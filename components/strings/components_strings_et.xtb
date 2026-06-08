@@ -1387,6 +1387,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3158539265159265653">Ketas</translation>
 <translation id="3162070126914310576">Seda seadet ei saa praegu registreerida, kuna teie organisatsiooniüksuse esialgne registreerimiste limiit on täis. Abi saamiseks võtke ühendust oma administraatoriga.</translation>
 <translation id="3162559335345991374">WiFi-võrk, mida kasutate, võib nõuda sisselogimislehe külastamist.</translation>
+<translation id="316542773973815724">Navigeerimine</translation>
 <translation id="316638481603975524">Võib küsida veebirakenduste installimist</translation>
 <translation id="3166788340998560642">Chrome pakub võimalust salvestada see rahakotti <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> järgmisel korral, kui seda kasutate.</translation>
 <translation id="3168744840365648658">Raadioseadmed</translation>
@@ -3759,7 +3760,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6893057134494550310">Fooliumlehega lamineerimine</translation>
 <translation id="6893204630281237373">Makserakenduse väljalülitamiseks Chrome'is avage oma <ph name="BEGIN_LINK1" />makseseaded<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Teie kaart on kinnitatud</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, asetusel <ph name="MATCH_POSITION" /> koguarvust <ph name="NUM_MATCHES_IN_GROUP" /> grupis <ph name="GROUP_HEADER" />.</translation>
 <translation id="6896758677409633944">Kopeeri</translation>
 <translation id="6897140037006041989">Kasutajaagent</translation>
 <translation id="6898699227549475383">Organisatsioon (O)</translation>
@@ -4123,7 +4123,6 @@ Lisateave:
 <translation id="7450577240311017924">Nupp Sünkroonimise haldamine, aktiveerige nupp, et Chrome'i seadetes sünkroonitavat teavet hallata</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Vaadake lisateavet<ph name="END_LINK" /> probleemi kohta.</translation>
 <translation id="745208957946308667">Dinosaurusemäng, vajutage mängimiseks tühikuklahvi</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, asetusel <ph name="MATCH_POSITION" /> koguarvust <ph name="NUM_MATCHES_IN_GROUP" /> grupis <ph name="GROUP_HEADER" />.</translation>
 <translation id="7453032093368223821">Hallake muid andmeid</translation>
 <translation id="7453849010505253492">See server ei suutnud tõestada, et tegemist on domeeniga <ph name="DOMAIN" />, kuna kasutab turbesertifikaati, mida Chrome või teie süsteemi veebiliikluse krüpteerimise seadistus ei usalda. Põhjuseks võib olla vale seadistus või teie ühendusele juurdepääsu saanud ründaja. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Kuva sertifikaat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Pilvekonto</translation>

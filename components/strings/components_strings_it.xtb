@@ -1387,6 +1387,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3158539265159265653">Disco</translation>
 <translation id="3162070126914310576">Al momento non è possibile registrare questo dispositivo perché l'unità organizzativa ha raggiunto il limite di registrazione iniziale. Per ricevere assistenza, contatta l'amministratore.</translation>
 <translation id="3162559335345991374">La rete Wi-Fi in uso potrebbe richiedere la visita della relativa pagina di accesso.</translation>
+<translation id="316542773973815724">Navigazione</translation>
 <translation id="316638481603975524">Può chiedere di installare le app web</translation>
 <translation id="3166788340998560642">Chrome ti proporrà di salvarle in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> la prossima volta che le utilizzerai</translation>
 <translation id="3168744840365648658">Apparecchiature radio</translation>
@@ -3755,7 +3756,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6893057134494550310">Pellicola laminata</translation>
 <translation id="6893204630281237373">Per disattivare l'app per pagamenti in Chrome, vai alle <ph name="BEGIN_LINK1" />impostazioni di pagamento<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">La carta è stata confermata</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> di <ph name="NUM_MATCHES_IN_GROUP" /> nel gruppo <ph name="GROUP_HEADER" />.</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6897140037006041989">User-agent</translation>
 <translation id="6898699227549475383">Organizzazione (O)</translation>
@@ -4119,7 +4119,6 @@ Ulteriori dettagli:
 <translation id="7450577240311017924">Pulsante Gestisci sincronizzazione, attiva per gestire le informazioni da sincronizzare nelle impostazioni di Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Leggere ulteriori informazioni<ph name="END_LINK" /> sul problema.</translation>
 <translation id="745208957946308667">Gioco Dino, premi la barra spaziatrice per giocare</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> di <ph name="NUM_MATCHES_IN_GROUP" /> nel gruppo <ph name="GROUP_HEADER" />.</translation>
 <translation id="7453032093368223821">Gestisci altri dati</translation>
 <translation id="7453849010505253492">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" /> perché utilizza un certificato di sicurezza non considerato attendibile da Chrome o dalla configurazione di sistema per la crittografia del traffico web. Il problema potrebbe essere dovuto a un'errata configurazione o a un attaccante che intercetta la connessione. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Visualizza certificato<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Account cloud</translation>

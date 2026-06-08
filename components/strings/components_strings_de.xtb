@@ -1387,6 +1387,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3158539265159265653">CD</translation>
 <translation id="3162070126914310576">Dieses Gerät kann derzeit nicht registriert werden, da die maximale Anzahl an Geräten für die Erstregistrierung in deiner Organisationseinheit bereits erreicht wurde. Bei Fragen wende dich bitte an deinen Administrator.</translation>
 <translation id="3162559335345991374">Unter Umständen musst du die Anmeldeseite des verwendeten WLAN-Netzwerken aufrufen.</translation>
+<translation id="316542773973815724">Navigation</translation>
 <translation id="316638481603975524">Darf nachfragen, ob Web-Apps installiert werden können</translation>
 <translation id="3166788340998560642">Wenn du das nächste Mal auf die Daten zugreifst, wirst du von Chrome gefragt, ob sie in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> gespeichert werden sollen</translation>
 <translation id="3168744840365648658">Funkausrüstung</translation>
@@ -3756,7 +3757,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6893057134494550310">Laminierfolie</translation>
 <translation id="6893204630281237373">Wenn du Zahlungs-Apps in Chrome deaktivieren möchtest, rufe deine <ph name="BEGIN_LINK1" />Zahlungseinstellungen<ph name="END_LINK1" /> auf</translation>
 <translation id="6895330447102777224">Deine Karte wurde bestätigt</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> von <ph name="NUM_MATCHES_IN_GROUP" /> in der Gruppe „<ph name="GROUP_HEADER" />“.</translation>
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6897140037006041989">User-Agent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
@@ -4120,7 +4120,6 @@ Weitere Details:
 <translation id="7450577240311017924">Button „Synchronisierung verwalten“ – aktivieren, um in den Chrome-Einstellungen zu verwalten, welche Informationen synchronisiert werden</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zu diesem Problem.</translation>
 <translation id="745208957946308667">Dino-Spiel – drücke die Leertaste, um das Spiel zu starten</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> von <ph name="NUM_MATCHES_IN_GROUP" /> in der Gruppe „<ph name="GROUP_HEADER" />“.</translation>
 <translation id="7453032093368223821">Andere Daten verwalten</translation>
 <translation id="7453849010505253492">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist, da er ein Sicherheitszertifikat verwendet, das von Chrome oder deiner Systemkonfiguration für die Verschlüsselung von Web-Traffic nicht als vertrauenswürdig eingestuft wird. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Zertifikat ansehen<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Cloud-Konto</translation>

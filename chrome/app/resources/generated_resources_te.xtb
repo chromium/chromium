@@ -1893,7 +1893,6 @@
 <translation id="2343160676229467122"><ph name="SITE_NAME" />‌లో ఎక్స్‌టెన్షన్‌లు అనుమతించబడవు</translation>
 <translation id="2343390523044483367">రాకీ మౌంటైన్స్ నేషనల్ పార్క్</translation>
 <translation id="2343747224442182863">ఈ ట్యాబ్‌పై దృష్టి కేంద్రీకరించు</translation>
-<translation id="2343971313330854480"><ph name="FEATURE_NAME" /> ఫోల్డర్‌లో మీ ఫైల్‌ను కనుగొనండి</translation>
 <translation id="234559068082989648">Chrome యాప్‌ల పాత వెర్షన్‌లు డిసెంబర్ 2022 తర్వాత తెరవబడవు. మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించి కొత్త వెర్షన్‌కు అప్‌డేట్ చేయండి లేదా ఈ యాప్‌ను తీసివేయండి.</translation>
 <translation id="2348176352564285430">యాప్: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - అనుమతి కోసం రిక్వెస్ట్ చేశారు, ప్రతిస్పందించడానికి Ctrl + Forwardను నొక్కండి</translation>
@@ -3580,7 +3579,6 @@
 <translation id="3569617221227793022">టైమ్ జోన్ ప్రస్తుతం <ph name="TIME_ZONE_ENTRY" />‌కు సెట్ చేసి ఉంది. ఈ సెట్టింగ్ మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతుంది.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" />, కింద ఉన్న ఫైళ్లను, ఫోల్డర్‌లను చూడగలదు</translation>
 <translation id="3571734092741541777">సెటప్ చేయండి</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> ఎక్స్‌టెన్షన్‌లు ఆఫ్ చేయబడ్డాయి</translation>
 <translation id="3575121482199441727">ఈ సైట్‌కు అనుమతించండి</translation>
 <translation id="3575224072358507281">వారి గోప్యతా పాలసీ (measurementlab.net/privacy) ప్రకారం, మెజర్‌మెంట్ ల్యాబ్ కోసం IP అడ్రస్, నెట్‌వర్క్ మెజర్‌మెంట్ ఫలితాలను కలెక్ట్ చేయండి</translation>
 <translation id="3576324189521867626">విజయవంతంగా ఇన్‌స్టాల్ చేయబడింది</translation>
@@ -5762,7 +5760,6 @@
 <translation id="5149602533174716626">వీడియో ఫ్రేమ్‌ను కాపీ చేయండి</translation>
 <translation id="5150254825601720210">Netscape సర్టిఫికెట్ SSL సర్వర్ పేరు</translation>
 <translation id="5151354047782775295">డిస్క్ స్థలాన్ని ఖాళీ చేయండి, లేదంటే ఎంపిక చేసిన డేటా ఆటోమేటిక్‌గా తొలగించబడవచ్చు</translation>
-<translation id="5152381187352661267">Chromeలో స్కిల్స్</translation>
 <translation id="5153074793829217329">మీ మౌస్ కర్సర్‌ను కంట్రోల్ చేయడానికి మీ కీబోర్డ్ లేదా సంఖ్యా కీప్యాడ్‌ను ఉపయోగించండి</translation>
 <translation id="5153234146675181447">ఫోన్‌ని మర్చిపో</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7020,7 +7017,6 @@
 <translation id="6112727384379533756">టిక్కెట్‌ను జోడించండి</translation>
 <translation id="6113434369102685411">Chrome బ్రౌజర్, <ph name="DEVICE_TYPE" /> లాంచర్ కోసం మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌ను సెట్ చేయండి</translation>
 <translation id="6113832060210023016">లాంచర్ + క్లిక్</translation>
-<translation id="6116004140911290070">Chromeలో స్కిల్స్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="6116921718742659598">భాష మరియు ఇన్‌పుట్ సెట్టింగ్‌లను మార్చండి</translation>
 <translation id="6119008366402292080">ప్రింటర్ ఏదీ అందుబాటులో లేదు</translation>
 <translation id="6119972796024789243">కలర్ కరెక్షన్</translation>
@@ -10423,7 +10419,6 @@
 <translation id="8596540852772265699">అనుకూల ఫైళ్ళు</translation>
 <translation id="8597845839771543242">లక్షణ ఆకృతి:</translation>
 <translation id="8598249292448297523">ప్రింట్</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{ఎక్స్‌టెన్షన్‌ను మేనేజ్ చేయండి}other{ఎక్స్‌టెన్షన్‌లను మేనేజ్ చేయండి}}</translation>
 <translation id="8599681327221583254">ఒకటి లేదా అంతకంటే ఎక్కువ పాలసీలు సరిగా కాన్ఫిగర్ చేయబడలేదు. దయచేసి మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి</translation>
 <translation id="8600362954032151088"><ph name="GOOGLE_PASSWORD_MANAGER" />‌లో మీ పాస్‌వర్డ్‌లను,పాస్-కీలను మేనేజ్ చేయండి</translation>
 <translation id="8602851771975208551">మీ కంప్యూటర్‌లోని మరో ప్రోగ్రామ్ జోడించిన యాప్ కారణంగా Chrome పని చేసే విధానం మారవచ్చు.</translation>
@@ -10819,7 +10814,6 @@
 <translation id="887292602123626481">ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌ల గురించి మరింత తెలుసుకోండి</translation>
 <translation id="8873075098103007382">ట్యాబ్ గ్రూప్‌లతో ఆర్గనైజ్డ్‌గా ఉండండి</translation>
 <translation id="8874341931345877644">పరికరానికి ప్రసారం చేయండి:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" ఆఫ్ చేయబడింది</translation>
 <translation id="8874647982044395866">ఆర్గానిక్</translation>
 <translation id="8874790741333031443">థర్డ్-పార్టీ కుక్కీలను తాత్కాలికంగా అనుమతించడానికి ట్రై చేయండి, అంటే బ్రౌజింగ్ రక్షణ తక్కువగా ఉంటుంది కానీ సైట్ ఫీచర్‌లు ఆశించిన విధంగా పని చేసే అవకాశం ఉంటుంది.</translation>
 <translation id="8875221558267407626">కంటెంట్‌ను సారాంశీకరించండి, క్లిష్టమైన భాషను సులభతరం చేయండి, లేదా ప్రశ్నలను అడగండి</translation>

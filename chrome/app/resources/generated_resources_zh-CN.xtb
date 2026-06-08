@@ -1878,7 +1878,6 @@
 <translation id="2343160676229467122">不允许在 <ph name="SITE_NAME" /> 上使用扩展程序</translation>
 <translation id="2343390523044483367">落基山国家公园</translation>
 <translation id="2343747224442182863">聚焦此标签页</translation>
-<translation id="2343971313330854480">在 <ph name="FEATURE_NAME" /> 文件夹中查找文件</translation>
 <translation id="234559068082989648">2022 年 12 月之后，多款旧版 Chrome 应用将无法开启。请联系您的管理员以更新到新版本或移除此应用。</translation>
 <translation id="2348176352564285430">应用：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - 收到了权限请求，按 Ctrl + 前进键即可回复</translation>
@@ -3562,7 +3561,6 @@
 <translation id="3569617221227793022">时区当前设置为 <ph name="TIME_ZONE_ENTRY" />。此设置由您的管理员管理。</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> 可查看以下文件和文件夹</translation>
 <translation id="3571734092741541777">设置</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> 个扩展程序已停用</translation>
 <translation id="3575121482199441727">允许此网站显示通知</translation>
 <translation id="3575224072358507281">根据 Measurement Lab 的隐私权政策 (measurementlab.net/privacy)，收集 IP 地址和网络测量结果</translation>
 <translation id="3576324189521867626">已成功安装</translation>
@@ -5742,7 +5740,6 @@
 <translation id="5149602533174716626">复制视频帧(&amp;Y)</translation>
 <translation id="5150254825601720210">Netscape 证书 SSL 服务器名称</translation>
 <translation id="5151354047782775295">请释放磁盘空间，否则系统可能会自动删除某些数据</translation>
-<translation id="5152381187352661267">Chrome 中的技能</translation>
 <translation id="5153074793829217329">使用键盘或数字键盘控制鼠标光标</translation>
 <translation id="5153234146675181447">移除手机</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -6997,7 +6994,6 @@
 <translation id="6112727384379533756">添加票据</translation>
 <translation id="6113434369102685411">为 Chrome 浏览器和 <ph name="DEVICE_TYPE" /> 启动器设置默认搜索引擎</translation>
 <translation id="6113832060210023016">启动器键 + 点击</translation>
-<translation id="6116004140911290070">在 Chrome 中启用技能</translation>
 <translation id="6116921718742659598">更改语言和输入设置</translation>
 <translation id="6119008366402292080">没有可用的打印机</translation>
 <translation id="6119972796024789243">色彩校正</translation>
@@ -10403,7 +10399,6 @@
 <translation id="8596540852772265699">自定义文件</translation>
 <translation id="8597845839771543242">属性格式：</translation>
 <translation id="8598249292448297523">打印</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{管理扩展程序}other{管理扩展程序}}</translation>
 <translation id="8599681327221583254">有一项或多项政策未正确配置。请与您的管理员联系</translation>
 <translation id="8600362954032151088">在 <ph name="GOOGLE_PASSWORD_MANAGER" />中管理您的密码和通行密钥</translation>
 <translation id="8602851771975208551">您计算机上的其他程序添加了一个应用，该应用可能会改变 Chrome 的工作方式。</translation>
@@ -10799,7 +10794,6 @@
 <translation id="887292602123626481">详细了解默认搜索引擎</translation>
 <translation id="8873075098103007382">为标签页分组，让页面井井有条</translation>
 <translation id="8874341931345877644">投放到设备：</translation>
-<translation id="8874448314264883207">“<ph name="EXTENSION_NAME" />”已停用</translation>
 <translation id="8874647982044395866">有机</translation>
 <translation id="8874790741333031443">尝试暂时允许使用第三方 Cookie，这样浏览保护会降低，但网站功能更可能正常运行。</translation>
 <translation id="8875221558267407626">总结内容、简化复杂语言或提问</translation>

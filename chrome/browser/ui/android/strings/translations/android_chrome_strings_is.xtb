@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">Þú finnur ferilinn þinn hér</translation>
 <translation id="1273937721055267968">Setja <ph name="DOMAIN" /> á bannlista</translation>
 <translation id="1280921956537356716">Kveikja á tilkynningum um ráð</translation>
-<translation id="1283039547216852943">Ýttu til að stækka</translation>
 <translation id="1289129165308566697">Skoðaðu ferilinn þinn í öðrum tækjum</translation>
 <translation id="129553762522093515">Nýlega lokað</translation>
 <translation id="1298077576058087471">Sparaðu allt að 60% af gögnum, lestu fréttir dagsins</translation>
@@ -1159,7 +1158,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="59577092665511740">Veldu reikning.</translation>
 <translation id="5958275228015807058">Þú finnur skrár og síður í Niðurhali</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome kom í veg fyrir að vefsvæði sem þú hefur ekki opnað nýlega sendi þér tilkynningar}one{Chrome kom í veg fyrir að vefsvæði sem þú hefur ekki opnað nýlega sendi þér tilkynningar}other{Chrome kom í veg fyrir að vefsvæði sem þú hefur ekki opnað nýlega sendi þér tilkynningar}}</translation>
-<translation id="5962718611393537961">Ýttu til að draga saman</translation>
 <translation id="5964869237734432770">Slökkva á myndlýsingum</translation>
 <translation id="5972844218283131174">Afvelja allt</translation>
 <translation id="5975083100439434680">Minnka aðdrátt</translation>

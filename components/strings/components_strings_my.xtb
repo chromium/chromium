@@ -1392,6 +1392,7 @@
 <translation id="3158539265159265653">ဒစ်ခ်</translation>
 <translation id="3162070126914310576">သင့်အဖွဲ့အစည်းဌာနသည် ၎င်း၏ ကနဦး စာရင်းသွင်းကန့်သတ်ချက် ပြည့်သွားသဖြင့် ဤစက်ကို လောလောဆယ် စာရင်းသွင်း၍မရပါ။ အကူအညီအတွက် သင့်စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="3162559335345991374">သင်အသုံးပြုနေသော Wi-Fi ၏ login စာမျက်နှာသို့ သင်သွားရောက်ကြည့်ရှုရန် လိုမည်။</translation>
+<translation id="316542773973815724">သွားလာမှု</translation>
 <translation id="316638481603975524">ဝဘ်အက်ပ်များ ထည့်သွင်းရန် တောင်းဆိုနိုင်သည်</translation>
 <translation id="3166788340998560642">နောက်တစ်ကြိမ် ၎င်းကိုသုံးသည့်အခါ Chrome သည် <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> တွင် သိမ်းရန် ကမ်းလှမ်းပါမည်</translation>
 <translation id="3168744840365648658">ရေဒီယိုသုံးစက်ပစ္စည်း</translation>
@@ -3759,7 +3760,6 @@
 <translation id="6893057134494550310">ပုံလောင်းသည့် သတ္တုလွှာပါး</translation>
 <translation id="6893204630281237373">Chrome တွင် ငွေပေးချေသည့်အက်ပ် ပိတ်ရန် သင်၏ <ph name="BEGIN_LINK1" />ငွေပေးချေမှု ဆက်တင်များ<ph name="END_LINK1" /> သို့ သွားပါ</translation>
 <translation id="6895330447102777224">သင့်ကဒ်ကို အတည်ပြုပြီးပါပြီ</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />၊ <ph name="SUGGESTION_DESCRIPTION" />၊ <ph name="GROUP_HEADER" /> အဖွဲ့ရှိ <ph name="NUM_MATCHES_IN_GROUP" /> အနက် <ph name="MATCH_POSITION" />။</translation>
 <translation id="6896758677409633944">ကူးယူရန်</translation>
 <translation id="6897140037006041989">အသုံးပြုသူ ကိုယ်စားလှယ်</translation>
 <translation id="6898699227549475383">အဖွဲ့အစည်း (O)</translation>
@@ -4123,7 +4123,6 @@
 <translation id="7450577240311017924">Chrome ဆက်တင်များတွင် သင်စင့်ခ်လုပ်သော အချက်အလက်များကို စီမံရန်အတွက် ‘စင့်ခ်လုပ်ခြင်း စီမံရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="7451311239929941790">ဤပြဿနာအကြောင်း <ph name="BEGIN_LINK" />ပိုမိုလေ့လာပါ<ph name="END_LINK" />။</translation>
 <translation id="745208957946308667">Dino ဂိမ်း။ ကစားရန် နေရာခြားခလုတ်ကို နှိပ်ပါ</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />၊ <ph name="GROUP_HEADER" /> အဖွဲ့ရှိ <ph name="NUM_MATCHES_IN_GROUP" /> အနက် <ph name="MATCH_POSITION" />။</translation>
 <translation id="7453032093368223821">အခြားဒေတာ စီမံရန်</translation>
 <translation id="7453849010505253492">ဤဆာဗာသည် Chrome က မယုံကြည်ရသော လုံခြုံရေးဆိုင်ရာ အသိအမှတ်ပြုလက်မှတ်ကို သုံးနေသောကြောင့် (သို့) ဝဘ်ဒေတာစီးဆင်းမှု အသွင်ဝှက်ခြင်းအတွက် သင့်စနစ်စီစဉ်သတ်မှတ်ချက်ကြောင့် <ph name="DOMAIN" /> ဖြစ်ကြောင်း သက်သေမပြနိုင်ပါ။ ၎င်းသည် စီစဉ်သတ်မှတ်ချက်အမှားကြောင့် (သို့) သင့်ချိတ်ဆက်မှုကို ကြားဖြတ်တိုက်ခိုက်သူကြောင့် ဖြစ်နိုင်သည်။ <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />အသိအမှတ်ပြုလက်မှတ်ကို ကြည့်ရန်<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Cloud အကောင့်</translation>

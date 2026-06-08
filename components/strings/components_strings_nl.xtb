@@ -1387,6 +1387,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3158539265159265653">Schijf</translation>
 <translation id="3162070126914310576">Dit apparaat kan nu niet worden ingeschreven omdat je organisatie-eenheid de aanvankelijke inschrijvingslimiet heeft bereikt. Neem voor hulp contact op met de beheerder.</translation>
 <translation id="3162559335345991374">Het is mogelijk dat je de inlogpagina moet bezoeken van het wifi-netwerk dat je gebruikt.</translation>
+<translation id="316542773973815724">Navigatie</translation>
 <translation id="316638481603975524">Kan vragen om web-apps te installeren</translation>
 <translation id="3166788340998560642">Chrome biedt je aan de informatie op te slaan in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> als je het de volgende keer gebruikt.</translation>
 <translation id="3168744840365648658">Radio-apparatuur</translation>
@@ -3752,7 +3753,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6893057134494550310">Lamineerfolie</translation>
 <translation id="6893204630281237373">Als je de betalingsapp in Chrome wilt uitzetten, ga je naar je <ph name="BEGIN_LINK1" />betaalinstellingen<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Je creditcard is bevestigd</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> van <ph name="NUM_MATCHES_IN_GROUP" /> in de groep <ph name="GROUP_HEADER" />.</translation>
 <translation id="6896758677409633944">Kopiëren</translation>
 <translation id="6897140037006041989">User-agent</translation>
 <translation id="6898699227549475383">Organisatie (O)</translation>
@@ -4116,7 +4116,6 @@ Aanvullende informatie:
 <translation id="7450577240311017924">Knop Synchronisatie beheren. Activeer deze om de informatie die je synchroniseert te beheren in de Chrome-instellingen.</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> over dit probleem.</translation>
 <translation id="745208957946308667">Dino-game, druk op de spatiebalk om te spelen</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> van <ph name="NUM_MATCHES_IN_GROUP" /> in de groep <ph name="GROUP_HEADER" />.</translation>
 <translation id="7453032093368223821">Andere gegevens beheren</translation>
 <translation id="7453849010505253492">Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is, omdat de server een beveiligingscertificaat gebruikt dat niet wordt vertrouwd door Chrome of je systeemconfiguratie voor versleuteling van webverkeer. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Certificaat bekijken<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Cloud-account</translation>

@@ -96,7 +96,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1953553007165777902">Atsisiunčiama... Liko <ph name="MINUTE" /> min.</translation>
 <translation id="1979600810166324878">Būkite saugesni keliaudami įjungę Sustiprintą saugų naršymą „iOS“ skirtoje „Chrome“</translation>
 <translation id="2001586581944147178">Neleiskite srautą internete galintiems pasiekti žmonėms matyti svetainių, kuriose lankotės. „Chrome“ naudoja saugų ryšį ieškodama svetainės IP adreso DNS (domenų pavadinimų sistemoje).</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Šis plėtinys nebepalaikomas. „Chrome“ rekomenduoja jį pašalinti.}one{Šie plėtiniai nebepalaikomi. „Chrome“ rekomenduoja juos pašalinti.}few{Šie plėtiniai nebepalaikomi. „Chrome“ rekomenduoja juos pašalinti.}many{Šie plėtiniai nebepalaikomi. „Chrome“ rekomenduoja juos pašalinti.}other{Šie plėtiniai nebepalaikomi. „Chrome“ rekomenduoja juos pašalinti.}}</translation>
 <translation id="2018528049276128029">Kiekviename profilyje saugoma atskira „Chrome“ informacija, pvz., žymės, istorija, slaptažodžiai ir kt.</translation>
 <translation id="2018879682492276940">Nepavyko įdiegti. Bandykite dar kartą.</translation>
 <translation id="2024959665595762054">Jei norite naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje, patvirtinkite savo tapatybę</translation>
@@ -389,6 +388,7 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="5127558335897923940">Palikite „Chrome“ doke, kad bet kada galėtumėte greitai ją pasiekti</translation>
 <translation id="5132929315877954718">Suraskite puikių „Google Chrome“ programų, žaidimų, plėtinių ir temų.</translation>
 <translation id="5139423532931106058">Tinkinti „Chrome“ profilį</translation>
+<translation id="5152381187352661267">Įgūdžiai naršyklėje „Chrome“</translation>
 <translation id="5163087008893166964">Sveiki, tai – „Chrome“; atidarytas naujas naršyklės langas</translation>
 <translation id="5166439563123238795">„Chrome“ reikalingas leidimas stebėti jūsų rankas</translation>
 <translation id="5169778651486082413">Slaptažodžių naudojimas su „Chrome“ telefone</translation>
@@ -488,6 +488,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6070348360322141662">Kad būtų papildomai užtikrintas saugumas, „Google Chrome“ užšifruos duomenis</translation>
 <translation id="6075300983329039771">Jūsų organizacija (<ph name="MANAGER" />) reikalauja prisijungti prie „Chrome“</translation>
 <translation id="6113794647360055231">„Chrome“ dabar dar tobulesnė</translation>
+<translation id="6116004140911290070">Įgalinti įgūdžius naršyklėje „Chrome“</translation>
 <translation id="6116252277240876590">Ši kalba vartojama „Chrome“ meniu, nustatymams, įspėjimams ir kitam tekstui pateikti</translation>
 <translation id="6127237283587442951">„Chrome“ naudojimas pagal numatytuosius nustatymus ir jos prisegimas</translation>
 <translation id="6134085236017727171">Jei norite naudoti mikrofoną, suteikite „Chrome“ prieigą <ph name="BEGIN_LINK" />sistemos nustatymuose<ph name="END_LINK" /></translation>

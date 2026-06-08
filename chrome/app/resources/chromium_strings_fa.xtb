@@ -51,7 +51,6 @@
 <translation id="154404805518949443">‏ورود به سیستم Chromium</translation>
 <translation id="1547469039832541117">تکلیف برجسته‌شده را به‌پایان می‌رساند.</translation>
 <translation id="1553461853655228091">‏Chromium برای ایجاد نقشه سه‌بعدی محیط شما باید اجازه دسترسی به دوربین داشته باشد</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{‏دیگر از این افزونه پشتیبانی نمی‌شود. ‫Chromium توصیه می‌کند آن را حذف کنید.}one{‏دیگر از این افزونه‌ها پشتیبانی نمی‌شود. ‫Chromium توصیه می‌کند آن‌ها را بردارید.}other{‏دیگر از این افزونه‌ها پشتیبانی نمی‌شود. ‫Chromium توصیه می‌کند آن‌ها را بردارید.}}</translation>
 <translation id="1562320819937089394">‏سنجاق کردن Chromium</translation>
 <translation id="1574377791422810894">‏ابزارهای ایمنی Chromium</translation>
 <translation id="1594928384848033697">‏‫Chromium می‌خواهد داده‌های «مدیر گذرواژه» شما را حذف کند. برای مجاز کردن این کار، گذرواژه Windows خود را تایپ کنید.</translation>

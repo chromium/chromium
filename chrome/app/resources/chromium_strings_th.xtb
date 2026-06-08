@@ -50,7 +50,6 @@
 <translation id="154404805518949443">ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="1547469039832541117">สิ้นสุดงานที่ไฮไลต์ไว้</translation>
 <translation id="1553461853655228091">Chromium ต้องการสิทธิ์เข้าถึงกล้องเพื่อสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณ</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{ระบบไม่รองรับส่วนขยายนี้อีกต่อไป Chromium ขอแนะนำให้คุณนำออก}other{ระบบไม่รองรับส่วนขยายเหล่านี้อีกต่อไป Chromium ขอแนะนำให้คุณนำออก}}</translation>
 <translation id="1562320819937089394">ปักหมุด Chromium</translation>
 <translation id="1574377791422810894">เครื่องมือด้านความปลอดภัยของ Chromium</translation>
 <translation id="1594928384848033697">Chromium ต้องการลบข้อมูลในเครื่องมือจัดการรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>

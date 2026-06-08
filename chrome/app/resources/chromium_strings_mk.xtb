@@ -53,7 +53,6 @@
 <translation id="154404805518949443">Најавете се на Chromium</translation>
 <translation id="1547469039832541117">Ја завршува нагласената задача.</translation>
 <translation id="1553461853655228091">На Chromium му треба дозвола за да пристапи до камерата и да создаде 3D-карта од вашето опкружување</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Екстензијава веќе не е поддржана. Chromium препорачува да ја отстраните.}one{Екстензииве веќе не се поддржани. Chromium препорачува да ги отстраните.}other{Екстензииве веќе не се поддржани. Chromium препорачува да ги отстраните.}}</translation>
 <translation id="1562320819937089394">Закачи го Chromium</translation>
 <translation id="1574377791422810894">Алатки за безбедност на Chromium</translation>
 <translation id="1594928384848033697">Chromium сака да ги избрише вашите податоци во Password Manager. За да го дозволите тоа, внесете ја вашата лозинка за Windows.</translation>

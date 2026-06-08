@@ -1387,6 +1387,7 @@
 <translation id="3158539265159265653">ڈسک</translation>
 <translation id="3162070126914310576">اس آلے کو ابھی اندراج نہیں کیا جا سکتا کیونکہ آپ کا تنظیم یونٹ اپنے اندراج کی ابتدائی حد کو پہنچ گیا ہے۔ مدد کے لیے اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="3162559335345991374">‏آپ جو Wi-Fi استعمال کر رہے ہیں وہ آپ سے اپنا لاگ ان صفحہ ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
+<translation id="316542773973815724">نیویگیشن</translation>
 <translation id="316638481603975524">ویب ایپس انسٹال کرنے کے لیے پوچھ سکتے ہیں</translation>
 <translation id="3166788340998560642">‏اگلی بار اس کا استعمال کرنے پر، Chrome اسے <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> میں محفوظ کرنے کی پیشکش کرے گا</translation>
 <translation id="3168744840365648658">ریڈیو کے ساز و سامان</translation>
@@ -3761,7 +3762,6 @@
 <translation id="6893057134494550310">لامینٹنگ فوئل</translation>
 <translation id="6893204630281237373">‏‫Chrome میں ادائیگیوں کی ایپ کو بند کرنے کے لیے، اپنی <ph name="BEGIN_LINK1" />ادائیگی کی ترتیبات<ph name="END_LINK1" /> پر جائیں</translation>
 <translation id="6895330447102777224">آپ کے کارڈ کی توثیق ہو گئی ہے</translation>
-<translation id="6895573608763679343">گروپ <ph name="GROUP_HEADER" /> میں <ph name="NUM_MATCHES_IN_GROUP" /> کا <ph name="SUGGESTION_TITLE" />، <ph name="SUGGESTION_DESCRIPTION" />، <ph name="MATCH_POSITION" />۔</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
 <translation id="6897140037006041989">صارف کا ایجنٹ</translation>
 <translation id="6898699227549475383">‏تنظیم (O)</translation>
@@ -4124,7 +4124,6 @@
 <translation id="7450577240311017924">‏مطابقت پذیری کا نظم کریں بٹن، آپ Chrome ترتیبات میں کن معلومات کو مطابقت پذیر بناتے ہیں ان کا نظم کرنے کے لئے فعال کریں</translation>
 <translation id="7451311239929941790">اس مسئلہ کے بارے میں <ph name="BEGIN_LINK" />مزید جاننے کی<ph name="END_LINK" />۔</translation>
 <translation id="745208957946308667">‏‫Dino گیم، کھیلنے کے لیے اسپیس دبائیں</translation>
-<translation id="74521886886364465">گروپ <ph name="GROUP_HEADER" /> میں <ph name="NUM_MATCHES_IN_GROUP" /> میں سے <ph name="SUGGESTION_TITLE" />، <ph name="MATCH_POSITION" />۔</translation>
 <translation id="7453032093368223821">دیگر ڈیٹا کا نظم کریں</translation>
 <translation id="7453849010505253492">‏یہ سرور ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے کیونکہ یہ ایک سیکیورٹی سرٹیفکیٹ استعمال کر رہا ہے جس پر Chrome یا آپ کے سسٹم کے کنفیگریشن کو ویب ٹریفک کی مرموز کاری کے لیے بھروسہ نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔ <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />سرٹیفکیٹ دیکھیں<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">کلاؤڈ اکاؤنٹ</translation>

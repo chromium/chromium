@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">Tu znajdziesz swoją historię</translation>
 <translation id="1273937721055267968">Zablokuj witrynę <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">Włącz powiadomienia o wskazówkach</translation>
-<translation id="1283039547216852943">Kliknij, by rozwinąć</translation>
 <translation id="1289129165308566697">Wyświetlaj historię na innych urządzeniach</translation>
 <translation id="129553762522093515">Ostatnio zamknięte</translation>
 <translation id="1298077576058087471">Oszczędź do 60% danych, przeczytaj dzisiejsze wiadomości</translation>
@@ -1161,7 +1160,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="59577092665511740">Wybierz konto.</translation>
 <translation id="5958275228015807058">Znajdź pliki i strony w Pobranych plikach</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Witrynie, której ostatnio nie odwiedzasz, przeglądarka Chrome uniemożliwiła wysyłanie powiadomień}few{Witrynom, których ostatnio nie odwiedzasz, przeglądarka Chrome uniemożliwiła wysyłanie powiadomień}many{Witrynom, których ostatnio nie odwiedzasz, przeglądarka Chrome uniemożliwiła wysyłanie powiadomień}other{Witrynom, których ostatnio nie odwiedzasz, przeglądarka Chrome uniemożliwiła wysyłanie powiadomień}}</translation>
-<translation id="5962718611393537961">Kliknij, by zwinąć</translation>
 <translation id="5964869237734432770">Wstrzymaj opisy obrazów</translation>
 <translation id="5972844218283131174">Odznacz wszystko</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>

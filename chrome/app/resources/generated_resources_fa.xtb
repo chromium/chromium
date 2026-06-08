@@ -1894,7 +1894,6 @@
 <translation id="2343160676229467122">افزونه‌ها در <ph name="SITE_NAME" /> مجاز نیستند</translation>
 <translation id="2343390523044483367">پارک ملی کوه راکی</translation>
 <translation id="2343747224442182863">متمرکز کردن این برگه</translation>
-<translation id="2343971313330854480">فایلتان را در پوشه «<ph name="FEATURE_NAME" />» پیدا کنید</translation>
 <translation id="234559068082989648">‏نسخه‌های قدیمی «برنامه‌های Chrome» بعداز دسامبر ۲۰۲۲ باز نخواهند شد. برای به‌روزرسانی به نسخه جدید یا برداشتن این برنامه، با سرپرست تماس بگیرید.</translation>
 <translation id="2348176352564285430">برنامه: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - درخواست اجازه ارائه شده است؛ برای پاسخ دادن، کلید «مهار + جلو» را فشار دهید</translation>
@@ -3584,7 +3583,6 @@
 <translation id="3569617221227793022">منطقه زمانی درحال‌حاضر روی <ph name="TIME_ZONE_ENTRY" /> تنظیم شده است. این تنظیم را سرپرست شما مدیریت می‌کند.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> می‌تواند فایل‌ها و پوشه‌های زیر را مشاهده کند</translation>
 <translation id="3571734092741541777">تنظیم</translation>
-<translation id="3572031449439748861">‫<ph name="NUM_EXTENSIONS" /> افزونه خاموش شد</translation>
 <translation id="3575121482199441727">اجازه دادن برای این سایت</translation>
 <translation id="3575224072358507281">‏طبق خط‌مشی رازداری خود (measurementlab.net/privacy)، نشانی IP و نتایج سنجش شبکه را برای Measurement Lab جمع‌آوری کند</translation>
 <translation id="3576324189521867626">نصب موفقیت‌آمیز بود</translation>
@@ -5769,7 +5767,6 @@
 <translation id="5149602533174716626">کپی کردن فریم ویدیو</translation>
 <translation id="5150254825601720210">‏نام سرور SSL گواهی Netscape</translation>
 <translation id="5151354047782775295">فضای دیسک را آزاد کنید، در غیر این صورت ممکن است داده‌های انتخابی به‌صورت خودکار حذف شوند</translation>
-<translation id="5152381187352661267">‏«مهارت‌ها» در Chrome</translation>
 <translation id="5153074793829217329">از صفحه‌کلید یا صفحه‌کلید عددی برای کنترل کردن مکان‌نما موشواره استفاده کنید</translation>
 <translation id="5153234146675181447">فراموش کردن تلفن</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7029,7 +7026,6 @@
 <translation id="6112727384379533756">افزودن بلیت</translation>
 <translation id="6113434369102685411">‏تعیین کردن موتور جستجوی پیش‌فرض برای مرورگر Chrome و «راه‌انداز <ph name="DEVICE_TYPE" />»</translation>
 <translation id="6113832060210023016">راه‌انداز + کلیک</translation>
-<translation id="6116004140911290070">‏فعال کردن «مهارت‌ها» در Chrome</translation>
 <translation id="6116921718742659598">تغییر تنظیمات زبان و ورودی</translation>
 <translation id="6119008366402292080">چاپگری دردسترس نیست</translation>
 <translation id="6119972796024789243">تصحیح رنگ</translation>
@@ -10439,7 +10435,6 @@
 <translation id="8596540852772265699">فایل‌های سفارشی</translation>
 <translation id="8597845839771543242">قالب محصول:</translation>
 <translation id="8598249292448297523">چاپ</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{مدیریت افزونه}one{مدیریت افزونه}other{مدیریت افزونه‌ها}}</translation>
 <translation id="8599681327221583254">یک یا چند خط‌مشی به‌درستی پیکربندی نشده‌اند. لطفاً با سرپرستتان تماس بگیرید</translation>
 <translation id="8600362954032151088">گذرواژه‌ها و گذرکلیدهایتان را در <ph name="GOOGLE_PASSWORD_MANAGER" /> مدیریت کنید</translation>
 <translation id="8602851771975208551">‏برنامه‌ای دیگر بر روی رایانه شما یک برنامه را اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.</translation>
@@ -10835,7 +10830,6 @@
 <translation id="887292602123626481">درباره موتورهای جستجوی پیش‌فرض بیشتر بدانید</translation>
 <translation id="8873075098103007382">با گروه‌های زبانه منظم بمانید</translation>
 <translation id="8874341931345877644">پخش محتوا به دستگاه:</translation>
-<translation id="8874448314264883207">‫«<ph name="EXTENSION_NAME" />» خاموش شد</translation>
 <translation id="8874647982044395866">اندامگانی</translation>
 <translation id="8874790741333031443">کوکی‌های طرف سوم را به‌طور موقت مجاز کنید. این کار به‌معنی محافظت کمتر هنگام مرور است اما ویژگی‌های سایت به احتمال زیاد عملکرد موردنظر را خواهد داشت.</translation>
 <translation id="8875221558267407626">خلاصه کردن محتوا، ساده کردن زبان پیچیده، یا پرسیدن سؤال</translation>

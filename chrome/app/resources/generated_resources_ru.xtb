@@ -1884,7 +1884,6 @@
 <translation id="2343160676229467122">На странице <ph name="SITE_NAME" /> нельзя использовать расширения.</translation>
 <translation id="2343390523044483367">Роки-Маунтин</translation>
 <translation id="2343747224442182863">Переключиться на эту вкладку</translation>
-<translation id="2343971313330854480">Найдите файл в папке "<ph name="FEATURE_NAME" />".</translation>
 <translation id="234559068082989648">Старые версии приложений Chrome перестанут работать с декабря 2022 года. Удалите это приложение или обратитесь к администратору, чтобы обновить его.</translation>
 <translation id="2348176352564285430">Приложение: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – требуется разрешение. Нажмите Ctrl + Косая черта, чтобы ответить.</translation>
@@ -3574,7 +3573,6 @@
 <translation id="3569617221227793022">Ваш текущий часовой пояс – <ph name="TIME_ZONE_ENTRY" />. Этим параметром управляет администратор.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> может просматривать следующие файлы и папки:</translation>
 <translation id="3571734092741541777">Настроить</translation>
-<translation id="3572031449439748861">Расширения (<ph name="NUM_EXTENSIONS" />) отключены</translation>
 <translation id="3575121482199441727">Разрешить для этого сайта</translation>
 <translation id="3575224072358507281">Сбор IP-адреса и результатов оценки сети для Measurement Lab в соответствии с политикой конфиденциальности этой платформы (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Установлено</translation>
@@ -5758,7 +5756,6 @@
 <translation id="5149602533174716626">&amp;Копировать кадр видео</translation>
 <translation id="5150254825601720210">Имя сервера SSL-сертификатов Netscape</translation>
 <translation id="5151354047782775295">Если вы не освободите место на диске, некоторые данные могут быть автоматически удалены.</translation>
-<translation id="5152381187352661267">Специализированные действия в Chrome</translation>
 <translation id="5153074793829217329">Контролировать указатель мыши, используя цифровой блок или другие клавиши на клавиатуре</translation>
 <translation id="5153234146675181447">Удаление телефона</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7018,7 +7015,6 @@
 <translation id="6112727384379533756">Добавить билет</translation>
 <translation id="6113434369102685411">Выберите поисковую систему по умолчанию для браузера Chrome и панели запуска на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6113832060210023016">Клавиша панели запуска + нажатие</translation>
-<translation id="6116004140911290070">Включить специализированные действия в Chrome</translation>
 <translation id="6116921718742659598">Изменение настроек языка и метода ввода</translation>
 <translation id="6119008366402292080">Нет доступных принтеров</translation>
 <translation id="6119972796024789243">Коррекция цвета</translation>
@@ -10431,7 +10427,6 @@
 <translation id="8596540852772265699">Пользовательские файлы</translation>
 <translation id="8597845839771543242">Формат свойств:</translation>
 <translation id="8598249292448297523">печать</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Настроить расширение}one{Настроить расширения}few{Настроить расширения}many{Настроить расширения}other{Настроить расширения}}</translation>
 <translation id="8599681327221583254">Одно или несколько правил настроены неправильно. Обратитесь к администратору.</translation>
 <translation id="8600362954032151088">Для управления паролями и ключами доступа откройте <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="8602851771975208551">Одна из программ на вашем компьютере установила приложение, которое может влиять на работу Chrome.</translation>
@@ -10827,7 +10822,6 @@
 <translation id="887292602123626481">Подробнее о поисковых системах по умолчанию</translation>
 <translation id="8873075098103007382">Поддерживайте порядок с помощью групп вкладок</translation>
 <translation id="8874341931345877644">Трансляция на устройство:</translation>
-<translation id="8874448314264883207">Расширение "<ph name="EXTENSION_NAME" />" отключено</translation>
 <translation id="8874647982044395866">Органические показы</translation>
 <translation id="8874790741333031443">Попробуйте временно разрешить сторонние файлы cookie. Браузер будет хуже защищен, но функции сайта могут начать работать правильно.</translation>
 <translation id="8875221558267407626">Получайте краткий пересказ, упрощайте сложный язык или задавайте вопросы</translation>

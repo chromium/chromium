@@ -1883,7 +1883,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2343160676229467122">Extensiile nu sunt permise pe <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Parcul Național Munții Stâncoși</translation>
 <translation id="2343747224442182863">Focalizează această filă</translation>
-<translation id="2343971313330854480">Găsește fișierul în dosarul <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Versiunile vechi ale aplicațiilor Chrome nu se vor mai deschide începând din decembrie 2022. Contactează administratorul pentru a actualiza la o versiune nouă sau pentru a elimina aplicația.</translation>
 <translation id="2348176352564285430">Aplicație: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Permisiune necesară, apasă Ctrl + tasta Înainte pentru a răspunde</translation>
@@ -3569,7 +3568,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3569617221227793022">Fusul orar este setat momentan la <ph name="TIME_ZONE_ENTRY" />. Această setare este gestionată de administrator.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> poate să vadă următoarele fișiere și dosare</translation>
 <translation id="3571734092741541777">Configurează</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> extensii au fost dezactivate</translation>
 <translation id="3575121482199441727">Permite pentru acest site</translation>
 <translation id="3575224072358507281">Colectează adresa IP și rezultatele măsurării rețelei pentru Measurement Lab, conform politicii de confidențialitate (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">S-a instalat</translation>
@@ -5750,7 +5748,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5149602533174716626">Copiaz&amp;ă cadrul video</translation>
 <translation id="5150254825601720210">Nume de server SSL pentru certificat Netscape</translation>
 <translation id="5151354047782775295">Eliberează spațiu pe hard disk sau este posibil ca anumite date să fie șterse automat</translation>
-<translation id="5152381187352661267">Abilități în Chrome</translation>
 <translation id="5153074793829217329">Folosește tastatura sau o tastatură numerică pentru a controla cursorul mouse-ului</translation>
 <translation id="5153234146675181447">Elimină telefonul</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7008,7 +7005,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6112727384379533756">Adaugă un tichet</translation>
 <translation id="6113434369102685411">Setează motorul de căutare prestabilit pentru browserul Chrome și lansatorul pentru <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">Lansator + clic</translation>
-<translation id="6116004140911290070">Activează funcția Abilități în Chrome</translation>
 <translation id="6116921718742659598">Schimbați setările pentru limbă și introducere de text</translation>
 <translation id="6119008366402292080">Nicio imprimantă disponibilă</translation>
 <translation id="6119972796024789243">Corecția culorilor</translation>
@@ -10416,7 +10412,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8596540852772265699">Fișiere personalizate</translation>
 <translation id="8597845839771543242">Formatul proprietății:</translation>
 <translation id="8598249292448297523">printează</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Gestionează extensia}few{Gestionează extensiile}other{Gestionează extensiile}}</translation>
 <translation id="8599681327221583254">Cel puțin o politică nu este configurată corect. Contactează administratorul.</translation>
 <translation id="8600362954032151088">Gestionează parolele și cheile de acces în <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Un alt program de pe computerul dvs. a adăugat o aplicație care poate schimba modul în care funcționează Chrome.</translation>
@@ -10812,7 +10807,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="887292602123626481">Află mai multe despre motoarele de căutare prestabilite</translation>
 <translation id="8873075098103007382">Organizează-te cu ajutorul grupurilor de file</translation>
 <translation id="8874341931345877644">Proiectează pe un dispozitiv:</translation>
-<translation id="8874448314264883207"><ph name="EXTENSION_NAME" /> a fost dezactivată</translation>
 <translation id="8874647982044395866">Organic</translation>
 <translation id="8874790741333031443">Încearcă să permiți temporar cookie-urile terță parte, ceea ce înseamnă mai puțină protecție pentru navigare, dar există șanse mai mari ca funcțiile site-urilor să funcționeze conform așteptărilor.</translation>
 <translation id="8875221558267407626">Rezumă conținut, simplifică limbajul complex sau pune întrebări</translation>

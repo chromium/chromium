@@ -1387,6 +1387,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162070126914310576">Denne enhed kan ikke tilmeldes lige nu, fordi din organisationsenhed har nået sin grænse for indledende tilmelding. Kontakt din administrator for at få hjælp.</translation>
 <translation id="3162559335345991374">Det Wi-Fi-netværk, du bruger, kan kræve, at du går til netværkets loginside.</translation>
+<translation id="316542773973815724">Navigation</translation>
 <translation id="316638481603975524">Kan anmode om at installere webapps</translation>
 <translation id="3166788340998560642">Chrome tilbyder at gemme oplysningerne i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />, næste gang du bruger den</translation>
 <translation id="3168744840365648658">Radioudstyr</translation>
@@ -3759,7 +3760,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6893057134494550310">Lamineringsfolie</translation>
 <translation id="6893204630281237373">Hvis du vil deaktivere betalingsappen i Chrome, skal du gå til dine <ph name="BEGIN_LINK1" />betalingsindstillinger<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Dit kort er bekræftet</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> af <ph name="NUM_MATCHES_IN_GROUP" /> i gruppen <ph name="GROUP_HEADER" />.</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6897140037006041989">Brugeragent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
@@ -4123,7 +4123,6 @@ Yderligere oplysninger:
 <translation id="7450577240311017924">Knappen Administrer synkronisering, aktivér for at administrere, hvilke oplysninger der skal synkroniseres, i Chrome-indstillingerne</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /> om dette problem.</translation>
 <translation id="745208957946308667">Dino-spillet – tryk på mellemrumstasten for at spille</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> af <ph name="NUM_MATCHES_IN_GROUP" /> i gruppen <ph name="GROUP_HEADER" />.</translation>
 <translation id="7453032093368223821">Administrer andre data</translation>
 <translation id="7453849010505253492">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, fordi den bruger et sikkerhedscertifikat, som Chrome eller din systemkonfiguration til kryptering af webtrafik ikke har tillid til. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Se certifikat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Cloud-konto</translation>

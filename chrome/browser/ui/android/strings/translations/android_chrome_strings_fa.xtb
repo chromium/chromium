@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">سابقه را اینجا خواهید دید</translation>
 <translation id="1273937721055267968">مسدود کردن <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">روشن کردن اعلان‌های نکته‌ها</translation>
-<translation id="1283039547216852943">برای بزرگ کردن تک‌ضرب بزنید</translation>
 <translation id="1289129165308566697">سابقه‌تان را در دستگاه‌های دیگر ببینید</translation>
 <translation id="129553762522093515">اخیراً بسته‌شده</translation>
 <translation id="1298077576058087471">تا ۶۰٪ در مصرف داده صرفه‌جویی کنید، اخبار امروز را بخوانید</translation>
@@ -1161,7 +1160,6 @@
 <translation id="59577092665511740">حسابی انتخاب کنید.</translation>
 <translation id="5958275228015807058">فایل‌ها و صفحه‌هایتان را در «بارگیری‌ها» پیدا کنید</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{‏‫Chrome ارسال اعلان از سایتی را که اخیراً از آن بازدید نکرده‌اید متوقف کرد}one{‏‫Chrome ارسال اعلان از سایتی را که اخیراً از آن بازدید نکرده‌اید متوقف کرد}other{‏‫Chrome ارسال اعلان از سایت‌هایی را که اخیراً از آن‌ها بازدید نکرده‌اید متوقف کرد}}</translation>
-<translation id="5962718611393537961">برای کوچک کردن تک‌ضرب بزنید</translation>
 <translation id="5964869237734432770">توقف توضیحات تصویر</translation>
 <translation id="5972844218283131174">لغوانتخاب همه</translation>
 <translation id="5975083100439434680">دورنمایی کردن</translation>

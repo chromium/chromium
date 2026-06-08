@@ -1387,6 +1387,7 @@
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162070126914310576">Това устройство не може да бъде регистрирано в момента, защото за организационната единица е достигнато ограничението за първоначална регистрация. За помощ се свържете с администратора си.</translation>
 <translation id="3162559335345991374">Използваната от вас Wi-Fi мрежа може да изисква да посетите страницата й за вход.</translation>
+<translation id="316542773973815724">Навигация</translation>
 <translation id="316638481603975524">Може да извежда запитвания за инсталиране на уеб приложения</translation>
 <translation id="3166788340998560642">Chrome ще предложи да я запази в <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> следващия път, когато я използвате</translation>
 <translation id="3168744840365648658">Радиоапаратура</translation>
@@ -3759,7 +3760,6 @@
 <translation id="6893057134494550310">Фолио за ламиниране</translation>
 <translation id="6893204630281237373">За да изключите приложението за плащане в Chrome, отворете <ph name="BEGIN_LINK1" />настройките за плащане<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Картата ви е потвърдена</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> от <ph name="NUM_MATCHES_IN_GROUP" /> в групата „<ph name="GROUP_HEADER" />“.</translation>
 <translation id="6896758677409633944">Копиране</translation>
 <translation id="6897140037006041989">Потребителски агент</translation>
 <translation id="6898699227549475383">Организация (О)</translation>
@@ -4123,7 +4123,6 @@
 <translation id="7450577240311017924">Бутон „Управление на синхронизирането“. Активирайте, за да управлявате данните, които да се синхронизират, в настройките на Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за този проблем.</translation>
 <translation id="745208957946308667">Играта с динозавъра – натиснете интервал, за да играете</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> от <ph name="NUM_MATCHES_IN_GROUP" /> в групата „<ph name="GROUP_HEADER" />“.</translation>
 <translation id="7453032093368223821">Управление на други данни</translation>
 <translation id="7453849010505253492">Сървърът не успя да докаже, че е <ph name="DOMAIN" />, защото използва сертификат за сигурност, който не се смята за надежден от Chrome или системната ви конфигурация за шифроване на трафика в мрежата. Това може да се дължи на неправилно конфигуриране или на прехващане на връзката ви от хакер. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Преглед на сертификата<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Профил в Cloud</translation>

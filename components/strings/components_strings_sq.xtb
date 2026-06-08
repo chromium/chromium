@@ -1387,6 +1387,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3158539265159265653">Disku</translation>
 <translation id="3162070126914310576">Kjo pajisje nuk mund të regjistrohet për momentin sepse njësia jote e organizatës ka arritur kufirin e regjistrimeve fillestare. Kontakto me administratorin tënd për ndihmë.</translation>
 <translation id="3162559335345991374">Lidhja Wi-Fi që po përdor mund të të kërkojë që të vizitosh faqen e saj të identifikimit.</translation>
+<translation id="316542773973815724">Lundrimi</translation>
 <translation id="316638481603975524">Mund të kërkojë të instalojë aplikacione uebi</translation>
 <translation id="3166788340998560642">Chrome do të ofrojë që ta ruajë atë te "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" herën tjetër kur ta përdorësh.</translation>
 <translation id="3168744840365648658">Pajisje radiofonike</translation>
@@ -3758,7 +3759,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6893057134494550310">Letër alumini e laminuar</translation>
 <translation id="6893204630281237373">Për të çaktivizuar aplikacionin për pagesë në Chrome, shko te <ph name="BEGIN_LINK1" />cilësimet e pagesës<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Karta jote është konfirmuar</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> nga <ph name="NUM_MATCHES_IN_GROUP" /> në grupin "<ph name="GROUP_HEADER" />".</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6897140037006041989">Agjenti i përdoruesit</translation>
 <translation id="6898699227549475383">Organizata (O)</translation>
@@ -4121,7 +4121,6 @@ Detaje shtesë:
 <translation id="7450577240311017924">Butoni "Menaxho sinkronizimin". Aktivizoje për të menaxhuar se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> rreth këtij problemi.</translation>
 <translation id="745208957946308667">Loja Dino, shtyp tastin e hapësirës për të luajtur</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> nga <ph name="NUM_MATCHES_IN_GROUP" /> në grupin "<ph name="GROUP_HEADER" />".</translation>
 <translation id="7453032093368223821">Menaxho të dhënat e tjera</translation>
 <translation id="7453849010505253492">Ky server nuk mund të vërtetonte që është <ph name="DOMAIN" /> sepse po përdor një certifikatë sigurie që nuk është e besuar nga Chrome ose nga konfigurimi i sistemit tënd për enkriptimin e trafikut të uebit. Kjo mund të jetë shkaktuar nga një konfigurim i gabuar ose nga ndërhyrja e një sulmuesi në lidhjen tënde. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Shiko certifikatën<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Llogaria në renë kompjuterike</translation>

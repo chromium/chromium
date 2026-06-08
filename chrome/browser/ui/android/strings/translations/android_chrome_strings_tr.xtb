@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">Geçmişiniz burada gösterilir</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> sitesini engelle</translation>
 <translation id="1280921956537356716">İpuçları bildirimlerini aç</translation>
-<translation id="1283039547216852943">Genişletmek için dokunun</translation>
 <translation id="1289129165308566697">Diğer cihazlardaki geçmişinizi görün</translation>
 <translation id="129553762522093515">Son kapatılanlar</translation>
 <translation id="1298077576058087471">Veriden %60'a varan oranda tasarruf edin, bugünkü haberleri okuyun</translation>
@@ -1159,7 +1158,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="59577092665511740">Bir hesap seçin.</translation>
 <translation id="5958275228015807058">Dosyalarınızı ve sayfalarınızı İndirilenler bölümünde bulabilirsiniz</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome, son zamanlarda ziyaret etmediğiniz bir sitenin size bildirim göndermesini engelledi}other{Chrome, son zamanlarda ziyaret etmediğiniz sitelerin size bildirim göndermesini engelledi}}</translation>
-<translation id="5962718611393537961">Daraltmak için dokunun</translation>
 <translation id="5964869237734432770">Resim açıklamasını durdur</translation>
 <translation id="5972844218283131174">Tümünün seçimini kaldır</translation>
 <translation id="5975083100439434680">Uzaklaştır</translation>

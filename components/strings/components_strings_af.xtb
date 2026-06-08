@@ -1387,6 +1387,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3158539265159265653">Skyf</translation>
 <translation id="3162070126914310576">Hierdie toestel kan nie op die oomblik ingeskryf word nie omdat jou organisasie-eenheid hul aanvanklike inskrywinglimiet bereik het. Kontak jou administrateur vir bystand.</translation>
 <translation id="3162559335345991374">Die Wi-Fi wat jy gebruik, kan vereis dat jy sy aanmeldbladsy besoek.</translation>
+<translation id="316542773973815724">Navigasie</translation>
 <translation id="316638481603975524">Kan vra om webapps te installeer</translation>
 <translation id="3166788340998560642">Chrome sal aanbied om dit in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> te stoor die volgende keer wat jy dit gebruik.</translation>
 <translation id="3168744840365648658">Radiotoerusting</translation>
@@ -3759,7 +3760,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6893057134494550310">Lamineerfoelie</translation>
 <translation id="6893204630281237373">Gaan na jou <ph name="BEGIN_LINK1" />betalinginstellings<ph name="END_LINK1" /> om betaalapp in Chrome af te skakel</translation>
 <translation id="6895330447102777224">Jou kaart is bevestig</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> van <ph name="NUM_MATCHES_IN_GROUP" /> in die groep <ph name="GROUP_HEADER" />.</translation>
 <translation id="6896758677409633944">Kopieer</translation>
 <translation id="6897140037006041989">Gebruikeragent</translation>
 <translation id="6898699227549475383">Organisasie (O)</translation>
@@ -4122,7 +4122,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7450577240311017924">Knoppie om sinkronisering te bestuur; aktiveer om te bestuur watter inligting jy in Chrome-instellings sinkroniseer</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /> oor hierdie probleem.</translation>
 <translation id="745208957946308667">Dino-speletjie, druk spasiebalk om te speel</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> van <ph name="NUM_MATCHES_IN_GROUP" /> in die groep <ph name="GROUP_HEADER" />.</translation>
 <translation id="7453032093368223821">Bestuur ander data</translation>
 <translation id="7453849010505253492">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie omdat dit ’n sekuriteitsertifikaat gebruik wat nie deur Chrome of jou stelselopstelling vir webverkeerenkripsie vertrou word nie. Dit is dalk veroorsaak deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep het. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Bekyk sertifikaat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Wolkrekening</translation>

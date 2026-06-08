@@ -95,7 +95,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1953553007165777902">Téléchargement… <ph name="MINUTE" /> minute(s) restante(s)</translation>
 <translation id="1979600810166324878">Pour vous protéger où que vous soyez, utilisez la navigation sécurisée avec protection renforcée de Chrome pour iOS</translation>
 <translation id="2001586581944147178">Faites en sorte qu'il soit plus difficile pour les personnes ayant accès à votre trafic Internet de voir quels sites vous consultez. Chrome utilise une connexion sécurisée pour rechercher l'adresse IP d'un site dans le système de noms de domaine (DNS).</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Cette extension n'est plus prise en charge. Chrome vous recommande de la supprimer.}one{Cette extension n'est plus prise en charge. Chrome vous recommande de la supprimer.}other{Ces extensions ne sont plus prises en charge. Chrome vous recommande de les supprimer.}}</translation>
 <translation id="2018528049276128029">Chaque profil possède ses propres informations Chrome, comme des favoris, un historique, des mots de passe, etc.</translation>
 <translation id="2018879682492276940">Échec de l'installation. Veuillez réessayer.</translation>
 <translation id="2024959665595762054">Pour utiliser et enregistrer des données Chrome dans votre compte Google, confirmez votre identité</translation>
@@ -388,6 +387,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="5127558335897923940">Gardez Chrome dans votre Dock pour y accéder rapidement à tout moment</translation>
 <translation id="5132929315877954718">Découvrez des applications, des jeux, des extensions et des thèmes exceptionnels pour Google Chrome.</translation>
 <translation id="5139423532931106058">Personnaliser votre profil Chrome</translation>
+<translation id="5152381187352661267">Skills dans Chrome</translation>
 <translation id="5163087008893166964">Bienvenue dans Chrome, une nouvelle fenêtre du navigateur a été ouverte</translation>
 <translation id="5166439563123238795">Chrome a besoin de l'autorisation de suivre vos mains</translation>
 <translation id="5169778651486082413">Utilisez vos mots de passe avec Chrome sur votre téléphone</translation>
@@ -487,6 +487,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6070348360322141662">Pour plus de sécurité, vos données seront chiffrées dans Google Chrome</translation>
 <translation id="6075300983329039771">Votre organisation (<ph name="MANAGER" />) exige que vous vous connectiez à Chrome</translation>
 <translation id="6113794647360055231">Chrome s'est amélioré</translation>
+<translation id="6116004140911290070">Activer les compétences dans Chrome</translation>
 <translation id="6116252277240876590">Cette langue est utilisée pour afficher les menus, les paramètres, les alertes et d'autres textes dans Chrome</translation>
 <translation id="6127237283587442951">Utilisez Chrome par défaut et épinglez-le</translation>
 <translation id="6134085236017727171">Pour que Chrome puisse utiliser votre micro, autorisez-le à y accéder dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>

@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">Čia rasite istoriją</translation>
 <translation id="1273937721055267968">Blokuoti <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">Įjungti patarimų pranešimus</translation>
-<translation id="1283039547216852943">Palieskite ir išskleiskite</translation>
 <translation id="1289129165308566697">Peržiūrėkite istoriją kituose įrenginiuose</translation>
 <translation id="129553762522093515">Neseniai uždarytas</translation>
 <translation id="1298077576058087471">Sutaupykite iki 60 proc. duomenų, skaitykite šiandienos naujienas</translation>
@@ -1161,7 +1160,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="59577092665511740">Pasirinkite paskyrą.</translation>
 <translation id="5958275228015807058">Suraskite failus ir puslapius „Atsisiuntimų“ skiltyje</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{„Chrome“ sustabdė svetainė, kurioje pastaruoju metu nesilankėte, pranešimų siuntimą}one{„Chrome“ sustabdė svetainių, kuriose pastaruoju metu nesilankėte, pranešimų siuntimą}few{„Chrome“ sustabdė svetainių, kuriose pastaruoju metu nesilankėte, pranešimų siuntimą}many{„Chrome“ sustabdė svetainių, kuriose pastaruoju metu nesilankėte, pranešimų siuntimą}other{„Chrome“ sustabdė svetainių, kuriose pastaruoju metu nesilankėte, pranešimų siuntimą}}</translation>
-<translation id="5962718611393537961">Palieskite ir sutraukite</translation>
 <translation id="5964869237734432770">Stabdyti vaizdų aprašus</translation>
 <translation id="5972844218283131174">Panaikinti visus pasirinkimus</translation>
 <translation id="5975083100439434680">Tolinti</translation>

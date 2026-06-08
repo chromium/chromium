@@ -1887,7 +1887,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2343160676229467122">Laiendused ei ole saidil <ph name="SITE_NAME" /> lubatud</translation>
 <translation id="2343390523044483367">Rocky Mountainsi rahvuspark</translation>
 <translation id="2343747224442182863">Tõsta see vaheleht esile</translation>
-<translation id="2343971313330854480">Leidke oma fail funktsiooni <ph name="FEATURE_NAME" /> kaustast</translation>
 <translation id="234559068082989648">Chrome'i rakenduste vanad versioonid pärast 2022. aasta detsembrit enam ei avane. Uuele versioonile värskendamiseks võtke ühendust administraatoriga või eemaldage see rakendus.</translation>
 <translation id="2348176352564285430">Rakendus: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – taotleti luba, vastamiseks vajutage klahvikombinatsiooni Ctrl + edasinool</translation>
@@ -3574,7 +3573,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3569617221227793022">Ajavööndiks on praegu määratud <ph name="TIME_ZONE_ENTRY" />. Seda seadet haldab administraator.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> saab vaadata järgmisi faile ja kaustu</translation>
 <translation id="3571734092741541777">Seadista</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> laiendust on välja lülitatud</translation>
 <translation id="3575121482199441727">Luba selle saidi puhul</translation>
 <translation id="3575224072358507281">Koguda Measurement Labi jaoks IP-aadressi ja võrgu mõõtmistulemusi vastavalt platvormi privaatsuseeskirjadele (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Installimine õnnestus</translation>
@@ -5756,7 +5754,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5149602533174716626">K&amp;opeeri videokaader</translation>
 <translation id="5150254825601720210">Netscape'i sertifikaadi SSL-serveri nimi</translation>
 <translation id="5151354047782775295">Vabastage kettaruumi, muidu võidakse valitud andmed automaatselt kustutada</translation>
-<translation id="5152381187352661267">Oskused Chrome'is</translation>
 <translation id="5153074793829217329">Kasutage hiirekursori juhtimiseks klaviatuuri või numbriklahvistikku</translation>
 <translation id="5153234146675181447">Telefoni unustamine</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7015,7 +7012,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6112727384379533756">Lisa pilet</translation>
 <translation id="6113434369102685411">Määrake Chrome’i brauseri ja seadme <ph name="DEVICE_TYPE" /> rakenduse Käivitaja jaoks vaikeotsingumootor</translation>
 <translation id="6113832060210023016">käivitaja + klõpsamine</translation>
-<translation id="6116004140911290070">Luba Oskused Chrome'is</translation>
 <translation id="6116921718742659598">Keele ja sisestusseadete muutmine</translation>
 <translation id="6119008366402292080">Ühtegi printerit pole saadaval</translation>
 <translation id="6119972796024789243">Värvide korrigeerimine</translation>
@@ -10421,7 +10417,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8596540852772265699">Kohandatud failid</translation>
 <translation id="8597845839771543242">Vara vorming:</translation>
 <translation id="8598249292448297523">printimine</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Halda laiendust}other{Halda laiendusi}}</translation>
 <translation id="8599681327221583254">Vähemalt üks reegel pole õigesti seadistatud. Võtke ühendust administraatoriga.</translation>
 <translation id="8600362954032151088">Paroole ja pääsuvõtmeid saate hallata teenuses<ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Teine programm teie arvutis lisas rakenduse, mis võib muuta Chrome'i toimimist.</translation>
@@ -10817,7 +10812,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="887292602123626481">Lisateave vaikeotsingumootorite kohta</translation>
 <translation id="8873075098103007382">Hoidke vahelehegruppide abil korda</translation>
 <translation id="8874341931345877644">Ülekandmine seadmesse:</translation>
-<translation id="8874448314264883207">„<ph name="EXTENSION_NAME" />“ on välja lülitatud</translation>
 <translation id="8874647982044395866">Orgaaniline</translation>
 <translation id="8874790741333031443">Proovige kolmanda osapoole küpsisefailid ajutiselt lubada. See vähendab sirvimiskaitset, kuid saidi funktsiooni töötavad suurema tõenäosusega oodatud moel.</translation>
 <translation id="8875221558267407626">Sisukokkuvõtted, keeruliste lausete lihtsustamine ja küsimuste esitamine</translation>

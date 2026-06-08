@@ -1382,6 +1382,7 @@
 <translation id="3158539265159265653">డిస్క్</translation>
 <translation id="3162070126914310576">మీ సంస్థ యూనిట్ దాని ప్రారంభ ఎన్‌రోల్‌మెంట్ పరిమితిని చేరుకున్నందున ఈ డివైజ్‌ను ప్రస్తుతం ఎన్‌రోల్ చేయడం సాధ్యం కాదు. సహాయం కోసం మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
 <translation id="3162559335345991374">మీరు ఉపయోగిస్తున్న Wi-Fiకి మీరు దాని లాగిన్ పేజీని సందర్శించడం అవసరం.</translation>
+<translation id="316542773973815724">నావిగేషన్</translation>
 <translation id="316638481603975524">వెబ్ యాప్‌లను ఇన్‌స్టాల్ చేయమని అడగవచ్చు</translation>
 <translation id="3166788340998560642">తర్వాతిసారి మీరు దీన్ని ఉపయోగించినప్పుడు, Chrome దీన్ని <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />లో సేవ్ చేసే ఆప్షన్‌ను అందిస్తుంది</translation>
 <translation id="3168744840365648658">రేడియో ఎక్విప్‌మెంట్</translation>
@@ -3754,7 +3755,6 @@
 <translation id="6893057134494550310">ల్యామినేటింగ్ ఫాయిల్</translation>
 <translation id="6893204630281237373">Chromeలో పేమెంట్ యాప్‌ను ఆఫ్ చేయడానికి మీ <ph name="BEGIN_LINK1" />పేమెంట్ సెట్టింగ్‌ల<ph name="END_LINK1" />కు వెళ్లండి</translation>
 <translation id="6895330447102777224">మీ కార్డ్ నిర్ధారించబడింది</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="GROUP_HEADER" /> గ్రూప్‌లో <ph name="NUM_MATCHES_IN_GROUP" />లో <ph name="MATCH_POSITION" />వది.</translation>
 <translation id="6896758677409633944">కాపీ చేయండి</translation>
 <translation id="6897140037006041989">వినియోగదారు ప్రతినిధి</translation>
 <translation id="6898699227549475383">సంస్థ (O)</translation>
@@ -4118,7 +4118,6 @@
 <translation id="7450577240311017924">'సింక్‌ను మేనేజ్ చేయండి' బటన్, Chrome సెట్టింగ్‌లలో మీరు ఏ సమాచారాన్ని సింక్ చేయాలనుకుంటున్నారో మేనేజ్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="7451311239929941790">ఈ సమస్య గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" />.</translation>
 <translation id="745208957946308667">Dino గేమ్, ఆడేందుకు స్పేస్ కీని నొక్కండి</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="GROUP_HEADER" /> గ్రూప్‌లో <ph name="NUM_MATCHES_IN_GROUP" />లో <ph name="MATCH_POSITION" />వది.</translation>
 <translation id="7453032093368223821">ఇతర డేటాను మేనేజ్ చేయండి</translation>
 <translation id="7453849010505253492">ఈ సర్వర్, Chrome లేదా వెబ్ ట్రాఫిక్ ఎన్‌క్రిప్షన్ కోసం మీ సిస్టమ్ కాన్ఫిగరేషన్ విశ్వసించని సెక్యూరిటీ సర్టిఫికెట్‌ను ఉపయోగిస్తున్నందున, అది <ph name="DOMAIN" /> అని నిరూపించలేకపోయింది. తప్పుగా కాన్ఫిగర్ చేసినందున లేదా దాడి చేసేవారు మీ కనెక్షన్‌కు అంతరాయం కలిగించినందున ఇలా జరిగి ఉండవచ్చు. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />సర్టిఫికెట్‌ను చూడండి<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">క్లౌడ్ ఖాతా</translation>

@@ -50,7 +50,6 @@
 <translation id="154404805518949443">Accedi a Chromium</translation>
 <translation id="1547469039832541117">Termina l'attività evidenziata.</translation>
 <translation id="1553461853655228091">Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Questa estensione non è più supportata. Chromium consiglia di rimuoverla.}other{Queste estensioni non sono più supportate. Chromium ti consiglia di rimuoverle.}}</translation>
 <translation id="1562320819937089394">Fissa Chromium</translation>
 <translation id="1574377791422810894">Strumenti per la sicurezza di Chromium</translation>
 <translation id="1594928384848033697">Chromium vuole eliminare i tuoi dati del Gestore delle password. Digita la tua password di Windows per consentire l'operazione.</translation>

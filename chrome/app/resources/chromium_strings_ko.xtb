@@ -52,7 +52,6 @@
 <translation id="154404805518949443">Chromium에 로그인</translation>
 <translation id="1547469039832541117">강조 표시된 작업을 종료합니다.</translation>
 <translation id="1553461853655228091">Chromium에서 주변 3D 지도를 만들려면 카메라 액세스 권한이 필요합니다.</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램은 더 이상 지원되지 않습니다. Chromium에서는 삭제할 것을 권장합니다.}other{이 확장 프로그램은 더 이상 지원되지 않습니다. Chromium에서는 삭제할 것을 권장합니다.}}</translation>
 <translation id="1562320819937089394">Chromium 고정</translation>
 <translation id="1574377791422810894">Chromium의 안전 도구</translation>
 <translation id="1594928384848033697">Chromium에서 비밀번호 관리자 데이터를 삭제하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>

@@ -1880,7 +1880,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2343160676229467122">No se permiten las extensiones en <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Parque Nacional de las Montañas Rocosas</translation>
 <translation id="2343747224442182863">Enfocar esta pestaña</translation>
-<translation id="2343971313330854480">Busca tu archivo en la carpeta <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Las versiones anteriores de las Apps de Chrome dejarán de funcionar después de diciembre de 2022. Comunícate con el administrador para actualizar a una versión nueva o quitar esta app.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Se solicitó un permiso; para responder, presiona Ctrl + flecha hacia adelante</translation>
@@ -3567,7 +3566,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3569617221227793022">Actualmente, la zona horaria está configurada como <ph name="TIME_ZONE_ENTRY" />. El administrador controla este parámetro de configuración.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> puede ver los siguientes archivos y carpetas</translation>
 <translation id="3571734092741541777">Configurar</translation>
-<translation id="3572031449439748861">Se desactivaron <ph name="NUM_EXTENSIONS" /> extensiones</translation>
 <translation id="3575121482199441727">Permitir para este sitio</translation>
 <translation id="3575224072358507281">Recopilar los resultados de mediciones de red y dirección IP para Measurement Lab, según su política de privacidad (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Se instaló correctamente</translation>
@@ -5749,7 +5747,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5149602533174716626">Copia&amp;r fotograma</translation>
 <translation id="5150254825601720210">Nombre del servidor SSL para el certificado de Microsoft</translation>
 <translation id="5151354047782775295">Libera espacio en el disco o selecciona los datos que se pueden borrar de forma automática.</translation>
-<translation id="5152381187352661267">Habilidades en Chrome</translation>
 <translation id="5153074793829217329">Usa el teclado o un teclado numérico para controlar el cursor del mouse</translation>
 <translation id="5153234146675181447">Olvidar el teléfono</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7008,7 +7005,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6112727384379533756">Agregar un ticket</translation>
 <translation id="6113434369102685411">Configura tu motor de búsqueda predeterminado para el navegador Chrome y el Selector de <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">Selector + clic</translation>
-<translation id="6116004140911290070">Habilitar habilidades en Chrome</translation>
 <translation id="6116921718742659598">Cambiar la configuración de idioma y de entrada de texto</translation>
 <translation id="6119008366402292080">No hay impresoras disponibles</translation>
 <translation id="6119972796024789243">Corrección de colores</translation>
@@ -10414,7 +10410,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8596540852772265699">Archivos personalizados</translation>
 <translation id="8597845839771543242">Formato de la propiedad:</translation>
 <translation id="8598249292448297523">imprimir</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Administrar extensión}other{Administrar extensiones}}</translation>
 <translation id="8599681327221583254">Hay una o más políticas que no se configuraron correctamente. Comunícate con tu administrador</translation>
 <translation id="8600362954032151088">Administra tus contraseñas y llaves de acceso en el <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Otro programa en tu computadora agregó una app que puede cambiar el funcionamiento de Chrome.</translation>
@@ -10810,7 +10805,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="887292602123626481">Más información sobre los motores de búsqueda predeterminados</translation>
 <translation id="8873075098103007382">Organízate con los grupos de pestañas</translation>
 <translation id="8874341931345877644">Transmitir a un dispositivo:</translation>
-<translation id="8874448314264883207">Se desactivó "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8874647982044395866">Orgánico</translation>
 <translation id="8874790741333031443">Intenta permitir temporalmente cookies de terceros, lo que implica menos protección al navegar, pero aumenta las probabilidades de que las funciones del sitio funcionen como se espera.</translation>
 <translation id="8875221558267407626">Resume el contenido, simplifica el lenguaje complejo o haz preguntas</translation>

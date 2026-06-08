@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">Та түүхээ эндээс олно</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" />-г блоклох</translation>
 <translation id="1280921956537356716">Зөвлөгөөний мэдэгдлийг асаах</translation>
-<translation id="1283039547216852943">Дэлгэхийн тулд товших</translation>
 <translation id="1289129165308566697">Түүхээ бусад төхөөрөмж дээр харах</translation>
 <translation id="129553762522093515">Саяхан хаагдсан</translation>
 <translation id="1298077576058087471">Датагаа 60% хүртэл хэмнэж, өнөөдрийн мэдээг уншаарай</translation>
@@ -1161,7 +1160,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="59577092665511740">Бүртгэл сонгоно уу.</translation>
 <translation id="5958275228015807058">Файл, хуудсаа Таталт хэсгээс хайна уу</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome таны сүүлийн үед зочлоогүй сайтыг танд мэдэгдэл илгээхийг нь зогсоосон}other{Chrome таны сүүлийн үед зочлоогүй сайтуудыг танд мэдэгдэл илгээхийг нь зогсоосон}}</translation>
-<translation id="5962718611393537961">Буулгахын тулд товших</translation>
 <translation id="5964869237734432770">Зургийн тайлбарыг зогсоох</translation>
 <translation id="5972844218283131174">Бүх сонголтыг цуцлах</translation>
 <translation id="5975083100439434680">Багасгаж харах</translation>

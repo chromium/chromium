@@ -1387,6 +1387,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3158539265159265653">Plate</translation>
 <translation id="3162070126914310576">Denne enheten kan ikke registreres nå fordi organisasjonsenheten din har nådd grensen for initiell registrering. Kontakt administratoren din hvis du trenger hjelp.</translation>
 <translation id="3162559335345991374">Det kan hende at Wifi-nettverket du bruker, krever at du besøker en påloggingsside.</translation>
+<translation id="316542773973815724">Navigering</translation>
 <translation id="316638481603975524">Kan be om å få installere nettapper</translation>
 <translation id="3166788340998560642">Chrome tilbyr å lagre den i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> neste gang du bruker det.</translation>
 <translation id="3168744840365648658">Radioutstyr</translation>
@@ -3759,7 +3760,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6893057134494550310">Lamineringsfolie</translation>
 <translation id="6893204630281237373">Gå til <ph name="BEGIN_LINK1" />betalingsinnstillingene<ph name="END_LINK1" /> for å slå av betalingsappen i Chrome.</translation>
 <translation id="6895330447102777224">Kortet ditt er bekreftet</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> av <ph name="NUM_MATCHES_IN_GROUP" /> i gruppen <ph name="GROUP_HEADER" />.</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6897140037006041989">Brukeragent</translation>
 <translation id="6898699227549475383">Organisasjon (O)</translation>
@@ -4122,7 +4122,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7450577240311017924">Knappen «Administrer synkronisering» – aktiver for å administrere hvilken informasjon du synkroniserer, i Chrome-innstillingene</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /> om dette problemet.</translation>
 <translation id="745208957946308667">Dino-spillet – trykk på mellomrom for å spille</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> av <ph name="NUM_MATCHES_IN_GROUP" /> i gruppen <ph name="GROUP_HEADER" />.</translation>
 <translation id="7453032093368223821">Administrer andre data</translation>
 <translation id="7453849010505253492">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />, fordi den bruker et sikkerhetssertifikat som ikke er klarert av Chrome eller systemkonfigurasjonen din for kryptering av nettrafikk. Dette kan skyldes en feilkonfigurering eller at en angriper avskjærer tilkoblingen din. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Vis sertifikatet<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Skykonto</translation>

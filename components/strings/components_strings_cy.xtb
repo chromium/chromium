@@ -1387,6 +1387,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162070126914310576">Nid oes modd cofrestru'r ddyfais hon ar hyn o bryd oherwydd bod eich uned sefydliadol wedi cyrraedd ei therfyn cofrestru cychwynnol. Cysylltwch â'ch gweinyddwr am gymorth.</translation>
 <translation id="3162559335345991374">Mae'n bosib y bydd y Wi-Fi rydych yn ei ddefnyddio yn gofyn i chi fynd i'w dudalen fewngofnodi.</translation>
+<translation id="316542773973815724">Llywio</translation>
 <translation id="316638481603975524">Yn gallu gofyn am osod apiau gwe</translation>
 <translation id="3166788340998560642">Bydd Chrome yn cynnig ei gadw i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> y tro nesaf y byddwch yn ei ddefnyddio.</translation>
 <translation id="3168744840365648658">Offer Radio</translation>
@@ -3759,7 +3760,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6893057134494550310">Ffoil Lamineiddio</translation>
 <translation id="6893204630281237373">I ddiffodd ap talu yn Chrome, ewch i'ch <ph name="BEGIN_LINK1" />gosodiadau talu<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Mae eich cerdyn wedi'i gadarnhau</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> o <ph name="NUM_MATCHES_IN_GROUP" /> yn y grŵp <ph name="GROUP_HEADER" />.</translation>
 <translation id="6896758677409633944">Copïo</translation>
 <translation id="6897140037006041989">Asiant Defnyddiwr</translation>
 <translation id="6898699227549475383">Sefydliad (O)</translation>
@@ -4122,7 +4122,6 @@ Manylion ychwanegol:
 <translation id="7450577240311017924">Botwm rheoli cysoni, gweithredwch i reoli pa wybodaeth rydych chi'n ei chysoni yng ngosodiadau Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /> am y broblem hon.</translation>
 <translation id="745208957946308667">Gêm Dino, pwyswch Space i chwarae</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> o <ph name="NUM_MATCHES_IN_GROUP" /> yn y grŵp <ph name="GROUP_HEADER" />.</translation>
 <translation id="7453032093368223821">Rheoli data eraill</translation>
 <translation id="7453849010505253492">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" /> oherwydd ei fod yn defnyddio tystysgrif diogelwch nad yw Chrome na ffurfweddiad eich system yn ymddiried ynddi ar gyfer amgryptio traffig gwe. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Gweld y Dystysgrif<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Cyfrif cwmwl</translation>

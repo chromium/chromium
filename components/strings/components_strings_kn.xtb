@@ -1387,6 +1387,7 @@
 <translation id="3158539265159265653">ಡಿಸ್ಕ್</translation>
 <translation id="3162070126914310576">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಘಟಕವು ತನ್ನ ಆರಂಭಿಕ ನೋಂದಣಿ ಮಿತಿಯನ್ನು ತಲುಪಿರುವ ಕಾರಣ ಈ ಸಾಧನವನ್ನು ಇದೀಗ ನೋಂದಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಸಹಾಯಕ್ಕಾಗಿ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="3162559335345991374">ನೀವು ಬಳಸುತ್ತಿರುವ ವೈ-ಫೈನ ಲಾಗಿನ್ ಪುಟಕ್ಕೆ ನೀವು ಭೇಟಿ ನೀಡುವ ಅಗತ್ಯವಿದೆ.</translation>
+<translation id="316542773973815724">ನ್ಯಾವಿಗೇಷನ್</translation>
 <translation id="316638481603975524">ವೆಬ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="3166788340998560642">ಮುಂದಿನ ಬಾರಿ ನೀವು ಅದನ್ನು ಬಳಸಿದಾಗ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲು Chrome ಅವಕಾಶ ನೀಡುತ್ತದೆ</translation>
 <translation id="3168744840365648658">ರೇಡಿಯೊ ಉಪಕರಣ</translation>
@@ -3756,7 +3757,6 @@
 <translation id="6893057134494550310">ಲ್ಯಾಮಿನೇಟಿಂಗ್ ಫಾಯಿಲ್</translation>
 <translation id="6893204630281237373">Chrome ನಲ್ಲಿ ಪಾವತಿ ಆ್ಯಪ್ ಅನ್ನು ಆಫ್‌ ಮಾಡಲು, ನಿಮ್ಮ <ph name="BEGIN_LINK1" />ಪಾವತಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="END_LINK1" /> ಹೋಗಿ</translation>
 <translation id="6895330447102777224">ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ದೃಢೀಕರಿಸಲಾಗಿದೆ</translation>
-<translation id="6895573608763679343"><ph name="GROUP_HEADER" /> ಗುಂಪಿನಲ್ಲಿರುವ <ph name="NUM_MATCHES_IN_GROUP" /> ರಲ್ಲಿ <ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" />.</translation>
 <translation id="6896758677409633944">ನಕಲಿಸು</translation>
 <translation id="6897140037006041989">ಬಳಕೆದಾರರ ಏಜೆಂಟ್</translation>
 <translation id="6898699227549475383">ಸಂಸ್ಥೆ (O)</translation>
@@ -4119,7 +4119,6 @@
 <translation id="7450577240311017924">ಸಿಂಕ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ ಬಟನ್, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು ಯಾವ ಮಾಹಿತಿಯನ್ನು ಸಿಂಕ್ ಮಾಡುತ್ತೀರಿ ಎಂಬುದನ್ನು ನಿರ್ವಹಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="7451311239929941790">ಈ ಸಮಸ್ಯೆಯ ಕುರಿತು <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯುವಿಕೆ<ph name="END_LINK" />.</translation>
 <translation id="745208957946308667">Dino ಗೇಮ್, ಆಡಲು ಸ್ಪೇಸ್ ಒತ್ತಿರಿ</translation>
-<translation id="74521886886364465"><ph name="GROUP_HEADER" /> ಗುಂಪಿನಲ್ಲಿರುವ <ph name="NUM_MATCHES_IN_GROUP" /> ರಲ್ಲಿ <ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" />.</translation>
 <translation id="7453032093368223821">ಇತರ ಡೇಟಾವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7453849010505253492">ಈ ಸರ್ವರ್ Chrome ನಿಂದ ಅಥವಾ ವೆಬ್ ಟ್ರಾಫಿಕ್ ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ಗಾಗಿ ನಿಮ್ಮ ಸಿಸ್ಟಮ್ ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ವಿಶ್ವಾಸಾರ್ಹವಲ್ಲದ ಭದ್ರತಾ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಬಳಸುತ್ತಿರುವುದರಿಂದ ಅದು <ph name="DOMAIN" /> ಎಂದು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಇದು ತಪ್ಪಾದ ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ದಾಳಿಕೋರರು ನಿಮ್ಮ ಕನೆಕ್ಷನ್‌ಗೆ ಅಡ್ಡಿಪಡಿಸಿರುವುದರಿಂದ ಉಂಟಾಗಿರಬಹುದು. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />ಪ್ರಮಾಣಪತ್ರವನ್ನು ವೀಕ್ಷಿಸಿ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">ಕ್ಲೌಡ್ ಖಾತೆ</translation>

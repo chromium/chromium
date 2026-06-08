@@ -1387,6 +1387,7 @@
 <translation id="3158539265159265653">Δίσκος</translation>
 <translation id="3162070126914310576">Δεν είναι δυνατή η εγγραφή της συσκευής αυτή τη στιγμή, επειδή η μονάδα οργανισμού έχει συμπληρώσει το αρχικό όριο εγγραφής. Επικοινωνήστε με τον διαχειριστή σας για βοήθεια.</translation>
 <translation id="3162559335345991374">Το Wi-Fi που χρησιμοποιείτε ενδέχεται να σας ζητήσει να επισκεφτείτε τη σελίδα σύνδεσής του.</translation>
+<translation id="316542773973815724">Πλοήγηση</translation>
 <translation id="316638481603975524">Μπορεί να ζητήσει άδεια για την εγκατάσταση εφαρμογών ιστού</translation>
 <translation id="3166788340998560642">Το Chrome θα προτείνει την αποθήκευση στο <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> την επόμενη φορά που θα το χρησιμοποιήσετε</translation>
 <translation id="3168744840365648658">Εξοπλισμός ραδιοφώνου</translation>
@@ -3761,7 +3762,6 @@
 <translation id="6893057134494550310">Φύλλο επίστρωσης αλουμινίου</translation>
 <translation id="6893204630281237373">Για να απενεργοποιήσετε την εφαρμογή πληρωμής στο Chrome, μεταβείτε στις <ph name="BEGIN_LINK1" />ρυθμίσεις πληρωμής<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Η κάρτα σας επιβεβαιώθηκε</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> από <ph name="NUM_MATCHES_IN_GROUP" /> στην ομάδα <ph name="GROUP_HEADER" />.</translation>
 <translation id="6896758677409633944">Αντιγραφή</translation>
 <translation id="6897140037006041989">Παράγοντας χρήστη</translation>
 <translation id="6898699227549475383">Οργάνωση (O)</translation>
@@ -4125,7 +4125,6 @@
 <translation id="7450577240311017924">Κουμπί Διαχείριση συγχρονισμού, ενεργοποιήστε το για να διαχειριστείτε τις πληροφορίες που συγχρονίζετε από τις ρυθμίσεις του Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Να μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με αυτό το πρόβλημα.</translation>
 <translation id="745208957946308667">Παιχνίδι με δεινόσαυρο. Πατήστε το πλήκτρο διαστήματος για να παίξετε</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> από <ph name="NUM_MATCHES_IN_GROUP" /> στην ομάδα <ph name="GROUP_HEADER" />.</translation>
 <translation id="7453032093368223821">Διαχείριση άλλων δεδομένων</translation>
 <translation id="7453849010505253492">Αυτός ο διακομιστής δεν μπόρεσε να αποδείξει ότι είναι ο τομέας <ph name="DOMAIN" />, επειδή χρησιμοποιεί ένα πιστοποιητικό ασφαλείας που δεν θεωρείται αξιόπιστο από το Chrome ή τη διαμόρφωση του συστήματός σας για την κρυπτογράφηση της επισκεψιμότητας ιστού. Αυτό μπορεί να οφείλεται σε εσφαλμένη διαμόρφωση ή σε κάποιον υπεύθυνο επίθεσης που παρεμβαίνει στη σύνδεσή σας. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Προβολή πιστοποιητικού<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Λογαριασμός cloud</translation>

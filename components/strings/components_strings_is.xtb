@@ -1387,6 +1387,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3158539265159265653">Diskur</translation>
 <translation id="3162070126914310576">Ekki er hægt að skrá þetta tæki eins og er vegna þess að notendaskipanin þín hefur náð upphaflegu skráningarhámarki. Hafðu samband við kerfisstjórann þinn til að fá aðstoð.</translation>
 <translation id="3162559335345991374">Wi-Fi netið sem þú notar kann að fara fram á að þú farir á innskráningarsíðu þess.</translation>
+<translation id="316542773973815724">Vefskoðun</translation>
 <translation id="316638481603975524">Getur beðið um leyfi til að setja upp vefforrit</translation>
 <translation id="3166788340998560642">Chrome mun bjóðast til að vista það í <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> næst þegar þú notar það</translation>
 <translation id="3168744840365648658">Útvarpsbúnaður</translation>
@@ -3759,7 +3760,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6893057134494550310">Plöstunarfilma</translation>
 <translation id="6893204630281237373">Opnaðu <ph name="BEGIN_LINK1" />greiðslustillingarnar<ph name="END_LINK1" /> þínar til að slökkva á greiðsluforriti í Chrome</translation>
 <translation id="6895330447102777224">Kortið er staðfest</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> af <ph name="NUM_MATCHES_IN_GROUP" /> í hópnum <ph name="GROUP_HEADER" />.</translation>
 <translation id="6896758677409633944">Afrita</translation>
 <translation id="6897140037006041989">Vafraupplýsingar</translation>
 <translation id="6898699227549475383">Notendaskipan (O)</translation>
@@ -4122,7 +4122,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7450577240311017924">Hnappurinn „Stjórna samstillingu“, virkjaðu til að stjórna hvaða upplýsingar eru samstilltar í stillingum Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /> um þetta vandamál.</translation>
 <translation id="745208957946308667">Risaeðluleikur, ýttu á bilslána til að spila</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> af <ph name="NUM_MATCHES_IN_GROUP" /> í hópnum <ph name="GROUP_HEADER" />.</translation>
 <translation id="7453032093368223821">Hafa umsjón með öðrum gögnum</translation>
 <translation id="7453849010505253492">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" /> vegna þess að hann notar öryggisvottorð sem Chrome eða kerfisstillingin þín treystir ekki fyrir dulkóðun vefumferðar. Þetta kann að orsakast af rangri stillingu eða tölvuþrjóti sem hefur komist inn í tenginguna. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Skoða vottorð<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Skýjareikningur</translation>

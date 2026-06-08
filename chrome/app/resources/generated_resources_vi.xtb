@@ -1898,7 +1898,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2343160676229467122">Các tiện ích không được cho phép trên <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Vườn quốc gia Núi Rocky</translation>
 <translation id="2343747224442182863">Lấy tiêu điểm thẻ này</translation>
-<translation id="2343971313330854480">Tìm tệp trong thư mục <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Các phiên bản cũ của Ứng dụng Chrome sẽ không mở sau tháng Mười hai năm 2022. Hãy liên hệ với quản trị viên để cập nhật lên phiên bản mới hoặc xóa ứng dụng này.</translation>
 <translation id="2348176352564285430">Ứng dụng: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Đã yêu cầu quyền. Hãy nhấn tổ hợp phím Ctrl + Mũi tên tiến để phản hồi</translation>
@@ -3588,7 +3587,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3569617221227793022">Múi giờ hiện tại là <ph name="TIME_ZONE_ENTRY" />. Chế độ cài đặt này do quản trị viên của bạn quản lý.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> có thể xem các tệp và thư mục sau</translation>
 <translation id="3571734092741541777">Thiết lập</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> tiện ích đã bị tắt</translation>
 <translation id="3575121482199441727">Cho phép đối với trang web này</translation>
 <translation id="3575224072358507281">Thu thập địa chỉ IP và kết quả đo lường mạng cho Measurement Lab, theo chính sách quyền riêng tư của Measurement Lab (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Đã cài đặt thành công</translation>
@@ -5773,7 +5771,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5149602533174716626">Sao ché&amp;p khung video</translation>
 <translation id="5150254825601720210">Tên Máy chủ SSL của Chứng chỉ Netscape</translation>
 <translation id="5151354047782775295">Giải phóng dung lượng đĩa, nếu không một số dữ liệu có thể tự động bị xóa</translation>
-<translation id="5152381187352661267">Kỹ năng trong Chrome</translation>
 <translation id="5153074793829217329">Sử dụng bàn phím hoặc bàn phím số để điều khiển con trỏ chuột</translation>
 <translation id="5153234146675181447">Quên điện thoại</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7033,7 +7030,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6112727384379533756">Thêm phiếu</translation>
 <translation id="6113434369102685411">Thiết lập công cụ tìm kiếm mặc định cho trình duyệt Chrome và Trình chạy trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">trình chạy + nhấp chuột</translation>
-<translation id="6116004140911290070">Bật tính năng Kỹ năng trong Chrome</translation>
 <translation id="6116921718742659598">Thay đổi chế độ cài đặt ngôn ngữ và phương thức nhập</translation>
 <translation id="6119008366402292080">Không có máy in nào</translation>
 <translation id="6119972796024789243">Chỉnh màu</translation>
@@ -10443,7 +10439,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8596540852772265699">Tệp tùy chỉnh</translation>
 <translation id="8597845839771543242">Định dạng thuộc tính:</translation>
 <translation id="8598249292448297523">in</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Quản lý tiện ích}other{Quản lý tiện ích}}</translation>
 <translation id="8599681327221583254">Một hoặc nhiều chính sách được định cấu hình không đúng cách. Vui lòng liên hệ với quản trị viên của bạn</translation>
 <translation id="8600362954032151088">Quản lý mật khẩu và khoá truy cập trong <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Một chương trình khác trên máy tính của bạn đã thêm một ứng dụng có thể thay đổi cách Chrome hoạt động.</translation>
@@ -10839,7 +10834,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="887292602123626481">Tìm hiểu thêm về công cụ tìm kiếm mặc định</translation>
 <translation id="8873075098103007382">Sắp xếp khoa học nhờ các nhóm thẻ</translation>
 <translation id="8874341931345877644">Truyền tới thiết bị:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" đã bị tắt</translation>
 <translation id="8874647982044395866">Tự nhiên</translation>
 <translation id="8874790741333031443">Hãy thử tạm thời cho phép cookie của bên thứ ba. Chế độ cài đặt này sẽ làm giảm khả năng bảo vệ khi duyệt web nhưng các tính năng của trang có thể sẽ hoạt động đúng như mong đợi.</translation>
 <translation id="8875221558267407626">Tóm tắt nội dung, đơn giản hoá ngôn ngữ phức tạp hoặc đặt câu hỏi</translation>

@@ -96,7 +96,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1953553007165777902">Preuzimanje… Preostalo je <ph name="MINUTE" /> min</translation>
 <translation id="1979600810166324878">Budite sigurniji u pokretu uz poboljšano Sigurno pregledanje u Chromeu za iOS</translation>
 <translation id="2001586581944147178">Otežajte osobama s pristupom vašem internetskom saobraćaju da vide koje web lokacije posjećujete. Chrome koristi sigurnu vezu da potraži IP adresu web lokacije u DNS-u (Sistem naziva domena).</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Ta ekstenzija više nije podržana. Chrome vam preporučuje da je uklonite.}one{Te ekstenzije više nisu podržane. Chrome vam preporučuje da ih uklonite.}few{Te ekstenzije više nisu podržane. Chrome vam preporučuje da ih uklonite.}other{Te ekstenzije više nisu podržane. Chrome vam preporučuje da ih uklonite.}}</translation>
 <translation id="2018528049276128029">Svaki profil sadrži svoje Chrome informacije, poput oznaka, historije, lozinki i još mnogo toga</translation>
 <translation id="2018879682492276940">Instalacija nije uspjela. Pokušajte ponovo.</translation>
 <translation id="2024959665595762054">Da koristite i sačuvate podatke Chromea na Google računu, potvrdite identitet</translation>
@@ -389,6 +388,7 @@ Ako ova stranica ne funkcionira kako se očekuje, pokušajte dozvoliti optimizac
 <translation id="5127558335897923940">Zadržite Chrome na donjoj traci da mu brzo pristupite bilo kada</translation>
 <translation id="5132929315877954718">Otkrijte odlične aplikacije, igre, ekstenzije i teme za Google Chrome.</translation>
 <translation id="5139423532931106058">Prilagodite svoj Chrome profil</translation>
+<translation id="5152381187352661267">Vještine u Chromeu</translation>
 <translation id="5163087008893166964">Dobro došli u Chrome. Otvoren je novi prozor preglednika</translation>
 <translation id="5166439563123238795">Chrome treba odobrenje da prati vaše ruke</translation>
 <translation id="5169778651486082413">Koristite lozinke putem Chromea na telefonu</translation>
@@ -488,6 +488,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6070348360322141662">Za dodatnu sigurnost, Google Chrome će šifrirati vaše podatke</translation>
 <translation id="6075300983329039771">Organizacija <ph name="MANAGER" /> zahtijeva da se prijavite u Chrome</translation>
 <translation id="6113794647360055231">Chrome je upravo postao još bolji</translation>
+<translation id="6116004140911290070">Omogući vještine u Chromeu</translation>
 <translation id="6116252277240876590">Ovaj jezik se koristi za prikaz menija, postavki, obavještenja i drugog teksta u Chromeu</translation>
 <translation id="6127237283587442951">Koristite Chrome prema zadanim postavkama i zakačite ga</translation>
 <translation id="6134085236017727171">Da koristite mikrofon, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />postavkama sistema<ph name="END_LINK" /></translation>

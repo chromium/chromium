@@ -1388,6 +1388,7 @@
 <translation id="3158539265159265653">دیسک</translation>
 <translation id="3162070126914310576">درحال‌حاضر نمی‌توان این دستگاه را ثبت‌نام کرد زیرا واحد سازمانی‌تان به حداکثر تعداد ثبت‌نام اولیه خود رسیده است. برای دریافت کمک با سرپرستتان تماس بگیرید.</translation>
 <translation id="3162559335345991374">‏شبکه Wi-Fi مورد استفاده‌تان احتمالاً نیاز دارد که به یک صفحه ورود به سیستم بروید.</translation>
+<translation id="316542773973815724">پیمایش</translation>
 <translation id="316638481603975524">می‌تواند نصب کردن برنامه‌های وب را درخواست کند</translation>
 <translation id="3166788340998560642">‏دفعه بعدی که از آن استفاده کنید، Chrome پیشنهاد می‌دهد آن را در <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ذخیره کنید.</translation>
 <translation id="3168744840365648658">تجهیزات رادیویی</translation>
@@ -3760,7 +3761,6 @@
 <translation id="6893057134494550310">فویل لمینت‌کاری</translation>
 <translation id="6893204630281237373">‏برای خاموش کردن برنامه پرداخت در Chrome، به <ph name="BEGIN_LINK1" />تنظیمات پرداخت<ph name="END_LINK1" /> بروید</translation>
 <translation id="6895330447102777224">کارتتان تأیید شد</translation>
-<translation id="6895573608763679343">‫<ph name="SUGGESTION_TITLE" />،‏ <ph name="SUGGESTION_DESCRIPTION" />،‏ <ph name="MATCH_POSITION" /> از <ph name="NUM_MATCHES_IN_GROUP" /> در گروه <ph name="GROUP_HEADER" />.</translation>
 <translation id="6896758677409633944">کپی کردن</translation>
 <translation id="6897140037006041989">نماینده کاربر</translation>
 <translation id="6898699227549475383">‏سازمان (O)</translation>
@@ -4124,7 +4124,6 @@
 <translation id="7450577240311017924">‏دکمه مدیریت همگام‌سازی؛ فعال کنید تا اطلاعاتی را که همگام‌سازی می‌کنید در تنظیمات Chrome مدیریت کنید</translation>
 <translation id="7451311239929941790">درباره این مشکل <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" />.</translation>
 <translation id="745208957946308667">بازی دایناسور، برای بازی فاصله را فشار دهید</translation>
-<translation id="74521886886364465">‫<ph name="SUGGESTION_TITLE" />،‏ <ph name="MATCH_POSITION" /> از <ph name="NUM_MATCHES_IN_GROUP" /> در گروه <ph name="GROUP_HEADER" />.</translation>
 <translation id="7453032093368223821">مدیریت داده‌های دیگر</translation>
 <translation id="7453849010505253492">‏این سرور نتوانست اثبات کند <ph name="DOMAIN" /> است زیرا از گواهینامه امنیتی‌ای استفاده می‌کند که مورداعتماد Chrome یا پیکربندی سیستم برای رمزگذاری ترافیک وب نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی درحال رهگیری اتصالتان باشد. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />مشاهده گواهینامه<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">حساب ابری</translation>

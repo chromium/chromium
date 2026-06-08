@@ -92,7 +92,6 @@
 <translation id="1953553007165777902">下載中… 還剩 <ph name="MINUTE" /> 分鐘</translation>
 <translation id="1979600810166324878">在 iOS 版 Chrome 上啟用安全瀏覽強化防護功能，隨時隨地享有更安全的體驗</translation>
 <translation id="2001586581944147178">讓可存取你網際網路流量的使用者難以查看你造訪的網站。Chrome 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Chrome 不再支援這項擴充功能，建議你移除。}other{Chrome 不再支援這些擴充功能，建議你移除。}}</translation>
 <translation id="2018528049276128029">每個設定檔都有獨立專屬的 Chrome 資訊，例如書籤、歷史記錄和密碼等等</translation>
 <translation id="2018879682492276940">無法安裝，請再試一次。</translation>
 <translation id="2024959665595762054">如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請驗證身分</translation>
@@ -382,6 +381,7 @@
 <translation id="5127558335897923940">將 Chrome 保留在 Dock 上，隨時都能快速存取</translation>
 <translation id="5132929315877954718">幫你的 Google Chrome 物色各種實用有趣的應用程式、遊戲、擴充功能和主題。</translation>
 <translation id="5139423532931106058">自訂 Chrome 設定檔</translation>
+<translation id="5152381187352661267">Chrome 中的「技能」</translation>
 <translation id="5163087008893166964">歡迎使用 Chrome；新的瀏覽器視窗已開啟</translation>
 <translation id="5166439563123238795">Chrome 需要相關權限才能追蹤手勢</translation>
 <translation id="5169778651486082413">在手機上使用 Chrome 儲存的密碼</translation>
@@ -479,6 +479,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6070348360322141662">為了提升安全性，Google Chrome 會將你的資料加密保護</translation>
 <translation id="6075300983329039771">貴機構 (<ph name="MANAGER" />) 要求你登入 Chrome</translation>
 <translation id="6113794647360055231">Chrome 變得更好用了</translation>
+<translation id="6116004140911290070">在 Chrome 中啟用「技能」</translation>
 <translation id="6116252277240876590">這個語言會用於顯示 Chrome 中的選單、設定、快訊和其他文字</translation>
 <translation id="6127237283587442951">預設使用 Chrome 並固定在工作列</translation>
 <translation id="6134085236017727171">如要使用麥克風，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中授予 Chrome 存取權</translation>

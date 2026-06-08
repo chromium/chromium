@@ -1885,7 +1885,6 @@
 <translation id="2343160676229467122"><ph name="SITE_NAME" /> پر ایکسٹینشنز کی اجازت نہیں ہے</translation>
 <translation id="2343390523044483367">راکی ماؤنٹین نیشنل پارک</translation>
 <translation id="2343747224442182863">اس ٹیب کو فوکس کریں</translation>
-<translation id="2343971313330854480">‫<ph name="FEATURE_NAME" /> فولڈر میں اپنی فائل تلاش کریں</translation>
 <translation id="234559068082989648">‏Chrome ایپس کے پرانے ورژنز دسمبر، 2022 کے بعد نہیں کھلیں گے۔ نئے ورژن پر اپ ڈیٹ کرنے کے لیے اپنے منتظم سے رابطہ کریں یا یہ ایپ ہٹائیں۔</translation>
 <translation id="2348176352564285430">ایپ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593">‏<ph name="WINDOW_TITLE" /> - اجازت کی درخواست کی گئی، جواب دینے کے ليے Ctrl + Forward دبائیں</translation>
@@ -3570,7 +3569,6 @@
 <translation id="3569617221227793022">ٹائم زون فی الحال <ph name="TIME_ZONE_ENTRY" /> پر سیٹ ہے۔ یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> مندرجہ ذیل فائلز اور فولڈرز کو دیکھ سکتا ہے</translation>
 <translation id="3571734092741541777">ترتیب دیں</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> ایکسٹینشنز کو آف کر دیا گیا</translation>
 <translation id="3575121482199441727">اس سائٹ کے لیے اجازت دیں</translation>
 <translation id="3575224072358507281">‏Measurement Lab کے لیے ان کی رازداری کی پالیسی (measurementlab.net/privacy) کے مطابق IP پتہ اور نیٹ ورک کی پیمائش کے نتائج جمع کریں</translation>
 <translation id="3576324189521867626">کامیابی کے ساتھ انسٹال کر دی گئی</translation>
@@ -5751,7 +5749,6 @@
 <translation id="5149602533174716626">ویڈیو فریم کاپی کریں</translation>
 <translation id="5150254825601720210">‏Netscape سرٹیفکیٹ SSL سرور کا نام</translation>
 <translation id="5151354047782775295">ڈسک کی جگہ خالی کریں یا منتخب کردہ ڈیٹا خودکار طور پر حذف ہوسکتا ہے</translation>
-<translation id="5152381187352661267">‏‫Chrome میں مہارتیں</translation>
 <translation id="5153074793829217329">اپنے ماؤس کرسر کو کنٹرول کرنے کے لیے اپنا کی بورڈ یا عددی کی پیڈ استعمال کریں</translation>
 <translation id="5153234146675181447">فون کو بھول جائیں</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7008,7 +7005,6 @@
 <translation id="6112727384379533756">ٹکٹ شامل کریں</translation>
 <translation id="6113434369102685411">‏Chrome براؤزر اور <ph name="DEVICE_TYPE" /> لانچر کیلئے اپنا ڈیفالٹ سرچ انجن سیٹ کریں</translation>
 <translation id="6113832060210023016">‏launcher + کلک</translation>
-<translation id="6116004140911290070">‏‫Chrome میں مہارتوں کو فعال کریں</translation>
 <translation id="6116921718742659598">زبان اور ان پٹ کی ترتیبات تبدیل کریں</translation>
 <translation id="6119008366402292080">کوئی پرنٹر دستیاب نہیں ہے</translation>
 <translation id="6119972796024789243">رنگ کی اصلاح</translation>
@@ -10413,7 +10409,6 @@
 <translation id="8596540852772265699">حسب ضرورت فائلز</translation>
 <translation id="8597845839771543242">خصوصیت فارمیٹ:</translation>
 <translation id="8598249292448297523">پرنٹ کریں</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{ایکسٹینشن کا نظم کریں}other{ایکسٹینشنز کا نظم کریں}}</translation>
 <translation id="8599681327221583254">ایک یا زیادہ پالیسیاں درست طریقے سے کنفیگر نہیں ہیں۔ براہ کرم اپنے منتظم سے رابطہ کریں</translation>
 <translation id="8600362954032151088"><ph name="GOOGLE_PASSWORD_MANAGER" /> میں اپنے پاس ورڈز اور پاس کیز کا نظم کریں</translation>
 <translation id="8602851771975208551">‏آپ کے کمپیوٹر پر موجود کسی دوسرے پروگرام نے ایک ایپ شامل کی ہے جو Chrome کے کام کرنے کا طریقہ تبدیل کر سکتی ہے۔</translation>
@@ -10809,7 +10804,6 @@
 <translation id="887292602123626481">ڈیفالٹ سرچ انجنز کے بارے میں مزید جانیں</translation>
 <translation id="8873075098103007382">ٹیب گروپس کے ساتھ منظم رہیں</translation>
 <translation id="8874341931345877644">کسی آلہ میں کاسٹ کریں:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" کو آف کر دیا گیا</translation>
 <translation id="8874647982044395866">نامیاتی</translation>
 <translation id="8874790741333031443">فریق ثالث کوکیز کو عارضی طور پر اجازت دے کر آزمائیں، جس کا مطلب براؤزنگ کا کم تحفظ ہے لیکن سائٹ کی خصوصیات کے توقع کے مطابق کام کرنے کا زیادہ امکان ہے۔</translation>
 <translation id="8875221558267407626">مواد کا خلاصہ کریں، پیچیدہ زبان کو سادہ بنائیں، یا سوالات پوچھیں</translation>

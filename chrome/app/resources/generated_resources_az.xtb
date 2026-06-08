@@ -1886,7 +1886,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2343160676229467122"><ph name="SITE_NAME" /> saytında artırmalara icazə verilmir</translation>
 <translation id="2343390523044483367">Rocky Mountains Milli Parkı</translation>
 <translation id="2343747224442182863">Bu Tabı Mərkəzə Gətirin</translation>
-<translation id="2343971313330854480">Faylınızı <ph name="FEATURE_NAME" /> qovluğunda tapın</translation>
 <translation id="234559068082989648">Chrome Tətbiqlərinin köhnə versiyaları 2022-ci ilin dekabrından sonra açılmayacaq. Yeni versiyaya güncəlləmək və ya bu tətbiqi silmək üçün administratorunuzla əlaqə saxlayın.</translation>
 <translation id="2348176352564285430">Tətbiq: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - İcazə tələb edilib, cavablandırmaq üçün Ctrl + İrəli düyməsini basın</translation>
@@ -3573,7 +3572,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3569617221227793022">Cari saat qurşağı: <ph name="TIME_ZONE_ENTRY" />. Bu ayar inzibatçınız tərəfindən idarə edilir.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> aşağıdakı fayl və qovluqlara baxa bilər</translation>
 <translation id="3571734092741541777">Quraşdırın</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> artırma söndürüldü</translation>
 <translation id="3575121482199441727">Bu sayt üçün icazə verin</translation>
 <translation id="3575224072358507281">Məxfilik siyasətinə uyğun olaraq Ölçmə Laboratoriyası üçün IP ünvanı və şəbəkə ölçmə nəticələrini toplaya bilər (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Uğurla quraşdırıldı</translation>
@@ -5753,7 +5751,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5149602533174716626">Videoçərçivəni kopyalayın</translation>
 <translation id="5150254825601720210">Netscape Sertifikat SSL Server adı</translation>
 <translation id="5151354047782775295">Diskdə yer boşaldın və ya avtomatik silinə bilən datanı seçin</translation>
-<translation id="5152381187352661267">Chrome-da bacarıqlar</translation>
 <translation id="5153074793829217329">Maus kursorunu idarə etmək üçün klaviaturanızdan və ya rəqəm klaviaturasından istifadə edin</translation>
 <translation id="5153234146675181447">Telefonu unudun</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7012,7 +7009,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6112727384379533756">Bilet əlavə edin</translation>
 <translation id="6113434369102685411">Chrome brauzeri və <ph name="DEVICE_TYPE" /> Başladıcısı üçün defolt axtarış sisteminizi ayarlayın</translation>
 <translation id="6113832060210023016">başladıcı + klik</translation>
-<translation id="6116004140911290070">Chrome-da bacarıqları aktivləşdirin</translation>
 <translation id="6116921718742659598">Dil və daxiletmə ayarlarını dəyişdirin...</translation>
 <translation id="6119008366402292080">Printer yoxdur</translation>
 <translation id="6119972796024789243">Rəng korreksiyası</translation>
@@ -10417,7 +10413,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8596540852772265699">Fərdi fayllar</translation>
 <translation id="8597845839771543242">Funksiya formatı:</translation>
 <translation id="8598249292448297523">çap</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Artırmanı idarə edin}other{Artırmaları idarə edin}}</translation>
 <translation id="8599681327221583254">Bir və ya daha çox siyasət düzgün konfiqurasiya edilməyib. Administratorunuz ilə əlaqə saxlayın</translation>
 <translation id="8600362954032151088"><ph name="GOOGLE_PASSWORD_MANAGER" /> bölməsində parollarınızı və giriş açarlarınızı idarə edin</translation>
 <translation id="8602851771975208551">Kompüterinizdə başqa bir proqram Chrome'un necə işlədiyini dəyişdirən tətbiq əlavə etdi.</translation>
@@ -10811,7 +10806,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="887292602123626481">Defolt axtarış sistemləri haqqında ətraflı məlumat</translation>
 <translation id="8873075098103007382">Tab qrupları ilə nizamlı qalın</translation>
 <translation id="8874341931345877644">Cihazda paylaşın:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" söndürüldü</translation>
 <translation id="8874647982044395866">Orqanik</translation>
 <translation id="8874790741333031443">Üçüncü tərəf kukilərinə müvəqqəti icazə verin. Axtarış zamanı qoruma az olsa da, funksiyaların gözlənilən kimi işləmə ehtimalı yüksəkdir.</translation>
 <translation id="8875221558267407626">Kontenti icmallaşdırın, mürəkkəb dili sadələşdrin və ya suallar verin</translation>

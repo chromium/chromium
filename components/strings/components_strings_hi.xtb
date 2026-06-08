@@ -1388,6 +1388,7 @@
 <translation id="3158539265159265653">डिस्क</translation>
 <translation id="3162070126914310576">इस डिवाइस को अभी रजिस्टर नहीं किया जा सकता, क्योंकि आपके संगठन की इकाई में रजिस्टर करने की तय सीमा पूरी हो चुकी है. सहायता के लिए, अपने एडमिन से संपर्क करें.</translation>
 <translation id="3162559335345991374">आप जिस वाई-फ़ाई का उपयोग कर रहे हैं, आपको उसके लॉगिन पेज पर जाने की ज़रूरत पड़ सकती है.</translation>
+<translation id="316542773973815724">मार्गदर्शक</translation>
 <translation id="316638481603975524">साइट, वेब ऐप्लिकेशन इंस्टॉल करने की अनुमति मांग सकती है</translation>
 <translation id="3166788340998560642">Chrome, अगली बार इसका इस्तेमाल करने पर, इसे <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> में सेव करने का विकल्प देगा</translation>
 <translation id="3168744840365648658">रेडियो इक्विपमेंट</translation>
@@ -3759,7 +3760,6 @@
 <translation id="6893057134494550310">लैमिनेटिंग फ़ॉयल</translation>
 <translation id="6893204630281237373">Chrome में पेमेंट ऐप्लिकेशन की सुविधा बंद करने के लिए <ph name="BEGIN_LINK1" />पेमेंट सेटिंग<ph name="END_LINK1" /> पर जाएं</translation>
 <translation id="6895330447102777224">आपके कार्ड की पुष्टि हो गई है</translation>
-<translation id="6895573608763679343"><ph name="GROUP_HEADER" /> ग्रुप में <ph name="SUGGESTION_TITLE" /> और <ph name="SUGGESTION_DESCRIPTION" />, <ph name="NUM_MATCHES_IN_GROUP" /> में से नंबर <ph name="MATCH_POSITION" /> है.</translation>
 <translation id="6896758677409633944">कॉपी बनाएं</translation>
 <translation id="6897140037006041989">उपयोगकर्ता एजेंट</translation>
 <translation id="6898699227549475383">संगठन (O)</translation>
@@ -4123,7 +4123,6 @@
 <translation id="7450577240311017924">'सिंक करना मैनेज करें' बटन, Chrome की सेटिंग में सिंक की जाने वाली जानकारी को मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="7451311239929941790">इस समस्या के बारे में <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" />.</translation>
 <translation id="745208957946308667">Dino गेम को खेलने के लिए स्पेस बटन दबाएं</translation>
-<translation id="74521886886364465"><ph name="GROUP_HEADER" /> ग्रुप में <ph name="SUGGESTION_TITLE" />, <ph name="NUM_MATCHES_IN_GROUP" /> में से नंबर <ph name="MATCH_POSITION" /> है.</translation>
 <translation id="7453032093368223821">अन्य डेटा मैनेज करें</translation>
 <translation id="7453849010505253492">यह सर्वर पुष्टि नहीं कर सका कि यह <ph name="DOMAIN" /> है. ऐसा इसलिए, क्योंकि यह एक ऐसे सुरक्षा सर्टिफ़िकेट का इस्तेमाल कर रहा है जिस पर Chrome या वेब ट्रैफ़िक को एन्क्रिप्ट (सुरक्षित) करने के लिए उपलब्ध आपका सिस्टम कॉन्फ़िगरेशन भरोसा नहीं करता. ऐसा, सिस्टम को गलत तरीके से कॉन्फ़िगर करने या किसी हमलावर का आपके कनेक्शन में छेड़छाड़ करने की वजह से हो सकता है. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />सर्टिफ़िकेट देखें<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">क्लाउड खाता</translation>

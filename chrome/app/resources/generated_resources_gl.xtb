@@ -1882,7 +1882,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2343160676229467122">Non se permiten as extensións en <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Parque Nacional das Montañas Rochosas</translation>
 <translation id="2343747224442182863">Enfocar esta pestana</translation>
-<translation id="2343971313330854480">Atopa o teu ficheiro no cartafol <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">As versións antigas das aplicacións de Chrome non se abrirán despois de decembro de 2022. Ponte en contacto co teu administrador para actualizar esta aplicación a unha versión nova ou quitala.</translation>
 <translation id="2348176352564285430">Aplicación: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" />: permiso solicitado; preme Control + tecla de avance para responder</translation>
@@ -3569,7 +3568,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3569617221227793022">O fuso horario actualmente está definido como <ph name="TIME_ZONE_ENTRY" />. A persoa administradora xestiona esta opción de configuración.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> pode ver os seguintes ficheiros e cartafoles</translation>
 <translation id="3571734092741541777">Configurar</translation>
-<translation id="3572031449439748861">Desactiváronse <ph name="NUM_EXTENSIONS" /> extensións</translation>
 <translation id="3575121482199441727">Permitir para este sitio</translation>
 <translation id="3575224072358507281">Recompilar resultados de medición de redes e enderezos IP para Measurement Lab, segundo a súa política de privacidade (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">A instalación realizouse correctamente</translation>
@@ -5754,7 +5752,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5149602533174716626">Copia&amp;r fotograma de vídeo</translation>
 <translation id="5150254825601720210">Nome do servidor SSL de certificados Netscape</translation>
 <translation id="5151354047782775295">Libera espazo en disco para que non se eliminen automaticamente datos seleccionados</translation>
-<translation id="5152381187352661267">Skills en Chrome</translation>
 <translation id="5153074793829217329">Usa o teclado ou un teclado numérico para controlar o cursor do rato</translation>
 <translation id="5153234146675181447">Esquecer o teléfono</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7010,7 +7007,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6112727384379533756">Engadir tícket</translation>
 <translation id="6113434369102685411">Establece o motor de busca predeterminado para o navegador Chrome e o menú de aplicacións de <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">menú de aplicacións + clic</translation>
-<translation id="6116004140911290070">Activar Skills en Chrome</translation>
 <translation id="6116921718742659598">Cambiar configuración de idioma e entrada</translation>
 <translation id="6119008366402292080">Non hai ningunha impresora dispoñible</translation>
 <translation id="6119972796024789243">Corrección da cor</translation>
@@ -10415,7 +10411,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8596540852772265699">Ficheiros personalizados</translation>
 <translation id="8597845839771543242">Formato de propiedade:</translation>
 <translation id="8598249292448297523">impresión</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Xestionar extensión}other{Xestionar extensións}}</translation>
 <translation id="8599681327221583254">Hai unha ou máis políticas que non están configuradas correctamente. Ponte en contacto co teu administrador</translation>
 <translation id="8600362954032151088">Xestiona os teus contrasinais e claves de acceso no <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Outro programa do teu ordenador engadiu unha aplicación que pode cambiar o funcionamento de Chrome.</translation>
@@ -10811,7 +10806,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="887292602123626481">Máis información sobre os motores de busca predeterminados</translation>
 <translation id="8873075098103007382">Organízate con grupos de pestanas</translation>
 <translation id="8874341931345877644">Emite contido nun dispositivo:</translation>
-<translation id="8874448314264883207">Desactivouse a extensión <ph name="EXTENSION_NAME" /></translation>
 <translation id="8874647982044395866">Orgánico</translation>
 <translation id="8874790741333031443">Proba a permitir de maneira temporal as cookies de terceiros. Terás menos protección, pero é máis probable que as funcións do sitio vaian segundo o previsto.</translation>
 <translation id="8875221558267407626">Resume contido, simplifica linguaxe complexa ou fai preguntas</translation>

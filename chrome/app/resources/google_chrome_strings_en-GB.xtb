@@ -96,7 +96,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1953553007165777902">Downloading… <ph name="MINUTE" /> minute(s) remaining</translation>
 <translation id="1979600810166324878">Stay safer on the go with Enhanced Safe Browsing on Chrome for iOS</translation>
 <translation id="2001586581944147178">Make it harder for people with access to your Internet traffic to see which sites you visit. Chrome uses a secure connection to look up a site's IP address in the DNS (Domain Name System).</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{This extension is no longer supported. Chrome recommends that you remove it.}other{These extensions are no longer supported. Chrome recommends that you remove them.}}</translation>
 <translation id="2018528049276128029">Each profile holds its own Chrome info, like bookmarks, history, passwords and more</translation>
 <translation id="2018879682492276940">Installation failed. Please try again.</translation>
 <translation id="2024959665595762054">To use and save Chrome data in your Google Account, verify that it's you</translation>
@@ -389,6 +388,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="5127558335897923940">Keep Chrome in your Dock to get to it quickly at any time</translation>
 <translation id="5132929315877954718">Discover great apps, games, extensions and themes for Google Chrome.</translation>
 <translation id="5139423532931106058">Customise your Chrome profile</translation>
+<translation id="5152381187352661267">Skills in Chrome</translation>
 <translation id="5163087008893166964">Welcome to Chrome; new browser window opened</translation>
 <translation id="5166439563123238795">Chrome needs permission to track your hands</translation>
 <translation id="5169778651486082413">Use your passwords with Chrome on your phone</translation>
@@ -488,6 +488,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6070348360322141662">For added security, Google Chrome will encrypt your data</translation>
 <translation id="6075300983329039771">Your organisation, <ph name="MANAGER" />, requires you to sign in to Chrome</translation>
 <translation id="6113794647360055231">Chrome just got better</translation>
+<translation id="6116004140911290070">Enable skills in Chrome</translation>
 <translation id="6116252277240876590">This language is used to display menus, settings, alerts and other text in Chrome</translation>
 <translation id="6127237283587442951">Use Chrome by default and get it pinned</translation>
 <translation id="6134085236017727171">To use your microphone, give Chrome access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>

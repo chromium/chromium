@@ -50,7 +50,6 @@
 <translation id="154404805518949443">Zaloguj się w Chromium</translation>
 <translation id="1547469039832541117">Kończy wyróżnione zadanie.</translation>
 <translation id="1553461853655228091">Aby utworzyć mapę 3D Twojego otoczenia, Chromium potrzebuje uprawnień dostępu do kamery</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{To rozszerzenie nie jest już obsługiwane. Chromium zaleca jego usunięcie.}few{Te rozszerzenia nie są już obsługiwane. Chromium zaleca ich usunięcie.}many{Te rozszerzenia nie są już obsługiwane. Chromium zaleca ich usunięcie.}other{Te rozszerzenia nie są już obsługiwane. Chromium zaleca ich usunięcie.}}</translation>
 <translation id="1562320819937089394">Przypnij Chromium</translation>
 <translation id="1574377791422810894">Narzędzia bezpieczeństwa Chromium</translation>
 <translation id="1594928384848033697">Chromium chce usunąć Twoje dane z Menedżera haseł. Aby na to zezwolić, podaj hasło do systemu Windows.</translation>

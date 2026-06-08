@@ -1898,7 +1898,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2343160676229467122">Plėtiniai neleidžiami svetainėje <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Uolinių kalnų nacionalinis parkas</translation>
 <translation id="2343747224442182863">Šio skirtuko paryškinimas</translation>
-<translation id="2343971313330854480">Raskite failą aplanke „<ph name="FEATURE_NAME" />“</translation>
 <translation id="234559068082989648">Senų versijų „Chrome“ programos nebebus atidaromos po 2022 m. gruodžio mėn. Susisiekite su administratoriumi, kad atnaujintų į naują versiją, arba pašalinkite šią programą.</translation>
 <translation id="2348176352564285430">Programa: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – pateikta užklausa dėl leidimo; paspauskite Ctrl + pirmyn, kad atsakytumėte</translation>
@@ -3588,7 +3587,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3569617221227793022">Šiuo metu nustatyta laiko juosta: <ph name="TIME_ZONE_ENTRY" />. Šį nustatymą tvarko jūsų administratorius.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> gali redaguoti toliau nurodytus failus ir aplankus</translation>
 <translation id="3571734092741541777">Nustatyti</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> plėtin. buvo išjungti</translation>
 <translation id="3575121482199441727">Leisti šioje svetainėje</translation>
 <translation id="3575224072358507281">Rinkite „Measurement Lab“ IP adreso ir tinklo vertinimo rezultatus pagal „Measurement Lab“ privatumo politiką (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Sėkmingai įdiegta</translation>
@@ -5773,7 +5771,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5149602533174716626">Kopijuot&amp;i vaizdo įrašo rėmelį</translation>
 <translation id="5150254825601720210">„Netscape“ sertifikato SSL serverio pavadinimas</translation>
 <translation id="5151354047782775295">Atlaisvinkite vietos diske arba pasirinkite duomenis, kuriuos galima automatiškai ištrinti</translation>
-<translation id="5152381187352661267">Įgūdžiai naršyklėje „Chrome“</translation>
 <translation id="5153074793829217329">Naudokite klaviatūrą arba skaitmenų klaviatūrą, kad galėtumėte valdyti pelės žymeklį</translation>
 <translation id="5153234146675181447">Pamiršti telefoną</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7034,7 +7031,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6112727384379533756">Pridėti bilietą</translation>
 <translation id="6113434369102685411">Nustatykite numatytąjį „Chrome“ naršyklės ir „<ph name="DEVICE_TYPE" />“ paleidimo priemonės paieškos variklį</translation>
 <translation id="6113832060210023016">paleidimo priemonės klavišas + paspaudimas</translation>
-<translation id="6116004140911290070">Įgalinti įgūdžius naršyklėje „Chrome“</translation>
 <translation id="6116921718742659598">Keisti kalbos ir įvesties nustatymus</translation>
 <translation id="6119008366402292080">Spausdintuvas nepasiekiamas</translation>
 <translation id="6119972796024789243">Spalvų taisymas</translation>
@@ -10448,7 +10444,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8596540852772265699">Priskirti failai</translation>
 <translation id="8597845839771543242">Nuosavybės formatas:</translation>
 <translation id="8598249292448297523">spausdintuvas</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Tvarkyti plėtinį}one{Tvarkyti plėtinius}few{Tvarkyti plėtinius}many{Tvarkyti plėtinius}other{Tvarkyti plėtinius}}</translation>
 <translation id="8599681327221583254">Viena ar daugiau politikos nuostatų nėra tinkamai nustatytos. Susisiekite su administratoriumi</translation>
 <translation id="8600362954032151088">Tvarkykite slaptažodžius ir prieigos raktus programoje „<ph name="GOOGLE_PASSWORD_MANAGER" />“</translation>
 <translation id="8602851771975208551">Kita jūsų kompiuteryje esanti programa pridėjo programą, kuri gali pakeisti „Chrome“ veikimo būdą.</translation>
@@ -10844,7 +10839,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="887292602123626481">Sužinokite daugiau apie numatytuosius paieškos variklius</translation>
 <translation id="8873075098103007382">Būkite tvarkingi naudodami skirtukų grupes</translation>
 <translation id="8874341931345877644">Perduoti į įrenginį:</translation>
-<translation id="8874448314264883207">Plėtinys „<ph name="EXTENSION_NAME" />“ buvo išjungtas</translation>
 <translation id="8874647982044395866">Organiškas</translation>
 <translation id="8874790741333031443">Pabandykite laikinai leisti trečiųjų šalių slapukus: tai reiškia, kad naršydami būsite mažiau apsaugoti, bet labiau tikėtina, kad svetainės funkcijos tinkamai veiks.</translation>
 <translation id="8875221558267407626">Apibendrinkite turinį, supaprastinkite sudėtingą kalbą arba užduokite klausimų</translation>

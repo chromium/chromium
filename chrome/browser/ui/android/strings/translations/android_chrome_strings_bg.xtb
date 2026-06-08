@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">Тук ще се показва историята ви</translation>
 <translation id="1273937721055267968">Блокиране на <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">Включване на известията със съвети</translation>
-<translation id="1283039547216852943">Докоснете за разгъване</translation>
 <translation id="1289129165308566697">Преглеждайте историята си на други устройства</translation>
 <translation id="129553762522093515">Наскоро затворени</translation>
 <translation id="1298077576058087471">Спестете до 60% данни – прочетете днешните новини</translation>
@@ -1161,7 +1160,6 @@
 <translation id="59577092665511740">Изберете профил.</translation>
 <translation id="5958275228015807058">Намерете файловете и страниците си в „Изтегляния“</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome спря изпращането на известия от сайт, който не сте посещавали наскоро}other{Chrome спря изпращането на известия от сайтовете, които не сте посещавали наскоро}}</translation>
-<translation id="5962718611393537961">Докоснете за свиване</translation>
 <translation id="5964869237734432770">Спиране на описанията</translation>
 <translation id="5972844218283131174">Премахване на избора от всички</translation>
 <translation id="5975083100439434680">Намаляване на мащаба</translation>

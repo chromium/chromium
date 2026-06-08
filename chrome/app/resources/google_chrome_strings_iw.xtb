@@ -92,7 +92,6 @@
 <translation id="1953553007165777902">מתבצעת הורדה… יש עוד <ph name="MINUTE" /> דק'</translation>
 <translation id="1979600810166324878">‏אפשר ליהנות מאינטרנט בטוח יותר בכל מקום עם הגרסה המשופרת של הגלישה הבטוחה ב-Chrome ל-iOS</translation>
 <translation id="2001586581944147178">‏לאנשים שיש להם גישה לתעבורת הנתונים שלך יהיה קשה יותר לראות את האתרים שביקרת בהם. ‫Chrome משתמש בחיבור מאובטח לחיפוש כתובות IP של אתרים ב-DNS.</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{‏התוסף הזה כבר לא נתמך. אנחנו ממליצים להסיר אותו מ-Chrome.}one{‏התוספים האלה כבר לא נתמכים. אנחנו ממליצים להסיר אותם מ-Chrome.}two{‏התוספים האלה כבר לא נתמכים. אנחנו ממליצים להסיר אותם מ-Chrome.}other{‏התוספים האלה כבר לא נתמכים. אנחנו ממליצים להסיר אותם מ-Chrome.}}</translation>
 <translation id="2018528049276128029">‏בכל פרופיל מאוחסנים נתוני Chrome משלו כמו סימניות, היסטוריה, סיסמאות ועוד</translation>
 <translation id="2018879682492276940">ההתקנה נכשלה. יש לנסות שוב.</translation>
 <translation id="2024959665595762054">‏כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך לאמת את הזהות שלך</translation>
@@ -188,6 +187,7 @@
 <translation id="2945997411976714835">שגיאת התקנה: הפעלת התהליך של מנהל ההתקנה נכשלה.</translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> – כניסה לרשת – Chrome</translation>
 <translation id="2970681950995291301">‏כדי להסיר את החשבון שלך ב-Google מ-Chrome, צריך לצאת מ-Chrome בדף ההגדרות</translation>
+<translation id="2976869732253036751">‏רוצה לקבל התראות על מעקב מחירים באמצעות Chrome בטלפון?</translation>
 <translation id="2991167882679440829">‏הסיסמאות ונתונים אחרים מ-Chrome ששמרת בחשבון שלך ב-Google יוסרו מהמכשיר הזה. כדי להשתמש בהם שוב ב-Chrome, צריך להיכנס בחזרה לחשבון.</translation>
 <translation id="2994465299455873643">השירות מספק הצפנה ודרך מאובטחת לשחזור של <ph name="BROWSER_NAME" /> אם הוא לא מעודכן. אם השירות הזה מושבת, ייתכן שהגישה של <ph name="BROWSER_NAME" /> לנתונים מוצפנים תאבד, ויכול להיות ש-<ph name="BROWSER_NAME" /> לא יוכל לשחזר אותה.</translation>
 <translation id="3003694935412297923">כל המשימות</translation>
@@ -384,6 +384,7 @@
 <translation id="5127558335897923940">‏כדאי להשאיר את Chromium ב-Dock כדי לגשת אליו במהירות מתי שרוצים</translation>
 <translation id="5132929315877954718">‏מקום לגלות אפליקציות, משחקים, תוספים ועיצובים מעולים ל-Google Chrome.</translation>
 <translation id="5139423532931106058">‏התאמה אישית של פרופיל Chrome</translation>
+<translation id="5152381187352661267">‏מיומנויות ב-Chrome</translation>
 <translation id="5163087008893166964">‏ברוך בואך אל Chrome. נפתח חלון חדש בדפדפן</translation>
 <translation id="5166439563123238795">‏צריך לתת ל-Chrome הרשאה כדי לעקוב אחרי תנועות הידיים</translation>
 <translation id="5169778651486082413">‏רוצה להשתמש בסיסמאות שלך ב-Chrome בטלפון?</translation>
@@ -479,6 +480,7 @@
 <translation id="6070348360322141662">‏לשיפור האבטחה, Google Chrome יצפין את הנתונים</translation>
 <translation id="6075300983329039771">‏לפי דרישת הארגון שלך, <ph name="MANAGER" />, עליך להיכנס לחשבון ב-Chrome</translation>
 <translation id="6113794647360055231">‏Chrome השתפר</translation>
+<translation id="6116004140911290070">‏הפעלת מיומנויות ב-Chrome</translation>
 <translation id="6116252277240876590">‏זו השפה שבה מוצגים תפריטים, הגדרות, התראות וטקסטים אחרים ב-Chrome</translation>
 <translation id="6127237283587442951">‏שימוש ב-Chrome כברירת מחדל והצמדה שלו</translation>
 <translation id="6134085236017727171">‏כדי להשתמש במיקרופון, צריך להיכנס אל <ph name="BEGIN_LINK" />הגדרות המערכת<ph name="END_LINK" /> ולתת ל-Chrome גישה</translation>

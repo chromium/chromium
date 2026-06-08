@@ -96,7 +96,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1953553007165777902">Deskargatzen… <ph name="MINUTE" /> minutu geratzen dira.</translation>
 <translation id="1979600810166324878">Egon seguruago edonoiz eta edonon iOS-erako Chrome-ko arakatze seguru hobetuarekin</translation>
 <translation id="2001586581944147178">Zaildu zure Interneteko trafikorako sarbidea duten pertsonei bisitatzen dituzun webguneak ikustea. Chrome-k konexio seguru bat erabiltzen du DNSan (domeinu-izenen sistema) webgune baten IP helbidea bilatzean.</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Luzapena ez da onartzen jada. Kentzea gomendatzen dizu Chrome-k.}other{Luzapen hauek ez dira onartzen jada. Kentzea gomendatzen dizu Chrome-k.}}</translation>
 <translation id="2018528049276128029">Profil bakoitzak Chrome-ko informazio propioa dauka; adibidez, laster-markak, historia, pasahitzak eta beste</translation>
 <translation id="2018879682492276940">Ezin izan da instalatu. Saiatu berriro.</translation>
 <translation id="2024959665595762054">Chrome-ko datuak Google-ko kontuan gordetzeko eta erabiltzeko, egiaztatu zeu zarela</translation>
@@ -388,6 +387,7 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="5127558335897923940">Mantendu Chrome Dock-ean, hura bizkor atzitzeko edonoiz</translation>
 <translation id="5132929315877954718">Ezagutu Google Chrome-rako aplikazio, joko, luzapen eta gai bikainak.</translation>
 <translation id="5139423532931106058">Pertsonalizatu Chrome-ko profila</translation>
+<translation id="5152381187352661267">Chrome-ko trebetasunak</translation>
 <translation id="5163087008893166964">Ongi etorri Chrome-ra; beste leiho bat ireki da arakatzailean</translation>
 <translation id="5166439563123238795">Chrome-k zure eskuen jarraipena egiteko baimena behar du</translation>
 <translation id="5169778651486082413">Erabili pasahitzak telefonoan Chrome-rekin</translation>
@@ -487,6 +487,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6070348360322141662">Segurtasun gehiago izateko, Google Chrome-k datuak enkriptatuko ditu</translation>
 <translation id="6075300983329039771">Chrome-n saioa hasteko eskatzen dizu zure erakundeak (<ph name="MANAGER" />)</translation>
 <translation id="6113794647360055231">Chrome hobetu egin dugu</translation>
+<translation id="6116004140911290070">Gaitu trebetasunak Chrome-n</translation>
 <translation id="6116252277240876590">Chrome-ren menuak, ezarpenak, alertak eta bestelako testuak bistaratzeko erabiltzen da hizkuntza hau</translation>
 <translation id="6127237283587442951">Erabili Chrome modu lehenetsian eta aingura ezazu</translation>
 <translation id="6134085236017727171">Mikrofonoa erabiltzeko, eman baimena Chrome-ri <ph name="BEGIN_LINK" />sistemaren ezarpenetan<ph name="END_LINK" /></translation>

@@ -1387,6 +1387,7 @@
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162070126914310576">Бұл құрылғыны дәл қазір тіркеу мүмкін емес, себебі ұйым бөлімі бастапқы тіркеу шегіне жетті. Көмек алу үшін әкімшіге хабарласыңыз.</translation>
 <translation id="3162559335345991374">Сіз пайдаланып жатқан Wi-Fi өзінің кіру бетіне өтуіңізді қажет етуі мүмкін.</translation>
+<translation id="316542773973815724">Навигация</translation>
 <translation id="316638481603975524">Веб-қолданбаларды орнатуға рұқсат сұрауы мүмкін</translation>
 <translation id="3166788340998560642">Келесі жолы пайдаланған кезде, Chrome оны <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> қызметіне сақтауды ұсынады.</translation>
 <translation id="3168744840365648658">Радиожабдық</translation>
@@ -3758,7 +3759,6 @@
 <translation id="6893057134494550310">Ламинаттайтын фольга</translation>
 <translation id="6893204630281237373">Chrome-дағы төлем қолданбасын өшіру үшін <ph name="BEGIN_LINK1" />төлем параметрлеріне<ph name="END_LINK1" /> өтіңіз.</translation>
 <translation id="6895330447102777224">Картаңыз расталды</translation>
-<translation id="6895573608763679343"><ph name="GROUP_HEADER" /> тобындағы <ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES_IN_GROUP" />.</translation>
 <translation id="6896758677409633944">Көшіру</translation>
 <translation id="6897140037006041989">Пайдаланушы агенті</translation>
 <translation id="6898699227549475383">Ұйым (O)</translation>
@@ -4121,7 +4121,6 @@
 <translation id="7450577240311017924">"Синхрондауды басқару" түймесі, Chrome параметрлерінде синхрондалатын ақпаратты басқару үшін белсендіріңіз</translation>
 <translation id="7451311239929941790">Бұл ақау туралы <ph name="BEGIN_LINK" />толығырақ ақпарат<ph name="END_LINK" /> қарау.</translation>
 <translation id="745208957946308667">Dino ойыны. Ойнау үшін бос орын пернесін басыңыз.</translation>
-<translation id="74521886886364465"><ph name="GROUP_HEADER" /> тобындағы <ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES_IN_GROUP" />.</translation>
 <translation id="7453032093368223821">Басқа деректерді басқару</translation>
 <translation id="7453849010505253492">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады, себебі ол интернет трафигін шифрлау үшін Chrome сенімді деп санамайтын қауіпсіздік сертификатын немесе жүйе конфигурациясын пайдаланып жатыр. Мұның себебі конфигурацияның қате болуынан не шабуылдаушының қосылымға тосқауыл жасауынан болуы мүмкін. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Сертификатты көру<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Бұлт аккаунты</translation>

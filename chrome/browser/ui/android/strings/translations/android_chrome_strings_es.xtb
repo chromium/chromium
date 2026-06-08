@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">Aquí verás tu historial</translation>
 <translation id="1273937721055267968">Bloquear <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">Activar notificaciones de consejos</translation>
-<translation id="1283039547216852943">Toca para ampliar</translation>
 <translation id="1289129165308566697">Consulta tu historial en otros dispositivos</translation>
 <translation id="129553762522093515">Cerrado recientemente</translation>
 <translation id="1298077576058087471">Ahorra hasta un 60 % de datos mientras lees las noticias</translation>
@@ -1161,7 +1160,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="59577092665511740">Elige una cuenta.</translation>
 <translation id="5958275228015807058">Encuentra tus archivos y páginas en la sección Descargas</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ha impedido que un sitio que no has visitado recientemente te envíe notificaciones}other{Chrome ha impedido que sitios que no has visitado recientemente te envíen notificaciones}}</translation>
-<translation id="5962718611393537961">Toca para ocultar</translation>
 <translation id="5964869237734432770">Detener descripciones de imágenes</translation>
 <translation id="5972844218283131174">Desmarcar todo</translation>
 <translation id="5975083100439434680">Reducir</translation>

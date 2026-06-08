@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">سيظهر لك السجلّ هنا</translation>
 <translation id="1273937721055267968">حظر <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">تفعيل إشعارات النصائح</translation>
-<translation id="1283039547216852943">النقر للتوسيع</translation>
 <translation id="1289129165308566697">عرض سجلّ التصفح على الأجهزة الأخرى</translation>
 <translation id="129553762522093515">المغلقة حديثًا</translation>
 <translation id="1298077576058087471">توفير ما يصل إلى 60% من البيانات والاطّلاع على أخبار اليوم</translation>
@@ -615,6 +614,7 @@
 <translation id="3635073343384702370">‏يستطيع Chrome التحقّق من كلمات المرور التي حفظتها فقط</translation>
 <translation id="3636940436873918441">اللغات المفضّلة</translation>
 <translation id="3637744895182738742">‏إذا نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090">‫<ph name="WINDOW_TITLE" /> ‏- <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">‏الانتقال إلى "الصفحة الرئيسية" في تطبيق Google</translation>
 <translation id="368329460027487650">تم تسجيل الخروج. سيتم فتح خيارات لتسجيل الدخول.</translation>
@@ -639,6 +639,7 @@
 <translation id="3739899004075612870">تمت إضافة إشارة مرجعية في <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740290940447881599">يُرجى التأكّد من أنّ هذا الموقع الإلكتروني موثوق</translation>
 <translation id="3740525748616366977">لا يتوفر البحث الصوتي على هذا الجهاز.</translation>
+<translation id="3756823472711156529">استعادة المجموعة</translation>
 <translation id="3763110477555836428">‏سيتم ملء رقم بطاقة افتراضية عند إتمام الدفع باستخدام هذه البطاقة لحماية تفاصيل بطاقتك الفعلية. ويمكنك إدارة البطاقة في "محفظة Google". <ph name="BEGIN_LINK1" />مزيد من المعلومات حول البطاقات الافتراضية<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">لم يتم حفظ بعض البيانات إلى الآن</translation>
 <translation id="3770620323585347665">تسمية النافذة</translation>
@@ -1160,7 +1161,6 @@
 <translation id="59577092665511740">اختَر حسابًا.</translation>
 <translation id="5958275228015807058">العثور على الملفات والصفحات في مجلد "المحتوى الذي تم تنزيله"</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{‏أوقف Chrome إرسال الإشعارات من موقع إلكتروني لم تتم زيارته مؤخرًا}zero{‏أوقف Chrome إرسال الإشعارات من المواقع الإلكترونية التي لم تتم زيارتها مؤخرًا}two{‏أوقف Chrome إرسال الإشعارات من موقعين إلكترونيين لم تتم زيارتهما مؤخرًا}few{‏أوقف Chrome إرسال الإشعارات من المواقع الإلكترونية التي لم تتم زيارتها مؤخرًا}many{‏أوقف Chrome إرسال الإشعارات من المواقع الإلكترونية التي لم تتم زيارتها مؤخرًا}other{‏أوقف Chrome إرسال الإشعارات من المواقع الإلكترونية التي لم تتم زيارتها مؤخرًا}}</translation>
-<translation id="5962718611393537961">النقر للتصغير</translation>
 <translation id="5964869237734432770">إيقاف عرض أوصاف الصور</translation>
 <translation id="5972844218283131174">إلغاء اختيار الكل</translation>
 <translation id="5975083100439434680">تصغير</translation>

@@ -1893,7 +1893,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2343160676229467122">Viendelezi haviruhusiwi kwenye <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Mbuga ya Wanyama Ya Rocky Mountains</translation>
 <translation id="2343747224442182863">Lenga Kichupo Hiki</translation>
-<translation id="2343971313330854480">Pata faili yako kwenye folda ya <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Matoleo ya zamani ya Programu za Chrome hayataweza kufunguliwa baada ya Desemba 2022. Wasiliana na msimamizi wako ili upate toleo jipya au uondoe programu hii.</translation>
 <translation id="2348176352564285430">Programu: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Umeombwa ruhusa, bonyeza vitufe vya Ctrl na Forward ili ujibu</translation>
@@ -3580,7 +3579,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3569617221227793022">Saa za eneo kwa sasa zimewekwa kuwa <ph name="TIME_ZONE_ENTRY" />. Mipangilio hii inadhibitiwa na msimamizi wako.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> inaweza kuona faili na folda zifuatazo</translation>
 <translation id="3571734092741541777">Weka mipangilio</translation>
-<translation id="3572031449439748861">Viendelezi <ph name="NUM_EXTENSIONS" /> vimezimwa</translation>
 <translation id="3575121482199441727">Ruhusu kutoka tovuti hii</translation>
 <translation id="3575224072358507281">Kukusanya Anwani ya IP na matokeo ya vipimo vya mtandao vya kutumia kwenye Measurement Lab, kulingana na sera yao ya faragha (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Imesakinishwa</translation>
@@ -5760,7 +5758,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5149602533174716626">Nakili Fremu ya Video</translation>
 <translation id="5150254825601720210">Jina la Seva ya SSL ya Cheti cha Netscape</translation>
 <translation id="5151354047782775295">Futa maudhui katika hifadhi ya diski au data iliyochaguliwa itafutwa kiotomatiki</translation>
-<translation id="5152381187352661267">Kipengele cha Ujuzi kwenye Chrome</translation>
 <translation id="5153074793829217329">Tumia kibodi yako au vitufe vya simu vya namba ili udhibiti kiteuzi cha kipanya chako</translation>
 <translation id="5153234146675181447">Sahau simu</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7019,7 +7016,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6112727384379533756">Weka tiketi</translation>
 <translation id="6113434369102685411">Weka mtambo wako chaguomsingi wa kutafuta kwenye kivinjari cha Chrome na Kifungua Programu cha <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">kifungua programu pamoja na bofya</translation>
-<translation id="6116004140911290070">Washa kipengele cha Ujuzi kwenye Chrome</translation>
 <translation id="6116921718742659598">Badilisha mipangilio ya lugha na uingizaji</translation>
 <translation id="6119008366402292080">Hakuna printa iliyopatikana</translation>
 <translation id="6119972796024789243">Usahihishaji wa rangi</translation>
@@ -10425,7 +10421,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8596540852772265699">Faili Maalum</translation>
 <translation id="8597845839771543242">Muundo wa sifa:</translation>
 <translation id="8598249292448297523">chapisha</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Dhibiti kiendelezi}other{Dhibiti viendelezi}}</translation>
 <translation id="8599681327221583254">Mipangilio ya sera moja au zaidi haijawekwa kwa usahihi. Tafadhali wasiliana na msimamizi wako</translation>
 <translation id="8600362954032151088">Dhibiti manesosiri na funguo zako za siri katika <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Programu nyingine kwenye kompyuta yako iliongeza programu ambayo inaweza kubadilisha jinsi Chrome inavyofanya kazi.</translation>
@@ -10821,7 +10816,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="887292602123626481">Pata maelezo zaidi kuhusu mitambo chaguomsingi ya kutafuta</translation>
 <translation id="8873075098103007382">Panga mambo yako ukitumia vikundi vya vichupo</translation>
 <translation id="8874341931345877644">Tuma kwenye kifaa:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" imezimwa</translation>
 <translation id="8874647982044395866">Halisi</translation>
 <translation id="8874790741333031443">Jaribu kuruhusu kwa muda vidakuzi vya washirika wengine, hatua hii inamaanisha kuwa ulinzi wa kuvinjari utapungua lakini vipengele vya tovuti vina uwezekano mkubwa wa kufanya kazi inavyotarajiwa.</translation>
 <translation id="8875221558267407626">Andaa muhtasari wa maudhui, rahisisha lugha changamano au uulize maswali</translation>

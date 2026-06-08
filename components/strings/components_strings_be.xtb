@@ -1388,6 +1388,7 @@
 <translation id="3158539265159265653">Дыск</translation>
 <translation id="3162070126914310576">На гэты момант гэту прыладу немагчыма зарэгістраваць, бо ваша арганізацыйная адзінка выкарыстала пачатковы ліміт рэгістрацый. Звярніцеся да адміністратара па дапамогу.</translation>
 <translation id="3162559335345991374">Сетка Wi-Fi, якую вы выкарыстоўваеце, можа запатрабаваць ад вас наведаць яе старонку ўваходу.</translation>
+<translation id="316542773973815724">Навігацыя</translation>
 <translation id="316638481603975524">Сайт можа запытаць дазвол на ўсталяванне вэб-праграм</translation>
 <translation id="3166788340998560642">Chrome прапануе захаваць яе ў сэрвісе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" пры наступным выкарыстанні.</translation>
 <translation id="3168744840365648658">Радыёабсталяванне</translation>
@@ -3758,7 +3759,6 @@
 <translation id="6893057134494550310">Плёнка для ламінавання</translation>
 <translation id="6893204630281237373">Каб выключыць плацежную праграму ў Chrome, перайдзіце ў <ph name="BEGIN_LINK1" />налады аплаты<ph name="END_LINK1" />.</translation>
 <translation id="6895330447102777224">Картка пацверджана</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> з <ph name="NUM_MATCHES_IN_GROUP" /> у групе "<ph name="GROUP_HEADER" />".</translation>
 <translation id="6896758677409633944">Капіраваць</translation>
 <translation id="6897140037006041989">Агент карыстальніка</translation>
 <translation id="6898699227549475383">Арганізацыя (А)</translation>
@@ -4122,7 +4122,6 @@
 <translation id="7450577240311017924">Кнопка "Кіраваць сінхранізацыяй". Каб задаць у наладах Chrome, якая іменна інфармацыя будзе сінхранізавацца, націсніце яе.</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра гэту праблему.</translation>
 <translation id="745208957946308667">Гульня з дыназаўрам – націсніце клавішу прабелу, каб гуляць</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> з <ph name="NUM_MATCHES_IN_GROUP" /> у групе <ph name="GROUP_HEADER" />.</translation>
 <translation id="7453032093368223821">Кіраваць іншымі данымі</translation>
 <translation id="7453849010505253492">Серверу не ўдалося даказаць, што гэта дамен <ph name="DOMAIN" />, бо ён выкарыстоўвае сертыфікат бяспекі, якому не давярае Chrome ці канфігурацыя вашай сістэмы для шыфравання інтэрнэт-трафіка. Прычынай могуць быць няправільныя налады або спроба зламысніка перахапіць падключэнне. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Праглядзець сертыфікат<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Воблачны ўліковы запіс</translation>

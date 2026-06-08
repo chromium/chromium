@@ -187,6 +187,7 @@
 <translation id="1125550662859510761">‏تبدو كـ <ph name="WIDTH" /> x <ph name="HEIGHT" /> (أصلية)</translation>
 <translation id="1125816658532547876">يمكنك الآن استخدام كلمات المرور الخاصة بك على <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">الخلفية والتصميم</translation>
+<translation id="1126475802377716263">{0,plural, =1{جارٍ مشاركة علامة تبويب واحدة}zero{جارٍ مشاركة # علامة تبويب}two{جارٍ مشاركة علامتَي تبويب}few{جارٍ مشاركة # علامات تبويب}many{جارٍ مشاركة # علامة تبويب}other{جارٍ مشاركة # علامة تبويب}}</translation>
 <translation id="1126696498560056882">إدارة الحسابات على هذا الجهاز</translation>
 <translation id="1128591060186966949">تعديل محرّك البحث</translation>
 <translation id="1129348283834595293">خيال علمي سيبراني</translation>
@@ -1759,6 +1760,7 @@
 <translation id="2263371730707937087">معدّل إعادة تحميل الشاشة</translation>
 <translation id="2263679799334060788">‏تساعدنا ملاحظاتك في تحسين Google Cast ونقدّر لك ذلك. للحصول على مساعدة بشأن تحديد مشاكل الإرسال وحلّها، يُرجى الرجوع إلى <ph name="BEGIN_LINK" />مركز المساعدة<ph name="END_LINK" />.</translation>
 <translation id="22649924370461580">مجموعات علامات التبويب المحفوظة</translation>
+<translation id="2265924028278810827">التطبيق الرئيسي: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">‏بروتوكول الطباعة على الإنترنت (IPP) عبر USB (IPPUSB)</translation>
 <translation id="2268130516524549846">تم إيقاف البلوتوث</translation>
 <translation id="2268182915828370037">هل تريد إيقاف مزامنة الملفات؟</translation>
@@ -1886,7 +1888,6 @@
 <translation id="2343160676229467122">غير مسموح بالإضافات على <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">متنزّه "روكي ماونتن" الوطني</translation>
 <translation id="2343747224442182863">التركيز على علامة التبويب هذه</translation>
-<translation id="2343971313330854480">يمكنك العثور على ملفك في مجلد "<ph name="FEATURE_NAME" />"</translation>
 <translation id="234559068082989648">‏لن تفتح الإصدارات القديمة من "تطبيقات Chrome" بعد كانون الأول (ديسمبر) 2022. يمكنك التواصل مع المشرف للتحديث إلى إصدار جديد من هذا التطبيق أو إزالته.</translation>
 <translation id="2348176352564285430">التطبيق: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593">‏<ph name="WINDOW_TITLE" /> - تم طلب الإذن، اضغط على Ctrl + السهم المتجه للأمام للاستجابة للطلب</translation>
@@ -1955,6 +1956,7 @@
 <translation id="2406942743794219791">يُرجى التأكُّد من محرّك البحث التلقائي المطلوب استخدامه</translation>
 <translation id="2407671304279211586">اختيار مزوِّد نظام أسماء النطاقات</translation>
 <translation id="2408018932941436077">جارٍ حفظ البطاقة</translation>
+<translation id="2408601796549249241">‏تم فتح بطاقة Gemini السفلية بطول الشاشة</translation>
 <translation id="2408762424059547338">‏تحمي هذه الميزة حسابك بشكل أفضل من الهجمات من خلال إيقاف ميزة تحسين JavaScript</translation>
 <translation id="2408955596600435184">إدخال رقم التعريف الشخصي</translation>
 <translation id="2409378541210421746">تغيير اللغة التي تم اختيارها</translation>
@@ -2711,6 +2713,7 @@
 <translation id="2932483646085333864">الخروج ثم إعادة تسجيل الدخول لبدء المزامنة</translation>
 <translation id="2932883381142163287">الإبلاغ عن إساءة الاستخدام</translation>
 <translation id="2933632078076743449">آخر تحديث</translation>
+<translation id="2933653107553951760">استعادة المجموعة</translation>
 <translation id="2934225044529065415">يتعذّر الوصول إلى الكاميرا</translation>
 <translation id="2935314715123552088">‏إيقاف الملف الشخصي النشط لشريحة eSIM</translation>
 <translation id="2935654492420446828">إضافة حساب مؤسسة تعليمية لاحقًا</translation>
@@ -2805,6 +2808,7 @@
 <translation id="3000461861112256445">صوت أحادي</translation>
 <translation id="3001144475369593262">حسابات الطفل</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{لم يتم تخصيص أي مفاتيح.}=1{تم تخصيص مفتاح واحد.}two{تم تخصيص مفتاحين ({COUNT}).}few{تم تخصيص {COUNT} مفاتيح.}many{تم تخصيص {COUNT} مفتاحًا.}other{تم تخصيص {COUNT} مفتاح.}}</translation>
+<translation id="3002864108328203174">‏تم فتح بطاقة Gemini السفلية في نصف الشاشة.</translation>
 <translation id="3003144360685731741">الشبكات المُفضلة</translation>
 <translation id="3003253259757197230">‏يتم إرسال عناوين URL التي تزورها إلى Google لتوقُّع المواقع الإلكترونية التي ستزورها بعد ذلك ولعرض معلومات إضافية عن الصفحة الحالية التي تزورها.</translation>
 <translation id="3003623123441819449">‏ذاكرة التخزين المؤقت للغة CSS</translation>
@@ -3573,7 +3577,6 @@
 <translation id="3569617221227793022">‏تم ضبط المنطقة الزمنية حاليًا على ‎<ph name="TIME_ZONE_ENTRY" />. ويدير المشرف هذا الإعداد.</translation>
 <translation id="3569682580018832495">بإمكان <ph name="ORIGIN" /> عرض الملفات والمجلدات التالية:</translation>
 <translation id="3571734092741541777">إعداد</translation>
-<translation id="3572031449439748861">تم إيقاف <ph name="NUM_EXTENSIONS" /> إضافة</translation>
 <translation id="3575121482199441727">سماح لهذا الموقع الإلكتروني</translation>
 <translation id="3575224072358507281">‏جمع عناوين IP ونتائج قياس أداء الشبكة لصالح Measurement Lab، وذلك وفقًا لسياسة الخصوصية الواردة في measurementlab.net/privacy</translation>
 <translation id="3576324189521867626">تم التثبيت بنجاح</translation>
@@ -3848,6 +3851,7 @@
 <translation id="3756485814916578707">جارٍ بثّ الشاشة</translation>
 <translation id="3756578970075173856">ضبط رقم التعريف الشخصي</translation>
 <translation id="3756806135608816820">السماح للمواقع الإلكترونية بطلب البحث عن أجهزة تتضمّن بلوتوث</translation>
+<translation id="3756823472711156529">استعادة المجموعة</translation>
 <translation id="3757567010566591880">إزالة تثبيت الإضافة من شريط الأدوات</translation>
 <translation id="3757645900890881944">أدوات البحث</translation>
 <translation id="3757733214359997190">لم يتم العثور على أي مواقع</translation>
@@ -4816,6 +4820,7 @@
 <translation id="4444304522807523469">‏الدخول إلى الماسحات الضوئية للمستند الملحق عبر جهاز USB أو على الشبكة المحلية</translation>
 <translation id="4444512841222467874">إذا لم تتوفر مساحة، فقد تتم إزالة المستخدمين والبيانات تلقائيًا.</translation>
 <translation id="4445446646109808714">اتفاقية ترخيص المستخدِم النهائي: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">استعادة وضع "تقسيم العرض"</translation>
 <translation id="4446933390699670756">معكوس</translation>
 <translation id="4448560527907365660">الحفظ وعرض المزيد</translation>
 <translation id="4449247303975391730">إدارة الأذونات</translation>
@@ -4949,6 +4954,7 @@
 <translation id="4562364000855074606">‏يتم حظر التطبيقات المثبَّتة على جهاز <ph name="DEVICE_TYPE" /> هذا. ولفرض قيود على تنزيل التطبيقات أو المحتوى، يُرجى الانتقال إلى إعدادات Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">لغة الإدخال الأولية هي الصينية</translation>
 <translation id="4563382028841851106">الإزالة من الحساب</translation>
+<translation id="4563883094055457792">&amp;استعادة وضع "تقسيم العرض"</translation>
 <translation id="4564245002465020751">إكمال عملية ضبط الإعدادات على هاتفك</translation>
 <translation id="456449593072900590">الحذف عند الخروج</translation>
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
@@ -5753,7 +5759,6 @@
 <translation id="5149602533174716626">نس&amp;خ إطار الفيديو</translation>
 <translation id="5150254825601720210">‏اسم خادم بروتوكول SSL (طبقة المقابس الآمنة) لشهادة Netscape</translation>
 <translation id="5151354047782775295">احرص على تفريغ مساحة على القرص أو حدد بيانات قد يتم حذفها تلقائيًا</translation>
-<translation id="5152381187352661267">‏"المهارات" في Chrome</translation>
 <translation id="5153074793829217329">يمكنك استخدام لوحة المفاتيح أو لوحة المفاتيح الرقمية للتحكّم في مؤشر الماوس</translation>
 <translation id="5153234146675181447">عدم تذكُّر الهاتف</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5854,6 +5859,7 @@
 <translation id="5221516927483787768">تعذَّر بث محتوى <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">تم حظر عملية تنزيل غير آمنة.</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
+<translation id="5222710719845250566">استعادة النافذة</translation>
 <translation id="5225324770654022472">إظهار اختصار التطبيقات</translation>
 <translation id="52254442782792731">لم يتم ضبط الإعداد الحالي لمستوى ظهور الجهاز.</translation>
 <translation id="5225463052809312700">تفعيل الكاميرا</translation>
@@ -7012,7 +7018,6 @@
 <translation id="6112727384379533756">إضافة تذكرة</translation>
 <translation id="6113434369102685411">‏اضبط محرك البحث التلقائي لمتصفّح Chrome ومشغِّل التطبيقات في <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6113832060210023016">مفتاح مشغِّل التطبيقات + النقر</translation>
-<translation id="6116004140911290070">‏تفعيل "المهارات" في Chrome</translation>
 <translation id="6116921718742659598">تغيير إعدادات اللغة والإدخال</translation>
 <translation id="6119008366402292080">ما مِن طابعة متوفّرة</translation>
 <translation id="6119972796024789243">تصحيح الألوان</translation>
@@ -7227,6 +7232,7 @@
 <translation id="6266984048393265562">تخصيص الملف الشخصي</translation>
 <translation id="6267166720438879315">اختَر شهادة للمصادقة مع <ph name="HOST_NAME" />.</translation>
 <translation id="6268252012308737255">فتح باستخدام <ph name="APP" /></translation>
+<translation id="6269392226729599142">استعادة وضع "تقسيم العرض"</translation>
 <translation id="6270309713620950855">تذكير تلقائي بأنّ الصوت مكتوم</translation>
 <translation id="6270391203985052864">السماح للمواقع الإلكترونية بطلب إرسال إشعارات</translation>
 <translation id="6270770586500173387">إرسال <ph name="BEGIN_LINK1" />معلومات النظام والتطبيق<ph name="END_LINK1" />، و<ph name="BEGIN_LINK2" />المقاييس<ph name="END_LINK2" /></translation>
@@ -8978,6 +8984,7 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">مساحة التخزين والطاقة واللغة</translation>
 <translation id="7551059576287086432">لم يتم تحميل <ph name="FILE_NAME" /> بنجاح</translation>
+<translation id="7551303452605464331">&amp;استعادة وضع "تقسيم العرض"</translation>
 <translation id="7551643184018910560">تثبيت في الرف</translation>
 <translation id="7552191410769096467">لمشاركة مجموعات علامات التبويب أو الانضمام إليها، يحب تسجيل الدخول وتفعيل المزامنة</translation>
 <translation id="7552196109089297786">‏تسجيل الخروج من Microsoft</translation>
@@ -10427,7 +10434,6 @@
 <translation id="8596540852772265699">ملفات مخصصة</translation>
 <translation id="8597845839771543242">شكل الموقع:</translation>
 <translation id="8598249292448297523">طباعة</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{إدارة الإضافة}zero{إدارة الإضافات}two{إدارة الإضافتين}few{إدارة الإضافات}many{إدارة الإضافات}other{إدارة الإضافات}}</translation>
 <translation id="8599681327221583254">لم يتم ضبط سياسة واحدة أو أكثر بشكل صحيح. يُرجى التواصل مع المشرف.</translation>
 <translation id="8600362954032151088">يمكنك إدارة كلمات المرور ومفاتيح المرور من خلال "<ph name="GOOGLE_PASSWORD_MANAGER" />"</translation>
 <translation id="8602851771975208551">‏أضاف برنامج آخر بجهاز الكمبيوتر تطبيقًا قد يؤدي إلى تغيير طريقة عمل Chrome.</translation>
@@ -10823,7 +10829,6 @@
 <translation id="887292602123626481">مزيد من المعلومات حول محرّكات البحث التلقائية</translation>
 <translation id="8873075098103007382">تنظيم المهام من خلال مجموعات علامات التبويب</translation>
 <translation id="8874341931345877644">البث على جهاز:</translation>
-<translation id="8874448314264883207">تم إيقاف "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8874647982044395866">حيوي</translation>
 <translation id="8874790741333031443">جرِّب السماح مؤقتًا باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية. هذا يعني أنّك ستحظى بمستوى حماية أقل أثناء التصفّح، غير أنّ ميزات الموقع الإلكتروني ستعمل غالبًا على النحو المتوقَّع.</translation>
 <translation id="8875221558267407626">تلخيص المحتوى أو تبسيط المصطلحات المعقدة أو طرح الأسئلة</translation>
@@ -11133,6 +11138,7 @@
 <translation id="9087949559523851360">إضافة مستخدم محظور</translation>
 <translation id="9088234649737575428">تم حظر <ph name="PLUGIN_NAME" /> بموجب سياسة المؤسسة</translation>
 <translation id="90885733430013283">Wi-Fi SSID</translation>
+<translation id="9088578317174654338">‏تم إغلاق بطاقة Gemini السفلية.</translation>
 <translation id="9089416786594320554">أساليب الإدخال</translation>
 <translation id="9089959054554410481">تغيير اتجاه التمرير على لوحة اللمس</translation>
 <translation id="9090044809052745245">كيفية عرض جهازك للآخرين</translation>

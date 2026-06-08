@@ -1896,7 +1896,6 @@
 <translation id="2343160676229467122">Екстензиите не се дозволени на <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Национален парк „Карпести Планини“</translation>
 <translation id="2343747224442182863">Фокусирајте ја картичкава</translation>
-<translation id="2343971313330854480">Најдете ја вашата датотека во папката <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Старите верзии на апликациите на Chrome нема да се отвораат по декември 2022 година. Контактирајте со администраторот за да ажурирате на нова верзија или отстранете ја апликацијава.</translation>
 <translation id="2348176352564285430">Апликација: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Побарана е дозвола. Притиснете Ctrl + „Напред“ за да одговорите</translation>
@@ -3583,7 +3582,6 @@
 <translation id="3569617221227793022">Во моментов, временската зона е поставена на <ph name="TIME_ZONE_ENTRY" />. Администраторот управува со поставкава.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> може да ги прегледува следниве датотеки и папки</translation>
 <translation id="3571734092741541777">Поставете</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> екстензии се исклучени</translation>
 <translation id="3575121482199441727">Дозволи за овој сајт</translation>
 <translation id="3575224072358507281">да ги прибира резултатите за IP-адресата и мерењето на мрежата за Measurement Lab, согласно со својата политика за приватност (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Успешно е инсталирана</translation>
@@ -5765,7 +5763,6 @@
 <translation id="5149602533174716626">Копирај видеокадар</translation>
 <translation id="5150254825601720210">Име на Netscape-сертификат за SSL-сервер</translation>
 <translation id="5151354047782775295">Ослободете простор на дискот или избрани податоци може автоматски да се избришат</translation>
-<translation id="5152381187352661267">Вештини во Chrome</translation>
 <translation id="5153074793829217329">Користете ја вашата тастатура или нумеричка тастатура за да го контролирате курсорот на глувчето</translation>
 <translation id="5153234146675181447">Заборави го телефонот</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7024,7 +7021,6 @@
 <translation id="6112727384379533756">Додајте билет</translation>
 <translation id="6113434369102685411">Поставете го стандардниот пребарувач за прелистувачот Chrome и стартерот на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">стартер + клик</translation>
-<translation id="6116004140911290070">Овозможете ја „Вештини“ во Chrome</translation>
 <translation id="6116921718742659598">Промени поставки за јазик и внесување...</translation>
 <translation id="6119008366402292080">Не е достапен печатач</translation>
 <translation id="6119972796024789243">Корекција на боите</translation>
@@ -10431,7 +10427,6 @@
 <translation id="8596540852772265699">Приспособени датотеки</translation>
 <translation id="8597845839771543242">Формат на својството:</translation>
 <translation id="8598249292448297523">печатење</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Управувајте со екстензијата}one{Управувајте со екстензиите}other{Управувајте со екстензиите}}</translation>
 <translation id="8599681327221583254">Едно или повеќе правила не се правилно конфигурирани. Контактирајте со администраторот</translation>
 <translation id="8600362954032151088">Управувајте со вашите лозинки и криптографски клучеви во <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Друга програма на компјутерот додаде апликација која може да промени како работи Chrome.</translation>
@@ -10827,7 +10822,6 @@
 <translation id="887292602123626481">Дознајте повеќе за стандардните пребарувачи</translation>
 <translation id="8873075098103007382">Останете организирани со групи картички</translation>
 <translation id="8874341931345877644">Емитувај на уред:</translation>
-<translation id="8874448314264883207">Екстензијата „<ph name="EXTENSION_NAME" />“ е исклучена</translation>
 <translation id="8874647982044395866">Органско</translation>
 <translation id="8874790741333031443">Обидете се со привремено дозволување колачиња од трети страни, што значи помала заштита при прелистување, но поголема веројатност функциите на сајтот да работат според очекувањата.</translation>
 <translation id="8875221558267407626">Резимирајте содржини, поедноставувајте сложени текстови или поставувајте прашања</translation>

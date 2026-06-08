@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">Her kan du se din historik</translation>
 <translation id="1273937721055267968">Bloker <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">Aktivér notifikationer med tips</translation>
-<translation id="1283039547216852943">Tryk for at udvide</translation>
 <translation id="1289129165308566697">Se din historik på andre enheder</translation>
 <translation id="129553762522093515">Senest lukkede</translation>
 <translation id="1298077576058087471">Spar op til 60 % data, og læs dagens nyheder</translation>
@@ -1159,7 +1158,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="59577092665511740">Vælg en konto.</translation>
 <translation id="5958275228015807058">Find dine filer og sider i Downloads</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome forhindrede et website, du ikke har besøgt for nylig, i at sende dig notifikationer}one{Chrome forhindrede et website, du ikke har besøgt for nylig, i at sende dig notifikationer}other{Chrome forhindrede websites, du ikke har besøgt for nylig, i at sende dig notifikationer}}</translation>
-<translation id="5962718611393537961">Tryk for at skjule</translation>
 <translation id="5964869237734432770">Stop billedbeskrivelser</translation>
 <translation id="5972844218283131174">Fravælg alle</translation>
 <translation id="5975083100439434680">Zoom ud</translation>

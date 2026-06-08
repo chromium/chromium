@@ -1387,6 +1387,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3158539265159265653">Dysk</translation>
 <translation id="3162070126914310576">Nie można teraz zarejestrować tego urządzenia, ponieważ jednostka organizacyjna osiągnęła wstępny limit rejestracji. Aby uzyskać pomoc, skontaktuj się z administratorem.</translation>
 <translation id="3162559335345991374">Sieć Wi-Fi, której używasz, może wymagać otwarcia strony logowania.</translation>
+<translation id="316542773973815724">Nawigacja</translation>
 <translation id="316638481603975524">Może prosić o instalację aplikacji internetowych</translation>
 <translation id="3166788340998560642">Chrome zaproponuje zapisanie tego elementu w usłudze <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> przy następnym użyciu</translation>
 <translation id="3168744840365648658">Sprzęt radiowy</translation>
@@ -3759,7 +3760,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6893057134494550310">Folia do laminowania</translation>
 <translation id="6893204630281237373">Aby wyłączyć aplikację płatniczą w Chrome, otwórz <ph name="BEGIN_LINK1" />ustawienia płatności<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Karta została potwierdzona</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> z <ph name="NUM_MATCHES_IN_GROUP" /> w grupie <ph name="GROUP_HEADER" />.</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6897140037006041989">Klient</translation>
 <translation id="6898699227549475383">Organizacja (O)</translation>
@@ -4123,7 +4123,6 @@ Dodatkowe informacje:
 <translation id="7450577240311017924">Przycisk Zarządzaj synchronizacją; aktywuj, aby zarządzać informacjami, które mają być synchronizowane w ustawieniach Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> o tym problemie.</translation>
 <translation id="745208957946308667">Gra z dinozaurem. Aby zagrać, naciśnij spację</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> z <ph name="NUM_MATCHES_IN_GROUP" /> w grupie <ph name="GROUP_HEADER" />.</translation>
 <translation id="7453032093368223821">Zarządzaj innymi danymi</translation>
 <translation id="7453849010505253492">Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />, ponieważ używa certyfikatu bezpieczeństwa, który nie jest zaufany przez Chrome ani konfigurację systemu do szyfrowania ruchu internetowego. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Wyświetl certyfikat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Konto Cloud</translation>

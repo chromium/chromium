@@ -1896,7 +1896,6 @@
 <translation id="2343160676229467122">Розширення на сайті <ph name="SITE_NAME" /> заборонено</translation>
 <translation id="2343390523044483367">Національний парк "Рокі-Маунтінc"</translation>
 <translation id="2343747224442182863">Виділити цю вкладку</translation>
-<translation id="2343971313330854480">Знайдіть файл у папці "<ph name="FEATURE_NAME" />"</translation>
 <translation id="234559068082989648">Старі версії додатків Chrome не відкриватимуться після грудня 2022 року. Зв’яжіться з адміністратором, щоб оновити додаток або вилучити його.</translation>
 <translation id="2348176352564285430">Додаток: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Потрібен дозвіл. Натисніть Ctrl + стрілку вперед, щоб відповісти</translation>
@@ -3583,7 +3582,6 @@
 <translation id="3569617221227793022">Зараз вибрано часовий пояс <ph name="TIME_ZONE_ENTRY" />. Цим налаштуванням керує адміністратор.</translation>
 <translation id="3569682580018832495">Сайт <ph name="ORIGIN" /> може переглядати вказані нижче файли й папки</translation>
 <translation id="3571734092741541777">Налаштувати</translation>
-<translation id="3572031449439748861">Вимкнено стільки розширень: <ph name="NUM_EXTENSIONS" /></translation>
 <translation id="3575121482199441727">Дозволити для цього сайту</translation>
 <translation id="3575224072358507281">збирати ІР-адреси й результати вимірювань мережі для Measurement Lab відповідно до політики конфіденційності (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Установлено</translation>
@@ -5764,7 +5762,6 @@
 <translation id="5149602533174716626">Копіюват&amp;и кадр відео</translation>
 <translation id="5150254825601720210">Ім'я SSL-сервера сертифіката Netscape</translation>
 <translation id="5151354047782775295">Звільніть місце на диску, інакше деякі дані буде автоматично видалено</translation>
-<translation id="5152381187352661267">Функції в Chrome</translation>
 <translation id="5153074793829217329">Керувати курсором миші за допомогою цифрової клавіатури або інших клавіш</translation>
 <translation id="5153234146675181447">Забути телефон</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7019,7 +7016,6 @@
 <translation id="6112727384379533756">Додати квиток</translation>
 <translation id="6113434369102685411">Налаштуйте пошукову систему за умовчанням для веб-переглядача Chrome і Панелі запуску <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">клавіша Панелі запуску + клік</translation>
-<translation id="6116004140911290070">Увімкнути функції в Chrome</translation>
 <translation id="6116921718742659598">Змінити налаштування мови та введення</translation>
 <translation id="6119008366402292080">Немає доступних принтерів</translation>
 <translation id="6119972796024789243">Корекція кольору</translation>
@@ -10430,7 +10426,6 @@
 <translation id="8596540852772265699">Нетипові файли</translation>
 <translation id="8597845839771543242">Формат властивості:</translation>
 <translation id="8598249292448297523">друк</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Керувати розширенням}one{Керувати розширеннями}few{Керувати розширеннями}many{Керувати розширеннями}other{Керувати розширеннями}}</translation>
 <translation id="8599681327221583254">Принаймні одне правило налаштовано неправильно. Зв’яжіться з адміністратором</translation>
 <translation id="8600362954032151088">Керуйте паролями й ключами доступу в сервісі <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Інша програма на вашому комп’ютері додала програму, яка може змінити роботу Chrome.</translation>
@@ -10826,7 +10821,6 @@
 <translation id="887292602123626481">Докладніше про пошукові системи за умовчанням</translation>
 <translation id="8873075098103007382">Групуйте вкладки, щоб підтримувати порядок</translation>
 <translation id="8874341931345877644">Транслюйте на пристрій:</translation>
-<translation id="8874448314264883207">Розширення <ph name="EXTENSION_NAME" /> вимкнено</translation>
 <translation id="8874647982044395866">Органічний</translation>
 <translation id="8874790741333031443">Спробуйте тимчасово дозволити сторонні файли cookie. Це зменшить рівень захисту під час перегляду, але функції сайту з більшою імовірністю працюватимуть належним чином.</translation>
 <translation id="8875221558267407626">Резюмуйте контент, створюйте перекази текстів простими словами й ставте запитання</translation>

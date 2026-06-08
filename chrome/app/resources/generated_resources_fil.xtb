@@ -1898,7 +1898,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2343160676229467122">Hindi pinapayagan ang mga extension sa <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Rocky Mountains National Park</translation>
 <translation id="2343747224442182863">I-focus ang Tab na Ito</translation>
-<translation id="2343971313330854480">Hanapin ang iyong file sa folder na <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Hindi na bubukas ang mga lumang bersyon ng Chrome Apps pagkatapos ng Disyembre 2022. Makipag-ugnayan sa iyong administrator para mag-update sa bagong bersyon o alisin ang app na ito.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Humiling ng pahintulot, pindutin ang Ctrl + Forward para tumugon</translation>
@@ -3588,7 +3587,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3569617221227793022">Kasalukuyang nakatakda ang time zone sa <ph name="TIME_ZONE_ENTRY" />. Pinapamahalaan ng iyong administrator ang setting na ito.</translation>
 <translation id="3569682580018832495">Puwedeng tingnan ng <ph name="ORIGIN" /> ang mga sumusunod na file at folder</translation>
 <translation id="3571734092741541777">I-set up</translation>
-<translation id="3572031449439748861">In-off ang <ph name="NUM_EXTENSIONS" /> (na) extension</translation>
 <translation id="3575121482199441727">Payagan para sa site na ito</translation>
 <translation id="3575224072358507281">Kolektahin ang IP address at mga resulta sa pagsukat ng network para sa Measurement Lab, alinsunod sa kanilang patakaran sa privacy (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Matagumpay na na-install</translation>
@@ -5773,7 +5771,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5149602533174716626">Kop&amp;yahin ang Video Frame</translation>
 <translation id="5150254825601720210">Pangalan ng Server ng Netscape Certificate SSL</translation>
 <translation id="5151354047782775295">Magbakante ng espasyo sa disk o pumili ng data na maaaring awtomatikong i-delete</translation>
-<translation id="5152381187352661267">Mga Kasanayan sa Chrome</translation>
 <translation id="5153074793829217329">Gamitin ang iyong keyboard o numeric na keypad para kontrolin ang cursor ng mouse mo</translation>
 <translation id="5153234146675181447">Kalimutan ang telepono</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7033,7 +7030,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6112727384379533756">Magdagdag ng ticket</translation>
 <translation id="6113434369102685411">Itakda ang iyong default na search engine para sa Chrome browser at <ph name="DEVICE_TYPE" /> Launcher</translation>
 <translation id="6113832060210023016">launcher + pag-click</translation>
-<translation id="6116004140911290070">I-enable ang Mga Kasanayan sa Chrome</translation>
 <translation id="6116921718742659598">Baguhin ang mga setting ng wika at input</translation>
 <translation id="6119008366402292080">Walang available na printer</translation>
 <translation id="6119972796024789243">Pagtatama ng kulay</translation>
@@ -10444,7 +10440,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8596540852772265699">Mga Custom na File</translation>
 <translation id="8597845839771543242">Format ng property:</translation>
 <translation id="8598249292448297523">mag-print</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Pamahalaan ang extension}one{Pamahalaan ang mga extension}other{Pamahalaan ang mga extension}}</translation>
 <translation id="8599681327221583254">Isa o higit pang patakaran ang hindi wastong naka-configure. Makipag-ugnayan sa iyong administrator</translation>
 <translation id="8600362954032151088">Pamahalaan ang iyong mga password at passkey sa <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Ang isa pang program sa iyong computer ay nagdagdag ng app na maaaring magpabago sa paraan ng paggana ng Chrome.</translation>
@@ -10841,7 +10836,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="887292602123626481">Matuto pa tungkol sa mga default na search engine</translation>
 <translation id="8873075098103007382">Manatiling organisado gamit ang mga grupo ng tab</translation>
 <translation id="8874341931345877644">Mag-cast sa isang device:</translation>
-<translation id="8874448314264883207">In-off ang "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8874647982044395866">Organic</translation>
 <translation id="8874790741333031443">Subukang payagan nang pansamantala ang third-party na cookies, na nangangahulugang mas mahina ang proteksyon sa pag-browse pero mas malamang na gumana ang mga feature ng site gaya ng inaasahan.</translation>
 <translation id="8875221558267407626">Magbuod ng content, pasimplehin ang mga pahayag na hindi madaling maunawaan, o magtanong</translation>

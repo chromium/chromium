@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">Leiate oma ajaloo siit</translation>
 <translation id="1273937721055267968">Blokeeri <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">Lülita nõuandemärguanded sisse</translation>
-<translation id="1283039547216852943">Laiendamiseks puudutage</translation>
 <translation id="1289129165308566697">Vaadake oma ajalugu teistes seadmetes</translation>
 <translation id="129553762522093515">Viimati suletud</translation>
 <translation id="1298077576058087471">Säästke kuni 60% andmemahtu, lugege tänaseid uudiseid</translation>
@@ -1159,7 +1158,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="59577092665511740">Valige konto.</translation>
 <translation id="5958275228015807058">Leidke oma failid ja lehed jaotisest Allalaadimised</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome peatas saidil, mida te pole hiljuti külastanud, märguannete saatmise.}other{Chrome peatas saitidel, mida te pole hiljuti külastanud, märguannete saatmise.}}</translation>
-<translation id="5962718611393537961">Ahendamiseks puudutage</translation>
 <translation id="5964869237734432770">Piltide kirjelduste peatam.</translation>
 <translation id="5972844218283131174">Tühista kõik valikud</translation>
 <translation id="5975083100439434680">Suumib välja</translation>

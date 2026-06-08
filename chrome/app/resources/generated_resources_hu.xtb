@@ -1894,7 +1894,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2343160676229467122">A bővítmények nincsenek engedélyezve itt: <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Sziklás-hegység Nemzeti Park</translation>
 <translation id="2343747224442182863">Fókusz erre a lapra</translation>
-<translation id="2343971313330854480">A fájlt a(z) <ph name="FEATURE_NAME" /> mappában találja</translation>
 <translation id="234559068082989648">A Chrome-alkalmazások régi verziói 2022 decembere után nem nyílnak majd meg. Kérje meg a rendszergazdát, hogy frissítsen az új verzióra, vagy távolítsa el ezt az alkalmazást.</translation>
 <translation id="2348176352564285430">Alkalmazás: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Engedély kérelmezve, a válaszhoz nyomja le a Ctrl + Előre billentyűkombinációt</translation>
@@ -3581,7 +3580,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3569617221227793022">A jelenlegi időzóna: <ph name="TIME_ZONE_ENTRY" />. Ezt a beállítást a rendszergazdája kezeli.</translation>
 <translation id="3569682580018832495">A(z) <ph name="ORIGIN" /> megtekintheti a következő fájlokat és mappákat</translation>
 <translation id="3571734092741541777">Beállítás</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> bővítmény kikapcsolva</translation>
 <translation id="3575121482199441727">Engedélyezés ezen a webhelyen</translation>
 <translation id="3575224072358507281">Gyűjtse a Measurement Lab IP-cím- és hálózatmérési eredményeit a szolgáltatás adatvédelmi irányelveinek megfelelően (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Sikeresen telepítve</translation>
@@ -5762,7 +5760,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5149602533174716626">Videóképkocka másolása</translation>
 <translation id="5150254825601720210">Netscape tanúsítvány - SSL-szerver neve</translation>
 <translation id="5151354047782775295">Szabadítson fel tárhelyet, vagy bizonyos adatok automatikusan törlődhetnek</translation>
-<translation id="5152381187352661267">Készségek a Chrome-ban</translation>
 <translation id="5153074793829217329">Az egérkurzor vezérlése a billentyűzettel vagy a numerikus billentyűzettel</translation>
 <translation id="5153234146675181447">Telefon elfelejtése</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7022,7 +7019,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6112727384379533756">Jegy felvétele</translation>
 <translation id="6113434369102685411">Állítsa be az alapértelmezett keresőmotort a Chrome böngészőhöz és a(z) <ph name="DEVICE_TYPE" /> indítójához</translation>
 <translation id="6113832060210023016">indító + kattintás</translation>
-<translation id="6116004140911290070">Készségek engedélyezése a Chrome-ban</translation>
 <translation id="6116921718742659598">Nyelvi és beviteli beállítások módosítása</translation>
 <translation id="6119008366402292080">Nincs rendelkezésre álló nyomtató</translation>
 <translation id="6119972796024789243">Színjavítás</translation>
@@ -10427,7 +10423,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8596540852772265699">Egyéni fájlok</translation>
 <translation id="8597845839771543242">Tulajdonság formátuma:</translation>
 <translation id="8598249292448297523">nyomtatás</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Bővítmény kezelése}other{Bővítmények kezelése}}</translation>
 <translation id="8599681327221583254">Legalább egy házirend nem megfelelően van beállítva. Forduljon a rendszergazdához.</translation>
 <translation id="8600362954032151088">Jelszavait és azonosítókulcsait a(z) <ph name="GOOGLE_PASSWORD_MANAGER" /> szolgáltatásban kezelheti</translation>
 <translation id="8602851771975208551">A számítógépen lévő egyik program olyan alkalmazást adott hozzá, amely módosíthatja a Chrome működését.</translation>
@@ -10823,7 +10818,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="887292602123626481">További információ az alapértelmezett keresőmotorokról</translation>
 <translation id="8873075098103007382">Rendszerezés lapcsoportokkal</translation>
 <translation id="8874341931345877644">Átküldés egyetlen eszközre:</translation>
-<translation id="8874448314264883207">„<ph name="EXTENSION_NAME" />” kikapcsolva</translation>
 <translation id="8874647982044395866">Organikus</translation>
 <translation id="8874790741333031443">Próbálja meg átmenetileg engedélyezni a harmadik felektől származó cookie-kat, ami kisebb böngészési védelmet jelent, de a webhelyfunkciók nagyobb valószínűséggel működnek majd megfelelően.</translation>
 <translation id="8875221558267407626">Összefoglalhatja a tartalmat, egyszerűsítheti a bonyolult nyelvezetet, vagy kérdéseket tehet fel</translation>

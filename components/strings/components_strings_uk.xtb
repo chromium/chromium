@@ -1387,6 +1387,7 @@
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162070126914310576">Зараз не можна зареєструвати цей пристрій, оскільки ваш організаційний підрозділ досяг ліміту для початкової реєстрації. Зверніться по допомогу до свого адміністратора.</translation>
 <translation id="3162559335345991374">Можливо, щоб під’єднатися до цієї мережі Wi-Fi, потрібно відвідати її сторінку входу.</translation>
+<translation id="316542773973815724">Навігація</translation>
 <translation id="316638481603975524">Може просити дозвіл на встановлення вебдодатків</translation>
 <translation id="3166788340998560642">Chrome запропонує зберегти цю інформацію в сервісі <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> наступного разу, коли ви скористаєтеся нею.</translation>
 <translation id="3168744840365648658">Радіотехнічне обладнання</translation>
@@ -3759,7 +3760,6 @@
 <translation id="6893057134494550310">Плівка для ламінування</translation>
 <translation id="6893204630281237373">Щоб вимкнути платіжний додаток у Chrome, перейдіть у <ph name="BEGIN_LINK1" />налаштування платежів<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Дані картки підтверджено</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> з <ph name="NUM_MATCHES_IN_GROUP" /> у групі "<ph name="GROUP_HEADER" />".</translation>
 <translation id="6896758677409633944">Копіювати</translation>
 <translation id="6897140037006041989">Агент користувача</translation>
 <translation id="6898699227549475383">Організація (О)</translation>
@@ -4123,7 +4123,6 @@
 <translation id="7450577240311017924">Кнопка "Керувати синхронізацією"; активуйте, щоб вибрати в налаштуваннях Chrome, яку інформацію синхронізувати</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />дізнатися більше<ph name="END_LINK" /> про цю проблему.</translation>
 <translation id="745208957946308667">Гра Dino: натисніть пробіл, щоб грати</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> з <ph name="NUM_MATCHES_IN_GROUP" /> у групі "<ph name="GROUP_HEADER" />".</translation>
 <translation id="7453032093368223821">Керувати іншими даними</translation>
 <translation id="7453849010505253492">Серверу не вдалося підтвердити, що це домен <ph name="DOMAIN" />, оскільки він використовує сертифікат безпеки, який Chrome або ваша системна конфігурація для шифрування вебтрафіку не вважає надійним. Можливо, сервер налаштовано неправильно або хтось намагається перехопити ваше з’єднання. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Переглянути сертифікат<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Хмарний обліковий запис</translation>

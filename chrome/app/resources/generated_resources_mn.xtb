@@ -1894,7 +1894,6 @@
 <translation id="2343160676229467122">Өргөтгөлийг <ph name="SITE_NAME" /> дээр зөвшөөрдөггүй</translation>
 <translation id="2343390523044483367">Роки Маунтэйнс байгалийн цогцолборт газар</translation>
 <translation id="2343747224442182863">Энэ табын фокусыг тохируулах</translation>
-<translation id="2343971313330854480"><ph name="FEATURE_NAME" /> фолдероос файлаа олно уу</translation>
 <translation id="234559068082989648">Chrome Аппын хуучин хувилбарууд 2022 оны 12-р сараас хойш нээгдэхгүй. Шинэ хувилбар руу шинэчлэх эсвэл энэ аппыг устгахын тулд администратортайгаа холбогдоно уу.</translation>
 <translation id="2348176352564285430">Апп: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Зөвшөөрлийн хүсэлт тавьсан. Хариу өгөхийн тулд Ctrl + Forward дээр дарна уу</translation>
@@ -3584,7 +3583,6 @@
 <translation id="3569617221227793022">Цагийн бүсийг одоогоор <ph name="TIME_ZONE_ENTRY" /> болгож тохируулсан. Энэ тохиргоог танай администратор удирддаг.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> дараах файл болон фолдерыг үзэх боломжтой</translation>
 <translation id="3571734092741541777">Тохиргоо хийх.</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> өргөтгөлийг унтраасан</translation>
 <translation id="3575121482199441727">Энэ сайтад зориулж зөвшөөрөх</translation>
 <translation id="3575224072358507281">Measurement Lab-н нууцлалын бодлогын (measurementlab.net/privacy) дагуу түүнд зориулж IP хаяг, сүлжээний хэмжилтийн үр дүнг цуглуулах</translation>
 <translation id="3576324189521867626">Амжилттай суулгасан</translation>
@@ -5768,7 +5766,6 @@
 <translation id="5149602533174716626">Видеоны фреймийг хуулах</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Серверийн нэр</translation>
 <translation id="5151354047782775295">Дискний багтаамжийг нэмэгдүүлнэ үү. Ингээгүй тохиолдолд сонгох өгөгдөл автоматаар устах болно</translation>
-<translation id="5152381187352661267">Chrome-н Ур чадвар</translation>
 <translation id="5153074793829217329">Хулганын курсороо хянахад гар эсвэл тоон товчлуураа ашиглана уу</translation>
 <translation id="5153234146675181447">Утсыг мартах</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7028,7 +7025,6 @@
 <translation id="6112727384379533756">Тасалбар нэмэх</translation>
 <translation id="6113434369102685411">Chrome хөтөч болон <ph name="DEVICE_TYPE" />-н эхлүүлэгчид өгөгдмөл хайлтын системээ тохируулна уу</translation>
 <translation id="6113832060210023016">эхлүүлэгч + товшилт</translation>
-<translation id="6116004140911290070">Chrome-д Ур чадварыг идэвхжүүлэх</translation>
 <translation id="6116921718742659598">Хэл болон оролтын тохиргоог өөрчлөх</translation>
 <translation id="6119008366402292080">Боломжтой ямар ч хэвлэгч байхгүй</translation>
 <translation id="6119972796024789243">Өнгөний засвар</translation>
@@ -10434,7 +10430,6 @@
 <translation id="8596540852772265699">Энгийн файлууд</translation>
 <translation id="8597845839771543242">Өмчийн хэлбэр нь:</translation>
 <translation id="8598249292448297523">хэвлэл</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Өргөтгөлийг удирдах}other{Өргөтгөлүүдийг удирдах}}</translation>
 <translation id="8599681327221583254">Нэг эсвэл түүнээс олон бодлогыг зөв тохируулаагүй байна. Администратортайгаа холбогдоно уу</translation>
 <translation id="8600362954032151088">Нууц үг, нэвтрэх түлхүүрүүдээ <ph name="GOOGLE_PASSWORD_MANAGER" />-д удирдах</translation>
 <translation id="8602851771975208551">Таны компьютерт өөр нэг программ нэмэгдсэн бөгөөд энэ нь Chrome-ийн ажиллах зарчмыг өөрчилж болох юм.</translation>
@@ -10828,7 +10823,6 @@
 <translation id="887292602123626481">Өгөгдмөл хайлтын системийн талаар нэмэлт мэдээлэл авах</translation>
 <translation id="8873075098103007382">Табын бүлгээр цэгцтэй байгаарай</translation>
 <translation id="8874341931345877644">Төхөөрөмжид дамжуулах:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />"-г унтраасан</translation>
 <translation id="8874647982044395866">Органик</translation>
 <translation id="8874790741333031443">Гуравдагч талын күүкинүүдийг түр зуур зөвшөөрч үзнэ үү. Энэ нь үзэх хамгаалалт багасах хэдий ч сайтын онцлогууд тооцоолсны дагуу ажиллах магадлал өндөр байна гэсэн үг юм.</translation>
 <translation id="8875221558267407626">Контентыг хураангуйлах, нарийн төвөгтэй үг хэллэгийг хялбарчлах, асуулт асуух</translation>

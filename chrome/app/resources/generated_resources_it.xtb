@@ -1882,7 +1882,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2343160676229467122">Le estensioni non sono consentite su <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Parco nazionale delle Montagne Rocciose</translation>
 <translation id="2343747224442182863">Imposta stato attivo su questa scheda</translation>
-<translation id="2343971313330854480">Trova il file nella cartella <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Le versioni precedenti delle app di Chrome non si apriranno più dopo dicembre 2022. Contatta l'amministratore per eseguire l'aggiornamento a una nuova versione o per rimuovere questa app.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Autorizzazione richiesta, premi Ctrl + Avanti per rispondere</translation>
@@ -3569,7 +3568,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3569617221227793022">Il fuso orario è attualmente impostato su <ph name="TIME_ZONE_ENTRY" />. Questa impostazione è gestita dall'amministratore.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> può visualizzare i file e le cartelle indicati di seguito</translation>
 <translation id="3571734092741541777">Configura</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> estensioni sono state disattivate</translation>
 <translation id="3575121482199441727">Consenti per questo sito</translation>
 <translation id="3575224072358507281">Raccogliere i risultati della misurazione di rete e dell'indirizzo IP per Measurement Lab, in base alle norme sulla privacy (measurementlab.net/privacy) di quest'ultimo</translation>
 <translation id="3576324189521867626">Installata</translation>
@@ -5750,7 +5748,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5149602533174716626">Copia frame</translation>
 <translation id="5150254825601720210">Nome server SSL certificato Netscape</translation>
 <translation id="5151354047782775295">Libera spazio sul disco, altrimenti alcuni dati potrebbero essere eliminati automaticamente</translation>
-<translation id="5152381187352661267">Skill in Chrome</translation>
 <translation id="5153074793829217329">Usa la tastiera o un tastierino numerico per controllare il cursore del mouse</translation>
 <translation id="5153234146675181447">Elimina telefono</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7006,7 +7003,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6112727384379533756">Aggiungi una richiesta</translation>
 <translation id="6113434369102685411">Imposta il tuo motore di ricerca predefinito per il browser Chrome e Avvio app di <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">Avvio app + clic</translation>
-<translation id="6116004140911290070">Attiva le skill in Chrome</translation>
 <translation id="6116921718742659598">Modifica impostazioni della lingua e di immissione</translation>
 <translation id="6119008366402292080">Nessuna stampante disponibile</translation>
 <translation id="6119972796024789243">Correzione del colore</translation>
@@ -10412,7 +10408,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8596540852772265699">File personalizzati</translation>
 <translation id="8597845839771543242">Formato proprietà:</translation>
 <translation id="8598249292448297523">Stampa</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Gestisci estensione}other{Gestisci estensioni}}</translation>
 <translation id="8599681327221583254">Una o più policy non sono configurate correttamente. Contatta l'amministratore.</translation>
 <translation id="8600362954032151088">Gestisci le tue password e passkey in <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Un altro programma sul computer ha aggiunto un'applicazione che potrebbe modificare il funzionamento di Chrome.</translation>
@@ -10808,7 +10803,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="887292602123626481">Scopri di più sui motori di ricerca predefiniti</translation>
 <translation id="8873075098103007382">Organizza tutto con i gruppi di schede</translation>
 <translation id="8874341931345877644">Trasmetti a un dispositivo:</translation>
-<translation id="8874448314264883207">L'estensione "<ph name="EXTENSION_NAME" />" è stata disattivata</translation>
 <translation id="8874647982044395866">Biologico</translation>
 <translation id="8874790741333031443">Prova a consentire temporaneamente i cookie di terze parti. In questo modo avrai meno protezione durante la navigazione, ma è più probabile che le funzionalità del sito operino come previsto.</translation>
 <translation id="8875221558267407626">Riepiloga i contenuti, semplifica il linguaggio complesso o poni domande</translation>

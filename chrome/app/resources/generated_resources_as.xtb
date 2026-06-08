@@ -1893,7 +1893,6 @@
 <translation id="2343160676229467122"><ph name="SITE_NAME" />ত এক্সটেনশ্বনৰ অনুমতি দিয়া হোৱা নাই</translation>
 <translation id="2343390523044483367">ৰকী মাউণ্টেইন্‌ছ ৰাষ্ট্ৰীয় উদ্যান</translation>
 <translation id="2343747224442182863">এই টেবটোত ফ'কাছ কৰক</translation>
-<translation id="2343971313330854480"><ph name="FEATURE_NAME" /> ফ’ল্ডাৰত আপোনাৰ ফাইল বিচাৰি পাওক</translation>
 <translation id="234559068082989648">Chrome এপৰ পুৰণি সংস্কৰণসমূহ ২০২২ চনৰ ডিচেম্বৰৰ পৰা নুখুলিব। এটা নতুন সংস্কৰণলৈ আপডে’ট কৰিবলৈ অথবা এই এপ্‌টো আঁতৰাবলৈ আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="2348176352564285430">এপ্: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - অনুমতিৰ বাবে অনুৰোধ জনোৱা হৈছে, সঁহাৰি জনাবলৈ ক’ণ্ট্ৰল + ফৰৱাৰ্ডত টিপক</translation>
@@ -3580,7 +3579,6 @@
 <translation id="3569617221227793022">সময় মণ্ডল বৰ্তমান <ph name="TIME_ZONE_ENTRY" /> হিচাপে ছেট কৰা হৈছে। এই ছেটিংটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে।</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" />এ তলত দিয়া ফাইল আৰু ফ’ল্ডাৰসমূহ চাব পাৰে</translation>
 <translation id="3571734092741541777">ছেট আপ কৰক</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> এক্সটেনশ্বন অফ কৰা হৈছে</translation>
 <translation id="3575121482199441727">এই ছাইটটোৰ বাবে অনুমতি দিয়ক</translation>
 <translation id="3575224072358507281">Measurement Labৰ বাবে তাৰ গোপনীয়তাৰ নীতি (measurementlab.net/privacy) অনুসৰি আইপি ঠিকনা আৰু নেটৱৰ্কৰ জোখ-মাখৰ ফলাফল সংগ্ৰহ কৰক</translation>
 <translation id="3576324189521867626">সফলতাৰে ইনষ্টল কৰা হ’ল</translation>
@@ -5761,7 +5759,6 @@
 <translation id="5149602533174716626">ভিডিঅ’ৰ ফ্ৰে’ম প্ৰতিলিপি কৰক</translation>
 <translation id="5150254825601720210">Netscape প্ৰমাণপত্ৰ SSL ছার্ভাৰৰ নাম</translation>
 <translation id="5151354047782775295">ডিস্কৰ ঠাই খালী কৰক অন্যথা বাছনি কৰ ডেটা স্বয়ংক্ৰিয়ভাৱে মচা হ’ব</translation>
-<translation id="5152381187352661267">Chromeত দক্ষতা</translation>
 <translation id="5153074793829217329">আপোনাৰ মাউছৰ কাৰ্ছৰ নিয়ন্ত্ৰণ কৰিবলৈ আপোনাৰ কীব’ৰ্ড বা এখন সাংখ্যিক কীপেড ব্যৱহাৰ কৰক</translation>
 <translation id="5153234146675181447">ফ’নৰ জৰিয়াতে ব্যৱহাৰ কৰা সুবিধাসমূহ বাদ দিয়ক</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7020,7 +7017,6 @@
 <translation id="6112727384379533756">এটা টিকেট যোগ কৰক</translation>
 <translation id="6113434369102685411">Chrome ব্ৰাউজাৰ আৰু <ph name="DEVICE_TYPE" /> লঞ্চাৰৰ বাবে আপোনাৰ ডিফ’ল্ট সন্ধান ইঞ্জিন ছেট কৰক</translation>
 <translation id="6113832060210023016">লঞ্চাৰ + ক্লিক</translation>
-<translation id="6116004140911290070">Chromeত দক্ষতা সক্ষম কৰক</translation>
 <translation id="6116921718742659598">ভাষা আৰু ইনপুট ছেটিংসমূহ সলনি কৰক</translation>
 <translation id="6119008366402292080">কোনো প্ৰিণ্টাৰ উপলব্ধ নহয়</translation>
 <translation id="6119972796024789243">ৰং শুধৰণী</translation>
@@ -10427,7 +10423,6 @@
 <translation id="8596540852772265699">কাষ্টম ফাইল</translation>
 <translation id="8597845839771543242">সম্পদৰ ফৰ্মেট:</translation>
 <translation id="8598249292448297523">প্ৰিণ্ট কৰক</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{এক্সটেনশ্বন পৰিচালনা কৰক}one{এক্সটেনশ্বনসমূহ পৰিচালনা কৰক}other{এক্সটেনশ্বনসমূহ পৰিচালনা কৰক}}</translation>
 <translation id="8599681327221583254">এক অথবা একাধিক নীতি সঠিকভাৱে কনফিগাৰ কৰা হোৱা নাই। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক</translation>
 <translation id="8600362954032151088"><ph name="GOOGLE_PASSWORD_MANAGER" />ত আপোনাৰ পাছৱৰ্ড আৰু পাছকীসমূহ পৰিচালনা কৰক</translation>
 <translation id="8602851771975208551">আপোনাৰ কম্পিউটাৰৰ অন্য কোনো প্ৰ’গ্ৰেমে এটা এপ্‌ যোগ কৰিছে যিয়ে Chromeৰ কার্যপ্ৰণালী সলনি কৰিব পাৰে।</translation>
@@ -10823,7 +10818,6 @@
 <translation id="887292602123626481">ডিফ’ল্ট সন্ধানৰ ইঞ্জিনৰ বিষয়ে অধিক জানক</translation>
 <translation id="8873075098103007382">টেবৰ গোটৰ জৰিয়তে শৃংখলাবদ্ধ হৈ থাকক</translation>
 <translation id="8874341931345877644">ডিভাইচলৈ কাষ্ট কৰক:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" অফ কৰা হৈছে</translation>
 <translation id="8874647982044395866">জৈৱিক</translation>
 <translation id="8874790741333031443">তৃতীয় পক্ষৰ কুকিসমূহক অস্থায়ীভাৱে অনুমতি দি চাওক, যাৰ ফলত ব্ৰাউজিং সুৰক্ষিত হ’ব কিন্তু ছাইটৰ সুবিধাসমূহে আশা কৰা কাম কৰাৰ সম্ভাৱনা অধিক থাকে।</translation>
 <translation id="8875221558267407626">সমলৰ সাৰাংশ প্ৰস্তুত কৰক, জটিল ভাষা সৰল কৰক বা প্ৰশ্ন সোধক</translation>

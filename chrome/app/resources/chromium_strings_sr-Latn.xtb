@@ -53,7 +53,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="154404805518949443">Prijavi me u Chromium</translation>
 <translation id="1547469039832541117">Završava istaknuti zadatak.</translation>
 <translation id="1553461853655228091">Chromium traži dozvolu da pristupi kameri da bi napravio 3D mapu okruženja</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Ovaj dodatak više nije podržan. Chromium preporučuje da ga uklonite.}one{Ovi dodaci više nisu podržani. Chromium preporučuje da ih uklonite.}few{Ovi dodaci više nisu podržani. Chromium preporučuje da ih uklonite.}other{Ovi dodaci više nisu podržani. Chromium preporučuje da ih uklonite.}}</translation>
 <translation id="1562320819937089394">Zakači Chromium</translation>
 <translation id="1574377791422810894">Chromium alatke za bezbednost</translation>
 <translation id="1594928384848033697">Chromium želi da izbriše podatke Menadžera lozinki. Unesite lozinku za Windows da biste to omogućili.</translation>

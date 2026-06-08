@@ -1893,7 +1893,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2343160676229467122">Ekstenzije nisu dozvoljene na <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Nacionalni park Stjenovite planine</translation>
 <translation id="2343747224442182863">Fokusiraj ovu stranicu</translation>
-<translation id="2343971313330854480">Pronađite fajl u folderu <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Stare verzije Chromeovih aplikacija se neće moći otvarati nakon decembra 2022. Kontaktirajte administratora da ažurirate na novu verziju ili uklonite ovu aplikaciju.</translation>
 <translation id="2348176352564285430">Aplikacija: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Zatraženo je odobrenje. Pritisnite Ctrl + naprijed da odgovorite</translation>
@@ -3580,7 +3579,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3569617221227793022">Vremenska zona je trenutno postavljena na <ph name="TIME_ZONE_ENTRY" />. Ovom postavkom upravlja vaš administrator.</translation>
 <translation id="3569682580018832495">Web lokacija <ph name="ORIGIN" /> može pregledati sljedeće fajlove i foldere</translation>
 <translation id="3571734092741541777">Postavi</translation>
-<translation id="3572031449439748861">Ekstenzije su isključene (ukupno <ph name="NUM_EXTENSIONS" />)</translation>
 <translation id="3575121482199441727">Omogući za ovu web lokaciju</translation>
 <translation id="3575224072358507281">prikupljati rezultate IP adresa i mjerenja mreža za Measurement Lab u skladu s pravilima privatnosti ove kompanije (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Uspješno instalirano</translation>
@@ -5762,7 +5760,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5149602533174716626">Kop&amp;iraj kadar videozapisa</translation>
 <translation id="5150254825601720210">Naziv SSL servera za Netscape potvrde</translation>
 <translation id="5151354047782775295">Oslobodite prostor na disku ili će se određeni podaci automatski izbrisati</translation>
-<translation id="5152381187352661267">Vještine u Chromeu</translation>
 <translation id="5153074793829217329">Koristite tastaturu ili brojčanu telefonsku tastaturu da upravljate kursorom miša</translation>
 <translation id="5153234146675181447">Zaboravi telefon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7021,7 +7018,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6112727384379533756">Dodaj tiket</translation>
 <translation id="6113434369102685411">Postavite zadani pretraživač za preglednik Chrome i pokretač uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">pokretač + klik</translation>
-<translation id="6116004140911290070">Omogući vještine u Chromeu</translation>
 <translation id="6116921718742659598">Promijenite postavke jezika i unosa</translation>
 <translation id="6119008366402292080">Nijedan štampač nije dostupan</translation>
 <translation id="6119972796024789243">Ispravka boja</translation>
@@ -10431,7 +10427,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8596540852772265699">Prilagođeni fajlovi</translation>
 <translation id="8597845839771543242">Format atributa:</translation>
 <translation id="8598249292448297523">štampanje</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Upravljajte ekstenzijom}one{Upravljajte ekstenzijama}few{Upravljajte ekstenzijama}other{Upravljajte ekstenzijama}}</translation>
 <translation id="8599681327221583254">Jedno ili više pravila nije ispravno konfigurirano. Kontaktirajte administratora</translation>
 <translation id="8600362954032151088">Da upravljate lozinkama i pristupnim ključevima, idite na <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Drugi program na vašem računaru je dodao aplikaciju koja može promijeniti način na koji Chrome radi.</translation>
@@ -10827,7 +10822,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="887292602123626481">Saznajte više o zadanim pretraživačima</translation>
 <translation id="8873075098103007382">Budite organizirani uz grupe kartica</translation>
 <translation id="8874341931345877644">Emitirajte na uređaj:</translation>
-<translation id="8874448314264883207">Ekstenzija "<ph name="EXTENSION_NAME" />" je isključena</translation>
 <translation id="8874647982044395866">Organsko</translation>
 <translation id="8874790741333031443">Pokušajte privremeno dozvoliti kolačiće treće strane, što podrazumijeva manju zaštitu prilikom pregledanja, ali i veću vjerovatnost da će funkcije web lokacije funkcionirati prema očekivanjima.</translation>
 <translation id="8875221558267407626">Sažimajte sadržaje, pojednostavljujte složene tekstove ili postavljajte pitanja</translation>

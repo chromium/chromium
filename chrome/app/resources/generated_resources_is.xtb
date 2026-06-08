@@ -1896,7 +1896,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2343160676229467122">Viðbætur eru ekki leyfðar á <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Þjóðgarðurinn í Klettafjöllum</translation>
 <translation id="2343747224442182863">Setja þennan flipa í fókus</translation>
-<translation id="2343971313330854480">Finndu skrána þína í möppunni <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Þegar desember 2022 er liðinn verður ekki hægt að opna gamlar útgáfur Chrome forrita. Hafðu samband við stjórnandann til að uppfæra í nýja útgáfu eða fjarlægja þetta forrit.</translation>
 <translation id="2348176352564285430">Forrit: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Heimildar óskað, ýttu á Ctrl + Áfram til að svara</translation>
@@ -3583,7 +3582,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3569617221227793022">Tímabeltið er stillt á <ph name="TIME_ZONE_ENTRY" /> eins og er. Kerfisstjórinn þinn stjórnar þessari stillingu.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> getur skoðað eftirfarandi skrár og möppur</translation>
 <translation id="3571734092741541777">Setja upp</translation>
-<translation id="3572031449439748861">Slökkt var á <ph name="NUM_EXTENSIONS" /> viðbótum</translation>
 <translation id="3575121482199441727">Leyfa fyrir þetta vefsvæði</translation>
 <translation id="3575224072358507281">Safnað IP-tölum og mælingum netkerfisins fyrir Measurement Lab í samræmi við persónuverndarstefnu þeirra (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Uppsetning tókst</translation>
@@ -5765,7 +5763,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5149602533174716626">Afrita vídeóramma</translation>
 <translation id="5150254825601720210">SSL-þjónsheiti Netscape-vottorðs</translation>
 <translation id="5151354047782775295">Losaðu um geymslupláss eða veldu gögn sem má eyða sjálfkrafa</translation>
-<translation id="5152381187352661267">Færni í Chrome</translation>
 <translation id="5153074793829217329">Notaðu lyklaborðið eða talnaborðið til að stjórna músarbendlinum</translation>
 <translation id="5153234146675181447">Gleyma síma</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7024,7 +7021,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6112727384379533756">Bæta við miða</translation>
 <translation id="6113434369102685411">Stilltu sjálfgefna leitarvél fyrir Chrome vafrann og ræsiforrit <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">ræsilykill + smella</translation>
-<translation id="6116004140911290070">Kveikja á færni í Chrome</translation>
 <translation id="6116921718742659598">Breyta tungumála- og innsláttarstillingum</translation>
 <translation id="6119008366402292080">Enginn prentari tiltækur</translation>
 <translation id="6119972796024789243">Litaleiðrétting</translation>
@@ -10431,7 +10427,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8596540852772265699">Sérsniðnar skrár</translation>
 <translation id="8597845839771543242">Snið eigindar:</translation>
 <translation id="8598249292448297523">prenta</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Stjórna viðbót}one{Stjórna viðbót}other{Stjórna viðbótum}}</translation>
 <translation id="8599681327221583254">Ein eða fleiri reglur eru rangt stilltar. Hafðu samband við kerfisstjórann</translation>
 <translation id="8600362954032151088">Stjórnaðu aðgangsorðum og aðgangslyklum í <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Annað forrit í tölvunni þinni bætti við forriti sem gæti breytt því hvernig Chrome virkar.</translation>
@@ -10827,7 +10822,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="887292602123626481">Nánar um sjálfgefnar leitarvélar</translation>
 <translation id="8873075098103007382">Hafðu skipulagið á hreinu með flipahópum</translation>
 <translation id="8874341931345877644">Senda út í tæki:</translation>
-<translation id="8874448314264883207">Slökkt var á „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="8874647982044395866">Lífrænt</translation>
 <translation id="8874790741333031443">Prófaðu að leyfa fótspor þriðju aðila tímabundið, það þýðir minni vernd við vefskoðun en líklegra er að eiginleikar vefsvæðisins virki sem skyldi.</translation>
 <translation id="8875221558267407626">Taktu saman efni, einfaldaðu flókið orðalag eða spurðu spurninga</translation>

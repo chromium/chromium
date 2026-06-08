@@ -51,7 +51,6 @@
 <translation id="154404805518949443">Acceder a Chromium</translation>
 <translation id="1547469039832541117">Finaliza la tarea destacada.</translation>
 <translation id="1553461853655228091">Chromium necesita permiso para acceder a la cámara a fin de crear un mapa 3D de tu entorno</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Esta extensión ya no es compatible. Chromium te recomienda quitarla.}other{Estas extensiones ya no son compatibles. Chromium te recomienda quitarlas.}}</translation>
 <translation id="1562320819937089394">Fijar Chromium</translation>
 <translation id="1574377791422810894">Herramientas de seguridad de Chromium</translation>
 <translation id="1594928384848033697">Chromium quiere borrar tus datos del Administrador de contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>

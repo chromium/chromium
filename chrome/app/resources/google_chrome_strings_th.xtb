@@ -92,7 +92,6 @@
 <translation id="1953553007165777902">กำลังดาวน์โหลด... เหลืออีก <ph name="MINUTE" /> นาที</translation>
 <translation id="1979600810166324878">ใช้งานได้อย่างปลอดภัยมากขึ้นทุกที่ทุกเวลาด้วย Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นใน Chrome สำหรับ iOS</translation>
 <translation id="2001586581944147178">ทำให้ผู้ที่มีสิทธิ์เข้าถึงการเข้าใช้อินเทอร์เน็ตของคุณดูว่าคุณเข้าชมเว็บไซต์ไหนบ้างได้ยากขึ้น Chrome ใช้การเชื่อมต่อที่ปลอดภัยเพื่อค้นหาที่อยู่ IP ของเว็บไซต์ใน DNS (ระบบชื่อโดเมน)</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{ระบบไม่รองรับส่วนขยายนี้อีกต่อไป Chrome ขอแนะนำให้คุณนำออก}other{ระบบไม่รองรับส่วนขยายเหล่านี้อีกต่อไป Chrome ขอแนะนําให้คุณนําออก}}</translation>
 <translation id="2018528049276128029">แต่ละโปรไฟล์จะเก็บข้อมูล Chrome ของตัวเอง เช่น บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และอื่นๆ</translation>
 <translation id="2018879682492276940">การติดตั้งไม่สำเร็จ โปรดลองอีกครั้ง</translation>
 <translation id="2024959665595762054">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
@@ -384,6 +383,7 @@
 <translation id="5127558335897923940">ปักหมุด Chrome ไว้ที่แถบแอปเพื่อให้เข้าถึงได้อย่างรวดเร็วทุกเมื่อ</translation>
 <translation id="5132929315877954718">พบกับแอป เกม ส่วนขยาย และธีมเด็ดๆ สำหรับ Google Chrome</translation>
 <translation id="5139423532931106058">ปรับแต่งโปรไฟล์ Chrome ของคุณ</translation>
+<translation id="5152381187352661267">ทักษะใน Chrome</translation>
 <translation id="5163087008893166964">ยินดีต้อนรับสู่ Chrome เปิดหน้าต่างเบราวเซอร์ใหม่แล้ว</translation>
 <translation id="5166439563123238795">Chrome ต้องการสิทธิ์ในการติดตามการเคลื่อนไหวของมือ</translation>
 <translation id="5169778651486082413">ใช้รหัสผ่านกับ Chrome ในโทรศัพท์</translation>
@@ -479,6 +479,7 @@
 <translation id="6070348360322141662">Google Chrome จะเข้ารหัสลับข้อมูลของคุณเพื่อเพิ่มความปลอดภัยให้มากยิ่งขึ้น</translation>
 <translation id="6075300983329039771">องค์กร <ph name="MANAGER" /> กำหนดให้คุณต้องลงชื่อเข้าใช้ Chrome</translation>
 <translation id="6113794647360055231">Chrome ดีขึ้นกว่าเดิม</translation>
+<translation id="6116004140911290070">เปิดใช้ทักษะใน Chrome</translation>
 <translation id="6116252277240876590">ระบบจะใช้ภาษานี้เพื่อแสดงเมนู การตั้งค่า การแจ้งเตือน และข้อความอื่นๆ ใน Chrome</translation>
 <translation id="6127237283587442951">ใช้ Chrome โดยค่าเริ่มต้นและปักหมุดไว้</translation>
 <translation id="6134085236017727171">หากต้องการใช้ไมโครโฟน โปรดให้สิทธิ์เข้าถึงแก่ Chrome ใน<ph name="BEGIN_LINK" />การตั้งค่าระบบ<ph name="END_LINK" /></translation>

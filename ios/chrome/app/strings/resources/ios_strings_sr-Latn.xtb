@@ -6,6 +6,7 @@
 <translation id="1005230401424685968">GGGG</translation>
 <translation id="1013952917065545813">Možete da se vratite ovde da biste ponovo otvorili kartice koje ste nedavno zatvorili</translation>
 <translation id="1016495303386450659">Stavka je ažurirana</translation>
+<translation id="1018804590490383958">Skeniraj i automatski popuni</translation>
 <translation id="1019990162050689579">Aktivnosti u Gemini aplikacijama</translation>
 <translation id="102916930470544692">Pristupni ključ</translation>
 <translation id="1030376737535466765">Otvori Menadžer lozinki</translation>
@@ -1549,6 +1550,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Birajte položaj trake za adresu</translation>
 <translation id="6307241780749477694">Potvrdite identitet da biste dobili sve lozinke na ovom uređaju</translation>
+<translation id="6307792728709337290">Sačuvajte karticu na Google nalogu da biste je automatski popunjavali za ovu i buduće kupovine u Chrome-u.</translation>
 <translation id="6316141353357700666">Sa liste koja se prikaže odaberite lozinku koju želite da koristite.</translation>
 <translation id="6321526113093607004">Dodaj u obeleživače</translation>
 <translation id="6327249202318869726">Gemini je isključen za nalog. Obratite se administratoru da biste dobili više informacija.</translation>

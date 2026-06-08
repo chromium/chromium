@@ -92,7 +92,6 @@
 <translation id="1953553007165777902">Se descarcă… Timp rămas: <ph name="MINUTE" /> minute</translation>
 <translation id="1979600810166324878">Protejează-te mai bine în mișcare cu Navigarea sigură îmbunătățită în Chrome pentru iOS</translation>
 <translation id="2001586581944147178">Împiedică persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi. Chrome folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii).</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Extensia nu mai este acceptată. Chrome recomandă să o elimini.}few{Aceste extensii nu mai sunt acceptate. Chrome recomandă să le elimini.}other{Aceste extensii nu mai sunt acceptate. Chrome recomandă să le elimini.}}</translation>
 <translation id="2018528049276128029">Fiecare profil conține propriile informații Chrome, cum ar fi marcaje, istoric, parole și altele</translation>
 <translation id="2018879682492276940">Nu s-a instalat. Încearcă din nou.</translation>
 <translation id="2024959665595762054">Pentru a folosi și a salva datele Chrome în Contul Google, confirmă-ți identitatea</translation>
@@ -385,6 +384,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="5127558335897923940">Păstrează Chrome în bara de andocare pentru a-l accesa rapid oricând</translation>
 <translation id="5132929315877954718">Descoperă aplicații, jocuri, extensii și teme extraordinare pentru Google Chrome.</translation>
 <translation id="5139423532931106058">Personalizează-ți profilul Chrome</translation>
+<translation id="5152381187352661267">Abilități în Chrome</translation>
 <translation id="5163087008893166964">Bun venit la Chrome; fereastră de browser nouă deschisă</translation>
 <translation id="5166439563123238795">Chrome are nevoie de permisiune pentru a-ți urmări mâinile</translation>
 <translation id="5169778651486082413">Folosește-ți parolele cu Chrome pe telefon</translation>
@@ -480,6 +480,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6070348360322141662">Pentru un plus de securitate, Google Chrome îți va cripta datele</translation>
 <translation id="6075300983329039771">Organizația ta, <ph name="MANAGER" />, îți solicită să te conectezi la Chrome</translation>
 <translation id="6113794647360055231">Chrome a devenit și mai bun</translation>
+<translation id="6116004140911290070">Activează funcția Abilități în Chrome</translation>
 <translation id="6116252277240876590">Această limbă se folosește pentru a afișa meniuri, setări, alerte și alte texte în Chrome</translation>
 <translation id="6127237283587442951">Folosește Chrome în mod prestabilit și fixează-l</translation>
 <translation id="6134085236017727171">Pentru a folosi microfonul, permite accesul browserului Chrome în <ph name="BEGIN_LINK" />setările de sistem<ph name="END_LINK" />.</translation>

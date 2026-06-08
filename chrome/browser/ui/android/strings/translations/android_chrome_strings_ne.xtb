@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">तपाईंको ब्राउजिङ हिस्ट्री यहाँ देखिने छ</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> ब्लक गर्नुहोस्</translation>
 <translation id="1280921956537356716">सुझावसम्बन्धी नोटिफिकेसनहरू अन गर्नुहोस्</translation>
-<translation id="1283039547216852943">विस्तृत गर्न ट्याप गर्नुहोस्</translation>
 <translation id="1289129165308566697">आफ्नो हिस्ट्री अन्य डिभाइसहरूमा हेर्नुहोस्</translation>
 <translation id="129553762522093515">हालैमा बन्द गरिएको</translation>
 <translation id="1298077576058087471">६०% सम्म डेटा बचत गर्नुहोस्, आजको समाचार पढ्नुहोस्</translation>
@@ -245,6 +244,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> को <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2091863218454846791">कम्प्याक्ट भ्यू देखाइँदै छ</translation>
 <translation id="2093731487903423814">पछिल्ला १५ मिनेट</translation>
+<translation id="2094298041331405438">सबै इन्कोग्निटो विन्डोहरू बन्द गर्न यहाँ ट्याप गर्नुहोस्</translation>
 <translation id="2096577711562668473">अटोफिल सेवा परिवर्तन गर्ने हो?</translation>
 <translation id="2109384632594340939">प्रोफाइल फोटो</translation>
 <translation id="2111511281910874386">पृष्ठमा जानुहोस्</translation>
@@ -506,6 +506,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3114507951000454849">आजको समाचार पढ्नुहोस् <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">थप विवरणहरू</translation>
 <translation id="3123734510202723619">घोषणाहरू</translation>
+<translation id="3132267803114336523">सबै इन्कोग्निटो विन्डो बन्द गर्न इन्कोग्निटो इन्डिकेटरमा ट्याप गर्नुहोस्</translation>
 <translation id="3134385238404760368">हालसालै कुनै पनि ट्याब खोलिएको छैन</translation>
 <translation id="3135655388926735587">"हालसालै खोलिएका ट्याबहरू" मा ट्याप गर्नुहोस्</translation>
 <translation id="314939179385989105">Chrome को गृहपृष्ठ</translation>
@@ -1160,7 +1161,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="59577092665511740">एउटा खाता चयन गर्नुहोस्।</translation>
 <translation id="5958275228015807058">डाउनलोडरू नामक फोल्डरमा भएका आफ्ना फाइल र पृष्ठहरू भेट्टाउनुहोस्</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ले तपाईंले केही समययता नखोलेको साइटलाई तपाईंलाई नोटिफिकेसन पठाउन रोक लगाएको छ}other{Chrome ले तपाईंले केही समययता नखोलेका साइटहरूलाई तपाईंलाई नोटिफिकेसन पठाउन रोक लगाएको छ}}</translation>
-<translation id="5962718611393537961">संक्षिप्त गर्न ट्याप गर्नुहोस्</translation>
 <translation id="5964869237734432770">फोटो विवरण पाउन छाड्नुहोस्</translation>
 <translation id="5972844218283131174">सबैको चयन रद्द गर्नुहोस्</translation>
 <translation id="5975083100439434680">जुम आउट</translation>

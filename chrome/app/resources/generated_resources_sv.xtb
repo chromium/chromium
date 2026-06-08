@@ -1896,7 +1896,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2343160676229467122">Tillägg tillåts inte på <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Klippiga bergens nationalpark</translation>
 <translation id="2343747224442182863">Fokusera på den här fliken</translation>
-<translation id="2343971313330854480">Hitta filen i mappen <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Gamla versioner av Chrome-appar öppnas inte efter december 2022. Kontakta administratören om att uppdatera till en ny version eller ta bort appen.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Behörighet har begärts, tryck på Ctrl + framåt för att svara</translation>
@@ -3583,7 +3582,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3569617221227793022">Tidszonen är för närvarande inställd på <ph name="TIME_ZONE_ENTRY" />. Den här inställningen hanteras av administratören.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> har visningsbehörighet till följande filer och mappar</translation>
 <translation id="3571734092741541777">Konfigurera</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> tillägg har inaktiverats</translation>
 <translation id="3575121482199441727">Tillåt för den här webbplatsen</translation>
 <translation id="3575224072358507281">samla in resultat från IP-adresser och nätverksmätningar för Measurement Lab enligt deras integritetspolicy (measurementlab.net/privacy).</translation>
 <translation id="3576324189521867626">Appen har installerats</translation>
@@ -5765,7 +5763,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5149602533174716626">Kopiera videobildrutan</translation>
 <translation id="5150254825601720210">SSL-servernamn för Netscape-certifikat</translation>
 <translation id="5151354047782775295">Frigör diskutrymme, annars tas en del data bort automatiskt.</translation>
-<translation id="5152381187352661267">Färdigheter i Chrome</translation>
 <translation id="5153074793829217329">Styr markören med tangentbordet eller en numerisk knappsats</translation>
 <translation id="5153234146675181447">Glöm mobil</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7024,7 +7021,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6112727384379533756">Lägg till en biljett</translation>
 <translation id="6113434369102685411">Ställ in standardsökmotor för webbläsaren Chrome och översikten på <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">Appstartaren + klick</translation>
-<translation id="6116004140911290070">Aktivera färdigheter i Chrome</translation>
 <translation id="6116921718742659598">Ändra språk- och inmatningsinställningar</translation>
 <translation id="6119008366402292080">Inga tillgängliga skrivare</translation>
 <translation id="6119972796024789243">Färgkorrigering</translation>
@@ -10430,7 +10426,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8596540852772265699">Egna filformat</translation>
 <translation id="8597845839771543242">Format på egenskap:</translation>
 <translation id="8598249292448297523">skriv ut</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Hantera tillägg}other{Hantera tillägg}}</translation>
 <translation id="8599681327221583254">Minst en princip har inte konfigurerats korrekt. Kontakta administratören</translation>
 <translation id="8600362954032151088">Hantera lösenord och nycklar i <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Ett annat program i datorn har lagt till en app som kan ändra hur Chrome fungerar.</translation>
@@ -10826,7 +10821,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="887292602123626481">Läs mer om standardsökmotorer</translation>
 <translation id="8873075098103007382">Håll ordning med flikgrupper</translation>
 <translation id="8874341931345877644">Casta till en enhet:</translation>
-<translation id="8874448314264883207"><ph name="EXTENSION_NAME" /> har stängts av</translation>
 <translation id="8874647982044395866">Organisk</translation>
 <translation id="8874790741333031443">Testa att tillfälligt tillåta tredjepartscookies, vilket innebär mindre skydd när du surfar men större sannolikhet att webbplatsfunktionerna fungerar som förväntat.</translation>
 <translation id="8875221558267407626">Sammanfatta innehåll, förenkla komplicerat språk eller ställ frågor</translation>

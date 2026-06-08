@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">Votre historique s'affichera ici</translation>
 <translation id="1273937721055267968">Bloquer <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">Activer les notifications d'astuces</translation>
-<translation id="1283039547216852943">Appuyer pour développer</translation>
 <translation id="1289129165308566697">Consultez votre historique sur d'autres appareils</translation>
 <translation id="129553762522093515">Récemment fermés</translation>
 <translation id="1298077576058087471">Économisez jusqu'à 60 % de données mobiles, découvrez les actualités du jour</translation>
@@ -1159,7 +1158,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="59577092665511740">Sélectionnez un compte.</translation>
 <translation id="5958275228015807058">Recherchez vos fichiers et vos pages dans la section "Téléchargements"</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome a empêché un site que vous n'avez pas consulté récemment de vous envoyer des notifications}one{Chrome a empêché un site que vous n'avez pas consulté récemment de vous envoyer des notifications}other{Chrome a empêché des sites que vous n'avez pas consultés récemment de vous envoyer des notifications}}</translation>
-<translation id="5962718611393537961">Appuyer pour réduire</translation>
 <translation id="5964869237734432770">Arrêter descriptions images</translation>
 <translation id="5972844218283131174">Tout désélectionner</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>

@@ -51,7 +51,6 @@
 <translation id="154404805518949443">Kirjaudu Chromiumiin</translation>
 <translation id="1547469039832541117">Lopettaa korostetun tehtävän.</translation>
 <translation id="1553461853655228091">Chromium tarvitsee luvan käyttää kameraasi ympäristön 3D-kartoittamiseen</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Tätä laajennusta ei enää tueta. Chromium suosittelee sen poistamista.}other{Näitä laajennuksia ei enää tueta. Chromium suosittelee niiden poistamista.}}</translation>
 <translation id="1562320819937089394">Kiinnitä Chromium</translation>
 <translation id="1574377791422810894">Chromiumin turvallisuustyökalut</translation>
 <translation id="1594928384848033697">Chromium haluaa poistaa Salasanat-datasi. Salli tämä kirjoittamalla Windows-salasanasi.</translation>

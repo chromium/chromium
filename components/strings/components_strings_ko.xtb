@@ -1387,6 +1387,7 @@
 <translation id="3158539265159265653">디스크</translation>
 <translation id="3162070126914310576">조직 단위의 초기 등록 한도에 도달하여 이 기기를 지금 등록할 수 없습니다. 관리자에게 문의하여 도움을 받으세요.</translation>
 <translation id="3162559335345991374">사용 중인 Wi-Fi에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
+<translation id="316542773973815724">탐색</translation>
 <translation id="316638481603975524">웹 앱 설치를 요청할 수 있음</translation>
 <translation id="3166788340998560642">다음에 사용할 때 Chrome에서 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />에 저장할지 묻습니다.</translation>
 <translation id="3168744840365648658">라디오 장비</translation>
@@ -3759,7 +3760,6 @@
 <translation id="6893057134494550310">코팅지</translation>
 <translation id="6893204630281237373">Chrome에서 결제 앱을 사용 중지하려면 <ph name="BEGIN_LINK1" />결제 설정<ph name="END_LINK1" />으로 이동하세요.</translation>
 <translation id="6895330447102777224">카드가 확인되었습니다.</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="GROUP_HEADER" /> 그룹의 <ph name="NUM_MATCHES_IN_GROUP" />개 중 <ph name="MATCH_POSITION" />번째 항목입니다.</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6897140037006041989">사용자 에이전트</translation>
 <translation id="6898699227549475383">조직(O)</translation>
@@ -4122,7 +4122,6 @@
 <translation id="7450577240311017924">동기화 관리 버튼, Chrome 설정에서 내가 동기화하는 정보를 관리하려면 활성화하세요.</translation>
 <translation id="7451311239929941790">이 문제를 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="745208957946308667">공룡 게임입니다, 스페이스바를 눌러 플레이하세요</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="GROUP_HEADER" /> 그룹의 <ph name="NUM_MATCHES_IN_GROUP" />개 중 <ph name="MATCH_POSITION" />번째 항목입니다.</translation>
 <translation id="7453032093368223821">기타 데이터 관리</translation>
 <translation id="7453849010505253492">이 서버가 Chrome이나 웹 트래픽 암호화를 위한 시스템 구성에서 신뢰하지 않는 보안 인증서를 사용하고 있기 때문에 <ph name="DOMAIN" />임을 입증할 수 없습니다. 설정이 잘못되었거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />인증서 보기<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Cloud 계정</translation>

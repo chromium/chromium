@@ -96,7 +96,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1953553007165777902">Sækir... <ph name="MINUTE" /> mín. eftir</translation>
 <translation id="1979600810166324878">Vertu öruggari á ferðinni með Enn öruggari vefskoðun í Chrome fyrir iOS</translation>
 <translation id="2001586581944147178">Gerðu fólki með aðgang að netumferðinni þinni erfiðara fyrir að sjá hvaða vefsvæði þú skoðar. Chrome notar örugga tengingu til að finna IP-tölu vefsvæðis í DNS (nafnakerfi léna).</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Þessi viðbót er ekki lengur studd. Chrome mælir með að þú fjarlægir hana.}one{Þessi viðbót er ekki lengur studd. Chrome mælir með að þú fjarlægir hana.}other{Þessar viðbætur eru ekki lengur studdar. Chrome mælir með að þú fjarlægir þær.}}</translation>
 <translation id="2018528049276128029">Á hverjum prófíl eru geymdar Chrome upplýsingar á borð við bókamerki, feril, aðgangsorð og fleira</translation>
 <translation id="2018879682492276940">Uppsetning mistókst. Reyndu aftur.</translation>
 <translation id="2024959665595762054">Staðfestu að þetta sért þú til að nota og vista Chrome-gögn á Google-reikningnum þínum</translation>
@@ -389,6 +388,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="5127558335897923940">Hafðu Chrome í dokkunni þinni til að hafa það ávallt við höndina</translation>
 <translation id="5132929315877954718">Uppgötvaðu frábær forrit, leiki, viðbætur og þemu fyrir Google Chrome</translation>
 <translation id="5139423532931106058">Sérsníða Chrome prófílinn þinn</translation>
+<translation id="5152381187352661267">Færni í Chrome</translation>
 <translation id="5163087008893166964">Velkomin(n) í Chrome; nýr vafragluggi opnaður</translation>
 <translation id="5166439563123238795">Chrome þarf heimild til að rekja handahreyfingar þínar</translation>
 <translation id="5169778651486082413">Notaðu aðgangsorðin þín með Chrome í símanum þínum</translation>
@@ -488,6 +488,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6070348360322141662">Google Chrome dulkóðar gögnin þín til að auka öryggið</translation>
 <translation id="6075300983329039771">Fyrirtækið þitt, <ph name="MANAGER" />, krefst þess að þú skráir þig inn í Chrome</translation>
 <translation id="6113794647360055231">Chrome er nú enn betra</translation>
+<translation id="6116004140911290070">Kveikja á færni í Chrome</translation>
 <translation id="6116252277240876590">Þetta tungumál er notað til að birta valmyndir, stillingar, viðvaranir og annan texta í Chrome</translation>
 <translation id="6127237283587442951">Notaðu Chrome sem sjálfgefinn vafra og festu hann</translation>
 <translation id="6134085236017727171">Veittu Chrome aðgang að hljóðnemanum þínum í <ph name="BEGIN_LINK" />kerfisstillingum<ph name="END_LINK" /> til að geta notað hann</translation>

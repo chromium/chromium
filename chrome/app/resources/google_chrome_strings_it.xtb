@@ -92,7 +92,6 @@
 <translation id="1953553007165777902">Download in corso… Minuti rimanenti: <ph name="MINUTE" /></translation>
 <translation id="1979600810166324878">Maggiore sicurezza ovunque ti trovi con la Navigazione sicura avanzata su Chrome per iOS</translation>
 <translation id="2001586581944147178">Rendi più difficile vedere quali siti visiti alle persone che hanno accesso al tuo traffico internet. Chrome utilizza una connessione sicura per cercare l'indirizzo IP di un sito nel DNS (Domain Name System).</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Questa estensione non è più supportata. Chrome consiglia di rimuoverla.}other{Queste estensioni non sono più supportate. Chrome consiglia di rimuoverle.}}</translation>
 <translation id="2018528049276128029">Ogni profilo dispone delle proprie informazioni di Chrome, come preferiti, cronologia, password e altro</translation>
 <translation id="2018879682492276940">Installazione non riuscita. Riprova.</translation>
 <translation id="2024959665595762054">Verifica la tua identità per usare e salvare i dati di Chrome nel tuo Account Google</translation>
@@ -384,6 +383,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="5127558335897923940">Mantieni Chrome nel dock per accedervi rapidamente in qualsiasi momento</translation>
 <translation id="5132929315877954718">Scopri applicazioni, giochi, estensioni e temi straordinari per Google Chrome.</translation>
 <translation id="5139423532931106058">Personalizza il tuo profilo Chrome</translation>
+<translation id="5152381187352661267">Skill in Chrome</translation>
 <translation id="5163087008893166964">Ti diamo il benvenuto in Chrome; nuova finestra del browser aperta</translation>
 <translation id="5166439563123238795">Chrome deve avere l'autorizzazione per monitorare le tue mani</translation>
 <translation id="5169778651486082413">Usa le tue password con Chrome sullo smartphone</translation>
@@ -479,6 +479,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6070348360322141662">Per maggiore sicurezza, Google Chrome cripterà i tuoi dati</translation>
 <translation id="6075300983329039771">La tua organizzazione, <ph name="MANAGER" />, richiede l'accesso a Chrome</translation>
 <translation id="6113794647360055231">Da oggi Chrome è ancora meglio</translation>
+<translation id="6116004140911290070">Attiva le skill in Chrome</translation>
 <translation id="6116252277240876590">Questa lingua è utilizzata per visualizzare menu, impostazioni, avvisi e altro testo in Chrome</translation>
 <translation id="6127237283587442951">Usa Chrome per impostazione predefinita e fissalo</translation>
 <translation id="6134085236017727171">Per usare il microfono, concedi l'accesso a Chrome nelle <ph name="BEGIN_LINK" />impostazioni di sistema<ph name="END_LINK" /></translation>

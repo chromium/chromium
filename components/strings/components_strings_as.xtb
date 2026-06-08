@@ -1387,6 +1387,7 @@
 <translation id="3158539265159265653">ডিস্ক</translation>
 <translation id="3162070126914310576">আপোনাৰ সংস্থাৰ ইউনিটটোৱে নিজৰ প্ৰাৰম্ভিক পঞ্জীয়নৰ সীমাত উপনীত হোৱাৰ বাবে এই মুহূৰ্তত এই ডিভাইচটো পঞ্জীয়ন কৰিব নোৱাৰি। সহায় পাবলৈ আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="3162559335345991374">আপুনি ব্যৱহাৰ কৰি থকা ৱাই-ফাইটোৰ বাবে আপুনি এইটোৰ লগ ইন পৃষ্ঠালৈ যাব লগা হ'ব পাৰে।</translation>
+<translation id="316542773973815724">নেভিগেশ্বন</translation>
 <translation id="316638481603975524">ৱেব এপ্‌ ইনষ্টল কৰিবলৈ ক’ব পাৰে</translation>
 <translation id="3166788340998560642">পৰৱৰ্তী বাৰ আপুনি এইখন ব্যৱহাৰ কৰাৰ সময়ত Chromeএ এইখন <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />ত ছেভ কৰিবলৈ আগবঢ়াব।</translation>
 <translation id="3168744840365648658">ৰেডিঅ’ৰ সা-সৰঞ্জাম</translation>
@@ -3754,7 +3755,6 @@
 <translation id="6893057134494550310">লেমিনে’ট কৰা ফইল</translation>
 <translation id="6893204630281237373">Chromeত পৰিশোধৰ এপ্‌ অফ কৰিবলৈ, আপোনাৰ <ph name="BEGIN_LINK1" />পৰিশোধৰ ছেটিঙ<ph name="END_LINK1" />লৈ যাওক</translation>
 <translation id="6895330447102777224">আপোনাৰ কার্ড নিশ্চিত কৰা হৈছে</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="GROUP_HEADER" /> গোটটোত <ph name="NUM_MATCHES_IN_GROUP" /> টাৰ ভিতৰত <ph name="MATCH_POSITION" /> নম্বৰটো।</translation>
 <translation id="6896758677409633944">প্ৰতিলিপি কৰক</translation>
 <translation id="6897140037006041989">ব্যৱহাৰকাৰীৰ এজেণ্ট</translation>
 <translation id="6898699227549475383">প্ৰতিষ্ঠান (O)</translation>
@@ -4117,7 +4117,6 @@
 <translation id="7450577240311017924">ছিংক পৰিচালনা কৰাৰ বুটাম, আপুনি Chromeৰ ছেটিঙত কি তথ্য ছিংক কৰিব সেয়া পৰিচালনা কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="7451311239929941790">এই সমস্যাটোৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" />।</translation>
 <translation id="745208957946308667">ডাইন’ছৰৰ গে’ম, খেলিবলৈ স্পেচ টিপক</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="GROUP_HEADER" /> গোটটোত <ph name="NUM_MATCHES_IN_GROUP" /> টাৰ ভিতৰত <ph name="MATCH_POSITION" /> নম্বৰটো।</translation>
 <translation id="7453032093368223821">আন ডেটা পৰিচালনা কৰক</translation>
 <translation id="7453849010505253492">এই ছাৰ্ভাৰটোৱে এইটো <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে, কিয়নো ই এনে এখন সুৰক্ষা সম্পৰ্কীয় প্ৰমাণপত্ৰ ব্যৱহাৰ কৰি আছে যিখন Chrome বা আপোনাৰ ছিষ্টেমৰ কনফিগাৰেশ্বনে ৱেব ট্ৰেফিক এনক্ৰিপশ্বনৰ বাবে বিশ্বাসযোগ্য বুলি গণ্য নকৰে। এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে হ’ব পাৰে। <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />প্ৰমাণপত্ৰ চাওক<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">ক্লাউড একাউণ্ট</translation>

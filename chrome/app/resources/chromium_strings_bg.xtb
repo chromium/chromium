@@ -51,7 +51,6 @@
 <translation id="154404805518949443">Вход в Chromium</translation>
 <translation id="1547469039832541117">Прекратява откроената задача.</translation>
 <translation id="1553461853655228091">Chromium се нуждае от разрешение за достъп до камерата ви, за да създаде триизмерна карта на заобикалящата ви среда</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Това разширение вече не се поддържа. Chromium препоръчва да го премахнете.}other{Тези разширения вече не се поддържат. Chromium препоръчва да ги премахнете.}}</translation>
 <translation id="1562320819937089394">Фиксиране на Chromium</translation>
 <translation id="1574377791422810894">Инструменти за безопасност на Chromium</translation>
 <translation id="1594928384848033697">Chromium иска да изтрие данните ви от Мениджър на пароли. За да разрешите това, въведете паролата си за Windows.</translation>

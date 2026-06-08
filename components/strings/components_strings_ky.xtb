@@ -1387,6 +1387,7 @@
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162070126914310576">Бул түзмөктү азыр каттоого болбойт, анткени уюмуңуз баштапкы каттоо чегине жетти. Жардам алуу үчүн администраторуңузга кайрылыңыз.</translation>
 <translation id="3162559335345991374">Сиз колдонуп жаткан Wi-Fi башкы кирүү барагына өтүшүңүздү талап кылышы мүмкүн.</translation>
+<translation id="316542773973815724">серептөө</translation>
 <translation id="316638481603975524">Веб колдонмолорун сиздин уруксатыңыз менен орното алат</translation>
 <translation id="3166788340998560642">Кийинки жолу колдонгонуңузда Chrome аны <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> кызматына сактоону сунуштайт</translation>
 <translation id="3168744840365648658">Радио жабдуулары</translation>
@@ -3758,7 +3759,6 @@
 <translation id="6893057134494550310">Ламинацияланган фольга</translation>
 <translation id="6893204630281237373">Chrome'до төлөм колдонмосун өчүрүү үчүн <ph name="BEGIN_LINK1" />төлөм параметрлерине<ph name="END_LINK1" /> өтүңүз</translation>
 <translation id="6895330447102777224">Карточкаңыз текшерилди</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="GROUP_HEADER" /> тобундагы <ph name="NUM_MATCHES_IN_GROUP" /> ичинен <ph name="MATCH_POSITION" />.</translation>
 <translation id="6896758677409633944">Көчүрүү</translation>
 <translation id="6897140037006041989">Колдонуучунун агенти</translation>
 <translation id="6898699227549475383">Уюм (У)</translation>
@@ -4121,7 +4121,6 @@
 <translation id="7450577240311017924">"Шайкештирүүнү башкаруу" баскычы. Chrome параметрлеринен шайкештирилген маалыматты башкаруу үчүн иштетиңиз</translation>
 <translation id="7451311239929941790">Бул көйгөй жөнүндө <ph name="BEGIN_LINK" />көбүрөөк маалымат<ph name="END_LINK" />.</translation>
 <translation id="745208957946308667">Dino оюну, ойноо үчүн боштукту таптап коюңуз</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="GROUP_HEADER" /> тобундагы <ph name="NUM_MATCHES_IN_GROUP" /> ичинен <ph name="MATCH_POSITION" />.</translation>
 <translation id="7453032093368223821">Башка маалыматты тескөө</translation>
 <translation id="7453849010505253492">Бул сервер <ph name="DOMAIN" /> экенин далилдей алган жок, анткени ал Интернеттеги трафикти шифрлөө үчүн Chrome же тутумуңуздун конфигурациясы ишеним көрсөтпөгөн коопсуздук тастыктамасын колдонуп жатат. Мындай көйгөй сервердин туура эмес конфигурацияланышы менен шартталышы мүмкүн же кимдир бирөө ортодон маалыматыңызды кармап калганга аракет кылып жатат. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Тастыктаманы көрүү<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Булуттагы арзандатуу</translation>

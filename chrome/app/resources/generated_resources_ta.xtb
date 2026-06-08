@@ -1898,7 +1898,6 @@
 <translation id="2343160676229467122"><ph name="SITE_NAME" /> தளத்தில் நீட்டிப்புகள் அனுமதிக்கப்படவில்லை</translation>
 <translation id="2343390523044483367">ராக்கி மலைகள் தேசியப் பூங்கா</translation>
 <translation id="2343747224442182863">இந்தத் தாவலை மையப்படுத்து</translation>
-<translation id="2343971313330854480"><ph name="FEATURE_NAME" /> ஃபோல்டரில் உங்கள் ஃபைலைப் பார்க்கலாம்</translation>
 <translation id="234559068082989648">டிசம்பர் 2022க்குப் பின்னர் Chrome ஆப்ஸின் பழைய பதிப்புகள் திறக்காது. புதிய பதிப்பைப் பெறவோ இந்த ஆப்ஸை அகற்றவோ உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="2348176352564285430">ஆப்ஸ்: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - அனுமதி கோரப்பட்டுள்ளது பதிலளிக்க Ctrl + Forward விசைகளை அழுத்தவும்</translation>
@@ -3588,7 +3587,6 @@
 <translation id="3569617221227793022">நேர மண்டலம் இப்போது <ph name="TIME_ZONE_ENTRY" /> என்று அமைக்கப்பட்டுள்ளது. உங்கள் நிர்வாகி இந்த அமைப்பை நிர்வகிக்கிறார்.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> தளத்தால் பின்வரும் கோப்புகளையும் ஃபோல்டர்களையும் பார்க்க முடியும்</translation>
 <translation id="3571734092741541777">அமை</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> நீட்டிப்புகள் முடக்கப்பட்டுள்ளன</translation>
 <translation id="3575121482199441727">இந்தத் தளத்திற்கு அனுமதி</translation>
 <translation id="3575224072358507281">அதன் தனியுரிமைக் கொள்கைக்கு (measurementlab.net/privacy) உட்பட்டு IP முகவரியையும், Measurement Labக்கான நெட்வொர்க் அளவீட்டு முடிவுகளையும் சேகரிக்கலாம்</translation>
 <translation id="3576324189521867626">நிறுவப்பட்டது</translation>
@@ -5773,7 +5771,6 @@
 <translation id="5149602533174716626">வீடியோ ஃபிரேமை நகலெடு</translation>
 <translation id="5150254825601720210">Netscape சான்றிதழ் SSL சேவையகப் பெயர்</translation>
 <translation id="5151354047782775295">சாதனத்தில் காலி இடத்தை உருவாக்கவும் அல்லது குறிப்பிட்ட தரவு தானாகவே நீக்கப்படலாம்</translation>
-<translation id="5152381187352661267">Chromeமில் திறன்கள்</translation>
 <translation id="5153074793829217329">உங்கள் மவுஸ் கர்சரைக் கட்டுப்படுத்த கீபோர்டையோ நியூமெரிக் கீபேடையோ பயன்படுத்தலாம்</translation>
 <translation id="5153234146675181447">ஃபோனை அகற்றும்</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7034,7 +7031,6 @@
 <translation id="6112727384379533756">டிக்கெட்டைச் சேர்</translation>
 <translation id="6113434369102685411">Chrome உலாவிக்கும் <ph name="DEVICE_TYPE" /> தொடக்கிக்கும் இயல்பான தேடல் இன்ஜினை அமைக்கலாம்</translation>
 <translation id="6113832060210023016">லான்ச்சர் + கிளிக்</translation>
-<translation id="6116004140911290070">Chromeமில் திறன்களை ஆன் செய்</translation>
 <translation id="6116921718742659598">மொழி மற்றும் உள்ளீட்டு அமைப்புகளை மாற்றவும்</translation>
 <translation id="6119008366402292080">பிரிண்டர் கிடைக்கவில்லை</translation>
 <translation id="6119972796024789243">கலர் கரெக்‌ஷன்</translation>
@@ -10442,7 +10438,6 @@
 <translation id="8596540852772265699">பிரத்தியேக ஃபைல்கள்</translation>
 <translation id="8597845839771543242">பண்பு வடிவமைப்பு:</translation>
 <translation id="8598249292448297523">அச்சிடு</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{நீட்டிப்பை நிர்வகியுங்கள்}other{நீட்டிப்புகளை நிர்வகியுங்கள்}}</translation>
 <translation id="8599681327221583254">ஒன்று அல்லது அதற்கு மேற்பட்ட கொள்கைகள் சரியாக உள்ளமைக்கப்படவில்லை. நிர்வாகியைத் தொடர்புகொள்ளவும்</translation>
 <translation id="8600362954032151088"><ph name="GOOGLE_PASSWORD_MANAGER" /> இல் உங்கள் கடவுச்சொற்களையும் கடவுச்சாவிகளையும் நிர்வகியுங்கள்</translation>
 <translation id="8602851771975208551">உங்கள் கம்ப்யூட்டரில் உள்ள மற்றொரு நிரல் Chrome இயங்கும் முறையை மாற்றும் ஆப்ஸைச் சேர்த்துள்ளது.</translation>
@@ -10838,7 +10833,6 @@
 <translation id="887292602123626481">இயல்புத் தேடல் இன்ஜின்கள் குறித்து மேலும் அறிந்துகொள்ளலாம்</translation>
 <translation id="8873075098103007382">பக்கக் குழுக்கள் மூலம் எப்போதும் ஒழுங்கமைத்திடுங்கள்</translation>
 <translation id="8874341931345877644">சாதனத்திற்கு அலைபரப்புங்கள்:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" முடக்கப்பட்டுள்ளது</translation>
 <translation id="8874647982044395866">ஆர்கானிக்</translation>
 <translation id="8874790741333031443">மூன்றாம் தரப்புக் குக்கீகளைத் தற்காலிகமாக அனுமதிக்கவும், இதனால் உலாவல் பாதுகாப்பு குறைந்தாலும் தள அம்சங்கள் எதிர்பார்த்தபடி நன்கு செயல்பட வாய்ப்புள்ளது.</translation>
 <translation id="8875221558267407626">உள்ளடக்கத்தைச் சுருக்குதல், சிக்கலான வாக்கியங்களை எளிதாக்குதல், கேள்விகளைக் கேட்டல்</translation>

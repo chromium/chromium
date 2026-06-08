@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">Тарихты осы жерден табасыз.</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> доменін бөгеу</translation>
 <translation id="1280921956537356716">Кеңестер туралы хабарландыруларды қосу</translation>
-<translation id="1283039547216852943">Жаю үшін түртіңіз</translation>
 <translation id="1289129165308566697">Басқа құрылғыларда тарихыңызды көріңіз</translation>
 <translation id="129553762522093515">Жақында жабылған</translation>
 <translation id="1298077576058087471">Деректер трафигін 60%-ға дейін үнемдеңіз, бүгінгінің жаңалықтарын оқыңыз.</translation>
@@ -1159,7 +1158,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="59577092665511740">Аккаунтты таңдаңыз.</translation>
 <translation id="5958275228015807058">"Жүктеп алулар" ішінен файлдар мен беттерді табыңыз</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome сіз жақында кірмеген сайттың сізге хабарландыру жіберуін тоқтатты.}other{Chrome сіз жақында кірмеген сайттардың сізге хабарландыру жіберуін тоқтатты.}}</translation>
-<translation id="5962718611393537961">Жию үшін түртіңіз</translation>
 <translation id="5964869237734432770">Сурет сипаттамаларын алмау</translation>
 <translation id="5972844218283131174">Барлық таңдаудан бас тарту</translation>
 <translation id="5975083100439434680">Кішірейту</translation>

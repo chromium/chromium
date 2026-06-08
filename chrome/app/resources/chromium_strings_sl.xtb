@@ -53,7 +53,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="154404805518949443">Prijava v Chromium</translation>
 <translation id="1547469039832541117">Konča označeno opravilo.</translation>
 <translation id="1553461853655228091">Chromium potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Ta razširitev ni več podprta. Chromium priporoča, da jo odstranite.}one{Te razširitve niso več podprte. Chromium priporoča, da jih odstranite.}two{Te razširitve niso več podprte. Chromium priporoča, da jih odstranite.}few{Te razširitve niso več podprte. Chromium priporoča, da jih odstranite.}other{Te razširitve niso več podprte. Chromium priporoča, da jih odstranite.}}</translation>
 <translation id="1562320819937089394">Pripni Chromium</translation>
 <translation id="1574377791422810894">Varnostna orodja v Chromiumu</translation>
 <translation id="1594928384848033697">Chromium želi izbrisati podatke upravitelja gesel. Če želite to omogočiti, vnesite geslo za Windows.</translation>

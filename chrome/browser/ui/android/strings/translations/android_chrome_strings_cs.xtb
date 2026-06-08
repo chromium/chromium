@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">Zde najdete svou historii</translation>
 <translation id="1273937721055267968">Blokovat doménu <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">Zapnout oznámení s tipy</translation>
-<translation id="1283039547216852943">Klepnutím rozbalíte</translation>
 <translation id="1289129165308566697">Mějte svou historii na jiných zařízeních</translation>
 <translation id="129553762522093515">Nedávno zavřené</translation>
 <translation id="1298077576058087471">Přečtěte si dnešní zprávy a ušetřete až 60 % dat</translation>
@@ -1159,7 +1158,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="59577092665511740">Vyberte účet.</translation>
 <translation id="5958275228015807058">Najděte stažené soubory a stránky</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome odhlásil odběr oznámení z webu, který v poslední době nenavštěvujete}few{Chrome odhlásil odběr oznámení z webů, které v poslední době nenavštěvujete}many{Chrome odhlásil odběr oznámení z webů, které v poslední době nenavštěvujete}other{Chrome odhlásil odběr oznámení z webů, které v poslední době nenavštěvujete}}</translation>
-<translation id="5962718611393537961">Klepnutím sbalíte</translation>
 <translation id="5964869237734432770">Nezobrazovat popisy obrázků</translation>
 <translation id="5972844218283131174">Zrušit výběr všech</translation>
 <translation id="5975083100439434680">Oddálit</translation>

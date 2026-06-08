@@ -1880,7 +1880,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2343160676229467122">Shtesat nuk lejohen në <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Parku kombëtar i Maleve Shkëmbore</translation>
 <translation id="2343747224442182863">Fokuso këtë skedë</translation>
-<translation id="2343971313330854480">Gjej skedarin tënd në dosjen "<ph name="FEATURE_NAME" />"</translation>
 <translation id="234559068082989648">Versionet e vjetra të aplikacioneve të Chrome nuk do të hapen pas dhjetorit 2022. Kontakto me administratorin për ta përditësuar me një version të ri ose hiqe këtë aplikacion.</translation>
 <translation id="2348176352564285430">Aplikacioni: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Kërkohet leje, shtyp Ctrl + Përpara për t'u përgjigjur</translation>
@@ -3567,7 +3566,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3569617221227793022">Brezi orar është caktuar aktualisht në <ph name="TIME_ZONE_ENTRY" />. Ky cilësim menaxhohet nga administratori yt.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> mund t'i shikojë skedarët dhe dosjet e mëposhtme</translation>
 <translation id="3571734092741541777">Konfigurimi</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> shtesa u çaktivizuan</translation>
 <translation id="3575121482199441727">Lejo për këtë sajt</translation>
 <translation id="3575224072358507281">Mblidh rezultatet për adresën IP dhe matjen e rrjetit për Measurement Lab, sipas politikës përkatëse të privatësisë (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">U instalua me sukses</translation>
@@ -5748,7 +5746,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5149602533174716626">Kopj&amp;o kuadrin e videos</translation>
 <translation id="5150254825601720210">Emri i serverit SSL të certifikatës së Netscape</translation>
 <translation id="5151354047782775295">Liro hapësirë në disk ose të dhëna të caktuara mund të fshihen automatikisht</translation>
-<translation id="5152381187352661267">"Aftësitë" në Chrome</translation>
 <translation id="5153074793829217329">Përdor tastierën ose një bllok tastesh numerike për të kontrolluar kursorin e miut</translation>
 <translation id="5153234146675181447">Harro telefonin</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7006,7 +7003,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6112727384379533756">Shto një biletë</translation>
 <translation id="6113434369102685411">Cakto motorin tënd të parazgjedhur të kërkimit për shfletuesin e Chrome dhe nisësin e <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">nisësi + kliko</translation>
-<translation id="6116004140911290070">Aktivizo "Aftësitë" në Chrome</translation>
 <translation id="6116921718742659598">Ndrysho cilësimet e gjuhës dhe të hyrjes</translation>
 <translation id="6119008366402292080">Nuk ofrohet asnjë printer</translation>
 <translation id="6119972796024789243">Korrigjimi i ngjyrës</translation>
@@ -10411,7 +10407,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8596540852772265699">Skedarë të personalizuar</translation>
 <translation id="8597845839771543242">Formati i vetisë:</translation>
 <translation id="8598249292448297523">printimi</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Menaxho shtesën}other{Menaxho shtesat}}</translation>
 <translation id="8599681327221583254">Një apo më shumë politika nuk janë konfiguruar saktë. Kontakto me administratorin tënd.</translation>
 <translation id="8600362954032151088">Menaxho fjalëkalimet dhe çelësat e kalimit te "<ph name="GOOGLE_PASSWORD_MANAGER" />"</translation>
 <translation id="8602851771975208551">Një program tjetër në kompjuterin tënd shtoi një aplikacion, që mund të ndryshojë mënyrën e funksionimit të Chrome.</translation>
@@ -10807,7 +10802,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="887292602123626481">Mëso më shumë për motorët e parazgjedhur të kërkimit</translation>
 <translation id="8873075098103007382">Qëndro i organizuar me grupet e skedave</translation>
 <translation id="8874341931345877644">Transmeto te një pajisje:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" u çaktivizua</translation>
 <translation id="8874647982044395866">Organik</translation>
 <translation id="8874790741333031443">Provo të lejosh përkohësisht kukit e palëve të treta, që do të thotë se ka më pak mbrojtje gjatë shfletimit, por veçoritë e sajteve me shumë mundësi mund të funksionojnë siç pritet.</translation>
 <translation id="8875221558267407626">Përmblidh përmbajtjet, thjeshtëso gjuhën e ndërlikuar ose bëj pyetje</translation>

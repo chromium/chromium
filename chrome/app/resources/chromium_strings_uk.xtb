@@ -51,7 +51,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="154404805518949443">Увійти в Chromium</translation>
 <translation id="1547469039832541117">Завершує виділене завдання.</translation>
 <translation id="1553461853655228091">Chromium потрібен дозвіл на використання камери, щоб створити 3D-карту вашого оточення</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Це розширення більше не підтримується. Chromium радить вилучити його.}one{Ці розширення більше не підтримуються. Chromium радить вилучити їх.}few{Ці розширення більше не підтримуються. Chromium радить вилучити їх.}many{Ці розширення більше не підтримуються. Chromium радить вилучити їх.}other{Ці розширення більше не підтримуються. Chromium радить вилучити їх.}}</translation>
 <translation id="1562320819937089394">Закріпити Chromium</translation>
 <translation id="1574377791422810894">Інструменти безпеки Chromium</translation>
 <translation id="1594928384848033697">Chromium хоче видалити ваші дані в Менеджері паролів. Щоб дозволити це, введіть пароль Windows.</translation>

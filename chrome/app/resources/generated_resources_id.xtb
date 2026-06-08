@@ -1895,7 +1895,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2343160676229467122">Ekstensi tidak diizinkan di <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Taman Nasional Pegunungan Rocky</translation>
 <translation id="2343747224442182863">Fokuskan Tab Ini</translation>
-<translation id="2343971313330854480">Temukan file Anda di folder <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Aplikasi Chrome versi lama tidak dapat dibuka setelah Desember 2022. Hubungi administrator untuk mengupdate ke versi baru atau hapus aplikasi ini.</translation>
 <translation id="2348176352564285430">Aplikasi: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Izin diminta, tekan Ctrl + Forward untuk merespons</translation>
@@ -3582,7 +3581,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3569617221227793022">Zona waktu saat ini disetel ke <ph name="TIME_ZONE_ENTRY" />. Setelan ini dikelola oleh administrator Anda.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> dapat melihat file dan folder berikut ini</translation>
 <translation id="3571734092741541777">Siapkan</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> ekstensi dinonaktifkan</translation>
 <translation id="3575121482199441727">Izinkan untuk situs ini</translation>
 <translation id="3575224072358507281">Mengumpulkan hasil pengukuran jaringan dan alamat IP untuk Measurement Lab, sesuai dengan kebijakan privasinya (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Berhasil dipasang</translation>
@@ -5764,7 +5762,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5149602533174716626">Salin Frame Video</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Server Name</translation>
 <translation id="5151354047782775295">Kosongkan ruang penyimpanan atau pilih data yang dapat dihapus otomatis.</translation>
-<translation id="5152381187352661267">Keahlian di Chrome</translation>
 <translation id="5153074793829217329">Gunakan keyboard atau keypad numerik untuk mengontrol kursor mouse</translation>
 <translation id="5153234146675181447">Lupakan ponsel</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7023,7 +7020,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6112727384379533756">Tambahkan tiket</translation>
 <translation id="6113434369102685411">Setel mesin telusur default untuk browser Chrome dan Peluncur <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">peluncur + klik</translation>
-<translation id="6116004140911290070">Aktifkan Keahlian di Chrome</translation>
 <translation id="6116921718742659598">Ubah setelan masukan dan bahasa</translation>
 <translation id="6119008366402292080">Printer tidak tersedia</translation>
 <translation id="6119972796024789243">Koreksi warna</translation>
@@ -10428,7 +10424,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8596540852772265699">File Khusus</translation>
 <translation id="8597845839771543242">Format properti:</translation>
 <translation id="8598249292448297523">cetak</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Kelola ekstensi}other{Kelola ekstensi}}</translation>
 <translation id="8599681327221583254">Satu atau beberapa kebijakan tidak dikonfigurasi dengan benar. Harap hubungi administrator Anda</translation>
 <translation id="8600362954032151088">Kelola sandi &amp; kunci sandi Anda di <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Program lain di komputer Anda menambahkan aplikasi yang dapat mengubah cara kerja Chrome.</translation>
@@ -10824,7 +10819,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="887292602123626481">Pelajari mesin telusur default lebih lanjut</translation>
 <translation id="8873075098103007382">Tetap teratur dengan grup tab</translation>
 <translation id="8874341931345877644">Transmisikan ke perangkat:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" sudah dinonaktifkan</translation>
 <translation id="8874647982044395866">Organik</translation>
 <translation id="8874790741333031443">Coba izinkan cookie pihak ketiga untuk sementara. Jika demikian, Anda akan mendapatkan lebih sedikit perlindungan terhadap penjelajahan, tetapi fitur situs cenderung berfungsi seperti yang diharapkan.</translation>
 <translation id="8875221558267407626">Meringkas konten, menyederhanakan bahasa yang kompleks, atau mengajukan pertanyaan</translation>

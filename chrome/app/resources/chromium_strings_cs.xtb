@@ -52,7 +52,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="154404805518949443">Přihlásit se do Chromia</translation>
 <translation id="1547469039832541117">Ukončí zvýrazněnou úlohu</translation>
 <translation id="1553461853655228091">Prohlížeč Chromium potřebuje oprávnění k přístupu k fotoaparátu, aby mohl vytvořit 3D mapu vašeho okolí</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Toto rozšíření už není podporováno. Chromium vám doporučuje odstranit ho.}few{Tato rozšíření už nejsou podporována. Chromium vám doporučuje odstranit je}many{Tato rozšíření už nejsou podporována. Chromium vám doporučuje odstranit je}other{Tato rozšíření už nejsou podporována. Chromium vám doporučuje odstranit je}}</translation>
 <translation id="1562320819937089394">Připnout Chromium</translation>
 <translation id="1574377791422810894">Bezpečnostní nástroje prohlížeče Chromium</translation>
 <translation id="1594928384848033697">Chromium chce smazat vaše data Správce hesel. Tato akce vyžaduje zadání hesla systému Windows.</translation>

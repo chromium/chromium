@@ -1882,7 +1882,6 @@
 <translation id="2343160676229467122"><ph name="SITE_NAME" />ରେ ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଏ ନାହିଁ</translation>
 <translation id="2343390523044483367">ରକି ମାଉଣ୍ଟେନ ଜାତୀୟ ଉଦ୍ୟାନ</translation>
 <translation id="2343747224442182863">ଏହି ଟାବ୍ ପ୍ରତି ଧ୍ୟାନ ଦିଅନ୍ତୁ</translation>
-<translation id="2343971313330854480"><ph name="FEATURE_NAME" /> ଫୋଲ୍ଡରରେ ଆପଣଙ୍କ ଫାଇଲ ଖୋଜନ୍ତୁ</translation>
 <translation id="234559068082989648">Chrome ଆପ୍ସର ପୁରୁଣା ସଂସ୍କରଣଗୁଡ଼ିକ ଡିସେମ୍ବର 2022 ପରେ ଖୋଲିବ ନାହିଁ। ଏକ ନୂଆ ସଂସ୍କରଣରେ ଅପଡେଟ କରିବା କିମ୍ବା ଏହି ଆପକୁ କାଢ଼ି ଦେବା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="2348176352564285430">ଆପ୍: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - ଅନୁମତି ପାଇଁ ଅନୁରୋଧ କରାଯାଇଛି, ଉତ୍ତର ଦେବାକୁ Ctrl + Forward କୀ ଦବାନ୍ତୁ</translation>
@@ -3569,7 +3568,6 @@
 <translation id="3569617221227793022">ଟାଇମ ଜୋନ ବର୍ତ୍ତମାନ <ph name="TIME_ZONE_ENTRY" />ରେ ସେଟ ହୋଇଛି। ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ।</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> ନିମ୍ନୋକ୍ତ ଫାଇଲ୍ ଏବଂ ଫୋଲ୍ଡରଗୁଡ଼ିକୁ ଦେଖିପାରିବ</translation>
 <translation id="3571734092741541777">ସେଟ୍ ଅପ୍</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> ଏକ୍ସଟେନସନ ବନ୍ଦ ଅଛି</translation>
 <translation id="3575121482199441727">ଏହି ସାଇଟ୍ ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="3575224072358507281">Measurement Labର ଗୋପନୀୟତା ନୀତି (measurementlab.net/privacy) ଅନୁଯାୟୀ, ତାହା ପାଇଁ IP ଠିକଣା ଏବଂ ନେଟୱାର୍କ ପରିମାପ ଫଳାଫଳ ସଂଗ୍ରହ କରନ୍ତୁ</translation>
 <translation id="3576324189521867626">ସଫଳତାପୂର୍ବକ ଇନ୍‌ଷ୍ଟଲ୍‌ କରାଗଲା</translation>
@@ -5749,7 +5747,6 @@
 <translation id="5149602533174716626">କପି&amp; ଭିଡିଓ ଫ୍ରେମ</translation>
 <translation id="5150254825601720210">Netscape ସାର୍ଟିଫିକେଟ୍ SSL ସର୍ଭର୍ ନାମ</translation>
 <translation id="5151354047782775295">ଡିସ୍କର ସ୍ଥାନ ଖାଲି କରନ୍ତୁ, ନହେଲେ ଚୟନିତ ଡାଟା ସ୍ୱଚଳିତ ଭାବେ ଡିଲିଟ୍ ହୋଇଯିବ</translation>
-<translation id="5152381187352661267">Chromeରେ ଦକ୍ଷତା</translation>
 <translation id="5153074793829217329">ଆପଣଙ୍କ ମାଉସ କର୍ସରକୁ ନିୟନ୍ତ୍ରଣ କରିବା ପାଇଁ ଆପଣଙ୍କ କୀବୋର୍ଡ କିମ୍ବା ଏକ ନ୍ୟୁମେରିକ କୀ’ପେଡ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="5153234146675181447">ଫୋନକୁ ଭୁଲିଯାଆନ୍ତୁ</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7005,7 +7002,6 @@
 <translation id="6112727384379533756">ଏକ ଟିକେଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6113434369102685411">Chrome ବ୍ରାଉଜର ଏବଂ <ph name="DEVICE_TYPE" /> ଲଞ୍ଚର ପାଇଁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ସେଟ କରନ୍ତୁ</translation>
 <translation id="6113832060210023016">ଲଞ୍ଚର + କ୍ଲିକ</translation>
-<translation id="6116004140911290070">Chromeରେ ଦକ୍ଷତାଗୁଡ଼ିକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="6116921718742659598">ଭାଷା ଓ ଇନ୍‌ପୁଟ୍ ସେଟିଂସ୍ ବଦଳାନ୍ତୁ</translation>
 <translation id="6119008366402292080">କୌଣସି ପ୍ରିଣ୍ଟର ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="6119972796024789243">ରଙ୍ଗ ସଂଶୋଧନ</translation>
@@ -10411,7 +10407,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8596540852772265699">କଷ୍ଟମ୍ ଫାଇଲ୍ସ</translation>
 <translation id="8597845839771543242">ପ୍ରପର୍ଟି ଫର୍ମାଟ୍:</translation>
 <translation id="8598249292448297523">ପ୍ରିଣ୍ଟ</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{ଏକ୍ସଟେନସନକୁ ପରିଚାଳନା କରନ୍ତୁ}other{ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ}}</translation>
 <translation id="8599681327221583254">ଏକ କିମ୍ବା ଅଧିକ ନୀତିକୁ ସଠିକ୍ ଭାବରେ କନଫିଗର୍ କରାଯାଇନାହିଁ। ଦୟାକରି ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8600362954032151088"><ph name="GOOGLE_PASSWORD_MANAGER" />ରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ପାସକୀଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8602851771975208551">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‍‍ରେ ଥିବା ଅନ୍ୟ ଏକ ପ୍ରୋଗ୍ରାମ୍ ଏକ ଆପ୍ ଯୋଗ କରିଛନ୍ତି ଯାହା Chromeର କାର୍ଯ୍ୟ କରିବାର ପଦ୍ଧତିକୁ ପରିବର୍ତ୍ତନ କରିପାରେ।</translation>
@@ -10807,7 +10802,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="887292602123626481">ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="8873075098103007382">ଟାବ ଗ୍ରୁପଗୁଡ଼ିକ ସହ ବ୍ୟବସ୍ଥିତ ରୁହନ୍ତୁ</translation>
 <translation id="8874341931345877644">ଏକ ଡିଭାଇସକୁ କାଷ୍ଟ କରନ୍ତୁ:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" ବନ୍ଦ ଅଛି</translation>
 <translation id="8874647982044395866">ଅର୍ଗାନିକ</translation>
 <translation id="8874790741333031443">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅସ୍ଥାୟୀ ଭାବରେ ଅନୁମତି ଦେବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ, ଯାହାର ଅର୍ଥ ହେଉଛି କମ ବ୍ରାଉଜ କରିବା ସୁରକ୍ଷା କିନ୍ତୁ ସାଇଟ ଫିଚରଗୁଡ଼ିକ ଆଶା କରାଯାଉଥିବା ପରି କାମ କରିବାର ସମ୍ଭାବନା ଅଧିକ</translation>
 <translation id="8875221558267407626">ବିଷୟବସ୍ତୁର ସାରାଂଶ ତିଆରି କରନ୍ତୁ, ଜଟିଳ ଭାଷାକୁ ସରଳ କରନ୍ତୁ, କିମ୍ବା ପ୍ରଶ୍ନ ପଚାରନ୍ତୁ</translation>

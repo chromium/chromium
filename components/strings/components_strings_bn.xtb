@@ -1388,6 +1388,7 @@
 <translation id="3158539265159265653">ডিস্ক</translation>
 <translation id="3162070126914310576">এই ডিভাইসটি এখন এনরোল করা যাবে না কারণ আপনার সংস্থার ইউনিট এনরোল করার প্রথমিক সীমায় পৌঁছে গেছে। সাহায্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="3162559335345991374">আপনি যে ওয়াই-ফাইটি ব্যবহার করছেন সেটির জন্য অপনাকে এটির লগ-ইন পৃষ্ঠাতে যেতে হতে পরে৷</translation>
+<translation id="316542773973815724">নেভিগেশন</translation>
 <translation id="316638481603975524">ওয়েব অ্যাপ ইনস্টল করার অনুমতি চাওয়া হতে পারে</translation>
 <translation id="3166788340998560642">পরেরবার ব্যবহার করার সময় Chrome এটি <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-এ সেভ করার সুযোগ দেবে</translation>
 <translation id="3168744840365648658">রেডিওর সরঞ্জাম</translation>
@@ -3759,7 +3760,6 @@
 <translation id="6893057134494550310">ল্যামিনেটিং ফয়েল</translation>
 <translation id="6893204630281237373">Chrome-এ পেমেন্ট অ্যাপ বন্ধ করতে, আপনার <ph name="BEGIN_LINK1" />পেমেন্টের সেটিংস<ph name="END_LINK1" />-এ যান</translation>
 <translation id="6895330447102777224">আপনার কার্ডটি নিশ্চিত করা হয়েছে</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="GROUP_HEADER" /> গ্রুপে <ph name="NUM_MATCHES_IN_GROUP" />টির মধ্যে <ph name="MATCH_POSITION" /> নম্বর।</translation>
 <translation id="6896758677409633944">কপি</translation>
 <translation id="6897140037006041989">ব্যবহারকারী এজেন্ট</translation>
 <translation id="6898699227549475383">সংস্থা (O)</translation>
@@ -4123,7 +4123,6 @@
 <translation id="7450577240311017924">'সিঙ্ক করা ম্যানেজ করুন' বোতাম, Chrome সেটিংসে আপনি কী তথ্য সিঙ্ক করবেন তা ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="7451311239929941790">এই সমস্যা সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" />।</translation>
 <translation id="745208957946308667">Dino গেম, খেলার জন্য স্পেস প্রেস করুন</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="GROUP_HEADER" /> গ্রুপে <ph name="NUM_MATCHES_IN_GROUP" />টির মধ্যে <ph name="MATCH_POSITION" /> নম্বর।</translation>
 <translation id="7453032093368223821">অন্য ডেটা ম্যানেজ করুন</translation>
 <translation id="7453849010505253492">এই সার্ভারটি প্রমাণ দিতে পারেনি যে এটি <ph name="DOMAIN" />, কারণ এটি এমন একটি নিরাপত্তা সার্টিফিকেট ব্যবহার করছে যা Chrome বা আপনার ওয়েব ট্রাফিক এনক্রিপশনের জন্য সেট করা সিস্টেম কনফিগারেশনের বিশ্বস্ত নয়। ভুল কনফিগারেশনের কারণে বা কোনও আক্রমণকারী আপনার কানেকশন ইন্টারসেপ্ট করার চেষ্টা করলে এটি হতে পারে। <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />সার্টিফিকেট দেখুন<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">ক্লাউড অ্যাকাউন্ট</translation>

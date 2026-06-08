@@ -1387,6 +1387,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3158539265159265653">Diskoa</translation>
 <translation id="3162070126914310576">Une honetan ezin da erregistratu gailua, erakundearen unitatea hasierako erregistro-mugara iritsi delako. Laguntza jasotzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="3162559335345991374">Baliteke darabilzun Wi-Fi konexioaren saio-hasierako orrira joan behar izatea.</translation>
+<translation id="316542773973815724">Nabigazioa</translation>
 <translation id="316638481603975524">Sareko aplikazioak instalatzeko baimena eska dezakete</translation>
 <translation id="3166788340998560642">Hura erabiltzen duzun hurrengoan, <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> zerbitzuan gorde nahi duzun galdetuko dizu</translation>
 <translation id="3168744840365648658">Irrati-ekipamendua</translation>
@@ -3754,7 +3755,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6893057134494550310">Laminatze-xafla</translation>
 <translation id="6893204630281237373">Chrome-n ordainketa-aplikazioa desaktibatzeko, joan <ph name="BEGIN_LINK1" />ordainketa-ezarpenetara<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Berretsi da txartela</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="GROUP_HEADER" /> taldeko <ph name="NUM_MATCHES_IN_GROUP" /> elementutatik <ph name="MATCH_POSITION" />garrena.</translation>
 <translation id="6896758677409633944">Kopiatu</translation>
 <translation id="6897140037006041989">Erabiltzaile-agentea</translation>
 <translation id="6898699227549475383">Erakundea (O)</translation>
@@ -4117,7 +4117,6 @@ Xehetasun gehiago:
 <translation id="7450577240311017924">Sinkronizazioa kudeatzeko botoia: aktiba ezazu Chrome-ren ezarpenetara joan, eta sinkronizatzen den informazioa kudeatzeko</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /> arazoari buruz.</translation>
 <translation id="745208957946308667">Dino jokoa. Jokatzeko, sakatu zuriunea.</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="GROUP_HEADER" /> taldeko <ph name="NUM_MATCHES_IN_GROUP" /> elementutatik <ph name="MATCH_POSITION" />garrena.</translation>
 <translation id="7453032093368223821">Kudeatu beste datu batzuk</translation>
 <translation id="7453849010505253492">Zerbitzariak ezin izan du frogatu <ph name="DOMAIN" /> denik, Chrome-k edo zure sareko trafikoa enkriptatzeko sistema-konfigurazioak fidagarritzat hartzen ez duen segurtasun-ziurtagiri bat darabilelako. Baliteke oker konfiguratuta dagoelako edo erasotzaile batek zure konexioa atzeman duelako izatea. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Ikusi ziurtagiria<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Hodeiko kontua</translation>

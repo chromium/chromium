@@ -96,7 +96,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1953553007165777902">Wrthi'n lawrlwytho... Mae <ph name="MINUTE" /> o funudau ar ôl</translation>
 <translation id="1979600810166324878">Cadwch yn fwy diogel wrth fynd gyda Gwell Pori'n Ddiogel ar Chrome ar gyfer iOS</translation>
 <translation id="2001586581944147178">Gwnewch hi'n anoddach i bobl sydd â mynediad at eich traffig rhyngrwyd weld pa wefannau rydych yn ymweld â nhw. Mae Chrome yn defnyddio cysylltiad diogel i chwilio am gyfeiriad IP safle yn y DNS (System Enw Parth).</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Nid yw'r estyniad hwn yn cael ei gefnogi mwyach. Mae Chrome yn argymell eich bod yn ei dynnu.}zero{Nid yw'r estyniadau hyn yn cael eu cefnogi mwyach. Mae Chrome yn argymell eich bod yn eu tynnu.}two{Nid yw'r estyniadau hyn yn cael eu cefnogi mwyach. Mae Chrome yn argymell eich bod yn eu tynnu.}few{Nid yw'r estyniadau hyn yn cael eu cefnogi mwyach. Mae Chrome yn argymell eich bod yn eu tynnu.}many{Nid yw'r estyniadau hyn yn cael eu cefnogi mwyach. Mae Chrome yn argymell eich bod yn eu tynnu.}other{Nid yw'r estyniadau hyn yn cael eu cefnogi mwyach. Mae Chrome yn argymell eich bod yn eu tynnu.}}</translation>
 <translation id="2018528049276128029">Mae gan bob proffil ei wybodaeth Chrome ei hun megis nodau tudalen, hanes, cyfrineiriau, a rhagor</translation>
 <translation id="2018879682492276940">Methwyd â gosod. Rhowch gynnig arall arni.</translation>
 <translation id="2024959665595762054">I ddefnyddio a chadw data Chrome yn eich Cyfrif Google, cadarnhewch mai chi sydd yno</translation>
@@ -389,6 +388,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="5127558335897923940">Cadwch Chrome yn eich Doc i gael mynediad ato'n gyflym unrhyw bryd</translation>
 <translation id="5132929315877954718">Darganfyddwch apiau, gemau, estyniadau a themâu gwych ar gyfer Google Chrome.</translation>
 <translation id="5139423532931106058">Personoleiddio'ch proffil Chrome</translation>
+<translation id="5152381187352661267">Sgiliau yn Chrome</translation>
 <translation id="5163087008893166964">Croeso i Chrome; agorwyd ffenestr porwr newydd</translation>
 <translation id="5166439563123238795">Mae angen caniatâd i olrhain eich dwylo ar Chrome</translation>
 <translation id="5169778651486082413">Defnyddiwch eich cyfrineiriau gyda Chrome ar eich ffôn</translation>
@@ -488,6 +488,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6070348360322141662">Er mwyn sicrhau mwy o ddiogelwch, bydd Google Chrome yn amgryptio eich data</translation>
 <translation id="6075300983329039771">Mae eich sefydliad, <ph name="MANAGER" />, yn gofyn i chi fewngofnodi i Chrome</translation>
 <translation id="6113794647360055231">Gwnaeth Chrome wella</translation>
+<translation id="6116004140911290070">Galluogi Sgiliau yn Chrome</translation>
 <translation id="6116252277240876590">Defnyddir yr iaith hon i arddangos dewislenni, gosodiadau, rhybuddion, a thestun arall yn Chrome</translation>
 <translation id="6127237283587442951">Defnyddio Chrome yn ddiofyn a'i binio</translation>
 <translation id="6134085236017727171">I ddefnyddio'ch meicroffon, rhowch fynediad i Chrome yn y <ph name="BEGIN_LINK" />gosodiadau system<ph name="END_LINK" /></translation>

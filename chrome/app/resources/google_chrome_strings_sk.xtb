@@ -94,7 +94,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1953553007165777902">Sťahuje sa… Zostávajúci čas: <ph name="MINUTE" /> min</translation>
 <translation id="1979600810166324878">Zlepšené bezpečné prehliadanie v Chrome pre systém iOS vám zaistí väčšiu bezpečnosť na cestách</translation>
 <translation id="2001586581944147178">Sťažte ľuďom s prístupom k vašej internetovej premávke možnosť zistiť, ktoré weby navštevujete. Chrome vyhľadá adresu IP webu v systéme doménových názvov (DNS) prostredníctvom zabezpečeného pripojenia.</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Toto rozšírenie už nie je podporované. Chrome odporúča, aby ste ho odstránili.}few{Tieto rozšírenia už nie sú podporované. Chrome odporúča, aby ste ich odstránili.}many{These extensions are no longer supported. Chrome recommends that you remove them.}other{Tieto rozšírenia už nie sú podporované. Chrome odporúča, aby ste ich odstránili.}}</translation>
 <translation id="2018528049276128029">V každom profile sú uchované vlastné údaje Chromu, ako sú záložky, história, heslá a ďalšie položky</translation>
 <translation id="2018879682492276940">Inštalácia bola neúspešná. Skúste to znova.</translation>
 <translation id="2024959665595762054">Ak chcete vo svojom účte Google používať a ukladať údaje Chromu, overte svoju totožnosť</translation>
@@ -386,6 +385,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="5127558335897923940">Ponechajte si Chrome v doku, aby ste k nemu mali kedykoľvek rýchly prístup</translation>
 <translation id="5132929315877954718">Objavte skvelé aplikácie, hry, rozšírenia a motívy pre prehliadač Google Chrome.</translation>
 <translation id="5139423532931106058">Prispôsobiť profil Chromu</translation>
+<translation id="5152381187352661267">Zručnosti v Chrome</translation>
 <translation id="5163087008893166964">Vitajte v Chrome, otvorilo sa nové okno prehliadača</translation>
 <translation id="5166439563123238795">Chrome vyžaduje povolenie sledovať vaše ruky</translation>
 <translation id="5169778651486082413">Používajte heslá v Chrome v telefóne</translation>
@@ -485,6 +485,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6070348360322141662">V záujme vyššej miery zabezpečenia budú dáta v prehliadači Google Chrome šifrované</translation>
 <translation id="6075300983329039771">Vaša organizácia (<ph name="MANAGER" />) vyžaduje, aby ste sa prihlásili do Chromu</translation>
 <translation id="6113794647360055231">Prehliadač Chrome bol práve vylepšený</translation>
+<translation id="6116004140911290070">Zapnúť zručnosti v Chrome</translation>
 <translation id="6116252277240876590">V tomto jazyku sa zobrazujú ponuky, nastavenia, upozornenia a ďalší text v Chrome</translation>
 <translation id="6127237283587442951">Používajte Chrome ako predvolený prehliadač a pripnite si ho</translation>
 <translation id="6134085236017727171">Ak chcete používať mikrofón, udeľte Chromu prístup v <ph name="BEGIN_LINK" />nastaveniach systému<ph name="END_LINK" />.</translation>

@@ -1387,6 +1387,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162070126914310576">Təşkilat qrupunuz ilkin qeydiyyat limitinə çatdığı üçün hazırda bu cihazı qeydiyyatdan keçirmək mümkün deyil. Kömək üçün administrator ilə əlaqə saxlayın.</translation>
 <translation id="3162559335345991374">İstifadə etdiyiniz Wi-Fi login səhifəsinə daxil olmağınızı tələb edə bilər.</translation>
+<translation id="316542773973815724">Naviqasiya</translation>
 <translation id="316638481603975524">Veb-tətbiqləri quraşdırmağı istəyə bilər</translation>
 <translation id="3166788340998560642">Növbəti dəfə istifadə etdiyiniz zaman Chrome onu <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> bölməsində yadda saxlamağı təklif edəcək</translation>
 <translation id="3168744840365648658">Radio təchizatı</translation>
@@ -3755,7 +3756,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6893057134494550310">Laminasiya folqası</translation>
 <translation id="6893204630281237373">Chrome-da ödəniş tətbiqini söndürmək üçün <ph name="BEGIN_LINK1" />ödəniş ayarlarına<ph name="END_LINK1" /> keçin</translation>
 <translation id="6895330447102777224">Kartınız təsdiqləndi</translation>
-<translation id="6895573608763679343"><ph name="GROUP_HEADER" /> qrupunda <ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES_IN_GROUP" />.</translation>
 <translation id="6896758677409633944">Kopyalayın</translation>
 <translation id="6897140037006041989">İstifadəçi Agent</translation>
 <translation id="6898699227549475383">Təşkilat (T)</translation>
@@ -4118,7 +4118,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7450577240311017924">"Sinxronlaşdırmanı idarə edin" düyməsi, aktivləşdirərək sinxronlaşdıracağınız məlumatları Chrome ayarlarında idarə edin</translation>
 <translation id="7451311239929941790">Problem haqqında <ph name="BEGIN_LINK" />ətraflı məlumat<ph name="END_LINK" /> əldə edilir.</translation>
 <translation id="745208957946308667">Dino oyunu, oynamaq üçün boşluq düyməsinə basın</translation>
-<translation id="74521886886364465"><ph name="GROUP_HEADER" /> qrupunda <ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES_IN_GROUP" />.</translation>
 <translation id="7453032093368223821">Digər datanı idarə edin</translation>
 <translation id="7453849010505253492">Bu server onun <ph name="DOMAIN" /> domeni olduğunu sübut edə bilmədi, çünki o, Chrome və ya veb-trafikin şifrələnməsi üçün sistem konfiqurasiyanız tərəfindən etibar edilməyən təhlükəsizlik sertifikatından istifadə edir. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Sertifikata baxın<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Bulud hesabı</translation>

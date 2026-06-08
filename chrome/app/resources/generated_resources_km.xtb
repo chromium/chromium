@@ -1898,7 +1898,6 @@
 <translation id="2343160676229467122">កម្មវិធីបន្ថែម​មិនត្រូវបានអនុញ្ញាតនៅលើ <ph name="SITE_NAME" /> ទេ</translation>
 <translation id="2343390523044483367">ឧទ្យានជាតិ Rocky Mountains</translation>
 <translation id="2343747224442182863">ផ្ដោត​ផ្ទាំងនេះ</translation>
-<translation id="2343971313330854480">រកឃើញ​ឯកសារ​របស់អ្នក​នៅក្នុង​ថត <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">បន្ទាប់ពី​ខែ​ធ្នូ ឆ្នាំ 2022 កំណែ​ចាស់​នៃ​កម្មវិធី Chrome នឹង​មិន​​បើក​បាន​ទេ។ សូមទាក់ទង​ទៅ​អ្នក​គ្រប់គ្រង​របស់អ្នក ដើម្បី​ដំឡើង​ទៅ​កំណែ​ថ្មី ឬ​លុប​កម្មវិធី​នេះ​ចេញ។</translation>
 <translation id="2348176352564285430">កម្មវិធី៖ <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - បានស្នើសុំការអនុញ្ញាត, ចុច Ctrl + Forward ដើម្បីឆ្លើយតប</translation>
@@ -3586,7 +3585,6 @@
 <translation id="3569617221227793022">បច្ចុប្បន្ន ល្វែងម៉ោងត្រូវបានកំណត់ទៅ <ph name="TIME_ZONE_ENTRY" />។ ការកំណត់នេះត្រូវបានគ្រប់គ្រងដោយអ្នកគ្រប់គ្រងរបស់អ្នក។</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> អាចមើល​ថត និងឯកសារខាងក្រោម</translation>
 <translation id="3571734092741541777">តំឡើង</translation>
-<translation id="3572031449439748861">កម្មវិធីបន្ថែម <ph name="NUM_EXTENSIONS" /> ត្រូវបានបិទ</translation>
 <translation id="3575121482199441727">អនុញ្ញាត​សម្រាប់​គេហទំព័រ​នេះ</translation>
 <translation id="3575224072358507281">ប្រមូល​លទ្ធផល​វាស់ស្ទង់​បណ្ដាញ និង​អាសយដ្ឋាន IP សម្រាប់ Measurement Lab ដោយ​យោងតាម​គោលការណ៍​ឯកជនភាព​របស់វា (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">បានដំឡើងដោយជោគជ័យ</translation>
@@ -5770,7 +5768,6 @@
 <translation id="5149602533174716626">ចម្ល&amp;ង​ហ្វ្រេមវីដេអូ</translation>
 <translation id="5150254825601720210">ឈ្មោះម៉ាស៊ីនមេ SSL វិញ្ញបនប័ត្រ Netscape</translation>
 <translation id="5151354047782775295">បង្កើនទំហំផ្ទុកក្នុងថាស បើមិនដូច្នោះទេ ទិន្នន័យដែលបានជ្រើសនឹងត្រូវបានលុបដោយស្វ័យប្រវត្តិ</translation>
-<translation id="5152381187352661267">ជំនាញ​នៅក្នុង Chrome</translation>
 <translation id="5153074793829217329">ប្រើក្ដារចុចរបស់អ្នក ឬផ្ទាំងចុច​លេខ ដើម្បីគ្រប់គ្រងទស្សន៍ទ្រនិច​ម៉ៅស៍របស់អ្នក</translation>
 <translation id="5153234146675181447">បំភ្លេចទូរសព្ទ</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7030,7 +7027,6 @@
 <translation id="6112727384379533756">បញ្ចូលសំបុត្រ</translation>
 <translation id="6113434369102685411">កំណត់ម៉ាស៊ីន​ស្វែងរកលំនាំដើម​របស់អ្នក​សម្រាប់​កម្មវិធីរុករកតាមអ៊ីនធឺណិត Chrome និង​កម្មវិធី​ចាប់ផ្ដើម <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">គ្រាប់ចុច​ចាប់ផ្ដើម + ចុច</translation>
-<translation id="6116004140911290070">បើក​ជំនាញ​នៅក្នុង Chrome</translation>
 <translation id="6116921718742659598">ប្តូរការកំណត់ភាសា និងធាតុបញ្ចូល</translation>
 <translation id="6119008366402292080">មិនមាន​ម៉ាស៊ីនបោះពុម្ពទេ</translation>
 <translation id="6119972796024789243">ការកែតម្រូវ​ពណ៌</translation>
@@ -10438,7 +10434,6 @@
 <translation id="8596540852772265699">ឯកសារផ្ទាល់ខ្លួន</translation>
 <translation id="8597845839771543242">ទម្រង់លក្ខណៈសម្បត្តិ៖</translation>
 <translation id="8598249292448297523">បោះពុម្ព</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{គ្រប់គ្រងកម្មវិធីបន្ថែម}other{គ្រប់គ្រងកម្មវិធីបន្ថែម}}</translation>
 <translation id="8599681327221583254">គោលការណ៍មួយ ឬច្រើនមិនត្រូវបានកំណត់​រចនាសម្ព័ន្ធត្រឹមត្រូវទេ។ សូមទាក់ទង​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
 <translation id="8600362954032151088">គ្រប់គ្រង​ពាក្យ​សម្ងាត់ និង​កូដសម្ងាត់​របស់អ្នក​នៅក្នុង<ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">កម្មវិធីដ៏ទៃទៀតនៅលើកុំព្យូទ័ររបស់អ្នកបានបន្ថែមកម្មវិធី ដែលអាចប្តូររបៀបដំណើរការរបស់ Chrome។</translation>
@@ -10834,7 +10829,6 @@
 <translation id="887292602123626481">ស្វែងយល់បន្ថែម​អំពី​ម៉ាស៊ីនស្វែងរក​លំនាំដើម</translation>
 <translation id="8873075098103007382">រក្សារបៀបរៀបរយដោយប្រើក្រុមផ្ទាំង</translation>
 <translation id="8874341931345877644">ភ្ជាប់​ទៅឧបករណ៍៖</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" ត្រូវបានបិទ</translation>
 <translation id="8874647982044395866">សរីរាង្គ</translation>
 <translation id="8874790741333031443">សាកល្បង​អនុញ្ញាត​ខូគី​ភាគីទីបី​ជាបណ្ដោះអាសន្ត ដែលមានន័យថា​មានការការពារ​ការរុករក​តិចជាងមុន ប៉ុន្តែ​មុខងារ​គេហទំព័រ​កាន់តែទំនង​ជាដំណើរការ​ដូចការរំពឹងទុក។</translation>
 <translation id="8875221558267407626">សង្ខេប​ខ្លឹមសារ សម្រួល​ភាសា​ស្មុគស្មាញ ឬ​សួរសំណួរ</translation>

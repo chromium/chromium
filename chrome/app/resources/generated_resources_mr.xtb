@@ -1898,7 +1898,6 @@
 <translation id="2343160676229467122"><ph name="SITE_NAME" /> वर एक्स्टेंशनना अनुमती नाही</translation>
 <translation id="2343390523044483367">रॉकी माउंटन नॅशनल पार्क</translation>
 <translation id="2343747224442182863">या टॅबवर फोकस करा</translation>
-<translation id="2343971313330854480">तुमची फाइल <ph name="FEATURE_NAME" /> फोल्डरमध्ये शोधा</translation>
 <translation id="234559068082989648">Chrome अ‍ॅप्स च्या जुन्या आवृत्त्या डिसेंबर २०२२ नंतर उघडणार नाहीत. नवीन आवृत्तीवर अपडेट करण्यासाठी किंवा हे अ‍ॅप काढून टाकण्यासाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="2348176352564285430">ॲप: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी Ctrl + Forward प्रेस करा</translation>
@@ -3588,7 +3587,6 @@
 <translation id="3569617221227793022">टाइम झोन सध्या <ph name="TIME_ZONE_ENTRY" /> वर सेट केला आहे. हे सेटिंग तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केले जाते.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> ला पुढील फाइल आणि फोल्डर पाहता येतात</translation>
 <translation id="3571734092741541777">सेट अप</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> बंद केलेली होती</translation>
 <translation id="3575121482199441727">या साइटला अनुमती द्या</translation>
 <translation id="3575224072358507281">Measurement Lab साठी, त्यांचे गोपनीयता धोरण (measurementlab.net/privacy) यानुसार आयपी अ‍ॅड्रेस आणि नेटवर्क मापनासंबंधित परिणाम गोळा करा</translation>
 <translation id="3576324189521867626">यशस्वीरित्या इंस्टॉल केला</translation>
@@ -5771,7 +5769,6 @@
 <translation id="5149602533174716626">व्हिडिओ फ्रेम कॉपी करा</translation>
 <translation id="5150254825601720210">Netscape सर्टिफिकेट SSL सर्व्हर नाव</translation>
 <translation id="5151354047782775295">डिस्क स्थान मोकळे करा किंवा निवडलेला डेटा स्वयंचलितपणे हटवला जाऊ शकतो</translation>
-<translation id="5152381187352661267">Chrome मधील कौशल्ये</translation>
 <translation id="5153074793829217329">तुमच्या माउसचा कर्सर नियंत्रित करण्यासाठी तुमचा कीबोर्ड वापरा किंवा अंकीय कीपॅड वापरा</translation>
 <translation id="5153234146675181447">फोन विसरा</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7033,7 +7030,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6112727384379533756">तिकीट जोडा</translation>
 <translation id="6113434369102685411">Chrome ब्राउझर आणि <ph name="DEVICE_TYPE" /> लाँचरसाठी तुमचे डीफॉल्ट शोध इंजीन सेट करा</translation>
 <translation id="6113832060210023016">launcher + click</translation>
-<translation id="6116004140911290070">Chrome मध्ये कौशल्ये सुरू करा</translation>
 <translation id="6116921718742659598">भाषा आणि इनपुट सेटिंग्ज बदला</translation>
 <translation id="6119008366402292080">कोणताही प्रिंटर उपलब्ध नाही</translation>
 <translation id="6119972796024789243">रंग सुधारणा</translation>
@@ -10441,7 +10437,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8596540852772265699">कस्टम फाइल</translation>
 <translation id="8597845839771543242">गुणधर्म स्‍वरूपन:</translation>
 <translation id="8598249292448297523">प्रिंट करा</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{एक्स्टेंशन व्यवस्थापित करा}other{एक्स्टेंशन व्यवस्थापित करा}}</translation>
 <translation id="8599681327221583254">एक किंवा त्यापेक्षा जास्त धोरणे योग्य प्रकारे काँफिगर केलेली नाहीत. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा</translation>
 <translation id="8600362954032151088"><ph name="GOOGLE_PASSWORD_MANAGER" /> मध्ये तुमचे पासवर्ड आणि पासकी व्यवस्थापित करा</translation>
 <translation id="8602851771975208551">तुमच्या कॉंप्युटरवरील दुसऱ्या प्रोग्रामने Chrome च्या काम करण्याचा मार्ग बदलू शकणारा अ‍ॅप जोडला.</translation>
@@ -10838,7 +10833,6 @@ I feel - विटांची इमारत</translation>
 <translation id="887292602123626481">डीफॉल्ट शोध इंजीनबद्दल अधिक जाणून घ्या</translation>
 <translation id="8873075098103007382">टॅब गटांसह व्यवस्थापित केलेले रहा</translation>
 <translation id="8874341931345877644">डिव्हाइसवर कास्ट करा:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" बंद केलेली होती</translation>
 <translation id="8874647982044395866">सेंद्रीय</translation>
 <translation id="8874790741333031443">तृतीय पक्ष कुकीना तात्पुरती अनुमती देऊन पहा, ज्यामुळे ब्राउझ करण्यासंबंधित संरक्षण कमी मिळेल, पण साइटची वैशिष्ट्ये अपेक्षेनुसार काम करण्याची अधिक शक्यता आहे.</translation>
 <translation id="8875221558267407626">आशयाचा सारांश द्या, क्लिष्ट भाषा सोपी करा किंवा प्रश्न विचारा</translation>

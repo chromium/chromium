@@ -1899,7 +1899,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2343160676229467122">Sambungan tidak dibenarkan pada <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Taman Negara Rocky Mountain</translation>
 <translation id="2343747224442182863">Fokus pada Tab Ini</translation>
-<translation id="2343971313330854480">Cari fail anda dalam folder <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Versi lama Apl Chrome tidak akan dibuka selepas Disember 2022. Hubungi pentadbir anda untuk mengemas kini kepada versi baharu atau mengalih keluar apl ini.</translation>
 <translation id="2348176352564285430">Apl: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Kebenaran diminta, tekan Ctrl + Maju untuk memberikan respons</translation>
@@ -3589,7 +3588,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3569617221227793022">Zon waktu ditetapkan kepada <ph name="TIME_ZONE_ENTRY" /> pada masa ini. Tetapan ini diurus oleh pentadbir anda.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> boleh melihat fail dan folder berikut</translation>
 <translation id="3571734092741541777">Sediakan</translation>
-<translation id="3572031449439748861">Sambungan <ph name="NUM_EXTENSIONS" /> dimatikan</translation>
 <translation id="3575121482199441727">Benarkan untuk tapak ini</translation>
 <translation id="3575224072358507281">Dapatkan alamat IP dan keputusan pengukuran rangkaian untuk Measurement Lab, menurut dasar privasi mereka (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Berjaya dipasang</translation>
@@ -5776,7 +5774,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5149602533174716626">Salin Bingkai Video</translation>
 <translation id="5150254825601720210">Nama Pelayan SSL Sijil Netscape</translation>
 <translation id="5151354047782775295">Kosongkan ruang cakera, jika tidak data terpilih akan dipadamkan secara automatik.</translation>
-<translation id="5152381187352661267">Kemahiran dalam Chrome</translation>
 <translation id="5153074793829217329">Gunakan papan kekunci atau papan kekunci berangka anda untuk mengawal kursor tetikus anda</translation>
 <translation id="5153234146675181447">Lupakan telefon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7036,7 +7033,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6112727384379533756">Tambahkan tiket</translation>
 <translation id="6113434369102685411">Tetapkan enjin carian lalai anda untuk penyemak imbas Chrome dan Pelancar <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">pelancar + klik</translation>
-<translation id="6116004140911290070">Dayakan Kemahiran dalam Chrome</translation>
 <translation id="6116921718742659598">Tukar tetapan bahasa dan input</translation>
 <translation id="6119008366402292080">Tiada pencetak tersedia</translation>
 <translation id="6119972796024789243">Pembetulan warna</translation>
@@ -10449,7 +10445,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8596540852772265699">Fail Tersuai</translation>
 <translation id="8597845839771543242">Format sifat:</translation>
 <translation id="8598249292448297523">cetak</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Urus sambungan}other{Urus sambungan}}</translation>
 <translation id="8599681327221583254">Satu atau beberapa dasar tidak dikonfigurasikan dengan betul. Sila hubungi pentadbir anda</translation>
 <translation id="8600362954032151088">Urus kata laluan &amp; kunci laluan anda dalam <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Program lain pada komputer anda menambah apl yang boleh mengubah cara Chrome berfungsi.</translation>
@@ -10845,7 +10840,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="887292602123626481">Ketahui lebih lanjut tentang enjin carian lalai</translation>
 <translation id="8873075098103007382">Kekal teratur dengan kumpulan tab</translation>
 <translation id="8874341931345877644">Hantar ke peranti:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" dimatikan</translation>
 <translation id="8874647982044395866">Organik</translation>
 <translation id="8874790741333031443">Cuba berikan kebenaran sementara untuk kuki pihak ketiga yang boleh mengurangkan perlindungan penyemakan imbas tetapi ciri laman lebih berkemungkinan untuk berfungsi seperti yang dijangka.</translation>
 <translation id="8875221558267407626">Ringkaskan kandungan, permudahkan bahasa yang kompleks atau tanya soalan</translation>

@@ -1895,7 +1895,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2343160676229467122">Razširitve niso dovoljene na spletnem mestu <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Narodni park v Skalnem gorovju</translation>
 <translation id="2343747224442182863">Izberi ta zavihek</translation>
-<translation id="2343971313330854480">Poiščite datoteko v mapi <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Stare različice aplikacij za Chrome se po decembru 2022 ne bodo odprle. Obrnite se na skrbnika, da to aplikacijo posodobi na novo različico ali jo odstrani.</translation>
 <translation id="2348176352564285430">Aplikacija: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Zahtevano je dovoljenje; pritisnite Ctrl + tipko za naprej, če se želite odzvati.</translation>
@@ -3582,7 +3581,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3569617221227793022">Časovni pas je trenutno nastavljen na <ph name="TIME_ZONE_ENTRY" />. To nastavitev upravlja skrbnik.</translation>
 <translation id="3569682580018832495">Spletno mesto <ph name="ORIGIN" /> si lahko ogleda te datoteke in mape</translation>
 <translation id="3571734092741541777">Nastavi</translation>
-<translation id="3572031449439748861">Izklopljenih je bilo toliko razširitev: <ph name="NUM_EXTENSIONS" /></translation>
 <translation id="3575121482199441727">Dovoli za to spletno mesto</translation>
 <translation id="3575224072358507281">Zbiranje naslovov IP in rezultatov meritev omrežja za Measurement Lab v skladu z njihovim pravilnikom o zasebnosti (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Uspešno nameščeno</translation>
@@ -5764,7 +5762,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5149602533174716626">Kopira&amp;j videosličico</translation>
 <translation id="5150254825601720210">Ime strežnika SLL Netscapeovega potrdila</translation>
 <translation id="5151354047782775295">Sprostite prostor na disku, sicer bodo nekateri podatki morda samodejno izbrisani</translation>
-<translation id="5152381187352661267">Veščine v Chromu</translation>
 <translation id="5153074793829217329">Upravljanje kazalca miške s tipkovnico ali številsko tipkovnico</translation>
 <translation id="5153234146675181447">Pozabi telefon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7024,7 +7021,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6112727384379533756">Dodaj kartonček</translation>
 <translation id="6113434369102685411">Nastavite privzeti iskalnik za brskalnik Chrome in zaganjalnik naprave <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">zaganjalnik in klik</translation>
-<translation id="6116004140911290070">Omogoči veščine v Chromu</translation>
 <translation id="6116921718742659598">Spreminjanje nastavitev jezika in vnosa</translation>
 <translation id="6119008366402292080">Ni razpoložljivih tiskalnikov</translation>
 <translation id="6119972796024789243">Popravljanje barv</translation>
@@ -10436,7 +10432,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8596540852772265699">Datoteke po meri</translation>
 <translation id="8597845839771543242">Oblika zapisa lastnosti:</translation>
 <translation id="8598249292448297523">natisni</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Upravljanje razširitve}one{Upravljanje razširitev}two{Upravljanje razširitev}few{Upravljanje razširitev}other{Upravljanje razširitev}}</translation>
 <translation id="8599681327221583254">Eden ali več pravilnikov ni ustrezno konfiguriranih. Obrnite se na skrbnika.</translation>
 <translation id="8600362954032151088">Upravljajte gesla in ključe za dostop v orodju <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Drug program v računalniku je dodal aplikacijo, ki lahko spremeni način delovanja Chroma.</translation>
@@ -10832,7 +10827,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="887292602123626481">Preberite več o privzetih iskalnikih</translation>
 <translation id="8873075098103007382">Ostanite organizirani s skupinami zavihkov</translation>
 <translation id="8874341931345877644">Predvajanje v oddaljeni napravi:</translation>
-<translation id="8874448314264883207">Razširitev »<ph name="EXTENSION_NAME" />« je bila izklopljena</translation>
 <translation id="8874647982044395866">Organsko</translation>
 <translation id="8874790741333031443">Poskusite začasno omogočiti piškotke tretjih oseb, kar pomeni manj zaščite brskanja, vendar je bolj verjetno, da bodo funkcije spletnega mesta delovale po pričakovanjih.</translation>
 <translation id="8875221558267407626">Povzemanje vsebine, poenostavljanje zapletenega besedila ali zastavljanje vprašanj</translation>

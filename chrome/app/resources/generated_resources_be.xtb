@@ -1880,7 +1880,6 @@
 <translation id="2343160676229467122">На сайце <ph name="SITE_NAME" /> пашырэнні забаронены</translation>
 <translation id="2343390523044483367">Нацыянальны парк Скалістыя горы</translation>
 <translation id="2343747224442182863">Перайсці на гэту ўкладку</translation>
-<translation id="2343971313330854480">Файл можна знайсці ў папцы "<ph name="FEATURE_NAME" />"</translation>
 <translation id="234559068082989648">Старыя версіі праграм Chrome перастануць адкрывацца пасля снежня 2022 г. Выдаліце гэту праграму або звяжыцеся з адміністратарам, каб абнавіць яе.</translation>
 <translation id="2348176352564285430">Праграма: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Запытаны дазвол. Каб адказаць, націсніце Ctrl + Forward</translation>
@@ -3567,7 +3566,6 @@
 <translation id="3569617221227793022">Бягучы часавы пояс – <ph name="TIME_ZONE_ENTRY" />. Гэта налада знаходзіцца пад кіраваннем адміністратара.</translation>
 <translation id="3569682580018832495">Сайт <ph name="ORIGIN" /> можа праглядаць наступныя файлы і папкі</translation>
 <translation id="3571734092741541777">Наладзіць</translation>
-<translation id="3572031449439748861">Пашырэнні (<ph name="NUM_EXTENSIONS" />) былі выключаны</translation>
 <translation id="3575121482199441727">Дазволіць для гэтага сайта</translation>
 <translation id="3575224072358507281">Збіраць IP-адрас і вынікі ацэнкі сеткі для сэрвісу Measurement Lab у адпаведнасці з яго палітыкай прыватнасці (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Усталявана</translation>
@@ -5747,7 +5745,6 @@
 <translation id="5149602533174716626">Кап&amp;іраваць кадр відэа</translation>
 <translation id="5150254825601720210">Назва SSL-сервера сертыфіката Netscape</translation>
 <translation id="5151354047782775295">Вызваліце месца на дыску або выберыце даныя, якія могуць быць аўтаматычна выдалены</translation>
-<translation id="5152381187352661267">Навыкі ў Chrome</translation>
 <translation id="5153074793829217329">Каб кіраваць курсорам мышы, выкарыстоўвайце клавіятуру ці панэль набору лічбаў</translation>
 <translation id="5153234146675181447">Забыць тэлефон</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7005,7 +7002,6 @@
 <translation id="6112727384379533756">Дадаць білет</translation>
 <translation id="6113434369102685411">Задайце стандартную пошукавую сістэму для браўзера Chrome і Панэлі запуску на прыладзе <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">Клавіша панэлі запуску + націсканне</translation>
-<translation id="6116004140911290070">Уключыць навыкі ў Chrome</translation>
 <translation id="6116921718742659598">Змяніць налады мовы і ўводу</translation>
 <translation id="6119008366402292080">Няма даступных прынтараў</translation>
 <translation id="6119972796024789243">Карэкцыя колераў</translation>
@@ -10416,7 +10412,6 @@
 <translation id="8596540852772265699">Карыстальніцкія файлы</translation>
 <translation id="8597845839771543242">Фармат уласцівасці:</translation>
 <translation id="8598249292448297523">друк</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Кіраваць пашырэннем}one{Кіраваць пашырэннямі}few{Кіраваць пашырэннямі}many{Кіраваць пашырэннямі}other{Кіраваць пашырэннямі}}</translation>
 <translation id="8599681327221583254">Адна або некалькі палітык наладжаны няправільна. Звярніцеся да адміністратара</translation>
 <translation id="8600362954032151088">Кіруйце паролямі і ключамі доступу тут: <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Іншая праграма на камп’ютары дадала праграму, якая можа змяніць працу Chrome.</translation>
@@ -10812,7 +10807,6 @@
 <translation id="887292602123626481">Даведацца больш пра стандартныя пошукавыя сістэмы</translation>
 <translation id="8873075098103007382">Падтрымлівайце парадак з дапамогай груп укладак</translation>
 <translation id="8874341931345877644">Трансляцыя на прыладу:</translation>
-<translation id="8874448314264883207">Пашырэнне "<ph name="EXTENSION_NAME" />" было выключана</translation>
 <translation id="8874647982044395866">Арганічны</translation>
 <translation id="8874790741333031443">Паспрабуйце часова дазволіць староннія файлы cookie – гэта знізіць вашу абароненасць падчас прагляду вэб-сайтаў, але павысіць імавернасць таго, што функцыі сайта будуць працаваць карэктна.</translation>
 <translation id="8875221558267407626">Падсумоўвайце змесціва, спрашчайце складаныя тэксты або задавайце пытанні</translation>

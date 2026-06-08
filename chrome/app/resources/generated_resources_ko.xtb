@@ -1898,7 +1898,6 @@
 <translation id="2343160676229467122"><ph name="SITE_NAME" />에서 확장 프로그램이 허용되지 않습니다.</translation>
 <translation id="2343390523044483367">로키산맥 국립공원</translation>
 <translation id="2343747224442182863">이 탭에 포커스</translation>
-<translation id="2343971313330854480"><ph name="FEATURE_NAME" /> 폴더에서 파일을 찾으세요</translation>
 <translation id="234559068082989648">이전 버전의 Chrome 앱은 2022년 12월 이후 열리지 않습니다. 관리자에게 문의하여 새 버전으로 업데이트하거나 앱을 삭제하세요.</translation>
 <translation id="2348176352564285430">앱: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - 권한 요청됨, Ctrl 키와 앞으로를 눌러 응답</translation>
@@ -3585,7 +3584,6 @@
 <translation id="3569617221227793022">현재 시간대가 <ph name="TIME_ZONE_ENTRY" />(으)로 설정되어 있습니다. 관리자가 관리하는 설정입니다.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" />에서 다음 파일과 폴더를 볼 수 있습니다.</translation>
 <translation id="3571734092741541777">설정</translation>
-<translation id="3572031449439748861">확장 프로그램 <ph name="NUM_EXTENSIONS" />개가 사용 중지되었습니다</translation>
 <translation id="3575121482199441727">이 사이트에 허용</translation>
 <translation id="3575224072358507281">개인정보처리방침(measurementlab.net/privacy)에 따라 Measurement Lab의 IP 주소 및 네트워크 측정 결과를 수집합니다.</translation>
 <translation id="3576324189521867626">설치되었습니다.</translation>
@@ -5765,7 +5763,6 @@
 <translation id="5149602533174716626">동영상 프레임 복사(&amp;Y)</translation>
 <translation id="5150254825601720210">Netscape Certificate SSL Server Name</translation>
 <translation id="5151354047782775295">디스크 저장 공간을 확보하지 않으면 일부 데이터가 자동으로 삭제됩니다.</translation>
-<translation id="5152381187352661267">Chrome의 스킬</translation>
 <translation id="5153074793829217329">키보드 또는 숫자 키패드를 사용하여 마우스 커서를 제어합니다.</translation>
 <translation id="5153234146675181447">휴대전화 지우기</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7024,7 +7021,6 @@
 <translation id="6112727384379533756">티켓 추가</translation>
 <translation id="6113434369102685411">Chrome 브라우저 및 <ph name="DEVICE_TYPE" /> 런처에서 사용할 기본 검색엔진을 설정하세요.</translation>
 <translation id="6113832060210023016">런처 + 클릭</translation>
-<translation id="6116004140911290070">Chrome에서 스킬 사용 설정</translation>
 <translation id="6116921718742659598">언어 및 입력 설정 변경</translation>
 <translation id="6119008366402292080">사용 가능한 프린터 없음</translation>
 <translation id="6119972796024789243">색상 보정</translation>
@@ -10429,7 +10425,6 @@
 <translation id="8596540852772265699">사용자 지정 파일</translation>
 <translation id="8597845839771543242">속성 형식:</translation>
 <translation id="8598249292448297523">인쇄</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{확장 프로그램 관리}other{확장 프로그램 관리}}</translation>
 <translation id="8599681327221583254">1개 이상의 정책이 올바로 구성되지 않았습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="8600362954032151088"><ph name="GOOGLE_PASSWORD_MANAGER" />에서 비밀번호 및 패스키 관리</translation>
 <translation id="8602851771975208551">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 앱을 추가했습니다.</translation>
@@ -10825,7 +10820,6 @@
 <translation id="887292602123626481">기본 검색엔진 자세히 알아보기</translation>
 <translation id="8873075098103007382">탭 그룹으로 깔끔하게 정리</translation>
 <translation id="8874341931345877644">기기로 전송:</translation>
-<translation id="8874448314264883207">'<ph name="EXTENSION_NAME" />'이(가) 사용 중지되었습니다</translation>
 <translation id="8874647982044395866">유기적</translation>
 <translation id="8874790741333031443">서드 파티 쿠키를 일시적으로 허용해 보세요. 인터넷 사용 시 보안은 취약해지지만 사이트 기능이 예상대로 작동할 가능성은 높아집니다.</translation>
 <translation id="8875221558267407626">콘텐츠를 요약하거나, 복잡한 언어를 단순화하거나, 질문하세요</translation>

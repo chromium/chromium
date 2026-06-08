@@ -1387,6 +1387,7 @@
 <translation id="3158539265159265653">ଡିସ୍କ</translation>
 <translation id="3162070126914310576">ଆପଣଙ୍କ ସଂସ୍ଥାର ୟୁନିଟ ଏହାର ପ୍ରାରମ୍ଭିକ ପଞ୍ଜିକରଣ ସୀମାରେ ପହଞ୍ଚିଯାଇଥିବା ଯୋଗୁଁ ଏହି ଡିଭାଇସକୁ ବର୍ତ୍ତମାନ ପଞ୍ଜିକରଣ କରାଯାଇପାରିବ ନାହିଁ। ସହାୟତା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="3162559335345991374">ଆପଣ ଯେଉଁ ୱାଇ-ଫାଇ ବ୍ୟବହାର କରୁଛନ୍ତି, ଆପଣଙ୍କୁ ଏହାର ଲଗ୍ ଇନ୍ ପୃଷ୍ଠାକୁ ଯିବାର ଆବଶ୍ୟକତା ହୋଇପାରେ।</translation>
+<translation id="316542773973815724">ନାଭିଗେସନ୍</translation>
 <translation id="316638481603975524">ୱେବ ଆପ୍ସ ଇନଷ୍ଟଲ କରିବାକୁ ପଚାରିପାରିବେ</translation>
 <translation id="3166788340998560642">ଆପଣ ପରବର୍ତ୍ତୀ ଥର ଏହାକୁ ବ୍ୟବହାର କଲେ Chrome ଏହାକୁ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />ରେ ସେଭ କରିବାକୁ ଅଫର କରିବ</translation>
 <translation id="3168744840365648658">ରେଡିଓ ଇକ୍ୟୁପମେଣ୍ଟ</translation>
@@ -3755,7 +3756,6 @@
 <translation id="6893057134494550310">ଲାମିନେଟିଂ ଫଏଲ</translation>
 <translation id="6893204630281237373">Chromeରେ ପେମେଣ୍ଟ ଆପ ବନ୍ଦ କରିବା ପାଇଁ, ଆପଣଙ୍କ <ph name="BEGIN_LINK1" />ପେମେଣ୍ଟ ସେଟିଂସ<ph name="END_LINK1" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6895330447102777224">ଆପଣଙ୍କ କାର୍ଡ ସୁନିଶ୍ଚିତ କରାଯାଇଛି</translation>
-<translation id="6895573608763679343"><ph name="GROUP_HEADER" /> ଗ୍ରୁପରେ <ph name="NUM_MATCHES_IN_GROUP" />ର <ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" />।</translation>
 <translation id="6896758677409633944">କପି କରନ୍ତୁ</translation>
 <translation id="6897140037006041989">ୟୁଜର ଏଜେଣ୍ଟ</translation>
 <translation id="6898699227549475383">ସଂସ୍ଥା (O)</translation>
@@ -4118,7 +4118,6 @@
 <translation id="7450577240311017924">'ସିଙ୍କ ପରିଚାଳନା କରନ୍ତୁ' ବଟନ, Chrome ସେଟିଂସରେ ଆପଣ କେଉଁ ସୂଚନା ସିଙ୍କ କରନ୍ତି ତାହା ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="7451311239929941790">ଏହି ସମସ୍ୟା ବିଷୟରେ <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="745208957946308667">Dino ଗେମ, ପ୍ଲେ କରିବାକୁ ସ୍ପେସ ଦବାନ୍ତୁ</translation>
-<translation id="74521886886364465">ଗ୍ରୁପ <ph name="GROUP_HEADER" />ରେ <ph name="NUM_MATCHES_IN_GROUP" />ର <ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" />।</translation>
 <translation id="7453032093368223821">ଅନ୍ୟ ଡାଟା ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="7453849010505253492">ଏହି ସର୍ଭର ଏହା <ph name="DOMAIN" /> ଅଟେ ବୋଲି ପ୍ରମାଣିତ କରିପାରିଲା ନାହିଁ କାରଣ ଏହା ଏକ ସିକ୍ୟୁରିଟି ସାର୍ଟିଫିକେଟ ବ୍ୟବହାର କରୁଛି ଯାହା Chrome କିମ୍ବା ୱେବ ଟ୍ରାଫିକ ଏନକ୍ରିପସନ ପାଇଁ ଆପଣଙ୍କର ସିଷ୍ଟମ କନଫିଗରେସନ ଦ୍ୱାରା ବିଶ୍ୱସନୀୟ ନୁହେଁ। ଏହା ଏକ ଭୁଲ କନଫିଗରେସନ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କ କନେକ୍ସନକୁ ବାଧା ଦେଉଥିବା ଯୋଗୁଁ ହୋଇଥାଇପାରେ। <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />ସାର୍ଟିଫିକେଟ ଭ୍ୟୁ କରନ୍ତୁ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">କ୍ଲାଉଡ ଆକାଉଣ୍ଟ</translation>

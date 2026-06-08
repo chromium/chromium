@@ -1387,6 +1387,7 @@
 <translation id="3158539265159265653">光碟</translation>
 <translation id="3162070126914310576">由于您的组织部门已达到初始注册上限，因此无法立即注册此设备。请与您的管理员联系，以获取帮助。</translation>
 <translation id="3162559335345991374">您要使用的 Wi-Fi 网络可能需要您访问其登录页面。</translation>
+<translation id="316542773973815724">导航</translation>
 <translation id="316638481603975524">可以请求安装 Web 应用</translation>
 <translation id="3166788340998560642">Chrome 会在您下次使用时询问您是否将其保存到 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="3168744840365648658">无线电设备</translation>
@@ -3754,7 +3755,6 @@
 <translation id="6893057134494550310">层压膜</translation>
 <translation id="6893204630281237373">如需在 Chrome 中关闭支付应用，请前往<ph name="BEGIN_LINK1" />支付设置<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">已确认您的信用卡</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />，<ph name="SUGGESTION_DESCRIPTION" />，群组“<ph name="GROUP_HEADER" />”中的第 <ph name="MATCH_POSITION" /> 项，共 <ph name="NUM_MATCHES_IN_GROUP" /> 项。</translation>
 <translation id="6896758677409633944">复制</translation>
 <translation id="6897140037006041989">用户代理</translation>
 <translation id="6898699227549475383">组织 (O)</translation>
@@ -4118,7 +4118,6 @@
 <translation id="7450577240311017924">“管理同步数据”按钮，激活它即可在 Chrome 设置中管理您要同步的信息</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />此问题。</translation>
 <translation id="745208957946308667">恐龙游戏，按空格键即可畅玩</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />，群组“<ph name="GROUP_HEADER" />”中的第 <ph name="MATCH_POSITION" /> 项，共 <ph name="NUM_MATCHES_IN_GROUP" /> 项。</translation>
 <translation id="7453032093368223821">管理其他数据</translation>
 <translation id="7453849010505253492">此服务器无法证明其所在网域是 <ph name="DOMAIN" />，因为它使用的安全证书不受 Chrome 或您系统的网站流量加密配置所信任。出现此问题的原因可能是配置有误，或是有攻击者拦截您的连接。<ph name="BEGIN_VIEW_CERTIFICATE_LINK" />查看证书<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Cloud 账号</translation>

@@ -92,7 +92,6 @@
 <translation id="1953553007165777902">Memuat turun... <ph name="MINUTE" /> minit lagi</translation>
 <translation id="1979600810166324878">Kekal lebih selamat semasa dalam perjalanan dengan Penyemakan Imbas Selamat Dipertingkat pada Chrome untuk iOS</translation>
 <translation id="2001586581944147178">Jadikan lebih sukar untuk pengguna dengan akses kepada trafik Internet anda untuk melihat laman yang anda lawati. Chrome menggunakan sambungan selamat untuk mencari alamat IP laman dalam DNS (Sistem Nama Domain).</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Sambungan ini tidak disokong lagi. Chrome mengesyorkan supaya anda mengalih keluar sambungan tersebut.}other{Sambungan ini tidak disokong lagi. Chrome mengesyorkan supaya anda mengalih keluar sambungan tersebut.}}</translation>
 <translation id="2018528049276128029">Setiap profil menyimpan maklumat Chrome profil itu sendiri seperti penanda halaman, sejarah, kata laluan dan pelbagai lagi</translation>
 <translation id="2018879682492276940">Pemasangan gagal. Sila cuba lagi.</translation>
 <translation id="2024959665595762054">Untuk menggunakan dan menyimpan data Chrome dalam Google Account anda, sahkan identiti anda</translation>
@@ -385,6 +384,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="5127558335897923940">Kekalkan Chrome dalam Dok anda supaya dapat diakses dengan pantas pada bila-bila masa</translation>
 <translation id="5132929315877954718">Temui apl, permainan, sambungan dan tema hebat untuk Google Chrome.</translation>
 <translation id="5139423532931106058">Sesuaikan profil Chrome anda</translation>
+<translation id="5152381187352661267">Kemahiran dalam Chrome</translation>
 <translation id="5163087008893166964">Selamat datang ke Chrome; tetingkap penyemak imbas baharu dibuka</translation>
 <translation id="5166439563123238795">Chrome memerlukan kebenaran untuk menjejaki tangan anda</translation>
 <translation id="5169778651486082413">Gunakan kata laluan anda dengan Chrome pada telefon anda</translation>
@@ -480,6 +480,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6070348360322141662">Untuk keselamatan tambahan, Google Chrome akan menyulitkan data anda</translation>
 <translation id="6075300983329039771">Organisasi anda, <ph name="MANAGER" />, menghendaki anda untuk log masuk ke Chrome</translation>
 <translation id="6113794647360055231">Chrome kini lebih baik</translation>
+<translation id="6116004140911290070">Dayakan Kemahiran dalam Chrome</translation>
 <translation id="6116252277240876590">Bahasa ini digunakan untuk memaparkan menu, tetapan, makluman dan teks lain dalam Chrome</translation>
 <translation id="6127237283587442951">Gunakan Chrome secara lalai dan sematkan Chrome</translation>
 <translation id="6134085236017727171">Untuk menggunakan mikrofon anda, berikan akses kepada Chrome dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" /></translation>

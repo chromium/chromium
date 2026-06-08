@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">এখানে আপনার ইতিহাস দেখতে পাবেন</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> ব্লক করুন</translation>
 <translation id="1280921956537356716">পরামর্শ সংক্রান্ত বিজ্ঞপ্তি চালু করুন</translation>
-<translation id="1283039547216852943">প্রসারিত করতে আলতো চাপুন</translation>
 <translation id="1289129165308566697">অন্য ডিভাইসে আপনার ইতিহাস দেখুন</translation>
 <translation id="129553762522093515">সম্প্রতি বন্ধ হয়েছে</translation>
 <translation id="1298077576058087471">সর্বাধিক ৬০ শতাংশ ডেটা সাশ্রয় করুন, আজকের খবর পড়ুন</translation>
@@ -1159,7 +1158,6 @@
 <translation id="59577092665511740">একটি অ্যাকাউন্ট বেছে নিন।</translation>
 <translation id="5958275228015807058">ডাউনলোড ফোল্ডার থেকে আপনার সমস্ত ফাইল ও পৃষ্ঠাগুলি খুঁজে নিন</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{আপনি সম্প্রতি ভিজিট করেননি এমন একটি সাইটকে Chrome বিজ্ঞপ্তি পাঠানো থেকে আটকেছে}one{আপনি সম্প্রতি ভিজিট করেননি এমন সাইটকে Chrome বিজ্ঞপ্তি পাঠানো থেকে আটকেছে}other{আপনি সম্প্রতি ভিজিট করেননি এমন সাইটকে Chrome বিজ্ঞপ্তি পাঠানো থেকে আটকেছে}}</translation>
-<translation id="5962718611393537961">সঙ্কুচিত করতে আলতো চাপুন</translation>
 <translation id="5964869237734432770">ছবির বিবরণ বন্ধ করুন</translation>
 <translation id="5972844218283131174">সবগুলি অনির্বাচন করুন</translation>
 <translation id="5975083100439434680">ছোট করুন</translation>

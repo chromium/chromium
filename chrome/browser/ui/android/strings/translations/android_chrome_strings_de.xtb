@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">Hier wird dein Verlauf angezeigt</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> blockieren</translation>
 <translation id="1280921956537356716">Benachrichtigungen mit Tipps aktivieren</translation>
-<translation id="1283039547216852943">Zum Maximieren tippen</translation>
 <translation id="1289129165308566697">Verlauf auf anderen Geräten ansehen</translation>
 <translation id="129553762522093515">Kürzlich geschlossen</translation>
 <translation id="1298077576058087471">Bis zu 60 % Daten sparen und die Nachrichten von heute lesen</translation>
@@ -1155,7 +1154,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="59577092665511740">Wähle ein Konto aus.</translation>
 <translation id="5958275228015807058">Deine Dateien und Seiten findest du unter "Downloads"</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome hat verhindert, dass eine Website, die du in letzter Zeit nicht besucht hast, dir Benachrichtigungen sendet}other{Chrome hat verhindert, dass Websites, die du in letzter Zeit nicht besucht hast, dir Benachrichtigungen senden}}</translation>
-<translation id="5962718611393537961">Zum Minimieren tippen</translation>
 <translation id="5964869237734432770">Bildbeschreibungen beenden</translation>
 <translation id="5972844218283131174">Auswahl für alle aufheben</translation>
 <translation id="5975083100439434680">Verkleinern</translation>

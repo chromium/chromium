@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">Këtu do të gjesh historikun tënd</translation>
 <translation id="1273937721055267968">Blloko <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">Aktivizo njoftimet e këshillave</translation>
-<translation id="1283039547216852943">Trokit për të zgjeruar</translation>
 <translation id="1289129165308566697">Shiko historikun tënd në pajisje të tjera</translation>
 <translation id="129553762522093515">Të mbyllura së fundi</translation>
 <translation id="1298077576058087471">Kurse deri në 60% të të dhënave, lexo lajmet e sotme</translation>
@@ -1159,7 +1158,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="59577092665511740">Zgjidh një llogari.</translation>
 <translation id="5958275228015807058">Gjej skedarët dhe faqet e tua te "Shkarkimet"</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ndaloi një sajt që nuk e ke vizituar së fundi që të të dërgojë njoftime}other{Chrome i ndaloi sajtet që nuk i ke vizituar së fundi që të të dërgojnë njoftime}}</translation>
-<translation id="5962718611393537961">Trokit për të palosur</translation>
 <translation id="5964869237734432770">Ndalo përshkrimet e imazheve</translation>
 <translation id="5972844218283131174">Anulo zgjedhjen për të gjitha</translation>
 <translation id="5975083100439434680">Zvogëlo</translation>

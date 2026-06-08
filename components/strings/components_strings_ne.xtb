@@ -1387,6 +1387,7 @@
 <translation id="3158539265159265653">डिस्क</translation>
 <translation id="3162070126914310576">तपाईंको संस्थागत एकाइले दर्ता गर्न मिल्ने जति डिभाइसहरू दर्ता गरिसकेको हुनाले यो डिभाइस अहिले नै दर्ता गर्न मिल्दैन। सहायता प्राप्त गर्न आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="3162559335345991374">तपाईँले प्रयोग गरिरहनु भएको Wi-Fi लाई तपाईँले यसको लगइन पृष्ठको भ्रमण गर्न आवश्यकता हुन सक्छ।</translation>
+<translation id="316542773973815724">नेभिगेसन</translation>
 <translation id="316638481603975524">वेब एप इन्स्टल गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="3166788340998560642">तपाईंले अर्को पटक यो प्रयोग गर्दा Chrome ले यसलाई <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> मा सेभ गर्ने विकल्प देखाउने छ</translation>
 <translation id="3168744840365648658">रेडियो उपकरण</translation>
@@ -3757,7 +3758,6 @@
 <translation id="6893057134494550310">लेमिनेटिङ फोइल</translation>
 <translation id="6893204630281237373">Chrome मा भुक्तानी गर्न प्रयोग गरिने एप अफ गर्न <ph name="BEGIN_LINK1" />भुक्तानीसम्बन्धी सेटिङ<ph name="END_LINK1" />मा जानुहोस्</translation>
 <translation id="6895330447102777224">तपाईंको कार्डको पुष्टि भयो</translation>
-<translation id="6895573608763679343"><ph name="GROUP_HEADER" /> समूहमा भएका <ph name="NUM_MATCHES_IN_GROUP" /> मध्ये <ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" />।</translation>
 <translation id="6896758677409633944">कपी गर्नुहोस्</translation>
 <translation id="6897140037006041989">प्रयोगकर्ता एजेन्ट</translation>
 <translation id="6898699227549475383">संगठन (सं)</translation>
@@ -4120,7 +4120,6 @@
 <translation id="7450577240311017924">सिंक गर्ने सुविधा व्यवस्थापन गर्ने बटन, Chrome का सेटिङमा गई के कस्ता जानकारी सिंक गर्ने भन्ने कुरा व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="7451311239929941790">यस समस्या बारे <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="745208957946308667">Dino गेम, यो गेम खेल्न स्पेस की थिच्नुहोस्</translation>
-<translation id="74521886886364465"><ph name="GROUP_HEADER" /> समूहमा भएका <ph name="NUM_MATCHES_IN_GROUP" /> मध्ये <ph name="SUGGESTION_TITLE" />,<ph name="MATCH_POSITION" />।</translation>
 <translation id="7453032093368223821">अन्य डेटा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7453849010505253492">यसले वेब ट्राफिक इन्क्रिप्सनका लागि तपाईंको सिस्टम कन्फिगुरेसन वा Chrome ले विश्वास नगर्ने सुरक्षासम्बन्धी सर्टिफिकेट प्रयोग गरिरहेकाले यो सर्भरले यो <ph name="DOMAIN" /> नै हो भन्ने कुरा पुष्टि गर्न सकेन। गलत कन्फिगुरेसन वा ह्याकरले तपाईंको कनेक्सनमा अवरोध गरिरहेका कारण यसो भएको हुन सक्छ। <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />प्रमाणपत्र हेर्नुहोस्<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">क्लाउड खाता</translation>

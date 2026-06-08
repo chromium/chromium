@@ -1387,6 +1387,7 @@
 <translation id="3158539265159265653">ഡിസ്‌ക്</translation>
 <translation id="3162070126914310576">നിങ്ങളുടെ ഓർഗനൈസേഷൻ യൂണിറ്റ് അതിന്റെ പ്രാരംഭ എൻറോൾമെന്റ് പരിധിയിൽ എത്തിയതിനാൽ, ഈ ഉപകരണം നിലവിൽ എൻറോൾ ചെയ്യാനാകില്ല. സഹായത്തിന്, നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="3162559335345991374">നിങ്ങൾ ഉപയോഗിക്കുന്ന Wi-Fi അതിന്റെ ലോഗിൻ പേജ് സന്ദർശിക്കാൻ നിങ്ങളോട് ആവശ്യപ്പെടാം.</translation>
+<translation id="316542773973815724">നാവിഗേഷൻ</translation>
 <translation id="316638481603975524">വെബ് ആപ്പുകൾ ഇൻസ്റ്റാൾ ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="3166788340998560642">അടുത്ത തവണ നിങ്ങൾ ഇത് ഉപയോഗിക്കുമ്പോൾ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> എന്നതിലേക്ക് സംരക്ഷിക്കാമെന്ന് Chrome ഓഫർ ചെയ്യും</translation>
 <translation id="3168744840365648658">റേഡിയോ ഉപകരണം</translation>
@@ -3758,7 +3759,6 @@
 <translation id="6893057134494550310">ലാമിനേറ്റ് ചെയ്യുന്ന ഫോയിൽ</translation>
 <translation id="6893204630281237373">Chrome-ൽ പേയ്‌മെന്റ് ആപ്പ് ഓഫാക്കാൻ, നിങ്ങളുടെ <ph name="BEGIN_LINK1" />പേയ്‌മെന്റ് ക്രമീകരണം<ph name="END_LINK1" /> സന്ദർശിക്കുക</translation>
 <translation id="6895330447102777224">നിങ്ങളുടെ കാർഡ് സ്ഥിരീകരിച്ചു</translation>
-<translation id="6895573608763679343"><ph name="GROUP_HEADER" /> എന്ന ഗ്രൂപ്പിലെ <ph name="NUM_MATCHES_IN_GROUP" />-ൽ <ph name="MATCH_POSITION" />-ാമത്തെ <ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />.</translation>
 <translation id="6896758677409633944">പകര്‍ത്തുക</translation>
 <translation id="6897140037006041989">ഉപയോക്തൃ ഏജന്‍റ്</translation>
 <translation id="6898699227549475383">ഓര്‍‌ഗനൈസേഷന്‍‌ (O)</translation>
@@ -4120,7 +4120,6 @@
 <translation id="7450577240311017924">'സമന്വയിപ്പിക്കൽ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങൾ സമന്വയിപ്പിക്കുന്ന വിവരങ്ങൾ മാനേജ് ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="7451311239929941790">ഈ പ്രശ്‌നത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതലറിയുന്നു<ph name="END_LINK" />.</translation>
 <translation id="745208957946308667">ദിനോസർ ഗെയിം, കളിക്കാൻ space അമർത്തുക</translation>
-<translation id="74521886886364465"><ph name="GROUP_HEADER" /> എന്ന ഗ്രൂപ്പിലെ <ph name="NUM_MATCHES_IN_GROUP" />-ൽ <ph name="MATCH_POSITION" />-ാമത്തെ <ph name="SUGGESTION_TITLE" />.</translation>
 <translation id="7453032093368223821">മറ്റ് ഡാറ്റ മാനേജ് ചെയ്യുക</translation>
 <translation id="7453849010505253492">വെബ് ട്രാഫിക് എൻക്രിപ്ഷന് വേണ്ടി Chrom-ന് വിശ്വാസമില്ലാത്ത ഒരു സുരക്ഷാ സർട്ടിഫിക്കറ്റ് അല്ലെങ്കിൽ നിങ്ങളുടെ സിസ്റ്റം കോൺഫിഗറേഷൻ ഉപയോഗിക്കുന്നതിനാലാണ് ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാൻ കഴിയാത്തത്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അറ്റാക്കർ നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />സർട്ടിഫിക്കറ്റ് കാണുക<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Cloud അക്കൗണ്ട്</translation>

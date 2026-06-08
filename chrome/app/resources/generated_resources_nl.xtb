@@ -1883,7 +1883,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2343160676229467122">Extensies zijn niet toegestaan op <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Rocky Mountains National Park</translation>
 <translation id="2343747224442182863">Focus op dit tabblad plaatsen</translation>
-<translation id="2343971313330854480">Zoek je bestand in de map <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Oude versies van Chrome-apps worden na december 2022 niet meer geopend. Neem contact op met je beheerder als je wilt updaten naar een nieuwe versie of verwijder deze app.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" />: rechten gevraagd, druk op Ctrl + Volgende om te reageren</translation>
@@ -3568,7 +3567,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3569617221227793022">De tijdzone is op dit moment ingesteld op <ph name="TIME_ZONE_ENTRY" />. Deze instelling wordt beheerd door je beheerder.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> kan de volgende bestanden en mappen bekijken</translation>
 <translation id="3571734092741541777">Instellen</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> extensies zijn uitgezet</translation>
 <translation id="3575121482199441727">Toestaan voor deze site</translation>
 <translation id="3575224072358507281">IP-adressen en netwerkmeetresultaten verzamelen voor Measurement Lab in overeenstemming met hun privacybeleid (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Installatie geslaagd</translation>
@@ -5748,7 +5746,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5149602533174716626">Videoframe kop&amp;iëren</translation>
 <translation id="5150254825601720210">SSL-servernaam van Netscape-certificaat</translation>
 <translation id="5151354047782775295">Maak schijfruimte vrij of bepaalde gegevens kunnen automatisch worden verwijderd</translation>
-<translation id="5152381187352661267">Vaardigheden in Chrome</translation>
 <translation id="5153074793829217329">Gebruik je toetsenbord of een numeriek toetsenblok om de muiscursor te bedienen</translation>
 <translation id="5153234146675181447">Telefoon vergeten</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7003,7 +7000,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6112727384379533756">Een ticket toevoegen</translation>
 <translation id="6113434369102685411">Stel de standaard zoekmachine in voor de Chrome-browser en <ph name="DEVICE_TYPE" /> Launcher</translation>
 <translation id="6113832060210023016">Launcher + klikken</translation>
-<translation id="6116004140911290070">Vaardigheden aanzetten in Chrome</translation>
 <translation id="6116921718742659598">Taal- en invoerinstellingen wijzigen</translation>
 <translation id="6119008366402292080">Geen printer beschikbaar</translation>
 <translation id="6119972796024789243">Kleurcorrectie</translation>
@@ -10408,7 +10404,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8596540852772265699">Aangepaste bestanden</translation>
 <translation id="8597845839771543242">Notatie van property:</translation>
 <translation id="8598249292448297523">afdrukken</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Extensie beheren}other{Extensies beheren}}</translation>
 <translation id="8599681327221583254">Een of meer beleidsregels zijn niet correct ingesteld. Neem contact op met je beheerder.</translation>
 <translation id="8600362954032151088">Je wachtwoorden en toegangssleutels beheren in <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Een ander programma op je computer heeft een app toegevoegd die de manier waarop Chrome werkt kan wijzigen.</translation>
@@ -10805,7 +10800,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="887292602123626481">Meer informatie over standaard zoekmachines</translation>
 <translation id="8873075098103007382">Blijf geordend met tabbladgroepen</translation>
 <translation id="8874341931345877644">Casten naar een apparaat:</translation>
-<translation id="8874448314264883207"><ph name="EXTENSION_NAME" /> is uitgezet</translation>
 <translation id="8874647982044395866">Biologisch</translation>
 <translation id="8874790741333031443">Sta cookies van derden tijdelijk toe. Dit betekent dat je minder browserbeveiliging hebt, maar dat sitefuncties waarschijnlijk wel werken zoals verwacht.</translation>
 <translation id="8875221558267407626">Content samenvatten, complexe taal vereenvoudigen of vragen stellen</translation>

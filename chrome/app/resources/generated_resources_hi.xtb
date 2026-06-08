@@ -1899,7 +1899,6 @@
 <translation id="2343160676229467122"><ph name="SITE_NAME" /> पर एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="2343390523044483367">रॉकी माउंटेंस नैशनल पार्क</translation>
 <translation id="2343747224442182863">इस टैब पर फ़ोकस करें</translation>
-<translation id="2343971313330854480">अपनी फ़ाइल को <ph name="FEATURE_NAME" /> फ़ोल्डर में ढूंढें</translation>
 <translation id="234559068082989648">'Chrome ऐप्स' के पुराने वर्शन, दिसंबर 2022 के बाद नहीं खुलेंगे. नए वर्शन पर अपडेट करने या इस ऐप्लिकेशन को हटाने के लिए, अपने एडमिन से संपर्क करें.</translation>
 <translation id="2348176352564285430">ऐप्लिकेशन: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - अनुमति मांगी गई है, जवाब देने के लिए Ctrl + Forward बटन दबाएं</translation>
@@ -3589,7 +3588,6 @@
 <translation id="3569617221227793022">फ़िलहाल, टाइम ज़ोन <ph name="TIME_ZONE_ENTRY" /> पर सेट है. इस सेटिंग को आपका एडमिन मैनेज करता है.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> नीचे दी गई फ़ाइलों और फ़ोल्डर काे देख सकती है</translation>
 <translation id="3571734092741541777">सेट अप करें</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> एक्सटेंशन बंद किए गए</translation>
 <translation id="3575121482199441727">इस साइट के लिए सूचनाओं को अनुमति दें</translation>
 <translation id="3575224072358507281">Measurement Lab के लिए, उनकी निजता नीति (measurementlab.net/privacy) के मुताबिक आईपी पता और नेटवर्क की जांच के नतीजे इकट्ठा करें</translation>
 <translation id="3576324189521867626">सफलतापूर्वक इंस्टॉल हो गया है</translation>
@@ -5774,7 +5772,6 @@
 <translation id="5149602533174716626">वीडियो फ़्रेम कॉपी करें</translation>
 <translation id="5150254825601720210">Netscape प्रमाणपत्र SSL सर्वर नाम</translation>
 <translation id="5151354047782775295">डिस्क स्पेस खाली करें अन्यथा चयनित डेटा अपने आप हट जाएगा</translation>
-<translation id="5152381187352661267">Chrome में स्किल की सुविधा</translation>
 <translation id="5153074793829217329">माउस के कर्सर को कंट्रोल करने के लिए, कीबोर्ड या न्यूमेरिक कीपैड का इस्तेमाल करें</translation>
 <translation id="5153234146675181447">फ़ोन को भूल जाएं</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7033,7 +7030,6 @@
 <translation id="6112727384379533756">टिकट जोड़ें</translation>
 <translation id="6113434369102685411">Chrome ब्राउज़र और <ph name="DEVICE_TYPE" /> लॉन्चर के लिए अपना डिफ़ॉल्ट सर्च इंजन सेट करें</translation>
 <translation id="6113832060210023016">लॉन्चर + क्लिक</translation>
-<translation id="6116004140911290070">Chrome में स्किल की सुविधा चालू करें</translation>
 <translation id="6116921718742659598">भाषा और इनपुट की सेटिंग बदलें</translation>
 <translation id="6119008366402292080">कोई प्रिंटर उपलब्ध नहीं है</translation>
 <translation id="6119972796024789243">रंग में सुधार करने की सुविधा</translation>
@@ -10446,7 +10442,6 @@
 <translation id="8596540852772265699">कस्टम फ़ाइल</translation>
 <translation id="8597845839771543242">प्रॉपर्टी का प्रारूप:</translation>
 <translation id="8598249292448297523">प्रिंट करें</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{एक्सटेंशन मैनेज करें}one{एक्सटेंशन मैनेज करें}other{एक्सटेंशन मैनेज करें}}</translation>
 <translation id="8599681327221583254">एक या ज़्यादा नीतियों को सही तरीके से कॉन्फ़िगर नहीं किया गया. कृपया अपने एडमिन से संपर्क करें</translation>
 <translation id="8600362954032151088"><ph name="GOOGLE_PASSWORD_MANAGER" /> में अपने पासवर्ड और पासकी मैनेज करें</translation>
 <translation id="8602851771975208551">आपके कंप्यूटर पर किसी दूसरे प्रोग्राम ने कोई ऐप्लिकेशन जोड़ा है जो Chrome के काम करने के तरीके को बदल सकता है.</translation>
@@ -10842,7 +10837,6 @@
 <translation id="887292602123626481">डिफ़ॉल्ट सर्च इंजन के बारे में ज़्यादा जानें</translation>
 <translation id="8873075098103007382">टैब ग्रुप की मदद से, अपने काम के टैब व्यवस्थित करें</translation>
 <translation id="8874341931345877644">किसी डिवाइस पर कास्ट करें:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" को बंद किया गया है</translation>
 <translation id="8874647982044395866">ऑर्गैनिक</translation>
 <translation id="8874790741333031443">कुछ समय के लिए तीसरे पक्ष की कुकी को अनुमति दें. इसका मतलब है कि साइट को मिलने वाली ब्राउज़िंग से जुड़ी सुरक्षा कम हो जाएगी. हालांकि, साइट की सुविधाएं उम्मीद के मुताबिक काम करेंगी.</translation>
 <translation id="8875221558267407626">कॉन्टेंट की खास जानकारी पाएं, मुश्किल विषयों को आसानी से समझें या सवाल पूछें</translation>

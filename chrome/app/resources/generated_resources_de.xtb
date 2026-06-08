@@ -1875,7 +1875,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2343160676229467122">Erweiterungen sind auf <ph name="SITE_NAME" /> nicht zulässig</translation>
 <translation id="2343390523044483367">Rocky-Mountains-Nationalpark</translation>
 <translation id="2343747224442182863">Diesen Tab fokussieren</translation>
-<translation id="2343971313330854480">Du findest deine Datei im Ordner „<ph name="FEATURE_NAME" />“</translation>
 <translation id="234559068082989648">Ältere Versionen von Chrome-Apps können nach Dezember 2022 nicht mehr geöffnet werden. Du kannst dich an deinen Administrator wenden, um ein Update auf eine neue Version durchzuführen, oder diese App entfernen.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> – Berechtigung angefordert. Drücke „Ctrl + Weiter“, um zu reagieren.</translation>
@@ -3555,7 +3554,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3569617221227793022">Die Zeitzone ist derzeit auf <ph name="TIME_ZONE_ENTRY" /> eingestellt. Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> darf die folgenden Dateien und Ordner aufrufen</translation>
 <translation id="3571734092741541777">Einrichten</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> Erweiterungen wurden deaktiviert</translation>
 <translation id="3575121482199441727">Für diese Website zulassen</translation>
 <translation id="3575224072358507281">IP-Adressen und Ergebnisse von Netzwerkmessungen für Measurement Lab gemäß der Datenschutzerklärung (measurementlab.net/privacy) erfassen</translation>
 <translation id="3576324189521867626">Installation war erfolgreich</translation>
@@ -5732,7 +5730,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5149602533174716626">Videoframe kop&amp;ieren</translation>
 <translation id="5150254825601720210">SSL-Servername für Netscape-Zertifikat</translation>
 <translation id="5151354047782775295">Gib Speicherplatz frei oder ausgewählte Daten werden automatisch gelöscht</translation>
-<translation id="5152381187352661267">Skills in Chrome</translation>
 <translation id="5153074793829217329">Cursor mit der Tastatur oder einem Ziffernblock steuern</translation>
 <translation id="5153234146675181447">Smartphone entfernen</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -6987,7 +6984,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6112727384379533756">Ticket hinzufügen</translation>
 <translation id="6113434369102685411">Hier kannst du die Standardsuchmaschine für den Chrome-Browser und <ph name="DEVICE_TYPE" /> Launcher festlegen</translation>
 <translation id="6113832060210023016">Launcher-Taste + Klick</translation>
-<translation id="6116004140911290070">Skills in Chrome aktivieren</translation>
 <translation id="6116921718742659598">Sprach- und Eingabeeinstellungen ändern</translation>
 <translation id="6119008366402292080">Kein Drucker verfügbar</translation>
 <translation id="6119972796024789243">Farbkorrektur</translation>
@@ -10387,7 +10383,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8596540852772265699">Benutzerdefinierte Dateien</translation>
 <translation id="8597845839771543242">Eigenschaftsformat:</translation>
 <translation id="8598249292448297523">drucken</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Erweiterung verwalten}other{Erweiterungen verwalten}}</translation>
 <translation id="8599681327221583254">Mindestens eine Richtlinie wurde nicht korrekt konfiguriert. Bitte wende dich an deinen Administrator.</translation>
 <translation id="8600362954032151088">Du kannst deine Passwörter und Passkeys im <ph name="GOOGLE_PASSWORD_MANAGER" /> verwalten</translation>
 <translation id="8602851771975208551">Ein anderes Programm auf deinem Computer hat eine App hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.</translation>
@@ -10783,7 +10778,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="887292602123626481">Weitere Informationen zu Standard-Suchmaschinen</translation>
 <translation id="8873075098103007382">Mit Tabgruppen den Überblick behalten</translation>
 <translation id="8874341931345877644">Auf ein Gerät streamen:</translation>
-<translation id="8874448314264883207">„<ph name="EXTENSION_NAME" />“ wurde deaktiviert</translation>
 <translation id="8874647982044395866">Organisch</translation>
 <translation id="8874790741333031443">Versuche, Drittanbieter-Cookies vorübergehend zuzulassen. Das bedeutet zwar weniger Schutz beim Surfen, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites wie erwartet funktionieren.</translation>
 <translation id="8875221558267407626">Inhalte zusammenfassen, komplexe Sprache vereinfachen oder Fragen stellen</translation>

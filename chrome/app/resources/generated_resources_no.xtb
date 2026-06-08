@@ -1892,7 +1892,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2343160676229467122">Utvidelser er ikke tillatt på <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Rocky Mountains nasjonalpark</translation>
 <translation id="2343747224442182863">Fokusér på denne fanen</translation>
-<translation id="2343971313330854480">Finn filen i <ph name="FEATURE_NAME" />-mappen</translation>
 <translation id="234559068082989648">Gamle versjoner av Chrome-apper er ikke mulige å åpne etter desember 2022. Kontakt administratoren din for å oppdatere til en ny versjon eller fjerne denne appen.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> ber om tillatelse. Trykk på Ctrl + Frem for å svare</translation>
@@ -3582,7 +3581,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3569617221227793022">Tidssonen er for øyeblikket satt til <ph name="TIME_ZONE_ENTRY" />. Denne innstillingen administreres av administratoren.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> kan se disse filene og mappene</translation>
 <translation id="3571734092741541777">Konfigurer</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" /> utvidelser ble slått av</translation>
 <translation id="3575121482199441727">Tillat for dette nettstedet</translation>
 <translation id="3575224072358507281">Samle inn IP-adresse- og nettverksmålingsresultater for Measurement Lab i henhold til personvernreglene deres (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Installert</translation>
@@ -5764,7 +5762,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5149602533174716626">Kop&amp;ier videorammen</translation>
 <translation id="5150254825601720210">Navn på Netscape SSL-tjenersertifikat</translation>
 <translation id="5151354047782775295">Frigjør lagringsplass eller velg data som kan slettes automatisk</translation>
-<translation id="5152381187352661267">Ferdigheter i Chrome</translation>
 <translation id="5153074793829217329">Bruk tastaturet eller et talltastatur for å kontrollere musepekeren</translation>
 <translation id="5153234146675181447">Glem telefon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7022,7 +7019,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6112727384379533756">Legg til en sak</translation>
 <translation id="6113434369102685411">Angi standard søkemotor for Chrome-nettleseren og appoversikten på <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">Appoversikt-tasten + klikk</translation>
-<translation id="6116004140911290070">Slå på ferdigheter i Chrome</translation>
 <translation id="6116921718742659598">Endre språk- og inndatainnstillinger</translation>
 <translation id="6119008366402292080">Ingen skriver er tilgjengelig</translation>
 <translation id="6119972796024789243">Fargekorrigering</translation>
@@ -10430,7 +10426,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8596540852772265699">Egendefinerte filer</translation>
 <translation id="8597845839771543242">Områdeformat:</translation>
 <translation id="8598249292448297523">utskrift</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Administrer utvidelsen}other{Administrer utvidelsene}}</translation>
 <translation id="8599681327221583254">Én eller flere regler er ikke riktig konfigurert. Kontakt administratoren din</translation>
 <translation id="8600362954032151088">Administrer passordene og passnøklene dine i <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Et annet program på datamaskinen la til en app som kan endre måten Chrome fungerer på.</translation>
@@ -10826,7 +10821,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="887292602123626481">Finn ut mer om standard søkemotorer</translation>
 <translation id="8873075098103007382">Hold orden med fanegrupper</translation>
 <translation id="8874341931345877644">Cast til en enhet:</translation>
-<translation id="8874448314264883207">«<ph name="EXTENSION_NAME" />» ble slått av</translation>
 <translation id="8874647982044395866">Organisk</translation>
 <translation id="8874790741333031443">Prøv å tillate informasjonskapsler fra tredjeparter midlertidig. Det innebærer mindre beskyttelse under surfing, men øker sannsynligheten for at nettstedsfunksjoner virker som forventet.</translation>
 <translation id="8875221558267407626">Oppsummer innhold, forenkle komplisert språk eller still spørsmål</translation>

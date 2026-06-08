@@ -1387,6 +1387,7 @@
 <translation id="3158539265159265653">டிஸ்க்</translation>
 <translation id="3162070126914310576">உங்கள் நிறுவன யூனிட் அதன் ஆரம்பப் பதிவிற்கான எண்ணிக்கை வரம்பை அடைந்துவிட்டதால் தற்போது இந்தச் சாதனத்தைப் பதிவுசெய்ய முடியாது. உதவிக்கு உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="3162559335345991374">நீங்கள் பயன்படுத்திக் கொண்டிருக்கும் வைஃபை, அதன் உள்நுழைவுப் பக்கத்தை நீங்கள் பார்க்கக் கோரலாம்.</translation>
+<translation id="316542773973815724">வழிச்செலுத்தல்</translation>
 <translation id="316638481603975524">வெப் ஆப்ஸை நிறுவ அனுமதி கேட்கும்</translation>
 <translation id="3166788340998560642">அடுத்த முறை நீங்கள் அதைப் பயன்படுத்தும்போது அதை <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />ல் சேமிக்க வேண்டுமா என்று Chrome கேட்கும்</translation>
 <translation id="3168744840365648658">ரேடியோ உபகரணங்கள்</translation>
@@ -3754,7 +3755,6 @@
 <translation id="6893057134494550310">லேமினேட்டிங் ஃபாயில்</translation>
 <translation id="6893204630281237373">Chromeமில் பேமெண்ட் ஆப்ஸை ஆஃப் செய்ய, <ph name="BEGIN_LINK1" />பேமெண்ட் அமைப்புகளுக்குச்<ph name="END_LINK1" /> செல்லவும்</translation>
 <translation id="6895330447102777224">கார்டு உறுதிசெய்யப்பட்டது</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="GROUP_HEADER" /> குழுவில்<ph name="NUM_MATCHES_IN_GROUP" />ல் <ph name="MATCH_POSITION" />வது நிலையில் உள்ளது.</translation>
 <translation id="6896758677409633944">நகலெடு</translation>
 <translation id="6897140037006041989">பயனர் ஏஜெண்ட்</translation>
 <translation id="6898699227549475383">நிறுவனம் (O)</translation>
@@ -4118,7 +4118,6 @@
 <translation id="7450577240311017924">ஒத்திசைவை நிர்வகிப்பதற்கான பட்டன். Chrome அமைப்புகளில் எந்தெந்தத் தகவல்களை ஒத்திசைக்க வேண்டும் என்பதை நிர்வகிக்க இதை இயக்குங்கள்</translation>
 <translation id="7451311239929941790">இந்தச் சிக்கல் குறித்து <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" />.</translation>
 <translation id="745208957946308667">டைனோசர் கேமை விளையாட Space அழுத்தவும்</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="GROUP_HEADER" /> குழுவில் <ph name="NUM_MATCHES_IN_GROUP" />ல் <ph name="MATCH_POSITION" />வது நிலையில் உள்ளது.</translation>
 <translation id="7453032093368223821">பிற தரவை நிர்வகியுங்கள்</translation>
 <translation id="7453849010505253492">இந்தச் சேவையகம் Chrome நம்பாத பாதுகாப்புச் சான்றிதழையோ இணைய டிராஃபிக் என்க்ரிப்ஷனுக்கான உங்கள் சிஸ்டத்தின் உள்ளமைவையோ பயன்படுத்துகிறது. இதனால், இது <ph name="DOMAIN" /> தான் என்பதை இந்தச் சேவையகத்தால் உறுதிப்படுத்த முடியவில்லை. இது தவறான உள்ளமைவால் ஏற்பட்டிருக்கலாம் அல்லது ஹேக்கர் உங்கள் இணைப்பில் குறுக்கிட்டிருக்கலாம். <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />சான்றிதழைக் காட்டு<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">கிளவுடு கணக்கு</translation>

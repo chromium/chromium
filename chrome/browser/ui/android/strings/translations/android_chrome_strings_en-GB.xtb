@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">You'll find your history here</translation>
 <translation id="1273937721055267968">Block <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">Turn on tips notifications</translation>
-<translation id="1283039547216852943">Tap to expand</translation>
 <translation id="1289129165308566697">See your history on other devices</translation>
 <translation id="129553762522093515">Recently closed</translation>
 <translation id="1298077576058087471">Save up to 60% data, read today's news</translation>
@@ -1159,7 +1158,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="59577092665511740">Choose an account.</translation>
 <translation id="5958275228015807058">Find your files and pages in Downloads</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome stopped a site that you haven't visited recently from sending you notifications}other{Chrome stopped sites that you haven't visited recently from sending you notifications}}</translation>
-<translation id="5962718611393537961">Tap to collapse</translation>
 <translation id="5964869237734432770">Stop image descriptions</translation>
 <translation id="5972844218283131174">Deselect all</translation>
 <translation id="5975083100439434680">Zoom out</translation>

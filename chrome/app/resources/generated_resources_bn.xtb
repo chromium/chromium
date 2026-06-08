@@ -1896,7 +1896,6 @@
 <translation id="2343160676229467122"><ph name="SITE_NAME" />-এ এক্সটেনশন অনুমোদিত নয়</translation>
 <translation id="2343390523044483367">রকি মাউন্টেন ন্যাশনাল পার্ক</translation>
 <translation id="2343747224442182863">এই ট্যাবে ফোকাস করুন</translation>
-<translation id="2343971313330854480"><ph name="FEATURE_NAME" /> ফোল্ডারে আপনার ফাইল খুঁজুন</translation>
 <translation id="234559068082989648">ডিসেম্বর ২০২২ এর পর থেকে Chrome অ্যাপের পুরনো ভার্সন আর খুলবে না। নতুন ভার্সনে আপডেট করার জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন বা এই অ্যাপটি সরিয়ে দিন।</translation>
 <translation id="2348176352564285430">অ্যাপ্লিকেশান: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - অনুমতি চাওয়া হয়েছে, উত্তর দিতে Ctrl + 'ফরওয়ার্ড' বোতাম প্রেস করুন</translation>
@@ -3583,7 +3582,6 @@
 <translation id="3569617221227793022">টাইম জোন বর্তমানে <ph name="TIME_ZONE_ENTRY" />-এ সেট করা আছে। আপনার অ্যাডমিনিস্ট্রেটর এই সেটিং ম্যানেজ করে।</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> নিচে উল্লেখ করা ফাইল এবং ফোল্ডারগুলি দেখতে পারবে</translation>
 <translation id="3571734092741541777">সেট-আপ করুন</translation>
-<translation id="3572031449439748861"><ph name="NUM_EXTENSIONS" />টি এক্সটেনশন বন্ধ আছে</translation>
 <translation id="3575121482199441727">এই সাইটের জন্য অনুমতি দিন</translation>
 <translation id="3575224072358507281">গোপনীয়তা নীতি (measurementlab.net/privacy) অনুযায়ী Measurement Lab-এর জন্য IP অ্যাড্রেস ও নেটওয়ার্ক পরিমাপ করার ফলাফল সংগ্রহ করে</translation>
 <translation id="3576324189521867626">সফলভাবে ইনস্টল হয়েছে</translation>
@@ -5765,7 +5763,6 @@
 <translation id="5149602533174716626">ভিডিও ফ্রেম কপি করুন</translation>
 <translation id="5150254825601720210">Netscape সার্টিফিকেট SSL সার্ভার নাম</translation>
 <translation id="5151354047782775295">ডিস্কের জায়গা খালি করুন, নাহলে নির্বাচিত তথ্য স্বয়ংক্রিয়ভাবে মুছে ফেলা হতে পারে</translation>
-<translation id="5152381187352661267">Chrome-এ স্কিল</translation>
 <translation id="5153074793829217329">আপনার মাউস কার্সার নিয়ন্ত্রণ করতে কীবোর্ড বা নিউমেরিক কীপ্যাড ব্যবহার করুন</translation>
 <translation id="5153234146675181447">ফোন ভুলে যান</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7025,7 +7022,6 @@
 <translation id="6112727384379533756">একটি টিকিট যোগ করুন</translation>
 <translation id="6113434369102685411">Chrome ব্রাউজার এবং <ph name="DEVICE_TYPE" /> লঞ্চারের জন্য আপনার ডিফল্ট সার্চ ইঞ্জিন সেট করুন</translation>
 <translation id="6113832060210023016">launcher + click</translation>
-<translation id="6116004140911290070">Chrome-এ স্কিল চালু করুন</translation>
 <translation id="6116921718742659598">ভাষা এবং ইনপুট সেটিংস পরিবর্তন করুন</translation>
 <translation id="6119008366402292080">কোনও প্রিন্টার উপলভ্য নেই</translation>
 <translation id="6119972796024789243">রঙ সংশোধন করা</translation>
@@ -10433,7 +10429,6 @@
 <translation id="8596540852772265699">কাস্টম ফাইলগুলি</translation>
 <translation id="8597845839771543242">প্রপার্টি ফর্ম্যাট:</translation>
 <translation id="8598249292448297523">প্রিন্ট</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{এক্সটেনশন ম্যানেজ করুন}one{এক্সটেনশন ম্যানেজ করুন}other{এক্সটেনশন ম্যানেজ করুন}}</translation>
 <translation id="8599681327221583254">এক বা একাধিক নীতি ঠিকভাবে কনফিগার করা হয়নি। অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন</translation>
 <translation id="8600362954032151088">আপনার পাসওয়ার্ড ও পাসকী<ph name="GOOGLE_PASSWORD_MANAGER" />-এ ম্যানেজ করুন</translation>
 <translation id="8602851771975208551">আপনার কম্পিউটারের অন্য একটি প্রোগ্রাম একটি অ্যাপ্লিকেশন জুড়েছে যা Chrome এর কাজ করার পদ্ধতিকে পাল্টে দিতে পারে৷</translation>
@@ -10829,7 +10824,6 @@
 <translation id="887292602123626481">ডিফল্ট সার্চ ইঞ্জিন সম্পর্কে আরও জানুন</translation>
 <translation id="8873075098103007382">ট্যাব গ্ৰুপের সাহায্যে সবকিছু গুছিয়ে রাখুন</translation>
 <translation id="8874341931345877644">কোনও ডিভাইসে কাস্ট করুন:</translation>
-<translation id="8874448314264883207">"<ph name="EXTENSION_NAME" />" বন্ধ আছে</translation>
 <translation id="8874647982044395866">অর্গানিক</translation>
 <translation id="8874790741333031443">সাময়িকভাবে থার্ড-পার্টি কুকিকে অনুমতি দিন। এর মানে হল সাইটের ফিচার প্রত্যাশা অনুযায়ী কাজ করবে কিন্তু আপনার ব্রাউজিং সুরক্ষা কম হয়ে যাবে।</translation>
 <translation id="8875221558267407626">কন্টেন্টের সারাংশ তৈরি করুন, জটিল ভাষা সহজ অথবা প্রশ্ন জিজ্ঞাসা করুন</translation>

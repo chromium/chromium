@@ -1387,6 +1387,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3158539265159265653">Cakera</translation>
 <translation id="3162070126914310576">Peranti gagal didaftarkan pada masa ini kerana unit organisasi anda telah mencapai had pendaftaran permulaan. Hubungi pentadbir anda untuk mendapatkan bantuan.</translation>
 <translation id="3162559335345991374">Wi-Fi yang anda gunakan mungkin memerlukan anda untuk melawat halaman log masuknya.</translation>
+<translation id="316542773973815724">Navigasi</translation>
 <translation id="316638481603975524">Boleh meminta untuk memasang apl web</translation>
 <translation id="3166788340998560642">Chrome akan menawarkan untuk menyimpan kad tersebut pada <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> apabila anda menggunakan kad tersebut pada masa hadapan</translation>
 <translation id="3168744840365648658">Peralatan Radio</translation>
@@ -3760,7 +3761,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6893057134494550310">Kerajang Perlaminaan</translation>
 <translation id="6893204630281237373">Untuk mematikan apl pembayaran dalam Chrome, akses <ph name="BEGIN_LINK1" />tetapan pembayaran<ph name="END_LINK1" /> anda</translation>
 <translation id="6895330447102777224">Kad anda telah disahkan</translation>
-<translation id="6895573608763679343"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> daripada <ph name="NUM_MATCHES_IN_GROUP" /> dalam kumpulan <ph name="GROUP_HEADER" />.</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6897140037006041989">Ejen Pengguna</translation>
 <translation id="6898699227549475383">Organisasi (O)</translation>
@@ -4124,7 +4124,6 @@ Butiran tambahan:
 <translation id="7450577240311017924">Butang urus penyegerakan, aktifkan untuk mengurus maklumat yang anda segerakkan dalam tetapan Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /> tentang masalah ini.</translation>
 <translation id="745208957946308667">Permainan Dino, tekan kekunci ruang untuk main</translation>
-<translation id="74521886886364465"><ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> daripada <ph name="NUM_MATCHES_IN_GROUP" /> dalam kumpulan <ph name="GROUP_HEADER" />.</translation>
 <translation id="7453032093368223821">Urus data lain</translation>
 <translation id="7453849010505253492">Pelayan ini tidak dapat membuktikan bahawa perkara itu ialah <ph name="DOMAIN" /> kerana sijil keselamatan yang digunakan tidak dipercayai oleh Chrome atau konfigurasi sistem anda untuk penyulitan trafik web. Hal ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Lihat Sijil<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Akaun awan</translation>

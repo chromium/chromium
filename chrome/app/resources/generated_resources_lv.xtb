@@ -1883,7 +1883,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2343160676229467122">Vietnē <ph name="SITE_NAME" /> paplašinājumi nav atļauti</translation>
 <translation id="2343390523044483367">Klinšu kalnu nacionālais parks</translation>
 <translation id="2343747224442182863">Izcelt šo cilni</translation>
-<translation id="2343971313330854480">Atrodiet failu mapē “<ph name="FEATURE_NAME" />”.</translation>
 <translation id="234559068082989648">Pēc 2022. gada decembra novecojušas Chrome lietotņu versijas vairs netiks atvērtas. Sazinieties ar administratoru, lai atjauninātu šo lietotni uz jaunu versiju vai noņemtu to.</translation>
 <translation id="2348176352564285430">Lietotne: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> — pieprasīta atļauja. Lai atbildētu, nospiediet vadīšanas taustiņu un uz priekšu vērsto bultiņu.</translation>
@@ -3568,7 +3567,6 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3569617221227793022">Pašlaik iestatītā laika josla: <ph name="TIME_ZONE_ENTRY" />. Šo iestatījumu pārvalda jūsu administrators.</translation>
 <translation id="3569682580018832495">Vietne <ph name="ORIGIN" /> var skatīt šos failus un mapes:</translation>
 <translation id="3571734092741541777">Iestatīt</translation>
-<translation id="3572031449439748861">Vairāki paplašinājumi (<ph name="NUM_EXTENSIONS" />) tika izslēgti</translation>
 <translation id="3575121482199441727">Atļaut šajā vietnē</translation>
 <translation id="3575224072358507281">vākt IP adresi un tīkla novērtēšanas rezultātus platformai Measurement Lab saskaņā ar tās konfidencialitātes politiku (measurementlab.net/privacy).</translation>
 <translation id="3576324189521867626">Veiksmīgi instalēta</translation>
@@ -5750,7 +5748,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5149602533174716626">Kop&amp;ēt video kadru</translation>
 <translation id="5150254825601720210">Netscape sertifikāta SSL servera nosaukums</translation>
 <translation id="5151354047782775295">Atbrīvojiet diskā vietu; pretējā gadījumā atlasītie dati var tikt automātiski dzēsti.</translation>
-<translation id="5152381187352661267">Prasmes pārlūkā Chrome</translation>
 <translation id="5153074793829217329">Izmantojiet tastatūru vai cipartastatūru, lai kontrolētu peles kursoru.</translation>
 <translation id="5153234146675181447">Tālruņa aizmiršana</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7005,7 +7002,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6112727384379533756">Pievienot biļeti</translation>
 <translation id="6113434369102685411">Iestatiet noklusējuma meklētājprogrammu pārlūkam Chrome un <ph name="DEVICE_TYPE" /> palaidējam.</translation>
 <translation id="6113832060210023016">palaidēja taustiņš + klikšķis</translation>
-<translation id="6116004140911290070">Prasmju iespējošana pārlūkā Chrome</translation>
 <translation id="6116921718742659598">Mainīt valodas un ievades iestatījumus</translation>
 <translation id="6119008366402292080">Nav pieejams neviens printeris</translation>
 <translation id="6119972796024789243">Krāsu korekcija</translation>
@@ -10415,7 +10411,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8596540852772265699">Pielāgotie faili</translation>
 <translation id="8597845839771543242">Īpašuma formāts:</translation>
 <translation id="8598249292448297523">druka</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Pārvaldīt paplašinājumu}zero{Pārvaldīt paplašinājumus}one{Pārvaldīt paplašinājumus}other{Pārvaldīt paplašinājumus}}</translation>
 <translation id="8599681327221583254">Viena vai vairākas politikas nav konfigurētas pareizi. Lūdzu, sazinieties ar administratoru.</translation>
 <translation id="8600362954032151088">Varat pārvaldīt paroles un piekļuves atslēgas pakalpojumā <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="8602851771975208551">Cita datorā instalēta programma ir izraisījusi tādas lietotnes pievienošanu, kas var ietekmēt pārlūkprogrammas Chrome darbību.</translation>
@@ -10811,7 +10806,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="887292602123626481">Uzzināt vairāk par noklusējuma meklētājprogrammām</translation>
 <translation id="8873075098103007382">Izmantojiet ciļņu grupas darba strukturēšanai</translation>
 <translation id="8874341931345877644">Apraide uz ierīci:</translation>
-<translation id="8874448314264883207">Paplašinājums “<ph name="EXTENSION_NAME" />” tika izslēgts</translation>
 <translation id="8874647982044395866">Organiskais stils</translation>
 <translation id="8874790741333031443">Īslaicīgi atļaujiet izmantot trešo pušu sīkfailus. Tas nozīmē, ka pārlūkošanas aizsardzības līmenis būs zemāks, taču pastāv lielāka iespēja, ka vietnes funkcijas darbosies, kā paredzēts.</translation>
 <translation id="8875221558267407626">Iegūstiet satura apkopojumu, vienkāršojiet sarežģītu tekstu vai uzdodiet jautājumus</translation>

@@ -1387,6 +1387,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="3158539265159265653">Idiski</translation>
 <translation id="3162070126914310576">Le divayisi ayikwazi ukubhaliswa njengamanje ngoba iyunithi yenhlangano yakho isifinyelele umkhawulo wayo wokuqala wokubhalisa. Xhumana nomlawuli wakho ukuze uthole usizo.</translation>
 <translation id="3162559335345991374">I-Wi-Fi oyisebenzisayo ingadinga ukuthi uvakashele ikhasi layo lokungena ngemvume.</translation>
+<translation id="316542773973815724">Ukuzulazula</translation>
 <translation id="316638481603975524">Ingacela ukufaka ama-app ewebhu</translation>
 <translation id="3166788340998560642">IChrome izocela ukuyilondoloza ku-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ngesikhathi esizayo lapho uyisebenzisa</translation>
 <translation id="3168744840365648658">Isisetshenziswa Somsakazo</translation>
@@ -3756,7 +3757,6 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="6893057134494550310">I-Laminating Foil</translation>
 <translation id="6893204630281237373">Ukuze uvale ama-app okukhokha kuChrome, iya <ph name="BEGIN_LINK1" />kumasethingi akho okukhokha<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Ikhadi lakho liqinisekisiwe</translation>
-<translation id="6895573608763679343">U-<ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />, <ph name="MATCH_POSITION" /> kokungu <ph name="NUM_MATCHES_IN_GROUP" /> eqenjini elithi <ph name="GROUP_HEADER" />.</translation>
 <translation id="6896758677409633944">Kopisha</translation>
 <translation id="6897140037006041989">Umenzeli womsebenzisi</translation>
 <translation id="6898699227549475383">Inhlangano (O)</translation>
@@ -4119,7 +4119,6 @@ Imininingwane engeziwe:
 <translation id="7450577240311017924">Phatha inkinobho yokuvumelanisa, yenza kusebenze ukuze uphathe ukuthi yiluphi ulwazi oluvumelanisa kumasethingi we-Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Ifunda kabanzi<ph name="END_LINK" /> mayelana nale nkinga.</translation>
 <translation id="745208957946308667">Igeyimu yedino, cindezela isikhala ukuze udlale</translation>
-<translation id="74521886886364465">U-<ph name="SUGGESTION_TITLE" />, <ph name="MATCH_POSITION" /> kokungu-<ph name="NUM_MATCHES_IN_GROUP" /> eqenjini elithi <ph name="GROUP_HEADER" />.</translation>
 <translation id="7453032093368223821">Lawula enye idatha</translation>
 <translation id="7453849010505253492">Le seva ayikwazanga ukufakazela ukuthi iyi-<ph name="DOMAIN" /> ngoba isebenzisa isitifiketi sokuvikeleka esingathenjwa yiChrome noma ukulungiselelwa kwesistimu yakho yokubethela kwethrafikhi yewebhu. Lokhu kungase kubangelwe ukungalungiseki kahle, noma umhlaseli uhlangabeze ukuxhumeka kwakho. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Buka Isitifiketi<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">I-akhawunti ye-cloud</translation>

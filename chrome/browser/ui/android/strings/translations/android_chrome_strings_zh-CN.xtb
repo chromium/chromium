@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">您的历史记录会显示在此处</translation>
 <translation id="1273937721055267968">屏蔽 <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">开启提示通知</translation>
-<translation id="1283039547216852943">点按即可展开</translation>
 <translation id="1289129165308566697">查看其他设备上的历史记录</translation>
 <translation id="129553762522093515">最近关闭的标签页</translation>
 <translation id="1298077576058087471">节省高达 60% 的数据流量，阅读今日新闻</translation>
@@ -1159,7 +1158,6 @@
 <translation id="59577092665511740">选择一个账号。</translation>
 <translation id="5958275228015807058">在“下载内容”中查找您的文件和网页</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome 已阻止您近期未访问过的网站向您发送通知}other{Chrome 已阻止您近期未访问过的网站向您发送通知}}</translation>
-<translation id="5962718611393537961">点按即可收起</translation>
 <translation id="5964869237734432770">停止获取图片说明</translation>
 <translation id="5972844218283131174">取消全选</translation>
 <translation id="5975083100439434680">缩小</translation>

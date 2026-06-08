@@ -96,7 +96,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1953553007165777902">Inapakua... Zimesalia dakika <ph name="MINUTE" /></translation>
 <translation id="1979600810166324878">Imarisha usalama wako popote ulipo kwa kutumia Kipengele cha Kuvinjari Salama Kilichoboreshwa katika Chrome kwenye iOS</translation>
 <translation id="2001586581944147178">Fanya iwe vigumu watu wanaoweza kufikia shughuli yako kwenye intaneti kuona tovuti unazotembelea. Chrome hutumia muunganisho salama kutafuta anwani ya IP ya tovuti katika DNS (Mfumo wa Majina ya Vikoa).</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Kiendelezi hiki hakitumiki tena. Chrome inapendekeza ukiondoe.}other{Viendelezi hivi havitumiki tena. Chrome inapendekeza uviondoe.}}</translation>
 <translation id="2018528049276128029">Kila wasifu una maelezo yake ya Chrome kama vile alamisho, historia, manenosiri na mengine</translation>
 <translation id="2018879682492276940">Imeshindwa kusakinisha. Tafadhali jaribu tena.</translation>
 <translation id="2024959665595762054">Ili utumie na uhifadhi data ya Chrome kwenye Akaunti yako ya Google, thibitisha kuwa ni wewe</translation>
@@ -389,6 +388,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="5127558335897923940">Weka Chrome katika sehemu yako ya Kupachika ili uifikie haraka wakati wowote</translation>
 <translation id="5132929315877954718">Gundua programu, michezo, viendelezi na mandhari bora ya Google Chrome.</translation>
 <translation id="5139423532931106058">Weka mapendeleo ya wasifu wako kwenye Chrome</translation>
+<translation id="5152381187352661267">Kipengele cha Ujuzi kwenye Chrome</translation>
 <translation id="5163087008893166964">Karibu kwenye Chrome; dirisha jipya la kivinjari limefunguliwa</translation>
 <translation id="5166439563123238795">Chrome inahitaji ruhusa ya kufuatilia mijongeo ya mikono yako</translation>
 <translation id="5169778651486082413">Kutumia manenosiri yako kwenye Chrome katika simu yako</translation>
@@ -488,6 +488,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6070348360322141662">Kwa usalama wa ziada, Google Chrome itasimba data yako kwa njia fiche</translation>
 <translation id="6075300983329039771">Shirika lako, <ph name="MANAGER" /> linataka uingie katika akaunti ya Chrome</translation>
 <translation id="6113794647360055231">Chrome imeboreshwa zaidi</translation>
+<translation id="6116004140911290070">Washa kipengele cha Ujuzi kwenye Chrome</translation>
 <translation id="6116252277240876590">Lugha hii hutumika kuonyesha menyu, mipangilio, arifa na maandishi mengine katika Chrome</translation>
 <translation id="6127237283587442951">Kutumia Chrome kwa chaguomsingi na kuibandika</translation>
 <translation id="6134085236017727171">Ili utumie maikrofoni yako, ruhusu Chrome ifikie <ph name="BEGIN_LINK" />mipangilio ya mfumo<ph name="END_LINK" /></translation>

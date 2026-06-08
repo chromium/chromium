@@ -52,7 +52,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="154404805518949443">Prihlásiť sa do prehliadača Chromium</translation>
 <translation id="1547469039832541117">Ukončí zvýraznenú úlohu.</translation>
 <translation id="1553461853655228091">Chromium potrebuje povolenie použiť fotoaparát, aby mohol vytvoriť 3D mapu vášho okolia</translation>
-<translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Toto rozšírenie už nie je podporované. Chromium odporúča, aby ste ho odstránili.}few{Tieto rozšírenia už nie sú podporované. Chromium odporúča, aby ste ich odstránili.}many{These extensions are no longer supported. Chromium recommends that you remove them.}other{Tieto rozšírenia už nie sú podporované. Chromium odporúča, aby ste ich odstránili.}}</translation>
 <translation id="1562320819937089394">Pripnúť Chromium</translation>
 <translation id="1574377791422810894">Bezpečnostné nástroje prehliadača Chromium</translation>
 <translation id="1594928384848033697">Chromium chce odstrániť vaše údaje Správcu hesiel. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>

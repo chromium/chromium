@@ -92,7 +92,6 @@
 <translation id="1953553007165777902">Fazendo o download… <ph name="MINUTE" /> minuto(s) restante(s)</translation>
 <translation id="1979600810166324878">Tenha mais segurança em qualquer lugar com a Navegação Segura com Maior Proteção no Chrome para iOS</translation>
 <translation id="2001586581944147178">Dificulte para as pessoas com acesso ao seu tráfego da Internet saber quais sites você visita. O Chrome usa uma conexão segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio).</translation>
-<translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Essa extensão não é mais compatível. O Chrome recomenda a remoção dela.}one{Essa extensão não é mais compatível. O Chrome recomenda a remoção dela.}other{Essas extensões não são mais compatíveis. O Chrome recomenda a remoção delas.}}</translation>
 <translation id="2018528049276128029">Cada perfil armazena as próprias informações do Chrome, como favoritos, histórico, senhas, entre outras</translation>
 <translation id="2018879682492276940">Falha na instalação. Tente novamente.</translation>
 <translation id="2024959665595762054">Confirme sua identidade para usar e salvar dados do Chrome na sua Conta do Google</translation>
@@ -385,6 +384,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="5127558335897923940">Mantenha o Chrome no Dock para ter acesso rápido a qualquer momento</translation>
 <translation id="5132929315877954718">Descubra ótimos aplicativos, jogos, extensões e temas para o Google Chrome.</translation>
 <translation id="5139423532931106058">Personalizar perfil do Chrome</translation>
+<translation id="5152381187352661267">Habilidades no Chrome</translation>
 <translation id="5163087008893166964">Conheça o Chrome. Nova janela do navegador aberta</translation>
 <translation id="5166439563123238795">O Chrome precisa de permissão para rastrear suas mãos</translation>
 <translation id="5169778651486082413">Use suas senhas com o Chrome no seu celular</translation>
@@ -480,6 +480,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6070348360322141662">Para aumentar a segurança, seus dados serão criptografados pelo Google Chrome</translation>
 <translation id="6075300983329039771">Sua organização, <ph name="MANAGER" />, exige o login no Chrome</translation>
 <translation id="6113794647360055231">O Chrome ficou ainda melhor</translation>
+<translation id="6116004140911290070">Ativar Habilidades no Chrome</translation>
 <translation id="6116252277240876590">Este idioma é usado para mostrar menus, configurações, alertas e outros textos no Chrome</translation>
 <translation id="6127237283587442951">Use o Chrome por padrão e o mantenha fixado</translation>
 <translation id="6134085236017727171">Para usar o microfone, permita o acesso ao Chrome nas <ph name="BEGIN_LINK" />configurações do sistema<ph name="END_LINK" /></translation>

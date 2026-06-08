@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">ታሪክዎን እዚህ ያገኛሉ</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" />ን አግድ</translation>
 <translation id="1280921956537356716">የጠቃሚ ምክሮች ማሳወቂያዎችን አብራ</translation>
-<translation id="1283039547216852943">ለመዘርጋት መታ ያድርጉ</translation>
 <translation id="1289129165308566697">በሌሎች መሣሪያዎች ላይ ታሪክዎን ይመልከቱ</translation>
 <translation id="129553762522093515">በቅርብ ጊዜ የተዘጉ</translation>
 <translation id="1298077576058087471">እስከ 60% ውሂብ ይቆጥቡ፣ የዛሬ ዜና ያንብቡ</translation>
@@ -1159,7 +1158,6 @@
 <translation id="59577092665511740">መለያ ይምረጡ።</translation>
 <translation id="5958275228015807058">የእርስዎን ፋይሎች እና ገጾች በውርዶች ውስጥ ያግኙ</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome በቅርብ ጊዜ ያልጎበኙት ጣቢያ ማሳወቂያዎችን ለእርስዎ እንዳይልክ አስቁሟል}one{Chrome በቅርብ ጊዜ ያልጎበኙት ጣቢያ ማሳወቂያዎችን ለእርስዎ እንዳይልክ አስቁሟል}other{Chrome በቅርብ ጊዜ ያልጎበኟቸው ጣቢያዎች ማሳወቂያዎችን ለእርስዎ እንዳይልኩ አስቁሟል}}</translation>
-<translation id="5962718611393537961">ለመሰብሰብ መታ ያድርጉ</translation>
 <translation id="5964869237734432770">የምስል መግለጫዎችን አቁም</translation>
 <translation id="5972844218283131174">ሁሉንም አትምረጥ</translation>
 <translation id="5975083100439434680">አሳንስ</translation>

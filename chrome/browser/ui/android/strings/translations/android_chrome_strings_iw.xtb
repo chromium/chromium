@@ -77,7 +77,6 @@
 <translation id="1269129608791067105">ההיסטוריה תופיע כאן</translation>
 <translation id="1273937721055267968">חסימה של <ph name="DOMAIN" /></translation>
 <translation id="1280921956537356716">אני רוצה לקבל התראות על טיפים</translation>
-<translation id="1283039547216852943">יש ללחוץ כדי להרחיב</translation>
 <translation id="1289129165308566697">רוצה לראות את ההיסטוריה שלך במכשירים אחרים?</translation>
 <translation id="129553762522093515">נסגרו לאחרונה</translation>
 <translation id="1298077576058087471">קראת חדשות היום? אפשר לחסוך עד 60% בניצול חבילת הגלישה</translation>
@@ -1159,7 +1158,6 @@
 <translation id="59577092665511740">בחירת חשבון.</translation>
 <translation id="5958275228015807058">הקבצים והדפים שלך נמצאים ב'הורדות'</translation>
 <translation id="5962499136121615854">{NUM_REVOKED_PERMISSIONS,plural, =1{‏‫Chrome הפסיק להציג לך התראות מאתר שלא ביקרת בו לאחרונה}one{‏‫Chrome הפסיק להציג לך התראות מאתרים שלא ביקרת בהם לאחרונה}two{‏‫Chrome הפסיק להציג לך התראות מאתרים שלא ביקרת בהם לאחרונה}other{‏‫Chrome הפסיק להציג לך התראות מאתרים שלא ביקרת בהם לאחרונה}}</translation>
-<translation id="5962718611393537961">יש ללחוץ כדי לכווץ</translation>
 <translation id="5964869237734432770">הפסקה של תיאורי התמונות</translation>
 <translation id="5972844218283131174">ביטול הבחירה בכול הכרטיסיות</translation>
 <translation id="5975083100439434680">התרחקות</translation>

@@ -1895,7 +1895,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2343160676229467122">Ni chaniateir estyniadau ar <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Parc Cenedlaethol Rocky Mountains</translation>
 <translation id="2343747224442182863">Canolbwyntio'r Tab Hwn</translation>
-<translation id="2343971313330854480">Dewch o hyd i'ch ffeil yn y ffolder <ph name="FEATURE_NAME" /></translation>
 <translation id="234559068082989648">Ni fydd hen fersiynau o Apiau Chrome yn agor ar ôl Rhagfyr 2022. Cysylltwch â'ch gweinyddwr i ddiweddaru i fersiwn newydd neu dynnu'r ap hwn.</translation>
 <translation id="2348176352564285430">Ap: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Gofynnwyd am ganiatâd, pwyswch Ctrl + Forward i ymateb</translation>
@@ -3582,7 +3581,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3569617221227793022">Mae'r gylchfa amser wedi'i gosod ar hyn o bryd i <ph name="TIME_ZONE_ENTRY" />. Mae'r gosodiad hwn yn cael ei reoli gan eich gweinyddwr.</translation>
 <translation id="3569682580018832495">Gall <ph name="ORIGIN" /> weld y ffeiliau a'r ffolderi canlynol</translation>
 <translation id="3571734092741541777">Gosod</translation>
-<translation id="3572031449439748861">Cafodd <ph name="NUM_EXTENSIONS" /> estyniad eu diffodd</translation>
 <translation id="3575121482199441727">Caniatáu ar gyfer y wefan hon</translation>
 <translation id="3575224072358507281">Casglu cyfeiriad IP a chanlyniadau mesur rhwydwaith ar gyfer Labordy Mesur, yn unol â'u polisi preifatrwydd (measurementlab.net/privacy)</translation>
 <translation id="3576324189521867626">Wedi'i osod yn llwyddiannus</translation>
@@ -5764,7 +5762,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5149602533174716626">Copïo Ffrâm Fideo</translation>
 <translation id="5150254825601720210">Enw Gweinydd SSL Tystysgrif Netscape</translation>
 <translation id="5151354047782775295">Crëwch ragor o le ar y disg neu mae'n bosib y bydd rhai data yn cael eu dileu yn awtomatig</translation>
-<translation id="5152381187352661267">Sgiliau yn Chrome</translation>
 <translation id="5153074793829217329">Defnyddiwch eich bysellfwrdd neu fysellbad rhifol i reoli cyrchwr eich llygoden</translation>
 <translation id="5153234146675181447">Anghofio'r ffôn</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -7023,7 +7020,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6112727384379533756">Ychwanegu tocyn</translation>
 <translation id="6113434369102685411">Gosod eich peiriant chwilio diofyn ar gyfer porwr Chrome a Lansiwr <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">launcher + clicio</translation>
-<translation id="6116004140911290070">Galluogi Sgiliau yn Chrome</translation>
 <translation id="6116921718742659598">Newid gosodiadau iaith a mewnbynnu</translation>
 <translation id="6119008366402292080">Dim argraffydd ar gael</translation>
 <translation id="6119972796024789243">Cywirwr lliw</translation>
@@ -10435,7 +10431,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8596540852772265699">Ffeiliau Personol</translation>
 <translation id="8597845839771543242">Fformat priodwedd:</translation>
 <translation id="8598249292448297523">argraffu</translation>
-<translation id="859912360782210750">{NUM_EXTENSIONS,plural, =1{Rheoli'r estyniad}zero{Rheoli'r estyniadau}two{Rheoli'r estyniadau}few{Rheoli'r estyniadau}many{Rheoli'r estyniadau}other{Rheoli'r estyniadau}}</translation>
 <translation id="8599681327221583254">Nid yw un neu fwy o bolisïau wedi'u ffurfweddu'n gywir. Cysylltwch â'ch gweinyddwr</translation>
 <translation id="8600362954032151088">Rheoli eich cyfrineiriau a'ch codau pas yn <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="8602851771975208551">Ychwanegodd rhaglen arall ar eich cyfrifiadur ap a allai newid y ffordd y mae Chrome yn gweithio.</translation>
@@ -10831,7 +10826,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="887292602123626481">Dysgu rhagor am beiriannau chwilio diofyn</translation>
 <translation id="8873075098103007382">Arhoswch yn drefnus gyda grwpiau tabiau</translation>
 <translation id="8874341931345877644">Castio i ddyfais:</translation>
-<translation id="8874448314264883207">Cafodd "<ph name="EXTENSION_NAME" />" ei ddiffodd</translation>
 <translation id="8874647982044395866">Organig</translation>
 <translation id="8874790741333031443">Rhowch gynnig ar ganiatáu cwcis trydydd parti dros dro, sy'n golygu llai o amddiffyniad pori ond mae nodweddion y wefan yn fwy tebygol o weithio fel y disgwyl.</translation>
 <translation id="8875221558267407626">Crynhoi cynnwys, symleiddio iaith gymhleth, neu ofyn cwestiynau</translation>
