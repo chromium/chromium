@@ -630,7 +630,7 @@
 "fullscreen"
 "standalone"
 "minimal-ui"
-"borderless"
+"unframed"
 "window-controls-overlay"
 "browser"
 "sticky"
