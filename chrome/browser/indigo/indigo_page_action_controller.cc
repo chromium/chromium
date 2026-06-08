@@ -373,7 +373,11 @@ void IndigoPageActionController::DidFinishNavigation(
   // the URL fragment. Notably we _do_ care about navigation within a
   // single-page application.
   if (!navigation_handle->HasCommitted() ||
-      !navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  if (navigation_handle->IsSameDocument() &&
       navigation_handle->GetPreviousPrimaryMainFrameURL().EqualsIgnoringRef(
           navigation_handle->GetURL())) {
     return;

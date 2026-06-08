@@ -596,5 +596,21 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningTransform) {
       StopObservingState(kToolbarBoundsState));
 }
 
+IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, HideToolbarOnReload) {
+  const GURL url = embedded_test_server()->GetURL("/image.html");
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+      WaitForShow(kIndigoPageActionIconElementId),
+      WaitForShow(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      PressButton(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      WaitForShow(IndigoToolbar::kToolbarElementId),
+      PressButton(kReloadButtonElementId),
+      // Verify the toolbar is hidden.
+      WaitForHide(IndigoToolbar::kToolbarElementId));
+}
+
 }  // namespace
 }  // namespace indigo

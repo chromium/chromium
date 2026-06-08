@@ -421,6 +421,30 @@ TEST_F(IndigoPageActionControllerTest, IgnoresFragmentOnlyNavigation) {
   navigation2->CommitSameDocument();
 }
 
+TEST_F(IndigoPageActionControllerTest, QueriesOptimizationGuideOnReload) {
+  CreateController();
+
+  GURL url("https://example.com");
+
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, Show(kActionIndigo));
+
+  auto navigation1 = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation1->Commit();
+
+  testing::Mock::VerifyAndClearExpectations(mock_optimization_guide_);
+  testing::Mock::VerifyAndClearExpectations(page_action_controller_.get());
+
+  // Reloading the same URL should query optimization guide again.
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, Show(kActionIndigo));
+
+  auto navigation2 = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation2->Commit();
+}
+
 TEST_F(IndigoPageActionControllerTest,
        HidesWhenOptimizationHintsFeatureIsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
