@@ -9,9 +9,11 @@
 #import <optional>
 #import <string>
 
+#import "base/memory/raw_ptr.h"
 #import "base/time/time.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_infobar_metrics_recorder.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -35,8 +37,10 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
       password_manager::features_util::PasswordAccountStorageUserState
           account_storage_user_state,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
+      ukm::SourceId ukm_source_id,
       CommandDispatcher* dispatcher,
-      ukm::SourceId ukm_source_id);
+      password_manager::PasswordStoreInterface* profile_store,
+      password_manager::PasswordStoreInterface* account_store);
 
   IOSChromeSavePasswordInfoBarDelegate(
       const IOSChromeSavePasswordInfoBarDelegate&) = delete;
@@ -115,6 +119,12 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   // Returns true if the infobar is currently presenting.
   bool IsPresenting() const;
 
+  // If there is an actionable error preventing user from saving passwords in
+  // their account, handles it by displaying an appropriate view for resolving
+  // the error. Returns true if a fix error view was displayed. Otherwise, does
+  // nothing.
+  bool MaybeHandlePasswordError(password_manager::ActionableError error);
+
   // The UKM source ID for the page.
   const ukm::SourceId ukm_source_id_;
 
@@ -151,6 +161,10 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Timestamp when the Infobar started presenting.
   std::optional<base::TimeTicks> start_timestamp_;
+
+  // The password stores.
+  const raw_ptr<password_manager::PasswordStoreInterface> profile_store_;
+  const raw_ptr<password_manager::PasswordStoreInterface> account_store_;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_SAVE_PASSWORD_INFOBAR_DELEGATE_H_

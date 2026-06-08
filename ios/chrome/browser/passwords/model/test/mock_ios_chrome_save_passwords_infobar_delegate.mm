@@ -59,8 +59,10 @@ MockIOSChromeSavePasswordInfoBarDelegate::
               : password_manager::features_util::
                     PasswordAccountStorageUserState::kSignedOutUser,
           CreateFormManager(form.get(), url.get()),
+          ukm::kInvalidSourceId,
           [[CommandDispatcher alloc] init],
-          ukm::kInvalidSourceId),
+          /*profile_store=*/nullptr,
+          /*account_store=*/nullptr),
       form_(std::move(form)),
       url_(std::move(url)) {}
 
