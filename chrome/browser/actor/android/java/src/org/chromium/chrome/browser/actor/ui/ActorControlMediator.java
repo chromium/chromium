@@ -48,5 +48,8 @@ public class ActorControlMediator {
         mModel.set(
                 TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING,
                 state.getButtonHorizontalPadding(mContext));
+        mModel.set(
+                TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION,
+                state.getButtonContentDescription(mContext));
     }
 }

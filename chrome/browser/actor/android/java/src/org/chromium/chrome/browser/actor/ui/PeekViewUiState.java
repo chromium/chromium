@@ -60,6 +60,7 @@ public class PeekViewUiState {
     public final @Visibility int descriptionVisibility;
     public final @StyleRes int titleTextAppearanceResId;
     public final @ColorRes int buttonBackgroundResId;
+    public final @StringRes int buttonContentDescriptionResId;
 
     private PeekViewUiState(
             @StateType int type,
@@ -71,7 +72,8 @@ public class PeekViewUiState {
             @Visibility int buttonVisibility,
             @StringRes int buttonTextResId,
             @Visibility int descriptionVisibility,
-            @StyleRes int titleTextAppearanceResId) {
+            @StyleRes int titleTextAppearanceResId,
+            @StringRes int buttonContentDescriptionResId) {
         this.type = type;
         this.descriptionResId = descriptionResId;
         this.buttonIconResId = buttonIconResId;
@@ -82,6 +84,7 @@ public class PeekViewUiState {
         this.buttonTextResId = buttonTextResId;
         this.descriptionVisibility = descriptionVisibility;
         this.titleTextAppearanceResId = titleTextAppearanceResId;
+        this.buttonContentDescriptionResId = buttonContentDescriptionResId;
     }
 
     /**
@@ -127,6 +130,18 @@ public class PeekViewUiState {
      */
     public @Nullable String getButtonText(Context context) {
         return (buttonTextResId != Resources.ID_NULL) ? context.getString(buttonTextResId) : null;
+    }
+
+    /**
+     * Returns the accessibility content description for the actor control button.
+     *
+     * @param context The {@link Context} to use for retrieving resources.
+     * @return The accessibility content description for the actor control button.
+     */
+    public @Nullable String getButtonContentDescription(Context context) {
+        return (buttonContentDescriptionResId != Resources.ID_NULL)
+                ? context.getString(buttonContentDescriptionResId)
+                : null;
     }
 
     /**
@@ -186,7 +201,8 @@ public class PeekViewUiState {
                 && buttonVisibility == that.buttonVisibility
                 && buttonTextResId == that.buttonTextResId
                 && descriptionVisibility == that.descriptionVisibility
-                && titleTextAppearanceResId == that.titleTextAppearanceResId;
+                && titleTextAppearanceResId == that.titleTextAppearanceResId
+                && buttonContentDescriptionResId == that.buttonContentDescriptionResId;
     }
 
     @Override
@@ -201,7 +217,8 @@ public class PeekViewUiState {
                 buttonVisibility,
                 buttonTextResId,
                 descriptionVisibility,
-                titleTextAppearanceResId);
+                titleTextAppearanceResId,
+                buttonContentDescriptionResId);
     }
 
     // Static instances for each state
@@ -216,7 +233,9 @@ public class PeekViewUiState {
                     /* buttonVisibility= */ View.VISIBLE,
                     /* buttonTextResId= */ Resources.ID_NULL,
                     /* descriptionVisibility= */ View.VISIBLE,
-                    /* titleTextAppearanceResId= */ R.style.TextAppearance_TextMediumThick_Primary);
+                    /* titleTextAppearanceResId= */ R.style.TextAppearance_TextMediumThick_Primary,
+                    /* buttonContentDescriptionResId= */ R.string
+                            .peek_state_pause_button_a11y_label);
 
     public static final PeekViewUiState PAUSED =
             new PeekViewUiState(
@@ -229,7 +248,9 @@ public class PeekViewUiState {
                     /* buttonVisibility= */ View.VISIBLE,
                     /* buttonTextResId= */ Resources.ID_NULL,
                     /* descriptionVisibility= */ View.VISIBLE,
-                    /* titleTextAppearanceResId= */ R.style.TextAppearance_TextMediumThick_Primary);
+                    /* titleTextAppearanceResId= */ R.style.TextAppearance_TextMediumThick_Primary,
+                    /* buttonContentDescriptionResId= */ R.string
+                            .peek_state_play_button_a11y_label);
 
     public static final PeekViewUiState WAITING =
             new PeekViewUiState(
@@ -243,7 +264,8 @@ public class PeekViewUiState {
                     /* buttonVisibility= */ View.VISIBLE,
                     /* buttonTextResId= */ R.string.peek_state_view_button_label,
                     /* descriptionVisibility= */ View.VISIBLE,
-                    /* titleTextAppearanceResId= */ R.style.TextAppearance_TextMediumThick_Primary);
+                    /* titleTextAppearanceResId= */ R.style.TextAppearance_TextMediumThick_Primary,
+                    /* buttonContentDescriptionResId= */ Resources.ID_NULL);
 
     public static final PeekViewUiState DEFAULT =
             new PeekViewUiState(
@@ -256,5 +278,6 @@ public class PeekViewUiState {
                     /* buttonVisibility= */ View.GONE,
                     /* buttonTextResId= */ Resources.ID_NULL,
                     /* descriptionVisibility= */ View.GONE,
-                    /* titleTextAppearanceResId= */ R.style.TextAppearance_Headline2Thick);
+                    /* titleTextAppearanceResId= */ R.style.TextAppearance_Headline2Thick,
+                    /* buttonContentDescriptionResId= */ Resources.ID_NULL);
 }

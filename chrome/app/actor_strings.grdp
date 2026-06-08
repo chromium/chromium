@@ -150,6 +150,12 @@
   <message name="IDS_PEEK_STATE_CLOSE_BUTTON_DESCRIPTION" desc="The accessibility content description for the button that closes peek view." formatter_data="android_java">
     Close Gemini in Chrome
   </message>
+  <message name="IDS_PEEK_STATE_PLAY_BUTTON_A11Y_LABEL" desc="Accessibility label for the button to resume/play the actor task." formatter_data="android_java" is_accessibility_with_no_ui="true">
+    Resume
+  </message>
+  <message name="IDS_PEEK_STATE_PAUSE_BUTTON_A11Y_LABEL" desc="Accessibility label for the button to pause the actor task." formatter_data="android_java" is_accessibility_with_no_ui="true">
+    Pause
+  </message>
   <message name="IDS_ACTOR_LEAVE_SITE_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to stop the actor task." formatter_data="android_java">
     Leave site?
   </message>

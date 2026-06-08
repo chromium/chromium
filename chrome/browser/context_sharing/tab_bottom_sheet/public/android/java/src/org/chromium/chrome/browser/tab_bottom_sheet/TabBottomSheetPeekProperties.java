@@ -44,6 +44,9 @@ public class TabBottomSheetPeekProperties {
     public static final WritableIntPropertyKey ACTION_BUTTON_HORIZONTAL_PADDING =
             new WritableIntPropertyKey();
 
+    public static final WritableObjectPropertyKey<String> ACTION_BUTTON_CONTENT_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
+
     public static final ReadableObjectPropertyKey<Runnable> ON_ACTION_BUTTON_CLICKED =
             new ReadableObjectPropertyKey<>();
 
@@ -64,6 +67,7 @@ public class TabBottomSheetPeekProperties {
         ACTION_BUTTON_BACKGROUND_TINT,
         ACTION_BUTTON_ICON_TINT,
         ACTION_BUTTON_HORIZONTAL_PADDING,
+        ACTION_BUTTON_CONTENT_DESCRIPTION,
         ON_ACTION_BUTTON_CLICKED,
         ON_CLOSE_CLICKED,
         ON_PEEK_VIEW_CLICKED

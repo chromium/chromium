@@ -160,6 +160,9 @@ public class ActorControlCoordinatorTest {
         assertEquals(
                 state.getButtonHorizontalPadding(mActivity),
                 mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING));
+        assertEquals(
+                state.getButtonContentDescription(mActivity),
+                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION));
     }
 
     private void performActorControlClick() {
