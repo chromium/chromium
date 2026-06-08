@@ -6,6 +6,26 @@ import("//components/spellcheck/spellcheck_build_features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 
+# The bubble model headers only need the small confirm_bubble_model target
+# rather than all of //chrome/browser/ui, so they live in their own target
+# that can be depended on without forming a cycle through
+# //chrome/browser/ui:ui (e.g. from //chrome/browser/ui/webui/settings).
+source_set("bubble_models") {
+  if (!is_android) {
+    public = [
+      "accessibility_labels_bubble_model.h",
+      "spelling_bubble_model.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui:confirm_bubble_model",
+      "//ui/base/mojom",
+      "//url",
+    ]
+  }
+}
+
 source_set("renderer_context_menu") {
   if (!is_android) {
     # TODO(crbug.com/353332589): Remove this circular dependency when
@@ -16,13 +36,10 @@ source_set("renderer_context_menu") {
       allow_circular_includes_from += [ "//chrome/browser/ui/cocoa" ]
     }
 
-    public = [
-      "accessibility_labels_bubble_model.h",
-      "render_view_context_menu.h",
-      "spelling_bubble_model.h",
-    ]
+    public = [ "render_view_context_menu.h" ]
 
     public_deps = [
+      ":bubble_models",
       "//base",
       "//chrome/app:command_ids",
       "//chrome/browser/ui",

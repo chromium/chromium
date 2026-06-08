@@ -107,6 +107,7 @@ if (!is_android) {
     deps = [
       "//base",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:confirm_bubble_model",
       "//ui/base",
     ]
   }

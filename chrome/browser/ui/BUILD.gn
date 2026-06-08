@@ -1193,8 +1193,6 @@ static_library("ui") {
       "chrome_pages.h",
       "collected_cookies_infobar_delegate.cc",
       "collected_cookies_infobar_delegate.h",
-      "confirm_bubble_model.cc",
-      "confirm_bubble_model.h",
       "focus_tab_after_navigation_helper.cc",
       "focus_tab_after_navigation_helper.h",
       "intent_picker_tab_helper.cc",
@@ -1433,6 +1431,7 @@ static_library("ui") {
     # Non-android deps for "ui" target.
     deps += [
       ":browser_tab_strip",
+      ":confirm_bubble_model",
       ":layout_constants",
       "//base",
       "//chrome/app/vector_icons",
@@ -1470,6 +1469,7 @@ static_library("ui") {
       "//chrome/browser/privacy_sandbox/notice:notice_mojom",
       "//chrome/browser/record_replay",
       "//chrome/browser/record_replay:impl",
+      "//chrome/browser/renderer_context_menu:bubble_models",
       "//chrome/browser/send_tab_to_self",
       "//chrome/browser/signin:signin_promo",
       "//chrome/browser/speech",
@@ -5467,6 +5467,22 @@ group("ui_public_dependencies") {
   if (chrome_root_store_cert_management_ui) {
     public_deps += [ "//chrome/browser/resources/certificate_manager:mojom" ]
   }
+}
+
+# A small standalone model used by confirm bubbles. Kept out of :ui so that
+# targets which cannot depend on :ui (e.g.
+# //chrome/browser/renderer_context_menu:bubble_models) can use it without
+# forming a dependency cycle.
+source_set("confirm_bubble_model") {
+  sources = [ "confirm_bubble_model.cc" ]
+  public = [ "confirm_bubble_model.h" ]
+  public_deps = [
+    "//base",
+    "//ui/base",
+    "//ui/base/mojom",
+    "//url",
+  ]
+  deps = [ "//components/strings:components_strings" ]
 }
 
 source_set("layout_constants") {
