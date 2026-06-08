@@ -41,6 +41,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -79,6 +80,7 @@ using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Gt;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Optional;
@@ -126,10 +128,6 @@ class ScopedUmaskSetter {
 bool IsOpenedInCorrectJournalMode(Database* db, bool is_wal) {
   std::string expected_mode = is_wal ? "wal" : "truncate";
   return ExecuteWithResult(db, "PRAGMA journal_mode") == expected_mode;
-}
-
-int64_t CheckedGetFileSize(const base::FilePath& file_path) {
-  return base::GetFileSize(file_path).value();
 }
 
 }  // namespace
@@ -1557,9 +1555,8 @@ TEST_P(SQLDatabaseTest, RazeTruncate) {
   // page.  Not checking directly because auto_vacuum on Android adds a freelist
   // page.
   ASSERT_TRUE(db_->Raze());
-  std::optional<int64_t> expected_size = base::GetFileSize(db_path_);
-  ASSERT_TRUE(expected_size.has_value());
-  EXPECT_GT(*expected_size, 0);
+  ASSERT_OK_AND_ASSIGN(int64_t expected_size, base::GetFileSize(db_path_));
+  EXPECT_GT(expected_size, 0);
 
   // Cause the database to take a few pages.
   static constexpr char kCreateSql[] =
@@ -1573,10 +1570,7 @@ TEST_P(SQLDatabaseTest, RazeTruncate) {
   // In WAL mode, writes don't reach the database file until a checkpoint
   // happens.
   ASSERT_TRUE(db_->CheckpointDatabase());
-
-  std::optional<int64_t> db_size = base::GetFileSize(db_path_);
-  ASSERT_TRUE(db_size.has_value());
-  EXPECT_GT(*db_size, *expected_size);
+  EXPECT_THAT(base::GetFileSize(db_path_), Optional(Gt(expected_size)));
 
   // Make a query covering most of the database file to make sure that the
   // blocks are actually mapped into memory.  Empirically, the truncate problem
@@ -1585,9 +1579,7 @@ TEST_P(SQLDatabaseTest, RazeTruncate) {
             ExecuteWithResult(db_.get(), "SELECT SUM(LENGTH(value)) FROM foo"));
 
   ASSERT_TRUE(db_->Raze());
-  db_size = base::GetFileSize(db_path_);
-  ASSERT_TRUE(db_size.has_value());
-  EXPECT_EQ(*expected_size, *db_size);
+  EXPECT_THAT(base::GetFileSize(db_path_), Optional(expected_size));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2189,8 +2181,7 @@ TEST_P(SQLDatabaseTest, ReOpenWithDifferentJournalMode) {
   } else {
     // The Rollback journal should have a zero size when pending operations
     // are completed.
-    std::optional<int64_t> journal_size = base::GetFileSize(journal_path);
-    EXPECT_THAT(journal_size, Optional(0));
+    EXPECT_THAT(base::GetFileSize(journal_path), Optional(0));
   }
 
   // Re-open the database with a different mode (Rollback vs WAL).
@@ -2363,20 +2354,13 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
   ASSERT_TRUE(db_->Execute("INSERT INTO foo VALUES (2, 2)"));
 
   // Writes reach WAL file but not db file.
-  std::optional<int64_t> wal_size = base::GetFileSize(wal_path);
-  ASSERT_TRUE(wal_size.has_value());
-  EXPECT_GT(wal_size.value(), 0);
-
-  std::optional<int64_t> db_size = base::GetFileSize(db_path_);
-  ASSERT_TRUE(db_size.has_value());
-  EXPECT_EQ(db_size.value(), db_->page_size());
+  ASSERT_OK_AND_ASSIGN(int64_t wal_size, base::GetFileSize(wal_path));
+  EXPECT_GT(wal_size, 0);
+  EXPECT_THAT(base::GetFileSize(db_path_), Optional(db_->page_size()));
 
   // Checkpoint database to immediately propagate writes to DB file.
   EXPECT_TRUE(db_->CheckpointDatabase());
-
-  db_size = base::GetFileSize(db_path_);
-  EXPECT_TRUE(db_size.has_value());
-  EXPECT_GT(db_size.value(), db_->page_size());
+  EXPECT_THAT(base::GetFileSize(db_path_), Optional(Gt(db_->page_size())));
   EXPECT_EQ(ExecuteWithResult(db_.get(), "SELECT value FROM foo where id=1"),
             "1");
   EXPECT_EQ(ExecuteWithResult(db_.get(), "SELECT value FROM foo where id=2"),
@@ -2384,11 +2368,9 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
 
   // Checkpointing doesn't normally reduce the WAL file size, unless used with
   // `truncate`.
-  std::optional<int64_t> post_checkpoint_wal_size = base::GetFileSize(wal_path);
-  EXPECT_EQ(post_checkpoint_wal_size, wal_size);
+  EXPECT_THAT(base::GetFileSize(wal_path), Optional(wal_size));
   EXPECT_TRUE(db_->CheckpointDatabase(/*truncate=*/true));
-  std::optional<int64_t> post_truncate_wal_size = base::GetFileSize(wal_path);
-  EXPECT_EQ(post_truncate_wal_size, 0);
+  EXPECT_THAT(base::GetFileSize(wal_path), Optional(0));
 }
 
 TEST_P(SQLDatabaseTest, WALCommitCallback) {
@@ -2418,25 +2400,22 @@ TEST_P(SQLDatabaseTest, WALCommitCallback) {
   // The WAL file should not exist yet.
   ASSERT_FALSE(base::GetFileSize(wal_path).has_value());
 
-  int64_t db_size = CheckedGetFileSize(db_path_);
-  int64_t previous_db_size = db_size;
+  ASSERT_OK_AND_ASSIGN(int64_t previous_db_size, base::GetFileSize(db_path_));
 
   // The following CREATE TABLE statement writes some pages into the WAL log.
   ASSERT_TRUE(
       db.Execute("CREATE TABLE foo (id INTEGER UNIQUE, value INTEGER)"));
 
   // The WAL callback must have been called while creating a table.
-  ASSERT_TRUE(wal_callback_pages.has_value());
-  EXPECT_GT(*wal_callback_pages, 0);
+  ASSERT_THAT(wal_callback_pages, Optional(Gt(0)));
   int previous_wal_callback_pages = *wal_callback_pages;
 
   // The WAL file should grow.
-  int64_t wal_size = CheckedGetFileSize(wal_path);
-  int64_t previous_wal_size = wal_size;
-  ASSERT_GT(wal_size, 0);
+  ASSERT_OK_AND_ASSIGN(int64_t previous_wal_size, base::GetFileSize(wal_path));
+  ASSERT_GT(previous_wal_size, 0);
 
   // The db file size should not change.
-  ASSERT_EQ(CheckedGetFileSize(db_path_), previous_db_size);
+  ASSERT_THAT(base::GetFileSize(db_path_), Optional(previous_db_size));
 
   for (int i = 0; i < 100; ++i) {
     // The following INSERT INTO statement writes some pages into the WAL log.
@@ -2444,16 +2423,16 @@ TEST_P(SQLDatabaseTest, WALCommitCallback) {
         base::StringPrintf("INSERT INTO foo VALUES (%d, %d)", i, i)));
 
     // The WAL callback must have been called with a greater `pages` value.
-    ASSERT_GT(*wal_callback_pages, previous_wal_callback_pages);
+    ASSERT_THAT(wal_callback_pages, Optional(Gt(previous_wal_callback_pages)));
     previous_wal_callback_pages = *wal_callback_pages;
 
     // The WAL file should grow.
-    wal_size = CheckedGetFileSize(wal_path);
+    ASSERT_OK_AND_ASSIGN(int64_t wal_size, base::GetFileSize(wal_path));
     ASSERT_GT(wal_size, previous_wal_size);
     previous_wal_size = wal_size;
 
     // The db file size should not change.
-    ASSERT_EQ(CheckedGetFileSize(db_path_), previous_db_size);
+    ASSERT_THAT(base::GetFileSize(db_path_), Optional(previous_db_size));
   }
 
   wal_callback_pages.reset();
@@ -2472,7 +2451,7 @@ TEST_P(SQLDatabaseTest, WALCommitCallback) {
   ASSERT_FALSE(wal_callback_pages.has_value());
 
   // The db file size should grow.
-  db_size = CheckedGetFileSize(db_path_);
+  ASSERT_OK_AND_ASSIGN(int64_t db_size, base::GetFileSize(db_path_));
   ASSERT_GT(db_size, previous_db_size);
   previous_db_size = db_size;
 
@@ -2482,11 +2461,11 @@ TEST_P(SQLDatabaseTest, WALCommitCallback) {
         base::StringPrintf("INSERT INTO foo VALUES (%d, %d)", i, i)));
 
     // The WAL callback must have been called with a greater `pages` value.
-    ASSERT_GT(*wal_callback_pages, previous_wal_callback_pages);
+    ASSERT_THAT(wal_callback_pages, Optional(Gt(previous_wal_callback_pages)));
     previous_wal_callback_pages = *wal_callback_pages;
 
     // The db file size should not change.
-    ASSERT_EQ(CheckedGetFileSize(db_path_), previous_db_size);
+    ASSERT_THAT(base::GetFileSize(db_path_), Optional(previous_db_size));
   }
 }
 
