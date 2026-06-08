@@ -17,6 +17,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
@@ -25,7 +27,10 @@
 #include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_view.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
+#include "components/contextual_search/mock_contextual_search_service.h"
+#include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/contextual_tasks/public/query_contextualizer.h"
@@ -2163,4 +2168,101 @@ TEST_F(OmniboxEditModelPopupTest, OpenFeaturedSearchMatch) {
   EXPECT_TRUE(model()->is_keyword_selected());
   EXPECT_EQ(u"@bookmarks", model()->keyword());
   EXPECT_FALSE(model()->is_keyword_hint());
+}
+
+class OmniboxEditModelContextualSearchTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  OmniboxEditModelContextualSearchTest() = default;
+  ~OmniboxEditModelContextualSearchTest() override = default;
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    // Create the ChromeOmniboxClient.
+    auto omnibox_client = std::make_unique<ChromeOmniboxClient>(
+        /*location_bar=*/nullptr, /*browser=*/nullptr, profile());
+
+    // Create the OmniboxController.
+    controller_ =
+        std::make_unique<OmniboxController>(std::move(omnibox_client));
+
+    // Create the TestOmniboxEditModel.
+    auto edit_model = std::make_unique<TestOmniboxEditModel>(
+        controller_.get(), profile()->GetPrefs());
+    model_ = edit_model.get();
+    controller_->SetEditModelForTesting(std::move(edit_model));
+  }
+
+  void TearDown() override {
+    model_ = nullptr;
+    controller_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  TestOmniboxEditModel* model() { return model_; }
+  OmniboxController* controller() { return controller_.get(); }
+
+ private:
+  std::unique_ptr<OmniboxController> controller_;
+  raw_ptr<TestOmniboxEditModel> model_ = nullptr;
+};
+
+TEST_F(OmniboxEditModelContextualSearchTest,
+       NavigateToAiModeWithSessionCreatesSearchUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kAiModeOmniboxEntryPoint);
+
+  auto session_handle =
+      std::make_unique<contextual_search::MockContextualSearchSessionHandle>();
+  EXPECT_CALL(*session_handle, CreateSearchUrl(_, _)).Times(1);
+
+  model()
+      ->NavigateToAiModeWithContextualizerOnContextualizationCompleteForTesting(
+          u"test query", WindowOpenDisposition::CURRENT_TAB,
+          session_handle->AsWeakPtr());
+}
+
+TEST_F(OmniboxEditModelContextualSearchTest,
+       NavigateToAiModeWithNullSessionCreatesSessionHandleAndSearchUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kAiModeOmniboxEntryPoint);
+
+  // Set the testing factory for ContextualSearchService.
+  ContextualSearchServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        return std::make_unique<contextual_search::MockContextualSearchService>(
+            /*identity_manager=*/nullptr,
+            /*url_loader_factory=*/nullptr,
+            /*template_url_service=*/nullptr,
+            /*variations_client=*/nullptr, version_info::Channel::UNKNOWN,
+            /*locale=*/"");
+      }));
+
+  auto* contextual_search_service =
+      static_cast<contextual_search::MockContextualSearchService*>(
+          ContextualSearchServiceFactory::GetForProfile(profile()));
+  ASSERT_TRUE(contextual_search_service);
+
+  auto session_handle =
+      std::make_unique<contextual_search::MockContextualSearchSessionHandle>();
+  auto* session_handle_ptr = session_handle.get();
+  EXPECT_CALL(*session_handle_ptr, CreateSearchUrl(_, _)).Times(1);
+
+  // When CreateSession is called, return our mock session handle.
+  EXPECT_CALL(*contextual_search_service, CreateSession(_, _, _))
+      .WillOnce(
+          [&](std::unique_ptr<
+                  contextual_search::ContextualSearchContextController::
+                      ConfigParams> config_params,
+              contextual_search::ContextualSearchSource source,
+              std::optional<lens::LensOverlayInvocationSource>
+                  invocation_source) { return std::move(session_handle); });
+
+  // Call the complete callback with nullptr (as if no session handle exists
+  // yet).
+  model()
+      ->NavigateToAiModeWithContextualizerOnContextualizationCompleteForTesting(
+          u"test query", WindowOpenDisposition::CURRENT_TAB, nullptr);
 }

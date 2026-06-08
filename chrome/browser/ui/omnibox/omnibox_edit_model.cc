@@ -3418,7 +3418,15 @@ void OmniboxEditModel::
   auto* chrome_omnibox_client =
       static_cast<ChromeOmniboxClient*>(controller_->client());
 
-  if (session_handle) {
+  auto* profile = chrome_omnibox_client->profile();
+  // Create session handle so metrics can get recorded when a user enters AI
+  // mode through the omnibox entrypoint.
+  auto* active_session_handle = session_handle.get();
+  if (!active_session_handle) {
+    active_session_handle = GetOrCreateContextualSearchSessionHandle(profile);
+  }
+
+  if (active_session_handle) {
     auto request_info =
         std::make_unique<contextual_search::ContextualSearchContextController::
                              CreateSearchUrlRequestInfo>();
@@ -3431,13 +3439,13 @@ void OmniboxEditModel::
     request_info->invocation_source =
         lens::LensOverlayInvocationSource::kOmniboxContextualQuery;
 
-    session_handle->CreateSearchUrl(
+    active_session_handle->CreateSearchUrl(
         std::move(request_info),
         base::BindOnce(
             &OmniboxEditModel::
                 NavigateToAiModeWithContextualizerNavigateToUrlWithSession,
-            weak_factory_.GetWeakPtr(), std::move(session_handle), query_text,
-            disposition));
+            weak_factory_.GetWeakPtr(), active_session_handle->AsWeakPtr(),
+            query_text, disposition));
     return;
   }
 

@@ -63,6 +63,16 @@ void TestOmniboxEditModel::SetCurrentMatchForTest(
   override_current_match_ = std::make_unique<AutocompleteMatch>(match);
 }
 
+void TestOmniboxEditModel::
+    NavigateToAiModeWithContextualizerOnContextualizationCompleteForTesting(
+        const std::u16string& query_text,
+        WindowOpenDisposition disposition,
+        base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
+            session_handle) {
+  NavigateToAiModeWithContextualizerOnContextualizationComplete(
+      query_text, disposition, session_handle);
+}
+
 void TestOmniboxEditModel::OnPopupDataChanged(
     const std::u16string& temporary_text,
     bool is_temporary_text,
