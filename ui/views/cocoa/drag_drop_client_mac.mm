@@ -99,6 +99,15 @@ void DragDropClientMac::StartDragAndDrop(
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
+
+  // As of MacOS 26, dragging with a trackpad results in a leftover mouse-up
+  // event remaining in the queue when the drag session is terminated. This
+  // ensures any leftover message is pumped to avoid handling the "release"
+  // action as a click.
+  [NSApp nextEventMatchingMask:NSEventMaskLeftMouseUp
+                     untilDate:[NSDate distantPast]
+                        inMode:NSEventTrackingRunLoopMode
+                       dequeue:YES];
 }
 
 NSDragOperation DragDropClientMac::DragUpdate(id<NSDraggingInfo> sender) {
