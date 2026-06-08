@@ -141,6 +141,10 @@ DesktopWindowTreeHostWin::~DesktopWindowTreeHostWin() {
   // DestroyCompositor() is called from both places.
   DestroyCompositor();
   DestroyDispatcher();
+
+  if (HWNDMessageHandler* raw_handler = message_handler_.release()) {
+    raw_handler->DestroyHandler();
+  }
 }
 
 // static

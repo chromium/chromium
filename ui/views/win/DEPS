@@ -1,8 +1,12 @@
 # hwnd_util is allowed to include ui/views because it has separate
 # implementations for win and aura.
 specific_include_rules = {
+  "hwnd_message_handler.cc": [
+    "+ui/views/views_features.h"
+  ],
   "hwnd_message_handler_interactive_uitest.cc": [
-    "+ui/views/test/widget_test.h"
+    "+ui/views/test/widget_test.h",
+    "+ui/views/views_features.h"
   ],
   "hwnd_util.*": [
     "+ui/views",

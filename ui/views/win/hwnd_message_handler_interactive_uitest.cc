@@ -5,11 +5,14 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/mock_input_method.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/views_features.h"
 #include "ui/views/win/hwnd_message_handler.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
 
@@ -327,6 +330,31 @@ TEST_F(HWNDMessageHandlerTest, UsesNativeSystemMenuControlsCapture) {
   EXPECT_NE(handler->hwnd(), ::GetCapture());
 
   handler->CloseNow();
+}
+
+TEST_F(HWNDMessageHandlerTest, DeferredDestruction) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kDeferHWNDMessageHandlerDestruction);
+
+  TestHWNDMessageHandlerDelegate delegate;
+  HWNDMessageHandler* handler =
+      HWNDMessageHandler::Create(&delegate, "test").release();
+  ASSERT_TRUE(handler);
+  handler->Init(nullptr, gfx::Rect(0, 0, 100, 100));
+  ASSERT_TRUE(handler->hwnd());
+
+  base::WeakPtr<HWNDMessageHandler> weak_handler = handler->GetWeakPtr();
+  ASSERT_TRUE(weak_handler);
+
+  handler->DestroyHandler();
+
+  EXPECT_TRUE(weak_handler);
+  EXPECT_TRUE(weak_handler->delete_pending_);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !weak_handler; }));
+
+  EXPECT_FALSE(weak_handler);
 }
 
 }  // namespace views

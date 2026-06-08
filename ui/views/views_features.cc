@@ -17,6 +17,12 @@ namespace views::features {
 // stable.
 BASE_FEATURE(kApplyInitialUrlToWebContents, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When disabled, HWNDMessageHandler is synchronously deleted when handling
+// WM_NCDESTROY. When enabled, HWNDMessageHandler's deletion is deferred by
+// posting a task to the UI task runner.
+BASE_FEATURE(kDeferHWNDMessageHandlerDestruction,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables input protection by blocking interaction with views that are
 // currently or were recently obscured by always-on-top windows, and prevents
 // unintended events on security-sensitive UI that appears and activates

@@ -78,6 +78,7 @@
 #include "ui/latency/latency_info.h"
 #include "ui/native_theme/native_theme_win.h"
 #include "ui/views/views_delegate.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/widget_hwnd_utils.h"
 #include "ui/views/win/fullscreen_handler.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
@@ -515,6 +516,22 @@ void HWNDMessageHandler::CloseNow() {
   }
 }
 
+void HWNDMessageHandler::DestroyHandler() {
+  delegate_ = nullptr;
+  observation_.Reset();
+  user_resize_move_detector_.set_hwnd_delegate(nullptr);
+  DestroyAXSystemCaret();
+
+  if (base::FeatureList::IsEnabled(
+          views::features::kDeferHWNDMessageHandlerDestruction)) {
+    delete_pending_ = true;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                  this);
+  } else {
+    delete this;
+  }
+}
+
 gfx::Rect HWNDMessageHandler::GetWindowBoundsInScreen() const {
   RECT r;
   ::GetWindowRect(hwnd(), &r);
@@ -824,7 +841,7 @@ void HWNDMessageHandler::Activate() {
     notify_restore_on_activate_ = true;
     auto ref = msg_handler_weak_factory_.GetWeakPtr();
     ::ShowWindow(hwnd(), SW_RESTORE);
-    if (!ref) {
+    if (IsDestroyed(ref)) {
       return;
     }
     notify_restore_on_activate_ = false;
@@ -1035,7 +1052,7 @@ void HWNDMessageHandler::SetFullscreen(bool fullscreen,
   background_fullscreen_hack_ = false;
   auto ref = msg_handler_weak_factory_.GetWeakPtr();
   fullscreen_handler()->SetFullscreen(fullscreen, target_display_id);
-  if (!ref) {
+  if (IsDestroyed(ref)) {
     return;
   }
 
@@ -1157,6 +1174,10 @@ HICON HWNDMessageHandler::GetSmallWindowIcon() const {
 LRESULT HWNDMessageHandler::OnWndProc(UINT message,
                                       WPARAM w_param,
                                       LPARAM l_param) {
+  if (delete_pending_) {
+    return ::DefWindowProc(hwnd(), message, w_param, l_param);
+  }
+
   TRACE_EVENT("ui,toplevel", "HWNDMessageHandler::OnWndProc",
               [&](perfetto::EventContext ctx) {
                 perfetto::protos::pbzero::ChromeWindowHandleEventInfo* args =
@@ -1180,7 +1201,7 @@ LRESULT HWNDMessageHandler::OnWndProc(UINT message,
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   const BOOL processed =
       _ProcessWindowMessage(window, message, w_param, l_param, result, 0);
-  if (!ref) {
+  if (IsDestroyed(ref)) {
     return 0;
   }
   msg_handled_ = old_msg_handled;
@@ -1189,7 +1210,7 @@ LRESULT HWNDMessageHandler::OnWndProc(UINT message,
     result = ::DefWindowProc(window, message, w_param, l_param);
     // DefWindowProc() may have destroyed the window and/or us in a nested
     // message loop.
-    if (!ref || !::IsWindow(window)) {
+    if (IsDestroyed(ref) || !::IsWindow(window)) {
       return result;
     }
   }
@@ -1252,7 +1273,7 @@ LRESULT HWNDMessageHandler::HandleMouseMessage(unsigned int message,
   // mouse.
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = HandleMouseEventInternal(message, w_param, l_param, false);
-  *handled = !ref.get() || msg_handled_;
+  *handled = IsDestroyed(ref) || msg_handled_;
   return ret;
 }
 
@@ -1267,7 +1288,7 @@ LRESULT HWNDMessageHandler::HandleKeyboardMessage(unsigned int message,
   } else {
     ret = OnKeyEvent(message, w_param, l_param);
   }
-  *handled = !ref.get() || msg_handled_;
+  *handled = IsDestroyed(ref) || msg_handled_;
   return ret;
 }
 
@@ -1277,7 +1298,7 @@ LRESULT HWNDMessageHandler::HandleTouchMessage(unsigned int message,
                                                bool* handled) {
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = OnTouchEvent(message, w_param, l_param);
-  *handled = !ref.get() || msg_handled_;
+  *handled = IsDestroyed(ref) || msg_handled_;
   return ret;
 }
 
@@ -1287,7 +1308,7 @@ LRESULT HWNDMessageHandler::HandlePointerMessage(unsigned int message,
                                                  bool* handled) {
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = OnPointerEvent(message, w_param, l_param);
-  *handled = !ref.get() || msg_handled_;
+  *handled = IsDestroyed(ref) || msg_handled_;
   return ret;
 }
 
@@ -1297,7 +1318,7 @@ LRESULT HWNDMessageHandler::HandleInputMessage(unsigned int message,
                                                bool* handled) {
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = OnInputEvent(message, w_param, l_param);
-  *handled = !ref.get() || msg_handled_;
+  *handled = IsDestroyed(ref) || msg_handled_;
   return ret;
 }
 
@@ -1307,7 +1328,7 @@ LRESULT HWNDMessageHandler::HandleScrollMessage(unsigned int message,
                                                 bool* handled) {
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = OnScrollMessage(message, w_param, l_param);
-  *handled = !ref.get() || msg_handled_;
+  *handled = IsDestroyed(ref) || msg_handled_;
   return ret;
 }
 
@@ -1318,7 +1339,7 @@ LRESULT HWNDMessageHandler::HandleNcHitTestMessage(unsigned int message,
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   LRESULT ret = OnNCHitTest(
       gfx::Point(CR_GET_X_LPARAM(l_param), CR_GET_Y_LPARAM(l_param)));
-  *handled = !ref.get() || msg_handled_;
+  *handled = IsDestroyed(ref) || msg_handled_;
   return ret;
 }
 
@@ -1418,11 +1439,12 @@ void HWNDMessageHandler::ApplyPanGestureFlingEnd() {
 }
 
 gfx::NativeViewAccessible HWNDMessageHandler::GetChildOfAXFragmentRoot() {
-  return delegate_->GetNativeViewAccessible();
+  return delegate_ ? delegate_->GetNativeViewAccessible() : nullptr;
 }
 
 gfx::NativeViewAccessible HWNDMessageHandler::GetParentOfAXFragmentRoot() {
-  if (!features::IsAccessibilityWinAXFragmentRootParentEnabled()) {
+  if (!delegate_ ||
+      !::features::IsAccessibilityWinAXFragmentRootParentEnabled()) {
     return nullptr;
   }
   return delegate_->GetParentNativeViewAccessible();
@@ -1534,7 +1556,7 @@ void HWNDMessageHandler::PostProcessActivateMessage(
   if (delegate_->CanActivate()) {
     auto ref = msg_handler_weak_factory_.GetWeakPtr();
     delegate_->HandleActivationChanged(active);
-    if (!ref) {
+    if (IsDestroyed(ref)) {
       return;
     }
   }
@@ -1575,7 +1597,7 @@ void HWNDMessageHandler::PostProcessActivateMessage(
                      &monitor_info);
     auto ref = msg_handler_weak_factory_.GetWeakPtr();
     SetBoundsInternal(gfx::Rect(monitor_info.rcMonitor), false);
-    if (!ref) {
+    if (IsDestroyed(ref)) {
       return;
     }
     // Inform the taskbar that this window is now a fullscreen window so it go
@@ -1647,7 +1669,7 @@ void HWNDMessageHandler::ClientAreaSizeChanged() {
   }
   auto ref = msg_handler_weak_factory_.GetWeakPtr();
   delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
-  if (!ref) {
+  if (IsDestroyed(ref)) {
     return;
   }
 
@@ -1747,7 +1769,7 @@ LRESULT HWNDMessageHandler::DefWindowProcWithRedrawLock(UINT message,
   // the WeakPtrFactory to avoid unlocking (and crashing) after destruction.
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   LRESULT result = ::DefWindowProc(hwnd(), message, w_param, l_param);
-  if (!ref) {
+  if (IsDestroyed(ref)) {
     lock.CancelUnlockOperation();
   }
   return result;
@@ -1933,7 +1955,7 @@ void HWNDMessageHandler::OnDestroy() {
     // providers have not previously been disconnected; see
     // https://learn.microsoft.com/en-us/windows/win32/api/uiautomationcoreapi/nf-uiautomationcoreapi-uiadisconnectprovider.
     if (ax_platform.IsUiaProviderEnabled() &&
-        base::FeatureList::IsEnabled(features::kUiaDisconnectRootProviders)) {
+        base::FeatureList::IsEnabled(::features::kUiaDisconnectRootProviders)) {
       // Post a task to disconnect the provider to avoid a potential re-entrancy
       // issue -- UiaDisconnectProvider may make COM calls, which could result
       // in a call to PeekMessage.
@@ -1969,7 +1991,7 @@ void HWNDMessageHandler::OnDisplayChange(UINT bits_per_pixel,
   delegate_->HandleDisplayChange();
 
   // HandleDisplayChange() may result in |this| being deleted.
-  if (!ref) {
+  if (IsDestroyed(ref)) {
     return;
   }
 
@@ -2021,11 +2043,11 @@ LRESULT HWNDMessageHandler::OnDpiChanged(UINT msg,
   // See https://crbug.com/1368455 for more info.
   auto ref = msg_handler_weak_factory_.GetWeakPtr();
   display::win::GetScreenWin()->UpdateDisplayInfos();
-  if (!ref) {
+  if (IsDestroyed(ref)) {
     return 0;
   }
   SetBoundsInternal(gfx::Rect(*reinterpret_cast<RECT*>(l_param)), false);
-  if (!ref) {
+  if (IsDestroyed(ref)) {
     return 0;
   }
   delegate_->HandleWindowScaleFactorChanged(scaling_factor);
@@ -2211,7 +2233,7 @@ LRESULT HWNDMessageHandler::OnKeyEvent(UINT message,
   ui::KeyEvent key(msg);
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
   delegate_->HandleKeyEvent(&key);
-  if (!ref) {
+  if (IsDestroyed(ref)) {
     return 0;
   }
   if (!key.handled()) {
@@ -3195,7 +3217,7 @@ void HWNDMessageHandler::OnWindowPosChanged(WINDOWPOS* window_pos) {
   if (DidClientAreaSizeChange(window_pos)) {
     ClientAreaSizeChanged();
   }
-  if (!ref) {
+  if (IsDestroyed(ref)) {
     return;
   }
   if (window_pos->flags & SWP_FRAMECHANGED) {
@@ -3240,7 +3262,7 @@ void HWNDMessageHandler::OnSessionChange(WPARAM status_code,
 
 void HWNDMessageHandler::HandleTouchEvents(const TouchEvents& touch_events) {
   base::WeakPtr<HWNDMessageHandler> ref(msg_handler_weak_factory_.GetWeakPtr());
-  for (size_t i = 0; i < touch_events.size() && ref; ++i) {
+  for (size_t i = 0; i < touch_events.size() && !IsDestroyed(ref); ++i) {
     delegate_->HandleTouchEvent(const_cast<ui::TouchEvent*>(&touch_events[i]));
   }
 }
@@ -3466,7 +3488,7 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
     handled = delegate_->HandleMouseEvent(&event);
   }
 
-  if (!ref.get()) {
+  if (IsDestroyed(ref)) {
     return 0;
   }
 
@@ -3842,7 +3864,7 @@ void HWNDMessageHandler::SetBoundsInternal(const gfx::Rect& bounds_in_pixels,
   ::SetWindowPos(hwnd(), nullptr, bounds_in_pixels.x(), bounds_in_pixels.y(),
                  bounds_in_pixels.width(), bounds_in_pixels.height(),
                  SWP_NOACTIVATE | SWP_NOZORDER);
-  if (!ref) {
+  if (IsDestroyed(ref)) {
     return;
   }
 
@@ -3852,7 +3874,7 @@ void HWNDMessageHandler::SetBoundsInternal(const gfx::Rect& bounds_in_pixels,
   if (old_size == bounds_in_pixels.size() && force_size_changed &&
       !background_fullscreen_hack_) {
     delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
-    if (!ref) {
+    if (IsDestroyed(ref)) {
       return;
     }
     ResetWindowRegion(false, true);
@@ -3885,7 +3907,7 @@ void HWNDMessageHandler::OnBackgroundFullscreen() {
   background_fullscreen_hack_ = true;
   auto ref = msg_handler_weak_factory_.GetWeakPtr();
   SetBoundsInternal(shrunk_rect, false);
-  if (!ref) {
+  if (IsDestroyed(ref)) {
     return;
   }
   // Inform the taskbar that this window is no longer a fullscreen window so it
@@ -3983,6 +4005,17 @@ bool HWNDMessageHandler::IsTopLevelWindow(HWND window) {
   }
   HWND parent = ::GetParent(window);
   return !parent || (parent == ::GetDesktopWindow());
+}
+
+// static
+bool HWNDMessageHandler::IsDestroyed(
+    const base::WeakPtr<HWNDMessageHandler>& ref) {
+  if (!ref) {
+    CHECK(!base::FeatureList::IsEnabled(
+        views::features::kDeferHWNDMessageHandlerDestruction));
+    return true;
+  }
+  return false;
 }
 
 // static
