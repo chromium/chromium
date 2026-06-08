@@ -151,6 +151,12 @@ class CC_PAINT_EXPORT PaintImage {
  public:
   using Id = int;
   using AnimationSequenceId = uint32_t;
+  enum class AnimationSyncSequence : AnimationSequenceId {
+    // All instances of the image animation together on a shared timeline.
+    kShared = 0,
+    // This instance drives its own independent image animation timeline.
+    kOwn = 1,
+  };
 
   // A ContentId is used to identify the content for which images which can be
   // lazily generated (generator/record backed images). As opposed to Id, which

@@ -171,6 +171,7 @@ SET TIMEOUT: css/css-image-animation/image-animation-paused-exact-frame.tentativ
 SET TIMEOUT: css/css-image-animation/image-animation-stopped-reset-frame.tentative.html
 SET TIMEOUT: css/css-image-animation/image-animation-video-poster-running.html
 SET TIMEOUT: css/compositing/opacity-and-transform-animation-crash.html
+SET TIMEOUT: css/css-image-animation/image-animation-display-none-reset.tentative.html
 SET TIMEOUT: css/css-contain/contain-body-overflow-002.html
 SET TIMEOUT: css/css-display/display-contents-shadow-dom-1.html
 SET TIMEOUT: css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html

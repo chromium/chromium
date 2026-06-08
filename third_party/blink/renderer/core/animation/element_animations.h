@@ -33,6 +33,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
+#include "third_party/blink/renderer/core/animation/css/css_image_animations.h"
 #include "third_party/blink/renderer/core/animation/effect_stack.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_base.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -105,6 +106,11 @@ class CORE_EXPORT ElementAnimations final
            animations_.empty() && worklet_animations_.empty();
   }
 
+  CSSImageAnimations& CssImageAnimations() { return css_image_animations_; }
+  const CSSImageAnimations& CssImageAnimations() const {
+    return css_image_animations_;
+  }
+
   void RestartAnimationOnCompositor();
 
   void SetAnimationStyleChange(bool animation_style_change) {
@@ -154,6 +160,7 @@ class CORE_EXPORT ElementAnimations final
  private:
   EffectStack effect_stack_;
   CSSAnimations css_animations_;
+  CSSImageAnimations css_image_animations_;
   AnimationCountedSet animations_;
   WorkletAnimationSet worklet_animations_;
 

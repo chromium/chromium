@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/image_painter.h"
 
+#include "third_party/blink/renderer/core/animation/css/css_image_animations.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -287,14 +288,17 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
         pixel_snapped_dest_rect);
   }
 
+  ImageNodeAnimationInfo image_animation =
+      CSSImageAnimations::CreateImageNodeAnimationInfo(
+          node, image_content, layout_image_.StyleRef().ImageAnimation());
+
   context.DrawImage(
       *image, decode_mode, image_auto_dark_mode,
       ComputeImagePaintTimingInfo(layout_image_, *image, image_content, context,
                                   pixel_snapped_dest_rect),
       gfx::RectF(pixel_snapped_dest_rect), &src_rect, SkBlendMode::kSrcOver,
       respect_orientation, Image::ImageClampingMode::kClampImageToSourceRect,
-      ImageNodeAnimationInfo(node ? node->GetDomNodeId() : kInvalidDOMNodeId,
-                             layout_image_.StyleRef().ImageAnimation()));
+      &image_animation);
 }
 
 }  // namespace blink

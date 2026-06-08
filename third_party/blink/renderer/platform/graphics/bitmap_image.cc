@@ -35,6 +35,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
+#include "third_party/blink/renderer/platform/graphics/css_image_animation_data_interface.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -135,7 +136,8 @@ size_t BitmapImage::TotalFrameBytes() {
 
 PaintImage BitmapImage::PaintImageForTesting() {
   return CreatePaintImage(
-      paint_image_id(), PaintImage::kInvalidId, 0,
+      paint_image_id(), PaintImage::kInvalidId,
+      PaintImage::AnimationSyncSequence::kShared,
       GetRepetitionCountWithPolicyOverride(RepetitionCount(), animation_policy_,
                                            ImageAnimationEnum::kNormal));
 }
@@ -143,7 +145,7 @@ PaintImage BitmapImage::PaintImageForTesting() {
 PaintImage BitmapImage::CreatePaintImage(
     PaintImage::Id paint_id,
     PaintImage::Id sync_animation_id,
-    PaintImage::AnimationSequenceId sync_animation_sequence_id,
+    PaintImage::AnimationSyncSequence sync_sequence,
     int image_animation_repetition_count) {
   sk_sp<PaintImageGenerator> generator =
       decoder_ ? decoder_->CreateGenerator() : nullptr;
@@ -162,7 +164,8 @@ PaintImage BitmapImage::CreatePaintImage(
           .set_completion_state(completion_state)
           .set_reset_animation_sequence_id(reset_animation_sequence_id_)
           .set_sync_animation_target_id(sync_animation_id)
-          .set_sync_animation_sequence_id(sync_animation_sequence_id);
+          .set_sync_animation_sequence_id(
+              static_cast<PaintImage::AnimationSequenceId>(sync_sequence));
 
   sk_sp<PaintImageGenerator> gainmap_generator;
   SkGainmapInfo gainmap_info;
@@ -300,13 +303,12 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
                        const gfx::RectF& src_rect,
                        const ImageDrawOptions& draw_options) {
   TRACE_EVENT0("skia", "BitmapImage::draw");
-  ImageNodeAnimationInfo node_animation_info =
-      draw_options.image_node_animation_info;
-
   PaintImage image;
   if (RuntimeEnabledFeatures::CSSImageAnimationEnabled() &&
-      node_animation_info.node_id != kInvalidDOMNodeId) {
-    image = PaintImageForCurrentFrameWithInfo(&node_animation_info);
+      draw_options.image_node_animation_info &&
+      draw_options.image_node_animation_info->node_id != kInvalidDOMNodeId) {
+    image = PaintImageForCurrentFrameWithInfo(
+        draw_options.image_node_animation_info);
   } else {
     image = PaintImageForCurrentFrame();
   }
@@ -415,92 +417,132 @@ PaintImage BitmapImage::PaintImageForCurrentFrameWithInfo(
   DOMNodeId id = kNormalCachedFrameId;
   PaintImage::Id paint_id = paint_image_id();
   PaintImage::Id sync_animation_target_id = PaintImage::kInvalidId;
-  PaintImage::AnimationSequenceId sync_animation_sequence_id = 0;
+  PaintImage::AnimationSyncSequence sync_sequence =
+      PaintImage::AnimationSyncSequence::kShared;
+
+  bool has_image_animation_data = false;
 
   if (image_node_animation_info) {
-    ImageAnimationData* animation_data = nullptr;
+    ElementImageAnimationData* animation_data =
+        image_node_animation_info->animation_data;
+    ImageResourceContent* image_key = image_node_animation_info->image;
+    DCHECK(animation_data && image_key);
 
-    if (auto it = image_animation_map_.find(image_node_animation_info->node_id);
-        it != image_animation_map_.end()) {
-      animation_data = &it->value;
-    }
+    std::optional<ImageAnimationData> image_animation_data =
+        animation_data->GetImageAnimationData(image_key);
 
-    if (animation_data) {
-      ImageAnimationEnum previous_image_animation =
-          animation_data->previous_image_animation;
-      if (previous_image_animation != image_animation) {
-        if ((previous_image_animation == ImageAnimationEnum::kNormal &&
-             image_animation == ImageAnimationEnum::kRunning)) {
-          image_animation = ImageAnimationEnum::kNormal;
-        } else {
+    has_image_animation_data = image_animation_data.has_value();
+
+    // State machine for CSS Image Animation
+    //
+    // States:
+    //  NoEntry: no entry in image_animation_data_.
+    //  Shared:  entry with sync_sequence == kShared (paint_id =
+    //  paint_image_id()) Own: entry with sync_sequence == kOwn (paint_id =
+    //  unique per-element id)
+    //
+    //     ┌──── kPaused / kRunning (first paint, non-normal) ───┐
+    //     │                                                     ▼
+    //   ┌─┴───────┐  kNormal   ┌─────────┐  kPaused   ┌──────────┐
+    //   │ NoEntry │ ─────────► │ Shared  │ ─────────► │   Own    │
+    //   │         │            │ seq = 0 │            │ seq != 0 │
+    //   │         │ ◄───────── │         │            │          │
+    //   │         │  kStopped  └─────────┘ ◄──kNormal ┴──────────┘
+    //   |         |             ▲↻                     ▲↻      |
+    //   └────▲────┘        (self loop)           (self loop)   │
+    //        │                kNormal /             kPaused /  │
+    //        │                kRunning              kRunning   │
+    //        │                                                 │
+    //        └─────────────── kStopped (erase entry) ──────────┘
+    //
+    switch (image_animation) {
+      case ImageAnimationEnum::kNormal: {
+        if (image_animation_data &&
+            image_animation_data->sync_sequence ==
+                PaintImage::AnimationSyncSequence::kOwn) {
           cached_frames_.erase(image_node_animation_info->node_id);
         }
-      }
-    }
-
-    const bool is_normal_animation =
-        image_animation == ImageAnimationEnum::kNormal;
-
-    // For non-normal animations, we store the separate paint image id per dom
-    // node id to track its animation timeline independently from the normal
-    // image. When transitioning from a normal to pause, we need to
-    // synchronize with the normal image's current frame by incrementing the
-    // sequence id and sync target id.
-    if (!is_normal_animation) {
-      id = image_node_animation_info->node_id;
-      if (animation_data &&
-          animation_data->non_normal_paint_id != PaintImage::kInvalidId) {
-        paint_id = animation_data->non_normal_paint_id;
-        if (animation_data->previous_image_animation ==
-            ImageAnimationEnum::kNormal) {
-          sync_animation_sequence_id =
-              animation_data->non_normal_sequence_id + 1;
-          sync_animation_target_id = paint_image_id();
-        } else if (image_animation !=
-                       animation_data->previous_image_animation &&
-                   animation_data->previous_image_animation ==
-                       ImageAnimationEnum::kStopped) {
-          sync_animation_sequence_id =
-              animation_data->non_normal_sequence_id + 1;
-          sync_animation_target_id = PaintImage::kInvalidId;
-        } else {
-          sync_animation_sequence_id = animation_data->non_normal_sequence_id;
+        if (!image_animation_data ||
+            image_animation_data->sync_sequence ==
+                PaintImage::AnimationSyncSequence::kOwn ||
+            image_animation_data->paint_id != paint_id) {
+          animation_data->SetImageAnimationData(
+              image_key,
+              {.paint_id = paint_id,
+               .sync_sequence = PaintImage::AnimationSyncSequence::kShared});
         }
-      } else {
-        paint_id = PaintImage::GetNextId();
-        sync_animation_target_id = paint_image_id();
-        sync_animation_sequence_id = 1;
+        break;
+      }
+      case ImageAnimationEnum::kRunning: {
+        if (image_animation_data) {
+          paint_id = image_animation_data->paint_id;
+          sync_sequence = image_animation_data->sync_sequence;
+          if (image_animation_data->sync_sequence ==
+              PaintImage::AnimationSyncSequence::kOwn) {
+            id = image_node_animation_info->node_id;
+          }
+        } else {
+          paint_id = PaintImage::GetNextId();
+          sync_sequence = PaintImage::AnimationSyncSequence::kOwn;
+          id = image_node_animation_info->node_id;
+          animation_data->SetImageAnimationData(
+              image_key,
+              {.paint_id = paint_id, .sync_sequence = sync_sequence});
+        }
+        break;
+      }
+      case ImageAnimationEnum::kPaused: {
+        if (image_animation_data &&
+            image_animation_data->sync_sequence ==
+                PaintImage::AnimationSyncSequence::kOwn) {
+          paint_id = image_animation_data->paint_id;
+          sync_sequence = image_animation_data->sync_sequence;
+          id = image_node_animation_info->node_id;
+        } else {
+          paint_id = PaintImage::GetNextId();
+          sync_animation_target_id = image_animation_data
+                                         ? image_animation_data->paint_id
+                                         : PaintImage::kInvalidId;
+          sync_sequence = PaintImage::AnimationSyncSequence::kOwn;
+          id = image_node_animation_info->node_id;
+          animation_data->SetImageAnimationData(
+              image_key,
+              {.paint_id = paint_id, .sync_sequence = sync_sequence});
+        }
+        break;
+      }
+      case ImageAnimationEnum::kStopped: {
+        if (image_animation_data) {
+          paint_id = image_animation_data->paint_id;
+          animation_data->EraseImageAnimationData(image_key);
+        } else {
+          paint_id = PaintImage::GetNextId();
+        }
+        id = image_node_animation_info->node_id;
+        sync_animation_target_id = PaintImage::kInvalidId;
+        sync_sequence = PaintImage::AnimationSyncSequence::kShared;
+        break;
       }
     }
-
-    const ImageAnimationData new_animation_data{
-        image_animation,
-        (paint_image_id() == paint_id) ? PaintImage::kInvalidId : paint_id,
-        sync_animation_sequence_id,
-    };
-
-    if (animation_data) {
-      // Update existing animation data.
-      *animation_data = new_animation_data;
-    } else {
-      image_animation_map_.Set(image_node_animation_info->node_id,
-                               new_animation_data);
-    };
   }
 
   auto alpha_type = decoder_ ? decoder_->AlphaType() : kUnknown_SkAlphaType;
+  const int expected_repetition_count = GetRepetitionCountWithPolicyOverride(
+      RepetitionCount(), animation_policy_, image_animation);
 
   if (auto it = cached_frames_.find(id); it != cached_frames_.end()) {
     const PaintImage& cached_frame = it->value;
-    if (cached_frame && cached_frame.GetAlphaType() == alpha_type) {
+    if (cached_frame &&
+        cached_frame.repetition_count() == expected_repetition_count &&
+        (!image_node_animation_info || has_image_animation_data) &&
+        cached_frame.GetAlphaType() == alpha_type) {
       return cached_frame;
     }
   }
 
-  PaintImage new_frame = CreatePaintImage(
-      paint_id, sync_animation_target_id, sync_animation_sequence_id,
-      GetRepetitionCountWithPolicyOverride(RepetitionCount(), animation_policy_,
-                                           image_animation));
+  PaintImage new_frame =
+      CreatePaintImage(paint_id, sync_animation_target_id, sync_sequence,
+                       expected_repetition_count);
 
   // BitmapImage should not be texture backed.
   DCHECK(!new_frame.IsTextureBacked());

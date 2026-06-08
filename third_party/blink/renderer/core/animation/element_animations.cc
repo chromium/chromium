@@ -70,6 +70,7 @@ void ElementAnimations::RestartAnimationOnCompositor() {
 
 void ElementAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(css_animations_);
+  visitor->Trace(css_image_animations_);
   visitor->Trace(effect_stack_);
   visitor->Trace(animations_);
   visitor->Trace(worklet_animations_);

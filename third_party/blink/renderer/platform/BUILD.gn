@@ -944,6 +944,7 @@ component("platform") {
     "graphics/cpu/x86/webgl_image_conversion_sse.h",
     "graphics/crossfade_generated_image.cc",
     "graphics/crossfade_generated_image.h",
+    "graphics/css_image_animation_data_interface.h",
     "graphics/dark_mode_color_classifier.cc",
     "graphics/dark_mode_color_classifier.h",
     "graphics/dark_mode_color_filter.cc",

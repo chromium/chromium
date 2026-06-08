@@ -4496,6 +4496,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
       if (ElementAnimations* element_animations =
               data->GetElementAnimations()) {
         element_animations->CssAnimations().Cancel();
+        element_animations->CssImageAnimations().Clear();
       }
     }
 
@@ -4739,6 +4740,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
       if (!performing_reattach) {
         DocumentLifecycle::DetachScope will_detach(GetDocument().Lifecycle());
         element_animations->CssAnimations().Cancel();
+        element_animations->CssImageAnimations().Clear();
         element_animations->SetAnimationStyleChange(false);
       }
       element_animations->RestartAnimationOnCompositor();
@@ -5598,6 +5600,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
         // cancel itself in this case.
         if (base_is_display_none) {
           element_animations->CssAnimations().Cancel();
+          element_animations->CssImageAnimations().Clear();
         }
       }
       data = data->SetContainerQueryEvaluator(nullptr);

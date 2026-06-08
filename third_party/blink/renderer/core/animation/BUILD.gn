@@ -59,6 +59,8 @@ blink_core_sources("animation") {
     "css/css_animation_update.h",
     "css/css_animations.cc",
     "css/css_animations.h",
+    "css/css_image_animations.cc",
+    "css/css_image_animations.h",
     "css/css_keyframe_effect_model.cc",
     "css/css_keyframe_effect_model.h",
     "css/css_timeline_map.cc",

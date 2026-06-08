@@ -811,15 +811,16 @@ PhysicalRect GetSubsetDestRectForImage(const BackgroundImageGeometry& geometry,
 // The tile_size is the total image size. The mapping from this size
 //   to the unsnapped_dest_rect size defines the scaling of the image for
 //   sprite computation.
-void DrawTiledBackground(LocalFrame* frame,
-                         GraphicsContext& context,
-                         const ComputedStyle& style,
-                         Image& image,
-                         const BackgroundImageGeometry& geometry,
-                         SkBlendMode op,
-                         RespectImageOrientationEnum respect_orientation,
-                         ImagePaintTimingInfo paint_timing_info,
-                         ImageNodeAnimationInfo image_node_animation_info) {
+void DrawTiledBackground(
+    LocalFrame* frame,
+    GraphicsContext& context,
+    const ComputedStyle& style,
+    Image& image,
+    const BackgroundImageGeometry& geometry,
+    SkBlendMode op,
+    RespectImageOrientationEnum respect_orientation,
+    ImagePaintTimingInfo paint_timing_info,
+    const ImageNodeAnimationInfo* image_node_animation_info) {
   DCHECK(!geometry.TileSize().IsEmpty());
 
   const PhysicalRect& snapped_dest = geometry.SnappedDestRect();
@@ -954,9 +955,7 @@ bool PaintBGColorWithPaintWorklet(const Document& document,
           /* image_may_be_lcp_candidate */ false,
           /* report_paint_timing */ false),
       dest_rect, src_rect, SkBlendMode::kSrcOver, kRespectImageOrientation,
-      Image::kClampImageToSourceRect,
-      ImageNodeAnimationInfo(node ? node->GetDomNodeId() : kInvalidDOMNodeId,
-                             style.ImageAnimation()));
+      Image::kClampImageToSourceRect);
   animation->OnPaintWorkletImageCreated();
   return true;
 }
@@ -1149,14 +1148,17 @@ inline bool PaintFastBottomLayer(const Document& document,
 
   // Since there is no way for the developer to specify decode behavior, use
   // kSync by default
+  ImageNodeAnimationInfo image_animation =
+      CSSImageAnimations::CreateImageNodeAnimationInfo(
+          node, info.image ? info.image->CachedImage() : nullptr,
+          style.ImageAnimation());
+
   context.DrawImageRRect(
       *image, Image::kSyncDecode, image_auto_dark_mode,
       ComputeImagePaintTimingInfo(node, *image, *info.image, context,
                                   image_border.Rect()),
       image_border, src_rect, composite_op, info.respect_image_orientation,
-      clamping_mode,
-      ImageNodeAnimationInfo(node ? node->GetDomNodeId() : kInvalidDOMNodeId,
-                             style.ImageAnimation()));
+      clamping_mode, &image_animation);
   return true;
 }
 
@@ -1281,13 +1283,17 @@ void PaintFillLayerBackground(const Document& document,
         TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
         inspector_paint_image_event::Data, node, *info.image,
         gfx::RectF(image->Rect()), gfx::RectF(scrolled_paint_rect));
+
+    ImageNodeAnimationInfo image_animation =
+        CSSImageAnimations::CreateImageNodeAnimationInfo(
+            node, info.image ? info.image->CachedImage() : nullptr,
+            style.ImageAnimation());
     DrawTiledBackground(
         document.GetFrame(), context, style, *image, geometry, composite_op,
         info.respect_image_orientation,
         ComputeImagePaintTimingInfo(node, *image, *info.image, context,
                                     gfx::RectF(geometry.SnappedDestRect())),
-        ImageNodeAnimationInfo(node ? node->GetDomNodeId() : kInvalidDOMNodeId,
-                               style.ImageAnimation()));
+        &image_animation);
   }
 }
 

@@ -254,10 +254,10 @@ void Image::DrawPattern(GraphicsContext& context,
 
   PaintImage image;
   if (auto* bitmap = DynamicTo<BitmapImage>(this);
-      bitmap &&
-      draw_options.image_node_animation_info.node_id != kInvalidDOMNodeId) {
-    auto image_animation = draw_options.image_node_animation_info;
-    image = bitmap->PaintImageForCurrentFrameWithInfo(&image_animation);
+      bitmap && draw_options.image_node_animation_info &&
+      draw_options.image_node_animation_info->node_id != kInvalidDOMNodeId) {
+    image = bitmap->PaintImageForCurrentFrameWithInfo(
+        draw_options.image_node_animation_info);
   } else {
     image = PaintImageForCurrentFrame();
   }
@@ -367,10 +367,10 @@ bool Image::ApplyShader(cc::PaintFlags& flags,
   // SkImage.
   PaintImage image;
   if (auto* bitmap = DynamicTo<BitmapImage>(this);
-      bitmap &&
-      draw_options.image_node_animation_info.node_id != kInvalidDOMNodeId) {
+      bitmap && draw_options.image_node_animation_info &&
+      draw_options.image_node_animation_info->node_id != kInvalidDOMNodeId) {
     image = bitmap->PaintImageForCurrentFrameWithInfo(
-        &draw_options.image_node_animation_info);
+        draw_options.image_node_animation_info);
   } else {
     image = PaintImageForCurrentFrame();
   }

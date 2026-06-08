@@ -515,7 +515,7 @@ void GraphicsContext::DrawImage(
     SkBlendMode op,
     RespectImageOrientationEnum should_respect_image_orientation,
     Image::ImageClampingMode clamping_mode,
-    ImageNodeAnimationInfo image_node_animation_info) {
+    const ImageNodeAnimationInfo* image_node_animation_info) {
   const gfx::RectF src = src_ptr ? *src_ptr : gfx::RectF(image.Rect());
   cc::PaintFlags image_flags = ImmutableState()->FillFlags();
   image_flags.setBlendMode(op);
@@ -540,7 +540,7 @@ void GraphicsContext::DrawImageRRect(
     SkBlendMode op,
     RespectImageOrientationEnum respect_orientation,
     Image::ImageClampingMode clamping_mode,
-    ImageNodeAnimationInfo image_node_animation_info) {
+    const ImageNodeAnimationInfo* image_node_animation_info) {
   if (!dest.IsRounded()) {
     DrawImage(image, decode_mode, auto_dark_mode, paint_timing_info,
               dest.Rect(), &src_rect, op, respect_orientation, clamping_mode,
@@ -635,7 +635,7 @@ void GraphicsContext::DrawImageTiled(
     const ImagePaintTimingInfo& paint_timing_info,
     SkBlendMode op,
     RespectImageOrientationEnum respect_orientation,
-    ImageNodeAnimationInfo image_node_animation_info) {
+    const ImageNodeAnimationInfo* image_node_animation_info) {
   cc::PaintFlags image_flags = ImmutableState()->FillFlags();
   image_flags.setBlendMode(op);
   SkSamplingOptions sampling = ImageSamplingOptions();
