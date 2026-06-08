@@ -150,7 +150,10 @@ public class FuseboxCoordinatorUnitTest {
                         mSnackbarManager,
                         /* scrimAnchorViewSupplier= */ () -> null,
                         mBackPressManager,
-                        mExactMatchUrlSupplier);
+                        mExactMatchUrlSupplier,
+                        /* onActivationChipClickedWithQuery= */ () -> {},
+                        /* clearUrlBarTextRunnable= */ () -> {},
+                        /* urlBarTextSupplier= */ () -> "");
     }
 
     private FuseboxSessionState createSession() {

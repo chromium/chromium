@@ -133,6 +133,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private @Nullable Callback<Boolean> mOnInteractionCompletedCallback;
     private @Nullable Runnable mOnFirstPickerInteractionCanceledCallback;
     private final NullableObservableSupplier<GURL> mExactMatchUrlSupplier;
+    private final Runnable mOnActivationChipClickedWithQuery;
+    private final Runnable mClearUrlBarTextCallback;
+    private final Supplier<String> mUrlBarTextSupplier;
 
     /**
      * Creates a new instance of {@link FuseboxCoordinator}.
@@ -146,6 +149,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      * @param scrimAnchorViewSupplier Supplier for the view to anchor the scrim to.
      * @param backPressManager The back press manager to register the back press handler.
      * @param exactMatchUrlSupplier The supplier of the exact match URL.
+     * @param onActivationChipClickedWithQuery Runnable for activation chip when there is a query.
+     * @param clearUrlBarTextRunnable Callback to clear the URL bar text.
+     * @param urlBarTextSupplier Supplier for the current URL bar text
      */
     public FuseboxCoordinator(
             Context context,
@@ -156,7 +162,10 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             SnackbarManager snackbarManager,
             Supplier<@Nullable View> scrimAnchorViewSupplier,
             BackPressManager backPressManager,
-            NullableObservableSupplier<GURL> exactMatchUrlSupplier) {
+            NullableObservableSupplier<GURL> exactMatchUrlSupplier,
+            Runnable onActivationChipClickedWithQuery,
+            Runnable clearUrlBarTextRunnable,
+            Supplier<String> urlBarTextSupplier) {
         mActivity = assumeNonNull(ContextUtils.activityFromContext(context));
         mWindowAndroid = windowAndroid;
         mParent = parent;
@@ -169,6 +178,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mFuseboxLayoutModeSupplier.set(getFuseboxLayoutMode());
         mBackPressManager = backPressManager;
         mExactMatchUrlSupplier = exactMatchUrlSupplier;
+        mOnActivationChipClickedWithQuery = onActivationChipClickedWithQuery;
+        mClearUrlBarTextCallback = clearUrlBarTextRunnable;
+        mUrlBarTextSupplier = urlBarTextSupplier;
 
         if (!OmniboxFeatures.isMultimodalInputEnabled(context)
                 || parent.findViewById(R.id.fusebox_request_type) == null) {
@@ -288,7 +300,10 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         mBackPressManager,
                         mOnFirstPickerInteractionCanceledCallback,
                         mExactMatchUrlSupplier,
-                        mActivationChipVisibilitySupplier);
+                        mActivationChipVisibilitySupplier,
+                        mOnActivationChipClickedWithQuery,
+                        mClearUrlBarTextCallback,
+                        mUrlBarTextSupplier);
         mMediator.onContextualTaskFocusChanged(mHasContextualTasksFocus);
         if (mLastBrandedColorScheme != null) {
             mMediator.updateVisualsForState(mLastBrandedColorScheme);

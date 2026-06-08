@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -123,6 +124,9 @@ import java.util.function.Supplier;
     private final NullableObservableSupplier<GURL> mExactMatchUrlSupplier;
     private final Callback<@Nullable GURL> mOnExactMatchUrlChanged = this::onExactMatchUrlChanged;
     private final SettableNonNullObservableSupplier<Boolean> mActivationChipVisibilitySupplier;
+    private final Runnable mOnActivationChipClickedWithQuery;
+    private final Runnable mClearUrlBarTextRunnable;
+    private final Supplier<String> mUrlBarTextSupplier;
 
     private boolean mIsTextWrapping;
     private boolean mHasContextualTasksFocus;
@@ -164,7 +168,10 @@ import java.util.function.Supplier;
             BackPressManager backPressManager,
             @Nullable Runnable onFirstPickerInteractionCanceledCallback,
             NullableObservableSupplier<GURL> exactMatchUrlSupplier,
-            SettableNonNullObservableSupplier<Boolean> activationChipVisibilitySupplier) {
+            SettableNonNullObservableSupplier<Boolean> activationChipVisibilitySupplier,
+            Runnable onActivationChipClickedWithQuery,
+            Runnable clearUrlBarTextRunnable,
+            Supplier<String> urlBarTextSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
@@ -182,6 +189,9 @@ import java.util.function.Supplier;
         mExactMatchUrlSupplier = exactMatchUrlSupplier;
         mExactMatchUrlSupplier.addSyncObserver(mOnExactMatchUrlChanged);
         mActivationChipVisibilitySupplier = activationChipVisibilitySupplier;
+        mOnActivationChipClickedWithQuery = onActivationChipClickedWithQuery;
+        mClearUrlBarTextRunnable = clearUrlBarTextRunnable;
+        mUrlBarTextSupplier = urlBarTextSupplier;
 
         // Create the upload failed snackbar.
         mAttachmentUploadFailedSnackbar =
@@ -1194,7 +1204,21 @@ import java.util.function.Supplier;
     void onActivationChipClicked() {
         if (!isInInputSession()) return;
         mInput.setAutocompleteState(AutocompleteState.ENABLED);
+
+        // TODO(https://crbug.com/520528598): Remove current text supplier once AutocompleteInput
+        // has uncommitted text, and use that instead.
+        String currentUrlBarText = mUrlBarTextSupplier.get();
+        String initialUserText = mInput.getInitialUserText();
         activateAiMode(AutocompleteRequestType.AI_MODE, AiModeActivationSource.DEDICATED_BUTTON);
+        if (TextUtils.isEmpty(currentUrlBarText)
+                || TextUtils.equals(currentUrlBarText, initialUserText)) {
+            mClearUrlBarTextRunnable.run();
+        } else {
+            // TODO(https://crbug.com/520528598): Call commit on the AutocompleteInput and then
+            // reimplement this runnable to navigate via the current input state, instead of reading
+            // from the views.
+            mOnActivationChipClickedWithQuery.run();
+        }
     }
 
     @VisibleForTesting

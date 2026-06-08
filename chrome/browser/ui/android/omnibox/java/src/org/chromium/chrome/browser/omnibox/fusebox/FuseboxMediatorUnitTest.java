@@ -134,6 +134,8 @@ import java.util.function.Function;
 /** Unit tests for {@link FuseboxMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxMediatorUnitTest {
+    private static final Bitmap BITMAP = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private FuseboxViewHolder mViewHolder;
@@ -156,6 +158,8 @@ public class FuseboxMediatorUnitTest {
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private BackPressManager mBackPressManager;
     @Mock private Runnable mOnFirstPickerInteractionCanceledCallback;
+    @Mock private Runnable mOnActivationChipClickedWithQuery;
+    @Mock private Runnable mClearUrlBarTextCallback;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallbackCaptor;
@@ -166,8 +170,9 @@ public class FuseboxMediatorUnitTest {
     private PropertyModel mModel;
     private FuseboxMediator mMediator;
     private FuseboxAttachmentModelList mAttachments;
-    private final LinkedHashMap<Integer, Tab> mTabMap = new LinkedHashMap<>();
     private SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+
+    private final LinkedHashMap<Integer, Tab> mTabMap = new LinkedHashMap<>();
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
     private final SettableMonotonicObservableSupplier<InputState> mInputStateSupplier =
@@ -180,9 +185,8 @@ public class FuseboxMediatorUnitTest {
             ObservableSuppliers.createNullable();
     private final SettableNonNullObservableSupplier<Boolean> mActivationChipVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
-
-    private final Bitmap mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-
+    private final SettableNonNullObservableSupplier<String> mUrlBarText =
+            ObservableSuppliers.createNonNull("");
     private final AutocompleteInput mInput = new AutocompleteInput();
 
     @Before
@@ -212,7 +216,7 @@ public class FuseboxMediatorUnitTest {
         mAttachments = new FuseboxAttachmentModelList();
         mAttachments.setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
         OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFactory);
-        doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
+        doReturn(BITMAP).when(mTabFaviconFactory).apply(any());
         when(mComposeboxQueryControllerBridge.getInputStateSupplier())
                 .thenReturn(mInputStateSupplier);
         when(mComposeboxQueryControllerBridge.getSuggestedTabsSupplier())
@@ -259,7 +263,10 @@ public class FuseboxMediatorUnitTest {
                         mBackPressManager,
                         mOnFirstPickerInteractionCanceledCallback,
                         mExactMatchUrlSupplier,
-                        mActivationChipVisibilitySupplier);
+                        mActivationChipVisibilitySupplier,
+                        mOnActivationChipClickedWithQuery,
+                        mClearUrlBarTextCallback,
+                        mUrlBarText);
         mMediator.beginInput(createSession());
     }
 
@@ -564,6 +571,46 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testActivationChipClicked_otherText() {
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        mInput.setInitialUserText("google.com");
+        mUrlBarText.set("suggestion text");
+        recreateMediator();
+
+        mModel.get(FuseboxProperties.ACTIVATION_CHIP_CLICKED).run();
+
+        assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
+        verify(mOnActivationChipClickedWithQuery).run();
+    }
+
+    @Test
+    public void testActivationChipClicked_emptyText() {
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        mInput.setInitialUserText("google.com");
+        mUrlBarText.set("");
+        recreateMediator();
+
+        mModel.get(FuseboxProperties.ACTIVATION_CHIP_CLICKED).run();
+
+        assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
+        verify(mOnActivationChipClickedWithQuery, never()).run();
+    }
+
+    @Test
+    public void testActivationChipClicked_currentUrl() {
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        mInput.setInitialUserText("google.com");
+        mUrlBarText.set("google.com");
+        recreateMediator();
+
+        mModel.get(FuseboxProperties.ACTIVATION_CHIP_CLICKED).run();
+
+        assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
+        verify(mOnActivationChipClickedWithQuery, never()).run();
+        verify(mClearUrlBarTextCallback).run();
+    }
+
+    @Test
     public void updateFuseboxState_setsRequestTypeButtonVisible_true() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
@@ -824,11 +871,11 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
         assertNull(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON));
 
-        doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
+        doReturn(BITMAP).when(mTabFaviconFactory).apply(any());
         doReturn("token").when(mComposeboxQueryControllerBridge).addTabContext(mTab1, false);
         mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED).run();
         verify(mComposeboxQueryControllerBridge).addTabContext(mTab1, false);
-        assertEquals(mBitmap, ((BitmapDrawable) mAttachments.get(0).thumbnail).getBitmap());
+        assertEquals(BITMAP, ((BitmapDrawable) mAttachments.get(0).thumbnail).getBitmap());
 
         doReturn(mTab2).when(mTabModelSelector).getCurrentTab();
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();

@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.animation.Animator;
 import android.content.Context;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -334,6 +335,16 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         }
 
         mMediator.beginInput(session);
+    }
+
+    /** Navigate using the current typed omnibox text. */
+    public void loadTypedOmniboxText() {
+        if (mMediator.hasAutocompleteController()) {
+            mMediator.loadTypedOmniboxText(
+                    SystemClock.uptimeMillis(),
+                    /* openInNewTab= */ false,
+                    /* openInNewWindow= */ false);
+        }
     }
 
     /** Ends the current omnibox session. */
