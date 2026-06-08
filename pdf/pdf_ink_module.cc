@@ -1706,6 +1706,26 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
     }
   }
 
+  std::optional<TextId> undo_redo_text_id;
+  if (!modify_undo_redo_model) {
+    // This assumes neither `HandleAnnotationUndoMessage()` nor
+    // `HandleAnnotationRedoMessage()` has been called yet for this action.
+    if (source == "undo") {
+      undo_redo_text_id = undo_redo_model_.GetUndoTextId();
+      if (undo_redo_text_id.has_value() &&
+          std::holds_alternative<InkLoadedTextId>(undo_redo_text_id.value())) {
+        InkLoadedTextId loaded_id =
+            std::get<InkLoadedTextId>(undo_redo_text_id.value());
+        text_id_map_[frontend_id] = loaded_id;
+        client_->UpdateTextActiveAndInvalidate(loaded_id, /*active=*/true);
+        return;
+      }
+    } else {
+      CHECK_EQ(source, "redo");
+      undo_redo_text_id = undo_redo_model_.GetRedoInkTextId();
+    }
+  }
+
   // If this is a modification or addition, then process the rest of the fields
   // in `data` and create a new annotation.
   const base::ListValue& typefaces_value = *data.FindList("newTypefaces");
@@ -1735,17 +1755,10 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
   InkTextId new_id;
   if (modify_undo_redo_model) {
     new_id = id_generator_.GetTextIdAndAdvance();
-  } else if (source == "undo") {
-    // This assumes `HandleAnnotationUndoMessage()` for this undo action has not
-    // been called yet.
-    const TextId text_id = undo_redo_model_.GetUndoTextId().value();
-    CHECK(std::holds_alternative<InkTextId>(text_id));
-    new_id = std::get<InkTextId>(text_id);
   } else {
-    // This assumes `HandleAnnotationRedoMessage()` for this redo action has not
-    // been called yet.
-    CHECK_EQ(source, "redo");
-    new_id = undo_redo_model_.GetRedoInkTextId().value();
+    CHECK(undo_redo_text_id.has_value());
+    CHECK(std::holds_alternative<InkTextId>(undo_redo_text_id.value()));
+    new_id = std::get<InkTextId>(undo_redo_text_id.value());
   }
 
   text_id_map_[frontend_id] = new_id;
@@ -1865,7 +1878,8 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
   std::set<InkStrokeId> stroke_ids;
   std::set<InkModeledShapeId> shape_ids;
   for (const IdType& id : ids) {
-    if (std::holds_alternative<InkTextId>(id)) {
+    if (std::holds_alternative<InkTextId>(id) ||
+        std::holds_alternative<InkLoadedTextId>(id)) {
       // No need to handle text objects. The frontend will separately send
       // "finishTextAnnotation" messages and make changes there.
       continue;

@@ -675,16 +675,6 @@ TEST(PdfInkUndoRedoModelTest, BadGetRedoInkTextIdNonText) {
   EXPECT_FALSE(undo_redo.GetRedoInkTextId().has_value());
 }
 
-TEST(PdfInkUndoRedoModelTest, RemoveLoadedTextIdSucceeds) {
-  PdfInkUndoRedoModel undo_redo;
-  undo_redo.SetLoadedPdfInkTextIds({InkTextId(3)});
-  base::expected<std::optional<IdType>, std::monostate> lowest_discard =
-      undo_redo.Start();
-  ASSERT_TRUE(lowest_discard.has_value());
-  ASSERT_FALSE(lowest_discard.value().has_value());
-  ASSERT_TRUE(undo_redo.Remove(InkTextId(3)));
-}
-
 TEST(PdfInkUndoRedoModelTest, Stress) {
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||         \
     defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
