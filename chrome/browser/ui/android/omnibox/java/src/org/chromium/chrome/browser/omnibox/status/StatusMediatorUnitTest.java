@@ -908,6 +908,28 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT + ":show_ntp_plus_button/true")
+    public void testShowNtpPlusButton_focusedStandbyNoFocus_showsPlusButton() {
+        doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
+        doReturn(false).when(mLocationBarDataProvider).isIncognito();
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        ComposeplateUtils.setIsEnabledForTesting(true);
+
+        doReturn(AutocompleteInput.AutocompleteState.STANDBY_NO_FOCUS)
+                .when(mAutocompleteInput)
+                .getAutocompleteState();
+
+        mMediator.beginInput(mFuseboxSessionState);
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+
+        assertNotNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
+        assertEquals(
+                R.drawable.ic_add_round_20dp_with_inset,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT + ":show_ntp_plus_button/false")
     public void testShowNtpPlusButton_unfocused_paramDisabled() {
         doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();

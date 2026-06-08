@@ -54,6 +54,7 @@ import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
@@ -495,8 +496,12 @@ public class StatusMediator
     private boolean shouldShowNtpPlusButton() {
         Profile profile = mProfileSupplier.get();
         TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
+        boolean isStandbyNoFocus =
+                mInputSessionState != null
+                        && mInputSessionState.getAutocompleteInput().getAutocompleteState()
+                                == AutocompleteInput.AutocompleteState.STANDBY_NO_FOCUS;
         return isNtpVisible()
-                && !mUrlHasFocus
+                && (!mUrlHasFocus || isStandbyNoFocus)
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                 && FuseboxFeatureUtils.shouldShowNtpPlusButton(
                         mContext, profile, templateUrlService);
