@@ -6581,11 +6581,6 @@ inline constexpr char kSavePasswordsContextualUiDescription[] =
     "Improved page action indicator and dialog UI when the user has "
     "blocklisted the current site for password saving.";
 
-inline constexpr char kSmartCardWebApiName[] = "Smart Card API";
-inline constexpr char kSmartCardWebApiDescription[] =
-    "Enable access to the Smart Card API. See "
-    "https://github.com/WICG/web-smart-card#readme for more information.";
-
 inline constexpr char kTranslateOpenSettingsName[] = "Translate Open Settings";
 inline constexpr char kTranslateOpenSettingsDescription[] =
     "Add an option to the translate bubble menu to open language settings.";

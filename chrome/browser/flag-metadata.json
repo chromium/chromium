@@ -4118,11 +4118,6 @@
     "expiry_milestone": 139
   },
   {
-    "name": "enable-smart-card-web-api",
-    "owners": ["zgroza@chromium.org", "iwa-team@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-smart-zoom",
     "owners": [
       "mschillaci@google.com",

@@ -9646,9 +9646,6 @@ const FeatureEntry kFeatureEntries[] = {
                             "")},
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"enable-smart-card-web-api", flag_descriptions::kSmartCardWebApiName,
-     flag_descriptions::kSmartCardWebApiDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(blink::features::kSmartCard)},
     {"enable-web-printing-api", flag_descriptions::kWebPrintingApiName,
      flag_descriptions::kWebPrintingApiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(blink::features::kWebPrinting)},
