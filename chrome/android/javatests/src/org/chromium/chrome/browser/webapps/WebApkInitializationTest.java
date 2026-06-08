@@ -11,6 +11,7 @@ import android.app.Activity;
 
 import androidx.test.filters.LargeTest;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +21,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
@@ -39,11 +39,11 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Activity initialzation test")
-@DisableLeakChecks("crbug.com/512492607 (ApplicationStatus)")
 public class WebApkInitializationTest {
     @Rule public final WebApkActivityTestRule mActivityRule = new WebApkActivityTestRule();
 
     public ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private CreationObserver mCreationObserver;
 
     class CreationObserver implements ApplicationStatus.ActivityStateListener {
         public CreationObserver() {}
@@ -59,6 +59,21 @@ public class WebApkInitializationTest {
         }
     }
 
+    @After
+    public void tearDown() {
+        // ApplicationStatus#sGeneralActivityStateListeners is process-wide; without unregistering
+        // the (non-static) CreationObserver, it would pin this test instance, the Mockito spy
+        // dispatcher, and transitively the destroyed Activity.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mCreationObserver != null) {
+                        ApplicationStatus.unregisterActivityStateListener(mCreationObserver);
+                        mCreationObserver = null;
+                    }
+                });
+        mActivityLifecycleDispatcher = null;
+    }
+
     /**
      * Test that {@link WebappActionsNotificationManager}, {@link
      * WebappDisclosureSnackbarController}, {@link WebApkActivityLifecycleUmaTracker} and {@link
@@ -70,7 +85,8 @@ public class WebApkInitializationTest {
     public void testInitialization() throws TimeoutException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ApplicationStatus.registerStateListenerForAllActivities(new CreationObserver());
+                    mCreationObserver = new CreationObserver();
+                    ApplicationStatus.registerStateListenerForAllActivities(mCreationObserver);
                 });
         EmbeddedTestServer embeddedTestServer =
                 mActivityRule.getEmbeddedTestServerRule().getServer();
