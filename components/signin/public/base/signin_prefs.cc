@@ -169,6 +169,18 @@ constexpr std::string_view kHistorySyncPromoIdentityPillShownCount =
 constexpr std::string_view kHistorySyncPromoIdentityPillUsedCount =
     "ChromeSigninSyncPromoIdentityPillUsedCount";
 
+// The stable account ID for metrics.
+constexpr std::string_view kAccountMetricsId = "AccountMetricsId";
+// Boolean indicating if the account is capped for metrics ID allocation.
+// Being capped means no new IDs will be allocated because the limit of 100
+// accounts has been reached.
+constexpr std::string_view kAccountMetricsIdIsCapped =
+    "AccountMetricsIdIsCapped";
+
+// The next unassigned ID for account metrics.
+constexpr char kAccountMetricsNextUnassignedId[] =
+    "signin.account_metrics_next_unassigned_id";
+
 }  // namespace
 
 SigninPrefs::SigninPrefs(PrefService& pref_service)
@@ -180,6 +192,7 @@ void SigninPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kSigninAccountPrefs);
   registry->RegisterIntegerPref(prefs::kHistorySyncSuccessiveDeclineCount, 0);
   registry->RegisterInt64Pref(prefs::kHistorySyncLastDeclinedTimestamp, 0);
+  registry->RegisterIntegerPref(kAccountMetricsNextUnassignedId, 0);
 }
 
 void SigninPrefs::MigrateObsoleteSigninPrefs() {
@@ -255,6 +268,37 @@ ChromeSigninUserChoice SigninPrefs::GetChromeSigninInterceptionUserChoice(
   // No value default to 0 -> `ChromeSigninUserChoice::kNoChoice`.
   return static_cast<ChromeSigninUserChoice>(
       account_dict->FindInt(kChromeSigninInterceptionUserChoice).value_or(0));
+}
+
+void SigninPrefs::SetAccountMetricsId(const GaiaId& gaia_id, int id) {
+  SetIntPrefForAccount(gaia_id, kAccountMetricsId, id);
+}
+
+std::optional<int> SigninPrefs::GetAccountMetricsId(
+    const GaiaId& gaia_id) const {
+  CHECK(!gaia_id.empty());
+  const base::DictValue* account_dict =
+      pref_service_->GetDict(kSigninAccountPrefs).FindDict(gaia_id.ToString());
+  if (!account_dict) {
+    return std::nullopt;
+  }
+  return account_dict->FindInt(kAccountMetricsId);
+}
+
+void SigninPrefs::SetAccountMetricsIdCapped(const GaiaId& gaia_id) {
+  SetBooleanPrefForAccount(gaia_id, kAccountMetricsIdIsCapped, true);
+}
+
+bool SigninPrefs::IsAccountMetricsIdCapped(const GaiaId& gaia_id) const {
+  return GetBooleanPrefForAccount(gaia_id, kAccountMetricsIdIsCapped);
+}
+
+int SigninPrefs::GetNextAccountMetricsUnassignedId() const {
+  return pref_service_->GetInteger(kAccountMetricsNextUnassignedId);
+}
+
+void SigninPrefs::SetNextAccountMetricsUnassignedId(int id) {
+  pref_service_->SetInteger(kAccountMetricsNextUnassignedId, id);
 }
 
 void SigninPrefs::SetChromeLastSignoutTime(const GaiaId& gaia_id,
@@ -589,6 +633,15 @@ int SigninPrefs::GetIntPrefForAccount(const GaiaId& gaia_id,
 
   // Return the pref value if it exists, otherwise return the default value.
   return account_dict->FindInt(pref).value_or(0);
+}
+
+void SigninPrefs::SetIntPrefForAccount(const GaiaId& gaia_id,
+                                       std::string_view pref,
+                                       int value) {
+  CHECK(!gaia_id.empty());
+  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
+  base::DictValue* account_dict = scoped_update->EnsureDict(gaia_id.ToString());
+  account_dict->Set(pref, value);
 }
 
 void SigninPrefs::SetBooleanPrefForAccount(const GaiaId& gaia_id,

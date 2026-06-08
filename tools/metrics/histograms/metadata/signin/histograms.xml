@@ -500,6 +500,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountInPref.AssignedId" units="id"
+    expires_after="2027-05-26">
+  <owner>pmeuleman@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Logs the stable integer ID assigned to a Google account when it is first
+    allocated for UMA metrics tracking. This assigns stable IDs from 0 to 99,
+    and value 100 represents the cap/overflow bucket.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountInPref.MatchingFetchedAccount" enum="Boolean"
     expires_after="2026-09-27">
   <owner>rsult@google.com</owner>
