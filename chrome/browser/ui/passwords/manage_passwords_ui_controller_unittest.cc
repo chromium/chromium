@@ -342,6 +342,7 @@ class ManagePasswordsUIControllerTest : public base::test::WithFeatureOverride,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override;
+  void TearDown() override;
 
   TestPasswordManagerClient& client() { return client_; }
   PasswordForm& test_local_form() { return test_local_form_; }
@@ -402,6 +403,13 @@ void ManagePasswordsUIControllerTest::SetUp() {
   // We need to be on a "webby" URL for most tests.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              GURL(kExampleUrl));
+}
+
+void ManagePasswordsUIControllerTest::TearDown() {
+  // Ensures that the PasswordManagerClient outlives the controller, which is
+  // the case outside of tests.
+  DeleteContents();
+  ChromeRenderViewHostTestHarness::TearDown();
 }
 
 void ManagePasswordsUIControllerTest::WaitForPasswordStore() {

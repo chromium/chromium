@@ -221,8 +221,7 @@ class ManagePasswordsState {
   password_manager::ui::State state_;
 
   // The client used for logging.
-  raw_ptr<password_manager::PasswordManagerClient, AcrossTasksDanglingUntriaged>
-      client_;
+  raw_ptr<password_manager::PasswordManagerClient> client_;
 
   // Whether GPM pin was created in the same flow as recent passkey creation.
   bool gpm_pin_created_during_recent_passkey_creation_ = false;
