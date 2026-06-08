@@ -17263,8 +17263,18 @@ void RenderFrameHostImpl::DidCommitNavigation(
   // kInBackForwardCache state. Trigger a renderer kill if we receive an
   // unexpected DidCommit message.
   if (IsInBackForwardCache()) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(), bad_message::RFH_DID_COMMIT_NAVIGATION_WHILE_BFCACHED);
+    if (render_view_host()->DidReceiveBackForwardCacheAck()) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(), bad_message::RFH_DID_COMMIT_NAVIGATION_WHILE_BFCACHED);
+    } else {
+      // The renderer might not have realized that it's in BFCache when it sent
+      // the DidCommitNavigation call, since we haven't received the BFCache
+      // ACK. In this case, just evict from BFCache instead of killing the
+      // renderer.
+      IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kDidCommitNavigation);
+    }
+    // Return early in any case.
     return;
   }
 
