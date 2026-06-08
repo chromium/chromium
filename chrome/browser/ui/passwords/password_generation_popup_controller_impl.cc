@@ -38,6 +38,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -55,7 +56,8 @@ using autofill::password_generation::PasswordGenerationType;
 class PasswordGenerationPopupControllerImpl::KeyPressRegistrator {
  public:
   explicit KeyPressRegistrator(content::RenderFrameHost* frame)
-      : frame_(frame) {}
+      : frame_id_(frame ? frame->GetGlobalId()
+                        : content::GlobalRenderFrameHostId()) {}
   KeyPressRegistrator(const KeyPressRegistrator& rhs) = delete;
   KeyPressRegistrator& operator=(const KeyPressRegistrator& rhs) = delete;
 
@@ -64,7 +66,7 @@ class PasswordGenerationPopupControllerImpl::KeyPressRegistrator {
   void RegisterKeyPressHandler(
       content::RenderWidgetHost::KeyPressEventCallback handler) {
     DCHECK(callback_.is_null());
-    content::RenderWidgetHostView* view = frame_->GetView();
+    content::RenderWidgetHostView* view = GetView();
     if (!view) {
       return;
     }
@@ -74,8 +76,7 @@ class PasswordGenerationPopupControllerImpl::KeyPressRegistrator {
 
   void RemoveKeyPressHandler() {
     if (!callback_.is_null()) {
-      content::RenderWidgetHostView* view = frame_->GetView();
-      if (view) {
+      if (content::RenderWidgetHostView* view = GetView()) {
         view->GetRenderWidgetHost()->RemoveKeyPressEventCallback(callback_);
       }
       callback_.Reset();
@@ -83,7 +84,13 @@ class PasswordGenerationPopupControllerImpl::KeyPressRegistrator {
   }
 
  private:
-  const raw_ptr<content::RenderFrameHost, DanglingUntriaged> frame_;
+  content::RenderWidgetHostView* GetView() {
+    content::RenderFrameHost* frame =
+        content::RenderFrameHost::FromID(frame_id_);
+    return frame ? frame->GetView() : nullptr;
+  }
+
+  const content::GlobalRenderFrameHostId frame_id_;
   content::RenderWidgetHost::KeyPressEventCallback callback_;
 };
 
