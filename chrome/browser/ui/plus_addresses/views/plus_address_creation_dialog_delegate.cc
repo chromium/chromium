@@ -605,9 +605,7 @@ PlusAddressCreationDialogDelegate::CreateRefreshButton() {
   auto button = views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&PlusAddressCreationDialogDelegate::OnRefreshClicked,
                           base::Unretained(this)),
-      ::features::IsRoundedIconsEnabled() ? vector_icons::kRefreshIcon
-                                          : vector_icons::kReloadOldIcon,
-      kRefreshButtonIconWidth);
+      vector_icons::kReloadCustomIcon, kRefreshButtonIconWidth);
   views::InstallCircleHighlightPathGenerator(button.get());
   button->SetProperty(views::kElementIdentifierKey,
                       kPlusAddressRefreshButtonElementId);

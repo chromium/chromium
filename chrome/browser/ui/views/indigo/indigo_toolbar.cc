@@ -288,9 +288,7 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                           CreateExpandedButton(
                               l10n_util::GetStringUTF16(
                                   IDS_INDIGO_TOOLBAR_REGENERATE),
-                              features::IsRoundedIconsEnabled()
-                                  ? vector_icons::kRefreshIcon
-                                  : vector_icons::kReloadOldIcon,
+                              vector_icons::kReloadCustomIcon,
                               base::BindRepeating(
                                   &IndigoToolbar::OnRegenerateButtonClicked,
                                   base::Unretained(this))))
