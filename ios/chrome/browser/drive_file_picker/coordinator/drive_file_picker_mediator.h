@@ -61,6 +61,7 @@ class AuthenticationService;
 - (instancetype)initWithWebState:(web::WebState*)webState
                          options:(DriveFilePickerOptions)options
                           isRoot:(BOOL)isRoot
+                   forComposebox:(BOOL)forComposebox
                  identityManager:(signin::IdentityManager*)identityManager
            authenticationService:(AuthenticationService*)authenticationService
     NS_DESIGNATED_INITIALIZER;

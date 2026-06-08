@@ -26,6 +26,9 @@ class WebState;
 @property(nonatomic, weak) id<BrowseDriveFilePickerCoordinatorDelegate>
     delegate;
 
+// Whether the coordinator is launched from/for the Composebox.
+@property(nonatomic, assign) BOOL forComposebox;
+
 // Creates a coordinator that uses `viewController`, `browser`, `webState` and
 // `folder`.
 - (instancetype)

@@ -98,6 +98,7 @@
            initWithWebState:_webState.get()
                     options:_options
                      isRoot:NO
+              forComposebox:self.forComposebox
             identityManager:IdentityManagerFactory::GetForProfile(profile)
       authenticationService:AuthenticationServiceFactory::GetForProfile(
                                 profile)];
@@ -120,7 +121,13 @@
   _viewController.mutator = _mediator;
   [_mediator setCollection:std::move(_collection)];
   _mediator.consumer = _viewController;
-  _mediator.metricsHelper = _metricsHelper;
+
+  // Since the Composebox flow bypasses local downloads completely and records
+  // its own native metrics, the mediator does not need the metrics helper in
+  // Composebox mode.
+  if (!self.forComposebox) {
+    _mediator.metricsHelper = _metricsHelper;
+  }
 }
 
 - (void)stop {
@@ -159,6 +166,7 @@
                                    options:options
                              metricsHelper:_metricsHelper];
   _childBrowseCoordinator.delegate = self;
+  _childBrowseCoordinator.forComposebox = self.forComposebox;
   [_childBrowseCoordinator start];
 }
 
@@ -199,6 +207,12 @@
       !searchActivated;
 }
 
+- (void)mediator:(DriveFilePickerMediator*)mediator
+    didPickDriveItems:(const std::vector<DriveItem>&)driveItems {
+  CHECK(self.forComposebox);
+  [self.delegate coordinator:self didPickDriveItems:driveItems];
+}
+
 #pragma mark - DriveFilePickerTableViewControllerDelegate
 
 - (void)viewControllerDidDisappear:(UIViewController*)viewController {
@@ -229,6 +243,12 @@
 - (void)coordinator:(ChromeCoordinator*)coordinator
     didAllowDismiss:(BOOL)allowDismiss {
   [self.delegate coordinator:self didAllowDismiss:allowDismiss];
+}
+
+- (void)coordinator:(ChromeCoordinator*)coordinator
+    didPickDriveItems:(const std::vector<DriveItem>&)driveItems {
+  CHECK(self.forComposebox);
+  [self.delegate coordinator:self didPickDriveItems:driveItems];
 }
 
 #pragma mark - Private

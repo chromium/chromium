@@ -129,11 +129,14 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
   std::unique_ptr<base::ScopedObservation<ChooseFileController,
                                           ChooseFileController::Observer>>
       _chooseFileControllerObservation;
+  // Whether the mediator is running in Composebox metadata-only mode.
+  BOOL _forComposebox;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
                          options:(DriveFilePickerOptions)options
                           isRoot:(BOOL)isRoot
+                   forComposebox:(BOOL)forComposebox
                  identityManager:(signin::IdentityManager*)identityManager
            authenticationService:(AuthenticationService*)authenticationService {
   self = [super init];
@@ -144,6 +147,7 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
     _webState = webState->GetWeakPtr();
     _options = options;
     _isRoot = isRoot;
+    _forComposebox = forComposebox;
     _fetchedDriveItems = {};
     _identityManager = identityManager;
     _authenticationService = authenticationService;
@@ -155,22 +159,30 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
         std::make_unique<AuthenticationServiceObserverBridge>(
             _authenticationService, self);
 
-    // Start observing ChooseFileController.
-    ChooseFileTabHelper* tabHelper =
-        ChooseFileTabHelper::FromWebState(webState);
-    CHECK(tabHelper->IsChoosingFiles());
-    ChooseFileController* controller = tabHelper->GetChooseFileController();
-    _chooseFileControllerObserverBridge =
-        std::make_unique<ChooseFileControllerObserverBridge>(self);
-    _chooseFileControllerObservation = std::make_unique<base::ScopedObservation<
-        ChooseFileController, ChooseFileController::Observer>>(
-        _chooseFileControllerObserverBridge.get());
-    _chooseFileControllerObservation->Observe(controller);
+    // For the Composebox native attachment flow, bypass the web-page-specific
+    // file chooser controller and allow universal multi-file selection.
+    if (_forComposebox) {
+      _acceptedTypes = @[];
+      _allowsMultipleSelection = YES;
+    } else {
+      // Start observing ChooseFileController.
+      ChooseFileTabHelper* tabHelper =
+          ChooseFileTabHelper::FromWebState(webState);
+      CHECK(tabHelper->IsChoosingFiles());
+      ChooseFileController* controller = tabHelper->GetChooseFileController();
+      _chooseFileControllerObserverBridge =
+          std::make_unique<ChooseFileControllerObserverBridge>(self);
+      _chooseFileControllerObservation =
+          std::make_unique<base::ScopedObservation<
+              ChooseFileController, ChooseFileController::Observer>>(
+              _chooseFileControllerObserverBridge.get());
+      _chooseFileControllerObservation->Observe(controller);
 
-    // Initialize the list of accepted types.
-    const ChooseFileEvent& event = tabHelper->GetChooseFileEvent();
-    _acceptedTypes = UTTypesAcceptedForEvent(event);
-    _allowsMultipleSelection = event.allow_multiple_files;
+      // Initialize the list of accepted types.
+      const ChooseFileEvent& event = tabHelper->GetChooseFileEvent();
+      _acceptedTypes = UTTypesAcceptedForEvent(event);
+      _allowsMultipleSelection = event.allow_multiple_files;
+    }
   }
   return self;
 }
@@ -182,6 +194,7 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
 #pragma mark - Public properties
 
 - (void)setMetricsHelper:(DriveFilePickerMetricsHelper*)metricsHelper {
+  CHECK(!_forComposebox);
   if (_metricsHelper == metricsHelper) {
     return;
   }
@@ -408,6 +421,16 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
     [self.driveFilePickerHandler hideDriveFilePicker];
     return;
   }
+
+  // For the Composebox, directly return the selected metadata (identifiers,
+  // filenames, MIME types) to bypass local downloads.
+  if (_forComposebox) {
+    std::vector<DriveItem> driveItems(_selectedFiles.begin(),
+                                      _selectedFiles.end());
+    [self.delegate mediator:self didPickDriveItems:driveItems];
+    return;
+  }
+
   ChooseFileTabHelper* tab_helper =
       ChooseFileTabHelper::FromWebState(_webState.get());
   CHECK(tab_helper);
@@ -772,6 +795,17 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
 - (void)processDownloadingQueue {
   if (!_webState || _webState->IsBeingDestroyed()) {
     // If the WebState was or is being destroyed, do nothing.
+    return;
+  }
+
+  // Since Composebox attachments are metadata-driven and uploaded server-side,
+  // bypass local downloader queue tasks entirely. Update the consumer
+  // status directly based on whether the selection list is populated.
+  if (_forComposebox) {
+    DriveFileDownloadStatus newDownloadStatus =
+        _selectedFiles.empty() ? DriveFileDownloadStatus::kNotStarted
+                               : DriveFileDownloadStatus::kSuccess;
+    [self.consumer setDownloadStatus:newDownloadStatus];
     return;
   }
 

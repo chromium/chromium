@@ -109,6 +109,10 @@ constexpr char kFakeIconURL[] = "http://www.example.com/image";
     didActivateSearch:(BOOL)searchActivated {
 }
 
+- (void)mediator:(DriveFilePickerMediator*)mediator
+    didPickDriveItems:(const std::vector<DriveItem>&)driveItems {
+}
+
 @end
 
 // Fake drive file picker commands for `DriveFilePickerMediator`.
@@ -340,6 +344,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
              initWithWebState:web_state_.get()
                       options:DriveFilePickerOptions::Default()
                        isRoot:YES
+                forComposebox:NO
               identityManager:_identityManager
         authenticationService:auth_service_];
     mediator_.delegate = fake_delegate_;

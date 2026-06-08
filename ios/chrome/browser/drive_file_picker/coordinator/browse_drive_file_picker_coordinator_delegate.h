@@ -5,6 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_BROWSE_DRIVE_FILE_PICKER_COORDINATOR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_BROWSE_DRIVE_FILE_PICKER_COORDINATOR_DELEGATE_H_
 
+#import <vector>
+
+struct DriveItem;
+
 // Protocol for the delegate of a `BrowseDriveFilePickerCoordinator`.
 @protocol BrowseDriveFilePickerCoordinatorDelegate
 
@@ -23,6 +27,10 @@
 // Called when file picker dismissal becomes allowed/forbidden.
 - (void)coordinator:(ChromeCoordinator*)coordinator
     didAllowDismiss:(BOOL)allowDismiss;
+
+// Called when Drive items were picked. Only called with the compose box.
+- (void)coordinator:(ChromeCoordinator*)coordinator
+    didPickDriveItems:(const std::vector<DriveItem>&)driveItems;
 
 @end
 
