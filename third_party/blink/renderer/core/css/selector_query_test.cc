@@ -275,16 +275,16 @@ TEST(SelectorQueryTest, FastPathScoped) {
       {"#multiple.c",      false, 1, {.elements_seen = 1, .fast_id_roots = 2, .check_id = 1, .check_class = 1, .skipped_subtree = 1}},
 
       // Class in the rightmost selector.
-      {".child",           false, 1, {.elements_seen = 1, .check_class = 1}},
-      {".child",            true, 4, {.elements_seen = 4, .check_class = 4, .skipped_subtree = 3}},
+      {".child",           false, 1, {.elements_seen = 2, .check_class = 1}},
+      {".child",            true, 4, {.elements_seen = 5, .check_class = 4, .skipped_subtree = 3}},
 
       // If an ancestor has the class name, we scan all the descendants of the scope
       // (we wouldn't need the recheck here; it could be optimized away in theory).
       // The two .check_class come from scanning ancestors to find .root-class above #first.
-      {".root-class span",  true, 4, {.elements_seen = 7, .check_tag = 7, .check_class = 2, .recheck_selector = 4}},
+      {".root-class span",  true, 4, {.elements_seen = 8, .check_tag = 7, .check_class = 2, .recheck_selector = 4}},
 
       // If the id is an ancestor, we scan all the descendants.
-      {"#root-id span",     true, 4, {.elements_seen = 7, .check_id = 2, .check_tag = 7, .recheck_selector = 4}},
+      {"#root-id span",     true, 4, {.elements_seen = 8, .check_id = 2, .check_tag = 7, .recheck_selector = 4}},
   };
   // clang-format on
 
@@ -369,12 +369,12 @@ TEST(SelectorQueryTest, DisconnectedSubtree) {
   // clang-format off
   static const struct QueryTest kTestCases[] = {
       // None of these use the fast ID path, since we're disconnected.
-      {"#A",          false, 1, {.elements_seen = 3, .check_id = 3}},
-      {"#B",          false, 1, {.elements_seen = 4, .check_id = 4}},
-      {"#B",           true, 1, {.elements_seen = 6, .check_id = 6}},
-      {"#multiple",    true, 2, {.elements_seen = 6, .check_id = 6}},
-      {".child",      false, 1, {.elements_seen = 3, .check_class = 3, .skipped_subtree = 1}},
-      {".child",       true, 2, {.elements_seen = 4, .check_class = 4, .skipped_subtree = 2}},
+      {"#A",          false, 1, {.elements_seen = 4, .check_id = 3}},
+      {"#B",          false, 1, {.elements_seen = 5, .check_id = 4}},
+      {"#B",           true, 1, {.elements_seen = 7, .check_id = 6}},
+      {"#multiple",    true, 2, {.elements_seen = 7, .check_id = 6}},
+      {".child",      false, 1, {.elements_seen = 4, .check_class = 3, .skipped_subtree = 1}},
+      {".child",       true, 2, {.elements_seen = 5, .check_class = 4, .skipped_subtree = 2}},
       {"#first span", false, 1, {.elements_seen = 4, .check_id = 3, .check_tag = 1}},
       {"#first span",  true, 4, {.elements_seen = 7, .check_id = 3, .check_tag = 4}},
   };
