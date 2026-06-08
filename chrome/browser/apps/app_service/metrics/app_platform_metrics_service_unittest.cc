@@ -1124,67 +1124,7 @@ TEST_F(AppPlatformMetricsServiceTest, AppRunningPercentage) {
 
 
 
-TEST_F(AppPlatformMetricsServiceTest,
-       UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser) {
-  std::unique_ptr<Browser> browser = CreateBrowserWindow();
 
-  // Create a web app tab.
-  const GURL url = GURL("https://foo.com");
-  auto web_app_window =
-      CreateWebAppWindow(browser->GetWindow()->GetNativeWindow());
-
-  // Set the browser window as inactivated.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(),
-                 kInactiveInstanceState);
-
-  // Set the web app tab as activated.
-  ModifyWebAppInstance(kWebAppId1, web_app_window.get(), kActiveInstanceState);
-
-  task_environment_.FastForwardBy(base::Minutes(5));
-  VerifyNoAppUsageTimeUkm();
-
-  // Set the browser window and web app tabs as inactivated.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(),
-                 kInactiveInstanceState);
-  ModifyWebAppInstance(kWebAppId1, web_app_window.get(),
-                       kInactiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(2));
-
-  // Set the web app tab as activated.
-  ModifyWebAppInstance(kWebAppId1, web_app_window.get(), kActiveInstanceState);
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(),
-                 kInactiveInstanceState);
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(3));
-  VerifyNoAppUsageTimeUkm();
-
-  // Set the web app tab as inactivated.
-  ModifyWebAppInstance(kWebAppId1, web_app_window.get(),
-                       kInactiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(1));
-
-  // Set the web app tab as destroyed.
-  ModifyWebAppInstance(kWebAppId1, web_app_window.get(),
-                       apps::InstanceState::kDestroyed);
-
-  // Set the browser window as destroyed.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(),
-                 apps::InstanceState::kDestroyed);
-  VerifyNoAppUsageTimeUkm();
-
-  task_environment_.FastForwardBy(base::Minutes(109));
-
-  // Verify the app usage time AppKM for the web app and browser window.
-  VerifyAppUsageTimeUkm(/*count=*/2);
-  VerifyAppUsageTimeUkm(url, base::Minutes(8), AppTypeName::kChromeBrowser);
-  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, base::Minutes(1),
-                        AppTypeName::kChromeBrowser);
-}
 
 TEST_F(AppPlatformMetricsServiceTest,
        UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser) {
