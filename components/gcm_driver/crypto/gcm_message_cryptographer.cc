@@ -22,8 +22,8 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
+#include "crypto/aead.h"
 #include "crypto/hkdf.h"
-#include "third_party/boringssl/src/include/openssl/aead.h"
 
 namespace gcm {
 
@@ -38,13 +38,6 @@ const size_t kDefaultRecordSize = 4096;
 
 // Key size, in bytes, of a valid AEAD_AES_128_GCM key.
 const size_t kContentEncryptionKeySize = 16;
-
-// The BoringSSL functions used to seal (encrypt) and open (decrypt) a payload
-// follow the same prototype, declared as follows.
-using EVP_AEAD_CTX_TransformFunction =
-    int(const EVP_AEAD_CTX *ctx, uint8_t *out, size_t *out_len,
-        size_t max_out_len, const uint8_t *nonce, size_t nonce_len,
-        const uint8_t *in, size_t in_len, const uint8_t *ad, size_t ad_len);
 
 // Implementation of draft 03 of the Web Push Encryption standard:
 // https://tools.ietf.org/html/draft-ietf-webpush-encryption-03
@@ -391,52 +384,29 @@ bool GCMMessageCryptographer::Decrypt(std::string_view recipient_public_key,
 }
 
 bool GCMMessageCryptographer::TransformRecord(Direction direction,
-                                              std::string_view input,
-                                              std::string_view key,
-                                              std::string_view nonce,
-                                              std::string* output) const {
-  DCHECK(output);
+                                              std::string_view input_str,
+                                              std::string_view key_str,
+                                              std::string_view nonce_str,
+                                              std::string* output_str) const {
+  constexpr auto kAlgorithm = crypto::aead::AES_128_GCM;
+  const auto input = base::as_byte_span(input_str);
+  const auto key = base::as_byte_span(key_str);
+  const auto nonce = base::as_byte_span(nonce_str);
+  constexpr base::span<const uint8_t> kNoAssociatedData{};
 
-  const EVP_AEAD* aead = EVP_aead_aes_128_gcm();
-
-  EVP_AEAD_CTX context;
-  if (!EVP_AEAD_CTX_init(&context, aead,
-                         reinterpret_cast<const uint8_t*>(key.data()),
-                         key.size(), EVP_AEAD_DEFAULT_TAG_LENGTH, nullptr)) {
-    return false;
+  if (direction == Direction::ENCRYPT) {
+    std::vector<uint8_t> ciphertext =
+        crypto::aead::Seal(kAlgorithm, key, input, nonce, kNoAssociatedData);
+    output_str->assign(base::as_string_view(ciphertext));
+    return true;
+  } else {
+    std::optional<std::vector<uint8_t>> plaintext =
+        crypto::aead::Open(kAlgorithm, key, input, nonce, kNoAssociatedData);
+    if (plaintext.has_value()) {
+      output_str->assign(base::as_string_view(*plaintext));
+    }
+    return plaintext.has_value();
   }
-
-  base::CheckedNumeric<size_t> maximum_output_length(input.size());
-  if (direction == Direction::ENCRYPT)
-    maximum_output_length += kAuthenticationTagBytes;
-
-  size_t output_length = 0;
-  output->resize(maximum_output_length.ValueOrDie());
-
-  EVP_AEAD_CTX_TransformFunction* transform_function =
-      direction == Direction::ENCRYPT ? EVP_AEAD_CTX_seal : EVP_AEAD_CTX_open;
-
-  if (!transform_function(
-          &context, reinterpret_cast<uint8_t*>(output->data()), &output_length,
-          output->size(), reinterpret_cast<const uint8_t*>(nonce.data()),
-          nonce.size(), reinterpret_cast<const uint8_t*>(input.data()),
-          input.size(), nullptr, 0)) {
-    EVP_AEAD_CTX_cleanup(&context);
-    return false;
-  }
-
-  EVP_AEAD_CTX_cleanup(&context);
-
-  base::CheckedNumeric<size_t> expected_output_length(input.size());
-  if (direction == Direction::ENCRYPT)
-    expected_output_length += kAuthenticationTagBytes;
-  else
-    expected_output_length -= kAuthenticationTagBytes;
-
-  DCHECK_EQ(expected_output_length.ValueOrDie(), output_length);
-
-  output->resize(output_length);
-  return true;
 }
 
 std::string GCMMessageCryptographer::DeriveContentEncryptionKey(
