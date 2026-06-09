@@ -676,34 +676,30 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     }
   }
 
-  std::unique_ptr<content::WebContents> message_proxy_web_contents =
-      CreateMessageProxyWebContents(initiator_origin);
-
-  // Set the opener of this new tab to the message proxy so we can route
-  // postMessages. This allows us to detect messages to the
-  // `message_proxy_web_contents`, which will then be intercepted and routed to
-  // the frame in the Contextual Tasks GuestView. This is required as the
-  // GuestView is in a different StoragePartition, causing the window.opener
-  // relationship to automatically be severed by the browser. Meaning,
-  // without creating a WebContents in the same StoragePartition, window.opener
-  // would be null.
   content::WebContents::CreateParams create_params(profile_);
-  create_params.opener_render_process_id =
-      message_proxy_web_contents->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetID()
-          .value();
-  create_params.opener_render_frame_id =
-      message_proxy_web_contents->GetPrimaryMainFrame()->GetRoutingID();
+  std::unique_ptr<content::WebContents> message_proxy_web_contents;
+
+  if (GetIsContextualTasksWindowTrackingEnabled() && tracker_manager_) {
+    message_proxy_web_contents =
+        CreateMessageProxyWebContents(initiator_origin);
+    create_params.opener_render_process_id =
+        message_proxy_web_contents->GetPrimaryMainFrame()
+            ->GetProcess()
+            ->GetID()
+            .value();
+    create_params.opener_render_frame_id =
+        message_proxy_web_contents->GetPrimaryMainFrame()->GetRoutingID();
+  }
 
   std::unique_ptr<content::WebContents> new_contents =
       content::WebContents::Create(create_params);
   content::WebContents* new_contents_ptr = new_contents.get();
   CreateSessionServiceTabHelper(new_contents_ptr);
 
-  // Match the new web contents that was created to the pending tracker.
-  tracker_manager_->MatchAndAssociatePendingTracker(
-      url, new_contents_ptr, std::move(message_proxy_web_contents));
+  if (GetIsContextualTasksWindowTrackingEnabled() && tracker_manager_) {
+    tracker_manager_->MatchAndAssociatePendingTracker(
+        url, new_contents_ptr, std::move(message_proxy_web_contents));
+  }
 
   // Copy navigation entries from the current tab to the new tab to support back
   // button navigation. See crbug.com/467042329 for detail.
@@ -1091,7 +1087,8 @@ void ContextualTasksUiService::OpenUrl(
                            << bounds.width() << "x" << bounds.height() << "]";
 
   std::unique_ptr<content::WebContents> message_proxy_web_contents;
-  if (base::FeatureList::IsEnabled(kAimTriggeredThreadLinks) &&
+  if (GetIsContextualTasksWindowTrackingEnabled() && tracker_manager_ &&
+      base::FeatureList::IsEnabled(kAimTriggeredThreadLinks) &&
       url_params.initiator_origin.has_value()) {
     OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: OpenUrl "
                                 "setting opener for initiator_origin: "
@@ -1113,8 +1110,10 @@ void ContextualTasksUiService::OpenUrl(
       nav_params.navigated_or_inserted_contents;
 
   if (new_contents_ptr) {
-    tracker_manager_->MatchAndAssociatePendingTracker(
-        url, new_contents_ptr, std::move(message_proxy_web_contents));
+    if (GetIsContextualTasksWindowTrackingEnabled() && tracker_manager_) {
+      tracker_manager_->MatchAndAssociatePendingTracker(
+          url, new_contents_ptr, std::move(message_proxy_web_contents));
+    }
   } else {
     OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: "
                                 "OpenUrl failed to get new WebContents";
@@ -1328,7 +1327,9 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   // the navigation in the opened window, rather than the original params that
   // started the chain of naivgations.
   ContextualTasksWindowTracker* pending_tracker =
-      tracker_manager_->GetPendingTracker(url_params.url, source_contents);
+      (GetIsContextualTasksWindowTrackingEnabled() && tracker_manager_)
+          ? tracker_manager_->GetPendingTracker(url_params.url, source_contents)
+          : nullptr;
   if (pending_tracker && pending_tracker->open_url_params()) {
     // When the navigation goes through CanCreateWindow, the first navigation
     // has the correct url params to trigger the new window, where as the second
@@ -1472,43 +1473,47 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     // again, which will then handle the `OnThreadLinkClick` via the call
     // below. Allowing the window to open is a requirement to allow
     // `window.open` calls to receive a Window object.
-    if (from_can_create_window &&
+    if (GetIsContextualTasksWindowTrackingEnabled() && from_can_create_window &&
         ShouldAllowNewTabOpen(url_params.url, browser, task_id)) {
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: HandleNavigationImpl "
              "allowing natural opening for new tab";
 
-      // Create a tracker to associate this navigation with the task.
-      // Store the initiator's RFH ID to prevent matching different contents.
-      // At this point, `source_contents` is known to be the WebUI page. So we
-      // can pass `source_contents->GetWeakPtr()` as the webui_contents.
-      // Additionally, initiator_frame_token is used for tracking, so if its
-      // missing, fallback to the WebUI primary frame token.
-      auto tracker = std::make_unique<ContextualTasksWindowTracker>(
-          ContextualTaskId(task_id), url_params.url,
-          initiator_frame_token.has_value()
-              ? initiator_frame_token.value()
-              : source_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(),
-          /*webui_contents=*/source_contents->GetWeakPtr(),
-          base::BindOnce(&ContextualTasksUiService::RemoveWindowTracker,
-                         weak_ptr_factory_.GetWeakPtr()));
-      tracker->SetOpenURLParams(url_params);
-      tracker->SetWindowFeatures(window_features);
-      OMNIBOX_LOG("window_tracker")
-          << "Stored window features for URL " << url_params.url.spec()
-          << ": bounds=[" << window_features.bounds.x() << ","
-          << window_features.bounds.y() << " " << window_features.bounds.width()
-          << "x" << window_features.bounds.height() << "]";
-      tracker_manager_->AddTracker(std::move(tracker));
-      tabs::TabInterface* source_tab =
-          tabs::TabInterface::MaybeGetFromContents(source_contents);
-      if (source_tab) {
-        BrowserWindowInterface* current_browser =
-            source_tab->GetBrowserWindowInterface();
-        if (current_browser) {
-          TabListInterface* tab_list = TabListInterface::From(current_browser);
-          if (tab_list) {
-            tracker_manager_->ObserveTabList(tab_list);
+      if (tracker_manager_) {
+        // Create a tracker to associate this navigation with the task.
+        // Store the initiator's RFH ID to prevent matching different contents.
+        // At this point, `source_contents` is known to be the WebUI page. So we
+        // can pass `source_contents->GetWeakPtr()` as the webui_contents.
+        // Additionally, initiator_frame_token is used for tracking, so if its
+        // missing, fallback to the WebUI primary frame token.
+        auto tracker = std::make_unique<ContextualTasksWindowTracker>(
+            ContextualTaskId(task_id), url_params.url,
+            initiator_frame_token.has_value()
+                ? initiator_frame_token.value()
+                : source_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(),
+            /*webui_contents=*/source_contents->GetWeakPtr(),
+            base::BindOnce(&ContextualTasksUiService::RemoveWindowTracker,
+                           weak_ptr_factory_.GetWeakPtr()));
+        tracker->SetOpenURLParams(url_params);
+        tracker->SetWindowFeatures(window_features);
+        OMNIBOX_LOG("window_tracker")
+            << "Stored window features for URL " << url_params.url.spec()
+            << ": bounds=[" << window_features.bounds.x() << ","
+            << window_features.bounds.y() << " "
+            << window_features.bounds.width() << "x"
+            << window_features.bounds.height() << "]";
+        tracker_manager_->AddTracker(std::move(tracker));
+        tabs::TabInterface* source_tab =
+            tabs::TabInterface::MaybeGetFromContents(source_contents);
+        if (source_tab) {
+          BrowserWindowInterface* current_browser =
+              source_tab->GetBrowserWindowInterface();
+          if (current_browser) {
+            TabListInterface* tab_list =
+                TabListInterface::From(current_browser);
+            if (tab_list) {
+              tracker_manager_->ObserveTabList(tab_list);
+            }
           }
         }
       }
@@ -1851,6 +1856,9 @@ std::string ContextualTasksUiService::GetHostForTask(
 
 void ContextualTasksUiService::RemoveWindowTracker(
     base::WeakPtr<ContextualTasksWindowTracker> tracker) {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return;
+  }
   if (!tracker) {
     return;
   }
@@ -1872,14 +1880,14 @@ void ContextualTasksUiService::RemoveWindowTracker(
 void ContextualTasksUiService::RegisterWindow(ContextualTaskId task_id,
                                               const GURL& url,
                                               ContextualWindowId window_id) {
-  if (tracker_manager_) {
+  if (GetIsContextualTasksWindowTrackingEnabled() && tracker_manager_) {
     tracker_manager_->RegisterWindow(task_id, url, window_id);
   }
 }
 
 void ContextualTasksUiService::CloseTrackedWindow(
     ContextualWindowId window_id) {
-  if (tracker_manager_) {
+  if (GetIsContextualTasksWindowTrackingEnabled() && tracker_manager_) {
     tracker_manager_->CloseTrackedWindow(window_id);
   }
 }
@@ -1972,7 +1980,8 @@ GURL ContextualTasksUiService::GetDefaultAiPageUrlForTask(
 
 bool ContextualTasksUiService::IsTrackedWindow(
     content::WebContents* web_contents) {
-  if (tracker_manager_->IsTrackedWindow(web_contents)) {
+  if (GetIsContextualTasksWindowTrackingEnabled() && tracker_manager_ &&
+      tracker_manager_->IsTrackedWindow(web_contents)) {
     return true;
   }
 
@@ -2427,6 +2436,9 @@ void ContextualTasksUiService::AssociateWebContentsToTask(
 content::RenderFrameHost* ContextualTasksUiService::GetGuestForMessage(
     content::RenderFrameHost* target_rfh,
     const url::Origin& source_origin) {
+  if (!GetIsContextualTasksWindowTrackingEnabled() || !tracker_manager_) {
+    return nullptr;
+  }
   // 1. Verify that the target of postMessage is one of our message proxy web
   // contents.
   content::WebContents* target_contents =

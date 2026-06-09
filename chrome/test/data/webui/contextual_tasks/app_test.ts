@@ -45,6 +45,7 @@ suite('ContextualTasksAppTest', function() {
       enableComposeboxJumpFix: false,
       isGhostLoaderVisible: false,
       isAiPage: true,
+      windowTrackingEnabled: true,
       nlmUrlParam: 'ajid',
       enableCustomNlmUi: true,
       composeboxSmartTabSharingVisible: false,
@@ -1155,4 +1156,23 @@ suite('ContextualTasksAppTest', function() {
 
     assertTrue(wrapper.hasAttribute('hidden'));
   });
+
+  test(
+      'does not initialize WindowManager when windowTrackingEnabled is false',
+      async () => {
+        loadTimeData.overrideValues({
+          windowTrackingEnabled: false,
+        });
+
+        const {appElement} =
+            await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+
+        let newWindowIntercepted = false;
+        appElement.$.threadFrame.addEventListener('newwindow', (e: Event) => {
+          newWindowIntercepted = e.defaultPrevented;
+        });
+        appElement.$.threadFrame.dispatchEvent(
+            new CustomEvent('newwindow', {cancelable: true}));
+        assertFalse(newWindowIntercepted);
+      });
 });

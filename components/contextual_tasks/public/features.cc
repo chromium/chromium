@@ -141,12 +141,18 @@ BASE_FEATURE(kContextualTasksCookiePrefetch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAimTriggeredThreadLinks, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksWindowTracking, base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool GetIsContextualTasksPdfCitationsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksPdfCitations);
 }
 
 bool GetIsContextualTasksLazyFetchClusterInfoEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksLazyFetchClusterInfo);
+}
+
+bool GetIsContextualTasksWindowTrackingEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksWindowTracking);
 }
 
 const base::FeatureParam<bool> kContextualTasksLockAndUnlockInputCapability(
