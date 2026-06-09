@@ -212,7 +212,9 @@ SourceBuffer::SourceBuffer(std::unique_ptr<WebSourceBuffer> web_source_buffer,
       append_window_end_(std::numeric_limits<double>::infinity()),
       first_initialization_segment_received_(false),
       pending_remove_start_(-1),
-      pending_remove_end_(-1) {
+      pending_remove_end_(-1),
+      trace_track_(
+          perfetto::NamedTrack::FromPointer("blink::SourceBuffer", this)) {
   DVLOG(1) << __func__ << " this=" << this;
 
   DCHECK(web_source_buffer_);
@@ -620,13 +622,12 @@ ScriptPromise<IDLUndefined> SourceBuffer::appendEncodedChunks(
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kMediaSourceExtensionsForWebCodecs);
 
-  TRACE_EVENT_BEGIN("media", "SourceBuffer::appendEncodedChunks",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN("media", "SourceBuffer::appendEncodedChunks", trace_track_);
 
   if (ThrowExceptionIfRemovedOrUpdating(IsRemoved(), updating_,
                                         exception_state)) {
     TRACE_EVENT_END("media", /*SourceBuffer::appendEncodedChunks*/
-                    perfetto::Track::FromPointer(this));
+                    trace_track_);
     return EmptyPromise();
   }
 
@@ -734,7 +735,7 @@ void SourceBuffer::AppendEncodedChunks_Locked(
   double media_time = GetMediaTime();
   if (!PrepareAppend(media_time, size, *exception_state)) {
     TRACE_EVENT_END("media", /*SourceBuffer::appendEncodedChunks*/
-                    perfetto::Track::FromPointer(this));
+                    trace_track_);
     append_encoded_chunks_resolver_ = nullptr;
     return;
   }
@@ -756,8 +757,7 @@ void SourceBuffer::AppendEncodedChunks_Locked(
       BindOnce(&SourceBuffer::AppendEncodedChunksAsyncPart,
                WrapPersistent(this)));
 
-  TRACE_EVENT_BEGIN("media", "delay", perfetto::Track::FromPointer(this),
-                    "type", "initialDelay");
+  TRACE_EVENT_BEGIN("media", "delay", trace_track_, "type", "initialDelay");
 }
 
 void SourceBuffer::abort(ExceptionState& exception_state) {
@@ -899,8 +899,7 @@ void SourceBuffer::Remove_Locked(
     return;
   }
 
-  TRACE_EVENT_BEGIN("media", "SourceBuffer::remove",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN("media", "SourceBuffer::remove", trace_track_);
 
   // 6. If the readyState attribute of the parent media source is in the "ended"
   //    state then run the following steps:
@@ -1089,8 +1088,7 @@ void SourceBuffer::CancelRemove() {
   pending_remove_end_ = -1;
   updating_ = false;
 
-  TRACE_EVENT_END("media", /*SourceBuffer::remove*/
-                  perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("media", /*SourceBuffer::remove*/ trace_track_);
 }
 
 void SourceBuffer::AbortIfUpdating() {
@@ -1128,7 +1126,7 @@ void SourceBuffer::AbortIfUpdating() {
         DOMExceptionCode::kAbortError, "Aborted by explicit abort()"));
     append_encoded_chunks_resolver_ = nullptr;
     TRACE_EVENT_END("media", /*SourceBuffer::appendEncodedChunks*/
-                    perfetto::Track::FromPointer(this));
+                    trace_track_);
     return;
   }
 
@@ -1145,8 +1143,7 @@ void SourceBuffer::AbortIfUpdating() {
   //      SourceBuffer object.
   ScheduleEvent(event_type_names::kUpdateend);
 
-  TRACE_EVENT_END("media", /*SourceBuffer::appendBuffer*/
-                  perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("media", /*SourceBuffer::appendBuffer*/ trace_track_);
 }
 
 void SourceBuffer::RemovedFromMediaSource() {
@@ -1849,8 +1846,7 @@ bool SourceBuffer::PrepareAppend(double media_time,
   // done by the caller.
   // http://w3c.github.io/media-source/#sourcebuffer-prepare-append
   // 3.5.4 Prepare Append Algorithm
-  TRACE_EVENT_BEGIN("media", "SourceBuffer::prepareAppend",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN("media", "SourceBuffer::prepareAppend", trace_track_);
   // 3. If the HTMLMediaElement.error attribute is not null, then throw an
   //    InvalidStateError exception and abort these steps.
   DCHECK(source_);
@@ -1861,8 +1857,7 @@ bool SourceBuffer::PrepareAppend(double media_time,
     MediaSource::LogAndThrowDOMException(
         exception_state, DOMExceptionCode::kInvalidStateError,
         "The HTMLMediaElement.error attribute is not null.");
-    TRACE_EVENT_END("media", /*SourceBuffer::prepareAppend*/
-                    perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("media", /*SourceBuffer::prepareAppend*/ trace_track_);
     return false;
   }
 
@@ -1885,13 +1880,11 @@ bool SourceBuffer::PrepareAppend(double media_time,
         exception_state,
         "The SourceBuffer is full, and cannot free space to append additional "
         "buffers.");
-    TRACE_EVENT_END("media", /*SourceBuffer::prepareAppend*/
-                    perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("media", /*SourceBuffer::prepareAppend*/ trace_track_);
     return false;
   }
 
-  TRACE_EVENT_END("media", /*SourceBuffer::prepareAppend*/
-                  perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("media", /*SourceBuffer::prepareAppend*/ trace_track_);
   return true;
 }
 
@@ -1915,8 +1908,8 @@ bool SourceBuffer::EvictCodedFrames(double media_time, size_t new_data_size) {
 
 void SourceBuffer::AppendBufferInternal(base::span<const unsigned char> data,
                                         ExceptionState& exception_state) {
-  TRACE_EVENT_BEGIN("media", "SourceBuffer::appendBuffer",
-                    perfetto::Track::FromPointer(this), "size", data.size());
+  TRACE_EVENT_BEGIN("media", "SourceBuffer::appendBuffer", trace_track_, "size",
+                    data.size());
   // Section 3.2 appendBuffer()
   // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#widl-SourceBuffer-appendBuffer-void-ArrayBufferView-data
   //
@@ -1936,8 +1929,7 @@ void SourceBuffer::AppendBufferInternal(base::span<const unsigned char> data,
   //    exception and abort these steps.
   if (ThrowExceptionIfRemovedOrUpdating(IsRemoved(), updating_,
                                         exception_state)) {
-    TRACE_EVENT_END("media", /*SourceBuffer::appendBuffer*/
-                    perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("media", /*SourceBuffer::appendBuffer*/ trace_track_);
     return;
   }
 
@@ -1967,12 +1959,10 @@ void SourceBuffer::AppendBufferInternal_Locked(
   // Finish the prepare append algorithm begun by the caller.
   double media_time = GetMediaTime();
   if (!PrepareAppend(media_time, data.size(), *exception_state)) {
-    TRACE_EVENT_END("media", /*SourceBuffer::appendBuffer*/
-                    perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("media", /*SourceBuffer::appendBuffer*/ trace_track_);
     return;
   }
-  TRACE_EVENT_BEGIN("media", "prepareAsyncAppend",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN("media", "prepareAsyncAppend", trace_track_);
 
   // 2. Add data to the end of the input buffer. Zero-length appends result in
   // just a single async segment parser loop run later, with nothing added to
@@ -1981,8 +1971,7 @@ void SourceBuffer::AppendBufferInternal_Locked(
     MediaSource::LogAndThrowQuotaExceededError(
         *exception_state,
         "Unable to allocate space required to buffer appended media.");
-    TRACE_EVENT_END("media", /*prepareAsyncAppend*/
-                    perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("media", /*prepareAsyncAppend*/ trace_track_);
     return;
   }
 
@@ -1999,10 +1988,8 @@ void SourceBuffer::AppendBufferInternal_Locked(
       FROM_HERE,
       BindOnce(&SourceBuffer::AppendBufferAsyncPart, WrapPersistent(this)));
 
-  TRACE_EVENT_END("media", /*prepareAsyncAppend*/
-                  perfetto::Track::FromPointer(this));
-  TRACE_EVENT_BEGIN("media", "delay", perfetto::Track::FromPointer(this),
-                    "type", "initialDelay");
+  TRACE_EVENT_END("media", /*prepareAsyncAppend*/ trace_track_);
+  TRACE_EVENT_BEGIN("media", "delay", trace_track_, "type", "initialDelay");
 }
 
 void SourceBuffer::AppendEncodedChunksAsyncPart() {
@@ -2056,9 +2043,9 @@ void SourceBuffer::AppendEncodedChunksAsyncPart_Locked(
   // TODO(crbug.com/1144908): Consider buffering |pending_chunks_to_buffer_| in
   // multiple async iterations if it contains many buffers. It is unclear if
   // this is necessary when buffering encoded chunks.
-  TRACE_EVENT_END("media", /* delay */ perfetto::Track::FromPointer(this));
-  TRACE_EVENT_BEGIN("media", "appending", perfetto::Track::FromPointer(this),
-                    "chunkCount", pending_chunks_to_buffer_->size());
+  TRACE_EVENT_END("media", /* delay */ trace_track_);
+  TRACE_EVENT_BEGIN("media", "appending", trace_track_, "chunkCount",
+                    pending_chunks_to_buffer_->size());
 
   bool append_success = web_source_buffer_->AppendChunks(
       std::move(pending_chunks_to_buffer_), &timestamp_offset_);
@@ -2084,10 +2071,9 @@ void SourceBuffer::AppendEncodedChunksAsyncPart_Locked(
     append_encoded_chunks_resolver_ = nullptr;
   }
 
-  TRACE_EVENT_END("media", /* appending */ perfetto::Track::FromPointer(this));
-  TRACE_EVENT_END("media",
-                  /* SourceBuffer::appendEncodedChunks */
-                  perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("media", /* appending */ trace_track_);
+  TRACE_EVENT_END("media", /* SourceBuffer::appendEncodedChunks */
+                  trace_track_);
 
   DVLOG(3) << __func__ << " done. this=" << this
            << " media_time=" << GetMediaTime() << " buffered="
@@ -2106,8 +2092,8 @@ void SourceBuffer::AppendBufferAsyncPart_Locked(
   // 1. Run the segment parser loop algorithm.
   // Step 2 doesn't apply since we run Step 1 synchronously here.
 
-  TRACE_EVENT_END("media", /* delay */ perfetto::Track::FromPointer(this));
-  TRACE_EVENT_BEGIN("media", "appending", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("media", /* delay */ trace_track_);
+  TRACE_EVENT_BEGIN("media", "appending", trace_track_);
   // The segment parser loop may not consume all of the pending appended data,
   // and lets us know via a distinct ParseStatus result. We parse incrementally
   // to avoid blocking the renderer event loop for too long. Note that even in
@@ -2129,10 +2115,9 @@ void SourceBuffer::AppendBufferAsyncPart_Locked(
           *GetExecutionContext()->GetTaskRunner(TaskType::kMediaElementEvent),
           FROM_HERE,
           BindOnce(&SourceBuffer::AppendBufferAsyncPart, WrapPersistent(this)));
-      TRACE_EVENT_END("media",
-                      /* appending */ perfetto::Track::FromPointer(this));
-      TRACE_EVENT_BEGIN("media", "delay", perfetto::Track::FromPointer(this),
-                        "type", "nextPieceDelay");
+      TRACE_EVENT_END("media", /* appending */ trace_track_);
+      TRACE_EVENT_BEGIN("media", "delay", trace_track_, "type",
+                        "nextPieceDelay");
       return;
     case media::StreamParser::ParseStatus::kSuccess:
       // 3. Set the updating attribute to false.
@@ -2150,9 +2135,8 @@ void SourceBuffer::AppendBufferAsyncPart_Locked(
       break;
   }
 
-  TRACE_EVENT_END("media", /* appending */ perfetto::Track::FromPointer(this));
-  TRACE_EVENT_END("media", /*SourceBuffer::appendBuffer*/
-                  perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("media", /* appending */ trace_track_);
+  TRACE_EVENT_END("media", /*SourceBuffer::appendBuffer*/ trace_track_);
 
   double media_time = GetMediaTime();
   DVLOG(3) << __func__ << " done. this=" << this << " media_time=" << media_time

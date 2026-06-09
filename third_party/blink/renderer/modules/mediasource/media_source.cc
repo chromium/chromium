@@ -745,13 +745,8 @@ void MediaSource::CompleteAttachingToMediaElement(
 
     DCHECK_EQ(!attachment_tracer_, !IsMainThread());
 
-    if (attachment_tracer_) {
-      // Use of a tracer means we must be using same-thread attachment.
-      TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
-    } else {
-      // Otherwise, we must be using a cross-thread MSE-in-Workers attachment.
-      TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
-    }
+    TRACE_EVENT_END(
+        "media", perfetto::NamedTrack::FromPointer("blink::MediaSource", this));
     DCHECK(web_media_source);
     DCHECK(!web_media_source_);
     DCHECK(media_source_attachment_);
@@ -1360,8 +1355,9 @@ MediaSourceTracer* MediaSource::StartAttachingToMediaElement(
   DCHECK(!context_already_destroyed_);
   DCHECK(IsClosed());
 
-  TRACE_EVENT_BEGIN("media", "MediaSource::StartAttachingToMediaElement",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(
+      "media", "MediaSource::StartAttachingToMediaElement",
+      perfetto::NamedTrack::FromPointer("blink::MediaSource", this));
   media_source_attachment_ = attachment;
   attachment_tracer_ =
       MakeGarbageCollected<SameThreadMediaSourceTracer>(element, this);
@@ -1386,9 +1382,9 @@ bool MediaSource::StartWorkerAttachingToMainThreadMediaElement(
   }
 
   DCHECK(IsClosed());
-  TRACE_EVENT_BEGIN("media",
-                    "MediaSource::StartWorkerAttachingToMainThreadMediaElement",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(
+      "media", "MediaSource::StartWorkerAttachingToMainThreadMediaElement",
+      perfetto::NamedTrack::FromPointer("blink::MediaSource", this));
   media_source_attachment_ = attachment;
   return true;
 }
