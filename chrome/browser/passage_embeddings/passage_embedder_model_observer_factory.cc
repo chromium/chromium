@@ -4,6 +4,10 @@
 
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 
+#include <algorithm>
+
+#include "base/byte_size.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
@@ -61,6 +65,15 @@ PassageEmbedderModelObserverFactory::BuildServiceInstanceForBrowserContext(
       !base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv4)) {
     return nullptr;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Restrict Android to "higher-end" devices.
+  if (base::SysInfo::AmountOfTotalPhysicalMemory() <
+      base::MiBU(static_cast<uint32_t>(
+          std::max(0, kPassageEmbedderMinRequiredRamMb.Get())))) {
+    return nullptr;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (!base::FeatureList::IsEnabled(

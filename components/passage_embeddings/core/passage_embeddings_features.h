@@ -18,6 +18,11 @@ BASE_DECLARE_FEATURE(kPassageEmbedder);
 // When enabled, supports PDF text for embeddings generation.
 BASE_DECLARE_FEATURE(kPDFEmbeddingsGeneration);
 
+#if BUILDFLAG(IS_ANDROID)
+// The minimum amount of RAM in MB required for the passage embedder to run.
+extern const base::FeatureParam<int> kPassageEmbedderMinRequiredRamMb;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // The number of threads to use for embeddings generation with
 // mojom::PassagePriority::kUserInitiated.
 extern const base::FeatureParam<int> kUserInitiatedPriorityNumThreads;
