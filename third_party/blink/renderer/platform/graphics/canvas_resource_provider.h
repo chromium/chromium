@@ -108,10 +108,18 @@ class PLATFORM_EXPORT CanvasResourceProvider
     virtual void NotifyGpuContextLost() = 0;
     virtual void InitializeForRecording(cc::PaintCanvas* canvas) const = 0;
     virtual bool IsPrinting() const { return false; }
+    // This is used to apply a map of frame indexes to be used by
+    // PlaybackImageProvider::GetRasterContent. When the delegate is a
+    // CanvasRenderingContextHost, it is treated as an index into an array
+    // of maps, one per ElementImage which has been drawn into the canvas by
+    // a call to drawElementImage(). This is only used by canvas2d; webgl and
+    // webgpu canvases don't need this because they rasterize each ElementImage
+    // as a stand-alone PaintOpBuffer.
     virtual scoped_refptr<const cc::AnimatedImageFrameIndexMap>
-    GetAnimatedImageFrameIndexes() const {
+    GetAnimatedImageFrameIndexes(uint32_t id) const {
       return nullptr;
     }
+    virtual void DidFlush() {}
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -188,6 +196,14 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual bool IsPrinting() const = 0;
 
   static void NotifyWillTransfer(cc::PaintImage::ContentId content_id);
+
+  // This is called via a CustomDataRasterCallback when a CustomDataOp is
+  // rasterized. The CustomDataOps are emplaced by drawElementImage() to
+  // ensure the correct frame indexes are used when rasterizing a particular
+  // ElementImage.
+  void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
+  void SetAnimatedImageFrameIndexes(
+      scoped_refptr<const cc::AnimatedImageFrameIndexMap>);
 
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
@@ -271,6 +287,8 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
                    int x,
                    int y) override;
 
+  void RasterRecord(base::FunctionRef<void(cc::PaintCanvas&)>);
+
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
   size_t GetSize() const override;
 
@@ -300,6 +318,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;
 
  private:
+  friend class CanvasRenderingContext;
   friend class CanvasRenderingContext2D;
   friend class OffscreenCanvasRenderingContext2D;
 
@@ -721,6 +740,10 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   CanvasResourceProvider::ResourceProviderType GetType() const {
     return CanvasResourceProvider::kSharedImage;
   }
+
+  CanvasImageProvider* GetOrCreateImageProvider();
+  void SetAnimatedImageFrameIndexes(
+      scoped_refptr<const cc::AnimatedImageFrameIndexMap>);
 
   SkSurface* GetSkSurface() const;
 

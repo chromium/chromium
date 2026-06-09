@@ -152,7 +152,9 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                       const gfx::Vector2dF& post_scale,
                       bool requires_clear,
                       const ScrollOffsetMap* raster_inducing_scroll_offsets,
-                      size_t* max_op_size_hint) override;
+                      size_t* max_op_size_hint,
+                      base::RepeatingCallback<void(SkCanvas*, uint32_t)>
+                          custom_raster_callback) override;
   void ReadbackARGBPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,

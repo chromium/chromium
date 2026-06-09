@@ -21,6 +21,8 @@
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
+class SkCanvas;
+
 namespace cc {
 class DisplayItemList;
 class ImageProvider;
@@ -114,7 +116,9 @@ class RasterInterface : public InterfaceBase {
       const gfx::Vector2dF& post_scale,
       bool requires_clear,
       const ScrollOffsetMap* raster_inducing_scroll_offsets,
-      size_t* max_op_size_hint) = 0;
+      size_t* max_op_size_hint,
+      base::RepeatingCallback<void(SkCanvas*, uint32_t)>
+          custom_raster_callback) = 0;
 
   // Starts an asynchronous readback of `source_mailbox` into caller-owned
   // memory represented by `out`.

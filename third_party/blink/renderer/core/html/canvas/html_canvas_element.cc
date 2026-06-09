@@ -1275,17 +1275,6 @@ bool HTMLCanvasElement::IsPrinting() const {
   return GetDocument().BeforePrintingOrPrinting();
 }
 
-scoped_refptr<const cc::AnimatedImageFrameIndexMap>
-HTMLCanvasElement::GetAnimatedImageFrameIndexes() const {
-  if (layoutSubtree() &&
-      RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext())) {
-    if (auto* view = GetDocument().View()) {
-      return view->GetAnimatedImageFrameIndexes();
-    }
-  }
-  return CanvasRenderingContextHost::GetAnimatedImageFrameIndexes();
-}
-
 UkmParameters HTMLCanvasElement::GetUkmParameters() {
   return {GetDocument().UkmRecorder(), GetDocument().UkmSourceID()};
 }

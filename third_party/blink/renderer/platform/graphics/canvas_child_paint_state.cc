@@ -9,6 +9,22 @@
 
 namespace blink {
 
+bool CanvasChildPaintState::operator==(
+    const CanvasChildPaintState& other) const {
+  return effective_zoom == other.effective_zoom &&
+         transform_origin == other.transform_origin &&
+         box_size == other.box_size &&
+         canvas_content_size == other.canvas_content_size &&
+         canvas_device_pixel_content_box ==
+             other.canvas_device_pixel_content_box &&
+         canvas_node_id == other.canvas_node_id &&
+         (!!animated_image_frame_index_map ==
+          !!other.animated_image_frame_index_map) &&
+         (!animated_image_frame_index_map ||
+          *animated_image_frame_index_map ==
+              *other.animated_image_frame_index_map);
+}
+
 gfx::Transform GetElementTransform(const CanvasChildPaintState& paint_state,
                                    const gfx::Size& canvas_size,
                                    const gfx::Transform& draw_transform) {

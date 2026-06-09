@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_CHILD_PAINT_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_CHILD_PAINT_STATE_H_
 
+#include "cc/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -19,7 +20,7 @@ class Vector2dF;
 namespace blink {
 
 struct PLATFORM_EXPORT CanvasChildPaintState {
-  bool operator==(const CanvasChildPaintState&) const = default;
+  bool operator==(const CanvasChildPaintState&) const;
 
   // Child element state.
   float effective_zoom = 1.f;
@@ -30,6 +31,9 @@ struct PLATFORM_EXPORT CanvasChildPaintState {
   gfx::SizeF canvas_content_size;
   gfx::Size canvas_device_pixel_content_box;
   DOMNodeId canvas_node_id = kInvalidDOMNodeId;
+  scoped_refptr<const cc::AnimatedImageFrameIndexMap>
+      animated_image_frame_index_map;
+  // NOTE: If adding more members, be sure to update operator==().
 };
 
 PLATFORM_EXPORT gfx::Transform GetElementTransform(

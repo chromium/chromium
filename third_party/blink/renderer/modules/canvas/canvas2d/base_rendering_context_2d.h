@@ -234,6 +234,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
                                  std::optional<double> dheight,
                                  ExceptionState& exception_state);
 
+  scoped_refptr<const cc::AnimatedImageFrameIndexMap>
+  GetAnimatedImageFrameIndexMap(uint32_t id) const override;
+
   void Trace(Visitor*) const override;
 
   // Implementing methods from CanvasRenderingContext
@@ -245,6 +248,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   void PageVisibilityChanged() override {}
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas* c) const final;
   void Reset() override;
+  void DidFlush() override;
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
       SourceDrawingBuffer source_buffer) final;
 
@@ -331,6 +335,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   int num_readbacks_performed_ = 0;
   unsigned read_count_ = 0;
   base::RepeatingClosure on_restore_failed_callback_for_testing_;
+  Vector<scoped_refptr<const cc::AnimatedImageFrameIndexMap>>
+      animated_image_frame_index_maps_;
 };
 
 }  // namespace blink

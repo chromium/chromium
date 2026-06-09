@@ -60,7 +60,9 @@ PlaybackParams PaintOpBufferSerializer::MakeParams(
     const SkCanvas* canvas) const {
   // We don't use an ImageProvider here since the ops are played onto a no-draw
   // canvas for state tracking and don't need decoded images.
-  PlaybackParams params(nullptr, canvas->getLocalToDevice());
+  PlaybackCallbacks callbacks;
+  callbacks.custom_callback = options_.custom_callback;
+  PlaybackParams params(nullptr, canvas->getLocalToDevice(), callbacks);
   params.raster_inducing_scroll_offsets =
       options_.raster_inducing_scroll_offsets;
   params.is_analyzing = true;

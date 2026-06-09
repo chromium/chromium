@@ -255,8 +255,6 @@ class CORE_EXPORT HTMLCanvasElement final
   // CanvasResourceProvider::Delegate implementation
   void NotifyGpuContextLost() override;
   bool IsPrinting() const override;
-  scoped_refptr<const cc::AnimatedImageFrameIndexMap>
-  GetAnimatedImageFrameIndexes() const override;
 
   // CanvasRenderingContextHost implementation
   bool ShouldAccelerate2dContext() const override;

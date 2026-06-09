@@ -348,7 +348,8 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
       playback_rect, transform.translation(), recording_to_raster_scale,
       raster_source->requires_clear(),
       playback_settings.raster_inducing_scroll_offsets,
-      const_cast<RasterSource*>(raster_source)->max_op_size_hint());
+      const_cast<RasterSource*>(raster_source)->max_op_size_hint(),
+      base::RepeatingCallback<void(SkCanvas*, uint32_t)>());
   ri->EndRasterCHROMIUM();
   backing_->mailbox_sync_token =
       gpu::RasterScopedAccess::EndAccess(std::move(ri_access));

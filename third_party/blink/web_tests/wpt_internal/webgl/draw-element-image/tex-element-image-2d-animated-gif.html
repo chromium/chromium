@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>texElementImage2D animated image</title>
+    <link rel="help" href="https://github.com/WICG/html-in-canvas">
+    <link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+      canvas, img {
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <canvas id=canvas width="100px" height="100px" layoutsubtree>
+      <div id=child class=draw-element-wrapper>
+        <img id=image src="/wpt_internal/resources/canvas-draw-element/rgb100.gif"/>
+      </div>
+    </canvas>
+
+    <script type="module">
+      import { resizeToPixelGrid, SimpleGLProgram } from "/wpt_internal/resources/canvas-draw-element/util.js";
+
+      promise_test(() => new Promise((resolve, reject) => {
+        const gl = canvas.getContext("webgl2");
+        const prog = new SimpleGLProgram(gl);
+        let sawRed = false, sawGreen = false, sawBlue = false;
+        let seenColors = [];
+        let colorEquals = (a, b) => {
+          return a[0] == b[0] && a[1] == b[1] && a[2] == b[2] && a[3] == b[3];
+        };
+        let paintCount = 0;
+        canvas.onpaint = (evt) => {
+          if (evt.changedElements.length != 1 || evt.changedElements[0] != child) {
+            reject("Canvas paint event 'changedElements' should contain just " +
+                   "the child element.");
+          }
+          if (++paintCount > 10) {
+            reject(`After ${paintCount} paints, seen colors=[${seenColors.join(" ")}]`);
+          }
+          prog.render(child);
+          const format = gl.RGBA;
+          const type = gl.UNSIGNED_BYTE;
+          const imageData = new Uint8Array(4);
+          gl.readPixels(25, 25, 1, 1, format, type, imageData);
+          if (colorEquals(imageData, [255, 0, 0, 255])) {
+            sawRed = true;
+          } else if (colorEquals(imageData, [0, 153, 0, 255])) {
+            sawGreen = true;
+          } else if (colorEquals(imageData, [0, 0, 255, 255])) {
+            sawBlue = true;
+          } else {
+            seenColors.push(`(${imageData.join(", ")})`);
+          }
+          if (sawRed && sawGreen && sawBlue) {
+            resolve("Saw red, green, and blue animated image frames.");
+          }
+        };
+      }));
+    </script>
+  </body>
+</html>

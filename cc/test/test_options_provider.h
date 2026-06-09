@@ -29,6 +29,9 @@ class TestOptionsProvider : public ImageProvider,
   const PaintOp::SerializeOptions& serialize_options() const {
     return serialize_options_;
   }
+  PaintOp::SerializeOptions& mutable_serialize_options() {
+    return serialize_options_;
+  }
   const PaintOp::DeserializeOptions& deserialize_options() const {
     return deserialize_options_;
   }

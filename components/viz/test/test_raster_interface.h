@@ -108,7 +108,9 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
                       const gfx::Vector2dF& post_scale,
                       bool requires_clear,
                       const ScrollOffsetMap* raster_inducing_scroll_offsets,
-                      size_t* max_op_size_hint) override {}
+                      size_t* max_op_size_hint,
+                      base::RepeatingCallback<void(SkCanvas*, uint32_t)>
+                          custom_raster_callback) override {}
   void EndRasterCHROMIUM() override {}
   void FlushTileRasterGraphiteCommandsCHROMIUM() override {}
   void ReadbackARGBPixelsAsync(

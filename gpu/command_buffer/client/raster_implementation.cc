@@ -1352,7 +1352,8 @@ void RasterImplementation::RasterCHROMIUM(
     const gfx::Vector2dF& post_scale,
     bool requires_clear,
     const ScrollOffsetMap* raster_inducing_scroll_offsets,
-    size_t* max_op_size_hint) {
+    size_t* max_op_size_hint,
+    base::RepeatingCallback<void(SkCanvas*, uint32_t)> custom_raster_callback) {
   TRACE_EVENT1("gpu", "RasterImplementation::RasterCHROMIUM",
                "raster_chromium_id", ++raster_chromium_id_);
   DCHECK(max_op_size_hint);
@@ -1397,15 +1398,17 @@ void RasterImplementation::RasterCHROMIUM(
                                   &transfer_cache_serialize_helper,
                                   &font_manager_, max_op_size_hint);
 
-  cc::PaintOpBufferSerializer serializer(
-      PaintOpSerializer::Serialize, &op_serializer,
-      cc::PaintOp::SerializeOptions(
-          &stashing_image_provider, &transfer_cache_serialize_helper,
-          GetOrCreatePaintCache(), font_manager_.strike_server(),
-          raster_properties_->color_space, &skottie_serialization_history_,
-          raster_properties_->can_use_lcd_text,
-          capabilities().context_supports_distance_field_text,
-          capabilities().max_texture_size, raster_inducing_scroll_offsets));
+  cc::PaintOp::SerializeOptions options(
+      &stashing_image_provider, &transfer_cache_serialize_helper,
+      GetOrCreatePaintCache(), font_manager_.strike_server(),
+      raster_properties_->color_space, &skottie_serialization_history_,
+      raster_properties_->can_use_lcd_text,
+      capabilities().context_supports_distance_field_text,
+      capabilities().max_texture_size, raster_inducing_scroll_offsets);
+  options.custom_callback = custom_raster_callback;
+
+  cc::PaintOpBufferSerializer serializer(PaintOpSerializer::Serialize,
+                                         &op_serializer, options);
   serializer.Serialize(list->paint_op_buffer(), &temp_raster_offsets_,
                        preamble);
   // TODO(piman): raise error if !serializer.valid()?

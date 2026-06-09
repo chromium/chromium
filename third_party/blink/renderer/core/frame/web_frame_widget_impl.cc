@@ -1556,6 +1556,11 @@ void WebFrameWidgetImpl::UpdateAnimatedImageState(
     if (Element* client = DynamicTo<Element>(
             DOMNodeIds::NodeForId(DOMNodeIdFromCompositorElementId(id)))) {
       if (auto* canvas = DynamicTo<HTMLCanvasElement>(client->parentNode())) {
+        if (auto* layout_object = client->GetLayoutObject()) {
+          // The canvas child element needs to update
+          // animated_image_frame_index_map in paint_property_tree_builder.cc
+          layout_object->SetNeedsPaintPropertyUpdate();
+        }
         if (auto* view = canvas->GetDocument().View()) {
           view->RequestCanvasOnpaint(*canvas, client);
         }

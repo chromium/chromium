@@ -158,6 +158,20 @@ void CanvasRenderingContextHost::InitializeForRecording(
     RenderingContext()->RestoreCanvasMatrixClipStack(canvas);
 }
 
+scoped_refptr<const cc::AnimatedImageFrameIndexMap>
+CanvasRenderingContextHost::GetAnimatedImageFrameIndexes(uint32_t id) const {
+  if (auto* context = RenderingContext()) {
+    return context->GetAnimatedImageFrameIndexMap(id);
+  }
+  return nullptr;
+}
+
+void CanvasRenderingContextHost::DidFlush() {
+  if (auto* context = RenderingContext()) {
+    context->DidFlush();
+  }
+}
+
 bool CanvasRenderingContextHost::IsWebGL() const {
   return RenderingContext() && RenderingContext()->IsWebGL();
 }

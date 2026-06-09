@@ -312,7 +312,8 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       ri->RasterCHROMIUM(
           display_item_list.get(), &image_provider, size, gfx::Rect(size),
           gfx::Rect(size), post_translate, post_scale, /*requires_clear=*/false,
-          /*raster_inducing_scroll_offsets=*/nullptr, &max_op_size_limit);
+          /*raster_inducing_scroll_offsets=*/nullptr, &max_op_size_limit,
+          base::RepeatingCallback<void(SkCanvas*, uint32_t)>());
       ri->EndRasterCHROMIUM();
     } else {
       // If not using |gpu_raster| but using gpu compositing, DrawHudContents()

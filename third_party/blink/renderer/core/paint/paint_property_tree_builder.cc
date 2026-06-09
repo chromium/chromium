@@ -1963,6 +1963,8 @@ static void PopulateCanvasChildPaintState(HTMLCanvasElement* canvas,
   paint_state.canvas_content_size = gfx::SizeF(canvas_content_size.size);
   paint_state.canvas_device_pixel_content_box = canvas_device_pixel_content_box;
   paint_state.canvas_node_id = canvas->GetDomNodeId();
+  paint_state.animated_image_frame_index_map =
+      canvas->GetDocument().View()->GetAnimatedImageFrameIndexes();
 }
 static void PopulateCanvasChildState(const LayoutObject& object,
                                      EffectPaintPropertyNode::State& state) {

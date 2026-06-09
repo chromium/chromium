@@ -143,6 +143,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     bool context_supports_distance_field_text = true;
     int max_texture_size = 0;
     const ScrollOffsetMap* raster_inducing_scroll_offsets = nullptr;
+    PlaybackCallbacks::CustomDataRasterCallback custom_callback;
   };
 
   struct CC_PAINT_EXPORT DeserializeOptions {

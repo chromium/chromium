@@ -261,22 +261,27 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(), wrapper,
           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | usage);
 
+      // GetOrCreateImageProvider() to make sure one is created prior to the
+      // call to SetAnimatedImageFrameIndexMaps().
+      resource_provider->GetOrCreateImageProvider();
+      resource_provider->SetAnimatedImageFrameIndexes(
+          child_paint_record->paint_state.animated_image_frame_index_map);
+
       return resource_provider->DoExternalOverdrawAndSnapshot(
           [&](cc::PaintCanvas& canvas) { draw_to_canvas(canvas); },
           ImageOrientation());
     }
   }
 
-  sk_sp<SkSurface> surface = SkSurfaces::Raster(
-      SkImageInfo::MakeN32Premul(dest_size.width(), dest_size.height()),
-      /*surface_props*/ nullptr);
-  if (!surface) {
-    return nullptr;
-  }
+  auto resource_provider = Canvas2DResourceProviderBitmap::CreateWithClear(
+      dest_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
+      gfx::ColorSpace::CreateSRGB());
 
-  SkiaPaintCanvas skia_paint_canvas(surface->getCanvas());
-  draw_to_canvas(skia_paint_canvas);
-  return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
+  resource_provider->SetAnimatedImageFrameIndexes(
+      child_paint_record->paint_state.animated_image_frame_index_map);
+
+  resource_provider->RasterRecord(draw_to_canvas);
+  return resource_provider->Snapshot();
 }
 
 void CanvasRenderingContext::DidDraw(

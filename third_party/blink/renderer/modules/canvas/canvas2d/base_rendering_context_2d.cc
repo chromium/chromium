@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -1439,6 +1440,10 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
   }
 
   cc::PaintRecord paint_record = std::move(child_paint_record->record);
+  uint32_t animated_image_frame_index_map_pos =
+      animated_image_frame_index_maps_.size();
+  animated_image_frame_index_maps_.emplace_back(
+      child_paint_record->paint_state.animated_image_frame_index_map);
   // TODO(crbug.com/421834883): This code is based on image drawing. Maybe we
   // need a distinct paint_type: kImagePaintType seems to do the right thing
   // but maybe its treatment of anti-aliasing is incorrect. The kNonOpaqueImage
@@ -1447,8 +1452,8 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
   // opaque so going with that for now.
   Draw<OverdrawOp::kNone>(
       /*draw_func=*/
-      [paint_record, dst_rect, src_rect](MemoryManagedPaintCanvas* c,
-                                         const cc::PaintFlags* flags) {
+      [paint_record, dst_rect, src_rect, animated_image_frame_index_map_pos](
+          MemoryManagedPaintCanvas* c, const cc::PaintFlags* flags) {
         cc::RecordPaintCanvas::DisableFlushCheckScope disable_flush_check_scope(
             static_cast<cc::RecordPaintCanvas*>(c));
         int initial_save_count = c->getSaveCount();
@@ -1499,10 +1504,18 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
         c->clipRect(SkRect::MakeXYWH(src_rect.x(), src_rect.y(),
                                      src_rect.width(), src_rect.height()));
 
+        // A CustomDataOp callback will be used to apply the animated image
+        // frame index map for this ElementImage prior to processing
+        // DrawImage(Rect)Op's in this paint_record.
+        c->recordCustomData(animated_image_frame_index_map_pos);
+
         c->drawPicture(std::move(paint_record),
                        // use a save at the beginning of the record to keep
                        // transforms local:
                        true);
+
+        // Reset the animated image frame index map
+        c->recordCustomData(std::numeric_limits<uint32_t>::max());
 
         c->restoreToCount(initial_save_count);
       },
@@ -1536,6 +1549,20 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
 
   return MakeGarbageCollected<DOMMatrix>(result_transform,
                                          result_transform.Is2dTransform());
+}
+
+scoped_refptr<const cc::AnimatedImageFrameIndexMap>
+BaseRenderingContext2D::GetAnimatedImageFrameIndexMap(uint32_t id) const {
+  DCHECK(id == std::numeric_limits<uint32_t>::max() ||
+         id < animated_image_frame_index_maps_.size());
+  if (id < animated_image_frame_index_maps_.size()) {
+    return animated_image_frame_index_maps_[id];
+  }
+  return nullptr;
+}
+
+void BaseRenderingContext2D::DidFlush() {
+  animated_image_frame_index_maps_.clear();
 }
 
 }  // namespace blink

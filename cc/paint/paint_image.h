@@ -508,7 +508,7 @@ class CC_PAINT_EXPORT PaintImage {
 
 // Lookup table to get the animation frame to be used for rasterization.
 class CC_PAINT_EXPORT AnimatedImageFrameIndexMap
-    : public base::RefCounted<AnimatedImageFrameIndexMap>,
+    : public base::RefCountedThreadSafe<AnimatedImageFrameIndexMap>,
       public base::flat_map<PaintImage::Id, size_t> {
  public:
   AnimatedImageFrameIndexMap();
@@ -517,7 +517,7 @@ class CC_PAINT_EXPORT AnimatedImageFrameIndexMap
       const std::vector<std::pair<PaintImage::Id, size_t>>& entries);
 
  private:
-  friend class base::RefCounted<AnimatedImageFrameIndexMap>;
+  friend class base::RefCountedThreadSafe<AnimatedImageFrameIndexMap>;
   ~AnimatedImageFrameIndexMap();
 };
 

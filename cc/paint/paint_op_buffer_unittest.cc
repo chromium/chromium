@@ -3823,6 +3823,29 @@ TEST(PaintOpBufferTest, CustomData) {
   }
 }
 
+TEST(PaintOpBufferTest, CustomDataSerializationCallback) {
+  PaintOpBuffer buffer;
+  buffer.push<CustomDataOp>(42u);
+
+  bool callback_called = false;
+  auto callback = base::BindRepeating(
+      [](bool* called, SkCanvas* canvas, uint32_t id) {
+        *called = true;
+        EXPECT_EQ(id, 42u);
+      },
+      base::Unretained(&callback_called));
+
+  TestOptionsProvider options_provider;
+  options_provider.mutable_serialize_options().custom_callback = callback;
+
+  auto memory = AllocateSerializedBuffer();
+  SimpleBufferSerializer serializer(memory.as_span(),
+                                    options_provider.serialize_options());
+  serializer.Serialize(buffer);
+
+  EXPECT_TRUE(callback_called);
+}
+
 TEST(PaintOpBufferTest, SecurityConstrainedImageSerialization) {
   auto image = CreateDiscardablePaintImage(gfx::Size(10, 10));
   sk_sp<PaintFilter> filter = sk_make_sp<ImagePaintFilter>(
