@@ -1859,6 +1859,28 @@ TEST_F(PasswordSuggestionGeneratorTest,
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
+       GetWebauthnSignInWithAnotherDeviceSuggestion_QrEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kMagiChromeQrCodeAutofill);
+
+  const std::string kTestQrString = "test_qr_string";
+  ON_CALL(credentials_delegate(), GetCableQrString)
+      .WillByDefault(Return(kTestQrString));
+
+  std::optional<Suggestion> suggestion =
+      generator().GetWebauthnSignInWithAnotherDeviceSuggestion();
+  ASSERT_TRUE(suggestion.has_value());
+  EXPECT_THAT(*suggestion,
+              EqualsSuggestion(SuggestionType::kWebauthnPasskeyQrCode,
+                               l10n_util::GetStringUTF16(
+                                   IDS_PASSWORD_MANAGER_PASSKEY_QR_CODE_TITLE),
+                               Suggestion::Icon::kNoIcon,
+                               autofill::Suggestion::Guid(kTestQrString)));
+  EXPECT_EQ(suggestion->filtration_policy,
+            autofill::Suggestion::FiltrationPolicy::kStatic);
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
        GetWebauthnSignInWithAnotherDeviceSuggestionWithListedPasskeys) {
   const std::vector<PasskeyCredential> passkeys = {
       passkey_credential(PasskeyCredential::Source::kWindowsHello, "username")};

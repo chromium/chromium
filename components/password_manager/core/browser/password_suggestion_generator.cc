@@ -478,7 +478,21 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
                      autofill::FieldType::PASSWORD));
   }
 
-  if (!fill_data.has_value() && !uses_passkeys && suggestions.empty()) {
+  // TODO(crbug.com/333945816): Restrict QR code autofill to the Chrome Sign-in
+  // page.
+  bool has_qr =
+      base::FeatureList::IsEnabled(features::kMagiChromeQrCodeAutofill) &&
+      password_client_->GetWebAuthnCredentialsDelegateForDriver(
+          password_manager_driver_) &&
+      password_client_
+          ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
+          ->GetCableQrString()
+          .has_value();
+
+  // Don't return early if there is a QR code suggestion. It still needs to be
+  // appended later in the footer section.
+  if (!fill_data.has_value() && !uses_passkeys && !has_qr &&
+      suggestions.empty()) {
     // Probably the credential was deleted in the mean time.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     if (CanShowPendingStatePromo(*password_client_)) {
@@ -666,7 +680,29 @@ PasswordSuggestionGenerator::GetWebauthnSignInWithAnotherDeviceSuggestion(
   WebAuthnCredentialsDelegate* delegate =
       password_client_->GetWebAuthnCredentialsDelegateForDriver(
           password_manager_driver_);
-  if (!delegate || !delegate->GetPasskeys().has_value() ||
+  if (!delegate) {
+    return std::nullopt;
+  }
+  if (base::FeatureList::IsEnabled(features::kMagiChromeQrCodeAutofill)) {
+    // Offer the inlined QR code suggestion instead of the standard hybrid
+    // suggestion if possible.
+    // TODO(crbug.com/333945816): Restrict QR code autofill to the Chrome
+    // Sign-in page.
+    std::optional<std::string> qr_string = delegate->GetCableQrString();
+    if (qr_string.has_value()) {
+      autofill::Suggestion suggestion(
+          l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PASSKEY_QR_CODE_TITLE),
+          autofill::SuggestionType::kWebauthnPasskeyQrCode);
+      suggestion.payload = autofill::Suggestion::Guid(*qr_string);
+      // Use static filtration policy so that this suggestion is not filtered
+      // out when the user types in the username field. This ensures the QR
+      // code remains visible as the user interacts with the form.
+      suggestion.filtration_policy =
+          autofill::Suggestion::FiltrationPolicy::kStatic;
+      return suggestion;
+    }
+  }
+  if (!delegate->GetPasskeys().has_value() ||
       !delegate->IsSecurityKeyOrHybridFlowAvailable()) {
     return std::nullopt;
   }
