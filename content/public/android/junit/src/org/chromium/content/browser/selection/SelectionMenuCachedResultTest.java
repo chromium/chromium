@@ -29,6 +29,7 @@ import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionClient.Result;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
+import org.chromium.ui.base.Clipboard;
 
 /** Unit tests for {@link SelectionMenuCachedResult}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -290,5 +291,65 @@ public class SelectionMenuCachedResultTest {
 
         // Different menu type
         Assert.assertFalse(menuParams.isSameSelection("test", 10, false, true, MenuType.DROPDOWN));
+    }
+
+    @Test
+    public void clipboardChangePreventsCacheReuse() {
+        Clipboard testClipboard =
+                new Clipboard() {
+                    private String mText = "";
+
+                    @Override
+                    public boolean canPaste() {
+                        return !"".equals(mText);
+                    }
+
+                    @Override
+                    public void setText(String text) {
+                        mText = text;
+                    }
+                };
+        Clipboard.setInstanceForTesting(testClipboard);
+        // Create params with empty clipboard.
+        SelectionMenuCachedResult menuParams =
+                new SelectionMenuCachedResult(
+                        mClassificationResult1,
+                        false,
+                        true,
+                        "test",
+                        0,
+                        MenuType.FLOATING,
+                        mMenuItems);
+        testClipboard.setText("Some text");
+        // Check params with non-empty clipboard.
+        Assert.assertFalse(
+                menuParams.canReuseResult(
+                        mClassificationResult1,
+                        false,
+                        true,
+                        "test",
+                        MenuType.FLOATING,
+                        mSelectionActionMenuDelegate));
+
+        // Create params with non-empty clipboard.
+        SelectionMenuCachedResult menuParams2 =
+                new SelectionMenuCachedResult(
+                        mClassificationResult1,
+                        false,
+                        true,
+                        "test",
+                        0,
+                        MenuType.FLOATING,
+                        mMenuItems);
+        testClipboard.setText("");
+        // Check params with empty clipboard.
+        Assert.assertFalse(
+                menuParams2.canReuseResult(
+                        mClassificationResult1,
+                        false,
+                        true,
+                        "test",
+                        MenuType.FLOATING,
+                        mSelectionActionMenuDelegate));
     }
 }

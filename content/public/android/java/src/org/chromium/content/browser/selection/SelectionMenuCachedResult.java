@@ -10,6 +10,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.PendingSelectionMenu;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
+import org.chromium.ui.base.Clipboard;
 
 import java.util.Objects;
 
@@ -34,6 +35,7 @@ public class SelectionMenuCachedResult {
     private final int mSelectionOffset;
     private final @MenuType int mMenuType;
     private final PendingSelectionMenu mLastSelectionMenu;
+    private final boolean mHasClipboardItemToPaste;
 
     public SelectionMenuCachedResult(
             SelectionClient.@Nullable Result classificationResult,
@@ -50,6 +52,7 @@ public class SelectionMenuCachedResult {
         mSelectionOffset = selectionOffset;
         mMenuType = menuType;
         mLastSelectionMenu = lastSelectionMenu;
+        mHasClipboardItemToPaste = Clipboard.getInstance().canPaste();
     }
 
     public PendingSelectionMenu getResult() {
@@ -100,6 +103,9 @@ public class SelectionMenuCachedResult {
                 || mIsSelectionReadOnly != isSelectionReadOnly
                 || !Objects.equals(mSelectedText, selectedText)
                 || mMenuType != menuType) {
+            return false;
+        }
+        if (Clipboard.getInstance().canPaste() != mHasClipboardItemToPaste) {
             return false;
         }
         if ((mClassificationResult == null) != (classificationResult == null)) {
