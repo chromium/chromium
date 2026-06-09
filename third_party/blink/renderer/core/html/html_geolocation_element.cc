@@ -60,11 +60,7 @@ void HTMLGeolocationElement::Trace(Visitor* visitor) const {
 
 void HTMLGeolocationElement::UpdateAppearance() {
   UpdateIcon(mojom::blink::PermissionName::GEOLOCATION);
-  // We need `PostTask` here because setInnerText hits a DCHECK.
-  GetDocument()
-      .GetTaskRunner(TaskType::kInternalDefault)
-      ->PostTask(FROM_HERE, BindOnce(&HTMLGeolocationElement::UpdateText,
-                                     WrapWeakPersistent(this)));
+  UpdateText();
 }
 
 void HTMLGeolocationElement::UpdatePermissionStatusAndAppearance() {
@@ -163,6 +159,11 @@ void HTMLGeolocationElement::DidFinishLifecycleUpdate(
   if (FastHasAttribute(html_names::kAutolocateAttr)) {
     MaybeTriggerAutolocate(ForceAutolocate::kNo);
   }
+}
+
+void HTMLGeolocationElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
+  HTMLCapabilityElementBase::DidAddUserAgentShadowRoot(root);
+  UpdateText();
 }
 
 void HTMLGeolocationElement::OnActivated() {
@@ -298,7 +299,10 @@ void HTMLGeolocationElement::UpdateText() {
                             : IDS_PERMISSION_REQUEST_GEOLOCATION,
       ComputeInheritedLanguage().ToAsciiLower());
   CHECK(message_id);
-  permission_text_span()->setInnerText(GetLocale().QueryString(message_id));
+  String new_text = GetLocale().QueryString(message_id);
+  if (permission_text_span()->textContent() != new_text) {
+    permission_text_span()->setInnerText(new_text);
+  }
 }
 
 void HTMLGeolocationElement::UpdateIcon(

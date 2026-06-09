@@ -77,6 +77,7 @@ class CORE_EXPORT HTMLGeolocationElement final
   void OnPermissionStatusChange(mojom::blink::PermissionName,
                                 mojom::blink::PermissionStatus) override;
   void DidFinishLifecycleUpdate(const LocalFrameView&) override;
+  void DidAddUserAgentShadowRoot(ShadowRoot&) override;
 
   void OnActivated();
   void GetCurrentPosition();
