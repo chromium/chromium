@@ -983,9 +983,10 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'gpu/command_buffer/client/dawn_client_memory_transfer_service\.cc',
             r'gpu/command_buffer/service/dawn_service_memory_transfer_service\.cc',
 
-            # Needed to implement Dawn caching interfaces.
+            # Needed to implement and use Dawn caching interfaces.
             r'gpu/command_buffer/service/dawn_caching_interface\.cc',
             r'gpu/command_buffer/service/dawn_caching_interface\.h',
+            r'gpu/command_buffer/service/dawn_context_provider\.cc',
             r'gpu/command_buffer/service/gpu_persistent_cache\.cc',
             r'gpu/command_buffer/service/gpu_persistent_cache\.h',
 

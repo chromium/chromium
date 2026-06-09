@@ -947,25 +947,26 @@ bool DawnSharedContext::Initialize(
 
   // Start initializing dawn device here.
   wgpu::DawnCacheDeviceDescriptor cache_desc;
-  cache_desc.loadDataFunction = [](const void* key, size_t key_size,
-                                   void* value, size_t value_size,
-                                   void* userdata) -> size_t {
-    if (auto caching_interface =
-            static_cast<DawnSharedContext*>(userdata)->caching_interface_) {
-      return caching_interface->LoadData(key, key_size, value, value_size);
-    }
-    return 0;
-  };
-  cache_desc.storeDataFunction = [](const void* key, size_t key_size,
-                                    const void* value, size_t value_size,
-                                    void* userdata) {
-    if (auto caching_interface =
-            static_cast<DawnSharedContext*>(userdata)->caching_interface_) {
-      caching_interface->StoreData(key, key_size, value, value_size);
-    }
-  };
-  // The dawn device is owned by this so a pointer back here is safe.
-  cache_desc.functionUserdata = this;
+  cache_desc.SetDawnLoadCacheDataCallback(
+      [](std::span<const std::byte> key, std::span<std::byte> value,
+         DawnSharedContext* context) -> size_t {
+        if (auto caching_interface = context->caching_interface_) {
+          if (value.empty()) {
+            return caching_interface->FindKey(key);
+          }
+          return caching_interface->LoadData(key, value);
+        }
+        return 0;
+      },
+      this);
+  cache_desc.SetDawnStoreCacheDataCallback(
+      [](std::span<const std::byte> key, std::span<const std::byte> value,
+         DawnSharedContext* context) {
+        if (auto caching_interface = context->caching_interface_) {
+          caching_interface->StoreData(key, value);
+        }
+      },
+      this);
   cache_desc.nextInChain = &toggles_desc;
 
   wgpu::DawnDeviceAllocatorControl allocator_desc;
