@@ -43,6 +43,8 @@ if (enable_cast_receiver) {
       "streaming_controller_mirroring.h",
       "streaming_controller_remoting.cc",
       "streaming_controller_remoting.h",
+      "streaming_input_observer.cc",
+      "streaming_input_observer.h",
       "streaming_receiver_session_client.cc",
       "streaming_receiver_session_client.h",
       "streaming_runtime_application.cc",
@@ -51,6 +53,7 @@ if (enable_cast_receiver) {
       "web_runtime_application.h",
     ]
     public_deps = [
+      "//components/cast_receiver/proto",
       "//components/cast_streaming/browser",
       "//third_party/blink/public/common:headers",
     ]
@@ -117,7 +120,14 @@ source_set("unit_tests") {
   ]
 
   if (enable_cast_receiver) {
-    deps += [ ":browser" ]
-    sources += [ "streaming_receiver_session_client_unittest.cc" ]
+    deps += [
+      ":browser",
+      "//content/public/browser",
+      "//content/test:test_support",
+    ]
+    sources += [
+      "streaming_input_observer_unittest.cc",
+      "streaming_receiver_session_client_unittest.cc",
+    ]
   }
 }
