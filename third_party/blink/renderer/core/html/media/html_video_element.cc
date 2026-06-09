@@ -994,14 +994,14 @@ void HTMLVideoElement::SetIsEffectivelyFullscreen(
     wmp->OnDisplayTypeChanged(GetDisplayType());
   }
 
-  // If the video becomes effectively fullscreen, request user confirmation to
-  // enter an immersive Picture-in-Picture session if enabled.
+  // If the video becomes effectively fullscreen, enter an immersive
+  // Picture-in-Picture session if enabled.
   if (is_effectively_fullscreen_ && !was_effectively_fullscreen) {
     if (GetDocument().GetSettings() &&
         GetDocument().GetSettings()->GetImmersiveVideoPlaybackEnabled()) {
       if (!PictureInPictureController::IsElementInPictureInPicture(this)) {
         PictureInPictureController::From(GetDocument())
-            .RequestImmersivePlaybackConfirmation(*this);
+            .EnterPictureInPictureImmersive(*this);
       }
     }
   }
