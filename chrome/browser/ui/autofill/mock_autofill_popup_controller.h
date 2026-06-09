@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
@@ -113,6 +114,17 @@ class MockAutofillPopupController : public AutofillPopupController {
   MOCK_METHOD(void,
               UpdateDataListValues,
               (base::span<const SelectOption>),
+              (override));
+  MOCK_METHOD(bool,
+              MayRecycle,
+              (base::WeakPtr<AutofillSuggestionDelegate> delegate,
+               content::WebContents* web_contents,
+               AutofillSuggestionTriggerSource trigger_source),
+              (const override));
+  MOCK_METHOD(void,
+              Recycle,
+              (PopupControllerCommon controller_common,
+               int32_t form_control_ax_id),
               (override));
   MOCK_METHOD(void,
               SetFilter,

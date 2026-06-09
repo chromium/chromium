@@ -101,6 +101,16 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   // Updates the data list values currently shown.
   virtual void UpdateDataListValues(base::span<const SelectOption> options) = 0;
 
+  // Returns true if the controller can be reused for the given parameters.
+  virtual bool MayRecycle(
+      base::WeakPtr<AutofillSuggestionDelegate> delegate,
+      content::WebContents* web_contents,
+      AutofillSuggestionTriggerSource trigger_source) const = 0;
+
+  // Reuses the controller with the new parameters.
+  virtual void Recycle(PopupControllerCommon controller_common,
+                       int32_t form_control_ax_id) = 0;
+
  protected:
   ~AutofillSuggestionController() override = default;
 };

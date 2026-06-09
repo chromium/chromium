@@ -253,19 +253,10 @@ AutofillSuggestionController::GetOrCreate(
     PopupControllerCommon controller_common,
     int32_t form_control_ax_id,
     AutofillSuggestionTriggerSource trigger_source) {
-  // All controllers on Android derive from
-  // `AutofillKeyboardAccessoryControllerImpl`.
-  if (AutofillKeyboardAccessoryControllerImpl* previous_impl =
-          static_cast<AutofillKeyboardAccessoryControllerImpl*>(previous.get());
-      previous_impl && previous_impl->delegate_.get() == delegate.get() &&
-      previous_impl->container_view() == web_contents->GetNativeView() &&
-      previous_impl->GetSuggestionTriggerSource() == trigger_source) {
-    if (previous_impl->self_deletion_weak_ptr_factory_.HasWeakPtrs()) {
-      previous_impl->self_deletion_weak_ptr_factory_.InvalidateWeakPtrs();
-    }
-    previous_impl->controller_common_ = std::move(controller_common);
-    previous_impl->suggestions_.clear();
-    return previous_impl->GetWeakPtr();
+  if (previous &&
+      previous->MayRecycle(delegate, web_contents, trigger_source)) {
+    previous->Recycle(std::move(controller_common), form_control_ax_id);
+    return previous;
   }
 
   if (previous) {
@@ -274,6 +265,25 @@ AutofillSuggestionController::GetOrCreate(
   auto* controller = new AutofillKeyboardAccessoryControllerImpl(
       delegate, web_contents, std::move(controller_common));
   return controller->GetWeakPtr();
+}
+
+bool AutofillKeyboardAccessoryControllerImpl::MayRecycle(
+    base::WeakPtr<AutofillSuggestionDelegate> delegate,
+    content::WebContents* web_contents,
+    AutofillSuggestionTriggerSource trigger_source) const {
+  return delegate_.get() == delegate.get() &&
+         container_view() == web_contents->GetNativeView() &&
+         GetSuggestionTriggerSource() == trigger_source;
+}
+
+void AutofillKeyboardAccessoryControllerImpl::Recycle(
+    PopupControllerCommon controller_common,
+    int32_t form_control_ax_id) {
+  if (self_deletion_weak_ptr_factory_.HasWeakPtrs()) {
+    self_deletion_weak_ptr_factory_.InvalidateWeakPtrs();
+  }
+  controller_common_ = std::move(controller_common);
+  suggestions_.clear();
 }
 
 AutofillKeyboardAccessoryControllerImpl::

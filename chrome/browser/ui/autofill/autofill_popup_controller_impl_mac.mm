@@ -24,15 +24,10 @@ WeakPtr<AutofillSuggestionController> AutofillSuggestionController::GetOrCreate(
     PopupControllerCommon controller_common,
     int32_t form_control_ax_id,
     AutofillSuggestionTriggerSource trigger_source) {
-  if (AutofillPopupControllerImpl* previous_impl =
-          static_cast<AutofillPopupControllerImpl*>(previous.get());
-      previous_impl && previous_impl->delegate_.get() == delegate.get() &&
-      previous_impl->container_view() == web_contents->GetNativeView() &&
-      previous_impl->GetSuggestionTriggerSource() == trigger_source) {
-    previous_impl->controller_common_ = std::move(controller_common);
-    previous_impl->form_control_ax_id_ = form_control_ax_id;
-    previous_impl->ClearState();
-    return previous_impl->GetWeakPtr();
+  if (previous &&
+      previous->MayRecycle(delegate, web_contents, trigger_source)) {
+    previous->Recycle(std::move(controller_common), form_control_ax_id);
+    return previous;
   }
 
   if (previous.get()) {

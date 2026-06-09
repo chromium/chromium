@@ -81,6 +81,12 @@ class AutofillKeyboardAccessoryControllerImpl
   std::optional<UiSessionId> GetUiSessionId() const override;
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
+  bool MayRecycle(
+      base::WeakPtr<AutofillSuggestionDelegate> delegate,
+      content::WebContents* web_contents,
+      AutofillSuggestionTriggerSource trigger_source) const override;
+  void Recycle(PopupControllerCommon controller_common,
+               int32_t form_control_ax_id) override;
 
   // AutofillKeyboardAccessoryController:
   std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
