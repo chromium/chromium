@@ -1,8 +1,8 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {CancelActionsResult, FocusedTabData, GetPinCandidatesOptions, InvokeOptions, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, TabData, UserConfirmationDialogRequest, UserProfileInfo} from '/glic/glic_api/glic_api.js';
+import {FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
+import type {CancelActionsResult, FocusedTabData, GetPinCandidatesOptions, InvokeOptions, OpenPanelInfo, PageMetadata, PanelOpeningData, TabData, UserConfirmationDialogRequest, UserProfileInfo} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
@@ -981,70 +981,6 @@ class ApiTests extends ApiTestFixtureBase {
     metrics.onResponseStopped({cause: ResponseStopCause.USER});
     metrics.onSessionTerminated();
     metrics.onClosedCaptionsShown();
-  }
-
-  async testScrollToFindsText() {
-    assertDefined(this.host.scrollTo);
-    assertDefined(this.host.setTabContextPermissionState);
-    await this.host.setTabContextPermissionState(true);
-    await this.host.scrollTo({
-      selector: {exactText: {text: 'Test Page'}},
-      highlight: true,
-      documentId: this.testParams.documentId,
-    });
-  }
-
-  async testScrollToFindsTextNoTabContextPermission() {
-    assertDefined(this.host.scrollTo);
-    try {
-      await this.host.scrollTo({
-        selector: {exactText: {text: 'Abracadabra'}},
-        highlight: true,
-        documentId: this.testParams.documentId,
-      });
-    } catch (e) {
-      assertEquals(
-          ScrollToErrorReason.TAB_CONTEXT_PERMISSION_DISABLED,
-          (e as ScrollToError).reason);
-      return;
-    }
-    assertTrue(false, 'scrollTo should have thrown an error');
-  }
-
-  async testScrollToFailsWhenInactive() {
-    assertDefined(this.host.scrollTo);
-    assertDefined(this.host.closePanel);
-    await this.closePanelAndWaitUntilInactive();
-    try {
-      await this.host.scrollTo({
-        selector: {exactText: {text: 'Abracadabra'}},
-        highlight: true,
-        documentId: this.testParams.documentId,
-      });
-    } catch (e) {
-      assertEquals(
-          ScrollToErrorReason.NOT_SUPPORTED, (e as ScrollToError).reason);
-      return;
-    }
-    assertTrue(false, 'scrollTo should have thrown an error');
-  }
-
-  async testScrollToNoMatchFound() {
-    assertDefined(this.host.scrollTo);
-    assertDefined(this.host.setTabContextPermissionState);
-    await this.host.setTabContextPermissionState(true);
-    try {
-      await this.host.scrollTo({
-        selector: {exactText: {text: 'Abracadabra'}},
-        highlight: true,
-        documentId: this.testParams.documentId,
-      });
-    } catch (e) {
-      assertEquals(
-          ScrollToErrorReason.NO_MATCH_FOUND, (e as ScrollToError).reason);
-      return;
-    }
-    assertTrue(false, 'scrollTo should have thrown an error');
   }
 
   async testSetSyntheticExperimentState() {

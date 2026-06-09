@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, SbThreatType, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, TabData, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
+import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, SbThreatType, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
+import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabData, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
@@ -539,6 +539,74 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testProcessCounterAbuseVerdictIsUndefinedWhenFeatureDisabled() {
     assertTrue(this.host.processCounterAbuseVerdict === undefined);
+  }
+
+  async testScrollToFindsText() {
+    assertDefined(this.host.scrollTo);
+    assertDefined(this.host.setTabContextPermissionState);
+    assertDefined(this.host.setContextAccessIndicator);
+    await this.host.setTabContextPermissionState(true);
+    this.host.setContextAccessIndicator(true);
+    await this.host.scrollTo({
+      selector: {exactText: {text: 'Because of the table layout'}},
+      highlight: true,
+      documentId: this.testParams.documentId,
+    });
+  }
+
+  async testScrollToFindsTextNoTabContextPermission() {
+    assertDefined(this.host.scrollTo);
+    try {
+      await this.host.scrollTo({
+        selector: {exactText: {text: 'Because of the table layout'}},
+        highlight: true,
+        documentId: this.testParams.documentId,
+      });
+    } catch (e) {
+      assertEquals(
+          ScrollToErrorReason.TAB_CONTEXT_PERMISSION_DISABLED,
+          (e as ScrollToError).reason);
+      return;
+    }
+    assertTrue(false, 'scrollTo should have thrown an error');
+  }
+
+  async testScrollToFailsWhenInactive() {
+    assertDefined(this.host.scrollTo);
+    assertDefined(this.host.closePanel);
+    await this.closePanelAndWaitUntilInactive();
+    try {
+      await this.host.scrollTo({
+        selector: {exactText: {text: 'Because of the table layout'}},
+        highlight: true,
+        documentId: this.testParams.documentId,
+      });
+    } catch (e) {
+      assertEquals(
+          ScrollToErrorReason.NOT_SUPPORTED, (e as ScrollToError).reason);
+      return;
+    }
+    assertTrue(false, 'scrollTo should have thrown an error');
+  }
+
+  async testScrollToNoMatchFound() {
+    assertDefined(this.host.scrollTo);
+    assertDefined(this.host.setTabContextPermissionState);
+    assertDefined(this.host.setContextAccessIndicator);
+    await this.host.setTabContextPermissionState(true);
+    this.host.setContextAccessIndicator(true);
+    try {
+      await this.host.scrollTo({
+        selector: {exactText: {text: 'Abracadabra'}},
+        highlight: true,
+        documentId: this.testParams.documentId,
+      });
+    } catch (e) {
+      assertEquals(
+          ScrollToErrorReason.NO_MATCH_FOUND, (e as ScrollToError).reason);
+      return;
+    }
+    assertTrue(false, 'scrollTo should have thrown an error');
   }
 }
 

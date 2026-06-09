@@ -1851,34 +1851,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testMetrics) {
   histogram_tester->ExpectTotalCount("Glic.TabContext.UploadTime", 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testScrollToFindsText) {
-  // TODO(b/446757683): GlicAnnotationManager doesn't work for multi-instance.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
-                     "documentId", GetDocumentIdForTab(kFirstTab)))});
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testScrollToFindsTextNoTabContextPermission) {
-  // TODO(b/446757683): GlicAnnotationManager doesn't work for multi-instance.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
-                     "documentId", GetDocumentIdForTab(kFirstTab)))});
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testScrollToFailsWhenInactive) {
-  // TODO(b/446757683): GlicAnnotationManager doesn't work for multi-instance.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
-                     "documentId", GetDocumentIdForTab(kFirstTab)))});
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testScrollToNoMatchFound) {
-  // TODO(b/446757683): GlicAnnotationManager doesn't work for multi-instance.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
-                     "documentId", GetDocumentIdForTab(kFirstTab)))});
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testSetSyntheticExperimentState) {
   ExecuteJsTest();

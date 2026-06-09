@@ -47,6 +47,7 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -155,6 +156,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiTestWithWebActuationSettingDisabled",
       "NewGlicApiTestWithWebActuationSettingEnabled",
       "NewGlicApiTestWithProcessCounterAbuseVerdictDisabled",
+      "GlicApiScrollToTest",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithSkills",
       "NewGlicApiTestWithNewTabDaisyChain",
@@ -749,6 +751,53 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
   EXPECT_EQ(GetTabListInterface()->GetTabCount(), 1);
   ExecuteJsTest();
   EXPECT_EQ(GetTabListInterface()->GetTabCount(), 1);
+}
+
+class GlicApiScrollToTest : public NewGlicApiTest {
+ protected:
+  TestResult<std::string> GetDocumentId() {
+    content::RenderFrameHost* rfh = GetTabListInterface()
+                                        ->GetActiveTab()
+                                        ->GetContents()
+                                        ->GetPrimaryMainFrame();
+    std::optional<std::string> document_id =
+        optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
+            rfh->GetGlobalFrameToken());
+    if (!document_id.has_value()) {
+      return base::unexpected("No document ID found");
+    }
+    return base::ok(document_id.value());
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(GlicApiScrollToTest, testScrollToFindsText) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ASSERT_OK_AND_ASSIGN(std::string document_id, GetDocumentId());
+  ExecuteJsTest({.params = base::Value(
+                     base::DictValue().Set("documentId", document_id))});
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiScrollToTest,
+                       testScrollToFindsTextNoTabContextPermission) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ASSERT_OK_AND_ASSIGN(std::string document_id, GetDocumentId());
+  ExecuteJsTest({.params = base::Value(
+                     base::DictValue().Set("documentId", document_id))});
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiScrollToTest, testScrollToFailsWhenInactive) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  PreventDeletionOnClose();
+  ASSERT_OK_AND_ASSIGN(std::string document_id, GetDocumentId());
+  ExecuteJsTest({.params = base::Value(
+                     base::DictValue().Set("documentId", document_id))});
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiScrollToTest, testScrollToNoMatchFound) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ASSERT_OK_AND_ASSIGN(std::string document_id, GetDocumentId());
+  ExecuteJsTest({.params = base::Value(
+                     base::DictValue().Set("documentId", document_id))});
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testCreateTabInBackground) {
@@ -2118,6 +2167,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestWithProcessCounterAbuseVerdictDisabled,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiScrollToTest,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
 
 // TODO(b/520114620): Skills are not supported yet on Android.
 #if !BUILDFLAG(IS_ANDROID)
@@ -2152,6 +2205,7 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithProcessCounterAbuseVerdictDisabled);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestForNoWebUiLoader);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicApiScrollToTest);
 #if !BUILDFLAG(IS_ANDROID)
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithSkills);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
