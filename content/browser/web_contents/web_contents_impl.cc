@@ -7559,6 +7559,15 @@ WebContentsImpl::ForSecurityDropFullscreen(int64_t display_id) {
   // checked. (See CanEnterFullscreenMode().)
 
   std::vector<base::WeakPtr<WebContentsImpl>> blocked_contents_list;
+  auto cleanup_blockers = [](std::vector<base::WeakPtr<WebContentsImpl>> list) {
+    for (auto& wc : list) {
+      if (wc) {
+        DCHECK_GT(wc->fullscreen_blocker_count_, 0);
+        --wc->fullscreen_blocker_count_;
+      }
+    }
+  };
+
   std::vector<base::WeakPtr<WebContentsImpl>> openers;
   for (WebContentsImpl* opener : GetAllOpeningWebContents(this)) {
     openers.push_back(opener->weak_factory_.GetWeakPtr());
@@ -7566,6 +7575,7 @@ WebContentsImpl::ForSecurityDropFullscreen(int64_t display_id) {
 
   for (auto& opener : openers) {
     if (!weak_this) {
+      cleanup_blockers(std::move(blocked_contents_list));
       return std::nullopt;
     }
     if (!opener) {
@@ -7585,17 +7595,13 @@ WebContentsImpl::ForSecurityDropFullscreen(int64_t display_id) {
     blocked_contents_list.push_back(opener);
   }
 
-  return base::ScopedClosureRunner(base::BindOnce(
-      [](std::vector<base::WeakPtr<WebContentsImpl>> blocked_contents_list) {
-        for (base::WeakPtr<WebContentsImpl>& web_contents :
-             blocked_contents_list) {
-          if (web_contents) {
-            DCHECK_GT(web_contents->fullscreen_blocker_count_, 0);
-            --web_contents->fullscreen_blocker_count_;
-          }
-        }
-      },
-      std::move(blocked_contents_list)));
+  if (!weak_this) {
+    cleanup_blockers(std::move(blocked_contents_list));
+    return std::nullopt;
+  }
+
+  return base::ScopedClosureRunner(
+      base::BindOnce(cleanup_blockers, std::move(blocked_contents_list)));
 }
 
 void WebContentsImpl::ResumeLoadingCreatedWebContents() {
