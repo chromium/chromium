@@ -1,24 +1,6 @@
 This is a testharness.js-based test.
-Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] border-block-end-width
-  assert_equals: expected "3px" but got "0.3px"
-[FAIL] border-block-start-width
-  assert_equals: expected "3px" but got "0.3px"
-[FAIL] border-bottom-width
-  assert_equals: expected "3px" but got "0.3px"
-[FAIL] border-inline-end-width
-  assert_equals: expected "3px" but got "0.3px"
-[FAIL] border-inline-start-width
-  assert_equals: expected "3px" but got "0.3px"
-[FAIL] border-left-width
-  assert_equals: expected "3px" but got "0.3px"
-[FAIL] border-right-width
-  assert_equals: expected "3px" but got "0.3px"
-[FAIL] border-top-width
-  assert_equals: expected "3px" but got "0.3px"
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] column-rule-width
-  assert_equals: expected "3px" but got "0.3px"
-[FAIL] outline-width
   assert_equals: expected "3px" but got "0.3px"
 [FAIL] row-rule-width
   assert_equals: expected "3px" but got "0.3px"
