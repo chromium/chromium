@@ -287,6 +287,19 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
             mTabDataToDeleteCallback = storedTabDataToDeleteCallback;
         }
 
+        /**
+         * Releases the static reference to this task (and the external callback it retains). Only
+         * clears {@link #sCleanupTask} if it still points to this task, to avoid wiping out a newer
+         * task scheduled while this one was still finishing.
+         */
+        private void clearCleanupTask() {
+            synchronized (CLEAN_UP_TASK_LOCK) {
+                if (sCleanupTask == this) {
+                    sCleanupTask = null;
+                }
+            }
+        }
+
         @Override
         protected @Nullable Void doInBackground() {
             if (mDestroyed) return null;
@@ -333,6 +346,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
             TabPersistenceFileInfo tabDataToDelete = new TabPersistenceFileInfo();
             if (mDestroyed) {
                 mTabDataToDeleteCallback.onResult(tabDataToDelete);
+                clearCleanupTask();
                 return;
             }
 
@@ -341,6 +355,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
             assumeNonNull(mTabIdsByMetadataFile);
             if (mUnreferencedTabIds.isEmpty() && mDeletableMetadataFiles.isEmpty()) {
                 mTabDataToDeleteCallback.onResult(tabDataToDelete);
+                clearCleanupTask();
                 return;
             }
 
@@ -382,9 +397,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
 
             mTabDataToDeleteCallback.onResult(tabDataToDelete);
 
-            synchronized (CLEAN_UP_TASK_LOCK) {
-                sCleanupTask = null; // Release static reference to external callback
-            }
+            clearCleanupTask();
         }
 
         private void getTabsFromStateFile(SparseBooleanArray tabIds, File metadataFile) {
@@ -404,9 +417,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
         @Override
         protected void onCancelled(@Nullable Void result) {
             super.onCancelled(null);
-            synchronized (CLEAN_UP_TASK_LOCK) {
-                sCleanupTask = null;
-            }
+            clearCleanupTask();
         }
     }
 
