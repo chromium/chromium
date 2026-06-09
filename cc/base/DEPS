@@ -6,7 +6,7 @@ include_rules = [
 
 # Tests can use things in cc/test
 specific_include_rules = {
-  ".*unittest\.cc": [
+  ".*unittest\\.cc": [
     "+cc/test",
     "+third_party/fuzztest",
   ],

@@ -10,7 +10,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*(test|_fuzzer)\.cc": [
+  ".*(test|_fuzzer)\\.cc": [
     "+cc",
   ],
   "paint_op_raster_fuzzer.cc": [

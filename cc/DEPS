@@ -53,17 +53,17 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "in_process_context_provider\.cc": [
+  "in_process_context_provider\\.cc": [
     "+gpu/command_buffer/client",
     "+gpu/command_buffer/common",
     "+gpu/command_buffer/service",
     "+gpu/ipc",
   ],
-  "in_process_context_provider\.h": [
+  "in_process_context_provider\\.h": [
     "+gpu/command_buffer/common",
     "+gpu/ipc",
   ],
-  ".*_(unit|pixel|perf)test.*\.cc": [
+  ".*_(unit|pixel|perf)test.*\\.cc": [
     "+components/viz/service/display",
     "+components/viz/service/layers",
     "+components/viz/test",
@@ -71,16 +71,16 @@ specific_include_rules = {
     "+gpu/command_buffer/common/command_buffer_id.h",
     "+gpu/command_buffer/common/constants.h",
   ],
-  "layer_tree_host_impl_test_base\.cc": [
+  "layer_tree_host_impl_test_base\\.cc": [
     "+components/viz/test",
   ],
-  "gpu_raster_pixeltest\.cc" : [
+  "gpu_raster_pixeltest\\.cc" : [
     "+gpu/command_buffer/client",
     "+gpu/command_buffer/common",
     "+gpu/config",
     "+gpu/ipc",
   ],
-  "transfer_cache_unittest\.cc" : [
+  "transfer_cache_unittest\\.cc" : [
     "+gpu/command_buffer/client",
     "+gpu/command_buffer/common",
     "+gpu/command_buffer/service",

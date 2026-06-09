@@ -17,24 +17,24 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "run_all_(perf|unit)tests\.cc": [
+  "run_all_(perf|unit)tests\\.cc": [
     "+mojo/core/embedder/embedder.h",
   ],
-  "cc_test_suite\.cc": [
+  "cc_test_suite\\.cc": [
     "+gpu/config",
   ],
-  "pixel_test\.h": [
+  "pixel_test\\.h": [
     "+gpu/command_buffer/service/shared_image/shared_image_manager.h",
     "+gpu/command_buffer/service/sync_point_manager.h",
   ],
-  "pixel_test\.cc": [
+  "pixel_test\\.cc": [
     "+gpu/command_buffer/service/service_utils.h",
     "+gpu/config/gpu_switches.h",
   ],
-  "layer_tree_test\.cc": [
+  "layer_tree_test\\.cc": [
     "+gpu/config/gpu_switches.h",
   ],
-  "test_layer_tree_frame_sink\.cc": [
+  "test_layer_tree_frame_sink\\.cc": [
     "+gpu/command_buffer/service/shared_image/shared_image_manager.h",
     "+gpu/command_buffer/service/scheduler.h",
   ],
