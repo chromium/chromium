@@ -17,7 +17,6 @@
   --cr-primary-text-color: var(--color-composebox-file-chip-text);
   --cr-hover-background-color:
       var(--color-composebox-context-entrypoint-hover-background);
-  --cr-action-menu-overflow: visible;
 }
 
 #menu::part(dialog) {
@@ -25,18 +24,18 @@
   min-height: 144px;
 }
 
-#menu::part(dialog)::-webkit-scrollbar {
+#menu[scrollable]::part(dialog)::-webkit-scrollbar {
   width: 12px;
 }
 
-#menu::part(dialog)::-webkit-scrollbar-thumb {
+#menu[scrollable]::part(dialog)::-webkit-scrollbar-thumb {
   background-color: var(--color-sys-surface-variant, #E1E3E1);
   background-clip: padding-box;
   border: 4px solid transparent;
   border-radius: 100px;
 }
 
-#menu::part(dialog)::-webkit-scrollbar-track {
+#menu[scrollable]::part(dialog)::-webkit-scrollbar-track {
   margin-bottom: 15px;
   margin-top: 15px;
 }
@@ -216,16 +215,13 @@ composebox-favicon-group {
   background-color: var(--cr-menu-background-color);
   border-radius: 16px;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
-  inset-inline-start: 100%;
-  margin-inline-start: 4px;
   box-sizing: border-box;
   max-height: 344px;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 8px 0;
-  position: absolute;
+  position: fixed;
   scrollbar-width: thin;
-  top: 0;
   width: 320px;
   z-index: 1;
 }
@@ -236,31 +232,6 @@ composebox-favicon-group {
 
 .share-tabs-flyout[hidden] {
   display: none;
-}
-
-.share-tabs-flyout[data-position='right'] {
-  left: 100%;
-  margin-left: 4px;
-  margin-right: 0;
-  right: auto;
-  top: 0;
-}
-
-.share-tabs-flyout[data-position='left'] {
-  left: auto;
-  margin-left: 0;
-  margin-right: 4px;
-  right: 100%;
-  top: 0;
-}
-
-.share-tabs-flyout[data-position='bottom'] {
-  left: 0;
-  margin-left: 0;
-  margin-right: 0;
-  margin-top: 4px;
-  right: auto;
-  top: 100%;
 }
 
 .share-tabs-flyout .dropdown-item {

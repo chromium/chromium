@@ -33,6 +33,7 @@ const MENU_WIDTH_PX = 190;
 
 const SHARE_TABS_MENU_WIDTH_PX = 240;
 const SHARE_TABS_FLYOUT_CLOSE_DELAY_MS = 300;
+const SHARE_TABS_FLYOUT_GAP_PX = 4;
 
 const ALIGNMENT_THRESHOLD_PX = 160;
 const VIEWPORT_BUFFER_PX = 16;
@@ -200,6 +201,11 @@ export class ContextualActionMenuElement extends
       }
       this.manageShareTabsInitialFocus_(changedProperties);
     }
+
+    if (changedProperties.has('tabSuggestions') ||
+        changedProperties.has('inputState')) {
+      this.updateScrollable_();
+    }
   }
   get open(): boolean {
     return this.$.menu.open;
@@ -264,6 +270,7 @@ export class ContextualActionMenuElement extends
     if (this.contextManagementInComposeboxEnabled_) {
       this.updateSharingTabsText_();
     }
+    this.updateScrollable_();
   }
 
   private manageShareTabsInitialFocus_(
@@ -654,27 +661,24 @@ export class ContextualActionMenuElement extends
       const flyoutWidth = flyout.offsetWidth || 320;
       const viewportWidth = window.innerWidth;
 
-      if (triggerRect.right + flyoutWidth + 4 <= viewportWidth) {
+      flyout.style.top = `${triggerRect.top}px`;
+
+      if (triggerRect.right + flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX <=
+          viewportWidth) {
         this.shareTabsFlyoutPosition_ = 'right';
-        flyout.style.left = '';
-        flyout.style.right = '';
-      } else if (triggerRect.left >= flyoutWidth + 4) {
+        flyout.style.left = `${triggerRect.right + SHARE_TABS_FLYOUT_GAP_PX}px`;
+      } else if (triggerRect.left >= flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX) {
         this.shareTabsFlyoutPosition_ = 'left';
-        flyout.style.left = '';
-        flyout.style.right = '';
+        flyout.style.left =
+            `${triggerRect.left - flyoutWidth - SHARE_TABS_FLYOUT_GAP_PX}px`;
       } else {
         this.shareTabsFlyoutPosition_ = 'bottom';
+        flyout.style.top = `${triggerRect.bottom + SHARE_TABS_FLYOUT_GAP_PX}px`;
         const rtl = getComputedStyle(this).direction === 'rtl';
         if (rtl) {
-          const maxRight = triggerRect.right - flyoutWidth - 12;
-          const boundedRight = Math.max(0, Math.min(110, maxRight));
-          flyout.style.right = `${boundedRight}px`;
-          flyout.style.left = 'auto';
+          flyout.style.left = `${triggerRect.right - flyoutWidth}px`;
         } else {
-          const maxLeft = viewportWidth - triggerRect.left - flyoutWidth - 12;
-          const boundedLeft = Math.max(0, Math.min(110, maxLeft));
-          flyout.style.left = `${boundedLeft}px`;
-          flyout.style.right = 'auto';
+          flyout.style.left = `${triggerRect.left}px`;
         }
       }
     });
@@ -703,6 +707,14 @@ export class ContextualActionMenuElement extends
     this.pointerOverTrigger_ = false;
     this.pointerOverFlyout_ = false;
     this.shareTabsFlyoutOpen_ = false;
+  }
+
+  private updateScrollable_() {
+    this.updateComplete.then(() => {
+      const dialog = this.$.menu.getDialog();
+      const isScrollable = dialog.scrollHeight > dialog.offsetHeight;
+      this.$.menu.toggleAttribute('scrollable', isScrollable);
+    });
   }
 
   protected onTabPointerenter_(e: Event) {
