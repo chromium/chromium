@@ -67,8 +67,8 @@
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_state.h"
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
-#include "third_party/blink/renderer/core/route_matching/route_match_state.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -1349,7 +1349,11 @@ void RuleSet::AddRulesFromSheet(const StyleSheetContents* sheet,
     // TODO(crbug.com/436805487): See if we can find a better place for this.
     // Maybe RuleSet isn't the right place. DidRoutesChange() was modeled after
     // DidMediaQueryResultsChange(), but maybe there's a better way.
-    route_match_state_ = RouteMatchState::Create(*route_map);
+    if (const NavigationState* new_state = route_map->GetNavigationState()) {
+      navigation_state_ = MakeGarbageCollected<NavigationState>(*new_state);
+    } else {
+      navigation_state_ = nullptr;
+    }
   }
 }
 
@@ -1856,12 +1860,11 @@ bool RuleSet::DidMediaQueryResultsChange(
 }
 
 bool RuleSet::DidRoutesChange(const Document* document) const {
-  const RouteMap* map = RouteMap::Get(document);
-  if (!map || !route_match_state_) {
-    return false;
+  const auto* current_state = NavigationState::Get(document);
+  if (!current_state != !navigation_state_) {
+    return true;
   }
-  auto* new_state = RouteMatchState::Create(*map);
-  return !new_state->Equals(*route_match_state_);
+  return current_state && *current_state != *navigation_state_;
 }
 
 const CascadeLayer* RuleSet::GetLayerForTest(const RuleData& rule) const {
@@ -1920,7 +1923,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(layer_intervals_);
   visitor->Trace(container_query_intervals_);
   visitor->Trace(scope_intervals_);
-  visitor->Trace(route_match_state_);
+  visitor->Trace(navigation_state_);
 #if DCHECK_IS_ON()
   visitor->Trace(all_rules_);
 #endif  // DCHECK_IS_ON()

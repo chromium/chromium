@@ -5,13 +5,13 @@
 blink_core_sources_route_matching = [
   "navigation_phase.h",
   "navigation_preposition.h",
+  "navigation_state.cc",
+  "navigation_state.h",
   "route.cc",
   "route.h",
   "route_event.h",
   "route_map.cc",
   "route_map.h",
-  "route_match_state.cc",
-  "route_match_state.h",
 ]
 
 blink_core_tests_route_matching = [ "route_map_test.cc" ]

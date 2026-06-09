@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_transition.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_type_util.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_state.h"
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/skeleton/skeleton_loader.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -877,8 +878,10 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
         routemap->HasHistoryRules() && destination_entry) {
       int previous_index = GetIndexFor(currentEntry());
       int next_index = GetIndexFor(destination_entry);
-      routemap->OnNavigationTraverse(
-          next_index < previous_index ? RouteMap::kBack : RouteMap::kForward);
+      NavigationState::HistoryTraverseType direction =
+          next_index < previous_index ? NavigationState::kBack
+                                      : NavigationState::kForward;
+      routemap->OnNavigationTraverse(direction);
     }
   }
 

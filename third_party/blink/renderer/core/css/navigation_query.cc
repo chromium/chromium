@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_state.h"
 #include "third_party/blink/renderer/core/route_matching/route.h"
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
@@ -121,8 +122,8 @@ void NavigationLocationBetweenTestExpression::SerializeTo(
 }
 
 bool NavigationPhaseTestExpression::Matches(Document& document) const {
-  const auto* route_map = RouteMap::Get(&document);
-  return route_map && route_map->GetPhase() == phase_;
+  const auto* state = NavigationState::Get(&document);
+  return state && state->GetPhase() == phase_;
 }
 
 void NavigationPhaseTestExpression::SerializeTo(StringBuilder& builder) const {
@@ -137,22 +138,20 @@ void NavigationPhaseTestExpression::SerializeTo(StringBuilder& builder) const {
     case NavigationPhase::kCommitted:
       builder.Append("committed");
       break;
-    case NavigationPhase::kInactive:
-      NOTREACHED();
   }
 }
 
 bool NavigationTypeTestExpression::Matches(Document& document) const {
-  const auto* route_map = RouteMap::Get(&document);
-  if (!route_map) {
+  const auto* state = NavigationState::Get(&document);
+  if (!state) {
     return false;
   }
-  switch (route_map->GetHistoryTraverseType()) {
-    case RouteMap::kNotTraversing:
+  switch (state->GetTraverseType()) {
+    case NavigationState::kNotTraversing:
       return false;
-    case RouteMap::kBack:
+    case NavigationState::kBack:
       return type_ == kTraverse || type_ == kBack;
-    case RouteMap::kForward:
+    case NavigationState::kForward:
       return type_ == kTraverse || type_ == kForward;
   }
 }
@@ -174,7 +173,8 @@ void NavigationTypeTestExpression::SerializeTo(StringBuilder& builder) const {
 }
 
 bool NavigationPreviewTestExpression::Matches(Document& document) const {
-  return RouteMap::Get(&document)->IsInPreview();
+  const auto* state = NavigationState::Get(&document);
+  return state && state->IsInPreview();
 }
 
 void NavigationPreviewTestExpression::SerializeTo(

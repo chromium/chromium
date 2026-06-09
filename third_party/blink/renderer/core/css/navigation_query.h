@@ -147,9 +147,7 @@ class NavigationLocationBetweenTestExpression
 class NavigationPhaseTestExpression : public NavigationTestExpression {
  public:
   explicit NavigationPhaseTestExpression(NavigationPhase phase)
-      : phase_(phase) {
-    DCHECK(phase != NavigationPhase::kInactive);
-  }
+      : phase_(phase) {}
 
   bool Matches(Document&) const override;
   void SerializeTo(StringBuilder&) const override;

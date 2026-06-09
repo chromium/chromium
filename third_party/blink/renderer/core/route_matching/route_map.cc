@@ -32,6 +32,7 @@ RouteMap::RouteMap() : Supplement<Document>(nullptr) {
 void RouteMap::Trace(Visitor* v) const {
   v->Trace(routes_);
   v->Trace(anonymous_routes_);
+  v->Trace(navigation_state_);
   Supplement<Document>::Trace(v);
   ScriptWrappable::Trace(v);
 }
@@ -224,8 +225,8 @@ void RouteMap::UpdateActiveRoutes() {
   }
 }
 
-void RouteMap::GetActiveRoutes(NavigationPreposition preposition,
-                               MatchCollection* collection) const {
+void RouteMap::GetActiveRoutesForTesting(NavigationPreposition preposition,
+                                         MatchCollection* collection) const {
   collection->clear();
   for (const auto& entry : routes_) {
     Route& route = *entry.value;
@@ -243,85 +244,73 @@ void RouteMap::GetActiveRoutes(NavigationPreposition preposition,
 
 void RouteMap::OnNavigationStart(const KURL& previous_url,
                                  const KURL& next_url) {
-  navigation_phase_ = NavigationPhase::kLoading;
-  previous_url_ = previous_url;
-  next_url_ = next_url;
+  DCHECK(!navigation_state_);
+  navigation_state_ =
+      MakeGarbageCollected<NavigationState>(previous_url, next_url);
   UpdateActiveRoutes();
   GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
 }
 
-void RouteMap::OnNavigationTraverse(HistoryTraverseType type) {
-  history_traverse_type_ = type;
+void RouteMap::OnNavigationTraverse(NavigationState::HistoryTraverseType type) {
+  DCHECK(navigation_state_);
+  navigation_state_->SetTraverseType(type);
   GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
 }
 
 void RouteMap::OnNavigationCommitted() {
-  navigation_phase_ = NavigationPhase::kCommitted;
+  DCHECK(navigation_state_);
+  navigation_state_->SetPhase(NavigationPhase::kCommitted);
   UpdateActiveRoutes();
   GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
 }
 
 void RouteMap::OnNavigationDone() {
-  navigation_phase_ = NavigationPhase::kInactive;
-  previous_url_ = KURL();
-  next_url_ = KURL();
+  navigation_state_ = nullptr;
   UpdateActiveRoutes();
-  history_traverse_type_ = kNotTraversing;
   GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
 }
 
 void RouteMap::OnPreviewStart() {
-  CHECK(!in_preview_);
+  CHECK(navigation_state_);
+  CHECK(!navigation_state_->IsInPreview());
   CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
-  in_preview_ = true;
+  navigation_state_->SetIsInPreview(true);
   GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
 }
 
 void RouteMap::OnPreviewFinished() {
-  if (!in_preview_) {
+  if (!navigation_state_ || navigation_state_->IsInPreview()) {
     return;
   }
   CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
-  in_preview_ = false;
+  navigation_state_->SetIsInPreview(false);
   GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
-}
-
-KURL RouteMap::GetWithURL() const {
-  if (!IsActiveNavigation()) {
-    return KURL();
-  }
-  DCHECK(GetDocument().Url() == next_url_ ||
-         GetDocument().Url() == previous_url_);
-  // Return the URL that we're navigating towards or away from, i.e. the
-  // opposite of the "at" URL.
-  if (GetDocument().Url() == next_url_) {
-    return previous_url_;
-  }
-  return next_url_;
-}
-
-KURL RouteMap::GetAtURL() const {
-  if (!IsActiveNavigation()) {
-    return KURL();
-  }
-  DCHECK(GetDocument().Url() == next_url_ ||
-         GetDocument().Url() == previous_url_);
-  return GetDocument().Url();
 }
 
 // Get the "active navigation URL", given the specified preposition.
 //
 // https://drafts.csswg.org/css-navigation-1/#active-navigation-url
 KURL RouteMap::GetActiveNavigationURL(NavigationPreposition preposition) const {
+  if (!navigation_state_) {
+    return KURL();
+  }
+  const NavigationState& state = *navigation_state_;
+  DCHECK(GetDocument().Url() == state.GetOldURL() ||
+         GetDocument().Url() == state.GetNewURL());
+
+  auto at_old_url = [&] {
+    return state.GetPhase() == NavigationPhase::kLoading;
+  };
+
   switch (preposition) {
     case NavigationPreposition::kAt:
-      return GetAtURL();
+      return at_old_url() ? state.GetOldURL() : state.GetNewURL();
     case NavigationPreposition::kFrom:
-      return GetFromURL();
+      return state.GetOldURL();
     case NavigationPreposition::kTo:
-      return GetToURL();
+      return state.GetNewURL();
     case NavigationPreposition::kWith:
-      return GetWithURL();
+      return !at_old_url() ? state.GetOldURL() : state.GetNewURL();
   }
 }
 
@@ -348,8 +337,7 @@ bool RouteMap::UpdateMatchStatus(
     Route& route,
     HeapVector<Member<Route>>* routes_needing_event) {
   bool matched_at = route.Matches(NavigationPreposition::kAt);
-
-  if (!route.UpdateMatchStatus(GetFromURL(), GetToURL(), navigation_phase_)) {
+  if (!route.UpdateMatchStatus(navigation_state_)) {
     return false;
   }
   if (routes_needing_event) {

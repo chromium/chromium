@@ -16,6 +16,7 @@ namespace blink {
 class AtomicString;
 class Document;
 class KURL;
+class NavigationState;
 class URLPattern;
 
 class Route : public EventTarget {
@@ -47,9 +48,7 @@ class Route : public EventTarget {
 
   // Check and update whether or not this route matches anything. Store the
   // current state. Return true if any match status changed, false otherwise.
-  bool UpdateMatchStatus(const KURL& from_url,
-                         const KURL& to_url,
-                         NavigationPhase);
+  bool UpdateMatchStatus(const NavigationState*);
 
   bool URLPatternMatchesURLAndHref(const KURL& active_navigation_url,
                                    const KURL& href_url) const;

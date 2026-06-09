@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_state.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -73,14 +74,23 @@ void Route::AddPattern(URLPattern* pattern) {
   patterns_.push_back(pattern);
 }
 
-bool Route::UpdateMatchStatus(const KURL& from_url,
-                              const KURL& to_url,
-                              NavigationPhase phase) {
-  bool committed = phase == NavigationPhase::kCommitted;
-  bool matches_at = MatchesPatterns(committed ? to_url : from_url, patterns_);
-  bool matches_from = MatchesPatterns(from_url, patterns_);
-  bool matches_to = MatchesPatterns(to_url, patterns_);
-  bool matches_with = MatchesPatterns(committed ? from_url : to_url, patterns_);
+bool Route::UpdateMatchStatus(const NavigationState* navigation_state) {
+  bool matches_at = false;
+  bool matches_to = false;
+  bool matches_from = false;
+  bool matches_with = false;
+
+  if (navigation_state) {
+    const KURL& old_url = navigation_state->GetOldURL();
+    const KURL& new_url = navigation_state->GetNewURL();
+    bool committed =
+        navigation_state->GetPhase() == NavigationPhase::kCommitted;
+
+    matches_at = MatchesPatterns(committed ? new_url : old_url, patterns_);
+    matches_from = MatchesPatterns(old_url, patterns_);
+    matches_to = MatchesPatterns(new_url, patterns_);
+    matches_with = MatchesPatterns(committed ? old_url : new_url, patterns_);
+  }
 
   bool at_changed = matches_at_ != matches_at;
   bool from_changed = matches_from_ != matches_from;

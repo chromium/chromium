@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_ROUTE_MAP_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/route_matching/navigation_phase.h"
 #include "third_party/blink/renderer/core/route_matching/navigation_preposition.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -62,11 +62,6 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   };
 
   using MatchCollection = HeapHashSet<WeakMember<Route>>;
-  enum HistoryTraverseType {
-    kNotTraversing,
-    kBack,
-    kForward,
-  };
 
   explicit RouteMap(Document&);
 
@@ -91,9 +86,6 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
 
   void SetHasHistoryRules() { has_history_rules_ = true; }
   bool HasHistoryRules() const { return has_history_rules_; }
-  HistoryTraverseType GetHistoryTraverseType() const {
-    return history_traverse_type_;
-  }
 
   ParseResult ParseAndApplyRoutes(const String& route_map_text);
 
@@ -107,13 +99,14 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   // changed.
   void UpdateActiveRoutes();
 
-  void GetActiveRoutes(NavigationPreposition, MatchCollection*) const;
+  // TODO(crbug.com/436805487): We probably don't need to keep this.
+  void GetActiveRoutesForTesting(NavigationPreposition, MatchCollection*) const;
 
   // Set the URLs that we're navigating between at the start of navigation. This
   // is used to match @route "from" (and "to") rules.
   void OnNavigationStart(const KURL& previous_url, const KURL& next_url);
 
-  void OnNavigationTraverse(HistoryTraverseType type);
+  void OnNavigationTraverse(NavigationState::HistoryTraverseType type);
 
   // The current URL has changed. This is used to match @route "at" and "with"
   // rules. What was "at" is now "with", and vice versa.
@@ -123,28 +116,13 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   // complete.
   void OnNavigationDone();
 
-  bool IsActiveNavigation() const {
-    return !previous_url_.IsNull() && !next_url_.IsNull();
-  }
-
   void OnPreviewStart();
   void OnPreviewFinished();
 
-  bool IsInPreview() const { return in_preview_; }
-
-  // Return the "from" URL of the current navigation, if any.
-  KURL GetFromURL() const { return previous_url_; }
-
-  // Return the "to" URL of the current navigation, if any.
-  KURL GetToURL() const { return next_url_; }
-
-  // Return the "with" URL of the current navigation, if any.
-  KURL GetWithURL() const;
-
-  // Return the "at" URL of the current navigation, if any.
-  KURL GetAtURL() const;
-
-  NavigationPhase GetPhase() const { return navigation_phase_; }
+  const NavigationState* GetNavigationState() const {
+    return navigation_state_;
+  }
+  bool IsActiveNavigation() const { return !!navigation_state_; }
 
   // Get the "active navigation URL", given the specified preposition.
   //
@@ -165,14 +143,9 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   HeapHashMap<String, Member<Route>> routes_;
   HeapHashMap<String, Member<Route>> anonymous_routes_;
 
-  // Only set while navigating from one URL to another one.
-  KURL previous_url_;
-  KURL next_url_;
+  Member<NavigationState> navigation_state_;
 
-  HistoryTraverseType history_traverse_type_ = kNotTraversing;
-  NavigationPhase navigation_phase_ = NavigationPhase::kInactive;
   bool has_history_rules_ = false;
-  bool in_preview_ = false;
 
 #if DCHECK_IS_ON()
   bool is_updating_active_routes_ = false;

@@ -84,7 +84,7 @@ TEST_F(RouteMapTest, ParseAndMatch) {
   EXPECT_FALSE(route2->Matches(NavigationPreposition::kAt));
 }
 
-TEST_F(RouteMapTest, GetActiveRoutes) {
+TEST_F(RouteMapTest, GetActiveRoutesForTesting) {
   KURL start_url("https://example.com/foo");
   GetDocument().SetURL(start_url);
 
@@ -107,34 +107,34 @@ TEST_F(RouteMapTest, GetActiveRoutes) {
   })");
 
   RouteMap::MatchCollection collection;
-  route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
+  route_map.GetActiveRoutesForTesting(NavigationPreposition::kAt, &collection);
   // No active routes when there's no active navigation.
   EXPECT_EQ(0u, collection.size());
 
   KURL from = start_url;
   KURL to = start_url;
   route_map.OnNavigationStart(from, to);
-  route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
+  route_map.GetActiveRoutesForTesting(NavigationPreposition::kAt, &collection);
   EXPECT_EQ(2u, collection.size());
   GetDocument().SetURL(to);
   route_map.OnNavigationCommitted();
-  route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
+  route_map.GetActiveRoutesForTesting(NavigationPreposition::kAt, &collection);
   EXPECT_EQ(2u, collection.size());
   route_map.OnNavigationDone();
-  route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
+  route_map.GetActiveRoutesForTesting(NavigationPreposition::kAt, &collection);
   // No active routes when there's no active navigation.
   EXPECT_EQ(0u, collection.size());
 
   to = KURL("https://example.com/bar");
   route_map.OnNavigationStart(from, to);
-  route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
+  route_map.GetActiveRoutesForTesting(NavigationPreposition::kAt, &collection);
   EXPECT_EQ(2u, collection.size());
   GetDocument().SetURL(to);
   route_map.OnNavigationCommitted();
-  route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
+  route_map.GetActiveRoutesForTesting(NavigationPreposition::kAt, &collection);
   EXPECT_EQ(1u, collection.size());
   route_map.OnNavigationDone();
-  route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
+  route_map.GetActiveRoutesForTesting(NavigationPreposition::kAt, &collection);
   // No active routes when there's no active navigation.
   EXPECT_EQ(0u, collection.size());
 }

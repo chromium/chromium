@@ -48,6 +48,7 @@
 
 namespace blink {
 
+class NavigationState;
 class RuleSet;
 class StyleRuleCounterStyle;
 class StyleRuleFontFeatureValues;
@@ -68,7 +69,6 @@ enum AddRuleFlag {
 class CSSSelector;
 class MediaQueryEvaluator;
 class StyleSheetContents;
-class RouteMatchState;
 
 // This is a wrapper around a StyleRule, pointing to one of the N complex
 // selectors in the StyleRule. This allows us to treat each selector
@@ -786,8 +786,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<CascadeLayered<StyleRuleFunction>> function_rules_;
   HeapVector<MediaQuerySetResult> media_query_set_results_;
 
-  // State of route matching when this RuleSet was built.
-  Member<RouteMatchState> route_match_state_;
+  // Navigation state (and thus route matching state) when this RuleSet was
+  // built.
+  Member<NavigationState> navigation_state_;
 
   // Whether there is a ruleset bucket for rules with a selector on
   // the style attribute (which is rare, but allowed). If so, the caller

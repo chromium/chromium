@@ -11,7 +11,6 @@ namespace blink {
 
 // https://drafts.csswg.org/css-navigation-1/#typedef-navigation-phase-keyword
 enum class NavigationPhase : uint8_t {
-  kInactive,  // No active navigation.
   kLoading,
   kReady,
   kCommitted,
