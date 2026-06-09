@@ -1729,12 +1729,12 @@
     },
     {
       name: "CSSLineClamp",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSLineClampLineBreakingEllipsis",
       depends_on: ["CSSLineClamp"],
-      status: "experimental",
+      status: "stable",
     },
     {
       // Implements `counter-increment` and `counter-set` for the non-<li>

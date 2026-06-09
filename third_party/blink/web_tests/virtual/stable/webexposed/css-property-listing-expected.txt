@@ -15,7 +15,6 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-box-reflect
     -webkit-font-smoothing
     -webkit-line-break
-    -webkit-line-clamp
     -webkit-locale
     -webkit-mask-box-image-outset
     -webkit-mask-box-image-repeat
@@ -80,6 +79,7 @@ All changes to this list should go through Blink's feature review process: http:
     background-size
     baseline-shift
     baseline-source
+    block-ellipsis
     block-size
     border-block-end-color
     border-block-end-style
@@ -166,6 +166,7 @@ All changes to this list should go through Blink's feature review process: http:
     container-type
     content
     content-visibility
+    continue
     corner-bottom-left-shape
     corner-bottom-right-shape
     corner-end-end-shape
@@ -286,6 +287,7 @@ All changes to this list should go through Blink's feature review process: http:
     max-block-size
     max-height
     max-inline-size
+    max-lines
     max-width
     min-block-size
     min-height
@@ -490,6 +492,10 @@ All changes to this list should go through Blink's feature review process: http:
         break-before
     -webkit-column-break-inside
         break-inside
+    -webkit-line-clamp
+        block-ellipsis
+        continue
+        max-lines
     -webkit-mask-box-image
         -webkit-mask-box-image-outset
         -webkit-mask-box-image-repeat
@@ -777,6 +783,10 @@ All changes to this list should go through Blink's feature review process: http:
     interest-delay
         interest-delay-end
         interest-delay-start
+    line-clamp
+        block-ellipsis
+        continue
+        max-lines
     list-style
         list-style-image
         list-style-position
