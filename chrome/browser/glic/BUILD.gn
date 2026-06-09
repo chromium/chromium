@@ -811,6 +811,7 @@ source_set("browser_tests") {
       "//chrome/browser/actor:test_support",
       "//chrome/browser/actor/ui",
       "//chrome/browser/actor/ui:test_support",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/enterprise/connectors/test:test_support",
       "//chrome/browser/extensions",
       "//chrome/browser/glic/browser_ui:browser_tests",

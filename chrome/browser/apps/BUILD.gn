@@ -60,6 +60,7 @@ if (is_chromeos && enable_extensions) {
     ]
     deps = [
       "//chrome/browser/apps/platform_apps:browser_test_support",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/bluetooth:test_support",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/guest_view",

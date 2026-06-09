@@ -42,6 +42,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/bluetooth/web_bluetooth_test_utils.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -90,7 +91,9 @@
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -8441,6 +8444,31 @@ class ContextualTasksChannelWebViewTest : public WebViewChannelTest {
     ContextMenuContentTypeWebView::SetChannelForTesting(std::nullopt);
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    WebViewChannelTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&ContextualTasksChannelWebViewTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+  }
+
+  virtual void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) {
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          auto service =
+              std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                  *Profile::FromBrowserContext(context)->GetPrefs(), nullptr,
+                  nullptr, nullptr);
+          ON_CALL(*service, IsAimEligible())
+              .WillByDefault(testing::Return(true));
+          return service;
+        }));
+  }
+
  protected:
   std::optional<version_info::Channel> GetOptionalChannelParam() {
     version_info::Channel channel = GetChannelParam();
@@ -8453,6 +8481,7 @@ class ContextualTasksChannelWebViewTest : public WebViewChannelTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

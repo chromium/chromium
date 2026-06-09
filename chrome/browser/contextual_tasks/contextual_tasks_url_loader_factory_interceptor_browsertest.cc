@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_url_loader_factory_interceptor.h"
 
 #include "base/test/bind.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -19,6 +20,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -159,6 +161,19 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          auto service =
+              std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                  *Profile::FromBrowserContext(context)->GetPrefs(), nullptr,
+                  nullptr, nullptr);
+          ON_CALL(*service, IsAimEligible())
+              .WillByDefault(testing::Return(true));
+          return service;
+        }));
+
     contextual_tasks::ContextualTasksServiceFactory::GetInstance()
         ->SetTestingFactory(
             context,

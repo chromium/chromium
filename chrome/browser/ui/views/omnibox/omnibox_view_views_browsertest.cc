@@ -1786,6 +1786,30 @@ class OmniboxViewViewsPlaceholderTest : public InProcessBrowserTest {
         {});
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&OmniboxViewViewsPlaceholderTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+  }
+
+  virtual void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) {
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          auto service =
+              std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                  *Profile::FromBrowserContext(context)->GetPrefs(), nullptr,
+                  nullptr, nullptr);
+          ON_CALL(*service, IsAimEligible())
+              .WillByDefault(testing::Return(true));
+          return service;
+        }));
+  }
+
  protected:
   OmniboxViewViews* omnibox_view() {
     return static_cast<OmniboxViewViews*>(
@@ -1798,6 +1822,7 @@ class OmniboxViewViewsPlaceholderTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
