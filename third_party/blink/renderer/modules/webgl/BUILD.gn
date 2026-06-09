@@ -191,7 +191,10 @@ blink_modules_sources("webgl") {
   # The modules/webgl/ directly is a larger module, and
   # the implementation depends on a fair chunk of core/ --
   # include the core pch for faster Windows compilation times.
-  configs += [ "//third_party/blink/renderer/core:blink_core_pch" ]
+  configs += [
+    "//third_party/blink/renderer/core:blink_core_pch",
+    "//third_party/blink/renderer:narrowing",
+  ]
 
   public_deps = [ "//device/vr/public/mojom:vr_service_blink" ]
   deps = [

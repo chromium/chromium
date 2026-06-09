@@ -1547,7 +1547,7 @@ void WebGLRenderingContextWebGPUBase::shaderSource(WebGLShader* shader,
     ascii_source.push_back(IsAscii(code_point) ? code_point : '?');
   }
 
-  GLint c_ascii_size = ascii_source.size();
+  GLint c_ascii_size = base::checked_cast<GLint>(ascii_source.size());
   const char* c_ascii_source = ascii_source.data();
   RETURN_IF_GL_ERROR(driver_gl_.fn.glShaderSourceFn(
       shader->Object(), 1, &c_ascii_source, &c_ascii_size));
@@ -1806,7 +1806,8 @@ void WebGLRenderingContextWebGPUBase::uniform1fv(
   if (!ValidateUniformV("uniform1fv", location, 1, v.size())) {
     return;
   }
-  driver_gl_.fn.glUniform1fvFn(location->Location(), v.size(), v.data());
+  driver_gl_.fn.glUniform1fvFn(location->Location(), static_cast<int>(v.size()),
+                               v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform1i(
@@ -1824,7 +1825,8 @@ void WebGLRenderingContextWebGPUBase::uniform1iv(
   if (!ValidateUniformV("uniform1iv", location, 1, v.size())) {
     return;
   }
-  driver_gl_.fn.glUniform1ivFn(location->Location(), v.size(), v.data());
+  driver_gl_.fn.glUniform1ivFn(location->Location(), static_cast<int>(v.size()),
+                               v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform2f(
@@ -1843,7 +1845,8 @@ void WebGLRenderingContextWebGPUBase::uniform2fv(
   if (!ValidateUniformV("uniform2fv", location, 2, v.size())) {
     return;
   }
-  driver_gl_.fn.glUniform2fvFn(location->Location(), v.size() / 2, v.data());
+  driver_gl_.fn.glUniform2fvFn(location->Location(),
+                               static_cast<int>(v.size() / 2), v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform2i(
@@ -1862,7 +1865,8 @@ void WebGLRenderingContextWebGPUBase::uniform2iv(
   if (!ValidateUniformV("uniform2iv", location, 2, v.size())) {
     return;
   }
-  driver_gl_.fn.glUniform2ivFn(location->Location(), v.size() / 2, v.data());
+  driver_gl_.fn.glUniform2ivFn(location->Location(),
+                               static_cast<int>(v.size() / 2), v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform3f(
@@ -1882,7 +1886,8 @@ void WebGLRenderingContextWebGPUBase::uniform3fv(
   if (!ValidateUniformV("uniform3fv", location, 3, v.size())) {
     return;
   }
-  driver_gl_.fn.glUniform3fvFn(location->Location(), v.size() / 3, v.data());
+  driver_gl_.fn.glUniform3fvFn(location->Location(),
+                               static_cast<int>(v.size() / 3), v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform3i(
@@ -1902,7 +1907,8 @@ void WebGLRenderingContextWebGPUBase::uniform3iv(
   if (!ValidateUniformV("uniform3iv", location, 3, v.size())) {
     return;
   }
-  driver_gl_.fn.glUniform3ivFn(location->Location(), v.size() / 3, v.data());
+  driver_gl_.fn.glUniform3ivFn(location->Location(),
+                               static_cast<int>(v.size() / 3), v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform4f(
@@ -1923,7 +1929,8 @@ void WebGLRenderingContextWebGPUBase::uniform4fv(
   if (!ValidateUniformV("uniform4fv", location, 4, v.size())) {
     return;
   }
-  driver_gl_.fn.glUniform4fvFn(location->Location(), v.size() / 4, v.data());
+  driver_gl_.fn.glUniform4fvFn(location->Location(),
+                               static_cast<int>(v.size() / 4), v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform4i(
@@ -1944,7 +1951,8 @@ void WebGLRenderingContextWebGPUBase::uniform4iv(
   if (!ValidateUniformV("uniform4iv", location, 4, v.size())) {
     return;
   }
-  driver_gl_.fn.glUniform4ivFn(location->Location(), v.size() / 4, v.data());
+  driver_gl_.fn.glUniform4ivFn(location->Location(),
+                               static_cast<int>(v.size() / 4), v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix2fv(
@@ -1954,8 +1962,9 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix2fv(
   if (!ValidateUniformV("uniformMatrix2fv", location, 4, v.size())) {
     return;
   }
-  driver_gl_.fn.glUniformMatrix2fvFn(location->Location(), v.size() / 4,
-                                     transpose, v.data());
+  driver_gl_.fn.glUniformMatrix2fvFn(location->Location(),
+                                     static_cast<int>(v.size() / 4), transpose,
+                                     v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix3fv(
@@ -1965,8 +1974,9 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix3fv(
   if (!ValidateUniformV("uniformMatrix3fv", location, 9, v.size())) {
     return;
   }
-  driver_gl_.fn.glUniformMatrix3fvFn(location->Location(), v.size() / 9,
-                                     transpose, v.data());
+  driver_gl_.fn.glUniformMatrix3fvFn(location->Location(),
+                                     static_cast<int>(v.size() / 9), transpose,
+                                     v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix4fv(
@@ -1976,8 +1986,9 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix4fv(
   if (!ValidateUniformV("uniformMatrix4fv", location, 16, v.size())) {
     return;
   }
-  driver_gl_.fn.glUniformMatrix4fvFn(location->Location(), v.size() / 16,
-                                     transpose, v.data());
+  driver_gl_.fn.glUniformMatrix4fvFn(location->Location(),
+                                     static_cast<int>(v.size() / 16), transpose,
+                                     v.data());
 }
 
 void WebGLRenderingContextWebGPUBase::useProgram(WebGLProgram* program) {
@@ -2888,7 +2899,8 @@ void WebGLRenderingContextWebGPUBase::uniform1fv(
                         &data)) {
     return;
   }
-  driver_gl_.fn.glUniform1fvFn(location->Location(), data.size(), data.data());
+  driver_gl_.fn.glUniform1fvFn(location->Location(),
+                               static_cast<int>(data.size()), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform2fv(
@@ -2901,8 +2913,8 @@ void WebGLRenderingContextWebGPUBase::uniform2fv(
                         &data)) {
     return;
   }
-  driver_gl_.fn.glUniform2fvFn(location->Location(), data.size() / 2,
-                               data.data());
+  driver_gl_.fn.glUniform2fvFn(location->Location(),
+                               static_cast<int>(data.size() / 2), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform3fv(
@@ -2915,8 +2927,8 @@ void WebGLRenderingContextWebGPUBase::uniform3fv(
                         &data)) {
     return;
   }
-  driver_gl_.fn.glUniform3fvFn(location->Location(), data.size() / 3,
-                               data.data());
+  driver_gl_.fn.glUniform3fvFn(location->Location(),
+                               static_cast<int>(data.size() / 3), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform4fv(
@@ -2929,8 +2941,8 @@ void WebGLRenderingContextWebGPUBase::uniform4fv(
                         &data)) {
     return;
   }
-  driver_gl_.fn.glUniform4fvFn(location->Location(), data.size() / 4,
-                               data.data());
+  driver_gl_.fn.glUniform4fvFn(location->Location(),
+                               static_cast<int>(data.size() / 4), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform1iv(
@@ -2943,7 +2955,8 @@ void WebGLRenderingContextWebGPUBase::uniform1iv(
                         &data)) {
     return;
   }
-  driver_gl_.fn.glUniform1ivFn(location->Location(), data.size(), data.data());
+  driver_gl_.fn.glUniform1ivFn(location->Location(),
+                               static_cast<int>(data.size()), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform2iv(
@@ -2956,8 +2969,8 @@ void WebGLRenderingContextWebGPUBase::uniform2iv(
                         &data)) {
     return;
   }
-  driver_gl_.fn.glUniform2ivFn(location->Location(), data.size() / 2,
-                               data.data());
+  driver_gl_.fn.glUniform2ivFn(location->Location(),
+                               static_cast<int>(data.size() / 2), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform3iv(
@@ -2970,8 +2983,8 @@ void WebGLRenderingContextWebGPUBase::uniform3iv(
                         &data)) {
     return;
   }
-  driver_gl_.fn.glUniform3ivFn(location->Location(), data.size() / 3,
-                               data.data());
+  driver_gl_.fn.glUniform3ivFn(location->Location(),
+                               static_cast<int>(data.size() / 3), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform4iv(
@@ -2984,8 +2997,8 @@ void WebGLRenderingContextWebGPUBase::uniform4iv(
                         &data)) {
     return;
   }
-  driver_gl_.fn.glUniform4ivFn(location->Location(), data.size() / 4,
-                               data.data());
+  driver_gl_.fn.glUniform4ivFn(location->Location(),
+                               static_cast<int>(data.size() / 4), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform1uiv(
@@ -2998,7 +3011,8 @@ void WebGLRenderingContextWebGPUBase::uniform1uiv(
                         &data)) {
     return;
   }
-  driver_gl_.fn.glUniform1uivFn(location->Location(), data.size(), data.data());
+  driver_gl_.fn.glUniform1uivFn(location->Location(),
+                                static_cast<int>(data.size()), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform2uiv(
@@ -3011,8 +3025,8 @@ void WebGLRenderingContextWebGPUBase::uniform2uiv(
                         &data)) {
     return;
   }
-  driver_gl_.fn.glUniform2uivFn(location->Location(), data.size() / 2,
-                                data.data());
+  driver_gl_.fn.glUniform2uivFn(location->Location(),
+                                static_cast<int>(data.size() / 2), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform3uiv(
@@ -3025,8 +3039,8 @@ void WebGLRenderingContextWebGPUBase::uniform3uiv(
                         &data)) {
     return;
   }
-  driver_gl_.fn.glUniform3uivFn(location->Location(), data.size() / 3,
-                                data.data());
+  driver_gl_.fn.glUniform3uivFn(location->Location(),
+                                static_cast<int>(data.size() / 3), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniform4uiv(
@@ -3039,8 +3053,8 @@ void WebGLRenderingContextWebGPUBase::uniform4uiv(
                         &data)) {
     return;
   }
-  driver_gl_.fn.glUniform4uivFn(location->Location(), data.size() / 4,
-                                data.data());
+  driver_gl_.fn.glUniform4uivFn(location->Location(),
+                                static_cast<int>(data.size() / 4), data.data());
 }
 
 void WebGLRenderingContextWebGPUBase::uniformMatrix2fv(
@@ -3054,7 +3068,8 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix2fv(
                         src_length, &data)) {
     return;
   }
-  driver_gl_.fn.glUniformMatrix2fvFn(location->Location(), data.size() / 4,
+  driver_gl_.fn.glUniformMatrix2fvFn(location->Location(),
+                                     static_cast<int>(data.size() / 4),
                                      transpose, data.data());
 }
 
@@ -3069,7 +3084,8 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix3fv(
                         src_length, &data)) {
     return;
   }
-  driver_gl_.fn.glUniformMatrix3fvFn(location->Location(), data.size() / 9,
+  driver_gl_.fn.glUniformMatrix3fvFn(location->Location(),
+                                     static_cast<int>(data.size() / 9),
                                      transpose, data.data());
 }
 
@@ -3084,7 +3100,8 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix4fv(
                         src_length, &data)) {
     return;
   }
-  driver_gl_.fn.glUniformMatrix4fvFn(location->Location(), data.size() / 16,
+  driver_gl_.fn.glUniformMatrix4fvFn(location->Location(),
+                                     static_cast<int>(data.size() / 16),
                                      transpose, data.data());
 }
 
@@ -3099,7 +3116,8 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix2x3fv(
                         src_length, &data)) {
     return;
   }
-  driver_gl_.fn.glUniformMatrix2x3fvFn(location->Location(), data.size() / 6,
+  driver_gl_.fn.glUniformMatrix2x3fvFn(location->Location(),
+                                       static_cast<int>(data.size() / 6),
                                        transpose, data.data());
 }
 
@@ -3114,7 +3132,8 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix3x2fv(
                         src_length, &data)) {
     return;
   }
-  driver_gl_.fn.glUniformMatrix3x2fvFn(location->Location(), data.size() / 6,
+  driver_gl_.fn.glUniformMatrix3x2fvFn(location->Location(),
+                                       static_cast<int>(data.size() / 6),
                                        transpose, data.data());
 }
 
@@ -3129,7 +3148,8 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix2x4fv(
                         src_length, &data)) {
     return;
   }
-  driver_gl_.fn.glUniformMatrix2x4fvFn(location->Location(), data.size() / 8,
+  driver_gl_.fn.glUniformMatrix2x4fvFn(location->Location(),
+                                       static_cast<int>(data.size() / 8),
                                        transpose, data.data());
 }
 
@@ -3144,7 +3164,8 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix4x2fv(
                         src_length, &data)) {
     return;
   }
-  driver_gl_.fn.glUniformMatrix4x2fvFn(location->Location(), data.size() / 8,
+  driver_gl_.fn.glUniformMatrix4x2fvFn(location->Location(),
+                                       static_cast<int>(data.size() / 8),
                                        transpose, data.data());
 }
 
@@ -3159,7 +3180,8 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix3x4fv(
                         src_length, &data)) {
     return;
   }
-  driver_gl_.fn.glUniformMatrix3x4fvFn(location->Location(), data.size() / 12,
+  driver_gl_.fn.glUniformMatrix3x4fvFn(location->Location(),
+                                       static_cast<int>(data.size() / 12),
                                        transpose, data.data());
 }
 
@@ -3174,7 +3196,8 @@ void WebGLRenderingContextWebGPUBase::uniformMatrix4x3fv(
                         src_length, &data)) {
     return;
   }
-  driver_gl_.fn.glUniformMatrix4x3fvFn(location->Location(), data.size() / 12,
+  driver_gl_.fn.glUniformMatrix4x3fvFn(location->Location(),
+                                       static_cast<int>(data.size() / 12),
                                        transpose, data.data());
 }
 
@@ -3692,7 +3715,8 @@ void WebGLRenderingContextWebGPUBase::readPixels(
       std::min(size_t(std::numeric_limits<GLsizei>::max()),
                kMaximumSupportedArrayBufferSize);
   size_t bufSizeSizeT = std::min(data_at_offset.size(), kMaxBufSize);
-  GLsizei bufSize = bufSizeSizeT;  // Safe with the min() above.
+  // Safe with the min() above.
+  GLsizei bufSize = static_cast<GLsizei>(bufSizeSizeT);
 
   driver_gl_.fn.glReadPixelsRobustANGLEFn(x, y, width, height, format, type,
                                           bufSize, nullptr, nullptr, nullptr,

@@ -279,8 +279,8 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
     {% for field in computed_style.fields|rejectattr('requires_tracing')|selectattr('is_inherited') %}
       inherited_data.{{field.name}} = data_.{{field.name}};
     {% endfor %}
-    return rapidhash(reinterpret_cast<uint8_t*>(&inherited_data),
-                     sizeof(inherited_data));
+    return static_cast<unsigned>(rapidhash(
+        reinterpret_cast<uint8_t*>(&inherited_data), sizeof(inherited_data)));
   }
 
  protected:

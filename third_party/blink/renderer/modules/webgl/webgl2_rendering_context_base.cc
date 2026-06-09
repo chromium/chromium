@@ -4409,11 +4409,11 @@ ScriptValue WebGL2RenderingContextBase::getIndexedParameter(
         return ScriptValue::CreateNull(script_state->GetIsolate());
       }
       if (target == GL_COLOR_WRITEMASK) {
-        constexpr size_t result_size = 4;
-        Vector<GLint> values(result_size);
+        constexpr wtf_size_t kResultSize = 4;
+        Vector<GLint> values(kResultSize);
         ContextGL()->GetIntegeri_v(target, index, values.data());
-        Vector<bool> bool_values(result_size);
-        for (size_t i = 0; i < result_size; i++) {
+        Vector<bool> bool_values(kResultSize);
+        for (wtf_size_t i = 0; i < kResultSize; ++i) {
           bool_values[i] = (values[i] != GL_FALSE);
         }
         return WebGLAny(script_state, bool_values);
