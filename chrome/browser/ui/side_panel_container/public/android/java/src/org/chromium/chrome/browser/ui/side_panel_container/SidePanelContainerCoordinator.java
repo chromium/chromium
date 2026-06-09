@@ -99,4 +99,7 @@ public interface SidePanelContainerCoordinator {
 
     /** Destroys all objects owned by this coordinator. */
     void destroy();
+
+    /** Returns the main {@link View} for testing. */
+    View getViewForTesting();
 }

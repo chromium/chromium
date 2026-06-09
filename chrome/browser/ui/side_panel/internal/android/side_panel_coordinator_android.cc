@@ -334,6 +334,15 @@ void SidePanelCoordinatorAndroid::SetNoDelaysForTesting(  // IN-TEST
   waiter()->SetNoDelaysForTesting(no_delays_for_testing);  // IN-TEST
 }
 
+SidePanelState SidePanelCoordinatorAndroid::GetStateForTesting() {  // IN-TEST
+  return state_;
+}
+
+int SidePanelCoordinatorAndroid::GetContainerWidthForTesting() {  // IN-TEST
+  return Java_SidePanelCoordinatorAndroidImpl_getContainerWidthForTesting(  // IN-TEST
+      AttachCurrentThread(), java_coordinator());
+}
+
 void SidePanelCoordinatorAndroid::Show(
     const UniqueKey& key,
     std::optional<SidePanelOpenTrigger> open_trigger,

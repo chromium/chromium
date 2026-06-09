@@ -131,6 +131,13 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
+    public View getViewForTesting() {
+        log(TAG, "getViewForTesting");
+        ThreadUtils.assertOnUiThread();
+        return mContainerView;
+    }
+
+    @Override
     public @Nullable View getContentView() {
         ThreadUtils.assertOnUiThread();
         return mCurrentContent != null ? mCurrentContent.mView : null;

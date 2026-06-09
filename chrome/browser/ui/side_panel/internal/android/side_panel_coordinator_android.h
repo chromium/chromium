@@ -79,6 +79,8 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   }
 
   // Functions for testing:
+  SidePanelState GetStateForTesting();
+  int GetContainerWidthForTesting();
   SidePanelEntryWaiter* GetWaiterForTesting() { return waiter(); }
   const SidePanelDeferredEntryTracker& GetDeferredEntryTrackerForTesting()
       const {

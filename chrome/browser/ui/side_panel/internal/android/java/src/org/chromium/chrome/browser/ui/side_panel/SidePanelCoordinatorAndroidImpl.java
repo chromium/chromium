@@ -133,6 +133,15 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
                 suppressAnimations || mDisableAnimationsForTesting);
     }
 
+    @CalledByNativeForTesting
+    private int getContainerWidthForTesting() {
+        View view = mSidePanelContainerCoordinator.getViewForTesting(); // IN-TEST
+        if (view == null || !view.isAttachedToWindow()) {
+            return 0;
+        }
+        return view.getWidth();
+    }
+
     private @Nullable Rect createRectFromCoordinates(int x, int y, int width, int height) {
         if (x == INVALID_COORDINATE
                 && y == INVALID_COORDINATE
