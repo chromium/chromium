@@ -848,7 +848,11 @@ public class TabListMediator implements TabListNotificationHandler {
 
                     switch (mLayoutType) {
                         case TabListLayoutType.NESTED:
-                            updateTabGroupStateInNestedLayout(movedTab);
+                            Token oldTabGroupId =
+                                    previousGroupTab != null
+                                            ? previousGroupTab.getTabGroupId()
+                                            : null;
+                            syncChildTabInNestedLayout(movedTab, oldTabGroupId);
                             break;
                         case TabListLayoutType.GROUPED:
                             moveTabOutOfGroupInGroupedLayout(
@@ -866,7 +870,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
                     TabModel tabModel = getCurrentTabModelChecked();
                     if (mLayoutType == TabListLayoutType.NESTED) {
-                        updateTabGroupStateInNestedLayout(movedTab);
+                        syncChildTabInNestedLayout(movedTab, /* oldTabGroupId= */ null);
                     } else if (mLayoutType == TabListLayoutType.GROUPED) {
                         List<Tab> relatedTabs = getRelatedTabsForId(movedTab.getId());
                         Pair<Integer, Integer> positions =
@@ -1028,7 +1032,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         // tabs to correctly position them under the new header.
                         List<Tab> relatedTabs = tabModel.getRelatedTabList(destinationTab.getId());
                         for (Tab tab : relatedTabs) {
-                            updateTabGroupStateInNestedLayout(tab);
+                            syncChildTabInNestedLayout(tab, /* oldTabGroupId= */ null);
                         }
                         return;
                     }
@@ -1880,46 +1884,70 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     /**
+     * Locates a Tab card's UI index, explicitly filtering out Tab Group Header cards. This prevents
+     * erroneously returning the Group Header when the tab is hidden inside a collapsed group.
+     *
+     * @param tabId The ID of the tab to locate.
+     */
+    private int getTabCardUiIndexForNestedLayout(int tabId) {
+        for (int i = 0; i < mModelList.size(); i++) {
+            PropertyModel model = mModelList.get(i).model;
+            if (model.get(CARD_TYPE) == TAB
+                    && model.get(TabProperties.TAB_ID) == tabId
+                    && model.get(TabProperties.TAB_GROUP_HEADER_ID) == null) {
+                return i;
+            }
+        }
+        return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
      * Updates the UI properties and positioning of a child tab in the NESTED layout when its group
      * membership changes.
      *
      * @param tab The tab whose group state is being updated.
      */
-    private void updateTabGroupStateInNestedLayout(Tab tab) {
-        int srcIndex = mModelList.indexFromTabId(tab.getId());
-        if (srcIndex == TabModel.INVALID_TAB_INDEX) {
-            // TODO(crbug.com/509226293): Address this for external/GTS operations (like
-            // group-to-group merges) where a tab is moved from a collapsed group (hidden in VT)
-            // to an expanded group. In this case, we must dynamically generate a new child card
-            // row so it doesn't vanish.
-            return;
+    private void syncChildTabInNestedLayout(Tab tab, @Nullable Token oldTabGroupId) {
+        int srcIndex = getTabCardUiIndexForNestedLayout(tab.getId());
+
+        if (oldTabGroupId == null && srcIndex != TabModel.INVALID_TAB_INDEX) {
+            oldTabGroupId = mModelList.get(srcIndex).model.get(TabProperties.TAB_GROUP_ID);
         }
-
-        PropertyModel model = mModelList.get(srcIndex).model;
-        Token oldTabGroupId = model.get(TabProperties.TAB_GROUP_ID);
-        Token newTabGroupId = tab.getTabGroupId();
-
-        if (newTabGroupId == null) {
-            // Tab is moving out of a group (becoming standalone).
-            clearTabGroupProperties(model);
-        } else {
-            // Tab is moving into a group.
-            TabModel tabModel = getCurrentTabModelChecked();
-            @TabGroupColorId int colorId = tabModel.getTabGroupColorWithFallback(newTabGroupId);
-            model.set(TabProperties.TAB_GROUP_ID, newTabGroupId);
-            updateTabGroupProperties(tab, model, colorId);
-        }
-
-        bindTabActionStateProperties(mTabActionState, tab, model);
 
         int desIndex = getInsertionIndexOfTabForNestedLayout(tab);
-        // Hidden if the destination group is collapsed.
-        if (desIndex == TabModel.INVALID_TAB_INDEX) {
+
+        if (srcIndex == TabModel.INVALID_TAB_INDEX && desIndex != TabModel.INVALID_TAB_INDEX) {
+            // Tab is moving out of a collapsed group.
+            TabModel tabModel = getCurrentTabModelChecked();
+            int currentTabId = TabModelUtils.getCurrentTabId(tabModel);
+            addTabInfoToModelForTab(tab, desIndex, currentTabId == tab.getId());
+        } else if (srcIndex != TabModel.INVALID_TAB_INDEX
+                && desIndex == TabModel.INVALID_TAB_INDEX) {
+            // Tab is moving into a collapsed group.
             mModelList.removeAt(srcIndex);
-        } else if (srcIndex != desIndex) {
-            mModelList.move(srcIndex, desIndex);
+        } else if (srcIndex != TabModel.INVALID_TAB_INDEX) {
+            PropertyModel model = mModelList.get(srcIndex).model;
+            Token newTabGroupId = tab.getTabGroupId();
+
+            if (newTabGroupId == null) {
+                // Tab is moving out of an expanded group.
+                clearTabGroupProperties(model);
+            } else {
+                // Tab is moving into an expanded group.
+                TabModel tabModel = getCurrentTabModelChecked();
+                @TabGroupColorId int colorId = tabModel.getTabGroupColorWithFallback(newTabGroupId);
+                model.set(TabProperties.TAB_GROUP_ID, newTabGroupId);
+                updateTabGroupProperties(tab, model, colorId);
+            }
+
+            bindTabActionStateProperties(mTabActionState, tab, model);
+
+            if (srcIndex != desIndex) {
+                mModelList.move(srcIndex, desIndex);
+            }
         }
 
+        Token newTabGroupId = tab.getTabGroupId();
         if (newTabGroupId != null) {
             updateTabGroupTitle(newTabGroupId);
         }
