@@ -4,8 +4,10 @@
 
 #include "base/memory_coordinator/memory_consumer.h"
 
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/memory_coordinator/memory_consumer_registry.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -46,10 +48,16 @@ MemoryConsumerRegistration::MemoryConsumerRegistration(
       check_unregister_(check_unregister),
       registry_(MemoryConsumerRegistry::MaybeGet()) {
   if (!registry_) {
-    CHECK_EQ(check_registry_exists, CheckRegistryExists::kDisabled)
-        << ". The MemoryConsumerRegistry did not exist at the time the "
-           "MemoryConsumerRegistration for "
-        << consumer_name << " was created.";
+#if !BUILDFLAG(IS_IOS)
+    if (check_registry_exists == CheckRegistryExists::kEnabled) {
+      // Enforce that the registry exists outside of tests to prevent components
+      // from silently failing to respond to memory pressure.
+      CHECK_IS_TEST()
+          << ". The MemoryConsumerRegistry did not exist at the time the "
+             "MemoryConsumerRegistration for "
+          << consumer_name << " was created.";
+    }
+#endif
     return;
   }
 

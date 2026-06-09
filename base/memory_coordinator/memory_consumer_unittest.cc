@@ -6,6 +6,7 @@
 
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -77,5 +78,15 @@ TEST(MemoryConsumerTest, ScaleByMemoryLimit) {
   EXPECT_EQ(ScaleByMemoryLimit(100u, consumer.memory_limit()), 200u);
   EXPECT_EQ(ScaleByMemoryLimit<int8_t>(100, consumer.memory_limit()), 127);
 }
+
+#if !BUILDFLAG(IS_IOS)
+TEST(MemoryConsumerTest, RegistrationWithoutRegistryAllowedInTests) {
+  MockMemoryConsumer consumer;
+  // This would have crashed previously because the global registry is not
+  // initialized and the check is enabled by default.
+  MemoryConsumerRegistration registration("consumer", {}, &consumer);
+  // Expecting no crash in test environment.
+}
+#endif
 
 }  // namespace base
