@@ -81,6 +81,7 @@ class PinnedActionToolbarButton : public ToolbarButton {
 
  private:
   void OnAnchorCountChanged(size_t anchor_count);
+  void UpdateFlexPriority();
 
   raw_ptr<Browser> browser_;
   raw_ptr<PinnedToolbarButtonStatusIndicator> status_indicator_;

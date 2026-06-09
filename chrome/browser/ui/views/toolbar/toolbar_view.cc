@@ -1278,7 +1278,7 @@ void ToolbarView::ShowIntentPickerBubble(
   // At this point, we either have a highlighted_element or it's a ClickToCall
   // bubble which doesn't have a corresponding page action button to highlight.
   IntentPickerBubbleView::ShowBubble(
-      FindBubbleAnchor(std::nullopt), higlighted_element, bubble_type,
+      GetBubbleAnchor(std::nullopt), higlighted_element, bubble_type,
       GetWebContents(), std::move(app_info), show_stay_in_chrome,
       show_remember_selection, initiating_origin, std::move(callback));
 }
@@ -1289,7 +1289,7 @@ void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
     bookmark_star_icon = GetPageActionViewInterface(kActionBookmarkThisTab);
     CHECK(bookmark_star_icon);
   }
-  BookmarkBubbleView::ShowBubble(FindBubbleAnchor(std::nullopt),
+  BookmarkBubbleView::ShowBubble(GetBubbleAnchor(std::nullopt),
                                  GetWebContents(), bookmark_star_icon, browser_,
                                  url, already_bookmarked);
 }
@@ -1784,21 +1784,18 @@ views::AccessiblePaneView* ToolbarView::GetAsAccessiblePaneView() {
   return this;
 }
 
-views::BubbleAnchor ToolbarView::FindBubbleAnchor(
+views::BubbleAnchor ToolbarView::GetBubbleAnchor(
     std::optional<actions::ActionId> action_id) {
+  // If a pinned toolbar actions button exists for the action_id, return that.
   if (pinned_toolbar_actions_ && action_id.has_value() &&
       pinned_toolbar_actions_->IsActionPinnedOrPoppedOut(action_id.value())) {
     return pinned_toolbar_actions_->GetBubbleAnchor(action_id.value());
   }
 
-  return features::IsWebUILocationBarEnabled()
-             ? views::BubbleAnchor(location_bar_->GetAnchorOrNull())
-             : views::BubbleAnchor(location_bar_view_);
-}
-
-views::BubbleAnchor ToolbarView::GetBubbleAnchor(
-    std::optional<actions::ActionId> action_id) {
-  auto anchor = FindBubbleAnchor(action_id);
+  // Otherwise attempt to use the location bar.
+  auto anchor = features::IsWebUILocationBarEnabled()
+                    ? views::BubbleAnchor(location_bar_->GetAnchorOrNull())
+                    : views::BubbleAnchor(location_bar_view_);
   bool anchor_not_drawn;
   if (views::View* view = anchor.GetIfView()) {
     anchor_not_drawn = !view->IsDrawn();

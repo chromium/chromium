@@ -263,19 +263,8 @@ bool PinnedActionToolbarButton::ShouldShowEphemerallyInToolbar() {
 }
 
 void PinnedActionToolbarButton::SetActionEngaged(bool action_engaged) {
-  if (!IsActive()) {
-    SetProperty(
-        kToolbarButtonFlexPriorityKey,
-        action_engaged
-            ? static_cast<
-                  std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
-                  PinnedToolbarActionFlexPriority::kMedium)
-            : static_cast<
-                  std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
-                  PinnedToolbarActionFlexPriority::kLow));
-    InvalidateLayout();
-  }
   action_engaged_ = action_engaged;
+  UpdateFlexPriority();
 }
 
 void PinnedActionToolbarButton::HideStatusIndicator() {
@@ -296,26 +285,29 @@ void PinnedActionToolbarButton::OnAnchorCountChanged(size_t anchor_count) {
   // small enough that icons must overflow. Update the
   // kToolbarButtonFlexPriorityKey to make sure icons are forced visible or able
   // to overflow.
-  if (anchor_count > 0) {
+  has_anchor_ = anchor_count > 0;
+  UpdateFlexPriority();
+  if (!has_anchor_) {
+    container_->MaybeRemovePoppedOutButtonFor(GetActionId());
+  }
+}
+
+void PinnedActionToolbarButton::UpdateFlexPriority() {
+  PinnedToolbarActionFlexPriority priority =
+      PinnedToolbarActionFlexPriority::kLow;
+  if (has_anchor_) {
+    priority = PinnedToolbarActionFlexPriority::kHigh;
+  } else if (action_engaged_) {
+    priority = PinnedToolbarActionFlexPriority::kMedium;
+  }
+
+  if (static_cast<PinnedToolbarActionFlexPriority>(
+          GetProperty(kToolbarButtonFlexPriorityKey)) != priority) {
     SetProperty(
         kToolbarButtonFlexPriorityKey,
         static_cast<std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
-            PinnedToolbarActionFlexPriority::kHigh));
+            priority));
     InvalidateLayout();
-    has_anchor_ = true;
-  } else {
-    SetProperty(
-        kToolbarButtonFlexPriorityKey,
-        action_engaged_
-            ? static_cast<
-                  std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
-                  PinnedToolbarActionFlexPriority::kMedium)
-            : static_cast<
-                  std::underlying_type_t<PinnedToolbarActionFlexPriority>>(
-                  PinnedToolbarActionFlexPriority::kLow));
-    InvalidateLayout();
-    has_anchor_ = false;
-    container_->MaybeRemovePoppedOutButtonFor(GetActionId());
   }
 }
 

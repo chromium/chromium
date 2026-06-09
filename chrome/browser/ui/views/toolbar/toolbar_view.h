@@ -322,10 +322,6 @@ class ToolbarView : public views::AccessiblePaneView,
   // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override;
 
-  // May return a View that is not drawn; prefer using GetBubbleAnchor().
-  views::BubbleAnchor FindBubbleAnchor(
-      std::optional<actions::ActionId> action_id);
-
   // Changes the visibility of the Chrome Labs entry point based on prefs.
   void OnChromeLabsPrefChanged();
 
