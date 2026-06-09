@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
@@ -49,7 +48,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/344669865): Failing when batched, batch this again.
-@DisableLeakChecks("crbug.com/512492995 (CookieControlsBridge)")
 public class CookieControlsBridgeTest {
     public static final String COOKIE_CONTROLS_BATCH_NAME = "cookie_controls";
     private WebPageStation mInitialPage;
@@ -113,6 +111,9 @@ public class CookieControlsBridgeTest {
         CallbackHelper helper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    if (mCookieControlsBridge != null) {
+                        mCookieControlsBridge.destroy();
+                    }
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
                     UserPrefs.get(profile).clearPref(PrefNames.COOKIE_CONTROLS_MODE);
                     WebsitePreferenceBridge.setDefaultContentSetting(
@@ -308,6 +309,7 @@ public class CookieControlsBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab incognitoTab = webPage.getActivity().getActivityTab();
+                    mCookieControlsBridge.destroy();
                     mCookieControlsBridge =
                             new CookieControlsBridge(
                                     mCallbackHandler,
