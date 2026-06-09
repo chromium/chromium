@@ -1426,8 +1426,11 @@ void SearchboxHandler::OnEmbeddedPermissionPromptChanged(
     const gfx::Size& prompt_size) {
   gfx::Size size_with_buffer;
   if (is_showing) {
-    size_with_buffer = gfx::Size(prompt_size.width() + kPromptWidthBuffer,
-                                 prompt_size.height() + kPromptHeightBuffer);
+    const int width = prompt_size.width();
+    const int height = prompt_size.height();
+    // Ensure buffer is not added if height or width is 0.
+    size_with_buffer.SetSize(width > 0 ? width + kPromptWidthBuffer : 0,
+                             height > 0 ? height + kPromptHeightBuffer : 0);
   }
 
   page_->OnEmbeddedPermissionPromptChanged(is_showing, size_with_buffer);

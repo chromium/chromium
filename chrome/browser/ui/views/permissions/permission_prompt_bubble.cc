@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_observer.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view_factory.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
@@ -54,12 +55,27 @@ void PermissionPromptBubble::ShowBubble() {
       prompt_bubble->GetWidget()->GetPrimaryWindowWidget()->IsVisible();
 
   disallowed_custom_cursors_scope_ =
-      delegate()->GetAssociatedWebContents()->CreateDisallowCustomCursorScope(
+      web_contents()->CreateDisallowCustomCursorScope(
           /*max_dimension_dips=*/0);
+
+  auto* observer =
+      EmbeddedPermissionPromptObserver::FromWebContents(web_contents());
+  if (observer) {
+    // Notify it is showing, but there is no minimum height/width.
+    observer->NotifyEmbeddedPermissionPromptChanged(
+        /*is_showing=*/true, gfx::Size());
+  }
 }
 
 void PermissionPromptBubble::CleanUpPromptBubble() {
   if (GetPromptBubble()) {
+    auto* observer =
+        EmbeddedPermissionPromptObserver::FromWebContents(web_contents());
+    if (observer) {
+      observer->NotifyEmbeddedPermissionPromptChanged(
+          /*is_showing=*/false, gfx::Size());
+    }
+
     views::Widget* widget = GetPromptBubble()->GetWidget();
     widget->RemoveObserver(this);
     widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
@@ -69,6 +85,13 @@ void PermissionPromptBubble::CleanUpPromptBubble() {
 }
 
 void PermissionPromptBubble::OnWidgetDestroying(views::Widget* widget) {
+  auto* observer =
+      EmbeddedPermissionPromptObserver::FromWebContents(web_contents());
+  if (observer) {
+    observer->NotifyEmbeddedPermissionPromptChanged(
+        /*is_showing=*/false, gfx::Size());
+  }
+
   widget->RemoveObserver(this);
   prompt_bubble_tracker_.SetView(nullptr);
 }

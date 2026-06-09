@@ -514,7 +514,15 @@ export const ComposeboxEmbedderMixin =
         // =====================================================================
 
         onVoicePermissionChanged(e: CustomEvent<VoicePermissionPromptState>) {
-          this.fire('embedded-voice-permission-prompt-changed', e.detail);
+          if (e.detail.isOpened) {
+            // Only for when the permission prompt is showing, fire a resize
+            // event if the permission prompt has a height and width.
+            if (e.detail.height > 0 && e.detail.width > 0) {
+              this.fire('embedded-voice-permission-prompt-changed', e.detail);
+            }
+          } else {
+            this.fire('embedded-voice-permission-prompt-changed', e.detail);
+          }
           const audioAnimation =
               this.shadowRoot?.querySelector<SearchAnimatedGlowElement>(
                   '#animatedSearchElement');
