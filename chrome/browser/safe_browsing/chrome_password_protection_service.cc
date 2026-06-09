@@ -306,8 +306,8 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
           IdentityManagerFactory::GetForProfile(profile),
           /*try_token_fetch=*/true,
           SafeBrowsingMetricsCollectorFactory::GetForProfile(profile)),
+      sb_service_(sb_service),
       ui_manager_(sb_service->ui_manager()),
-      trigger_manager_(sb_service->trigger_manager()),
       profile_(profile),
       pref_change_registrar_(new PrefChangeRegistrar),
       cache_manager_(VerdictCacheManagerFactory::GetForProfile(profile)) {
@@ -689,9 +689,10 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
     content::WebContents* web_contents,
     const std::string& token,
     ReusedPasswordAccountType password_type) {
-  // |trigger_manager_| can be null in test.
-  if (!trigger_manager_)
+  // Can be null in tests.
+  if (!GetTriggerManager()) {
     return;
+  }
 
   auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
   const content::GlobalRenderFrameHostId primary_main_frame_id =
@@ -723,7 +724,7 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
   // Ignores the return of |StartCollectingThreatDetails()| here and
   // let TriggerManager decide whether it should start data
   // collection.
-  trigger_manager_->StartCollectingThreatDetails(
+  GetTriggerManager()->StartCollectingThreatDetails(
       safe_browsing::TriggerType::GAIA_PASSWORD_REUSE, web_contents, resource,
       url_loader_factory, /*history_service=*/nullptr,
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
@@ -735,9 +736,10 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
 void ChromePasswordProtectionService::MaybeFinishCollectingThreatDetails(
     content::WebContents* web_contents,
     bool did_proceed) {
-  // |trigger_manager_| can be null in test.
-  if (!trigger_manager_)
+  // Can be null in tests.
+  if (!GetTriggerManager()) {
     return;
+  }
 
   // Get the num_visits for the URL from the history service. If the value is
   // not able to be retrieved, set it to 0.
@@ -759,7 +761,7 @@ void ChromePasswordProtectionService::MaybeFinishCollectingThreatDetails(
     // Since we don't keep track the threat details in progress, it is safe to
     // ignore the result of |FinishCollectingThreatDetails()|. TriggerManager
     // will take care of whether report should be sent.
-    trigger_manager_->FinishCollectingThreatDetails(
+    GetTriggerManager()->FinishCollectingThreatDetails(
         safe_browsing::TriggerType::GAIA_PASSWORD_REUSE,
         GetWebContentsKey(web_contents), base::Milliseconds(0), did_proceed,
         /*num_visits=*/0,
@@ -1670,6 +1672,10 @@ PrefService* ChromePasswordProtectionService::GetPrefs() const {
   return profile_->GetPrefs();
 }
 
+TriggerManager* ChromePasswordProtectionService::GetTriggerManager() {
+  return sb_service_ ? sb_service_->trigger_manager() : nullptr;
+}
+
 bool ChromePasswordProtectionService::IsSafeBrowsingEnabled() {
   return ::safe_browsing::IsSafeBrowsingEnabled(*GetPrefs());
 }
@@ -1927,8 +1933,8 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
           nullptr,
           /*try_token_fetch=*/false,
           SafeBrowsingMetricsCollectorFactory::GetForProfile(profile)),
+      sb_service_(nullptr),
       ui_manager_(ui_manager),
-      trigger_manager_(nullptr),
       profile_(profile),
       cache_manager_(cache_manager),
       add_phished_credentials_(std::move(add_phished_credentials)),
@@ -1956,8 +1962,8 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
           nullptr,
           /*try_token_fetch=*/false,
           SafeBrowsingMetricsCollectorFactory::GetForProfile(profile)),
+      sb_service_(nullptr),
       ui_manager_(ui_manager),
-      trigger_manager_(nullptr),
       profile_(profile),
       cache_manager_(cache_manager),
       add_phished_credentials_(std::move(add_phished_credentials)),
@@ -2163,7 +2169,7 @@ void ChromePasswordProtectionService::OnGetVisibleVisitCountToHost(
         data_collection_permissions,
     history::VisibleVisitCountToHostResult result) {
   int visit_count = result.success && result.count ? result.count : 0;
-  trigger_manager_->FinishCollectingThreatDetails(
+  GetTriggerManager()->FinishCollectingThreatDetails(
       trigger_type, web_contents_key, delay, did_proceed, visit_count,
       data_collection_permissions);
 }

@@ -495,6 +495,8 @@ class ChromePasswordProtectionService
   // Gets prefs associated with |profile_|.
   PrefService* GetPrefs() const;
 
+  TriggerManager* GetTriggerManager();
+
   // Returns whether the profile is valid and has safe browsing service enabled.
   bool IsSafeBrowsingEnabled();
 
@@ -609,8 +611,8 @@ class ChromePasswordProtectionService
           data_collection_permissions,
       history::VisibleVisitCountToHostResult result);
 
+  scoped_refptr<SafeBrowsingService> sb_service_;
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
-  raw_ptr<TriggerManager, DanglingUntriaged> trigger_manager_;
   // Profile associated with this instance.
   raw_ptr<Profile> profile_;
   // Current sync password hash.
