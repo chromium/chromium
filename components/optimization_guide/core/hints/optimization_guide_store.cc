@@ -29,6 +29,9 @@
 
 namespace optimization_guide {
 
+const base::FilePath::CharType kOptimizationGuideHintStore[] =
+    FILE_PATH_LITERAL("optimization_guide_hint_cache_store");
+
 namespace {
 
 // Enforce that StoreEntryType enum is synced with the StoreEntryType proto

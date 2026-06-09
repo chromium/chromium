@@ -15,7 +15,6 @@
 #include "base/version.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -54,8 +53,8 @@ class OptimizationHintsComponentInstallerTest : public PlatformTest {
   }
 
   void CreateTestOptimizationHints(const std::string& hints_content) {
-    base::FilePath hints_path = component_install_dir().Append(
-        optimization_guide::kUnindexedHintsFileName);
+    base::FilePath hints_path =
+        component_install_dir().Append(kUnindexedHintsFileName);
     ASSERT_TRUE(base::WriteFile(hints_path, hints_content));
   }
 

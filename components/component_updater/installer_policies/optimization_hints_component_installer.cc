@@ -16,14 +16,18 @@
 #include "base/version.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace component_updater {
 
+const base::FilePath::CharType kUnindexedHintsFileName[] =
+    FILE_PATH_LITERAL("optimization-hints.pb");
+
 namespace {
 
 const char kDisableInstallerUpdate[] = "optimization-guide-disable-installer";
+
+const char kRulesetFormatVersionString[] = "1.0.0";
 
 // The extension id is: lmelglejhemejginpboagddgdfbepgmp
 const uint8_t kOptimizationHintsPublicKeySHA256[32] = {
@@ -42,8 +46,7 @@ const char
 
 OptimizationHintsComponentInstallerPolicy::
     OptimizationHintsComponentInstallerPolicy()
-    : ruleset_format_version_(
-          base::Version(optimization_guide::kRulesetFormatVersionString)) {
+    : ruleset_format_version_(base::Version(kRulesetFormatVersionString)) {
   DCHECK(ruleset_format_version_.IsValid());
 }
 
@@ -81,8 +84,7 @@ void OptimizationHintsComponentInstallerPolicy::ComponentReady(
   if (update_listener && !base::CommandLine::ForCurrentProcess()->HasSwitch(
                              kDisableInstallerUpdate)) {
     optimization_guide::HintsComponentInfo info(
-        version,
-        install_dir.Append(optimization_guide::kUnindexedHintsFileName));
+        version, install_dir.Append(kUnindexedHintsFileName));
     update_listener->MaybeUpdateHintsComponent(info);
   }
 }

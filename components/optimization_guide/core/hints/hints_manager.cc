@@ -42,7 +42,6 @@
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/optimization_guide/core/hints/tab_url_provider.h"
 #include "components/optimization_guide/core/hints/top_host_provider.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -64,6 +63,9 @@ namespace optimization_guide {
 
 const char kOptimizationGuideServiceGetHintsDefaultURL[] =
     "https://optimizationguide-pa.googleapis.com/v1:GetHints";
+
+const char kLoadedHintLocalHistogramString[] =
+    "OptimizationGuide.LoadedHint.Result";
 
 BASE_FEATURE(kHintsBatchUpdateForActiveTabsAndTopHosts,
              "OptimizationGuideHintsBatchUpdateForActiveTabsAndTopHosts",

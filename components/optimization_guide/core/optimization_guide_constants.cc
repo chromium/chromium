@@ -6,19 +6,6 @@
 
 namespace optimization_guide {
 
-const base::FilePath::CharType kUnindexedHintsFileName[] =
-    FILE_PATH_LITERAL("optimization-hints.pb");
-
-const char kRulesetFormatVersionString[] = "1.0.0";
-
-const char kLoadedHintLocalHistogramString[] =
-    "OptimizationGuide.LoadedHint.Result";
-
-const char kOptimizationGuideLanguageOverrideHeaderKey[] =
-    "x-optimization-guide-language-override";
-
-const base::FilePath::CharType kOptimizationGuideHintStore[] =
-    FILE_PATH_LITERAL("optimization_guide_hint_cache_store");
 
 const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[] =
     FILE_PATH_LITERAL("optimization_guide_model_store");

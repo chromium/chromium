@@ -9,15 +9,18 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 
 namespace base {
-class FilePath;
 class Version;
 }  // namespace base
 
 namespace component_updater {
+
+// The name of the file that stores the unindexed hints.
+extern const base::FilePath::CharType kUnindexedHintsFileName[];
 
 class ComponentUpdateService;
 

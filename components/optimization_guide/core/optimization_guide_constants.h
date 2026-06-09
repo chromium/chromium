@@ -13,36 +13,6 @@
 
 namespace optimization_guide {
 
-// The name of the file that stores the unindexed hints.
-// TODO: crbug.com/514743962 - Move this to the only file that uses it:
-// components/component_updater/installer_policies/optimization_hints_component_installer.cc
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const base::FilePath::CharType kUnindexedHintsFileName[];
-
-// TODO: crbug.com/514743962 - Move this to the only file that uses it:
-// components/component_updater/installer_policies/optimization_hints_component_installer.cc
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kRulesetFormatVersionString[];
-
-// The local histogram used to record that the component hints are stored in
-// the cache and are ready for use.
-// TODO: crbug.com/514743962 - Move this to the only file that uses it:
-// components/optimization_guide/core/hints/hints_manager.cc
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kLoadedHintLocalHistogramString[];
-
-// The name of the language override request header.
-// TODO: crbug.com/514743962 - Move this to the only file that uses it:
-// components/optimization_guide/core/hints/hints_fetcher.cc
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kOptimizationGuideLanguageOverrideHeaderKey[];
-
-// The folder where the hint data will be stored on disk.
-// TODO: crbug.com/514743962 - This defines hint cache storage directory and
-// should be moved to
-// components/optimization_guide/core/hints/optimization_guide_store.h.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const base::FilePath::CharType kOptimizationGuideHintStore[];
 
 // The prefix for the folder where models are stored by the new install-wide
 // model store.

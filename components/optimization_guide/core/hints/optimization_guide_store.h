@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -27,6 +28,10 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace optimization_guide {
+
+// The folder where the hint data will be stored on disk.
+extern const base::FilePath::CharType kOptimizationGuideHintStore[];
+
 namespace proto {
 class StoreEntry;
 }  // namespace proto

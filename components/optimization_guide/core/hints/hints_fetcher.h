@@ -30,6 +30,9 @@ class SimpleURLLoader;
 
 namespace optimization_guide {
 
+// The name of the language override request header.
+extern const char kOptimizationGuideLanguageOverrideHeaderKey[];
+
 // Callback to inform the caller that the remote hints have been fetched and
 // to pass back the fetched hints response from the remote Optimization Guide
 // Service.
