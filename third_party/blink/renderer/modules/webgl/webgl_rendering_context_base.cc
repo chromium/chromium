@@ -664,27 +664,6 @@ class ScopedFramebufferRestorer {
   WebGLRenderingContextBase* context_;
 };
 
-class ScopedUnpackParametersResetRestore {
-  STACK_ALLOCATED();
-
- public:
-  explicit ScopedUnpackParametersResetRestore(
-      WebGLRenderingContextBase* context,
-      bool enabled = true)
-      : context_(context), enabled_(enabled) {
-    if (enabled)
-      context_->ResetUnpackParameters();
-  }
-
-  ~ScopedUnpackParametersResetRestore() {
-    if (enabled_)
-      context_->RestoreUnpackParameters();
-  }
-
- private:
-  WebGLRenderingContextBase* context_;
-  bool enabled_;
-};
 
 class ScopedDisableRasterizerDiscard {
   STACK_ALLOCATED();

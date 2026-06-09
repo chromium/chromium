@@ -96,6 +96,10 @@ WebGLTexture* XRCubeMap::updateWebGLEnvironmentCube(
   DCHECK(!texture->HasEverBeenBound() ||
          texture->GetTarget() == GL_TEXTURE_CUBE_MAP);
 
+  // Enforce a temporary reset of unpack parameters to avoid stale WebGL state
+  // over-reading CPU vectors.
+  ScopedUnpackParametersResetRestore unpack_params(context);
+
   auto* gl = context->ContextGL();
   texture->SetTarget(GL_TEXTURE_CUBE_MAP);
   gl->BindTexture(GL_TEXTURE_CUBE_MAP, texture->Object());
