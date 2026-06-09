@@ -3620,7 +3620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SafeSites.Latency" units="ms"
-    expires_after="2026-01-18">
+    expires_after="2027-06-09">
   <owner>ftirelo@chromium.org</owner>
   <owner>ljjlee@google.com</owner>
   <owner>cbe-eng@google.com</owner>
