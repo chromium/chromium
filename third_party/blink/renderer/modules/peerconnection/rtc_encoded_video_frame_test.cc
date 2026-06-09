@@ -200,6 +200,10 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataPreservesVP9CodecSpecifics) {
 
 TEST_F(RTCEncodedVideoFrameTest, SetMetadataMissingFieldsFails) {
   V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
 
   std::unique_ptr<MockTransformableVideoFrame> frame =
       std::make_unique<NiceMock<MockTransformableVideoFrame>>();
@@ -245,8 +249,12 @@ RTCEncodedVideoFrameMetadata* CreateMetadata(bool change_all_fields = false) {
   return new_metadata;
 }
 
-TEST_F(RTCEncodedVideoFrameTest, SetMetadataFailsModifications) {
+TEST_F(RTCEncodedVideoFrameTest, SetMetadataWithoutFeatureFailsModifications) {
   V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields});
 
   std::unique_ptr<MockTransformableVideoFrame> frame =
       std::make_unique<NiceMock<MockTransformableVideoFrame>>();
@@ -269,6 +277,52 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataFailsModifications) {
   EXPECT_EQ(exception_state.Message(),
             "Cannot setMetadata: invalid modification of "
             "RTCEncodedVideoFrameMetadata.");
+}
+
+TEST_F(RTCEncodedVideoFrameTest, SetMetadataWithFeatureAllowsModifications) {
+  V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP8Metadata(frame.get());
+
+  webrtc::VideoFrameMetadata actual_metadata;
+  EXPECT_CALL(*frame, SetMetadata(_)).WillOnce(SaveArg<0>(&actual_metadata));
+  EXPECT_CALL(*frame, GetPayloadType()).WillRepeatedly(Return(14));
+
+  RTCEncodedVideoFrame* encoded_frame =
+      MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
+
+  RTCEncodedVideoFrameMetadata* new_metadata =
+      CreateMetadata(/*change_all_fields=*/true);
+
+  DummyExceptionStateForTesting exception_state;
+  encoded_frame->setMetadata(v8_scope.GetExecutionContext(), new_metadata,
+                             exception_state);
+  EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
+
+  EXPECT_EQ(actual_metadata.GetFrameId(), new_metadata->frameId());
+  if (auto webrtc_deps = actual_metadata.GetDependencies()) {
+    Vector<int64_t> actual_dependencies;
+    actual_dependencies.append_range(*webrtc_deps);
+    EXPECT_EQ(actual_dependencies, new_metadata->dependencies());
+  }
+  EXPECT_EQ(actual_metadata.GetWidth(), new_metadata->width());
+  EXPECT_EQ(actual_metadata.GetHeight(), new_metadata->height());
+  EXPECT_THAT(actual_metadata.GetSpatialIndex(),
+              Eq(new_metadata->spatialIndex()));
+  EXPECT_THAT(actual_metadata.GetTemporalIndex(),
+              Eq(new_metadata->temporalIndex()));
+  EXPECT_EQ(actual_metadata.GetSsrc(), new_metadata->synchronizationSource());
+  Vector<uint32_t> actual_csrcs;
+  for (const auto& dependency : actual_metadata.GetCsrcs()) {
+    actual_csrcs.push_back(dependency);
+  }
+  EXPECT_EQ(actual_csrcs, new_metadata->contributingSources());
 }
 
 TEST_F(RTCEncodedVideoFrameTest, SetMetadataOnEmptyFrameFails) {
@@ -297,6 +351,10 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataOnEmptyFrameFails) {
 
 TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsInvalidDependencies) {
   V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
 
   std::unique_ptr<MockTransformableVideoFrame> frame =
       std::make_unique<NiceMock<MockTransformableVideoFrame>>();
@@ -321,6 +379,10 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsInvalidDependencies) {
 
 TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsTooEarlyDependencies) {
   V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
 
   std::unique_ptr<MockTransformableVideoFrame> frame =
       std::make_unique<NiceMock<MockTransformableVideoFrame>>();
@@ -346,6 +408,10 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsTooEarlyDependencies) {
 
 TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsTooManyDependencies) {
   V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
 
   std::unique_ptr<MockTransformableVideoFrame> frame =
       std::make_unique<NiceMock<MockTransformableVideoFrame>>();
@@ -453,8 +519,12 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorMissingFieldsFails) {
   EXPECT_EQ(new_frame, nullptr);
 }
 
-TEST_F(RTCEncodedVideoFrameTest, ConstructorFailsModifications) {
+TEST_F(RTCEncodedVideoFrameTest, ConstructorWithoutFeatureFailsModifications) {
   V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields});
 
   std::unique_ptr<MockTransformableVideoFrame> frame =
       std::make_unique<NiceMock<MockTransformableVideoFrame>>();
@@ -479,6 +549,63 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorFailsModifications) {
             "Cannot create a new VideoFrame: invalid modification of "
             "RTCEncodedVideoFrameMetadata.");
   EXPECT_EQ(new_frame, nullptr);
+}
+
+TEST_F(RTCEncodedVideoFrameTest, ConstructorWithFeatureAllowsModifications) {
+  V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP8Metadata(frame.get());
+
+  webrtc::VideoFrameMetadata actual_metadata;
+  EXPECT_CALL(*frame, SetMetadata(_)).Times(0);
+  EXPECT_CALL(*frame, GetPayloadType()).WillRepeatedly(Return(14));
+
+  RTCEncodedVideoFrame* encoded_frame =
+      MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
+
+  RTCEncodedVideoFrameMetadata* new_metadata =
+      CreateMetadata(/*change_all_fields=*/true);
+  RTCEncodedVideoFrameOptions* frame_options =
+      RTCEncodedVideoFrameOptions::Create();
+  frame_options->setMetadata(new_metadata);
+
+  DummyExceptionStateForTesting exception_state;
+  ExecutionContext* execution_context = v8_scope.GetExecutionContext();
+  RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
+      execution_context, encoded_frame, frame_options, exception_state);
+
+  EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
+
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->frameId(),
+            new_metadata->frameId());
+  Vector<int64_t> actual_dependencies;
+  for (const auto& dependency :
+       new_frame->getMetadata(execution_context)->dependencies()) {
+    actual_dependencies.push_back(dependency);
+  }
+  EXPECT_EQ(actual_dependencies, new_metadata->dependencies());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->width(),
+            new_metadata->width());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->height(),
+            new_metadata->height());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->spatialIndex(),
+            new_metadata->spatialIndex());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->temporalIndex(),
+            new_metadata->temporalIndex());
+  EXPECT_EQ(new_frame->getMetadata(execution_context)->synchronizationSource(),
+            new_metadata->synchronizationSource());
+  Vector<uint32_t> actual_csrcs;
+  for (const auto& dependency :
+       new_frame->getMetadata(execution_context)->contributingSources()) {
+    actual_csrcs.push_back(dependency);
+  }
+  EXPECT_EQ(actual_csrcs, new_metadata->contributingSources());
 }
 
 TEST_F(RTCEncodedVideoFrameTest, ConstructorFromNull) {
@@ -549,6 +676,10 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorWithMetadataOnEmptyFrameFails) {
 
 TEST_F(RTCEncodedVideoFrameTest, ConstructorRejectsInvalidDependencies) {
   V8TestingScope v8_scope;
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kAllowRTCEncodedVideoFrameSetMetadataAllFields},
+      /*disabled_features=*/{});
 
   std::unique_ptr<MockTransformableVideoFrame> frame =
       std::make_unique<NiceMock<MockTransformableVideoFrame>>();
