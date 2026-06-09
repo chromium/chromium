@@ -762,6 +762,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
 
   // Refreshing the page should exit the pipeline early, and should not crash.
   web_app::NavigateViaLinkClickToURLAndWait(browser(), GetUrlOuterApp());
+  ml_promoter()->AwaitMetricsCollectionTasksCompleteForTesting();
   task_runner_->RunPendingTasks();
 }
 
