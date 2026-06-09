@@ -41,7 +41,7 @@ namespace glic {
 class GlicActorClientSession;
 class GlicInstanceMetrics;
 class GlicActorJournalHandler;
-class GlicSharingManager;
+class GlicSharingManagerInternal;
 class GlicInstanceMetrics;
 class GlicActorClientSession;
 
@@ -64,12 +64,13 @@ class GlicActorTaskManager {
         actor::TaskId task_id,
         const tabs::TabInterface::Handle& tab_handle) = 0;
   };
-  explicit GlicActorTaskManager(Profile* profile,
-                                actor::ActorKeyedService* actor_keyed_service,
-                                GlicActorPolicyChecker& actor_policy_checker,
-                                GlicInstanceMetrics* instance_metrics,
-                                glic::GlicSharingManager* sharing_manager,
-                                Delegate* delegate);
+  explicit GlicActorTaskManager(
+      Profile* profile,
+      actor::ActorKeyedService* actor_keyed_service,
+      GlicActorPolicyChecker& actor_policy_checker,
+      GlicInstanceMetrics* instance_metrics,
+      glic::GlicSharingManagerInternal* sharing_manager,
+      Delegate* delegate);
   GlicActorTaskManager(const GlicActorTaskManager&) = delete;
   GlicActorTaskManager& operator=(const GlicActorTaskManager&) = delete;
   ~GlicActorTaskManager();
@@ -103,7 +104,7 @@ class GlicActorTaskManager {
   raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
   const raw_ref<GlicActorPolicyChecker> actor_policy_checker_;
   raw_ptr<GlicInstanceMetrics> instance_metrics_;
-  raw_ptr<GlicSharingManager> sharing_manager_;
+  raw_ptr<GlicSharingManagerInternal> sharing_manager_;
   bool actuating_ = false;
   base::RepeatingCallbackList<void(bool)> actuating_changed_callbacks_;
   raw_ptr<Delegate> delegate_;

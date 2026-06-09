@@ -32,7 +32,7 @@ struct NativeWebKeyboardEvent;
 namespace glic {
 
 class FocusedTabData;
-class GlicSharingManager;
+class GlicSharingManagerInternal;
 
 class SelectionOverlayController
     : public OverlayBaseController,
@@ -75,7 +75,7 @@ class SelectionOverlayController
       mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
   static void CaptureRegion(
       tabs::TabInterface* tab,
-      GlicSharingManager& sharing_manager,
+      GlicSharingManagerInternal& sharing_manager,
       mojo::PendingRemote<mojom::CaptureRegionObserver> observer,
       mojom::GetTabContextOptionsPtr options);
 

@@ -185,7 +185,7 @@ enum class GlicInvokeError {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeResult,//chrome/browser/glic/host/glic_internals_page_handler.cc:GlicInvokeError)
 
 // Details for invoking Glic with tabs shared. See
-// GlicSharingManager::PinTabs().
+// GlicSharingManagerInternal::PinTabs().
 struct TabSharingOptions {
   TabSharingOptions();
   TabSharingOptions(std::vector<tabs::TabHandle> tabs_to_pin,

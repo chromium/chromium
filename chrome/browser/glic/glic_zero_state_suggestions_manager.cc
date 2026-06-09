@@ -94,7 +94,7 @@ bool HasUserNavigationBeyondInitial(content::WebContents& web_contents) {
 }  // namespace
 
 GlicZeroStateSuggestionsManager::GlicZeroStateSuggestionsManager(
-    GlicSharingManager* sharing_manager,
+    GlicSharingManagerInternal* sharing_manager,
     GlicInstanceImpl* glic_instance,
     ContextualCueingService* contextual_cueing_service)
     : sharing_manager_(sharing_manager),

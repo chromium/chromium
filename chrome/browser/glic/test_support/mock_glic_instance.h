@@ -56,6 +56,8 @@ class MockGlicInstance : public GlicInstance {
   MOCK_METHOD(bool, IsActuating, (), (const, override));
   MOCK_METHOD(void, CancelTask, (), (override));
 
+  MOCK_METHOD(GlicSharingManager*, GetSharingManager, (), (override));
+
   MOCK_METHOD(void,
               GetExperimentalTriggeringUpdates,
               (mojo::PendingRemote<mojom::ExperimentalTriggeringUpdatesHandler>,

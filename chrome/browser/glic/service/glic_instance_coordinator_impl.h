@@ -186,7 +186,7 @@ class GlicInstanceCoordinatorImpl
   AddActiveInstanceChangedCallbackAndNotifyImmediately(
       ActiveInstanceChangedCallback callback) override;
   GlicInstance* GetActiveInstance() override;
-  GlicSharingManager& active_instance_sharing_manager() override;
+  GlicSharingManagerInternal& active_instance_sharing_manager() override;
 
   // Returns a pointer to an instance with a Floaty embedder or nullptr.
   GlicInstanceImpl* GetInstanceWithFloaty() const;

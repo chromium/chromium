@@ -191,13 +191,13 @@ void GlicDelegatingSharingManagerBase::OnConversationTurnSubmitted() {
   }
 }
 
-base::WeakPtr<GlicSharingManager>
+base::WeakPtr<GlicSharingManagerInternal>
 GlicDelegatingSharingManagerBase::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
 void GlicDelegatingSharingManagerBase::SetDelegate(
-    GlicSharingManager* sharing_manager_delegate) {
+    GlicSharingManagerInternal* sharing_manager_delegate) {
   // Do nothing if the delegate hasn't changed.
   if (sharing_manager_delegate == sharing_manager_delegate_) {
     return;
@@ -210,7 +210,7 @@ void GlicDelegatingSharingManagerBase::SetDelegate(
   ForceNotify(old_pinned_tabs);
 }
 
-GlicSharingManager* GlicDelegatingSharingManagerBase::GetDelegate() {
+GlicSharingManagerInternal* GlicDelegatingSharingManagerBase::GetDelegate() {
   return sharing_manager_delegate_;
 }
 

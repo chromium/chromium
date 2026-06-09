@@ -227,7 +227,7 @@ class Host : public GlicSharingManagerProvider {
   void Zoom(mojom::ZoomAction zoom_action);
 
   // GlicSharingManagerProvider Implementation.
-  GlicSharingManager& sharing_manager() override;
+  GlicSharingManagerInternal& sharing_manager() override;
 
   GlicPinCandidateProvider& pin_candidate_provider() override;
 

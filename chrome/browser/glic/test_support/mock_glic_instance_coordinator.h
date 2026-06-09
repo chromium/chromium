@@ -84,7 +84,7 @@ class MockGlicInstanceCoordinator
               (ActiveInstanceChangedCallback callback),
               (override));
   MOCK_METHOD(GlicInstance*, GetActiveInstance, (), (override));
-  MOCK_METHOD(GlicSharingManager&,
+  MOCK_METHOD(GlicSharingManagerInternal&,
               active_instance_sharing_manager,
               (),
               (override));

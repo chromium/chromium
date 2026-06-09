@@ -165,7 +165,7 @@ GlicActorTaskManager::GlicActorTaskManager(
     actor::ActorKeyedService* actor_keyed_service,
     GlicActorPolicyChecker& actor_policy_checker,
     GlicInstanceMetrics* instance_metrics,
-    GlicSharingManager* sharing_manager,
+    GlicSharingManagerInternal* sharing_manager,
     Delegate* delegate)
     : profile_(profile),
       actor_keyed_service_(actor_keyed_service),

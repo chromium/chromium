@@ -46,7 +46,7 @@ class TimeDelta;
 
 namespace glic {
 
-class GlicSharingManager;
+class GlicSharingManagerInternal;
 struct ShowOptions;
 
 using SafeEmbedderKey = std::variant<tabs::TabHandle, FloatingEmbedderKey>;
@@ -167,7 +167,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
       const metrics::ProfileMetricsService* profile_metrics_service);
   GlicInstanceMetrics(
       const metrics::ProfileMetricsService* profile_metrics_service,
-      GlicSharingManager* sharing_manager,
+      GlicSharingManagerInternal* sharing_manager,
       enterprise_reporting::SaasUsageReportingController*
           saas_usage_reporting_controller,
       PrefService* pref_service = nullptr);
@@ -430,7 +430,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   base::CallbackListSubscription pinned_tabs_changed_subscription_;
   base::CallbackListSubscription tab_pinning_status_subscription_;
   const raw_ref<const metrics::ProfileMetricsService> profile_metrics_service_;
-  raw_ptr<GlicSharingManager> sharing_manager_ = nullptr;
+  raw_ptr<GlicSharingManagerInternal> sharing_manager_ = nullptr;
   raw_ptr<enterprise_reporting::SaasUsageReportingController>
       saas_usage_reporting_controller_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;

@@ -31,6 +31,7 @@ namespace glic {
 
 class GlicActorTaskManager;
 class Host;
+class GlicSharingManager;
 
 struct ConversationInfo {
   ConversationInfo();
@@ -126,6 +127,9 @@ class GlicInstance {
 
   // Cancels ongoing actuation task if one exists.
   virtual void CancelTask() = 0;
+
+  // Exposes basic pinning controls to external Chrome consumers.
+  virtual GlicSharingManager* GetSharingManager() = 0;
 };
 
 }  // namespace glic

@@ -29,7 +29,7 @@ class GlicActiveInstanceSharingManager : public GlicDelegatingSharingManager {
   // Sets the sharing manager of the currently active instance. Can be null.
   // The caller must ensure this is changed (or set to null) before the
   // previously active sharing manager is destroyed.
-  void SetActiveSharingManager(GlicSharingManager* sharing_manager);
+  void SetActiveSharingManager(GlicSharingManagerInternal* sharing_manager);
 
  private:
   // Callback for changes to profile consent state.
@@ -42,7 +42,7 @@ class GlicActiveInstanceSharingManager : public GlicDelegatingSharingManager {
   const raw_ptr<Profile> profile_;
 
   // The sharing manager of the currently active instance.
-  raw_ptr<GlicSharingManager> active_sharing_manager_ = nullptr;
+  raw_ptr<GlicSharingManagerInternal> active_sharing_manager_ = nullptr;
 
   // Subscription for profile consent changes.
   base::CallbackListSubscription profile_state_subscription_;

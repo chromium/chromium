@@ -435,7 +435,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   Host& host() { return page_handler_->host(); }
-  GlicSharingManager& sharing_manager() { return host().sharing_manager(); }
+  GlicSharingManagerInternal& sharing_manager() {
+    return host().sharing_manager();
+  }
 
   // glic::mojom::WebClientHandler implementation.
   void SwitchConversation(glic::mojom::ConversationInfoPtr info,

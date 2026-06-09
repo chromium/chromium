@@ -317,7 +317,7 @@ void GlicSharingManagerImpl::OnConversationTurnSubmitted() {
       GlicPinnedTabContextEventType::kConversationTurnSubmitted));
 }
 
-base::WeakPtr<GlicSharingManager> GlicSharingManagerImpl::GetWeakPtr() {
+base::WeakPtr<GlicSharingManagerInternal> GlicSharingManagerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

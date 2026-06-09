@@ -29,7 +29,7 @@ class BrowserWindowInterface;
 namespace glic {
 
 class GlicFocusedBrowserManager;
-class GlicSharingManager;
+class GlicSharingManagerInternal;
 
 // Responsible for managing which tab is considered "focused" and for accessing
 // its WebContents.
@@ -248,7 +248,7 @@ class GlicPinAwareDetachedFocusedTabManager
     : public GlicFocusedTabManagerInterface {
  public:
   explicit GlicPinAwareDetachedFocusedTabManager(
-      GlicSharingManager* sharing_manager,
+      GlicSharingManagerInternal* sharing_manager,
       GlicFocusedBrowserManager* focused_browser_manager);
   ~GlicPinAwareDetachedFocusedTabManager() override;
 
@@ -309,7 +309,7 @@ class GlicPinAwareDetachedFocusedTabManager
   // Source of truth for pinned tabs.
   // TODO(crbug.com/452150693): Split up the sharing manager interface so we can
   // specify just the pinning portion here.
-  raw_ptr<GlicSharingManager> sharing_manager_;
+  raw_ptr<GlicSharingManagerInternal> sharing_manager_;
 
   // Proxied focused tab manager.
   GlicFocusedTabManager focused_tab_manager_;

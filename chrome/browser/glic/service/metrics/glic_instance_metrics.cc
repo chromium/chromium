@@ -137,7 +137,7 @@ GlicInstanceMetrics::GlicInstanceMetrics(
 
 GlicInstanceMetrics::GlicInstanceMetrics(
     const metrics::ProfileMetricsService* profile_metrics_service,
-    GlicSharingManager* sharing_manager,
+    GlicSharingManagerInternal* sharing_manager,
     enterprise_reporting::SaasUsageReportingController*
         saas_usage_reporting_controller,
     PrefService* pref_service)

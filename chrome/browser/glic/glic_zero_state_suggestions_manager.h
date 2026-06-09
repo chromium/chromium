@@ -16,7 +16,7 @@
 namespace glic {
 class CachingZeroStateSuggestionsManager;
 class ContextualCueingService;
-class GlicSharingManager;
+class GlicSharingManagerInternal;
 class GlicInstanceImpl;
 class Host;
 
@@ -24,7 +24,7 @@ class Host;
 class GlicZeroStateSuggestionsManager {
  public:
   GlicZeroStateSuggestionsManager(
-      GlicSharingManager* sharing_manager,
+      GlicSharingManagerInternal* sharing_manager,
       GlicInstanceImpl* glic_instance,
       ContextualCueingService* contextual_cueing_service);
   virtual ~GlicZeroStateSuggestionsManager();
@@ -81,7 +81,7 @@ class GlicZeroStateSuggestionsManager {
   Host& host();
 
   // Owned by the glic_keyed_service.
-  raw_ptr<GlicSharingManager> sharing_manager_;
+  raw_ptr<GlicSharingManagerInternal> sharing_manager_;
   raw_ptr<GlicInstanceImpl> glic_instance_;
   raw_ptr<Host> host_;
 

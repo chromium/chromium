@@ -362,7 +362,7 @@ GlicFocusedTabManager::NoFocusedTabData::operator=(
     const NoFocusedTabData& other) = default;
 
 GlicPinAwareDetachedFocusedTabManager::GlicPinAwareDetachedFocusedTabManager(
-    GlicSharingManager* sharing_manager,
+    GlicSharingManagerInternal* sharing_manager,
     GlicFocusedBrowserManager* focused_browser_manager)
     : sharing_manager_(sharing_manager),
       focused_tab_manager_(focused_browser_manager) {}

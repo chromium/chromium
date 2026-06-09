@@ -23,7 +23,7 @@ GlicActiveInstanceSharingManager::GlicActiveInstanceSharingManager(
 GlicActiveInstanceSharingManager::~GlicActiveInstanceSharingManager() = default;
 
 void GlicActiveInstanceSharingManager::SetActiveSharingManager(
-    GlicSharingManager* sharing_manager) {
+    GlicSharingManagerInternal* sharing_manager) {
   if (active_sharing_manager_ == sharing_manager) {
     return;
   }

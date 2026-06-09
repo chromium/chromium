@@ -82,7 +82,8 @@ GlicSharingManagerCoordinator::GlicSharingManagerCoordinator(
 
 GlicSharingManagerCoordinator::~GlicSharingManagerCoordinator() = default;
 
-GlicSharingManager& GlicSharingManagerCoordinator::GetActiveSharingManager() {
+GlicSharingManagerInternal&
+GlicSharingManagerCoordinator::GetActiveSharingManager() {
   return sharing_manager_;
 }
 

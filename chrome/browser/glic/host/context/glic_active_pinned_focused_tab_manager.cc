@@ -11,7 +11,7 @@ namespace glic {
 
 GlicActivePinnedFocusedTabManager::GlicActivePinnedFocusedTabManager(
     Profile* profile,
-    GlicSharingManager* sharing_manager)
+    GlicSharingManagerInternal* sharing_manager)
     : sharing_manager_(sharing_manager),
       active_tab_tracker_(profile),
       profile_(profile) {}

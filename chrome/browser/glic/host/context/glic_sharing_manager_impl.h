@@ -20,10 +20,10 @@ namespace glic {
 class GlicMetrics;
 class GlicStablePinningDelegatingSharingManager;
 
-// Implements GlicSharingManager and provides additional functionality needed
-// by chrome/browser/glic. It also provides some common sharing-related
+// Implements GlicSharingManagerInternal and provides additional functionality
+// needed by chrome/browser/glic. It also provides some common sharing-related
 // functionality.
-class GlicSharingManagerImpl : public GlicSharingManager,
+class GlicSharingManagerImpl : public GlicSharingManagerInternal,
                                public GlicPinCandidateProvider {
  public:
   GlicSharingManagerImpl(
@@ -41,7 +41,7 @@ class GlicSharingManagerImpl : public GlicSharingManager,
   // without exposing generally.
   friend class GlicStablePinningDelegatingSharingManager;
 
-  // GlicSharingManager implementation.
+  // GlicSharingManagerInternal implementation.
 
   using FocusedTabChangedCallback =
       base::RepeatingCallback<void(const FocusedTabData&)>;
@@ -126,7 +126,7 @@ class GlicSharingManagerImpl : public GlicSharingManager,
 
   void OnConversationTurnSubmitted() override;
 
-  base::WeakPtr<GlicSharingManager> GetWeakPtr() override;
+  base::WeakPtr<GlicSharingManagerInternal> GetWeakPtr() override;
 
  private:
   void GetContextFromTabImpl(

@@ -22,7 +22,7 @@ class GlicSharingManagerProvider {
   GlicSharingManagerProvider& operator=(const GlicSharingManagerProvider&) =
       delete;
 
-  virtual GlicSharingManager& sharing_manager() = 0;
+  virtual GlicSharingManagerInternal& sharing_manager() = 0;
 
   virtual GlicPinCandidateProvider& pin_candidate_provider() = 0;
 };

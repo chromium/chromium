@@ -20,8 +20,9 @@ class GlicFocusedBrowserManager;
 class GlicMetrics;
 class GlicPinnedTabManager;
 
-// Coordinates the lifecycle and switching of different GlicSharingManager
-// implementations based on the instance state (attached, detached, live mode).
+// Coordinates the lifecycle and switching of different
+// GlicSharingManagerInternal implementations based on the instance state
+// (attached, detached, live mode).
 class GlicSharingManagerCoordinator {
  public:
   GlicSharingManagerCoordinator(Profile* profile,
@@ -35,7 +36,7 @@ class GlicSharingManagerCoordinator {
 
   // returns the active sharing manager that delegates to the appropriate
   // internal manager based on current state.
-  GlicSharingManager& GetActiveSharingManager();
+  GlicSharingManagerInternal& GetActiveSharingManager();
 
   GlicPinCandidateProvider& pin_candidate_provider() {
     return sharing_manager_;

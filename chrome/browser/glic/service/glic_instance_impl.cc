@@ -571,7 +571,7 @@ GlicInstanceImpl::EmbedderEntry* GlicInstanceImpl::GetEmbedderEntry(
   return nullptr;
 }
 
-GlicSharingManager& GlicInstanceImpl::sharing_manager() {
+GlicSharingManagerInternal& GlicInstanceImpl::sharing_manager() {
   return sharing_manager_coordinator_.GetActiveSharingManager();
 }
 
@@ -818,6 +818,10 @@ void GlicInstanceImpl::CancelTask() {
 
 GlicActorTaskManager* GlicInstanceImpl::GetActorTaskManager() {
   return actor_task_manager_.get();
+}
+
+GlicSharingManager* GlicInstanceImpl::GetSharingManager() {
+  return &sharing_manager();
 }
 
 void GlicInstanceImpl::FetchZeroStateSuggestions(

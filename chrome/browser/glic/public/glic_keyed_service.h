@@ -144,7 +144,7 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   // for whichever instance is active. Please prefer to use the sharing manager
   // on the `GlicInstance` if you don't need one that automatically tracks the
   // active instance.
-  GlicSharingManager& active_instance_sharing_manager();
+  GlicSharingManagerInternal& active_instance_sharing_manager();
 
   // Returns true if `bwi` has a glic panel showing for its active tab. Virtual
   // for testing.

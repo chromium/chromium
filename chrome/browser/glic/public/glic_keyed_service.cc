@@ -330,7 +330,8 @@ GlicExperimentalOptInController& GlicKeyedService::opt_in_controller() {
 }
 #endif
 
-GlicSharingManager& GlicKeyedService::active_instance_sharing_manager() {
+GlicSharingManagerInternal&
+GlicKeyedService::active_instance_sharing_manager() {
   return instance_coordinator().active_instance_sharing_manager();
 }
 

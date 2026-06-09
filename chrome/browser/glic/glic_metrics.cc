@@ -71,7 +71,7 @@ class DummyDelegateImpl : public GlicMetrics::Delegate {
 
 class BaseDelegate : public GlicMetrics::Delegate {
  public:
-  explicit BaseDelegate(GlicSharingManager* sharing_manager,
+  explicit BaseDelegate(GlicSharingManagerInternal* sharing_manager,
                         PrefService* pref_service)
       : sharing_manager_(sharing_manager), pref_service_(pref_service) {}
   content::WebContents* GetFocusedWebContents() override {
@@ -93,15 +93,16 @@ class BaseDelegate : public GlicMetrics::Delegate {
   }
 
  protected:
-  raw_ptr<GlicSharingManager> sharing_manager_;
+  raw_ptr<GlicSharingManagerInternal> sharing_manager_;
   raw_ptr<PrefService> pref_service_;
 };
 
 class DelegateMultiInstanceImpl : public BaseDelegate {
  public:
-  explicit DelegateMultiInstanceImpl(GlicInstance* glic_instance,
-                                     GlicSharingManager* sharing_manager,
-                                     PrefService* pref_service)
+  explicit DelegateMultiInstanceImpl(
+      GlicInstance* glic_instance,
+      GlicSharingManagerInternal* sharing_manager,
+      PrefService* pref_service)
       : BaseDelegate(sharing_manager, pref_service),
         glic_instance_(glic_instance) {}
   gfx::Size GetWindowSize() const override {
@@ -735,7 +736,7 @@ void GlicMetrics::OnActivateTabFromInstance(tabs::TabInterface* tab) {
 
 void GlicMetrics::SetControllersWithInstance(
     GlicInstance* glic_instance,
-    GlicSharingManager* sharing_manager) {
+    GlicSharingManagerInternal* sharing_manager) {
   delegate_ = std::make_unique<DelegateMultiInstanceImpl>(
       glic_instance, sharing_manager, profile_->GetPrefs());
 }

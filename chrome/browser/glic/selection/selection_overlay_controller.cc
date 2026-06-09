@@ -227,7 +227,7 @@ void SelectionOverlayController::BindCaptureRegionObserver(
 // static
 void SelectionOverlayController::CaptureRegion(
     tabs::TabInterface* tab,
-    GlicSharingManager& sharing_manager,
+    GlicSharingManagerInternal& sharing_manager,
     mojo::PendingRemote<mojom::CaptureRegionObserver> observer,
     mojom::GetTabContextOptionsPtr options) {
   content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;

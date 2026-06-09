@@ -39,7 +39,7 @@ namespace glic {
 
 class GlicTabPinningWaiter {
  public:
-  GlicTabPinningWaiter(glic::GlicSharingManager* sharing_manager,
+  GlicTabPinningWaiter(glic::GlicSharingManagerInternal* sharing_manager,
                        const std::vector<tabs::TabHandle>& tab_handles)
       : sharing_manager_(sharing_manager) {
     for (const auto& handle : tab_handles) {
@@ -80,7 +80,7 @@ class GlicTabPinningWaiter {
     }
   }
 
-  raw_ptr<glic::GlicSharingManager> sharing_manager_;
+  raw_ptr<glic::GlicSharingManagerInternal> sharing_manager_;
   base::flat_set<tabs::TabHandle> tabs_to_wait_for_;
   base::CallbackListSubscription subscription_;
   base::OnceClosure quit_closure_;

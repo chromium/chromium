@@ -125,7 +125,7 @@ class GlicInstanceImpl : public GlicInstance,
   GlicUiEmbedder* GetActiveEmbedder();
 
   // GlicSharingManagerProvider implementation.
-  GlicSharingManager& sharing_manager() override;
+  GlicSharingManagerInternal& sharing_manager() override;
   GlicPinCandidateProvider& pin_candidate_provider() override;
 
   void NotifyInstanceActivationChanged(bool is_active);
@@ -200,6 +200,7 @@ class GlicInstanceImpl : public GlicInstance,
       base::RepeatingCallback<void(const mojom::ConversationInfo&)> callback);
   void CancelTask() override;
   GlicActorTaskManager* GetActorTaskManager() override;
+  GlicSharingManager* GetSharingManager() override;
 
   // Called exactly once, right before the instance is destroyed.
   using DestructionCallback = base::OnceCallback<void(GlicInstance*)>;

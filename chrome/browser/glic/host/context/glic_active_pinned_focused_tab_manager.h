@@ -11,7 +11,7 @@
 
 namespace glic {
 
-class GlicSharingManager;
+class GlicSharingManagerInternal;
 
 // Focused tab manager that combines "active" and "pinned" status. The
 // active tab in the active browser is considered focused
@@ -30,7 +30,7 @@ class GlicActivePinnedFocusedTabManager
  public:
   explicit GlicActivePinnedFocusedTabManager(
       Profile* profile,
-      GlicSharingManager* sharing_manager);
+      GlicSharingManagerInternal* sharing_manager);
   ~GlicActivePinnedFocusedTabManager() override;
   GlicActivePinnedFocusedTabManager(const GlicActivePinnedFocusedTabManager&) =
       delete;
@@ -73,7 +73,7 @@ class GlicActivePinnedFocusedTabManager
       const glic::mojom::TabData* focused_tab_data);
 
   // Source of truth for pinned tabs.
-  raw_ptr<GlicSharingManager> sharing_manager_;
+  raw_ptr<GlicSharingManagerInternal> sharing_manager_;
 
   // TODO(b:444463509): refactor into a shared singleton for the profile.
   GlicActiveTabForProfileTracker active_tab_tracker_;

@@ -40,7 +40,7 @@ void TabUnderlineController::Initialize(
     glic_service_ = GlicKeyedServiceFactory::GetGlicKeyedService(
         browser_window_interface_->GetProfile());
 
-    GlicSharingManager& sharing_manager =
+    GlicSharingManagerInternal& sharing_manager =
         glic_service_->active_instance_sharing_manager();
 
     // Subscribe to changes in the set of pinned tabs.

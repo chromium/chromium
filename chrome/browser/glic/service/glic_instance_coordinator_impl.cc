@@ -621,7 +621,7 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetActiveInstance() {
   return active_instance_;
 }
 
-GlicSharingManager&
+GlicSharingManagerInternal&
 GlicInstanceCoordinatorImpl::active_instance_sharing_manager() {
   CHECK(active_instance_sharing_manager_);
   return *active_instance_sharing_manager_;

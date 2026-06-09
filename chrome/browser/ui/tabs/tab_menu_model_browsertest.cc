@@ -614,7 +614,7 @@ class TabMenuModelGlicMultiTabTest : public TabMenuModelBrowserTest {
  protected:
   TabStripModel* tab_strip() { return browser()->tab_strip_model(); }
 
-  glic::GlicSharingManager& sharing_manager() {
+  glic::GlicSharingManagerInternal& sharing_manager() {
     return glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile())
         ->active_instance_sharing_manager();
   }

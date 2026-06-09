@@ -17,7 +17,7 @@
 
 namespace glic {
 
-// The error returned by the GlicSharingManager when requesting context.
+// The error returned by the GlicSharingManagerInternal when requesting context.
 struct GlicGetContextError {
   GlicGetContextFromTabError error_code;
   std::string message;
@@ -126,14 +126,64 @@ using GlicPinningStatusEvent = std::variant<GlicPinEvent, GlicUnpinEvent>;
 
 // TODO(crbug.com/461849870): Add metadata to the api below.
 
-// Responsible for managing all shared context (focused tabs, explicitly-shared
-// tabs).
+// Lightweight public-facing interface for external Chrome components
+// to control and observe tab pinning on a GlicInstance.
 class GlicSharingManager {
  public:
   GlicSharingManager() = default;
   virtual ~GlicSharingManager() = default;
   GlicSharingManager(const GlicSharingManager&) = delete;
   GlicSharingManager& operator=(const GlicSharingManager&) = delete;
+
+  // Registers a callback to be invoked when the pinned status of a tab changes.
+  using TabPinningStatusChangedCallback =
+      base::RepeatingCallback<void(tabs::TabInterface*, bool)>;
+  virtual base::CallbackListSubscription AddTabPinningStatusChangedCallback(
+      TabPinningStatusChangedCallback callback) = 0;
+
+  // Pins the specified tabs. If we are only able to pin `n` tabs within the
+  // limit, the first `n` tabs from this collection will be pinned and we
+  // will return false (to indicate that it was not fully successful). If
+  // any of the tab handles correspond to a tab that either doesn't exist or
+  // is already pinned, it will be skipped and we will similarly return
+  // false to indicate that the function was not fully successful.
+  virtual bool PinTabs(base::span<const tabs::TabHandle> tab_handles,
+                       GlicPinTrigger trigger) = 0;
+
+  // Forwarding overload for legacy calls. Calls PinTabs with kUnknown trigger.
+  bool PinTabs(base::span<const tabs::TabHandle> tab_handles) {
+    return PinTabs(tab_handles, GlicPinTrigger::kUnknown);
+  }
+
+  // Unpins the specified tabs. If any of the tab handles correspond to a tab
+  // that either doesn't exist or is not pinned, it will be skipped and we will
+  // similarly return false to indicate that the function was not fully
+  // successful.
+  virtual bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles,
+                         GlicUnpinTrigger trigger) = 0;
+
+  // Forwarding overload for legacy calls. Calls UnpinTabs with kUnknown
+  // trigger.
+  bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles) {
+    return UnpinTabs(tab_handles, GlicUnpinTrigger::kUnknown);
+  }
+
+  // Queries whether the given tab has been explicitly pinned.
+  virtual bool IsTabPinned(tabs::TabHandle tab_handle) const = 0;
+};
+
+// Responsible for managing all shared context (focused tabs, explicitly-shared
+// tabs).
+class GlicSharingManagerInternal : public GlicSharingManager {
+ public:
+  GlicSharingManagerInternal() = default;
+  ~GlicSharingManagerInternal() override = default;
+  GlicSharingManagerInternal(const GlicSharingManagerInternal&) = delete;
+  GlicSharingManagerInternal& operator=(const GlicSharingManagerInternal&) =
+      delete;
+
+  using GlicSharingManager::PinTabs;
+  using GlicSharingManager::UnpinTabs;
 
   // Callback for changes to focused tab. If no tab is in focus an error reason
   // is returned indicating why and maybe a tab candidate with details as to
@@ -165,11 +215,9 @@ class GlicSharingManager {
       FocusedBrowserChangedCallback callback) = 0;
   virtual BrowserWindowInterface* GetFocusedBrowser() const = 0;
 
-  // Registers a callback to be invoked when the pinned status of a tab changes.
-  using TabPinningStatusChangedCallback =
-      base::RepeatingCallback<void(tabs::TabInterface*, bool)>;
-  virtual base::CallbackListSubscription AddTabPinningStatusChangedCallback(
-      TabPinningStatusChangedCallback callback) = 0;
+  // GlicSharingManager override.
+  base::CallbackListSubscription AddTabPinningStatusChangedCallback(
+      TabPinningStatusChangedCallback callback) override = 0;
 
   // Registers a callback to be invoked when a pinning status event takes place
   // for a tab. Provides richer metadata than the simple boolean callback above.
@@ -193,14 +241,9 @@ class GlicSharingManager {
   virtual base::CallbackListSubscription AddPinnedTabDataChangedCallback(
       PinnedTabDataChangedCallback callback) = 0;
 
-  // Pins the specified tabs. If we are only able to pin `n` tabs within the
-  // limit, the first `n` tabs from this collection will be pinned and we
-  // will return false (to indicate that it was not fully successful). If
-  // any of the tab handles correspond to a tab that either doesn't exist or
-  // is already pinned, it will be skipped and we will similarly return
-  // false to indicate that the function was not fully successful.
-  virtual bool PinTabs(base::span<const tabs::TabHandle> tab_handles,
-                       GlicPinTrigger trigger) = 0;
+  // GlicSharingManager override.
+  bool PinTabs(base::span<const tabs::TabHandle> tab_handles,
+               GlicPinTrigger trigger) override = 0;
 
   // Overwrites the pin trigger and timestamp for an already-pinned tab.
   // This should ONLY be used when transitioning the context of a pinned tab
@@ -209,26 +252,16 @@ class GlicSharingManager {
   virtual void SetPinTrigger(tabs::TabHandle tab_handle,
                              GlicPinTrigger trigger) = 0;
 
-  // Forwarding overload for legacy calls. Calls PinTabs with kUnknown trigger.
-  bool PinTabs(base::span<const tabs::TabHandle> tab_handles);
-
-  // Unpins the specified tabs. If any of the tab handles correspond to a tab
-  // that either doesn't exist or is not pinned, it will be skipped and we will
-  // similarly return false to indicate that the function was not fully
-  // successful.
-  virtual bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles,
-                         GlicUnpinTrigger trigger) = 0;
-
-  // Forwarding overload for legacy calls. Calls UnpinTabs with kUnknown
-  // trigger.
-  bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles);
+  // GlicSharingManager override.
+  bool UnpinTabs(base::span<const tabs::TabHandle> tab_handles,
+                 GlicUnpinTrigger trigger) override = 0;
 
   // Unpins all pinned tabs, if any.
   virtual void UnpinAllTabs(GlicUnpinTrigger trigger) = 0;
 
   // Forwarding overload for legacy calls. Calls UnpinAllTabs with kUnknown
   // trigger.
-  void UnpinAllTabs();
+  void UnpinAllTabs() { UnpinAllTabs(GlicUnpinTrigger::kUnknown); }
 
   // Gets the limit on the number of pinned tabs.
   virtual int32_t GetMaxPinnedTabs() const = 0;
@@ -244,8 +277,8 @@ class GlicSharingManager {
   // Fetches the current list of pinned tabs.
   virtual std::vector<tabs::TabInterface*> GetPinnedTabs() const = 0;
 
-  // Queries whether the given tab has been explicitly pinned.
-  virtual bool IsTabPinned(tabs::TabHandle tab_handle) const = 0;
+  // GlicSharingManager override.
+  bool IsTabPinned(tabs::TabHandle tab_handle) const override = 0;
 
   // Queries whether the given tab is focused.
   // Note: this signal should only be used by features that care about live mode
@@ -277,7 +310,7 @@ class GlicSharingManager {
   // Callback for conversation turn submission.
   virtual void OnConversationTurnSubmitted() = 0;
 
-  virtual base::WeakPtr<GlicSharingManager> GetWeakPtr() = 0;
+  virtual base::WeakPtr<GlicSharingManagerInternal> GetWeakPtr() = 0;
 };
 
 }  // namespace glic
