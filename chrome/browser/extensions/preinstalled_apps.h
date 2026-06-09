@@ -41,13 +41,11 @@ enum InstallState {
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 // A specialization of the ExternalProviderImpl that conditionally installs apps
-// from the chrome::DIR_DEFAULT_APPS location based on a preference in the
-// profile.
+// and extensions based on a hard-coded list.
 class Provider : public extensions::ExternalProviderImpl {
  public:
   Provider(Profile* profile,
            VisitorInterface* service,
-           scoped_refptr<extensions::ExternalLoader> loader,
            extensions::mojom::ManifestLocation crx_location,
            extensions::mojom::ManifestLocation download_location,
            int creation_flags);

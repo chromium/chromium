@@ -63,16 +63,6 @@ int GetInstallState(Profile* profile) {
   return profile->GetPrefs()->GetInteger(prefs::kPreinstalledAppsInstallState);
 }
 
-class MockExternalLoader : public ExternalLoader {
- public:
-  MockExternalLoader() = default;
-
-  void StartLoading() override {}
-
- private:
-  ~MockExternalLoader() override = default;
-};
-
 class PreinstalledAppsTest : public testing::Test {
  public:
   PreinstalledAppsTest()
@@ -85,8 +75,6 @@ class PreinstalledAppsTest : public testing::Test {
 
 TEST_F(PreinstalledAppsTest, Install) {
   TestingProfile profile;
-  scoped_refptr<ExternalLoader> loader =
-      base::MakeRefCounted<MockExternalLoader>();
 
   auto set_install_state = [](Profile* profile,
                               preinstalled_apps::InstallState state) {
@@ -99,7 +87,7 @@ TEST_F(PreinstalledAppsTest, Install) {
   {
     // The pre-installed apps should be installed if
     // kPreinstalledAppsInstallState is unknown.
-    Provider provider(&profile, nullptr, loader, ManifestLocation::kInternal,
+    Provider provider(&profile, nullptr, ManifestLocation::kInternal,
                       ManifestLocation::kInternal, Extension::NO_FLAGS);
     EXPECT_TRUE(provider.preinstalled_apps_enabled());
     EXPECT_FALSE(provider.is_migration());
@@ -110,7 +98,7 @@ TEST_F(PreinstalledAppsTest, Install) {
 
   {
     // The pre-installed apps should only be installed once.
-    Provider provider(&profile, nullptr, loader, ManifestLocation::kInternal,
+    Provider provider(&profile, nullptr, ManifestLocation::kInternal,
                       ManifestLocation::kInternal, Extension::NO_FLAGS);
     EXPECT_TRUE(provider.preinstalled_apps_enabled());
     EXPECT_FALSE(provider.is_migration());
@@ -124,7 +112,7 @@ TEST_F(PreinstalledAppsTest, Install) {
     // kNeverProvidePreinstalledApps
     set_install_state(&profile,
                       preinstalled_apps::kNeverInstallPreinstalledApps);
-    Provider provider(&profile, nullptr, loader, ManifestLocation::kInternal,
+    Provider provider(&profile, nullptr, ManifestLocation::kInternal,
                       ManifestLocation::kInternal, Extension::NO_FLAGS);
     EXPECT_TRUE(provider.preinstalled_apps_enabled());
     EXPECT_FALSE(provider.is_migration());
@@ -138,7 +126,7 @@ TEST_F(PreinstalledAppsTest, Install) {
     // migrated.
     set_install_state(&profile,
                       preinstalled_apps::kProvideLegacyPreinstalledApps);
-    Provider provider(&profile, nullptr, loader, ManifestLocation::kInternal,
+    Provider provider(&profile, nullptr, ManifestLocation::kInternal,
                       ManifestLocation::kInternal, Extension::NO_FLAGS);
     EXPECT_TRUE(provider.preinstalled_apps_enabled());
     EXPECT_TRUE(provider.is_migration());
@@ -158,7 +146,7 @@ TEST_F(PreinstalledAppsTest, Install) {
     // migrated even if the profile version is older than Chrome version.
     set_install_state(&default_testing_profile,
                       preinstalled_apps::kProvideLegacyPreinstalledApps);
-    Provider provider(&default_testing_profile, nullptr, loader,
+    Provider provider(&default_testing_profile, nullptr,
                       ManifestLocation::kInternal, ManifestLocation::kInternal,
                       Extension::NO_FLAGS);
     EXPECT_TRUE(provider.preinstalled_apps_enabled());
@@ -172,15 +160,13 @@ TEST_F(PreinstalledAppsTest, Install) {
 TEST_F(PreinstalledAppsTest, DocsOfflineInstalledForBranded) {
   TestingProfile profile;
   MockExternalProviderVisitor visitor;
-  scoped_refptr<ExternalLoader> loader =
-      base::MakeRefCounted<MockExternalLoader>();
 
   // By default, apps/extensions aren't installed yet.
   ASSERT_EQ(preinstalled_apps::kUnknown, GetInstallState(&profile));
 
   // The pre-installed apps/extensions will be installed. The `visitor` must be
   // non-null for prefs to be set.
-  Provider provider(&profile, &visitor, loader, ManifestLocation::kInternal,
+  Provider provider(&profile, &visitor, ManifestLocation::kInternal,
                     ManifestLocation::kInternal, Extension::NO_FLAGS);
   ASSERT_TRUE(provider.preinstalled_apps_enabled());
 

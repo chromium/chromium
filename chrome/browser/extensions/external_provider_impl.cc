@@ -887,8 +887,6 @@ void ExternalProviderImpl::CreateExternalProviders(
   // has its own mechanism for preinstalls.
   provider_list->push_back(std::make_unique<preinstalled_apps::Provider>(
       profile, service,
-      base::MakeRefCounted<ExternalPrefLoader>(
-          chrome::DIR_DEFAULT_APPS, ExternalPrefLoader::NONE, nullptr),
       ManifestLocation::kInternal, ManifestLocation::kInternal,
       Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT));
 #endif

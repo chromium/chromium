@@ -213,6 +213,8 @@ namespace keys = manifest_keys;
 namespace {
 
 // Extension ids used during testing.
+// TODO(crbug.com/469417243): Convert these to the kFoo naming convention and
+// consider changing to std::string_view.
 const char good0[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 const char good1[] = "hpiknbiabeeppbpihjehijgoemciehgk";
 const char good2[] = "bjafgdebaacbbbecmhlhpofkepfkgcpa";
@@ -5010,19 +5012,21 @@ TEST_F(ExtensionServiceTest, PreinstalledAppsInstall) {
     // state; reset it for the sake of testing.
     profile()->GetPrefs()->SetInteger(prefs::kPreinstalledAppsInstallState,
                                       preinstalled_apps::kUnknown);
-    std::string json_data =
-        "{"
-        "  \"ldnnhddmnhbkjipkidpdiheffobcpfmf\" : {"
-        "    \"external_crx\": \"good.crx\","
-        "    \"external_version\": \"1.0.0.0\","
-        "    \"is_bookmark_app\": false"
-        "  }"
-        "}";
     auto provider = std::make_unique<preinstalled_apps::Provider>(
-        profile(), external_provider_manager(),
-        new ExternalTestingLoader(json_data, data_dir()),
-        ManifestLocation::kInternal, ManifestLocation::kInternal,
+        profile(), external_provider_manager(), ManifestLocation::kInternal,
+        ManifestLocation::kInternal,
         Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT);
+
+    // Use an external CRX file so we can test `Provider` behavior without
+    // requiring a branded build (e.g. for Docs Offline). This also lets us
+    // exercise the connection with the install flow.
+    base::DictValue prefs;
+    const std::string crx_id = good_crx;
+    const base::FilePath crx_path = data_dir().AppendASCII("good.crx");
+    prefs.SetByDottedPath(crx_id + ".external_crx", crx_path.AsUTF8Unsafe());
+    prefs.SetByDottedPath(crx_id + ".external_version", "1.0.0.0");
+    prefs.SetByDottedPath(crx_id + ".is_bookmark_app", false);
+    provider->SetPrefs(std::move(prefs));
 
     external_provider_manager()->AddProviderForTesting(std::move(provider));
   }

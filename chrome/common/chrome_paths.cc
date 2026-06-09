@@ -446,18 +446,6 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif
       break;
 
-    case chrome::DIR_DEFAULT_APPS:
-#if BUILDFLAG(IS_MAC)
-      cur = base::apple::FrameworkBundlePath();
-      cur = cur.Append(FILE_PATH_LITERAL("Default Apps"));
-#else
-      if (!base::PathService::Get(base::DIR_MODULE, &cur)) {
-        return false;
-      }
-      cur = cur.Append(FILE_PATH_LITERAL("default_apps"));
-#endif
-      break;
-
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE) &&                                   \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
      BUILDFLAG(IS_ANDROID))

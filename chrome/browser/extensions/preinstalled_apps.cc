@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/extensions/external_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -68,6 +69,25 @@ std::set<Profile*>& GetPerformNewInstallationProfiles() {
   static base::NoDestructor<std::set<Profile*>> perform_new_installation;
   return *perform_new_installation;
 }
+
+// A null loader that immediately calls LoadFinished().
+class NullLoader : public extensions::ExternalLoader {
+ public:
+  NullLoader() = default;
+  const NullLoader& operator=(const NullLoader&) = delete;
+  NullLoader& operator=(NullLoader&&) = delete;
+
+  // ExternalLoader:
+  void StartLoading() override {
+    // LoadFinished will call SetPrefs() and add the extensions.
+    LoadFinished(base::DictValue());
+  }
+
+ private:
+  // Private destructor because ExternalLoader is ref counted.
+  ~NullLoader() override = default;
+};
+
 }  // namespace
 
 namespace preinstalled_apps {
@@ -144,12 +164,11 @@ void Provider::InitProfileState() {
 
 Provider::Provider(Profile* profile,
                    VisitorInterface* service,
-                   scoped_refptr<extensions::ExternalLoader> loader,
                    extensions::mojom::ManifestLocation crx_location,
                    extensions::mojom::ManifestLocation download_location,
                    int creation_flags)
     : extensions::ExternalProviderImpl(service,
-                                       std::move(loader),
+                                       base::MakeRefCounted<NullLoader>(),
                                        profile,
                                        crx_location,
                                        download_location,
