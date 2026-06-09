@@ -61,6 +61,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -531,6 +532,21 @@ void StreamWrite(DevToolsUIBindings* bindings,
   bindings->CallClientMethod("DevToolsAPI", "streamWrite",
                              base::Value(stream_id), std::move(chunkValue),
                              base::Value(encoded));
+}
+
+bool IsLocalDevToolsFrontendURL(const GURL& url) {
+  if (!url.is_valid() || url.IsAboutBlank() ||
+      !url.SchemeIs(content::kChromeDevToolsScheme) ||
+      url.host() != chrome::kChromeUIDevToolsHost) {
+    return false;
+  }
+  std::string_view path = url.path();
+  if (base::StartsWith(path, "/")) {
+    path = path.substr(1);
+  }
+  return base::StartsWith(path, chrome::kChromeUIDevToolsBundledPath) ||
+         base::StartsWith(path, chrome::kChromeUIDevToolsCustomPath) ||
+         base::StartsWith(path, chrome::kChromeUIDevToolsBlankPath);
 }
 
 }  // namespace
@@ -1272,10 +1288,7 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
   NetworkResourceLoader::URLLoaderFactoryHolder url_loader_factory;
   if (gurl.SchemeIsFile()) {
     GURL frontend_url = web_contents_->GetLastCommittedURL();
-    bool is_remote_frontend =
-        frontend_url.is_valid() && !frontend_url.IsAboutBlank() &&
-        IsValidRemoteFrontendURL(frontend_url);
-    if (is_remote_frontend) {
+    if (!IsLocalDevToolsFrontendURL(frontend_url)) {
       if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kAllowUnsafeDevToolsRemoteFileLoading)) {
         base::DictValue response_dict;
