@@ -1169,6 +1169,10 @@ data/accessibility/aria/aria-list-expected-blink.txt
 data/accessibility/aria/aria-list-expected-mac.txt
 data/accessibility/aria/aria-list-expected-win.txt
 data/accessibility/aria/aria-list.html
+data/accessibility/aria/aria-list-labeled-expected-android-external.txt
+data/accessibility/aria/aria-list-labeled-expected-android.txt
+data/accessibility/aria/aria-list-labeled-expected-blink.txt
+data/accessibility/aria/aria-list-labeled.html
 data/accessibility/aria/aria-listbox-activedescendant-expected-blink.txt
 data/accessibility/aria/aria-listbox-activedescendant-expected-mac.txt
 data/accessibility/aria/aria-listbox-activedescendant.html

@@ -1,0 +1,14 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++list name='fruits'
+++++++++listItem
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText ignored
+++++++++++staticText name='apple'
+++++++++++++inlineTextBox name='apple'
+++++++++listItem
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText ignored
+++++++++++staticText name='orange'
+++++++++++++inlineTextBox name='orange'

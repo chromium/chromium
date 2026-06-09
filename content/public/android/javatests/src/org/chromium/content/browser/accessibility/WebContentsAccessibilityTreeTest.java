@@ -652,6 +652,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaListLabeled() {
+        performAriaTest("aria-list-labeled.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaListitem() {
         performAriaTest("aria-listitem.html");
     }

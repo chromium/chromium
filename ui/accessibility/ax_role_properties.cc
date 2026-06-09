@@ -290,6 +290,7 @@ bool IsContainerOnAndroid(const ax::mojom::Role role) {
     case ax::mojom::Role::kComboBoxGrouping:
     case ax::mojom::Role::kGrid:
     case ax::mojom::Role::kListBox:
+    case ax::mojom::Role::kList:
     case ax::mojom::Role::kMenu:
     case ax::mojom::Role::kMenuBar:
     case ax::mojom::Role::kRadioGroup:
