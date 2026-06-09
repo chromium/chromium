@@ -17,8 +17,11 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/rand_util.h"
 #include "base/sequence_token.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/common/scoped_defer_task_posting.h"
@@ -60,6 +63,10 @@ class CurrentDefaultHandleOverrideForRunOrPostTask {
 };
 
 namespace {
+
+// Targeting tasks that are longer than p99 for session duration.
+constexpr base::TimeDelta kLongDelayedTaskThreshold = base::Minutes(25);
+constexpr double kLongDelayedTaskSubsamplingProbability = 0.001;
 
 // An atomic is used here because the value is queried from other threads when
 // tasks are posted cross-thread, which can race with its initialization.
@@ -1056,6 +1063,24 @@ Task TaskQueueImpl::MakeDelayedTask(PostedTask delayed_task,
   delayed_task.delay_policy = subtle::MaybeOverrideDelayPolicy(
       delayed_task.delay_policy, delay,
       g_max_precise_delay.load(std::memory_order_relaxed));
+
+  if (delay >= kLongDelayedTaskThreshold &&
+      base::ShouldRecordSubsampledMetric(
+          kLongDelayedTaskSubsamplingProbability)) {
+    if (delayed_task.location.has_source_info()) {
+      std::string caller_identifier =
+          base::StringPrintf("%s:%s", delayed_task.location.file_name(),
+                             delayed_task.location.function_name());
+      uint32_t hash = base::HashMetricNameAs32Bits(caller_identifier);
+      base::UmaHistogramSparse(
+          "Scheduling.DelayedTask.LongDelayedTaskPostedLocation",
+          static_cast<int>(hash));
+    } else {
+      base::UmaHistogramSparse(
+          "Scheduling.DelayedTask.LongDelayedTaskPostedLocation", 0);
+    }
+  }
+
   // leeway isn't specified yet since this may be called from any thread.
   return Task(std::move(delayed_task), sequence_number, EnqueueOrder(),
               lazy_now->Now());

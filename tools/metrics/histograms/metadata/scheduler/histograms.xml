@@ -131,6 +131,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Scheduling.DelayedTask.LongDelayedTaskPostedLocation"
+    units="hash" expires_after="2027-06-05">
+  <owner>peilinwang@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Records the hash of callers (file_name:function_name) that post delayed
+    tasks with a delay longer than 25 minutes. Recorded in
+    TaskQueueImpl::MakeDelayedTask when the DelayedTask is created.
+
+    Subsampled with probability 1/1000.
+  </summary>
+</histogram>
+
 <histogram name="Scheduling.MessagePumpDefault.BusyLoop.Duration.TaskArrived"
     units="microseconds" expires_after="2027-04-10">
   <owner>anandrv@google.com</owner>
