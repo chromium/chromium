@@ -21,6 +21,7 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 namespace content {
 class RenderFrameHost;
 class RenderProcessHost;
+class SecurityPrincipal;
 class VpnServiceProxy;
 class WebContents;
 }
@@ -64,7 +65,9 @@ class ChromeContentBrowserClientExtensionsPart
       bool is_outermost_main_frame,
       const GURL& candidate_url,
       const GURL& destination_url);
-  static bool ShouldUseProcessPerSite(Profile* profile, const GURL& site_url);
+  static bool ShouldUseProcessPerSite(
+      Profile* profile,
+      const content::SecurityPrincipal& security_principal);
   static bool ShouldUseSpareRenderProcessHost(Profile* profile,
                                               const GURL& site_url);
   static bool DoesSiteRequireDedicatedProcess(
@@ -76,9 +79,10 @@ class ChromeContentBrowserClientExtensionsPart
       const GURL& url);
   static bool CanCommitURL(content::RenderProcessHost* process_host,
                            const GURL& url);
-  static bool IsSuitableHost(Profile* profile,
-                             content::RenderProcessHost* process_host,
-                             const GURL& site_url);
+  static bool IsSuitableHost(
+      Profile* profile,
+      content::RenderProcessHost* process_host,
+      const content::SecurityPrincipal& security_principal);
   static size_t GetProcessCountToIgnoreForLimit();
   static bool ShouldEmbeddedFramesTryToReuseExistingProcess(
       content::RenderFrameHost* outermost_main_frame);

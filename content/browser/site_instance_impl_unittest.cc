@@ -105,9 +105,9 @@ const base::UnguessableToken kBrowserContextId =
 class SiteInstanceTestBrowserClient : public TestContentBrowserClient {
  public:
   bool IsSuitableHost(RenderProcessHost* process_host,
-                      const GURL& site_url) override {
+                      const SecurityPrincipal& security_principal) override {
     return (privileged_process_id_ == process_host->GetDeprecatedID()) ==
-           site_url.SchemeIs(kPrivilegedScheme);
+           security_principal.SchemeIs(kPrivilegedScheme);
   }
 
   void set_privileged_process_id(int process_id) {

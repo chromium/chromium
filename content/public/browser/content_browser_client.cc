@@ -49,6 +49,7 @@
 #include "content/public/browser/process_selection_deferring_condition.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/responsiveness_calculator_delegate.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/browser/tracing_delegate.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
@@ -179,7 +180,7 @@ bool ContentBrowserClient::IsExplicitNavigation(ui::PageTransition transition) {
 
 bool ContentBrowserClient::ShouldUseProcessPerSite(
     BrowserContext* browser_context,
-    const GURL& site_url) {
+    const SecurityPrincipal& security_principal) {
   DCHECK(browser_context);
   return false;
 }
@@ -306,8 +307,9 @@ bool ContentBrowserClient::ShouldStayInParentProcessForNTP(
   return false;
 }
 
-bool ContentBrowserClient::IsSuitableHost(RenderProcessHost* process_host,
-                                          const GURL& site_url) {
+bool ContentBrowserClient::IsSuitableHost(
+    RenderProcessHost* process_host,
+    const SecurityPrincipal& security_principal) {
   return true;
 }
 

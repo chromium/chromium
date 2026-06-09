@@ -1934,7 +1934,7 @@ bool ChromeContentBrowserClient::
 
 bool ChromeContentBrowserClient::ShouldUseProcessPerSite(
     content::BrowserContext* browser_context,
-    const GURL& site_url) {
+    const content::SecurityPrincipal& security_principal) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (!profile) {
     return false;
@@ -1942,20 +1942,24 @@ bool ChromeContentBrowserClient::ShouldUseProcessPerSite(
 
   // NTP should use process-per-site.  This is a performance optimization to
   // reduce process count associated with NTP tabs.
-  if (site_url == chrome::ChromeUINewTabURLAsGURL() ||
-      site_url == chrome::ChromeUINewTabPageURLAsGURL()) {
-    return true;
+  if (security_principal.SchemeIs(content::kChromeUIScheme)) {
+    const std::string host = security_principal.GetHost();
+    if (host == chrome::kChromeUINewTabHost ||
+        host == chrome::kChromeUINewTabPageHost) {
+      return true;
+    }
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (search::ShouldUseProcessPerSiteForInstantSiteURL(site_url, profile)) {
+  if (search::ShouldUseProcessPerSiteForInstantSiteURL(
+          security_principal.GetDeprecatedSiteURL(), profile)) {
     return true;
   }
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (ChromeContentBrowserClientExtensionsPart::ShouldUseProcessPerSite(
-          profile, site_url)) {
+          profile, security_principal)) {
     return true;
   }
 #endif
@@ -2345,7 +2349,7 @@ bool ChromeContentBrowserClient::ShouldStayInParentProcessForNTP(
 
 bool ChromeContentBrowserClient::IsSuitableHost(
     content::RenderProcessHost* process_host,
-    const GURL& site_url) {
+    const content::SecurityPrincipal& security_principal) {
   Profile* profile =
       Profile::FromBrowserContext(process_host->GetBrowserContext());
   // This may be nullptr during tests. In that case, just assume any site can
@@ -2363,7 +2367,8 @@ bool ChromeContentBrowserClient::IsSuitableHost(
     bool is_instant_process =
         instant_service->IsInstantProcess(process_host->GetDeprecatedID());
     bool should_be_in_instant_process =
-        search::ShouldAssignURLToInstantRenderer(site_url, profile);
+        search::ShouldAssignURLToInstantRenderer(
+            security_principal.GetDeprecatedSiteURL(), profile);
     if (is_instant_process) {
       return should_be_in_instant_process;
     }
@@ -2382,7 +2387,7 @@ bool ChromeContentBrowserClient::IsSuitableHost(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return ChromeContentBrowserClientExtensionsPart::IsSuitableHost(
-      profile, process_host, site_url);
+      profile, process_host, security_principal);
 #else
   return true;
 #endif

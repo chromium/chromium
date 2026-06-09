@@ -792,7 +792,7 @@ bool SiteInfo::ShouldUseProcessPerSite(BrowserContext* browser_context) const {
 
   // Otherwise let the content client decide, defaulting to false.
   return GetContentClient()->browser()->ShouldUseProcessPerSite(browser_context,
-                                                                site_url_);
+                                                                *this);
 }
 
 // static

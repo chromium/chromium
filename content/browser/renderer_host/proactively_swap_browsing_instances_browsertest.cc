@@ -351,8 +351,9 @@ class ProcessPerSiteContentBrowserClient
     should_use_process_per_site_ = should_use_process_per_site;
   }
 
-  bool ShouldUseProcessPerSite(BrowserContext* browser_context,
-                               const GURL& site_url) override {
+  bool ShouldUseProcessPerSite(
+      BrowserContext* browser_context,
+      const SecurityPrincipal& security_principal) override {
     return should_use_process_per_site_;
   }
 

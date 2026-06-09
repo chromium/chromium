@@ -267,6 +267,7 @@ class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
 class RenderProcessHost;
 class ResponsivenessCalculatorDelegate;
+class SecurityPrincipal;
 class SerialDelegate;
 class ServiceWorkerContext;
 class SiteInstance;
@@ -466,10 +467,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsFullscreenAllowedForUnfocusedWebContents(
       content::WebContents* unfocused_web_contents);
 
-  // Returns whether all instances of the specified site URL should be
-  // rendered by the same process, rather than using process-per-site-instance.
-  virtual bool ShouldUseProcessPerSite(BrowserContext* browser_context,
-                                       const GURL& site_url);
+  // Returns whether SiteInstances matching the specified |security_principal|
+  // should share a single renderer process, rather than each getting its own
+  // process (the default process-per-site-instance mode).
+  virtual bool ShouldUseProcessPerSite(
+      BrowserContext* browser_context,
+      const SecurityPrincipal& security_principal);
 
   // Returns true if the embedder prefers reusing any same-site renderer process
   // not over-utilized for a main frame site instance for
@@ -685,10 +688,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldStayInParentProcessForNTP(const GURL& url,
                                                const GURL& parent_site_url);
 
-  // Returns whether a new view for a given |site_url| can be launched in a
-  // given |process_host|.
+  // Returns whether a new view for a given |security_principal| can be
+  // launched in a given |process_host|.
   virtual bool IsSuitableHost(RenderProcessHost* process_host,
-                              const GURL& site_url);
+                              const SecurityPrincipal& security_principal);
 
   // Returns whether a new view for a new site instance can be added to a
   // given |process_host|.

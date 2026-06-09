@@ -508,7 +508,7 @@ class SpareRendererContentBrowserClient
     : public ContentBrowserTestContentBrowserClient {
  public:
   bool IsSuitableHost(RenderProcessHost* process_host,
-                      const GURL& site_url) override {
+                      const SecurityPrincipal& security_principal) override {
     const auto& spares = SpareRenderProcessHostManagerImpl::Get().GetSpares();
     if (!spares.empty()) {
       return std::ranges::contains(spares, process_host);
@@ -530,7 +530,7 @@ class NonSpareRendererContentBrowserClient
       const NonSpareRendererContentBrowserClient&) = delete;
 
   bool IsSuitableHost(RenderProcessHost* process_host,
-                      const GURL& site_url) override {
+                      const SecurityPrincipal& security_principal) override {
     return !process_host->IsSpare();
   }
 

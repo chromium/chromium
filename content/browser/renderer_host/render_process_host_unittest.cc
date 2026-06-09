@@ -360,7 +360,7 @@ class UnsuitableHostContentBrowserClient : public ContentBrowserClient {
 
  private:
   bool IsSuitableHost(RenderProcessHost* process_host,
-                      const GURL& site_url) override {
+                      const SecurityPrincipal& security_principal) override {
     return false;
   }
 };

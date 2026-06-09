@@ -5024,8 +5024,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // Finally, let the embedder decide if there are any last reasons to consider
   // this process unsuitable. This check is last so that it cannot override any
   // of the earlier reasons.
-  return GetContentClient()->browser()->IsSuitableHost(host,
-                                                       site_info.site_url());
+  return GetContentClient()->browser()->IsSuitableHost(host, site_info);
 }
 
 // static

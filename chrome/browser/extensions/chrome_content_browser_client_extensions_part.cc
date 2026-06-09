@@ -110,19 +110,6 @@ namespace {
 // If non-null, a scope of a service worker to always allow to be unregistered.
 const GURL* g_allow_service_worker_unregistration_scope = nullptr;
 
-// Deprecated, prefer using GetEnabledExtensionFromSecurityPrincipal() instead.
-const Extension* GetEnabledExtensionFromSiteURL(BrowserContext* context,
-                                                const GURL& site_url) {
-  if (!site_url.SchemeIs(kExtensionScheme))
-    return nullptr;
-
-  ExtensionRegistry* registry = ExtensionRegistry::Get(context);
-  if (!registry)
-    return nullptr;
-
-  return registry->enabled_extensions().GetByID(site_url.GetHost());
-}
-
 const Extension* GetEnabledExtensionFromSecurityPrincipal(
     BrowserContext* context,
     const content::SecurityPrincipal& principal) {
@@ -311,9 +298,9 @@ bool ChromeContentBrowserClientExtensionsPart::
 // static
 bool ChromeContentBrowserClientExtensionsPart::ShouldUseProcessPerSite(
     Profile* profile,
-    const GURL& site_url) {
+    const content::SecurityPrincipal& security_principal) {
   const Extension* extension =
-      GetEnabledExtensionFromSiteURL(profile, site_url);
+      GetEnabledExtensionFromSecurityPrincipal(profile, security_principal);
   if (!extension)
     return false;
 
@@ -469,7 +456,7 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
 bool ChromeContentBrowserClientExtensionsPart::IsSuitableHost(
     Profile* profile,
     content::RenderProcessHost* process_host,
-    const GURL& site_url) {
+    const content::SecurityPrincipal& security_principal) {
   DCHECK(profile);
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
@@ -480,32 +467,32 @@ bool ChromeContentBrowserClientExtensionsPart::IsSuitableHost(
   if (!registry || !process_map)
     return true;
 
-  // Don't use a process that's not in the ProcessMap for a site URL that
-  // corresponds to an enabled extension. For example, this prevents a
+  // Don't use a process that's not in the ProcessMap for a security principal
+  // that corresponds to an enabled extension. For example, this prevents a
   // navigation to an enabled extension's URL from reusing a process that has
   // previously loaded non-functional URLs from that same extension while it
   // was disabled.
   //
-  // Note that this is called on site URLs that have been computed after
-  // effective URL translation, so site URLs with an extension scheme capture
-  // SiteInstances for both extensions and hosted apps.
+  // Note that this is called on security principals that have been computed
+  // after effective URL translation, so principals with an extension scheme
+  // capture SiteInstances for both extensions and hosted apps.
   const Extension* extension =
-      GetEnabledExtensionFromSiteURL(profile, site_url);
+      GetEnabledExtensionFromSecurityPrincipal(profile, security_principal);
   if (extension &&
       !process_map->Contains(extension->id(), process_host->GetID())) {
     return false;
   }
 
-  // Conversely, don't use an extension process for a site URL that does not
-  // map to an enabled extension. For example, this prevents a reload of an
-  // extension or app that has just been disabled from staying in the
+  // Conversely, don't use an extension process for a security principal that
+  // does not map to an enabled extension. For example, this prevents a reload
+  // of an extension or app that has just been disabled from staying in the
   // privileged extension process.
   if (!extension && process_map->Contains(process_host->GetID())) {
     return false;
   }
 
   // Otherwise, the extensions layer is ok with using `process_host` for
-  // `site_url`.
+  // `security_principal`.
   return true;
 }
 

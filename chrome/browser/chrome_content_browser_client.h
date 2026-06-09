@@ -201,8 +201,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool is_outermost_main_frame,
       const GURL& candidate_url,
       const GURL& destination_url) override;
-  bool ShouldUseProcessPerSite(content::BrowserContext* browser_context,
-                               const GURL& site_url) override;
+  bool ShouldUseProcessPerSite(
+      content::BrowserContext* browser_context,
+      const content::SecurityPrincipal& security_principal) override;
   bool ShouldReuseAnyExistingProcessForNewMainFrameSiteInstance(
       content::BrowserContext* browser_context,
       const GURL& site_instance_original_url) override;
@@ -261,8 +262,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost* render_frame_host) override;
   bool ShouldStayInParentProcessForNTP(const GURL& url,
                                        const GURL& parent_site_url) override;
-  bool IsSuitableHost(content::RenderProcessHost* process_host,
-                      const GURL& site_url) override;
+  bool IsSuitableHost(
+      content::RenderProcessHost* process_host,
+      const content::SecurityPrincipal& security_principal) override;
   bool MayReuseHost(content::RenderProcessHost* process_host) override;
   size_t GetProcessCountToIgnoreForLimit() override;
   bool SupportsBaselinePermissionsPolicyForIsolatedApp() override;
