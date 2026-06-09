@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 java_cpp_enum("enums_java") {
   sources = [
@@ -11,8 +12,15 @@ java_cpp_enum("enums_java") {
   ]
 }
 
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetComponentProvider.java" ]
+}
+
 android_library("java") {
-  srcjar_deps = [ ":enums_java" ]
+  srcjar_deps = [
+    ":enums_java",
+    ":jni_headers",
+  ]
   sources = [
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetComponentProvider.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetContent.java",
@@ -27,6 +35,7 @@ android_library("java") {
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
 }

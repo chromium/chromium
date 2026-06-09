@@ -10,11 +10,17 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.Px;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.build.annotations.NullMarked;
 
 /** Interface providing specialized components for different client features. */
 @NullMarked
 public interface TabBottomSheetComponentProvider {
+    /** Destroys the component provider and releases any resources. */
+    @CalledByNative
+    default void destroy() {}
+
     /**
      * Instantiates a new instance of {@link TabBottomSheetContent}.
      *

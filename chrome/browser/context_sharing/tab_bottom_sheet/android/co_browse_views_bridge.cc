@@ -19,6 +19,7 @@
 // avoid 'specialization after instantiation' errors for ToJniType.
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/CoBrowseViewFactory_jni.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/CoBrowseViews_jni.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/public/android/jni_headers/TabBottomSheetComponentProvider_jni.h"
 
 using base::android::AttachCurrentThread;
 
@@ -46,6 +47,13 @@ CoBrowseViewsBridge::CoBrowseViewsBridge(
       bottom_sheet_content_provider_(bottom_sheet_content_provider) {}
 
 CoBrowseViewsBridge::~CoBrowseViewsBridge() {
+  if (bottom_sheet_content_provider_) {
+    JNIEnv* env = AttachCurrentThread();
+    Java_TabBottomSheetComponentProvider_destroy(
+        env, bottom_sheet_content_provider_);
+    bottom_sheet_content_provider_.Reset();
+  }
+
   DestroyCoBrowseViews();
 }
 
