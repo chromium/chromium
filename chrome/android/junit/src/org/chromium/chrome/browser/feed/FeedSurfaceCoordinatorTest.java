@@ -51,6 +51,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -68,6 +69,8 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManag
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpBackgroundImageCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -522,6 +525,48 @@ public class FeedSurfaceCoordinatorTest {
         assertEquals(0, mCoordinator.getRootViewForTesting().getChildCount());
 
         mCoordinator = null;
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.WIDE_SCREEN_FEED_FOR_FOLDABLES)
+    public void testOnSurfaceOpened_wideScreenStateChanged() {
+        DeviceInfo.setIsFoldableForTesting(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.FEED_PREVIOUS_WIDESCREEN_STATE, false);
+
+        FeedSurfaceTracker.getInstance().startup();
+
+        verify(mMediatorSpy).manualRefresh(any());
+        assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.FEED_PREVIOUS_WIDESCREEN_STATE, false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.WIDE_SCREEN_FEED_FOR_FOLDABLES)
+    public void testOnSurfaceOpened_wideScreenStateNotChanged() {
+        DeviceInfo.setIsFoldableForTesting(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.FEED_PREVIOUS_WIDESCREEN_STATE, true);
+
+        FeedSurfaceTracker.getInstance().startup();
+
+        verify(mMediatorSpy, never()).manualRefresh(any());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.WIDE_SCREEN_FEED_FOR_FOLDABLES)
+    public void testOnSurfaceOpened_wideScreenStateChanged_featureDisabled() {
+        DeviceInfo.setIsFoldableForTesting(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.FEED_PREVIOUS_WIDESCREEN_STATE, true);
+
+        FeedSurfaceTracker.getInstance().startup();
+
+        verify(mMediatorSpy).manualRefresh(any());
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.FEED_PREVIOUS_WIDESCREEN_STATE, true));
     }
 
     @Test

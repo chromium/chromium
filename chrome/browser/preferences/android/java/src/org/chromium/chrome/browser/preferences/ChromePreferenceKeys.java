@@ -400,6 +400,10 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix EXTENSIONS_CHROME_PAGE_URL_OVERRIDE_ENABLED =
             new KeyPrefix("Chrome.ExtensionsUrlOverrides.Page.*");
 
+    /** Indicates the previous widescreen state of the feed. */
+    public static final String FEED_PREVIOUS_WIDESCREEN_STATE =
+            "Chrome.Feed.PreviousWidescreenState";
+
     public static final String FIRST_RUN_FLOW_COMPLETE = "first_run_flow";
     // BACKUP_FLOW_SIGNIN_ACCOUNT_NAME used to be employed for the FRE too, thus the "first_run_"
     // prefix. The string should NOT be changed without some sort of migration.
@@ -1238,6 +1242,7 @@ public final class ChromePreferenceKeys {
                 EDUCATIONAL_TIP_LAST_DEFAULT_BROWSER_PROMO_TIMESTAMP,
                 EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 EXTENSIONS_CHROME_PAGE_URL_OVERRIDE_ENABLED.pattern(),
+                FEED_PREVIOUS_WIDESCREEN_STATE,
                 FIRST_RUN_SKIPPED_BY_POLICY,
                 FIRST_CTA_START_TIMESTAMP,
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
