@@ -1146,6 +1146,22 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.Integrity.CustomPopulatedDefault" enum="Boolean"
+    expires_after="2026-10-20">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether the default search engine is a custom search engine but has
+    a non-zero `prepopulate_id`. This helps identify engines that are not part
+    of the standard prepopulated list but are appearing in the default search
+    list.
+
+    Recorded once per profile at startup when the search engine allowlist is
+    initialized and the configuration is checked.
+  </summary>
+</histogram>
+
 <histogram
     name="Search.Integrity.Enterprise.IsDefaultCustomWithMatchingPolicyEngine"
     enum="Boolean" expires_after="2026-10-20">
