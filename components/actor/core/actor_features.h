@@ -112,6 +112,7 @@ extern const base::FeatureParam<base::TimeDelta>
 
 BASE_DECLARE_FEATURE(kGlicActorTransientTasks);
 extern const base::FeatureParam<bool> kGlicActorTransientTasksForceTransient;
+extern const base::FeatureParam<base::TimeDelta> kGlicActorTransientTasksDelay;
 
 BASE_DECLARE_FEATURE(kGlicActorEnableScriptTools);
 extern const base::FeatureParam<base::TimeDelta>

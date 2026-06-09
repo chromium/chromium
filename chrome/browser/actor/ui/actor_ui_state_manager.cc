@@ -18,6 +18,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
+#include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -87,16 +88,6 @@ constexpr UiTabState kCompletedUiTabState = {
     .border_glow_visible = false,
 };
 
-UiTabState GetActorControlledUiTabState(ActorTask::TaskDuration duration) {
-  switch (duration) {
-    case ActorTask::TaskDuration::kDefault:
-      return kDefaultActorState;
-    case ActorTask::TaskDuration::kTransient:
-      return kTransientActorState;
-  }
-  NOTREACHED();
-}
-
 struct TabUiUpdate {
   raw_ptr<TabInterface> tab;
   UiTabState ui_tab_state;
@@ -165,6 +156,50 @@ ActorTask::TaskDuration ActorUiStateManager::GetDuration(
   return ActorTask::TaskDuration::kDefault;
 }
 
+UiTabState ActorUiStateManager::GetActorControlledUiTabState(TaskId task_id) {
+  switch (GetDuration(task_id)) {
+    case ActorTask::TaskDuration::kDefault:
+      return kDefaultActorState;
+    case ActorTask::TaskDuration::kTransient: {
+      auto it = transient_task_timers_.find(task_id);
+      if (it != transient_task_timers_.end() && !it->second->IsRunning()) {
+        return kDefaultActorState;
+      }
+      return kTransientActorState;
+    }
+  }
+  NOTREACHED();
+}
+
+UiTabState ActorUiStateManager::GetActorControlledUiTabState(
+    const tabs::TabInterface* tab) {
+  if (ActorTask* task = tab ? actor_service_->GetTaskFromTab(*tab) : nullptr) {
+    return GetActorControlledUiTabState(task->id());
+  }
+  return kDefaultActorState;
+}
+
+void ActorUiStateManager::OnTransientTaskDelayExpired(TaskId task_id) {
+  std::optional<ActorTask::State> state = GetActorTaskState(task_id);
+  if (state && (*state == ActorTask::State::kActing ||
+                *state == ActorTask::State::kReflecting)) {
+    OnActorTaskStateChange(task_id, *state);
+  }
+}
+
+void ActorUiStateManager::StopTimer(TaskId task_id) {
+  auto it = transient_task_timers_.find(task_id);
+  if (it != transient_task_timers_.end()) {
+    it->second->Stop();
+  } else {
+    // If the timer doesn't exist yet (e.g. we transitioned to a waiting/paused
+    // state before any acting started), we insert a stopped (not running)
+    // timer.  This will trigger the default (non-transient) UI.
+    auto timer = std::make_unique<base::OneShotTimer>();
+    transient_task_timers_[task_id] = std::move(timer);
+  }
+}
+
 // TODO(crbug.com/424495020): If the tab doesn't exist we will silently
 // fail/not send a callback in the interim until these tasks are able to
 // accept a callback.
@@ -183,13 +218,25 @@ void ActorUiStateManager::OnActorTaskStateChange(
           << "Task state should never be set to kCreated from another state.";
     case ActorTask::State::kActing:
     case ActorTask::State::kReflecting:
-      ui_tab_state = GetActorControlledUiTabState(GetDuration(task_id));
+      if (GetDuration(task_id) == ActorTask::TaskDuration::kTransient) {
+        if (!transient_task_timers_.contains(task_id)) {
+          auto timer = std::make_unique<base::OneShotTimer>();
+          timer->Start(
+              FROM_HERE, actor::kGlicActorTransientTasksDelay.Get(),
+              base::BindOnce(&ActorUiStateManager::OnTransientTaskDelayExpired,
+                             weak_factory_.GetWeakPtr(), task_id));
+          transient_task_timers_[task_id] = std::move(timer);
+        }
+      }
+      ui_tab_state = GetActorControlledUiTabState(task_id);
       break;
     case ActorTask::State::kWaitingOnUser:
+      StopTimer(task_id);
       ui_tab_state = kWaitingOnUserUiTabState;
       break;
     case ActorTask::State::kPausedByUser:
     case ActorTask::State::kPausedByActor:
+      StopTimer(task_id);
       ui_tab_state = kPausedUiTabState;
       break;
     case ActorTask::State::kFailed:
@@ -232,24 +279,23 @@ void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
               DebugString(event));
   if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
     const TabUiUpdate update = std::visit(
-        absl::Overload{
-            [this](const StartingToActOnTab& e) -> TabUiUpdate {
-              return TabUiUpdate{
-                  e.tab_handle.Get(),
-                  GetActorControlledUiTabState(GetDuration(e.task_id))};
-            },
-            [this](const MouseClick& e) -> TabUiUpdate {
-              UiTabState ui_tab_state =
-                  GetActorControlledUiTabState(GetDuration(e.tab_handle.Get()));
-              ui_tab_state.actor_overlay.mouse_down = true;
-              return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
-            },
-            [this](const MouseMove& e) -> TabUiUpdate {
-              UiTabState ui_tab_state =
-                  GetActorControlledUiTabState(GetDuration(e.tab_handle.Get()));
-              ui_tab_state.actor_overlay.mouse_target = e.target;
-              return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
-            }},
+        absl::Overload{[this](const StartingToActOnTab& e) -> TabUiUpdate {
+                         return TabUiUpdate{
+                             e.tab_handle.Get(),
+                             GetActorControlledUiTabState(e.task_id)};
+                       },
+                       [this](const MouseClick& e) -> TabUiUpdate {
+                         UiTabState ui_tab_state =
+                             GetActorControlledUiTabState(e.tab_handle.Get());
+                         ui_tab_state.actor_overlay.mouse_down = true;
+                         return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
+                       },
+                       [this](const MouseMove& e) -> TabUiUpdate {
+                         UiTabState ui_tab_state =
+                             GetActorControlledUiTabState(e.tab_handle.Get());
+                         ui_tab_state.actor_overlay.mouse_target = e.target;
+                         return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
+                       }},
         event);
     if (auto* tab_controller =
             ActorUiTabControllerInterface::From(update.tab)) {
@@ -291,6 +337,7 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
             this->OnActorTaskStateChange(e.task_id, e.state);
           },
           [this](const StopTask& e) {
+            transient_task_timers_.erase(e.task_id);
             // Cancelled tasks are intentionally not stored.
             if (e.final_state == ActorTask::State::kCancelled) {
               NotifyActorTaskStopped(e.task_id);

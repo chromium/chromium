@@ -57,6 +57,11 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
 
  private:
+  UiTabState GetActorControlledUiTabState(TaskId task_id);
+  UiTabState GetActorControlledUiTabState(const tabs::TabInterface* tab);
+  void OnTransientTaskDelayExpired(TaskId task_id);
+  void StopTimer(TaskId task_id);
+
   ActorTask::TaskDuration GetDuration(const tabs::TabInterface* tab);
   // Notify profile scoped ui components about actor task state changes.
   void NotifyActorTaskStateChange(TaskId task_id);
@@ -75,6 +80,10 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // cancelled by the user. Elements in this map are cleared after
   // kGlicActorUiCompletedTaskExpiryDelaySeconds period of time.
   absl::flat_hash_map<TaskId, StoppedTaskInfo> stopped_task_info_;
+
+  // One-shot timers for active transient tasks UI delays.
+  absl::flat_hash_map<TaskId, std::unique_ptr<base::OneShotTimer>>
+      transient_task_timers_;
 
   base::OneShotTimer notify_actor_task_state_change_debounce_timer_;
 
