@@ -12,7 +12,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*_unittest\.cc": [
+  ".*_unittest\\.cc": [
     "+services/network/network_service.h",
   ],
 }
