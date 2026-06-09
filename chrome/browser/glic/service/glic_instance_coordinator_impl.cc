@@ -919,8 +919,12 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
 
 std::vector<glic::mojom::ConversationInfoPtr>
 GlicInstanceCoordinatorImpl::GetRecentlyActiveConversations(size_t limit) {
+  base::TimeDelta limit_delta = base::TimeDelta::Max();
+  if (base::FeatureList::IsEnabled(kGlicMaxRecency)) {
+    limit_delta = kGlicMaxRecencyValue.Get();
+  }
   std::vector<GlicInstanceImpl*> sorted_instances =
-      GetSortedRecentInstances(limit);
+      GetSortedRecentInstances(limit, limit_delta);
 
   std::vector<glic::mojom::ConversationInfoPtr> result;
   for (auto* instance : sorted_instances) {
@@ -932,9 +936,11 @@ GlicInstanceCoordinatorImpl::GetRecentlyActiveConversations(size_t limit) {
 }
 
 std::vector<ConversationInfo>
-GlicInstanceCoordinatorImpl::GetRecentlyActiveInstances(size_t limit) {
+GlicInstanceCoordinatorImpl::GetRecentlyActiveInstances(
+    size_t limit,
+    base::TimeDelta max_time_since_active) {
   std::vector<GlicInstanceImpl*> sorted_instances =
-      GetSortedRecentInstances(limit);
+      GetSortedRecentInstances(limit, max_time_since_active);
 
   std::vector<ConversationInfo> result;
   for (auto* instance : sorted_instances) {
@@ -961,7 +967,9 @@ void GlicInstanceCoordinatorImpl::UnpinTabsFromAllInstances(
 }
 
 std::vector<GlicInstanceImpl*>
-GlicInstanceCoordinatorImpl::GetSortedRecentInstances(size_t limit) const {
+GlicInstanceCoordinatorImpl::GetSortedRecentInstances(
+    size_t limit,
+    base::TimeDelta max_time_since_active) const {
   // This will only cover recently active conversations that still have living
   // instances. If an instance is torn down because the user closed all bound
   // tabs, it will not be included in the list.
@@ -970,8 +978,7 @@ GlicInstanceCoordinatorImpl::GetSortedRecentInstances(size_t limit) const {
     if (!instance->conversation_id()) {
       continue;
     }
-    if (base::FeatureList::IsEnabled(kGlicMaxRecency) &&
-        instance->GetTimeSinceLastActive() > kGlicMaxRecencyValue.Get()) {
+    if (instance->GetTimeSinceLastActive() > max_time_since_active) {
       continue;
     }
     sorted_instances.push_back(instance.get());

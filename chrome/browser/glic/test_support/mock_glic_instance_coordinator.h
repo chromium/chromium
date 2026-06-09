@@ -99,7 +99,7 @@ class MockGlicInstanceCoordinator
               (override));
   MOCK_METHOD(std::vector<ConversationInfo>,
               GetRecentlyActiveInstances,
-              (size_t),
+              (size_t, base::TimeDelta),
               (override));
   MOCK_METHOD(bool,
               IsTabPinnedToAnyInstance,

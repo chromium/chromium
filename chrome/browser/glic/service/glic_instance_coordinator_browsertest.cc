@@ -1541,4 +1541,68 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_EQ(coordinator().GetInstanceImplFor(instance_id), instance);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       GetRecentlyActiveInstances) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  tabs::TabInterface* tab3 = CreateAndActivateTab(GURL("about:blank"));
+
+  // Open Glic on tab1, register conversation, and close.
+  GetTabListInterface()->ActivateTab(tab1->GetHandle());
+  ASSERT_OK_AND_ASSIGN(auto* instance1, OpenGlicForActiveTab());
+  PreventDeletionOnClose(instance1, "conv1");
+  ASSERT_OK(CloseGlicForTabAndWait(tab1));
+
+  // Open Glic on tab2, register conversation, and close.
+  GetTabListInterface()->ActivateTab(tab2->GetHandle());
+  ASSERT_OK_AND_ASSIGN(auto* instance2, OpenGlicForActiveTab());
+  PreventDeletionOnClose(instance2, "conv2");
+  ASSERT_OK(CloseGlicForTabAndWait(tab2));
+
+  // Open Glic on tab3, register conversation, keep open.
+  GetTabListInterface()->ActivateTab(tab3->GetHandle());
+  ASSERT_OK_AND_ASSIGN(auto* instance3, OpenGlicForActiveTab());
+  PreventDeletionOnClose(instance3, "conv3");
+
+  // Query with limit 5, no age limit. Should return all 3, newest first.
+  {
+    std::vector<ConversationInfo> result =
+        coordinator().GetRecentlyActiveInstances(5, base::TimeDelta::Max());
+    ASSERT_EQ(result.size(), 3u);
+    EXPECT_EQ(result[0].instance_id, instance3->id());
+    EXPECT_EQ(result[1].instance_id, instance2->id());
+    EXPECT_EQ(result[2].instance_id, instance1->id());
+  }
+
+  // Query with limit 2, no age limit. Should return 2 newest.
+  {
+    std::vector<ConversationInfo> result =
+        coordinator().GetRecentlyActiveInstances(2, base::TimeDelta::Max());
+    ASSERT_EQ(result.size(), 2u);
+    EXPECT_EQ(result[0].instance_id, instance3->id());
+    EXPECT_EQ(result[1].instance_id, instance2->id());
+  }
+
+  // Wait 200ms to ensure closed instances are older than 100ms.
+  {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(200));
+    run_loop.Run();
+  }
+
+  // Query with limit 5, max_age = 100ms.
+  // instance3 is open (age = 0) -> INCLUDED.
+  // instance2 is closed (age > 200ms) -> EXCLUDED.
+  // instance1 is closed (age > 200ms) -> EXCLUDED.
+  {
+    std::vector<ConversationInfo> result =
+        coordinator().GetRecentlyActiveInstances(5, base::Milliseconds(100));
+    ASSERT_EQ(result.size(), 1u);
+    EXPECT_EQ(result[0].instance_id, instance3->id());
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace glic

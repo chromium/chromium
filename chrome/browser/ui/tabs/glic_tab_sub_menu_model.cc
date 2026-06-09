@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -34,7 +35,7 @@ GlicTabSubMenuModel::GlicTabSubMenuModel(TabStripModel* tab_strip_model,
 
   recent_conversations_ =
       glic_service->instance_coordinator().GetRecentlyActiveInstances(
-          kMaxRecentConversations);
+          kMaxRecentConversations, base::TimeDelta::Max());
 
   if (!recent_conversations_.empty()) {
     AddSeparator(ui::NORMAL_SEPARATOR);

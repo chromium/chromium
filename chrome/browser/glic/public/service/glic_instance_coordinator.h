@@ -15,6 +15,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
@@ -79,7 +80,8 @@ class GlicInstanceCoordinator {
   virtual void ShowInstanceForTabs(const std::vector<tabs::TabInterface*>& tabs,
                                    const InstanceId& instance_id) = 0;
   virtual std::vector<ConversationInfo> GetRecentlyActiveInstances(
-      size_t limit) = 0;
+      size_t limit,
+      base::TimeDelta max_time_since_active) = 0;
 
   virtual bool IsTabPinnedToAnyInstance(
       const tabs::TabHandle& tab_handle) const = 0;
