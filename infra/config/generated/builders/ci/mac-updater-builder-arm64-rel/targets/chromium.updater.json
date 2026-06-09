@@ -4,63 +4,6 @@
       "chrome/updater:all"
     ]
   },
-  "mac12-arm64-updater-tester-rel": {
-    "gtest_tests": [
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "module_name": "//chrome/updater:updater_fuzztests",
-        "module_scheme": "gtest",
-        "name": "updater_fuzztests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-12"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "updater_fuzztests",
-        "test_id_prefix": "ninja://chrome/updater:updater_fuzztests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "module_name": "//chrome/updater:updater_tests",
-        "module_scheme": "gtest",
-        "name": "updater_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-12",
-            "pool": "chromium.tests"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "updater_tests",
-        "test_id_prefix": "ninja://chrome/updater:updater_tests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "module_name": "//chrome/updater:updater_tests_system",
-        "module_scheme": "gtest",
-        "name": "updater_tests_system",
-        "swarming": {
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-12",
-            "pool": "chromium.tests.updater"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "updater_tests_system",
-        "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
-      }
-    ]
-  },
   "mac15-arm64-updater-tester-rel": {
     "gtest_tests": [
       {

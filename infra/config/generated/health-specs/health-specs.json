@@ -12062,50 +12062,8 @@
           }
         ]
       },
-      "mac12-arm64-updater-tester-rel": {
-        "contact_team_email": "omaha-core@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "mac12-x64-enterprise-companion-tester-asan-dbg": {
         "contact_team_email": "omaha-client-dev@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "mac12-x64-updater-tester-asan-dbg": {
-        "contact_team_email": "omaha-core@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

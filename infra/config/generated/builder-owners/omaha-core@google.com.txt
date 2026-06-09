@@ -7,8 +7,6 @@ ci/mac-updater-builder-arm64-rel
 ci/mac-updater-builder-asan-dbg
 ci/mac-updater-builder-dbg
 ci/mac-updater-builder-rel
-ci/mac12-arm64-updater-tester-rel
-ci/mac12-x64-updater-tester-asan-dbg
 ci/mac13-arm64-updater-tester-dbg
 ci/mac13-x64-updater-tester-rel
 ci/mac14-arm64-updater-tester-dbg
