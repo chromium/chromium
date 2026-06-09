@@ -77,6 +77,27 @@ TEST_F(OnDeviceAiSettingsHandlerTest, HandleSetOnDeviceAIEnabled) {
 }
 
 TEST_F(OnDeviceAiSettingsHandlerTest,
+       HandleSetOnDeviceAiEnabled_PolicyDisabled) {
+  // Ensure the pref is initially false for this test.
+  local_state()->SetBoolean(kOnDeviceAiUserSettingsEnabled, false);
+
+  using optimization_guide::model_execution::prefs::
+      GenAILocalFoundationalModelEnterprisePolicySettings;
+  local_state()->SetInteger(
+      optimization_guide::model_execution::prefs::localstate::
+          kGenAILocalFoundationalModelEnterprisePolicySettings,
+      static_cast<int>(
+          GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed));
+
+  base::ListValue args;
+  args.Append(true);
+  handler()->HandleSetOnDeviceAiEnabled(args);
+
+  EXPECT_FALSE(local_state()->GetBoolean(kOnDeviceAiUserSettingsEnabled));
+}
+
+
+TEST_F(OnDeviceAiSettingsHandlerTest,
        HandleGetOnDeviceAiEnabled_PolicyDisabled) {
   using optimization_guide::model_execution::prefs::
       GenAILocalFoundationalModelEnterprisePolicySettings;

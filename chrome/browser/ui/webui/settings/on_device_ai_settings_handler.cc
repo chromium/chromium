@@ -89,9 +89,22 @@ void OnDeviceAiSettingsHandler::HandleGetOnDeviceAiEnabled(
 void OnDeviceAiSettingsHandler::HandleSetOnDeviceAiEnabled(
     const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
+
+  PrefService* local_state = g_browser_process->local_state();
+  using optimization_guide::model_execution::prefs::
+      GenAILocalFoundationalModelEnterprisePolicySettings;
+  bool disallowed_by_policy =
+      optimization_guide::
+          GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state) ==
+      GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed;
+  if (disallowed_by_policy) {
+    LOG(ERROR) << "Cannot set on-device AI user setting when disallowed "
+                  "by policy.";
+    return;
+  }
+
   bool enabled = args[0].GetBool();
-  g_browser_process->local_state()->SetBoolean(kOnDeviceAiUserSettingsEnabled,
-                                               enabled);
+  local_state->SetBoolean(kOnDeviceAiUserSettingsEnabled, enabled);
 }
 
 void OnDeviceAiSettingsHandler::HandleOpenFeedbackDialog(
