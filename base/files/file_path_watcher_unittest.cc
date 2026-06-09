@@ -914,13 +914,15 @@ TEST_F(FilePathWatcherTest, WatchDirectory) {
   }
   delegate.RunUntilEventsMatch(event_expecter);
 
-#if !BUILDFLAG(IS_APPLE)
   ASSERT_TRUE(WriteFile(file1, "content v2"));
-  // Mac implementation does not detect files modified in a directory.
-  // TODO(crbug.com/40263777): Expect that no events are fired on Mac.
+#if BUILDFLAG(IS_APPLE)
+  // Apple implementation does not detect files modified in a directory.
   // TODO(crbug.com/40105284): Consider using FSEvents to support
   // watching a directory and its immediate children, as Type::kNonRecursive
   // does on other platforms.
+  delegate.RunUntilEventsMatch(event_expecter.GetMatcher(),
+                               ExpectedEventsSinceLastWait::kNone);
+#else
   VLOG(1) << "Waiting for file1 modification";
   event_expecter.AddExpectedEventForPath(dir);
 #if BUILDFLAG(IS_WIN)
@@ -929,7 +931,7 @@ TEST_F(FilePathWatcherTest, WatchDirectory) {
   event_expecter.AddExpectedEventForPath(dir);
 #endif
   delegate.RunUntilEventsMatch(event_expecter);
-#endif  // !BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
   ASSERT_TRUE(DeleteFile(file1));
   VLOG(1) << "Waiting for file1 deletion";
