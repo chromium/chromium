@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './simple_action_menu.js';
+import './grouped_action_menu.js';
 
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -14,13 +14,13 @@ import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_ty
 import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
+import type {GroupedActionMenuElement} from './grouped_action_menu.js';
 import {getHtml} from './line_focus_menu.html.js';
-import type {MenuStateItem, ToolbarMenu} from './menu_util.js';
-import type {SimpleActionMenuElement} from './simple_action_menu.js';
+import type {MenuGroup, MenuStateItem, ToolbarMenu} from './menu_util.js';
 
 export interface LineFocusMenuElement {
   $: {
-    menu: SimpleActionMenuElement,
+    menu: GroupedActionMenuElement,
   };
 }
 
@@ -43,7 +43,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
       nonModal: {type: Boolean},
       lineFocusStyle: {type: Object},
       lineFocusMovement: {type: Number},
-      options_: {type: Array},
+      groups_: {type: Array},
     };
   }
 
@@ -54,63 +54,56 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
 
   private styleOptions_: Array<MenuStateItem<LineFocusStyle>> = [
     {
-      header: {
-        title: loadTimeData.getString('lineFocusStyleHeading'),
-        separator: false,
-      },
       title: loadTimeData.getString('lineFocusOffTitle'),
-      ariaLabel: loadTimeData.getString('lineFocusOffAriaLabel'),
       data: LineFocusStyle.OFF,
-      eventName: ToolbarEvent.LINE_FOCUS_STYLE,
     },
     {
       title: loadTimeData.getString('lineFocusUnderlineTitle'),
-      ariaLabel: loadTimeData.getString('lineFocusUnderlineAriaLabel'),
       data: LineFocusStyle.UNDERLINE,
-      eventName: ToolbarEvent.LINE_FOCUS_STYLE,
     },
     {
       title: loadTimeData.getString('lineFocusOneLineTitle'),
-      ariaLabel: loadTimeData.getString('lineFocusOneLineAriaLabel'),
       data: LineFocusStyle.SMALL_WINDOW,
-      eventName: ToolbarEvent.LINE_FOCUS_STYLE,
     },
     {
       title: loadTimeData.getString('lineFocusThreeLineTitle'),
-      ariaLabel: loadTimeData.getString('lineFocusThreeLineAriaLabel'),
       data: LineFocusStyle.MEDIUM_WINDOW,
-      eventName: ToolbarEvent.LINE_FOCUS_STYLE,
     },
     {
       title: loadTimeData.getString('lineFocusFiveLineTitle'),
-      ariaLabel: loadTimeData.getString('lineFocusFiveLineAriaLabel'),
       data: LineFocusStyle.LARGE_WINDOW,
-      eventName: ToolbarEvent.LINE_FOCUS_STYLE,
     },
   ];
 
   private movementOptions_: Array<MenuStateItem<LineFocusMovement>> = [
     {
-      header: {
-        title: loadTimeData.getString('lineFocusMovementHeading'),
-        separator: true,
-      },
       title: loadTimeData.getString('lineFocusStaticTitle'),
-      ariaLabel: loadTimeData.getString('lineFocusStaticAriaLabel'),
       data: LineFocusMovement.STATIC,
-      eventName: ToolbarEvent.LINE_FOCUS_MOVEMENT,
     },
     {
       title: loadTimeData.getString('lineFocusCursorLineTitle'),
-      ariaLabel: loadTimeData.getString('lineFocusCursorLineAriaLabel'),
       data: LineFocusMovement.CURSOR,
-      eventName: ToolbarEvent.LINE_FOCUS_MOVEMENT,
     },
   ];
-  protected accessor options_:
-      Array<MenuStateItem<LineFocusStyle|LineFocusMovement>> = [
-        ...this.styleOptions_,
-        ...this.movementOptions_,
+
+  protected accessor groups_:
+      Array<MenuGroup<LineFocusStyle|LineFocusMovement>> = [
+        {
+          header: {
+            title: loadTimeData.getString('lineFocusStyleHeading'),
+            separator: false,
+          },
+          items: this.styleOptions_,
+          eventName: ToolbarEvent.LINE_FOCUS_STYLE,
+        },
+        {
+          header: {
+            title: loadTimeData.getString('lineFocusMovementHeading'),
+            separator: true,
+          },
+          items: this.movementOptions_,
+          eventName: ToolbarEvent.LINE_FOCUS_MOVEMENT,
+        },
       ];
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
@@ -127,10 +120,7 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
     }
     if (changedProperties.has('lineFocusStyle') ||
         changedProperties.has('lineFocusMovement')) {
-      this.options_ = [
-        ...this.styleOptions_,
-        ...this.movementOptions_,
-      ];
+      this.groups_ = [...this.groups_];
     }
   }
 

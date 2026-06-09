@@ -9,7 +9,7 @@ import type {HighlightMenuElement} from 'chrome-untrusted://read-anything-side-p
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, assertHeadersForDropdown, assertTestSettingsAreNotDefaultSettings, mockMetrics, stubAnimationFrame, TEST_RANDOM_VALUE_SETTINGS} from './common.js';
+import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, mockMetrics, stubAnimationFrame, TEST_RANDOM_VALUE_SETTINGS} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -39,10 +39,7 @@ suite('HighlightMenuElement', () => {
     assertCheckMarksForDropdown(highlightMenu);
   });
 
-  test('does not have headers', () => {
-    assertHeadersForDropdown(
-        highlightMenu.$.menu, /*shouldHaveHeaders=*/ false);
-  });
+
 
   test('highlight change is propagated', async () => {
     createHighlightMenu();

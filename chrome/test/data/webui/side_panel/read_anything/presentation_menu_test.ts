@@ -9,7 +9,7 @@ import type {PresentationMenuElement} from 'chrome-untrusted://read-anything-sid
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, assertHeadersForDropdown, stubAnimationFrame} from './common.js';
+import {assertCheckMarksForDropdown, stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 
 suite('PresentationMenuElement', () => {
@@ -31,10 +31,7 @@ suite('PresentationMenuElement', () => {
     assertCheckMarksForDropdown(presentationMenu);
   });
 
-  test('does not have headers', () => {
-    assertHeadersForDropdown(
-        presentationMenu.$.menu, /*shouldHaveHeaders=*/ false);
-  });
+
 
   test('presentation change', async () => {
     const sidePanelState = chrome.readingMode.inSidePanelPresentationState;

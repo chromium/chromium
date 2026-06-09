@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,28 +13,25 @@ import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
-import {ToolbarEvent} from '../content/read_anything_types.js';
 import {openMenu} from '../shared/common.js';
 
 import {getCss} from './action_menu.css.js';
-import type {MenuStateItem} from './menu_util.js';
-import {getHtml} from './simple_action_menu.html.js';
+import {getHtml} from './grouped_action_menu.html.js';
+import type {MenuGroup} from './menu_util.js';
 
-export interface SimpleActionMenuElement {
+export interface GroupedActionMenuElement {
   $: {
     lazyMenu: CrLazyRenderLitElement<CrActionMenuElement>,
   };
 }
 
-const SimpleActionMenuElementBase = WebUiListenerMixinLit(CrLitElement);
+const GroupedActionMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 
-// Represents a simple dropdown menu that contains a flat list of items with
-// text and an optional icon. Selecting an item in this menu propagates that
-// event, sets that item as selected with a visual checkmark, and then closes
-// the menu.
-export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
+// Represents a dropdown menu that contains groups of items with a header and
+// optional separator per group.
+export class GroupedActionMenuElement extends GroupedActionMenuElementBase {
   static get is() {
-    return 'simple-action-menu';
+    return 'grouped-action-menu';
   }
 
   static override get styles() {
@@ -47,22 +44,18 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
 
   static override get properties() {
     return {
-      currentSelectedIndex: {type: Number},
-      menuItems: {type: Array},
-      eventName: {type: String},
+      menuGroups: {type: Array},
       label: {type: String},
       nonModal: {type: Boolean},
       closeOnClick: {type: Boolean},
     };
   }
 
-  accessor currentSelectedIndex: number = 0;
-  accessor menuItems: Array<MenuStateItem<unknown>> = [];
+  accessor menuGroups: Array<MenuGroup<unknown>> = [];
   accessor nonModal: boolean = false;
   accessor closeOnClick: boolean = true;
 
   // Initializing to random value, but this is set by the parent.
-  accessor eventName: ToolbarEvent = ToolbarEvent.THEME;
   accessor label: string = '';
 
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
@@ -77,33 +70,30 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
 
   protected onClick_(e: Event) {
     const currentTarget = e.currentTarget as HTMLElement;
-    this.currentSelectedIndex =
-        Number.parseInt(currentTarget.dataset['index']!);
-    const menuItem = this.menuItems[this.currentSelectedIndex];
+    const groupIndex = Number.parseInt(currentTarget.dataset['groupIndex']!);
+    const itemIndex = Number.parseInt(currentTarget.dataset['itemIndex']!);
+    const group = this.menuGroups[groupIndex];
+    assert(group);
+    const menuItem = group.items[itemIndex];
     assert(menuItem);
-    this.fire(this.eventName, {data: menuItem.data});
+    this.fire(group.eventName, {data: menuItem.data});
     if (this.closeOnClick) {
       this.$.lazyMenu.get().close();
     }
   }
 
-  protected isItemSelected_(index: number): boolean {
-    return index === this.currentSelectedIndex;
-  }
-
-  protected doesItemHaveIcon_(item: MenuStateItem<unknown>): boolean {
-    return item.icon !== undefined;
-  }
-
-  protected itemIcon_(item: MenuStateItem<unknown>): string {
-    return item.icon === undefined ? '' : item.icon;
+  protected getAriaOwns_(groupIndex: number, length: number): string {
+    return Array
+        .from(
+            {length}, (_, itemIndex) => `group-${groupIndex}-item-${itemIndex}`)
+        .join(' ');
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'simple-action-menu': SimpleActionMenuElement;
+    'grouped-action-menu': GroupedActionMenuElement;
   }
 }
 
-customElements.define(SimpleActionMenuElement.is, SimpleActionMenuElement);
+customElements.define(GroupedActionMenuElement.is, GroupedActionMenuElement);

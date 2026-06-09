@@ -25,15 +25,16 @@
   visibility: hidden;
 }
 
-.has-header-true {
+.has-separator-true {
   display: grid;
 }
 
-.has-header-false {
+.has-separator-false {
   display: none;
 }
 
 .header-style {
+  display: grid;
   align-items: center;
   font-size: 13px;
   height: 32px;

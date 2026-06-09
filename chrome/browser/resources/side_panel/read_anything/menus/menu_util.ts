@@ -11,15 +11,19 @@ export interface MenuStateItem<T> {
   selected?: boolean;  // Whether this item is currently selected.
   icon?: string;   // An optional icon that is displayed next to the title.
   style?: string;  // An optional string for styling each item.
-  header?: MenuHeader;  // Optional header that should go above this item.
-  eventName?: string;  // Optional event name for this item if needed per-item.
   // Needed when the aria label should be different from the title
   ariaLabel?: string;
 }
 
-interface MenuHeader {
+export interface MenuHeader {
   title: string;
   separator: boolean;
+}
+
+export interface MenuGroup<T> {
+  header: MenuHeader;
+  items: Array<MenuStateItem<T>>;
+  eventName: string;
 }
 
 // Defines the contract for any menu that appears in the Toolbar.

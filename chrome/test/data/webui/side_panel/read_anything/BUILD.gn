@@ -49,6 +49,7 @@ build_webui_tests("build") {
     "selection_controller_test.ts",
     "settings_menu_test.ts",
     "simple_action_menu_test.ts",
+    "grouped_action_menu_test.ts",
     "speech_controller_content_test.ts",
     "speech_controller_test.ts",
     "speech_model_test.ts",

@@ -9,7 +9,7 @@ import type {FontMenuElement} from 'chrome-untrusted://read-anything-side-panel.
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {assertCheckMarksForDropdown, assertHeadersForDropdown, getItemsInMenu, mockMetrics, stubAnimationFrame} from './common.js';
+import {assertCheckMarksForDropdown, getItemsInMenu, mockMetrics, stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -46,9 +46,7 @@ suite('FontMenu', () => {
     assertCheckMarksForDropdown(fontMenu);
   });
 
-  test('does not have headers', () => {
-    assertHeadersForDropdown(fontMenu.$.menu, /*shouldHaveHeaders=*/ false);
-  });
+
 
   test('updates fonts on page language change', async () => {
     chrome.readingMode.supportedFonts =

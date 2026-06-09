@@ -9,16 +9,15 @@ import type {LineFocusMenuElement} from './line_focus_menu.js';
 export function getHtml(this: LineFocusMenuElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<simple-action-menu
+<grouped-action-menu
     id="menu"
     label="$i18n{lineFocusLabel}"
-    .menuItems="${this.options_}"
+    .menuGroups="${this.groups_}"
     .nonModal="${this.nonModal}"
     .closeOnClick="${false}"
-    current-selected-index="-1"
     @line-focus-style-change="${this.onLineFocusStyleChange_}"
     @line-focus-movement-change="${this.onLineFocusMovementChange_}">
-</simple-action-menu>
+</grouped-action-menu>
 <!--_html_template_end_-->`;
   // clang-format on
 }

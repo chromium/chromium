@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
-import type {AppElement, SettingsPrefs, SimpleActionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, SettingsPrefs} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {DEFAULT_SETTINGS, MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAloudNode, ReadAnythingLogger, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertNotDeepEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -88,13 +88,6 @@ export function assertCheckMarksForDropdown(dropdown: HTMLElement): void {
     button.click();
     assertCheckMarkVisible(checkMarks, index);
   });
-}
-
-export function assertHeadersForDropdown(
-    dropdown: SimpleActionMenuElement, shouldHaveHeaders: boolean): void {
-  const headers =
-      dropdown.$.lazyMenu.get().querySelector<HTMLElement>('.has-header-true');
-  assertEquals(shouldHaveHeaders, !!headers);
 }
 
 export function createSpeechErrorEvent(

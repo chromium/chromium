@@ -28,11 +28,12 @@ export {ReadabilityImageClassifier} from './content/readability_image_classifier
 export {SelectionController} from './content/selection_controller.js';
 export type {ColorMenuElement} from './menus/color_menu.js';
 export type {FontMenuElement} from './menus/font_menu.js';
+export type {GroupedActionMenuElement} from './menus/grouped_action_menu.js';
 export type {HighlightMenuElement} from './menus/highlight_menu.js';
 export type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
 export type {LineFocusMenuElement} from './menus/line_focus_menu.js';
 export type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
-export type {MenuStateItem} from './menus/menu_util.js';
+export type {MenuGroup, MenuStateItem} from './menus/menu_util.js';
 export type {PresentationMenuElement} from './menus/presentation_menu.js';
 export type {RateMenuElement} from './menus/rate_menu.js';
 export type {SettingsMenuElement} from './menus/settings_menu.js';
