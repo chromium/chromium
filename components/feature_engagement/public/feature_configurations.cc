@@ -764,6 +764,22 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHAimActivationHint.name == feature->name) {
+    // A config that changes the omnibox hint text to activate the AI Mode chip
+    // on Android Desktop via keystrokes.
+    // * Show at most 3 times per day.
+    // * Show at most 15 times total.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.trigger = EventConfig("aim_activation_hint_trigger",
+                                 Comparator(LESS_THAN, 3), 1, 360);
+    config.event_configs.insert(EventConfig(
+        "aim_activation_hint_trigger", Comparator(LESS_THAN, 15), 360, 360));
+    return config;
+  }
+
   if (kIPHFuseboxAttachmentFeature.name == feature->name) {
     // A config that allows measurement for user engagement on the fusebox
     // attachment button by checking:

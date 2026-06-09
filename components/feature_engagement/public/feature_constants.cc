@@ -348,6 +348,9 @@ BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryWebFeature,
 BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryPdfFeature,
              "IPH_AdaptiveButtonInTopToolbarCustomization_PageSummary_Pdf",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAimActivationHint,
+             "IPH_AimActivationHint",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPageSummaryWebMenuFeature,
              "IPH_PageSummaryWebMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);

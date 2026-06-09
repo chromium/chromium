@@ -55,6 +55,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AddToHomescreenTextBubble"
       summary="(obsolete) educating users about adding website shortcuts to
                their home screen (using a text bubble)"/>
+  <variant name="IPH_AimActivationHint"
+      summary="A hint to activate AI Mode on Android Desktop via keystrokes."/>
   <variant name="IPH_AndroidBottomBarGlic"
       summary="Describes the GLIC button added in the bottom bar."/>
   <variant name="IPH_AndroidBottomBarNewTab"
