@@ -1112,7 +1112,7 @@ void PasswordManager::OnPasswordFormsParsed(
       driver ? driver->GetPasswordGenerationHelper() : nullptr;
   if (password_generation_manager) {
     password_generation_manager->PrefetchSpec(
-        client_->GetLastCommittedOrigin().GetURL());
+        driver->GetLastCommittedOrigin().GetURL());
   }
 }
 

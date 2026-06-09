@@ -251,8 +251,8 @@ void PasswordGenerationPopupControllerImpl::GeneratePasswordValue(
   if (current_generated_password_.empty() || state_ != kOfferGeneration) {
     current_generated_password_ =
         driver_->GetPasswordGenerationHelper()->GeneratePassword(
-            web_contents()->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
-            generation_type, form_signature_, field_signature_, max_length_);
+            driver_->GetLastCommittedOrigin().GetURL(), generation_type,
+            form_signature_, field_signature_, max_length_);
   }
 }
 

@@ -997,7 +997,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
 
   std::u16string generatedPassword =
       [_driverHelper PasswordGenerationHelper:frame]->GeneratePassword(
-          [self lastCommittedURL],
+          frame->GetSecurityOrigin().GetURL(),
           isManuallyTriggered ? PasswordGenerationType::kManual
                               : PasswordGenerationType::kAutomatic,
           formSignature, fieldSignature, maxLength);
