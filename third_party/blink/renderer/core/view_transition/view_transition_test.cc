@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/scoped_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_test_utils.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_transition_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -93,10 +94,8 @@ class ViewTransitionTest : public testing::Test,
   // callback directly.
   void UpdateAllLifecyclePhasesAndFinishDirectives() {
     UpdateAllLifecyclePhasesForTest();
-    for (auto& callback :
-         LayerTreeHost()->TakeViewTransitionCallbacksForTesting()) {
-      std::move(callback).Run({});
-    }
+    ViewTransitionTestUtils::ProcessPendingDirectives(GetDocument(),
+                                                      LayerTreeHost());
   }
 
   cc::LayerTreeHost* LayerTreeHost() {

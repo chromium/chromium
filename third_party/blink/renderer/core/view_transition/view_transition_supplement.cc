@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 
+#include <algorithm>
+
 #include "cc/trees/layer_tree_host.h"
 #include "cc/view_transition/view_transition_request.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -295,6 +297,12 @@ void ViewTransitionSupplement::OnTransitionFinished(
     ViewTransition* transition) {
   CHECK(transition);
 
+  auto it = std::find(captured_transitions_.begin(),
+                      captured_transitions_.end(), transition);
+  if (it != captured_transitions_.end()) {
+    captured_transitions_.erase(it);
+  }
+
   // Clear the ongoing transition. Proceed with cross-document transition if
   // this was a preview.
   if (transition == document_transition_) {
@@ -323,6 +331,10 @@ void ViewTransitionSupplement::OnTransitionFinished(
     element_transitions_.erase(scope);
   }
 
+  if (!captured_transitions_.empty() && !HasActiveCaptures()) {
+    AdvanceCapturedTransitions();
+  }
+
   // Notify the animator if the set of active view transitions is empty.
   if (!document_transition_ && element_transitions_.empty()) {
     if (auto* page = document_->GetPage()) {
@@ -347,19 +359,86 @@ void ViewTransitionSupplement::OnSkippedTransitionDOMCallback(
   }
 }
 
-void ViewTransitionSupplement::OnTransitionCaptured(
-    ViewTransition* transition) {
-  CHECK(transition);
-  captured_transitions_.push_back(transition);
-  if (--in_flight_capture_requests_ == 0) {
-    std::sort(captured_transitions_.begin(), captured_transitions_.end(),
-              CompareTransitions);
-    HeapVector<Member<ViewTransition>> local_copy(captured_transitions_);
-    captured_transitions_.clear();
-    for (auto captured_transition : local_copy) {
+bool ViewTransitionSupplement::HasNonScriptTransitions() const {
+  if (document_transition_ && !document_transition_->IsCreatedViaScriptAPI()) {
+    return true;
+  }
+  for (auto& element_transition : element_transitions_.Values()) {
+    if (!element_transition->IsCreatedViaScriptAPI()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ViewTransitionSupplement::IsEarlyCallbackEnabled() const {
+  if (!RuntimeEnabledFeatures::ViewTransitionDOMCallbackAfterCommitEnabled()) {
+    return false;
+  }
+  if (HasNonScriptTransitions()) {
+    return false;
+  }
+  return true;
+}
+
+bool ViewTransitionSupplement::HasActiveCaptures() const {
+  auto is_capturing_and_not_ready = [this](ViewTransition* t) {
+    return t && t->IsCapturing() && !captured_transitions_.Contains(t);
+  };
+  if (is_capturing_and_not_ready(document_transition_)) {
+    return true;
+  }
+  for (const auto& entry : element_transitions_) {
+    if (is_capturing_and_not_ready(entry.value)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void ViewTransitionSupplement::AdvanceCapturedTransitions() {
+  std::sort(captured_transitions_.begin(), captured_transitions_.end(),
+            CompareTransitions);
+  HeapVector<Member<ViewTransition>> local_copy(captured_transitions_);
+  captured_transitions_.clear();
+  for (auto captured_transition : local_copy) {
+    if (IsEarlyCallbackEnabled()) {
+      captured_transition->OnCaptureCommitted();
+    } else {
       captured_transition->OnCapturePhaseComplete();
     }
   }
+}
+
+void ViewTransitionSupplement::OnDOMCallbackReadyToRun(
+    ViewTransition* transition) {
+  CHECK(transition);
+  if (!transition->IsCapturing()) {
+    return;
+  }
+  captured_transitions_.push_back(transition);
+  if (!HasActiveCaptures()) {
+    AdvanceCapturedTransitions();
+  }
+}
+
+void ViewTransitionSupplement::OnTransitionCaptured(
+    ViewTransition* transition) {
+  CHECK(transition);
+  if (!IsEarlyCallbackEnabled()) {
+    OnDOMCallbackReadyToRun(transition);
+  } else {
+    // In early DOM callbacks mode, OnTransitionCaptured is called when
+    // capture rects are received. We just notify the waiting state machine!
+    transition->OnCaptureRectsReceived();
+  }
+}
+
+void ViewTransitionSupplement::OnCaptureCommitted(ViewTransition* transition) {
+  CHECK(transition);
+  CHECK(IsEarlyCallbackEnabled());
+
+  OnDOMCallbackReadyToRun(transition);
 }
 
 ViewTransition* ViewTransitionSupplement::GetTransition() {
@@ -446,9 +525,6 @@ void ViewTransitionSupplement::Trace(Visitor* visitor) const {
 
 void ViewTransitionSupplement::AddPendingRequest(
     std::unique_ptr<ViewTransitionRequest> request) {
-  if (request->type() == ViewTransitionRequest::Type::kSave) {
-    in_flight_capture_requests_++;
-  }
   pending_requests_.push_back(std::move(request));
 
   if (!document_ || !document_->GetPage() || !document_->View()) {
