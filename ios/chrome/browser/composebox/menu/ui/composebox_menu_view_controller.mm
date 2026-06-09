@@ -492,9 +492,8 @@ UIImage* IconForModel(ComposeboxModelOption option) {
     driveSymbol =
         CustomSymbolWithPointSize(kGoogleDriveSymbol, kSymbolActionPointSize);
 #endif
-    // TODO(crbug.com/515377633): Add string translation.
     ComposeboxMenuItem* driveItem = [[ComposeboxMenuItem alloc]
-        initWithTitle:@"Drive"
+        initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_DRIVE_ACTION)
                 image:driveSymbol
                  type:ComposeboxMenuItemType::kAttachmentDrive
              disabled:[_inputState isAttachmentDisabled:

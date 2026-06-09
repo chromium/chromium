@@ -67,6 +67,10 @@ TEST_F(ComposeboxStringsTest, TestLocalFallbackForAttachment) {
   EXPECT_NSEQ(
       [strings stringForAttachmentOption:ComposeboxAttachmentOption::kFile],
       l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_FILES_ACTION));
+
+  EXPECT_NSEQ(
+      [strings stringForAttachmentOption:ComposeboxAttachmentOption::kDrive],
+      l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_DRIVE_ACTION));
 }
 
 TEST_F(ComposeboxStringsTest, TestServerStringsMapping) {

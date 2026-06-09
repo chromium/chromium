@@ -117,8 +117,7 @@
     case kCamera:
       return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CAMERA_ACTION);
     case kDrive:
-      // TODO(crbug.com/515377633): Add string translation.
-      return @"Drive";
+      return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_DRIVE_ACTION);
   }
 }
 

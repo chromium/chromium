@@ -1720,6 +1720,9 @@
       <message name="IDS_IOS_COMPOSEBOX_DELETE_ATTACHMENT_ACCESSIBILITY_CUSTOM_ACTION" desc="The name of the custom accessibility action for that deletes a previously added attachment from the list of attachments in the AIM Composebox. [iOS only].">
         Delete attachment
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_DRIVE_ACTION" desc="The contextual menu option for opening the Drive file picker. [iOS only].">
+        Drive
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_FILES_ACTION" desc="The contextual menu option for opening the file picker. [iOS only].">
         Files
       </message>
