@@ -802,8 +802,7 @@ public class CustomTabsConnection {
     public @Nullable Bundle extraCommand(String commandName, @Nullable Bundle args) {
         if (commandName.equals(IS_AUTH_TAB_SUPPORTED)) {
             var bundle = new Bundle();
-            boolean supported = ChromeFeatureList.sCctAuthTab.isEnabled();
-            bundle.putBoolean(AUTH_TAB_SUPPORTED_KEY, supported);
+            bundle.putBoolean(AUTH_TAB_SUPPORTED_KEY, true);
             return bundle;
         }
         return null;

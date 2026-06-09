@@ -51,7 +51,6 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
     private @Nullable String mUrlToLoad;
 
     public static boolean isAuthTabIntent(Intent intent) {
-        if (!ChromeFeatureList.sCctAuthTab.isEnabled()) return false;
         return IntentUtils.safeGetBooleanExtra(intent, AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, false);
     }
 

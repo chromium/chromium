@@ -27,10 +27,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -41,7 +39,6 @@ import java.util.concurrent.TimeoutException;
 /** Instrumentation tests for Auth Tab. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Testing CCT start up behavior.")
-@Features.EnableFeatures(ChromeFeatureList.CCT_AUTH_TAB)
 public class AuthTabTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/auth.html";
     private static final String SCHEME = "testscheme";

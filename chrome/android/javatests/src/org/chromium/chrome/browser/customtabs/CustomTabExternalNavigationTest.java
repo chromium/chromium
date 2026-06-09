@@ -29,12 +29,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
 import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory.CustomTabNavigationDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -205,7 +203,6 @@ public class CustomTabExternalNavigationTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.CCT_AUTH_TAB)
     public void testAuthTabShouldReturnAsActivityResult_customScheme() throws TimeoutException {
         setUpAuthTab();
 
@@ -220,7 +217,6 @@ public class CustomTabExternalNavigationTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.CCT_AUTH_TAB)
     public void testAuthTabReturnAsActivityResult_httpsRedirectUrl() throws TimeoutException {
         setUpAuthTab();
         var result = getOverrideUrlLoadingResult(AUTH_TAB_OTHER_URL);
@@ -235,7 +231,6 @@ public class CustomTabExternalNavigationTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.CCT_AUTH_TAB)
     public void testAuthTabReturnAsActivityResult_httpsRedirectUrlDelayed()
             throws TimeoutException {
         // Set the testing flag to simulate the case where the result has not yet arrived.

@@ -5519,10 +5519,6 @@ inline constexpr char kCCTAdaptiveButtonTestSwitchDescription[] =
     "to facilitate testing 1) simulate narrow toolbar to hide MTB 2) Always "
     "show static action MTB chip animation";
 
-inline constexpr char kCCTAuthTabName[] = "CCT Auth Tab";
-inline constexpr char kCCTAuthTabDescription[] =
-    "Enable AuthTab used for authentication";
-
 inline constexpr char kCCTAuthTabDisableAllExternalIntentsName[] =
     "Disable all external intents in Auth Tab";
 inline constexpr char kCCTAuthTabDisableAllExternalIntentsDescription[] =

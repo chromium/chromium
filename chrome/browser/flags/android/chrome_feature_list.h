@@ -101,7 +101,6 @@ BASE_DECLARE_FEATURE(kBrowserControlsRenderDrivenShowConstraint);
 BASE_DECLARE_FEATURE(kBrowserWindowInterfaceMobile);
 BASE_DECLARE_FEATURE(kCCTAdaptiveButton);
 BASE_DECLARE_FEATURE(kCCTAdaptiveButtonTestSwitch);
-BASE_DECLARE_FEATURE(kCCTAuthTab);
 BASE_DECLARE_FEATURE(kCCTAuthTabDisableAllExternalIntents);
 BASE_DECLARE_FEATURE(kCCTAuthTabEnableHttpsRedirects);
 BASE_DECLARE_FEATURE(kCCTBlockTouchesDuringEnterAnimation);
