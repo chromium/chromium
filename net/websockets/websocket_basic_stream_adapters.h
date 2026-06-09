@@ -239,6 +239,9 @@ class NET_EXPORT_PRIVATE WebSocketQuicStreamAdapter
   //  because they may be destroyed in any order.
   raw_ptr<WebSocketQuicSpdyStream> websocket_quic_spdy_stream_;
 
+  // Close error returned by Read() and Write() after the stream is cleared.
+  int stream_error_ = ERR_UNEXPECTED;
+
   raw_ptr<Delegate> delegate_;
 
   // Read buffer, length and callback used for asynchronous read operations.

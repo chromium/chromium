@@ -284,7 +284,7 @@ int WebSocketQuicStreamAdapter::Read(IOBuffer* buf,
                                      int buf_len,
                                      CompletionOnceCallback callback) {
   if (!websocket_quic_spdy_stream_) {
-    return ERR_UNEXPECTED;
+    return stream_error_;
   }
 
   int rv = websocket_quic_spdy_stream_->Read(buf, buf_len);
@@ -304,15 +304,29 @@ int WebSocketQuicStreamAdapter::Write(
     CompletionOnceCallback callback,
     const NetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK(!write_callback_);
-  DCHECK(websocket_quic_spdy_stream_);
   CHECK_GT(buf_len, 0);
   DCHECK(callback);
 
+  if (!websocket_quic_spdy_stream_) {
+    return stream_error_;
+  }
+
   // Queue data to the QUIC stream. WriteOrBufferBody() either sends the data
   // immediately if flow control allows, or buffers it internally.
+  // It can also synchronously close the connection on socket write errors.
+  base::WeakPtr<WebSocketQuicStreamAdapter> weak_this =
+      weak_factory_.GetWeakPtr();
   websocket_quic_spdy_stream_->WriteOrBufferBody(
       {buf->data(), static_cast<size_t>(buf_len)},
       /*fin=*/false);
+  // If the adapter was destroyed by a callback during the write, return
+  // safely without accessing member variables.
+  if (!weak_this) {
+    return ERR_CONNECTION_CLOSED;
+  }
+  if (!websocket_quic_spdy_stream_) {
+    return stream_error_;
+  }
 
   // Check CanWriteNewData() after queuing rather than before. This is necessary
   // because WriteOrBufferBody() may have caused the send buffer to cross its
@@ -403,21 +417,27 @@ void WebSocketQuicStreamAdapter::OnBodyAvailable() {
 
 void WebSocketQuicStreamAdapter::OnClose(int status) {
   CHECK_LE(status, 0);
-  auto self = weak_factory_.GetWeakPtr();
-  ClearStream();
-
   if (status == OK) {
     status = ERR_CONNECTION_CLOSED;
   }
+  stream_error_ = status;
+
+  base::WeakPtr<WebSocketQuicStreamAdapter> weak_this =
+      weak_factory_.GetWeakPtr();
+  ClearStream();
+
+  // Running a completion callback can delete the current
+  // WebSocketQuicStreamAdapter. In that case, `weak_this` becomes invalid and
+  // OnClose() must return before accessing more member variables.
   if (read_callback_) {
     std::move(read_callback_).Run(status);
-    if (!self) {  // |this| might have been destroyed.
+    if (!weak_this) {
       return;
     }
   }
   if (write_callback_) {
     std::move(write_callback_).Run(status);
-    if (!self) {  // |this| might have been destroyed.
+    if (!weak_this) {
       return;
     }
   }

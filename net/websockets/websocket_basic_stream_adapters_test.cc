@@ -2227,6 +2227,57 @@ TEST_P(WebSocketQuicStreamAdapterTest, ReadCallbackDestroysAdapter) {
   EXPECT_TRUE(mock_quic_data_.AllWriteDataConsumed());
 }
 
+// Verifies that WebSocketQuicStreamAdapter::Write() safely returns when
+// QuicSpdyStream::WriteOrBufferBody() synchronously closes the QUIC stream and
+// a pending read callback deletes the adapter before Write() continues.
+TEST_P(WebSocketQuicStreamAdapterTest,
+       WriteSyncSocketErrorDestroysAdapterWithPendingRead) {
+  int packet_number = 1;
+
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, client_maker_.MakeRequestHeadersPacket(
+                       packet_number++, client_data_stream_id1_, /*fin=*/false,
+                       ConvertRequestPriorityToQuicPriority(LOWEST),
+                       RequestHeaders(), nullptr));
+  // This write is the DATA packet from WebSocketQuicStreamAdapter::Write().
+  // Fail it synchronously to close the connection inside WriteOrBufferBody().
+  mock_quic_data_.AddWrite(SYNCHRONOUS, ERR_CONNECTION_REFUSED);
+
+  Initialize();
+
+  net::QuicChromiumClientSession::Handle* session_handle =
+      GetQuicSessionHandle();
+  ASSERT_TRUE(session_handle);
+
+  TestWebSocketQuicStreamAdapterCompletionCallback creation_callback;
+  auto adapter = session_handle->CreateWebSocketQuicStreamAdapter(
+      &mock_delegate_, creation_callback.callback(),
+      TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_TRUE(adapter);
+  adapter->WriteHeaders(RequestHeaders(), false);
+
+  // Start a Read() that will finish later. DeleterCallback owns the adapter and
+  // deletes it when the read callback runs.
+  DeleterCallback callback(std::move(adapter));
+  constexpr int kReadBufSize = 1024;
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
+  int rv = callback.adapter()->Read(read_buf.get(), kReadBufSize,
+                                    callback.callback());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // This WebSocketQuicStreamAdapter::Write() triggers the mocked socket error.
+  // Closing the stream runs the pending read callback, which deletes the
+  // adapter. Write() must return without using the deleted adapter.
+  auto write_buf = base::MakeRefCounted<StringIOBuffer>("test data");
+  rv = callback.adapter()->Write(write_buf.get(), write_buf->size(),
+                                 base::DoNothing(),
+                                 TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_THAT(rv, IsError(ERR_CONNECTION_CLOSED));
+  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_QUIC_PROTOCOL_ERROR));
+}
+
 // Tests that the adapter correctly handles being destroyed from within its own
 // OnClose() delegate method, when there are no pending read or write
 // callbacks.
