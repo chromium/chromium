@@ -42,7 +42,8 @@ export class TestTextClick extends TestSuite {
     const timer = new FakeTaskTimer();
     const clicker = new TextClick(
         document.documentElement, this.tapConsumer, () => undefined, timer,
-        /* mutationCheckDelay */ 50, annotation);
+        /* mutationCheckDelay */ 50, annotation,
+        /* skipTrustedCheckForTesting= */ true);
     clicker.start();
 
     annotation.click();
@@ -74,7 +75,8 @@ export class TestTextClick extends TestSuite {
     const timer = new FakeTaskTimer();
     const clicker = new TextClick(
         document.documentElement, this.tapConsumer, () => undefined, timer,
-        /* mutationCheckDelay */ 50, annotation);
+        /* mutationCheckDelay */ 50, annotation,
+        /* skipTrustedCheckForTesting= */ true);
     clicker.start();
 
     annotation.click();
@@ -105,7 +107,8 @@ export class TestTextClick extends TestSuite {
     const timer = new FakeTaskTimer();
     const clicker = new TextClick(
         document.documentElement, this.tapConsumer, () => undefined, timer,
-        /* mutationCheckDelay */ 50, annotation);
+        /* mutationCheckDelay */ 50, annotation,
+        /* skipTrustedCheckForTesting= */ true);
     clicker.start();
 
     annotation.click();
@@ -132,7 +135,8 @@ export class TestTextClick extends TestSuite {
     const timer = new FakeTaskTimer();
     const clicker = new TextClick(
         document.documentElement, this.tapConsumer, () => undefined, timer,
-        /* mutationCheckDelay */ 50, annotation);
+        /* mutationCheckDelay */ 50, annotation,
+        /* skipTrustedCheckForTesting= */ true);
     clicker.start();
 
     annotation.click();
@@ -163,7 +167,8 @@ export class TestTextClick extends TestSuite {
     const timer = new FakeTaskTimer();
     const clicker = new TextClick(
         document.documentElement, this.tapConsumer, () => undefined, timer,
-        /* mutationCheckDelay */ 50, annotation);
+        /* mutationCheckDelay */ 50, annotation,
+        /* skipTrustedCheckForTesting= */ true);
     clicker.start();
 
     annotation.click();
@@ -176,6 +181,30 @@ export class TestTextClick extends TestSuite {
     timer.moveAhead(/* ms= */ 10, /* times= */ 4);  // -> 60ms total
     expectEq(annotation, this.tappedAnnotation, 'tappedAnnotation after 60ms:');
     expectEq(false, this.tappedCancel, 'tappedCancel after 60ms:');
+
+    clicker.stop();
+  }
+
+  // Tests that an untrusted click event is ignored.
+  testTextClickUntrusted() {
+    const decoratedHTML = '<div id="outer">' +
+        '<chrome_annotation>Hello</chrome_annotation>' +
+        '</div>';
+    load(decoratedHTML);
+
+    const annotation =
+        document.querySelector<HTMLElement>('chrome_annotation')!;
+    const timer = new FakeTaskTimer();
+    const clicker = new TextClick(
+        document.documentElement, this.tapConsumer, () => undefined, timer,
+        /* mutationCheckDelay */ 50, annotation);
+    clicker.start();
+
+    annotation.click();
+
+    expectEq(undefined, this.tappedAnnotation, 'tappedAnnotation after click:');
+    timer.moveAhead(/* ms= */ 10, /* times= */ 10);  // -> 100ms total
+    expectEq(undefined, this.tappedAnnotation, 'tappedAnnotation after 100ms:');
 
     clicker.stop();
   }

@@ -149,6 +149,11 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
 
  protected:
   void SetUp() override {
+    override_feature_ = base::WrapUnique(new AnnotationsJavaScriptFeature(
+        /*trusted_event_check_enabled=*/false));
+    AnnotationsJavaScriptFeature::SetInstanceForTesting(
+        override_feature_.get());
+
     WebTestWithWebState::SetUp();
 
     AnnotationsTextManager::CreateForWebState(web_state());
@@ -175,6 +180,8 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     auto* manager = AnnotationsTextManager::FromWebState(web_state());
     manager->RemoveObserver(&observer_);
     WebTestWithWebState::TearDown();
+
+    AnnotationsJavaScriptFeature::SetInstanceForTesting(nullptr);
   }
 
   virtual std::string GetScriptName() { return ""; }
@@ -320,6 +327,7 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
 
   TestAnnotationTextObserver* observer() { return &observer_; }
 
+  std::unique_ptr<AnnotationsJavaScriptFeature> override_feature_;
   base::test::ScopedFeatureList feature_;
   raw_ptr<JavaScriptContentWorld> content_world_;
   TestAnnotationTextObserver observer_;

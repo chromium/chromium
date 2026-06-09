@@ -18,6 +18,20 @@ export interface AnnotationsTapConsumer {
 // Delay while checking for DOM mutations.
 export const DOM_MUTATION_DELAY_MS = 300;
 
+/**
+ * Parses a string to a boolean.
+ * @param boolStr The string to parse as a boolean.
+ * @returns The boolean value.
+ */
+function stringAsBool(boolStr: string): boolean {
+  switch (boolStr) {
+    case 'true':
+      return true;
+    default:
+      return false;
+  }
+}
+
 // Monitors DOM mutations between instance construction until a call to
 // `stopObserving`.
 class MutationsTracker {
@@ -97,7 +111,9 @@ export class TextClick {
       private decorationsProvider: () => Map<number, TextDecoration>| undefined,
       private taskTimer: TaskTimer = new LiveTaskTimer(),
       private mutationCheckDelay = DOM_MUTATION_DELAY_MS,
-      private annotationForTest: Element|null = null) {}
+      private annotationForTest: Element|null = null,
+      private skipTrustedCheckForTesting =
+          stringAsBool('{{SkipTrustedCheckForTesting}}')) {}
 
   // Starts event listeners.
   start(): void {
@@ -154,6 +170,9 @@ export class TextClick {
   // triggered by an annotation and if no DOM mutation have happened while the
   // event is bubbling up. If it's the case, the annotation callback is called.
   private handleTopTap(event: PointerEvent): void {
+    if (!this.skipTrustedCheckForTesting && !event.isTrusted) {
+      return;
+    }
     // Make decoration not inert and find if the actual target should be an
     // annotation. This way CHROME_ANNOTATION are never target in an Event.
     let annotation = this.annotationForTest;
