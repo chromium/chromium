@@ -491,6 +491,11 @@ class AutofillField : public FormFieldData {
     UpdateFieldData(field_data);
   }
 
+  bool is_autofilled_according_to_renderer(
+      base::PassKey<FormAutofillHistory> pass_key) const {
+    return is_autofilled_according_to_renderer();
+  }
+
 #if defined(UNIT_TEST)
   const std::array<FieldType,
                    static_cast<size_t>(HeuristicSource::kMaxValue) + 1>&

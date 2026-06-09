@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -51,16 +52,10 @@ class FormAutofillHistoryTest : public testing::Test {
     return field.global_id();
   }
   void AddFormFilling(bool is_refill) {
-    std::vector<const FormFieldData*> fields;
-    std::vector<const AutofillField*> autofill_fields;
-    for (const FormFieldData& field : filled_fields_) {
-      fields.push_back(&field);
-    }
-    for (const AutofillField& autofill_field : filled_autofill_fields_) {
-      autofill_fields.push_back(&autofill_field);
-    }
+    std::vector<const AutofillField*> autofill_fields = base::ToVector(
+        filled_autofill_fields_, [](const auto& field) { return &field; });
     form_autofill_history_.AddFormFillingEntry(
-        fields, autofill_fields, FillingProduct::kNone, is_refill);
+        autofill_fields, FillingProduct::kNone, is_refill);
   }
 
   std::vector<FormFieldData> filled_fields_;

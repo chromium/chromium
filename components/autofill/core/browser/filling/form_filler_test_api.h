@@ -21,15 +21,6 @@ class FormFillerTestApi {
     form_filler_->limit_before_programmatic_refill_ = limit;
   }
 
-  void AddFormFillingEntry(
-      base::span<const FormFieldData* const> filled_fields,
-      base::span<const AutofillField* const> filled_autofill_fields,
-      FillingProduct filling_product,
-      bool is_refill) {
-    form_filler_->form_autofill_history_.AddFormFillingEntry(
-        filled_fields, filled_autofill_fields, filling_product, is_refill);
-  }
-
  private:
   raw_ref<FormFiller> form_filler_;
 };

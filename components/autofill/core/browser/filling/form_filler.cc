@@ -900,9 +900,7 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                     std::optional<FieldType> field_type_used) {
   if (autofill_field && action_persistence == mojom::ActionPersistence::kFill) {
     if (ShouldRecordFillingHistory(filling_product)) {
-      // TODO(crbug.com/393114125): Only use AutofillField.
       form_autofill_history_.AddFormFillingEntry(
-          std::to_array<const FormFieldData*>({&field}),
           std::to_array<const AutofillField*>({autofill_field}),
           filling_product,
           /*is_refill=*/false);
@@ -1079,27 +1077,20 @@ void FormFiller::FillOrPreviewForm(
 
   // This will hold the subset of fields of `result_fields` whose ids are in
   // `safe_filled_field_ids`.
-  struct {
-    std::vector<const FormFieldData*> old_values;
-    std::vector<const AutofillField*> cached;
-  } safe_filled_fields;
-
+  std::vector<const AutofillField*> safe_filled_fields;
   for (const FormFieldData& field : result_fields) {
     const FieldGlobalId field_id = field.global_id();
     if (safe_filled_field_ids.contains(field_id)) {
       // A safe field was filled. Both functions will not return a nullptr
       // because they passed the `FieldFillingSkipReason::kFormChanged`
       // condition.
-      safe_filled_fields.old_values.push_back(
-          form.FindFieldByGlobalId(field_id));
-      safe_filled_fields.cached.push_back(
-          form_structure.GetFieldById(field_id));
+      safe_filled_fields.push_back(form_structure.GetFieldById(field_id));
     } else {
-      auto it =
-          std::ranges::find(form.fields(), field_id, &FormFieldData::global_id);
-      CHECK(it != result_fields.end());
+      auto it = std::ranges::find(form_structure.fields(), field_id,
+                                  &FormFieldData::global_id);
+      CHECK(it != form_structure.fields().end());
       std::string field_number =
-          base::StringPrintf("Field %zu", it - result_fields.begin());
+          base::StringPrintf("Field %zu", it - form_structure.fields().begin());
       LOG_AF(buffer) << Tr{} << field_number
                      << "Actually did not fill field because of the iframe "
                         "security policy.";
@@ -1117,8 +1108,7 @@ void FormFiller::FillOrPreviewForm(
     if (ShouldRecordFillingHistory(
             augmented_filling_payload.filling_product())) {
       form_autofill_history_.AddFormFillingEntry(
-          safe_filled_fields.old_values, safe_filled_fields.cached,
-          augmented_filling_payload.filling_product(),
+          safe_filled_fields, augmented_filling_payload.filling_product(),
           refill_options.is_refill());
     }
 
@@ -1135,7 +1125,7 @@ void FormFiller::FillOrPreviewForm(
 
   manager_->OnDidFillOrPreviewForm(
       action_persistence, form_structure, autofill_trigger_field,
-      safe_filled_fields.cached,
+      safe_filled_fields,
       base::MakeFlatSet<FieldGlobalId>(result_fields, {},
                                        &FormFieldData::global_id),
       filling_payload, trigger_source, refill_options.reason());
