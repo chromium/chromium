@@ -68,6 +68,8 @@ class TestChromePaymentRequestDelegate : public ChromePaymentRequestDelegate {
     return static_cast<PaymentRequestDialogView*>(shown_dialog_.get());
   }
 
+  base::WeakPtr<TestChromePaymentRequestDelegate> GetWeakPtr();
+
  private:
   // ChromePaymentRequestDelegate:
   void ShowDialog(base::WeakPtr<PaymentRequest> request) override;
@@ -95,6 +97,9 @@ class TestChromePaymentRequestDelegate : public ChromePaymentRequestDelegate {
   std::optional<bool> is_off_the_record_;
   std::optional<bool> is_valid_ssl_;
   std::optional<bool> is_browser_window_active_;
+
+  base::WeakPtrFactory<TestChromePaymentRequestDelegate> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace payments

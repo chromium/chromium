@@ -558,7 +558,7 @@ void PaymentRequestBrowserTestBase::CreatePaymentRequestForTest(
   delegate->OverrideOffTheRecord(is_incognito_);
   delegate->OverrideValidSSL(is_valid_ssl_);
   delegate->OverrideBrowserWindowActive(is_browser_window_active_);
-  delegate_ = delegate.get();
+  delegate_ = delegate->GetWeakPtr();
 
   auto* request = new PaymentRequest(std::move(delegate), std::move(receiver));
   request->set_observer_for_test(GetWeakPtr());

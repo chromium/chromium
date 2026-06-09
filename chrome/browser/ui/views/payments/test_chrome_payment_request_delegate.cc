@@ -131,4 +131,9 @@ TestChromePaymentRequestDelegate::GetPaymentUIObserver() const {
   return payment_ui_observer_;
 }
 
+base::WeakPtr<TestChromePaymentRequestDelegate>
+TestChromePaymentRequestDelegate::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace payments
