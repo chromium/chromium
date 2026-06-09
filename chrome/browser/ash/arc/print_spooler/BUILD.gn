@@ -33,6 +33,7 @@ static_library("print_spooler") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
+    "//pdf:features",
     "//printing",
     "//ui/aura",
     "//ui/gfx",

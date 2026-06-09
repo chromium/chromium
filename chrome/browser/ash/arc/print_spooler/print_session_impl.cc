@@ -24,16 +24,19 @@
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_util.h"
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
+#include "chrome/browser/printing/printing_init.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "chromeos/ash/experiences/arc/intent_helper/custom_tab.h"
 #include "chromeos/ash/experiences/arc/mojom/print_common.mojom.h"
 #include "components/pdf/browser/pdf_document_helper.h"
+#include "components/pdf/browser/pdf_frame_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/filename_util.h"
+#include "pdf/pdf_features.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_range.h"
 #include "printing/print_job_constants.h"
@@ -193,8 +196,12 @@ bool IsPdfPluginLoaded(content::WebContents* web_contents) {
     return false;
   }
 
+  // Refer to
+  // chrome/browser/printing/print_view_manager_common.cc::GetRenderFrameHostToUse.
   content::RenderFrameHost* plugin_frame =
-      printing::GetFullPagePlugin(web_contents);
+      chrome_pdf::features::IsOopifPdfEnabled()
+          ? pdf_frame_util::FindFullPagePdfExtensionHost(web_contents)
+          : printing::GetFullPagePlugin(web_contents);
   if (!plugin_frame) {
     VLOG(1) << "No plugin frame found yet.";
     return false;
@@ -262,6 +269,7 @@ PrintSessionImpl::PrintSessionImpl(
       document_path_(std::move(document_path)) {
   session_receiver_.set_disconnect_handler(
       base::BindOnce(&PrintSessionImpl::Close, weak_ptr_factory_.GetWeakPtr()));
+  printing::InitializePrintingForWebContents(web_contents_.get());
   web_contents_->SetUserData(UserDataKey(), base::WrapUnique(this));
   arc_window_observation_.Observe(arc_window);
 
