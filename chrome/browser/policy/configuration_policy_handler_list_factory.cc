@@ -2480,14 +2480,16 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif
 
-#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
+// These policies are not supported on ChromeOS, so their `key::` constants
+// are only defined in non-ChromeOS builds and must be guarded accordingly.
+#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES) && !BUILDFLAG(IS_CHROMEOS)
   { key::kProvisionManagedClientCertificateForUser,
     client_certificates::prefs::kProvisionManagedClientCertificateForUserPrefs,
     base::Value::Type::INTEGER },
   { key::kProvisionManagedClientCertificateForBrowser,
     client_certificates::prefs::kProvisionManagedClientCertificateForBrowserPrefs,
     base::Value::Type::INTEGER },
-#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
+#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
   { key::kDeviceAuthenticationFlowAutoReloadInterval,

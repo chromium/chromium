@@ -1013,7 +1013,11 @@ source_set("impl") {
     ]
   }
 
-  if (enterprise_client_certificates) {
+  # These targets back browser (machine) scope provisioning via Chrome Browser
+  # Cloud Management (BrowserDMTokenStorage / BrowserCloudManagementDelegate),
+  # which does not exist on ChromeOS even though enterprise_client_certificates
+  # is enabled there.
+  if (enterprise_client_certificates && !is_chromeos) {
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
       "//components/enterprise/client_certificates/core:management_delegate",

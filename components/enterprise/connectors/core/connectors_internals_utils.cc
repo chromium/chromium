@@ -42,6 +42,10 @@ connectors_internals::mojom::KeyTrustLevel ConvertPrivateKeySource(
       return connectors_internals::mojom::KeyTrustLevel::OS_SOFTWARE;
     case client_certificates::PrivateKeySource::kAndroidKey:
       return connectors_internals::mojom::KeyTrustLevel::HW;
+    case client_certificates::PrivateKeySource::kChromeOsHwKey:
+      return connectors_internals::mojom::KeyTrustLevel::HW;
+    case client_certificates::PrivateKeySource::kChromeOsSwKey:
+      return connectors_internals::mojom::KeyTrustLevel::OS;
   }
 }
 

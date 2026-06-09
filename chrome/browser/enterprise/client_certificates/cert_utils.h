@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "components/enterprise/client_certificates/core/private_key_factory.h"
 
 class PrefService;
@@ -26,13 +27,17 @@ class PrivateKeyFactory;
 
 std::unique_ptr<PrivateKeyFactory> CreatePrivateKeyFactory();
 
-// Creates and returns a CertificateProvisioningService.
+#if !BUILDFLAG(IS_CHROMEOS)
+// Creates and returns a CertificateProvisioningService for the browser
+// (machine) scope. This relies on Chrome Browser Cloud Management, which does
+// not exist on ChromeOS.
 std::unique_ptr<client_certificates::CertificateProvisioningService>
 CreateBrowserCertificateProvisioningService(
     PrefService* local_state,
     client_certificates::CertificateStore* certificate_store,
     policy::DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace client_certificates
 

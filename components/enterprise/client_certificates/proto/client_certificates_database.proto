@@ -20,10 +20,17 @@ message PrivateKey {
     PRIVATE_OS_SOFTWARE_KEY = 3;
     // Chrome Browser with the key stored in Android StrongBox.
     PRIVATE_ANDROID_KEY = 4;
+    // Chrome Browser on ChromeOS with a hardware-backed (TPM) key managed by
+    // Kcer.
+    PRIVATE_CHROME_OS_HW_KEY = 5;
+    // Chrome Browser on ChromeOS with a software key managed by Kcer (used when
+    // hardware-backed generation is unavailable and Chrome falls back).
+    PRIVATE_CHROME_OS_SW_KEY = 6;
   }
 
   // Represents the source of the private key, which will dictate how
-  // to deal with `wrapped_key`.
+  // to deal with `wrapped_key`. The hardware-vs-software distinction for
+  // ChromeOS keys is encoded in the source itself (see PRIVATE_CHROME_OS_*).
   optional PrivateKeySource source = 1;
 
   // Bytes of a wrapped private key.

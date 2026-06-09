@@ -36,9 +36,11 @@ BPKUR::KeyTrustLevel SourceToTrustLevel(PrivateKeySource source) {
   switch (source) {
     case PrivateKeySource::kAndroidKey:
     case PrivateKeySource::kUnexportableKey:
+    case PrivateKeySource::kChromeOsHwKey:
       return BPKUR::CHROME_BROWSER_HW_KEY;
     case PrivateKeySource::kSoftwareKey:
     case PrivateKeySource::kOsSoftwareKey:
+    case PrivateKeySource::kChromeOsSwKey:
       return BPKUR::CHROME_BROWSER_OS_KEY;
   }
 }

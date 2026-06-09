@@ -6,12 +6,11 @@
 
 #include <utility>
 
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/client_certificates/browser_context_delegate.h"
 #include "chrome/browser/enterprise/client_certificates/cert_utils.h"
 #include "chrome/common/chrome_version.h"
-#include "components/enterprise/client_certificates/core/browser_cloud_management_delegate.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
-#include "components/enterprise/client_certificates/core/dm_server_client.h"
 #include "components/enterprise/client_certificates/core/ec_private_key_factory.h"
 #include "components/enterprise/client_certificates/core/key_upload_client.h"
 #include "components/enterprise/client_certificates/core/private_key_factory.h"
@@ -30,6 +29,13 @@
 #include "components/enterprise/client_certificates/core/android_private_key_factory.h"
 #include "components/enterprise/client_certificates/core/features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Browser (machine) scope provisioning relies on Chrome Browser Cloud
+// Management, which is not available on ChromeOS.
+#include "components/enterprise/client_certificates/core/browser_cloud_management_delegate.h"
+#include "components/enterprise/client_certificates/core/dm_server_client.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace client_certificates {
 
@@ -80,6 +86,7 @@ std::unique_ptr<PrivateKeyFactory> CreatePrivateKeyFactory() {
   return PrivateKeyFactory::Create(std::move(sub_factories));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<client_certificates::CertificateProvisioningService>
 CreateBrowserCertificateProvisioningService(
     PrefService* local_state,
@@ -99,5 +106,6 @@ CreateBrowserCertificateProvisioningService(
               enterprise_attestation::DMServerClient::Create(
                   device_management_service, std::move(url_loader_factory)))));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace client_certificates

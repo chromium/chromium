@@ -1742,7 +1742,12 @@ source_set("platform_browser_tests") {
     }
   }
 
-  if (enterprise_client_certificates) {
+  # This test exercises CBCM browser/machine-level provisioning APIs
+  # (cloud machine policies, ChromeBrowserCloudManagementController, and the
+  # ProvisionManagedClientCertificateFor{User,Browser} policies), none of which
+  # exist on ChromeOS even though enterprise_client_certificates is enabled
+  # there.
+  if (enterprise_client_certificates && !is_chromeos) {
     sources += [ "../browser/enterprise/client_certificates/client_certificates_browsertest.cc" ]
 
     deps += [

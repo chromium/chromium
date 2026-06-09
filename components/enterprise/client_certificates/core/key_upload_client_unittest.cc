@@ -63,12 +63,13 @@ scoped_refptr<MockPrivateKey> CreateMockedKey() {
 }
 
 enterprise_management::DeviceManagementRequest CreateExpectedRequest(
-    bool provision_certificate) {
+    bool provision_certificate,
+    BPKUR::KeyTrustLevel trust_level = BPKUR::CHROME_BROWSER_HW_KEY) {
   enterprise_management::DeviceManagementRequest request;
   auto* upload_request = request.mutable_browser_public_key_upload_request();
   upload_request->set_public_key(std::string(kFakeSpki));
   upload_request->set_signature(std::string(kFakeSignature));
-  upload_request->set_key_trust_level(BPKUR::CHROME_BROWSER_HW_KEY);
+  upload_request->set_key_trust_level(trust_level);
   upload_request->set_key_type(BPKUR::RSA_KEY);
   upload_request->set_provision_certificate(provision_certificate);
   return request;
@@ -329,6 +330,68 @@ TEST_F(KeyUploadClientTest, KeySync_DMServerFailed) {
   auto response_code = test_future.Take();
 
   EXPECT_EQ(response_code, 409);
+}
+
+namespace {
+
+// Builds a mock key with the given `source`. key_upload_client maps the source
+// to a trust level via SourceToTrustLevel() (kChromeOsHwKey -> HW key,
+// kChromeOsSwKey -> OS key).
+scoped_refptr<StrictMock<MockPrivateKey>> CreateMockKeyWithSource(
+    PrivateKeySource source) {
+  auto key = base::MakeRefCounted<StrictMock<MockPrivateKey>>(source);
+  ON_CALL(*key, SignSlowly(_)).WillByDefault(Return(ToBytes(kFakeSignature)));
+  ON_CALL(*key, GetSubjectPublicKeyInfo())
+      .WillByDefault(Return(ToBytes(kFakeSpki)));
+  ON_CALL(*key, GetAlgorithm())
+      .WillByDefault(Return(crypto::SignatureVerifier::RSA_PKCS1_SHA1));
+  EXPECT_CALL(*key, SignSlowly(_));
+  EXPECT_CALL(*key, GetSubjectPublicKeyInfo());
+  EXPECT_CALL(*key, GetAlgorithm());
+  return key;
+}
+
+}  // namespace
+
+// A hardware-backed ChromeOS key (kChromeOsHwKey) should be uploaded with
+// CHROME_BROWSER_HW_KEY trust level.
+TEST_F(KeyUploadClientTest, KeySync_ChromeOsHwKey_ReportsHwKey) {
+  SetUpDMToken();
+  EXPECT_CALL(*mock_management_delegate_,
+              UploadBrowserPublicKey(
+                  EqualsProto(CreateExpectedRequest(
+                      /*provision_certificate=*/false,
+                      BPKUR::CHROME_BROWSER_HW_KEY)),
+                  _))
+      .WillOnce(RunOnceCallback<1>(CreateResult()));
+  CreateUploadClient();
+
+  auto private_key = CreateMockKeyWithSource(PrivateKeySource::kChromeOsHwKey);
+
+  base::test::TestFuture<HttpCodeOrClientError> test_future;
+  upload_client_->SyncKey(private_key, test_future.GetCallback());
+  EXPECT_EQ(test_future.Get(), kSuccessCode);
+}
+
+// A ChromeOS key that fell back to software generation (kChromeOsSwKey) should
+// report CHROME_BROWSER_OS_KEY — preserves accurate trust reporting on Flex /
+// no-TPM devices.
+TEST_F(KeyUploadClientTest, KeySync_ChromeOsSwKey_ReportsOsKey) {
+  SetUpDMToken();
+  EXPECT_CALL(*mock_management_delegate_,
+              UploadBrowserPublicKey(
+                  EqualsProto(CreateExpectedRequest(
+                      /*provision_certificate=*/false,
+                      BPKUR::CHROME_BROWSER_OS_KEY)),
+                  _))
+      .WillOnce(RunOnceCallback<1>(CreateResult()));
+  CreateUploadClient();
+
+  auto private_key = CreateMockKeyWithSource(PrivateKeySource::kChromeOsSwKey);
+
+  base::test::TestFuture<HttpCodeOrClientError> test_future;
+  upload_client_->SyncKey(private_key, test_future.GetCallback());
+  EXPECT_EQ(test_future.Get(), kSuccessCode);
 }
 
 }  // namespace client_certificates

@@ -696,6 +696,7 @@ source_set("impl") {
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
       "//chrome/browser/enterprise/connectors/device_trust/common",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
       "//chrome/browser/enterprise/connectors/device_trust/signals",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common",
       "//components/device_signals/core/browser",
@@ -791,7 +792,6 @@ source_set("impl") {
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
       "//chrome/services/system_signals/public/cpp/browser",
     ]
   }

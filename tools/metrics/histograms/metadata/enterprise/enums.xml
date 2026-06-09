@@ -63,6 +63,9 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unexportable"/>
   <int value="1" label="Software"/>
   <int value="2" label="OsSoftware"/>
+  <int value="3" label="Android"/>
+  <int value="4" label="ChromeOsHardware"/>
+  <int value="5" label="ChromeOsSoftware"/>
 </enum>
 
 <enum name="CertificateProvisioningError">

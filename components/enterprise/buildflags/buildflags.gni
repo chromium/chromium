@@ -23,7 +23,7 @@ declare_args() {
   # Indicates support for client certificates provisioning.
   # iOS support is currently under development
   enterprise_client_certificates =
-      is_win || is_mac || is_linux || is_android || is_ios
+      is_win || is_mac || is_linux || is_android || is_ios || is_chromeos
 
   # The watermark is currently implemented using the views framework.
   enterprise_watermark =

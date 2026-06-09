@@ -33,15 +33,14 @@ source_set("cloud_management_delegate") {
 source_set("management_delegate") {
   configs += [ "//components/enterprise:extra_warnings" ]
 
-  public = [
-    "browser_cloud_management_delegate.h",
-    "profile_cloud_management_delegate.h",
-  ]
+  public = [ "profile_cloud_management_delegate.h" ]
 
-  sources = [
-    "browser_cloud_management_delegate.cc",
-    "profile_cloud_management_delegate.cc",
-  ]
+  sources = [ "profile_cloud_management_delegate.cc" ]
+
+  if (!is_chromeos) {
+    public += [ "browser_cloud_management_delegate.h" ]
+    sources += [ "browser_cloud_management_delegate.cc" ]
+  }
 
   public_deps = [
     "//base",
