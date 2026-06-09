@@ -468,15 +468,15 @@ TEST_F(PixAccountLinkingManagerTest, PromptDeclined_ExitedReasonLogged) {
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/PixAccountLinkingFlowExitedReason::kUserDeclined,
+      /*sample=*/AccountLinkingFlowExitedReason::kUserDeclined,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectBucketCount(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/PixAccountLinkingFlowExitedReason::kScreenClosedNotByUser,
+      /*sample=*/AccountLinkingFlowExitedReason::kScreenClosedNotByUser,
       /*expected_count=*/0);
   histogram_tester.ExpectBucketCount(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/PixAccountLinkingFlowExitedReason::kScreenClosedByUser,
+      /*sample=*/AccountLinkingFlowExitedReason::kScreenClosedByUser,
       /*expected_count=*/0);
 }
 
@@ -490,7 +490,7 @@ TEST_F(PixAccountLinkingManagerTest, WalletNotInstalled_ExitedReasonLogged) {
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/PixAccountLinkingFlowExitedReason::kWalletNotInstalled,
+      /*sample=*/AccountLinkingFlowExitedReason::kWalletNotInstalled,
       /*expected_bucket_count=*/1);
 }
 
@@ -505,7 +505,7 @@ TEST_F(PixAccountLinkingManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/PixAccountLinkingFlowExitedReason::kWalletVersionNotSupported,
+      /*sample=*/AccountLinkingFlowExitedReason::kWalletVersionNotSupported,
       /*expected_bucket_count=*/1);
 }
 
@@ -519,7 +519,7 @@ TEST_F(PixAccountLinkingManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/PixAccountLinkingFlowExitedReason::kUserOptedOut,
+      /*sample=*/AccountLinkingFlowExitedReason::kUserOptedOut,
       /*expected_bucket_count=*/1);
 }
 
@@ -533,7 +533,7 @@ TEST_F(PixAccountLinkingManagerTest, ScreenlockNotEnabled_ExitedReasonLogged) {
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
       /*sample=*/
-      PixAccountLinkingFlowExitedReason::kNoScreenlockOrBiometricSetup,
+      AccountLinkingFlowExitedReason::kNoScreenlockOrBiometricSetup,
       /*expected_bucket_count=*/1);
 }
 
@@ -551,7 +551,7 @@ TEST_F(PixAccountLinkingManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/PixAccountLinkingFlowExitedReason::kServerSideIneligible,
+      /*sample=*/AccountLinkingFlowExitedReason::kServerSideIneligible,
       /*expected_bucket_count=*/1);
 }
 
@@ -574,7 +574,7 @@ TEST_F(PixAccountLinkingManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/PixAccountLinkingFlowExitedReason::kServerSideIneligible,
+      /*sample=*/AccountLinkingFlowExitedReason::kServerSideIneligible,
       /*expected_bucket_count=*/1);
 }
 
@@ -587,7 +587,7 @@ TEST_F(PixAccountLinkingManagerTest, TabNotActive_ExitedReasonLogged) {
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/PixAccountLinkingFlowExitedReason::kTabIsNotActive,
+      /*sample=*/AccountLinkingFlowExitedReason::kTabIsNotActive,
       /*expected_bucket_count=*/1);
 }
 
@@ -604,18 +604,18 @@ TEST_F(PixAccountLinkingManagerTest, DifferentOrigin_ExitedReasonLogged) {
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/PixAccountLinkingFlowExitedReason::kUserSwitchedWebsite,
+      /*sample=*/AccountLinkingFlowExitedReason::kUserSwitchedWebsite,
       /*expected_bucket_count=*/1);
 }
 
 class PixAccountLinkingManagerTestForExitedReasons
     : public PixAccountLinkingManagerTest,
       public testing::WithParamInterface<
-          std::tuple<UiEvent, PixAccountLinkingFlowExitedReason>> {
+          std::tuple<UiEvent, AccountLinkingFlowExitedReason>> {
  public:
   UiEvent ui_event() const { return std::get<0>(GetParam()); }
 
-  PixAccountLinkingFlowExitedReason pix_account_linking_flow_exited_reason()
+  AccountLinkingFlowExitedReason pix_account_linking_flow_exited_reason()
       const {
     return std::get<1>(GetParam());
   }
@@ -639,12 +639,11 @@ INSTANTIATE_TEST_SUITE_P(
     PixAccountLinkingManagerTestForExitedReasons,
     testing::ValuesIn({
         std::make_tuple(UiEvent::kScreenCouldNotBeShown,
-                        PixAccountLinkingFlowExitedReason::kScreenNotShown),
-        std::make_tuple(
-            UiEvent::kScreenClosedNotByUser,
-            PixAccountLinkingFlowExitedReason::kScreenClosedNotByUser),
+                        AccountLinkingFlowExitedReason::kScreenNotShown),
+        std::make_tuple(UiEvent::kScreenClosedNotByUser,
+                        AccountLinkingFlowExitedReason::kScreenClosedNotByUser),
         std::make_tuple(UiEvent::kScreenClosedByUser,
-                        PixAccountLinkingFlowExitedReason::kScreenClosedByUser),
+                        AccountLinkingFlowExitedReason::kScreenClosedByUser),
     }));
 
 TEST_F(PixAccountLinkingManagerTest,
@@ -665,7 +664,7 @@ TEST_F(PixAccountLinkingManagerTest,
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/PixAccountLinkingFlowExitedReason::kMaxStrikes,
+      /*sample=*/AccountLinkingFlowExitedReason::kMaxStrikes,
       /*expected_bucket_count=*/1);
 }
 
@@ -689,7 +688,7 @@ TEST_F(
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/PixAccountLinkingFlowExitedReason::kRequiredDelayNotPassed,
+      /*sample=*/AccountLinkingFlowExitedReason::kRequiredDelayNotPassed,
       /*expected_bucket_count=*/1);
 }
 

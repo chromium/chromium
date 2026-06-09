@@ -464,50 +464,6 @@ reviewer.
   <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
-<histogram name="FacilitatedPayments.Pix.AccountLinking.FlowExitedReason"
-    enum="FacilitatedPayments.Pix.AccountLinking.FlowExitedReason"
-    expires_after="2027-04-30">
-  <owner>longsheng@google.com</owner>
-  <owner>siashah@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    This histogram logs the reasons as to why the Pix account linking flow was
-    exited. The flow is said to be completed if Chrome successfully opens
-    Wallet's Pix account linking page. [Trigger] Pix account linking flow was
-    exited early. [Frequency] Logged at most once per payflow.
-  </summary>
-</histogram>
-
-<histogram
-    name="FacilitatedPayments.Pix.AccountLinking.GetDetailsForCreatePaymentInstrument.Latency"
-    units="ms" expires_after="2027-04-30">
-  <owner>longsheng@google.com</owner>
-  <owner>siashah@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Records the amount of time that it takes to receive a response from the
-    server endpoint that checks the Pix account linking eligibility
-    (GetDetailsForCreatePaymentInstrument). [Frequency] Logged once per Pix
-    account linking flow. [Trigger] The histogram is logged when the server
-    endpoint returns a response.
-  </summary>
-</histogram>
-
-<histogram
-    name="FacilitatedPayments.Pix.AccountLinking.GetDetailsForCreatePaymentInstrument.Result"
-    enum="BooleanEligible" expires_after="2027-04-30">
-  <owner>longsheng@google.com</owner>
-  <owner>siashah@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Records the eligibility response received from the server endpoint that
-    checks the Pix account linking eligibility
-    (GetDetailsForCreatePaymentInstrument). [Frequency] Logged once per Pix
-    account linking flow. [Trigger] The histogram is logged when the server
-    endpoint returns a response.
-  </summary>
-</histogram>
-
 <histogram name="FacilitatedPayments.Pix.AccountLinking.PromptAccepted"
     enum="BooleanAccepted" expires_after="2027-04-30">
   <owner>longsheng@google.com</owner>
@@ -842,6 +798,80 @@ reviewer.
     otherwise. Does not log if the toggle is not updated. [Trigger] User updates
     the toggle for {FacilitatedPaymentsType} from the facilitated payments
     settings page. [Frequency] Logged once per toggle update.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.AccountLinking.FlowExitedReason"
+    enum="FacilitatedPayments.AccountLinking.FlowExitedReason"
+    expires_after="2027-04-30">
+  <owner>longsheng@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>hfizt@google.com</owner>
+  <owner>nicluo@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    This histogram logs the reasons as to why the {FacilitatedPaymentsType}
+    account linking flow was exited. The flow is said to be completed if Chrome
+    successfully opens Wallet's {FacilitatedPaymentsType} account linking page.
+    [Trigger] {FacilitatedPaymentsType} account linking flow was exited early.
+    [Frequency] Logged at most once per payflow.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.AccountLinking.GetClientToken.{Result}.Latency"
+    units="ms" expires_after="2027-04-30">
+  <owner>longsheng@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>hfizt@google.com</owner>
+  <owner>nicluo@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Latency for the call to fetch the client token for the
+    {FacilitatedPaymentsType} account linking flow. The client token is fetched
+    from the platform-specific payment library. {Result} is the token fetch
+    result. [Frequency] Logged once per {FacilitatedPaymentsType} account
+    linking flow. [Trigger] The GMSCore API returns the token or fails.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="Result" variants="BooleanResult"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.AccountLinking.GetDetailsForCreatePaymentInstrument.Latency"
+    units="ms" expires_after="2027-04-30">
+  <owner>longsheng@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>hfizt@google.com</owner>
+  <owner>nicluo@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the amount of time that it takes to receive a response from the
+    server endpoint that checks the {FacilitatedPaymentsType} account linking
+    eligibility (GetDetailsForCreatePaymentInstrument). [Frequency] Logged once
+    per {FacilitatedPaymentsType} account linking flow. [Trigger] The histogram
+    is logged when the server endpoint returns a response.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.AccountLinking.GetDetailsForCreatePaymentInstrument.Result"
+    enum="BooleanEligible" expires_after="2027-04-30">
+  <owner>longsheng@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>hfizt@google.com</owner>
+  <owner>nicluo@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the eligibility response received from the server endpoint that
+    checks the {FacilitatedPaymentsType} account linking eligibility
+    (GetDetailsForCreatePaymentInstrument). [Frequency] Logged once per
+    {FacilitatedPaymentsType} account linking flow. [Trigger] The histogram is
+    logged when the server endpoint returns a response.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
 </histogram>

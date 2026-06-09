@@ -13,6 +13,8 @@ static_library("browser") {
     "facilitated_payments_driver.h",
     "model/secure_payload.cc",
     "model/secure_payload.h",
+    "native_account_linking_handler.cc",
+    "native_account_linking_handler.h",
     "network_api/facilitated_payments_initiate_payment_request.cc",
     "network_api/facilitated_payments_initiate_payment_request.h",
     "network_api/facilitated_payments_initiate_payment_request_details.cc",
@@ -58,6 +60,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "facilitated_payments_driver_unittest.cc",
+    "native_account_linking_handler_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_details_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
     "network_api/facilitated_payments_network_interface_unittest.cc",
