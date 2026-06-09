@@ -136,6 +136,8 @@ BASE_FEATURE(kLensSendVitForSingleContextNextQueries,
 
 BASE_FEATURE(kLensSendRawFileMediaTypes, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensSendQuerySubmissionTime, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensSendUrlsInComposeboxes,
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT

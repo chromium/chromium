@@ -207,6 +207,10 @@ BASE_DECLARE_FEATURE(kLensSendVitForSingleContextNextQueries);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSendRawFileMediaTypes);
 
+// Enables sending the query submission time (qsubts) parameter.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSendQuerySubmissionTime);
+
 // Enables parsing and sending URLs from the Query Contextualizer in
 // composeboxes.
 COMPONENT_EXPORT(LENS_FEATURES)
