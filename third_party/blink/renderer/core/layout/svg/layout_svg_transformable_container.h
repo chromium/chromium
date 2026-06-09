@@ -47,6 +47,11 @@ class LayoutSVGTransformableContainer : public LayoutSVGContainer {
     return local_transform_;
   }
 
+  virtual bool HasAdditionalTransform() const {
+    NOT_DESTROYED();
+    return !additional_translation_.IsZero();
+  }
+
  protected:
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
