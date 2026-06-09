@@ -258,7 +258,10 @@ TEST_F(LoadProfileTest, StopsWhenHandleIsCancelled) {
   ASSERT_TRUE(signin_future.Wait()) << "Did not signin";
   handle.reset();
 
-  base::RunLoop().RunUntilIdle();  // Wait any ongoing tasks to complete.
+  // The sign-in callback was already posted; this sentinel runs after it.
+  base::RunLoop run_loop;
+  PostTask(run_loop.QuitClosure());
+  run_loop.Run();
   ASSERT_FALSE(did_call_jobs_after_cancellation);
   ASSERT_FALSE(future.IsReady());
 }
