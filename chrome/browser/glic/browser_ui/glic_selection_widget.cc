@@ -53,13 +53,10 @@ class GlicSelectionContentsView : public views::View {
   METADATA_HEADER(GlicSelectionContentsView, views::View)
 
  public:
-  GlicSelectionContentsView(const std::u16string& selected_text,
-                            bool initial_pinned_state,
-                            base::RepeatingClosure on_ask_gemini,
-                            base::RepeatingClosure on_copy,
-                            base::RepeatingClosure on_copy_link,
-                            base::RepeatingClosure on_toggle_pin,
-                            base::RepeatingClosure on_dismiss) {
+  GlicSelectionContentsView(GlicSelectionWidgetDelegate* widget_delegate,
+                            const std::u16string& selected_text,
+                            bool initial_pinned_state)
+      : widget_delegate_(widget_delegate) {
     SetNotifyEnterExitOnChild(true);
 
     auto border1 = std::make_unique<views::BubbleBorder>(
@@ -106,7 +103,9 @@ class GlicSelectionContentsView : public views::View {
         base::StrCat({u"\"", truncated_text, u"\""}));
     auto* ask_gemini_btn =
         ask_pill_->AddChildView(std::make_unique<views::MdTextButton>(
-            std::move(on_ask_gemini),
+            base::BindRepeating(
+                &GlicSelectionWidgetDelegate::ActionDelegate::OnAskGemini,
+                base::Unretained(&widget_delegate_->action_delegate())),
             l10n_util::GetStringUTF16(
                 IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL)));
     ask_gemini_btn->SetStyle(ui::ButtonStyle::kText);
@@ -165,7 +164,9 @@ class GlicSelectionContentsView : public views::View {
         l10n_util::GetStringUTF16(IDS_APP_COPY), nullptr, nullptr);
     auto* copy_btn =
         ask_pill_->AddChildView(views::ImageButton::CreateIconButton(
-            std::move(on_copy),
+            base::BindRepeating(
+                &GlicSelectionWidgetDelegate::ActionDelegate::OnCopy,
+                base::Unretained(&widget_delegate_->action_delegate())),
             features::IsRoundedIconsEnabled()
                 ? vector_icons::kContentCopyIcon
                 : vector_icons::kContentCopyOldIcon,
@@ -191,7 +192,9 @@ class GlicSelectionContentsView : public views::View {
         l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT);
     copy_link_btn_ =
         ask_pill_->AddChildView(views::ImageButton::CreateIconButton(
-            std::move(on_copy_link),
+            base::BindRepeating(
+                &GlicSelectionWidgetDelegate::ActionDelegate::OnCopyLink,
+                base::Unretained(&widget_delegate_->action_delegate())),
             features::IsRoundedIconsEnabled()
                 ? omnibox::kShareIcon
                 : omnibox::kShareChromeRefreshOldIcon,
@@ -232,7 +235,8 @@ class GlicSelectionContentsView : public views::View {
     if (features::kGlicSelectionPromptEnablePinning.Get()) {
       pin_btn_ =
           dismiss_pill_->AddChildView(views::ImageButton::CreateIconButton(
-              std::move(on_toggle_pin),
+              base::BindRepeating(&GlicSelectionWidgetDelegate::TogglePinState,
+                                  base::Unretained(widget_delegate_)),
               features::IsRoundedIconsEnabled()
                   ? vector_icons::kKeyboardArrowUpIcon
                   : vector_icons::kCaretUpOldIcon,
@@ -248,7 +252,9 @@ class GlicSelectionContentsView : public views::View {
       auto dismiss_tooltip = l10n_util::GetStringUTF16(IDS_APP_CLOSE);
       dismiss_btn_ =
           dismiss_pill_->AddChildView(views::ImageButton::CreateIconButton(
-              std::move(on_dismiss),
+              base::BindRepeating(
+                  &GlicSelectionWidgetDelegate::ActionDelegate::OnDismiss,
+                  base::Unretained(&widget_delegate_->action_delegate())),
               features::IsRoundedIconsEnabled() ? vector_icons::kCloseIcon
                                                 : vector_icons::kCloseOldIcon,
               dismiss_tooltip));
@@ -344,6 +350,7 @@ class GlicSelectionContentsView : public views::View {
   }
 
  private:
+  const raw_ptr<GlicSelectionWidgetDelegate> widget_delegate_;
   raw_ptr<views::ImageButton> copy_link_btn_ = nullptr;
   raw_ptr<views::ImageButton> pin_btn_ = nullptr;
   raw_ptr<views::ImageButton> dismiss_btn_ = nullptr;
@@ -356,80 +363,22 @@ END_METADATA
 
 }  // namespace
 
-// static
-views::Widget* GlicSelectionWidgetDelegate::Show(
-    content::WebContents* web_contents,
-    const gfx::Rect& anchor_rect,
-    const std::u16string& selected_text,
-    bool is_pinned,
-    base::RepeatingClosure on_ask_gemini,
-    base::RepeatingClosure on_copy,
-    base::RepeatingClosure on_copy_link,
-    base::RepeatingCallback<void(bool)> on_pin_toggled,
-    base::RepeatingClosure on_dismiss) {
-  // Both `GetContainerBounds` and `GetTextSelectionBounds` (from which
-  // `anchor_rect` originates) return global screen coordinates in DIPs, so
-  // relative positions and scales are compatible.
-  gfx::Rect window_bounds =
-      web_contents ? web_contents->GetContainerBounds() : gfx::Rect();
-  auto delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      anchor_rect, window_bounds, selected_text, is_pinned,
-      std::move(on_ask_gemini), std::move(on_copy), std::move(on_copy_link),
-      std::move(on_pin_toggled), std::move(on_dismiss));
-  if (web_contents) {
-    delegate->set_parent_window(platform_util::GetViewForWindow(
-        web_contents->GetTopLevelNativeWindow()));
-  }
-  views::Widget* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
-      std::move(delegate),
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
-  widget->ShowInactive();
-  return widget;
-}
-
 GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
+    ActionDelegate& action_delegate,
     const gfx::Rect& anchor_rect,
     const gfx::Rect& window_bounds,
     const std::u16string& selected_text,
-    bool is_pinned,
-    base::RepeatingClosure on_ask_gemini,
-    base::RepeatingClosure on_copy,
-    base::RepeatingClosure on_copy_link,
-    base::RepeatingCallback<void(bool)> on_pin_toggled,
-    base::RepeatingClosure on_dismiss)
+    bool is_pinned)
     : BubbleDialogDelegate(nullptr,
                            views::BubbleBorder::BOTTOM_RIGHT,
                            views::BubbleBorder::STANDARD_SHADOW,
                            /*autosize=*/true),
+      action_delegate_(action_delegate),
       original_anchor_rect_(anchor_rect),
       window_bounds_(window_bounds),
-      is_pinned_(is_pinned),
-      on_pin_toggled_callback_(std::move(on_pin_toggled)) {
-  auto button_click = [](base::RepeatingClosure original_click,
-                         views::BubbleDialogDelegate* delegate) {
-    if (delegate->GetWidget()) {
-      delegate->GetWidget()->CloseWithReason(
-          views::Widget::ClosedReason::kAcceptButtonClicked);
-    }
-    if (original_click) {
-      original_click.Run();
-    }
-  };
-
-  auto contents_view = std::make_unique<GlicSelectionContentsView>(
-      selected_text, is_pinned_,
-      base::BindRepeating(button_click, std::move(on_ask_gemini),
-                          base::Unretained(this)),
-      base::BindRepeating(button_click, std::move(on_copy),
-                          base::Unretained(this)),
-      base::BindRepeating(button_click, std::move(on_copy_link),
-                          base::Unretained(this)),
-      base::BindRepeating(&GlicSelectionWidgetDelegate::TogglePinState,
-                          base::Unretained(this)),
-      base::BindRepeating(button_click, std::move(on_dismiss),
-                          base::Unretained(this)));
-
-  SetContentsView(std::move(contents_view));
+      is_pinned_(is_pinned) {
+  SetContentsView(std::make_unique<GlicSelectionContentsView>(
+      this, selected_text, is_pinned_));
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(false);
@@ -446,9 +395,7 @@ GlicSelectionWidgetDelegate::~GlicSelectionWidgetDelegate() = default;
 
 void GlicSelectionWidgetDelegate::TogglePinState() {
   is_pinned_ = !is_pinned_;
-  if (on_pin_toggled_callback_) {
-    on_pin_toggled_callback_.Run(is_pinned_);
-  }
+  action_delegate_->OnPinToggled(is_pinned_);
   if (auto* contents_view =
           views::AsViewClass<GlicSelectionContentsView>(GetContentsView())) {
     contents_view->SetPinned(is_pinned_);

@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -154,8 +156,28 @@ mojom::AdditionalContextPtr CreateAdditionalContext(
 
 }  // namespace
 
+class GlicSelectionObserver::WidgetActionDelegate
+    : public GlicSelectionWidgetDelegate::ActionDelegate {
+ public:
+  explicit WidgetActionDelegate(GlicSelectionObserver* observer)
+      : observer_(observer) {}
+
+  // GlicSelectionWidgetDelegate::ActionDelegate:
+  void OnAskGemini() override { observer_->OnAskGemini(); }
+  void OnCopy() override { observer_->OnCopy(); }
+  void OnCopyLink() override { observer_->OnCopyLink(); }
+  void OnPinToggled(bool is_pinned) override {
+    observer_->OnPinToggled(is_pinned);
+  }
+  void OnDismiss() override { observer_->OnDismiss(); }
+
+ private:
+  raw_ptr<GlicSelectionObserver> observer_;
+};
+
 GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      action_delegate_(std::make_unique<WidgetActionDelegate>(this)) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   glic_keyed_service_ = GlicKeyedService::Get(profile);
@@ -186,6 +208,11 @@ GlicSelectionObserver::~GlicSelectionObserver() {
   if (selection_widget_) {
     selection_widget_->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
   }
+  // Explicitly destroy the widget first, then the bubble delegate to ensure the
+  // delegate outlives its widget. This is required under the CLIENT_OWNS_WIDGET
+  // ownership model.
+  selection_widget_.reset();
+  widget_delegate_.reset();
 
   base::flat_set<content::RenderWidgetHost*> unique_rwhs;
   for (const auto& frame_token : observed_frames_) {
@@ -637,31 +664,20 @@ void GlicSelectionObserver::ShowSelectionAffordance(
         base::UmaHistogramEnumeration(
             base::StrCat({"Glic.Selection.Action", histogram_suffix}),
             GlicSelectionAction::kWidgetShown);
-        auto invoke_glic = base::BindRepeating(
-            &GlicSelectionObserver::InvokeGlicFromSelectionAffordance,
-            selected_text,
-            /*is_widget=*/true, web_contents()->GetWeakPtr(),
-            GlicNudgeActivity::kNudgeClicked);
 
-        selection_widget_ =
-            GlicSelectionWidgetDelegate::Show(
-                web_contents(), *bounds, std::u16string(selected_text),
-                is_widget_pinned_,
-                base::BindRepeating(
-                    [](base::RepeatingCallback<void()> invoke_glic_cb) {
-                      invoke_glic_cb.Run();
-                    },
-                    std::move(invoke_glic)),
-                base::BindRepeating(&content::WebContents::Copy,
-                                    web_contents()->GetWeakPtr()),
-                base::BindRepeating(&GlicSelectionObserver::CopyLinkToHighlight,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    selected_frame->GetWeakDocumentPtr()),
-                base::BindRepeating(&GlicSelectionObserver::OnWidgetPinToggled,
-                                    weak_ptr_factory_.GetWeakPtr()),
-                base::BindRepeating(&GlicSelectionObserver::OnWidgetDismissed,
-                                    weak_ptr_factory_.GetWeakPtr()))
-                ->GetWeakPtr();
+        widget_delegate_ = std::make_unique<GlicSelectionWidgetDelegate>(
+            *action_delegate_, *bounds,
+            web_contents() ? web_contents()->GetContainerBounds() : gfx::Rect(),
+            std::u16string(selected_text), is_widget_pinned_);
+        if (web_contents()) {
+          widget_delegate_->set_parent_window(platform_util::GetViewForWindow(
+              web_contents()->GetTopLevelNativeWindow()));
+        }
+        selection_widget_ = views::BubbleDialogDelegate::CreateBubble(
+            widget_delegate_.get(),
+            base::BindOnce(&GlicSelectionObserver::OnWidgetClosed,
+                           weak_ptr_factory_.GetWeakPtr()));
+        selection_widget_->ShowInactive();
         RequestLinkGeneration(selected_frame);
       } else if (bounds_retry_count_ < 5) {
         // Retry showing the widget, bounds might not be available yet due
@@ -787,11 +803,8 @@ void GlicSelectionObserver::OnLinkGenerated(
     generated_link_ =
         shared_highlighting::AppendSelectors(fallback_url, {selector});
   }
-  if (selection_widget_) {
-    if (auto* delegate = static_cast<GlicSelectionWidgetDelegate*>(
-            selection_widget_->widget_delegate())) {
-      delegate->UpdateCopyLinkButton(generated_link_.has_value());
-    }
+  if (widget_delegate_) {
+    widget_delegate_->UpdateCopyLinkButton(generated_link_.has_value());
   }
 }
 
@@ -830,6 +843,52 @@ void GlicSelectionObserver::OnGlobalPanelShowHide() {
   }
 
   UpdateSelectionState(last_selected_text_, /*is_pending_selection=*/false);
+}
+
+void GlicSelectionObserver::OnAskGemini() {
+  DismissUI(/*keep_nudge=*/false);
+  InvokeGlicFromSelectionAffordance(last_selected_text_, /*is_widget=*/true,
+                                    web_contents()->GetWeakPtr(),
+                                    GlicNudgeActivity::kNudgeClicked);
+}
+
+void GlicSelectionObserver::OnCopy() {
+  DismissUI(/*keep_nudge=*/false);
+  if (web_contents()) {
+    web_contents()->Copy();
+  }
+}
+
+void GlicSelectionObserver::OnCopyLink() {
+  DismissUI(/*keep_nudge=*/false);
+  content::RenderFrameHost* selected_frame =
+      last_selection_frame_token_.has_value()
+          ? content::RenderFrameHost::FromFrameToken(
+                *last_selection_frame_token_)
+          : nullptr;
+  if (selected_frame) {
+    CopyLinkToHighlight(selected_frame->GetWeakDocumentPtr());
+  }
+}
+
+void GlicSelectionObserver::OnPinToggled(bool is_pinned) {
+  is_widget_pinned_ = is_pinned;
+}
+
+void GlicSelectionObserver::OnDismiss() {
+  DismissUI(/*keep_nudge=*/false);
+  OnWidgetDismissed();
+}
+
+void GlicSelectionObserver::OnWidgetClosed(views::Widget::ClosedReason reason) {
+  // Under the CLIENT_OWNS_WIDGET ownership model, the
+  // GlicSelectionWidgetDelegate (the delegate) must outlive the views::Widget.
+  // To guarantee this asynchronously, we post tasks to delete the widget first,
+  // followed by the delegate.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, selection_widget_.release());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, widget_delegate_.release());
 }
 
 }  // namespace glic

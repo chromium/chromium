@@ -8,12 +8,10 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-namespace content {
-class WebContents;
-}
 
 namespace views {
 class Widget;
@@ -23,29 +21,27 @@ namespace glic {
 
 class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
  public:
-  // Shows the bubble anchored to `anchor_rect` with `on_click` executed when
-  // the Ask Gemini button is clicked. Parented to `web_contents`'s view.
-  static views::Widget* Show(content::WebContents* web_contents,
-                             const gfx::Rect& anchor_rect,
-                             const std::u16string& selected_text,
-                             bool is_pinned,
-                             base::RepeatingClosure on_ask_gemini,
-                             base::RepeatingClosure on_copy,
-                             base::RepeatingClosure on_copy_link,
-                             base::RepeatingCallback<void(bool)> on_pin_toggled,
-                             base::RepeatingClosure on_dismiss);
+  // Pure virtual interface implemented by the bridge to receive UI events.
+  class ActionDelegate {
+   public:
+    virtual void OnAskGemini() = 0;
+    virtual void OnCopy() = 0;
+    virtual void OnCopyLink() = 0;
+    virtual void OnPinToggled(bool is_pinned) = 0;
+    virtual void OnDismiss() = 0;
 
-  GlicSelectionWidgetDelegate(
-      const gfx::Rect& anchor_rect,
-      const gfx::Rect& window_bounds,
-      const std::u16string& selected_text,
-      bool is_pinned,
-      base::RepeatingClosure on_ask_gemini,
-      base::RepeatingClosure on_copy,
-      base::RepeatingClosure on_copy_link,
-      base::RepeatingCallback<void(bool)> on_pin_toggled,
-      base::RepeatingClosure on_dismiss);
+   protected:
+    virtual ~ActionDelegate() = default;
+  };
+
+  GlicSelectionWidgetDelegate(ActionDelegate& action_delegate,
+                              const gfx::Rect& anchor_rect,
+                              const gfx::Rect& window_bounds,
+                              const std::u16string& selected_text,
+                              bool is_pinned);
   ~GlicSelectionWidgetDelegate() override;
+
+  ActionDelegate& action_delegate() const { return *action_delegate_; }
 
   void TogglePinState();
   void UpdatePosition();
@@ -58,10 +54,10 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
   void UpdateCopyLinkButton(bool enabled);
 
  private:
+  const raw_ref<ActionDelegate> action_delegate_;
   gfx::Rect original_anchor_rect_;
   gfx::Rect window_bounds_;
   bool is_pinned_;
-  base::RepeatingCallback<void(bool)> on_pin_toggled_callback_;
 };
 
 }  // namespace glic

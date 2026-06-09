@@ -5,8 +5,8 @@
 #include "chrome/browser/glic/browser_ui/glic_selection_widget.h"
 
 #include "base/test/bind.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -21,30 +21,36 @@ class GlicSelectionWidgetTest : public ChromeViewsTestBase {
   ~GlicSelectionWidgetTest() override = default;
 };
 
-TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
+class TestWidgetActionDelegate
+    : public GlicSelectionWidgetDelegate::ActionDelegate {
+ public:
+  void OnAskGemini() override { ask_gemini_called = true; }
+  void OnCopy() override { copy_called = true; }
+  void OnCopyLink() override { copy_link_called = true; }
+  void OnPinToggled(bool is_pinned) override {
+    pin_toggled_called = true;
+    pin_toggled_val = is_pinned;
+  }
+  void OnDismiss() override { dismiss_called = true; }
+
   bool ask_gemini_called = false;
   bool copy_called = false;
   bool copy_link_called = false;
   bool pin_toggled_called = false;
   bool pin_toggled_val = false;
+  bool dismiss_called = false;
+};
 
+TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
   gfx::Rect anchor_rect(10, 10, 100, 100);
   std::u16string selected_text = u"selected text";
 
-  bool dismiss_called = false;
+  auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
+  auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
+      *test_delegate, anchor_rect, gfx::Rect(), selected_text,
+      /*is_pinned=*/false);
 
-  GlicSelectionWidgetDelegate* delegate = new GlicSelectionWidgetDelegate(
-      anchor_rect, gfx::Rect(), selected_text, /*is_pinned=*/false,
-      base::BindLambdaForTesting([&]() { ask_gemini_called = true; }),
-      base::BindLambdaForTesting([&]() { copy_called = true; }),
-      base::BindLambdaForTesting([&]() { copy_link_called = true; }),
-      base::BindLambdaForTesting([&](bool val) {
-        pin_toggled_called = true;
-        pin_toggled_val = val;
-      }),
-      base::BindLambdaForTesting([&]() { dismiss_called = true; }));
-
-  views::View* contents_view = delegate->GetContentsView();
+  views::View* contents_view = widget_delegate->GetContentsView();
   ASSERT_TRUE(contents_view);
 
   auto children = contents_view->children();
@@ -71,7 +77,7 @@ TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
   EXPECT_FALSE(copy_link_btn->GetEnabled());
 
   // Enable it and test.
-  delegate->UpdateCopyLinkButton(true);
+  widget_delegate->UpdateCopyLinkButton(true);
   EXPECT_TRUE(copy_link_btn->GetEnabled());
 
   // Manually run callbacks since we don't have a widget to receive events.
@@ -80,29 +86,27 @@ TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
                                   gfx::Point(), ui::EventTimeForNow(),
                                   ui::EF_LEFT_MOUSE_BUTTON,
                                   ui::EF_LEFT_MOUSE_BUTTON));
-  EXPECT_TRUE(ask_gemini_called);
+  EXPECT_TRUE(test_delegate->ask_gemini_called);
 
   views::test::ButtonTestApi(copy_btn).NotifyClick(
       ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                      ui::EF_LEFT_MOUSE_BUTTON));
-  EXPECT_TRUE(copy_called);
+  EXPECT_TRUE(test_delegate->copy_called);
 
   views::test::ButtonTestApi(copy_link_btn)
       .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(),
                                   ui::EF_LEFT_MOUSE_BUTTON,
                                   ui::EF_LEFT_MOUSE_BUTTON));
-  EXPECT_TRUE(copy_link_called);
+  EXPECT_TRUE(test_delegate->copy_link_called);
 
   views::test::ButtonTestApi(dismiss_btn)
       .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(),
                                   ui::EF_LEFT_MOUSE_BUTTON,
                                   ui::EF_LEFT_MOUSE_BUTTON));
-  EXPECT_TRUE(dismiss_called);
-
-  delete delegate;
+  EXPECT_TRUE(test_delegate->dismiss_called);
 }
 
 }  // namespace glic
