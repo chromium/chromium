@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentCaptor.captor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -38,10 +42,13 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.intents.BrowserIntentUtils;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
+import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.EventForwarder;
@@ -278,6 +285,69 @@ public class TabBottomSheetWebUiTest {
         verify(focusedView, times(0)).clearFocus();
     }
 
+    @Test
+    public void testSetWebContents_ItemDelegate_BottomSheet() {
+        mWebUi.setWebContents(mWebContents, true);
+        ArgumentCaptor<ContextMenuItemDelegate> captor =
+                ArgumentCaptor.forClass(ContextMenuItemDelegate.class);
+        verify(mContextMenuPopulatorFactory).setItemDelegate(captor.capture());
+
+        ContextMenuItemDelegate delegate = captor.getValue();
+        assertNotNull(delegate);
+        assertTrue(delegate instanceof ThinWebViewContextMenuItemDelegate);
+        assertNull(
+                ((ThinWebViewContextMenuItemDelegate) delegate)
+                        .getIntentTargetClassNameForTesting());
+        assertFalse(delegate.supportsOpenImageInNewTab());
+        assertFalse(delegate.supportsOpenInEphemeralTab());
+        assertFalse(delegate.supportsSaveImage());
+        assertFalse(delegate.supportsSearchByImage());
+        assertFalse(delegate.supportsInspectElement());
+    }
+
+    @Test
+    public void testSetWebContents_ItemDelegate_SidePanel() {
+        ContextMenuPopulatorFactory mockFactory = mock(ContextMenuPopulatorFactory.class);
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        View containerView =
+                LayoutInflater.from(context)
+                        .inflate(
+                                org.chromium.chrome.browser.context_sharing.R.layout
+                                        .tab_bottom_sheet,
+                                null);
+        TabBottomSheetWebUi sidePanelWebUi =
+                new TestTabBottomSheetWebUi(
+                        context,
+                        containerView,
+                        mWindowAndroid,
+                        mockFactory,
+                        mSelectionDropdownMenuDelegate,
+                        Color.WHITE,
+                        mMockContentView,
+                        CoBrowseContainerType.SIDE_PANEL);
+        sidePanelWebUi.setWebContents(mWebContents, true);
+
+        ArgumentCaptor<ContextMenuItemDelegate> captor =
+                ArgumentCaptor.forClass(ContextMenuItemDelegate.class);
+        verify(mockFactory).setItemDelegate(captor.capture());
+
+        ContextMenuItemDelegate delegate = captor.getValue();
+        assertNotNull(delegate);
+        assertTrue(delegate instanceof ThinWebViewContextMenuItemDelegate);
+        assertEquals(
+                BrowserIntentUtils.CHROME_LAUNCHER_ACTIVITY_CLASS_NAME,
+                ((ThinWebViewContextMenuItemDelegate) delegate)
+                        .getIntentTargetClassNameForTesting());
+        assertTrue(delegate.supportsOpenImageInNewTab());
+        assertTrue(delegate.supportsOpenInEphemeralTab());
+        assertTrue(delegate.supportsSaveImage());
+        assertTrue(delegate.supportsSearchByImage());
+        assertTrue(delegate.supportsInspectElement());
+    }
+
     private static class TestTabBottomSheetWebUi extends TabBottomSheetWebUi {
         private final ContentView mMockContentView;
 
@@ -289,13 +359,34 @@ public class TabBottomSheetWebUiTest {
                 SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
                 int backgroundColor,
                 ContentView mockContentView) {
+            this(
+                    context,
+                    containerView,
+                    windowAndroid,
+                    contextMenuPopulatorFactory,
+                    selectionDropdownMenuDelegate,
+                    backgroundColor,
+                    mockContentView,
+                    CoBrowseContainerType.BOTTOM_SHEET);
+        }
+
+        TestTabBottomSheetWebUi(
+                Context context,
+                View containerView,
+                WindowAndroid windowAndroid,
+                ContextMenuPopulatorFactory contextMenuPopulatorFactory,
+                SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
+                int backgroundColor,
+                ContentView mockContentView,
+                @CoBrowseContainerType int containerType) {
             super(
                     context,
                     containerView,
                     windowAndroid,
                     contextMenuPopulatorFactory,
                     selectionDropdownMenuDelegate,
-                    backgroundColor);
+                    backgroundColor,
+                    containerType);
             mMockContentView = mockContentView;
         }
 

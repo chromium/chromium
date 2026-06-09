@@ -100,6 +100,31 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     public void onDestroy() {}
 
     @Override
+    public boolean supportsOpenImageInNewTab() {
+        return mActivityType == ActivityType.TABBED;
+    }
+
+    @Override
+    public boolean supportsOpenInEphemeralTab() {
+        return mActivityType == ActivityType.TABBED || mActivityType == ActivityType.CUSTOM_TAB;
+    }
+
+    @Override
+    public boolean supportsSaveImage() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsSearchByImage() {
+        return mActivityType == ActivityType.TABBED || mActivityType == ActivityType.CUSTOM_TAB;
+    }
+
+    @Override
+    public boolean supportsInspectElement() {
+        return true;
+    }
+
+    @Override
     public String getPageTitle() {
         return mTab.getTitle();
     }
@@ -391,6 +416,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      *
      * @param url The image URL to open.
      */
+    @Override
     public void onOpenImageInNewTab(GURL url, @Nullable Referrer referrer) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
@@ -404,6 +430,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      * @param url The URL to open.
      * @param title The title text to show on top control.
      */
+    @Override
     public void onOpenInEphemeralTab(GURL url, String title) {
         EphemeralTabCoordinator ephemeralTabCoordinator = mEphemeralTabCoordinatorSupplier.get();
         if (ephemeralTabCoordinator == null) {

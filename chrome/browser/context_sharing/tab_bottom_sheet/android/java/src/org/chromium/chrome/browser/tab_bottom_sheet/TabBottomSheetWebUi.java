@@ -21,6 +21,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
@@ -46,6 +47,7 @@ public class TabBottomSheetWebUi {
     private final SelectionDropdownMenuDelegate mSelectionDropdownMenuDelegate;
     private final WebViewResizingHelper mWebViewResizingHelper;
     private final @ColorInt int mBackgroundColor;
+    private final @CoBrowseContainerType int mContainerType;
 
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
@@ -57,12 +59,14 @@ public class TabBottomSheetWebUi {
             WindowAndroid windowAndroid,
             ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
-            @ColorInt int backgroundColor) {
+            @ColorInt int backgroundColor,
+            @CoBrowseContainerType int containerType) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
         mSelectionDropdownMenuDelegate = selectionDropdownMenuDelegate;
         mBackgroundColor = backgroundColor;
+        mContainerType = containerType;
         mWebViewResizingHelper =
                 new WebViewResizingHelper(containerView, windowAndroid, backgroundColor);
     }
@@ -141,7 +145,11 @@ public class TabBottomSheetWebUi {
             }
         }
         ThinWebViewContextMenuItemDelegate itemDelegate =
-                new ThinWebViewContextMenuItemDelegate(mWebContents);
+                new ThinWebViewContextMenuItemDelegate(
+                        mWebContents,
+                        mContainerType == CoBrowseContainerType.SIDE_PANEL
+                                ? BrowserIntentUtils.CHROME_LAUNCHER_ACTIVITY_CLASS_NAME
+                                : null);
         mContextMenuPopulatorFactory.setItemDelegate(itemDelegate);
         ensureThinWebViewCreated();
         if (mThinWebView != null) {

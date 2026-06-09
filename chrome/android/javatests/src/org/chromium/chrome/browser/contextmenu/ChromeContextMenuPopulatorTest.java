@@ -190,6 +190,11 @@ public class ChromeContextMenuPopulatorTest {
         when(mItemDelegate.supportsSendEmailMessage()).thenReturn(true);
         when(mItemDelegate.supportsSendTextMessage()).thenReturn(true);
         when(mItemDelegate.supportsAddToContacts()).thenReturn(true);
+        when(mItemDelegate.supportsOpenImageInNewTab()).thenReturn(true);
+        when(mItemDelegate.supportsOpenInEphemeralTab()).thenReturn(true);
+        when(mItemDelegate.supportsSaveImage()).thenReturn(true);
+        when(mItemDelegate.supportsSearchByImage()).thenReturn(true);
+        when(mItemDelegate.supportsInspectElement()).thenReturn(true);
         when(mItemDelegate.getWebContents()).thenReturn(mWebContents);
         when(mItemDelegate.getTab()).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(pageUrl);
@@ -273,6 +278,27 @@ public class ChromeContextMenuPopulatorTest {
             boolean shouldShowDeveloperMenu,
             boolean shouldShowViewPageSourceMenu,
             boolean supportPrint) {
+        when(mItemDelegate.supportsOpenImageInNewTab())
+                .thenReturn(
+                        mode == ChromeContextMenuPopulator.ContextMenuMode.NORMAL
+                                || mode
+                                        == ChromeContextMenuPopulator.ContextMenuMode
+                                                .THIN_WEB_VIEW);
+        when(mItemDelegate.supportsOpenInEphemeralTab())
+                .thenReturn(
+                        mode == ChromeContextMenuPopulator.ContextMenuMode.NORMAL
+                                || mode == ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB
+                                || mode
+                                        == ChromeContextMenuPopulator.ContextMenuMode
+                                                .THIN_WEB_VIEW);
+        when(mItemDelegate.supportsSearchByImage())
+                .thenReturn(
+                        mode == ChromeContextMenuPopulator.ContextMenuMode.NORMAL
+                                || mode == ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB
+                                || mode
+                                        == ChromeContextMenuPopulator.ContextMenuMode
+                                                .THIN_WEB_VIEW);
+
         mPopulator =
                 Mockito.spy(
                         new ChromeContextMenuPopulator(
@@ -1744,7 +1770,13 @@ public class ChromeContextMenuPopulatorTest {
         checkMenuOptions(expected5);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
-        int[] expected6 = {R.id.contextmenu_copy_image, R.id.contextmenu_share_image};
+        int[] expected6 = {
+            R.id.contextmenu_open_image_in_new_tab,
+            R.id.contextmenu_open_image_in_ephemeral_tab,
+            R.id.contextmenu_copy_image,
+            R.id.contextmenu_save_image,
+            R.id.contextmenu_share_image
+        };
         checkMenuOptions(expected6);
 
         initializePopulator(
@@ -1882,7 +1914,13 @@ public class ChromeContextMenuPopulatorTest {
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
         int[] expected6Tab1 = {R.id.contextmenu_copy_link_address, R.id.contextmenu_share_link};
-        int[] expected6Tab2 = {R.id.contextmenu_copy_image, R.id.contextmenu_share_image};
+        int[] expected6Tab2 = {
+            R.id.contextmenu_open_image_in_new_tab,
+            R.id.contextmenu_open_image_in_ephemeral_tab,
+            R.id.contextmenu_copy_image,
+            R.id.contextmenu_save_image,
+            R.id.contextmenu_share_image
+        };
         checkMenuOptions(expected6Tab1, expected6Tab2);
     }
 
@@ -1954,8 +1992,14 @@ public class ChromeContextMenuPopulatorTest {
         checkMenuOptions(Arrays.asList(R.id.contextmenu_save_image), expected5);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
-        int[] expected6 = {R.id.contextmenu_copy_image, R.id.contextmenu_share_image};
-        checkMenuOptions(expected6);
+        int[] expected6 = {
+            R.id.contextmenu_open_image_in_new_tab,
+            R.id.contextmenu_open_image_in_ephemeral_tab,
+            R.id.contextmenu_copy_image,
+            R.id.contextmenu_save_image,
+            R.id.contextmenu_share_image
+        };
+        checkMenuOptions(Arrays.asList(R.id.contextmenu_save_image), expected6);
     }
 
     @Test
@@ -2559,7 +2603,7 @@ public class ChromeContextMenuPopulatorTest {
         checkMenuOptions(expected);
 
         int[][] expectedThinWebView = {
-            {R.id.contextmenu_reload},
+            {R.id.contextmenu_reload}, {R.id.contextmenu_inspect_element},
         };
 
         initializePopulator(
@@ -3441,14 +3485,6 @@ public class ChromeContextMenuPopulatorTest {
         assertNull(
                 "ThinWebView context menu must not contain 'Save Link As'",
                 findItemWithId(linkMenu, R.id.contextmenu_save_link_as));
-
-        // 2. Test Image (excludes SAVE_IMAGE)
-        ContextMenuParams imageParams = getImageParams();
-        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, imageParams);
-        List<ModelList> imageMenu = mPopulator.buildContextMenu();
-        assertNull(
-                "ThinWebView context menu must not contain 'Save Image'",
-                findItemWithId(imageMenu, R.id.contextmenu_save_image));
 
         // 3. Test Video (excludes SAVE_VIDEO, DOWNLOAD_VIDEO_FRAME)
         ContextMenuParams videoParams =

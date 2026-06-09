@@ -110,7 +110,8 @@ public class CoBrowseViewFactory {
                         mWindowAndroid,
                         mContextMenuPopulatorFactory,
                         mSelectionDropdownMenuDelegate,
-                        backgroundColor);
+                        backgroundColor,
+                        containerType);
         ContextualTasksFusebox fusebox = null;
         if (clientType == TabBottomSheetClientType.CONTEXTUAL_TASKS
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS_JAVA_FUSEBOX)) {

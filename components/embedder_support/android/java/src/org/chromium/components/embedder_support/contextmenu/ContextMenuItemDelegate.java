@@ -10,7 +10,9 @@ import android.net.Uri;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.Referrer;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -144,6 +146,57 @@ public interface ContextMenuItemDelegate {
      * @param url The URL to be parsed to add to contacts.
      */
     default void onAddToContacts(GURL url) {}
+
+    /**
+     * @return Whether opening an image in a new tab is supported.
+     */
+    default boolean supportsOpenImageInNewTab() {
+        return false;
+    }
+
+    /**
+     * @return Whether opening an ephemeral preview tab is supported.
+     */
+    default boolean supportsOpenInEphemeralTab() {
+        return false;
+    }
+
+    /**
+     * @return Whether saving/downloading an image is supported.
+     */
+    default boolean supportsSaveImage() {
+        return false;
+    }
+
+    /**
+     * @return Whether searching by image / Google Lens is supported.
+     */
+    default boolean supportsSearchByImage() {
+        return false;
+    }
+
+    /**
+     * @return Whether inspecting elements is supported.
+     */
+    default boolean supportsInspectElement() {
+        return false;
+    }
+
+    /**
+     * Called when the {@code url} is of an image and should be opened in a new page.
+     *
+     * @param url The image URL to open.
+     * @param referrer The referrer to be used for navigation.
+     */
+    default void onOpenImageInNewTab(GURL url, @Nullable Referrer referrer) {}
+
+    /**
+     * Called when the {@code url} should be opened in an ephemeral page.
+     *
+     * @param url The URL to open.
+     * @param title The title text to show on top control.
+     */
+    default void onOpenInEphemeralTab(GURL url, String title) {}
 
     /** Returns the page url. */
     GURL getPageUrl();
