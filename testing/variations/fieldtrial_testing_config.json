@@ -19805,25 +19805,6 @@
             ]
         }
     ],
-    "PrivacySandboxInternalsDevUI": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "PrivacySandboxInternalsDevUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivateAI": [
         {
             "platforms": [

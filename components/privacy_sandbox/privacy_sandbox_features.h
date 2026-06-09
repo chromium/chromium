@@ -106,14 +106,6 @@ BASE_DECLARE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivateAggregationDebugReportingIgnoreSiteExceptions);
 
-// Enables chrome://privacy-sandbox-internals DevUI page.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxInternalsDevUI);
-
-// Enables chrome://privacy-sandbox-internals/related-website-internals DevUI
-// page. Relies on PrivacySandboxInternalsDevUI also being enabled.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kRelatedWebsiteSetsDevUI);
 
 // Privacy UX features start
 
@@ -127,10 +119,6 @@ BASE_DECLARE_FEATURE(kRelatedWebsiteSetsUi);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPsDualWritePrefsToNoticeStorage);
 
-// Enables chrome://privacy-sandbox-internals/private-state-tokens DevUI
-// page. Relies on PrivacySandboxInternalsDevUI also being enabled.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivateStateTokensDevUI);
 
 #if BUILDFLAG(IS_ANDROID)
 // The delay in milliseconds between the first click and the next accepted
