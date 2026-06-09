@@ -311,6 +311,47 @@ TEST_P(WaylandEventSourceTest, TabletToolProximityInUAF) {
                                         base::TimeTicks::Now());
 }
 
+// Check that if an event dispatched by ReleasePressedPointerButtons causes the
+// target window to be destroyed, we don't cause a UAF or dangling pointer.
+TEST_P(WaylandEventSourceTest, ReleasePressedPointerButtonsUAF) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(server->seat()->resource(),
+                              WL_SEAT_CAPABILITY_POINTER);
+  });
+  ASSERT_TRUE(connection_->seat()->pointer());
+
+  // Record two pressed buttons so ReleasePressedPointerButtons iterates twice.
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(::testing::AnyNumber());
+  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const surface =
+        server->GetObject<wl::MockSurface>(surface_id)->resource();
+    auto* const pointer = server->seat()->pointer()->resource();
+    wl_pointer_send_enter(pointer, server->GetNextSerial(), surface, 0, 0);
+    wl_pointer_send_button(pointer, server->GetNextSerial(),
+                           server->GetNextTime(), BTN_LEFT,
+                           WL_POINTER_BUTTON_STATE_PRESSED);
+    wl_pointer_send_button(pointer, server->GetNextSerial(),
+                           server->GetNextTime(), BTN_RIGHT,
+                           WL_POINTER_BUTTON_STATE_PRESSED);
+    wl_pointer_send_frame(pointer);
+  });
+  ASSERT_TRUE(pointer_delegate_->IsPointerButtonPressed(EF_LEFT_MOUSE_BUTTON));
+  ASSERT_TRUE(pointer_delegate_->IsPointerButtonPressed(EF_RIGHT_MOUSE_BUTTON));
+
+  // Destroy the window on the first mouse release.
+  EXPECT_CALL(delegate_, DispatchEvent(_))
+      .WillOnce([&](Event* event) {
+        EXPECT_EQ(event->type(), EventType::kMouseReleased);
+        window_.reset();
+      })
+      .WillRepeatedly(::testing::Return());
+
+  // Release both pressed buttons.
+  pointer_delegate_->ReleasePressedPointerButtons(window_.get(),
+                                                  base::TimeTicks::Now());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     EventsDispatchPolicyTest,
     WaylandEventSourceTest,
