@@ -100,7 +100,7 @@ public class CoBrowseViewFactory {
             @ColorInt int backgroundColor,
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
-            @Nullable TabBottomSheetContentProvider bottomSheetContentProvider) {
+            @Nullable TabBottomSheetComponentProvider bottomSheetContentProvider) {
         View containerView =
                 LayoutInflater.from(mActivity).inflate(R.layout.tab_bottom_sheet, null);
         TabBottomSheetWebUi webUi =
@@ -154,7 +154,7 @@ public class CoBrowseViewFactory {
             @Nullable @JniType("content::WebContents*") WebContents webContents,
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
-            @Nullable TabBottomSheetContentProvider bottomSheetContentProvider) {
+            @Nullable TabBottomSheetComponentProvider bottomSheetContentProvider) {
         CoBrowseViewFactory factory = TabBottomSheetUtils.getFactoryFromWindow(windowAndroid);
         if (factory == null) {
             return null;

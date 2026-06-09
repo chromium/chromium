@@ -12,12 +12,9 @@ import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 
-/**
- * Interface providing specialized implementations of {@link TabBottomSheetContent} for different
- * client features.
- */
+/** Interface providing specialized components for different client features. */
 @NullMarked
-public interface TabBottomSheetContentProvider {
+public interface TabBottomSheetComponentProvider {
     /**
      * Instantiates a new instance of {@link TabBottomSheetContent}.
      *
@@ -30,7 +27,7 @@ public interface TabBottomSheetContentProvider {
      * @param onBackPressed Callback run when the back button/swipe is triggered.
      * @return A non-null custom or default {@link TabBottomSheetContent}.
      */
-    TabBottomSheetContent create(
+    TabBottomSheetContent createContent(
             View contentView,
             float fullHeightRatio,
             @ColorInt int backgroundColor,

@@ -14,14 +14,16 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** Concrete test implementation of {@link TabBottomSheetContentProvider} for automated testing. */
+/**
+ * Concrete test implementation of {@link TabBottomSheetComponentProvider} for automated testing.
+ */
 @NullMarked
-public class TestTabBottomSheetContentProvider implements TabBottomSheetContentProvider {
+public class TestTabBottomSheetComponentProvider implements TabBottomSheetComponentProvider {
     @CalledByNative
-    public TestTabBottomSheetContentProvider() {}
+    public TestTabBottomSheetComponentProvider() {}
 
     @Override
-    public TabBottomSheetContent create(
+    public TabBottomSheetContent createContent(
             View contentView,
             float fullHeightRatio,
             @ColorInt int backgroundColor,

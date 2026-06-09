@@ -11,7 +11,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_views_bridge.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
-#include "chrome/browser/contextual_tasks/jni_headers/ContextualTaskBottomSheetContentProvider_jni.h"
+#include "chrome/browser/contextual_tasks/jni_headers/ContextualTaskBottomSheetComponentProvider_jni.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -159,7 +159,7 @@ TabAndroid* ContextualTasksPanelHostAndroid::GetTabAndroid() const {
 base::android::ScopedJavaLocalRef<jobject>
 ContextualTasksPanelHostAndroid::CreateBottomSheetContentProvider() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_ContextualTaskBottomSheetContentProvider_createProvider(env);
+  return Java_ContextualTaskBottomSheetComponentProvider_createProvider(env);
 }
 
 }  // namespace contextual_tasks

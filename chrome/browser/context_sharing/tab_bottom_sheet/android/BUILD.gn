@@ -221,8 +221,8 @@ source_set("browser_tests") {
 android_library("test_support_java") {
   testonly = true
   sources = [
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TestTabBottomSheetComponentProvider.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TestTabBottomSheetContent.java",
-    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TestTabBottomSheetContentProvider.java",
   ]
   deps = [
     ":java",
@@ -237,5 +237,5 @@ android_library("test_support_java") {
 
 generate_jni("test_jni_headers") {
   testonly = true
-  sources = [ "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TestTabBottomSheetContentProvider.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TestTabBottomSheetComponentProvider.java" ]
 }

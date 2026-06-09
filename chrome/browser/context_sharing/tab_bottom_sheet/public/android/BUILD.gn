@@ -14,8 +14,8 @@ java_cpp_enum("enums_java") {
 android_library("java") {
   srcjar_deps = [ ":enums_java" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetComponentProvider.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetContent.java",
-    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetContentProvider.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManager.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetPeekProperties.java",
   ]

@@ -9,7 +9,7 @@
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_views_bridge.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_client_type.h"
-#include "chrome/browser/context_sharing/tab_bottom_sheet/android/test_jni_headers/TestTabBottomSheetContentProvider_jni.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/test_jni_headers/TestTabBottomSheetComponentProvider_jni.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
@@ -19,7 +19,7 @@ TabBottomSheetTestFeature::TabBottomSheetTestFeature(tabs::TabInterface* tab)
     : tab_(*tab) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> provider =
-      Java_TestTabBottomSheetContentProvider_Constructor(env);
+      Java_TestTabBottomSheetComponentProvider_Constructor(env);
   views_bridge_ = std::make_unique<CoBrowseViewsBridge>(
       *tab, TabBottomSheetClientType::kUnknown,
       CoBrowseContainerType::kBottomSheet, provider);

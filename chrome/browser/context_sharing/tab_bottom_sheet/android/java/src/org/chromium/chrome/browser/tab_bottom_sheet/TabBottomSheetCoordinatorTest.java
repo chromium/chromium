@@ -116,7 +116,7 @@ public class TabBottomSheetCoordinatorTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     @Mock private TabBottomSheetWebUi mMockWebUi;
-    @Mock private TabBottomSheetContentProvider mMockContentProvider;
+    @Mock private TabBottomSheetComponentProvider mMockContentProvider;
 
     @Captor private ArgumentCaptor<TabBottomSheetContent> mBottomSheetContentArgumentCaptor;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverArgumentCaptor;
@@ -181,7 +181,7 @@ public class TabBottomSheetCoordinatorTest {
                                     onBackPressed);
                         })
                 .when(mMockContentProvider)
-                .create(
+                .createContent(
                         any(View.class),
                         anyFloat(),
                         anyInt(),

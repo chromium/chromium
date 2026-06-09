@@ -48,7 +48,7 @@ public class CoBrowseViewsTest {
     @Mock private View mPeekView;
     @Mock private WebContents mWebContents;
     @Mock private EventForwarder mEventForwarder;
-    @Mock private TabBottomSheetContentProvider mMockContentProvider;
+    @Mock private TabBottomSheetComponentProvider mMockContentProvider;
 
     private Context mContext;
     private CoBrowseViews mCoBrowseViews;

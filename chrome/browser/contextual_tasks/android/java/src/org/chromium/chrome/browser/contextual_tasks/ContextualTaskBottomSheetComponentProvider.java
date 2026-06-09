@@ -14,31 +14,31 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetComponentProvider;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetContent;
-import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetContentProvider;
 
 /**
- * Concrete implementation of {@link TabBottomSheetContentProvider} for Contextual Tasks.
- * Instantiates specialized {@link ContextualTaskBottomSheetContent} instances.
+ * Concrete implementation of {@link TabBottomSheetComponentProvider} for Contextual Tasks.
+ * Instantiates specialized components.
  */
 @NullMarked
 @JNINamespace("contextual_tasks")
-public class ContextualTaskBottomSheetContentProvider implements TabBottomSheetContentProvider {
+public class ContextualTaskBottomSheetComponentProvider implements TabBottomSheetComponentProvider {
 
     /**
      * Instantiates the content provider from C++.
      *
-     * @return A new instance of {@link ContextualTaskBottomSheetContentProvider}.
+     * @return A new instance of {@link ContextualTaskBottomSheetComponentProvider}.
      */
     @CalledByNative
-    private static ContextualTaskBottomSheetContentProvider createProvider() {
-        return new ContextualTaskBottomSheetContentProvider();
+    private static ContextualTaskBottomSheetComponentProvider createProvider() {
+        return new ContextualTaskBottomSheetComponentProvider();
     }
 
-    private ContextualTaskBottomSheetContentProvider() {}
+    private ContextualTaskBottomSheetComponentProvider() {}
 
     @Override
-    public TabBottomSheetContent create(
+    public TabBottomSheetContent createContent(
             View contentView,
             float fullHeightRatio,
             @ColorInt int backgroundColor,
