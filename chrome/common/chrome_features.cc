@@ -1293,6 +1293,12 @@ BASE_FEATURE(kNewMacNotificationAPI, base::FEATURE_DISABLED_BY_DEFAULT);
 // referrers instead of their ordinary behavior.
 BASE_FEATURE(kNoReferrers, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, ChromeContentBrowserClient::OverrideNavigationParams no
+// longer treats NTP-sourced renderer-initiated link clicks as browser-
+// initiated.
+BASE_FEATURE(kNtpDisableBrowserInitiatedLinks,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kOfflineAutoFetch, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)

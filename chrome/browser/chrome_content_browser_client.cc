@@ -2308,15 +2308,18 @@ void ChromeContentBrowserClient::OverrideNavigationParams(
   if (source_process_site_url &&
       search::IsNTPURL(source_process_site_url.value()) &&
       ui::PageTransitionCoreTypeIs(*transition, ui::PAGE_TRANSITION_LINK)) {
-    // Clicks on tiles of the new tab page should be treated as if a user
-    // clicked on a bookmark.  This is consistent with native implementations
-    // like Android's.  This also helps ensure that security features (like
-    // Sec-Fetch-Site and SameSite-cookies) will treat the navigation as
-    // browser-initiated.
+    // Use AUTO_BOOKMARK for clicks on tiles of the new tab page,
+    // consistent with native implementations like Android's.
     *transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-    *is_renderer_initiated = false;
-    *referrer = content::Referrer();
-    *initiator_origin = std::nullopt;
+    if (!base::FeatureList::IsEnabled(
+            features::kNtpDisableBrowserInitiatedLinks)) {
+      // Reset the renderer-initiated flag, referrer, and initiator origin so
+      // that security features (like Sec-Fetch-Site and SameSite-cookies)
+      // treat the navigation as browser-initiated.
+      *is_renderer_initiated = false;
+      *referrer = content::Referrer();
+      *initiator_origin = std::nullopt;
+    }
   }
 }
 
