@@ -31,6 +31,8 @@ class SyncServiceFactoryTest : public PlatformTest {
  public:
   SyncServiceFactoryTest() {
     TestProfileIOS::Builder profile_builder;
+    profile_builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                                      SyncServiceFactory::GetDefaultFactory());
     // BOOKMARKS requires the FaviconService, which requires the HistoryService.
     profile_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),

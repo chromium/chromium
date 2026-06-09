@@ -30,6 +30,10 @@ class SyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
   // SyncService if present. Returned pointers are guaranteed to be not null.
   static std::vector<const syncer::SyncService*> GetAllSyncServices();
 
+  // Returns the default factory, mainly for tests that want to use a real
+  // SyncServiceImpl (as opposed to, say, a TestSyncService).
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend class base::NoDestructor<SyncServiceFactory>;
 

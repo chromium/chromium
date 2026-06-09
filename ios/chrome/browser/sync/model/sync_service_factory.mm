@@ -305,6 +305,11 @@ SyncServiceFactory::GetAllSyncServices() {
   return sync_services;
 }
 
+// static
+SyncServiceFactory::TestingFactory SyncServiceFactory::GetDefaultFactory() {
+  return base::BindOnce(&BuildSyncService);
+}
+
 SyncServiceFactory::SyncServiceFactory()
     : ProfileKeyedServiceFactoryIOS("SyncService") {
   // The SyncServiceImpl depends on various KeyedServices being around
