@@ -63,8 +63,8 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchBoxHintTextObserver;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineIconObserver;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineNameObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
@@ -151,8 +151,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private @Nullable DisplayStyleObserver mDisplayStyleObserver;
     private CallbackController mCallbackController = new CallbackController();
     private @Nullable SearchEngineIconObserver mSearchEngineIconObserver;
-    private @Nullable SearchBoxHintTextObserver mSearchBoxHintTextObserver;
-
+    private @Nullable SearchEngineNameObserver mSearchEngineNameObserver;
     private @Nullable HomeModulesCoordinator mHomeModulesCoordinator;
     private @Nullable ViewGroup mHomeModulesContainer;
     private SetupListManager.@Nullable Observer mSetupListObserver;
@@ -161,7 +160,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     /**
      * Whether the tiles shown in the layout have finished loading. With {@link #mHasShownView},
-     * it's one of the 2 flags used to track initialisation progress.
+     * it's one of the 2 flags used to track initialization progress.
      */
     private boolean mTilesLoaded;
 
@@ -400,8 +399,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
 
         // Initialize Searchbox observers
-        mSearchBoxHintTextObserver = this::onSearchBoxHintTextChanged;
-        mSearchEngineUtils.addSearchBoxHintTextObserver(mSearchBoxHintTextObserver);
+        mSearchEngineNameObserver = this::onSearchBoxHintTextChanged;
+        mSearchEngineUtils.addSearchEngineNameObserver(mSearchEngineNameObserver);
 
         mInitialized = true;
 
@@ -1298,9 +1297,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         mMostRecentTabSupplier.set(null);
 
-        if (mSearchBoxHintTextObserver != null) {
-            mSearchEngineUtils.removeSearchBoxHintTextObserver(mSearchBoxHintTextObserver);
-            mSearchBoxHintTextObserver = null;
+        if (mSearchEngineNameObserver != null) {
+            mSearchEngineUtils.removeSearchEngineNameObserver(mSearchEngineNameObserver);
+            mSearchEngineNameObserver = null;
         }
 
         if (mSearchEngineIconObserver != null) {

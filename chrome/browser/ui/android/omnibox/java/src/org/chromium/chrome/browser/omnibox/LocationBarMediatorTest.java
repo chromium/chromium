@@ -2759,7 +2759,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testOnSearchBoxHintTextChanged_UpdatesHintText() {
+    public void testOnSearchEngineName_UpdatesHintText() {
         mProfileSupplier.set(mProfile);
         mMediator.onFinishNativeInitialization();
         RobolectricUtil.runAllBackgroundAndUi();
@@ -2768,7 +2768,7 @@ public class LocationBarMediatorTest {
                 .when(mSearchEngineUtils)
                 .getOmniboxHintText(anyInt(), any());
 
-        mMediator.onSearchBoxHintTextChanged();
+        mMediator.onSearchEngineNameChanged();
 
         verify(mUrlCoordinator).setUrlBarHintText(eq("search engine hint text"));
 
@@ -2779,14 +2779,14 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testOnSearchBoxHintTextChanged_EmbedderControlledHint_DoesNotUpdateHintText() {
+    public void testOnSearchEngineName_EmbedderControlledHint_DoesNotUpdateHintText() {
         mUiOverrides.setEmbedderControlledHint(true);
 
         mProfileSupplier.set(mProfile);
         mMediator.onFinishNativeInitialization();
         RobolectricUtil.runAllBackgroundAndUi();
 
-        mMediator.onSearchBoxHintTextChanged();
+        mMediator.onSearchEngineNameChanged();
 
         verify(mUrlCoordinator, never()).setUrlBarHintText(any());
     }
@@ -2809,7 +2809,7 @@ public class LocationBarMediatorTest {
 
         // Triggering it again should also set it to empty.
         clearInvocations(mUrlCoordinator);
-        mMediator.onSearchBoxHintTextChanged();
+        mMediator.onSearchEngineNameChanged();
         verify(mUrlCoordinator).setUrlBarHintText(eq(""));
     }
 

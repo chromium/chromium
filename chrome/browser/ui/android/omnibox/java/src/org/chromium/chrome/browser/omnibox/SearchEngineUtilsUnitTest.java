@@ -23,7 +23,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 
 import org.junit.Before;
@@ -44,6 +43,8 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineIconObserver;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineNameObserver;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
@@ -65,7 +66,7 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.GURL;
 
-/** Tests for SearchEngineUtils. */
+/** Unit tests for {@link SearchEngineUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SearchEngineUtilsUnitTest {
     private static final String LOGO_URL = "https://www.search.com/";
@@ -73,20 +74,19 @@ public class SearchEngineUtilsUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Captor ArgumentCaptor<FaviconHelper.FaviconImageCallback> mCallbackCaptor;
-    @Captor ArgumentCaptor<StatusIconResource> mStatusIconCaptor;
-    @Mock FaviconHelper mFaviconHelper;
-    @Mock TemplateUrlService mTemplateUrlService;
-    @Mock TemplateUrl mTemplateUrl;
-    @Mock Callback<StatusIconResource> mStarterPackCallback;
-    @Mock LocaleManagerDelegate mLocaleManagerDelegate;
-    @Mock Resources mResources;
-    @Mock Profile mProfile;
-    @Mock SearchEngineUtils.SearchBoxHintTextObserver mHintTextObserver;
-    @Mock SearchEngineUtils.SearchEngineIconObserver mEngineIconObserver;
-    @Mock FuseboxSessionState mFuseboxSessionState;
-    @Mock AutocompleteInput mAutocompleteInput;
-    @Mock ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
+    @Captor private ArgumentCaptor<FaviconHelper.FaviconImageCallback> mCallbackCaptor;
+    @Captor private ArgumentCaptor<StatusIconResource> mStatusIconCaptor;
+    @Mock private FaviconHelper mFaviconHelper;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private TemplateUrl mTemplateUrl;
+    @Mock private Callback<StatusIconResource> mStarterPackCallback;
+    @Mock private LocaleManagerDelegate mLocaleManagerDelegate;
+    @Mock private Profile mProfile;
+    @Mock private SearchEngineNameObserver mHintTextObserver;
+    @Mock private SearchEngineIconObserver mEngineIconObserver;
+    @Mock private FuseboxSessionState mFuseboxSessionState;
+    @Mock private AutocompleteInput mAutocompleteInput;
+    @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
 
     private Context mContext;
     private Bitmap mBitmap;
@@ -124,15 +124,12 @@ public class SearchEngineUtilsUnitTest {
                 .when(mFaviconHelper)
                 .getLocalFaviconImageForURL(
                         any(), any(), anyInt(), anyBoolean(), mCallbackCaptor.capture());
-
-        // Used when creating bitmaps, needs to be greater than 0.
-        doReturn(1).when(mResources).getDimensionPixelSize(anyInt());
     }
 
     @Test
     public void testDefaultEnabledBehavior() {
         var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
-        searchEngineUtils.addSearchBoxHintTextObserver(mHintTextObserver);
+        searchEngineUtils.addSearchEngineNameObserver(mHintTextObserver);
 
         // Show DSE logo when using regular profile.
         doReturn(false).when(mProfile).isOffTheRecord();
@@ -145,7 +142,7 @@ public class SearchEngineUtilsUnitTest {
         assertFalse(searchEngineUtils.shouldShowSearchEngineLogo());
 
         // Verify default placeholder text.
-        verify(mHintTextObserver).onSearchBoxHintTextChanged();
+        verify(mHintTextObserver).onSearchEngineNameChanged();
         assertEquals(
                 searchEngineUtils.getOmniboxHintText(
                         AutocompleteRequestType.SEARCH, /* fuseboxSessionState= */ null),
@@ -287,10 +284,10 @@ public class SearchEngineUtilsUnitTest {
             // Google to Google
             configureSearchEngine("google", "Google");
             var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
-            searchEngineUtils.addSearchBoxHintTextObserver(mHintTextObserver);
+            searchEngineUtils.addSearchEngineNameObserver(mHintTextObserver);
 
             // Verify updated placeholder text.
-            verify(mHintTextObserver).onSearchBoxHintTextChanged();
+            verify(mHintTextObserver).onSearchEngineNameChanged();
             assertEquals(
                     "Search Google or type URL",
                     searchEngineUtils.getOmniboxHintText(
@@ -305,7 +302,7 @@ public class SearchEngineUtilsUnitTest {
             verifySearchEngineSpecificDataRetainedInCache();
 
             // Verify updated placeholder text.
-            verify(mHintTextObserver, never()).onSearchBoxHintTextChanged();
+            verify(mHintTextObserver, never()).onSearchEngineNameChanged();
         }
 
         clearInvocations(mHintTextObserver);
@@ -314,7 +311,7 @@ public class SearchEngineUtilsUnitTest {
             // Non-Google to same non-Google.
             configureSearchEngine("engine", "Some Engine");
             var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
-            searchEngineUtils.addSearchBoxHintTextObserver(mHintTextObserver);
+            searchEngineUtils.addSearchEngineNameObserver(mHintTextObserver);
             clearInvocations(mHintTextObserver);
 
             // Make an update
@@ -325,7 +322,7 @@ public class SearchEngineUtilsUnitTest {
             verifySearchEngineSpecificDataRetainedInCache();
 
             // Verify updated placeholder text.
-            verify(mHintTextObserver).onSearchBoxHintTextChanged();
+            verify(mHintTextObserver).onSearchEngineNameChanged();
             assertEquals(
                     "Search Another Engine or type URL",
                     searchEngineUtils.getOmniboxHintText(
@@ -338,7 +335,7 @@ public class SearchEngineUtilsUnitTest {
             // Non-Google, unnamed engine
             configureSearchEngine("engine", "Some Engine");
             var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
-            searchEngineUtils.addSearchBoxHintTextObserver(mHintTextObserver);
+            searchEngineUtils.addSearchEngineNameObserver(mHintTextObserver);
             clearInvocations(mHintTextObserver);
 
             // Make an update
@@ -349,7 +346,7 @@ public class SearchEngineUtilsUnitTest {
             verifySearchEngineSpecificDataRetainedInCache();
 
             // Verify default placeholder text.
-            verify(mHintTextObserver).onSearchBoxHintTextChanged();
+            verify(mHintTextObserver).onSearchEngineNameChanged();
             assertEquals(
                     "Search or type URL",
                     searchEngineUtils.getOmniboxHintText(
@@ -362,7 +359,7 @@ public class SearchEngineUtilsUnitTest {
             // Non-Google, unnamed engine
             configureSearchEngine("engine", "Some Engine");
             var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
-            searchEngineUtils.addSearchBoxHintTextObserver(mHintTextObserver);
+            searchEngineUtils.addSearchEngineNameObserver(mHintTextObserver);
             clearInvocations(mHintTextObserver);
 
             // Make an update to no engine
@@ -370,7 +367,7 @@ public class SearchEngineUtilsUnitTest {
             searchEngineUtils.onTemplateURLServiceChanged();
 
             // Verify default placeholder text.
-            verify(mHintTextObserver).onSearchBoxHintTextChanged();
+            verify(mHintTextObserver).onSearchEngineNameChanged();
             assertEquals(
                     "Search or type URL",
                     searchEngineUtils.getOmniboxHintText(

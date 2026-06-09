@@ -20,7 +20,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.BuildConfig;
-import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
@@ -52,13 +51,17 @@ import org.chromium.url.GURL;
 
 import java.util.Objects;
 
-/** Common Default Search Engine functions. */
+/**
+ * Profile keyed service and wrapper around {@link TemplateUrlService}, providing common/shared
+ * search engine functionality.
+ */
 @NullMarked
 public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserver {
     private static final int MAX_IMAGE_CACHE_SIZE_BYTES = 4096;
     private static final String TAG = "DSEUtils";
-    private static final ProfileKeyedMap<SearchEngineUtils> sProfileKeyedUtils =
+    private static final ProfileKeyedMap<SearchEngineUtils> sProfileMap =
             ProfileKeyedMap.createMapOfDestroyables();
+
     private static @Nullable SearchEngineUtils sInstanceForTesting;
 
     private final Context mContext;
@@ -68,10 +71,11 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     private final FaviconHelper mFaviconHelper;
     private final ImageFetcher mImageFetcher;
     private final int mSearchEngineLogoTargetSizePixels;
-    private final ObserverList<SearchBoxHintTextObserver> mSearchBoxHintTextObservers =
+    private final ObserverList<SearchEngineNameObserver> mSearchEngineNameObservers =
             new ObserverList<>();
     private final ObserverList<SearchEngineIconObserver> mSearchEngineIconObservers =
             new ObserverList<>();
+
     private @Nullable SearchEngineMetadata mDefaultSearchEngineMetadata;
     private @Nullable Boolean mNeedToCheckForSearchEnginePromo;
     private boolean mDoesDefaultSearchEngineHaveLogo;
@@ -79,13 +83,12 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     private @Nullable String mSearchEngineName;
 
     @FunctionalInterface
-    public interface SearchBoxHintTextObserver {
+    public interface SearchEngineNameObserver {
         /**
-         * Invoked when the Search Box hint text changes.
-         *
-         * @param newHintText the new hint text to apply
+         * Invoked when the default search engine name changes. Hint text may have changed as well,
+         * would be a good idea for clients to recalculate.
          */
-        void onSearchBoxHintTextChanged();
+        void onSearchEngineNameChanged();
     }
 
     @FunctionalInterface
@@ -98,21 +101,26 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         void onSearchEngineIconChanged(@Nullable StatusIconResource newIcon);
     }
 
-    private SearchEngineUtils(
-            Profile profile, FaviconHelper faviconHelper, ImageFetcher imageFetcher) {
+    @VisibleForTesting
+    SearchEngineUtils(Profile profile, FaviconHelper faviconHelper) {
         mProfile = profile;
         mIsOffTheRecord = profile.isOffTheRecord();
         mFaviconHelper = faviconHelper;
         mContext = ContextUtils.getApplicationContext();
 
-        mImageFetcher = imageFetcher;
+        mImageFetcher =
+                ImageFetcherFactory.createImageFetcher(
+                        ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                        profile.getProfileKey(),
+                        GlobalDiscardableReferencePool.getReferencePool(),
+                        MAX_IMAGE_CACHE_SIZE_BYTES);
 
         mSearchEngineLogoTargetSizePixels =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_composed_size);
 
         // Apply safe fallback values.
-        setSearchBoxHintText(null);
+        setSearchEngineName(null);
         resetFavicon();
 
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
@@ -122,30 +130,13 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         onTemplateURLServiceChanged();
     }
 
-    @VisibleForTesting
-    SearchEngineUtils(Profile profile, FaviconHelper faviconHelper) {
-        this(
-                profile,
-                faviconHelper,
-                ImageFetcherFactory.createImageFetcher(
-                        ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
-                        profile.getProfileKey(),
-                        GlobalDiscardableReferencePool.getReferencePool(),
-                        MAX_IMAGE_CACHE_SIZE_BYTES));
-    }
-
-    public static SearchEngineUtils createSearchEngineUtilsForTesting(
-            Profile profile, FaviconHelper faviconHelper, ImageFetcher imageFetcher) {
-        return new SearchEngineUtils(profile, faviconHelper, imageFetcher);
-    }
-
     /** Get the instance of SearchEngineUtils associated with the supplied Profile. */
     public static SearchEngineUtils getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
         if (sInstanceForTesting != null) return sInstanceForTesting;
 
         assert profile != null;
-        return sProfileKeyedUtils.getForProfile(profile, SearchEngineUtils::buildForProfile);
+        return sProfileMap.getForProfile(profile, SearchEngineUtils::buildForProfile);
     }
 
     private static SearchEngineUtils buildForProfile(Profile profile) {
@@ -158,7 +149,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         mFaviconHelper.destroy();
         mImageFetcher.destroy();
         mSearchEngineIconObservers.clear();
-        mSearchBoxHintTextObservers.clear();
+        mSearchEngineNameObservers.clear();
     }
 
     @Override
@@ -167,14 +158,14 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
 
         var templateUrl = mTemplateUrlService.getDefaultSearchEngineTemplateUrl();
         if (templateUrl == null) {
-            setSearchBoxHintText(null);
+            setSearchEngineName(null);
             return;
         }
 
         if (!TextUtils.isEmpty(templateUrl.getShortName())) {
-            setSearchBoxHintText(templateUrl.getShortName());
+            setSearchEngineName(templateUrl.getShortName());
         } else {
-            setSearchBoxHintText(null);
+            setSearchEngineName(null);
         }
 
         if (mDefaultSearchEngineMetadata == null
@@ -188,25 +179,22 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         retrieveFavicon(templateUrl, this::setSearchEngineIcon);
     }
 
-    /** Add observer to be notified whenever the Omnibox hint text changes. */
-    public void addSearchBoxHintTextObserver(SearchBoxHintTextObserver observer) {
-        mSearchBoxHintTextObservers.addObserver(observer);
-        observer.onSearchBoxHintTextChanged();
+    /** Add observer to be notified whenever the default search engine name changes. */
+    public void addSearchEngineNameObserver(SearchEngineNameObserver observer) {
+        mSearchEngineNameObservers.addObserver(observer);
+        observer.onSearchEngineNameChanged();
     }
 
-    /** Remove previously registered Omnibox hint text observer. */
-    public void removeSearchBoxHintTextObserver(SearchBoxHintTextObserver observer) {
-        mSearchBoxHintTextObservers.removeObserver(observer);
+    /** Remove previously registered search engine name observer. */
+    public void removeSearchEngineNameObserver(SearchEngineNameObserver observer) {
+        mSearchEngineNameObservers.removeObserver(observer);
     }
 
-    @Initializer
-    private void setSearchBoxHintText(@Nullable String engineName) {
-        // mSearchBoxHintText may be null when this method is invoked from constructor.
-        // This may generate a warning that this field is null. This is fine.
-        if (Objects.equals(engineName, mSearchEngineName)) return;
+    private void setSearchEngineName(@Nullable String engineName) {
+        if (TextUtils.equals(engineName, mSearchEngineName)) return;
         mSearchEngineName = engineName;
-        for (var observer : mSearchBoxHintTextObservers) {
-            observer.onSearchBoxHintTextChanged();
+        for (SearchEngineNameObserver observer : mSearchEngineNameObservers) {
+            observer.onSearchEngineNameChanged();
         }
     }
 
@@ -290,7 +278,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         return null;
     }
 
-    /** Add observer to be notified whenever the Search Enigne Icon changes. */
+    /** Add observer to be notified whenever the Search Engine Icon changes. */
     public void addIconObserver(SearchEngineIconObserver observer) {
         mSearchEngineIconObservers.addObserver(observer);
         observer.onSearchEngineIconChanged(mFavicon);
@@ -441,15 +429,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         }
     }
 
-    /** Set the instance for testing. */
-    public static void setInstanceForTesting(SearchEngineUtils instance) {
-        sInstanceForTesting = instance;
-        ResettersForTesting.register(() -> sInstanceForTesting = null);
-    }
-
-    /*
-     * Returns whether the current search provider has Logo.
-     */
+    /** Returns whether the current search provider has Logo. */
     public boolean doesDefaultSearchEngineHaveLogo() {
         return mDoesDefaultSearchEngineHaveLogo;
     }
@@ -457,5 +437,11 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     /** Returns whether the default search engine is Google. */
     public boolean isDefaultSearchEngineGoogle() {
         return mTemplateUrlService.isDefaultSearchEngineGoogle();
+    }
+
+    /** Set the instance for testing. */
+    public static void setInstanceForTesting(SearchEngineUtils instance) {
+        sInstanceForTesting = instance;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 }

@@ -74,7 +74,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.Observer;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchBoxHintTextObserver;
+import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineNameObserver;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
@@ -162,7 +162,7 @@ class LocationBarMediator
                 TemplateUrlServiceObserver,
                 BackPressHandler,
                 PauseResumeWithNativeObserver,
-                SearchBoxHintTextObserver,
+                SearchEngineNameObserver,
                 AppBannerManager.Observer,
                 OmniboxSuggestionsDropdownScrollListener {
 
@@ -284,7 +284,7 @@ class LocationBarMediator
     private final Callback<@AutocompleteRequestType Integer> mAutocompleteRequestTypeObserver =
             this::onAutocompleteRequestTypeChanged;
     private final Callback<AutocompleteInput.@Nullable SiteSearchData> mSiteSearchDataObserver =
-            (siteSearchData) -> onSearchBoxHintTextChanged();
+            (siteSearchData) -> onSearchEngineNameChanged();
     private @Nullable Callback<Boolean> mOnSpecializedFuseboxModeActivatedCallback;
 
     private final ButtonToolbarWidthConsumer mBookmarkButtonToolbarWidthConsumer;
@@ -440,7 +440,7 @@ class LocationBarMediator
             templateUrlService.removeObserver(this);
         }
         if (mSearchEngineUtils != null) {
-            mSearchEngineUtils.removeSearchBoxHintTextObserver(this);
+            mSearchEngineUtils.removeSearchEngineNameObserver(this);
         }
         mStatusCoordinator = null;
         mAutocompleteCoordinator.removeOmniboxSuggestionsDropdownScrollListener(this);
@@ -1768,11 +1768,11 @@ class LocationBarMediator
         mOmniboxPrerender.initializeForProfile(profile);
 
         if (mSearchEngineUtils != null) {
-            mSearchEngineUtils.removeSearchBoxHintTextObserver(this);
+            mSearchEngineUtils.removeSearchEngineNameObserver(this);
         }
 
         mSearchEngineUtils = SearchEngineUtils.getForProfile(profile);
-        mSearchEngineUtils.addSearchBoxHintTextObserver(this);
+        mSearchEngineUtils.addSearchEngineNameObserver(this);
         mLocationBarLayout.setSearchEngineUtils(mSearchEngineUtils);
     }
 
@@ -2236,7 +2236,7 @@ class LocationBarMediator
                     type != AutocompleteRequestType.SEARCH);
         }
         updateButtonVisibility();
-        onSearchBoxHintTextChanged();
+        onSearchEngineNameChanged();
         mLocationBarLayout.onSpecializedFuseboxModeActivated(isSpecializedRequestType);
     }
 
@@ -2410,7 +2410,7 @@ class LocationBarMediator
 
     @Override
     public void onTitleChanged() {
-        onSearchBoxHintTextChanged();
+        onSearchEngineNameChanged();
     }
 
     @Override
@@ -2525,7 +2525,7 @@ class LocationBarMediator
 
         mCurrentInput = null;
         // The hint text depends on mCurrentInput, nulling it may change the outcome.
-        onSearchBoxHintTextChanged();
+        onSearchEngineNameChanged();
 
         setAttachmentModelList(null);
     }
@@ -2829,7 +2829,7 @@ class LocationBarMediator
     }
 
     @Override
-    public void onSearchBoxHintTextChanged() {
+    public void onSearchEngineNameChanged() {
         // Edge case / SearchActivity could be triggering focus before Profile (and by proxy -
         // SearchEngineUtils) is available.
         if (mSearchEngineUtils == null) return;
