@@ -11268,56 +11268,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_TRUE(activation_observer.was_activated());
 }
 
-class InvisiblePageLazyLoadingImageBrowserTest
-    : public PrerenderBrowserTest,
-      public testing::WithParamInterface<
-          blink::features::EnableLazyLoadImageForInvisiblePageType> {
- public:
-  static std::string GetFieldTrialParamName(
-      blink::features::EnableLazyLoadImageForInvisiblePageType
-          target_page_type) {
-    switch (target_page_type) {
-      case blink::features::EnableLazyLoadImageForInvisiblePageType::
-          kAllInvisiblePage:
-        return "all_invisible_page";
-      case blink::features::EnableLazyLoadImageForInvisiblePageType::
-          kPrerenderPage:
-        return "prerender_page";
-    }
-  }
-
-  InvisiblePageLazyLoadingImageBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kEnableLazyLoadImageForInvisiblePage,
-          {
-              {"enabled_page_type", GetFieldTrialParamName(GetParam())},
-          }}},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    InvisiblePageLazyLoadingImageBrowserTest,
-    testing::Values(blink::features::EnableLazyLoadImageForInvisiblePageType::
-                        kAllInvisiblePage,
-                    blink::features::EnableLazyLoadImageForInvisiblePageType::
-                        kPrerenderPage),
-    [](const testing::TestParamInfo<
-        blink::features::EnableLazyLoadImageForInvisiblePageType>& info) {
-      return InvisiblePageLazyLoadingImageBrowserTest::GetFieldTrialParamName(
-          info.param);
-    });
-
 // Tests that loading=lazy can prevent image load in a prerendered page.
 // TODO(https://crbug.com/381110833): The image, positioned in the top-left
 // corner of the page, should be visible in the initial viewport after the page
 // gets activated. Ideally it should be loaded during prerendering, and we need
 // to figure out how to make that happen.
-IN_PROC_BROWSER_TEST_P(InvisiblePageLazyLoadingImageBrowserTest, LazyLoading) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LazyLoading) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/prerender/image_loading_lazy.html");
   const GURL kImageUrl = GetUrl("/blank.jpg");
@@ -11347,43 +11303,6 @@ IN_PROC_BROWSER_TEST_P(InvisiblePageLazyLoadingImageBrowserTest, LazyLoading) {
 
   EXPECT_TRUE(ExecJs(prerender_frame_host, "promise_with_resolvers.promise"));
   EXPECT_EQ(EvalJs(prerender_frame_host, "image_loaded"), true);
-}
-
-class DisabledInvisiblePageLazyLoadingImageBrowserTest
-    : public PrerenderBrowserTest {
- public:
-  DisabledInvisiblePageLazyLoadingImageBrowserTest() {
-    feature_list_.InitAndDisableFeature(
-        blink::features::kEnableLazyLoadImageForInvisiblePage);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that loading=lazy doesn't prevent image load in a prerendered page.
-// This test is tested under the condition that
-// blink::features::kEnableLazyLoadImageForInvisiblePage is disabled.
-IN_PROC_BROWSER_TEST_F(DisabledInvisiblePageLazyLoadingImageBrowserTest,
-                       LazyLoading) {
-  ASSERT_FALSE(base::FeatureList::IsEnabled(
-      blink::features::kEnableLazyLoadImageForInvisiblePage));
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl = GetUrl("/prerender/image_loading_lazy.html");
-  const GURL kImageUrl = GetUrl("/blank.jpg");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
-
-  // Start prerendering `kPrerenderingUrl`.
-  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
-  AddPrerender(kPrerenderingUrl);
-  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-
-  // A request for the image in the prerendered page shouldn't be prevented by
-  // loading=lazy.
-  EXPECT_EQ(GetRequestCount(kImageUrl), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,

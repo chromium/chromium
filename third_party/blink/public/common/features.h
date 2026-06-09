@@ -449,15 +449,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnforceNoopenerOnBlobURLNavigation);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableLazyLoadImageForInvisiblePage);
-enum class EnableLazyLoadImageForInvisiblePageType {
-  kAllInvisiblePage,
-  kPrerenderPage,
-};
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    EnableLazyLoadImageForInvisiblePageType,
-    kEnableLazyLoadImageForInvisiblePageTypeParam);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kEventTimingIgnorePresentationTimeFromUnexpectedFrameSource);
 

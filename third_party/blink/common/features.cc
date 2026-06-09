@@ -712,24 +712,6 @@ BASE_FEATURE(kDropInputEventsWhilePaintHolding,
 BASE_FEATURE(kEnableDevtoolsDeepLinkViaExtensibilityApi,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether to respect loading=lazy attribute for images when they are on
-// invisible pages.
-BASE_FEATURE(kEnableLazyLoadImageForInvisiblePage,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<EnableLazyLoadImageForInvisiblePageType>::Option
-    enable_lazy_load_image_for_invisible_page_types[] = {
-        {EnableLazyLoadImageForInvisiblePageType::kAllInvisiblePage,
-         "all_invisible_page"},
-        {EnableLazyLoadImageForInvisiblePageType::kPrerenderPage,
-         "prerender_page"}};
-BASE_FEATURE_ENUM_PARAM(
-    EnableLazyLoadImageForInvisiblePageType,
-    kEnableLazyLoadImageForInvisiblePageTypeParam,
-    &kEnableLazyLoadImageForInvisiblePage,
-    "enabled_page_type",
-    EnableLazyLoadImageForInvisiblePageType::kAllInvisiblePage,
-    &enable_lazy_load_image_for_invisible_page_types);
-
 // Prevents an opener from being returned when a BlobURL is cross-site to the
 // window's top-level site.
 BASE_FEATURE(kEnforceNoopenerOnBlobURLNavigation,
