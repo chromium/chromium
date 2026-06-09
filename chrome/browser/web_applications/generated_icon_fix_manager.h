@@ -6,17 +6,21 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_GENERATED_ICON_FIX_MANAGER_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/scheduler/generated_icon_fix_result.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/webapps/common/web_app_id.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace web_app {
 
@@ -24,6 +28,7 @@ class AllAppsLock;
 class AppLock;
 class WebApp;
 class WebAppProvider;
+class WebAppRegistrar;
 class WithAppResources;
 
 // Used by metrics.
@@ -38,7 +43,9 @@ enum class GeneratedIconFixScheduleDecision {
   kMaxValue = kSchedule,
 };
 
-class GeneratedIconFixManager {
+class GeneratedIconFixManager
+    : public WebAppRegistrarObserver,
+      public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   // Disable the logic that schedules generated icon fixes. Only intended for
   // use in tests that need to check the app state before these operations are
@@ -47,13 +54,10 @@ class GeneratedIconFixManager {
   static base::AutoReset<bool> DisableAutoRetryForTesting();
 
   GeneratedIconFixManager();
-  ~GeneratedIconFixManager();
+  ~GeneratedIconFixManager() override;
 
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Start();
-
-  // TODO(crbug.com/40185008): Schedule fixes ten minutes after sync install.
-  // TODO(crbug.com/40185008): Schedule fixes on network reconnection.
 
   void InvalidateWeakPtrsForTesting();
 
@@ -74,6 +78,14 @@ class GeneratedIconFixManager {
 
  private:
   void ScheduleFixes(AllAppsLock& all_apps_lock, base::DictValue& debug_value);
+  void ScheduleAllFixes();
+  void ScheduleFixAfterSyncInstall(const webapps::AppId& app_id);
+
+  void OnWebAppsWillBeUpdatedFromSync(
+      const std::vector<const WebApp*>& new_apps_state) override;
+  void OnAppRegistrarDestroyed() override;
+  void OnConnectionChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // Returns whether a fix was newly scheduled for `app_id`.
   bool MaybeScheduleFix(const webapps::AppId& app_id,
@@ -91,6 +103,12 @@ class GeneratedIconFixManager {
                     GeneratedIconFixResult result);
 
   raw_ptr<WebAppProvider> provider_ = nullptr;
+  base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>
+      registrar_observation_{this};
+  base::ScopedObservation<
+      network::NetworkConnectionTracker,
+      network::NetworkConnectionTracker::NetworkConnectionObserver>
+      network_observation_{this};
 
   base::flat_set<webapps::AppId> scheduled_fixes_;
 

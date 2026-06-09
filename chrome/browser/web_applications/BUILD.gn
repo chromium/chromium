@@ -1010,6 +1010,7 @@ source_set("web_applications_unit_tests") {
     "daily_metrics_helper_unittest.cc",
     "external_install_options_unittest.cc",
     "externally_managed_app_manager_unittest.cc",
+    "generated_icon_fix_manager_unittest.cc",
     "icons/icon_masker_unittest.cc",
     "icons/trusted_icon_filter_unittest.cc",
     "isolated_web_apps/commands/check_isolated_web_app_bundle_user_installability_command_unittest.cc",

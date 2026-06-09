@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/generated_icon_fix_command.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "content/public/browser/network_service_instance.h"
 
 namespace web_app {
 
@@ -30,6 +32,8 @@ namespace {
 
 bool g_disable_auto_retry_for_testing = false;
 bool g_disable_generated_icon_fixes_for_testing = false;
+
+constexpr base::TimeDelta kSyncInstallFixDelay = base::Minutes(10);
 
 }  // namespace
 
@@ -58,15 +62,63 @@ void GeneratedIconFixManager::Start() {
   if (g_disable_generated_icon_fixes_for_testing) {
     return;
   }
+  if (!registrar_observation_.IsObserving()) {
+    registrar_observation_.Observe(&provider_->registrar_unsafe());
+  }
+  if (!network_observation_.IsObserving()) {
+    network_observation_.Observe(content::GetNetworkConnectionTracker());
+  }
+  ScheduleAllFixes();
+}
+
+void GeneratedIconFixManager::InvalidateWeakPtrsForTesting() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void GeneratedIconFixManager::ScheduleAllFixes() {
   provider_->scheduler().ScheduleCallback(
-      "GeneratedIconFixManager::Start", AllAppsLockDescription(),
+      "GeneratedIconFixManager::ScheduleAllFixes", AllAppsLockDescription(),
       base::BindOnce(&GeneratedIconFixManager::ScheduleFixes,
                      weak_ptr_factory_.GetWeakPtr()),
       /*on_complete=*/base::DoNothing());
 }
 
-void GeneratedIconFixManager::InvalidateWeakPtrsForTesting() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
+void GeneratedIconFixManager::ScheduleFixAfterSyncInstall(
+    const webapps::AppId& app_id) {
+  provider_->scheduler().ScheduleCallback(
+      "GeneratedIconFixManager::ScheduleFixAfterSyncInstall",
+      AppLockDescription(app_id),
+      base::BindOnce(&GeneratedIconFixManager::MaybeScheduleFixAppLock,
+                     weak_ptr_factory_.GetWeakPtr(), app_id),
+      base::DoNothing());
+}
+
+void GeneratedIconFixManager::OnWebAppsWillBeUpdatedFromSync(
+    const std::vector<const WebApp*>& new_apps_state) {
+  for (const WebApp* app : new_apps_state) {
+    if (MakeScheduleDecision(app) !=
+        GeneratedIconFixScheduleDecision::kSchedule) {
+      continue;
+    }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&GeneratedIconFixManager::ScheduleFixAfterSyncInstall,
+                       weak_ptr_factory_.GetWeakPtr(), app->app_id()),
+        kSyncInstallFixDelay);
+  }
+}
+
+void GeneratedIconFixManager::OnAppRegistrarDestroyed() {
+  registrar_observation_.Reset();
+  network_observation_.Reset();
+  provider_ = nullptr;
+}
+
+void GeneratedIconFixManager::OnConnectionChanged(
+    net::NetworkChangeNotifier::ConnectionType type) {
+  if (type != net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
+    ScheduleAllFixes();
+  }
 }
 
 void GeneratedIconFixManager::ScheduleFixes(AllAppsLock& all_apps_lock,
