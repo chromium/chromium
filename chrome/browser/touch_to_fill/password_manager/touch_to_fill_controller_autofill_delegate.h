@@ -25,6 +25,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/gfx/native_ui_types.h"
+#include "url/origin.h"
 
 namespace password_manager {
 class PasskeyCredential;
@@ -127,6 +128,7 @@ class TouchToFillControllerAutofillDelegate
   void OnDismiss(base::OnceClosure action_completed) override;
   void OnCredManDismissed(base::OnceClosure action_completed) override;
   GURL GetFrameUrl() override;
+  url::Origin GetFrameOrigin() override;
   bool ShouldShowTouchToFill() override;
   bool ShouldTriggerSubmission() override;
   bool ShouldShowHybridOption() override;

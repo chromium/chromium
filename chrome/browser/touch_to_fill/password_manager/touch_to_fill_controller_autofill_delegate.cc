@@ -231,6 +231,11 @@ GURL TouchToFillControllerAutofillDelegate::GetFrameUrl() {
   return filler_->GetFrameUrl();
 }
 
+url::Origin TouchToFillControllerAutofillDelegate::GetFrameOrigin() {
+  CHECK(filler_);
+  return filler_->GetFrameOrigin();
+}
+
 bool TouchToFillControllerAutofillDelegate::ShouldShowTouchToFill() {
   if (!form_to_fill_) {
     return false;
@@ -336,9 +341,9 @@ void TouchToFillControllerAutofillDelegate::CleanUpFillerAndReportOutcome(
   // this case it's not possible to mark credentials as notitied. If the user
   // has properly interact with the touch to fill UI, the client would have been
   // notified properly.
-  GURL url = GetFrameUrl();
-  if (!url.is_empty()) {
-    password_client_->MarkSharedCredentialsAsNotified(url);
+  url::Origin origin = GetFrameOrigin();
+  if (!origin.opaque()) {
+    password_client_->MarkSharedCredentialsAsNotified(origin);
   }
   filler_.reset();
   base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome", outcome);

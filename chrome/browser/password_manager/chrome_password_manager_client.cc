@@ -222,12 +222,6 @@ namespace {
 constexpr char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/41485955): Get rid of DeprecatedGetOriginAsURL().
-url::Origin URLToOrigin(GURL url) {
-  return url::Origin::Create(url.DeprecatedGetOriginAsURL());
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -632,6 +626,9 @@ void ChromePasswordManagerClient::ContinueShowKeyboardReplacingSurface(
   // without being called.
   auto split_delay_callback =
       base::SplitOnceCallback(std::move(delay_callback));
+  if (!weak_driver) {
+    return;
+  }
   password_manager::ContentPasswordManagerDriver* driver =
       static_cast<password_manager::ContentPasswordManagerDriver*>(
           weak_driver.get());
@@ -681,8 +678,7 @@ void ChromePasswordManagerClient::ContinueShowKeyboardReplacingSurface(
               should_show_hybrid_option));
 
   base::span<const password_manager::UiCredential> password_credentials =
-      credential_cache_
-          .GetCredentialStore(URLToOrigin(driver->GetLastCommittedURL()))
+      credential_cache_.GetCredentialStore(driver->GetLastCommittedOrigin())
           .GetCredentials();
   std::vector<TouchToFillView::Credential> credentials;
   credentials.reserve(password_credentials.size() + passkeys.size());
@@ -1404,10 +1400,9 @@ ChromePasswordManagerClient::GetWebAuthnCredManDelegateForDriver(
 }
 
 void ChromePasswordManagerClient::MarkSharedCredentialsAsNotified(
-    const GURL& url) {
-  for (const PasswordForm& form :
-       credential_cache_.GetCredentialStore(URLToOrigin(url))
-           .GetUnnotifiedSharedCredentials()) {
+    const url::Origin& origin) {
+  for (const PasswordForm& form : credential_cache_.GetCredentialStore(origin)
+                                      .GetUnnotifiedSharedCredentials()) {
     // Make a non-const copy so we can modify it.
     password_manager::PasswordForm updatedForm = form;
     updatedForm.sharing_notification_displayed = true;
