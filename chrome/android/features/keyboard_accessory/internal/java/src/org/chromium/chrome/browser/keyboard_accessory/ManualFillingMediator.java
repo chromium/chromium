@@ -930,64 +930,80 @@ class ManualFillingMediator
         return (int) (MAXIMUM_BAR_WIDTH_PERCENTAGE * screenWidth);
     }
 
-    // TODO(crbug.com/469956054): Make this method more readable.
     private void updateStyleAndControlSpaceForState(int extensionState) {
         if (extensionState == WAITING_TO_REPLACE) return; // Don't change yet.
 
-        int newControlsOffset = 0;
-        if (isLargeFormFactor()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP)) {
-            if (requiresVisibleBar(extensionState)) {
-                mKeyboardAccessory.setStyle(
-                        KeyboardAccessoryStyle.createUndockedKeyboardAccessoryStyle(
-                                getHorizontalOffset(),
-                                getTopOffset(),
-                                getMaxWidth(),
-                                getNotchPositionForDynamicPositioning()));
-                mBottomInsetSupplier.set(0);
-                return;
-            }
-            if (requiresVisibleSheet(extensionState)
-                    && ChromeFeatureList.isEnabled(
+        boolean useUndockedLayout =
+                isLargeFormFactor()
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP);
+
+        if (requiresVisibleSheet(extensionState)) {
+            boolean isDocked = !useUndockedLayout;
+            if (isDocked
+                    || ChromeFeatureList.isEnabled(
                             ChromeFeatureList
                                     .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
-                mAccessorySheet.setStyle(/* isDocked= */ false);
-                mBottomInsetSupplier.set(0);
-                return;
+                mAccessorySheet.setStyle(isDocked);
             }
         }
 
-        int newControlsHeight = 0;
         if (requiresVisibleBar(extensionState)) {
-            boolean isEdgeToEdgeActive = mEdgeToEdgeControllerSupplier.get() != null;
-            // TODO(crbug.com/41483806): Treat VirtualKeyboardMode.OVERLAYS_CONTENT like fullscreen?
-            if (mModel.get(IS_FULLSCREEN) // Hides UI and lets keyboard overlay webContents.
-                    // No need to set the controls height to 0 in edge-to-edge since the content
-                    // view will resize to account for the keyboard.
-                    && !isEdgeToEdgeActive) {
-                newControlsOffset = getKeyboardAndNavigationHeight();
-                // Don't resize the page because the keyboard does not doesn't do that either in
-                // fullscreen mode. It's overlaying the content and the accessory mimics that.
-                newControlsHeight = 0;
-            } else {
-                newControlsHeight = getBarHeightWithoutShadow();
+            mKeyboardAccessory.setStyle(getAccessoryStyle(extensionState, useUndockedLayout));
+        }
+
+        mBottomInsetSupplier.set(calculateControlsHeight(extensionState, useUndockedLayout));
+    }
+
+    private KeyboardAccessoryStyle getAccessoryStyle(
+            int extensionState, boolean useUndockedLayout) {
+        if (useUndockedLayout) {
+            return KeyboardAccessoryStyle.createUndockedKeyboardAccessoryStyle(
+                    getHorizontalOffset(),
+                    getTopOffset(),
+                    getMaxWidth(),
+                    getNotchPositionForDynamicPositioning());
+        }
+
+        int offset = 0;
+        if (isKeyboardOverlayingContent()) {
+            offset = getKeyboardAndNavigationHeight();
+        }
+        if (requiresVisibleSheet(extensionState)) {
+            offset += mAccessorySheet.getHeight();
+        }
+        return KeyboardAccessoryStyle.createDockedKeyboardAccessoryStyle(offset);
+    }
+
+    private int calculateControlsHeight(int extensionState, boolean useUndockedLayout) {
+        if (useUndockedLayout) {
+            return 0;
+        }
+
+        int inset = 0;
+        if (requiresVisibleBar(extensionState)) {
+            if (!isKeyboardOverlayingContent()) {
+                inset += getBarHeightWithoutShadow();
             }
         }
         if (requiresVisibleSheet(extensionState)) {
-            newControlsHeight +=
-                    mAccessorySheet.getHeight()
-                            - mActivity
-                                    .getResources()
-                                    .getDimensionPixelSize(R.dimen.toolbar_shadow_height);
-            newControlsOffset += mAccessorySheet.getHeight();
-            mAccessorySheet.setStyle(/* isDocked= */ true);
+            int shadowHeight =
+                    mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_shadow_height);
+            inset += (mAccessorySheet.getHeight() - shadowHeight);
         }
-        if (requiresVisibleBar(extensionState)) {
-            mKeyboardAccessory.setStyle(
-                    KeyboardAccessoryStyle.createDockedKeyboardAccessoryStyle(newControlsOffset));
-        }
-        mBottomInsetSupplier.set(newControlsHeight);
+        return inset;
+    }
+
+    // TODO(crbug.com/41483806): Treat VirtualKeyboardMode.OVERLAYS_CONTENT like fullscreen?
+    private boolean isKeyboardOverlayingContent() {
+        boolean isEdgeToEdgeActive = mEdgeToEdgeControllerSupplier.get() != null;
+        // Hides UI and lets keyboard overlay webContents.
+        // No need to set the controls height to 0 in edge-to-edge since the content
+        // view will resize to account for the keyboard.
+        // Don't resize the page because the keyboard doesn't do that either in
+        // fullscreen mode. It's overlaying the content and the accessory mimics that.
+        return mModel.get(IS_FULLSCREEN) && !isEdgeToEdgeActive;
     }
 
     private void onViewportInsetChanged(ViewportInsets newViewportInsets) {
