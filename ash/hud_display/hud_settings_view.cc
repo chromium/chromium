@@ -147,6 +147,11 @@ class SettingsCheckbox : public views::Checkbox {
   SettingsCheckbox(const std::u16string& label, const std::u16string& tooltip)
       : views::Checkbox(label, views::Button::PressedCallback()) {
     SetTooltipText(tooltip);
+    SetEnabledTextColors(kHUDDefaultColor);
+
+    // Make checkbox text and icon clickable.
+    SetProperty(kHUDClickHandler, HTCLIENT);
+    image_container_view()->SetProperty(kHUDClickHandler, HTCLIENT);
   }
   SettingsCheckbox(const SettingsCheckbox& other) = delete;
   SettingsCheckbox operator=(const SettingsCheckbox& other) = delete;
@@ -468,8 +473,6 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
             std::make_unique<SettingsCheckbox>(text, tooltip));
         checkbox->SetCallback(
             base::BindRepeating(std::move(callback), checkbox));
-        checkbox->SetEnabledTextColors(kHUDDefaultColor);
-        checkbox->SetProperty(kHUDClickHandler, HTCLIENT);
         return checkbox;
       };
 
