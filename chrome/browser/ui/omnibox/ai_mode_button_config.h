@@ -21,7 +21,7 @@ struct AiModeButtonConfig {
   // Text show when hovering over button.
   std::u16string tooltip;
 
-  // TODO(crbug.com/510389207): Wire in `favicon_url`, `navigation_url`, &
+  // TODO(crbug.com/510389207): Wire in `navigation_url` &
   //   `navigation_url_empty`.
 
   // Icon shown in button.

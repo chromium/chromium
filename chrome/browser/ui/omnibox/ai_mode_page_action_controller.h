@@ -60,6 +60,9 @@ class AiModePageActionController : public OmniboxEditModel::Observer {
                                    LocationBarView& location_bar_view);
 
  private:
+  // Callback used in `UpdatePageAction()` to asynchronously fetch the favicon.
+  void OnFaviconFetched(const gfx::Image& favicon);
+
   const raw_ref<BrowserWindowInterface> bwi_;
   const raw_ref<Profile> profile_;
   const raw_ref<LocationBarView> location_bar_view_;
@@ -68,6 +71,9 @@ class AiModePageActionController : public OmniboxEditModel::Observer {
 
   base::ScopedObservation<OmniboxEditModel, OmniboxEditModel::Observer>
       observation_{this};
+
+  // Used for `OnFaviconFetched()` callback.
+  base::WeakPtrFactory<AiModePageActionController> weak_factory_{this};
 };
 
 }  // namespace omnibox

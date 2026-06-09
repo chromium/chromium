@@ -146,6 +146,12 @@ gfx::Image OmniboxClient::GetFaviconForKeywordSearchProvider(
   return gfx::Image();
 }
 
+gfx::Image OmniboxClient::GetFaviconForIconUrl(
+    const GURL& icon_url,
+    FaviconFetchedCallback on_favicon_fetched) {
+  return gfx::Image();
+}
+
 bool OmniboxClient::IsHistoryEmbeddingsEnabled() const {
   return false;
 }

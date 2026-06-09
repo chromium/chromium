@@ -109,6 +109,9 @@ class ChromeOmniboxClient final : public OmniboxClient {
   gfx::Image GetFaviconForKeywordSearchProvider(
       const TemplateURL* template_url,
       FaviconFetchedCallback on_favicon_fetched) override;
+  gfx::Image GetFaviconForIconUrl(
+      const GURL& icon_url,
+      FaviconFetchedCallback on_favicon_fetched) override;
   void OnTextChanged(const AutocompleteMatch& current_match,
                      bool user_input_in_progress,
                      const std::u16string& user_text,

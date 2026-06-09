@@ -260,11 +260,11 @@ class OmniboxClient {
                                const BitmapFetchedCallback& on_bitmap_fetched) {
   }
 
-  // These two methods fetch favicons if the embedder supports it. Not all
-  // embedders do. These methods return the favicon synchronously if possible.
-  // Otherwise, they return an empty gfx::Image and |on_favicon_fetched| may or
-  // may not be called asynchronously later. |on_favicon_fetched| will never be
-  // run synchronously, and will never be run with an empty result.
+  // These methods fetch favicons if the embedder supports it. Not all embedders
+  // do. These methods return the favicon synchronously if possible. Otherwise,
+  // they return an empty `gfx::Image` and `on_favicon_fetched` may or may not
+  // be called asynchronously later. `on_favicon_fetched` will never be run
+  // synchronously, and will never be run with an empty result.
   using FaviconFetchedCallback =
       base::OnceCallback<void(const gfx::Image& favicon)>;
   virtual gfx::Image GetFaviconForPageUrl(
@@ -291,6 +291,15 @@ class OmniboxClient {
       FaviconFetchedCallback on_favicon_fetched) const {
     return const_cast<OmniboxClient*>(this)->GetFaviconForKeywordSearchProvider(
         template_url, std::move(on_favicon_fetched));
+  }
+  virtual gfx::Image GetFaviconForIconUrl(
+      const GURL& icon_url,
+      FaviconFetchedCallback on_favicon_fetched);
+  gfx::Image GetFaviconForIconUrl(
+      const GURL& icon_url,
+      FaviconFetchedCallback on_favicon_fetched) const {
+    return const_cast<OmniboxClient*>(this)->GetFaviconForIconUrl(
+        icon_url, std::move(on_favicon_fetched));
   }
 
   // Called when the text may have changed in the edit.

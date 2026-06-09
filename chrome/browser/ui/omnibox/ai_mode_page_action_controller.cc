@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/omnibox/ai_mode_button_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -22,11 +23,13 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/models/image_model.h"
@@ -49,8 +52,17 @@ page_actions::PageActionController* GetPageActionController(
 
 void SetPageActionVisibility(
     page_actions::PageActionController& page_action_controller,
+    OmniboxClient* client,
+    base::OnceCallback<void(const gfx::Image&)> on_favicon_fetched,
     bool visible) {
-  if (visible) {
+  if (!visible) {
+    page_action_controller.HideSuggestionChip(kActionAiMode);
+    page_action_controller.Hide(kActionAiMode);
+    return;
+  }
+
+  const auto& config = ai_mode_button_config::GetCurrentAiModeButtonConfig();
+  if (config.id == SearchEngineType::SEARCH_ENGINE_GOOGLE) {
     page_action_controller.OverrideImage(
         kActionAiMode,
         ui::ImageModel::FromImageGenerator(
@@ -65,14 +77,25 @@ void SetPageActionVisibility(
             gfx::Size(
                 GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
                 GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize))));
-    page_action_controller.Show(kActionAiMode);
-    page_action_controller.ShowSuggestionChip(kActionAiMode,
-                                              {.should_animate = false});
-    return;
+
+  } else {
+    GURL favicon_url(config.favicon_url);
+    gfx::Image image = client->GetFaviconForIconUrl(
+        favicon_url, std::move(on_favicon_fetched));
+    if (image.IsEmpty()) {
+      // `image` will be empty if not cached. Hide this page action until it's
+      // returned async.
+      page_action_controller.HideSuggestionChip(kActionAiMode);
+      page_action_controller.Hide(kActionAiMode);
+      return;
+    }
+    page_action_controller.OverrideImage(kActionAiMode,
+                                         ui::ImageModel::FromImage(image));
   }
 
-  page_action_controller.HideSuggestionChip(kActionAiMode);
-  page_action_controller.Hide(kActionAiMode);
+  page_action_controller.Show(kActionAiMode);
+  page_action_controller.ShowSuggestionChip(kActionAiMode,
+                                            {.should_animate = false});
 }
 
 }  // namespace
@@ -223,7 +246,26 @@ void AiModePageActionController::UpdatePageAction() {
     NotifyOmniboxTriggeredFeatureService(
         *location_bar_view_->GetOmniboxController());
   }
-  SetPageActionVisibility(*page_action_controller, is_visible);
+  SetPageActionVisibility(
+      *page_action_controller,
+      location_bar_view_->GetOmniboxController()->client(),
+      base::BindOnce(&AiModePageActionController::OnFaviconFetched,
+                     weak_factory_.GetWeakPtr()),
+      is_visible);
+}
+
+void AiModePageActionController::OnFaviconFetched(const gfx::Image& favicon) {
+  if (favicon.IsEmpty() ||
+      !ShouldShowPageAction(base::to_address(profile_), *location_bar_view_)) {
+    return;
+  }
+  if (auto* page_action_controller = GetPageActionController(*bwi_)) {
+    page_action_controller->OverrideImage(kActionAiMode,
+                                          ui::ImageModel::FromImage(favicon));
+    page_action_controller->Show(kActionAiMode);
+    page_action_controller->ShowSuggestionChip(kActionAiMode,
+                                               {.should_animate = false});
+  }
 }
 
 }  // namespace omnibox

@@ -731,6 +731,13 @@ gfx::Image ChromeOmniboxClient::GetFaviconForKeywordSearchProvider(
                                              std::move(on_favicon_fetched));
 }
 
+gfx::Image ChromeOmniboxClient::GetFaviconForIconUrl(
+    const GURL& icon_url,
+    FaviconFetchedCallback on_favicon_fetched) {
+  return favicon_cache_.GetFaviconForIconUrl(icon_url,
+                                             std::move(on_favicon_fetched));
+}
+
 void ChromeOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,
                                         bool user_input_in_progress,
                                         const std::u16string& user_text,
