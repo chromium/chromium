@@ -39,6 +39,9 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.url.GURL;
+
+import java.util.function.BiConsumer;
 
 /** Abstract class for Tab Bottom Sheet toolbars. */
 @NullMarked
@@ -52,6 +55,7 @@ public class TabBottomSheetWebUi {
     private final WebViewResizingHelper mWebViewResizingHelper;
     private final @ColorInt int mBackgroundColor;
     private final @CoBrowseContainerType int mContainerType;
+    private final @Nullable BiConsumer<GURL, String> mEphemeralTabOpener;
 
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
@@ -70,7 +74,8 @@ public class TabBottomSheetWebUi {
             ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
             @ColorInt int backgroundColor,
-            @CoBrowseContainerType int containerType) {
+            @CoBrowseContainerType int containerType,
+            @Nullable BiConsumer<GURL, String> ephemeralTabOpener) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
@@ -78,6 +83,7 @@ public class TabBottomSheetWebUi {
                 new SelectionDropdownMenuDelegateWrapper(selectionDropdownMenuDelegate);
         mBackgroundColor = backgroundColor;
         mContainerType = containerType;
+        mEphemeralTabOpener = ephemeralTabOpener;
         mWebViewResizingHelper =
                 new WebViewResizingHelper(containerView, windowAndroid, backgroundColor);
     }
@@ -160,7 +166,8 @@ public class TabBottomSheetWebUi {
                         mWebContents,
                         mContainerType == CoBrowseContainerType.SIDE_PANEL
                                 ? BrowserIntentUtils.CHROME_LAUNCHER_ACTIVITY_CLASS_NAME
-                                : null);
+                                : null,
+                        mEphemeralTabOpener);
         mContextMenuPopulatorFactory.setItemDelegate(itemDelegate);
         ensureThinWebViewCreated();
         if (mThinWebView != null) {

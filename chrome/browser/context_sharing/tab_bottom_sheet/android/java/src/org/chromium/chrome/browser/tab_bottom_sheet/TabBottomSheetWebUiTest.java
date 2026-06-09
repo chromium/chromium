@@ -55,8 +55,10 @@ import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelega
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
+import java.util.function.BiConsumer;
 
 /** Unit tests for {@link TabBottomSheetWebUi}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -444,6 +446,50 @@ public class TabBottomSheetWebUiTest {
         verify(mMockContentView, times(1)).clearFocus();
     }
 
+    @Test
+    public void testSetWebContents_ItemDelegate_EphemeralTabOpener() {
+        ContextMenuPopulatorFactory mockFactory = mock(ContextMenuPopulatorFactory.class);
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        View containerView =
+                LayoutInflater.from(context)
+                        .inflate(
+                                org.chromium.chrome.browser.context_sharing.R.layout
+                                        .tab_bottom_sheet,
+                                null);
+        @SuppressWarnings("unchecked")
+        BiConsumer<GURL, String> mockOpener = mock(BiConsumer.class);
+
+        TabBottomSheetWebUi webUi =
+                new TestTabBottomSheetWebUi(
+                        context,
+                        containerView,
+                        mWindowAndroid,
+                        mockFactory,
+                        mSelectionDropdownMenuDelegate,
+                        Color.WHITE,
+                        CoBrowseContainerType.SIDE_PANEL,
+                        mockOpener,
+                        mMockContentView);
+        webUi.setWebContents(mWebContents, true);
+
+        ArgumentCaptor<ContextMenuItemDelegate> captor =
+                ArgumentCaptor.forClass(ContextMenuItemDelegate.class);
+        verify(mockFactory).setItemDelegate(captor.capture());
+
+        ContextMenuItemDelegate delegate = captor.getValue();
+        assertNotNull(delegate);
+        assertTrue(delegate instanceof ThinWebViewContextMenuItemDelegate);
+
+        GURL testUrl = new GURL("https://example.com/image.jpg");
+        String testTitle = "Test Image";
+        delegate.onOpenInEphemeralTab(testUrl, testTitle);
+
+        verify(mockOpener).accept(eq(testUrl), eq(testTitle));
+    }
+
     private static class TestTabBottomSheetWebUi extends TabBottomSheetWebUi {
         private final ContentView mMockContentView;
 
@@ -475,6 +521,28 @@ public class TabBottomSheetWebUiTest {
                 int backgroundColor,
                 ContentView mockContentView,
                 @CoBrowseContainerType int containerType) {
+            this(
+                    context,
+                    containerView,
+                    windowAndroid,
+                    contextMenuPopulatorFactory,
+                    selectionDropdownMenuDelegate,
+                    backgroundColor,
+                    containerType,
+                    /* ephemeralTabOpener= */ null,
+                    mockContentView);
+        }
+
+        TestTabBottomSheetWebUi(
+                Context context,
+                View containerView,
+                WindowAndroid windowAndroid,
+                ContextMenuPopulatorFactory contextMenuPopulatorFactory,
+                SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
+                int backgroundColor,
+                @CoBrowseContainerType int containerType,
+                BiConsumer<GURL, String> ephemeralTabOpener,
+                ContentView mockContentView) {
             super(
                     context,
                     containerView,
@@ -482,7 +550,8 @@ public class TabBottomSheetWebUiTest {
                     contextMenuPopulatorFactory,
                     selectionDropdownMenuDelegate,
                     backgroundColor,
-                    containerType);
+                    containerType,
+                    ephemeralTabOpener);
             mMockContentView = mockContentView;
         }
 

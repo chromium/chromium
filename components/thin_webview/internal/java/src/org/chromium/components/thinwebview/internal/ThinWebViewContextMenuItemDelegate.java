@@ -23,15 +23,18 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.function.BiConsumer;
+
 /** Handles the context menu item functionality in WebView. */
 @NullMarked
 public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelegate {
     private final WebContents mWebContents;
     private final @Nullable String mIntentTargetClassName;
+    private final @Nullable BiConsumer<GURL, String> mEphemeralTabOpener;
 
     /** Builds a {@link ThinWebViewContextMenuItemDelegate} instance. */
     public ThinWebViewContextMenuItemDelegate(WebContents webContents) {
-        this(webContents, /* intentTargetClassName= */ null);
+        this(webContents, /* intentTargetClassName= */ null, /* ephemeralTabOpener= */ null);
     }
 
     /**
@@ -41,11 +44,15 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
      * @param intentTargetClassName The fully qualified class name used as the explicit component
      *     for Intents fired by this delegate. Required for environments where the window's activity
      *     context might be null.
+     * @param ephemeralTabOpener A callback to open a URL in an ephemeral tab, if supported.
      */
     public ThinWebViewContextMenuItemDelegate(
-            WebContents webContents, @Nullable String intentTargetClassName) {
+            WebContents webContents,
+            @Nullable String intentTargetClassName,
+            @Nullable BiConsumer<GURL, String> ephemeralTabOpener) {
         mWebContents = webContents;
         mIntentTargetClassName = intentTargetClassName;
+        mEphemeralTabOpener = ephemeralTabOpener;
     }
 
     @Override
@@ -174,11 +181,17 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
 
     @Override
     public void onOpenInEphemeralTab(GURL url, String title) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setData(Uri.parse(url.getSpec()));
-        intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
-        safeStartActivity(intent);
+        if (!supportsOpenInEphemeralTab()) return;
+
+        if (mEphemeralTabOpener != null) {
+            mEphemeralTabOpener.accept(url, title);
+        } else {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse(url.getSpec()));
+            intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+            safeStartActivity(intent);
+        }
     }
 
     private void safeStartActivity(Intent intent) {
