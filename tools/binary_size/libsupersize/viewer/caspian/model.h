@@ -272,6 +272,9 @@ class DeltaSymbol : public BaseSymbol {
 
   DiffStatus GetDiffStatus() const override;
 
+  const Symbol* Before() const { return before_; }
+  const Symbol* After() const { return after_; }
+
  private:
   const Symbol* before_ = nullptr;
   const Symbol* after_ = nullptr;

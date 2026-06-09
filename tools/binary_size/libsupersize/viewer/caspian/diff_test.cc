@@ -358,5 +358,27 @@ TEST_F(DiffTest, TestChangedPathsNamedStringLiteralsDifferentSize) {
   EXPECT_EQ(10, SumOfSymbolSizes(diff));
 }
 
+TEST_F(DiffTest, TestAliasesCount) {
+  MakeAliasGroup(size_info1_.get(), 2, 5);
+  MakeAliasGroup(size_info2_.get(), 2, 5);
+
+  DeltaSizeInfo diff = Diff(size_info1_.get(), size_info2_.get(),
+                            &removed_sources_, &added_sources_);
+
+  int checked_symbols = 0;
+  for (const DeltaSymbol& sym : diff.delta_symbols) {
+    if (sym.Name().find("30") != std::string_view::npos ||
+        sym.Name().find("40") != std::string_view::npos ||
+        sym.Name().find("50") != std::string_view::npos) {
+      ASSERT_NE(nullptr, sym.Before());
+      ASSERT_NE(nullptr, sym.After());
+      EXPECT_EQ(3, sym.Before()->NumAliases());
+      EXPECT_EQ(3, sym.After()->NumAliases());
+      checked_symbols++;
+    }
+  }
+  EXPECT_EQ(3, checked_symbols);
+}
+
 }  // namespace
 }  // namespace caspian

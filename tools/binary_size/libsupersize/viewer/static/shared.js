@@ -35,6 +35,10 @@
  * @property {number|undefined} address - Start address of this node.
  * @property {number} flags - A bit field to store symbol properties.
  * @property {number} numAliases - Number of aliases for the symbol.
+ * @property {number|undefined} beforeNumAliases - Diff mode only: Number of aliases in
+ *     "before" binary.
+ * @property {number|undefined} afterNumAliases - Diff mode only: Number of aliases in "after"
+ *      binary.
  * @property {string} type - Type of this node. If this node has children, the
  *     string may have a second character to denote the most common child.
  * @property {_DIFF_STATUSES} diffStatus

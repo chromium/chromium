@@ -698,8 +698,14 @@ function _makeSizeTextGetter() {
         descriptionToks.push(`(${before} → ${after})`);  // '→' is '\u2192'.
       }
       descriptionToks.push(`${formatNumber(bytes)} bytes`);
-      if (node.numAliases && node.numAliases > 1) {
-        descriptionToks.push(`for 1 of ${node.numAliases} aliases`);
+      const beforeNumAliases = node.beforeNumAliases || node.numAliases || 1;
+      const afterNumAliases = node.afterNumAliases || node.numAliases || 1;
+      if (beforeNumAliases > 1 || afterNumAliases > 1) {
+        if (beforeNumAliases === afterNumAliases) {
+          descriptionToks.push(`for 1 of ${afterNumAliases} aliases`);
+        } else {
+          descriptionToks.push(`for 1 of ${beforeNumAliases} → ${afterNumAliases} aliases`);
+        }
       }
 
       return {
