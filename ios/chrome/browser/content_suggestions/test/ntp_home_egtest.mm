@@ -1133,6 +1133,10 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
         @"MostVisitedTilesCollectionView goes through its next layout pass "
         @"based on the actual width of the new tab page content.");
   }
+  if (!base::ios::IsRunningOnIOS26OrLater()) {
+    // TODO(crbug.com/521678721): test flaky on iOS18.
+    EARL_GREY_TEST_SKIPPED(@"Flaky test");
+  }
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
   GREYWaitForAppToIdle(@"App failed to idle");
   [self
