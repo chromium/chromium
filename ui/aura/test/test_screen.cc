@@ -166,6 +166,10 @@ gfx::NativeWindow TestScreen::GetWindowForPoint(Window* window,
   }
 
   for (Window* child : base::Reversed(window->children())) {
+    if (child->is_destroying()) {
+      continue;
+    }
+
     gfx::Point point_in_child_coords(local_point);
     Window::ConvertPointToTarget(window, child, &point_in_child_coords);
     Window* match = GetWindowForPoint(child, point_in_child_coords);

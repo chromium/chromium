@@ -733,6 +733,7 @@ void Window::MoveCursorTo(const gfx::Point& point_in_window) {
 }
 
 gfx::NativeCursor Window::GetCursor(const gfx::Point& point) const {
+  DUMP_WILL_BE_CHECK(!is_destroyed_);
   return delegate_ ? delegate_->GetCursor(point) : gfx::NativeCursor{};
 }
 
@@ -792,6 +793,8 @@ bool Window::ContainsPoint(const gfx::Point& local_point) const {
 }
 
 Window* Window::GetEventHandlerForPoint(const gfx::Point& local_point) {
+  DUMP_WILL_BE_CHECK(!is_destroyed_);
+
   if (!IsVisible())
     return nullptr;
 
@@ -865,6 +868,12 @@ bool Window::HasFocus() const {
 bool Window::CanFocus() const {
   if (IsRootWindow())
     return IsVisible();
+
+  if (is_destroying_) {
+    return false;
+  }
+
+  DUMP_WILL_BE_CHECK(!is_destroyed_);
 
   // NOTE: as part of focusing the window the ActivationClient may make the
   // window visible (by way of making a hidden ancestor visible). For this
@@ -942,6 +951,8 @@ void* Window::GetNativeWindowProperty(const char* key) const {
 
 void Window::OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                         float new_device_scale_factor) {
+  DUMP_WILL_BE_CHECK(!is_destroying_);
+
   if (!IsRootWindow() && last_device_scale_factor_ != new_device_scale_factor &&
       IsEmbeddingExternalContent()) {
     last_device_scale_factor_ = new_device_scale_factor;
@@ -958,6 +969,7 @@ void Window::OnDeviceScaleFactorChanged(float old_device_scale_factor,
 }
 
 void Window::UpdateVisualState() {
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   if (delegate_)
     delegate_->UpdateVisualState();
 }
@@ -1079,6 +1091,8 @@ void Window::SetEmbedFrameSinkIdImpl(const viz::FrameSinkId& frame_sink_id) {
 }
 
 bool Window::HitTest(const gfx::Point& local_point) {
+  DUMP_WILL_BE_CHECK(!is_destroyed_);
+
   gfx::Rect local_bounds(bounds().size());
   if (!delegate_ || !delegate_->HasHitTestMask())
     return local_bounds.Contains(local_point);
@@ -1171,6 +1185,7 @@ void Window::SchedulePaint() {
 }
 
 void Window::Paint(const ui::PaintContext& context) {
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   if (delegate_)
     delegate_->OnPaint(context);
 }
@@ -1534,6 +1549,7 @@ void Window::UntrackOcclusionState() {
 }
 
 bool Window::RequiresDoubleTapGestureEvents() const {
+  DUMP_WILL_BE_CHECK(!is_destroyed_);
   return delegate_ && delegate_->RequiresDoubleTapGestureEvents();
 }
 
