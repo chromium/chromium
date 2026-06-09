@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
@@ -22,7 +23,9 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -209,6 +212,93 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest, EscPressed) {
   widget->OnKeyEvent(&event);
 
   EXPECT_FALSE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
+                       AllSubAppIconsCorrectlyMasked) {
+  std::vector<std::unique_ptr<WebAppInstallInfo>> sub_apps;
+
+  const GeneratedIconsInfo any_red(IconPurpose::ANY, {icon_size::k32},
+                                   {SK_ColorRED});
+  const GeneratedIconsInfo mask_red(IconPurpose::MASKABLE, {icon_size::k32},
+                                    {SK_ColorRED});
+
+  const GeneratedIconsInfo any_green(IconPurpose::ANY, {icon_size::k32},
+                                     {SK_ColorGREEN});
+  const GeneratedIconsInfo mask_green(IconPurpose::MASKABLE, {icon_size::k32},
+                                      {SK_ColorGREEN});
+
+  const GeneratedIconsInfo any_blue(IconPurpose::ANY, {icon_size::k32},
+                                    {SK_ColorBLUE});
+  const GeneratedIconsInfo mask_blue(IconPurpose::MASKABLE, {icon_size::k32},
+                                     {SK_ColorBLUE});
+
+  std::unique_ptr<WebAppInstallInfo> sub_app_1 =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(kSubAppStartURL));
+  sub_app_1->title = kSubAppName1;
+  web_app::AddIconsToWebAppInstallInfo(sub_app_1.get(), GURL(kSubAppIconURL),
+                                       {any_red, mask_red});
+
+  std::unique_ptr<WebAppInstallInfo> sub_app_2 =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(kSubAppStartURL));
+  sub_app_2->title = kSubAppName2;
+  web_app::AddIconsToWebAppInstallInfo(sub_app_2.get(), GURL(kSubAppIconURL),
+                                       {any_green, mask_green});
+
+  std::unique_ptr<WebAppInstallInfo> sub_app_3 =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(kSubAppStartURL));
+  sub_app_3->title = kSubAppName3;
+  web_app::AddIconsToWebAppInstallInfo(sub_app_3.get(), GURL(kSubAppIconURL),
+                                       {any_blue, mask_blue});
+
+  sub_apps.emplace_back(std::move(sub_app_1));
+  sub_apps.emplace_back(std::move(sub_app_2));
+  sub_apps.emplace_back(std::move(sub_app_3));
+
+  const webapps::AppId parent_app_id = web_app::GenerateAppIdFromManifestId(
+      webapps::ManifestId(GURL(kParentAppScope)));
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "SubAppsInstallDialog");
+  ShowSubAppsInstallDialog(browser()->tab_strip_model()->GetActiveWebContents(),
+                           sub_apps, kParentAppName, parent_app_id,
+                           base::DoNothing());
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+
+  // Wait for the dialog to have completed masking and all children views
+  // to have been constructed.
+  base::RunLoop().RunUntilIdle();
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_icons;
+  widget->GetContentsView()->GetViewsInGroup(
+      std::to_underlying(DialogViewIDForTesting::SUB_APP_ICON), &sub_app_icons);
+  ASSERT_EQ(sub_app_icons.size(), 3u);
+
+  views::ImageView* icon_view_1 =
+      views::AsViewClass<views::ImageView>(sub_app_icons[0]);
+  ASSERT_TRUE(icon_view_1);
+  views::ImageView* icon_view_2 =
+      views::AsViewClass<views::ImageView>(sub_app_icons[1]);
+  ASSERT_TRUE(icon_view_2);
+  views::ImageView* icon_view_3 =
+      views::AsViewClass<views::ImageView>(sub_app_icons[2]);
+  ASSERT_TRUE(icon_view_3);
+
+  ASSERT_FALSE(icon_view_1->GetImageModel().IsEmpty());
+  ASSERT_FALSE(icon_view_2->GetImageModel().IsEmpty());
+  ASSERT_FALSE(icon_view_3->GetImageModel().IsEmpty());
+
+  SkBitmap bitmap_1 =
+      icon_view_1->GetImage().GetRepresentation(1.0f).GetBitmap();
+  SkBitmap bitmap_2 =
+      icon_view_2->GetImage().GetRepresentation(1.0f).GetBitmap();
+  SkBitmap bitmap_3 =
+      icon_view_3->GetImage().GetRepresentation(1.0f).GetBitmap();
+
+  EXPECT_EQ(bitmap_1.getColor(16, 16), SK_ColorRED);
+  EXPECT_EQ(bitmap_2.getColor(16, 16), SK_ColorGREEN);
+  EXPECT_EQ(bitmap_3.getColor(16, 16), SK_ColorBLUE);
+
+  widget->CloseNow();
 }
 
 }  // namespace

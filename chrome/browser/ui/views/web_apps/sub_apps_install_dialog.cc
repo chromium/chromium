@@ -172,8 +172,8 @@ class SubAppsListView : public views::ScrollView {
             views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL)));
 
     // Add a box view for each sub app containing the app's icon and title.
+    size_t icon_index = 0;
     for (const std::unique_ptr<WebAppInstallInfo>& sub_app : sub_apps) {
-      size_t icon_index = 0;
       auto* box =
           sub_app_list->AddChildView(std::make_unique<views::BoxLayoutView>());
       box->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
