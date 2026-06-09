@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals_page_handler.h"
 
 #include <memory>
+#include <optional>
+#include <sstream>
 #include <string>
 #include <utility>
 
@@ -14,13 +16,16 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chrome/browser/private_ai/private_ai_service.h"
+#include "chrome/browser/private_ai/private_ai_utils.h"
 #include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
+#include "components/optimization_guide/proto/model_execution.ostream.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/private_ai/client.h"
 #include "components/private_ai/common/private_ai_logger.h"
@@ -28,11 +33,50 @@
 #include "components/private_ai/content/private_ai_oak_session_driver_content.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_manager.h"
+#include "components/private_ai/proto/private_ai.ostream.h"
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace private_ai {
+
+namespace {
+
+template <typename ProtoResponseType>
+base::expected<ProtoResponseType, std::string> ParseResponse(
+    const base::expected<proto::PaicMessage, StatusCode>& response) {
+  if (!response.has_value()) {
+    return base::unexpected(
+        std::string("Error: ") +
+        base::NumberToString(static_cast<int>(response.error())));
+  }
+
+  if (!response->has_execute_response_ext()) {
+    std::ostringstream err;
+    err << "Error: no execute_response_ext: " << *response;
+    return base::unexpected(err.str());
+  }
+
+  const auto& execute_response = response->execute_response_ext();
+  if (execute_response.has_error_response()) {
+    std::ostringstream err;
+    err << "MES error_response: " << execute_response.error_response();
+    return base::unexpected(err.str());
+  }
+
+  auto parsed_response =
+      optimization_guide::ParsedAnyMetadata<ProtoResponseType>(
+          execute_response.response_metadata());
+  if (!parsed_response) {
+    std::ostringstream err;
+    err << "Error: failed to parse response metadata: " << execute_response;
+    return base::unexpected(err.str());
+  }
+
+  return *parsed_response;
+}
+
+}  // namespace
 
 PrivateAiInternalsPageHandler::PrivateAiInternalsPageHandler(
     phosphor::TokenManager* token_manager,
@@ -177,9 +221,9 @@ void PrivateAiInternalsPageHandler::SendZssRequest(
       optimization_guide::AnyWrapProto(zss_request);
 
   private_ai::proto::PaicMessage paic_message;
-  paic_message.set_feature_name(
-      private_ai::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION);
-  *paic_message.mutable_execute_request_ext() = execute_request;
+  PopulatePaicMessage(
+      private_ai::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
+      execute_request, &paic_message);
 
   webui_client_->SendPaicRequest(
       private_ai::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
@@ -188,27 +232,12 @@ void PrivateAiInternalsPageHandler::SendZssRequest(
           [](SendRequestCallback callback,
              base::expected<private_ai::proto::PaicMessage,
                             private_ai::StatusCode> response) {
-            auto result = private_ai_internals::mojom::PrivateAiResponse::New();
-            if (!response.has_value()) {
-              result->error =
-                  std::string("Error: ") +
-                  base::NumberToString(static_cast<int>(response.error()));
-              std::move(callback).Run(std::move(result));
-              return;
-            }
-
-            if (!response->has_execute_response_ext()) {
-              result->error = "Error: no execute_response_ext";
-              std::move(callback).Run(std::move(result));
-              return;
-            }
-
-            auto zss_response = optimization_guide::ParsedAnyMetadata<
+            auto zss_response = ParseResponse<
                 optimization_guide::proto::ZeroStateSuggestionsResponse>(
-                response->execute_response_ext().response_metadata());
-
-            if (!zss_response) {
-              result->error = "Error: failed to parse zss response";
+                response);
+            auto result = private_ai_internals::mojom::PrivateAiResponse::New();
+            if (!zss_response.has_value()) {
+              result->error = std::move(zss_response.error());
               std::move(callback).Run(std::move(result));
               return;
             }
@@ -268,9 +297,8 @@ void PrivateAiInternalsPageHandler::SendFormsAiRequest(
       optimization_guide::AnyWrapProto(forms_ai_request);
 
   private_ai::proto::PaicMessage paic_message;
-  paic_message.set_feature_name(
-      private_ai::proto::FEATURE_NAME_CHROME_FORMS_AI);
-  *paic_message.mutable_execute_request_ext() = execute_request;
+  PopulatePaicMessage(private_ai::proto::FEATURE_NAME_CHROME_FORMS_AI,
+                      execute_request, &paic_message);
 
   webui_client_->SendPaicRequest(
       private_ai::proto::FEATURE_NAME_CHROME_FORMS_AI, paic_message,
@@ -278,27 +306,11 @@ void PrivateAiInternalsPageHandler::SendFormsAiRequest(
           [](SendRequestCallback callback,
              base::expected<private_ai::proto::PaicMessage,
                             private_ai::StatusCode> response) {
+            auto forms_ai_response = ParseResponse<
+                optimization_guide::proto::AutofillAiTypeResponse>(response);
             auto result = private_ai_internals::mojom::PrivateAiResponse::New();
-            if (!response.has_value()) {
-              result->error =
-                  std::string("Error: ") +
-                  base::NumberToString(static_cast<int>(response.error()));
-              std::move(callback).Run(std::move(result));
-              return;
-            }
-
-            if (!response->has_execute_response_ext()) {
-              result->error = "Error: no execute_response_ext";
-              std::move(callback).Run(std::move(result));
-              return;
-            }
-
-            auto forms_ai_response = optimization_guide::ParsedAnyMetadata<
-                optimization_guide::proto::AutofillAiTypeResponse>(
-                response->execute_response_ext().response_metadata());
-
-            if (!forms_ai_response) {
-              result->error = "Error: failed to parse forms ai response";
+            if (!forms_ai_response.has_value()) {
+              result->error = std::move(forms_ai_response.error());
               std::move(callback).Run(std::move(result));
               return;
             }
@@ -352,9 +364,8 @@ void PrivateAiInternalsPageHandler::SendContextualCueRequest(
       optimization_guide::AnyWrapProto(contextual_cue_request);
 
   private_ai::proto::PaicMessage paic_message;
-  paic_message.set_feature_name(
-      private_ai::proto::FEATURE_NAME_CHROME_CONTEXTUAL_CUEING);
-  *paic_message.mutable_execute_request_ext() = execute_request;
+  PopulatePaicMessage(private_ai::proto::FEATURE_NAME_CHROME_CONTEXTUAL_CUEING,
+                      execute_request, &paic_message);
 
   webui_client_->SendPaicRequest(
       private_ai::proto::FEATURE_NAME_CHROME_CONTEXTUAL_CUEING, paic_message,
@@ -362,28 +373,11 @@ void PrivateAiInternalsPageHandler::SendContextualCueRequest(
           [](SendRequestCallback callback,
              base::expected<private_ai::proto::PaicMessage,
                             private_ai::StatusCode> response) {
+            auto contextual_cue_response = ParseResponse<
+                optimization_guide::proto::ContextualCueingResponse>(response);
             auto result = private_ai_internals::mojom::PrivateAiResponse::New();
-            if (!response.has_value()) {
-              result->error =
-                  std::string("Error: ") +
-                  base::NumberToString(static_cast<int>(response.error()));
-              std::move(callback).Run(std::move(result));
-              return;
-            }
-
-            if (!response->has_execute_response_ext()) {
-              result->error = "Error: no execute_response_ext";
-              std::move(callback).Run(std::move(result));
-              return;
-            }
-
-            auto contextual_cue_response =
-                optimization_guide::ParsedAnyMetadata<
-                    optimization_guide::proto::ContextualCueingResponse>(
-                    response->execute_response_ext().response_metadata());
-
-            if (!contextual_cue_response) {
-              result->error = "Error: failed to parse contextual cue response";
+            if (!contextual_cue_response.has_value()) {
+              result->error = std::move(contextual_cue_response.error());
               std::move(callback).Run(std::move(result));
               return;
             }

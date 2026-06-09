@@ -6,11 +6,10 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "base/types/expected.h"
+#include "chrome/browser/private_ai/private_ai_utils.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -20,7 +19,6 @@
 #include "components/private_ai/client.h"
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/status_code.h"
-#include "components/variations/variations_ids_provider.h"
 
 namespace optimization_guide {
 namespace {
@@ -80,30 +78,9 @@ void PrivateAiModelExecutionFetcher::ExecuteModel(
   auto private_ai_feature_name = ToPrivateAiFeatureName(feature);
 
   private_ai::proto::PaicMessage paic_message;
-  paic_message.set_feature_name(private_ai_feature_name);
-  if (base::FeatureList::IsEnabled(
-          features::internal::kPrivateExecuteRequest)) {
-    auto* private_execute_request =
-        paic_message.mutable_private_execute_request_ext();
-    *private_execute_request->mutable_request() =
-        ToExecuteRequest(feature, request_metadata);
-
-    const std::set<variations::IDCollectionKey> web_properties_keys{
-        variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
-        variations::GOOGLE_WEB_PROPERTIES_FIRST_PARTY,
-        variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
-        variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY,
-    };
-    std::vector<variations::VariationID> variations =
-        variations::VariationsIdsProvider::GetInstance()->GetVariationsVector(
-            web_properties_keys);
-    for (auto variation : variations) {
-      private_execute_request->add_variations(variation);
-    }
-  } else {
-    *paic_message.mutable_execute_request_ext() =
-        ToExecuteRequest(feature, request_metadata);
-  }
+  private_ai::PopulatePaicMessage(private_ai_feature_name,
+                                  ToExecuteRequest(feature, request_metadata),
+                                  &paic_message);
 
   private_ai::Client::RequestOptions options;
   if (timeout) {

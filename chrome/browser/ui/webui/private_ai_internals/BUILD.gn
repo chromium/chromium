@@ -22,9 +22,11 @@ source_set("private_ai_internals") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/private_ai",
     "//components/private_ai:proto",
+    "//components/private_ai:proto_extras",
     "//components/private_ai/common",
     "//components/private_ai/content",
     "//components/private_ai/phosphor",
+    "//components/variations",
     "//content/public/browser",
     "//ui/webui",
   ]
