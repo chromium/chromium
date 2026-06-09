@@ -1100,7 +1100,7 @@ void FormFiller::FillOrPreviewForm(
   if (action_persistence == mojom::ActionPersistence::kFill) {
     form_structure.set_last_filling_timestamp(base::TimeTicks::Now());
 
-    AppendFillLogEvents(form, form_structure, autofill_trigger_field,
+    AppendFillLogEvents(form_structure, autofill_trigger_field,
                         safe_filled_field_ids, skip_reasons, filling_payload,
                         refill_options.is_refill());
 
@@ -1541,9 +1541,8 @@ void FormFiller::UpdateCacheOnFill(
 }
 
 void FormFiller::AppendFillLogEvents(
-    const FormData& form,
-    FormStructure& form_structure,
-    AutofillField& trigger_autofill_field,
+    FormStructure& form,
+    AutofillField& trigger_field,
     const base::flat_set<FieldGlobalId>& safe_field_ids,
     const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
         skip_reasons,
@@ -1560,14 +1559,12 @@ void FormFiller::AppendFillLogEvents(
           .data_type = GetFillDataTypeFromFillingPayload(filling_payload),
           .associated_country_code = country_code,
           .timestamp = base::Time::Now()};
-  trigger_autofill_field.AppendLogEventIfNotRepeated(
-      trigger_fill_field_log_event);
+  trigger_field.AppendLogEventIfNotRepeated(trigger_fill_field_log_event);
   FillEventId fill_event_id = trigger_fill_field_log_event.fill_event_id;
 
-  for (auto [form_field, field] :
-       base::zip(form.fields(), form_structure.fields())) {
+  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
     const FieldGlobalId field_id = field->global_id();
-    const bool has_value_before = !form_field.value().empty();
+    const bool has_value_before = !field->value().empty();
     const FieldFillingSkipReason skip_reason =
         skip_reasons.at(field_id).empty() ? FieldFillingSkipReason::kNotSkipped
                                           : *skip_reasons.at(field_id).begin();

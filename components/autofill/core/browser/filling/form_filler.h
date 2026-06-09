@@ -309,12 +309,11 @@ class FormFiller {
       const absl::flat_hash_map<FieldGlobalId, FieldType>& filled_field_types,
       const AugmentedFillingPayload& augmented_filling_payload) const;
 
-  // Appends TriggerFillFieldLogEvent and FillFieldLogEvents to the relevant
-  // fields in the `form_structure` if there was a filling operation.
+  // Appends `TriggerFillFieldLogEvent` and `FillFieldLogEvents` to the relevant
+  // fields in the `form` if there was a filling operation.
   void AppendFillLogEvents(
-      const FormData& form,
-      FormStructure& form_structure,
-      AutofillField& trigger_autofill_field,
+      FormStructure& form,
+      AutofillField& trigger_field,
       const base::flat_set<FieldGlobalId>& safe_field_ids,
       const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
           skip_reasons,
