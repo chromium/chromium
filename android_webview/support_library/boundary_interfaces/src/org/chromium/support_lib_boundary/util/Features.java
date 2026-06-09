@@ -490,4 +490,12 @@ public class Features {
     // WebSettingsCompat.setDownloadFaviconsEnabled
     // WebSettingsCompat.getDownloadFaviconsEnabled
     public static final String DOWNLOAD_FAVICONS_ENABLED = "DOWNLOAD_FAVICONS_ENABLED";
+
+    // Profile.getHttpCache
+    // HttpCache.getDefaultQuotaBytes
+    // HttpCache.isUsingDefaultQuota
+    // HttpCache.useDefaultQuota
+    // HttpCache.getQuotaBytes
+    // HttpCache.setQuotaBytes
+    public static final String HTTP_CACHE_MANAGER = "HTTP_CACHE_MANAGER";
 }

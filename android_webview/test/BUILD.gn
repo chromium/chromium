@@ -489,6 +489,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/GetTitleTest.java",
     "../javatests/src/org/chromium/android_webview/test/HeapProfilingTest.java",
     "../javatests/src/org/chromium/android_webview/test/HttpAuthDatabaseTest.java",
+    "../javatests/src/org/chromium/android_webview/test/HttpCacheQuotaTest.java",
     "../javatests/src/org/chromium/android_webview/test/JsJavaInteractionTest.java",
     "../javatests/src/org/chromium/android_webview/test/KeySystemTest.java",
     "../javatests/src/org/chromium/android_webview/test/LoadDataWithBaseUrlTest.java",

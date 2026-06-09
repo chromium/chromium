@@ -24,6 +24,7 @@
 #include "android_webview/browser/aw_devtools_manager_delegate.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/aw_http_auth_handler.h"
+#include "android_webview/browser/aw_http_cache_manager.h"
 #include "android_webview/browser/aw_origin_matched_header.h"
 #include "android_webview/browser/aw_policy_blocklist_service_factory.h"
 #include "android_webview/browser/aw_settings.h"
@@ -530,11 +531,17 @@ AwContentBrowserClient::GetGeneratedCodeCacheSettings(
   // are two code caches that both use this value, so we pass half the the HTTP
   // cache size limit to keep the total cache usage to roughly 2x the HTTP cache
   // limit.
-  int code_cache_limit = 0.5 * GetHttpCacheSize();
+  int http_cache_quota = GetDefaultHttpCacheSize();
+  if (base::FeatureList::IsEnabled(features::kWebViewHttpCacheQuotaApi) &&
+      features::kWebViewHttpCacheQuotaApiAffectsCodeCache.Get()) {
+    http_cache_quota =
+        browser_context->GetHttpCacheManager()->GetQuotaBytes(/*env=*/nullptr);
+  }
+  int code_cache_limit = 0.5 * http_cache_quota;
   if (base::FeatureList::IsEnabled(
           features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota)) {
-    code_cache_limit = features::kWebViewCodeCacheSizeLimitMultiplier.Get() *
-                       GetHttpCacheSize();
+    code_cache_limit =
+        features::kWebViewCodeCacheSizeLimitMultiplier.Get() * http_cache_quota;
   }
 
   return content::GeneratedCodeCacheSettings(

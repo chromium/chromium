@@ -10,6 +10,7 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/DropDataContentProviderBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ExecuteJavaScriptCallbackBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/FeatureFlagHolderBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/HttpCacheBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/IsomorphicObjectBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/JsReplyProxyBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/NavigationParametersBoundaryInterface.java",

@@ -21,6 +21,7 @@
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_download_manager_delegate.h"
+#include "android_webview/browser/aw_http_cache_manager.h"
 #include "android_webview/browser/aw_origin_matched_header.h"
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/browser/aw_quota_manager_bridge.h"
@@ -29,7 +30,6 @@
 #include "android_webview/browser/content_restriction/aw_content_restriction_manager_client.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
-#include "android_webview/browser/network_service/net_helpers.h"
 #include "android_webview/browser/prefetch/aw_prefetch_prefs.h"
 #include "android_webview/browser/prefetch/aw_preloading_utils.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
@@ -154,6 +154,8 @@ AwBrowserContext::AwBrowserContext(std::string name,
     cookie_manager_ = std::make_unique<CookieManager>(this);
   }
 
+  http_cache_manager_ = std::make_unique<AwHttpCacheManager>(this);
+
   SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);
 
   CreateUserPrefService();
@@ -246,6 +248,8 @@ void AwBrowserContext::RegisterPrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(ENABLE_MOJO_CDM)
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(registry);
 #endif
+
+  AwHttpCacheManager::RegisterProfilePrefs(registry);
 }
 
 void AwBrowserContext::CreateUserPrefService() {
@@ -262,6 +266,7 @@ void AwBrowserContext::CreateUserPrefService() {
   persistent_prefs.insert(cdm::prefs::kMediaDrmStorage);
   // Persisted to ensure client hints can be sent on next page load.
   persistent_prefs.insert(prefs::kClientHintsCachedPerOriginMap);
+  http_cache_manager_->InsertPersistentPrefs(&persistent_prefs);
 
   // Register to persist the latest prefetch info, ensuring `AwPrefetchManager`
   // can initialize `PrePrefetchService` with these as optimization hints for
@@ -299,6 +304,8 @@ void AwBrowserContext::CreateUserPrefService() {
     base::ScopedAllowBlocking scoped_allow_blocking;
     user_pref_service_ = pref_service_factory.Create(pref_registry);
   }
+
+  http_cache_manager_->RecordInitialQuotaHistogram();
 
   if (IsDefaultBrowserContext()) {
     MigrateLocalStatePrefs();
@@ -528,7 +535,8 @@ void AwBrowserContext::ConfigureNetworkContextParams(
 
   // HTTP cache
   context_params->http_cache_enabled = true;
-  context_params->http_cache_max_size = GetHttpCacheSize();
+  context_params->http_cache_max_size =
+      http_cache_manager_->GetQuotaBytes(/*env=*/nullptr);
 
   // WebView should persist and restore cookies between app sessions (including
   // session cookies).
@@ -612,6 +620,7 @@ AwBrowserContext::GetJavaBrowserContext() {
     obj_ = Java_AwBrowserContext_create(
         env, reinterpret_cast<intptr_t>(this), name_, relative_path_.value(),
         GetCookieManager()->GetJavaCookieManager(),
+        http_cache_manager_->GetJavaHttpCacheManager(),
         prefetch_manager_->GetJavaPrefetchManager(),
         preconnector_->GetJavaAwPreconnector(), IsDefaultBrowserContext());
   }

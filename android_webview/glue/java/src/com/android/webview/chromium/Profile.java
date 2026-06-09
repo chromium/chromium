@@ -15,6 +15,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import org.chromium.android_webview.AwBrowserContext;
+import org.chromium.android_webview.AwHttpCacheManager;
 import org.chromium.android_webview.AwOriginMatchedHeader;
 import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
@@ -347,5 +348,13 @@ public class Profile {
         } else {
             Log.w(TAG, "Profile.addQuicHints has been disabled.");
         }
+    }
+
+    /**
+     * @return The HTTP cache manager for the {@link Profile}
+     */
+    @UiThread
+    public AwHttpCacheManager getHttpCacheManager() {
+        return mBrowserContext.getHttpCacheManager();
     }
 }

@@ -111,4 +111,6 @@ public interface ProfileBoundaryInterface {
     void preconnect(String url);
 
     void addQuicHints(Set<String> origins);
+
+    /* HttpCacheBoundaryInterface */ InvocationHandler getHttpCache();
 }

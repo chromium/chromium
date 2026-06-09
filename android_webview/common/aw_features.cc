@@ -310,4 +310,52 @@ BASE_FEATURE(kWebViewNavigate, base::FEATURE_ENABLED_BY_DEFAULT);
 // Kill switch for WebSettings setShouldDownloadFavicons method.
 BASE_FEATURE(kWebViewSetDownloadFaviconsEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Partial kill switch for the HTTP Cache Quota API.
+//
+// When enabled, HTTP Cache quota can be configured by the WebView embedder.
+// When disabled, the setters are no-ops and defaults are restored.
+//
+// Note that getters still function regardless of whether this feature is
+// enabled, though they may not reflect any embedder configured values.
+BASE_FEATURE(kWebViewHttpCacheQuotaApi, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, the quota for the Default profile may be configured.
+const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiAllowForDefaultProfile{
+    &kWebViewHttpCacheQuotaApi, "AllowForDefaultProfile", true};
+
+// When enabled, the quota for a profile may be shrunk below the default quota.
+const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiAllowShrinking{
+    &kWebViewHttpCacheQuotaApi, "AllowShrinking", true};
+
+// When enabled, quota changes are propagated to the network service at runtime,
+// without having to wait for an app restart.
+const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiRuntimeUpdate{
+    &kWebViewHttpCacheQuotaApi, "RuntimeUpdate", true};
+
+// The minimum cache quota size that clamps any default or embedder-supplied
+// value. MUST be >= 1, and < 2**31.
+const base::FeatureParam<int> kWebViewHttpCacheQuotaApiMinimum{
+    &kWebViewHttpCacheQuotaApi, "Minimum", 5 * 1024 * 1024};
+
+// The maximum cache quota size that clamps any default or embedder-supplied
+// value. MUST be >= Minimum.
+//
+// 320MiB is chosen as the default because it mirrors the upper limits used in
+// both android_webview's and net's default quota logic, and greater values
+// haven't previously been tested in WebView.
+const base::FeatureParam<int> kWebViewHttpCacheQuotaApiMaximum{
+    &kWebViewHttpCacheQuotaApi, "Maximum", 320 * 1024 * 1024};
+
+// When enabled, the code cache quota is derived from the embedder-supplied HTTP
+// cache quota. When disabled, it is instead derived from the default HTTP cache
+// quota size.
+const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiAffectsCodeCache{
+    &kWebViewHttpCacheQuotaApi, "AffectsCodeCache", true};
+
+// When enabled, using the cache quota API will initialize the cache backend if
+// it has not already been initialized. This may trigger evictions more readily.
+const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiForceBackendInit{
+    &kWebViewHttpCacheQuotaApi, "ForceBackendInit", true};
+
 }  // namespace android_webview::features

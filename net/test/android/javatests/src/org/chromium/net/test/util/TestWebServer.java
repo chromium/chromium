@@ -286,6 +286,25 @@ public class TestWebServer extends WebServer {
     }
 
     /**
+     * Sets a response to be returned when a particular request path is passed in (with the option
+     * to specify additional headers).
+     *
+     * @param requestPath The path to respond to.
+     * @param responseBytes The response body that will be returned. This method does not take a
+     *     copy of the data, so you should do this in the caller if you plan to modify the byte
+     *     array contents after calling.
+     * @param responseHeaders Any additional headers that should be returned along with the response
+     *     (null is acceptable).
+     * @return The full URL including the path that should be requested to get the expected
+     *     response.
+     */
+    public String setResponse(
+            String requestPath, byte[] responseBytes, List<Pair<String, String>> responseHeaders) {
+        return setResponseInternal(
+                requestPath, responseBytes, responseHeaders, null, RESPONSE_STATUS_NORMAL);
+    }
+
+    /**
      * Sets a response to be returned when a particular request path is passed
      * in with the option to specify additional headers as well as an arbitrary action to be
      * executed on each request.

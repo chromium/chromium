@@ -441,4 +441,14 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
             mProfileImpl.addQuicHints(origins);
         }
     }
+
+    @NonNull
+    @Override
+    public /* HttpCacheBoundaryInterface */ InvocationHandler getHttpCache() {
+        recordApiCall(ApiCall.GET_HTTP_CACHE);
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.GET_HTTP_CACHE")) {
+            return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                    new SupportLibHttpCache(mProfileImpl.getHttpCacheManager()));
+        }
+    }
 }

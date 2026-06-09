@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -60,6 +61,7 @@ namespace android_webview {
 class AwBrowserContextIoThreadHandle;
 class AwContentRestrictionManagerClient;
 class AwContentRestrictionBlockedNavigationTracker;
+class AwHttpCacheManager;
 class AwQuotaManagerBridge;
 class CookieManager;
 
@@ -255,6 +257,9 @@ class AwBrowserContext : public content::BrowserContext,
   // Adds a QUIC hints for the given origins.
   void AddQuicHints(JNIEnv* env, const std::vector<GURL>& origins);
 
+  AwHttpCacheManager* GetHttpCacheManager() {
+    return http_cache_manager_.get();
+  }
   AwPrefetchManager& GetPrefetchManager() { return *prefetch_manager_.get(); }
 
  private:
@@ -305,6 +310,8 @@ class AwBrowserContext : public content::BrowserContext,
   //
   // In generally, use GetCookieManager() rather than using this directly.
   std::unique_ptr<CookieManager> cookie_manager_;
+
+  std::unique_ptr<AwHttpCacheManager> http_cache_manager_;
 
   std::unique_ptr<AwPrefetchManager> prefetch_manager_;
   std::unique_ptr<AwPreconnector> preconnector_;

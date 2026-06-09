@@ -8,6 +8,7 @@ import("//build/config/android/rules.gni")
 android_library("support_lib_glue_java") {
   sources = [
     "java/src/org/chromium/support_lib_glue/SupportLibDropDataContentProviderAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibHttpCache.java",
     "java/src/org/chromium/support_lib_glue/SupportLibJsReplyProxyAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibNavigationParametersAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibOriginMatchedHeader.java",

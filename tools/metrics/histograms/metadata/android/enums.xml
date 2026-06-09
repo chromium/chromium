@@ -747,6 +747,12 @@ chromium-metrics-reviews@google.com.
   <int value="194" label="WebViewCompat.navigate"/>
   <int value="195" label="WebSettingsCompat.setDownloadFaviconsEnabled"/>
   <int value="196" label="WebSettingsCompat.getDownloadFaviconsEnabled"/>
+  <int value="197" label="Profile.getHttpCache"/>
+  <int value="198" label="HttpCache.getDefaultQuotaBytes"/>
+  <int value="199" label="HttpCache.isUsingDefaultQuota"/>
+  <int value="200" label="HttpCache.useDefaultQuota"/>
+  <int value="201" label="HttpCache.getQuotaBytes"/>
+  <int value="202" label="HttpCache.setQuotaBytes"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
@@ -1200,6 +1206,16 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="NeitherNav Corrected"/>
   <int value="11" label="NeitherNav Regressed"/>
 </enum>
+
+<!-- LINT.IfChange(HttpCacheQuotaChangeHistory) -->
+
+<enum name="HttpCacheQuotaChangeHistory">
+  <int value="0" label="FirstTime"/>
+  <int value="1" label="RepeatedCallWithoutChange"/>
+  <int value="2" label="RepeatedCallWithChange"/>
+</enum>
+
+<!-- LINT.ThenChange(/android_webview/browser/aw_http_cache_manager.cc:HttpCacheQuotaChangeHistory) -->
 
 <!-- LINT.IfChange(HubPaneId) -->
 

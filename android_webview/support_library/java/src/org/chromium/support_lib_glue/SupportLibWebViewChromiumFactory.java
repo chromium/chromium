@@ -144,6 +144,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.IGNORE_DUPLICATE_NAV + Features.DEV_SUFFIX,
                 Features.WEBVIEW_NAVIGATE_V1,
                 Features.DOWNLOAD_FAVICONS_ENABLED + Features.DEV_SUFFIX,
+                Features.HTTP_CACHE_MANAGER + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -342,6 +343,12 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.NAVIGATE,
         ApiCall.SET_DOWNLOAD_FAVICONS_ENABLED,
         ApiCall.GET_DOWNLOAD_FAVICONS_ENABLED,
+        ApiCall.GET_HTTP_CACHE,
+        ApiCall.HTTP_CACHE_GET_DEFAULT_QUOTA_BYTES,
+        ApiCall.HTTP_CACHE_IS_USING_DEFAULT_QUOTA,
+        ApiCall.HTTP_CACHE_USE_DEFAULT_QUOTA,
+        ApiCall.HTTP_CACHE_GET_QUOTA_BYTES,
+        ApiCall.HTTP_CACHE_SET_QUOTA_BYTES,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -546,8 +553,14 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int NAVIGATE = 194;
         int SET_DOWNLOAD_FAVICONS_ENABLED = 195;
         int GET_DOWNLOAD_FAVICONS_ENABLED = 196;
+        int GET_HTTP_CACHE = 197;
+        int HTTP_CACHE_GET_DEFAULT_QUOTA_BYTES = 198;
+        int HTTP_CACHE_IS_USING_DEFAULT_QUOTA = 199;
+        int HTTP_CACHE_USE_DEFAULT_QUOTA = 200;
+        int HTTP_CACHE_GET_QUOTA_BYTES = 201;
+        int HTTP_CACHE_SET_QUOTA_BYTES = 202;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 197;
+        int COUNT = 203;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

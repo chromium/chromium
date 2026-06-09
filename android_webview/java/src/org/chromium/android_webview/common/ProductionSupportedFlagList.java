@@ -1380,6 +1380,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_SET_DOWNLOAD_FAVICONS_ENABLED,
                 "Enables the WebSettings setDownloadFaviconsEnabled method"),
+        Flag.baseFeature(
+                "WebViewHttpCacheQuotaApi",
+                "When enabled, HTTP cache quota can be managed via support library APIs."),
+
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

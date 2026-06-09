@@ -27,9 +27,9 @@ int UpdateLoadFlags(int load_flags, AwContentsIoThreadClient* client);
 // net::ERR_ACCESS_DENIED.
 bool ShouldBlockURL(const GURL& url, AwContentsIoThreadClient* client);
 
-// Determines the desired size for WebView's on-disk HttpCache, measured in
-// Bytes.
-int GetHttpCacheSize();
+// Determines a reasonable default desired size for WebView's on-disk HttpCache,
+// measured in Bytes.
+int GetDefaultHttpCacheSize();
 
 // Convert `net::HttpRequestHeaders` to a pair of vectors to be passed through
 // JNI.

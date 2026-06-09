@@ -126,15 +126,11 @@ bool ShouldBlockURL(const GURL& url, AwContentsIoThreadClient* client) {
   return client->ShouldBlockNetworkLoads() && url.SchemeIs(url::kFtpScheme);
 }
 
-int GetHttpCacheSize() {
+int GetDefaultHttpCacheSize() {
   // static so that `GetHttpCacheSizeInternal()` is called only once.
   static int cache_limit = -1;
   if (cache_limit == -1) {
     cache_limit = GetHttpCacheSizeInternal();
-    // Using WARNING instead of INFO since usage of INFO is unallowed.
-    // This is semantically not a warning and is temporary till the
-    // HTTP Cache size experiment has landed.
-    LOG(WARNING) << "HTTP Cache size is: " << cache_limit;
     base::UmaHistogramCounts10000("Android.WebView.HttpCacheSizeLimit",
                                   cache_limit / (1024 * 1024));
   };

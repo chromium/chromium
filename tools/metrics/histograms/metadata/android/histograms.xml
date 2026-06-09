@@ -91,6 +91,11 @@ chromium-metrics-reviews@google.com.
                initiate the search suggestion navigation earlier."/>
 </variants>
 
+<variants name="AwHttpCacheQuotaProfileType">
+  <variant name="Default" summary="the default profile"/>
+  <variant name="NonDefault" summary="a non-default profile"/>
+</variants>
+
 <variants name="ChildProcessConnectionMetricsBindingState">
   <variant name="ContentModerate"
       summary="Moderate binding excluding BindingManager bindings"/>
@@ -7969,13 +7974,100 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.HttpCacheQuotaApi.AbsoluteValue.{ProfileType}"
+    units="KiB" expires_after="2026-12-01">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The absolute HTTP cache quota size supplied to the SetHttpCacheQuota API for
+    {ProfileType}. Recorded on every call to the setter API. This uses the
+    unclamped value provided to the setter.
+
+    Not emitted when calling UseDefaultHttpCacheQuota. Only emitted if the
+    WebViewHttpCacheQuotaApi feature is enabled. This histogram will only be
+    emitted for the default profile if the
+    WebViewHttpCacheQuotaApiAllowForDefaultProfile feature parameter is true.
+  </summary>
+  <token key="ProfileType" variants="AwHttpCacheQuotaProfileType"/>
+</histogram>
+
+<histogram name="Android.WebView.HttpCacheQuotaApi.ChangeHistory.{ProfileType}"
+    enum="HttpCacheQuotaChangeHistory" expires_after="2026-12-01">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    For each call to the AwBrowserContext::SetHttpCacheQuota or
+    ::UseDefaultHttpCacheQuota APIs for {ProfileType}, records whether it is the
+    first call or a repeated call with or without a change since the previous
+    call.
+
+    Only emitted if the WebViewHttpCacheQuotaApi feature is enabled. This
+    histogram will only be emitted for the default profile if the
+    WebViewHttpCacheQuotaApiAllowForDefaultProfile feature parameter is true.
+  </summary>
+  <token key="ProfileType" variants="AwHttpCacheQuotaProfileType"/>
+</histogram>
+
+<histogram name="Android.WebView.HttpCacheQuotaApi.RelativeValue.{ProfileType}"
+    units="%" expires_after="2026-12-01">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The HTTP cache quota size supplied to the SetHttpCacheQuota API relative to
+    the default quota size for {ProfileType}. 100% means equal to default.
+    Recorded on every call to the SetHttpCacheQuota API. This uses the unclamped
+    value provided to the setter, but the default it is compared against is a
+    clamped value.
+
+    Not emitted when calling UseDefaultHttpCacheQuota. Only emitted if the
+    WebViewHttpCacheQuotaApi feature is enabled. This histogram will only be
+    emitted for the default profile if the
+    WebViewHttpCacheQuotaApiAllowForDefaultProfile feature parameter is true.
+  </summary>
+  <token key="ProfileType" variants="AwHttpCacheQuotaProfileType"/>
+</histogram>
+
+<histogram
+    name="Android.WebView.HttpCacheQuotaApi.RestoredFromPrefs.{ProfileType}"
+    enum="Boolean" expires_after="2026-12-01">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Whether a non-default HTTP cache quota was restored from a previously
+    persisted preference for {ProfileType}. Recorded once per profile during
+    profile initialization.
+
+    Only emitted if the WebViewHttpCacheQuotaApi feature is enabled. This
+    histogram will only be emitted for the default profile if the
+    WebViewHttpCacheQuotaApiAllowForDefaultProfile feature parameter is true.
+  </summary>
+  <token key="ProfileType" variants="AwHttpCacheQuotaProfileType"/>
+</histogram>
+
+<histogram
+    name="Android.WebView.HttpCacheQuotaApi.UseDefaultQuota.{ProfileType}"
+    enum="Boolean" expires_after="2026-12-01">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Recorded when the HTTP cache quota is reset to the default value for
+    {ProfileType}. Recorded on every call to UseDefaultHttpCacheQuota.
+
+    Only emitted if the WebViewHttpCacheQuotaApi feature is enabled. This
+    histogram will only be emitted for the default profile if the
+    WebViewHttpCacheQuotaApiAllowForDefaultProfile feature parameter is true.
+  </summary>
+  <token key="ProfileType" variants="AwHttpCacheQuotaProfileType"/>
+</histogram>
+
 <histogram name="Android.WebView.HttpCacheSizeLimit" units="MiB"
     expires_after="2026-11-08">
   <owner>abhijithnair@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Records the per-profile HTTP cache size limit that will be used throughout
-    this session.
+    Records the default per-profile HTTP cache size limit that will be used
+    throughout this session. This default may be overridden by the Cache Quota
+    API.
 
     This is emitted once during WebView global initialization.
 

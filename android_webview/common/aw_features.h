@@ -80,6 +80,16 @@ BASE_DECLARE_FEATURE(kWebViewPersistHttpServerProperties);
 BASE_DECLARE_FEATURE(kWebViewRemoveInstantAppSupport);
 BASE_DECLARE_FEATURE(kWebViewNavigate);
 BASE_DECLARE_FEATURE(kWebViewSetDownloadFaviconsEnabled);
+BASE_DECLARE_FEATURE(kWebViewHttpCacheQuotaApi);
+extern const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiAllowShrinking;
+extern const base::FeatureParam<bool>
+    kWebViewHttpCacheQuotaApiAllowForDefaultProfile;
+extern const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiRuntimeUpdate;
+extern const base::FeatureParam<int> kWebViewHttpCacheQuotaApiMinimum;
+extern const base::FeatureParam<int> kWebViewHttpCacheQuotaApiMaximum;
+extern const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiAffectsCodeCache;
+extern const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiForceBackendInit;
+
 }  // namespace android_webview::features
 
 #endif  // ANDROID_WEBVIEW_COMMON_AW_FEATURES_H_
