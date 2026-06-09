@@ -1351,7 +1351,7 @@ class RenderProcessHostWatcher : public RenderProcessHostObserver {
 
  private:
   // Register the event and clean up.
-  void OnEvent();
+  void OnEvent(bool success);
 
   // Overridden RenderProcessHost::LifecycleObserver methods.
   void RenderProcessReady(RenderProcessHost* host) override;
@@ -1361,12 +1361,13 @@ class RenderProcessHostWatcher : public RenderProcessHostObserver {
 
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       observation_{this};
-  WatchType type_;
+  const WatchType type_;
   bool did_exit_normally_;
 
   std::unique_ptr<ScopedAllowRendererCrashes> allow_renderer_crashes_;
 
   WaiterHelper waiter_helper_;
+  bool success_ = false;
 };
 
 // Implementation helper for:

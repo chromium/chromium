@@ -2668,16 +2668,17 @@ bool RenderProcessHostWatcher::Wait() {
   allow_renderer_crashes_.reset();
   // Call this here just in case something else quits the RunLoop.
   observation_.Reset();
-  return result;
+  return result && success_;
 }
-void RenderProcessHostWatcher::OnEvent() {
+void RenderProcessHostWatcher::OnEvent(bool success) {
+  success_ = success;
   waiter_helper_.OnEvent();
   observation_.Reset();
 }
 
 void RenderProcessHostWatcher::RenderProcessReady(RenderProcessHost* host) {
   if (type_ == WATCH_FOR_PROCESS_READY) {
-    OnEvent();
+    OnEvent(true);
   }
 }
 
@@ -2687,15 +2688,16 @@ void RenderProcessHostWatcher::RenderProcessExited(
   did_exit_normally_ =
       info.status == base::TERMINATION_STATUS_NORMAL_TERMINATION;
   if (type_ == WATCH_FOR_PROCESS_EXIT) {
-    OnEvent();
+    OnEvent(true);
+  } else if (type_ == WATCH_FOR_PROCESS_READY) {
+    OnEvent(false);
   }
 }
 
 void RenderProcessHostWatcher::RenderProcessHostDestroyed(
     RenderProcessHost* host) {
-  if (type_ == WATCH_FOR_HOST_DESTRUCTION) {
-    OnEvent();
-  }
+  OnEvent(type_ == WATCH_FOR_HOST_DESTRUCTION ||
+          type_ == WATCH_FOR_PROCESS_EXIT);
 }
 
 RenderProcessHostKillWaiter::RenderProcessHostKillWaiter(
