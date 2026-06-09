@@ -219,10 +219,6 @@ class TaskManagerView : public TableViewDelegate,
   // Search keyword the user input.
   std::u16string search_terms_;
 
-  // This button is not the same as the dialog button. It is only non-null if
-  // task manager refresh is enabled.
-  raw_ptr<views::MdTextButton> end_process_btn_;
-
   // The first time this instance of the task manager was initialized.
   const base::TimeTicks start_time_ = base::TimeTicks::Now();
 
