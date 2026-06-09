@@ -2,3 +2,6 @@ file://chrome/browser/web_applications/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+per-file iwa_internals_handler.cc=simonha@google.com
+per-file iwa_internals_handler.h=simonha@google.com
