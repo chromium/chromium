@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "gpu/vulkan/buildflags.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -22,14 +23,13 @@
 #include "gpu/config/gpu_feature_type.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_info.h"
+#include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
 #include "url/gurl.h"
-
-
 
 namespace content {
 namespace {
@@ -453,6 +453,7 @@ INSTANTIATE_TEST_SUITE_P(GpuDataManagerImplPrivateTest,
                          ::testing::Values(gpu::DomainGuilt::kKnown,
                                            gpu::DomainGuilt::kUnknown));
 
+#if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGraphiteFeatureFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableSkiaGraphite);
@@ -464,10 +465,20 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGraphiteFeatureFlag) {
 // On Mac-ARM graphite should fallback to Swiftshader immediately. On other
 // platforms graphite should fallback to Ganesh/GL.
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
-#if BUILDFLAG(ENABLE_SWIFTSHADER)
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kAllowSwiftShaderFallback);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {
+#if BUILDFLAG(ENABLE_SWIFTSHADER)
+          features::kAllowSwiftShaderFallback,
 #endif
+      },
+      /*disabled_features=*/
+      {
+#if BUILDFLAG(ENABLE_VULKAN)
+          features::kVulkan,
+#endif
+      });
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableSkiaGraphite);
@@ -482,6 +493,196 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 #endif
 }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
+// Tests for UpdateGpuPreferences and UpdateGpuFeatureInfo.
+// These run everywhere except Fuchsia, which has different fallback semantics.
+#if !BUILDFLAG(IS_FUCHSIA)
+// Graphite mode: gr_context_type is kGraphiteDawn and fallback list contains
+// kGL for the hardware fallback.
+#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+TEST_F(GpuDataManagerImplPrivateTest,
+       UpdateGpuPreferences_GraphiteModeFallbackIsGL) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableSkiaGraphite);
+
+  base::test::ScopedFeatureList feature_list;
+#if BUILDFLAG(ENABLE_VULKAN)
+  feature_list.InitAndDisableFeature(features::kVulkan);
+#endif
+
+  ScopedGpuDataManagerImplPrivate manager;
+  ASSERT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
+
+  gpu::GpuPreferences prefs;
+  manager->UpdateGpuPreferences(&prefs, GPU_PROCESS_KIND_SANDBOXED);
+
+  EXPECT_EQ(gpu::GrContextType::kGraphiteDawn, prefs.gr_context_type);
+  ASSERT_EQ(prefs.fallback_gr_context_types.size(), 1u);
+  EXPECT_EQ(prefs.fallback_gr_context_types[0], gpu::GrContextType::kGL);
+}
+
+// GL mode: gr_context_type is kGL and there are no hardware fallbacks left.
+TEST_F(GpuDataManagerImplPrivateTest,
+       UpdateGpuPreferences_GLModeNoHardwareFallback) {
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kDisableSkiaGraphite);
+
+  base::test::ScopedFeatureList feature_list;
+#if BUILDFLAG(ENABLE_VULKAN)
+  feature_list.InitAndDisableFeature(features::kVulkan);
+#endif
+
+  ScopedGpuDataManagerImplPrivate manager;
+  ASSERT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+
+  gpu::GpuPreferences prefs;
+  manager->UpdateGpuPreferences(&prefs, GPU_PROCESS_KIND_SANDBOXED);
+
+  EXPECT_EQ(gpu::GrContextType::kGL, prefs.gr_context_type);
+  EXPECT_TRUE(prefs.fallback_gr_context_types.empty());
+}
+
+// After falling back from Graphite to GL, fallback_gr_context_types is empty
+// since no hardware modes remain.
+TEST_F(GpuDataManagerImplPrivateTest,
+       UpdateGpuPreferences_AfterGraphiteFallbackToGL) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableSkiaGraphite);
+
+  base::test::ScopedFeatureList feature_list;
+#if BUILDFLAG(ENABLE_VULKAN)
+  feature_list.InitAndDisableFeature(features::kVulkan);
+#endif
+
+  ScopedGpuDataManagerImplPrivate manager;
+  ASSERT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
+
+  manager->FallBackToNextGpuMode();
+  ASSERT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+
+  gpu::GpuPreferences prefs;
+  manager->UpdateGpuPreferences(&prefs, GPU_PROCESS_KIND_SANDBOXED);
+
+  EXPECT_EQ(gpu::GrContextType::kGL, prefs.gr_context_type);
+  EXPECT_TRUE(prefs.fallback_gr_context_types.empty());
+}
+
+// Graphite mode with Vulkan also enabled: fallback list contains both kVulkan
+// and kGL, with kVulkan tried first (at back()).
+TEST_F(GpuDataManagerImplPrivateTest,
+       UpdateGpuPreferences_GraphiteModeFallbackIncludesVulkan) {
+  if constexpr (!BUILDFLAG(ENABLE_VULKAN)) {
+    GTEST_SKIP();
+  }
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableSkiaGraphite);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kVulkan);
+
+  ScopedGpuDataManagerImplPrivate manager;
+  ASSERT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
+
+  gpu::GpuPreferences prefs;
+  manager->UpdateGpuPreferences(&prefs, GPU_PROCESS_KIND_SANDBOXED);
+
+  EXPECT_EQ(gpu::GrContextType::kGraphiteDawn, prefs.gr_context_type);
+  // kVulkan is at front (tried first); kGL is at back.
+  ASSERT_EQ(prefs.fallback_gr_context_types.size(), 2u);
+  EXPECT_EQ(prefs.fallback_gr_context_types[0], gpu::GrContextType::kVulkan);
+  EXPECT_EQ(prefs.fallback_gr_context_types[1], gpu::GrContextType::kGL);
+}
+#endif  // !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+
+// All GPU features are enabled: gpu_mode_ stays HARDWARE_GRAPHITE.
+TEST_F(GpuDataManagerImplPrivateTest,
+       UpdateGpuFeatureInfo_GraphiteEnabledKeepsGraphiteMode) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableSkiaGraphite);
+  ScopedGpuDataManagerImplPrivate manager;
+  ASSERT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
+
+  gpu::GpuFeatureInfo gpu_feature_info;
+  for (auto& status : gpu_feature_info.status_values) {
+    status = gpu::kGpuFeatureStatusEnabled;
+  }
+
+  manager->UpdateGpuFeatureInfo(gpu_feature_info, std::nullopt);
+  EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
+}
+
+// SKIA_GRAPHITE is blocklisted in the feature info: UpdateGpuFeatureInfo's
+// loop falls back from HARDWARE_GRAPHITE to HARDWARE_GL.
+TEST_F(GpuDataManagerImplPrivateTest,
+       UpdateGpuFeatureInfo_GraphiteBlocklistedSwitchesToGL) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableSkiaGraphite);
+
+  base::test::ScopedFeatureList feature_list;
+#if BUILDFLAG(ENABLE_VULKAN)
+  feature_list.InitAndEnableFeature(features::kVulkan);
+#endif
+
+  ScopedGpuDataManagerImplPrivate manager;
+  ASSERT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
+
+  gpu::GpuFeatureInfo gpu_feature_info;
+  for (auto& status : gpu_feature_info.status_values) {
+    status = gpu::kGpuFeatureStatusEnabled;
+  }
+  gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
+      gpu::kGpuFeatureStatusBlocklisted;
+  gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] =
+      gpu::kGpuFeatureStatusDisabled;
+
+  manager->UpdateGpuFeatureInfo(gpu_feature_info, std::nullopt);
+#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+  EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+#else
+  EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
+#endif
+}
+
+// No hardware mode is available: the UpdateGpuFeatureInfo loop walks past
+// every hardware mode in fallback_modes_ and lands on a non-hardware mode
+// (SOFTWARE_GL or DISPLAY_COMPOSITOR depending on which one is present).
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
+TEST_F(GpuDataManagerImplPrivateTest,
+       UpdateGpuFeatureInfo_NoHardwareModeAvailable) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableSkiaGraphite);
+
+  base::test::ScopedFeatureList feature_list;
+#if BUILDFLAG(ENABLE_VULKAN)
+  feature_list.InitAndEnableFeature(features::kVulkan);
+#endif
+
+  ScopedGpuDataManagerImplPrivate manager;
+  ASSERT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
+
+  gpu::GpuFeatureInfo gpu_feature_info;
+  for (auto& status : gpu_feature_info.status_values) {
+    status = gpu::kGpuFeatureStatusEnabled;
+  }
+  gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
+      gpu::kGpuFeatureStatusDisabled;
+  gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_GL] =
+      gpu::kGpuFeatureStatusDisabled;
+  gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] =
+      gpu::kGpuFeatureStatusDisabled;
+
+  manager->UpdateGpuFeatureInfo(gpu_feature_info, std::nullopt);
+  const gpu::GpuMode mode = manager->GetGpuMode();
+  EXPECT_TRUE(mode == gpu::GpuMode::SOFTWARE_GL ||
+              mode == gpu::GpuMode::DISPLAY_COMPOSITOR)
+      << "gpu_mode_ = " << static_cast<int>(mode);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
+        // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 // Android and Chrome OS do not support software compositing, while Fuchsia does
 // not support falling back to software from Vulkan.
@@ -507,9 +708,11 @@ TEST_F(GpuDataManagerImplPrivateTest, NoDefaultFallbackToSwiftShaderForGanesh) {
                                     });
 
   ScopedGpuDataManagerImplPrivate manager;
+#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
+#endif  // !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
   EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
 }
 
@@ -520,9 +723,11 @@ TEST_F(GpuDataManagerImplPrivateTest, ExplicitFallbackToSwiftShaderForGanesh) {
       switches::kEnableUnsafeSwiftShader);
 
   ScopedGpuDataManagerImplPrivate manager;
+#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
+#endif  // !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
   EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
 }
 
@@ -537,9 +742,11 @@ TEST_F(GpuDataManagerImplPrivateTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableUnsafeSwiftShader);
   ScopedGpuDataManagerImplPrivate manager;
+#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
+#endif  // !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
 }
@@ -558,9 +765,11 @@ TEST_F(GpuDataManagerImplPrivateTest,
   feature_list.InitAndDisableFeature(features::kAllowSwiftShaderFallback);
 
   ScopedGpuDataManagerImplPrivate manager;
+#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
+#endif  // !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
 }
@@ -681,10 +890,11 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
         // !BUILDFLAG(IS_IOS)
 
-
-
 #if BUILDFLAG(ENABLE_VULKAN)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithVulkanFeatureFlag) {
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kDisableSkiaGraphite);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kVulkan);
   ScopedGpuDataManagerImplPrivate manager;
@@ -695,6 +905,9 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithVulkanFeatureFlag) {
 // Vulkan.
 #if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanToGL) {
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kDisableSkiaGraphite);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kVulkan);
   ScopedGpuDataManagerImplPrivate manager;
@@ -710,6 +923,8 @@ TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->RemoveSwitch(
       switches::kEnableUnsafeSwiftShader);
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kDisableSkiaGraphite);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kVulkan},
@@ -749,6 +964,8 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->RemoveSwitch(
       switches::kEnableUnsafeSwiftShader);
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kDisableSkiaGraphite);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kVulkan},

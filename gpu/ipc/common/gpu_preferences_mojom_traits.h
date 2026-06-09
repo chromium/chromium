@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_preferences.h"
@@ -236,6 +237,9 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuPreferencesDataView,
     if (!prefs.ReadGrContextType(&out->gr_context_type)) {
       return false;
     }
+    if (!prefs.ReadFallbackGrContextTypes(&out->fallback_gr_context_types)) {
+      return false;
+    }
     if (!prefs.ReadUseVulkan(&out->use_vulkan)) {
       return false;
     }
@@ -393,6 +397,10 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuPreferencesDataView,
   }
   static gpu::GrContextType gr_context_type(const gpu::GpuPreferences& prefs) {
     return prefs.gr_context_type;
+  }
+  static const base::circular_deque<gpu::GrContextType>&
+  fallback_gr_context_types(const gpu::GpuPreferences& prefs) {
+    return prefs.fallback_gr_context_types;
   }
   static gpu::VulkanImplementationName use_vulkan(
       const gpu::GpuPreferences& prefs) {

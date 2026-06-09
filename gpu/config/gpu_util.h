@@ -8,6 +8,8 @@
 #include "build/build_config.h"
 #include "gpu/config/gpu_config_export.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_mode.h"
+#include "gpu/config/gpu_preferences.h"
 #include "ui/gl/gl_display.h"
 
 namespace base {
@@ -37,6 +39,32 @@ ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
                       const GpuPreferences& gpu_preferences,
                       base::CommandLine* command_line,
                       bool* needs_more_info);
+
+// Returns true if |gr_context_type| is supported according to
+// |gpu_feature_info|, i.e. the feature corresponding to it is enabled:
+//   - kGraphiteDawn -> GPU_FEATURE_TYPE_SKIA_GRAPHITE
+//   - kVulkan       -> GPU_FEATURE_TYPE_VULKAN
+//   - kGL           -> GPU_FEATURE_TYPE_ACCELERATED_GL
+// kNone is always supported.
+GPU_CONFIG_EXPORT bool IsGrContextTypeSupported(
+    GrContextType gr_context_type,
+    const GpuFeatureInfo& gpu_feature_info);
+
+// Checks whether the current GrContextType in |gpu_preferences| is supported
+// according to |gpu_feature_info| (see IsGrContextTypeSupported). If not, the
+// function will switch to the next type from
+// |gpu_preferences.fallback_gr_context_types|, recompute the feature info for
+// that type, and repeat until a supported type is found or all candidates are
+// exhausted. Returns true if a supported type was found.
+GPU_CONFIG_EXPORT bool TryFallbackGrContextTypesIfNeeded(
+    GpuFeatureInfo& gpu_feature_info,
+    GpuPreferences& gpu_preferences,
+    const GPUInfo& gpu_info,
+    base::CommandLine* command_line);
+
+// Maps GpuMode to the hardware context type it supports. Non-hardware modes
+// (e.g. SOFTWARE_GL, DISPLAY_COMPOSITOR, UNKNOWN) return GrContextType::kNone.
+GPU_CONFIG_EXPORT GrContextType GpuModeToGrContextType(GpuMode mode);
 
 GPU_CONFIG_EXPORT void SetKeysForCrashLogging(const GPUInfo& gpu_info);
 

@@ -22,6 +22,8 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
+#include "base/containers/circular_deque.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -97,7 +99,6 @@
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/mojom/dxgi_info.mojom.h"
 #endif  // BUILDFLAG(IS_WIN)
-
 
 namespace content {
 
@@ -523,15 +524,6 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
     BUILDFLAG(IS_CHROMEOS)
     NOTREACHED() << "GPU acceleration is required on certain platforms!";
 #endif
-  } else if (features::IsSkiaGraphiteEnabled(command_line)) {
-    // If Graphite is enabled, fall back to Ganesh/GL on platforms that do not
-    // support software compositing or sometimes fail dawn initialization.
-    // TODO(b/323953910): Eliminate this fallback on each platform once Graphite
-    // stability is sufficient on that platform.
-#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
-    fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GL);
-#endif
-    fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GRAPHITE);
   } else {
     // On Fuchsia Vulkan must be used when it's enabled by the WebEngine
     // embedder. Falling back to SW compositing in that case is not supported.
@@ -539,10 +531,32 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
     fallback_modes_.clear();
     fallback_modes_.push_back(gpu::GpuMode::HARDWARE_VULKAN);
 #else
-    fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GL);
-    // Prefer Vulkan over GL if enabled.
-    if (features::IsUsingVulkan()) {
-      fallback_modes_.push_back(gpu::GpuMode::HARDWARE_VULKAN);
+    // Skip hardware modes if SwiftShader-for-WebGL is in use; hardware GPU is
+    // not needed in that case.
+    if (!features::IsSwiftShaderUsedForWebGLByCommandLine(command_line)) {
+      // If Graphite is enabled, fall back to Ganesh/GL on platforms that do not
+      // support software compositing or sometimes fail dawn initialization.
+      // TODO(b/323953910): Eliminate this fallback on each platform once
+      // Graphite stability is sufficient on that platform.
+#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+      fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GL);
+#endif
+      // When kLateGraphiteFeatureCheck is enabled, the browser gates hardware
+      // Graphite mode solely on the --disable-skia-graphite switch, deferring
+      // the blocklist and device support checks (like Metal/D3D11 checking)
+      // to the GPU process post-initialization.
+      const bool early_feature_check =
+          !base::FeatureList::IsEnabled(features::kLateGraphiteFeatureCheck);
+      const bool can_use_graphite =
+          early_feature_check
+              ? features::IsSkiaGraphiteEnabled(command_line)
+              : !command_line->HasSwitch(switches::kDisableSkiaGraphite);
+      const bool can_use_vulkan = features::IsUsingVulkan();
+      if (can_use_graphite) {
+        fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GRAPHITE);
+      } else if (can_use_vulkan) {
+        fallback_modes_.push_back(gpu::GpuMode::HARDWARE_VULKAN);
+      }
     }
 #endif  // BUILDFLAG(IS_FUCHSIA)
   }
@@ -1217,32 +1231,25 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
     gpu_feature_info_ = gpu_feature_info;
   }
 #if !BUILDFLAG(IS_FUCHSIA)
-  // With Vulkan or Graphite, GL might be blocked so don't fallback to it later.
-  if (HardwareAccelerationEnabled() &&
-      gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_GL] !=
-          gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled) {
-    std::erase(fallback_modes_, gpu::GpuMode::HARDWARE_GL);
-  }
-
-  // If Vulkan or Graphite initialization fails, the GPU process can silently
-  // fallback to GL.
-  if (gpu_mode_ == gpu::GpuMode::HARDWARE_VULKAN &&
-      gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] !=
-          gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled) {
-    // TODO(rivr): The GpuMode in GpuProcessHost will still be
-    // HARDWARE_VULKAN. This isn't a big issue right now because both GPU modes
-    // report to the same histogram. The first fallback will occur after 4
-    // crashes, instead of 3.
-    FallBackToNextGpuMode();
-  } else if (gpu_mode_ == gpu::GpuMode::HARDWARE_GRAPHITE &&
-             gpu_feature_info_
-                     .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
-                 gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled) {
-    if (gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] ==
-        gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled) {
-      // TODO(crbug.com/496616828): For Pixel devices Graphite can silently be
-      // replaced with Ganesh/Vulkan. Remove this once Graphite works on
-      // Imagination GPUs.
+  // Prune any hardware fallback whose gr_context_type the GPU process has
+  // determined is unsupported, so later FallBackToNextGpuMode() calls don't
+  // relaunch the GPU process into a mode it already rejected.
+  std::erase_if(fallback_modes_, [&](gpu::GpuMode mode) {
+    gpu::GrContextType type = gpu::GpuModeToGrContextType(mode);
+    return type != gpu::GrContextType::kNone &&
+           !gpu::IsGrContextTypeSupported(type, gpu_feature_info_);
+  });
+  if (!gpu::IsGrContextTypeSupported(gpu::GpuModeToGrContextType(gpu_mode_),
+                                     gpu_feature_info_)) {
+    if (gpu_mode_ == gpu::GpuMode::HARDWARE_GRAPHITE &&
+        gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] ==
+            gpu::kGpuFeatureStatusEnabled) {
+      // If the GPU process fell back to Vulkan, update the browser's active
+      // GPU mode to Vulkan as well.
+      // TODO(crbug.com/511049071): add a dedicated
+      // HARDWARE_MODE_GRAPHITE_OR_VULKAN
+      DCHECK(!std::ranges::contains(fallback_modes_,
+                                    gpu::GpuMode::HARDWARE_VULKAN));
       gpu_mode_ = gpu::GpuMode::HARDWARE_VULKAN;
     } else {
       FallBackToNextGpuMode();
@@ -1419,21 +1426,44 @@ void GpuDataManagerImplPrivate::UpdateGpuPreferences(
                                            .message_pump_type_for_gpu;
 #endif
 
-  // Disable loading VulkanImplementation if not using Ganesh/Vulkan.
-  if (gpu_mode_ != gpu::GpuMode::HARDWARE_VULKAN) {
-    gpu_preferences->use_vulkan = gpu::VulkanImplementationName::kNone;
+  gpu_preferences->gr_context_type = gpu::GpuModeToGrContextType(gpu_mode_);
+  // Omit use_vulkan if the context type doesn't use Vulkan. For Graphite, we
+  // keep use_vulkan because it might be needed when falling back to Vulkan
+  // later.
+  switch (gpu_preferences->gr_context_type) {
+    case gpu::GrContextType::kGL:
+    case gpu::GrContextType::kNone:
+      gpu_preferences->use_vulkan = gpu::VulkanImplementationName::kNone;
+      break;
+    default:
+      break;
   }
 
-  if (!HardwareAccelerationEnabled()) {
-    gpu_preferences->gr_context_type = gpu::GrContextType::kNone;
-  } else if (gpu_mode_ != gpu::GpuMode::HARDWARE_GRAPHITE) {
-    // Recompute the `gr_context_type` pref with Graphite explicitly disabled,
-    // as it may currently be set to Graphite.
-    auto command_line_with_graphite_disabled(*command_line);
-    command_line_with_graphite_disabled.AppendSwitch(
-        switches::kDisableSkiaGraphite);
-    gpu_preferences->gr_context_type =
-        gpu::gles2::ParseGrContextType(&command_line_with_graphite_disabled);
+  gpu_preferences->fallback_gr_context_types.clear();
+
+  if (gpu_mode_ == gpu::GpuMode::HARDWARE_GRAPHITE &&
+      features::IsUsingVulkan()) {
+    // We add kVulkan to fallback types for the GPU process to fall back from
+    // kGraphiteDawn if the GPU detects that Graphite is blocklisted or the
+    // feature is disabled.
+    // TODO(crbug.com/511049071): add a dedicated
+    // HARDWARE_MODE_GRAPHITE_OR_VULKAN
+    gpu_preferences->fallback_gr_context_types.push_back(
+        gpu::GrContextType::kVulkan);
+
+    // However, the browser process shouldn't fall back from HARDWARE_GRAPHITE
+    // to HARDWARE_VULKAN after a crash.
+    DCHECK(
+        !std::ranges::contains(fallback_modes_, gpu::GpuMode::HARDWARE_VULKAN));
+  }
+
+  for (gpu::GpuMode mode : base::Reversed(fallback_modes_)) {
+    gpu::GrContextType type = gpu::GpuModeToGrContextType(mode);
+    // kNone corresponds to a software mode; in-process fallback from a hardware
+    // context type to a software context type is not supported.
+    if (type != gpu::GrContextType::kNone) {
+      gpu_preferences->fallback_gr_context_types.push_back(type);
+    }
   }
 }
 

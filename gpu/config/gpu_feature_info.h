@@ -15,6 +15,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/config/gpu_config_export.h"
 #include "gpu/config/gpu_feature_type.h"
+#include "gpu/config/gpu_preferences.h"
 
 namespace gl {
 class GLContext;

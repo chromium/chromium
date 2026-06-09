@@ -325,6 +325,16 @@ BASE_FEATURE(kUseStrongRefToSharedImageInterface,
 // SkiaGraphite is also enabled.
 BASE_FEATURE(kSkiaGraphiteSmallPathAtlas, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the Graphite feature check (including blocklist) is deferred to
+// the GPU process rather than evaluated in the browser process.
+BASE_FEATURE(kLateGraphiteFeatureCheck,
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // Enable Skia Graphite's Pipeline precompilation feature.
 // Note: This is only meaningful when Skia Graphite is enabled but can then also
 // be overridden by

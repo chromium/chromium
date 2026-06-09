@@ -368,8 +368,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   LOG(WARNING) << "Starting gpu initialization.";
 #endif  //  BUILDFLAG(IS_CHROMEOS)
   gpu_preferences_ = gpu_preferences;
-  gpu_preferences_.perform_graphite_precompilation =
-      features::IsSkiaGraphitePrecompilationEnabled(command_line);
   // Blocklist decisions based on basic GPUInfo may not be final. It might
   // need more context based GPUInfo. In such situations, switching to
   // SwiftShader needs to wait until creating a context.
@@ -502,64 +500,13 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     VLOG(1) << "gl::init::InitializeStaticGLBindingsOneOff failed";
     return false;
   }
-#if BUILDFLAG(IS_WIN)
-  if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn &&
-      features::kSkiaGraphiteDawnBackendValidation.Get()) {
-    // Enable ANGLE debug layer if we need backend validation for Graphite since
-    // we can share the D3D11 device between ANGLE and Dawn.
-    gl::GLDisplayEGL::EnableANGLEDebugLayer();
-  }
-#endif  // BUILDFLAG(IS_WIN)
   if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
     gl_display = gl::init::InitializeGLNoExtensionsOneOff(
         /*init_bindings*/ false, gl::GpuPreference::kDefault);
     if (!gl_display) {
-      // If GL initialization failed, GPU process will be teardown later, sp set
-      // gpu_preferences_.gr_context_type to kGL to avoid initializing
-      // DawnContextProvider later.
-      gpu_preferences_.gr_context_type = GrContextType::kGL;
       VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
       return false;
     }
-  }
-
-  const bool need_fallback_from_graphite = [this]() {
-    // If graphite is requested, check ANGLE implementation.
-    if (gpu_preferences_.gr_context_type != GrContextType::kGraphiteDawn) {
-      return false;
-    }
-
-#if BUILDFLAG(IS_APPLE)
-    // Graphite requires ANGLE Metal (or Swiftshader, handled below) on Mac
-    constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kMetal;
-#elif BUILDFLAG(IS_WIN)
-    // Graphite requires ANGLE D3D11 (or Swiftshader, handled below) on Windows
-    constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kD3D11;
-#else   // !IS_APPLE && !IS_WIN
-    constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kNone;
-#endif  // BUILDFLAG(IS_APPLE)
-    if (kRequiredANGLEImplementation == gl::ANGLEImplementation::kNone ||
-        gl::GetANGLEImplementation() == kRequiredANGLEImplementation) {
-      // If ANGLE is using required implementation, fallback is not needed.
-      return false;
-    }
-
-    // If ANGLE is using Swiftshader, fallback is not needed.
-    if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader) {
-      return false;
-    }
-
-    // If graphite is requested from command line, fallback is not needed.
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kEnableSkiaGraphite)) {
-      return false;
-    }
-
-    return true;
-  }();
-
-  if (need_fallback_from_graphite) {
-    gpu_preferences_.gr_context_type = GrContextType::kGL;
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -676,8 +623,38 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     }
   }
 
+  // Try to fall back to a valid GrContextType after GpuFeatureInfo is
+  // computed. For example, if the gpu_preferences_.gr_context_type is
+  // kGraphiteDawn but the GpuFeatureInfo indicates Graphite is blocklisted or
+  // the feature is not enabled, we will fall back to the next context type in
+  // gpu_preferences_.fallback_gr_context_types
+  if (!TryFallbackGrContextTypesIfNeeded(gpu_feature_info_, gpu_preferences_,
+                                         gpu_info_, command_line)) {
+    VLOG(1) << "All gr_context_type fallbacks exhausted";
+    return false;
+  }
+  gpu_preferences_.perform_graphite_precompilation =
+      gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+          kGpuFeatureStatusEnabled &&
+      features::IsSkiaGraphitePrecompilationEnabled(command_line);
+
 #if BUILDFLAG(IS_WIN)
   {
+    if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn &&
+        features::kSkiaGraphiteDawnBackendValidation.Get()) {
+      // Enable ANGLE debug layer for Graphite backend validation, sharing the
+      // D3D11 device between ANGLE and Dawn. Requires GL reinit.
+      gl::init::ShutdownGL(gl_display, true);
+      gl::GLDisplayEGL::EnableANGLEDebugLayer();
+      gl_display = gl::init::InitializeGLNoExtensionsOneOff(
+          /*init_bindings=*/true, gl::GpuPreference::kDefault);
+      if (!gl_display) {
+        VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed "
+                   "after enabling ANGLE debug layer";
+        return false;
+      }
+    }
+
     // On Windows, MITIGATION_FORCE_MS_SIGNED_BINS is used which disallows
     // loading any .dll that is not signed by Microsoft. Preload the SwiftShader
     // .dll so it may be accessed later. This is needed for WebGPU to
@@ -735,23 +712,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_ANDROID)
-  if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn &&
-      gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
-          kGpuFeatureStatusBlocklisted &&
-      base::android::android_info::brand() == "google") {
-    // On Pixel hardware we want to always use Vulkan. If the SkiaGraphite
-    // feature is enabled but then blocklisted it would normally fall back to
-    // Ganesh/GL. This isn't desirable so force it to fall back to
-    // Ganesh/Vulkan.
-    // TODO(crbug.com/496616828): Once Graphite works on Imagination GPUs remove
-    // this workaround.
-    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] =
-        kGpuFeatureStatusEnabled;
-    gpu_preferences_.gr_context_type = GrContextType::kVulkan;
-    gpu_preferences_.use_vulkan = VulkanImplementationName::kNative;
-  }
-#endif
 
 #if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
 #if BUILDFLAG(IS_OZONE)
@@ -1050,10 +1010,24 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   }
 
   if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan)) {
+    if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+        kGpuFeatureStatusEnabled) {
+      gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
+          kGpuFeatureStatusDisabled;
+    }
+    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] =
+        kGpuFeatureStatusEnabled;
+    gpu_preferences_.gr_context_type = GrContextType::kVulkan;
     bool result = InitializeVulkan();
     // There is no fallback for webview.
     CHECK(result);
   } else {
+    // Try to fall back to a valid GrContextType after GpuFeatureInfo is
+    // computed.
+    if (!TryFallbackGrContextTypesIfNeeded(gpu_feature_info_, gpu_preferences_,
+                                           gpu_info_, command_line)) {
+      LOG(FATAL) << "All gr_context_type fallbacks exhausted";
+    }
     DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
     DisableInProcessGpuGraphite(gpu_feature_info_, gpu_preferences_);
   }
@@ -1207,6 +1181,12 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   }
 #endif  // BUILDFLAG(IS_OZONE)
 
+  // We try to fall back to a valid GrContextType after GpuFeatureInfo is
+  // computed.
+  if (!TryFallbackGrContextTypesIfNeeded(gpu_feature_info_, gpu_preferences_,
+                                         gpu_info_, command_line)) {
+    LOG(FATAL) << "All gr_context_type fallbacks exhausted";
+  }
   DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
 #endif  // BUILDFLAG(IS_ANDROID)
 

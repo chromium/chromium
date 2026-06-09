@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/circular_deque.h"
 #include <string>
 #include <vector>
 
@@ -221,6 +222,22 @@ struct GPU_CONFIG_EXPORT GpuPreferences {
   // tracking.
   bool use_passthrough_cmd_decoder = false;
 
+  // The Skia rendering backend to use. Set by the browser based on gpu_mode.
+  // The GPU process may downgrade this (e.g. from kGraphiteDawn to kGL) after
+  // consulting the blocklist.
+  GrContextType gr_context_type = GrContextType::kGL;
+
+  // Ordered fallback GrContextTypes for the GPU process to try if
+  // gr_context_type is unavailable. Stored in priority order
+  // (front() = next to try).
+  // TODO(crbug.com/511049071): Consider merging gr_context_type to this list,
+  // so that we have a list of gr_context_type to try starting from the default
+  // type. This would involve refactoring the consumers of this struct, which
+  // currently use gr_context_type in many places.
+  // TODO(crbug.com/511049071): This contains hardware accelerated context type
+  // only (e.g. kGL, kVulkan, kGraphiteDawn). kNone won't be included.
+  base::circular_deque<GrContextType> fallback_gr_context_types;
+
   // ===================================
   // Settings from //gpu/config/gpu_switches.h
 
@@ -237,8 +254,6 @@ struct GPU_CONFIG_EXPORT GpuPreferences {
 
   // ===================================
   // Settings from //gpu/command_buffer/service/gpu_switches.h
-  // The type of the GrContext or Graphite Context.
-  GrContextType gr_context_type = GrContextType::kGL;
 
   // Use Vulkan for rasterization and display compositing.
   VulkanImplementationName use_vulkan = VulkanImplementationName::kNone;

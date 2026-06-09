@@ -33,13 +33,8 @@ GPU_GLES2_EXPORT bool UsePassthroughCommandDecoder(
 GPU_GLES2_EXPORT GpuPreferences
 ParseGpuPreferences(const base::CommandLine* command_line);
 
-// Determine which Skia GrContext backend will be used for GPU compositing and
-// rasterization (if enabled) by checking the feature flags for Vulkan and/or
-// Graphite. If they are not enabled, default to GL.
-// If Graphite is enabled, its Dawn backend can be selected by using the
-// --skia-graphite-dawn-backend flag.
 GPU_GLES2_EXPORT GrContextType
-ParseGrContextType(const base::CommandLine* command_line);
+ParseDefaultGrContextType(const base::CommandLine* command_line);
 
 bool MSAAIsSlow(const GpuDriverBugWorkarounds& workarounds);
 

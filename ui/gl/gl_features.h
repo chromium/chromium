@@ -64,6 +64,11 @@ GL_EXPORT bool IsSwiftShaderAllowedByFeature();
 // IsSwiftShaderAllowedByFeature.
 GL_EXPORT bool IsSwiftShaderAllowed(const base::CommandLine* command_line);
 
+// If SwiftShader is explicitly requested for WebGL via
+// --use-angle=swiftshader-webgl.
+GL_EXPORT bool IsSwiftShaderUsedForWebGLByCommandLine(
+    const base::CommandLine* command_line);
+
 #if BUILDFLAG(IS_WIN)
 GL_EXPORT BASE_DECLARE_FEATURE(kAllowD3D11WarpFallback);
 

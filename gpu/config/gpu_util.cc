@@ -48,6 +48,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_info_collector.h"
+#include "gpu/config/gpu_mode.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/vulkan/buildflags.h"
@@ -131,6 +132,10 @@ GpuFeatureStatus GetVulkanFeatureStatus(
   if (gpu_preferences.use_vulkan == VulkanImplementationName::kNative &&
       blocklisted_features.count(GPU_FEATURE_TYPE_VULKAN))
     return kGpuFeatureStatusBlocklisted;
+
+  if (gpu_preferences.gr_context_type != GrContextType::kVulkan) {
+    return kGpuFeatureStatusDisabled;
+  }
 
   if (gpu_preferences.use_vulkan == VulkanImplementationName::kNone)
     return kGpuFeatureStatusDisabled;
@@ -290,12 +295,43 @@ GpuFeatureStatus GetGLFeatureStatus(const std::set<int>& blocklisted_features,
 
 GpuFeatureStatus GetSkiaGraphiteFeatureStatus(
     const std::set<int>& blocklisted_features,
-    const GpuPreferences& gpu_preferences) {
+    const GpuPreferences& gpu_preferences,
+    const base::CommandLine* command_line) {
   if (blocklisted_features.count(GPU_FEATURE_TYPE_SKIA_GRAPHITE)) {
     return kGpuFeatureStatusBlocklisted;
   }
+  if (gpu_preferences.gr_context_type != GrContextType::kGraphiteDawn) {
+    return kGpuFeatureStatusDisabled;
+  }
+  const bool can_use_graphite = [command_line]() -> bool {
+#if BUILDFLAG(IS_APPLE)
+    constexpr gl::ANGLEImplementation kRequired =
+        gl::ANGLEImplementation::kMetal;
+#elif BUILDFLAG(IS_WIN)
+    constexpr gl::ANGLEImplementation kRequired =
+        gl::ANGLEImplementation::kD3D11;
+#else
+    constexpr gl::ANGLEImplementation kRequired =
+        gl::ANGLEImplementation::kNone;
+#endif
+    // Allow SwiftShader for testing.
+    if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader) {
+      return true;
+    }
+    if (kRequired == gl::ANGLEImplementation::kNone ||
+        gl::GetANGLEImplementation() == kRequired) {
+      return true;
+    }
+    if (command_line->HasSwitch(switches::kEnableSkiaGraphite)) {
+      return true;
+    }
+    return false;
+  }();
+  if (!can_use_graphite) {
+    return kGpuFeatureStatusDisabled;
+  }
 #if BUILDFLAG(SKIA_USE_DAWN)
-  if (gpu_preferences.gr_context_type == GrContextType::kGraphiteDawn) {
+  if (features::IsSkiaGraphiteEnabled(command_line)) {
     return kGpuFeatureStatusEnabled;
   }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
@@ -645,7 +681,8 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_VULKAN] =
       GetVulkanFeatureStatus(blocklisted_features, gpu_preferences);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
-      GetSkiaGraphiteFeatureStatus(blocklisted_features, gpu_preferences);
+      GetSkiaGraphiteFeatureStatus(blocklisted_features, gpu_preferences,
+                                   command_line);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBNN] =
       GetWebNNFeatureStatus(blocklisted_features);
   gpu_feature_info
@@ -723,6 +760,57 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
   SetProcessGlWorkaroundsFromGpuFeatures(gpu_feature_info);
 
   return gpu_feature_info;
+}
+
+GrContextType GpuModeToGrContextType(GpuMode mode) {
+  switch (mode) {
+    case GpuMode::HARDWARE_GL:
+      return GrContextType::kGL;
+    case GpuMode::HARDWARE_VULKAN:
+      return GrContextType::kVulkan;
+    case GpuMode::HARDWARE_GRAPHITE:
+      return GrContextType::kGraphiteDawn;
+    case GpuMode::UNKNOWN:
+    case GpuMode::SOFTWARE_GL:
+    case GpuMode::DISPLAY_COMPOSITOR:
+      return GrContextType::kNone;
+  }
+}
+
+bool IsGrContextTypeSupported(GrContextType gr_context_type,
+                              const GpuFeatureInfo& gpu_feature_info) {
+  switch (gr_context_type) {
+    case GrContextType::kGraphiteDawn:
+      return gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+             kGpuFeatureStatusEnabled;
+    case GrContextType::kVulkan:
+      return gpu_feature_info.status_values[GPU_FEATURE_TYPE_VULKAN] ==
+             kGpuFeatureStatusEnabled;
+    case GrContextType::kGL:
+      return gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] ==
+             kGpuFeatureStatusEnabled;
+    case GrContextType::kNone:
+      return true;
+  }
+}
+
+bool TryFallbackGrContextTypesIfNeeded(GpuFeatureInfo& gpu_feature_info,
+                                       GpuPreferences& gpu_preferences,
+                                       const GPUInfo& gpu_info,
+                                       base::CommandLine* command_line) {
+  while (true) {
+    const bool supported = IsGrContextTypeSupported(
+        gpu_preferences.gr_context_type, gpu_feature_info);
+    if (supported || gpu_preferences.fallback_gr_context_types.empty()) {
+      return supported;
+    }
+    // Switch to the next fallback type and re-evaluate the blocklist.
+    gpu_preferences.gr_context_type =
+        gpu_preferences.fallback_gr_context_types.front();
+    gpu_preferences.fallback_gr_context_types.pop_front();
+    gpu_feature_info =
+        ComputeGpuFeatureInfo(gpu_info, gpu_preferences, command_line, nullptr);
+  }
 }
 
 void SetKeysForCrashLogging(const GPUInfo& gpu_info) {

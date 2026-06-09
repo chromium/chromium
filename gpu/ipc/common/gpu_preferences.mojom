@@ -93,6 +93,7 @@ struct GpuPreferences {
   array<uint32> ignored_gpu_blocklist_entries;
   bool watchdog_starts_backgrounded;
   GrContextType gr_context_type;
+  array<GrContextType> fallback_gr_context_types;
   VulkanImplementationName use_vulkan;
   bool enable_vulkan_protected_memory;
   bool disable_vulkan_surface;

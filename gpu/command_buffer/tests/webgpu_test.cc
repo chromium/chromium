@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/client/webgpu_implementation.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
+#include "gpu/config/gpu_switches.h"
 #include "gpu/config/gpu_test_config.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 #include "gpu/ipc/webgpu_in_process_context.h"
@@ -102,6 +103,8 @@ void WebGPUTest::Initialize(const Options& options) {
           base::CommandLine::ForCurrentProcess());
   if (options.use_skia_graphite) {
     gpu_preferences.gr_context_type = gpu::GrContextType::kGraphiteDawn;
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnableSkiaGraphite);
   } else {
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && BUILDFLAG(USE_DAWN)
     gpu_preferences.use_vulkan = gpu::VulkanImplementationName::kNative;

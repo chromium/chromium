@@ -8,8 +8,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "gpu/config/gpu_blocklist.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
+#include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_feature_type.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_info.h"
+#include "gpu/config/gpu_mode.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -145,6 +148,87 @@ TEST(GpuUtilTest, GetGpuFeatureInfo_SoftwareRenderingFromFeatureFlag) {
                          active_blocklist_entry_ids.end(), 153),
               0);
   }
+}
+
+// Graphite is enabled; no fallback should occur.
+TEST(GpuUtilTest, GrContextType_GraphiteValidNoFallback) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  GPUInfo gpu_info;
+  GpuPreferences gpu_preferences;
+  gpu_preferences.gr_context_type = GrContextType::kGraphiteDawn;
+  gpu_preferences.fallback_gr_context_types = {GrContextType::kGL};
+
+  GpuFeatureInfo gpu_feature_info =
+      ComputeGpuFeatureInfo(gpu_info, gpu_preferences, &command_line, nullptr);
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
+      kGpuFeatureStatusEnabled;
+
+  EXPECT_TRUE(TryFallbackGrContextTypesIfNeeded(
+      gpu_feature_info, gpu_preferences, gpu_info, &command_line));
+  EXPECT_EQ(gpu_preferences.gr_context_type, GrContextType::kGraphiteDawn);
+  ASSERT_EQ(gpu_preferences.fallback_gr_context_types.size(), 1u);
+  EXPECT_EQ(gpu_preferences.fallback_gr_context_types[0], GrContextType::kGL);
+}
+
+// Graphite is blocklisted; should fall back to GL.
+TEST(GpuUtilTest, GrContextType_GraphiteFallbackToGL) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  GPUInfo gpu_info;
+  GpuPreferences gpu_preferences;
+  gpu_preferences.gr_context_type = GrContextType::kGraphiteDawn;
+  gpu_preferences.fallback_gr_context_types = {GrContextType::kGL};
+
+  GpuFeatureInfo gpu_feature_info =
+      ComputeGpuFeatureInfo(gpu_info, gpu_preferences, &command_line, nullptr);
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
+      kGpuFeatureStatusBlocklisted;
+
+  EXPECT_TRUE(TryFallbackGrContextTypesIfNeeded(
+      gpu_feature_info, gpu_preferences, gpu_info, &command_line));
+  EXPECT_EQ(gpu_preferences.gr_context_type, GrContextType::kGL);
+  EXPECT_TRUE(gpu_preferences.fallback_gr_context_types.empty());
+}
+
+// Graphite is blocklisted and no fallback is available;
+// TryFallbackGrContextTypesIfNeeded should return false.
+TEST(GpuUtilTest, GrContextType_GraphiteNoFallbackAvailable) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  GPUInfo gpu_info;
+  GpuPreferences gpu_preferences;
+  gpu_preferences.gr_context_type = GrContextType::kGraphiteDawn;
+
+  GpuFeatureInfo gpu_feature_info =
+      ComputeGpuFeatureInfo(gpu_info, gpu_preferences, &command_line, nullptr);
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
+      kGpuFeatureStatusBlocklisted;
+
+  EXPECT_FALSE(TryFallbackGrContextTypesIfNeeded(
+      gpu_feature_info, gpu_preferences, gpu_info, &command_line));
+  EXPECT_EQ(gpu_preferences.gr_context_type, GrContextType::kGraphiteDawn);
+}
+
+// Graphite is blocklisted with fallbacks [kVulkan, kGL] (kGL tried first);
+// should stop at GL, leaving kVulkan in the fallback list.
+TEST(GpuUtilTest, GrContextType_GraphiteFallbackToGLWithVulkanRemaining) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  GPUInfo gpu_info;
+  GpuPreferences gpu_preferences;
+  gpu_preferences.gr_context_type = GrContextType::kGraphiteDawn;
+  // kGL at front (tried first), kVulkan at back.
+  gpu_preferences.fallback_gr_context_types = {GrContextType::kGL,
+                                               GrContextType::kVulkan};
+
+  GpuFeatureInfo gpu_feature_info =
+      ComputeGpuFeatureInfo(gpu_info, gpu_preferences, &command_line, nullptr);
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
+      kGpuFeatureStatusBlocklisted;
+
+  EXPECT_TRUE(TryFallbackGrContextTypesIfNeeded(
+      gpu_feature_info, gpu_preferences, gpu_info, &command_line));
+  EXPECT_EQ(gpu_preferences.gr_context_type, GrContextType::kGL);
+  ASSERT_EQ(gpu_preferences.fallback_gr_context_types.size(), 1u);
+  EXPECT_EQ(gpu_preferences.fallback_gr_context_types[0],
+            GrContextType::kVulkan);
 }
 
 }  // namespace gpu

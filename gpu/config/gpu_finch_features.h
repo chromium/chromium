@@ -95,6 +95,10 @@ GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteSmallPathAtlas);
 GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
     kSkiaGraphiteMinPathSizeForMsaa;
 
+// When enabled, the Graphite feature check (including blocklist) is deferred to
+// the GPU process rather than evaluated in the browser process.
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kLateGraphiteFeatureCheck);
+
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kGpuPersistentCache);
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kGpuPersistentCacheMetadata);
 GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
