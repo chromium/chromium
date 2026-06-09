@@ -53,6 +53,7 @@ public class AuthenticatorImplPasswordOnlyTest {
     @Mock private FidoIntentSender mIntentSender;
     @Mock private WebauthnModeProvider mModeProviderMock;
     @Mock private Fido2CredentialRequest mFido2CredentialRequestMock;
+    @Mock private WebauthnBrowserBridge.Natives mWebauthnBrowserBridgeNativesMock;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -67,6 +68,7 @@ public class AuthenticatorImplPasswordOnlyTest {
         when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.CHROME);
         when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.CHROME);
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mFido2CredentialRequestMock);
+        WebauthnBrowserBridgeJni.setInstanceForTesting(mWebauthnBrowserBridgeNativesMock);
 
         when(mWebContents.getVisibility()).thenReturn(Visibility.VISIBLE);
 

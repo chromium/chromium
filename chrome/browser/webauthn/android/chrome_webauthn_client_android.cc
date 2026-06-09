@@ -4,11 +4,15 @@
 
 #include "chrome/browser/webauthn/android/chrome_webauthn_client_android.h"
 
+#include "base/feature_list.h"
+#include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "device/fido/public/features.h"
 
 ChromeWebAuthnClientAndroid::ChromeWebAuthnClientAndroid() = default;
 
@@ -41,4 +45,15 @@ void ChromeWebAuthnClientAndroid::CleanupWebAuthnRequest(
       WebAuthnRequestDelegateAndroid::GetRequestDelegate(
           content::WebContents::FromRenderFrameHost(frame_host));
   webauthn_request_delegate->CleanupWebAuthnRequest(frame_host);
+}
+
+bool ChromeWebAuthnClientAndroid::ShouldDisallowCredentialRequest(
+    content::RenderFrameHost* render_frame_host) {
+  if (!base::FeatureList::IsEnabled(device::kWebAuthnActorCheck) ||
+      !base::FeatureList::IsEnabled(password_manager::features::kActorLogin)) {
+    return false;
+  }
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  return actor::HaveActiveTaskForContents(web_contents);
 }

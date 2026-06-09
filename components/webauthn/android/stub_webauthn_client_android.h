@@ -41,6 +41,8 @@ class StubWebAuthnClientAndroid : public WebAuthnClientAndroid {
       base::RepeatingCallback<void(NonCredentialReturnReason)>
           non_credential_callback) override;
   void CleanupWebAuthnRequest(content::RenderFrameHost* frame_host) override;
+  bool ShouldDisallowCredentialRequest(
+      content::RenderFrameHost* render_frame_host) override;
 };
 
 }  // namespace webauthn

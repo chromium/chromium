@@ -7,6 +7,8 @@ package org.chromium.components.webauthn;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -32,8 +34,16 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.Authenticator;
+import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.blink.mojom.GetCredentialOptions;
+import org.chromium.blink.mojom.GetCredentialResponse;
+import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
+import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.WebAuthnClientCapability;
+import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.url.GURL;
@@ -57,6 +67,8 @@ public class AuthenticatorImplTest {
     @Mock private FidoIntentSender mIntentSender;
     @Mock private WebauthnModeProvider mModeProviderMock;
     @Mock private Fido2CredentialRequest mFido2CredentialRequestMock;
+    @Mock private WebauthnBrowserBridge.Natives mWebauthnBrowserBridgeNativesMock;
+    @Mock private UkmRecorder.Natives mUkmRecorderNativesMock;
 
     @Captor private ArgumentCaptor<IsUvpaaResponseCallback> mIsUvpaaCallbackCaptor;
     @Captor private ArgumentCaptor<WebAuthnClientCapability[]> mCapabilitiesCaptor;
@@ -86,6 +98,10 @@ public class AuthenticatorImplTest {
         when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.CHROME);
         when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.CHROME);
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mFido2CredentialRequestMock);
+        WebauthnBrowserBridgeJni.setInstanceForTesting(mWebauthnBrowserBridgeNativesMock);
+        UkmRecorderJni.setInstanceForTesting(mUkmRecorderNativesMock);
+        when(mWebContents.getVisibility()).thenReturn(Visibility.VISIBLE);
+        GpmBrowserOptionsHelper.setIsIncognitoExtraUntilTearDown(false);
 
         invokeIsUvpaaCallback(true);
         mAuthenticator =
@@ -102,6 +118,8 @@ public class AuthenticatorImplTest {
     public void tearDown() {
         WebauthnModeProvider.setInstanceForTesting(null);
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(null);
+        WebauthnBrowserBridgeJni.setInstanceForTesting(null);
+        UkmRecorderJni.setInstanceForTesting(null);
     }
 
     @Test
@@ -296,5 +314,116 @@ public class AuthenticatorImplTest {
         assertThrows(
                 AssertionError.class,
                 () -> authenticator.getCredential(/* options= */ null, /* callback= */ null));
+    }
+
+    @Test
+    public void testMakeCredential_blockedByEmbedder() {
+        when(mWebauthnBrowserBridgeNativesMock.shouldDisallowCredentialRequest(mRenderFrameHost))
+                .thenReturn(true);
+
+        Authenticator.MakeCredential_Response callback =
+                mock(Authenticator.MakeCredential_Response.class);
+        PublicKeyCredentialCreationOptions options = new PublicKeyCredentialCreationOptions();
+        mAuthenticator.makeCredential(options, callback);
+
+        verify(callback).call(eq(AuthenticatorStatus.NOT_ALLOWED_ERROR), any(), any());
+        verify(mFido2CredentialRequestMock, never())
+                .handleMakeCredentialRequest(any(), any(), any(), any(), any());
+        verify(mUkmRecorderNativesMock)
+                .recordEventWithMultipleMetrics(
+                        eq(mWebContents), eq("WebAuthn.RegisterCompletion"), any());
+    }
+
+    @Test
+    public void testMakeCredential_notBlockedByEmbedder() {
+        GmsCoreUtils.setGmsCoreVersionForTesting(GmsCoreUtils.GMSCORE_MIN_VERSION);
+        when(mWebauthnBrowserBridgeNativesMock.shouldDisallowCredentialRequest(mRenderFrameHost))
+                .thenReturn(false);
+
+        Authenticator.MakeCredential_Response callback =
+                mock(Authenticator.MakeCredential_Response.class);
+        PublicKeyCredentialCreationOptions options = new PublicKeyCredentialCreationOptions();
+        mAuthenticator.makeCredential(options, callback);
+
+        verify(callback, never()).call(anyInt(), any(), any());
+        verify(mFido2CredentialRequestMock)
+                .handleMakeCredentialRequest(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    public void testGetCredential_blockedByEmbedder() {
+        when(mWebauthnBrowserBridgeNativesMock.shouldDisallowCredentialRequest(mRenderFrameHost))
+                .thenReturn(true);
+
+        Authenticator.GetCredential_Response callback =
+                mock(Authenticator.GetCredential_Response.class);
+        GetCredentialOptions options = new GetCredentialOptions();
+        mAuthenticator.getCredential(options, callback);
+
+        ArgumentCaptor<GetCredentialResponse> responseCaptor =
+                ArgumentCaptor.forClass(GetCredentialResponse.class);
+        verify(callback).call(responseCaptor.capture());
+        GetCredentialResponse response = responseCaptor.getValue();
+        assertEquals(GetCredentialResponse.Tag.GetAssertionResponse, response.which());
+        assertEquals(
+                AuthenticatorStatus.NOT_ALLOWED_ERROR, response.getGetAssertionResponse().status);
+
+        verify(mFido2CredentialRequestMock, never())
+                .handleGetCredentialRequest(any(), any(), any(), any());
+        verify(mUkmRecorderNativesMock)
+                .recordEventWithMultipleMetrics(
+                        eq(mWebContents), eq("WebAuthn.SignCompletion"), any());
+    }
+
+    @Test
+    public void testGetCredential_notBlockedByEmbedder() {
+        GmsCoreUtils.setGmsCoreVersionForTesting(GmsCoreUtils.GMSCORE_MIN_VERSION);
+        when(mWebauthnBrowserBridgeNativesMock.shouldDisallowCredentialRequest(mRenderFrameHost))
+                .thenReturn(false);
+
+        Authenticator.GetCredential_Response callback =
+                mock(Authenticator.GetCredential_Response.class);
+        GetCredentialOptions options = new GetCredentialOptions();
+        options.publicKey = new PublicKeyCredentialRequestOptions();
+        mAuthenticator.getCredential(options, callback);
+
+        verify(callback, never()).call(any());
+        verify(mFido2CredentialRequestMock).handleGetCredentialRequest(any(), any(), any(), any());
+    }
+
+    @Test
+    public void testMakeCredential_blockedByEmbedder_notChrome() {
+        GmsCoreUtils.setGmsCoreVersionForTesting(300000000);
+        when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
+        when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.APP);
+        when(mWebauthnBrowserBridgeNativesMock.shouldDisallowCredentialRequest(mRenderFrameHost))
+                .thenReturn(true);
+
+        Authenticator.MakeCredential_Response callback =
+                mock(Authenticator.MakeCredential_Response.class);
+        PublicKeyCredentialCreationOptions options = new PublicKeyCredentialCreationOptions();
+        mAuthenticator.makeCredential(options, callback);
+
+        verify(callback, never()).call(anyInt(), any(), any());
+        verify(mFido2CredentialRequestMock)
+                .handleMakeCredentialRequest(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    public void testGetCredential_blockedByEmbedder_notChrome() {
+        GmsCoreUtils.setGmsCoreVersionForTesting(300000000);
+        when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
+        when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.APP);
+        when(mWebauthnBrowserBridgeNativesMock.shouldDisallowCredentialRequest(mRenderFrameHost))
+                .thenReturn(true);
+
+        Authenticator.GetCredential_Response callback =
+                mock(Authenticator.GetCredential_Response.class);
+        GetCredentialOptions options = new GetCredentialOptions();
+        options.publicKey = new PublicKeyCredentialRequestOptions();
+        mAuthenticator.getCredential(options, callback);
+
+        verify(callback, never()).call(any());
+        verify(mFido2CredentialRequestMock).handleGetCredentialRequest(any(), any(), any(), any());
     }
 }

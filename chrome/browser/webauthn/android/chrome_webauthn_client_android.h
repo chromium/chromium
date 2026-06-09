@@ -33,6 +33,8 @@ class ChromeWebAuthnClientAndroid : public webauthn::WebAuthnClientAndroid {
           non_credential_callback) override;
 
   void CleanupWebAuthnRequest(content::RenderFrameHost* frame_host) override;
+  bool ShouldDisallowCredentialRequest(
+      content::RenderFrameHost* render_frame_host) override;
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_ANDROID_CHROME_WEBAUTHN_CLIENT_ANDROID_H_
