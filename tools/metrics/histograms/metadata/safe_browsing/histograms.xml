@@ -3325,6 +3325,24 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.SiteFamiliarity.Verdict{FrameType}"
+    enum="SiteFamiliarity" expires_after="2026-09-01">
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logged when the site familiarity verdict is finalized for {FrameType}
+    navigation. Records the site familiarity verdict (Familiar or Unfamiliar).
+    Only logged for non-incognito profiles when the V8 blocking feature is
+    active. Familiarity is determined by the standard site familiarity heuristic
+    (see SiteFamiliarityFetcher in the codebase).
+  </summary>
+  <token key="FrameType">
+    <variant name="" summary="any (top-frame or cross-site subframe)"/>
+    <variant name=".Subframe" summary="a cross-site subframe"/>
+    <variant name=".TopFrame" summary="a top-frame"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.SiteProtection.FamiliarityHeuristic"
     enum="SiteFamiliarityHeuristicName" expires_after="2026-11-15">
   <owner>jacastro@chromium.org</owner>

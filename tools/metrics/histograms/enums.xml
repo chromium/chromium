@@ -25536,6 +25536,15 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="Notification interaction"/>
 </enum>
 
+<!-- LINT.IfChange(SiteFamiliarity) -->
+
+<enum name="SiteFamiliarity">
+  <int value="0" label="Familiar"/>
+  <int value="1" label="Unfamiliar"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/site_protection/site_familiarity_fetcher.h:SiteFamiliarity) -->
+
 <!-- LINT.IfChange(SiteInstanceProcessAssignment) -->
 
 <enum name="SiteInstanceProcessAssignment">
