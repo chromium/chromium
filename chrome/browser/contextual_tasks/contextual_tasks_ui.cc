@@ -501,6 +501,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       contextual_tasks::kContextualTasksNextboxMaxFileSize.Get());
   // Enable typed suggest.
   source->AddBoolean("composeboxShowTypedSuggest", false);
+  source->AddBoolean("useContextualTasksComposeboxFork",
+                     base::FeatureList::IsEnabled(
+                         contextual_tasks::kContextualTasksComposeboxFork));
   // Disable ZPS.
   source->AddBoolean(
       "composeboxShowZps",

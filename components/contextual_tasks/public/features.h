@@ -71,6 +71,9 @@ BASE_DECLARE_FEATURE(kEnergyEffectInNextbox);
 // Fixes the composebox jump.
 BASE_DECLARE_FEATURE(kContextualTasksComposeboxJumpFix);
 
+// Switches the Contextual Tasks composebox to the forked embedder element.
+BASE_DECLARE_FEATURE(kContextualTasksComposeboxFork);
+
 // Enables the use of a rounded clip-path for the composebox.
 BASE_DECLARE_FEATURE(kContextualTasksRoundedClipPath);
 

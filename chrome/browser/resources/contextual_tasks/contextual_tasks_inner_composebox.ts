@@ -66,7 +66,9 @@ export interface ContextualTasksInnerComposeboxInterface {
       uuidToDelete: UnguessableToken, fromUserAction?: boolean,
       fromAutoSuggestedChip?: boolean): ComposeboxFile|null;
   focusInput(): void;
+  getAutomaticActiveTabChipElement(): HTMLElement|null;
   getDropTarget(): HTMLElement;
+  getHasAutomaticActiveTabChipToken(): boolean;
   hasFiles(): boolean;
   injectInput(
       title: string, thumbnail: string, fileToken: UnguessableToken,
@@ -198,6 +200,16 @@ export class
   drag and drop handler can access addDroppedFiles(). */
   getDropTarget() {
     return this;
+  }
+
+  getAutomaticActiveTabChipElement(): HTMLElement|null {
+    // TODO: Migrate automatic active tab behavior.
+    return null;
+  }
+
+  getHasAutomaticActiveTabChipToken(): boolean {
+    // TODO: Migrate automatic active tab behavior.
+    return false;
   }
 
   injectInput(
