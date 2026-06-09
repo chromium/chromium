@@ -10,11 +10,13 @@
 #import "base/command_line.h"
 #import "base/containers/flat_set.h"
 #import "base/memory/raw_ptr.h"
+#import "base/sequence_checker.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/commerce/core/commerce_constants.h"
 #import "components/commerce/core/commerce_feature_list.h"
@@ -83,7 +85,6 @@
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/thread/web_task_traits.h"
-#import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -91,6 +92,11 @@ namespace {
 
 // A command line flag to override the default sync threshold.
 const char kTabResumptionThresholdParameter[] = "tab-resumption-sync-threshold";
+
+// Type of the parameter of OnDemandOptimizationGuideDecisionRepeatingCallback.
+using OnDemandOptimizationGuideDecisionResult =
+    base::flat_map<optimization_guide::proto::OptimizationType,
+                   optimization_guide::OptimizationGuideDecisionWithMetadata>;
 
 const base::TimeDelta TabResumptionForXDevicesTimeThreshold() {
   const base::CommandLine* command_line =
@@ -169,9 +175,7 @@ void AddProductImageIfApplicable(
 }
 
 void ConfigureTabResumptionItemForShopCard(
-    const base::flat_map<
-        optimization_guide::proto::OptimizationType,
-        optimization_guide::OptimizationGuideDecisionWithMetadata>& decisions,
+    const OnDemandOptimizationGuideDecisionResult& decisions,
     TabResumptionConfig* config,
     const GURL& url) {
   auto iter = decisions.find(optimization_guide::proto::PRICE_TRACKING);
@@ -209,11 +213,7 @@ void ConfigureTabResumptionItemForShopCard(
         base::UTF8ToUTF16(price_tracking_data->buyable_product().title()),
         GetHostnameFromGURL(url));
   }
-
-
 }
-
-
 
 }  // namespace
 
@@ -310,6 +310,10 @@ class TabResumptionMediatorProxy {
   // Whether the item is currently presented as Top Module by Magic Stack.
   BOOL _currentlyTopModule;
   PrefBackedBoolean* _tabResumptionDisabled;
+
+  // Used to ensure that the methods of TabResumptionMediator are called on
+  // the correct sequence (as the object is sequence bound).
+  SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (instancetype)initWithLocalState:(PrefService*)localState
@@ -368,6 +372,7 @@ class TabResumptionMediatorProxy {
 }
 
 - (void)disconnect {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _syncedSessionsObserverBridge.reset();
   if (_startSurfaceObserver) {
     _recentTabBrowserAgent->RemoveObserver(_startSurfaceObserver.get());
@@ -399,6 +404,7 @@ class TabResumptionMediatorProxy {
 #pragma mark - Public methods
 
 - (void)openTabResumptionItem:(TabResumptionConfig*)config {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self.contentSuggestionsMetricsRecorder
       recordTabResumptionTabOpened:config.shopCardData];
   tab_resumption_prefs::SetTabResumptionLastOpenedTabURL(config.tabURL,
@@ -444,6 +450,7 @@ class TabResumptionMediatorProxy {
 
 
 - (void)openDistantTab:(TabResumptionConfig*)config {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   ProfileIOS* profile = _browser->GetProfile();
   sync_sessions::OpenTabsUIDelegate* openTabsDelegate =
       SessionSyncServiceFactory::GetForProfile(profile)
@@ -473,10 +480,12 @@ class TabResumptionMediatorProxy {
 }
 
 - (void)disableModule {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   tab_resumption_prefs::DisableTabResumption(_profilePrefs);
 }
 
 - (void)setDelegate:(id<TabResumptionMediatorDelegate>)delegate {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _delegate = delegate;
   if (_delegate) {
     [self fetchLastTabResumptionItem];
@@ -487,6 +496,7 @@ class TabResumptionMediatorProxy {
 
 - (void)magicStackModule:(MagicStackModule*)magicStackModule
      wasDisplayedAtIndex:(NSUInteger)index {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   CHECK(self.itemConfig == magicStackModule);
   _currentlyTopModule = (index == 0);
   switch (self.itemConfig.itemType) {
@@ -506,6 +516,7 @@ class TabResumptionMediatorProxy {
 #pragma mark - Boolean Observer
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (observableBoolean == _tabResumptionDisabled) {
     if (!observableBoolean.value) {
       [self.delegate removeTabResumptionModule];
@@ -516,6 +527,7 @@ class TabResumptionMediatorProxy {
 #pragma mark - SyncObserverBridge
 
 - (void)onSyncStateChanged {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   // If tabs are not synced, hide the tab resumption tile.
   if (!_syncService->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kTabs)) {
@@ -527,6 +539,7 @@ class TabResumptionMediatorProxy {
 
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kCleared: {
       // If the user is signed out, remove the tab resumption tile.
@@ -542,12 +555,14 @@ class TabResumptionMediatorProxy {
 #pragma mark - SyncedSessionsObserver
 
 - (void)onForeignSessionsChanged {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self fetchLastTabResumptionItem];
 }
 
 #pragma mark - StartSurfaceRecentTabObserving
 
 - (void)mostRecentTabWasRemoved:(web::WebState*)webState {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (self.itemConfig && self.itemConfig.itemType == kMostRecentTab) {
     [self.delegate removeTabResumptionModule];
     _currentlyTopModule = NO;
@@ -557,10 +572,12 @@ class TabResumptionMediatorProxy {
 
 - (void)mostRecentTab:(web::WebState*)webState
     faviconUpdatedWithImage:(UIImage*)image {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 }
 
 - (void)mostRecentTab:(web::WebState*)webState
       titleWasUpdated:(NSString*)title {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 }
 
 #pragma mark - Private
@@ -568,12 +585,14 @@ class TabResumptionMediatorProxy {
 // Updates the Tab Resumption card view for the configuration of a given
 // `config`.
 - (void)updateCardWithConfig:(TabResumptionConfig*)config {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self.itemConfig reconfigureWithConfig:config];
   [self.delegate tabResumptionMediatorDidReconfigureItem];
 }
 
 // Fetches the item to display from the model.
 - (void)fetchLastTabResumptionItem {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (tab_resumption_prefs::IsTabResumptionDisabled(_profilePrefs)) {
     return;
   }
@@ -627,6 +646,7 @@ class TabResumptionMediatorProxy {
 
 // Fetches a relevant image for the `config` to display.
 - (void)fetchImageForItem:(TabResumptionConfig*)config {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if ([self isPendingItem:config]) {
     // The item was already fetched or is being fetched, ignore it.
     return;
@@ -653,56 +673,68 @@ class TabResumptionMediatorProxy {
 // product image and updates the card when this data is availalbe.
 // This reduces the overall latency of the card.
 - (void)fetchPriceDropIfApplicable:(TabResumptionConfig*)config {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!_shoppingService || !_shoppingService->IsRegionLockedFeatureEnabled(
                                commerce::kTabResumptionShopCard)) {
     return;
   }
   __weak TabResumptionMediator* weakSelf = self;
-  web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
-                                             [weakSelf fetchPriceDrop:config];
-                                           }));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf fetchPriceDrop:config];
+      }));
 }
 
 - (void)fetchPriceDrop:(TabResumptionConfig*)config {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   __weak __typeof(self) weakSelf = self;
   TabResumptionMediatorProxy::CanApplyOptimizationOnDemand(
       _optimizationGuideService, config.tabURL,
       optimization_guide::proto::PRICE_TRACKING,
       optimization_guide::proto::RequestContext::CONTEXT_SHOP_CARD,
-      base::BindRepeating(^(
-          const GURL& url,
-          const base::flat_map<
-              optimization_guide::proto::OptimizationType,
-              optimization_guide::OptimizationGuideDecisionWithMetadata>&
-              decisions) {
-        TabResumptionMediator* strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
+      base::BindRepeating(
+          ^(const GURL& url,
+            const OnDemandOptimizationGuideDecisionResult& decisions) {
+            [weakSelf configureItem:config withDecisions:decisions URL:url];
+          }));
+}
 
-        ConfigureTabResumptionItemForShopCard(decisions, config, url);
-        if (![strongSelf isPendingItem:config]) {
-          // The item was already fetched or is being fetched, ignore it.
-          return;
-        }
+// Invoked from OptimizationGuideService with the decision whether the
+// optimization can be applied for `config`.
+- (void)configureItem:(TabResumptionConfig*)config
+        withDecisions:(const OnDemandOptimizationGuideDecisionResult&)decisions
+                  URL:(const GURL&)URL {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  ConfigureTabResumptionItemForShopCard(decisions, config, URL);
+  if (![self isPendingItem:config]) {
+    // The item was already fetched or is being fetched, ignore it.
+    return;
+  }
 
-        web::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(^{
-              if (config.shopCardData.productImageURL.has_value()) {
-                [strongSelf
-                    salientImageURLReceived:GURL(config.shopCardData
-                                                     .productImageURL.value())
-                                    forItem:config
-                                updateImage:YES];
-              } else {
-                [self updateCardWithConfig:config];
-              }
-            }));
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf priceDropFetched:config];
       }));
+}
+
+// Invoked to update the item for `config` after the price drop has been
+// fetched and the optimization guide decision received.
+- (void)priceDropFetched:(TabResumptionConfig*)config {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  const auto& productImageURL = config.shopCardData.productImageURL;
+  if (productImageURL.has_value()) {
+    [self salientImageURLReceived:GURL(productImageURL.value())
+                          forItem:config
+                      updateImage:YES];
+  } else {
+    [self updateCardWithConfig:config];
+  }
 }
 
 // Fetches the snapshot of the tab showing `config`.
 - (void)fetchSnapshotForItem:(TabResumptionConfig*)config {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!config.localWebState) {
     return;
   }
@@ -728,6 +760,7 @@ class TabResumptionMediatorProxy {
 
 // The snapshot of the tab showing `config` was fetched.
 - (void)snapshotFetched:(UIImage*)image forItem:(TabResumptionConfig*)config {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!image) {
     return;
   }
@@ -740,6 +773,7 @@ class TabResumptionMediatorProxy {
 - (void)salientImageURLReceived:(const GURL&)URL
                         forItem:(TabResumptionConfig*)config
                     updateImage:(BOOL)updateImage {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   __weak TabResumptionMediator* weakSelf = self;
   if (!URL.is_valid() || !URL.SchemeIsCryptographic() ||
       !base::EndsWith(URL.GetHost(), kGStatic)) {
@@ -760,6 +794,7 @@ class TabResumptionMediatorProxy {
 - (void)salientImageReceived:(const std::string&)imageData
                      forItem:(TabResumptionConfig*)config
                  updateImage:(BOOL)updateImage {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   UIImage* image =
       [UIImage imageWithData:[NSData dataWithBytes:imageData.c_str()
                                             length:imageData.size()]];
@@ -776,6 +811,7 @@ class TabResumptionMediatorProxy {
 
 // Fetches the favicon for `config`.
 - (void)fetchFaviconForItem:(TabResumptionConfig*)config {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   __weak TabResumptionMediator* weakSelf = self;
   if (!_faviconLoader) {
     return;
@@ -792,6 +828,7 @@ class TabResumptionMediatorProxy {
 - (void)faviconReceived:(FaviconAttributes*)attributes
                  cached:(BOOL)cached
                 forItem:(TabResumptionConfig*)config {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (config.faviconImage || !cached) {
     if ([UIImagePNGRepresentation(config.faviconImage)
             isEqual:UIImagePNGRepresentation(attributes.faviconImage)]) {
@@ -804,6 +841,7 @@ class TabResumptionMediatorProxy {
 
 // Sends `config` to  TabResumption to be displayed.
 - (void)showItem:(TabResumptionConfig*)config {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (![self isPendingItem:config]) {
     // A new item has been fetched, ignore.
     return;
@@ -827,6 +865,7 @@ class TabResumptionMediatorProxy {
                                                session:(const synced_sessions::
                                                             DistantSession*)
                                                            session {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   TabResumptionConfig* config = [[TabResumptionConfig alloc]
       initWithItemType:TabResumptionItemType::kLastSyncedTab];
   config.sessionName = base::SysUTF8ToNSString(session->name);
@@ -842,6 +881,7 @@ class TabResumptionMediatorProxy {
 // Creates a TabResumptionConfig corresponding to the `webState`.
 - (void)fetchMostRecentTabItemFromWebState:(web::WebState*)webState
                                 openedTime:(base::Time)openedTime {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   TabResumptionConfig* config = [[TabResumptionConfig alloc]
       initWithItemType:TabResumptionItemType::kMostRecentTab];
   config.tabTitle = base::SysUTF16ToNSString(webState->GetTitle());
@@ -857,6 +897,7 @@ class TabResumptionMediatorProxy {
 
 // Compares `config` and `_pendingItem` on tabURL and tabTitle field.
 - (BOOL)isPendingItem:(TabResumptionConfig*)config {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (_pendingItem == nil) {
     return NO;
   }
