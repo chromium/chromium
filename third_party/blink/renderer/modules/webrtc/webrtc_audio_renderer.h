@@ -140,9 +140,6 @@ class MODULES_EXPORT WebRtcAudioRenderer
   scoped_refptr<MediaStreamAudioRenderer> CreateSharedAudioRendererProxy(
       MediaStreamDescriptor* media_stream_descriptor);
 
-  // Used to DCHECK on the expected state.
-  bool IsStarted() const;
-
   // Accessors to the sink audio parameters.
   int channels() const { return sink_params_.channels(); }
   int sample_rate() const { return sink_params_.sample_rate(); }

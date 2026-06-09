@@ -373,10 +373,6 @@ WebRtcAudioRenderer::CreateSharedAudioRendererProxy(
       std::move(on_play_state_removed));
 }
 
-bool WebRtcAudioRenderer::IsStarted() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return start_ref_count_ != 0;
-}
 
 bool WebRtcAudioRenderer::CurrentThreadIsRenderingThread() {
   return sink_->CurrentThreadIsRenderingThread();
