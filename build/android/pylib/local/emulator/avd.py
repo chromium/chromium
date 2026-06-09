@@ -1401,6 +1401,8 @@ class _AvdInstance:
       }
       if 'DISPLAY' in os.environ:
         emulator_env['DISPLAY'] = os.environ.get('DISPLAY')
+      if 'XAUTHORITY' in os.environ:
+        emulator_env['XAUTHORITY'] = os.environ.get('XAUTHORITY')
       if window:
         if 'DISPLAY' not in emulator_env:
           raise AvdException('Emulator failed to start: DISPLAY not defined')
