@@ -3,7 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import io
 import unittest
+import unittest.mock
+import zipfile
+_RealZipFile = zipfile.ZipFile
 
 import dex
 
@@ -57,6 +61,86 @@ Warning: PublicStopClientEvent is hungry.
     }
     for path, expected in cases.items():
       self.assertEqual(dex._ClassFileNestPrefix(path), expected, msg=path)
+
+  @unittest.mock.patch('zipfile.ZipFile')
+  def testCreateServicesMap(self, mock_zipfile):
+    def create_zip_data(files):
+      bio = io.BytesIO()
+      with _RealZipFile(bio, 'w') as z:
+        for name, content in files.items():
+          z.writestr(name, content)
+      bio.seek(0)
+      return bio
+
+    zip_data_1 = create_zip_data({
+        'META-INF/services/foo.Bar': b'impl.Bar1\n'
+    })
+    zip_data_2 = create_zip_data({
+        'META-INF/services/foo.Bar': b'impl.Bar2\n'
+    })
+    zip_data_3 = create_zip_data({
+        'META-INF/services/foo.Bar': b'impl.Bar1\n'
+    })
+    zip_data_non_conflicting = create_zip_data({
+        'META-INF/services/foo.Baz': b'impl.Baz1\n'
+    })
+    zip_data_cleanup_1 = create_zip_data({
+        'META-INF/services/org.chromium.base.test.BaseJUnit4ClassRunner$ClassCleanupHook': b'impl.Hook1\n'
+    })
+    zip_data_cleanup_2 = create_zip_data({
+        'META-INF/services/org.chromium.base.test.BaseJUnit4ClassRunner$ClassCleanupHook': b'impl.Hook2\n'
+    })
+
+    def side_effect(path, mode='r'):
+      del mode
+      if path == 'jar1.jar':
+        return _RealZipFile(zip_data_1, 'r')
+      if path == 'jar2.jar':
+        return _RealZipFile(zip_data_2, 'r')
+      if path == 'jar3.jar':
+        return _RealZipFile(zip_data_3, 'r')
+      if path == 'jar_baz.jar':
+        return _RealZipFile(zip_data_non_conflicting, 'r')
+      if path == 'cleanup1.jar':
+        return _RealZipFile(zip_data_cleanup_1, 'r')
+      if path == 'cleanup2.jar':
+        return _RealZipFile(zip_data_cleanup_2, 'r')
+      raise FileNotFoundError(path)
+
+    mock_zipfile.side_effect = side_effect
+
+    # Case 1: Same content (no conflict)
+    res = dex._CreateServicesMap(['jar1.jar', 'jar3.jar'])
+    self.assertEqual(res, {'META-INF/services/foo.Bar': 'impl.Bar1\n'})
+
+    # Case 2: Conflicting content, not in merge list -> should raise Exception
+    with self.assertRaises(Exception) as cm:
+      dex._CreateServicesMap(['jar1.jar', 'jar2.jar'])
+    self.assertIn('Conflicting contents for: META-INF/services/foo.Bar', str(cm.exception))
+
+    # Case 3: Conflicting content, but in merge list -> should merge
+    orig_merge = dex._MERGE_SERVICE_ENTRIES
+    dex._MERGE_SERVICE_ENTRIES = ('META-INF/services/foo.Bar',)
+    try:
+      res = dex._CreateServicesMap(['jar1.jar', 'jar2.jar'])
+      self.assertEqual(res, {'META-INF/services/foo.Bar': 'impl.Bar1\nimpl.Bar2\n'})
+    finally:
+      dex._MERGE_SERVICE_ENTRIES = orig_merge
+
+    # Case 4: Different services (no conflict)
+    res = dex._CreateServicesMap(['jar1.jar', 'jar_baz.jar'])
+    self.assertEqual(res, {
+        'META-INF/services/foo.Bar': 'impl.Bar1\n',
+        'META-INF/services/foo.Baz': 'impl.Baz1\n'
+    })
+
+    # Case 5: Real whitelisted service (ClassCleanupHook) -> should merge
+    res = dex._CreateServicesMap(['cleanup1.jar', 'cleanup2.jar'])
+    self.assertEqual(res, {
+        'META-INF/services/org.chromium.base.test.BaseJUnit4ClassRunner$ClassCleanupHook':
+            'impl.Hook1\nimpl.Hook2\n'
+    })
+
 
 if __name__ == '__main__':
   unittest.main()
