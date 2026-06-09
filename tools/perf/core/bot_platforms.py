@@ -696,6 +696,16 @@ def _crossbench_gma_embedder(estimated_runtime: int = 900,
                           auto_enable_field_trials=False)
 
 
+@_register('shell.embedder.benchmark')
+def _crossbench_shell_embedder(estimated_runtime: int = 900,
+                            flags: tuple[str, ...] = ()):
+  return CrossbenchConfig('shell.embedder.benchmark',
+                          'embedder',
+                          estimated_runtime=estimated_runtime,
+                          flags=flags,
+                          auto_enable_field_trials=False)
+
+
 @_register('devtools_frontend.crossbench')
 def _devtools_frontend_crossbench(estimated_runtime: int = 60,
                                   flags: tuple[str, ...] = ()):
