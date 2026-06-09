@@ -70,12 +70,4 @@ bool MaybeDecryptBuffer(base::span<uint8_t> buffer) {
   return false;
 }
 
-void SecureZeroBuffer(base::span<uint8_t> buffer) {
-#if BUILDFLAG(IS_WIN)
-  ::SecureZeroMemory(buffer.data(), buffer.size());
-#else
-  OPENSSL_cleanse(buffer.data(), buffer.size());
-#endif  // BUILDFLAG(IS_WIN)
-}
-
 }  // namespace crypto::internal

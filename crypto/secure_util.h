@@ -28,7 +28,9 @@ namespace crypto {
 CRYPTO_EXPORT bool SecureMemEqual(base::span<const uint8_t> s1,
                                   base::span<const uint8_t> s2);
 
+// Securely zero a buffer using a platform specific method.
+CRYPTO_EXPORT void SecureZeroBuffer(base::span<uint8_t> buffer);
+
 }  // namespace crypto
 
 #endif  // CRYPTO_SECURE_UTIL_H_
-

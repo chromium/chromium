@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "crypto/crypto_export.h"
+#include "crypto/secure_util.h"
 
 namespace crypto {
 
@@ -28,10 +29,6 @@ CRYPTO_EXPORT bool MaybeEncryptBuffer(base::span<uint8_t> buffer);
 // Maybe decrypt a buffer, in place. Returns true if the buffer was successfully
 // decrypted or false if unsupported by the platform or failed to decrypt.
 CRYPTO_EXPORT bool MaybeDecryptBuffer(base::span<uint8_t> buffer);
-
-// Securely zero a buffer using a platform specific method.
-CRYPTO_EXPORT void SecureZeroBuffer(base::span<uint8_t> buffer);
-
 }  // namespace internal
 
 // SecureAllocator is used by the SecureString variants below to clear the
@@ -48,7 +45,7 @@ struct CRYPTO_EXPORT SecureAllocator {
     if (p) {
       // SAFETY: deallocate() has a fixed prototype from the std library, and
       // passes an unsafe buffer, so convert it to a base::span here.
-      internal::SecureZeroBuffer(UNSAFE_BUFFERS(
+      SecureZeroBuffer(UNSAFE_BUFFERS(
           base::span<uint8_t>(reinterpret_cast<uint8_t*>(p), n * sizeof(T))));
       std::allocator<T>().deallocate(p, n);
     }
