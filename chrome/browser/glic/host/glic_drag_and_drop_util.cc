@@ -107,17 +107,17 @@ void TriggerDragDropInvoke(content::WebContents* target_web_contents,
       std::move(context), source_rfh->GetGlobalId(), PolicyCheck::kClipboard);
 
   // We specify the panel's Glic WebContents as the target surface.
-  // TODO(b/481036078): Use GlicInstance::GetInvokeTarget here when it's
-  // available.
   GlicInstance* target_instance =
       service->instance_coordinator().GetInstanceWithGlicWebContents(
           target_web_contents);
 
   if (target_instance) {
-    invoke_options.target.conversation = target_instance->id();
-  }
-
-  if (source_tab) {
+    glic::Target::Surface fallback_surface =
+        source_tab ? glic::Target::Surface(source_tab->GetHandle())
+                   : glic::Target::Surface(glic::DefaultSurface());
+    invoke_options.target =
+        target_instance->GetInvokeTarget(std::move(fallback_surface));
+  } else if (source_tab) {
     invoke_options.target.surface = source_tab->GetHandle();
   }
 
