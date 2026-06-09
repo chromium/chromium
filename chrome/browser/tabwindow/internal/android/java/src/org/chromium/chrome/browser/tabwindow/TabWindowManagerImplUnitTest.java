@@ -64,7 +64,9 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -142,7 +144,8 @@ public class TabWindowManagerImplUnitTest {
                                         mIncognitoProfile,
                                         /* tabCount= */ 0,
                                         /* incognitoTabCount= */ 0,
-                                        /* delegate= */ null),
+                                        /* delegate= */ null,
+                                        TabModelType.HEADLESS),
                                 () -> {});
                     }
                 };
@@ -645,7 +648,9 @@ public class TabWindowManagerImplUnitTest {
                 /* taskId= */ 123, /* selector= */ customSelector);
 
         Tab tab = customSelector.addMockTab();
+        ((MockTab) tab).setIsCustomTab(true);
         Tab incognitoTab = customSelector.addMockIncognitoTab();
+        ((MockTab) incognitoTab).setIsCustomTab(true);
 
         // Test getTabById.
         assertEquals(tab, mSubject.getTabById(tab.getId()));
@@ -667,6 +672,7 @@ public class TabWindowManagerImplUnitTest {
         assertEquals(tab, info.tab);
         assertEquals(customSelector, info.tabModelSelector);
         assertEquals(INVALID_WINDOW_ID, info.windowId);
+        assertEquals(TabWindowInfo.TabWindowType.CUSTOM, info.type);
 
         mSubject.unregisterCustomTabsTabModelSelector(customSelector);
         assertNull(mSubject.getTabById(tab.getId()));
@@ -1236,12 +1242,25 @@ public class TabWindowManagerImplUnitTest {
         assertEquals(tab1, info.tab);
         assertEquals(selector0, info.tabModelSelector);
         assertEquals(window0, info.windowId);
+        assertEquals(TabWindowInfo.TabWindowType.TABBED, info.type);
 
         info = mSubject.getTabWindowInfoById(tab2.getId());
         assertNotNull(info);
         assertEquals(tab2, info.tab);
         assertEquals(selector1, info.tabModelSelector);
         assertEquals(window1, info.windowId);
+        assertEquals(TabWindowInfo.TabWindowType.TABBED, info.type);
+
+        // Test headless tabs.
+        TabModelSelector headlessSelector = mSubject.requestSelectorWithoutActivity(2, mProfile);
+        MockTabModel headlessModel = (MockTabModel) headlessSelector.getModel(false);
+        Tab headlessTab = headlessModel.addTab(99);
+        info = mSubject.getTabWindowInfoById(headlessTab.getId());
+        assertNotNull(info);
+        assertEquals(headlessTab, info.tab);
+        assertEquals(headlessSelector, info.tabModelSelector);
+        assertEquals(2, info.windowId);
+        assertEquals(TabWindowInfo.TabWindowType.HEADLESS, info.type);
 
         info = mSubject.getTabWindowInfoById(tab2.getId() + 1);
         assertNull(info);

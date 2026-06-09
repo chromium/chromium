@@ -21,6 +21,7 @@ android_library("java") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/multiwindow:java",
     "//components/tab_groups:tab_groups_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
 }

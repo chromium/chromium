@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 
@@ -89,14 +90,25 @@ public class MockTabModel extends EmptyTabModel {
     private final ComprehensiveTabList mComprehensiveModel = new ComprehensiveTabList();
     private final Profile mProfile;
     private final MockTabModelDelegate mDelegate;
+    private final @TabModelType int mTabModelType;
     private boolean mIsActiveModel;
     private @Nullable TabCreator mTabCreator;
     private @Nullable TabRemover mTabRemover;
 
-    public MockTabModel(Profile profile, MockTabModelDelegate delegate) {
+    public MockTabModel(Profile profile, MockTabModelDelegate delegate, @TabModelType int type) {
         mProfile = profile;
         mDelegate = delegate;
         mTabCountSupplier.set(0);
+        mTabModelType = type;
+    }
+
+    public MockTabModel(Profile profile, MockTabModelDelegate delegate) {
+        this(profile, delegate, TabModelType.STANDARD);
+    }
+
+    @Override
+    public @TabModelType int getTabModelType() {
+        return mTabModelType;
     }
 
     public MockTab addTab(int id) {
