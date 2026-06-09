@@ -233,6 +233,28 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="All variations are restricted"/>
 </enum>
 
+<enum name="VariationsRuntimeMutabilityResult">
+  <int value="0" label="Unknown">Reserved value. This should not be used.</int>
+  <int value="1" label="Success">
+    A runtime-update was successfully applied.
+  </int>
+  <int value="2" label="Failure">
+    A runtime-update was rejected because the targeted feature was not found to
+    be enabled for runtime mutability.
+  </int>
+  <int value="3" label="Failure - State Not Supported">
+    A runtime-update was rejected because the requested feature state is not
+    supported. V0, for example, only supports the disabling of runtime-mutable
+    features.
+  </int>
+  <int value="4" label="Failure - Command Line Override">
+    The runtime-mutability of a feature has been disabled because the feature's
+    state was set via a command-line override. This is not an error, per se, but
+    is still worth logging to understand whether runtime mutability is being
+    affected by command-line overrides.
+  </int>
+</enum>
+
 <enum name="VariationsSafeModeCachedFlagsBehavior">
   <int value="0" label="Unknown"/>
   <int value="1" label="Not engaged - below threshold"/>

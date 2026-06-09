@@ -398,6 +398,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.RuntimeMutability.Error.FeatureName"
+    enum="FeatureNameHash" expires_after="2027-06-30">
+  <owner>rogerm@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Captures the hashed name of a feature for which a runtime mutability
+    operation (registration, state query, state update, etc) failed.
+  </summary>
+</histogram>
+
+<histogram name="Variations.RuntimeMutability.Result"
+    enum="VariationsRuntimeMutabilityResult" expires_after="2027-06-30">
+  <owner>rogerm@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Captures the result of applying a runtime mutability update. Recored once
+    per runtime-mutable feature update received in each downloaded variations
+    seed.
+  </summary>
+</histogram>
+
 <histogram name="Variations.SafeMode.CrashStreakDiscrepancy" units="crashes"
     expires_after="2026-11-01">
   <owner>caitlinfischer@google.com</owner>

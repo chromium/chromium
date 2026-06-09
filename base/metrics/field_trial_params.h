@@ -115,7 +115,8 @@ struct FeatureParam {
   // Calling Get() or GetWithoutCache() will activate the field trial associated
   // with |feature|. See GetFieldTrialParamValueByFeature() for more details.
   BASE_EXPORT T Get() const {
-    if (internal::IsFeatureParamWithCacheEnabled() && cache_getter) {
+    if (internal::IsFeatureParamWithCacheEnabled() && cache_getter &&
+        !feature->IsRuntimeMutable()) {
       return cache_getter(this);
     }
     return GetWithoutCache();

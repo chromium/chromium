@@ -12,7 +12,8 @@
 namespace base::internal {
 
 // Secret handshake to (try to) ensure all places that construct a base::Feature
-// go through the helper `BASE_FEATURE()` macro above.
+// go through the helper `BASE_FEATURE()` and `BASE_RUNTIME_MUTABLE_FEATURE()`
+// macros, below.
 enum class FeatureMacroHandshake { kSecret };
 
 // Storage class for feature name. This is needed so we store the feature name
@@ -38,22 +39,26 @@ StringStorage(const char (&feature)[N]) -> StringStorage<N - 1>;
 }  // namespace base::internal
 
 // Three-argument version of BASE_FEATURE macro.
-#define BASE_FEATURE_INTERNAL_3_ARGS(feature, name, default_state) \
-  constinit const base::Feature feature(                           \
-      name, default_state, base::internal::FeatureMacroHandshake::kSecret)
+#define BASE_FEATURE_INTERNAL_3_ARGS(is_runtime_mutable, feature, name, \
+                                     default_state)                     \
+  constinit const base::Feature feature(                                \
+      name, default_state, is_runtime_mutable,                          \
+      base::internal::FeatureMacroHandshake::kSecret)
 
 // Two-argument version of BASE_FEATURE macro.
-#define BASE_FEATURE_INTERNAL_2_ARGS(feature, default_state)              \
+#define BASE_FEATURE_INTERNAL_2_ARGS(is_runtime_mutable, feature,         \
+                                     default_state)                       \
   constinit const base::Feature feature(                                  \
       []() {                                                              \
         static_assert(#feature[0] == 'k');                                \
         static constexpr base::internal::StringStorage storage(#feature); \
         return storage.storage.data();                                    \
       }(),                                                                \
-      default_state, base::internal::FeatureMacroHandshake::kSecret)
+      default_state, is_runtime_mutable,                                  \
+      base::internal::FeatureMacroHandshake::kSecret)
 
-  // Helper macro to deduce the whether to use the 2 or 3 argument version of
-  // the BASE_FEATURE macro.
+// Helper macro to deduce whether to use the 2 or 3 argument version of the
+// BASE_FEATURE macro.
 #define BASE_FEATURE_INTERNAL_GET_FEATURE_MACRO(_1, _2, _3, NAME, ...) NAME
 
 // Five-argument version of BASE_FEATURE_PARAM macro.
@@ -69,7 +74,7 @@ StringStorage(const char (&feature)[N]) -> StringStorage<N - 1>;
     return base::internal::FeatureParamTraits<T>::FromCacheStorageType(     \
         storage);                                                           \
   }                                                                         \
-  } /* field_trial_params_internal */                                       \
+  } /* namespace field_trial_params_internal */                             \
   constinit const base::FeatureParam<T> feature_object_name(                \
       feature, name, default_value,                                         \
       &field_trial_params_internal::                                        \

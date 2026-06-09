@@ -6,13 +6,11 @@
 #define BASE_FEATURE_H_
 
 #include <atomic>
-#include <cstddef>
 #include <cstdint>
 #include <string_view>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/containers/span.h"
 #include "base/feature_buildflags.h"
 #include "base/feature_internal.h"
 #include "build/build_config.h"
@@ -50,6 +48,19 @@ class FeatureListTest;
 
 // Provides a definition for `kFeature` with `name` and `default_state`, e.g.
 //
+// There are two versions of this macro: one for runtime static features, whose
+// state is fixed at initialization time, and one for runtime mutable features,
+// whose state may be updated at runtime as new Variations seeds are received.
+//
+// TODO: http://crbug.com/482450632 - Runtime mutable features are not fully
+// implemented or supported; they are not yet ready for general use. Update
+// documentation when they are ready for general use.
+//
+// The feature state of runtime mutable features, and any related parameters,
+// may only be queried from the main thread. Additionally, runtime mutable
+// features must have their runtime mutability explicitly enabled via the
+// `FeatureList::EnableRuntimeMutability()` function call.
+//
 // This macro can be used in two ways:
 //
 // 1. With two arguments, to define a feature whose name is derived from the C++
@@ -57,11 +68,16 @@ class FeatureListTest;
 //    name and helps prevent typos.
 //
 //      BASE_FEATURE(kMyFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+//      BASE_RUNTIME_MUTABLE_FEATURE(kMyRuntimeMutableFeature,
+//                                   base::FEATURE_DISABLED_BY_DEFAULT);
 //
 //    This is equivalent to:
 //
 //      BASE_FEATURE(kMyFeature, "MyFeature",
 //                   base::FEATURE_DISABLED_BY_DEFAULT);
+//      BASE_RUNTIME_MUTABLE_FEATURE(kMyRuntimeMutableFeature,
+//                                   "MyRuntimeMutableFeature",
+//                                   base::FEATURE_DISABLED_BY_DEFAULT);
 //
 // 2. With three arguments, to explicitly specify the C++ identifier and the
 //    name of the feature. This form should be used only if the feature needs
@@ -70,13 +86,20 @@ class FeatureListTest;
 //
 //      BASE_FEATURE(kMyFeature, "MyFeatureName",
 //                   base::FEATURE_DISABLED_BY_DEFAULT);
+//      BASE_RUNTIME_MUTABLE_FEATURE(kMyRuntimeMutableFeature,
+//                                   "MyRuntimeMutableFeatureName",
+//                                   base::FEATURE_DISABLED_BY_DEFAULT);
 //
 // Features should *not* be defined in header files; do not use this macro in
 // header files.
 #define BASE_FEATURE(...)                        \
   BASE_FEATURE_INTERNAL_GET_FEATURE_MACRO(       \
       __VA_ARGS__, BASE_FEATURE_INTERNAL_3_ARGS, \
-      BASE_FEATURE_INTERNAL_2_ARGS)(__VA_ARGS__)
+      BASE_FEATURE_INTERNAL_2_ARGS)(false, __VA_ARGS__)
+#define BASE_RUNTIME_MUTABLE_FEATURE(...)        \
+  BASE_FEATURE_INTERNAL_GET_FEATURE_MACRO(       \
+      __VA_ARGS__, BASE_FEATURE_INTERNAL_3_ARGS, \
+      BASE_FEATURE_INTERNAL_2_ARGS)(true, __VA_ARGS__)
 
 // Provides a forward declaration for `feature_object_name` in a header file,
 // e.g.
@@ -174,17 +197,18 @@ enum FeatureState {
 // https://crsrc.org/c/docs/speed/binary_size/android_binary_size_trybot.md#Mutable-Constants
 struct BASE_EXPORT LOGICALLY_CONST Feature {
   // The type used to store the cached state of a feature. This is a uint32_t
-  // that is packed with the override state, logging information, and a caching
-  // context ID.
-  // See the comments on `cached_value` below for more details.
+  // that is packed with the override state, logging and mutability flags, and
+  // a caching context ID. See the comments on `cached_value` below for more
+  // details.
   using FeatureStateCache = uint32_t;
-  static constexpr FeatureStateCache kCachedLogGeneralMask = 0x00010000;
-  static constexpr FeatureStateCache kCachedLogEarlyMask = 0x00020000;
 
   constexpr Feature(const char* name,
                     FeatureState default_state,
+                    bool is_runtime_mutable,
                     internal::FeatureMacroHandshake)
-      : name(name), default_state(default_state) {
+      : name(name),
+        default_state(default_state),
+        cached_value(is_runtime_mutable ? kRuntimeMutabilityMask : 0) {
 #if BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX)
     if (std::string_view(name).starts_with(
             BUILDFLAG(BANNED_BASE_FEATURE_PREFIX))) {
@@ -199,6 +223,19 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
   // - a `Feature` contains internal cached state about the override state.
   Feature(const Feature&) = delete;
   Feature& operator=(const Feature&) = delete;
+
+  // Returns true if this feature is a runtime mutable feature.
+  bool IsRuntimeMutable() const;
+
+  // Returns true if this feature has runtime mutability enabled.
+  bool HasRuntimeMutabilityEnabled() const;
+
+  // Returns true if this feature has runtime mutability disabled.
+  bool HasRuntimeMutabilityDisabled() const;
+
+  // Returns true if this feature was accessed before the FeatureList was
+  // initialized.
+  bool WasAccessedEarly() const;
 
   // The name of the feature. This should be unique to each feature and is used
   // for enabling/disabling features via command line flags and experiments.
@@ -215,15 +252,18 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
   friend class FeatureList;
   friend class FeatureListTest;
 
+  // Keep this in sync with base/feature_list_internal.h:kRuntimeMutabilityMask
+  enum { kRuntimeMutabilityMask = 1 << 18 };
+
   // A packed value where the first 8 bits represent the `OverrideState` of this
-  // feature, the next 8 bits are reserved for flags (e.g. logging), and the
-  // last 16 bits are a caching context ID used to allow ScopedFeatureLists to
-  // invalidate these cached values in testing. A value of 0 in the caching
-  // context ID field indicates that this value has never been looked up and
-  // cached, a value of 1 indicates this value contains the cached
-  // `OverrideState` that was looked up via `base::FeatureList`, and any other
-  // value indicate that this cached value is only valid for a particular
-  // ScopedFeatureList instance.
+  // feature, the next 8 bits are reserved for flags (e.g. logging, runtime
+  // mutability, etc.), and the last 16 bits are a caching context ID used to
+  // allow ScopedFeatureLists to invalidate these cached values in testing. A
+  // value of 0 in the caching context ID field indicates that this value has
+  // never been looked up and cached, a value of 1 indicates this value contains
+  // the cached `OverrideState` that was looked up via `base::FeatureList`,
+  // and any other value indicate that this cached value is only valid for a
+  // particular ScopedFeatureList instance.
   //
   // Packing these values into a uint32_t makes it so that atomic operations
   // performed on this fields can be lock free.
@@ -234,7 +274,7 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
   // feature list and the cache is updated.
   // The logging bits (16 and 17) are used to ensure that we only log the
   // feature access once per session, even if the cached value is invalidated.
-  mutable std::atomic<FeatureStateCache> cached_value = 0;
+  mutable std::atomic<FeatureStateCache> cached_value;
 };
 
 }  // namespace base

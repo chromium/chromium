@@ -371,6 +371,8 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
 
   platform_field_trials->RegisterFeatureOverrides(feature_list.get());
 
+  platform_field_trials->RegisterRuntimeMutableFeatures(feature_list.get());
+
   base::FeatureList::SetInstance(std::move(feature_list));
 
   GetSeedStore()->AllowToPurgeSeedsDataFromMemory();

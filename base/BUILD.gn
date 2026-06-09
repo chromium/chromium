@@ -338,6 +338,7 @@ component("base") {
     "feature_internal.h",
     "feature_list.cc",
     "feature_list.h",
+    "feature_list_internal.h",
     "feature_visitor.h",
     "features.cc",
     "features.h",
