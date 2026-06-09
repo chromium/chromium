@@ -126,18 +126,27 @@ class COMPONENT_EXPORT(GFX) PlatformFont
   // otherwise lose the handle to the correct platform font instance.
   virtual sk_sp<SkTypeface> GetNativeSkTypeface() const = 0;
 
+  uint32_t typeface_unique_id() const { return typeface_unique_id_; }
+
   std::strong_ordering operator<=>(const PlatformFont& other) const {
     return Compare(other);
   }
 
  protected:
-  virtual ~PlatformFont() = default;
+  PlatformFont();
+  virtual ~PlatformFont();
 
   // Compares this PlatformFont with |other|.
   virtual std::strong_ordering Compare(const PlatformFont& other) const;
 
+  void set_typeface_unique_id(uint32_t id);
+
  private:
   friend class base::RefCounted<PlatformFont>;
+
+  // Cached unique ID of the Skia typeface, used to ensure stable comparison
+  // ordering.
+  uint32_t typeface_unique_id_ = 0;
 };
 
 constexpr int PlatformFont::GetFontSizeDelta(int desired_font_size) {

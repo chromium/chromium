@@ -394,6 +394,7 @@ void PlatformFontSkia::InitFromDetails(sk_sp<SkTypeface> typeface,
     return;
   }
 
+  set_typeface_unique_id(typeface_->uniqueID());
   font_size_pixels_ = font_size_pixels;
   style_ = style;
   weight_ = weight;
@@ -408,6 +409,7 @@ void PlatformFontSkia::InitFromDetails(sk_sp<SkTypeface> typeface,
 void PlatformFontSkia::InitFromPlatformFont(const PlatformFontSkia* other) {
   TRACE_EVENT0("fonts", "PlatformFontSkia::InitFromPlatformFont");
   typeface_ = other->typeface_;
+  set_typeface_unique_id(other->typeface_unique_id());
   font_family_ = other->font_family_;
   font_size_pixels_ = other->font_size_pixels_;
   style_ = other->style_;
