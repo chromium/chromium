@@ -13,10 +13,7 @@ using ::one_time_tokens::AndroidSmsOtpBackend;
 AndroidSmsOtpBackendFactory::AndroidSmsOtpBackendFactory()
     : ProfileKeyedServiceFactory(
           "AndroidSmsOtpBackendFactory",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOwnInstance)
-              .WithGuest(ProfileSelection::kOwnInstance)
-              .Build()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 AndroidSmsOtpBackendFactory::~AndroidSmsOtpBackendFactory() = default;
 
 AndroidSmsOtpBackendFactory* AndroidSmsOtpBackendFactory::GetInstance() {
