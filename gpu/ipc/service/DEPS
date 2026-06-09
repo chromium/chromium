@@ -21,10 +21,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "arc_shared_image_interface\.cc": [
+  "arc_shared_image_interface\\.cc": [
     "+chromeos/ash/experiences/arc/arc_features.h",
   ],
-  "image_decode_accelerator_stub_unittest\.cc": [
+  "image_decode_accelerator_stub_unittest\\.cc": [
     "+skia/ext/skia_memory_dump_provider.h",
   ],
 }

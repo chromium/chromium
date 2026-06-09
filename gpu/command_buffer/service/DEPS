@@ -18,7 +18,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "drm_modifiers_filter_dawn\.cc": [
+  "drm_modifiers_filter_dawn\\.cc": [
     "+third_party/libdrm/src/include/drm/drm_fourcc.h",
   ],
 }
