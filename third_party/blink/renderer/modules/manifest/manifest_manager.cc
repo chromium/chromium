@@ -155,9 +155,11 @@ void ManifestManager::RequestManifestForTesting(
 }
 
 bool ManifestManager::CanFetchManifest() {
-  // Do not fetch the manifest if we are on an opaque origin.
+  // Do not fetch the manifest if we are on an opaque origin, or if the document
+  // url is an about: url.
   return !GetSupplementable()->GetSecurityOrigin()->IsOpaque() &&
-         GetSupplementable()->Url().IsValid();
+         GetSupplementable()->Url().IsValid() &&
+         !GetSupplementable()->Url().ProtocolIsAbout();
 }
 
 void ManifestManager::RequestManifestImpl(

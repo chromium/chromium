@@ -74,6 +74,14 @@ class MockWebContentsDelegate : public WebContentsDelegate {
       PreloadingTriggerType trigger_type) override {
     return PreloadingEligibility::kEligible;
   }
+  WebContents* AddNewContents(
+      WebContents* source,
+      std::unique_ptr<WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override;
 
  private:
   raw_ptr<ManifestBrowserTest> test_ = nullptr;
@@ -108,8 +116,12 @@ class ManifestBrowserTest : public ContentBrowserTest,
   }
 
   void GetManifestAndWait() {
-    shell()->web_contents()->GetPrimaryPage().GetManifest(base::BindOnce(
-        &ManifestBrowserTest::OnGetManifest, base::Unretained(this)));
+    GetManifestAndWait(shell()->web_contents()->GetPrimaryPage());
+  }
+
+  void GetManifestAndWait(Page& page) {
+    page.GetManifest(base::BindOnce(&ManifestBrowserTest::OnGetManifest,
+                                    base::Unretained(this)));
 
     message_loop_runner_ = new MessageLoopRunner();
     message_loop_runner_->Run();
@@ -210,6 +222,19 @@ bool MockWebContentsDelegate::DidAddMessageToConsole(
     test_->OnReceivedConsoleError(message);
   }
   return false;
+}
+
+WebContents* MockWebContentsDelegate::AddNewContents(
+    WebContents* source,
+    std::unique_ptr<WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture,
+    bool* was_blocked) {
+  return test_->shell()->AddNewContents(
+      source, std::move(new_contents), target_url, disposition, window_features,
+      user_gesture, was_blocked);
 }
 
 // If a page has no manifest, requesting a manifest should return the empty
@@ -888,6 +913,37 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UniqueOrigin) {
   EXPECT_FALSE(manifest_url().is_empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   EXPECT_EQ(0u, reported_manifest_urls().size());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, AboutBlank) {
+  GURL test_url =
+      embedded_test_server()->GetURL("/manifest/sample-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ShellAddedObserver new_shell_observer;
+  ASSERT_TRUE(ExecJs(shell(),
+                     "var link = document.createElement('a');"
+                     "link.href = 'about:blank';"
+                     "link.target = '_blank';"
+                     "link.id = 'click_me';"
+                     "document.body.appendChild(link);"
+                     "link.click();"));
+
+  Shell* new_shell = new_shell_observer.GetShell();
+  WebContents* new_contents = new_shell->web_contents();
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+
+  // The new window should have about:blank URL but origin of the opener.
+  EXPECT_TRUE(new_contents->GetLastCommittedURL().IsAboutBlank());
+  EXPECT_EQ(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+      new_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  EXPECT_FALSE(
+      new_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+
+  GetManifestAndWait(new_contents->GetPrimaryPage());
+  EXPECT_TRUE(blink::IsEmptyManifest(manifest()));
+  EXPECT_TRUE(manifest_url().is_empty());
 }
 
 // This is testing the crash scenario encountered by https://crbug.com/1369363.
