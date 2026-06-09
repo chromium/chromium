@@ -65,9 +65,9 @@ void PaymentLinkManager::TriggerPaymentLinkPushPayment(
   }
   payment_flow_triggered_timestamp_ = base::TimeTicks::Now();
   ukm_source_id_ = ukm_source_id;
-  LogPaymentLinkDetected(ukm_source_id_);
-
   scheme_ = PaymentLinkValidator().GetScheme(payment_link_url);
+
+  LogPaymentLinkDetected(ukm_source_id_, scheme_);
   if (scheme_ == PaymentLinkValidator::Scheme::kInvalid) {
     LogEwalletFlowExitedReason(EwalletFlowExitedReason::kLinkIsInvalid);
     return;

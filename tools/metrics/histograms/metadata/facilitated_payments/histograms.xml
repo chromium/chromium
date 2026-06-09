@@ -51,6 +51,7 @@ reviewer.
   <variant name="Dana" summary="Scheme Dana that supports eWallet payflow."/>
   <variant name="DuitNow"
       summary="Scheme DuitNow that supports eWallet payflow."/>
+  <variant name="Invalid" summary="Invalid payment link scheme."/>
   <variant name="Momo" summary="Scheme Momo that supports eWallet payflow."/>
   <variant name="PromptPay"
       summary="Scheme PromptPay that supports payment link payflow."/>
@@ -447,6 +448,20 @@ reviewer.
     standard linked eWallet accounts but has matching eWallet creation options.
     [Frequency] Logged once per page load.
   </summary>
+</histogram>
+
+<histogram name="FacilitatedPayments.PaymentLinkDetected.{Scheme}"
+    enum="Boolean" expires_after="2027-04-30">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs true when a payment link is detected on a merchant webpage. The payment
+    is supported by {Scheme}. [Trigger] A payment link on a merchant page has
+    triggered the payment link push payment flow. [Frequency] Logged once per
+    page load.
+  </summary>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
 <histogram name="FacilitatedPayments.Pix.AccountLinking.FlowExitedReason"

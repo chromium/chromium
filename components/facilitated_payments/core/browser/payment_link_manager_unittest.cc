@@ -155,6 +155,10 @@ TEST_F(PaymentLinkManagerTest, LogPaymentLinkDetected) {
   histogram_tester.ExpectUniqueSample("FacilitatedPayments.PaymentLinkDetected",
                                       /*sample=*/true,
                                       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.PaymentLinkDetected.ShopeePay",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_PaymentLinkDetected::kEntryName,
       {ukm::builders::FacilitatedPayments_PaymentLinkDetected::

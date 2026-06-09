@@ -108,9 +108,7 @@ std::string SchemeToString(PaymentLinkValidator::Scheme scheme) {
     case PaymentLinkValidator::Scheme::kDana:
       return "Dana";
     case PaymentLinkValidator::Scheme::kInvalid:
-      // This case can't happen because `kInvalid` causes an early return in the
-      // PaymentLinkManager.
-      NOTREACHED();
+      return "Invalid";
   }
 }
 
@@ -138,9 +136,15 @@ void LogPixIframeIsSameOriginAsMainFrame(bool is_same_origin) {
                             is_same_origin);
 }
 
-void LogPaymentLinkDetected(ukm::SourceId ukm_source_id) {
+void LogPaymentLinkDetected(ukm::SourceId ukm_source_id,
+                            PaymentLinkValidator::Scheme scheme) {
   base::UmaHistogramBoolean("FacilitatedPayments.PaymentLinkDetected",
                             /*sample=*/true);
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"FacilitatedPayments.PaymentLinkDetected.", SchemeToString(scheme)}),
+      /*sample=*/true);
+
   ukm::builders::FacilitatedPayments_PaymentLinkDetected(ukm_source_id)
       .SetPaymentLinkDetected(true)
       .Record(ukm::UkmRecorder::Get());

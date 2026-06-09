@@ -44,7 +44,7 @@ std::string GetSchemeString(PaymentLinkValidator::Scheme scheme) {
     case PaymentLinkValidator::Scheme::kDana:
       return "Dana";
     case PaymentLinkValidator::Scheme::kInvalid:
-      NOTREACHED();
+      return "Invalid";
   }
 }
 
@@ -109,14 +109,34 @@ TEST(FacilitatedPaymentsMetricsTest, LogPixIframeIsSameOrigin) {
       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogEwalletPaymentLinkDetected) {
+class FacilitatedPaymentsMetricsPaymentLinkDetectedTest
+    : public testing::TestWithParam<PaymentLinkValidator::Scheme> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    FacilitatedPaymentsMetricsTest,
+    FacilitatedPaymentsMetricsPaymentLinkDetectedTest,
+    testing::Values(PaymentLinkValidator::Scheme::kDuitNow,
+                    PaymentLinkValidator::Scheme::kShopeePay,
+                    PaymentLinkValidator::Scheme::kTngd,
+                    PaymentLinkValidator::Scheme::kPromptPay,
+                    PaymentLinkValidator::Scheme::kMomo,
+                    PaymentLinkValidator::Scheme::kDana,
+                    PaymentLinkValidator::Scheme::kInvalid));
+
+TEST_P(FacilitatedPaymentsMetricsPaymentLinkDetectedTest,
+       LogEwalletPaymentLinkDetected) {
   base::HistogramTester histogram_tester;
 
-  LogPaymentLinkDetected(ukm::UkmRecorder::GetNewSourceID());
+  LogPaymentLinkDetected(ukm::UkmRecorder::GetNewSourceID(), GetParam());
 
   histogram_tester.ExpectUniqueSample("FacilitatedPayments.PaymentLinkDetected",
                                       /*sample=*/true,
                                       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"FacilitatedPayments.PaymentLinkDetected.",
+                    GetSchemeString(GetParam())}),
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 TEST(FacilitatedPaymentsMetricsTest,
@@ -629,7 +649,8 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogPixCodeCopied) {
 }
 
 TEST_F(FacilitatedPaymentsMetricsUkmTest, LogEwalletPaymentLinkDetectedUkm) {
-  LogPaymentLinkDetected(ukm::UkmRecorder::GetNewSourceID());
+  LogPaymentLinkDetected(ukm::UkmRecorder::GetNewSourceID(),
+                         PaymentLinkValidator::Scheme::kShopeePay);
 
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_PaymentLinkDetected::kEntryName,
@@ -774,7 +795,8 @@ INSTANTIATE_TEST_SUITE_P(
                         PaymentLinkValidator::Scheme::kShopeePay,
                         PaymentLinkValidator::Scheme::kTngd,
                         PaymentLinkValidator::Scheme::kMomo,
-                        PaymentLinkValidator::Scheme::kPromptPay)));
+                        PaymentLinkValidator::Scheme::kPromptPay,
+                        PaymentLinkValidator::Scheme::kDana)));
 
 TEST_P(FacilitatedPaymentsFopSelectorTypesMetricsParameterizedTest,
        LogNonCardPaymentMethodsFopSelected) {

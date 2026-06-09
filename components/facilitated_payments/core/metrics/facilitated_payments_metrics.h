@@ -277,7 +277,8 @@ void LogPixIframeIsSameOriginAsMainFrame(bool is_same_origin);
 
 // Log when a given payment link in a certain page for an eWallet push payment
 // flow is detected.
-void LogPaymentLinkDetected(ukm::SourceId ukm_source_id);
+void LogPaymentLinkDetected(ukm::SourceId ukm_source_id,
+                            PaymentLinkValidator::Scheme scheme);
 
 // Log when a valid payment link is detected and the user is eligible for the
 // eWallet New Account Linking (NAL) onboarding flow (meaning they have no
