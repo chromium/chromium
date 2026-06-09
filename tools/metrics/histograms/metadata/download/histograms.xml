@@ -760,6 +760,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.NonDangerousDialog.Events"
+    enum="DangerousDownloadDialogEvent" expires_after="2026-12-05">
+  <owner>yawfrempong@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records user interactions with the non-dangerous download dialog on Android.
+    Records when the dialog is shown, or when user clicks on a button or
+    dismisses the dialog.
+  </summary>
+</histogram>
+
 <histogram name="Download.OpenDownloads.OpenWithExternalAppsSource"
     enum="OpenDownloadWithExternalAppsSource" expires_after="2026-12-01">
   <owner>shuyng@google.com</owner>

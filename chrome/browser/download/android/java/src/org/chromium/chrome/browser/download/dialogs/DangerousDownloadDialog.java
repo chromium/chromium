@@ -96,14 +96,13 @@ public class DangerousDownloadDialog {
                                 acceptDownload
                                         ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
                                         : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
-                        if (isDangerous) {
-                            recordDangerousDownloadDialogEvent(
-                                    acceptDownload
-                                            ? DangerousDownloadDialogEvent
-                                                    .DANGEROUS_DOWNLOAD_DIALOG_CONFIRM
-                                            : DangerousDownloadDialogEvent
-                                                    .DANGEROUS_DOWNLOAD_DIALOG_CANCEL);
-                        }
+                        recordDownloadDialogEvent(
+                                acceptDownload
+                                        ? DangerousDownloadDialogEvent
+                                                .DANGEROUS_DOWNLOAD_DIALOG_CONFIRM
+                                        : DangerousDownloadDialogEvent
+                                                .DANGEROUS_DOWNLOAD_DIALOG_CANCEL,
+                                isDangerous);
                     }
 
                     @Override
@@ -111,11 +110,9 @@ public class DangerousDownloadDialog {
                         if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED
                                 && dismissalCause != DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
                             if (callback != null) callback.onResult(false);
-                            if (isDangerous) {
-                                recordDangerousDownloadDialogEvent(
-                                        DangerousDownloadDialogEvent
-                                                .DANGEROUS_DOWNLOAD_DIALOG_DISMISS);
-                            }
+                            recordDownloadDialogEvent(
+                                    DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_DISMISS,
+                                    isDangerous);
                         }
                     }
                 };
@@ -144,9 +141,6 @@ public class DangerousDownloadDialog {
                     .with(
                             ModalDialogProperties.BUTTON_STYLES,
                             ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE);
-
-            recordDangerousDownloadDialogEvent(
-                    DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_SHOW);
         } else {
             builder.with(
                             ModalDialogProperties.TITLE,
@@ -162,6 +156,8 @@ public class DangerousDownloadDialog {
                             ModalDialogProperties.BUTTON_STYLES,
                             ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
         }
+        recordDownloadDialogEvent(
+                DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_SHOW, isDangerous);
         modalDialogManager.showDialog(builder.build(), ModalDialogManager.ModalDialogType.TAB);
     }
 
@@ -254,13 +250,17 @@ public class DangerousDownloadDialog {
     }
 
     /**
-     * Collects dangerous download dialog UI event metrics.
+     * Collects download dialog UI event metrics.
      *
      * @param event The UI event to collect.
      */
-    private static void recordDangerousDownloadDialogEvent(
-            @DangerousDownloadDialogEvent int event) {
+    private static void recordDownloadDialogEvent(
+            @DangerousDownloadDialogEvent int event, boolean isDangerous) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Download.DangerousDialog.Events", event, DangerousDownloadDialogEvent.COUNT);
+                isDangerous
+                        ? "Download.DangerousDialog.Events"
+                        : "Download.NonDangerousDialog.Events",
+                event,
+                DangerousDownloadDialogEvent.COUNT);
     }
 }
