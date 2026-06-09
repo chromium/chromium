@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_version.h"
+#include "chrome/common/pref_names.h"
 #include "components/background_task_scheduler/background_task_scheduler_factory.h"
 #include "components/feed/core/proto/v2/keyvalue_store.pb.h"
 #include "components/feed/core/proto/v2/store.pb.h"
@@ -215,6 +217,10 @@ FeedServiceFactory::BuildServiceInstanceForBrowserContext(
           profile);
   chrome_info.is_new_tab_search_engine_url_android_enabled =
       regional_capabilities->IsInEeaCountry();
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kUserFeedbackAllowedPolicy)) {
+    chrome_info.user_feedback_allowed_pref_key = ::prefs::kUserFeedbackAllowed;
+  }
 #else
   chrome_info.is_new_tab_search_engine_url_android_enabled = false;
 #endif

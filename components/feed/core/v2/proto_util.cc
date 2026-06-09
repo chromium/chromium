@@ -177,6 +177,11 @@ feedwire::Request CreateFeedQueryRequest(
     feed_request.add_client_capability(
         Capability::WIDE_SCREEN_SINGLE_COLUMN_FEED);
   }
+
+  if (request_metadata.is_user_feedback_disabled) {
+    feed_request.add_client_capability(
+        Capability::USER_FEEDBACK_DISABLED_BY_POLICY);
+  }
 #endif
 
   switch (request_metadata.tab_group_enabled_state) {

@@ -897,6 +897,7 @@ void FeedApiTest::SetUp() {
   feed::prefs::RegisterFeedSharedProfilePrefs(profile_prefs_.registry());
   feed::RegisterProfilePrefs(profile_prefs_.registry());
   profile_prefs_.registry()->RegisterBooleanPref(::prefs::kSigninAllowed, true);
+  profile_prefs_.registry()->RegisterBooleanPref(kFeedbackAllowedPref, true);
   metrics_reporter_ = std::make_unique<TestMetricsReporter>(&profile_prefs_);
 
   shared_url_loader_factory_ =
@@ -979,6 +980,7 @@ void FeedApiTest::CreateStream(
   chrome_info.version = base::Version({99, 1, 9911, 2});
   chrome_info.is_new_tab_search_engine_url_android_enabled =
       is_new_tab_search_engine_url_android_enabled;
+  chrome_info.user_feedback_allowed_pref_key = kFeedbackAllowedPref;
   stream_ = std::make_unique<FeedStream>(
       &refresh_scheduler_, metrics_reporter_.get(), this, &profile_prefs_,
       &network_, image_fetcher_.get(), store_.get(),

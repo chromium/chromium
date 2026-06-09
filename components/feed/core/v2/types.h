@@ -60,6 +60,7 @@ struct RequestMetadata {
   std::string country;
   DisplayMetrics display_metrics{};
   bool notice_card_acknowledged = false;
+  bool is_user_feedback_disabled = false;
   TabGroupEnabledState tab_group_enabled_state = TabGroupEnabledState::kNone;
   std::vector<feedwire::InfoCardTrackingState> info_card_tracking_states;
   feedwire::ChromeSignInStatus::SignInStatus sign_in_status =

@@ -434,6 +434,8 @@ class TestMetricsReporter : public MetricsReporter {
 // GetCountry() is overridden to return one of the launch counties.
 class FeedApiTest : public testing::Test, public FeedStream::Delegate {
  public:
+  static constexpr char kFeedbackAllowedPref[] = "feedback_allowed";
+
   FeedApiTest();
   ~FeedApiTest() override;
   void SetUp() override;

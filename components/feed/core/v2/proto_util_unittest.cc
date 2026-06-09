@@ -162,6 +162,36 @@ TEST(ProtoUtilTest, WideScreenSingleColumnFeedDisabledWhenFeatureDisabled) {
 
   base::android::device_info::set_is_foldable_for_testing(false);
 }
+
+TEST(ProtoUtilTest, DisableSendFeedbackAbsentByDefault) {
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    /*request_metadata=*/{},
+                                    /*consistency_token=*/std::string(),
+                                    /*doc_view_counts=*/{})
+          .feed_request();
+
+  ASSERT_THAT(
+      request.client_capability(),
+      Not(Contains(feedwire::Capability::USER_FEEDBACK_DISABLED_BY_POLICY)));
+}
+
+TEST(ProtoUtilTest, DisableSendFeedbackPresentWhenFeedbackDisabled) {
+  RequestMetadata request_metadata;
+  request_metadata.is_user_feedback_disabled = true;
+
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    request_metadata,
+                                    /*consistency_token=*/std::string(),
+                                    /*doc_view_counts=*/{})
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              Contains(feedwire::Capability::USER_FEEDBACK_DISABLED_BY_POLICY));
+}
 #endif
 
 TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {

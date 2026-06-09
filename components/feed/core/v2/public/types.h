@@ -52,6 +52,7 @@ struct ChromeInfo {
   version_info::Channel channel{};
   base::Version version;
   bool is_new_tab_search_engine_url_android_enabled = false;
+  std::string user_feedback_allowed_pref_key;
 };
 // Device display metrics.
 struct DisplayMetrics {

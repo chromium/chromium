@@ -47,6 +47,7 @@
 #include "components/feed/core/v2/wire_response_translator.h"
 #include "components/feed/core/v2/xsurface_datastore.h"
 #include "components/offline_pages/task/task_queue.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/search_engines/template_url_service.h"
 
@@ -419,6 +420,10 @@ class FeedStream : public FeedApi,
   // on the feed.
   void ScheduleFeedCloseRefresh(const StreamType& type);
 
+  // Updates whether user feedback is restricted by enterprise policy. When
+  // toggled, invalidates the For You feed cache to enforce compliance on the
+  // next refresh.
+  void OnUserFeedbackPolicyChanged();
   void CheckDuplicatedContentsOnRefresh();
   void AddViewedContentHashes(const feedstore::Content& content);
 
@@ -472,6 +477,7 @@ class FeedStream : public FeedApi,
   BooleanPrefMember articles_list_visible_;
   BooleanPrefMember snippets_enabled_by_dse_;
   BooleanPrefMember signin_allowed_;
+  PrefChangeRegistrar pref_change_registrar_;
 
   // State loaded at startup:
   feedstore::Metadata metadata_;
@@ -489,6 +495,7 @@ class FeedStream : public FeedApi,
   InfoCardTracker info_card_tracker_;
 
   bool clear_all_in_progress_ = false;
+  bool is_user_feedback_disabled_ = false;
 
   std::vector<GURL> recent_feed_navigations_;
   UserActionsCollector user_actions_collector_;
