@@ -15,6 +15,7 @@ import posixpath
 import dateparser
 
 import cipd_helpers
+import git_utils
 from common_types import CommonArgs, PreviousRunInfo
 import local_git_steps
 
@@ -172,11 +173,33 @@ def _parse_args() -> argparse.Namespace:
         action='store_true',
         help=('Run through all index creation steps, but do not upload any '
               'index data.'))
+    parser.add_argument(
+        '--head-git-revision',
+        default='HEAD',
+        help=('An git revision to treat as HEAD. Commits after this revision '
+              'will be ignored. This is primarily intended to support local '
+              'runs with WIP changes committed.'))
     parser.add_argument('--verbose',
                         action='store_true',
                         help='Log more verbosely')
 
-    return parser.parse_args()
+    args = parser.parse_args()
+    _validate_args(args, parser)
+    return args
+
+
+def _validate_args(args: argparse.Namespace,
+                   parser: argparse.ArgumentParser) -> None:
+    """Validates arguments immediately after parsing.
+
+    Args:
+        args: The parsed arguments.
+        parser: The parser that parsed `args`.
+    """
+    if args.head_git_revision != 'HEAD':
+        if not git_utils.revision_exists(args.head_git_revision):
+            parser.error(
+                f'Invalid head git revision: {args.head_git_revision}')
 
 
 def main() -> None:
@@ -194,7 +217,8 @@ def main() -> None:
                              window=window,
                              window_base=base,
                              dryrun=args.dryrun,
-                             previous_run=None)
+                             previous_run=None,
+                             head_git_revision=args.head_git_revision)
     _retrieve_previous_run_info(common_args)
 
     _cl_info = local_git_steps.process_local_git_data(common_args)

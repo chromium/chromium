@@ -155,7 +155,7 @@ class GetCommitsToProcessTest(unittest.TestCase):
         expected_since = '2026-06-01T12:00:00+00:00'
         self.mock_check_output.assert_called_once_with([
             'git', 'log', '--format=%H', '--name-only', '--reverse',
-            f'--since={expected_since}'
+            f'--since={expected_since}', 'HEAD'
         ],
                                                        encoding='utf-8')
         self.mock_parse.assert_called_once_with('git log output')
@@ -198,6 +198,82 @@ class GetCommitsToProcessTest(unittest.TestCase):
         self.mock_check_output.assert_called_once_with([
             'git', 'log', '--format=%H', '--name-only', '--reverse',
             'prev_rev..HEAD'
+        ],
+                                                       encoding='utf-8')
+
+    def test_get_commits_to_process_clobber_with_revision(self):
+        common_args = CommonArgs(project='proj',
+                                 repo='repo',
+                                 window=datetime.timedelta(days=1),
+                                 window_base=datetime.datetime(
+                                     2026,
+                                     6,
+                                     2,
+                                     12,
+                                     0,
+                                     0,
+                                     tzinfo=datetime.timezone.utc),
+                                 dryrun=False,
+                                 previous_run=None,
+                                 head_git_revision='my_head_rev')
+        self.mock_check_output.return_value = 'git log output'
+        self.mock_parse.return_value = [
+            local_git_steps._RevisionAndChangedFiles(revision='rev1',
+                                                     changed_files=['file1'])
+        ]
+
+        commits = local_git_steps._get_commits_to_process(common_args)
+
+        self.assertEqual(commits, [
+            local_git_steps._RevisionAndChangedFiles(revision='rev1',
+                                                     changed_files=['file1'])
+        ])
+        expected_since = '2026-06-01T12:00:00+00:00'
+        self.mock_check_output.assert_called_once_with([
+            'git', 'log', '--format=%H', '--name-only', '--reverse',
+            f'--since={expected_since}', 'my_head_rev'
+        ],
+                                                       encoding='utf-8')
+
+    def test_get_commits_to_process_incremental_with_revision(self):
+        previous_run = PreviousRunInfo(revision='prev_rev',
+                                       start_time=datetime.datetime(
+                                           2026,
+                                           6,
+                                           1,
+                                           12,
+                                           0,
+                                           0,
+                                           tzinfo=datetime.timezone.utc))
+        common_args = CommonArgs(project='proj',
+                                 repo='repo',
+                                 window=datetime.timedelta(days=1),
+                                 window_base=datetime.datetime(
+                                     2026,
+                                     6,
+                                     2,
+                                     12,
+                                     0,
+                                     0,
+                                     tzinfo=datetime.timezone.utc),
+                                 dryrun=False,
+                                 previous_run=previous_run,
+                                 head_git_revision='my_head_rev')
+        self.mock_check_output.return_value = 'git log output'
+        self.mock_parse.return_value = [
+            local_git_steps._RevisionAndChangedFiles(revision='rev1',
+                                                     changed_files=['file1'])
+        ]
+
+        commits = local_git_steps._get_commits_to_process(common_args)
+
+        self.assertEqual(commits, [
+            local_git_steps._RevisionAndChangedFiles(revision='rev1',
+                                                     changed_files=['file1'])
+        ])
+        self.mock_check_output.assert_called_once_with([
+            'git', 'log', '--format=%H', '--name-only', '--reverse',
+            'prev_rev..my_head_rev'
         ],
                                                        encoding='utf-8')
 

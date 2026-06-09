@@ -33,6 +33,8 @@ class CommonArgs:
     dryrun: bool
     # Information about the previous index creation run, if available.
     previous_run: PreviousRunInfo | None
+    # A git revision to treat as HEAD, ignoring commits after it.
+    head_git_revision: str = 'HEAD'
 
     @property
     def clobber(self) -> bool:

@@ -173,13 +173,13 @@ def _get_commits_to_process(
         since_str = since_time.isoformat()
         cmd = [
             'git', 'log', '--format=%H', '--name-only', '--reverse',
-            f'--since={since_str}'
+            f'--since={since_str}', common_args.head_git_revision
         ]
     else:
         last_rev = common_args.previous_run.revision
         cmd = [
             'git', 'log', '--format=%H', '--name-only', '--reverse',
-            f'{last_rev}..HEAD'
+            f'{last_rev}..{common_args.head_git_revision}'
         ]
     logging.info('Running git log: %s', ' '.join(cmd))
     # TODO(b/517156708): Stream output from the subprocess and process it

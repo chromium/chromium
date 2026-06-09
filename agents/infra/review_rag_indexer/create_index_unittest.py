@@ -4,7 +4,9 @@
 # found in the LICENSE file.
 """Unit tests for create_index.py."""
 
+import contextlib
 import datetime
+import io
 import json
 import logging
 import pathlib
@@ -102,8 +104,51 @@ class CreateIndexTest(fake_filesystem_unittest.TestCase):
         self.assertTrue(called_args.clobber)
         self.assertFalse(called_args.dryrun)
         self.assertIsNone(called_args.previous_run)
+        self.assertEqual(called_args.head_git_revision, 'HEAD')
 
         mock_process_local_git_data.assert_called_once_with(called_args)
+
+    @mock.patch('sys.argv', [
+        'create_index.py', '--since', '1 hour ago', '--project', 'proj',
+        '--repo', 'repo', '--head-git-revision', 'my_head_rev'
+    ])
+    @mock.patch('create_index._perform_initial_setup')
+    @mock.patch('create_index._retrieve_previous_run_info')
+    @mock.patch('create_index.local_git_steps.process_local_git_data')
+    @mock.patch('create_index.git_utils.revision_exists')
+    def test_main_success_with_head_git_revision(self, mock_revision_exists,
+                                                 mock_process_local_git_data,
+                                                 mock_retrieve, mock_setup):
+        mock_revision_exists.return_value = True
+        mock_process_local_git_data.return_value = []
+
+        create_index.main()
+
+        mock_setup.assert_called_once()
+        mock_revision_exists.assert_called_once_with('my_head_rev')
+        mock_retrieve.assert_called_once()
+        called_args = mock_retrieve.call_args[0][0]
+        self.assertIsInstance(called_args, create_index.CommonArgs)
+        self.assertEqual(called_args.head_git_revision, 'my_head_rev')
+
+    @mock.patch('sys.argv', [
+        'create_index.py', '--since', '1 hour ago', '--project', 'proj',
+        '--repo', 'repo', '--head-git-revision', 'invalid_rev'
+    ])
+    @mock.patch('create_index._perform_initial_setup')
+    @mock.patch('create_index.git_utils.revision_exists')
+    def test_main_invalid_head_git_revision_fails_validation(
+            self, mock_revision_exists, mock_setup):
+        mock_revision_exists.return_value = False
+
+        with (self.assertRaises(SystemExit),
+              contextlib.redirect_stderr(io.StringIO()) as stderr):
+            create_index.main()
+
+        self.assertTrue(
+            'Invalid head git revision: invalid_rev' in stderr.getvalue())
+        mock_setup.assert_not_called()
+        mock_revision_exists.assert_called_once_with('invalid_rev')
 
 
 class CreateIndexRetrievePreviousRunInfoTest(fake_filesystem_unittest.TestCase
