@@ -8,11 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP;
 import static org.chromium.chrome.browser.ui.side_ui.TestSideUiContainer.TEST_SIDE_UI_WIDTH;
@@ -54,6 +55,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewUtils;
 
+import java.util.List;
 import java.util.Map;
 
 /** Unit tests for {@link SideUiCoordinatorImpl}. */
@@ -541,11 +543,72 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.onConfigurationChanged(new Configuration());
         RobolectricUtil.runAllBackgroundAndUi();
 
-        // Verify that observers are NOT notified again (no new changes).
-        verifyNoInteractions(mSideUiObserver);
+        // Verify that observer is notified of the showable state, but specs change is NOT notified
+        // (since specs are unchanged).
+        verify(mSideUiObserver)
+                .onShowableSideUisUpdated(eq(List.of(SideUiId.SIDE_PANEL)), eq(List.of()));
+        verify(mSideUiObserver, never()).onSideUiSpecsChanged(any());
 
         // Verify the container view's width is unchanged.
         assertEquals(initialSideUiWidth, getSideUiContainerViewWidth());
+    }
+
+    @Test
+    public void testCanShowSideUi() {
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        sideUiContainer.mMinWidthDp = 200;
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        // 1. Initially, window is wide (1920dp). Should be able to show SideUi.
+        assertEquals(true, mCoordinator.canShowSideUi(sideUiContainer.getSideUiId()));
+
+        // 2. Shrink window below threshold: minWebContentsWidth (412) + minSidePanelWidth (200) =
+        // 612dp.
+        int minWindowWidthDpForVisibleSideUi =
+                MIN_WEB_CONTENTS_WIDTH_DP + sideUiContainer.mMinWidthDp;
+        RuntimeEnvironment.setQualifiers(
+                "w" + (minWindowWidthDpForVisibleSideUi - 1) + "dp-h1080dp-mdpi");
+        mCoordinator.onConfigurationChanged(new Configuration());
+
+        // Should not be able to show side UI.
+        assertEquals(false, mCoordinator.canShowSideUi(sideUiContainer.getSideUiId()));
+    }
+
+    @Test
+    public void testOnConfigurationChanged_ShowableContainerIdsChange_NotifyObservers() {
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        sideUiContainer.mMinWidthDp = 200;
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+        mCoordinator.addObserver(mSideUiObserver);
+        clearInvocations(mSideUiObserver);
+
+        // 1. Shrink window so side UI cannot be shown.
+        int minWindowWidthDpForVisibleSideUi =
+                MIN_WEB_CONTENTS_WIDTH_DP + sideUiContainer.mMinWidthDp;
+        RuntimeEnvironment.setQualifiers(
+                "w" + (minWindowWidthDpForVisibleSideUi - 1) + "dp-h1080dp-mdpi");
+        mCoordinator.onConfigurationChanged(new Configuration());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify the observer is notified that the container can no longer be shown.
+        verify(mSideUiObserver)
+                .onShowableSideUisUpdated(eq(List.of()), eq(List.of(SideUiId.SIDE_PANEL)));
+
+        clearInvocations(mSideUiObserver);
+
+        // 2. Grow window back to wide.
+        RuntimeEnvironment.setQualifiers(
+                "w" + minWindowWidthDpForVisibleSideUi + "dp-h1080dp-mdpi");
+        mCoordinator.onConfigurationChanged(new Configuration());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify the observer is notified that the container can be shown again.
+        verify(mSideUiObserver)
+                .onShowableSideUisUpdated(eq(List.of(SideUiId.SIDE_PANEL)), eq(List.of()));
     }
 
     private int getSideUiContainerViewWidth() {

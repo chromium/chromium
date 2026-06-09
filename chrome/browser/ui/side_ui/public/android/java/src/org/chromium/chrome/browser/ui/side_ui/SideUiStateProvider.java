@@ -39,4 +39,11 @@ public interface SideUiStateProvider {
 
     /** Returns whether the SideUIContainer of the given ID is currently showing. */
     boolean isSideUiShowing(@SideUiId int sideUidId);
+
+    /**
+     * Returns whether the SideUIContainer of the given ID can currently be shown given the window
+     * width constraints. This checks ability to be shown, not whether it is currently showing (use
+     * {@link #isSideUiShowing(int)} for the latter).
+     */
+    boolean canShowSideUi(@SideUiId int sideUiId);
 }

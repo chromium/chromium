@@ -182,6 +182,32 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         return false;
     }
 
+    @Override
+    public boolean canShowSideUi(@SideUiId int sideUiId) {
+        SideUiContainer sideUiContainer = null;
+        for (var container : mSideUiContainers) {
+            if (container.getSideUiId() == sideUiId) {
+                sideUiContainer = container;
+                break;
+            }
+        }
+        if (sideUiContainer == null) return false;
+
+        @Px int windowWidth = getWindowWidth();
+        @Px int minWebContentsWidth = ViewUtils.dpToPx(mParentActivity, MIN_WEB_CONTENTS_WIDTH_DP);
+        @Px int availableWidth = windowWidth - minWebContentsWidth;
+
+        SideUiSpecs currentSpecs = getCurrentSideUiSpecsInternal();
+        SideUiSpecs newSpecs =
+                determineSideUiSpecs(
+                        new SideUiContainerProperties(
+                                sideUiId, sideUiContainer.getAnchorSide(), availableWidth),
+                        currentSpecs,
+                        windowWidth,
+                        minWebContentsWidth);
+        return newSpecs.getWidth(sideUiContainer.getAnchorSide()) > 0;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //              End of SideUiStateProvider Implementation                                    //
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -240,6 +266,17 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
                         windowWidth,
                         minWebContentsWidth);
         boolean canShowSideUi = newSideUiSpecs.getWidth(currentAnchorSide) > 0;
+
+        List<Integer> showableSideUiIds = new ArrayList<>();
+        List<Integer> unshowableSideUiIds = new ArrayList<>();
+        if (canShowSideUi) {
+            showableSideUiIds.add(SideUiId.SIDE_PANEL);
+        } else {
+            unshowableSideUiIds.add(SideUiId.SIDE_PANEL);
+        }
+        for (var sideUiObserver : mSideUiObservers) {
+            sideUiObserver.onShowableSideUisUpdated(showableSideUiIds, unshowableSideUiIds);
+        }
 
         // 3.1. Check if we need to close side UI.
         if (currentSideUiWidth != 0 && !canShowSideUi) {
