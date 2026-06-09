@@ -66,6 +66,7 @@ class CrxUpdateService : public ComponentUpdateService,
 #if BUILDFLAG(CHROME_FOR_TESTING)
   void EnsureRequiredComponentsReady(base::TimeDelta timeout) override;
 #endif
+  void Stop() override;
 
   // Overrides for Observer.
   void OnEvent(const CrxUpdateItem& item) override;
@@ -77,7 +78,6 @@ class CrxUpdateService : public ComponentUpdateService,
 
  private:
   void Start();
-  void Stop();
 
   bool CheckForUpdates(UpdateScheduler::OnFinishedCallback on_finished);
 

@@ -52,6 +52,7 @@ class MockComponentUpdateService : public ComponentUpdateService {
   MOCK_CONST_METHOD0(GetComponentIDs, std::vector<std::string>());
   MOCK_CONST_METHOD0(GetComponents, std::vector<ComponentInfo>());
   MOCK_METHOD0(GetOnDemandUpdater, OnDemandUpdater&());
+  MOCK_METHOD0(Stop, void());
   MOCK_METHOD2(DoMaybeThrottle,
                void(const std::string& id, const base::OnceClosure& callback));
   MOCK_METHOD0(GetSequencedTaskRunner,

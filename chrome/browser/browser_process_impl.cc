@@ -696,6 +696,10 @@ void BrowserProcessImpl::StartTearDown() {
   // This expects to be destroyed before the task scheduler is torn down.
   SystemNetworkContextManager::DeleteInstance();
 
+  if (component_updater_) {
+    component_updater_->Stop();
+  }
+
   // The ApplicationBreadcrumbsLogger logs a shutdown event via a task when it
   // is destroyed, so it should be destroyed before the task scheduler is torn
   // down.
@@ -1407,7 +1411,7 @@ BrowserProcessImpl::component_updater() {
     return component_updater_.get();
   }
 
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+  if (!BrowserThread::CurrentlyOn(BrowserThread::UI) || tearing_down_) {
     return nullptr;
   }
 

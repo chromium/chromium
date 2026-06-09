@@ -205,6 +205,7 @@ class ComponentUpdateService {
   // required components are up to date.
   virtual void EnsureRequiredComponentsReady(base::TimeDelta timeout) = 0;
 #endif
+  virtual void Stop() = 0;
 
  private:
   friend class screen_ai::ScreenAIDownloaderNonChromeOS;
