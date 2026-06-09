@@ -161,6 +161,41 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_NoTokens) {
   EXPECT_EQ(future.Get(), "");
 }
 
+// Tests that `RetrieveOtp` fails gracefully when the tab is null.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_TabNull) {
+  base::test::TestFuture<std::string> future;
+  service().RetrieveOtp(tabs::TabHandle(), {}, future.GetCallback());
+  EXPECT_EQ(future.Get(), "");
+}
+
+// Tests that `RetrieveOtp` fails gracefully when the OTP service is null.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_ServiceNull) {
+  OneTimeTokenServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+        return nullptr;
+      }));
+
+  base::test::TestFuture<std::string> future;
+  service().RetrieveOtp(tab().GetHandle(), {}, future.GetCallback());
+  EXPECT_EQ(future.Get(), "");
+}
+
+// Tests that multiple sequential `RetrieveOtp` calls supersede previous ones,
+// running previous callbacks with an empty string.
+TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Superseded) {
+  EXPECT_CALL(otp_service(), GetCachedOneTimeTokens())
+      .WillRepeatedly(Return(std::vector<one_time_tokens::OneTimeToken>{}));
+
+  base::test::TestFuture<std::string> future1;
+  base::test::TestFuture<std::string> future2;
+
+  service().RetrieveOtp(tab().GetHandle(), {}, future1.GetCallback());
+  service().RetrieveOtp(tab().GetHandle(), {}, future2.GetCallback());
+
+  EXPECT_EQ(future1.Get(), "");
+}
+
 }  // namespace
 
 }  // namespace autofill
