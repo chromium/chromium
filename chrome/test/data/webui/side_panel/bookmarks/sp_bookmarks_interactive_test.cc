@@ -46,7 +46,13 @@ IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest,
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, DragManager) {
+// TODO(crbug.com/521419448): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DragManager DISABLED_DragManager
+#else
+#define MAYBE_DragManager DragManager
+#endif
+IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, MAYBE_DragManager) {
   RunTest("side_panel/bookmarks/power_bookmarks_drag_manager_test.js",
           "mocha.run()");
 }
