@@ -478,6 +478,11 @@ public class TabWindowManagerImpl implements TabWindowManager {
             }
         }
 
+        if (mArchivedTabModelSelector != null) {
+            TabModel tabModel = mArchivedTabModelSelector.getModelForTabId(tab.getId());
+            if (tabModel != null) return tabModel;
+        }
+
         return null;
     }
 
@@ -520,6 +525,16 @@ public class TabWindowManagerImpl implements TabWindowManager {
                 @Nullable final Tab tab = tabModel.getTabById(tabId);
                 if (tab != null) {
                     return new TabWindowInfo(INVALID_WINDOW_ID, selector, tabModel, tab);
+                }
+            }
+        }
+
+        if (mArchivedTabModelSelector != null) {
+            for (TabModel tabModel : mArchivedTabModelSelector.getModels()) {
+                @Nullable final Tab tab = tabModel.getTabById(tabId);
+                if (tab != null) {
+                    return new TabWindowInfo(
+                            INVALID_WINDOW_ID, mArchivedTabModelSelector, tabModel, tab);
                 }
             }
         }

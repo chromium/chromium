@@ -16,8 +16,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Holds objects related to a tab and where it lives. CCTs will have an invalid windowId {@link
- * TabWindowManager#INVALID_WINDOW_ID}.
+ * Holds objects related to a tab and where it lives. CCTs and archived tabs will have an invalid
+ * windowId {@link TabWindowManager#INVALID_WINDOW_ID}.
  */
 @NullMarked
 public class TabWindowInfo {

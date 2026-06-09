@@ -679,6 +679,40 @@ public class TabWindowManagerImplUnitTest {
         assertEquals(0, mSubject.getIncognitoTabCount());
     }
 
+    /** Tests that getTabById() and other lookups function properly for archived tabs. */
+    @Test
+    public void testArchivedTabsLookups() {
+        MockTabModelSelector archivedSelector =
+                new MockTabModelSelector(
+                        /* profile= */ mProfile,
+                        /* incognitoProfile= */ mIncognitoProfile,
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* delegate= */ null,
+                        TabModelType.ARCHIVED);
+        mSubject.setArchivedTabModelSelector(archivedSelector);
+
+        Tab tab = archivedSelector.addMockTab();
+
+        // Test getTabById.
+        assertEquals(tab, mSubject.getTabById(tab.getId()));
+
+        // Test getTabModelForTab.
+        assertEquals(
+                archivedSelector.getModel(/* incognito= */ false), mSubject.getTabModelForTab(tab));
+
+        // Test getTabWindowInfoById.
+        TabWindowInfo info = mSubject.getTabWindowInfoById(tab.getId());
+        assertNotNull(info);
+        assertEquals(tab, info.tab);
+        assertEquals(archivedSelector, info.tabModelSelector);
+        assertEquals(INVALID_WINDOW_ID, info.windowId);
+        assertEquals(TabWindowInfo.TabWindowType.ARCHIVED, info.type);
+
+        mSubject.setArchivedTabModelSelector(null);
+        assertNull(mSubject.getTabById(tab.getId()));
+    }
+
     /** Tests that getTabModelForTab(...) functions properly. */
     @Test
     @Feature({"Multiwindow"})
