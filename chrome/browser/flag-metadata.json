@@ -7764,6 +7764,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "prefetch-activation-beacon",
+    "owners": [ "gjc@google.com", "//content/browser/preloading/prefetch/OWNERS" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "prefetch-bookmarkbar-trigger",
     "owners": [
       "robertlin@google.com",
@@ -7778,6 +7783,11 @@
       "//content/browser/preloading/OWNERS"
     ],
     "expiry_milestone": 150
+  },
+  {
+    "name": "prerender-activation-beacon",
+    "owners": [ "gjc@google.com", "//content/browser/preloading/prerender/OWNERS" ],
+    "expiry_milestone": 155
   },
   {
     "name": "prerender-activation-by-form-submission",

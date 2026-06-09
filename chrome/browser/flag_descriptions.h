@@ -726,6 +726,12 @@ inline constexpr char kD3D12VideoEncoderDescription[] =
     "Media Foundation video encoder if D3D12 encoder is not available "
     "or fails to initialize.";
 
+inline constexpr char kPrefetchActivationBeaconName[] =
+    "Prefetch Activation Beacon";
+inline constexpr char kPrefetchActivationBeaconDescription[] =
+    "If enabled, prefetch activation beacon will be sent when a prefetch is "
+    "activated.";
+
 inline constexpr char kPrerender2Name[] = "Prerendering";
 inline constexpr char kPrerender2Description[] =
     "If enabled, browser features and the speculation rules API can trigger "
@@ -746,6 +752,12 @@ inline constexpr char kPrerenderUntilScriptName[] = "Prerender Until Script";
 inline constexpr char kPrerenderUntilScriptDescription[] =
     "Prerenders pages until a script is about to be executed. The script "
     "execution and the page parsing will be deferred until action.";
+
+inline constexpr char kPrerenderActivationBeaconName[] =
+    "Prerender Activation Beacon";
+inline constexpr char kPrerenderActivationBeaconDescription[] =
+    "If enabled, prerender activation beacon will be sent when a prerender is "
+    "activated.";
 
 inline constexpr char kPrerenderActivationByFormSubmissionName[] =
     "Prerender Activation By Form Submission";

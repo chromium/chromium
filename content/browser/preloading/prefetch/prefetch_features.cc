@@ -96,8 +96,6 @@ const base::FeatureParam<size_t> kMaxNumberOfModeratePrefetchesPerPage{
 BASE_FEATURE(kPrefetchOffTheMainThreadForceForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchActivationBeacon, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrefetchCancelUnrelatedPrefetch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

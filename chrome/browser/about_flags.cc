@@ -13017,6 +13017,14 @@ const FeatureEntry kFeatureEntries[] = {
                                     "SplitViewHorizontal")},
 #endif
 
+    {"prefetch-activation-beacon",
+     flag_descriptions::kPrefetchActivationBeaconName,
+     flag_descriptions::kPrefetchActivationBeaconDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kPrefetchActivationBeacon)},
+    {"prerender-activation-beacon",
+     flag_descriptions::kPrerenderActivationBeaconName,
+     flag_descriptions::kPrerenderActivationBeaconDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kPrerenderActivationBeacon)},
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
