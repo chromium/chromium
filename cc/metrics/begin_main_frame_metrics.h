@@ -17,12 +17,15 @@ enum class BeginMainFrameReason {
   kRAF = 1,
   kServiceScriptedAnimations = 2,
   kCSSAnimation = 3,
-  kStyleInvalidation = 4,
+  // These three are relatively infrequent, so group them all together for now.
+  kStylePaintOrLayoutInvalidation = 4,
+  kStyleInvalidation = kStylePaintOrLayoutInvalidation,
+  kPaintInvalidation = kStylePaintOrLayoutInvalidation,
+  kLayoutInvalidation = kStylePaintOrLayoutInvalidation,
   kScroll = 5,
   kInput = 6,
-  kPaintInvalidation = 7,
-  kLayoutInvalidation = 8,
-  kMaxValue = kLayoutInvalidation,
+  kMainThreadScroll = 7,
+  kMaxValue = kMainThreadScroll,
 };
 
 inline constexpr size_t BeginMainFrameReasonSize =

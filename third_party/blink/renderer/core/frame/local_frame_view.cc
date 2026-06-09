@@ -3057,7 +3057,8 @@ void LocalFrameView::DequeueScrollAnchoringAdjustment(
 void LocalFrameView::SetNeedsEnqueueScrollEvent(
     PaintLayerScrollableArea* scrollable_area) {
   scroll_event_queue_.insert(scrollable_area);
-  GetPage()->Animator().ScheduleVisualUpdate(frame_.Get());
+  GetPage()->Animator().ScheduleVisualUpdate(
+      frame_.Get(), cc::BeginMainFrameReason::kMainThreadScroll);
 }
 
 void LocalFrameView::PerformScrollAnchoringAdjustments() {
