@@ -1208,7 +1208,7 @@ void ArCoreGl::TransitionProcessingFrameToRendering() {
 void ArCoreGl::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
     std::vector<device::mojom::XRLayerUpdatePtr> layer_updates,
-    const std::vector<gpu::SyncToken>& camera_sync_tokens,
+    gpu::SharedImageExportResult camera_export_multi_result,
     base::TimeDelta time_waited) {
   TRACE_EVENT1("gpu", "ArCoreGl::SubmitFrameDrawnIntoTexture", "frame",
                frame_index);
@@ -1224,6 +1224,14 @@ void ArCoreGl::SubmitFrameDrawnIntoTexture(
 
   if (!IsSubmitFrameExpected(frame_index))
     return;
+
+  std::vector<gpu::SyncToken> camera_sync_tokens;
+  auto camera_image =
+      webxr_->GetAnimatingFrame()->camera_image_shared_buffer->shared_image;
+  if (camera_image) {
+    camera_sync_tokens =
+        camera_image->EndExportAsVector(std::move(camera_export_multi_result));
+  }
 
   for (auto& camera_sync_token : camera_sync_tokens) {
     ar_image_transport_->WaitSyncToken(camera_sync_token);

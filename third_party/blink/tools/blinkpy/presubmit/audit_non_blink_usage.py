@@ -1861,6 +1861,7 @@ _CONFIG = [
             'gpu::raster::RasterInterface',
             'gpu::RasterScopedAccess',
             'gpu::SHARED_IMAGE_USAGE_.+',
+            'gpu::SharedImageExportResult',
             'gpu::SharedImageInterface',
             'gpu::SharedImageTexture',
             'gpu::SharedImageUsageSet',

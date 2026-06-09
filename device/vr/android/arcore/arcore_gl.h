@@ -154,7 +154,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   void SubmitFrameDrawnIntoTexture(
       int16_t frame_index,
       std::vector<device::mojom::XRLayerUpdatePtr> layer_updates,
-      const std::vector<gpu::SyncToken>& camera_sync_tokens,
+      gpu::SharedImageExportResult camera_export_multi_result,
       base::TimeDelta time_waited) override;
   void UpdateLayerBounds(int16_t frame_index,
                          const gfx::RectF& left_bounds,

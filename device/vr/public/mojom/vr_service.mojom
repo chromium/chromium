@@ -1226,11 +1226,14 @@ interface XRPresentationProvider {
   // If layer_updates is empty, the base layer will be used.
   // Only when WebXR Layers feature is enabled, layer_updates can be
   // non-empty. In such a case, the Open XR textures of the specified
-  // layers will be updated.
-  SubmitFrameDrawnIntoTexture(int16 frame_id,
-                              array<XRLayerUpdate> layer_updates,
-                              array<gpu.mojom.SyncToken> camera_sync_tokens,
-                              mojo_base.mojom.TimeDelta time_waited);
+  // layers will be updated. The export result |camera_export_multi_result|
+  // may contain multiple camera SyncTokens (from multiple contexts) for
+  // ARCore, and should always be empty for Cardboard and OpenXR.
+  SubmitFrameDrawnIntoTexture(
+      int16 frame_id,
+      array<XRLayerUpdate> layer_updates,
+      gpu.mojom.SharedImageExportResult camera_export_multi_result,
+      mojo_base.mojom.TimeDelta time_waited);
 };
 
 // After submitting a frame, the XRPresentationProvider will notify the client

@@ -59,7 +59,7 @@ class PLATFORM_EXPORT XRFrameTransport final
   bool FrameSubmit(device::mojom::blink::XRPresentationProvider*,
                    XRFrameTransportDelegate* delegate,
                    Vector<XRLayerUpdate> layers,
-                   Vector<gpu::SyncToken> camera_sync_tokens,
+                   gpu::SharedImageExportResult camera_export_result,
                    int16_t vr_frame_id);
 
   void FrameSubmitMissing(device::mojom::blink::XRPresentationProvider*,

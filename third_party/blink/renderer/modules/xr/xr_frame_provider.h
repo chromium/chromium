@@ -77,7 +77,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   void ClearCachedLayersData();
   void SubmitLayer(device::LayerId layer_id, XrLayerClient*, bool was_changed);
   void SubmitFrame(XRFrameTransportDelegate* transport_delegate,
-                   Vector<gpu::SyncToken> camera_sync_tokens = {});
+                   gpu::SharedImageExportResult camera_export_result =
+                       gpu::SharedImageExportResult());
 
   void Dispose();
   void OnFocusChanged();

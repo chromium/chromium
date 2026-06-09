@@ -463,7 +463,7 @@ void CardboardRenderLoop::SubmitFrame(int16_t frame_index,
 void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
     std::vector<device::mojom::XRLayerUpdatePtr> layer_updates,
-    const std::vector<gpu::SyncToken>& camera_sync_tokens,
+    gpu::SharedImageExportResult camera_export_multi_result,
     base::TimeDelta time_waited) {
   TRACE_EVENT1("gpu", "CardboardRenderLoop::SubmitFrameDrawnIntoTexture",
                "frame", frame_index);
@@ -478,7 +478,7 @@ void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
 
   // For cardboard, no sync token for the camera should be received since there
   // is no camera shared image.
-  if (!camera_sync_tokens.empty()) {
+  if (camera_export_multi_result.HasData()) {
     presentation_receiver_.ReportBadMessage(
         "Received unexpected camera sync tokens.");
     return;
@@ -493,13 +493,11 @@ void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
   webxr_->ProcessOrDefer(
       base::BindOnce(&CardboardRenderLoop::ProcessFrameDrawnIntoTexture,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(layer_updates[0]->shared_image_export_result),
-                     camera_sync_tokens));
+                     std::move(layer_updates[0]->shared_image_export_result)));
 }
 
 void CardboardRenderLoop::ProcessFrameDrawnIntoTexture(
-    gpu::SharedImageExportResult shared_image_export_result,
-    const std::vector<gpu::SyncToken>& camera_sync_tokens) {
+    gpu::SharedImageExportResult shared_image_export_result) {
   // The current function is run immediately after the animating frame is
   // moved to processing, so GetProcessingFrame() is guaranteed to be valid.
   WebXrFrame* frame = webxr_->GetProcessingFrame();
@@ -510,13 +508,8 @@ void CardboardRenderLoop::ProcessFrameDrawnIntoTexture(
   std::vector<scoped_refptr<gpu::ClientSharedImage>> shared_images{
       frame->shared_buffer->shared_image};
 
-  std::vector<gpu::SyncToken> combined_sync_tokens;
-  combined_sync_tokens.reserve(camera_sync_tokens.size() + 1);
-  combined_sync_tokens.push_back(
-      shared_images[0]->EndExport(std::move(shared_image_export_result)));
-  for (auto& camera_sync_token : camera_sync_tokens) {
-    combined_sync_tokens.push_back(camera_sync_token);
-  }
+  std::vector<gpu::SyncToken> combined_sync_tokens{
+      shared_images[0]->EndExport(std::move(shared_image_export_result))};
 
   viz::ContextProvider* context_provider =
       cardboard_image_transport_->GetContextProvider();

@@ -75,7 +75,7 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
   void SubmitFrameDrawnIntoTexture(
       int16_t frame_index,
       std::vector<device::mojom::XRLayerUpdatePtr> layer_updates,
-      const std::vector<gpu::SyncToken>& camera_sync_tokens,
+      gpu::SharedImageExportResult camera_export_multi_result,
       base::TimeDelta time_waited) override;
 
   // mojom::XRSessionController
@@ -103,8 +103,7 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
   bool IsSubmitFrameExpected(int16_t frame_index);
 
   void ProcessFrameDrawnIntoTexture(
-      gpu::SharedImageExportResult shared_image_export_result,
-      const std::vector<gpu::SyncToken>& camera_sync_tokens);
+      gpu::SharedImageExportResult shared_image_export_result);
   void OnWebXrTokenSignaled(std::unique_ptr<gfx::GpuFence> gpu_fence);
 
   void TransitionProcessingFrameToRendering();
