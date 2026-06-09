@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorTaskHelper;
 import org.chromium.chrome.browser.actor.ui.ActorControlCoordinator;
+import org.chromium.chrome.browser.actor.ui.ActorControlStateTracker;
 import org.chromium.chrome.browser.actor.ui.ActorOverlayCoordinator;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -38,6 +39,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistr
 public class GlicUiCoordinator implements Destroyable {
 
     private final Activity mActivity;
+    private final ActorControlStateTracker mActorControlStateTracker;
     private final ActorControlCoordinator mActorControlCoordinator;
     private final ActorOverlayCoordinator mActorOverlayCoordinator;
     private final ActorTaskHelper mActorTaskHelper;
@@ -77,11 +79,13 @@ public class GlicUiCoordinator implements Destroyable {
             @Nullable SideUiStateProvider sideUiStateProvider) {
         mActivity = activity;
 
+        mActorControlStateTracker =
+                new ActorControlStateTracker(profileSupplier, activityTabProvider);
+
         mActorControlCoordinator =
                 new ActorControlCoordinator(
                         tabBottomSheetManager,
-                        profileSupplier,
-                        activityTabProvider,
+                        mActorControlStateTracker,
                         (tabId) -> {
                             TabModelSelector selector = tabModelSelectorSupplier.get();
                             if (selector != null) {
@@ -113,6 +117,7 @@ public class GlicUiCoordinator implements Destroyable {
 
     @Override
     public void destroy() {
+        mActorControlStateTracker.destroy();
         mActorControlCoordinator.destroy();
         mActorOverlayCoordinator.destroy();
         mActorTaskHelper.onDestroy();
