@@ -112,7 +112,7 @@ class PooledHarfBuzzBuffer {
     DCHECK_LE(pool.size(), kInlineCapacity);
     DCHECK(!buffer_);
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
-    }
+  }
 
   hb_buffer_t* Get() const { return buffer_; }
   const hb_buffer_t* operator->() const { return Get(); }
@@ -553,6 +553,38 @@ void HarfBuzzShaper::CommitGlyphs(RangeContext* range_data,
   }
 }
 
+static inline bool CodepointIsNotDef(hb_codepoint_t codepoint) {
+  return codepoint == 0 || codepoint == kUnmatchedVSGlyphId;
+}
+
+static inline bool AnyCodepointsAreNotDef(const hb_glyph_info_t* glyph_info,
+                                          unsigned num_glyphs) {
+  // We unroll the loop manually because Clang steadfastly refuses to,
+  // even with #pragma unroll, and we use pointer arithmetic because Clang
+  // again refuses to do that conversion. (This is also why the loop has not
+  // been spanified; we should revisit this when the optimizer is able to
+  // generate the expected code. Similarly, do not blindly spanify without
+  // actually running e.g. Speedometer and checking that there is
+  // no regression.)
+  unsigned glyph_index;
+  for (glyph_index = 0; glyph_index + 3 < num_glyphs; glyph_index += 4) {
+    const hb_codepoint_t glyph0 = UNSAFE_TODO(glyph_info++)->codepoint;
+    const hb_codepoint_t glyph1 = UNSAFE_TODO(glyph_info++)->codepoint;
+    const hb_codepoint_t glyph2 = UNSAFE_TODO(glyph_info++)->codepoint;
+    const hb_codepoint_t glyph3 = UNSAFE_TODO(glyph_info++)->codepoint;
+    if (CodepointIsNotDef(glyph0) || CodepointIsNotDef(glyph1) ||
+        CodepointIsNotDef(glyph2) || CodepointIsNotDef(glyph3)) {
+      return true;
+    }
+  }
+  for (; glyph_index < num_glyphs; ++glyph_index) {
+    if (CodepointIsNotDef(UNSAFE_TODO(glyph_info++)->codepoint)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void HarfBuzzShaper::ExtractShapeResults(
     RangeContext* range_data,
     bool& font_cycle_queued,
@@ -562,23 +594,40 @@ void HarfBuzzShaper::ExtractShapeResults(
     CanvasRotationInVertical canvas_rotation,
     FallbackFontStage& fallback_stage,
     ShapeResult* shape_result) const {
+  unsigned num_glyphs = hb_buffer_get_length(range_data->buffer.Get());
+  hb_glyph_info_t* glyph_info =
+      hb_buffer_get_glyph_infos(range_data->buffer.Get(), nullptr);
+
+  if (!num_glyphs) {
+    return;
+  }
+
+  // Find first notdef glyph in buffer.
+
+  // Fast path: If all glyphs are known to be shaped (none have ID zero,
+  // none are kUnmatchedVSGlyphId, and the text does not contain any
+  // ideographic spaces), we know that we have a single segment and can
+  // commit that straight away without further glyph run analysis.
+  if (num_glyphs >= 64 && !text_contains_ideographic_space_ &&
+      !AnyCodepointsAreNotDef(glyph_info, num_glyphs)) {
+    BufferSlice slice =
+        ComputeSlice(range_data, current_queue_item, glyph_info, num_glyphs,
+                     /*old_glyph_index=*/0, num_glyphs);
+    CommitGlyphs(range_data, current_font, current_run_script, canvas_rotation,
+                 fallback_stage, slice, shape_result);
+    return;
+  }
+
+  // Regular path below.
+
   enum ClusterResult { kShaped, kNotDef, kUnknown };
   ClusterResult current_cluster_result = kUnknown;
   ClusterResult previous_cluster_result = kUnknown;
   unsigned previous_cluster = 0;
   unsigned current_cluster = 0;
 
-  // Find first notdef glyph in buffer.
-  unsigned num_glyphs = hb_buffer_get_length(range_data->buffer.Get());
-  hb_glyph_info_t* glyph_info =
-      hb_buffer_get_glyph_infos(range_data->buffer.Get(), nullptr);
-
   unsigned last_change_glyph_index = 0;
   unsigned previous_cluster_start_glyph_index = 0;
-
-  if (!num_glyphs) {
-    return;
-  }
 
   const Glyph space_glyph = current_font->SpaceGlyph();
   for (unsigned glyph_index = 0; glyph_index < num_glyphs; ++glyph_index) {

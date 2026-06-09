@@ -52,7 +52,10 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
   DISALLOW_NEW();
 
  public:
-  explicit HarfBuzzShaper(String text) : text_(std::move(text)) {}
+  explicit HarfBuzzShaper(String text)
+      : text_(std::move(text)),
+        text_contains_ideographic_space_(text_.find(uchar::kIdeographicSpace) !=
+                                         String::npos) {}
 
   // Shape a range, defined by the start and end parameters, of the string
   // supplied to the constructor.
@@ -165,6 +168,10 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
   void CheckTextEnd(unsigned start, unsigned end) const;
 
   const String text_;
+
+  // Used to know if we can enter the fast path in ExtractShapeResults()
+  // or not; precomputed because we may have several calls to it.
+  const bool text_contains_ideographic_space_;
 };
 
 }  // namespace blink
