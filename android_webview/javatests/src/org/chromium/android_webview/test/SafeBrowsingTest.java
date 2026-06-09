@@ -56,6 +56,7 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.safe_browsing.SafeBrowsingApiHandler;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -183,8 +184,8 @@ public class SafeBrowsingTest extends AwParameterizedTest {
      * A fake PlatformServiceBridge that allows tests to make safe browsing requests without GMS.
      */
     private static class MockPlatformServiceBridge extends PlatformServiceBridge {
-        private Callback<Boolean> mCallback;
-        private Boolean mConsent;
+        private Callback<@Nullable Boolean> mCallback;
+        private @Nullable Boolean mConsent;
 
         @Override
         public boolean canUseGms() {
@@ -192,7 +193,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         }
 
         @Override
-        public void querySafeBrowsingUserConsent(Callback<Boolean> callback) {
+        public void querySafeBrowsingUserConsent(Callback<@Nullable Boolean> callback) {
             mCallback = callback;
             if (mConsent != null) {
                 callback.onResult(mConsent);
@@ -201,7 +202,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
 
         public void setConsent(Boolean consent) {
             mConsent = consent;
-            if (mCallback != null && consent != null) {
+            if (mCallback != null) {
                 mCallback.onResult(consent);
             }
         }
@@ -1278,6 +1279,51 @@ public class SafeBrowsingTest extends AwParameterizedTest {
                         .build()) {
             bridge.setConsent(false);
             // Waits for posted task from callback to complete.
+            Assert.assertFalse(AwSafeBrowsingConfigHelper.getSafeBrowsingUserOptInForTesting());
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSafeBrowsingUserOptInNullDoesNotUpdateCache() throws Throwable {
+        MockPlatformServiceBridge bridge =
+                (MockPlatformServiceBridge) PlatformServiceBridge.getInstance();
+
+        // Set initial consent to true in pref
+        AwSafeBrowsingConfigHelper.setSafeBrowsingUserOptInForTesting(true);
+
+        bridge.setConsent(null); // Don't return immediately
+
+        AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromGms();
+
+        // Now trigger callback with null (simulating timeout/error)
+        // We expect that the cache is NOT updated (stays true)
+        // And we expect NO histogram record for ApiCallMatchesDiskCache
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("SafeBrowsing.WebView.GmsOptIn.ApiCallMatchesDiskCache")
+                        .build()) {
+            bridge.setConsent(null);
+            // Waits for posted task from callback to complete (if any)
+            // and verifies pref is still true
+            Assert.assertTrue(AwSafeBrowsingConfigHelper.getSafeBrowsingUserOptInForTesting());
+        }
+
+        // Set initial consent to false in pref
+        AwSafeBrowsingConfigHelper.setSafeBrowsingUserOptInForTesting(false);
+
+        bridge.setConsent(null); // Reset
+
+        AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromGms();
+
+        // Trigger callback with null again
+        // We expect that the cache is NOT updated (stays false)
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("SafeBrowsing.WebView.GmsOptIn.ApiCallMatchesDiskCache")
+                        .build()) {
+            bridge.setConsent(null);
             Assert.assertFalse(AwSafeBrowsingConfigHelper.getSafeBrowsingUserOptInForTesting());
         }
     }

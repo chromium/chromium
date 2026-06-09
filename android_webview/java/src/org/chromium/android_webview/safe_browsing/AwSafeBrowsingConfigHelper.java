@@ -77,14 +77,15 @@ public class AwSafeBrowsingConfigHelper {
     }
 
     public static void maybeEnableSafeBrowsingFromGms() {
-        Callback<Boolean> cb =
+        Callback<@Nullable Boolean> cb =
                 verifyAppsValue -> {
-                    ThreadUtils.postOnUiThread(
-                            () -> {
-                                AwSafeBrowsingConfigHelperJni.get()
-                                        .setSafeBrowsingUserOptIn(
-                                                Boolean.TRUE.equals(verifyAppsValue));
-                            });
+                    if (verifyAppsValue != null) {
+                        ThreadUtils.postOnUiThread(
+                                () -> {
+                                    AwSafeBrowsingConfigHelperJni.get()
+                                            .setSafeBrowsingUserOptIn(verifyAppsValue);
+                                });
+                    }
                 };
         PlatformServiceBridge.getInstance().querySafeBrowsingUserConsent(cb);
     }

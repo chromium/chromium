@@ -8801,8 +8801,10 @@ chromium-metrics-reviews@google.com.
     value matches the disk cache and a log of &quot;false&quot; means that the
     disk cache didn't match.
 
-    This histogram is recorded when the task completes, which can be on either
-    success, failure, or timeout.
+    This histogram is recorded when the task completes successfully.
+
+    Note: Prior to M151, timeouts and errors were recorded as a consent value of
+    false.
   </summary>
 </histogram>
 

@@ -50,6 +50,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.MessagePayload;
@@ -420,13 +421,15 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
 
     private static class OnProgressChangedClient extends TestAwContentsClient {
         private final CallbackHelper mCallbackHelper = new CallbackHelper();
+        private int mLastProgress = -1;
 
         @Override
         public void onProgressChanged(int progress) {
             super.onProgressChanged(progress);
-            if (progress == 100) {
+            if (progress == 100 && mLastProgress != 100) {
                 mCallbackHelper.notifyCalled();
             }
+            mLastProgress = progress;
         }
 
         public void waitForFullLoad() throws TimeoutException {
@@ -462,7 +465,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         // works.
         private final Executor mExecutor = new BackgroundThreadExecutor("TEST_BACKGROUND_THREAD");
         private final CallbackHelper mNeedsRestrictionHelper = new CallbackHelper();
-        private boolean mNeedsRestrictionResponse;
+        private @Nullable Boolean mNeedsRestrictionResponse;
         private static final Set RESTRICTED_CONTENT_BLOCKLIST =
                 Set.of(MATURE_SITE_PATH, MATURE_SITE_IFRAME_PATH);
 
@@ -477,7 +480,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         }
 
         @Override
-        public void needsRestrictedContentBlocking(final Callback<Boolean> callback) {
+        public void needsRestrictedContentBlocking(final Callback<@Nullable Boolean> callback) {
             mExecutor.execute(
                     () -> {
                         callback.onResult(mNeedsRestrictionResponse);
@@ -485,7 +488,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
                     });
         }
 
-        public void setNeedsRestrictedContentBlockingResponse(boolean value) {
+        public void setNeedsRestrictedContentBlockingResponse(@Nullable Boolean value) {
             mNeedsRestrictionResponse = value;
         }
 
@@ -507,7 +510,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         }
     }
 
-    private void resetNeedsRestriction(boolean value) throws Exception {
+    private void resetNeedsRestriction(@Nullable Boolean value) throws Exception {
         mDelegate.setNeedsRestrictedContentBlockingResponse(value);
         int count = mDelegate.getNeedsRestrictionHelper().getCallCount();
         AwSupervisedUserUrlClassifier classifier = AwSupervisedUserUrlClassifier.getInstance();
@@ -515,5 +518,50 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
 
         classifier.checkIfNeedRestrictedContentBlocking();
         mDelegate.getNeedsRestrictionHelper().waitForCallback(count);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testRestrictedContentBlockingNullDoesNotUpdateCache() throws Throwable {
+        String embeddedUrl = setUpWebPage(MATURE_SITE_IFRAME_PATH, MATURE_SITE_IFRAME_TITLE, null);
+        String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, embeddedUrl);
+
+        // Start with restriction enabled (setUp sets it to true, but let's be explicit)
+        resetNeedsRestriction(true);
+        loadUrl(requestUrl);
+        assertPageTitle(BLOCKED_SITE_TITLE);
+
+        // Now set restriction response to null (simulating timeout/error)
+        // It should NOT update the cache, so restriction should remain enabled (mature pages
+        // blocked)
+        // We also check that the histogram is NOT recorded.
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Android.WebView.RestrictedContentBlocking.ApiCallMatchesDiskCache")
+                        .build()) {
+            resetNeedsRestriction(null);
+            loadUrl(requestUrl);
+            assertPageTitle(BLOCKED_SITE_TITLE);
+        }
+
+        // Now set restriction to false
+        resetNeedsRestriction(false);
+        loadUrl(requestUrl);
+        assertPageTitle(MATURE_SITE_TITLE);
+
+        // Now set restriction response to null again
+        // It should NOT update the cache, so restriction should remain disabled (mature pages
+        // allowed)
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Android.WebView.RestrictedContentBlocking.ApiCallMatchesDiskCache")
+                        .build()) {
+            resetNeedsRestriction(null);
+            loadUrl(requestUrl);
+            assertPageTitle(MATURE_SITE_TITLE);
+        }
     }
 }

@@ -4389,12 +4389,14 @@ failing to fetch the updates which puts users' security at risk. -->
   <summary>
     Records whether the result of the query for Safe Browsing user consent
     matches the value stored in the disk cache. A value of true means they
-    match, and false means they do not. Note that if the SafeBrowsing query
-    fails (e.g due to an exception or a timeout), the result of the query is
-    false. The default value of the disk cache is false.
+    match, and false means they do not. The default value of the disk cache is
+    false.
 
     This histogram is recorded when the query, which is called once per WebView
-    global process startup, completes successfully or errors out.
+    global process startup, completes successfully.
+
+    Note: Prior to M151, timeouts and errors were recorded as a consent value of
+    false.
   </summary>
 </histogram>
 
