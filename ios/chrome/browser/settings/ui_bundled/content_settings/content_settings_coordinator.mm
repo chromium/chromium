@@ -91,7 +91,7 @@
 - (void)dealloc {
   // TODO(crbug.com/427791214): If stop is always called before dealloc, then
   // do all C++ cleanup in stop.
-  CHECK(_stopped, base::NotFatalUntil::M150);
+  CHECK(_stopped, base::NotFatalUntil::M154);
 }
 
 #pragma mark - ContentSettingsTableViewControllerPresentationDelegate
