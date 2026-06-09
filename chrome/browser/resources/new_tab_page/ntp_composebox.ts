@@ -61,11 +61,26 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      /*
+      `expanding_` property is used in composebox.css styles. It is added
+      so that the imported styles work well. Remove this property once each
+      embedder has its own styles.
+      */
+      expanding_: {
+        reflect: true,
+        type: Boolean,
+      },
+    };
+  }
+
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
   private eventTracker_: EventTracker = new EventTracker();
   protected dragAndDropHandler_: DragAndDropHandler;
+  protected accessor expanding_: boolean = true;
 
   override getPageHandler(): PageHandlerRemote {
     return this.pageHandler_;

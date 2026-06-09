@@ -5,15 +5,13 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_components/composebox/composebox.css.js
  * #import=//resources/cr_components/composebox/composebox_shared_style.css.js
  * #scheme=relative
- * #include=cr-icons-lit composebox-shared-style
+ * #include=cr-icons-lit composebox composebox-shared-style
  * #css_wrapper_metadata_end */
 
 :host {
-  --border-radius-transition: border-radius 600ms cubic-bezier(0.3, 0, 0.8, 0.15);
-  --icon-entry-transition: opacity 300ms linear 800ms;
-  --icon-exit-transition: opacity 100ms cubic-bezier(0.3, 0, 0.8, 0.15);
   --composebox-cancel-button-top: var(--cr-composebox-cancel-button-top, 10px);
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0px;
 
@@ -27,8 +25,6 @@
   border-radius: var(--expanded-border-radius);
   box-shadow: var(--cr-searchbox-shadow);
   font-size: var(--cr-composebox-font-size);
-  transition: var(--border-radius-transition),
-      box-shadow 500ms cubic-bezier(0.4, 0.0, 0.2, 1);
   width: var(--cr-composebox-width, 337px);
 }
 
@@ -41,17 +37,6 @@
   pointer-events: auto;
   position: relative;
   overflow: hidden;
-  transition:
-    max-height 600ms cubic-bezier(0.3, 0, 0.8, 0.15),
-    min-height 600ms cubic-bezier(0.3, 0, 0.8, 0.15),
-    opacity 100ms ease-in-out,
-    visibility 100ms ease-in-out;
-}
-
-search-animated-glow {
-  pointer-events: none;
-  inset: -2px;
-  z-index: 1;
 }
 
 #inputContainer {
@@ -84,14 +69,6 @@ cr-composebox-submit::part(submit) {
   padding-inline-end: var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-end, 8px);
 }
 
-:host(:not([file-uploads-complete])) .upload-button {
-  cursor: not-allowed;
-}
-
-:host([upload-button-disabled]) .upload-button {
-  color: var(--color-composebox-upload-button-disabled);
-}
-
 #contextEntrypoint::part(context-menu-entrypoint-icon) {
   position: absolute;
   top: 10px;
@@ -111,16 +88,6 @@ cr-composebox-submit::part(submit) {
   top: 10px;
 }
 
-@media (forced-colors: active) {
-  #voiceSearchButton {
-    --cr-icon-button-fill-color: ButtonText;
-  }
-}
-
-#errorScrim {
-  border-radius: inherit;
-}
-
 #composebox[inert] {
   pointer-events: none;
 }
@@ -135,12 +102,6 @@ cr-composebox-submit::part(submit) {
   flex-direction: row;
 }
 
-.carousel-container-inner {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
 #carousel {
   box-sizing: border-box;
   margin-bottom: var(--context-non-top-carousel-bottom-margin, 4px);
@@ -151,17 +112,6 @@ cr-composebox-submit::part(submit) {
       var(--context-carousel-inline-end-spacing, 50px));
 }
 
-#toolChipsContainer {
-  padding-bottom: 4px;
-  padding-inline-start: 16px;
-  padding-top: 14px;
-}
-
-:host([searchbox-layout-mode='Compact'][show-dropdown]) .carousel-divider {
-  --contextual-entrypoint-and-carousel-carousel-divider-margin-bottom: 8px;
-  --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 12px;
-}
-
 :host([submit-enabled]) cr-composebox-submit::part(submit) {
   inset-inline-end: 0;
   margin-block: 12px 2px;
@@ -169,49 +119,16 @@ cr-composebox-submit::part(submit) {
   position: relative;
 }
 
-:host([searchbox-next-enabled]) cr-composebox-submit::part(submit-icon) {
-  --cr-icon-button-icon-size: 12px;
-}
-
-:host(:not([submit-enabled])) cr-composebox-submit::part(submit) {
-  display: none;
-}
-
 :host([in-voice-search-mode]) {
   box-shadow: 2px 10px 18px -5px rgb(0, 0, 0, 0.1);
-}
-
-:host([in-voice-search-mode]) #suggestionActivity {
-  display: none;
-}
-
-:host([in-voice-search-mode]) #composebox {
-  opacity: 0;
-  visibility: hidden;
 }
 
 cr-composebox-voice-search {
   z-index: 2;
 }
 
-:host(:not([in-voice-search-mode])) cr-composebox-voice-search {
-  display: none;
-}
-
 :host([in-voice-search-mode]) cr-composebox-input::part(cancel),
 :host([in-voice-search-mode]) cr-composebox-submit::part(submit) {
   opacity: 0;
   transition: var(--icon-exit-transition);
-}
-
-#suggestionActivity {
-  color: var(--color-composebox-suggestion-activity);
-  display: flex;
-  font-size: 12px;
-  font-weight: 400;
-  justify-content: flex-end;
-  line-height: 18px;
-  padding-bottom: 10px;
-  padding-inline-end: 18px;
-  position: relative;
 }
