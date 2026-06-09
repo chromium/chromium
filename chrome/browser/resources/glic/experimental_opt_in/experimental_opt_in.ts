@@ -42,6 +42,10 @@ document.documentElement.style.setProperty(
 document.documentElement.style.setProperty(
     '--glic-transition-duration', `${TRANSITION_DURATION_MS}ms`);
 
+// Set min-height on body to prevent collapse during loading when webview is
+// hidden and skeleton is absolute.
+document.body.style.minHeight = `${defaultHeight}px`;
+
 function init() {
   const webview = getRequiredElement<chrome.webviewTag.WebView>('webview');
   webview.setAttribute('minwidth', String(defaultWidth));
@@ -76,6 +80,9 @@ function init() {
       return;
     }
     transitioned = true;
+
+    // Clear min-height restriction once we have real content
+    document.body.style.minHeight = '';
 
     const skeleton = document.getElementById('skeleton-container');
     if (skeleton) {
@@ -120,16 +127,8 @@ function init() {
     }, 10000);
   }
 
-  webview.addEventListener('sizechanged', (e: Event) => {
-    if (hasError || webview.hidden) {
-      return;
-    }
-
-    const sizeEvent = e as unknown as chrome.webviewTag.SizeChangedEvent;
-    window.resizeTo(sizeEvent.newWidth, sizeEvent.newHeight);
-  });
-
   function showFailureState(type: FailureType) {
+    document.body.style.minHeight = '';
     if (type === FailureType.OFFLINE) {
       errorIcon.setAttribute('icon', 'glic:offline');
       errorHeadline.textContent = loadTimeData.getString('offlineNoticeHeader');
@@ -148,7 +147,6 @@ function init() {
     if (skeleton) {
       skeleton.classList.add('hidden');
     }
-    window.resizeTo(defaultWidth, 502);
   }
 
   webview.addEventListener('loadstart', () => {
