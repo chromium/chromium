@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.app.Activity;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.Contract;
@@ -39,7 +41,9 @@ public final class TabBottomSheetUtils {
      * @param windowAndroid The {@link WindowAndroid} to attach to.
      * @param manager The {@link TabBottomSheetManager} to attach.
      */
-    static void attachManagerToWindow(WindowAndroid windowAndroid, TabBottomSheetManager manager) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static void attachManagerToWindow(
+            WindowAndroid windowAndroid, TabBottomSheetManager manager) {
         MANAGER_KEY.attachToHost(windowAndroid.getUnownedUserDataHost(), manager);
     }
 
@@ -48,7 +52,8 @@ public final class TabBottomSheetUtils {
      *
      * @param windowAndroid The {@link WindowAndroid} to detach from.
      */
-    static void detachManagerFromWindow(WindowAndroid windowAndroid) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static void detachManagerFromWindow(WindowAndroid windowAndroid) {
         MANAGER_KEY.detachFromHost(windowAndroid.getUnownedUserDataHost());
     }
 

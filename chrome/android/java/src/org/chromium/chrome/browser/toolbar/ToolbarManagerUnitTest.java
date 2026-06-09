@@ -93,6 +93,8 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabViewManager;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -156,7 +158,8 @@ import java.util.function.Supplier;
 @EnableFeatures({
     ChromeFeatureList.HTTPS_FIRST_DIALOG_UI,
     SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-    SigninFeatures.ENABLE_SEAMLESS_SIGNIN
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+    ChromeFeatureList.GLIC
 })
 @DisableFeatures({SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS})
 public class ToolbarManagerUnitTest {
@@ -229,6 +232,7 @@ public class ToolbarManagerUnitTest {
     @Mock private PropertyModel mActionPropertyModel;
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private GlicKeyedService mGlicKeyedService;
+    @Mock private TabBottomSheetManager mTabBottomSheetManager;
     @Mock private PrefService mPrefService;
     @Mock private TabModel mIncognitoTabModel;
     @Mock private Profile mIncognitoProfile;
@@ -539,6 +543,20 @@ public class ToolbarManagerUnitTest {
                 "Fallback color for bottom toolbar in incognito should be Surface Container High",
                 expectedColor,
                 actualColor);
+
+        mToolbarManager.destroy();
+    }
+
+    @Test
+    public void testHomeButtonClickCollapsesBottomSheet() {
+        TabBottomSheetUtils.attachManagerToWindow(mWindowAndroid, mTabBottomSheetManager);
+
+        AppCompatActivity activity = mActivityController.get();
+        View homeButton = activity.findViewById(R.id.home_button);
+        assertNotNull("Home button should be present", homeButton);
+        homeButton.performClick();
+
+        verify(mTabBottomSheetManager).setSheetExpanded(false);
 
         mToolbarManager.destroy();
     }

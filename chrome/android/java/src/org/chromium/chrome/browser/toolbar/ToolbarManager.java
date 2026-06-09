@@ -149,6 +149,8 @@ import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -1074,6 +1076,14 @@ public class ToolbarManager
                                 } else if (hasShift) {
                                     mToolbarTabController.openHomepageInNewWindow();
                                 } else {
+                                    // TODO(crbug.com/518852349): Revisit this approach to handle
+                                    // the case form GLIC.
+                                    TabBottomSheetManager tabBottomSheetManager =
+                                            TabBottomSheetUtils.getManagerFromWindow(
+                                                    mWindowAndroid);
+                                    if (tabBottomSheetManager != null) {
+                                        tabBottomSheetManager.setSheetExpanded(false);
+                                    }
                                     mToolbarTabController.openHomepage();
                                 }
 
