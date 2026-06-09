@@ -60,6 +60,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -978,10 +979,11 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, ExtensionProcessReuse) {
     ExtensionHost* extension_host =
         pm->GetBackgroundHostForExtension(extension->id());
 
-    EXPECT_EQ(extension->url(), extension_host->host_contents()
-                                    ->GetSiteInstance()
-                                    ->GetSecurityPrincipal()
-                                    .GetDeprecatedSiteURL());
+    auto& principal = extension_host->host_contents()
+                          ->GetSiteInstance()
+                          ->GetSecurityPrincipal();
+    EXPECT_TRUE(principal.SchemeIs(kExtensionScheme));
+    EXPECT_EQ(extension->id(), principal.GetHost());
 
     processes.insert(extension_host->render_process_host()->GetDeprecatedID());
   }

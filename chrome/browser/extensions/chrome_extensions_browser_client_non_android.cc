@@ -107,9 +107,8 @@ void ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
         callback) {
   if (owner_site_instance->GetSecurityPrincipal().SchemeIs(
           webapps::kIsolatedAppScheme)) {
-    base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
-        web_app::IsolatedWebAppUrlInfo::Create(
-            owner_site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL());
+    auto url_info = web_app::IsolatedWebAppUrlInfo::CreateFromHost(
+        owner_site_instance->GetSecurityPrincipal().GetHost());
     DCHECK(url_info.has_value()) << url_info.error();
 
     auto* profile = Profile::FromBrowserContext(browser_context);

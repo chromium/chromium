@@ -110,6 +110,7 @@ namespace {
 // If non-null, a scope of a service worker to always allow to be unregistered.
 const GURL* g_allow_service_worker_unregistration_scope = nullptr;
 
+// Deprecated, prefer using GetEnabledExtensionFromSecurityPrincipal() instead.
 const Extension* GetEnabledExtensionFromSiteURL(BrowserContext* context,
                                                 const GURL& site_url) {
   if (!site_url.SchemeIs(kExtensionScheme))
@@ -120,6 +121,21 @@ const Extension* GetEnabledExtensionFromSiteURL(BrowserContext* context,
     return nullptr;
 
   return registry->enabled_extensions().GetByID(site_url.GetHost());
+}
+
+const Extension* GetEnabledExtensionFromSecurityPrincipal(
+    BrowserContext* context,
+    const content::SecurityPrincipal& principal) {
+  if (!principal.SchemeIs(kExtensionScheme)) {
+    return nullptr;
+  }
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(context);
+  if (!registry) {
+    return nullptr;
+  }
+
+  return registry->enabled_extensions().GetByID(principal.GetHost());
 }
 
 bool HasEffectiveUrl(content::BrowserContext* browser_context,
@@ -529,13 +545,10 @@ bool ChromeContentBrowserClientExtensionsPart::
   // and makes it more likely that the subframe process will be shown near the
   // extension in Chrome's task manager for blame purposes. See
   // https://crbug.com/40599941.
-  const Extension* extension =
-      ExtensionRegistry::Get(
-          outermost_main_frame->GetSiteInstance()->GetBrowserContext())
-          ->enabled_extensions()
-          .GetExtensionOrAppByURL(outermost_main_frame->GetSiteInstance()
-                                      ->GetSecurityPrincipal()
-                                      .GetDeprecatedSiteURL());
+  auto* site_instance = outermost_main_frame->GetSiteInstance();
+  const Extension* extension = GetEnabledExtensionFromSecurityPrincipal(
+      site_instance->GetBrowserContext(),
+      site_instance->GetSecurityPrincipal());
   return !extension || !extension->is_extension();
 }
 
@@ -759,8 +772,8 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcessAndSite(
   // for isolated origins or cross-site iframes). For that case, don't look up
   // the hosted app's Extension from the site URL using GetExtensionOrAppByURL,
   // since it isn't treated as a hosted app.
-  const Extension* extension = GetEnabledExtensionFromSiteURL(
-      context, site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL());
+  const Extension* extension = GetEnabledExtensionFromSecurityPrincipal(
+      context, site_instance->GetSecurityPrincipal());
   if (!extension) {
     return;
   }

@@ -245,16 +245,14 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   // RendererProcessHostImpl::ShouldDelayProcessShutdown() for details).
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
   EXPECT_NE(subframe->GetSiteInstance(), extension_site_instance);
+  auto& principal = subframe->GetSiteInstance()->GetSecurityPrincipal();
   if (content::SiteIsolationPolicy::IsErrorPageIsolationEnabled(false)) {
-    EXPECT_EQ(subframe->GetSiteInstance()
-                  ->GetSecurityPrincipal()
-                  .GetDeprecatedSiteURL(),
-              GURL(content::kUnreachableWebDataURL));
+    EXPECT_TRUE(principal.SchemeIs(content::kChromeErrorScheme));
+    EXPECT_EQ(GURL(content::kUnreachableWebDataURL).host(),
+              principal.GetHost());
   } else {
-    EXPECT_EQ(subframe->GetSiteInstance()
-                  ->GetSecurityPrincipal()
-                  .GetDeprecatedSiteURL(),
-              GURL(kExtensionInvalidRequestURL));
+    EXPECT_TRUE(principal.SchemeIs(kExtensionScheme));
+    EXPECT_EQ(GURL(kExtensionInvalidRequestURL).host(), principal.GetHost());
     // The disabled extension process should be locked.
     EXPECT_TRUE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
   }

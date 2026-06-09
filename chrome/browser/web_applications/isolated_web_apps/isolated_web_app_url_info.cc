@@ -53,6 +53,13 @@ IsolatedWebAppUrlInfo IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
 }
 
 // static
+base::expected<IsolatedWebAppUrlInfo, std::string>
+IsolatedWebAppUrlInfo::CreateFromHost(std::string_view host) {
+  return MakeIsolatedWebAppUrlInfo(
+      web_package::SignedWebBundleId::Create(host));
+}
+
+// static
 void IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
     const IwaSource& source,
     base::OnceCallback<void(base::expected<IsolatedWebAppUrlInfo, std::string>)>

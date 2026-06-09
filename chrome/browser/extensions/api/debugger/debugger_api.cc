@@ -144,6 +144,12 @@ bool IsPdfExtensionUrl(const GURL& url) {
   return url.GetScheme() == kExtensionScheme &&
          url.GetHost() == extension_misc::kPdfExtensionId;
 }
+
+// Returns whether `principal` is for the built-in PDF extension.
+bool IsPdfExtensionPrincipal(const content::SecurityPrincipal& principal) {
+  return principal.SchemeIs(kExtensionScheme) &&
+         principal.GetHost() == extension_misc::kPdfExtensionId;
+}
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 bool ExtensionMayAttachToTargetProfile(Profile* extension_profile,
@@ -277,9 +283,8 @@ bool ExtensionMayAttachToRenderFrameHost(
         if (chrome_pdf::features::IsOopifPdfEnabled() &&
             (IsPdfExtensionOrigin(
                  render_frame_host->GetLastCommittedOrigin()) ||
-             IsPdfExtensionUrl(render_frame_host->GetSiteInstance()
-                                   ->GetSecurityPrincipal()
-                                   .GetDeprecatedSiteURL()))) {
+             IsPdfExtensionPrincipal(render_frame_host->GetSiteInstance()
+                                         ->GetSecurityPrincipal()))) {
           return content::RenderFrameHost::FrameIterationAction::kContinue;
         }
 #endif  // BUILDFLAG(ENABLE_PDF)

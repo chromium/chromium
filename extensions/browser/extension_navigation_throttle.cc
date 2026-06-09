@@ -240,12 +240,11 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   // Block all navigations to blob: or filesystem: URLs with extension
   // origin from non-extension processes.  See https://crbug.com/40085339 and
   // https://crbug.com/40091207.
+  const auto& starting_principal =
+      navigation_handle()->GetStartingSiteInstance()->GetSecurityPrincipal();
   bool current_frame_is_extension_process =
-      !!registry->enabled_extensions().GetExtensionOrAppByURL(
-          navigation_handle()
-              ->GetStartingSiteInstance()
-              ->GetSecurityPrincipal()
-              .GetDeprecatedSiteURL());
+      starting_principal.SchemeIs(kExtensionScheme) &&
+      !!registry->enabled_extensions().GetByID(starting_principal.GetHost());
 
   if (!url_has_extension_scheme && !current_frame_is_extension_process) {
     // Relax this restriction for apps that use <webview>.  See
