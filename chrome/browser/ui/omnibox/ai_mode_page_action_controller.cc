@@ -35,11 +35,14 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/tabs/public/tab_interface.h"
+#include "skia/ext/image_operations.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
@@ -55,6 +58,22 @@ page_actions::PageActionController* GetPageActionController(
   }
 
   return tab_interface->GetTabFeatures()->page_action_controller();
+}
+
+// Converts an `Image` of arbitrary size to an `ImageModel` of
+// `kLocationBarChipIconSize` size.
+ui::ImageModel SizedImageModel(const gfx::Image& image) {
+  gfx::Size target_size = {
+      GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
+      GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize)};
+  if (image.Size() == target_size) {
+    return ui::ImageModel::FromImage(image);
+  }
+
+  gfx::ImageSkia image_skia = image.AsImageSkia();
+  image_skia = gfx::ImageSkiaOperations::CreateResizedImage(
+      image_skia, skia::ImageOperations::RESIZE_BEST, target_size);
+  return ui::ImageModel::FromImageSkia(image_skia);
 }
 
 }  // namespace
@@ -243,7 +262,7 @@ void AiModePageActionController::SetPageActionVisibility(bool is_visible) {
     // `image` will be empty if not cached. In which case, let
     // `OnFaviconFetchedLocally()` handle visibility and the image.
     if (!image.IsEmpty()) {
-      ShowAndOverrideImage(ui::ImageModel::FromImage(image));
+      ShowAndOverrideImage(SizedImageModel(image));
     }
   }
 }
@@ -275,7 +294,7 @@ void AiModePageActionController::OnFaviconFetchedLocally(
     FetchFaviconFromNetwork(favicon_url);
     return;
   }
-  ShowAndOverrideImage(ui::ImageModel::FromImage(favicon));
+  ShowAndOverrideImage(SizedImageModel(favicon));
 }
 
 void AiModePageActionController::FetchFaviconFromNetwork(
@@ -300,8 +319,8 @@ void AiModePageActionController::OnFaviconFetchedFromNetwork(SkBitmap bitmap) {
     Hide();
     return;
   }
-  gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
-  ShowAndOverrideImage(ui::ImageModel::FromImage(image));
+  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  ShowAndOverrideImage(SizedImageModel(gfx::Image(image_skia)));
 }
 
 }  // namespace omnibox
