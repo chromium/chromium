@@ -188,3 +188,28 @@ TEST_F(DeviceAuthenticatorAndroidTest,
   EXPECT_EQ(device_reauth::BiometricStatus::kUnavailable,
             authenticator()->GetBiometricAvailabilityStatus());
 }
+
+TEST_F(DeviceAuthenticatorAndroidTest, DestroySignalingInCancel) {
+  // The test ensures that bridge_ptr->Cancel() gets called and nothing crashes
+  // (if it's called after authenticator destruction, there can be a
+  // use-after-free).
+  std::unique_ptr<MockDeviceAuthenticatorBridge> unique_bridge =
+      std::make_unique<MockDeviceAuthenticatorBridge>();
+  MockDeviceAuthenticatorBridge* bridge_ptr = unique_bridge.get();
+
+  DeviceAuthenticatorProxy proxy;
+  device_reauth::DeviceAuthParams params(
+      base::Seconds(60), device_reauth::DeviceAuthSource::kPasswordManager);
+
+  auto authenticator = std::make_unique<DeviceAuthenticatorAndroid>(
+      std::move(unique_bridge), &proxy, params);
+
+  EXPECT_CALL(*bridge_ptr, Cancel());
+
+  authenticator->AuthenticateWithMessage(
+      u"", base::BindOnce([](std::unique_ptr<DeviceAuthenticatorAndroid>* auth,
+                             bool success) { auth->reset(); },
+                          base::Unretained(&authenticator)));
+
+  authenticator->Cancel();
+}

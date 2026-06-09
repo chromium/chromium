@@ -140,8 +140,10 @@ void DeviceAuthenticatorAndroid::Cancel() {
   }
   LogAuthResult(source_, DeviceAuthFinalResult::kCanceledByChrome);
 
-  std::move(callback_).Run(/*success=*/false);
   bridge_->Cancel();
+  // No code should be run after the callback as the callback could already be
+  // destroying "this".
+  std::move(callback_).Run(/*success=*/false);
 }
 
 void DeviceAuthenticatorAndroid::OnAuthenticationCompleted(
