@@ -10437,6 +10437,26 @@
             ]
         }
     ],
+    "EnterpriseDataProtectionForGlic": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DataControlsGlic",
+                        "GlicBulkDataEntrySupport"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterpriseDownloadScanOnAndroid": [
         {
             "platforms": [
