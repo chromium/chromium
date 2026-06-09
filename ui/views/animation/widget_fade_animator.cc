@@ -140,7 +140,7 @@ void WidgetFadeAnimator::AnimationEnded(const gfx::Animation* animation) {
 
 void WidgetFadeAnimator::OnWidgetDestroying(Widget* widget) {
   widget_observation_.Reset();
-  fade_animation_.End();
+  fade_animation_.Stop();
   animation_type_ = FadeType::kNone;
   widget_ = nullptr;
 }
