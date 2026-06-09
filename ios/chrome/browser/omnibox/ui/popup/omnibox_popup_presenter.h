@@ -16,7 +16,7 @@
 @class OmniboxPopupPresenter;
 @class OmniboxPopupViewController;
 
-@protocol OmniboxPopupPresenterDelegate <NSObject>
+@protocol OmniboxPopupPresenterDelegate
 
 /// View to which the popup view should be added as subview.
 - (UIView*)popupParentViewForPresenter:(OmniboxPopupPresenter*)presenter;
