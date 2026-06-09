@@ -1516,8 +1516,14 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
   CloseBrowserSynchronously(browser);
 }
 
-IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, BrowserWindow) {
-
+// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
+#if defined(LEAK_SANITIZER)
+#define MAYBE_BrowserWindow DISABLED_BrowserWindow
+#else
+#define MAYBE_BrowserWindow BrowserWindow
+#endif
+IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
+                       MAYBE_BrowserWindow) {
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
                 Readiness::kReady, InstallSource::kSystem);
 
@@ -1580,8 +1586,14 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, BrowserWindow) {
   CloseBrowserSynchronously(browser1);
 }
 
+// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
+#if defined(LEAK_SANITIZER)
+#define MAYBE_AppRunningPercentage DISABLED_AppRunningPercentage
+#else
+#define MAYBE_AppRunningPercentage AppRunningPercentage
+#endif
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
-                       AppRunningPercentage) {
+                       MAYBE_AppRunningPercentage) {
   Browser* browser = CreateBrowserWindow();
 
   // Test one Chrome browser.
