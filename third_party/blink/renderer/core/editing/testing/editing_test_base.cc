@@ -49,7 +49,7 @@ std::string EditingTestBase::GetSelectionTextFromBody(
 }
 
 std::string EditingTestBase::GetSelectionTextFromBody() const {
-  return GetSelectionTextFromBody(Selection().GetSelectionInDOMTree());
+  return GetSelectionTextFromBody(Selection().GetSelectionInDomTree());
 }
 
 std::string EditingTestBase::GetSelectionTextInFlatTreeFromBody(

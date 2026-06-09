@@ -734,7 +734,7 @@ TEST_F(GranularityStrategyTest, UpdateExtentWithNullPositionForCharacter) {
   // Point to RANGE inside shadow root to get null position from
   // |visiblePositionForContentsPoint()|.
   Selection().MoveRangeSelectionExtent(gfx::Point(0, 0));
-  EXPECT_EQ(selection_in_dom_tree, Selection().GetSelectionInDOMTree());
+  EXPECT_EQ(selection_in_dom_tree, Selection().GetSelectionInDomTree());
 }
 
 // For http://crbug.com/704529
@@ -773,7 +773,7 @@ TEST_F(GranularityStrategyTest, UpdateExtentWithNullPositionForDirectional) {
   // |visiblePositionForContentsPoint()|.
   Selection().MoveRangeSelectionExtent(gfx::Point(0, 0));
 
-  EXPECT_EQ(selection_in_dom_tree, Selection().GetSelectionInDOMTree());
+  EXPECT_EQ(selection_in_dom_tree, Selection().GetSelectionInDomTree());
 }
 
 // For http://crbug.com/974728
@@ -792,7 +792,7 @@ TEST_F(GranularityStrategyTest, UpdateExtentWithNullNextWordBound) {
       << "We extend selection inside content editable.";
   Selection().MoveRangeSelectionExtent(gfx::Point(0, 0));
 
-  EXPECT_EQ(selection, Selection().GetSelectionInDOMTree());
+  EXPECT_EQ(selection, Selection().GetSelectionInDomTree());
 }
 
 }  // namespace blink

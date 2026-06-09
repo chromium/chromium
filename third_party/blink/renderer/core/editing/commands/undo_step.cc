@@ -86,7 +86,7 @@ void UndoStep::Unapply() {
 
   // Take selection `FrameSelection` which `ChangeSelectionAfterCommand()` set.
   editor.RespondToChangedContents(
-      frame->Selection().GetSelectionInDOMTree().Anchor());
+      frame->Selection().GetSelectionInDomTree().Anchor());
 }
 
 void UndoStep::Reapply() {
@@ -131,7 +131,7 @@ void UndoStep::Reapply() {
 
   // Take selection `FrameSelection` which `ChangeSelectionAfterCommand()` set.
   editor.RespondToChangedContents(
-      frame->Selection().GetSelectionInDOMTree().Anchor());
+      frame->Selection().GetSelectionInDomTree().Anchor());
 }
 
 void UndoStep::Append(SimpleEditCommand* command) {

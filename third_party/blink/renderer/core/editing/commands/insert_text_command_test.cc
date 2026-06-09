@@ -275,7 +275,7 @@ TEST_F(InsertTextCommandTest, CheckTabSpanElementNoCrash) {
       "head {-webkit-text-stroke-color: black; display: list-item;}"
       "</style>",
       SelectionSample::GetSelectionText(*GetDocument().documentElement(),
-                                        Selection().GetSelectionInDOMTree()));
+                                        Selection().GetSelectionInDomTree()));
 }
 
 // http://crbug.com/792548

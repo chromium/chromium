@@ -106,7 +106,7 @@ const Element* ColdModeSpellCheckRequester::QualifyingEditable() const {
   }
 
   const Position position =
-      window_->GetFrame()->Selection().GetSelectionInDOMTree().Focus();
+      window_->GetFrame()->Selection().GetSelectionInDomTree().Focus();
   if (position.IsNull())
     return nullptr;
 
@@ -274,7 +274,7 @@ void ColdModeSpellCheckRequester::RequestLocalChecking(
   const EphemeralRange& full_range =
       EphemeralRange::RangeOfContents(element_to_check);
   const Position position =
-      window_->GetFrame()->Selection().GetSelectionInDOMTree().Focus();
+      window_->GetFrame()->Selection().GetSelectionInDomTree().Focus();
   DCHECK(position.IsNotNull());
 
   TextIteratorBehavior behavior =

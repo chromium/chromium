@@ -188,7 +188,7 @@ TEST_F(ApplyBlockElementCommandTest, FormatBlockWithDirectChildrenOfRoot) {
                                                            html_names::kPreTag);
   // Shouldn't crash here.
   EXPECT_FALSE(command->Apply());
-  const SelectionInDOMTree& selection = Selection().GetSelectionInDOMTree();
+  const SelectionInDomTree& selection = Selection().GetSelectionInDomTree();
   EXPECT_EQ("^a<div>b</div>c|",
             SelectionSample::GetSelectionText(*root, selection));
 }

@@ -104,7 +104,7 @@ VisibleSelection DomSelection::GetVisibleSelection() const {
 }
 
 bool DomSelection::IsAnchorFirstInSelection() const {
-  return Selection().GetSelectionInDOMTree().IsAnchorFirst();
+  return Selection().GetSelectionInDomTree().IsAnchorFirst();
 }
 
 Node* DomSelection::anchorNode() const {
@@ -192,8 +192,9 @@ String DomSelection::type() const {
     return "None";
   // Do not use isCollapsed() here. We'd like to return "Range" for
   // range-selection in text control elements.
-  if (Selection().GetSelectionInDOMTree().IsCaret())
+  if (Selection().GetSelectionInDomTree().IsCaret()) {
     return "Caret";
+  }
   return "Range";
 }
 
@@ -210,7 +211,7 @@ String DomSelection::direction() const {
       (RuntimeEnabledFeatures::SelectionCollapsedDirectionNoneEnabled() &&
        // Use IsCaret() instead of isCollapsed() so that directionality is still
        // reported for selections that cross shadow boundaries.
-       Selection().GetSelectionInDOMTree().IsCaret()) ||
+       Selection().GetSelectionInDomTree().IsCaret()) ||
       Selection().ComputeVisibleSelectionInDomTree().IsNone()) {
     return "none";
   }
@@ -319,8 +320,8 @@ void DomSelection::collapseToEnd(ExceptionState& exception_state) {
   } else {
     // TODO(tkent): The Selection API doesn't define this behavior. We should
     // discuss this on https://github.com/w3c/selection-api/issues/83.
-    SelectionInDOMTree::Builder builder;
-    builder.Collapse(Selection().GetSelectionInDOMTree().ComputeEndPosition());
+    SelectionInDomTree::Builder builder;
+    builder.Collapse(Selection().GetSelectionInDomTree().ComputeEndPosition());
     UpdateFrameSelection(builder.Build(), nullptr, SetSelectionOptions());
   }
 }
@@ -351,9 +352,9 @@ void DomSelection::collapseToStart(ExceptionState& exception_state) {
   } else {
     // TODO(tkent): The Selection API doesn't define this behavior. We should
     // discuss this on https://github.com/w3c/selection-api/issues/83.
-    SelectionInDOMTree::Builder builder;
+    SelectionInDomTree::Builder builder;
     builder.Collapse(
-        Selection().GetSelectionInDOMTree().ComputeStartPosition());
+        Selection().GetSelectionInDomTree().ComputeStartPosition());
     UpdateFrameSelection(builder.Build(), nullptr, SetSelectionOptions());
   }
 }
@@ -543,7 +544,7 @@ void DomSelection::extend(Node* node,
   if (RuntimeEnabledFeatures::
           UseSelectionInDOMTreeAnchorInExtendSelectionEnabled()) {
     old_anchor =
-        Selection().GetSelectionInDOMTree().Anchor().ToOffsetInAnchor();
+        Selection().GetSelectionInDomTree().Anchor().ToOffsetInAnchor();
   }
 
   DCHECK(!old_anchor.IsNull());
@@ -623,7 +624,7 @@ const StaticRangeVector DomSelection::getComposedRanges(
     return ranges;
   }
 
-  const SelectionInDOMTree& selection = Selection().GetSelectionInDOMTree();
+  const SelectionInDomTree& selection = Selection().GetSelectionInDomTree();
   // 2. Otherwise, let startNode be start node of the range associated with
   // this, and let startOffset be start offset of the range.
   const Position& start = selection.ComputeStartPosition();

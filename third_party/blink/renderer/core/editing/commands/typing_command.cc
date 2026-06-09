@@ -332,8 +332,8 @@ void TypingCommand::UpdateSelectionIfDifferentFromCurrentSelection(
     TypingCommand* typing_command,
     LocalFrame* frame) {
   DCHECK(frame);
-  const SelectionInDOMTree& current_selection =
-      frame->Selection().GetSelectionInDOMTree();
+  const SelectionInDomTree& current_selection =
+      frame->Selection().GetSelectionInDomTree();
   if (current_selection == typing_command->EndingSelection().AsSelection())
     return;
 
@@ -360,7 +360,7 @@ void TypingCommand::InsertText(Document& document,
   LocalFrame* frame = document.GetFrame();
   DCHECK(frame);
   EditingState editing_state;
-  InsertText(document, text, frame->Selection().GetSelectionInDOMTree(),
+  InsertText(document, text, frame->Selection().GetSelectionInDomTree(),
              options, &editing_state, password_echo_behavior, composition,
              is_incremental_insertion);
 }
@@ -500,8 +500,8 @@ void TypingCommand::InsertText(
   TypingCommand* command = MakeGarbageCollected<TypingCommand>(
       document, kInsertText, new_text, options, TextGranularity::kCharacter,
       composition_type, data_transfer);
-  const SelectionInDOMTree& current_selection =
-      frame->Selection().GetSelectionInDOMTree();
+  const SelectionInDomTree& current_selection =
+      frame->Selection().GetSelectionInDomTree();
   bool change_selection =
       current_selection !=
       passed_selection_for_insertion_as_undo_step.AsSelection();
@@ -524,8 +524,8 @@ void TypingCommand::InsertText(
   ABORT_EDITING_COMMAND_IF(!command->Apply());
 
   if (change_selection) {
-    const SelectionInDOMTree& current_selection_as_dom =
-        frame->Selection().GetSelectionInDOMTree();
+    const SelectionInDomTree& current_selection_as_dom =
+        frame->Selection().GetSelectionInDomTree();
     command->SetEndingSelection(
         SelectionForUndoStep::From(current_selection_as_dom));
     if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {

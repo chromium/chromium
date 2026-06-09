@@ -267,7 +267,7 @@ bool IdleSpellCheckController::NeedsHotModeCheckingUnderCurrentSelection()
   // already fully checked the current element.
   DCHECK(needs_invocation_for_changed_selection_);
   const Position& position =
-      GetWindow().GetFrame()->Selection().GetSelectionInDOMTree().Focus();
+      GetWindow().GetFrame()->Selection().GetSelectionInDomTree().Focus();
   const auto* element = DynamicTo<Element>(HighestEditableRoot(position));
   if (!element || !element->isConnected())
     return false;
@@ -284,7 +284,7 @@ void IdleSpellCheckController::HotModeInvocation(IdleDeadline* deadline) {
 
   if (NeedsHotModeCheckingUnderCurrentSelection()) {
     requester.CheckSpellingAt(
-        GetWindow().GetFrame()->Selection().GetSelectionInDOMTree().Focus());
+        GetWindow().GetFrame()->Selection().GetSelectionInDomTree().Focus());
   }
 
   const uint64_t watermark = last_processed_undo_step_sequence_;
@@ -323,7 +323,7 @@ void IdleSpellCheckController::Invoke(IdleDeadline* deadline) {
   if (RuntimeEnabledFeatures::
           CheckForCanonicalPositionInIdleSpellCheckEnabled()) {
     Position selection_focus =
-        GetWindow().GetFrame()->Selection().GetSelectionInDOMTree().Focus();
+        GetWindow().GetFrame()->Selection().GetSelectionInDomTree().Focus();
     if (selection_focus) {
       GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
       if (CanonicalPositionOf(EphemeralRange(selection_focus).StartPosition())

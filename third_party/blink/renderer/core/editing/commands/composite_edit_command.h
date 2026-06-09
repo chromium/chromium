@@ -264,7 +264,7 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
   SelectionForUndoStep starting_selection_;
   SelectionForUndoStep ending_selection_;
   // Raw-DOM lane mirroring starting_/ending_selection_. Seeded from
-  // FrameSelection::GetSelectionInDOMTree() at command birth (no VP
+  // FrameSelection::GetSelectionInDomTree() at command birth (no VP
   // canonicalization). Updated via SetStartingDomSelection /
   // SetEndingDomSelection. Inherited from parent in SetParent.
   SelectionForUndoStep starting_dom_selection_;

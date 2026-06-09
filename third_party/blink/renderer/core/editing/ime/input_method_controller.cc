@@ -224,7 +224,7 @@ int CalculateAfterDeletionLengthsInCodePoints(const String& text,
 }
 
 Element* RootEditableElementOfSelection(const FrameSelection& frame_selection) {
-  const SelectionInDOMTree& selection = frame_selection.GetSelectionInDOMTree();
+  const SelectionInDomTree& selection = frame_selection.GetSelectionInDomTree();
   if (selection.IsNone())
     return nullptr;
   // To avoid update layout, we attempt to get root editable element from
@@ -1443,8 +1443,8 @@ bool InputMethodController::DeleteSelection() {
 }
 
 bool InputMethodController::DeleteSelectionWithoutAdjustment() {
-  const SelectionInDOMTree& selection_in_dom_tree =
-      GetFrame().Selection().GetSelectionInDOMTree();
+  const SelectionInDomTree& selection_in_dom_tree =
+      GetFrame().Selection().GetSelectionInDomTree();
   if (selection_in_dom_tree.IsCaret())
     return true;
 

@@ -82,7 +82,7 @@ bool MoveCommands::ModifySelectionWithPageGranularity(
     UpdateSelectionForCaretBrowsing(frame);
 
   SelectionModifier selection_modifier(
-      frame, frame.Selection().GetSelectionInDOMTree());
+      frame, frame.Selection().GetSelectionInDomTree());
   selection_modifier.SetSelectionIsDirectional(
       frame.Selection().IsDirectional());
   if (!selection_modifier.ModifyWithPageGranularity(alter, vertical_distance,
@@ -132,7 +132,7 @@ void MoveCommands::UpdateFocusForCaretBrowsing(LocalFrame& frame) {
     return;
   }
 
-  SelectionInDOMTree selection = frame.Selection().GetSelectionInDOMTree();
+  SelectionInDomTree selection = frame.Selection().GetSelectionInDomTree();
   if (!selection.IsCaret())
     return;
 

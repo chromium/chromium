@@ -679,7 +679,7 @@ void ChangeSelectionAfterCommand(LocalFrame* frame,
   // See <rdar://problem/5729315> Some shouldChangeSelectedDOMRange contain
   // Ranges for selections that are no longer valid
   const bool selection_did_not_change_dom_position =
-      new_selection == frame->Selection().GetSelectionInDOMTree() &&
+      new_selection == frame->Selection().GetSelectionInDomTree() &&
       options.IsDirectional() == frame->Selection().IsDirectional();
   const bool handle_visible =
       frame->Selection().IsHandleVisible() && new_selection.IsRange();
@@ -702,7 +702,7 @@ void ChangeSelectionAfterCommand(LocalFrame* frame,
   if (!selection_did_not_change_dom_position)
     return;
   frame->Client()->DidChangeSelection(
-      !frame->Selection().GetSelectionInDOMTree().IsRange(),
+      !frame->Selection().GetSelectionInDomTree().IsRange(),
       blink::SyncCondition::kNotForced);
 }
 

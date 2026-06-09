@@ -128,7 +128,7 @@ CompositeEditCommand::CompositeEditCommand(Document& document,
   // Migrated commands read this via StartingDomSelection() /
   // EndingDomSelection() to see the selection as the user authored it.
   starting_dom_selection_ =
-      SelectionForUndoStep::From(frame_selection.GetSelectionInDOMTree());
+      SelectionForUndoStep::From(frame_selection.GetSelectionInDomTree());
   ending_dom_selection_ = starting_dom_selection_;
 }
 

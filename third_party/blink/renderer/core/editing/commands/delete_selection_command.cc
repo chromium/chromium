@@ -897,7 +897,7 @@ void DeleteSelectionCommand::HandleGeneralDelete(EditingState* editing_state) {
                                       GetDocument()
                                           .GetFrame()
                                           ->Selection()
-                                          .GetSelectionInDOMTree()
+                                          .GetSelectionInDomTree()
                                           .Focus()) <= 0) {
             // `downstream_end_` in FrameSelection(Use FrameSelection because
             // we need non-visual selection), the node be fully selected.

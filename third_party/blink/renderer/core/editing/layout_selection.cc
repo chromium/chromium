@@ -127,8 +127,8 @@ void LayoutSelection::AssertIsValid() const {
 
 static SelectionMode ComputeSelectionMode(
     const FrameSelection& frame_selection) {
-  const SelectionInDOMTree& selection_in_dom =
-      frame_selection.GetSelectionInDOMTree();
+  const SelectionInDomTree& selection_in_dom =
+      frame_selection.GetSelectionInDomTree();
   if (selection_in_dom.IsRange())
     return SelectionMode::kRange;
   DCHECK(selection_in_dom.IsCaret());
@@ -137,8 +137,8 @@ static SelectionMode ComputeSelectionMode(
 
 static EphemeralRangeInFlatTree CalcSelectionInFlatTree(
     const FrameSelection& frame_selection) {
-  const SelectionInDOMTree& selection_in_dom =
-      frame_selection.GetSelectionInDOMTree();
+  const SelectionInDomTree& selection_in_dom =
+      frame_selection.GetSelectionInDomTree();
   switch (ComputeSelectionMode(frame_selection)) {
     case SelectionMode::kNone:
       return {};
@@ -880,8 +880,8 @@ static void SetSelectionStateForPaint(
 
 static NewPaintRangeAndSelectedNodes CalcSelectionRangeAndSetSelectionState(
     const FrameSelection& frame_selection) {
-  const SelectionInDOMTree& selection_in_dom =
-      frame_selection.GetSelectionInDOMTree();
+  const SelectionInDomTree& selection_in_dom =
+      frame_selection.GetSelectionInDomTree();
   if (selection_in_dom.IsNone())
     return {};
 

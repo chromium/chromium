@@ -273,7 +273,7 @@ TEST_F(InsertListCommandTest, TimeAndMeterInRoot) {
   EXPECT_TRUE(command->Apply());
   EXPECT_EQ("<ul><li>|<time></time></li></ul><head></head><body></body>",
             SelectionSample::GetSelectionText(
-                *root, Selection().GetSelectionInDOMTree()));
+                *root, Selection().GetSelectionInDomTree()));
 }
 
 // Refer https://crbug.com/1312348

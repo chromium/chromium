@@ -236,7 +236,7 @@ GCedStaticRangeVector* RangesFromCurrentSelectionOrExtendCaret(
 
   frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   SelectionModifier selection_modifier(
-      frame, frame.Selection().GetSelectionInDOMTree());
+      frame, frame.Selection().GetSelectionInDomTree());
   selection_modifier.SetSelectionIsDirectional(
       frame.Selection().IsDirectional());
   if (selection_modifier.Selection().IsCaret()) {
