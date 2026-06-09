@@ -1059,6 +1059,13 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
           .OnRemoveCurrentSingleFieldSuggestion(
               query_field_.name(), suggestion.main_text.value, suggestion.type);
       return true;
+    // This suggestion type represents a notice about the usage of personal
+    // context in autofill. The user can acknowledge it to dismiss it.
+    case SuggestionType::kPersonalContextNotice: {
+      // TODO(crbug.com/518787026): Call
+      // PersonalContextFirstRunServiceImpl::MarkPersonalContextInAutofillNoticeAsAcknowledged()
+      return true;
+    }
     case SuggestionType::kAddressEntryOnTyping:
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageAutofillAi:
@@ -1116,7 +1123,6 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kOpenGemini:
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAtMemorySearchAffordance:
-    case SuggestionType::kPersonalContextNotice:
       return false;
   }
 }

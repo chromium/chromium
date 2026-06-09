@@ -1364,7 +1364,8 @@ void PopupViewViews::CreateSuggestionViews() {
     } else if (suggestions[current_line_number].type ==
                SuggestionType::kPersonalContextNotice) {
       rows_.push_back(footer_container_->AddChildView(
-          std::make_unique<PopupPersonalContextNoticeView>()));
+          std::make_unique<PopupPersonalContextNoticeView>(
+              controller(), current_line_number)));
     } else {
       rows_.push_back(footer_container_->AddChildView(CreatePopupRowView(
           controller(), /*a11y_selection_delegate=*/*this,
