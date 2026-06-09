@@ -4,8 +4,10 @@
 
 #include "components/omnibox/browser/omnibox_client.h"
 
-#include <memory>
+#include <optional>
+#include <string>
 
+#include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/gfx/image/image.h"
@@ -148,7 +150,8 @@ gfx::Image OmniboxClient::GetFaviconForKeywordSearchProvider(
 
 gfx::Image OmniboxClient::GetFaviconForIconUrl(
     const GURL& icon_url,
-    FaviconFetchedCallback on_favicon_fetched) {
+    FaviconFetchedCallback on_favicon_fetched,
+    bool notify_on_empty) {
   return gfx::Image();
 }
 

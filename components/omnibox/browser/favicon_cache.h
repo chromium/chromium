@@ -10,7 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/lru_cache.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -20,6 +20,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
+#include "ui/gfx/image/image.h"
 
 namespace favicon {
 class FaviconService;
@@ -63,11 +64,12 @@ class FaviconCache : public history::HistoryServiceObserver {
   //
   // If FaviconService responds with an empty image (because the correct favicon
   // isn't in our database), we simply erase all the pending callbacks, and also
-  // cache the result.
+  // cache the result. We fulfill only the `on_favicon_fetched` callbacks that
+  // had `notify_on_empty` true.
   //
-  // Therefore, |on_favicon_fetched| may or may not be called asynchronously
-  // later, but will never be called with an empty result. It will also never
-  // be called synchronously.
+  // Therefore, unless `notify_on_empty` is true, |on_favicon_fetched| may or
+  // may not be called asynchronously later, but will never be run synchronously
+  // and will never be run with an empty result.
   //
   // Note that GetFaviconForPageUrl and GetLargestFaviconForPageUrl should not
   // be used interchangeably. These methods use the same |page_url| key for
@@ -79,7 +81,8 @@ class FaviconCache : public history::HistoryServiceObserver {
       const GURL& page_url,
       FaviconFetchedCallback on_favicon_fetched);
   gfx::Image GetFaviconForIconUrl(const GURL& icon_url,
-                                  FaviconFetchedCallback on_favicon_fetched);
+                                  FaviconFetchedCallback on_favicon_fetched,
+                                  bool notify_on_empty);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FaviconCacheTest, ClearIconsWithHistoryDeletions);
@@ -103,7 +106,8 @@ class FaviconCache : public history::HistoryServiceObserver {
 
   // Internal method backing GetFaviconForPageUrl and GetFaviconForIconUrl.
   gfx::Image GetFaviconInternal(const Request& request,
-                                FaviconFetchedCallback on_favicon_fetched);
+                                FaviconFetchedCallback on_favicon_fetched,
+                                bool notify_on_empty);
 
   // These are the callbacks passed to the underlying FaviconService. When these
   // are called, all the pending requests that match |request| will be called.
@@ -136,7 +140,11 @@ class FaviconCache : public history::HistoryServiceObserver {
       history_observation_{this};
 
   base::CancelableTaskTracker task_tracker_;
-  std::map<Request, std::list<FaviconFetchedCallback>> pending_requests_;
+  struct PendingCallback {
+    FaviconFetchedCallback callback;
+    bool notify_on_empty;
+  };
+  std::map<Request, std::list<PendingCallback>> pending_requests_;
 
   base::LRUCache<Request, gfx::Image> lru_cache_;
 

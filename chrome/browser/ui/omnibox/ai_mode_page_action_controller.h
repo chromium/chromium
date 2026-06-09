@@ -6,14 +6,26 @@
 #define CHROME_BROWSER_UI_OMNIBOX_AI_MODE_PAGE_ACTION_CONTROLLER_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "url/gurl.h"
 
 class BrowserWindowInterface;
 class LocationBarView;
 class OmniboxController;
 class Profile;
+class SkBitmap;
+
+namespace gfx {
+class Image;
+}
+
+namespace ui {
+class ImageModel;
+}
 
 namespace omnibox {
 
@@ -60,11 +72,27 @@ class AiModePageActionController : public OmniboxEditModel::Observer {
                                    LocationBarView& location_bar_view);
 
  private:
-  // Helper for `UpdatePageAction()`.
+  // Helper for `UpdatePageAction()`. Updates visibility and override image:
+  // - If DSE is google, will use built-in image.
+  // - If DSE is 3p, will check the in-memory favicon cache.
+  // - If icon not found in the in-memory favicon cache, will check the on-disk
+  //   favicon DB.
+  // - If icon not found in the on-disk favicon DB, then will make a network
+  //   request to fetch the icon.
   void SetPageActionVisibility(bool is_visible);
 
-  // Callback used in `UpdatePageAction()` to asynchronously fetch the favicon.
-  void OnFaviconFetched(const gfx::Image& favicon);
+  // Helper for `SetPageActionVisibility()` to update visibility.
+  void Hide();
+
+  // Helper for `SetPageActionVisibility()` to update the image and visibility.
+  void ShowAndOverrideImage(const ui::ImageModel& image);
+
+  // Helpers used in `SetPageActionVisibility()` to asynchronously fetch the
+  // favicon.
+  void OnFaviconFetchedLocally(const GURL& favicon_url,
+                               const gfx::Image& favicon);
+  void FetchFaviconFromNetwork(const GURL& favicon_url);
+  void OnFaviconFetchedFromNetwork(SkBitmap bitmap);
 
   const raw_ref<BrowserWindowInterface> bwi_;
   const raw_ref<Profile> profile_;

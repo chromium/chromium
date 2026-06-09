@@ -8,9 +8,11 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "ui/gfx/image/image.h"
 
 namespace {
 
@@ -49,26 +51,30 @@ gfx::Image FaviconCache::GetFaviconForPageUrl(
     const GURL& page_url,
     FaviconFetchedCallback on_favicon_fetched) {
   return GetFaviconInternal({RequestType::kByPageUrl, page_url},
-                            std::move(on_favicon_fetched));
+                            std::move(on_favicon_fetched),
+                            /*notify_on_empty=*/false);
 }
 
 gfx::Image FaviconCache::GetLargestFaviconForPageUrl(
     const GURL& page_url,
     FaviconFetchedCallback on_favicon_fetched) {
   return GetFaviconInternal({RequestType::kRawByPageUrl, page_url},
-                            std::move(on_favicon_fetched));
+                            std::move(on_favicon_fetched),
+                            /*notify_on_empty=*/false);
 }
 
 gfx::Image FaviconCache::GetFaviconForIconUrl(
     const GURL& icon_url,
-    FaviconFetchedCallback on_favicon_fetched) {
+    FaviconFetchedCallback on_favicon_fetched,
+    bool notify_on_empty) {
   return GetFaviconInternal({RequestType::kByIconUrl, icon_url},
-                            std::move(on_favicon_fetched));
+                            std::move(on_favicon_fetched), notify_on_empty);
 }
 
 gfx::Image FaviconCache::GetFaviconInternal(
     const Request& request,
-    FaviconFetchedCallback on_favicon_fetched) {
+    FaviconFetchedCallback on_favicon_fetched,
+    bool notify_on_empty) {
   if (!favicon_service_)
     return gfx::Image();
 
@@ -83,6 +89,9 @@ gfx::Image FaviconCache::GetFaviconInternal(
   // Early exit if we've already established that we don't have the favicon.
   if (responses_without_favicons_.Peek(request) !=
       responses_without_favicons_.end()) {
+    if (notify_on_empty) {
+      std::move(on_favicon_fetched).Run(gfx::Image());
+    }
     return gfx::Image();
   }
 
@@ -90,7 +99,7 @@ gfx::Image FaviconCache::GetFaviconInternal(
   // and return an empty gfx::Image.
   auto it = pending_requests_.find(request);
   if (it != pending_requests_.end()) {
-    it->second.push_back(std::move(on_favicon_fetched));
+    it->second.push_back({std::move(on_favicon_fetched), notify_on_empty});
     return gfx::Image();
   }
 
@@ -117,7 +126,8 @@ gfx::Image FaviconCache::GetFaviconInternal(
     NOTREACHED();
   }
 
-  pending_requests_[request].push_back(std::move(on_favicon_fetched));
+  pending_requests_[request].push_back(
+      {std::move(on_favicon_fetched), notify_on_empty});
 
   return gfx::Image();
 }
@@ -127,7 +137,14 @@ void FaviconCache::OnFaviconFetched(
     const favicon_base::FaviconImageResult& result) {
   if (result.image.IsEmpty()) {
     responses_without_favicons_.Put(request, true);
-    pending_requests_.erase(request);
+    auto it = pending_requests_.find(request);
+    CHECK(it != pending_requests_.end());
+    for (auto& pending_callback : it->second) {
+      if (pending_callback.notify_on_empty) {
+        std::move(pending_callback.callback).Run(gfx::Image());
+      }
+    }
+    pending_requests_.erase(it);
     return;
   }
 
@@ -154,8 +171,8 @@ void FaviconCache::InvokeRequestCallbackWithFavicon(const Request& request,
 
   auto it = pending_requests_.find(request);
   CHECK(it != pending_requests_.end());
-  for (auto& callback : it->second) {
-    std::move(callback).Run(image);
+  for (auto& pending_callback : it->second) {
+    std::move(pending_callback.callback).Run(image);
   }
   pending_requests_.erase(it);
 }
