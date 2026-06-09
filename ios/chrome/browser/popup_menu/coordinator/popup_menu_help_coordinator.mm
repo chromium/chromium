@@ -17,6 +17,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/bubble/model/utils.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -32,6 +33,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -586,9 +588,9 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
                      voiceOverAnnouncement:(NSString*)voiceOverAnnouncement
                          dismissalCallback:(CallbackWithIPHDismissalReasonType)
                                                dismissalCallback {
-  BubbleArrowDirection arrowDirection =
-      IsSplitToolbarMode(self.baseViewController) ? BubbleArrowDirectionDown
-                                                  : BubbleArrowDirectionUp;
+  BubbleArrowDirection arrowDirection = [self isToolsMenuAtBottom]
+                                            ? BubbleArrowDirectionDown
+                                            : BubbleArrowDirectionUp;
 
   BubbleViewControllerPresenter* bubbleViewControllerPresenter =
       [[BubbleViewControllerPresenter alloc]
@@ -600,6 +602,15 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   bubbleViewControllerPresenter.voiceOverAnnouncement = voiceOverAnnouncement;
 
   return bubbleViewControllerPresenter;
+}
+
+// Returns whether the tools menu button is displayed at the bottom of the
+// screen.
+- (BOOL)isToolsMenuAtBottom {
+  if (IsChromeNextIaEnabled()) {
+    return IsCurrentLayoutBottomOmnibox(self.browser);
+  }
+  return IsSplitToolbarMode(self.baseViewController);
 }
 
 // Displays an IPH bubble anchored to the popup menu button (tools menu button).
@@ -616,19 +627,30 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
     return;
   }
 
-  // Get the anchor point for the bubble. In Split Toolbar Mode, the anchor
-  // button is at the bottom of the screen, so the bubble should be above it.
-  // When there's only one toolbar, the anchor button is at the top of the
-  // screen, so the bubble should be below it.
+  UIViewController* baseViewController = self.baseViewController;
+  UIView* baseView = baseViewController.view;
   CGRect anchorFrame = self.layoutGuide.layoutFrame;
-  CGFloat anchorPointY = IsSplitToolbarMode(self.baseViewController)
-                             ? CGRectGetMinY(anchorFrame)
-                             : CGRectGetMaxY(anchorFrame);
-  CGPoint anchorPoint = CGPointMake(CGRectGetMidX(anchorFrame), anchorPointY);
+
+  BOOL isAtBottom = [self isToolsMenuAtBottom];
+  CGFloat anchorPointY =
+      isAtBottom ? CGRectGetMinY(anchorFrame) : CGRectGetMaxY(anchorFrame);
+
+  CGPoint anchorPointInOwningView =
+      CGPointMake(CGRectGetMidX(anchorFrame), anchorPointY);
+  CGPoint anchorPoint = [baseView convertPoint:anchorPointInOwningView
+                                      fromView:self.layoutGuide.owningView];
+
+  // Cap `anchorPoint.x` to prevent the bubble from overflowing the screen.
+  // The `-1.0` accounts for subpixel rounding in
+  // `bubble_util::LeadingDistance`.
+  CGFloat alignmentOffset = bubble_util::BubbleDefaultAlignmentOffset();
+  CGFloat maxAnchorX = CGRectGetWidth(baseView.bounds) - alignmentOffset - 1.0;
+  if (anchorPoint.x > maxAnchorX) {
+    anchorPoint.x = maxAnchorX;
+  }
 
   // Discard if it doesn't fit in the view as it is currently shown.
-  if (![bubblePresenter canPresentInView:self.baseViewController.view
-                             anchorPoint:anchorPoint]) {
+  if (![bubblePresenter canPresentInView:baseView anchorPoint:anchorPoint]) {
     return;
   }
 
@@ -639,7 +661,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   }
 
   self.popupMenuBubblePresenter = bubblePresenter;
-  [self.popupMenuBubblePresenter presentInViewController:self.baseViewController
+  [self.popupMenuBubblePresenter presentInViewController:baseViewController
                                              anchorPoint:anchorPoint
                                          anchorViewFrame:anchorFrame];
   [self.UIUpdater updateUIForOverflowMenuIPHDisplayed];

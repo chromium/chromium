@@ -57,8 +57,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 
@@ -75,6 +73,31 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
                                    error:nil];
   [super tearDownHelper];
+}
+
+#pragma mark - Private
+
+// Returns the launch configuration with the History IPH feature enabled.
+- (AppLaunchConfiguration)appConfigurationForHistoryIPH {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.iph_feature_enabled = "IPH_iOSHistoryOnOverflowMenuFeature";
+  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
+  config.additional_args.push_back("SyncedAndFirstDevice");
+  return config;
+}
+
+// Prepares the app by launching it and loading a mock web page, then returns
+// the relaunch configuration with the History IPH enabled.
+- (AppLaunchConfiguration)prepareAppForHistoryIPH {
+  // Launch the app and navigate to a web page to set up the session state.
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithConfiguration:[self appConfigurationForTestCase]];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+
+  // Prepare relaunch configuration, preserving the session state.
+  AppLaunchConfiguration config = [self appConfigurationForHistoryIPH];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  return config;
 }
 
 #pragma mark - TabHistory
@@ -105,19 +128,25 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Check that the first four entries are shown the back tab history menu.
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_text(entry0),
-                                          grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:
+          grey_allOf(
+              chrome_test_util::ContextMenuItemWithAccessibilityLabel(entry0),
+              grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:grey_text(entry1)]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:grey_text(entry2)]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:grey_text(entry3)]
-      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     entry1)] assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     entry2)] assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     entry3)] assertWithMatcher:grey_notNil()];
 
   // Tap entry to go back 3 pages, and verify that entry 1 is loaded.
-  [[EarlGrey selectElementWithMatcher:grey_text(entry1)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     entry1)] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateVisibleURL:URL1];
 
   // Long press forward button.
@@ -125,15 +154,19 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       performAction:grey_longPress()];
 
   // Check that entries 2, 3, and 4 are in the forward tab history menu.
-  [[EarlGrey selectElementWithMatcher:grey_text(entry2)]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:grey_text(entry3)]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:grey_text(entry4)]
-      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     entry2)] assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     entry3)] assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     entry4)] assertWithMatcher:grey_notNil()];
   // Tap entry to go forward 2 pages, and verify that entry 3 is loaded.
-  [[EarlGrey selectElementWithMatcher:grey_text(entry3)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabel(
+                     entry3)] performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateVisibleURL:URL3];
 }
 
@@ -211,13 +244,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // Tests that both the 2 steps of the history on overflow menu IPH is displayed,
 // when the user opens the menu while the 1st step is displayed.
 - (void)testOverflowMenuIPHForHistoryShow2StepsWhenUserOpensMenu {
-  // Enable the IPH flag for this test
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.iph_feature_enabled = "IPH_iOSHistoryOnOverflowMenuFeature";
-  // Force the conditions that allow the iph to show.
-  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-  config.additional_args.push_back("SyncedAndFirstDevice");
-
   // The IPH appears immediately on startup, so don't open a new tab when the
   // app starts up.
   [[self class] testForStartup];
@@ -226,11 +252,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   {
     ScopedSynchronizationDisabler syncDisabler;
 
+    AppLaunchConfiguration config = [self prepareAppForHistoryIPH];
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithConfiguration:config];
 
-    // The app relaunch (to enable a feature flag) may take a while, therefore
-    // the timeout is extended to 15 seconds.
+    // The app relaunch may take a while, therefore the timeout is extended to
+    // 15 seconds.
     [ChromeEarlGrey
         waitForUIElementToAppearWithMatcher:grey_accessibilityID(
                                                 @"BubbleViewLabelIdentifier")
@@ -246,13 +273,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // Tests that both the 2 steps of the history on overflow menu IPH is displayed,
 // when the user lets the first step times out.
 - (void)testOverflowMenuIPHForHistoryShow2StepsWhen1stStepTimeout {
-  // Enable the IPH flag for this test
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.iph_feature_enabled = "IPH_iOSHistoryOnOverflowMenuFeature";
-  // Force the conditions that allow the iph to show.
-  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-  config.additional_args.push_back("SyncedAndFirstDevice");
-
   // The IPH appears immediately on startup, so don't open a new tab when the
   // app starts up.
   [[self class] testForStartup];
@@ -261,11 +281,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   {
     ScopedSynchronizationDisabler syncDisabler;
 
+    AppLaunchConfiguration config = [self prepareAppForHistoryIPH];
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithConfiguration:config];
 
-    // The app relaunch (to enable a feature flag) may take a while, therefore
-    // the timeout is extended to 15 seconds.
+    // The app relaunch may take a while, therefore the timeout is extended to
+    // 15 seconds.
     [ChromeEarlGrey
         waitForUIElementToAppearWithMatcher:grey_accessibilityID(
                                                 @"BubbleViewLabelIdentifier")
@@ -292,11 +313,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // the 1st step IPH is dismissed by the user by tapping outside.
 - (void)testOverflowMenuIPHForHistoryNotShow2ndStep {
   // Enable the IPH flag to ensure the IPH triggers
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.iph_feature_enabled = "IPH_iOSHistoryOnOverflowMenuFeature";
-  // Force the conditions that allow the iph to show.
-  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-  config.additional_args.push_back("SyncedAndFirstDevice");
+  AppLaunchConfiguration config = [self appConfigurationForHistoryIPH];
 
   // The IPH appears immediately on startup, so don't open a new tab when the
   // app starts up.
