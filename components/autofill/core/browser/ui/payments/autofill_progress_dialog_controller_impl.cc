@@ -60,6 +60,11 @@ void AutofillProgressDialogControllerImpl::DismissDialog(
 
 void AutofillProgressDialogControllerImpl::OnDismissed(
     bool is_canceled_by_user) {
+  // On macOS without biometrics, the accept/cancel callbacks have the potential
+  // to destroy this controller (e.g., if the tab is closed during the nested
+  // run loop of the passcode prompt). We check a weak pointer to avoid a UAF.
+  auto weak_self = weak_ptr_factory_.GetWeakPtr();
+
   // Dialog is being dismissed so set the pointer to nullptr.
   autofill_progress_dialog_view_.reset();
   if (is_canceled_by_user) {
@@ -68,6 +73,10 @@ void AutofillProgressDialogControllerImpl::OnDismissed(
     if (no_interactive_authentication_callback_) {
       std::move(no_interactive_authentication_callback_).Run();
     }
+  }
+
+  if (!weak_self) {
+    return;
   }
 
   AutofillMetrics::LogProgressDialogResultMetric(
