@@ -176,7 +176,7 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT Scheduler {
 
     SequenceId sequence_id;
     SchedulingPriority priority = SchedulingPriority::kLow;
-    uint32_t order_num = 0;
+    uint64_t order_num = 0;
   };
 
   // All public methods except constructor must be accessed under TaskGraph's
@@ -239,7 +239,7 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT Scheduler {
     using TaskGraph::Sequence::AddTask;
 
     // Returns the next order number and closure. Sets running state to RUNNING.
-    uint32_t BeginTask(base::OnceClosure* task_closure) override
+    uint64_t BeginTask(base::OnceClosure* task_closure) override
         EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     // Called after running the closure returned by BeginTask. Sets running
@@ -253,7 +253,7 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT Scheduler {
     void ContinueTask(base::OnceClosure task_closure) override
         EXCLUSIVE_LOCKS_REQUIRED(lock());
 
-    void OnFrontTaskUnblocked(uint32_t order_num) override
+    void OnFrontTaskUnblocked(uint64_t order_num) override
         EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     SchedulingPriority current_priority() const

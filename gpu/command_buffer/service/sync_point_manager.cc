@@ -27,7 +27,7 @@ uint64_t GenerateCallbackId() {
 }  // namespace
 
 SyncPointOrderData::OrderFence::OrderFence(
-    uint32_t order,
+    uint64_t order,
     uint64_t release,
     scoped_refptr<SyncPointClientState> state,
     uint64_t callback_id)
@@ -70,7 +70,7 @@ void SyncPointOrderData::Destroy() {
   sync_point_manager_->RemoveSyncPointOrderData(base::WrapRefCounted(this));
 }
 
-uint32_t SyncPointOrderData::GenerateUnprocessedOrderNumber() {
+uint64_t SyncPointOrderData::GenerateUnprocessedOrderNumber() {
   base::AutoLock auto_lock(lock_);
   DCHECK(!destroyed_);
   last_unprocessed_order_num_ = sync_point_manager_->GenerateOrderNumber();
@@ -78,7 +78,7 @@ uint32_t SyncPointOrderData::GenerateUnprocessedOrderNumber() {
   return last_unprocessed_order_num_;
 }
 
-void SyncPointOrderData::BeginProcessingOrderNumber(uint32_t order_num) {
+void SyncPointOrderData::BeginProcessingOrderNumber(uint64_t order_num) {
   DCHECK(processing_thread_checker_.CalledOnValidThread());
   DCHECK_GE(order_num, current_order_num_);
   // Use thread-safe accessors here because |processed_order_num_| and
@@ -89,14 +89,14 @@ void SyncPointOrderData::BeginProcessingOrderNumber(uint32_t order_num) {
   paused_ = false;
 }
 
-void SyncPointOrderData::PauseProcessingOrderNumber(uint32_t order_num) {
+void SyncPointOrderData::PauseProcessingOrderNumber(uint64_t order_num) {
   DCHECK(processing_thread_checker_.CalledOnValidThread());
   DCHECK_EQ(current_order_num_, order_num);
   DCHECK(!paused_);
   paused_ = true;
 }
 
-void SyncPointOrderData::FinishProcessingOrderNumber(uint32_t order_num) {
+void SyncPointOrderData::FinishProcessingOrderNumber(uint64_t order_num) {
   DCHECK(processing_thread_checker_.CalledOnValidThread());
   DCHECK_EQ(current_order_num_, order_num);
   DCHECK(!paused_);
@@ -116,7 +116,7 @@ void SyncPointOrderData::FinishProcessingOrderNumber(uint32_t order_num) {
     unprocessed_order_nums_.pop();
 
     if (!sync_point_manager_->graph_validation_enabled()) {
-      uint32_t next_order_num = 0;
+      uint64_t next_order_num = 0;
       if (!unprocessed_order_nums_.empty()) {
         next_order_num = unprocessed_order_nums_.front();
       }
@@ -145,7 +145,7 @@ void SyncPointOrderData::FinishProcessingOrderNumber(uint32_t order_num) {
 
 uint64_t SyncPointOrderData::ValidateReleaseOrderNumber(
     scoped_refptr<SyncPointClientState> client_state,
-    uint32_t wait_order_num,
+    uint64_t wait_order_num,
     uint64_t fence_release) {
   client_state->fence_sync_lock_.AssertAcquired();  // Can't statically check.
   base::AutoLock lock(lock_);
@@ -172,7 +172,7 @@ uint64_t SyncPointOrderData::ValidateReleaseOrderNumber(
 
   // So far it could be valid, but add an order fence guard to be sure it
   // gets released eventually.
-  uint32_t expected_order_num =
+  uint64_t expected_order_num =
       std::min(unprocessed_order_nums_.back(), wait_order_num);
   uint64_t callback_id = GenerateCallbackId();
   order_fence_queue_.emplace(expected_order_num, fence_release,
@@ -234,7 +234,7 @@ bool SyncPointClientState::IsFenceSyncReleased(uint64_t release) {
 }
 
 bool SyncPointClientState::WaitForRelease(uint64_t release,
-                                          uint32_t wait_order_num,
+                                          uint64_t wait_order_num,
                                           base::OnceClosure callback) {
   // Lock must be held the whole time while we validate otherwise it could be
   // released while we are checking.
@@ -369,9 +369,6 @@ void SyncPointClientState::EnsureWaitReleased(uint64_t release,
 
 SyncPointManager::SyncPointManager()
     : graph_validation_enabled_(features::IsSyncPointGraphValidationEnabled()) {
-  // Order number 0 is treated as invalid, so increment the generator and return
-  // positive order numbers in GenerateOrderNumber() from now on.
-  order_num_generator_.GetNext();
 }
 
 SyncPointManager::~SyncPointManager() {
@@ -508,9 +505,9 @@ SequenceId SyncPointManager::GetSyncTokenReleaseSequenceIdInternal(
   return SequenceId();
 }
 
-uint32_t SyncPointManager::GetProcessedOrderNum() const {
+uint64_t SyncPointManager::GetProcessedOrderNum() const {
   base::AutoLock auto_lock(lock_);
-  uint32_t processed_order_num = 0;
+  uint64_t processed_order_num = 0;
   for (const auto& kv : order_data_map_) {
     processed_order_num =
         std::max(processed_order_num, kv.second->processed_order_num());
@@ -518,9 +515,9 @@ uint32_t SyncPointManager::GetProcessedOrderNum() const {
   return processed_order_num;
 }
 
-uint32_t SyncPointManager::GetUnprocessedOrderNum() const {
+uint64_t SyncPointManager::GetUnprocessedOrderNum() const {
   base::AutoLock auto_lock(lock_);
-  uint32_t unprocessed_order_num = 0;
+  uint64_t unprocessed_order_num = 0;
   for (const auto& kv : order_data_map_) {
     unprocessed_order_num =
         std::max(unprocessed_order_num, kv.second->unprocessed_order_num());
@@ -530,7 +527,7 @@ uint32_t SyncPointManager::GetUnprocessedOrderNum() const {
 
 bool SyncPointManager::Wait(const SyncToken& sync_token,
                             SequenceId sequence_id,
-                            uint32_t wait_order_num,
+                            uint64_t wait_order_num,
                             base::OnceClosure callback) {
   base::AutoLock auto_lock(lock_);
   if (sequence_id == GetSyncTokenReleaseSequenceIdInternal(sync_token)) {
@@ -548,8 +545,8 @@ bool SyncPointManager::Wait(const SyncToken& sync_token,
   return false;
 }
 
-uint32_t SyncPointManager::GenerateOrderNumber() {
-  return order_num_generator_.GetNext();
+uint64_t SyncPointManager::GenerateOrderNumber() {
+  return next_order_num_.fetch_add(1, std::memory_order_relaxed);
 }
 
 scoped_refptr<SyncPointClientState> SyncPointManager::GetSyncPointClientState(

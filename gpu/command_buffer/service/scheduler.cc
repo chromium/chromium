@@ -27,13 +27,13 @@
 
 namespace gpu {
 namespace {
-uint64_t GetTaskFlowId(uint32_t sequence_id, uint32_t order_num) {
-  // Xor with a mask to reduce likelihood of flow id collision with non-surface
-  // tasks. First 64-bits of SHA256 hash of "SurfaceControl::Transaction",
+uint64_t GetTaskFlowId(uint32_t sequence_id, uint64_t order_num) {
+  // Xor with a mask to reduce likelihood of flow id collision with
+  // non-scheduler tasks. First 64-bits of SHA256 hash of "gpu::Scheduler",
   // interpreted as a big-endian integer. Python snippet:
   // hashlib.sha256(b'gpu::Scheduler').hexdigest()[:16]
   static constexpr uint64_t kMask = 0x03af62470b040902;
-  return kMask ^ (sequence_id) ^ (uint64_t{order_num} << 32);
+  return kMask ^ (static_cast<uint64_t>(sequence_id) << 32) ^ order_num;
 }
 }  // namespace
 
@@ -186,7 +186,7 @@ void Scheduler::Sequence::ContinueTask(base::OnceClosure task_closure) {
   TaskGraph::Sequence::ContinueTask(std::move(task_closure));
 }
 
-uint32_t Scheduler::Sequence::BeginTask(base::OnceClosure* task_closure) {
+uint64_t Scheduler::Sequence::BeginTask(base::OnceClosure* task_closure) {
   DCHECK_EQ(running_state_, SCHEDULED);
   running_state_ = RUNNING;
   return TaskGraph::Sequence::BeginTask(task_closure);
@@ -198,7 +198,7 @@ void Scheduler::Sequence::FinishTask() {
   TaskGraph::Sequence::FinishTask();
 }
 
-void Scheduler::Sequence::OnFrontTaskUnblocked(uint32_t order_num) {
+void Scheduler::Sequence::OnFrontTaskUnblocked(uint64_t order_num) {
   TRACE_EVENT(
       "gpu,toplevel.flow", "Scheduler::SequenceUnblocked",
       perfetto::Flow::Global(GetTaskFlowId(sequence_id_.value(), order_num)));
@@ -342,7 +342,7 @@ void Scheduler::ScheduleTaskHelper(Task task) {
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
 
-  uint32_t order_num;
+  uint64_t order_num;
   if (task.task_callback) {
     order_num = sequence->AddTask(
         std::move(task.task_callback), std::move(task.sync_token_fences),
@@ -716,7 +716,7 @@ void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
   }
 
   base::OnceClosure task_closure;
-  const uint32_t order_num = sequence->BeginTask(&task_closure);
+  const uint64_t order_num = sequence->BeginTask(&task_closure);
   const SyncToken release = sequence->current_task_release();
   const uint64_t task_flow_id = GetTaskFlowId(sequence_id.value(), order_num);
 

@@ -242,7 +242,7 @@ class SchedulerTaskRunOrderTest : public SchedulerTest {
     // Simulate external sequence, when tasks are run outside of this
     // gpu::Scheduler
     auto order_data = info_it->second.order_data;
-    uint32_t order_num = order_data->GenerateUnprocessedOrderNumber();
+    uint64_t order_num = order_data->GenerateUnprocessedOrderNumber();
 
     return GetClosure([this, task_id, sequence_key, release_sync, order_num] {
       auto info_it = sequence_info_.find(sequence_key);

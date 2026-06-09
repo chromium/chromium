@@ -125,7 +125,7 @@ class TaskGraphTest : public testing::Test {
 
         while (sequence->IsFrontTaskUnblocked()) {
           base::OnceClosure task_closure;
-          uint32_t order_num = sequence->BeginTask(&task_closure);
+          uint64_t order_num = sequence->BeginTask(&task_closure);
           SyncToken release = sequence->current_task_release();
 
           {

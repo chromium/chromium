@@ -182,19 +182,19 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT TaskGraph {
     }
 
     // Enqueues a task in the sequence and returns the generated order number.
-    uint32_t AddTask(TaskCallback task_callback,
+    uint64_t AddTask(TaskCallback task_callback,
                      std::vector<SyncToken> wait_fences,
                      const SyncToken& release,
                      ReportingCallback report_callback)
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
-    virtual uint32_t AddTask(base::OnceClosure task_closure,
+    virtual uint64_t AddTask(base::OnceClosure task_closure,
                              std::vector<SyncToken> wait_fences,
                              const SyncToken& release,
                              ReportingCallback report_callback)
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
-    virtual uint32_t BeginTask(base::OnceClosure* task_closure)
+    virtual uint64_t BeginTask(base::OnceClosure* task_closure)
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
     // Should be called after running the closure returned by BeginTask().
@@ -213,7 +213,7 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT TaskGraph {
     // - To avoid reentrancy, it is not called by AddTask() or FinishTask(),
     //   even if those methods result a new front task which is not blocked.
     // - It is called while holding `TaskGraph::lock_`.
-    virtual void OnFrontTaskUnblocked(uint32_t order_num)
+    virtual void OnFrontTaskUnblocked(uint64_t order_num)
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_) {}
 
     // Sets the first dependency added time on the last task if it wasn't
@@ -227,7 +227,7 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT TaskGraph {
 
     // Removes a waiting sync token fence.
     void RemoveWaitFence(const SyncToken& sync_token,
-                         uint32_t order_num,
+                         uint64_t order_num,
                          SequenceId release_sequence_id)
         EXCLUSIVE_LOCKS_REQUIRED(&TaskGraph::lock_);
 
@@ -254,7 +254,7 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT TaskGraph {
       // `order_num`. The `sync_token` is released on the sequence identified
       // by `release_sequence_id`.
       WaitFence(const SyncToken& sync_token,
-                uint32_t order_num,
+                uint64_t order_num,
                 SequenceId release_sequence_id);
       WaitFence(WaitFence&& other);
 
@@ -263,7 +263,7 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT TaskGraph {
       WaitFence& operator=(WaitFence&& other);
 
       SyncToken sync_token;
-      uint32_t order_num;
+      uint64_t order_num;
       SequenceId release_sequence_id;
 
       bool operator==(const WaitFence& other) const {
@@ -283,7 +283,7 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT TaskGraph {
     struct Task {
       Task(Task&& other);
       Task(base::OnceClosure task_closure,
-           uint32_t order_num,
+           uint64_t order_num,
            const SyncToken& release,
            ReportingCallback report_callback);
       ~Task();
@@ -292,7 +292,7 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT TaskGraph {
       // Always store tasks as closures. TaskCallbacks are bound with argument
       // and wrap as closures.
       base::OnceClosure task_closure;
-      uint32_t order_num;
+      uint64_t order_num;
       SyncToken release;
 
       ReportingCallback report_callback;
@@ -375,7 +375,7 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT TaskGraph {
   };
 
   void SyncTokenFenceReleased(const SyncToken& sync_token,
-                              uint32_t order_num,
+                              uint64_t order_num,
                               SequenceId release_sequence_id,
                               SequenceId waiting_sequence_id)
       LOCKS_EXCLUDED(lock_);

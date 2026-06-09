@@ -53,7 +53,7 @@ class SyncPointManagerOrderValidationTest : public SyncPointManagerTest {
 struct SyncPointStream {
   scoped_refptr<SyncPointOrderData> order_data;
   scoped_refptr<SyncPointClientState> client_state;
-  base::queue<uint32_t> order_numbers;
+  base::queue<uint64_t> order_numbers;
   const raw_ptr<SyncPointManager> sync_point_manager;
 
   SyncPointStream(SyncPointManager* sync_point_manager,
@@ -103,7 +103,7 @@ TEST_P(SyncPointManagerTest, BasicSyncPointOrderDataTest) {
   EXPECT_EQ(0u, order_data->processed_order_num());
   EXPECT_EQ(0u, order_data->unprocessed_order_num());
 
-  uint32_t order_num = order_data->GenerateUnprocessedOrderNumber();
+  uint64_t order_num = order_data->GenerateUnprocessedOrderNumber();
   EXPECT_EQ(1u, order_num);
 
   EXPECT_EQ(0u, order_data->current_order_num());
