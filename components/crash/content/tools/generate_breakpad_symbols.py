@@ -39,8 +39,11 @@ def _GetDumpSymsBinary(dump_syms_path: str, build_dir: str):
     DUMP_SYMS = 'dump_syms'
     dump_syms_path = os.path.join(os.path.expanduser(build_dir), DUMP_SYMS)
 
-  if not os.access(dump_syms_path, os.X_OK):
+  if not os.path.isfile(dump_syms_path):
     print(f'Cannot find {dump_syms_path}.')
+    return None
+  if not os.access(dump_syms_path, os.X_OK):
+    print(f'File is not executable:{dump_syms_path}.')
     return None
 
   return dump_syms_path
@@ -59,7 +62,7 @@ def Resolve(path, exe_path, loader_path, rpaths):
   if path.find('@rpath') != -1:
     for rpath in rpaths:
       new_path = path.replace('@rpath', rpath)
-      if os.access(new_path, os.X_OK):
+      if os.path.isfile(new_path):
         return new_path
     return ''
   return path
@@ -95,7 +98,7 @@ def _GetSharedLibraryDependenciesAndroidOrChromeOS(binary):
     m = lib_re.search(line)
     if m:
       lib = os.path.join(binary_path, m.group(1))
-      if os.access(lib, os.X_OK):
+      if os.path.isfile(lib):
         result.append(lib)
   return result
 
@@ -234,7 +237,7 @@ def GetSharedLibraryDependencies(options, binary, exe_path):
   result = []
   build_dir = os.path.abspath(options.build_dir)
   for dep in deps:
-    if (os.access(dep, os.X_OK)
+    if (os.path.isfile(dep)
         and os.path.abspath(os.path.dirname(dep)).startswith(build_dir)):
       result.append(dep)
   return result
@@ -424,7 +427,7 @@ def main():
 
   args = parser.parse_args()
 
-  if not os.access(args.binary, os.X_OK):
+  if not os.path.isfile(args.binary):
     print(f'Cannot find {args.binary}')
     return 1
 
