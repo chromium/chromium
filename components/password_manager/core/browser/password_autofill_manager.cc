@@ -330,9 +330,16 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           std::move(last_popup_open_args_).suggestions, suggestion));
       break;
     case autofill::SuggestionType::kWebauthnSignInWithAnotherDevice:
-    case autofill::SuggestionType::kWebauthnPasskeyQrCode:
       metrics_util::LogPasswordSuggestionSelected(
           PasswordDropdownSelectedOption::kWebAuthnSignInWithAnotherDevice,
+          password_client_->IsOffTheRecord());
+      password_client_
+          ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
+          ->LaunchSecurityKeyOrHybridFlow();
+      break;
+    case autofill::SuggestionType::kWebauthnPasskeyQrCode:
+      metrics_util::LogPasswordSuggestionSelected(
+          PasswordDropdownSelectedOption::kWebAuthnPasskeyQrCode,
           password_client_->IsOffTheRecord());
       password_client_
           ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)

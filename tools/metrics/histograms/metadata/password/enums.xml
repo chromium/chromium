@@ -994,6 +994,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Sign in with another WebAuthn device"/>
   <int value="8" label="Backup password"/>
   <int value="9" label="Trouble signing in"/>
+  <int value="10" label="WebAuthn passkey QR code"/>
 </enum>
 
 <enum name="PasswordDropdownState">

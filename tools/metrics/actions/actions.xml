@@ -38192,6 +38192,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PasswordManager.PasswordDropdownSelected.PasskeyQrCode">
+  <owner>derinel@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <description>
+    Recorded when the user selected a passkey QR code entry in the password
+    dropdown.
+  </description>
+</action>
+
 <action name="PasswordManager.PasswordDropdownSelected.Password">
   <owner>derinel@google.com</owner>
   <owner>markusheintz@google.com</owner>

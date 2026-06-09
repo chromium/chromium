@@ -389,7 +389,9 @@ enum class PasswordDropdownSelectedOption {
   // "Trouble signing in" disclaimer, displayed when trying to log in with APC
   // password.
   kTroubleSigningIn = 9,
-  kMaxValue = kTroubleSigningIn
+  // User selected the WebAuthn passkey QR code suggestion.
+  kWebAuthnPasskeyQrCode = 10,
+  kMaxValue = kWebAuthnPasskeyQrCode
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

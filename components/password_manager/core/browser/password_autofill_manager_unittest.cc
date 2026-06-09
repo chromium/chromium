@@ -1976,6 +1976,45 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnSignInLaunchesWebAuthnFlow) {
                                                   SuggestionPosition{.row = 0});
 }
 
+TEST_F(PasswordAutofillManagerTest, WebAuthnSuggestionsLogMetrics) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  // Test kWebauthnSignInWithAnotherDevice
+  {
+    base::HistogramTester histograms;
+    EXPECT_CALL(*webauthn_credentials_delegate_,
+                LaunchSecurityKeyOrHybridFlow());
+    Suggestion suggestion(
+        autofill::SuggestionType::kWebauthnSignInWithAnotherDevice);
+    suggestion.payload = autofill::Suggestion::Payload();
+    password_autofill_manager_->DidAcceptSuggestion(
+        suggestion, SuggestionPosition{.row = 0});
+
+    histograms.ExpectUniqueSample(kDropdownSelectedHistogram,
+                                  metrics_util::PasswordDropdownSelectedOption::
+                                      kWebAuthnSignInWithAnotherDevice,
+                                  1);
+  }
+
+  // Test kWebauthnPasskeyQrCode
+  {
+    base::HistogramTester histograms;
+    EXPECT_CALL(*webauthn_credentials_delegate_,
+                LaunchSecurityKeyOrHybridFlow());
+    Suggestion suggestion(autofill::SuggestionType::kWebauthnPasskeyQrCode);
+    suggestion.payload = autofill::Suggestion::Payload();
+    password_autofill_manager_->DidAcceptSuggestion(
+        suggestion, SuggestionPosition{.row = 0});
+
+    histograms.ExpectUniqueSample(
+        kDropdownSelectedHistogram,
+        metrics_util::PasswordDropdownSelectedOption::kWebAuthnPasskeyQrCode,
+        1);
+  }
+}
+
 // Test that the AutofillSuggestionAvailability is set according to the popup
 // availability.
 TEST_F(PasswordAutofillManagerTest,

@@ -318,6 +318,10 @@ void LogPasswordSuggestionSelected(PasswordDropdownSelectedOption type,
       base::RecordAction(base::UserMetricsAction(
           "PasswordManager.PasswordDropdownSelected.UseAnotherDevice"));
       break;
+    case PasswordDropdownSelectedOption::kWebAuthnPasskeyQrCode:
+      base::RecordAction(base::UserMetricsAction(
+          "PasswordManager.PasswordDropdownSelected.PasskeyQrCode"));
+      break;
     case PasswordDropdownSelectedOption::kShowAll:
     case PasswordDropdownSelectedOption::kGenerate:
     case PasswordDropdownSelectedOption::kBackupPassword:
