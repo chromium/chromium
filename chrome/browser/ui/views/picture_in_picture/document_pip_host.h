@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PICTURE_IN_PICTURE_DOCUMENT_PIP_HOST_H_
 #define CHROME_BROWSER_UI_VIEWS_PICTURE_IN_PICTURE_DOCUMENT_PIP_HOST_H_
 
+#include <optional>
+#include <string>
+
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -39,7 +43,7 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   ~DocumentPipHost() override;
 
   // Creates the PiP widget for the given child WebContents. Can be called
-  // multiple times over the host's lifetime — each call opens a new PiP window
+  // multiple times over the host's lifetime - each call opens a new PiP window
   // after the previous one has been closed via ClosePipWindow(). The child
   // WebContents ownership is transferred to the widget's WebView.
   void CreatePipWidget(std::unique_ptr<content::WebContents> child_web_contents,
@@ -53,12 +57,100 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   const blink::mojom::PictureInPictureWindowOptions& GetPipOptions() const;
 
   // content::WebContentsObserver (observing the opener):
+  // Bring WebContentsObserver::BeforeUnloadFired(bool) into scope so the
+  // WebContentsDelegate::BeforeUnloadFired() override below does not hide it.
+  using content::WebContentsObserver::BeforeUnloadFired;
   void PrimaryPageChanged(content::Page& page) override;
 
-  // content::WebContentsDelegate (serving the child):
+  // content::WebContentsDelegate - Navigation & State:
   blink::mojom::DisplayMode GetDisplayMode(
       const content::WebContents* web_contents) override;
   void CloseContents(content::WebContents* source) override;
+  void NavigationStateChanged(content::WebContents* source,
+                              content::InvalidateTypes changed_flags) override;
+  void LoadingStateChanged(content::WebContents* source,
+                           bool should_show_loading_ui) override;
+  void VisibleSecurityStateChanged(content::WebContents* source) override;
+
+  // content::WebContentsDelegate - Window Activation & Bounds:
+  void ActivateContents(content::WebContents* contents) override;
+  bool IsContentsActive(content::WebContents* contents) override;
+  void SetContentsBounds(content::WebContents* source,
+                         const gfx::Rect& bounds) override;
+
+  // content::WebContentsDelegate - UI Events & Input:
+  void UpdateTargetURL(content::WebContents* source, const GURL& url) override;
+  void ContentsMouseEvent(content::WebContents* source,
+                          const ui::Event& event) override;
+  content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
+      content::WebContents* source,
+      const input::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
+  bool TakeFocus(content::WebContents* source, bool reverse) override;
+
+  // content::WebContentsDelegate - New Windows & Popups:
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override;
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
+  bool IsWebContentsCreationOverridden(
+      content::RenderFrameHost* opener,
+      content::SiteInstance* source_site_instance,
+      content::mojom::WindowContainerType window_container_type,
+      const GURL& opener_url,
+      const std::string& frame_name,
+      const GURL& target_url) override;
+  void WebContentsCreated(content::WebContents* source_contents,
+                          int opener_render_process_id,
+                          int opener_render_frame_id,
+                          const std::string& frame_name,
+                          const GURL& target_url,
+                          content::WebContents* new_contents) override;
+
+  // content::WebContentsDelegate - Dialogs & Logging:
+  content::JavaScriptDialogManager* GetJavaScriptDialogManager(
+      content::WebContents* source) override;
+  bool DidAddMessageToConsole(content::WebContents* source,
+                              blink::mojom::ConsoleMessageLevel log_level,
+                              const std::u16string& message,
+                              int32_t line_no,
+                              const std::u16string& source_id) override;
+
+  // content::WebContentsDelegate - Window Properties & Fullscreen:
+  bool GetCanResize() override;
+  ui::mojom::WindowShowState GetWindowShowState() const override;
+  content::FullscreenState GetFullscreenState(
+      const content::WebContents* web_contents) const override;
+  bool IsFullscreenForTabOrPending(
+      const content::WebContents* web_contents) override;
+  bool CanEnterFullscreenModeForTab(
+      content::RenderFrameHost* requesting_frame) override;
+
+  // content::WebContentsDelegate - Feature Capabilities:
+  bool CanOverscrollContent() override;
+  bool IsBackForwardCacheSupported(content::WebContents& web_contents) override;
+  bool ShouldFocusLocationBarByDefault(content::WebContents* source) override;
+  bool ShouldUseInstancedSystemMediaControls() const override;
+  content::WebContents* GetResponsibleWebContents(
+      content::WebContents* web_contents) override;
+  std::string GetTitleForMediaControls(
+      content::WebContents* web_contents) override;
+  void UpdatePreferredSize(content::WebContents* web_contents,
+                           const gfx::Size& pref_size) override;
+  std::optional<gfx::Rect> GetWindowBoundsInScreen() override;
+  void BeforeUnloadFired(content::WebContents* tab,
+                         bool proceed,
+                         bool* proceed_to_fire_unload) override;
 
   // PictureInPictureWindow:
   void SetForcedTucking(bool tuck) override;
@@ -96,6 +188,10 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
 
   // Initial options from the requestWindow() call.
   blink::mojom::PictureInPictureWindowOptions pip_options_;
+
+  // Tracks time since host creation, used by SetContentsBounds to record
+  // kMovedOrResizedPopup2sAfterCreation - aligned with Browser's behavior.
+  base::ElapsedTimer creation_timer_;
 
   // Manages tucking the PiP window offscreen. Created lazily on first
   // SetForcedTucking() call.
