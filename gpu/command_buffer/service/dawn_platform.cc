@@ -380,6 +380,12 @@ bool DawnPlatform::IsFeatureEnabled(dawn::platform::Features feature) {
   }
 }
 
+void DawnPlatform::ReportProgress() {
+  if (progress_reporter_) {
+    progress_reporter_->ReportProgress();
+  }
+}
+
 void DawnPlatform::OnFramePresented() {
   // Report cache hits' stats but only for first presentation.
   base::AutoLock autolock(cache_map_->lock);

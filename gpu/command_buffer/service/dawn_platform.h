@@ -74,6 +74,8 @@ class GPU_GLES2_EXPORT DawnPlatform : public dawn::platform::Platform {
 
   bool IsFeatureEnabled(dawn::platform::Features feature) override;
 
+  void ReportProgress() override;
+
   void OnFramePresented();
 
   struct CacheCountsMap : public base::RefCountedThreadSafe<CacheCountsMap> {

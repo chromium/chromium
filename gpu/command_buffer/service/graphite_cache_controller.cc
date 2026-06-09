@@ -17,6 +17,7 @@
 
 #if BUILDFLAG(SKIA_USE_DAWN)
 #include "gpu/command_buffer/service/dawn_context_provider.h"
+#include "gpu/command_buffer/service/dawn_platform.h"
 #endif
 
 namespace gpu::raster {
@@ -133,6 +134,13 @@ void GraphiteCacheController::CleanUpAllResourcesImpl() {
 
 #if BUILDFLAG(SKIA_USE_DAWN)
   if (can_handle_context_resources_) {
+    if (dawn_context_provider_) {
+      if (auto* platform = dawn_context_provider_->GetDawnPlatform()) {
+        // Report progress to the GPU watchdog thread to prevent timeout crashes
+        // during potentially long memory-reduction operations.
+        platform->ReportProgress();
+      }
+    }
     if (dawn::native::ReduceMemoryUsage(
             dawn_context_provider_->GetDevice().Get())) {
       // There is scheduled work on the GPU that must complete before finishing
