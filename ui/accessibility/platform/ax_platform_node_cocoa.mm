@@ -2221,6 +2221,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     case ax::mojom::InvalidState::kTrue:
       return @"true";
   }
+  NOTREACHED();
 }
 
 - (NSNumber*)AXIsMultiSelectable {
@@ -2283,6 +2284,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     case ax::mojom::HasPopup::kDialog:
       return @"dialog";
   }
+  NOTREACHED();
 }
 
 - (NSNumber*)AXRequired {
