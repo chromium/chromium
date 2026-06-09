@@ -395,6 +395,79 @@ TEST(FontMatcherMacTest, FontWeightSearchDirection) {
   }
 }
 
+TEST(FontMatcherMacTest, FontWeightSearchDirectionSub400) {
+  // crbug.com/467809214: AppKit returns the same numeric weight for several
+  // PingFang SC faces (Thin and Light are reported as equal), so the
+  // AppKit-only path could not distinguish them. For requested weights in
+  // [300, 399] the §5.2 descending search then resolved the tie by
+  // iteration order and picked Thin instead of Light. Verified by
+  // PostScript name since `CTFontCopyTraits` on an instantiated CTFont can
+  // drift from the descriptor weight. 400-700 cases also guard against
+  // regressions from the unconditional bold-trait skip in `BetterChoiceCT`.
+  AtomicString family_name = AtomicString("PingFang SC");
+  struct {
+    int requested_weight;
+    const char* expected_postscript;
+  } kCases[] = {
+      {100, "PingFangSC-Ultralight"}, {199, "PingFangSC-Ultralight"},
+      {200, "PingFangSC-Thin"},       {299, "PingFangSC-Thin"},
+      {300, "PingFangSC-Light"},      {390, "PingFangSC-Light"},
+      {400, "PingFangSC-Regular"},    {500, "PingFangSC-Medium"},
+      {600, "PingFangSC-Semibold"},   {700, "PingFangSC-Semibold"},
+  };
+  for (const auto& c : kCases) {
+    ScopedCFTypeRef<CTFontRef> font =
+        MatchFontFamily(family_name, FontSelectionValue(c.requested_weight),
+                        kNormalSlopeValue, kNormalWidthValue, 11);
+    ASSERT_TRUE(font) << "Failed to match PingFang SC for weight "
+                      << c.requested_weight;
+    ScopedCFTypeRef<CFStringRef> actual_postscript(
+        CTFontCopyPostScriptName(font.get()));
+    ASSERT_TRUE(actual_postscript);
+    ScopedCFTypeRef<CFStringRef> expected_postscript(CFStringCreateWithCString(
+        nullptr, c.expected_postscript, kCFStringEncodingUTF8));
+    EXPECT_EQ(
+        CFStringCompare(actual_postscript.get(), expected_postscript.get(),
+                        kCFCompareCaseInsensitive),
+        kCFCompareEqualTo)
+        << "Requested weight " << c.requested_weight << ": expected "
+        << c.expected_postscript;
+  }
+}
+
+TEST(FontMatcherMacTest, ConsistentLightMatchAcrossCJKFamilies) {
+  // crbug.com/516316384: At weight 360, the CJK family stack
+  // ("Hiragino Sans", "PingFang TC", "PingFang SC") matched mixed faces
+  // (W3/W6/Thin) across glyphs. Per CSS Fonts 4 §5.2 each family must pick
+  // its Light face.
+  struct {
+    const char* family;
+    const char* expected_postscript;
+  } kCases[] = {
+      {"Hiragino Sans", "HiraginoSans-W2"},
+      {"PingFang TC", "PingFangTC-Light"},
+      {"PingFang SC", "PingFangSC-Light"},
+  };
+  constexpr int kRequestedWeight = 360;
+  for (const auto& c : kCases) {
+    AtomicString family_name = AtomicString(c.family);
+    ScopedCFTypeRef<CTFontRef> font =
+        MatchFontFamily(family_name, FontSelectionValue(kRequestedWeight),
+                        kNormalSlopeValue, kNormalWidthValue, 11);
+    ASSERT_TRUE(font) << "Failed to match " << c.family;
+    ScopedCFTypeRef<CFStringRef> actual_postscript(
+        CTFontCopyPostScriptName(font.get()));
+    ASSERT_TRUE(actual_postscript);
+    ScopedCFTypeRef<CFStringRef> expected_postscript(CFStringCreateWithCString(
+        nullptr, c.expected_postscript, kCFStringEncodingUTF8));
+    EXPECT_EQ(
+        CFStringCompare(actual_postscript.get(), expected_postscript.get(),
+                        kCFCompareCaseInsensitive),
+        kCFCompareEqualTo)
+        << c.family << ": expected " << c.expected_postscript;
+  }
+}
+
 TEST(FontMatcherMacTest, MatchFamilyWithWeightVariations) {
   // For some fonts AppKit returns inconsistent weight values in the font
   // information, retrieved using `availableFontsForFamily`. For instance, both

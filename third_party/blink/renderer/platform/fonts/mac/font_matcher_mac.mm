@@ -226,35 +226,15 @@ bool BetterChoiceCT(CTFontSymbolicTraits desired_traits,
                     int chosen_weight,
                     CTFontSymbolicTraits candidate_traits,
                     int candidate_weight) {
-  // A list of the traits we care about.
-  // The top item in the list is the worst trait to mismatch; if a font has this
-  // and we didn't ask for it, we'd prefer any other font in the family.
-  const CTFontSymbolicTraits kMasks[] = {kCTFontTraitCondensed,
-                                         kCTFontTraitExpanded,
-                                         kCTFontTraitItalic, kCTFontTraitBold};
+  // Traits we compare, worst-to-best mismatch order. The bold trait is
+  // intentionally omitted: CoreText reports it inconsistently for some
+  // non-bold faces (e.g. HiraginoSans-W5, PingFangSC-Light), and the
+  // directional weight search in `BetterWeightMatch` below already encodes
+  // the spec's bold preference via the weight value.
+  const CTFontSymbolicTraits kMasks[] = {
+      kCTFontTraitCondensed, kCTFontTraitExpanded, kCTFontTraitItalic};
 
   for (CTFontSymbolicTraits mask : kMasks) {
-    // CoreText reports that "HiraginoSans-W5" font with AppKit weight 6 (which
-    // we map to CSS weight 500), has a bold trait. Since we consider bold
-    // threshold to be CSS weight 600, we will not match this font even if
-    // `desired_weight=500` was requested, but instead we will match
-    // "HiraginoSans-W4" with AppKit font weight 5 (CSS font weight 400).
-    // This check ignores the bold trait value if the `candidate_weight` is the
-    // same as requested.
-    if (mask == kCTFontBoldTrait && candidate_weight == desired_weight &&
-        chosen_weight != desired_weight) {
-      return true;
-    }
-    // For weights > 500, the CSS font matching algorithm (css-fonts-4 §5.2)
-    // requires ascending search (heavier first). However, kBoldThreshold is
-    // 600, so desired_traits only sets kCTFontTraitBold at weight >= 600.
-    // This means weights in (500, 600) would penalize bold candidates for
-    // having the bold trait even though the spec wants heavier faces first.
-    // Skip the bold trait comparison for the entire >500 range so the
-    // directional weight logic below can handle it correctly.
-    if (mask == kCTFontBoldTrait && desired_weight > 500) {
-      continue;
-    }
     bool desired = (desired_traits & mask) != 0;
     bool chosen_has_unwanted_trait = desired != ((chosen_traits & mask) != 0);
     bool candidate_has_unwanted_trait =
@@ -310,22 +290,60 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamilyNS(
   CTFontSymbolicTraits chosen_traits;
   int chosen_weight;
   for (NSArray* font_info in fonts) {
+    NSString* candidate_name = font_info[0];
+
     int candidate_weight = kNormalWeightValue;
-    NSNumber* candidate_weight_ns = font_info[2];
-    if (candidate_weight_ns) {
-      candidate_weight = AppKitToCSSFontWeight(candidate_weight_ns.intValue);
+    CTFontSymbolicTraits candidate_traits = kCTNormalTraitsValue;
+
+    // Per-candidate: read weight and symbolic traits from the CoreText
+    // descriptor (derived from the font's own metadata) instead of AppKit's
+    // reported values. AppKit collapses some distinct faces onto the same
+    // numeric weight (e.g. PingFangSC-Light and PingFangSC-Thin) and its
+    // trait bits don't fully align with `CTFontSymbolicTraits`. Descriptor
+    // lookup by name is cheap and runs only for the family's faces.
+    bool got_descriptor_attributes = false;
+    ScopedCFTypeRef<CTFontDescriptorRef> candidate_descriptor(
+        CTFontDescriptorCreateWithNameAndSize(NSToCFPtrCast(candidate_name),
+                                              0));
+    if (candidate_descriptor) {
+      ScopedCFTypeRef<CFTypeRef> traits_ref(CTFontDescriptorCopyAttribute(
+          candidate_descriptor.get(), kCTFontTraitsAttribute));
+      NSDictionary* traits =
+          CFToNSPtrCast(CFCast<CFDictionaryRef>(traits_ref.get()));
+      if (traits) {
+        NSNumber* weight_num =
+            ObjCCast<NSNumber>(traits[CFToNSPtrCast(kCTFontWeightTrait)]);
+        NSNumber* sym_traits_num =
+            ObjCCast<NSNumber>(traits[CFToNSPtrCast(kCTFontSymbolicTrait)]);
+        if (weight_num) {
+          candidate_weight = ToCSSFontWeight(weight_num.floatValue);
+          if (sym_traits_num) {
+            candidate_traits = sym_traits_num.intValue & kImportantTraitsMask;
+          }
+          got_descriptor_attributes = true;
+        }
+      }
     }
 
-    CTFontSymbolicTraits candidate_traits = kCTNormalTraitsValue;
-    NSNumber* candidate_traits_ns = font_info[3];
-    if (candidate_traits_ns) {
-      candidate_traits = candidate_traits_ns.intValue & kImportantTraitsMask;
+    if (!got_descriptor_attributes) {
+      // Fall back to AppKit-reported weight and traits. The trait bits from
+      // `availableMembersOfFontFamily` are `NSFontTraitMask` bits whose
+      // positions do not match `CTFontSymbolicTraits` past bit 1, but italic
+      // and bold do align, which is sufficient for the fallback.
+      NSNumber* candidate_weight_ns = font_info[2];
+      if (candidate_weight_ns) {
+        candidate_weight = AppKitToCSSFontWeight(candidate_weight_ns.intValue);
+      }
+      NSNumber* candidate_traits_ns = font_info[3];
+      if (candidate_traits_ns) {
+        candidate_traits = candidate_traits_ns.intValue & kImportantTraitsMask;
+      }
     }
 
     if (!matched_font_name ||
         BetterChoiceCT(desired_traits, desired_weight, chosen_traits,
                        chosen_weight, candidate_traits, candidate_weight)) {
-      matched_font_name = font_info[0];
+      matched_font_name = candidate_name;
       chosen_traits = candidate_traits;
       chosen_weight = candidate_weight;
 
