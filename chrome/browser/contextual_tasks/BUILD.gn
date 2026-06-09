@@ -312,6 +312,7 @@ source_set("ui_impl") {
     "guest_opener_user_data.cc",
     "guest_opener_user_data.h",
   ]
+  deps = []
 
   if (is_android) {
     sources += [
@@ -329,9 +330,10 @@ source_set("ui_impl") {
 
   if (enable_dice_support) {
     sources += [ "search_ai_mode_promo_tab_helper.cc" ]
+    deps += [ "//chrome/browser/ui/views/search_ai_mode" ]
   }
 
-  deps = [
+  deps += [
     ":impl",
     ":ui",
     ":user_data",
@@ -498,12 +500,14 @@ if (!is_android) {
       "contextual_tasks_ui_service_pdf_browsertest.cc",
       "contextual_tasks_url_loader_factory_interceptor_browsertest.cc",
     ]
+    deps = []
 
     if (enable_dice_support) {
       sources += [ "search_ai_mode_promo_tab_helper_browsertest.cc" ]
+      deps += [ "//chrome/browser/ui/views/search_ai_mode" ]
     }
 
-    deps = [
+    deps += [
       ":contextual_tasks",
       ":impl",
       ":test_support",
@@ -628,7 +632,7 @@ source_set("unit_tests") {
 
   if (!is_android) {
     deps += [
-      "//chrome/browser/ui/actions:actions",
+      "//chrome/browser/ui/actions",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/hats:test_support",
@@ -681,6 +685,7 @@ source_set("interactive_ui_tests") {
     deps += [
       ":test_support",
       "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/views/search_ai_mode",
     ]
   }
 

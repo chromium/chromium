@@ -1,0 +1,46 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/signin/features.gni")
+
+assert(enable_dice_support)
+
+source_set("search_ai_mode") {
+  public = [
+    "signin_promo_controller.h",
+    "signin_promo_view.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/contextual_tasks:ui",
+    "//chrome/browser/ui/views/location_bar",
+    "//content/public/browser",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "signin_promo_controller.cc",
+    "signin_promo_view.cc",
+  ]
+  deps = [
+    ":search_ai_mode",
+    "//chrome/browser/ui/signin",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "signin_promo_view_pixeltest.cc" ]
+  deps = [
+    ":search_ai_mode",
+    "//base/test:test_support",
+    "//chrome/browser/ui/test:dialog",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/test:test_support",
+  ]
+}

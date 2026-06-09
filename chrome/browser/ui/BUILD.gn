@@ -1418,11 +1418,18 @@ static_library("ui") {
     }
 
     if (enable_dice_support) {
-      sources += [
-        "views/search_ai_mode/signin_promo_controller.cc",
-        "views/search_ai_mode/signin_promo_controller.h",
-        "views/search_ai_mode/signin_promo_view.cc",
-        "views/search_ai_mode/signin_promo_view.h",
+      deps += [
+        "//chrome/browser/ui/views/search_ai_mode",
+        "//chrome/browser/ui/views/search_ai_mode:impl",
+      ]
+      allow_circular_includes_from += [
+        # TODO(crbug.com/364667551): Remove this circular dependency when
+        # the following headers get modularized:
+        # - c/b/ui/browser.h"
+        # - c/b/ui/views/frame/browser_view.h"
+        # - c/b/ui/views/toolbar/avatar_toolbar_button_interface.h"
+        # - c/b/ui/views/chrome_layout_provider.h"
+        "//chrome/browser/ui/views/search_ai_mode:impl",
       ]
     }
 
@@ -5584,11 +5591,6 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [ "browser_manager_service_browsertest.cc" ]
-
-    if (enable_dice_support) {
-      sources += [ "//chrome/browser/ui/views/search_ai_mode/signin_promo_view_pixeltest.cc" ]
-    }
-
     deps = [
       "//base",
       "//chrome/browser",

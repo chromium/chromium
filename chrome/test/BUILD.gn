@@ -4421,6 +4421,8 @@ if (!is_android) {
         # from profiles:impl, due to a circular dependency.
         "//chrome/browser/ui/profiles:impl",
       ]
+
+      deps += [ "//chrome/browser/ui/views/search_ai_mode:browser_tests" ]
     } else {
       sources += [ "../browser/signin/mirror_browsertest.cc" ]
     }
