@@ -52,7 +52,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -315,7 +314,6 @@ class WallpaperSearchHandlerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   MockWallpaperSearchBackgroundManager
       mock_wallpaper_search_background_manager_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   raw_ptr<MockHatsService> mock_hats_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   testing::NiceMock<MockWallpaperSearchStringMap>
