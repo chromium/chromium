@@ -327,6 +327,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Cancel search.
   if (iOS26_OR_ABOVE()) {
+    [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+        performAction:grey_tap()];
     [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
   } else {
     [[EarlGrey selectElementWithMatcher:CancelButton()]
@@ -823,6 +825,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Cancel search.
   if (iOS26_OR_ABOVE()) {
+    [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+        performAction:grey_tap()];
     [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
   } else {
     [[EarlGrey selectElementWithMatcher:CancelButton()]
