@@ -298,10 +298,6 @@ void ManifestV2ExperimentManager::EmitMetricsForProfileReady() {
       return;
     }
 
-    if (Manifest::IsComponentLocation(extension.location())) {
-      return;
-    }
-
     MV2ExtensionState extension_state = MV2ExtensionState::kUnaffected;
     if (!impact_checker_.IsExtensionAffected(extension)) {
       extension_state = MV2ExtensionState::kUnaffected;

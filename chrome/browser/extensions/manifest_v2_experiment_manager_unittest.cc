@@ -198,12 +198,14 @@ TEST_F(ManifestV2ExperimentManagerUnitTest,
     mojom::ManifestLocation manifest_location;
     std::string name;
     std::string expected_histogram;
+    ManifestV2ExperimentManager::MV2ExtensionState expected_state =
+        ManifestV2ExperimentManager::MV2ExtensionState::kHardDisabled;
   } test_cases[] = {
       {mojom::ManifestLocation::kInternal, "Internal",
        "Extensions.MV2Deprecation.MV2ExtensionState.Internal"},
-      // Note: component extensions aren't considered in the metrics, so
-      // shouldn't have any emitted histograms.
-      {mojom::ManifestLocation::kComponent, "Component", ""},
+      {mojom::ManifestLocation::kComponent, "Component",
+       "Extensions.MV2Deprecation.MV2ExtensionState.Component",
+       ManifestV2ExperimentManager::MV2ExtensionState::kUnaffected},
       {mojom::ManifestLocation::kExternalPolicy, "Policy",
        "Extensions.MV2Deprecation.MV2ExtensionState.Policy"},
       {mojom::ManifestLocation::kExternalPolicyDownload, "Policy Download",
@@ -248,9 +250,8 @@ TEST_F(ManifestV2ExperimentManagerUnitTest,
     // should have exactly one entry: the extension is hard-disabled.
     for (const char* histogram : histograms) {
       if (test_case.expected_histogram == histogram) {
-        histogram_tester.ExpectBucketCount(
-            histogram,
-            ManifestV2ExperimentManager::MV2ExtensionState::kHardDisabled, 1);
+        histogram_tester.ExpectBucketCount(histogram, test_case.expected_state,
+                                           1);
       } else {
         histogram_tester.ExpectTotalCount(histogram, 0);
       }
