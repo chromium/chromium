@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -70,6 +71,12 @@ class MockAutofillDriver : public TestContentAutofillDriver {
                FieldGlobalId token_field_id,
                const std::string& presentation_token),
               (override));
+};
+
+class MockEmailVerifierDelegateObserver
+    : public EmailVerifierDelegate::Observer {
+ public:
+  MOCK_METHOD(void, OnFlowCompleted, (EvpAutofillFlowResult), (override));
 };
 
 class TestRuntimeFeatureStateContext
@@ -238,6 +245,7 @@ class EmailVerifierDelegateTest : public EmailVerifierDelegateTestBase {
 // all requirements, the user autofills an email field and the
 // renderer is notified with the presentation token to dispatch an event.
 TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
+  base::HistogramTester histogram_tester;
   auto* observer =
       page_load_metrics::MetricsWebContentsObserver::FromWebContents(
           web_contents());
@@ -246,7 +254,6 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
       static_cast<page_load_metrics::TestMetricsWebContentsObserverEmbedder*>(
           observer->GetEmbedderInterfaceForTesting());
   ASSERT_TRUE(embedder);
-
   FormStructure* form = SetUpValidForm();
 
   SetUpVerificationExpectations(*form);
@@ -273,10 +280,70 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
     }
   }
   EXPECT_TRUE(feature_observed);
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kTokenSentToRenderer, 1);
+}
+
+TEST_F(EmailVerifierDelegateTest, TokenSharedSuccess) {
+  base::HistogramTester histogram_tester;
+  FormStructure* form = SetUpValidForm();
+
+  SetUpVerificationExpectations(*form);
+
+  AutofillProfile profile = test::GetFullProfile();
+
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id()};
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+
+  popup_shown_run_loop_.Run();
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kTokenSentToRenderer, 1);
+  histogram_tester.ExpectBucketCount("Blink.Evp.Autofill.FlowResult",
+                                     EvpAutofillFlowResult::kSuccess, 0);
+
+  // Clear expectations on client to avoid conflict with ShowEmailVerifiedToast.
+  testing::Mock::VerifyAndClearExpectations(&client());
+
+  EXPECT_CALL(client(), ShowEmailVerifiedToast(GURL("https://example.com")));
+  delegate().OnEmailVerificationTokenShared(manager(),
+                                            form->field(1)->global_id());
+
+  histogram_tester.ExpectBucketCount("Blink.Evp.Autofill.FlowResult",
+                                     EvpAutofillFlowResult::kSuccess, 1);
+}
+
+TEST_F(EmailVerifierDelegateTest, ObserverNotified) {
+  FormStructure* form = SetUpValidForm();
+  SetUpVerificationExpectations(*form);
+
+  NiceMock<MockEmailVerifierDelegateObserver> observer;
+  delegate().AddObserver(&observer);
+
+  EXPECT_CALL(observer,
+              OnFlowCompleted(EvpAutofillFlowResult::kTokenSentToRenderer));
+
+  AutofillProfile profile = test::GetFullProfile();
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id()};
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+
+  popup_shown_run_loop_.Run();
+
+  delegate().RemoveObserver(&observer);
 }
 
 // Verifies that if the user declines the prompt, no verification is triggered.
 TEST_F(EmailVerifierDelegateTest, VerificationDeclined) {
+  base::HistogramTester histogram_tester;
   FormStructure* form = SetUpValidForm();
 
   SetUpVerificationExpectations(
@@ -301,11 +368,16 @@ TEST_F(EmailVerifierDelegateTest, VerificationDeclined) {
   EXPECT_EQ(
       strike_db.GetStrikes(EmailVerificationStrikeDatabase::GetId(email_utf8)),
       1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kUserDeclinedPermissionPrompt, 1);
 }
 
 // Verifies that if the prompt is dismissed (not declined), no strikes are
 // added.
 TEST_F(EmailVerifierDelegateTest, VerificationDismissed) {
+  base::HistogramTester histogram_tester;
   FormStructure* form = SetUpValidForm();
 
   SetUpVerificationExpectations(
@@ -330,6 +402,10 @@ TEST_F(EmailVerifierDelegateTest, VerificationDismissed) {
   EXPECT_EQ(
       strike_db.GetStrikes(EmailVerificationStrikeDatabase::GetId(email_utf8)),
       0);
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kUserIgnoredPermissionPrompt, 1);
 }
 
 // Verifies that if the base feature is explicitly overridden to disabled,
@@ -461,6 +537,7 @@ TEST_F(EmailVerifierDelegateTest, NotEmailField) {
 // Verifies that if the verification fails, no event is dispatched to the
 // renderer.
 TEST_F(EmailVerifierDelegateTest, VerificationFails) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list{
       ::features::kEmailVerificationProtocol};
 
@@ -499,6 +576,10 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
       mojom::ActionPersistence::kFill, filled_field_ids, &profile);
 
   verify_called_run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kVerificationFailed, 1);
 }
 
 // Verifies that if the base feature is in its default state (enabled by
@@ -593,6 +674,7 @@ TEST_F(EmailVerifierDelegateTest,
 }
 
 TEST_F(EmailVerifierDelegateTest, BlockedByStrikes) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list{
       ::features::kEmailVerificationProtocol};
 
@@ -621,6 +703,10 @@ TEST_F(EmailVerifierDelegateTest, BlockedByStrikes) {
   delegate().OnFillOrPreviewForm(
       manager(), form->global_id(), form->field(0)->global_id(),
       mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kStrikeDatabaseBlock, 1);
 }
 
 TEST_F(EmailVerifierDelegateTest, ClearsStrikesOnAccept) {
@@ -709,6 +795,73 @@ TEST_F(EmailVerifierDelegateTest, Regression_ShowPopupReceivesValidIssuerSite) {
       mojom::ActionPersistence::kFill, filled_field_ids, &profile);
 
   run_loop.Run();
+}
+
+TEST_F(EmailVerifierDelegateTest, TokenFieldHasNoNonce) {
+  base::HistogramTester histogram_tester;
+  FormData form_data = test::GetFormData(
+      {.description_for_logging = "NoNonceTokenForm",
+       .fields =
+           {
+               {.label = u"Email",
+                .name = u"email",
+                .nonce = u"test_nonce",
+                .value = u"Triggering field (filled)",
+                .form_control_type = FormControlType::kInputEmail},
+               {.label = u"Verification Token",
+                .name = u"verification_token",
+                .nonce = u"",  // Empty nonce!
+                .autocomplete_attribute = "email-verification-token",
+                .form_control_type =
+                    FormControlType::kInputHiddenEmailVerification},
+           },
+       .host_frame = driver().GetFrameToken()});
+  manager().AddSeenForm(form_data, {EMAIL_ADDRESS, UNKNOWN_TYPE});
+  FormStructure* form =
+      test_api(manager()).FindCachedFormById(form_data.global_id());
+  ASSERT_TRUE(form);
+  form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
+
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
+
+  AutofillProfile profile = test::GetFullProfile();
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id()};
+
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kTokenFieldHasNoNonce, 1);
+}
+
+TEST_F(EmailVerifierDelegateTest, UserPrefDisabled) {
+  base::HistogramTester histogram_tester;
+  FormStructure* form = SetUpValidForm();
+
+  // Disable user pref.
+  PrefService* prefs = manager().client().GetPrefs();
+  prefs->SetBoolean(prefs::kAutofillEmailVerificationEnabled, false);
+
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
+
+  AutofillProfile profile = test::GetFullProfile();
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id()};
+
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+
+  histogram_tester.ExpectUniqueSample("Blink.Evp.Autofill.FlowResult",
+                                      EvpAutofillFlowResult::kUserPrefDisabled,
+                                      1);
 }
 
 }  // namespace autofill

@@ -257,6 +257,24 @@ Called by update_document_policy_enum.py.-->
   <int value="16" label="NetworkEfficiencyGuardrails"/>
 </enum>
 
+<!-- LINT.IfChange(EvpAutofillFlowResult) -->
+
+<enum name="EvpAutofillFlowResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="TokenFieldHasNoNonce"/>
+  <int value="2" label="UserPrefDisabled"/>
+  <int value="3" label="StrikeDatabaseBlock"/>
+  <int value="4" label="VerifierUnavailable"/>
+  <int value="5" label="NotVerifiable"/>
+  <int value="6" label="UserDeclinedPermissionPrompt"/>
+  <int value="7" label="UserIgnoredPermissionPrompt"/>
+  <int value="8" label="VerificationFailed"/>
+  <int value="9" label="ManagerDestroyed"/>
+  <int value="10" label="TokenSentToRenderer"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/content/browser/email_verifier_delegate.h:EvpAutofillFlowResult) -->
+
 <!-- LINT.IfChange(EvpPermissionUiStatus) -->
 
 <enum name="EvpPermissionUiStatus">
