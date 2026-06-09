@@ -27,6 +27,7 @@ enum class ComposeboxInputItemType {
   kComposeboxInputItemTypePDF,
   kComposeboxInputItemTypeRawFile,
   kComposeboxInputItemTypeTab,
+  kComposeboxInputItemTypeDrive,
 };
 
 // Data object for an item in the AIM input.
@@ -67,6 +68,12 @@ enum class ComposeboxInputItemType {
 @property(nonatomic, strong) NSItemProvider* imageProvider;
 // The file URL for this item. Only set for PDF and raw file types.
 @property(nonatomic, strong) NSURL* fileURL;
+// The Drive item identifier. Only set for Drive types.
+@property(nonatomic, copy) NSString* driveIdentifier;
+// The Drive resource key. Only set for Drive types.
+@property(nonatomic, copy) NSString* driveResourceKey;
+// The Drive mime type. Only set for Drive types.
+@property(nonatomic, copy) NSString* driveMimeType;
 
 @end
 

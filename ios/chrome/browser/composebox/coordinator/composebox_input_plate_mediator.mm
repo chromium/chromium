@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_attachment_diff.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_drive_result.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
@@ -484,6 +485,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   NSMutableArray<ComposeboxPickerImageResult*>* images =
       [[NSMutableArray alloc] init];
   NSMutableArray<NSURL*>* files = [[NSMutableArray alloc] init];
+  NSMutableArray<ComposeboxPickerDriveResult*>* driveItems =
+      [[NSMutableArray alloc] init];
 
   for (ComposeboxInputItem* item in _items.containedItems) {
     switch (item.type) {
@@ -512,15 +515,23 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
         }
         break;
       }
+      case ComposeboxInputItemType::kComposeboxInputItemTypeDrive: {
+        ComposeboxPickerDriveResult* result =
+            [[ComposeboxPickerDriveResult alloc] init];
+        result.identifier = item.driveIdentifier;
+        result.fileName = item.title;
+        result.mimeType = item.driveMimeType;
+        [driveItems addObject:result];
+        break;
+      }
     }
   }
 
-  // TODO(crbug.com/515377633): Add proper Drive files selection.
   return [[ComposeboxAttachmentSelection alloc] initWithTabIDs:tabIDs
                                              cachedWebStateIDs:{}
                                                         images:images
                                                          files:files
-                                                    driveItems:@[]];
+                                                    driveItems:driveItems];
 }
 
 - (void)updateAttachments:(ComposeboxAttachmentSelection*)attachments {
@@ -552,6 +563,11 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     [self processFileURL:gurl
                    isPDF:isPDF
               completion:stopAccessScopedResourcesIfNeeded];
+  }
+  for (ComposeboxPickerDriveResult* driveItem in attachments.driveItems) {
+    [self processDriveFileWithIdentifier:driveItem.identifier
+                                    name:driveItem.fileName
+                                mimeType:driveItem.mimeType];
   }
 
   // TODO(crbug.com/512774045): update attachment is called in both embedded an
@@ -1300,6 +1316,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       return composebox_debugger::AttachmentType::kImage;
     case ComposeboxInputItemType::kComposeboxInputItemTypeRawFile:
     case ComposeboxInputItemType::kComposeboxInputItemTypePDF:
+    case ComposeboxInputItemType::kComposeboxInputItemTypeDrive:
       return composebox_debugger::AttachmentType::kFile;
     case ComposeboxInputItemType::kComposeboxInputItemTypeTab:
       return composebox_debugger::AttachmentType::kTab;
@@ -1763,6 +1780,44 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       base::BindOnce(^(UIImage* preview) {
         [weakSelf didLoadPreviewImage:preview forItemWithIdentifier:identifier];
       }));
+}
+
+- (void)processDriveFileWithIdentifier:(NSString*)identifier
+                                  name:(NSString*)name
+                              mimeType:(NSString*)mimeType {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if ([_items assetAlreadyLoaded:identifier]) {
+    return;
+  }
+
+  if (!_contextualSearchSession) {
+    return;
+  }
+
+  ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
+      initWithComposeboxInputItemType:ComposeboxInputItemType::
+                                          kComposeboxInputItemTypeDrive
+                              assetID:identifier
+                               source:ComposeboxInputItemSource::kDrivePicker];
+  item.title = name;
+  item.driveIdentifier = identifier;
+  item.driveMimeType = mimeType;
+
+  [self addItem:item];
+
+  [self setState:ComposeboxInputItemState::kUploading onItem:item];
+  [self.consumer updateState:item.state forItemWithIdentifier:item.identifier];
+
+  auto serverToken = _contextualSearchSession->CreateContextToken();
+  [self onFileContextAdded:serverToken forIdentifier:item.identifier];
+
+  contextual_search::ContextualSearchSessionHandle::DriveUploadParams params;
+  params.drive_id = base::SysNSStringToUTF8(identifier);
+  params.mime_type = base::SysNSStringToUTF8(mimeType);
+  params.file_name = base::SysNSStringToUTF8(name);
+
+  _contextualSearchSession->StartDriveContextUploadFlow(serverToken, params);
+  [self notifyContextChanged];
 }
 
 - (BOOL)compactModeRequired {

@@ -145,7 +145,8 @@ const CGFloat kCloseButtonAlpha = 0.9;
       break;
     }
     case ComposeboxInputItemType::kComposeboxInputItemTypeRawFile:
-    case ComposeboxInputItemType::kComposeboxInputItemTypePDF: {
+    case ComposeboxInputItemType::kComposeboxInputItemTypePDF:
+    case ComposeboxInputItemType::kComposeboxInputItemTypeDrive: {
       std::u16string title = base::SysNSStringToUTF16(item.title);
       std::u16string pattern = l10n_util::GetStringUTF16(
           IDS_IOS_COMPOSEBOX_ATTACHMENT_FILE_ACCESSIBILITY_LABEL);

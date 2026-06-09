@@ -111,6 +111,15 @@ const CGFloat kTrailingMargin = 8.0;
                                             kLeadingIconSize);
       _titleLabel.text = item.title;
       break;
+    case ComposeboxInputItemType::kComposeboxInputItemTypeDrive: {
+      UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+          configurationWithPointSize:kLeadingIconSize
+                              weight:UIImageSymbolWeightMedium
+                               scale:UIImageSymbolScaleLarge];
+      _leadingIconImageView.image =
+          CustomSymbolWithConfiguration(kMyDriveSymbol, configuration);
+      _titleLabel.text = item.title;
+    } break;
   }
   [self updateFadeViewVisibility];
 }

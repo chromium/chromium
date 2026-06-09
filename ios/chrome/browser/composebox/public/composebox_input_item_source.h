@@ -14,6 +14,7 @@ enum class ComposeboxInputItemSource {
   kTabPicker,
   kDragAndDrop,
   kCurrentTab,
+  kDrivePicker,
 };
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_COMPOSEBOX_INPUT_ITEM_SOURCE_H_

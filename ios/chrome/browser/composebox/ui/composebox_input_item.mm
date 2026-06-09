@@ -65,6 +65,9 @@
     copy.imageProvider = self.imageProvider;
     copy.fileURL = self.fileURL;
     copy.source = self.source;
+    copy.driveIdentifier = self.driveIdentifier;
+    copy.driveResourceKey = self.driveResourceKey;
+    copy.driveMimeType = self.driveMimeType;
   }
   return copy;
 }

@@ -72,7 +72,8 @@
   NSUInteger result = 0;
   for (ComposeboxInputItem* item in _containedItems) {
     if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeRawFile ||
-        item.type == ComposeboxInputItemType::kComposeboxInputItemTypePDF) {
+        item.type == ComposeboxInputItemType::kComposeboxInputItemTypePDF ||
+        item.type == ComposeboxInputItemType::kComposeboxInputItemTypeDrive) {
       result++;
     }
   }

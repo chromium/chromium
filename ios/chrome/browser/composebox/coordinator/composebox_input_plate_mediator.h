@@ -127,6 +127,12 @@ class ContextualSearchSessionHandle;
 // Applies the focus parameters to initialize the session state.
 - (void)applyFocusParams:(ComposeboxFocusParams*)params;
 
+// Processes the picked Google Drive file metadata and triggers contextual
+// session upload.
+- (void)processDriveFileWithIdentifier:(NSString*)identifier
+                                  name:(NSString*)name
+                              mimeType:(NSString*)mimeType;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_INPUT_PLATE_MEDIATOR_H_
