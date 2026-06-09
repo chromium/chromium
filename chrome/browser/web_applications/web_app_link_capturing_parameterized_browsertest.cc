@@ -755,6 +755,16 @@ static const base::flat_set<std::string> disabled_flaky_tests = {
 // "FocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_..." (etc).
 #elif BUILDFLAG(IS_LINUX)
 #elif BUILDFLAG(IS_WIN)
+    // TODO(crbug.com/521419451) Re-enable tests.
+    "AppANavigateExistingAppBFocusExisting_BothStandalone_"
+    "CaptureForSpecifiedClientMode_Tab_ScopeA2B_Direct_ViaButton_LeftClick_"
+    "WithoutOpener_TargetSelf",
+    "NavigateNew_AppAStandaloneAppBBrowser_CaptureForSpecifiedClientMode_Tab_"
+    "ScopeA2X_Direct_ViaButton_LeftClick_WithoutOpener_TargetNoFrame",
+    "NavigateNew_BothStandalone_CaptureForSpecifiedClientMode_Tab_ScopeA2X_"
+    "Direct_ViaLink_LeftClick_WithOpener_TargetFrame",
+    "NavigateExisting_BothStandalone_CaptureOnWithSelfLinkCapture_Tab_ScopeA2B_"
+    "ServerSideViaA_ViaButton_LeftClick_WithoutOpener_TargetBlank"
 #elif BUILDFLAG(IS_CHROMEOS)
 #endif
 };
