@@ -48,7 +48,11 @@ void TaskAttributionTaskState::SetCurrent(
   if (isolate->IsExecutionTerminating()) {
     return;
   }
-  CHECK(!ScriptForbiddenScope::IsScriptForbidden());
+  if (ScriptForbiddenScope::IsScriptForbidden()) {
+    // The callback for this task state would be canceled, so there is no need
+    // to set this task state. See crbug.com/516377556.
+    return;
+  }
   // `task_state` will be null when leaving the top-level task scope, at which
   // point we want to clear the isolate's CPED and reference to the related
   // context. We don't need to distinguish between null and undefined values,
