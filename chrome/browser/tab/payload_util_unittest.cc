@@ -19,9 +19,10 @@ namespace {
 TEST(PayloadUtilTest, GenerateKeyForOtrPayloads) {
   std::vector<uint8_t> key1 = GenerateKeyForOtrPayloads();
   std::vector<uint8_t> key2 = GenerateKeyForOtrPayloads();
-  crypto::Aead aead(crypto::Aead::AES_128_CTR_HMAC_SHA256);
-  ASSERT_EQ(key1.size(), aead.KeyLength());
-  ASSERT_EQ(key2.size(), aead.KeyLength());
+  const size_t kExpected =
+      crypto::aead::KeySizeFor(crypto::aead::AES_128_CTR_HMAC_SHA256);
+  ASSERT_EQ(key1.size(), kExpected);
+  ASSERT_EQ(key2.size(), kExpected);
   ASSERT_NE(key1, key2);
 }
 
