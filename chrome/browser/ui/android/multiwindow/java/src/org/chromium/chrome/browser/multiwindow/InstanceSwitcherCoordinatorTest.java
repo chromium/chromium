@@ -64,7 +64,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -85,7 +84,6 @@ import java.util.concurrent.TimeoutException;
 /** Unit tests for {@link InstanceSwitcherCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableLeakChecks("crbug.com/512492435 (InstanceSwitcherCoordinator)")
 public class InstanceSwitcherCoordinatorTest {
     private static final int MAX_INSTANCE_COUNT = 5;
 
@@ -1487,8 +1485,18 @@ public class InstanceSwitcherCoordinatorTest {
         // Verify the close buttons are enabled.
         onView(withId(R.id.inactive_instance_list))
                 .inRoot(isDialog())
-                .check(matches(atPosition(0, hasDescendant(allOf(withId(R.id.close_button), isEnabled())))))
-                .check(matches(atPosition(1, hasDescendant(allOf(withId(R.id.close_button), isEnabled())))));
+                .check(
+                        matches(
+                                atPosition(
+                                        0,
+                                        hasDescendant(
+                                                allOf(withId(R.id.close_button), isEnabled())))))
+                .check(
+                        matches(
+                                atPosition(
+                                        1,
+                                        hasDescendant(
+                                                allOf(withId(R.id.close_button), isEnabled())))));
 
         // Select the second item.
         onView(withId(R.id.inactive_instance_list))
@@ -1509,8 +1517,22 @@ public class InstanceSwitcherCoordinatorTest {
         // Verify the close buttons are disabled.
         onView(withId(R.id.inactive_instance_list))
                 .inRoot(isDialog())
-                .check(matches(atPosition(0, hasDescendant(allOf(withId(R.id.close_button), not(isEnabled()))))))
-                .check(matches(atPosition(1, hasDescendant(allOf(withId(R.id.close_button), not(isEnabled()))))));
+                .check(
+                        matches(
+                                atPosition(
+                                        0,
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.close_button),
+                                                        not(isEnabled()))))))
+                .check(
+                        matches(
+                                atPosition(
+                                        1,
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.close_button),
+                                                        not(isEnabled()))))));
 
         // Deselect the first item.
         onView(withId(R.id.inactive_instance_list))
