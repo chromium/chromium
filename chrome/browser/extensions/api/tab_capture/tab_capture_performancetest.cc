@@ -52,17 +52,16 @@ constexpr char kMetricCaptureLatencyMs[] = "capture_latency";
 constexpr char kMetricRendererFrameDrawMs[] = "renderer_frame_draw";
 
 constexpr char kEventCapture[] = "Capture";
-constexpr char kEventSuffixFailRate[] = "FailRate";
-constexpr char kEventSuffixLatency[] = "Latency";
+constexpr char kEventCaptureFailRate[] = "CaptureFailRate";
+constexpr char kEventCaptureLatency[] = "CaptureLatency";
 constexpr char kEventCommitAndDrawCompositorFrame[] =
     "WidgetBase::DidCommitAndDrawCompositorFrame";
-const base::flat_map<std::string, std::string> kEventToMetricMap(
-    {{kEventCapture, kMetricCaptureMs},
-     {std::string(kEventCapture) + kEventSuffixFailRate,
-      kMetricCaptureFailRatePercent},
-     {std::string(kEventCapture) + kEventSuffixLatency,
-      kMetricCaptureLatencyMs},
-     {kEventCommitAndDrawCompositorFrame, kMetricRendererFrameDrawMs}});
+constexpr auto kEventToMetricMap =
+    base::MakeFixedFlatMap<std::string_view, std::string_view>(
+        {{kEventCapture, kMetricCaptureMs},
+         {kEventCaptureFailRate, kMetricCaptureFailRatePercent},
+         {kEventCaptureLatency, kMetricCaptureLatencyMs},
+         {kEventCommitAndDrawCompositorFrame, kMetricRendererFrameDrawMs}});
 
 perf_test::PerfResultReporter SetUpTabCaptureReporter(
     const std::string& story) {
@@ -74,7 +73,7 @@ perf_test::PerfResultReporter SetUpTabCaptureReporter(
   return reporter;
 }
 
-std::string GetMetricFromEventName(const std::string& event_name) {
+std::string_view GetMetricFromEventName(const std::string& event_name) {
   auto iter = kEventToMetricMap.find(event_name);
   return iter == kEventToMetricMap.end() ? event_name : iter->second;
 }
@@ -123,6 +122,10 @@ class TabCapturePerformanceTest : public TabCapturePerformanceTestBase,
  public:
   TabCapturePerformanceTest() = default;
   ~TabCapturePerformanceTest() override = default;
+
+  // Member constants to avoid exit-time destructor.
+  const std::string kEventSuffixLatency = "Latency";
+  const std::string kEventSuffixFailRate = "FailRate";
 
   bool HasFlag(TestFlags flag) const {
     return (GetParam() & flag) == flag;

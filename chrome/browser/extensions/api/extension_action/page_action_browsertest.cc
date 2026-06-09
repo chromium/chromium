@@ -23,14 +23,16 @@
 namespace extensions {
 namespace {
 
-const std::string kSubscribePageAction = "subscribe_page_action_v2/src";
-const std::string kFeedPage = "/feeds/feed.html";
-const std::string kNoFeedPage = "/feeds/no_feed.html";
+constexpr std::string_view kSubscribePageAction =
+    "subscribe_page_action_v2/src";
+constexpr std::string_view kFeedPage = "/feeds/feed.html";
+constexpr std::string_view kNoFeedPage = "/feeds/no_feed.html";
 
-const std::string kHashPageA =
+constexpr std::string_view kHashPageA =
     "/extensions/api_test/page_action/hash_change/test_page_A.html";
-const std::string kHashPageAHash = kHashPageA + "#asdf";
-const std::string kHashPageB =
+constexpr std::string_view kHashPageAHash =
+    "/extensions/api_test/page_action/hash_change/test_page_A.html#asdf";
+constexpr std::string_view kHashPageB =
     "/extensions/api_test/page_action/hash_change/test_page_B.html";
 
 using ContextType = extensions::browser_test_util::ContextType;

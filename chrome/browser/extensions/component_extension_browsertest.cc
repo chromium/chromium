@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(ComponentExtensionBrowserTest, MojoJS) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-const ExtensionId kExtensionId = "iegclhlplifhodhkoafiokenjoapiobj";
+constexpr char kExtensionId[] = "iegclhlplifhodhkoafiokenjoapiobj";
 constexpr char kExtensionKey[] =
     "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjzv7dI7Ygyh67VHE1DdidudpYf8P"
     "Ffv8iucWvzO+3xpF/Dm5xNo7aQhPNiEaNfHwJQ7lsp4gc+C+4bbaVewBFspTruoSJhZc5uEf"

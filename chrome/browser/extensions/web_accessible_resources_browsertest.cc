@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
     EXPECT_EQ(expected, EvalJs(iframe, "document.body.innerText;"));
   };
 
-  static struct {
+  struct {
     const char* title;
     const GURL target;
     const GURL commit;
@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(
   //   is a renderer-initiated navigation, and should be limited to
   //   web-accessible resource checks.
   // * Verify where the navigation reached.
-  static struct {
+  struct {
     // The url to navigate the browser tab to.
     GURL site_url;
     // The url to navigate to via `document.location.replace()` (an extension
