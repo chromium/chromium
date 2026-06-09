@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "cc/layers/texture_layer.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
@@ -34,7 +35,14 @@ ImageBitmapRenderingContext::ImageBitmapRenderingContext(
     : CanvasRenderingContext(host, attrs, CanvasRenderingAPI::kBitmaprenderer),
       image_layer_bridge_(MakeGarbageCollected<ImageLayerBridge>(
           attrs.alpha ? kNonOpaque : kOpaque)) {
-  host->InitializeLayerWithCSSProperties(image_layer_bridge_->CcLayer());
+  auto& layer = image_layer_bridge_->layer_;
+  layer->SetIsDrawable(true);
+  layer->SetHitTestable(true);
+  if (image_layer_bridge_->is_opaque_) {
+    layer->SetContentsOpaque(true);
+    layer->SetBlendBackgroundColor(false);
+  }
+  host->InitializeLayerWithCSSProperties(layer.get());
 }
 
 ImageBitmapRenderingContext::~ImageBitmapRenderingContext() = default;
@@ -137,11 +145,14 @@ ImageBitmapRenderingContext::GetImageAndResetInternal() {
 
 void ImageBitmapRenderingContext::SetUV(const gfx::PointF& left_top,
                                         const gfx::PointF& right_bottom) {
-  image_layer_bridge_->SetUV(left_top, right_bottom);
+  if (image_layer_bridge_->disposed_) {
+    return;
+  }
+  image_layer_bridge_->layer_->SetUV(left_top, right_bottom);
 }
 
 cc::Layer* ImageBitmapRenderingContext::CcLayer() const {
-  return image_layer_bridge_->CcLayer();
+  return image_layer_bridge_ ? image_layer_bridge_->layer_.get() : nullptr;
 }
 
 bool ImageBitmapRenderingContext::IsPaintable() const {

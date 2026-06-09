@@ -14,7 +14,6 @@
 #include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
-class Layer;
 class TextureLayer;
 }  // namespace cc
 
@@ -44,13 +43,10 @@ class MODULES_EXPORT ImageLayerBridge
 
   scoped_refptr<StaticBitmapImage> GetImage() { return image_; }
 
-  cc::Layer* CcLayer() const;
-
-  void SetUV(const gfx::PointF& left_top, const gfx::PointF& right_bottom);
 
   void Trace(Visitor* visitor) const {}
 
- private:
+ public:
   // Resource holding a software SharedImage. Used only with software
   // compositing.
   struct SoftwareResource {

@@ -80,12 +80,6 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
 ImageLayerBridge::ImageLayerBridge(OpacityMode opacity_mode)
     : is_opaque_(opacity_mode == kOpaque) {
   layer_ = cc::TextureLayer::Create(this);
-  layer_->SetIsDrawable(true);
-  layer_->SetHitTestable(true);
-  if (is_opaque_) {
-    layer_->SetContentsOpaque(true);
-    layer_->SetBlendBackgroundColor(false);
-  }
 }
 
 ImageLayerBridge::~ImageLayerBridge() {
@@ -120,14 +114,6 @@ void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
   has_presented_since_last_set_image_ = false;
 }
 
-void ImageLayerBridge::SetUV(const gfx::PointF& left_top,
-                             const gfx::PointF& right_bottom) {
-  if (disposed_) {
-    return;
-  }
-
-  layer_->SetUV(left_top, right_bottom);
-}
 
 void ImageLayerBridge::Dispose() {
   if (layer_) {
@@ -299,9 +285,6 @@ void ImageLayerBridge::ResourceReleasedSoftware(
   }
 }
 
-cc::Layer* ImageLayerBridge::CcLayer() const {
-  return layer_.get();
-}
 
 ImageLayerBridge::SoftwareResource::SoftwareResource() = default;
 ImageLayerBridge::SoftwareResource::SoftwareResource(SoftwareResource&& other) =

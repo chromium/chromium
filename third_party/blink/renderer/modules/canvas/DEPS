@@ -14,6 +14,9 @@ specific_include_rules = {
         "+components/ukm/test_ukm_recorder.h",
         "+services/metrics/public/cpp/ukm_builders.h",
     ],
+    "image_bitmap_rendering_context\\.cc": [
+        "+cc/layers/texture_layer.h",
+    ],
     "image_layer_bridge\\.(cc|h)": [
         "+cc/layers/texture_layer.h",
         "+cc/layers/texture_layer_client.h",
