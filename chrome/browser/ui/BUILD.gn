@@ -2083,16 +2083,6 @@ static_library("ui") {
       "platform_keys_certificate_selector_chromeos.h",
       "settings_window_manager_chromeos.cc",
       "settings_window_manager_chromeos.h",
-      "views/apps/app_dialog/app_block_dialog_view.cc",
-      "views/apps/app_dialog/app_block_dialog_view.h",
-      "views/apps/app_dialog/app_dialog_view.cc",
-      "views/apps/app_dialog/app_dialog_view.h",
-      "views/apps/app_dialog/app_local_block_dialog_view.cc",
-      "views/apps/app_dialog/app_local_block_dialog_view.h",
-      "views/apps/app_dialog/app_pause_dialog_view.cc",
-      "views/apps/app_dialog/app_pause_dialog_view.h",
-      "views/apps/app_dialog/app_uninstall_dialog_view.cc",
-      "views/apps/app_dialog/app_uninstall_dialog_view.h",
       "views/apps/chrome_app_window_client_views_chromeos.cc",
       "views/apps/chrome_native_app_window_views_aura_ash.cc",
       "views/apps/chrome_native_app_window_views_aura_ash.h",
@@ -2458,6 +2448,8 @@ static_library("ui") {
       "//chrome/browser/ui/ash/user_education",
       "//chrome/browser/ui/ash/wallpaper",
       "//chrome/browser/ui/ash/wm",
+      "//chrome/browser/ui/views/apps/app_dialog",
+      "//chrome/browser/ui/views/apps/app_dialog:impl",
       "//chrome/browser/ui/views/bruschetta",
       "//chrome/browser/ui/views/crostini",
       "//chrome/browser/ui/views/mahi",
@@ -2963,6 +2955,12 @@ static_library("ui") {
       "//chrome/browser/ui/webui/nearby_share",
       "//chrome/browser/ui/webui/signin/ash",
       "//chrome/browser/ash/arc:arc_util_impl",
+
+      # TODO(crbug.com/432061436) Remove this dependency when the following
+      # headers get componentized:
+      # - c/b/ui/views/chrome_layout_provider.h
+      # - c/b/ui/views/chrome_typography.h
+      "//chrome/browser/ui/views/apps/app_dialog:impl",
     ]
 
     if (is_chrome_branded) {

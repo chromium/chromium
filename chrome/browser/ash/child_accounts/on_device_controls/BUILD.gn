@@ -79,6 +79,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/child_accounts/apps",
     "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/views/apps/app_dialog",
     "//chrome/test:test_support",
     "//chromeos/ash/components/system",
     "//chromeos/ash/experiences/arc:arc_test_support",
