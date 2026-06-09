@@ -4540,8 +4540,15 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
+  std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
+      send_tab_to_self::GetEntryPointDisplayReason(embedder_web_contents_);
+  if (!reason) {
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfEnhancedDesktopUI)) {
+          send_tab_to_self::kSendTabToSelfEnhancedDesktopUI) &&
+      *reason == send_tab_to_self::EntryPointDisplayReason::kOfferFeature) {
     send_tab_to_self_submenu_delegate_ =
         std::make_unique<send_tab_to_self::SendTabToSelfContextMenuDelegate>(
             embedder_web_contents_);

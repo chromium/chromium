@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 
+#include <ostream>
+#include <tuple>
+
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -14,12 +18,14 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
+#include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
@@ -39,7 +45,9 @@
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/test/fake_data_type_controller_delegate.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
@@ -54,6 +62,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 
 namespace send_tab_to_self {
@@ -93,8 +102,6 @@ class TestSendTabToSelfModelObserver : public SendTabToSelfModelObserver {
   base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
       observation_{this};
 };
-
-}  // namespace
 
 class SendTabToSelfBubbleControllerBrowserTest : public SigninBrowserTestBase {
  public:
@@ -620,5 +627,97 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   EXPECT_FALSE(controller->IsBubbleShown());
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+const char* DisplayReasonToString(EntryPointDisplayReason reason) {
+  switch (reason) {
+    case EntryPointDisplayReason::kOfferFeature:
+      return "OfferFeature";
+    case EntryPointDisplayReason::kOfferSignIn:
+      return "OfferSignIn";
+    case EntryPointDisplayReason::kInformNoTargetDevice:
+      return "InformNoTargetDevice";
+  }
+}
+
+[[maybe_unused]] std::ostream& operator<<(std::ostream& os,
+                                          EntryPointDisplayReason reason) {
+  return os << DisplayReasonToString(reason);
+}
+
+class SendTabToSelfContextMenuParamsTest
+    : public SendTabToSelfBubbleControllerBrowserTest,
+      public ::testing::WithParamInterface<
+          std::tuple<bool, EntryPointDisplayReason>> {
+ public:
+  SendTabToSelfContextMenuParamsTest() {
+    feature_list_.InitWithFeatureState(kSendTabToSelfEnhancedDesktopUI,
+                                       std::get<0>(GetParam()));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(SendTabToSelfContextMenuParamsTest, VerifyMenuType) {
+  const bool enhanced_ui_enabled = std::get<0>(GetParam());
+  const EntryPointDisplayReason display_reason = std::get<1>(GetParam());
+  const bool expect_submenu =
+      enhanced_ui_enabled &&
+      display_reason == EntryPointDisplayReason::kOfferFeature;
+
+#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // The 'Offer Sign-In' flow is only relevant on platforms with DICE support.
+  // Skip this parameter on other platforms (like ChromeOS) where this state
+  // is not applicable in production.
+  if (display_reason == EntryPointDisplayReason::kOfferSignIn) {
+    GTEST_SKIP() << "Sign-in promo not supported on this platform.";
+  }
+#endif
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL("about:blank")));
+
+  StubSendTabToSelfSyncService* stts_sync_service = GetStubSyncService();
+  ASSERT_TRUE(stts_sync_service);
+  stts_sync_service->SetEntryPointDisplayReason(display_reason);
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      TestRenderViewContextMenu::Create(web_contents, GURL("about:blank"));
+
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu->GetMenuModelAndItemIndex(IDC_SEND_TAB_TO_SELF);
+  ASSERT_TRUE(model_and_index.has_value());
+  ui::MenuModel* model = model_and_index->first;
+  size_t index = model_and_index->second;
+
+  if (expect_submenu) {
+    EXPECT_EQ(model->GetTypeAt(index), ui::MenuModel::TYPE_SUBMENU);
+    EXPECT_NE(model->GetSubmenuModelAt(index), nullptr);
+  } else {
+    EXPECT_EQ(model->GetTypeAt(index), ui::MenuModel::TYPE_COMMAND);
+    EXPECT_FALSE(model->GetSubmenuModelAt(index));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SendTabToSelfContextMenuParamsTest,
+    ::testing::Combine(
+        ::testing::Bool(),  // enhanced_ui_enabled
+        ::testing::Values(EntryPointDisplayReason::kOfferFeature,
+                          EntryPointDisplayReason::kOfferSignIn,
+                          EntryPointDisplayReason::kInformNoTargetDevice)),
+    [](const ::testing::TestParamInfo<
+        SendTabToSelfContextMenuParamsTest::ParamType>& info) {
+      const bool enhanced_ui_enabled = std::get<0>(info.param);
+      const EntryPointDisplayReason display_reason = std::get<1>(info.param);
+      return base::StringPrintf(
+          "%s_%s",
+          enhanced_ui_enabled ? "EnhancedUiEnabled" : "EnhancedUiDisabled",
+          DisplayReasonToString(display_reason));
+    });
+
+}  // namespace
 
 }  // namespace send_tab_to_self
