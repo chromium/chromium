@@ -89,6 +89,8 @@ class EmbeddedPermissionPrompt
   void CloseView();
   void CloseViewAndScrim();
 
+  void FocusThenClose();
+
   void FinalizePrompt();
   void SendDelegateAction(Action action);
 

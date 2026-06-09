@@ -87,9 +87,10 @@ EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
   params.bounds = web_contents->GetContainerBounds();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.accept_events = true;
-  params.activatable = should_dismiss_on_click
-                           ? views::Widget::InitParams::Activatable::kYes
-                           : views::Widget::InitParams::Activatable::kNo;
+  // The scrim should not be activatable to prevent it from stealing
+  // OS-level focus when clicked, which ensures focus remains on the
+  // browser window during prompt dismissal.
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.name = kWidgetName;
   auto widget = std::make_unique<views::Widget>();
   widget->Init(std::move(params));
