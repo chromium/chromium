@@ -17442,7 +17442,6 @@ from previous Chrome versions.
   <int value="1006608931" label="ArcEnableUnifiedAudioFocus:disabled"/>
   <int value="1007269704" label="SwapNewTabAndNewTabInGroupAndroid:disabled"/>
   <int value="1007444341" label="enable-prefixed-encrypted-media"/>
-  <int value="1008809847" label="PrivacySandboxInternalsDevUI:disabled"/>
   <int value="1009252543" label="BlinkExtension:disabled"/>
   <int value="1009396667" label="(Obsolete) prefer-dcheck"/>
   <int value="1009437086" label="AutofillEnableOfferNotification:disabled"/>
@@ -18459,7 +18458,6 @@ from previous Chrome versions.
   <int value="1325459977" label="HandwritingGestureEditing:disabled"/>
   <int value="1326063771" label="ChromeWebuiRefresh2023:disabled"/>
   <int value="1326530782" label="AutofillParseAsync:enabled"/>
-  <int value="1326676281" label="PrivacySandboxInternalsDevUI:enabled"/>
   <int value="1327883321"
       label="OmniboxHistoryQuickProviderAllowMidwordContinuations:enabled"/>
   <int value="1327928774" label="ClipboardHistorySimpleRender:enabled"/>

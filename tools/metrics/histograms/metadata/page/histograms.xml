@@ -512,7 +512,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".print-management"/>
   <variant name=".privacy-sandbox-base-dialog"/>
   <variant name=".privacy-sandbox-dialog"/>
-  <variant name=".privacy-sandbox-internals"/>
   <variant name=".private-aggregation-internals"/>
   <variant name=".private-ai-internals"/>
   <variant name=".process-internals"/>
