@@ -67,7 +67,7 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
     public float getHalfHeightRatio() {
         return Math.min(
                 getSheetContentHeight() / (float) mBottomSheetController.getContainerHeight(),
-                0.5f);
+                0.9f);
     }
 
     @Override

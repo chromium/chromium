@@ -79,7 +79,7 @@ public class AtMemoryFlyoutViewRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(1)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
