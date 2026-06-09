@@ -174,6 +174,15 @@ class ChooseFileJavaScriptFeatureTest
     web::test::LoadHtml(html, web_state());
   }
 
+  std::optional<ChooseFileEvent> ResetLastChooseFileEvent() {
+    if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
+      ChooseFileTabHelper* tab_helper =
+          ChooseFileTabHelper::FromWebState(web_state());
+      return tab_helper ? tab_helper->ResetLastChooseFileEvent() : std::nullopt;
+    }
+    return ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent();
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ChooseFileJavaScriptFeature> java_script_feature_;
   web::ScopedTestingWebClient web_client_;
@@ -449,14 +458,13 @@ TEST_P(ChooseFileJavaScriptFeatureTest,
           ASSERT_TRUE(
               web::test::TapWebViewElementWithId(web_state(), "choose_file"));
           const std::optional<ChooseFileEvent> event =
-              ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent();
+              ResetLastChooseFileEvent();
           ASSERT_TRUE(event.has_value());
           EXPECT_EQ(expected_file_extensions, event->accept_file_extensions);
           EXPECT_EQ(multiple_attribute, event->allow_multiple_files);
           EXPECT_EQ(only_allow_directory, event->only_allow_directory);
           EXPECT_EQ(has_file_attributes, event->has_selected_file);
-          EXPECT_FALSE(
-              ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent());
+          EXPECT_FALSE(ResetLastChooseFileEvent());
         }
       }
     }
@@ -499,14 +507,13 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestResetLastChooseFileEventMimeTypes) {
           ASSERT_TRUE(
               web::test::TapWebViewElementWithId(web_state(), "choose_file"));
           const std::optional<ChooseFileEvent> event =
-              ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent();
+              ResetLastChooseFileEvent();
           ASSERT_TRUE(event.has_value());
           EXPECT_EQ(expected_mime_types, event->accept_mime_types);
           EXPECT_EQ(multiple_attribute, event->allow_multiple_files);
           EXPECT_EQ(only_allow_directory, event->only_allow_directory);
           EXPECT_EQ(has_file_attributes, event->has_selected_file);
-          EXPECT_FALSE(
-              ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent());
+          EXPECT_FALSE(ResetLastChooseFileEvent());
         }
       }
     }
@@ -560,12 +567,10 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestResetLastChooseFileEventCapture) {
         /*already_has_file=*/false, /*has_webkitdirectory=*/false,
         capture_attribute ? base::SysUTF8ToNSString(*capture_attribute) : nil);
     ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), "choose_file"));
-    const std::optional<ChooseFileEvent> event =
-        ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent();
+    const std::optional<ChooseFileEvent> event = ResetLastChooseFileEvent();
     ASSERT_TRUE(event.has_value());
     EXPECT_EQ(expected_capture_type, event->capture);
-    EXPECT_FALSE(
-        ChooseFileEventHolder::GetInstance()->ResetLastChooseFileEvent());
+    EXPECT_FALSE(ResetLastChooseFileEvent());
   }
 }
 
