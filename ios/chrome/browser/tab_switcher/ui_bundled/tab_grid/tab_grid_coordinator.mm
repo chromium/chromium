@@ -1405,6 +1405,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       initWithURLs:URLs
           scenario:SharingScenario::TabGridSelectionMode];
 
+  [self.sharingCoordinator stop];
   self.sharingCoordinator =
       [[SharingCoordinator alloc] initWithBaseViewController:_viewController
                                                      browser:self.regularBrowser
@@ -1574,6 +1575,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   SharingParams* params = [[SharingParams alloc] initWithURL:URL
                                                        title:title
                                                     scenario:scenario];
+  [self.sharingCoordinator stop];
   self.sharingCoordinator =
       [[SharingCoordinator alloc] initWithBaseViewController:_viewController
                                                      browser:self.regularBrowser

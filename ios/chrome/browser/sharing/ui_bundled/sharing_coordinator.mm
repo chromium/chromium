@@ -296,8 +296,10 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
   [self.download cancelDownload:nil];
   [self stopDisplayDownloadOverlay];
   if (_webStateListObserverBridge) {
-    self.browser->GetWebStateList()->RemoveObserver(
-        _webStateListObserverBridge.get());
+    if (self.browser) {
+      self.browser->GetWebStateList()->RemoveObserver(
+          _webStateListObserverBridge.get());
+    }
     _webStateListObserverBridge.reset();
   }
   [self activityServiceDidEndPresenting];
