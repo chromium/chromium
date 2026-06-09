@@ -22,6 +22,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -38,6 +39,9 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/common/content_switches.h"
+#include "media/base/media_switches.h"
+#include "media/base/video_frame.h"
+#include "media/base/video_frame_converter.h"
 #include "media/base/video_util.h"
 #include "media/capture/content/capture_resolution_chooser.h"
 #include "media/webrtc/webrtc_features.h"
@@ -88,21 +92,6 @@ const char* DesktopMediaTypeToString(DesktopMediaID::Type type) {
     default:
       return "UNKNOWN";
   }
-}
-
-webrtc::DesktopRect ComputeLetterboxRect(
-    const webrtc::DesktopSize& max_size,
-    const webrtc::DesktopSize& source_size) {
-  gfx::Rect result = media::ComputeLetterboxRegion(
-      gfx::Rect(0, 0, max_size.width(), max_size.height()),
-      gfx::Size(source_size.width(), source_size.height()));
-  return webrtc::DesktopRect::MakeLTRB(
-      result.x(), result.y(), result.right(), result.bottom());
-}
-
-bool IsFrameUnpackedOrInverted(webrtc::DesktopFrame* frame) {
-  return frame->stride() !=
-      frame->size().width() * webrtc::DesktopFrame::kBytesPerPixel;
 }
 
 void BindWakeLockProvider(
@@ -225,6 +214,22 @@ class ScopedWebrtcDebugLogging {
 };
 
 DesktopCaptureDevice::Client* ScopedWebrtcDebugLogging::g_client_ = nullptr;
+
+webrtc::DesktopRect ComputeLetterboxRect(
+    const webrtc::DesktopSize& max_size,
+    const webrtc::DesktopSize& source_size) {
+  gfx::Rect result = media::ComputeLetterboxRegion(
+      gfx::Rect(0, 0, max_size.width(), max_size.height()),
+      gfx::Size(source_size.width(), source_size.height()));
+  return webrtc::DesktopRect::MakeLTRB(result.x(), result.y(), result.right(),
+                                       result.bottom());
+}
+
+bool IsFrameUnpackedOrInverted(webrtc::DesktopFrame* frame) {
+  return frame->stride() !=
+         frame->size().width() * webrtc::DesktopFrame::kBytesPerPixel;
+}
+
 }  // namespace
 
 media::VideoPixelFormat FourCCToVideoPixelFormat(webrtc::FourCC fourcc) {
@@ -275,6 +280,11 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   void OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) override;
+
+  void OnCaptureResultZeroCopy(const bool frame_is_refresh,
+                               std::unique_ptr<webrtc::DesktopFrame> frame);
+  void OnCaptureResultLegacy(const bool frame_is_refresh,
+                             std::unique_ptr<webrtc::DesktopFrame> frame);
 
   // Method that is scheduled on |task_runner_| to be called on regular interval
   // to capture a frame.
@@ -330,26 +340,27 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   // Records time of last call to CaptureFrame.
   base::TimeTicks capture_start_time_;
 
-  // Size of frame most recently captured from the source.
-  webrtc::DesktopSize last_frame_size_;
+  // Size of frame most recently captured from the source (zero-copy path).
+  gfx::Size last_frame_size_;
+
+  // Size of frame most recently captured from the source (legacy path).
+  webrtc::DesktopSize legacy_last_frame_size_;
 
   // DesktopFrame into which captured frames are down-scaled and/or letterboxed,
-  // depending upon the caller's requested capture capabilities. If frames can
-  // be returned to the caller directly then this is NULL.
-  // TODO(https://crbug.com/1444340): should NOT be used to store frames
-  // received from the underlying capturer since it can cause cursor flickering
-  // if the frame is a DesktopFrameWithCursor. The output frame is black when
-  // |output_frame_is_black_| is set. This can happen when a minimized window
-  // is shared.
+  // depending upon the caller's requested capture capabilities (legacy path).
   std::unique_ptr<webrtc::DesktopFrame> output_frame_;
 
-  // True when the |output_frame_->data()| contains only zeros. Tracking this is
-  // an optimization to avoid re-clearing |output_frame_| during stretches where
-  // we are only sending black frames.
+  // True when the |output_frame_->data()| contains only zeros (legacy path).
   bool output_frame_is_black_ = false;
 
-  // Used for conversion to I420 before scaling.
+  // Used for conversion to I420 before scaling (legacy path).
   std::vector<uint8_t> temp_buffer_;
+
+  // Used for conversion to I420 and scaling (zero-copy path).
+  media::VideoFrameConverter video_frame_converter_;
+
+  // Used as a fallback if the original frame cannot be wrapped directly.
+  std::unique_ptr<webrtc::BasicDesktopFrame> unpacked_frame_;
 
   // Determines the size of frames to deliver to the |client_|.
   media::CaptureResolutionChooser resolution_chooser_;
@@ -399,8 +410,6 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   // filter which results in an average refresh rate in `rrf_rate_`.
   base::TimeTicks last_rrf_time_;
 
-  std::unique_ptr<webrtc::BasicDesktopFrame> black_frame_;
-
   // TODO(jiayl): Remove wake_lock_ when there is an API to keep the
   // screen from sleeping for the drive-by web.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
@@ -427,7 +436,8 @@ DesktopCaptureDevice::Core::~Core() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   client_.reset();
   output_frame_.reset();
-  last_frame_size_.set(0, 0);
+  last_frame_size_.SetSize(0, 0);
+  legacy_last_frame_size_.set(0, 0);
   desktop_capturer_.reset();
 }
 
@@ -583,13 +593,202 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(media::kZeroCopyDesktopCapture)) {
+    OnCaptureResultZeroCopy(frame_is_refresh, std::move(frame));
+  } else {
+    OnCaptureResultLegacy(frame_is_refresh, std::move(frame));
+  }
+}
+
+void DesktopCaptureDevice::Core::OnCaptureResultZeroCopy(
+    const bool frame_is_refresh,
+    std::unique_ptr<webrtc::DesktopFrame> frame) {
+  // If the frame size has changed, determine the new output size.
+  const gfx::Size frame_size =
+      gfx::Size(frame->size().width(), frame->size().height());
+  if (last_frame_size_ != frame_size) {
+    resolution_chooser_.SetSourceSize(frame_size);
+    last_frame_size_ = frame_size;
+  }
+  // Align to 2x2 pixel boundaries, as required by OnIncomingCapturedData() so
+  // it can convert the frame to I420 format.
+  gfx::Size output_size(resolution_chooser_.capture_size().width() & ~1,
+                        resolution_chooser_.capture_size().height() & ~1);
+  if (output_size.IsEmpty()) {
+    // Even RESOLUTION_POLICY_ANY_WITHIN_LIMIT is used, a non-empty size should
+    // be guaranteed.
+    output_size = gfx::Size(2, 2);
+  }
+  Client::Buffer buffer;
+  auto reservation_result_code = client_->ReserveOutputBuffer(
+      output_size, media::PIXEL_FORMAT_I420, 0, &buffer, nullptr, nullptr);
+
+  if (reservation_result_code != Client::ReserveResult::kSucceeded) {
+    client_->OnError(media::VideoCaptureError::
+                         kDesktopCaptureDeviceWebrtcDesktopCapturerHasFailed,
+                     FROM_HERE, "Failed to reserve output buffer.");
+    return;
+  }
+
+  base::TimeTicks now = NowTicks();
+  if (first_ref_time_.is_null()) {
+    first_ref_time_ = now;
+  }
+
+  // I420 requires frames to have even dimensions. While we can crop larger
+  // frames (e.g. 1281x767) to an even amount and output them with valid
+  // content, frames that have 1 or 0 as a dimension do not have valid content
+  // and we thus leave output_rect empty.
+  // While we still want to send these zero area frames downstream to keep the
+  // video stream alive, they do not have valid content and we can skip scaling.
+  const bool has_valid_content =
+      frame->size().width() > 1 && frame->size().height() > 1;
+  gfx::Rect output_rect;
+  if (has_valid_content) {
+    output_rect = media::ComputeLetterboxRegionForI420(gfx::Rect(output_size),
+                                                       frame_size);
+  }
+
+  std::unique_ptr<media::VideoCaptureBufferHandle> buffer_access =
+      buffer.handle_provider->GetHandleForInProcessAccess();
+  scoped_refptr<media::VideoFrame> dest_frame =
+      media::VideoFrame::WrapExternalData(
+          media::PIXEL_FORMAT_I420, output_size,
+          output_rect.IsEmpty()
+              ? gfx::Rect(output_size.width(), output_size.height())
+              : output_rect,
+          output_size, buffer_access->data(), now - first_ref_time_);
+
+  if (!dest_frame) {
+    client_->OnError(media::VideoCaptureError::
+                         kDesktopCaptureDeviceWebrtcDesktopCapturerHasFailed,
+                     FROM_HERE, "Failed to wrap output buffer.");
+    return;
+  }
+
+  // Clear the whole frame (or letterboxed areas) to I420 black.
+  media::LetterboxVideoFrame(dest_frame.get(), output_rect);
+
+  // If the output rect is empty, we can completely skip scaling and cropping.
+  if (!output_rect.IsEmpty()) {
+    // Scaling frame with odd dimensions to even dimensions will cause
+    // blurring. See https://crbug.com/737278.
+    // Since chromium always requests frames to be with even dimensions,
+    // i.e. for I420 format and video codec, always cropping captured frame
+    // to even dimensions.
+    if (frame_size.width() % 2 == 1 || frame_size.height() % 2 == 1) {
+      frame = webrtc::CreateCroppedDesktopFrame(
+          std::move(frame),
+          webrtc::DesktopRect::MakeWH(frame_size.width() & ~1,
+                                      frame_size.height() & ~1));
+    }
+    DCHECK(frame);
+
+    const gfx::Size src_size(frame->size().width(), frame->size().height());
+    // A negative stride means the frame is inverted (bottom-to-top). We handle
+    // unpacked or inverted frames by making a fallback copy. CopyPixelsFrom
+    // will properly invert the frame and remove padding.
+    // Ideally WebRTC would return frames in a consistent pixel order.
+    int32_t src_stride = frame->stride();
+    base::span<const uint8_t> src_data;
+
+    // TODO(bugs.webrtc.org/519632883): Add span accessors for
+    // webrtc::DesktopFrame and friends.
+    if (src_stride < 0) {
+      if (!unpacked_frame_ || !unpacked_frame_->size().equals(frame->size())) {
+        unpacked_frame_ = std::make_unique<webrtc::BasicDesktopFrame>(
+            frame->size(), frame->pixel_format());
+      }
+      unpacked_frame_->CopyPixelsFrom(
+          *frame, webrtc::DesktopVector(),
+          webrtc::DesktopRect::MakeSize(frame->size()));
+      src_stride = unpacked_frame_->stride();
+      // SAFETY: unpacked_frame_ is guaranteed to have a positive stride and
+      // hold stride * height bytes.
+      src_data = UNSAFE_BUFFERS(base::span<const uint8_t>(
+          unpacked_frame_->data(),
+          base::checked_cast<size_t>(src_stride * src_size.height())));
+    } else {
+      // SAFETY: frame has a positive stride and holds stride * height bytes.
+      src_data = UNSAFE_BUFFERS(base::span<const uint8_t>(
+          frame->data(),
+          base::checked_cast<size_t>(src_stride * src_size.height())));
+    }
+
+    scoped_refptr<media::VideoFrame> src_frame;
+    if (src_stride == src_size.width() * webrtc::DesktopFrame::kBytesPerPixel) {
+      src_frame = media::VideoFrame::WrapExternalData(
+          FourCCToVideoPixelFormat(frame->pixel_format()), src_size,
+          gfx::Rect(src_size), src_size, src_data, base::TimeDelta());
+    } else {
+      const std::optional<media::VideoFrameLayout> layout =
+          media::VideoFrameLayout::CreateWithStrides(
+              FourCCToVideoPixelFormat(frame->pixel_format()), src_size,
+              {base::checked_cast<size_t>(src_stride)});
+      if (layout) {
+        src_frame = media::VideoFrame::WrapExternalDataWithLayout(
+            *layout, gfx::Rect(src_size), src_size, src_data,
+            base::TimeDelta());
+      }
+    }
+
+    if (src_frame) {
+      media::EncoderStatus status =
+          video_frame_converter_.ConvertAndScale(*src_frame, *dest_frame);
+      if (!status.is_ok()) {
+        DLOG(ERROR) << "ConvertAndScale failed: " << status.message();
+      }
+    }
+  }
+
+  // Set color space correctly.
+  gfx::ColorSpace frame_color_space;
+  if (!frame->icc_profile().empty()) {
+    gfx::ICCProfile icc_profile = gfx::ICCProfile::FromData(
+        frame->icc_profile().data(), frame->icc_profile().size());
+    frame_color_space = icc_profile.GetColorSpace();
+    // Conversion ARGB->I420 will switch the color space.
+    frame_color_space = frame_color_space.GetWithMatrixAndRange(
+        gfx::ColorSpace::MatrixID::SMPTE170M,
+        gfx::ColorSpace::RangeID::LIMITED);
+  } else {
+    frame_color_space = dest_frame->ColorSpace();
+  }
+
+  // Note: `metadata` is only populated for "additional fields" here since
+  // OnIncomingCapturedBufferExt() takes color space and several other
+  // video frame properties as explicit, separate parameters.
+  media::VideoFrameMetadata metadata;
+  metadata.source_size =
+      gfx::Size(frame->size().width(), frame->size().height());
+  metadata.device_scale_factor = frame->device_scale_factor();
+
+  // Explicitly reset dest_frame and buffer_access before moving buffer to
+  // avoid dangling pointers.
+  dest_frame.reset();
+  buffer_access.reset();
+
+  client_->OnIncomingCapturedBufferExt(
+      std::move(buffer),
+      media::VideoCaptureFormat(
+          gfx::Size(output_size.width(), output_size.height()),
+          requested_frame_rate_, media::PIXEL_FORMAT_I420),
+      frame_color_space, now, now - first_ref_time_, std::nullopt,
+      gfx::Rect(output_size.width(), output_size.height()), metadata);
+
+  ScheduleNextCaptureFrame();
+}
+
+void DesktopCaptureDevice::Core::OnCaptureResultLegacy(
+    const bool frame_is_refresh,
+    std::unique_ptr<webrtc::DesktopFrame> frame) {
   // If the frame size has changed, drop the output frame (if any), and
   // determine the new output size.
-  if (!last_frame_size_.equals(frame->size())) {
+  if (!legacy_last_frame_size_.equals(frame->size())) {
     output_frame_.reset();
     resolution_chooser_.SetSourceSize(
         gfx::Size(frame->size().width(), frame->size().height()));
-    last_frame_size_ = frame->size();
+    legacy_last_frame_size_ = frame->size();
   }
   // Align to 2x2 pixel boundaries, as required by OnIncomingCapturedData() so
   // it can convert the frame to I420 format.
