@@ -36,6 +36,9 @@ fuzzer_test("mojo_parse_message_fuzzer") {
     "//base",
     "//mojo/core/embedder",
   ]
+  if (is_android) {
+    deps += [ "//base/test:test_support" ]
+  }
   seed_corpus = "//mojo/public/tools/fuzzers/message_corpus"
 }
 
@@ -67,6 +70,9 @@ fuzzer_test("mojo_parse_message_proto_fuzzer") {
     "//mojo/core/embedder",
     "//third_party/libprotobuf-mutator",
   ]
+  if (is_android) {
+    deps += [ "//base/test:test_support" ]
+  }
   seed_corpus = "//mojo/public/tools/fuzzers/mojo_parse_message_proto_corpus"
 }
 

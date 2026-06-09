@@ -20,6 +20,10 @@
 #include "mojo/public/tools/fuzzers/suppress_validation_error_logging.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/test_support_android.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "base/at_exit.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -60,7 +64,15 @@ void FuzzMessage(const MojoFuzzerMessages& mojo_fuzzer_messages,
 // ThreadPool, because Mojo messages must be sent and processed from
 // TaskRunners.
 struct Environment {
-  Environment() : main_task_executor(base::MessagePumpType::UI) {
+  Environment() {
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, SingleThreadTaskExecutor with MessagePumpType::UI creates a
+    // UI message pump that does not support RunLoop::Run(). This installs a
+    // stub pump to allow it in tests.
+    base::InitAndroidTestMessageLoop();
+#endif
+    main_task_executor = std::make_unique<base::SingleThreadTaskExecutor>(
+        base::MessagePumpType::UI);
     base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
         "MojoParseMessageFuzzerProcess");
     mojo::core::Init();
@@ -73,7 +85,7 @@ struct Environment {
 #endif  // BUILDFLAG(IS_WIN)
 
   // Task executor to send and handle messages on.
-  base::SingleThreadTaskExecutor main_task_executor;
+  std::unique_ptr<base::SingleThreadTaskExecutor> main_task_executor;
 
   // Suppress mojo validation failure logs.
   mojo::internal::ScopedSuppressValidationErrorLoggingForTests log_suppression;
@@ -84,7 +96,7 @@ DEFINE_PROTO_FUZZER(const MojoFuzzerMessages& mojo_fuzzer_messages) {
   // Pass the data along to run on a SingleThreadTaskExecutor, and wait for it
   // to finish.
   base::RunLoop run;
-  env->main_task_executor.task_runner()->PostTask(
+  env->main_task_executor->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&FuzzMessage, mojo_fuzzer_messages, &run));
   run.Run();
 }
