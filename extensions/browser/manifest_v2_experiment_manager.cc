@@ -20,11 +20,9 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/pref_names.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -58,12 +56,6 @@ const char* GetHistogramManifestLocation(mojom::ManifestLocation location) {
       NOTREACHED();
   }
 }
-
-// Stores a bit for whether the extension has been disabled as part of the
-// MV2 deprecation.
-constexpr PrefMap kMV2DeprecationDidDisablePref = {
-    "mv2_deprecation_did_disable", PrefType::kBool,
-    PrefScope::kExtensionSpecific};
 
 class ManifestV2ExperimentManagerFactory
     : public BrowserContextKeyedServiceFactory {
@@ -212,16 +204,6 @@ void ManifestV2ExperimentManager::OnExtensionSystemReady() {
   DisableAffectedExtensions();
 
   EmitMetricsForProfileReady();
-
-  is_manager_ready_ = true;
-  on_manager_ready_callback_list_.Notify();
-}
-
-base::CallbackListSubscription
-ManifestV2ExperimentManager::RegisterOnManagerReadyCallback(
-    base::RepeatingClosure callback) {
-  CHECK(!is_manager_ready_);
-  return on_manager_ready_callback_list_.Add(std::move(callback));
 }
 
 void ManifestV2ExperimentManager::DisableAffectedExtensions() {
@@ -247,8 +229,6 @@ void ManifestV2ExperimentManager::DisableAffectedExtensions() {
     registrar->DisableExtension(
         extension->id(),
         {disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION});
-    extension_prefs()->SetBooleanPref(extension->id(),
-                                      kMV2DeprecationDidDisablePref, true);
   }
 }
 
@@ -284,11 +264,6 @@ void ManifestV2ExperimentManager::MaybeReEnableExtension(
     return;
   }
 
-  // Remove the bit that the extension was disabled by the MV2 deprecation,
-  // since it no longer is. This also ensures we don't count it as user-
-  // re-enabled, if it gets re-enabled below.
-  extension_prefs()->SetBooleanPref(extension.id(),
-                                    kMV2DeprecationDidDisablePref, false);
   // Remove the disable reason (possibly re-enabling the extension).
   ExtensionRegistrar::Get(browser_context_)
       ->RemoveDisableReasonAndMaybeEnable(

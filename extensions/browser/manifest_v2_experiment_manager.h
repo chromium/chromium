@@ -6,8 +6,6 @@
 #define EXTENSIONS_BROWSER_MANIFEST_V2_EXPERIMENT_MANAGER_H_
 
 #include "base/auto_reset.h"
-#include "base/callback_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -31,7 +29,6 @@ namespace extensions {
 class Extension;
 class ExtensionPrefs;
 class ScopedTestMV2Enabler;
-enum class MV2ExperimentStage;
 
 // The central class responsible for managing experiments related to the MV2
 // deprecation.
@@ -96,14 +93,6 @@ class ManifestV2ExperimentManager : public KeyedService,
   // the current MV2 deprecation `experiment_stage_`..
   void MarkNoticeAsAcknowledgedGlobally();
 
-  // Registers `callback` to run when this has finished its initialization
-  // steps. `is_manager_ready_` must be false for this to be called.
-  base::CallbackListSubscription RegisterOnManagerReadyCallback(
-      base::RepeatingClosure callback);
-
-  // Returns whether this has finished its initialization steps.
-  bool is_manager_ready() { return is_manager_ready_; }
-
   // Helpers to call internal methods directly for testing purposes. These are
   // useful to have an extension that's installed in the body of a test get
   // disabled, since this normally only happens on startup.
@@ -157,12 +146,6 @@ class ManifestV2ExperimentManager : public KeyedService,
   // The associated BrowserContext. Guaranteed to be safe to use since this is
   // a KeyedService for the context.
   raw_ptr<content::BrowserContext> browser_context_;
-
-  // Whether this class has finished its initialization steps.
-  bool is_manager_ready_ = false;
-
-  // Callback to be run when this has finished its initialization steps.
-  base::RepeatingCallbackList<void()> on_manager_ready_callback_list_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
