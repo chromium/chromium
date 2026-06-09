@@ -11,6 +11,7 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "cc/paint/color_filter.h"
 #include "cc/paint/draw_image.h"
@@ -554,10 +555,8 @@ void PaintOpWriter::Write(const gfx::HDRMetadata& hdr_metadata) {
 }
 
 void PaintOpWriter::Write(const SkString& sk_string) {
-  size_t num_bytes = sk_string.size();
-  WriteSize(num_bytes);
-  WriteData(UNSAFE_TODO(base::span<const uint8_t>(
-      reinterpret_cast<const uint8_t*>(sk_string.data()), num_bytes)));
+  WriteSize(sk_string.size());
+  WriteData(base::as_byte_span(sk_string));
 }
 
 void PaintOpWriter::Write(

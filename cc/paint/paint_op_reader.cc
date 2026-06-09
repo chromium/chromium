@@ -24,6 +24,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "cc/base/features.h"
@@ -183,16 +184,15 @@ void PaintOpReader::ReadSimple(T* val) {
   AssertFieldAlignment();
 }
 
-uint8_t* PaintOpReader::CopyScratchSpace(size_t bytes) {
+base::span<uint8_t> PaintOpReader::CopyScratchSpace(size_t bytes) {
   DCHECK(SkIsAlign4(reinterpret_cast<uintptr_t>(remaining_.data())));
 
   if (options_.scratch_buffer.size() < bytes) {
     options_.scratch_buffer.resize(bytes);
   }
-  base::span(options_.scratch_buffer)
-      .first(bytes)
-      .copy_from(remaining_.first(bytes));
-  return options_.scratch_buffer.data();
+  auto result = base::span(options_.scratch_buffer).first(bytes);
+  result.copy_from(remaining_.first(bytes));
+  return result;
 }
 
 void PaintOpReader::ReadData(base::span<uint8_t> data) {
@@ -327,10 +327,10 @@ void PaintOpReader::Read(SkPath* path) {
       if (!valid_)
         return;
 
-      auto* scratch = CopyScratchSpace(path_bytes);
+      base::span<uint8_t> scratch = CopyScratchSpace(path_bytes);
       size_t bytes_read = 0;
       std::optional<SkPath> deserialized_path =
-          SkPath::ReadFromMemory(scratch, path_bytes, &bytes_read);
+          SkPath::ReadFromMemory(scratch.data(), scratch.size(), &bytes_read);
 
       if (bytes_read == 0u || !deserialized_path) {
         SetInvalid(DeserializationError::kSkPathReadFromMemoryFailure);
@@ -580,8 +580,8 @@ void PaintOpReader::Read(sk_sp<SkColorSpace>* color_space) {
   if (!valid_ || size == 0)
     return;
 
-  auto* scratch = CopyScratchSpace(size);
-  *color_space = SkColorSpace::Deserialize(scratch, size);
+  base::span<uint8_t> scratch = CopyScratchSpace(size);
+  *color_space = SkColorSpace::Deserialize(scratch.data(), scratch.size());
   // If this had non-zero bytes, it should be a valid color space.
   if (!color_space)
     SetInvalid(DeserializationError::kSkColorSpaceDeserializeFailure);
@@ -982,8 +982,8 @@ void PaintOpReader::Read(gfx::HDRMetadata* hdr_metadata) {
   if (!valid_ || size == 0) {
     return;
   }
-  uint8_t* scratch = CopyScratchSpace(size);
-  if (!gfx::mojom::HDRMetadata::Deserialize(scratch, size, hdr_metadata)) {
+  base::span<uint8_t> scratch = CopyScratchSpace(size);
+  if (!gfx::mojom::HDRMetadata::Deserialize(scratch, hdr_metadata)) {
     SetInvalid(DeserializationError::kHdrMetadataDeserializeFailure);
   }
   DidRead(size);
@@ -1041,8 +1041,8 @@ void PaintOpReader::Read(SkString* sk_string) {
   if (!valid_ || size == 0) {
     return;
   }
-  uint8_t* scratch = CopyScratchSpace(size);
-  *sk_string = SkString(reinterpret_cast<char*>(scratch), size);
+  base::span<uint8_t> scratch = CopyScratchSpace(size);
+  *sk_string = SkString(base::as_string_view(scratch));
   DidRead(size);
 }
 

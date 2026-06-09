@@ -363,7 +363,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   size_t Read(std::optional<PaintRecord>* record);
 
   void Read(SkRegion* region);
-  uint8_t* CopyScratchSpace(size_t bytes);
+  base::span<uint8_t> CopyScratchSpace(size_t bytes);
   void DidRead(size_t bytes_read);
 
   template <typename T>
