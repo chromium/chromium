@@ -1,4 +1,3 @@
-try/linux-blink-rel
 try/mac12.0-blink-rel
 try/mac12.0.arm64-blink-rel
 try/mac13-blink-rel

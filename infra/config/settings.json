@@ -18,20 +18,12 @@
             "description": "beta/stable",
             "gardener_rotation": "chrome_browser_release"
         },
-        "ios": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
-        },
-        "linux": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
-        },
         "mac": {
-            "description": "beta/stable",
+            "description": "beta/extended stable",
             "gardener_rotation": "chrome_browser_release"
         },
         "windows": {
-            "description": "beta/stable",
+            "description": "beta/extended stable",
             "gardener_rotation": "chrome_browser_release"
         }
     }
