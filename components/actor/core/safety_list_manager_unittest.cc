@@ -626,6 +626,67 @@ TEST_P(SafetyListManagerTest, Find) {
   }
 }
 
+TEST_P(SafetyListManagerTest, Find_SameOrigin) {
+  const struct {
+    std::string_view desc;
+    std::string_view json;
+    Decision expected;
+  } kTestCases[] = {
+      {
+          "no wildcards",
+          R"json(
+            {
+              "navigation_blocked": [
+                { "from": "a.com", "to": "a.com" }
+              ]
+            }
+          )json",
+          ExpectedBlocklistDecision(),
+      },
+      {
+          "wildcard source",
+          R"json(
+            {
+              "navigation_blocked": [
+                { "from": "*", "to": "a.com" }
+              ]
+            }
+          )json",
+          ExpectedBlocklistDecision(),
+      },
+      {
+          "wildcard destination",
+          R"json(
+            {
+              "navigation_blocked": [
+                { "from": "a.com", "to": "*" }
+              ]
+            }
+          )json",
+          ExpectedBlocklistDecision(),
+      },
+      {
+          "all wildcards",
+          R"json(
+            {
+              "navigation_blocked": [
+                { "from": "*", "to": "*" }
+              ]
+            }
+          )json",
+          ExpectedBlocklistDecision(),
+      },
+  };
+
+  GURL url("https://a.com");
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+    manager().ParseSafetyLists(test_case.json);
+    EXPECT_EQ(manager().Find(url, url), test_case.expected);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All, SafetyListManagerTest, testing::Bool());
 
 }  // namespace
