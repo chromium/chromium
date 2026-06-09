@@ -583,6 +583,10 @@ bool FocusManager::ProcessArrowKeyTraversal(const ui::KeyEvent& event) {
     return false;
   }
 
+  if (focused_view_ && focused_view_->GetGroup() != -1) {
+    return false;
+  }
+
   const ui::KeyboardCode reverse =
       base::i18n::IsRTL() ? ui::VKEY_RIGHT : ui::VKEY_LEFT;
   AdvanceFocus(key == reverse || key == ui::VKEY_UP);
