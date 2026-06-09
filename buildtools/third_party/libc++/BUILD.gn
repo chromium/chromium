@@ -122,7 +122,10 @@ if (use_clang_modules && use_unified_system_module) {
     }
 
     DarwinFoundation1_module("_DarwinFoundation1") {
-      public_deps = [ ":_AvailabilityInternal" ]
+      public_deps = [
+        ":_AvailabilityInternal",
+        ":_Builtin_float",
+      ]
     }
     DarwinFoundation1_module("_AvailabilityInternal") {
     }

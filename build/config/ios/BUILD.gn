@@ -159,7 +159,10 @@ config("ios_executable_flags") {
     framework_dirs = [ "$ios_sdk_path/System/Library/SubFrameworks" ]
   }
   if (xcode_version_int >= 2640 && use_lld) {
-    ldflags += [ "-Wl,--ignore-auto-link-option,UIUtilities" ]
+    ldflags += [
+      "-Wl,--ignore-auto-link-option,UIUtilities",
+      "-Wl,--ignore-auto-link-option,CoreAudioTypes",
+    ]
   }
 }
 
@@ -184,7 +187,10 @@ config("ios_extension_executable_flags") {
     framework_dirs = [ "$ios_sdk_path/System/Library/SubFrameworks" ]
   }
   if (xcode_version_int >= 2640 && use_lld) {
-    ldflags += [ "-Wl,--ignore-auto-link-option,UIUtilities" ]
+    ldflags += [
+      "-Wl,--ignore-auto-link-option,UIUtilities",
+      "-Wl,--ignore-auto-link-option,CoreAudioTypes",
+    ]
   }
 }
 
@@ -244,7 +250,10 @@ config("ios_shared_library_flags") {
     framework_dirs = [ "$ios_sdk_path/System/Library/SubFrameworks" ]
   }
   if (xcode_version_int >= 2640 && use_lld) {
-    ldflags += [ "-Wl,--ignore-auto-link-option,UIUtilities" ]
+    ldflags += [
+      "-Wl,--ignore-auto-link-option,UIUtilities",
+      "-Wl,--ignore-auto-link-option,CoreAudioTypes",
+    ]
   }
 }
 
@@ -276,7 +285,10 @@ config("xctest_config") {
   }
   if (xcode_version_int >= 2640) {
     if (use_lld) {
-      ldflags += [ "-Wl,--ignore-auto-link-option,UIUtilities" ]
+      ldflags += [
+        "-Wl,--ignore-auto-link-option,UIUtilities",
+        "-Wl,--ignore-auto-link-option,CoreAudioTypes",
+      ]
     }
     ldflags += [ "-Wl,-needed-lXCTestSwiftSupport,-lXCTestSwiftSupport" ]
   }
