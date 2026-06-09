@@ -1367,6 +1367,15 @@ const FeatureEntry::FeatureVariation kAutoSubmissionVariations[] = {
     {"Script Submit", kAutoSubmissionScriptSubmit, nullptr},
 };
 
+const FeatureEntry::FeatureParam kCrossDeviceSigninDefaultUrl[] = {
+    {"url", "https://www.google.com/chrome/go-mobile"},
+};
+
+const FeatureEntry::FeatureVariation kCrossDeviceSigninVariations[] = {
+    {"Default URL (https://www.google.com/chrome/go-mobile)",
+     kCrossDeviceSigninDefaultUrl, nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2831,7 +2840,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_VALUE_TYPE(kIOSMiniMapUniversalLink)},
     {"cross-device-signin", flag_descriptions::kCrossDeviceSigninName,
      flag_descriptions::kCrossDeviceSigninDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(switches::kCrossDeviceSignin)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kCrossDeviceSignin,
+                                    kCrossDeviceSigninVariations,
+                                    "CrossDeviceSignin")},
     {"use-ui-graphics-image-renderer-for-fallback-icons",
      flag_descriptions::kUseUIGraphicsImageRendererForFallbackIconsName,
      flag_descriptions::kUseUIGraphicsImageRendererForFallbackIconsDescription,
