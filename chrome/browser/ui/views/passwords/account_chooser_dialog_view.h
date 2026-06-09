@@ -35,6 +35,7 @@ class AccountChooserDialogView : public views::DialogDelegate,
 
   // DialogDelegate:
   bool Accept() override;
+  bool ShouldAllowKeyEventsDuringInputProtection() const override;
 
  private:
   std::u16string GetWindowTitle() const override;

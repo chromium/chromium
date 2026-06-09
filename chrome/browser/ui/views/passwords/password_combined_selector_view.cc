@@ -522,6 +522,11 @@ bool PasswordCombinedSelectorView::Accept() {
   return false;
 }
 
+bool PasswordCombinedSelectorView::ShouldAllowKeyEventsDuringInputProtection()
+    const {
+  return false;
+}
+
 void PasswordCombinedSelectorView::InitWindow() {
   auto main_view = std::make_unique<PasswordCombinedSelectorViewWrapper>();
   main_view->SetLayoutManager(std::make_unique<views::FillLayout>());
