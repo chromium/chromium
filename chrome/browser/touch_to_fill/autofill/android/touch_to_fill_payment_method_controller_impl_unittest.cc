@@ -192,6 +192,8 @@ class TouchToFillPaymentMethodControllerImplTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL("about:blank"));
+    FocusWebContentsOnMainFrame();
+    ASSERT_TRUE(web_contents()->GetFocusedFrame());
     autofill_manager().set_touch_to_fill_delegate(
         std::make_unique<MockTouchToFillDelegateAndroidImpl>(
             &autofill_manager()));

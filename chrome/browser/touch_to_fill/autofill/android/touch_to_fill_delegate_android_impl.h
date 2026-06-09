@@ -107,6 +107,8 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
       const TouchToFillDelegateAndroidImpl&) = delete;
   ~TouchToFillDelegateAndroidImpl() override;
 
+  BrowserAutofillManager& GetAutofillManager() override;
+
   // Checks whether TTF is eligible for the given web form data.
   // Only if this is true, the controller will show the view.
   bool IntendsToShowTouchToFill(FormGlobalId form_id,

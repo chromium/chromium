@@ -12,10 +12,12 @@
 #include "base/android/jni_string.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/autofill/payments/android_bnpl_ui_delegate.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -29,6 +31,7 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -46,8 +49,7 @@ TouchToFillDelegateAndroidImpl* GetDelegate(AutofillManager& manager) {
 
 TouchToFillPaymentMethodControllerImpl::TouchToFillPaymentMethodControllerImpl(
     ContentAutofillClient* autofill_client)
-    : content::WebContentsObserver(&autofill_client->GetWebContents()),
-      keyboard_suppressor_(
+    : keyboard_suppressor_(
           autofill_client,
           base::BindRepeating([](AutofillManager& manager) {
             return GetDelegate(manager) &&
@@ -70,6 +72,55 @@ TouchToFillPaymentMethodControllerImpl::
   ResetJavaObject();
 }
 
+content::WebContents* TouchToFillPaymentMethodControllerImpl::web_contents() {
+  return driver_factory_observation_.GetSource()->web_contents();
+}
+
+bool TouchToFillPaymentMethodControllerImpl::InitHideHelper(
+    TouchToFillDelegate& delegate) {
+  // The focused frame may be a different frame than the one the delegate is
+  // associated with. This happens in two scenarios:
+  // - With frame-transcending forms: the focused frame is subframe, whose
+  //   form has been flattened into an ancestor form.
+  // - With race conditions: while Autofill parsed the form, the focus may
+  //   have moved to another frame.
+  // We support the case where the focused frame is a descendant of the
+  // `delegate_`'s frame. We observe the focused frame's RenderFrameDeleted()
+  // event.
+  content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
+  content::RenderFrameHost* delegate_rfh =
+      static_cast<ContentAutofillDriver&>(
+          delegate.GetAutofillManager().driver())
+          .render_frame_host();
+
+  if (!rfh || !IsAncestorOf(delegate_rfh, rfh)) {
+    return false;
+  }
+
+  if (IsPointerLocked(web_contents())) {
+    return false;
+  }
+
+  // The bottom sheet steals the focus from the WebContents, so we cannot rely
+  // on AutofillPopupHideHelper's focus handling.
+  AutofillPopupHideHelper::HidingParams params = {
+      .hide_on_web_contents_lost_focus = false};
+
+  AutofillPopupHideHelper::HidingCallback hide_callback =
+      base::IgnoreArgs<SuggestionHidingReason>(
+          base::BindRepeating(&TouchToFillPaymentMethodControllerImpl::Hide,
+                              base::Unretained(this)));
+
+  // TODO(crbug.com/521318493): Should we hide TTF in the face of a PiP?
+  AutofillPopupHideHelper::PictureInPictureDetectionCallback
+      pip_detection_callback = base::BindRepeating([]() { return false; });
+
+  hide_helper_.emplace(web_contents(), rfh->GetGlobalId(), std::move(params),
+                       std::move(hide_callback),
+                       std::move(pip_detection_callback));
+  return true;
+}
+
 bool TouchToFillPaymentMethodControllerImpl::ShowPaymentMethods(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
@@ -80,6 +131,10 @@ bool TouchToFillPaymentMethodControllerImpl::ShowPaymentMethods(
 
   // Abort if TTF surface is already shown.
   if (view_) {
+    return false;
+  }
+
+  if (!InitHideHelper(*delegate)) {
     return false;
   }
 
@@ -110,6 +165,10 @@ bool TouchToFillPaymentMethodControllerImpl::ShowIbans(
     return false;
   }
 
+  if (!InitHideHelper(*delegate)) {
+    return false;
+  }
+
   if (!view->ShowIbans(this, ibans_to_suggest)) {
     ResetJavaObject();
     return false;
@@ -126,7 +185,7 @@ bool TouchToFillPaymentMethodControllerImpl::ShowAffiliatedLoyaltyCards(
     base::span<const LoyaltyCard> affiliated_loyalty_cards,
     base::span<const LoyaltyCard> all_loyalty_cards,
     bool first_time_usage) {
-  // TODO(crbug.com/404437211): Unify `ShowX()` methods to avoid code
+  // TODO(crbug.com/521032396): Unify `ShowX()` methods to avoid code
   // duplication.
   if (!keyboard_suppressor_.is_suppressing()) {
     return false;
@@ -134,6 +193,10 @@ bool TouchToFillPaymentMethodControllerImpl::ShowAffiliatedLoyaltyCards(
 
   // Abort if TTF surface is already shown.
   if (view_) {
+    return false;
+  }
+
+  if (!InitHideHelper(*delegate)) {
     return false;
   }
 
@@ -154,6 +217,10 @@ bool TouchToFillPaymentMethodControllerImpl::ShowAllLoyaltyCards(
     base::span<const LoyaltyCard> all_loyalty_cards) {
   // Abort if TTF surface is already shown.
   if (view_) {
+    return false;
+  }
+
+  if (!InitHideHelper(*delegate)) {
     return false;
   }
 
@@ -283,21 +350,6 @@ void TouchToFillPaymentMethodControllerImpl::SetVisible(bool visible) {
   }
 }
 
-void TouchToFillPaymentMethodControllerImpl::WebContentsDestroyed() {
-  Hide();
-}
-
-void TouchToFillPaymentMethodControllerImpl::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted() ||
-      navigation_handle->IsInPrerenderedMainFrame() ||
-      (!navigation_handle->IsInMainFrame() &&
-       !navigation_handle->HasSubframeNavigationEntryCommitted())) {
-    return;
-  }
-  Hide();
-}
-
 void TouchToFillPaymentMethodControllerImpl::
     OnContentAutofillDriverFactoryDestroyed(
         ContentAutofillDriverFactory& factory) {
@@ -323,6 +375,7 @@ void TouchToFillPaymentMethodControllerImpl::OnDismissed(JNIEnv* env,
   delegate_.reset();
   ResetJavaObject();
   keyboard_suppressor_.Unsuppress();
+  hide_helper_.reset();
 }
 
 void TouchToFillPaymentMethodControllerImpl::ScanCreditCard(JNIEnv* env) {

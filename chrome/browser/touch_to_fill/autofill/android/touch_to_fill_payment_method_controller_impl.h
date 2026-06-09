@@ -14,10 +14,15 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
+#include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "components/autofill/android/touch_to_fill_keyboard_suppressor.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace autofill {
 
@@ -39,8 +44,7 @@ class TouchToFillPaymentMethodView;
 // `java_object_`.
 class TouchToFillPaymentMethodControllerImpl
     : public TouchToFillPaymentMethodController,
-      public ContentAutofillDriverFactory::Observer,
-      public content::WebContentsObserver {
+      public ContentAutofillDriverFactory::Observer {
  public:
   explicit TouchToFillPaymentMethodControllerImpl(
       ContentAutofillClient* autofill_client);
@@ -90,11 +94,6 @@ class TouchToFillPaymentMethodControllerImpl
   void Hide() override;
   void SetVisible(bool visible) override;
 
-  // content::WebContentsObserver:
-  void WebContentsDestroyed() override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-
   // ContentAutofillDriverFactory::Observer:
   void OnContentAutofillDriverFactoryDestroyed(
       ContentAutofillDriverFactory& factory) override;
@@ -129,6 +128,9 @@ class TouchToFillPaymentMethodControllerImpl
   }
 
  private:
+  bool InitHideHelper(TouchToFillDelegate& delegate);
+  content::WebContents* web_contents();
+
   // Observes creation of ContentAutofillDrivers to inject a
   // TouchToFillDelegateAndroidImpl into the BrowserAutofillManager.
   base::ScopedObservation<ContentAutofillDriverFactory,
@@ -144,6 +146,8 @@ class TouchToFillPaymentMethodControllerImpl
   // AutofillManager::Observer::On{Before,After}AskForValuesToFill() events if
   // TTF may be shown.
   TouchToFillKeyboardSuppressor keyboard_suppressor_;
+  // Hides TTF when a relevant frame is destroyed or navigated.
+  std::optional<AutofillPopupHideHelper> hide_helper_;
 };
 
 }  // namespace autofill

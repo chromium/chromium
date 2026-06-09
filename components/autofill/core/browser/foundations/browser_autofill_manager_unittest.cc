@@ -204,6 +204,7 @@ using ::testing::Optional;
 using ::testing::Property;
 using ::testing::Ref;
 using ::testing::Return;
+using ::testing::ReturnRef;
 using ::testing::SaveArg;
 using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
@@ -632,6 +633,7 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
   static std::unique_ptr<MockTouchToFillDelegate> Create(
       BrowserAutofillManager* manager) {
     auto delegate = std::make_unique<NiceMock<MockTouchToFillDelegate>>();
+    ON_CALL(*delegate, GetAutofillManager()).WillByDefault(ReturnRef(*manager));
     ON_CALL(*delegate, IsShowingTouchToFill()).WillByDefault(Return(false));
     return delegate;
   }
@@ -641,6 +643,7 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
   MockTouchToFillDelegate& operator=(const MockTouchToFillDelegate&) = delete;
   ~MockTouchToFillDelegate() override = default;
 
+  MOCK_METHOD(BrowserAutofillManager&, GetAutofillManager, (), (override));
   MOCK_METHOD(bool,
               IntendsToShowTouchToFill,
               (FormGlobalId, FieldGlobalId),

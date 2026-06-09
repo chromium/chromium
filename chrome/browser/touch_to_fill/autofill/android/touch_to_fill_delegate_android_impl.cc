@@ -131,6 +131,10 @@ TouchToFillDelegateAndroidImpl::~TouchToFillDelegateAndroidImpl() {
   HideTouchToFill();
 }
 
+BrowserAutofillManager& TouchToFillDelegateAndroidImpl::GetAutofillManager() {
+  return *manager_;
+}
+
 TouchToFillDelegateAndroidImpl::DryRunResult
 TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
                                        FieldGlobalId field_id) {
