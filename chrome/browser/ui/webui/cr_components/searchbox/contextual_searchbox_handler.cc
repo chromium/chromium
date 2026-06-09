@@ -1169,6 +1169,20 @@ void ContextualSearchboxHandler::RecordTabAddedMetric(
 
   metrics_recorder->RecordTabAddedMetrics(has_duplicate_title, recency_ranking,
                                           is_tab_suggestion_chip);
+
+  if (is_tab_suggestion_chip) {
+    metrics_recorder->RecordAttachmentButtonUsed(
+        contextual_search::ContextualSearchAttachmentButtonType::kSuggestedTab);
+  } else {
+    tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+    if (active_tab == tab) {
+      metrics_recorder->RecordAttachmentButtonUsed(
+          contextual_search::ContextualSearchAttachmentButtonType::kCurrentTab);
+    } else {
+      metrics_recorder->RecordAttachmentButtonUsed(
+          contextual_search::ContextualSearchAttachmentButtonType::kRecentTab);
+    }
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

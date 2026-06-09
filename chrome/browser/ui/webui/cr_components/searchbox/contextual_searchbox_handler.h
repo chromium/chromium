@@ -282,8 +282,12 @@ class ContextualSearchboxHandler
                            ResetInputStateModel);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
                            SubmitQuery_DelayUpload);
+  FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
+                           SubmitQuery_TabAttachmentCount);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTestTabsTest,
                            AddTabContext_DelayUpload);
+  FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTestTabsTest,
+                           AddTabContext_RecentTab);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTestTabsTest,
                            DeleteContext_DelayUpload);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
