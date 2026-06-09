@@ -18956,6 +18956,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "PermanentNotificationSubscribeInPageInfo",
                         "PermissionsAndroidClapperLoud"
                     ]
                 }
