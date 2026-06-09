@@ -4547,6 +4547,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   auto* router = web_contents()->GetInputEventRouter();
 
   // Scroll the main frame.
+  HitTestRegionObserver hit_test_data_change_observer(
+      root_view->GetRootFrameSinkId());
+  hit_test_data_change_observer.WaitForHitTestData();
   gfx::Rect initial_child_view_bounds = child_view->GetViewBounds();
   EXPECT_TRUE(ExecJs(root, "window.scrollTo(0, 10);"));
   // Wait until the OOPIF positions have been updated in the browser process.
@@ -4554,6 +4557,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     return initial_child_view_bounds.y() ==
            child_view->GetViewBounds().y() + 10;
   }));
+  hit_test_data_change_observer.WaitForHitTestDataChange();
 
   // A cursor should not be shown when the main frame is scrolled
   // and the iframe is outside the root view's visible viewport.

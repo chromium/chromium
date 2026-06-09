@@ -395,6 +395,26 @@ void RenderWidgetTargeter::FoundFrameSinkId(
   RenderWidgetHostViewInput* resolved_view =
       delegate_->FindViewFromFrameSinkId(frame_sink_id, target.get());
 
+  if (resolved_view && resolved_view != target.get()) {
+    // Validate that the renderer-supplied transformed_location is geometrically
+    // consistent with the original target_location. A compromised parent
+    // renderer could lie about the local coordinates to redirect input to
+    // arbitrary areas of a child frame. We verify this by transforming the
+    // coordinate from the resolved sub-frame view's space (`resolved_view`)
+    // back to the queried target view's space (`target`) and comparing it with
+    // `target_location`.
+    gfx::PointF computed_point;
+    if (resolved_view->TransformPointToCoordSpaceForView(
+            transformed_location, target.get(), &computed_point)) {
+      constexpr float kEpsilon = 2.0f;
+      if (!computed_point.IsWithinDistance(target_location, kEpsilon)) {
+        resolved_view = nullptr;
+      }
+    } else {
+      resolved_view = nullptr;
+    }
+  }
+
   // Compute final target and location.
   RenderWidgetHostViewInput* final_view =
       resolved_view ? resolved_view : target.get();
