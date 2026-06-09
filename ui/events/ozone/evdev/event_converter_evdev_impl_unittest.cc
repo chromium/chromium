@@ -944,47 +944,7 @@ TEST_F(EventConverterEvdevImplTest, ShouldSwapMouseButtonsFromUserPreference) {
 }
 
 TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
-       DisableBlockTelephonyDevicePhoneMute) {
-  // By default Block Phone Mic Mute is enabled. We disable it and validate that
-  // events are processed.
-  scoped_feature_list_->InitAndDisableFeature(
-      ui::kBlockTelephonyDevicePhoneMute);
-  SetUpDevice(ui::EventDeviceInfo());
-  ui::MockEventConverterEvdevImpl* dev = device();
-
-  struct input_event mock_kernel_queue[] = {
-      {{0, 0}, EV_MSC, MSC_SCAN, 0x0b002f},
-      {{0, 0}, EV_KEY, KEY_MICMUTE, 1},
-      {{0, 0}, EV_SYN, SYN_REPORT, 0},
-
-      {{0, 0}, EV_MSC, MSC_SCAN, 0x0b002f},
-      {{0, 0}, EV_KEY, KEY_MICMUTE, 0},
-      {{0, 0}, EV_SYN, SYN_REPORT, 0},
-  };
-
-  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
-  EXPECT_EQ(2u, size());
-
-  ui::KeyEvent* event;
-
-  event = dispatched_event(0);
-  EXPECT_EQ(ui::EventType::kKeyPressed, event->type());
-  EXPECT_EQ(ui::VKEY_MICROPHONE_MUTE_TOGGLE, event->key_code());
-  EXPECT_EQ(0xb002fu, event->scan_code());
-  EXPECT_EQ(0, event->flags());
-
-  event = dispatched_event(1);
-  EXPECT_EQ(ui::EventType::kKeyReleased, event->type());
-  EXPECT_EQ(ui::VKEY_MICROPHONE_MUTE_TOGGLE, event->key_code());
-  EXPECT_EQ(0xb002fu, event->scan_code());
-  EXPECT_EQ(0, event->flags());
-}
-
-TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
-       EnableBlockTelephonyDevicePhoneMute) {
-  // We enable the flag it and validate that events are not processed.
-  scoped_feature_list_->InitAndEnableFeature(
-      ui::kBlockTelephonyDevicePhoneMute);
+       BlockTelephonyDevicePhoneMute) {
   SetUpDevice(ui::EventDeviceInfo());
   ui::MockEventConverterEvdevImpl* dev = device();
 

@@ -6,8 +6,6 @@
 
 namespace ui {
 
-BASE_FEATURE(kBlockTelephonyDevicePhoneMute, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableFastTouchpadClick, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableHeatmapPalmDetection, base::FEATURE_DISABLED_BY_DEFAULT);

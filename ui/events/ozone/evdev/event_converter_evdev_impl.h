@@ -150,9 +150,6 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   // Supported keyboard key bits.
   std::vector<uint64_t> key_bits_;
 
-  // Whether telephony device phone mute scan code should be blocked.
-  bool block_telephony_device_phone_mute_ = false;
-
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<MicrophoneMuteKeyMetrics> microphone_mute_key_metrics_;
 #endif

@@ -89,10 +89,6 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
       EvdevSetUint64Bit(key_bits_, i);
     }
   }
-
-  if (base::FeatureList::IsEnabled(kBlockTelephonyDevicePhoneMute)) {
-    block_telephony_device_phone_mute_ = true;
-  }
 }
 
 EventConverterEvdevImpl::~EventConverterEvdevImpl() {
@@ -302,14 +298,12 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
 
   // TODO: crbug.com/356306613 - Sync mute state between telephony devices and
   // CrOS
-  if (block_telephony_device_phone_mute_) {
-    // Ignore Telephony Phone Mute scan code so that it does not toggle system
-    // mic mute to resolve user confusions. We don't want to block `KEY_MICMUTE`
-    // as there are other scan codes that map to the same key code. Not suitable
-    // to use `blocked_keys_`.
-    if (key == KEY_MICMUTE && last_scan_code_ == kTelephonyDevicePhoneMute) {
-      return;
-    }
+  // Ignore Telephony Phone Mute scan code so that it does not toggle system
+  // mic mute to resolve user confusions. We don't want to block `KEY_MICMUTE`
+  // as there are other scan codes that map to the same key code. Not suitable
+  // to use `blocked_keys_`.
+  if (key == KEY_MICMUTE && last_scan_code_ == kTelephonyDevicePhoneMute) {
+    return;
   }
 
   // State transition: !(down) -> (down)

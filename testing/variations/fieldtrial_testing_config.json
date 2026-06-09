@@ -4165,21 +4165,6 @@
             ]
         }
     ],
-    "BlockTelephonyDevicePhoneMute": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "BlockTelephonyDevicePhoneMute"
-                    ]
-                }
-            ]
-        }
-    ],
     "BlockfileCacheBackendDumpWithoutCrashing": [
         {
             "platforms": [
