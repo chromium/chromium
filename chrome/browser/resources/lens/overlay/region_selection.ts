@@ -573,6 +573,14 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
   private getNormalizedCenterRotatedBoxFromDrag(gesture: GestureEvent):
       CenterRotatedBox {
     const parentRect = this.selectionOverlayRect;
+    if (parentRect.width <= 0 || parentRect.height <= 0) {
+      return {
+        box: {x: 0, y: 0, width: 0, height: 0},
+        rotation: 0,
+        coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+      };
+    }
+
     // Get coordinates relative to the region selection bounds
     const relativeDragStart = getRelativeCoordinate(
         {x: gesture.startX, y: gesture.startY}, parentRect);
@@ -620,6 +628,14 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
   private getPostSelectionRegionFromDrag(gesture: GestureEvent):
       PostSelectionBoundingBox {
     const parentRect = this.selectionOverlayRect;
+    if (parentRect.width <= 0 || parentRect.height <= 0) {
+      return {
+        top: 0,
+        left: 0,
+        width: 0,
+        height: 0,
+      };
+    }
 
     // Get coordinates relative to the region selection bounds
     const relativeDragStart = getRelativeCoordinate(
@@ -647,6 +663,15 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
   private getNormalizedRectangleFromTap(gesture: GestureEvent):
       NormalizedRectangle {
     const parentRect = this.selectionOverlayRect;
+    if (parentRect.width <= 0 || parentRect.height <= 0) {
+      return {
+        top: 0,
+        left: 0,
+        center: {x: 0.5, y: 0.5},
+        width: 1,
+        height: 1,
+      };
+    }
     // The size of the canvas relative to the size of the viewport.
     const scaleFactor = Math.min(
         parentRect.height / window.innerHeight,

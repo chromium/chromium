@@ -565,7 +565,8 @@ export class PostSelectionRendererElement extends
   }
 
   handleGestureDrag(event: GestureEvent) {
-    if (!this.selectionOverlayRect) {
+    if (!this.selectionOverlayRect || this.selectionOverlayRect.width <= 0 ||
+        this.selectionOverlayRect.height <= 0) {
       return;
     }
 
@@ -687,7 +688,7 @@ export class PostSelectionRendererElement extends
     }
 
     const imageBounds = this.selectionOverlayRect;
-    if (!imageBounds) {
+    if (!imageBounds || imageBounds.width <= 0 || imageBounds.height <= 0) {
       return;
     }
     const normalizedMinBoxWidth = MIN_BOX_SIZE_PX / imageBounds.width;

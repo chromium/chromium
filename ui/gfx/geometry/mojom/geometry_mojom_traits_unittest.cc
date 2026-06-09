@@ -198,4 +198,111 @@ TEST(GeometryStructTraitsTest, AxisTransform2d) {
   EXPECT_EQ(input, output);
 }
 
+TEST(GeometryStructTraitsTest, InvalidFloats) {
+  const float nan = std::numeric_limits<float>::quiet_NaN();
+  const float inf = std::numeric_limits<float>::infinity();
+  const double dnan = std::numeric_limits<double>::quiet_NaN();
+  const double dinf = std::numeric_limits<double>::infinity();
+
+  // PointF
+  {
+    gfx::PointF output;
+    gfx::PointF bad1(nan, 1.0f);
+    EXPECT_FALSE(
+        mojo::test::SerializeAndDeserialize<gfx::mojom::PointF>(bad1, output));
+    gfx::PointF bad2(1.0f, inf);
+    EXPECT_FALSE(
+        mojo::test::SerializeAndDeserialize<gfx::mojom::PointF>(bad2, output));
+  }
+  // Point3F
+  {
+    gfx::Point3F output;
+    gfx::Point3F bad1(nan, 1.0f, 1.0f);
+    EXPECT_FALSE(
+        mojo::test::SerializeAndDeserialize<gfx::mojom::Point3F>(bad1, output));
+    gfx::Point3F bad2(1.0f, inf, 1.0f);
+    EXPECT_FALSE(
+        mojo::test::SerializeAndDeserialize<gfx::mojom::Point3F>(bad2, output));
+    gfx::Point3F bad3(1.0f, 1.0f, nan);
+    EXPECT_FALSE(
+        mojo::test::SerializeAndDeserialize<gfx::mojom::Point3F>(bad3, output));
+  }
+  // SizeF (using Mojo StructPtr to bypass clamping in gfx::SizeF constructor)
+  {
+    gfx::SizeF output;
+
+    auto bad1 = gfx::mojom::SizeF::New();
+    bad1->width = nan;
+    bad1->height = 1.0f;
+    EXPECT_FALSE(
+        mojo::test::SerializeAndDeserialize<gfx::mojom::SizeF>(bad1, output));
+
+    auto bad2 = gfx::mojom::SizeF::New();
+    bad2->width = 1.0f;
+    bad2->height = inf;
+    EXPECT_FALSE(
+        mojo::test::SerializeAndDeserialize<gfx::mojom::SizeF>(bad2, output));
+  }
+  // RectF (using Mojo StructPtr to bypass clamping in gfx::SizeF constructor)
+  {
+    gfx::RectF output;
+
+    auto bad1 = gfx::mojom::RectF::New();
+    bad1->x = nan;
+    bad1->y = 1.0f;
+    bad1->width = 1.0f;
+    bad1->height = 1.0f;
+    EXPECT_FALSE(
+        mojo::test::SerializeAndDeserialize<gfx::mojom::RectF>(bad1, output));
+
+    auto bad2 = gfx::mojom::RectF::New();
+    bad2->x = 1.0f;
+    bad2->y = 1.0f;
+    bad2->width = 1.0f;
+    bad2->height = inf;
+    EXPECT_FALSE(
+        mojo::test::SerializeAndDeserialize<gfx::mojom::RectF>(bad2, output));
+  }
+  // InsetsF
+  {
+    gfx::InsetsF output;
+    gfx::InsetsF bad1 = gfx::InsetsF::TLBR(nan, 1.0f, 1.0f, 1.0f);
+    EXPECT_FALSE(
+        mojo::test::SerializeAndDeserialize<gfx::mojom::InsetsF>(bad1, output));
+    gfx::InsetsF bad2 = gfx::InsetsF::TLBR(1.0f, 1.0f, inf, 1.0f);
+    EXPECT_FALSE(
+        mojo::test::SerializeAndDeserialize<gfx::mojom::InsetsF>(bad2, output));
+  }
+  // Vector2dF
+  {
+    gfx::Vector2dF output;
+    gfx::Vector2dF bad1(nan, 1.0f);
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<gfx::mojom::Vector2dF>(
+        bad1, output));
+    gfx::Vector2dF bad2(1.0f, inf);
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<gfx::mojom::Vector2dF>(
+        bad2, output));
+  }
+  // Vector3dF
+  {
+    gfx::Vector3dF output;
+    gfx::Vector3dF bad1(nan, 1.0f, 1.0f);
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<gfx::mojom::Vector3dF>(
+        bad1, output));
+    gfx::Vector3dF bad2(1.0f, 1.0f, inf);
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<gfx::mojom::Vector3dF>(
+        bad2, output));
+  }
+  // Quaternion
+  {
+    gfx::Quaternion output;
+    gfx::Quaternion bad1(dnan, 1.0, 1.0, 1.0);
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<gfx::mojom::Quaternion>(
+        bad1, output));
+    gfx::Quaternion bad2(1.0, 1.0, 1.0, dinf);
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<gfx::mojom::Quaternion>(
+        bad2, output));
+  }
+}
+
 }  // namespace gfx

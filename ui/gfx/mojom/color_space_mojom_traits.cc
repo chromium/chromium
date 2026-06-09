@@ -4,6 +4,7 @@
 
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 
+#include <cmath>
 
 namespace mojo {
 
@@ -23,11 +24,21 @@ bool StructTraits<gfx::mojom::ColorSpaceDataView, gfx::ColorSpace>::Read(
     base::span<float> matrix(out->custom_primary_matrix_);
     if (!input.ReadCustomPrimaryMatrix(&matrix))
       return false;
+    for (float val : matrix) {
+      if (!std::isfinite(val)) {
+        return false;
+      }
+    }
   }
   {
     base::span<float> matrix(out->transfer_params_);
     if (!input.ReadTransferParams(&matrix))
       return false;
+    for (float val : matrix) {
+      if (!std::isfinite(val)) {
+        return false;
+      }
+    }
   }
   return true;
 }
