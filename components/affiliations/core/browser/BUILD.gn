@@ -17,6 +17,7 @@ source_set("sql_builder") {
 
 fuzzable_proto_library("affiliation_proto") {
   sources = [ "affiliation_api.proto" ]
+  use_experimental_fuzzable_proto = true
 }
 
 source_set("affiliations") {
@@ -131,18 +132,17 @@ source_set("unit_tests") {
   ]
 }
 
-if (use_fuzzing_engine_with_lpm) {
-  fuzzer_test("lookup_affiliation_response_parser_fuzzer") {
-    sources = [ "lookup_affiliation_response_parser_fuzzer.cc" ]
-    deps = [
-      ":affiliation_proto",
-      ":affiliations",
-      "//base",
-      "//base:i18n",
-      "//third_party/libprotobuf-mutator",
-    ]
+fuzzer_test("lookup_affiliation_response_parser_fuzzer") {
+  sources = [ "lookup_affiliation_response_parser_fuzzer.cc" ]
+  deps = [
+    ":affiliation_proto",
+    ":affiliation_proto_fuzzable",
+    ":affiliations",
+    "//base",
+    "//base:i18n",
+    "//third_party/libprotobuf-mutator",
+  ]
 
-    # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
-    is_fuzztest_compatible = false
-  }
+  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
+  is_fuzztest_compatible = false
 }
