@@ -227,23 +227,27 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
     }
 
     /**
-     * Updates whether the MV tiles layout stays in the center of the container when used in NTP on
-     * the tablet by changing the width of its container. Also updates the lateral margins.
+     * Updates the width of the MV tiles container. If on a tablet and the content fits, it uses
+     * WRAP_CONTENT to center the tiles. Otherwise, it applies the provided totalWidth. Also updates
+     * the lateral margins.
      *
-     * @param totalWidth The total width of the MV tiles layout. If it isn't null, we will
-     *     recalculate the value of |mMvtContentFits|.
+     * @param totalWidth The total width to apply or check against. If null, the applied width falls
+     *     back to MATCH_PARENT.
      */
-    void updateMvtOnTablet(@Nullable Integer totalWidth) {
-        if (totalWidth != null) {
+    void updateMvtWidth(@Nullable Integer totalWidth) {
+        if (mIsTablet && totalWidth != null) {
             mMvtContentFits = mMvTilesLayout.contentFitsOnTablet(totalWidth);
         }
 
         MarginLayoutParams marginLayoutParams =
                 (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
-        marginLayoutParams.width =
-                mMvtContentFits
-                        ? ViewGroup.LayoutParams.WRAP_CONTENT
-                        : ViewGroup.LayoutParams.MATCH_PARENT;
+        if (mIsTablet && mMvtContentFits) {
+            marginLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        } else if (totalWidth != null) {
+            marginLayoutParams.width = totalWidth;
+        } else {
+            marginLayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        }
 
         int lateralPaddingId =
                 NtpCustomizationUtils.isInNarrowWindowOnTablet(mIsTablet, mUiConfig)

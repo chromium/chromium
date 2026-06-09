@@ -46,9 +46,16 @@ public final class SuggestionsConfig {
 
     private SuggestionsConfig() {}
 
-    /** Returns the current tile style, that depends on the enabled features and the screen size. */
-    public static @TileStyle int getTileStyle(UiConfig uiConfig) {
-        return uiConfig.getCurrentDisplayStyle().isSmall()
+    /**
+     * Returns the current tile style. This depends on the enabled features, the screen size, and
+     * whether the device is a tablet. Tablets and small screens use the condensed style to improve
+     * density.
+     *
+     * @param uiConfig The UiConfig containing display style information.
+     * @param isTablet Whether the device is a tablet (or large screen equivalent).
+     */
+    public static @TileStyle int getTileStyle(UiConfig uiConfig, boolean isTablet) {
+        return (isTablet || uiConfig.getCurrentDisplayStyle().isSmall())
                 ? TileStyle.MODERN_CONDENSED
                 : TileStyle.MODERN;
     }
