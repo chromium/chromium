@@ -6,6 +6,9 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "content/browser/renderer_host/direct_manipulation_helper_win.h"
 #include "content/browser/renderer_host/direct_manipulation_test_helper_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,6 +44,25 @@ class MockDirectManipulationViewport
 
   ~MockDirectManipulationViewport() override = default;
 
+  void set_stop_callback(base::OnceClosure callback) {
+    stop_callback_ = std::move(callback);
+  }
+  void set_add_event_handler_callback(base::OnceClosure callback) {
+    add_event_handler_callback_ = std::move(callback);
+  }
+  void set_remove_event_handler_callback(base::OnceClosure callback) {
+    remove_event_handler_callback_ = std::move(callback);
+  }
+  void set_set_contact_callback(base::OnceClosure callback) {
+    set_contact_callback_ = std::move(callback);
+  }
+  void set_abandon_callback(base::OnceClosure callback) {
+    abandon_callback_ = std::move(callback);
+  }
+  void set_zoom_to_rect_callback(base::OnceClosure callback) {
+    zoom_to_rect_callback_ = std::move(callback);
+  }
+
   bool WasZoomToRectCalled() {
     bool called = zoom_to_rect_called_;
     zoom_to_rect_called_ = false;
@@ -52,6 +74,9 @@ class MockDirectManipulationViewport
   HRESULT STDMETHODCALLTYPE Disable() override { return S_OK; }
 
   HRESULT STDMETHODCALLTYPE SetContact(_In_ UINT32 pointerId) override {
+    if (set_contact_callback_) {
+      std::move(set_contact_callback_).Run();
+    }
     return S_OK;
   }
 
@@ -92,6 +117,9 @@ class MockDirectManipulationViewport
                                        _In_ const float bottom,
                                        _In_ BOOL animate) override {
     zoom_to_rect_called_ = true;
+    if (zoom_to_rect_callback_) {
+      std::move(zoom_to_rect_callback_).Run();
+    }
     return S_OK;
   }
 
@@ -156,10 +184,16 @@ class MockDirectManipulationViewport
   AddEventHandler(_In_opt_ HWND window,
                   _In_ IDirectManipulationViewportEventHandler* eventHandler,
                   _Out_ DWORD* cookie) override {
+    if (add_event_handler_callback_) {
+      std::move(add_event_handler_callback_).Run();
+    }
     return S_OK;
   }
 
   HRESULT STDMETHODCALLTYPE RemoveEventHandler(_In_ DWORD cookie) override {
+    if (remove_event_handler_callback_) {
+      std::move(remove_event_handler_callback_).Run();
+    }
     return S_OK;
   }
 
@@ -173,12 +207,28 @@ class MockDirectManipulationViewport
     return S_OK;
   }
 
-  HRESULT STDMETHODCALLTYPE Stop() override { return S_OK; }
+  HRESULT STDMETHODCALLTYPE Stop() override {
+    if (stop_callback_) {
+      std::move(stop_callback_).Run();
+    }
+    return S_OK;
+  }
 
-  HRESULT STDMETHODCALLTYPE Abandon() override { return S_OK; }
+  HRESULT STDMETHODCALLTYPE Abandon() override {
+    if (abandon_callback_) {
+      std::move(abandon_callback_).Run();
+    }
+    return S_OK;
+  }
 
  private:
   bool zoom_to_rect_called_ = false;
+  base::OnceClosure stop_callback_;
+  base::OnceClosure add_event_handler_callback_;
+  base::OnceClosure remove_event_handler_callback_;
+  base::OnceClosure set_contact_callback_;
+  base::OnceClosure abandon_callback_;
+  base::OnceClosure zoom_to_rect_callback_;
 };
 
 class MockDirectManipulationUpdateManager
@@ -192,6 +242,10 @@ class MockDirectManipulationUpdateManager
       const MockDirectManipulationUpdateManager&) = delete;
 
   ~MockDirectManipulationUpdateManager() override = default;
+
+  void set_update_callback(base::OnceClosure callback) {
+    update_callback_ = std::move(callback);
+  }
 
   HRESULT STDMETHODCALLTYPE
   RegisterWaitHandleCallback(HANDLE,
@@ -207,8 +261,14 @@ class MockDirectManipulationUpdateManager
 
   HRESULT STDMETHODCALLTYPE
   Update(IDirectManipulationFrameInfoProvider*) override {
+    if (update_callback_) {
+      std::move(update_callback_).Run();
+    }
     return S_OK;
   }
+
+ private:
+  base::OnceClosure update_callback_;
 };
 
 class MockDirectManipulationManager
@@ -255,6 +315,10 @@ class MockDirectManipulationManager
   HRESULT STDMETHODCALLTYPE
   RegisterHitTestTarget(HWND, HWND, DIRECTMANIPULATION_HITTEST_TYPE) override {
     return S_OK;
+  }
+
+  ComPtr<MockDirectManipulationUpdateManager> mock_update_manager() {
+    return update_manager_;
   }
 
  private:
@@ -408,15 +472,34 @@ class DirectManipulationUnitTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
+    viewport_ = Microsoft::WRL::Make<MockDirectManipulationViewport>();
+    ASSERT_TRUE(viewport_);
+    manager_ = Microsoft::WRL::Make<MockDirectManipulationManager>(viewport_);
+    ASSERT_TRUE(manager_);
     direct_manipulation_helper_ =
-        DirectManipulationHelper::CreateInstanceForTesting(
-            Microsoft::WRL::Make<MockDirectManipulationManager>(viewport_));
+        DirectManipulationHelper::CreateInstanceForTesting(manager_);
     ASSERT_TRUE(direct_manipulation_helper_);
     direct_manipulation_helper_->UpdateEventHandler(nullptr, &event_target_);
+    content_ = Microsoft::WRL::Make<MockDirectManipulationContent>();
+    ASSERT_TRUE(content_);
   }
 
   DirectManipulationHelper* GetDirectManipulationHelper() {
     return direct_manipulation_helper_.get();
+  }
+
+  base::OnceClosure ResetDirectManipulationHelperCallback() {
+    return base::BindOnce(
+        &DirectManipulationUnitTest::ResetDirectManipulationHelper,
+        base::Unretained(this));
+  }
+
+  void RecreateDirectManipulationHelper() {
+    ASSERT_FALSE(direct_manipulation_helper_);
+    ASSERT_TRUE(manager_);
+    direct_manipulation_helper_ =
+        DirectManipulationHelper::CreateInstanceForTesting(manager_);
+    ASSERT_TRUE(direct_manipulation_helper_);
   }
 
   std::vector<Event> GetEvents() { return event_target_.GetEvents(); }
@@ -439,13 +522,16 @@ class DirectManipulationUnitTest : public testing::Test {
     direct_manipulation_helper_->SetDeviceScaleFactorForTesting(factor);
   }
 
- private:
-  std::unique_ptr<DirectManipulationHelper> direct_manipulation_helper_;
-  ComPtr<MockDirectManipulationViewport> viewport_ =
-      Microsoft::WRL::Make<MockDirectManipulationViewport>();
-  ComPtr<MockDirectManipulationContent> content_ =
-      Microsoft::WRL::Make<MockDirectManipulationContent>();
+ protected:
+  ComPtr<MockDirectManipulationViewport> viewport_;
+  ComPtr<MockDirectManipulationManager> manager_;
+  ComPtr<MockDirectManipulationContent> content_;
   MockWindowEventTarget event_target_;
+
+ private:
+  void ResetDirectManipulationHelper() { direct_manipulation_helper_.reset(); }
+
+  std::unique_ptr<DirectManipulationHelper> direct_manipulation_helper_;
 };
 
 TEST_F(DirectManipulationUnitTest, ReceiveSimplePanTransform) {
@@ -769,6 +855,79 @@ TEST_F(DirectManipulationUnitTest, HiDPIScroll) {
   ASSERT_EQ(1u, events.size());
   EXPECT_EQ(EventGesture::kScrollBegin, events[0].gesture_);
   EXPECT_EQ(5, events[0].scroll_x_);
+}
+
+// DirectManipulation COM calls on the UI thread can enter a nested message loop
+// while they block on an internal delegate thread. The nested message loop can
+// process WM_DESTROY messages that can invalidate pointers on the stack. To
+// simulate this, these tests delete the DirectManipulationHelper from a mock
+// COM call in each method that makes COM calls. If the methods don't guard
+// their stack objects this will cause ASAN errors. Not all of these functions
+// will enter a nested message loop in practice, but better safe than sorry.
+
+TEST_F(DirectManipulationUnitTest, DestroyDuringOnAnimationStep) {
+  manager_->mock_update_manager()->set_update_callback(
+      ResetDirectManipulationHelperCallback());
+  GetDirectManipulationHelper()->OnAnimationStep(base::TimeTicks::Now());
+  EXPECT_EQ(GetDirectManipulationHelper(), nullptr);
+}
+
+TEST_F(DirectManipulationUnitTest, DestroyDuringUpdateEventHandler) {
+  ASSERT_TRUE(GetDirectManipulationHelper()->HasEventHandlerForTesting());
+  viewport_->set_remove_event_handler_callback(
+      ResetDirectManipulationHelperCallback());
+  GetDirectManipulationHelper()->UpdateEventHandler(nullptr, nullptr);
+  EXPECT_EQ(GetDirectManipulationHelper(), nullptr);
+
+  RecreateDirectManipulationHelper();
+  ASSERT_FALSE(GetDirectManipulationHelper()->HasEventHandlerForTesting());
+  viewport_->set_add_event_handler_callback(
+      ResetDirectManipulationHelperCallback());
+  GetDirectManipulationHelper()->UpdateEventHandler(nullptr, &event_target_);
+  EXPECT_EQ(GetDirectManipulationHelper(), nullptr);
+}
+
+TEST_F(DirectManipulationUnitTest, DestroyDuringSetSizeInPixels) {
+  viewport_->set_stop_callback(ResetDirectManipulationHelperCallback());
+  GetDirectManipulationHelper()->SetSizeInPixels(gfx::Size(2000, 2000));
+  EXPECT_EQ(GetDirectManipulationHelper(), nullptr);
+}
+
+TEST_F(DirectManipulationUnitTest, DestroyDuringOnPointerHitTest) {
+  ASSERT_TRUE(GetDirectManipulationHelper()->HasEventHandlerForTesting());
+  viewport_->set_set_contact_callback(ResetDirectManipulationHelperCallback());
+  GetDirectManipulationHelper()->OnPointerHitTest(0, PT_TOUCHPAD);
+  EXPECT_EQ(GetDirectManipulationHelper(), nullptr);
+}
+
+TEST_F(DirectManipulationUnitTest, DestroyDuringDestroy) {
+  // OnCompositingShuttingDown can call Destroy(), which makes COM calls that
+  // could enter a nested event loop. Those could process WM_DESTROY messages
+  // that delete the DirectManipulationHelper, causing the destructor to
+  // re-enter Destroy().
+  viewport_->set_abandon_callback(ResetDirectManipulationHelperCallback());
+  GetDirectManipulationHelper()->OnCompositingShuttingDown(
+      GetDirectManipulationHelper()->compositor());
+  EXPECT_EQ(GetDirectManipulationHelper(), nullptr);
+}
+
+TEST_F(DirectManipulationUnitTest, DestroyDuringZoomToRect) {
+  // ZoomToRect is triggered from
+  // DirectManipulationEventHandler::OnViewportStatusChanged when there's a
+  // content transform.
+  ContentUpdated(1.1f, 0, 0);
+  viewport_->set_zoom_to_rect_callback(ResetDirectManipulationHelperCallback());
+  ViewportStatusChanged(DIRECTMANIPULATION_READY, DIRECTMANIPULATION_RUNNING);
+  EXPECT_EQ(GetDirectManipulationHelper(), nullptr);
+}
+
+TEST_F(DirectManipulationUnitTest, DestroyDuringGetContentTransform) {
+  // GetContentTransform is triggered from
+  // DirectManipulationEventHandler::OnContentUpdated.
+  content_->set_get_content_transform_callback(
+      ResetDirectManipulationHelperCallback());
+  ContentUpdated(1.1f, 0, 0);
+  EXPECT_EQ(GetDirectManipulationHelper(), nullptr);
 }
 
 }  //  namespace content
