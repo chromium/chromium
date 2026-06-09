@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_IMPL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_IMPL_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -19,6 +20,7 @@
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
 #include "components/personal_context/core/personal_context_enablement_service.h"
 #include "components/personal_context/core/personal_context_types.h"
+#include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace personal_context {
@@ -74,7 +76,7 @@ class PersonalContextAccessManagerImpl
     };
     Status status = Status::kSuccess;
     base::TimeTicks last_update_time;
-    size_t failure_count = 0;
+    std::unique_ptr<net::BackoffEntry> backoff_entry;
   };
 
   // Clears all caches and invalidates weak pointers.

@@ -29,11 +29,14 @@ namespace autofill {
 namespace {
 
 using ::base::test::RunOnceCallback;
+using personal_context::ContextMemoryError;
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
+using ::testing::InSequence;
 using ::testing::IsEmpty;
+using ::testing::MockFunction;
 using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::Truly;
@@ -575,6 +578,120 @@ TEST_F(PersonalContextAccessManagerImplTest, PendingRequestBlocksSubsequent) {
 
   // Now it is cached.
   EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kOrder));
+}
+
+// Tests that failed requests trigger exponential backoff.
+TEST_F(PersonalContextAccessManagerImplTest, FailureTriggersBackoff) {
+  const std::vector<EntityType> requested_types = {
+      EntityType(EntityTypeName::kOrder)};
+
+  ContextMemoryError expected_error = ContextMemoryError::FromExecutionError(
+      ContextMemoryError::ExecutionError::kGenericFailure);
+
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+  personal_context::proto::Any any_response;
+  response.SerializeToString(any_response.mutable_value());
+
+  MockFunction<void(std::string_view)> check;
+  {
+    InSequence s;
+    // 1. First failure.
+    EXPECT_CALL(
+        mock_personal_context_service(),
+        FetchContext(
+            personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, _,
+            _, _))
+        .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+            base::unexpected(expected_error))));
+    EXPECT_CALL(check, Call("1. First failure"));
+
+    // 2. Immediate retry should be blocked by backoff (1s delay).
+    EXPECT_CALL(check, Call("2. Immediate retry"));
+
+    // 3. Fast forward 500ms (still blocked).
+    EXPECT_CALL(check, Call("3. Fast forward 500ms"));
+
+    // 4. Fast forward another 500ms (total 1s, backoff expired).
+    // Second failure.
+    EXPECT_CALL(
+        mock_personal_context_service(),
+        FetchContext(
+            personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, _,
+            _, _))
+        .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+            base::unexpected(expected_error))));
+    EXPECT_CALL(check, Call("4. Second failure"));
+
+    // 5. Immediate retry should be blocked by backoff (2s delay now).
+    EXPECT_CALL(check, Call("5. Immediate retry"));
+
+    // 6. Fast forward 1.5s (still blocked).
+    EXPECT_CALL(check, Call("6. Fast forward 1.5s"));
+
+    // 7. Fast forward another 500ms (total 2s, backoff expired).
+    // This time it succeeds.
+    EXPECT_CALL(
+        mock_personal_context_service(),
+        FetchContext(
+            personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, _,
+            _, _))
+        .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+            base::ok(std::move(any_response)))));
+    EXPECT_CALL(check, Call("7. Success"));
+
+    // 9. Success resets failure count.
+    EXPECT_CALL(
+        mock_personal_context_service(),
+        FetchContext(
+            personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, _,
+            _, _))
+        .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+            base::unexpected(expected_error))));
+    EXPECT_CALL(check, Call("9. Reset success"));
+  }
+
+  // 1. First failure.
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
+  EXPECT_FALSE(access_manager().IsTypeCached(EntityTypeName::kOrder));
+  check.Call("1. First failure");
+
+  // 2. Immediate retry should be blocked by backoff (1s delay).
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
+  check.Call("2. Immediate retry");
+
+  // 3. Fast forward 500ms (still blocked).
+  FastForwardBy(base::Milliseconds(500));
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
+  check.Call("3. Fast forward 500ms");
+
+  // 4. Fast forward another 500ms (total 1s, backoff expired).
+  FastForwardBy(base::Milliseconds(500));
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
+  check.Call("4. Second failure");
+
+  // 5. Immediate retry should be blocked by backoff (2s delay now).
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
+  check.Call("5. Immediate retry");
+
+  // 6. Fast forward 1.5s (still blocked).
+  FastForwardBy(base::Milliseconds(1500));
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
+  check.Call("6. Fast forward 1.5s");
+
+  // 7. Fast forward another 500ms (total 2s, backoff expired).
+  FastForwardBy(base::Milliseconds(500));
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
+  EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kOrder));
+  check.Call("7. Success");
+
+  // 8. Expire the cache (30 mins).
+  FastForwardBy(base::Minutes(30));
+  EXPECT_FALSE(access_manager().IsTypeCached(EntityTypeName::kOrder));
+
+  // 9. Request again, should succeed immediately because failure count was
+  // reset on success.
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
+  check.Call("9. Reset success");
 }
 
 }  // namespace

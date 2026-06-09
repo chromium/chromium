@@ -23,10 +23,24 @@
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/features/ambient_autofill.pb.h"
+#include "net/base/backoff_entry.h"
 
 namespace autofill {
 
 namespace {
+
+// Configuration for exponential backoff on failed prefetch requests.
+// Subsequent prefetch requests are blocked until the backoff delay expires
+// (starts at 1s, doubles for each consecutive failure, capped at 1 hour).
+const net::BackoffEntry::Policy kBackoffPolicy = {
+    0,        // num_errors_to_ignore
+    1000,     // initial_delay_ms (1s)
+    2.0,      // multiply_factor
+    0.0,      // jitter_factor
+    3600000,  // maximum_backoff_ms (1h)
+    -1,       // entry_lifetime_ms
+    false     // always_use_initial_delay
+};
 
 // Parses the raw protobuf string and converts it into a vector of
 // EntityInstances. Returns an unexpected error if parsing fails.
@@ -287,8 +301,7 @@ bool PersonalContextAccessManagerImpl::ShouldRequestType(
 
 bool PersonalContextAccessManagerImpl::ShouldRetryAfterFailure(
     const RequestState& state) const {
-  // TODO(crbug.com/516721244): Implement.
-  return true;
+  return state.backoff_entry && !state.backoff_entry->ShouldRejectRequest();
 }
 
 void PersonalContextAccessManagerImpl::SetTypeStatus(
@@ -297,14 +310,19 @@ void PersonalContextAccessManagerImpl::SetTypeStatus(
   RequestState& state = cache_state_[type_name];
   state.status = status;
   state.last_update_time = base::TimeTicks::Now();
+
+  if (!state.backoff_entry) {
+    state.backoff_entry = std::make_unique<net::BackoffEntry>(&kBackoffPolicy);
+  }
+
   switch (status) {
     case RequestState::Status::kPending:
       break;
     case RequestState::Status::kSuccess:
-      state.failure_count = 0;
+      state.backoff_entry->Reset();
       break;
     case RequestState::Status::kFailure:
-      state.failure_count++;
+      state.backoff_entry->InformOfRequest(/*succeeded=*/false);
       break;
   }
 }
