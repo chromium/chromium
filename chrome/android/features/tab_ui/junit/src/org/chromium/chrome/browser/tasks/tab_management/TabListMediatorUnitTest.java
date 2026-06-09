@@ -2276,10 +2276,9 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabMovementWithGroup_Forward() {
+    public void testDidMoveTabGroup_GroupedLayout_Forward() {
         // Assume that moveTab in TabModel is finished.
-        doReturn(mTab1).when(mTabModel).getTabAt(POSITION2);
-        doReturn(mTab2).when(mTabModel).getTabAt(POSITION1);
+        mockTabIndexes(mTab2, mTab1);
 
         assertThat(mModelList.size(), equalTo(2));
         assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
@@ -2293,10 +2292,9 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabMovementWithGroup_Backward() {
+    public void testDidMoveTabGroup_GroupedLayout_Backward() {
         // Assume that moveTab in TabModel is finished.
-        doReturn(mTab1).when(mTabModel).getTabAt(POSITION2);
-        doReturn(mTab2).when(mTabModel).getTabAt(POSITION1);
+        mockTabIndexes(mTab2, mTab1);
 
         assertThat(mModelList.size(), equalTo(2));
         assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
@@ -2310,12 +2308,125 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testDidMoveTabGroup_NestedLayout_Forward() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+
+        // Assume that moveTab in TabModel is finished.
+        mockTabIndexes(mTab2, mTab1);
+
+        assertThat(mModelList.size(), equalTo(2));
+        assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mModelList.get(1).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
+
+        mTabGroupObserverCaptor.getValue().didMoveTabGroup(mTab2, POSITION2, POSITION1);
+
+        assertThat(mModelList.size(), equalTo(2));
+        assertThat(mModelList.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mModelList.get(0).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
+    }
+
+    @Test
+    public void testDidMoveTabGroup_NestedLayout_Backward() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+
+        // Assume that moveTab in TabModel is finished.
+        mockTabIndexes(mTab2, mTab1);
+
+        assertThat(mModelList.size(), equalTo(2));
+        assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mModelList.get(1).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
+
+        mTabGroupObserverCaptor.getValue().didMoveTabGroup(mTab1, POSITION1, POSITION2);
+
+        assertThat(mModelList.size(), equalTo(2));
+        assertThat(mModelList.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mModelList.get(0).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
+    }
+
+    @Test
+    public void testDidMoveTabGroup_NestedLayout_Group_Forward() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = List.of(mTab2, tab3);
+        createTabGroup(tabs, TAB_GROUP_ID);
+
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
+
+        mMediator.resetWithListOfTabs(null, null, false);
+        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, false);
+
+        assertThat(mModelList.size(), equalTo(4));
+        assertThat(mModelList.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+        assertThat(mModelList.get(1).type, equalTo(UiType.TAB));
+        assertThat(
+                mModelList.get(1).model.get(TabProperties.TAB_GROUP_HEADER_ID),
+                equalTo(TAB_GROUP_ID));
+        assertThat(mModelList.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mModelList.get(3).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
+
+        mockTabIndexes(mTab2, tab3, mTab1);
+
+        mTabGroupObserverCaptor.getValue().didMoveTabGroup(mTab2, 1, 0);
+
+        assertThat(mModelList.size(), equalTo(4));
+        assertThat(mModelList.get(0).type, equalTo(UiType.TAB));
+        assertThat(
+                mModelList.get(0).model.get(TabProperties.TAB_GROUP_HEADER_ID),
+                equalTo(TAB_GROUP_ID));
+        assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mModelList.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
+        assertThat(mModelList.get(3).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+    }
+
+    @Test
+    public void testDidMoveTabGroup_NestedLayout_Group_Backward() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = List.of(mTab1, tab3);
+        createTabGroup(tabs, TAB_GROUP_ID);
+
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
+
+        mMediator.resetWithListOfTabs(null, null, false);
+        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, false);
+
+        assertThat(mModelList.size(), equalTo(4));
+        assertThat(mModelList.get(0).type, equalTo(UiType.TAB));
+        assertThat(
+                mModelList.get(0).model.get(TabProperties.TAB_GROUP_HEADER_ID),
+                equalTo(TAB_GROUP_ID));
+        assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+        assertThat(mModelList.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
+        assertThat(mModelList.get(3).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+
+        mockTabIndexes(mTab2, mTab1, tab3);
+
+        mTabGroupObserverCaptor.getValue().didMoveTabGroup(mTab1, 0, 1);
+
+        assertThat(mModelList.size(), equalTo(4));
+        assertThat(mModelList.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mModelList.get(1).type, equalTo(UiType.TAB));
+        assertThat(
+                mModelList.get(1).model.get(TabProperties.TAB_GROUP_HEADER_ID),
+                equalTo(TAB_GROUP_ID));
+        assertThat(mModelList.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+        assertThat(mModelList.get(3).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
+    }
+
+    @Test
     public void tabMovementWithinGroup_FlatLayout_Forward() {
         setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
 
         // Assume that moveTab in TabModel is finished.
-        doReturn(mTab1).when(mTabModel).getTabAt(POSITION2);
-        doReturn(mTab2).when(mTabModel).getTabAt(POSITION1);
+        mockTabIndexes(mTab2, mTab1);
         doReturn(TAB_GROUP_ID).when(mTab1).getTabGroupId();
         doReturn(TAB_GROUP_ID).when(mTab2).getTabGroupId();
 
@@ -2335,8 +2446,7 @@ public class TabListMediatorUnitTest {
         setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
 
         // Assume that moveTab in TabModel is finished.
-        doReturn(mTab1).when(mTabModel).getTabAt(POSITION2);
-        doReturn(mTab2).when(mTabModel).getTabAt(POSITION1);
+        mockTabIndexes(mTab2, mTab1);
         doReturn(TAB_GROUP_ID).when(mTab1).getTabGroupId();
         doReturn(TAB_GROUP_ID).when(mTab2).getTabGroupId();
 

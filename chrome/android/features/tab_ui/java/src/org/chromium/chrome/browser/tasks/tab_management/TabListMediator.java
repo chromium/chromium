@@ -720,7 +720,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
                     int finalIndex;
                     if (mLayoutType == TabListLayoutType.NESTED) {
-                        finalIndex = getInsertionIndexOfTabForNestedGroups(tab);
+                        finalIndex = getInsertionIndexOfTabForNestedLayout(tab);
                     } else {
                         finalIndex =
                                 mModelList.indexOfNthTabCard(
@@ -959,6 +959,12 @@ public class TabListMediator implements TabListNotificationHandler {
                             || tabModelNewIndex == tabModelOldIndex) {
                         return;
                     }
+
+                    if (mLayoutType == TabListLayoutType.NESTED) {
+                        moveTabGroupForNestedLayout(movedTab, tabModelNewIndex);
+                        return;
+                    }
+
                     List<Tab> relatedTabs = getRelatedTabsForId(movedTab.getId());
                     TabModel tabModel = getCurrentTabModelChecked();
                     Tab currentGroupSelectedTab =
@@ -1665,7 +1671,7 @@ public class TabListMediator implements TabListNotificationHandler {
         if (tab == null) return TabList.INVALID_TAB_INDEX;
 
         if (mLayoutType == TabListLayoutType.NESTED) {
-            return getInsertionIndexOfTabForNestedGroups(tab);
+            return getInsertionIndexOfTabForNestedLayout(tab);
         }
 
         boolean onlyShowRelatedTabs = mLayoutType == TabListLayoutType.FLAT;
@@ -1709,7 +1715,7 @@ public class TabListMediator implements TabListNotificationHandler {
      * Spatial indexing helper for nested layouts. Maps a backend Tab's absolute index to its
      * corresponding UI list position.
      */
-    private int getInsertionIndexOfTabForNestedGroups(Tab tab) {
+    private int getInsertionIndexOfTabForNestedLayout(Tab tab) {
         if (tab == null) return TabList.INVALID_TAB_INDEX;
 
         TabModel tabModel = getCurrentTabModelChecked();
@@ -1838,6 +1844,42 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     /**
+     * Calculates the target UI index for a moving tab group in a nested layout.
+     *
+     * @param movedTab The tab that was moved.
+     * @param tabModelNewIndex The new backend index of the moved tab.
+     * @param relatedTabs The list of tabs in the group being moved.
+     * @return The UI index of the element immediately following the group's new position.
+     */
+    private int getInsertionIndexOfGroupForNestedLayout(
+            Tab movedTab, int tabModelNewIndex, List<Tab> relatedTabs) {
+        TabModel tabModel = getCurrentTabModelChecked();
+
+        int offset = relatedTabs.indexOf(movedTab);
+        if (offset == -1) return TabModel.INVALID_TAB_INDEX;
+        int firstTabIndex = tabModelNewIndex - offset;
+        if (firstTabIndex < 0) return TabModel.INVALID_TAB_INDEX;
+
+        int tabAfterIndex = firstTabIndex + relatedTabs.size();
+        Tab tabAfter = tabModel.getTabAt(tabAfterIndex);
+
+        if (tabAfter == null) {
+            return mModelList.size();
+        }
+
+        // If the anchor tab belongs to another group, we must anchor our moving block relative to
+        // that group's header card. If it's a standalone tab, we simply map it to its direct UI
+        // index.
+        Tab tabAfterGroupSelected = TabGroupUtils.getSelectedTabInGroupForTab(tabModel, tabAfter);
+        Token tabAfterGroupId = tabAfterGroupSelected.getTabGroupId();
+        if (tabAfterGroupId != null) {
+            return getTabGroupHeaderUiIndex(tabAfterGroupId);
+        } else {
+            return mModelList.indexFromTabId(tabAfterGroupSelected.getId());
+        }
+    }
+
+    /**
      * Updates the UI properties and positioning of a child tab in the NESTED layout when its group
      * membership changes.
      *
@@ -1870,7 +1912,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
         bindTabActionStateProperties(mTabActionState, tab, model);
 
-        int desIndex = getInsertionIndexOfTabForNestedGroups(tab);
+        int desIndex = getInsertionIndexOfTabForNestedLayout(tab);
         // Hidden if the destination group is collapsed.
         if (desIndex == TabModel.INVALID_TAB_INDEX) {
             mModelList.removeAt(srcIndex);
@@ -1883,6 +1925,53 @@ public class TabListMediator implements TabListNotificationHandler {
         }
         if (oldTabGroupId != null && !oldTabGroupId.equals(newTabGroupId)) {
             updateTabGroupTitle(oldTabGroupId);
+        }
+    }
+
+    /**
+     * Updates the UI positioning of a tab or tab group in the NESTED layout when it is moved across
+     * the tab list. Standalone tabs are treated as a block of 1.
+     *
+     * @param movedTab The tab that was moved. If part of a group, this is the representative tab.
+     * @param tabModelNewIndex The new backend index of the moved tab.
+     */
+    private void moveTabGroupForNestedLayout(Tab movedTab, int tabModelNewIndex) {
+        Token tabGroupId = movedTab.getTabGroupId();
+
+        int sourceUiIndex =
+                tabGroupId == null
+                        ? mModelList.indexFromTabId(movedTab.getId())
+                        : getTabGroupHeaderUiIndex(tabGroupId);
+        if (sourceUiIndex == TabModel.INVALID_TAB_INDEX) return;
+
+        List<Tab> relatedTabs = getRelatedTabsForId(movedTab.getId());
+        if (relatedTabs == null || relatedTabs.isEmpty()) return;
+
+        int itemsToMove = 1;
+        if (tabGroupId != null) {
+            PropertyModel headerModel = mModelList.get(sourceUiIndex).model;
+            boolean isCollapsed = headerModel.get(TabProperties.IS_COLLAPSED);
+            if (!isCollapsed) {
+                itemsToMove += relatedTabs.size();
+            }
+        }
+
+        int destinationUiIndex =
+                getInsertionIndexOfGroupForNestedLayout(movedTab, tabModelNewIndex, relatedTabs);
+        if (destinationUiIndex == TabModel.INVALID_TAB_INDEX) return;
+
+        if (sourceUiIndex + itemsToMove == destinationUiIndex) return;
+
+        if (sourceUiIndex < destinationUiIndex) {
+            // Move the tab group down. Insert it immediately before the destination's UI position.
+            for (int i = 0; i < itemsToMove; i++) {
+                mModelList.move(sourceUiIndex, destinationUiIndex - 1);
+            }
+        } else if (sourceUiIndex > destinationUiIndex) {
+            // Move the tab group up. Insert it exactly at the destination's UI position.
+            for (int i = 0; i < itemsToMove; i++) {
+                mModelList.move(sourceUiIndex + i, destinationUiIndex + i);
+            }
         }
     }
 
