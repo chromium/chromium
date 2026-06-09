@@ -4164,7 +4164,9 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   expected_icon = "internal-icons:google_lens_monochrome_logo";
 #else
-  expected_icon = "pinned-toolbar-action:SidePanelShowLensOverlayResults";
+  expected_icon = features::IsRoundedIconsEnabled()
+                      ? "webui-toolbar:vector_icons_search"
+                      : "pinned-toolbar-action:SidePanelShowLensOverlayResults";
 #endif
 
   // Verify iron-icon attribute in WebUI.

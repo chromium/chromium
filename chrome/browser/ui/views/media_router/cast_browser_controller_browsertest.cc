@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -79,26 +80,28 @@ class CastBrowserControllerTest : public InProcessBrowserTest {
         MediaRouterFactory::GetApiForBrowserContext(browser()->profile());
 
     const ui::ColorProvider* color_provider = button_->GetColorProvider();
+    const int icon_size =
+        GetLayoutConstant(LayoutConstant::kToolbarButtonIconSize);
     idle_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
         features::IsRoundedIconsEnabled()
             ? vector_icons::kCastIcon
             : vector_icons::kMediaRouterIdleChromeRefreshOldIcon,
-        color_provider->GetColor(kColorToolbarButtonIcon)));
+        icon_size, color_provider->GetColor(kColorToolbarButtonIcon)));
     warning_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
         features::IsRoundedIconsEnabled()
             ? vector_icons::kCastWarningIcon
             : vector_icons::kMediaRouterWarningChromeRefreshOldIcon,
-        color_provider->GetColor(kColorToolbarButtonIcon)));
+        icon_size, color_provider->GetColor(kColorToolbarButtonIcon)));
     active_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
         features::IsRoundedIconsEnabled()
             ? vector_icons::kCastConnectedIcon
             : vector_icons::kMediaRouterActiveChromeRefreshOldIcon,
-        color_provider->GetColor(kColorMediaRouterIconActive)));
+        icon_size, color_provider->GetColor(kColorMediaRouterIconActive)));
     paused_icon_ = gfx::Image(gfx::CreateVectorIcon(
         features::IsRoundedIconsEnabled()
             ? vector_icons::kCastPauseIcon
             : vector_icons::kMediaRouterPausedOldIcon,
-        color_provider->GetColor(kColorToolbarButtonIcon)));
+        icon_size, color_provider->GetColor(kColorToolbarButtonIcon)));
   }
 
   void TearDownOnMainThread() override {

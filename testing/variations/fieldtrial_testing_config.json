@@ -12339,6 +12339,32 @@
             ]
         }
     ],
+    "GlowUp": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260325",
+                    "enable_features": [
+                        "MenuSimplification",
+                        "RoundedIcons",
+                        "TabGroupColorRefresh",
+                        "TabStripDeclutter",
+                        "ToolbarGlowUp",
+                        "UpdateTabGroupColors",
+                        "WebuiRefresh2026"
+                    ]
+                }
+            ]
+        }
+    ],
     "GoogleChromeScheme": [
         {
             "platforms": [
@@ -24404,22 +24430,6 @@
                     "enable_features": [
                         "UpdateScrollPredictorInputMapping",
                         "WaitForLateScrollEvents"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UpdateTabGroupColors": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UpdateTabGroupColors"
                     ]
                 }
             ]
