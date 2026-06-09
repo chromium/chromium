@@ -8062,11 +8062,6 @@ inline constexpr char kQuickAnswersMaterialNextUIDescription[] =
     "is effective only if a device is eligible to Magic Boost when the Magic "
     "Boost flag gets flipped.";
 
-inline constexpr char kWebPrintingApiName[] = "Web Printing API";
-inline constexpr char kWebPrintingApiDescription[] =
-    "Enable access to the Web Printing API. See "
-    "https://github.com/WICG/web-printing for details.";
-
 inline constexpr char kChromeOSHWVBREncodingName[] =
     "ChromeOS Hardware Variable Bitrate Encoding";
 inline constexpr char kChromeOSHWVBREncodingDescription[] =

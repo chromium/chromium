@@ -4301,11 +4301,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-web-printing-api",
-    "owners": [ "//chrome/browser/printing/web_api/OWNERS" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-web-signin-loading-dialog",
     "owners": [ "mlbipin@google.com", "chrome-signin-mobile-team@google.com" ],
     "expiry_milestone": 160
