@@ -40,11 +40,6 @@
 #include <windows.h>
 #endif
 
-#if defined(IS_AURA)
-#include "ui/aura/window.h"
-#include "ui/views/view_constants_aura.h"
-#endif
-
 using input::NativeWebKeyboardEvent;
 
 // During testing we can disable animations by setting this flag to true,
@@ -189,10 +184,6 @@ FindBarHost::FindBarHost(FindBarOwner* find_bar_owner)
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   host_->Init(std::move(params));
   host_->SetContentsView(std::move(clip_view));
-#if defined(IS_AURA)
-  host_->GetNativeView()->SetProperty(views::kHostViewKey,
-                                      browser_view->find_bar_host_view());
-#endif
 
   // Start listening to focus changes, so we can register and unregister our
   // own handler for Escape.
