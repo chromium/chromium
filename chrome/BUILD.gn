@@ -1010,14 +1010,6 @@ if (is_win) {
     public_deps = [ "//ui/gl:swiftshader_vk_library_copy" ]
   }
 
-  if (shared_libvulkan_on_mac) {
-    bundle_data("vulkan_loader_binaries") {
-      sources = [ "$root_out_dir/vulkan_intermediates/libvulkan.dylib" ]
-      outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
-      public_deps = [ "//ui/gl:vulkan_loader_library_copy" ]
-    }
-  }
-
   if (bundle_widevine_cdm) {
     bundle_data("widevine_cdm_library_binaries") {
       sources = [ "$root_out_dir/$widevine_cdm_path/libwidevinecdm.dylib" ]
@@ -1224,10 +1216,6 @@ if (is_win) {
 
     if (!use_static_angle) {
       bundle_deps += [ ":angle_binaries" ]
-    }
-
-    if (shared_libvulkan_on_mac) {
-      bundle_deps += [ ":vulkan_loader_binaries" ]
     }
 
     configs += [ ":chrome_dll_symbol_order" ]

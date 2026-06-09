@@ -34,7 +34,3 @@ class BuildPropsCodeSignConfig(CodeSignConfig):
     @property
     def base_bundle_id(self):
         return '@MAC_BUNDLE_ID@'
-
-    @property
-    def shared_libvulkan_on_mac(self):
-        return @SHARED_LIBVULKAN_ON_MAC@

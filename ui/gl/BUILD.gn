@@ -427,9 +427,6 @@ component("gl") {
         "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
       ]
     }
-    if (shared_libvulkan_on_mac) {
-      data_deps += [ "//third_party/vulkan-loader/src:libvulkan" ]
-    }
 
     defines += [ "GL_SILENCE_DEPRECATION" ]
   }
@@ -519,14 +516,6 @@ if (is_mac) {
         "//third_party/swiftshader/src/Vulkan:icd_file",
         "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
       ]
-    }
-  }
-
-  if (shared_libvulkan_on_mac) {
-    copy("vulkan_loader_library_copy") {
-      sources = [ "$root_out_dir/libvulkan.dylib" ]
-      outputs = [ "$root_out_dir/vulkan_intermediates/{{source_file_part}}" ]
-      deps = [ "//third_party/vulkan-loader/src:libvulkan" ]
     }
   }
 }
