@@ -119,6 +119,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -230,6 +231,10 @@ import java.util.function.Consumer;
                 "Some tests are Testing CCT start up behavior. "
                         + "Unit test conversion tracked in crbug.com/40185034")
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
+@DisableLeakChecks({
+    "crbug.com/512492806 (NavigationInfoCaptureTrigger)",
+    "crbug.com/512492857 (NavigationInfoCaptureTrigger)"
+})
 public class CustomTabActivityTest {
     private static final int TIMEOUT_PAGE_LOAD_SECONDS = 10;
     private static final String TEST_PACKAGE = "org.chromium.chrome.tests";
