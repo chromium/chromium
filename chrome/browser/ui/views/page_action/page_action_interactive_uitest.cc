@@ -265,13 +265,16 @@ class PageActionUiTestBase {
 
   void ShowTestAnchoredMessageWithExpandableContent(
       std::u16string text,
-      const AnchoredMessageExpandableContent& expandable_content) const {
+      const AnchoredMessageExpandableContent& expandable_content,
+      std::unique_ptr<ui::SimpleMenuModel> menu = nullptr) const {
     ShowPageAction(kActionShowTranslate);
     page_action_controller()->SetAnchoredMessageExpandableContent(
         kActionShowTranslate, expandable_content);
-    ShowAnchoredMessage(kActionShowTranslate, text,
-                        AnchoredMessageActionIconType::kNone, std::nullopt,
-                        nullptr);
+    const AnchoredMessageActionIconType icon_type =
+        menu ? AnchoredMessageActionIconType::kMenu
+             : AnchoredMessageActionIconType::kNone;
+    ShowAnchoredMessage(kActionShowTranslate, text, icon_type, std::nullopt,
+                        std::move(menu));
   }
 
   void ShowTranslatePageActionIcon() const {
@@ -1275,8 +1278,11 @@ IN_PROC_BROWSER_TEST_P(PageActionExpandedAnchoredMessageTest,
                text});
         }
 
-        ShowTestAnchoredMessageWithExpandableContent(u"Anchored with expand",
-                                                     content);
+        auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
+        menu_model->AddItem(0, u"Menu Item 1");
+
+        ShowTestAnchoredMessageWithExpandableContent(
+            u"Anchored with expand", content, std::move(menu_model));
       }),
       WaitForShow(AnchoredMessageBubbleView::kAnchoredMessageBubbleId),
       EnsureNotPresent(
