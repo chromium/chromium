@@ -683,8 +683,8 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case SuggestionType::kAtMemorySearchResult:
       manager_->GetAtMemoryManager().FillOrPreviewSearchResult(
-          mojom::ActionPersistence::kPreview, query_form_, query_field_,
-          suggestion);
+          mojom::ActionPersistence::kPreview, query_form_.global_id(),
+          query_field_.global_id(), suggestion);
       break;
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kWebauthnPasskeyQrCode:
@@ -950,8 +950,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case SuggestionType::kAtMemorySearchResult:
       manager_->GetAtMemoryManager().FillOrPreviewSearchResult(
-          mojom::ActionPersistence::kFill, query_form_, query_field_,
-          suggestion);
+          mojom::ActionPersistence::kFill, query_form_.global_id(),
+          query_field_.global_id(), suggestion);
       break;
     case SuggestionType::kOpenGemini:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

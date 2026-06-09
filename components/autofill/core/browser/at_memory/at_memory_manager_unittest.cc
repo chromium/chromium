@@ -311,8 +311,9 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
                          passport_attribute->GetCompleteRawInfo(),
                          FillingProduct::kAtMemory, _));
 
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form,
-                                      field, suggestion);
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                      form.global_id(), field.global_id(),
+                                      suggestion);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.AtMemory.Funnel.SuggestionAccepted", true, 1);
@@ -378,8 +379,9 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
                          mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                          expected_primary_value, FillingProduct::kAtMemory, _));
 
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form,
-                                      field, suggestion);
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                      form.global_id(), field.global_id(),
+                                      suggestion);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.AtMemory.Funnel.SuggestionAccepted", true, 1);
@@ -432,11 +434,11 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
 
   EXPECT_CALL(autofill_client(),
               ShowAutofillAiFetchFromWalletFailureNotification());
-  EXPECT_CALL(autofill_manager(), FillOrPreviewField(_, _, _, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(autofill_manager(), FillOrPreviewField).Times(0);
 
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form,
-                                      field, suggestion);
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                      form.global_id(), field.global_id(),
+                                      suggestion);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.AtMemory.Funnel.SuggestionAccepted", true, 1);
@@ -583,8 +585,9 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
                          mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
                          expected_value, FillingProduct::kAtMemory, _));
 
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form,
-                                      field, suggestion);
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                      form.global_id(), field.global_id(),
+                                      suggestion);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.AtMemory.Funnel.SuggestionAccepted", true, 1);
@@ -618,7 +621,7 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
       autofill_client().GetPaymentsAutofillClient()->GetIbanAccessManager();
 
   base::OnceCallback<void(const std::u16string& value)> fetch_callback;
-  EXPECT_CALL(*mock_iban_access_manager, FetchValue(_, _))
+  EXPECT_CALL(*mock_iban_access_manager, FetchValue)
       .WillOnce(
           [&](const Suggestion::Payload& payload,
               base::OnceCallback<void(const std::u16string& value)> callback) {
@@ -626,8 +629,9 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
           });
 
   // 2. Accept async suggestion on Popup 1.
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form,
-                                      field, suggestion);
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                      form.global_id(), field.global_id(),
+                                      suggestion);
 
   // 3. Hide Popup 1.
   manager().OnPopupHidden();

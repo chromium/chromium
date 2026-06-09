@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace accessibility_annotator {
 struct MemorySearchResults;
@@ -29,8 +30,6 @@ struct MemorySearchResults;
 namespace autofill {
 
 class BrowserAutofillManager;
-class FormData;
-class FormFieldData;
 
 // Manager for the accessibility annotator search feature. It handles queries
 // to the AccessibilityQueryService and manages session-based metrics.
@@ -68,8 +67,8 @@ class AtMemoryManager {
 
   // Fills or previews the selected search result.
   void FillOrPreviewSearchResult(mojom::ActionPersistence action_persistence,
-                                 const FormData& form,
-                                 const FormFieldData& field,
+                                 const FormGlobalId& form_id,
+                                 const FieldGlobalId& field_id,
                                  const Suggestion& suggestion);
 
   // Returns true if a search is currently in progress.
@@ -106,31 +105,31 @@ class AtMemoryManager {
 
   // Fills the unmasked IBAN value after fetching it.
   void FillIban(const Suggestion::AtMemoryPayload::Identifier& identifier,
-                const FormData& form,
-                const FormFieldData& field,
+                const FormGlobalId& form_id,
+                const FieldGlobalId& field_id,
                 const Suggestion& suggestion,
                 std::unique_ptr<AtMemoryFunnelMetrics> metrics);
 
   // Fills the unmasked credit card value after fetching it.
   void FillCreditCard(const Suggestion::AtMemoryPayload::Identifier& identifier,
-                      const FormData& form,
-                      const FormFieldData& field,
+                      const FormGlobalId& form_id,
+                      const FieldGlobalId& field_id,
                       const Suggestion& suggestion,
                       std::unique_ptr<AtMemoryFunnelMetrics> metrics);
 
   // Fills the unmasked AutofillAI value after fetching it.
   void FillSensitiveAutofillAiData(
       const EntityInstance::EntityId& entity_id,
-      const FormData& form,
-      const FormFieldData& field,
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
       const Suggestion& suggestion,
       const AtMemoryDataType& data_type,
       std::unique_ptr<AtMemoryFunnelMetrics> metrics);
 
   // Callback handler when the unmasked AutofillAI entity has been fetched.
   void OnAutofillAiFetched(
-      const FormData& form,
-      const FormFieldData& field,
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
       const Suggestion& suggestion,
       const AtMemoryDataType& data_type,
       std::unique_ptr<AtMemoryFunnelMetrics> metrics,
