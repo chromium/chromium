@@ -3205,16 +3205,21 @@ void RenderWidgetHostViewAura::UpdateLegacyWin() {
   if (legacy_window_destroyed_ || !GetHostWindowHWND())
     return;
 
+  // `Create`, `UpdateParent`, and `SetBounds` can all spin a nested message
+  // loop on Windows, potentially destroying `this`.
+  base::WeakPtr<RenderWidgetHostViewAura> weak_this(
+      weak_ptr_factory_.GetWeakPtr());
+
   if (!legacy_render_widget_host_HWND_) {
-    legacy_render_widget_host_HWND_ =
+    LegacyRenderWidgetHostHWND* legacy_window =
         LegacyRenderWidgetHostHWND::Create(GetHostWindowHWND(), this);
+    if (!weak_this) {
+      return;
+    }
+    legacy_render_widget_host_HWND_ = legacy_window;
   }
 
   if (legacy_render_widget_host_HWND_) {
-    // Both UpdateParent and SetBounds can spin a nested message loop on
-    // Windows, potentially destroying `this`.
-    base::WeakPtr<RenderWidgetHostViewAura> weak_this(
-        weak_ptr_factory_.GetWeakPtr());
     legacy_render_widget_host_HWND_->UpdateParent(GetHostWindowHWND());
     if (!weak_this) {
       return;
