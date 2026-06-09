@@ -740,7 +740,7 @@ bool IsGeminiActorEnabled() {
   return base::FeatureList::IsEnabled(kGeminiActor);
 }
 
-BASE_FEATURE(kGeminiRichAPCExtraction, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiRichAPCExtraction, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiRichAPCExtractionEnabled() {
   if (!IsPageActionMenuEnabled() ||
@@ -794,7 +794,7 @@ bool IsPersistTabContextRichExtractionEnabled() {
   return base::FeatureList::IsEnabled(kPersistTabContextRichExtraction);
 }
 
-BASE_FEATURE(kPageContextIPCOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPageContextIPCOptimization, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPageContextIPCOptimizationActionableParam[] = "enable_actionable";
 

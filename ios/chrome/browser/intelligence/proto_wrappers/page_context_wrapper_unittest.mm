@@ -2029,7 +2029,8 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction) {
           "    <a href='https://example.com' style='display: block;' "
           "       rel=\"noopener noreferrer\">Link</a>"
           "    <div style='width: 200px; height: 200px;'></div>"
-          "</div>"),
+          "</div>"
+          "<canvas width='10' height='10'></canvas>"),
       Iframe(TestOrigin::kCrossA,
              HtmlPage("Child Cross Origin",
                       Paragraph("Child frame cross-origin text")),
@@ -2086,7 +2087,7 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction) {
   EXPECT_TRUE(root.content_attributes().has_common_ancestor_dom_node_id());
   EXPECT_EQ(root.content_attributes().common_ancestor_dom_node_id(), 1);
 
-  ASSERT_EQ(root.children_nodes_size(), 3);
+  ASSERT_EQ(root.children_nodes_size(), 4);
 
   // Verify root node content.
 
@@ -2194,11 +2195,11 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction) {
   //   |   | Iframe (Cross-Origin)    |
   //   |   |   - P ("Child ...")      |
   //   |   +--------------------------+
-  const auto& iframe = root.children_nodes(1);
+  const auto& iframe = root.children_nodes(2);
   EXPECT_EQ(iframe.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   EXPECT_TRUE(iframe.content_attributes().has_common_ancestor_dom_node_id());
-  EXPECT_EQ(iframe.content_attributes().common_ancestor_dom_node_id(), 8);
+  EXPECT_EQ(iframe.content_attributes().common_ancestor_dom_node_id(), 9);
   EXPECT_EQ(iframe.content_attributes().iframe_data().frame_data().url(),
             page_helper_->GetUrlForId("iframe_cross").spec());
   EXPECT_EQ(iframe.content_attributes().iframe_data().frame_data().title(),
@@ -2253,13 +2254,14 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction) {
   //   |   | Iframe (Same-Origin)     |
   //   |   |   - P ("Child frame 3")  |
   //   |   +--------------------------+
-  const auto& same_origin_iframe = root.children_nodes(2);
+  const auto& same_origin_iframe = root.children_nodes(3);
   EXPECT_EQ(same_origin_iframe.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
   EXPECT_TRUE(same_origin_iframe.content_attributes()
                   .has_common_ancestor_dom_node_id());
   EXPECT_EQ(
-      same_origin_iframe.content_attributes().common_ancestor_dom_node_id(), 9);
+      same_origin_iframe.content_attributes().common_ancestor_dom_node_id(),
+      10);
   EXPECT_EQ(same_origin_iframe.content_attributes()
                 .iframe_data()
                 .frame_data()
@@ -2323,6 +2325,13 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction) {
   EXPECT_EQ(
       same_origin_iframe_text.content_attributes().text_data().text_content(),
       "Child frame 3 text");
+
+  // ---------------------------------------------------------
+  // Section 4: Canvas
+  // ---------------------------------------------------------
+  const auto& canvas_node = root.children_nodes(1);
+  EXPECT_EQ(canvas_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CANVAS);
 }
 
 // Tests that all the nested iframes on different origins are put under their
@@ -5412,7 +5421,8 @@ TEST_P(PageContextWrapperTest,
               "<div style='width: 50px; height: 50px; overflow: hidden;' "
               "id='hidden'>"
               "  <div style='width: 100px; height: 100px;'>Content</div>"
-              "</div>"));
+              "</div>"
+              "<canvas width='10' height='10'></canvas>"));
 
   std::string main_html = page_helper_->Build(page_structure);
   web::test::LoadHtml(base::SysUTF8ToNSString(main_html),

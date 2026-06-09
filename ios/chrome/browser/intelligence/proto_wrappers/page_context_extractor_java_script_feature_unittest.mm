@@ -62,6 +62,8 @@ class PageContextExtractorJavaScriptFeatureTest
   void SetUp() override {
     if (GetParam() == IPCExtractionMethod::kJSON) {
       scoped_feature_list_.InitAndEnableFeature(kPageContextIPCOptimization);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(kPageContextIPCOptimization);
     }
     PlatformTest::SetUp();
 

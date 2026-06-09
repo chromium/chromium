@@ -13097,21 +13097,6 @@
             ]
         }
     ],
-    "HeliosRichAPCExtraction": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GeminiRichAPCExtraction"
-                    ]
-                }
-            ]
-        }
-    ],
     "HeliosWithReaderMode": [
         {
             "platforms": [
