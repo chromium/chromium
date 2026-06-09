@@ -11,11 +11,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*_browsertest\.cc": [
+  ".*_browsertest\\.cc": [
     # WebEngine test helpers.
     "+fuchsia_web/webengine/test/web_engine_browser_test.h",
   ],
-  "cast_runner_integration_test\.cc": [
+  "cast_runner_integration_test\\.cc": [
     # The expeted behavior of some tests depends on ENABLE_CAST_RECEIVER.
     "+build/chromecast_buildflags.h",
   ],

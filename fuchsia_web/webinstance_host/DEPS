@@ -17,13 +17,13 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "web_instance_host_internal\.cc": [
+  "web_instance_host_internal\\.cc": [
     # Some functionality depends on ENABLE_CAST_RECEIVER.
     "+build/chromecast_buildflags.h",
 
     "+third_party/widevine/cdm/buildflags.h",
   ],
-  "web_instance_host_integration_test\.cc": [
+  "web_instance_host_integration_test\\.cc": [
     "+fuchsia_web/webengine/test/frame_for_test.h",
     "+net/test/embedded_test_server",
   ],

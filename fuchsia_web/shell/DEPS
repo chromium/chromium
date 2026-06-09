@@ -4,7 +4,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "cast_streaming_shell\.cc": [
+  "cast_streaming_shell\\.cc": [
     "+components/cast/message_port",
     "+components/cast_streaming",
     "+fuchsia_web/cast_streaming",
@@ -15,7 +15,7 @@ specific_include_rules = {
     "+media/base",
     "+media/gpu/test",
   ],
-  "web_engine_shell\.cc": [
+  "web_engine_shell\\.cc": [
     "+third_party/widevine/cdm/buildflags.h",
   ],
 }

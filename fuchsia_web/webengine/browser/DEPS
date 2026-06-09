@@ -52,7 +52,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*_(unit|browser|api)test\.cc": [
+  ".*_(unit|browser|api)test\\.cc": [
     "+content/public/test",
     "+services/network",
   ],
@@ -61,14 +61,14 @@ specific_include_rules = {
   ],
 
   # Exceptions related to Cast Streaming.
-  "cast_streaming_browsertest\.cc" : [
+  "cast_streaming_browsertest\\.cc" : [
     "+components/cast/message_port",
     "+components/cast_streaming/test",
   ],
-  "context_impl\.cc" : [
+  "context_impl\\.cc" : [
     "+components/cast_streaming/browser/public"
   ],
-  "receiver_session_client\.cc" : [
+  "receiver_session_client\\.cc" : [
     "+components/cast/message_port",
     "+components/cast_streaming/browser/public",
   ],

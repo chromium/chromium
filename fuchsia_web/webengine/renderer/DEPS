@@ -15,7 +15,7 @@ include_rules = [
 
 specific_include_rules = {
   # Exceptions related to Cast Streaming.
-  "web_engine_content_renderer_client\.cc" : [
+  "web_engine_content_renderer_client\\.cc" : [
     "+components/cast_streaming/renderer/public",
     "+third_party/widevine/cdm",
   ]
