@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
   session_manager::SessionManager::Get()->SwitchActiveSession(kAccountId0);
 #endif  //  BUILDFLAG(IS_CHROMEOS)
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   ui_test_utils::WaitForBrowserSetLastActive(browser());
   EXPECT_EQ(profile0, profile_manager->GetProfileForLaunch());
 #endif  // !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)

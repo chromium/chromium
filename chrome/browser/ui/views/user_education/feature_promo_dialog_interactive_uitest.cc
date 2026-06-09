@@ -99,7 +99,7 @@ class FeaturePromoDialogTest : public TestBase {
   }
   void SetUpOnMainThread() override {
     TestBase::SetUpOnMainThread();
-    browser()->window()->Activate();
+    browser()->GetWindow()->Activate();
     ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
   }
 
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
                   kActionInstallPwa)
                   ->GetVisible());
 
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
 
   ShowAndVerifyUi();

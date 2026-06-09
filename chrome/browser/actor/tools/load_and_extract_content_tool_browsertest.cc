@@ -74,7 +74,7 @@ class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
     browser()->GetWindow()->Show();
-    browser()->window()->Activate();
+    browser()->GetWindow()->Activate();
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &ActorLoadAndExtractContentToolBrowserTest::HandleStallRequest,
         base::Unretained(this)));

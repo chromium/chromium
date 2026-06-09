@@ -242,9 +242,9 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
         chrome::CreateBrowserWithAuraTestWindowForParams(
             std::move(dummy_window), &params);
     if (is_focused) {
-      browser->window()->Activate();
+      browser->GetWindow()->Activate();
     } else {
-      browser->window()->Deactivate();
+      browser->GetWindow()->Deactivate();
     }
     return browser;
   }

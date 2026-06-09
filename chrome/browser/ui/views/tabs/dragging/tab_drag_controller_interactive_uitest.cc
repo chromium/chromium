@@ -5018,7 +5018,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   // Ensure the first browser is on top so clicks go to it.
   ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   activation_waiter.WaitForActivation();
 
   // Move to the first tab and drag it to browser2.
@@ -7348,7 +7348,7 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
   Tab* first_tab = tab_strip->tab_at(0);
 
   ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   activation_waiter.WaitForActivation();
   ASSERT_TRUE(PressInputAtCenter(first_tab));
 
@@ -7389,7 +7389,7 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
   EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
 
   ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   activation_waiter.WaitForActivation();
 
   // Forcibly reveal the tabstrip immediately.
@@ -7446,7 +7446,7 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest, DragFromSnapped) {
   Tab* first_tab = tab_strip->tab_at(0);
 
   ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   activation_waiter.WaitForActivation();
   ASSERT_TRUE(PressInputAtCenter(first_tab));
 
@@ -7491,7 +7491,7 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
   Tab* first_tab = tab_strip->tab_at(0);
 
   ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   activation_waiter.WaitForActivation();
   ASSERT_TRUE(PressInputAtCenter(first_tab));
 
@@ -7541,7 +7541,7 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
   Tab* first_tab = tab_strip->tab_at(0);
 
   ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   activation_waiter.WaitForActivation();
   ASSERT_TRUE(PressInputAtCenter(first_tab));
 
@@ -7594,7 +7594,7 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
   Tab* first_tab = tab_strip->tab_at(0);
 
   ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   activation_waiter.WaitForActivation();
   ASSERT_TRUE(PressInputAtCenter(first_tab));
 
@@ -7638,7 +7638,7 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest,
   Tab* first_tab = tab_strip->tab_at(0);
 
   ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   activation_waiter.WaitForActivation();
   EXPECT_TRUE(PressInputAtCenter(first_tab));
 
@@ -7679,7 +7679,7 @@ IN_PROC_BROWSER_TEST_P(TabDragControllerTabletModeTest, DoubleDetach) {
   gfx::Point first_tab_center = first_tab->GetBoundsInScreen().CenterPoint();
 
   ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   activation_waiter.WaitForActivation();
   ASSERT_TRUE(PressInputAtCenter(first_tab));
 

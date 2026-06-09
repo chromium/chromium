@@ -231,7 +231,7 @@ WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
         true;
 #endif
     if (should_activate) {
-      browser->window()->Activate();
+      browser->GetWindow()->Activate();
     }
   }
 

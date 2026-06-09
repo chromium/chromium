@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Bubble is reshown by the user. Closing a reshown bubble makes the
   // browser inactive for some reason, so we must reactivate it first.
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   ReshowBubble();
 
   histogram_tester.ExpectBucketCount(

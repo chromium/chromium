@@ -236,10 +236,10 @@ TEST_F(BrowserViewTest, MAYBE_UpdateActiveBrowser) {
   browser()->GetWindow()->Show();
   EXPECT_EQ(browser(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
-  browser2->window()->Activate();
+  browser2->GetWindow()->Activate();
   EXPECT_EQ(browser2, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   EXPECT_EQ(browser(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   browser2 = nullptr;

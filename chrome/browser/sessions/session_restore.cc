@@ -766,7 +766,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
     // Determine if there is a visible window, or if the active window exists.
     // Even if all windows are ui::mojom::WindowShowState::kMinimized, if one of
     // them is the active window it will be made visible by the call to
-    // browser_to_activate->window()->Activate() later on in this method.
+    // browser_to_activate->GetWindow()->Activate() later on in this method.
     bool has_visible_browser = false;
     for (const auto& window : *windows) {
       if (window->show_state != ui::mojom::WindowShowState::kMinimized ||
@@ -930,7 +930,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
         "SessionRestore-CreatingTabs-End", false);
 #endif
     if (browser_to_activate) {
-      browser_to_activate->window()->Activate();
+      browser_to_activate->GetWindow()->Activate();
     }
 
     // If last_normal_browser is NULL and startup_tabs_ is non-empty,

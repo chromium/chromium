@@ -182,12 +182,12 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {
 
   // Switch to the 1st browser window, focus should still be on the location
   // bar and the second browser should have nothing focused.
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   ASSERT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));
   EXPECT_EQ(nullptr, focus_manager2->GetFocusedView());
 
   // Switch back to the second browser, focus should still be on the page.
-  browser2->window()->Activate();
+  browser2->GetWindow()->Activate();
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   ASSERT_TRUE(widget);
   EXPECT_EQ(nullptr, widget->GetFocusManager()->GetFocusedView());

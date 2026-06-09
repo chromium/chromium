@@ -1341,7 +1341,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelActiveWithMicrophone) {
   // Activating the other tab should take focus away from Floaty. Floaty should
   // still remain active.
   browser()->tab_strip_model()->ActivateTabAt(1);
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
 
   EXPECT_TRUE(GetGlicInstance()->IsActive());
 
@@ -1351,7 +1351,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelActiveWithMicrophone) {
   // considered active.
   GetHost()->OnMicrophoneStatusChanged(mojom::MicrophoneStatus::kNotListening);
   browser()->tab_strip_model()->ActivateTabAt(1);
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
 
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !GetGlicInstance()->IsActive(); }));

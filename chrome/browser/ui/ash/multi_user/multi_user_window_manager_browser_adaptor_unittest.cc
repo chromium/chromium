@@ -1670,7 +1670,7 @@ TEST_F(MultiUserWindowManagerBrowserAdaptorTest, GetActiveBrowser) {
   std::unique_ptr<Browser> browser(
       CreateTestBrowser(CreateTestWindowInShell({.window_id = 0}).release(),
                         {16, 32, 640, 320}, &params));
-  browser->window()->Activate();
+  browser->GetWindow()->Activate();
   // Manually set last active browser in BrowserList for testing.
   ui_test_utils::DeprecatedFakeActivateBrowser(browser.get());
   EXPECT_EQ(browser.get(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());

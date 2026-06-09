@@ -1067,7 +1067,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
         ASSERT_FALSE(browser()->window()->IsActive());
 
         ui_test_utils::BrowserActivationWaiter waiter(browser());
-        browser()->window()->Activate();
+        browser()->GetWindow()->Activate();
         waiter.WaitForActivation();
       }),
 

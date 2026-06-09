@@ -448,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, BackgroundBrowserDontStealFocus) {
 
   // Activate the first browser (again). Note BringBrowserWindowToFront() does
   // Show() and Focus(), but not Activate(), which is needed for Desktop Linux.
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   EXPECT_TRUE(browser()->window()->IsActive());
   ASSERT_TRUE(content::ExecJs(

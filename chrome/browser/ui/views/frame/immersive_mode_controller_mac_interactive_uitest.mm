@@ -118,7 +118,7 @@ class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
         base::BindRepeating(&ui::BaseWindow::IsActive,
                             base::Unretained(second_browser_->window())),
         true);
-    second_browser_->window()->Activate();
+    second_browser_->GetWindow()->Activate();
     EXPECT_TRUE(activate_waiter.Wait());
 
     views::test::PropertyWaiter active_space_waiter(

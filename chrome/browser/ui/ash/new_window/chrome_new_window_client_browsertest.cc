@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoForced) {
 
   // Deactivating the current normal profile browser
   Browser* regular_browser = GetLastActiveBrowser();
-  regular_browser->window()->Deactivate();
+  regular_browser->GetWindow()->Deactivate();
 
   // NewTab should open a new browser window in Incognito
   ChromeNewWindowClient::Get()->NewTab();
@@ -158,8 +158,8 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoForced) {
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
 
   // After deactivating browsers, NewTab should open a new Incognito Tab only
-  incognito_browser->window()->Deactivate();
-  regular_browser->window()->Deactivate();
+  incognito_browser->GetWindow()->Deactivate();
+  regular_browser->GetWindow()->Deactivate();
   ChromeNewWindowClient::Get()->NewTab();
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(2, incognito_browser->tab_strip_model()->count());

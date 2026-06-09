@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientSendTabToSelfSyncTest,
 
   // Ensure receiver browser is active so notification is handled immediately,
   // as opposed to getting queued and executing during teardown.
-  GetBrowser(1)->window()->Activate();
+  GetBrowser(1)->GetWindow()->Activate();
 
   // Client 1: Wait for entry and fill.
   send_tab_to_self::SendTabToSelfSyncService* service1 =

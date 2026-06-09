@@ -153,7 +153,7 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
 
     SendAcceleratorSync(ui::VKEY_OEM_4, true, false);
     EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
-    browser()->window()->Activate();
+    browser()->GetWindow()->Activate();
     EnsureWindowActive(browser()->window(), "switch away with curly brace");
     EXPECT_FALSE(test_api_->GetPromptWindow());
   }
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest, MAYBE_SwitchTabs) {
   // test environment can't guarantee that macOS decides that the Browser window
   // is actually the "best" window to activate upon closing the current key
   // window. So activate it manually.
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   EnsureWindowActive(browser()->window(), "tab added");
 #endif
 
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest, MAYBE_SwitchTabs) {
   JumpToNextOpenTab();
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
 
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   EnsureWindowActive(browser()->window(),
                      "switch away with ctrl+tab or arrow at mac os");
   EXPECT_FALSE(test_api_->GetPromptWindow());

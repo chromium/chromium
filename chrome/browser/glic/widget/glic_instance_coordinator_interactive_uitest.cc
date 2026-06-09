@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
   RunTestSequence(
       Do([&]() {
         Browser* const pwa = CreateBrowserForApp("app name", GetProfile());
-        pwa->window()->Activate();
+        pwa->GetWindow()->Activate();
       }),
       SimulateGlicHotkey(),
       InAnyContext(WaitForShow(kGlicViewElementId).SetMustRemainVisible(false)),
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
       ActivateSurface(kBrowserViewElementId));
 
   // This will make some other window the foreground window.
-  browser()->window()->Deactivate();
+  browser()->GetWindow()->Deactivate();
 
   RunTestSequence(
       SimulateGlicHotkey(),
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
         histogram_tester.ExpectTotalCount(
             "Glic.Host.WebClientUnresponsiveState", 0);
       }),
-      Do([&] { browser()->window()->Activate(); }),
+      Do([&] { browser()->GetWindow()->Activate(); }),
       WaitForState(test::internal::kGlicAppState,
                    mojom::WebUiState::kUnresponsive),
       Do([&] {

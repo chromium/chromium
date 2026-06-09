@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(KioskSettingsTest, CanRefocusSettings) {
   EXPECT_TRUE(settings.window()->IsActive());
 
   // Simulate a focus switch.
-  settings.window()->Deactivate();
+  settings.GetWindow()->Deactivate();
   EXPECT_FALSE(settings.window()->IsActive());
 
   // Verify focus can switch to another settings page.

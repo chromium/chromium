@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherActiveStateTest,
   // Immediately change the activation so that it will not show the what's new
   // tab.
   ui_test_utils::BrowserActivationWaiter waiter(browser());
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   waiter.WaitForActivation();
 
   // There is no events to wait, so just use RunUntilIdle to give the posted

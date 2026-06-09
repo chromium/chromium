@@ -359,7 +359,7 @@ void CollaborationControllerDelegateDesktop::PromoteCurrentScreen() {
   }
 
   // Focus on the current browser.
-  browser_->window()->Activate();
+  browser_->GetWindow()->Activate();
 
   MaybeShowSignInOrSyncPromptDialog();
 }

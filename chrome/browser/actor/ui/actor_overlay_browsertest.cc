@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
   // Verify that the default state is enabled for the second browser.
   ASSERT_TRUE(chrome::IsCommandEnabled(browser2, IDC_FIND));
   // Activate the first browser window.
-  browser1->window()->Activate();
+  browser1->GetWindow()->Activate();
   // Start actuating on the first browser window and wait for overlay to
   // visible.
   ActorUiStateManagerInterface* state_manager =
@@ -522,11 +522,11 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
   // Verify that the FIP command is disabled in the first browser.
   EXPECT_FALSE(chrome::IsCommandEnabled(browser1, IDC_FIND));
   // Activate the second browser window.
-  browser2->window()->Activate();
+  browser2->GetWindow()->Activate();
   // Verify that the FIP command is enabled in the second browser.
   EXPECT_TRUE(chrome::IsCommandEnabled(browser2, IDC_FIND));
   // Activate the first browser window again.
-  browser1->window()->Activate();
+  browser1->GetWindow()->Activate();
   // Verify that the FIP command is still disabled in the first browser.
   EXPECT_FALSE(chrome::IsCommandEnabled(browser1, IDC_FIND));
   // Stop actuating and wait for overlay to be hidden.

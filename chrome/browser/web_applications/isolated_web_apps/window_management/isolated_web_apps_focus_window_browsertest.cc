@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppFocusBrowserTest,
   EXPECT_TRUE(WindowHasNoFocus(iwa_browser));
 
   // Explicitly activate the original IWA window to shift focus back to it.
-  iwa_browser->window()->Activate();
+  iwa_browser->GetWindow()->Activate();
   EXPECT_TRUE(WindowHasFocus(iwa_browser));
   EXPECT_TRUE(WindowHasNoFocus(new_browser));
 

@@ -40,13 +40,13 @@ IN_PROC_BROWSER_TEST_F(
   browser2->GetWindow()->Show();
 
   // Activate the second browser.
-  browser2->window()->Activate();
+  browser2->GetWindow()->Activate();
   EXPECT_TRUE(base::test::RunUntil([&] {
     return GetLastActiveBrowserWindowInterfaceWithAnyProfile() == browser2;
   }));
 
   // Activate the first browser again.
-  browser1->window()->Activate();
+  browser1->GetWindow()->Activate();
   EXPECT_TRUE(base::test::RunUntil([&] {
     return GetLastActiveBrowserWindowInterfaceWithAnyProfile() == browser1;
   }));

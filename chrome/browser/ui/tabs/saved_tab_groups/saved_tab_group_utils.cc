@@ -635,7 +635,7 @@ void SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
 
   if (active_index >= static_cast<int>(tab_group_index_range.GetMin()) &&
       active_index < static_cast<int>(tab_group_index_range.GetMax())) {
-    browser_for_activation->window()->Activate();
+    browser_for_activation->GetWindow()->Activate();
     return;
   }
 

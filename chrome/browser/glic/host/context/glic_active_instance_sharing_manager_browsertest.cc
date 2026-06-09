@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerBrowserTest,
   // window). Create another browser.
   Browser* browser2 = CreateBrowser(browser()->profile());
   // Helper to activate.
-  browser2->window()->Activate();
+  browser2->GetWindow()->Activate();
 
   // Now `active_instance` for the sharing manager should be null (or whatever
   // is on browser2, which is nothing yet). Note:
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerBrowserTest,
   }));
 
   // Switch back to browser1.
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
 
   // Verify delegation to instance1: tab1 pinned, tab2 NOT pinned.
   EXPECT_TRUE(base::test::RunUntil([&]() {

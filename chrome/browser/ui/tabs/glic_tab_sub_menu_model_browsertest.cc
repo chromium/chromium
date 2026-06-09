@@ -111,7 +111,7 @@ class GlicTabSubMenuModelTest : public InProcessBrowserTest {
     glic::GlicKeyedService::Get(browser()->profile())
         ->enabling()
         .SetCompletedFre(glic::prefs::FreStatus::kCompleted);
-    browser()->window()->Activate();
+    browser()->GetWindow()->Activate();
   }
 
   void TearDownOnMainThread() override {

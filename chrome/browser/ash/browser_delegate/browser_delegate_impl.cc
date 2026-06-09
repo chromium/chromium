@@ -140,7 +140,7 @@ void BrowserDelegateImpl::ShowInactive() {
 }
 
 void BrowserDelegateImpl::Activate() {
-  browser_->window()->Activate();
+  browser_->GetWindow()->Activate();
 }
 
 void BrowserDelegateImpl::Minimize() {

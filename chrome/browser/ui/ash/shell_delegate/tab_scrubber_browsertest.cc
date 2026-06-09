@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, MultiBrowser) {
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
   Browser* browser2 = CreateBrowser(browser()->profile());
-  browser2->window()->Activate();
+  browser2->GetWindow()->Activate();
   ASSERT_TRUE(browser2->window()->IsActive());
   ASSERT_FALSE(browser()->window()->IsActive());
   AddTabs(browser2, 1);
@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, DisabledIfWindowCycleListOpen) {
 
   // Create a second browser, but don't make it active.
   Browser* browser2 = CreateBrowser(browser()->profile());
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   ASSERT_FALSE(browser2->window()->IsActive());
   ASSERT_TRUE(browser()->window()->IsActive());
 

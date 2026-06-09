@@ -466,10 +466,10 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
 
-  browser()->window()->Deactivate();
+  browser()->GetWindow()->Deactivate();
   EXPECT_TRUE(IsBubbleShowing());
 
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   EXPECT_TRUE(IsBubbleShowing());
 }
 
@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, DontCloseOnLostFocus) {
       ->GetOkButton()
       ->RequestFocus();
 
-  browser()->window()->Deactivate();
+  browser()->GetWindow()->Deactivate();
   EXPECT_TRUE(IsBubbleShowing());
 }
 

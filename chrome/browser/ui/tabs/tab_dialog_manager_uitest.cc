@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerDesktopWidgetUiTest,
       Check([&]() { return widget->IsActive(); }, "Verify dialog is active"),
 
       // Activate the browser window.
-      Do([&]() { browser()->window()->Activate(); }),
+      Do([&]() { browser()->GetWindow()->Activate(); }),
 
       // Check that the browser window is active.
       WaitForState(views::test::kCurrentWidgetFocus,
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerDesktopWidgetUiTest,
                }),
 
       // Activate the browser window.
-      Do([&]() { browser()->window()->Activate(); }),
+      Do([&]() { browser()->GetWindow()->Activate(); }),
 
       // Check that the browser window is active and the dialog is not.
       WaitForState(views::test::kCurrentWidgetFocus, std::ref(browser_widget)));
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerUiTest, DoesNotActivateInactiveWindow) {
 
   RunTestSequence(
       ObserveState(views::test::kCurrentWidgetFocus),
-      Do([&]() { browser2->window()->Activate(); }),
+      Do([&]() { browser2->GetWindow()->Activate(); }),
       WaitForState(
           views::test::kCurrentWidgetFocus,
           [&]() {

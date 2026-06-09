@@ -947,7 +947,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, BrowserActivation) {
   EXPECT_EQ(ash::TYPE_APP, item.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item.status);
 
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->ItemByID(item_id1)->status);
 }
 
@@ -1374,7 +1374,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchMaximized) {
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->ItemByID(shortcut_id)->status);
 
   // Activate the first browser window.
-  browser()->window()->Activate();
+  browser()->GetWindow()->Activate();
   EXPECT_FALSE(browser2->window()->IsActive());
 
   // Selecting the shortcut activates the second window.
@@ -3010,7 +3010,7 @@ class PerDeskShelfAppBrowserTest : public ShelfAppBrowserTest,
   void CreateTestBrowser() {
     Browser* new_browser = CreateBrowser(browser()->profile());
     new_browser->GetWindow()->Show();
-    new_browser->window()->Activate();
+    new_browser->GetWindow()->Activate();
   }
 
   ash::ShelfID GetBrowserId() const {

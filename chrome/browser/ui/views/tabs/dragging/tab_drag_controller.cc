@@ -1731,7 +1731,7 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
   // Activate may trigger a focus loss, destroying us.
   {
     base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
-    browser->window()->Activate();
+    browser->GetWindow()->Activate();
     if (!ref) {
       return Liveness::kDeleted;
     }

@@ -56,7 +56,7 @@ class MediaStreamFocusDelegateTest : public InProcessBrowserTest {
 
     // Actually activate the widget to avoid faking it.
     browser()->tab_strip_model()->ActivateTabAt(0);
-    browser()->window()->Activate();
+    browser()->GetWindow()->Activate();
     browser()->tab_strip_model()->GetWebContentsAt(0)->Focus();
 
     delegate_ = std::make_unique<MediaStreamFocusDelegate>(
