@@ -655,10 +655,6 @@ class WPTResultsProcessor:
         handler = self._event_handlers.get(event.action)
         if handler:
             handler(event, **raw_event)
-        elif event.action not in ['log', 'add_subsuite']:
-            _log.warning(
-                "%r event received, but not handled (event: %r, "
-                'extra: %r)', event.action, event, raw_event)
 
     def suite_start(self,
                     event: Event,

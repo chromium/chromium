@@ -1199,9 +1199,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
 
     def test_unknown_event(self):
         self._event(action='unknown', time=1000)
-        (message, ) = self.logMessages()
-        self.assertRegex(message,
-                         "WARNING: 'unknown' event received, but not handled")
+        self.assertEqual(0, len(self.logMessages()))
 
     def test_unknown_test(self):
         with self.assertRaises(EventProcessingError):
