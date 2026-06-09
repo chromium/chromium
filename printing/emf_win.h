@@ -109,13 +109,14 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) PostScriptMetaFile : public Emf {
 };
 
 struct Emf::EnumerationContext {
-  EnumerationContext();
+  explicit EnumerationContext(uint32_t metafile_size);
 
   HDC hdc = nullptr;
   raw_ptr<HANDLETABLE> handle_table = nullptr;
   raw_ptr<const XFORM> base_matrix = nullptr;
   int objects_count = 0;
   int dc_on_page_start = 0;
+  uint32_t remaining_metafile_size;
 };
 
 // One EMF record. It keeps pointers to the EMF buffer held by Emf::emf_.

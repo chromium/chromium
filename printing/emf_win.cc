@@ -108,7 +108,7 @@ bool Emf::SafePlayback(HDC context) const {
   DCHECK(emf_ && !hdc_);
   XFORM base_matrix;
   CHECK(GetWorldTransform(context, &base_matrix));
-  Emf::EnumerationContext playback_context;
+  Emf::EnumerationContext playback_context(GetDataSize());
   playback_context.base_matrix = &base_matrix;
   gfx::Rect bound = GetPageBounds(1);
   RECT rect = bound.ToRECT();
@@ -168,8 +168,7 @@ int CALLBACK Emf::SafePlaybackProc(HDC hdc,
                                    const ENHMETARECORD* record,
                                    int objects_count,
                                    LPARAM param) {
-  Emf::EnumerationContext* context =
-      reinterpret_cast<Emf::EnumerationContext*>(param);
+  auto* context = reinterpret_cast<Emf::EnumerationContext*>(param);
   context->handle_table = handle_table;
   context->objects_count = objects_count;
   context->hdc = hdc;
@@ -215,7 +214,8 @@ bool PostScriptMetaFile::SafePlayback(HDC hdc) const {
   return true;
 }
 
-Emf::EnumerationContext::EnumerationContext() = default;
+Emf::EnumerationContext::EnumerationContext(uint32_t metafile_size)
+    : remaining_metafile_size(metafile_size) {}
 
 Emf::Record::Record(const ENHMETARECORD* record) : record_(record) {
   DCHECK(record_);
@@ -386,7 +386,8 @@ bool Emf::FinishPage() {
   return true;
 }
 
-Emf::Enumerator::Enumerator(const Emf& emf, HDC context, const RECT* rect) {
+Emf::Enumerator::Enumerator(const Emf& emf, HDC context, const RECT* rect)
+    : context_(emf.GetDataSize()) {
   CHECK(::EnumEnhMetaFile(context, emf.emf(), &Emf::Enumerator::EnhMetaFileProc,
                           this, rect));
   DCHECK_EQ(context_.hdc, context);
