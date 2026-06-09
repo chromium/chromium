@@ -331,7 +331,7 @@ void KioskBrowserWindowHandler::OnCompleteBrowserAdded(Browser* browser) {
 void KioskBrowserWindowHandler::OnBrowserNavigationWatchEnded(
     Browser* browser) {
   if (TriageNewSettingsBrowserWindow(browser)) {
-    browser->window()->Show();
+    browser->GetWindow()->Show();
   }
 }
 

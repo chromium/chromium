@@ -829,7 +829,7 @@ void InProcessBrowserTest::AddBlankTabAndShow(Browser* browser,
   content::TestNavigationObserver observer(blank_tab);
   observer.Wait();
   RunScheduledLayouts();
-  browser->window()->Show();
+  browser->GetWindow()->Show();
   if (wait_for_activation && !browser_shutdown::IsTryingToQuit()) {
     ui_test_utils::WaitForBrowserSetLastActive(browser);
   }

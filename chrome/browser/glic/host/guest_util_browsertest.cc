@@ -96,7 +96,7 @@ void OpenWebUiWithGuestView(const GURL& host_url) {
                             /*user_gesture=*/true);
 
   auto& new_browser = CHECK_DEREF(Browser::Create(params));
-  new_browser.window()->Show();
+  new_browser.GetWindow()->Show();
 
   ui_test_utils::NavigateToURLWithDisposition(
       &new_browser, host_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,

@@ -230,10 +230,10 @@ TEST_F(BrowserViewTest, MAYBE_UpdateActiveBrowser) {
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(browser(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
-  browser2->window()->Show();
+  browser2->GetWindow()->Show();
   EXPECT_EQ(browser2, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
-  browser()->window()->Show();
+  browser()->GetWindow()->Show();
   EXPECT_EQ(browser(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   browser2->window()->Activate();

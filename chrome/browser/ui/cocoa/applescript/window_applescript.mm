@@ -103,7 +103,7 @@
     // TODO(crbug.com/452431839): Make a new NewTabTypes enum value
     // for new tabs made with AppleScript requests.
     chrome::NewTab(browser, NewTabTypes::kNewTabCommand);
-    browser->window()->Show();
+    browser->GetWindow()->Show();
 
     _browser = browser->GetWeakPtr();
     self.uniqueID =

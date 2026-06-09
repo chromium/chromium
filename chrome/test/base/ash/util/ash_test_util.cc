@@ -148,7 +148,7 @@ Browser* CreateAndShowBrowser(Profile* profile,
                               const std::vector<GURL>& urls,
                               std::optional<size_t> active_url_index) {
   Browser* browser = CreateBrowser(profile, urls, active_url_index);
-  browser->window()->Show();
+  browser->GetWindow()->Show();
   return browser;
 }
 

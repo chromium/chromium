@@ -440,7 +440,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     }
   }
 
-  browser->window()->Show();
+  browser->GetWindow()->Show();
 
   return browser;
 }

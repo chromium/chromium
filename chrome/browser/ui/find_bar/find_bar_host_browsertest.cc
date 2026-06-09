@@ -1560,7 +1560,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, NoIncognitoPrepopulate) {
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   EXPECT_TRUE(content::WaitForLoadStop(
       incognito_browser->tab_strip_model()->GetActiveWebContents()));
-  incognito_browser->window()->Show();
+  incognito_browser->GetWindow()->Show();
 
   // Open the find box and make sure that it is prepopulated with "page".
   EnsureFindBoxOpenForBrowser(incognito_browser);
@@ -1619,7 +1619,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FitWindow) {
   // Wait for the page to finish loading.
   EXPECT_TRUE(content::WaitForLoadStop(
       popup->tab_strip_model()->GetActiveWebContents()));
-  popup->window()->Show();
+  popup->GetWindow()->Show();
 
   EnsureFindBoxOpenForBrowser(popup);
 

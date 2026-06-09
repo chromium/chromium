@@ -84,7 +84,7 @@ content::WebContents* OpenUrlInBrowser(GURL page_url) {
                             /*profile=*/&ash::kiosk::test::CurrentProfile(),
                             /*user_gesture=*/true);
   auto& new_browser = CHECK_DEREF(Browser::Create(params));
-  new_browser.window()->Show();
+  new_browser.GetWindow()->Show();
   ui_test_utils::NavigateToURLWithDisposition(
       &new_browser, page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);

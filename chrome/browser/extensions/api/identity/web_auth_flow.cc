@@ -191,7 +191,7 @@ bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
       ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
       AddTabTypes::ADD_ACTIVE);
 
-  browser->window()->Show();
+  browser->GetWindow()->Show();
 #else
   static_assert(BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
   BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_POPUP,

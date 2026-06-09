@@ -289,7 +289,7 @@ class AuthenticatorRequestWindow
         std::move(web_contents), /*index=*/0,
         ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
         AddTabTypes::ADD_ACTIVE);
-    browser->window()->Show();
+    browser->GetWindow()->Show();
   }
 
   ~AuthenticatorRequestWindow() override = default;

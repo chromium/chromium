@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   }
 
   // Show the window which should be shown minimized, and verify it.
-  new_browser->window()->Show();
+  new_browser->GetWindow()->Show();
   EXPECT_TRUE(new_browser->window()->IsMinimized());
 
   // Restore (open) the window.

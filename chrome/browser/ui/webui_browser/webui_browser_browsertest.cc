@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, SetContentsSizeEarlyResizesWindow) {
   window->SetContentsSize(target_size);
 
   // 3) Show the window and navigate to our layout testing page
-  new_browser->window()->Show();
+  new_browser->GetWindow()->Show();
   content::WebContents* tab_contents =
       new_browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab_contents);

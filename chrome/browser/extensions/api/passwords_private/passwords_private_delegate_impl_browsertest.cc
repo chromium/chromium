@@ -1486,7 +1486,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplTest,
                        ShowAddShortcutDialog) {
   base::HistogramTester histogram_tester;
   // Simulate a navigation.
-  browser()->window()->Show();
+  browser()->GetWindow()->Show();
   ASSERT_TRUE(embedded_test_server()->Start());
   NavigateParams nav_params(browser(),
                             embedded_test_server()->GetURL("/empty.html"),

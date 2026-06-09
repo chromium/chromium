@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   ASSERT_TRUE(browser2);
   chrome::AddTabAt(browser2, GURL(), -1, true);
-  browser2->window()->Show();
+  browser2->GetWindow()->Show();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url));
 
   gfx::NativeWindow window2 = browser2->GetWindow()->GetNativeWindow();

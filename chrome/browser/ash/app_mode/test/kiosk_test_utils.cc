@@ -395,7 +395,7 @@ AccountId CreateDeviceLocalAccountId(std::string_view account_id,
 Browser& CreateRegularBrowser(Profile& profile, const GURL& url) {
   Browser::CreateParams params(&profile, /*user_gesture=*/true);
   Browser& browser = CHECK_DEREF(Browser::Create(params));
-  browser.window()->Show();
+  browser.GetWindow()->Show();
 
   AddWebContentsToBrowser(browser, profile);
   TriggerNavigationToUrl(GetActiveWebContents(browser), url);
@@ -412,7 +412,7 @@ Browser& CreatePopupBrowser(Profile& profile,
       /*window_bounds=*/gfx::Rect(), &profile,
       /*user_gesture=*/true);
   Browser& browser = CHECK_DEREF(Browser::Create(params));
-  browser.window()->Show();
+  browser.GetWindow()->Show();
 
   AddWebContentsToBrowser(browser, profile);
   TriggerNavigationToUrl(GetActiveWebContents(browser), url);

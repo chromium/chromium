@@ -149,9 +149,9 @@ class WindowCaptureSession {
             permissions::PermissionRequestManager::ACCEPT_ALL);
 
     // This forces both tabs to pump video frames, preventing WebRTC timeouts.
-    target_browser_->window()->Show();
+    target_browser_->GetWindow()->Show();
     target_contents_->WasShown();
-    capturer_browser_->window()->Show();
+    capturer_browser_->GetWindow()->Show();
     capturer_contents_->WasShown();
     EXPECT_EQ("capture-success",
               content::EvalJs(capturer_contents_, "captureOtherTab();"));

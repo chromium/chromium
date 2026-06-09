@@ -94,7 +94,7 @@ class PinnedToolbarActionsContainerBrowserTest : public InProcessBrowserTest {
   Browser* CreateBrowser() {
     Browser::CreateParams params(browser()->profile(), true /* user_gesture */);
     Browser* browser = Browser::Create(params);
-    browser->window()->Show();
+    browser->GetWindow()->Show();
     return browser;
   }
 

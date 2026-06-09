@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   run_loop.Run();
   Browser::CreateParams browser_params(new_profile, /*user_gesture=*/true);
   Browser* new_browser = Browser::Create(browser_params);
-  new_browser->window()->Show();
+  new_browser->GetWindow()->Show();
 
   // Create a bubble using the temporary profile, but not attached to its view
   // hierarchy. This bubble won't be destroyed when the new browser is closed,

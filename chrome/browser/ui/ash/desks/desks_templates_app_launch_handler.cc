@@ -298,7 +298,7 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
         continue;
       }
 
-      browser->window()->ShowInactive();
+      browser->GetWindow()->ShowInactive();
     }
   }
   restore_data()->RemoveApp(app_constants::kChromeAppId);

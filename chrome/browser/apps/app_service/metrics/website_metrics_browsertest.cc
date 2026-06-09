@@ -146,7 +146,7 @@ class WebsiteMetricsBrowserTest : public MixinBasedInProcessBrowserTest {
         gfx::Rect(), /* window_bounts */
         profile(), true /* user_gesture */);
     Browser* browser = Browser::Create(params);
-    browser->window()->Show();
+    browser->GetWindow()->Show();
     return browser;
   }
 

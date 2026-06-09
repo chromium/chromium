@@ -642,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoSessionRestoreNewWindowChromeOS) {
 
   Browser* incognito_browser = CreateIncognitoBrowser();
   chrome::AddTabAt(incognito_browser, GURL(), -1, true);
-  incognito_browser->window()->Show();
+  incognito_browser->GetWindow()->Show();
 
   // Close the normal browser. After this we only have the incognito window
   // open.
@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MaximizedApps) {
   const char* app_name = "TestApp";
   Browser* app_browser = CreateBrowserForApp(app_name, browser()->profile());
   app_browser->window()->Maximize();
-  app_browser->window()->Show();
+  app_browser->GetWindow()->Show();
   EXPECT_TRUE(app_browser->window()->IsMaximized());
   EXPECT_TRUE(app_browser->is_type_app());
 
@@ -814,7 +814,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, IncognitotoNonIncognito) {
   // Create a new incognito window.
   Browser* incognito_browser = CreateIncognitoBrowser();
   chrome::AddTabAt(incognito_browser, GURL(), -1, true);
-  incognito_browser->window()->Show();
+  incognito_browser->GetWindow()->Show();
 
   // Close the normal browser. After this we only have the incognito window
   // open.

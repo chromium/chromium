@@ -509,7 +509,7 @@ Browser* SyncTest::AddBrowser(int profile_index) {
   // Show the browser window. Otherwise, the rendering pipeline might not
   // initialize or produce frames (e.g., on Wayland headless bots), which
   // can cause tests relying on hit test data or visual state to time out.
-  browser->window()->Show();
+  browser->GetWindow()->Show();
   return browser;
 }
 
@@ -689,7 +689,7 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   // Show the browser window. Otherwise, the rendering pipeline might not
   // initialize or produce frames (e.g., on Wayland headless bots), which
   // can cause tests relying on hit test data or visual state to time out.
-  browser->window()->Show();
+  browser->GetWindow()->Show();
 #endif
 
   if (server_type_ == IN_PROCESS_FAKE_SERVER) {

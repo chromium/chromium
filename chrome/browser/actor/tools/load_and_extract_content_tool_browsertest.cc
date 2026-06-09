@@ -73,7 +73,7 @@ class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
 
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
-    browser()->window()->Show();
+    browser()->GetWindow()->Show();
     browser()->window()->Activate();
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &ActorLoadAndExtractContentToolBrowserTest::HandleStallRequest,
@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
   // currently uses the active window.
   // TODO(b/478282022): Update this test to use a specific window ID once the
   // tool supports that.
-  second_browser->window()->Show();
+  second_browser->GetWindow()->Show();
 
   std::unique_ptr<ToolRequest> request =
       std::make_unique<LoadAndExtractContentToolRequest>(urls);

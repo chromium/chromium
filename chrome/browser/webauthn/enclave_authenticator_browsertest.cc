@@ -2702,7 +2702,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, BiometricsInPWA) {
       browser()->profile(),
       /*user_gesture=*/true));
   ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
-  app_browser->window()->Show();
+  app_browser->GetWindow()->Show();
 
   ASSERT_TRUE(NavigateToURLWithDisposition(
       app_browser, https_server_.GetURL("www.example.com", "/title1.html"),

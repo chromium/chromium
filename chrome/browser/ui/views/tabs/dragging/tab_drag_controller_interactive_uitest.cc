@@ -605,7 +605,7 @@ void TabDragControllerTest::AddTabsAndResetBrowser(Browser* browser,
         browser, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
     content::WaitForLoadStop(contents);
   }
-  browser->window()->Show();
+  browser->GetWindow()->Show();
   StopAnimating(GetTabStripForBrowser(browser));
   // Perform any scheduled layouts so the tabstrip is in a steady state.
   BrowserView::GetBrowserViewForBrowser(browser)

@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
   EXPECT_EQ(1U, GetAppMenuItems(controller, ui::EF_NONE).size());
 
   // Browsers shown with no active tab appear as "New Tab" without crashing.
-  browser1->window()->Show();
+  browser1->GetWindow()->Show();
   EXPECT_TRUE(browser1->window()->IsVisible());
   EXPECT_FALSE(browser1->tab_strip_model()->GetActiveWebContents());
   EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());

@@ -1341,7 +1341,7 @@ class ProfileMenuViewBookmarksLimitExceededTest
   void EnableSync() {
     ASSERT_TRUE(SetupSync());
     SetTargetBrowser(GetBrowser(0));
-    GetBrowser(0)->window()->Show();
+    GetBrowser(0)->GetWindow()->Show();
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()

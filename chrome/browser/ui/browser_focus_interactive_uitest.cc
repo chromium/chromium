@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, BackgroundBrowserDontStealFocus) {
   Browser* background_browser =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::AddTabAt(background_browser, GURL(), -1, true);
-  background_browser->window()->Show();
+  background_browser->GetWindow()->Show();
 
   const GURL steal_focus_url = embedded_test_server()->GetURL(kStealFocusPage);
   ASSERT_TRUE(

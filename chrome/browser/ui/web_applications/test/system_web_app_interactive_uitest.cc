@@ -106,7 +106,7 @@ class SystemWebAppLinkCaptureBrowserTest
                                       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
     EXPECT_TRUE(content::WaitForLoadStop(contents));
 
-    incognito->window()->Show();
+    incognito->GetWindow()->Show();
     return incognito;
   }
   const GURL kInitiatingAppUrl = GURL("chrome://initiating-app/pwa.html");

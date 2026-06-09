@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest, GlicItemAbsentInAppWindow) {
   content::WebContents* blank_tab = chrome::AddSelectedTabWithURL(
       app_browser, GetSimpleTestUrl(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   ASSERT_TRUE(content::WaitForLoadStop(blank_tab));
-  app_browser->window()->Show();
+  app_browser->GetWindow()->Show();
 
   // Create context menu for the app window.
   content::ContextMenuParams params;

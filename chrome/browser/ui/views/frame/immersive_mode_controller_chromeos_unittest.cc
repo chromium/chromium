@@ -49,7 +49,7 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
   void SetUp() override {
     TestWithBrowserView::SetUp();
 
-    browser()->window()->Show();
+    browser()->GetWindow()->Show();
 
     controller_ = ImmersiveModeController::From(browser());
     chromeos::ImmersiveFullscreenControllerTestApi(

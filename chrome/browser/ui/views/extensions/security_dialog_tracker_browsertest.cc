@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(SecurityDialogTrackerTest, Basic) {
   // Security dialog is not yet visible.
   EXPECT_FALSE(tracker->BrowserHasVisibleSecurityDialogs(browser()));
 
-  browser()->window()->Show();
+  browser()->GetWindow()->Show();
   security_widget->Show();
   views::test::WidgetVisibleWaiter(security_widget.get()).Wait();
   // Security dialog is now visible.

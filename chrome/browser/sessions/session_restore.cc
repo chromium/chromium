@@ -477,7 +477,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       browser->tab_strip_model()->ActivateTabAt(
           0, TabStripUserGestureDetails(
                  TabStripUserGestureDetails::GestureType::kOther));
-      browser->window()->Show();
+      browser->GetWindow()->Show();
     }
     NotifySessionServiceOfRestoredTabs(browser,
                                        browser->tab_strip_model()->count());
@@ -533,7 +533,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
         startup_tabs_.emplace_back(chrome::ChromeUINewTabURLAsGURL());
       }
       AppendURLsToBrowser(browser, startup_tabs_);
-      browser->window()->Show();
+      browser->GetWindow()->Show();
     }
 
     // Remove any tabs that have been deleted.
@@ -1282,7 +1282,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       return;
     }
 
-    browser->window()->Show();
+    browser->GetWindow()->Show();
     browser->set_is_session_restore(false);
   }
 
@@ -1334,7 +1334,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       params.creation_source = Browser::CreationSource::kLastAndUrlsStartupPref;
       Browser* new_browser = Browser::Create(params);
       AppendURLsToBrowser(new_browser, startup_tabs_from_last_and_urls_pref);
-      new_browser->window()->Show();
+      new_browser->GetWindow()->Show();
       browser_to_activate = new_browser;
     }
     return browser_to_activate;

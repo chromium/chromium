@@ -1699,7 +1699,7 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
 #endif
 
   dragged_widget->SetVisibilityChangedAnimationsEnabled(false);
-  browser->window()->Show();
+  browser->GetWindow()->Show();
   dragged_widget->SetVisibilityChangedAnimationsEnabled(true);
 
   // When InitialWebUI is enabled, the asynchronous loading of WebUI might cause

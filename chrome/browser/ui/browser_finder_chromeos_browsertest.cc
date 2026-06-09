@@ -60,7 +60,7 @@ class BrowserFinderWithDesksTest : public InProcessBrowserTest {
 
   Browser* CreateTestBrowser() {
     Browser* new_browser = CreateBrowser(browser()->profile());
-    new_browser->window()->Show();
+    new_browser->GetWindow()->Show();
     ActivateBrowser(new_browser);
     return new_browser;
   }

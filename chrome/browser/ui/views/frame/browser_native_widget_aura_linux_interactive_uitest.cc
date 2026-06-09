@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetAuraLinuxTest, NewWindowSize) {
   Profile* profile = browser()->profile();
   Browser::CreateParams params(profile, true /* user_gesture */);
   Browser* browser2 = Browser::Create(params);
-  browser2->window()->Show();
+  browser2->GetWindow()->Show();
 
   // The first window saves its placement on losing the active state, then the
   // second window needs to go through the initialisation, update its size and

@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, DynamicStatePropagation) {
   Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE,
                                browser()->profile(), true);
   Browser* pip_browser = Browser::Create(params);
-  pip_browser->window()->Show();
+  pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
       BrowserView::GetBrowserViewForBrowser(pip_browser);
 
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, InitialStateVerification) {
   Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE,
                                browser()->profile(), true);
   Browser* pip_browser = Browser::Create(params);
-  pip_browser->window()->Show();
+  pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
       BrowserView::GetBrowserViewForBrowser(pip_browser);
 
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipDisabledTest, FeatureFlagEnforcement) {
   Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE,
                                browser()->profile(), true);
   Browser* pip_browser = Browser::Create(params);
-  pip_browser->window()->Show();
+  pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
       BrowserView::GetBrowserViewForBrowser(pip_browser);
 
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, NewWindowInitializationIsolation) {
   Browser::CreateParams params(Browser::TYPE_NORMAL, browser()->profile(),
                                true);
   Browser* new_normal_browser = Browser::Create(params);
-  new_normal_browser->window()->Show();
+  new_normal_browser->GetWindow()->Show();
 
   BrowserView* new_normal_view =
       BrowserView::GetBrowserViewForBrowser(new_normal_browser);
@@ -1398,7 +1398,7 @@ class BrowserViewScrimPixelTest : public UiBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     GURL url = embedded_test_server()->GetURL(kSimplePage);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    browser()->window()->Show();
+    browser()->GetWindow()->Show();
     BrowserView::GetBrowserViewForBrowser(browser())
         ->GetActiveContentsContainerView()
         ->contents_scrim_view()

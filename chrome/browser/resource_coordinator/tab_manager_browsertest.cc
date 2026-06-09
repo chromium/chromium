@@ -1031,7 +1031,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabsWithMinimizedWindow) {
       IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(1)));
 
   // Showing the browser again should reload the active tab.
-  browser()->window()->Show();
+  browser()->GetWindow()->Show();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(
       IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));

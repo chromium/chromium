@@ -881,7 +881,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                    /*foreground=*/true);
   navigation_observer.Wait();
 
-  new_browser->window()->Show();
+  new_browser->GetWindow()->Show();
   new_browser->window()->SetBounds(expected_bounds);
 
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);

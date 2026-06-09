@@ -2661,7 +2661,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser1, embedded_https_test_server().GetURL("/title1.html")));
-  browser1->window()->Show();
+  browser1->GetWindow()->Show();
   browser1->window()->Maximize();
 
   // Set startup preferences to restore last session.

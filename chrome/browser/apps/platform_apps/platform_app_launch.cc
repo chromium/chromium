@@ -156,7 +156,7 @@ bool OpenDeprecatedApplicationPrompt(Profile* profile,
   params.tabstrip_add_types = AddTabTypes::ADD_ACTIVE;
   Navigate(&params);
 
-  browser->window()->Show();
+  browser->GetWindow()->Show();
 
   return true;
 }

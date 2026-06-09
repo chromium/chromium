@@ -558,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowWebAppBrowserTest,
             GetAppInstanceState(app_id, instance2->Window()));
 
   // Bring the browser window to foreground.
-  browser()->window()->Show();
+  browser()->GetWindow()->Show();
 
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kVisible,

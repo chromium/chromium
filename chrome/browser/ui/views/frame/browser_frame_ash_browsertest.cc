@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestParam,
   params.initial_show_state = ui::mojom::WindowShowState::kNormal;
   params.initial_bounds = original_bounds;
   Browser* browser = Browser::Create(params);
-  browser->window()->Show();
+  browser->GetWindow()->Show();
 
   // The bounds passed via |initial_bounds| should be respected regardless of
   // the window type.
@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestParam,
   browser->window()->Close();
   params.initial_bounds = gfx::Rect();
   browser = Browser::Create(params);
-  browser->window()->Show();
+  browser->GetWindow()->Show();
 
   // For tabbed browser window, it will be centered to work area by auto window
   // management logic; for app browser window, it will remain the given bounds.
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameAshTest, SnappedWindowSaveBounds) {
   // Recreate the browser window. Test that the bounds are the same as the
   // snapped size (position has been shifted by the ash auto window positioner).
   Browser* new_browser = CreateBrowser(profile);
-  new_browser->window()->Show();
+  new_browser->GetWindow()->Show();
   aura::Window* new_window = new_browser->GetWindow()->GetNativeWindow();
   EXPECT_EQ(snapped_size, new_window->GetBoundsInScreen().size());
 }

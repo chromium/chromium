@@ -3009,7 +3009,7 @@ class PerDeskShelfAppBrowserTest : public ShelfAppBrowserTest,
 
   void CreateTestBrowser() {
     Browser* new_browser = CreateBrowser(browser()->profile());
-    new_browser->window()->Show();
+    new_browser->GetWindow()->Show();
     new_browser->window()->Activate();
   }
 

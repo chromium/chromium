@@ -1200,7 +1200,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
 
   // Wait for it to be minimized by OnBrowserActivated.
   // We need to ensure activation happens to trigger our logic.
-  unauthorized_regular_browser->window()->Show();
+  unauthorized_regular_browser->GetWindow()->Show();
   unauthorized_regular_browser->window()->Activate();
   destroyed_observer.Wait();
 

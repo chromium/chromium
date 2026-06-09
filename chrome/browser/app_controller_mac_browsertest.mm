@@ -896,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlInGuestBrowser) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, guest_browser->tab_strip_model()->count());
   EXPECT_TRUE(guest_browser->profile()->IsGuestSession());
-  guest_browser->window()->Show();
+  guest_browser->GetWindow()->Show();
   EXPECT_EQ(guest_browser,
             GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
   // Assure that `windowDidBecomeMain` is called even if this browser process
@@ -1525,7 +1525,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   EXPECT_EQ(g_handoff_title, u"");
 
   // Activate the original browser window.
-  browser()->window()->Show();
+  browser()->GetWindow()->Show();
   EXPECT_EQ(g_handoff_url, test_url2);
   EXPECT_EQ(g_handoff_title, u"Title Of Awesomeness");
 }

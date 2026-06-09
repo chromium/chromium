@@ -93,7 +93,7 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
             ->controller())
         .SetupForTest();
 
-    browser_->window()->Show();
+    browser_->GetWindow()->Show();
   }
 
   // Returns the bounds of |view| in widget coordinates.
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   EXPECT_FALSE(controller()->IsEnabled());
 
   // Verify that after showing the browser, immersive mode is reenabled.
-  browser()->window()->Show();
+  browser()->GetWindow()->Show();
   EXPECT_TRUE(controller()->IsEnabled());
 
   // Verify that immersive mode remains if fullscreen is toggled while in tablet

@@ -571,7 +571,7 @@ WebContents* OpenApplicationWindow(Profile* profile,
   WebContents* web_contents = NavigateApplicationWindow(
       browser, params, url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
 
-  browser->window()->Show();
+  browser->GetWindow()->Show();
   return web_contents;
 }
 

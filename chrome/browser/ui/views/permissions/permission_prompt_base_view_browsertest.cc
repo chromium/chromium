@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBaseViewBrowserTest,
   Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE, GetProfile(),
                                true);
   Browser* pip_browser = Browser::Create(params);
-  pip_browser->window()->Show();
+  pip_browser->GetWindow()->Show();
 
   // Create the bubble for a picture-in-picture-window.
   auto prompt_unique = std::make_unique<TestPermissionPromptBaseView>(

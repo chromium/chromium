@@ -316,7 +316,7 @@ Browser* AuthSessionRequest::CreateBrowser(
   params.omit_from_session_restore = true;
   Browser* browser = Browser::Create(params);
   chrome::AddTabAt(browser, GURL("about:blank"), -1, true);
-  browser->window()->Show();
+  browser->GetWindow()->Show();
 
   return browser;
 }

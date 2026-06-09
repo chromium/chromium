@@ -132,11 +132,11 @@ bool BrowserDelegateImpl::IsVisible() const {
 }
 
 void BrowserDelegateImpl::Show() {
-  browser_->window()->Show();
+  browser_->GetWindow()->Show();
 }
 
 void BrowserDelegateImpl::ShowInactive() {
-  browser_->window()->ShowInactive();
+  browser_->GetWindow()->ShowInactive();
 }
 
 void BrowserDelegateImpl::Activate() {

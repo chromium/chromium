@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(NewWindowsInKioskAllowedTest, CloseBrowserIfReOpen) {
   ASSERT_TRUE(DidKioskHideNewWindow(&browser));
   EXPECT_EQ(VisibleBrowserCount(), 1u);
   ASSERT_FALSE(browser.window()->IsVisible());
-  browser.window()->Show();
+  browser.GetWindow()->Show();
   ui_test_utils::BrowserDestroyedObserver observer(&browser);
   observer.Wait();
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);

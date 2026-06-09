@@ -91,7 +91,7 @@ class CrosAppsApiAccessControlBrowsertestBase : public InProcessBrowserTest {
     BrowserWindowInterface* const new_browser = Browser::Create(params);
     CHECK_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
     SetBrowser(new_browser);
-    browser()->window()->Show();
+    browser()->GetWindow()->Show();
 
     std::unique_ptr<content::WebContents> web_contents_to_add =
         content::WebContents::Create(
