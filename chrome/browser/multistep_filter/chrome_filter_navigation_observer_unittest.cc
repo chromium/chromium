@@ -45,7 +45,7 @@ class MockFilterUiController : public FilterUiController {
               OnSuggestionGenerated,
               (std::optional<UrlFilterSuggestion> suggestion),
               (override));
-  MOCK_METHOD(void, ClearSuggestion, (), (override));
+  MOCK_METHOD(void, ClearSuggestion, (SuggestionUserDecision), (override));
 };
 
 class MockMultistepFilterService : public MultistepFilterService {
@@ -187,7 +187,7 @@ TEST_F(ChromeFilterNavigationObserverTest, SameDocumentNavigation) {
   // Subsequent same-document navigation should NOT clear the suggestion in the
   // controller.
   const GURL same_doc_url("https://www.example.com/#test");
-  EXPECT_CALL(*mock_controller, ClearSuggestion()).Times(0);
+  EXPECT_CALL(*mock_controller, ClearSuggestion(_)).Times(0);
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
       same_doc_url, main_rfh());
   navigation->CommitSameDocument();
@@ -201,7 +201,9 @@ TEST_F(ChromeFilterNavigationObserverTest, NavigationClearsSuggestion) {
 
   // Navigate to a new URL, which should trigger ClearSuggestion on the
   // delegate.
-  EXPECT_CALL(*mock_controller, ClearSuggestion());
+  EXPECT_CALL(
+      *mock_controller,
+      ClearSuggestion(FilterUiController::SuggestionUserDecision::kIgnored));
   EXPECT_CALL(*mock_service(), GenerateFilterSuggestions(
                                    _, GURL("https://www.example2.com"), _));
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(

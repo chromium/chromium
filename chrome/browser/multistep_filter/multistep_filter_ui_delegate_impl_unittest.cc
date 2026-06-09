@@ -32,7 +32,7 @@ class MockFilterUiController : public FilterUiController {
               OnSuggestionGenerated,
               (std::optional<UrlFilterSuggestion> suggestion),
               (override));
-  MOCK_METHOD(void, ClearSuggestion, (), (override));
+  MOCK_METHOD(void, ClearSuggestion, (SuggestionUserDecision), (override));
 };
 
 class MultistepFilterUiDelegateImplTest
@@ -66,7 +66,9 @@ TEST_F(MultistepFilterUiDelegateImplTest, ClearSuggestion_WithController) {
   auto mock_controller =
       std::make_unique<testing::NiceMock<MockFilterUiController>>(*mock_tab_);
 
-  EXPECT_CALL(*mock_controller, ClearSuggestion());
+  EXPECT_CALL(
+      *mock_controller,
+      ClearSuggestion(FilterUiController::SuggestionUserDecision::kIgnored));
   delegate_->ClearSuggestion();
 }
 

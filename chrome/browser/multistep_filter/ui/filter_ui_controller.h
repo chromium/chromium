@@ -48,6 +48,13 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
  public:
   DECLARE_USER_DATA(FilterUiController);
 
+  // The user's decision upon interacting with the suggestion.
+  enum class SuggestionUserDecision {
+    kAccepted,
+    kDismissed,
+    kIgnored,
+  };
+
   static FilterUiController* From(tabs::TabInterface* tab);
 
   explicit FilterUiController(tabs::TabInterface& tab);
@@ -64,8 +71,8 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
   virtual void OnSuggestionGenerated(
       std::optional<UrlFilterSuggestion> suggestion);
 
-  // Clears the current suggestion and hides the UI.
-  virtual void ClearSuggestion();
+  // Clears the current suggestion, hides the UI, and logs the action.
+  virtual void ClearSuggestion(SuggestionUserDecision decision);
 
   // Applies the current suggestion by navigating to the suggested URL.
   virtual void ApplySuggestion();

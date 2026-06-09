@@ -15,7 +15,6 @@ namespace multistep_filter {
 
 // Represents the types of events that can be logged by the Multistep Filter
 // system.
-// LINT.IfChange(LogEventType)
 enum class LogEventType {
   kNavigationStarted,
   kUrlEligibilityCheck,
@@ -29,13 +28,13 @@ enum class LogEventType {
   kSuggestionGenerated,
   kSuggestionSuppressed,
   kSuggestionCleared,
-  kUiShown,
-  kUiAccepted,
-  kUiDismissed,
+  kSuggestionShown,
+  kSuggestionAccepted,
+  kSuggestionDismissed,
+  kSuggestionIgnored,
   kServerRequestFailed,
   kServerResponseMalformed,
 };
-// LINT.ThenChange(//chrome/browser/ui/webui/multistep_filter_internals/multistep_filter_internals.mojom:LogEventType)
 
 // Represents a single log entry for the Multistep Filter feature.
 // LINT.IfChange(LogEntry)

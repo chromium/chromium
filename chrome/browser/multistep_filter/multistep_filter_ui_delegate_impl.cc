@@ -22,7 +22,9 @@ void MultistepFilterUiDelegateImpl::ClearSuggestion() {
   // Cancel any pending suggestion generation callbacks.
   weak_ptr_factory_.InvalidateWeakPtrs();
   if (FilterUiController* controller = GetController()) {
-    controller->ClearSuggestion();
+    // A navigation has occurred, so the suggestion is ignored.
+    controller->ClearSuggestion(
+        FilterUiController::SuggestionUserDecision::kIgnored);
   }
 }
 

@@ -42,12 +42,14 @@ constexpr std::string_view LogEventTypeToString(LogEventType type) {
       return "SuggestionSuppressed";
     case LogEventType::kSuggestionCleared:
       return "SuggestionCleared";
-    case LogEventType::kUiShown:
-      return "UiShown";
-    case LogEventType::kUiAccepted:
-      return "UiAccepted";
-    case LogEventType::kUiDismissed:
-      return "UiDismissed";
+    case LogEventType::kSuggestionShown:
+      return "SuggestionShown";
+    case LogEventType::kSuggestionAccepted:
+      return "SuggestionAccepted";
+    case LogEventType::kSuggestionDismissed:
+      return "SuggestionDismissed";
+    case LogEventType::kSuggestionIgnored:
+      return "SuggestionIgnored";
     case LogEventType::kServerRequestFailed:
       return "ServerRequestFailed";
     case LogEventType::kServerResponseMalformed:

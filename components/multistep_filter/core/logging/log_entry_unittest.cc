@@ -36,9 +36,10 @@ TEST(LogEntryTest, AllEventTypes) {
       {LogEventType::kSuggestionGenerated, "SuggestionGenerated"},
       {LogEventType::kSuggestionSuppressed, "SuggestionSuppressed"},
       {LogEventType::kSuggestionCleared, "SuggestionCleared"},
-      {LogEventType::kUiShown, "UiShown"},
-      {LogEventType::kUiAccepted, "UiAccepted"},
-      {LogEventType::kUiDismissed, "UiDismissed"},
+      {LogEventType::kSuggestionShown, "SuggestionShown"},
+      {LogEventType::kSuggestionAccepted, "SuggestionAccepted"},
+      {LogEventType::kSuggestionDismissed, "SuggestionDismissed"},
+      {LogEventType::kSuggestionIgnored, "SuggestionIgnored"},
       {LogEventType::kServerRequestFailed, "ServerRequestFailed"},
       {LogEventType::kServerResponseMalformed, "ServerResponseMalformed"},
   };

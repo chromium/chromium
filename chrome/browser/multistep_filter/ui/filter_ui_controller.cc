@@ -42,29 +42,41 @@ namespace multistep_filter {
 
 namespace {
 
-void LogUiAccepted(MultistepFilterLogRouter* log_router,
-                   int64_t navigation_id,
-                   std::string_view triggering_domain) {
-  MULTISTEP_FILTER_LOG(log_router, navigation_id, LogEventType::kUiAccepted,
-                       triggering_domain)
-      << LogDetail{"navigation_attempted", true};
+void LogSuggestionUiDecision(
+    MultistepFilterLogRouter* log_router,
+    int64_t navigation_id,
+    std::string_view triggering_domain,
+    FilterUiController::SuggestionUserDecision decision) {
+  LogEventType event_type;
+  switch (decision) {
+    case FilterUiController::SuggestionUserDecision::kAccepted:
+      event_type = LogEventType::kSuggestionAccepted;
+      break;
+    case FilterUiController::SuggestionUserDecision::kDismissed:
+      event_type = LogEventType::kSuggestionDismissed;
+      break;
+    case FilterUiController::SuggestionUserDecision::kIgnored:
+      event_type = LogEventType::kSuggestionIgnored;
+      break;
+  }
+
+  if (decision == FilterUiController::SuggestionUserDecision::kAccepted) {
+    MULTISTEP_FILTER_LOG(log_router, navigation_id, event_type,
+                         triggering_domain)
+        << LogDetail{"navigation_attempted", true};
+  } else {
+    MULTISTEP_FILTER_LOG(log_router, navigation_id, event_type,
+                         triggering_domain);
+  }
 }
 
-void LogUiShown(MultistepFilterLogRouter* log_router,
-                const UrlFilterSuggestion& suggestion,
-                bool ui_shown) {
+void LogSuggestionUiShown(MultistepFilterLogRouter* log_router,
+                          const UrlFilterSuggestion& suggestion,
+                          bool ui_shown) {
   MULTISTEP_FILTER_LOG(log_router, suggestion.triggering_navigation_id,
-                       LogEventType::kUiShown, suggestion.triggering_domain)
+                       LogEventType::kSuggestionShown,
+                       suggestion.triggering_domain)
       << LogDetail{"ui_shown", ui_shown};
-}
-
-void LogUiDismissed(MultistepFilterLogRouter* log_router,
-                    int64_t navigation_id,
-                    std::string_view triggering_domain,
-                    std::string_view suppressed_domain) {
-  MULTISTEP_FILTER_LOG(log_router, navigation_id, LogEventType::kUiDismissed,
-                       triggering_domain)
-      << LogDetail{"suppressed_domain", std::string(suppressed_domain)};
 }
 
 }  // namespace
@@ -90,7 +102,14 @@ FilterUiController::FilterUiController(tabs::TabInterface& tab)
   }
 }
 
-FilterUiController::~FilterUiController() = default;
+FilterUiController::~FilterUiController() {
+  if (current_url_filter_suggestion_) {
+    LogSuggestionUiDecision(
+        log_router_, current_url_filter_suggestion_->triggering_navigation_id,
+        current_url_filter_suggestion_->triggering_domain,
+        SuggestionUserDecision::kIgnored);
+  }
+}
 
 // Items in the contextual cue menu are action buttons rather than toggles,
 // so they are never checked.
@@ -112,21 +131,15 @@ void FilterUiController::ExecuteCommand(int command_id, int event_flags) {
       OpenSettings();
       break;
   }
-  ClearSuggestion();
 }
 
 void FilterUiController::DismissSuggestion() {
-  if (current_url_filter_suggestion_) {
-    content::WebContents* web_contents = tab().GetContents();
-    std::string dismissal_domain =
-        web_contents ? GetEtldPlusOne(web_contents->GetLastCommittedURL()) : "";
-    LogUiDismissed(
-        log_router_, current_url_filter_suggestion_->triggering_navigation_id,
-        current_url_filter_suggestion_->triggering_domain, dismissal_domain);
-  }
+  ClearSuggestion(SuggestionUserDecision::kDismissed);
 }
 
 void FilterUiController::OpenSettings() {
+  ClearSuggestion(SuggestionUserDecision::kIgnored);
+
   // TODO(crbug.com/517999412): Use Delegate pattern to avoid circular
   // dependency and use chrome::ShowSettingsSubPage instead of manual
   // navigation.
@@ -149,25 +162,27 @@ void FilterUiController::OnSuggestionGenerated(
   }
   if (!tab().GetContents() || !service_ || !page_action_controller_ ||
       !favicon_service_) {
-    LogUiShown(log_router_, *suggestion, false);
+    LogSuggestionUiShown(log_router_, *suggestion, false);
     return;
   }
 
   // Clear any existing suggestion state before showing the new one.
-  ClearSuggestion();
+  ClearSuggestion(SuggestionUserDecision::kIgnored);
   ShowCue(*suggestion);
   service_->DeleteAnnotationsForTask(suggestion->task_type,
                                      suggestion->triggering_navigation_id,
                                      suggestion->triggering_domain);
-  LogUiShown(log_router_, *suggestion, true);
+  LogSuggestionUiShown(log_router_, *suggestion, true);
   current_url_filter_suggestion_ = std::move(suggestion);
 }
 
-void FilterUiController::ClearSuggestion() {
-  dismissal_weak_factory_.InvalidateWeakPtrs();
-  if (!current_url_filter_suggestion_) {
-    return;
+void FilterUiController::ClearSuggestion(SuggestionUserDecision decision) {
+  if (current_url_filter_suggestion_) {
+    LogSuggestionUiDecision(
+        log_router_, current_url_filter_suggestion_->triggering_navigation_id,
+        current_url_filter_suggestion_->triggering_domain, decision);
   }
+  dismissal_weak_factory_.InvalidateWeakPtrs();
   current_url_filter_suggestion_.reset();
   ClearCue();
 }
@@ -178,15 +193,8 @@ void FilterUiController::ApplySuggestion() {
     return;
   }
 
-  std::string_view domain = current_url_filter_suggestion_->triggering_domain;
-  LogUiAccepted(log_router_,
-                current_url_filter_suggestion_->triggering_navigation_id,
-                domain);
-
   GURL url = current_url_filter_suggestion_->navigation_url;
-  // Clearing the suggestion prevents the toast close callback from marking
-  // this as a dismissal because it invalidates the dismissal weak pointers.
-  ClearSuggestion();
+  ClearSuggestion(SuggestionUserDecision::kAccepted);
   NavigateTo(url);
 }
 

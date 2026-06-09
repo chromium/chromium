@@ -52,7 +52,6 @@ class MockFilterUiController : public FilterUiController {
   ~MockFilterUiController() override = default;
 
   MOCK_METHOD(void, NavigateTo, (const GURL& url), (override));
-  MOCK_METHOD(void, ClearSuggestion, (), (override));
 };
 
 class TestFilterUiController : public FilterUiController {
@@ -301,7 +300,8 @@ TEST_F(FilterUiControllerTest, ClearSuggestion) {
 
   controller_->OnSuggestionGenerated(suggestion);
 
-  controller_->FilterUiController::ClearSuggestion();
+  controller_->FilterUiController::ClearSuggestion(
+      FilterUiController::SuggestionUserDecision::kIgnored);
 
   // Verify that the current suggestion is reset.
   EXPECT_CALL(*controller_, NavigateTo(_)).Times(0);
@@ -333,7 +333,8 @@ TEST_F(FilterUiControllerTest, ClearSuggestionHidesPageAction) {
   EXPECT_CALL(mock_controller, HideAnchoredMessage(kActionMultistepFilter))
       .Times(1);
 
-  controller_->FilterUiController::ClearSuggestion();
+  controller_->FilterUiController::ClearSuggestion(
+      FilterUiController::SuggestionUserDecision::kIgnored);
 }
 
 // === Group 4: Apply Suggestion & Navigation ===
@@ -406,19 +407,32 @@ TEST_F(FilterUiControllerTest, NavigateToWithWebContents) {
 // === Group 5: Commands (ExecuteCommand) ===
 
 TEST_F(FilterUiControllerTest, ExecuteCommandDismissClearsSuggestion) {
-  EXPECT_CALL(*controller_, ClearSuggestion()).Times(1);
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
+  controller_->OnSuggestionGenerated(suggestion);
+
   controller_->ExecuteCommand(internal::kDismissCommand, 0);
+
+  EXPECT_FALSE(
+      test_api(*controller_).current_url_filter_suggestion().has_value());
 }
 
 TEST_F(FilterUiControllerTest, ExecuteCommandSettingsClearsSuggestion) {
-  EXPECT_CALL(*controller_, ClearSuggestion()).Times(1);
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
+  controller_->OnSuggestionGenerated(suggestion);
+
   controller_->ExecuteCommand(internal::kSettingsCommand, 0);
+
+  EXPECT_FALSE(
+      test_api(*controller_).current_url_filter_suggestion().has_value());
 }
 
 TEST_F(FilterUiControllerTest, ExecuteCommandWithNullWebContents) {
+  // We explicitly do not generate a suggestion here as that would query
+  // GetContents() and saturate the mock expectation before we execute the
+  // command.
   EXPECT_CALL(*mock_tab_, GetContents()).WillOnce(Return(nullptr));
-
-  EXPECT_CALL(*controller_, ClearSuggestion()).Times(1);
 
   // Should not crash when attempting to open settings.
   controller_->ExecuteCommand(internal::kSettingsCommand, 0);

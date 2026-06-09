@@ -62,22 +62,22 @@ class TestLogRouter : public MultistepFilterLogRouter {
 TEST(MultistepFilterLoggerTest, ScopedLogMessage) {
   TestLogRouter router;
   {
-    ScopedLogMessage(&router, kTestNavigationId1, LogEventType::kUiShown,
-                     "example.com");
+    ScopedLogMessage(&router, kTestNavigationId1,
+                     LogEventType::kSuggestionShown, "example.com");
   }
 
   ASSERT_EQ(router.entries().size(), 1u);
   const LogEntry& entry = router.entries().front();
   EXPECT_EQ(entry.navigation_id, kTestNavigationId1);
-  EXPECT_EQ(entry.event_type, LogEventType::kUiShown);
+  EXPECT_EQ(entry.event_type, LogEventType::kSuggestionShown);
   EXPECT_EQ(entry.source_etld_plus_1, "example.com");
 }
 
 TEST(MultistepFilterLoggerTest, ScopedLogMessageWithDetail) {
   TestLogRouter router;
   {
-    ScopedLogMessage(&router, kTestNavigationId1, LogEventType::kUiShown,
-                     "example.com")
+    ScopedLogMessage(&router, kTestNavigationId1,
+                     LogEventType::kSuggestionShown, "example.com")
         << LogDetail{"key1", "val1"} << LogDetail{"key2", 42};
   }
 
@@ -98,14 +98,14 @@ TEST(MultistepFilterLoggerTest, MacroLoggingEnabled) {
   TestLogRouter router;
   router.SetIsLoggingEnabled(true);
 
-  MULTISTEP_FILTER_LOG(&router, kTestNavigationId2, LogEventType::kUiAccepted,
-                       "test.com")
+  MULTISTEP_FILTER_LOG(&router, kTestNavigationId2,
+                       LogEventType::kSuggestionAccepted, "test.com")
       << LogDetail{"detail_key", "detail_val"};
 
   ASSERT_EQ(router.entries().size(), 1u);
   const LogEntry& entry = router.entries().front();
   EXPECT_EQ(entry.navigation_id, kTestNavigationId2);
-  EXPECT_EQ(entry.event_type, LogEventType::kUiAccepted);
+  EXPECT_EQ(entry.event_type, LogEventType::kSuggestionAccepted);
   EXPECT_EQ(entry.source_etld_plus_1, "test.com");
 
   auto* detail = entry.details.FindString("detail_key");
@@ -117,8 +117,8 @@ TEST(MultistepFilterLoggerTest, MacroLoggingDisabled) {
   TestLogRouter router;
   router.SetIsLoggingEnabled(false);
 
-  MULTISTEP_FILTER_LOG(&router, kTestNavigationId3, LogEventType::kUiDismissed,
-                       "test.com")
+  MULTISTEP_FILTER_LOG(&router, kTestNavigationId3,
+                       LogEventType::kSuggestionDismissed, "test.com")
       << LogDetail{"detail_key", "detail_val"};
 
   EXPECT_EQ(router.entries().size(), 0u);
