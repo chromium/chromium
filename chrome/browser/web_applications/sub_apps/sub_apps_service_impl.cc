@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -41,8 +42,9 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -207,26 +209,6 @@ bool CanAccessSubAppsApi(content::RenderFrameHost& render_frame_host) {
   return IsInstalledNonChildApp(render_frame_host);
 }
 
-bool ShouldSkipUserConfirmation(content::RenderFrameHost& frame) {
-#if BUILDFLAG(IS_CHROMEOS)
-  auto const* profile = Profile::FromBrowserContext(frame.GetBrowserContext());
-  if (!profile) {
-    return false;
-  }
-
-  auto const* prefs = profile->GetPrefs();
-  if (!prefs) {
-    return false;
-  }
-
-  return policy::IsOriginInAllowlist(
-      frame.GetLastCommittedURL(), prefs,
-      prefs::kSubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins);
-#else   // BUILDFLAG(IS_CHROMEOS)
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
 bool AppsScopesOverlap(
     const GURL& new_scope,
     const webapps::AppId& parent_app_id,
@@ -258,6 +240,21 @@ bool AppsScopesOverlap(
   }
 
   return false;
+}
+
+ContentSetting GetSubAppsContentSetting(content::RenderFrameHost& frame) {
+  auto* profile = Profile::FromBrowserContext(frame.GetBrowserContext());
+  if (!profile) {
+    return CONTENT_SETTING_BLOCK;
+  }
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  if (!map) {
+    return CONTENT_SETTING_BLOCK;
+  }
+  return map->GetContentSetting(frame.GetLastCommittedURL(),
+                                frame.GetLastCommittedURL(),
+                                ContentSettingsType::SUB_APPS_WITHOUT_PROMPTS);
 }
 
 }  // namespace
@@ -302,7 +299,8 @@ void SubAppsServiceImpl::CreateIfAllowed(
 void SubAppsServiceImpl::Add(
     std::vector<SubAppsServiceAddParametersPtr> sub_apps_to_add,
     AddCallback result_callback) {
-  if (!CanAccessSubAppsApi(render_frame_host())) {
+  if (!CanAccessSubAppsApi(render_frame_host()) ||
+      GetSubAppsContentSetting(render_frame_host()) == CONTENT_SETTING_BLOCK) {
     ReturnAllAddsAsFailed(sub_apps_to_add, std::move(result_callback));
     return;
   }
@@ -465,18 +463,24 @@ void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
     return;
   }
 
-  if (ShouldSkipUserConfirmation(render_frame_host())) {
-    ProcessDialogResponse(add_call_id, true);
-    return;
+  switch (GetSubAppsContentSetting(render_frame_host())) {
+    case CONTENT_SETTING_ALLOW:
+      ProcessDialogResponse(add_call_id, /*dialog_accepted=*/true);
+      return;
+    case CONTENT_SETTING_BLOCK:
+      ProcessDialogResponse(add_call_id, /*dialog_accepted=*/false);
+      return;
+    case CONTENT_SETTING_ASK:
+    default:
+      WebAppProvider* provider = GetWebAppProvider(render_frame_host());
+      const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
+      provider->ui_manager().ShowSubAppsInstallDialog(
+          content::WebContents::FromRenderFrameHost(&render_frame_host()),
+          add_call_info.install_infos, *parent_app_id,
+          base::BindOnce(&SubAppsServiceImpl::ProcessDialogResponse,
+                         weak_ptr_factory_.GetWeakPtr(), add_call_id));
+      return;
   }
-
-  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
-  const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
-  provider->ui_manager().ShowSubAppsInstallDialog(
-      content::WebContents::FromRenderFrameHost(&render_frame_host()),
-      add_call_info.install_infos, *parent_app_id,
-      base::BindOnce(&SubAppsServiceImpl::ProcessDialogResponse,
-                     weak_ptr_factory_.GetWeakPtr(), add_call_id));
 }
 
 void SubAppsServiceImpl::ProcessDialogResponse(int add_call_id,

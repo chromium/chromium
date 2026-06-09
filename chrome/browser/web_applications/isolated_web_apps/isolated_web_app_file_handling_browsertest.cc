@@ -5,6 +5,7 @@
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -21,8 +22,10 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
@@ -260,7 +263,6 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppFileHandlingApprovalBrowserTest,
             target_state);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppFileHandlingApprovalBrowserTest,
                        SubAppInheritsState) {
   ApiApprovalState target_state = GetParam();
@@ -323,12 +325,13 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppFileHandlingApprovalBrowserTest,
                 parent_app_id),
             target_state);
 
-  // 2. Set policy to auto-accept sub-apps for this parent.
-  profile()->GetPrefs()->SetList(
-      prefs::kSubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins,
-      base::ListValue().Append(parent_url_info.origin().Serialize()));
+  // Set content setting to auto-accept sub-apps for this parent.
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetContentSettingDefaultScope(
+          parent_url_info.origin().GetURL(), parent_url_info.origin().GetURL(),
+          ContentSettingsType::SUB_APPS_WITHOUT_PROMPTS, CONTENT_SETTING_ALLOW);
 
-  // 3. Open parent app and call navigator.subApps.add.
+  // Open parent app and call navigator.subApps.add.
   auto* iwa_frame = OpenApp(parent_app_id);
 
   WebAppTestInstallObserver observer(profile());
@@ -344,12 +347,11 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppFileHandlingApprovalBrowserTest,
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       sub_app_id, WebAppFilter::IsIsolatedSubApp()));
 
-  // 4. Expect that the file handler approval is inherited.
+  // Expect that the file handler approval is inherited.
   EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlerUserApprovalState(
                 sub_app_id),
             target_state);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(
     All,
