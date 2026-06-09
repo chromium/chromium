@@ -4992,20 +4992,16 @@ inline constexpr char kPromptAPIForGeminiNanoDescription[] =
     "This API is primarily intended for natural language processing tasks such "
     "as summarizing, classifying, or rephrasing text. It is NOT suitable for "
     "use cases that require factual accuracy (e.g. answering knowledge "
-    "questions). "
-    "You must comply with our Prohibited Use Policy [2] which provides "
-    "additional details about appropriate use of Generative AI.";
-inline constexpr const char* kAIAPIsForGeminiNanoLinks[2] = {
-    "https://goo.gle/chrome-ai-dev-preview",
-    "https://policies.google.com/terms/generative-ai/use-policy"};
+    "questions).";
+inline constexpr const char* kAIAPIsForGeminiNanoLinks[1] = {
+    "https://goo.gle/chrome-ai-dev-preview"};
 
 inline constexpr char kGemma4ForBuiltInAIName[] = "Gemma 4 for Built-in AI";
 inline constexpr char kGemma4ForBuiltInAIDescription[] =
     "Enables all built-in AI APIs (Prompt, Summarizer, Writer, etc.) with the "
     "Gemma 4 model.";
-inline constexpr const char* kGemma4ForBuiltInAILinks[2] = {
-    "https://goo.gle/chrome-ai-dev-preview",
-    "https://policies.google.com/terms/generative-ai/use-policy"};
+inline constexpr const char* kGemma4ForBuiltInAILinks[1] = {
+    "https://goo.gle/chrome-ai-dev-preview"};
 
 inline constexpr char kPromptAPIForGeminiNanoMultimodalInputName[] =
     "Prompt API for Gemini Nano with Multimodal Input";
@@ -5020,39 +5016,31 @@ inline constexpr char kPromptAPIForGeminiNanoMultimodalInputDescription[] =
     "processing tasks associated with visual and auditory data, such as "
     "generating rough descriptions of pictures and sounds. It is NOT suitable "
     "for use cases that require factual accuracy (e.g. answering knowledge "
-    "questions). "
-    "You must comply with our Prohibited Use Policy [2] which provides "
-    "additional details about appropriate use of Generative AI.";
+    "questions).";
 
 inline constexpr char kWriterAPIForGeminiNanoName[] =
     "Writer API for Gemini Nano";
 inline constexpr char kWriterAPIForGeminiNanoDescription[] =
     "Enables the Writer API, allowing you to write a piece "
-    "of text with a built-in large language model (Gemini Nano in Chrome)."
-    "The API may be subject to changes including the supported options."
-    "Please refer to the built-in AI article [1] for details. "
-    "You must comply with our Prohibited Use Policy [2] which provides "
-    "additional details about appropriate use of Generative AI.";
+    "of text with a built-in large language model (Gemini Nano in Chrome). "
+    "The API may be subject to changes including the supported options. "
+    "Please refer to the built-in AI article [1] for details.";
 
 inline constexpr char kRewriterAPIForGeminiNanoName[] =
     "Rewriter API for Gemini Nano";
 inline constexpr char kRewriterAPIForGeminiNanoDescription[] =
     "Enables the Rewriter API, allowing you to rewrite a piece "
-    "of text with a built-in large language model (Gemini Nano in Chrome)."
-    "The API may be subject to changes including the supported options."
-    "Please refer to the built-in AI article [1] for details. "
-    "You must comply with our Prohibited Use Policy [2] which provides "
-    "additional details about appropriate use of Generative AI.";
+    "of text with a built-in large language model (Gemini Nano in Chrome). "
+    "The API may be subject to changes including the supported options. "
+    "Please refer to the built-in AI article [1] for details.";
 
 inline constexpr char kProofreaderAPIName[] =
     "Proofreader API for Small Expert Model";
 inline constexpr char kProofreaderAPIDescription[] =
-    "Enables the Proofreader API, allowing you to proofread a piece of text"
+    "Enables the Proofreader API, allowing you to proofread a piece of text "
     "with a built-in small expert model in Chrome. "
-    "The API may be subject to changes including the supported options."
-    "Please refer to the built-in AI article [1] for details. "
-    "You must comply with our Prohibited Use Policy [2] which provides "
-    "additional details about appropriate use of Generative AI.";
+    "The API may be subject to changes including the supported options. "
+    "Please refer to the built-in AI article [1] for details.";
 
 inline constexpr char kClassifierAPIForTinyModelName[] =
     "Classifier API for Tiny Model";
@@ -5060,9 +5048,7 @@ inline constexpr char kClassifierAPIForTinyModelDescription[] =
     "Enables the Classifier API, allowing you to classify a piece of text "
     "with a built-in tiny model in Chrome. "
     "The API may be subject to changes including the supported options. "
-    "Please refer to the built-in AI article [1] for details. "
-    "You must comply with our Prohibited Use Policy [2] which provides "
-    "additional details about appropriate use of Generative AI.";
+    "Please refer to the built-in AI article [1] for details.";
 
 inline constexpr char kSummarizerAPIWithPerformancePreferenceName[] =
     "Summarizer API with Performance Preference";
@@ -5082,9 +5068,7 @@ inline constexpr char kSummarizerAPIForGeminiNanoDescription[] =
     "Enables the Summarizer API, allowing you to summarize a piece "
     "of text with a built-in large language model (Gemini Nano in Chrome). "
     "The API may be subject to changes including the supported options. "
-    "Please refer to the built-in AI article [1] for details. "
-    "You must comply with our Prohibited Use Policy [2] which provides "
-    "additional details about appropriate use of Generative AI.";
+    "Please refer to the built-in AI article [1] for details.";
 
 inline constexpr char kOnDeviceModelLitertLmBackendName[] =
     "LiteRT-LM for On-Device AI";
