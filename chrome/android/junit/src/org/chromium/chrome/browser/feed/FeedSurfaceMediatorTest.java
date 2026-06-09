@@ -44,10 +44,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -75,6 +77,8 @@ public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;
     private static final int SPAN_COUNT_SMALL_WIDTH = 1;
     private static final int SPAN_COUNT_LARGE_WIDTH = 2;
+    private static final int SPAN_COUNT_RESPONSIVE_LAYOUT = 1;
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     // Mocked JNI.
@@ -326,17 +330,26 @@ public class FeedSurfaceMediatorTest {
     @Test
     @Config(qualifiers = "sw600dp")
     public void testUpdateLayout_smallWidth_tablet() {
+        DeviceFormFactor.setIsTabletForTesting(true);
         testUpdateLayoutImpl(600, SPAN_COUNT_SMALL_WIDTH);
     }
 
     @Test
     @Config(qualifiers = "sw600dp")
     public void testUpdateLayout_largeWidth_tablet() {
+        DeviceFormFactor.setIsTabletForTesting(true);
         testUpdateLayoutImpl(800, SPAN_COUNT_LARGE_WIDTH);
     }
 
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.WIDE_SCREEN_FEED_FOR_FOLDABLES)
+    public void testUpdateLayout_responsive_foldable() {
+        DeviceInfo.setIsFoldableForTesting(true);
+        testUpdateLayoutImpl(800, SPAN_COUNT_RESPONSIVE_LAYOUT);
+    }
+
     private void testUpdateLayoutImpl(int width, int expectedSpanCount) {
-        DeviceFormFactor.setIsTabletForTesting(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);

@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ObserverList;
 import org.chromium.base.memory.MemoryPressureCallback;
@@ -32,6 +33,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedSurfaceProvider.RestoringState;
 import org.chromium.chrome.browser.feed.Stream.ContentChangedListener;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -191,6 +193,7 @@ public class FeedSurfaceMediator
     private static @Nullable PrefChangeRegistrar sTestPrefChangeRegistar;
     private static final int SPAN_COUNT_SMALL_WIDTH = 1;
     private static final int SPAN_COUNT_LARGE_WIDTH = 2;
+    private static final int SPAN_COUNT_RESPONSIVE_LAYOUT = 1;
     private static final int SMALL_WIDTH_DP = 700;
 
     private final FeedSurfaceCoordinator mCoordinator;
@@ -235,6 +238,7 @@ public class FeedSurfaceMediator
     // This avoids automatically binding the first stream when it's added.
     private boolean mSettingUpStreams;
     private final boolean mIsNewTabSearchEngineUrlAndroidEnabled;
+    private final boolean mUseResponsiveLayoutForFoldables;
     private boolean mIsPropertiesInitializedForStream;
     private @ClosedReason int mClosedReason = ClosedReason.SUSPEND_APP;
 
@@ -261,6 +265,10 @@ public class FeedSurfaceMediator
         mActionDelegate = actionDelegate;
         mIsNewTabSearchEngineUrlAndroidEnabled =
                 DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled();
+        mUseResponsiveLayoutForFoldables =
+                DeviceInfo.isFoldable()
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.WIDE_SCREEN_FEED_FOR_FOLDABLES);
 
         /*
          * When feature flag isNewTabSearchEngineUrlAndroidEnabled is enabled, the Feeds may be
@@ -308,7 +316,12 @@ public class FeedSurfaceMediator
                 || mCurrentStream == null) {
             return;
         }
-        int spanCount = isSmallLayoutWidth ? SPAN_COUNT_SMALL_WIDTH : SPAN_COUNT_LARGE_WIDTH;
+        int spanCount;
+        if (mUseResponsiveLayoutForFoldables) {
+            spanCount = SPAN_COUNT_RESPONSIVE_LAYOUT;
+        } else {
+            spanCount = isSmallLayoutWidth ? SPAN_COUNT_SMALL_WIDTH : SPAN_COUNT_LARGE_WIDTH;
+        }
         boolean res = listLayoutHelper.setColumnCount(spanCount);
         assert res : "Failed to set column count on Feed";
     }
