@@ -42,6 +42,7 @@ try_.builder(
             "no_symbols",
             "devtools_do_typecheck",
             "chrome_for_testing",
+            "chrome_with_codecs",
             "linux",
             "x64",
         ],
@@ -61,6 +62,7 @@ try_.builder(
             "remoteexec",
             "no_symbols",
             "chrome_for_testing",
+            "chrome_with_codecs",
             "mac",
             "x64",
         ],
@@ -84,6 +86,7 @@ try_.builder(
             # is no longer needed.
             "no_resource_allowlisting",
             "chrome_for_testing",
+            "chrome_with_codecs",
             "win",
             "x64",
         ],
