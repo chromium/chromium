@@ -648,6 +648,9 @@ TEST_P(DiceResponseHandlerParamTest,
 
 TEST_P(DiceResponseHandlerParamTest,
        SigninWithMtlsTokenBinding_PrimaryConnected) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kEnableMtlsTokenBinding);
+
   const size_t account_count = GetAccountCount();
   const int initiator_index = 0;
   DiceResponseParams dice_params = MakeDiceParams(
@@ -691,6 +694,7 @@ TEST_P(DiceResponseHandlerParamTest,
   // Check that the tokens have been inserted in the token service.
   for (const auto& id : account_ids) {
     EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(id));
+    EXPECT_TRUE(identity_manager()->HasAccountWithRefreshTokenBoundToMtls(id));
   }
 }
 

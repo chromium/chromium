@@ -139,8 +139,8 @@ class MutableProfileOAuth2TokenServiceDelegate
   bool IsRefreshTokenBoundToKey(const CoreAccountId& account_id) const override;
   std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const override;
-  bool ShouldUseMtlsForAccessTokenFetches(
-      const CoreAccountId& account_id) const;
+  bool IsRefreshTokenBoundToMtls(
+      const CoreAccountId& account_id) const override;
   bool AllBoundTokensShareSameBindingKey() const override;
   void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
       const CoreAccountId& account_id,

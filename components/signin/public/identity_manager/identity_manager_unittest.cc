@@ -1221,6 +1221,47 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(identity_manager()->GetWrappedBindingKey(),
             secondary_account_wrapped_binding_key);
 }
+
+TEST_F(IdentityManagerTest, HasAccountWithRefreshTokenBoundToMtls) {
+  account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
+  AccountInfo account_info2 =
+      account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2);
+  CoreAccountId account_id2 = account_info2.account_id;
+
+  // Non-existent token should return false.
+  EXPECT_FALSE(
+      identity_manager()->HasAccountWithRefreshTokenBoundToMtls(account_id2));
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kEnableMtlsTokenBinding);
+
+  // Unbound token should return false.
+  SetRefreshTokenForAccount(identity_manager(), account_id2);
+  EXPECT_FALSE(
+      identity_manager()->HasAccountWithRefreshTokenBoundToMtls(account_id2));
+
+  // Set the token with mtls_token_binding = true.
+  SetRefreshTokenForAccount(
+      identity_manager(), account_id2, "token_val",
+      signin::TokenBindingInfo(/*wrapped_binding_key=*/{},
+                               /*mtls_token_binding=*/true));
+  EXPECT_TRUE(
+      identity_manager()->HasAccountWithRefreshTokenBoundToMtls(account_id2));
+
+  // Disable the feature and check it returns false.
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(
+        switches::kEnableMtlsTokenBinding);
+    EXPECT_FALSE(
+        identity_manager()->HasAccountWithRefreshTokenBoundToMtls(account_id2));
+  }
+
+  // Remove the token and check it returns false.
+  RemoveRefreshTokenForAccount(identity_manager(), account_id2);
+  EXPECT_FALSE(
+      identity_manager()->HasAccountWithRefreshTokenBoundToMtls(account_id2));
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(IdentityManagerTest, GetErrorStateOfRefreshTokenForAccount) {

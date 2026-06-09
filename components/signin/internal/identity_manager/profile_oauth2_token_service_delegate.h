@@ -140,6 +140,11 @@ class ProfileOAuth2TokenServiceDelegate {
   virtual std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const = 0;
 
+  // Returns true if a refresh token exists for `account_id` and it is bound to
+  // an mTLS certificate.
+  virtual bool IsRefreshTokenBoundToMtls(
+      const CoreAccountId& account_id) const = 0;
+
   // Returns whether all bound refresh tokens share the same binding key.
   //
   // Unbound tokens are ignored in this check. Returns `true` if there are zero

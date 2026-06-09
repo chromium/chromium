@@ -2018,6 +2018,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   EXPECT_TRUE(
       oauth2_service_delegate_->GetWrappedBindingKey(kAccountId2).empty());
 
+  EXPECT_FALSE(oauth2_service_delegate_->IsRefreshTokenBoundToMtls(kAccountId));
+  EXPECT_FALSE(
+      oauth2_service_delegate_->IsRefreshTokenBoundToMtls(kAccountId2));
+
   histogram_tester.ExpectUniqueSample(
       "Signin.TokenBinding.BoundTokenPrevalence",
       /*kSomeTokensBoundSomeUnbound*/ 2, /*expected_bucket_count=*/1);
@@ -2178,8 +2182,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   EXPECT_TRUE(oauth2_service_delegate_->RefreshTokenIsAvailable(kAccountId));
   EXPECT_EQ(oauth2_service_delegate_->GetWrappedBindingKey(kAccountId),
             kFakeWrappedBindingKey);
-  EXPECT_TRUE(
-      oauth2_service_delegate_->ShouldUseMtlsForAccessTokenFetches(kAccountId));
+  EXPECT_TRUE(oauth2_service_delegate_->IsRefreshTokenBoundToMtls(kAccountId));
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
@@ -2199,8 +2202,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
         signin_metrics::SourceForRefreshTokenOperation::kUnknown,
         signin::TokenBindingInfo(kFakeWrappedBindingKey,
                                  /*mtls_token_binding=*/true));
-    EXPECT_TRUE(oauth2_service_delegate_->ShouldUseMtlsForAccessTokenFetches(
-        kAccountId));
+    EXPECT_TRUE(
+        oauth2_service_delegate_->IsRefreshTokenBoundToMtls(kAccountId));
     ShutdownOAuth2ServiceDelegate();
   }
 
@@ -2215,8 +2218,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   WaitForRefreshTokensLoaded();
 
   EXPECT_TRUE(oauth2_service_delegate_->RefreshTokenIsAvailable(kAccountId));
-  EXPECT_FALSE(
-      oauth2_service_delegate_->ShouldUseMtlsForAccessTokenFetches(kAccountId));
+  EXPECT_FALSE(oauth2_service_delegate_->IsRefreshTokenBoundToMtls(kAccountId));
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
@@ -2250,6 +2252,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
       signin::TokenBindingInfo(kFakeWrappedBindingKey,
                                /*mtls_token_binding=*/true));
+  EXPECT_TRUE(oauth2_service_delegate_->IsRefreshTokenBoundToMtls(account_id));
 
   // Verify that the binding key and mTLS flag are added to the destination
   // service.
@@ -2261,8 +2264,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   oauth2_service_delegate_->ExtractCredentials(&dest_token_service, account_id);
 
   // Verify that the mTLS flag is copied to the destination service.
-  EXPECT_TRUE(
-      dest_delegate_ptr->ShouldUseMtlsForAccessTokenFetches(account_id));
+  EXPECT_TRUE(dest_delegate_ptr->IsRefreshTokenBoundToMtls(account_id));
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,

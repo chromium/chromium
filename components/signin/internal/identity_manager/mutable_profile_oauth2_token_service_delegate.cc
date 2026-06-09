@@ -13,6 +13,7 @@
 
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -393,7 +394,7 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
         consumer, BackOffError());
   }
   std::string refresh_token = GetRefreshToken(account_id);
-  bool mtls_token_binding = ShouldUseMtlsForAccessTokenFetches(account_id);
+  bool mtls_token_binding = IsRefreshTokenBoundToMtls(account_id);
   DCHECK(!refresh_token.empty());
   bool is_refresh_token_bound = IsRefreshTokenBoundToKey(account_id);
   if (is_refresh_token_bound || ShouldUseIssueTokenForUnboundTokens()) {
@@ -472,12 +473,6 @@ std::string MutableProfileOAuth2TokenServiceDelegate::GetRefreshToken(
   return std::string();
 }
 
-bool MutableProfileOAuth2TokenServiceDelegate::
-    ShouldUseMtlsForAccessTokenFetches(const CoreAccountId& account_id) const {
-  auto iter = refresh_tokens_.find(account_id);
-  return iter != refresh_tokens_.end() && iter->second.mtls_token_binding &&
-         base::FeatureList::IsEnabled(switches::kEnableMtlsTokenBinding);
-}
 
 bool MutableProfileOAuth2TokenServiceDelegate::
     GenerateBindingKeyRegistrationToken(
@@ -509,6 +504,13 @@ MutableProfileOAuth2TokenServiceDelegate::GetWrappedBindingKey(
   }
 
   return token_binding_helper_->GetWrappedBindingKey(account_id);
+}
+
+bool MutableProfileOAuth2TokenServiceDelegate::IsRefreshTokenBoundToMtls(
+    const CoreAccountId& account_id) const {
+  const auto* token_data = base::FindOrNull(refresh_tokens_, account_id);
+  return token_data && token_data->mtls_token_binding &&
+         base::FeatureList::IsEnabled(switches::kEnableMtlsTokenBinding);
 }
 
 bool MutableProfileOAuth2TokenServiceDelegate::
@@ -1047,7 +1049,7 @@ void MutableProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(
     const CoreAccountId& account_id) {
   bool should_update_credentials = true;
   std::string refresh_token = GetRefreshToken(account_id);
-  bool mtls_token_binding = ShouldUseMtlsForAccessTokenFetches(account_id);
+  bool mtls_token_binding = IsRefreshTokenBoundToMtls(account_id);
   AccountMoveDecision move_decision =
       AccountMoveDecision::kCanMoveWithRefreshToken;
   signin::TokenBindingInfo token_binding_info(GetWrappedBindingKey(account_id),

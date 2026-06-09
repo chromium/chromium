@@ -333,6 +333,12 @@ class IdentityManager : public KeyedService,
   // refresh token is bound to a device, it returns `false` otherwise.
   bool HasAccountWithBoundRefreshToken(const CoreAccountId& account_id) const;
 
+  // Returns `true` if (a) a refresh token exists for `account_id`, and (b) the
+  // refresh token is bound to an mTLS certificate. It returns `false`
+  // otherwise.
+  bool HasAccountWithRefreshTokenBoundToMtls(
+      const CoreAccountId& account_id) const;
+
   // Returns whether all bound refresh tokens share the same binding key.
   //
   // Unbound tokens are ignored in this check. Returns `true` if there are zero

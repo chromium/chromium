@@ -292,6 +292,11 @@ bool IdentityManager::HasAccountWithBoundRefreshToken(
   return !token_service_->GetWrappedBindingKey(account_id).empty();
 }
 
+bool IdentityManager::HasAccountWithRefreshTokenBoundToMtls(
+    const CoreAccountId& account_id) const {
+  return token_service_->IsRefreshTokenBoundToMtls(account_id);
+}
+
 bool IdentityManager::AllBoundTokensShareSameBindingKey() const {
   return token_service_->AllBoundTokensShareSameBindingKey();
 }

@@ -80,6 +80,8 @@ class FakeProfileOAuth2TokenServiceDelegate
   bool IsRefreshTokenBoundToKey(const CoreAccountId& account_id) const override;
   std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const override;
+  bool IsRefreshTokenBoundToMtls(
+      const CoreAccountId& account_id) const override;
   bool AllBoundTokensShareSameBindingKey() const override;
   void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
       const CoreAccountId& account_id,
@@ -152,6 +154,7 @@ class FakeProfileOAuth2TokenServiceDelegate
            base::OnceCallback<void(
                std::optional<signin::BindingKeyRegistrationTokenResult>)>>
       pending_token_binding_callbacks_;
+  std::map<CoreAccountId, bool> mtls_token_bindings_;
 #endif
 
   network::TestURLLoaderFactory test_url_loader_factory_;

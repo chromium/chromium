@@ -367,6 +367,11 @@ std::vector<uint8_t> ProfileOAuth2TokenService::GetWrappedBindingKey(
   return delegate_->GetWrappedBindingKey(account_id);
 }
 
+bool ProfileOAuth2TokenService::IsRefreshTokenBoundToMtls(
+    const CoreAccountId& account_id) const {
+  return delegate_->IsRefreshTokenBoundToMtls(account_id);
+}
+
 bool ProfileOAuth2TokenService::AllBoundTokensShareSameBindingKey() const {
   return delegate_->AllBoundTokensShareSameBindingKey();
 }
