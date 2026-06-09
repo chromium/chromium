@@ -750,13 +750,7 @@ TEST_F(NavigationURLLoaderImplTest, TimeoutDuringURLLoader) {
 
 // Timeout + MaybeCreateLoaderForResponse() + redirect case (failure) while
 // waiting for the response from URLLoader.
-// TODO(crbug.com/502512105): Re-enable this test.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_RedirectDuringURLLoader DISABLED_RedirectDuringURLLoader
-#else
-#define MAYBE_RedirectDuringURLLoader RedirectDuringURLLoader
-#endif
-TEST_F(NavigationURLLoaderImplTest, MAYBE_RedirectDuringURLLoader) {
+TEST_F(NavigationURLLoaderImplTest, RedirectDuringURLLoader) {
   ASSERT_TRUE(http_test_server_.Start());
   const GURL final_url = http_test_server_.GetURL("/echo");
   const GURL interceptor_url = http_test_server_.GetURL("/foo");
