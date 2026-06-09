@@ -50,7 +50,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -215,39 +214,11 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
-    public void testCreateNewWindowIntent_nonMultiWindowMode_opensFullScreen() {
-        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
-        Activity mActivity = createMockActivity();
-        when(mActivity.isInMultiWindowMode()).thenReturn(false);
-
-        // The new window shouldn't be opened as an adjacent window.
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
-                false);
-
-        Intent intent =
-                MultiWindowUtils.createNewWindowIntent(
-                        mActivity,
-                        /* isIncognito= */ false,
-                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
-
-        assertNotNull(intent);
-        assertEquals(0, (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT));
-    }
-
-    @Test
     @Config(sdk = 32)
     public void testCreateNewWindowIntent_nonMultiWindowMode_opensAdjacently() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         Activity mActivity = createMockActivity();
         when(mActivity.isInMultiWindowMode()).thenReturn(false);
-
-        // The new window should be opened as an adjacent window.
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
-                true);
 
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(

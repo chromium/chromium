@@ -1291,6 +1291,32 @@ public class MultiWindowUtils implements ActivityStateListener {
                 true);
     }
 
+    /**
+     * Determines whether a new window should be opened adjacently (split-screen) or in full screen.
+     *
+     * <p>Different-mode window launches (regular-to-incognito or incognito-to-regular) are forced
+     * to open in full screen if the {@link ChromeFeatureList#INCOGNITO_AS_WINDOW_FULL_SCREEN}
+     * feature is enabled. Default behavior is to always open adjacently.
+     *
+     * @param activity The current activity initiating the launch.
+     * @param isTargetIncognito Whether the target window to be opened is incognito.
+     * @return {@code false} when the new window should be opened in full screen, {@code true} when
+     *     it should be opened adjacently (split-screen).
+     */
+    // TODO(crbug.com/520131322): Rename this method (and remove old one) once flag is removed.
+    /* package */ static boolean shouldOpenInAdjacentWindowUpdated(
+            Activity activity, boolean isTargetIncognito) {
+        boolean isSourceIncognito = false;
+        if (activity instanceof ChromeTabbedActivity) {
+            isSourceIncognito = ((ChromeTabbedActivity) activity).isIncognitoWindow();
+        }
+        if (isSourceIncognito != isTargetIncognito
+                && IncognitoUtils.isIncognitoAsWindowFullScreenEnabled()) {
+            return false;
+        }
+        return true;
+    }
+
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     // LINT.IfChange(LaunchInInstanceEarlyFailureReason)
