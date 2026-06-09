@@ -67,10 +67,6 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
  private:
   LockedSessionWindowTracker* GetWindowTracker();
 
-  void DisableCommandsForDevTools(SessionID window_id);
-
-  void EnableOrDisableCommandsForTabSwitch(SessionID window_id, bool enabled);
-
   void PauseCameraInput(bool paused);
 
   void PauseMicrophoneInput(bool paused);

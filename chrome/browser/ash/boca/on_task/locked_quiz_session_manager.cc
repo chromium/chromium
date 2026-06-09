@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
@@ -145,26 +144,23 @@ void LockedQuizSessionManager::SetLockedFullscreenState(Browser* browser,
 
   // TODO(crbug.com/438540029): Clean up after migrating locked quizzes to use
   // the Boca SWA.
-  aura::Window* const window = browser->GetWindow()->GetNativeWindow();
-  DCHECK(window);
-
-  CHECK_NE(GetWindowPinType(window), chromeos::WindowPinType::kPinned)
+  ash::BrowserDelegate* const browser_delegate =
+      ash::BrowserController::GetInstance()->GetDelegate(browser);
+  CHECK_NE(GetWindowPinType(browser_delegate->GetNativeWindow()),
+           chromeos::WindowPinType::kPinned)
       << "Extensions only set Trusted Pinned";
 
   // As this gets triggered from extensions, we might encounter this case.
-  if (IsWindowPinned(window) == pinned) {
+  if (browser_delegate->IsLockedFullscreen() == pinned) {
     return;
   }
 
   if (pinned) {
     // Pins from extension are always trusted.
-    PinWindow(window, /*trusted=*/true);
+    browser_delegate->EnterLockedFullscreen(/*focus_toolbar=*/false);
   } else {
-    UnpinWindow(window);
+    browser_delegate->LeaveLockedFullscreen();
   }
-
-  // Update the set of available browser commands.
-  browser->command_controller()->LockedFullscreenStateChanged();
 }
 
 }  // namespace ash::boca

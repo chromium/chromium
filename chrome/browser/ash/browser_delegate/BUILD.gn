@@ -44,6 +44,7 @@ static_library("impl") {
   ]
 
   deps = [
+    "//ash",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/devtools",

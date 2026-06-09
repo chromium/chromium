@@ -56,6 +56,12 @@ class BrowserDelegateImpl : public BrowserDelegate {
   void MoveTab(size_t tab_index, BrowserDelegate& target_browser) override;
   bool CreateWebAppFromActiveWebContents() override;
   void ResetLocationBar() override;
+  void EnterLockedFullscreen(bool focus_toolbar) override;
+  void LeaveLockedFullscreen() override;
+  bool IsLockedFullscreen() const override;
+  void SetDevToolsCommandsEnabled(bool enabled) override;
+  void SetTabSwitchCommandsEnabled(bool enabled) override;
+  void ActivateWebContentsAt(size_t index) override;
 
  private:
   const raw_ref<Browser> browser_;

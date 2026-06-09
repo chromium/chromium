@@ -168,6 +168,29 @@ class BrowserDelegate {
   // Resets the location bar so that its permanent text is shown.
   virtual void ResetLocationBar() = 0;
 
+  // Enters locked fullscreen mode.
+  // Pins the window, updates browser commands, and optionally focuses the
+  // toolbar.
+  virtual void EnterLockedFullscreen(bool focus_toolbar) = 0;
+
+  // Leaves locked fullscreen mode.
+  // Unpins the window and updates browser commands.
+  virtual void LeaveLockedFullscreen() = 0;
+
+  // Sets whether command shortcuts related to DevTools are enabled.
+  virtual void SetDevToolsCommandsEnabled(bool enabled) = 0;
+
+  // Sets whether command shortcuts related to tab switching are enabled.
+  virtual void SetTabSwitchCommandsEnabled(bool enabled) = 0;
+
+  // Activates the web contents at the specified tab strip index.
+  virtual void ActivateWebContentsAt(size_t index) = 0;
+
+  //// The following functions are added purely for convenience. ////
+
+  // Returns whether the browser window is in locked fullscreen mode.
+  virtual bool IsLockedFullscreen() const = 0;
+
  protected:
   ~BrowserDelegate() = default;
 
