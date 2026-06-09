@@ -558,6 +558,8 @@ struct GPU_COMMAND_BUFFER_CLIENT_EXPORT ExportedSharedImage {
       ExportedSharedImageMojoDeserialization_TextureTargetZero);
   FRIEND_TEST_ALL_PREFIXES(ClientSharedImageTest,
                            ExportedSharedImageMojoDeserialization_EmptyBuffer);
+  FRIEND_TEST_ALL_PREFIXES(ClientSharedImageTest,
+                           ExportedSharedImageMojoDeserialization_ZeroMailbox);
 
   ExportedSharedImage(const Mailbox& mailbox,
                       const SharedImageMetadata& metadata,

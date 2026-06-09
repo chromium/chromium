@@ -79,7 +79,7 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
 
   static bool Read(gpu::mojom::ExportedSharedImageDataView data,
                    gpu::ExportedSharedImage* out) {
-    if (!data.ReadMailbox(&out->mailbox_) ||
+    if (!data.ReadMailbox(&out->mailbox_) || out->mailbox_.IsZero() ||
         !data.ReadMetadata(&out->metadata_) ||
         !data.ReadDebugLabel(&out->debug_label_) ||
         !data.ReadCreationSyncToken(&out->creation_sync_token_) ||
