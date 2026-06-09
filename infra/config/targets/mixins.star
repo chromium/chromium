@@ -1152,6 +1152,18 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "ios_runtime_cache_27_0",
+    swarming = targets.swarming(
+        named_caches = [
+            swarming.cache(
+                name = "runtime_ios_27_0",
+                path = "Runtime-ios-27.0",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
     name = "tvos_runtime_cache_26_0",
     swarming = targets.swarming(
         named_caches = [
@@ -2291,15 +2303,15 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "xcode_26_beta",
+    name = "xcode_27_beta",
     args = [
         "--xcode-build-version",
-        "17f42",
+        "27a5194q",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_17f42",
+                name = "xcode_ios_27a5194q",
                 path = "Xcode.app",
             ),
         ],

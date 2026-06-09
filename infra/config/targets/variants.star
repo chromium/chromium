@@ -301,17 +301,17 @@ targets.variant(
 )
 
 targets.variant(
-    name = "SIM_IPAD_AIR_6TH_GEN_26_5",
-    identifier = "iPad Air (6th generation) 26.5",
+    name = "SIM_IPAD_AIR_6TH_GEN_27_0",
+    identifier = "iPad Air (6th generation) 27.0",
     mixins = [
-        "ios_runtime_cache_26_5",
+        "ios_runtime_cache_27_0",
         "use-ios-simulator-cache",
     ],
     args = [
         "--platform",
         "iPad Air 11-inch (M2)",
         "--version",
-        "26.5",
+        "27.0",
     ],
 )
 
@@ -526,6 +526,21 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPHONE_16_27_0",
+    identifier = "iPhone 16 27.0",
+    mixins = [
+        "ios_runtime_cache_27_0",
+        "use-ios-simulator-cache",
+    ],
+    args = [
+        "--platform",
+        "iPhone 16",
+        "--version",
+        "27.0",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPHONE_14_PLUS_18_2",
     identifier = "iPhone 14 Plus 18.2",
     mixins = [
@@ -642,6 +657,21 @@ targets.variant(
         "iPhone SE (3rd generation)",
         "--version",
         "26.5",
+    ],
+)
+
+targets.variant(
+    name = "SIM_IPHONE_SE_3RD_GEN_27_0",
+    identifier = "iPhone SE (3rd generation) 27.0",
+    mixins = [
+        "ios_runtime_cache_27_0",
+        "use-ios-simulator-cache",
+    ],
+    args = [
+        "--platform",
+        "iPhone SE (3rd generation)",
+        "--version",
+        "27.0",
     ],
 )
 

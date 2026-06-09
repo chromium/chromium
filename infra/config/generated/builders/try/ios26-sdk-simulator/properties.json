@@ -62,5 +62,5 @@
   },
   "builder_group": "tryserver.chromium.mac",
   "recipe": "chromium_trybot",
-  "xcode_build_version": "17f42"
+  "xcode_build_version": "27a5194q"
 }
