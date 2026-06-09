@@ -167,6 +167,9 @@ class WebStateID;
 // Handles snapshots and favicons fetches.
 @property(nonatomic, weak) id<TabSwitcherItemSnapShotAndFaviconDataSource>
     snapshotAndfaviconDataSource;
+// The active context menu interaction animator.
+@property(nonatomic, strong) id<UIContextMenuInteractionAnimating>
+    activeContextMenuAnimator;
 
 // Returns the legacy layout of the grid for use in an animated transition.
 - (LegacyGridTransitionLayout*)legacyTransitionLayout;

@@ -238,6 +238,7 @@ chromium-metrics-reviews@google.com.
   <int value="71" label="Edit on pinned site on most visited sites section"/>
   <int value="72" label="Delete browsing data"/>
   <int value="73" label="Create empty tab group"/>
+  <int value="74" label="Send tab to self"/>
 </enum>
 
 <enum name="IOSMenuScenario">

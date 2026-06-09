@@ -2302,4 +2302,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
+- (id<UIContextMenuInteractionAnimating>)activeContextMenuAnimator {
+  id activeVC = self.currentPageViewController;
+  return [activeVC respondsToSelector:@selector(activeContextMenuAnimator)]
+             ? [activeVC activeContextMenuAnimator]
+             : nil;
+}
+
 @end

@@ -8,6 +8,7 @@ include_rules = [
   "+ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h",
   "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h",
+  "+ios/chrome/browser/send_tab_to_self/coordinator",
   "+ios/chrome/browser/settings/ui_bundled",
   # go/keep-sorted end
 ]

@@ -262,6 +262,9 @@ class TabGroup;
 - (UIAction*)actionToEditPinnedSiteOnMostVisitedTileWithBlock:
     (ProceduralBlock)block;
 
+// Creates a UIAction instance for sending tab to another device.
+- (UIAction*)actionToSendTabToSelfWithBlock:(ProceduralBlock)block;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_MENU_UI_BUNDLED_ACTION_FACTORY_H_

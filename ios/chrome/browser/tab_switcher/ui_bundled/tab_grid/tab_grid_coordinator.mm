@@ -26,6 +26,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/chrome/app/profile/first_run_profile_agent.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
@@ -54,6 +55,8 @@
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator.h"
+#import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator_delegate.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
@@ -141,6 +144,8 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using collaboration::CollaborationServiceShareOrManageEntryPoint;
@@ -181,6 +186,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                   InactiveTabsCoordinatorDelegate,
                                   LegacyGridTransitionAnimationLayoutProviding,
                                   SceneStateObserver,
+                                  SendTabToSelfCoordinatorDelegate,
+                                  SigninPresenter,
                                   TabContextMenuDelegate,
                                   TabGridCommands,
                                   TabGridTransitionLayoutProviding,
@@ -258,6 +265,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 // YES if the TabViewController has never been shown yet.
 @property(nonatomic, assign) BOOL firstPresentation;
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
+// Coordinator for "Send tab to self".
+@property(nonatomic, strong) SendTabToSelfCoordinator* sendTabToSelfCoordinator;
 // The action sheet coordinator, if one is currently being shown.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
 // The coordinator for the page action menu.
@@ -1231,6 +1240,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _viewController = nil;
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
+  [self.sendTabToSelfCoordinator stop];
+  self.sendTabToSelfCoordinator = nil;
   [self.incognitoBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self.regularBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self.dispatcher stopDispatchingForProtocol:@protocol(SceneCommands)];
@@ -1569,6 +1580,70 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                       params:params
                                                   sourceItem:view];
   [self.sharingCoordinator start];
+}
+
+- (void)sendTabToSelfWithIdentifier:(web::WebStateID)identifier {
+  Browser* browser = self.regularBrowser;
+  if (!browser) {
+    return;
+  }
+  WebStateList* webStateList = browser->GetWebStateList();
+  web::WebState* webState = GetWebState(
+      webStateList, WebStateSearchCriteria{.identifier = identifier});
+  if (!webState) {
+    return;
+  }
+  const GURL& url = webState->GetVisibleURL();
+  NSString* title = base::SysUTF16ToNSString(webState->GetTitle());
+
+  [self.sendTabToSelfCoordinator stop];
+  self.sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.regularBrowser
+                 signinPresenter:self
+                             url:url
+                           title:title];
+  self.sendTabToSelfCoordinator.delegate = self;
+
+  // Postpone the start of the coordinator to allow the context menu dismissal
+  // animation to complete cleanly and prevent a UIKit transition deadlock.
+  // TODO(crbug.com/493866370): These transition details shouldn't be the
+  // responsibility of the TabGridCoordinator. Instead, implement a Protocol
+  // ("TransitionStateProviding") which exposes the context menu animator, and
+  // a common utility to run a block once the current transition completes.
+  __weak TabGridCoordinator* weakSelf = self;
+  id<UIContextMenuInteractionAnimating> contextMenuAnimator =
+      _viewController.activeContextMenuAnimator;
+  if (contextMenuAnimator) {
+    [contextMenuAnimator addCompletion:^{
+      web::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(^{
+            TabGridCoordinator* strongSelf = weakSelf;
+            if (strongSelf) {
+              [strongSelf.sendTabToSelfCoordinator start];
+            }
+          }));
+    }];
+  } else {
+    [self.sendTabToSelfCoordinator start];
+  }
+}
+
+#pragma mark - SendTabToSelfCoordinatorDelegate
+
+- (void)sendTabToSelfCoordinatorWantsToBeStopped:
+    (SendTabToSelfCoordinator*)coordinator {
+  DCHECK_EQ(coordinator, self.sendTabToSelfCoordinator);
+  [self.sendTabToSelfCoordinator stop];
+  self.sendTabToSelfCoordinator = nil;
+}
+
+#pragma mark - SigninPresenter
+
+- (void)showSignin:(ShowSigninCommand*)command {
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.dispatcher, SceneCommands);
+  [handler showSignin:command baseViewController:_viewController];
 }
 
 - (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title {
@@ -1913,9 +1988,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       self.regularBrowser->GetCommandDispatcher(), PageActionMenuCommands);
   [self.pageActionMenuCoordinator start];
 }
-
-
-
 
 #pragma mark - TabGroupPositioner
 

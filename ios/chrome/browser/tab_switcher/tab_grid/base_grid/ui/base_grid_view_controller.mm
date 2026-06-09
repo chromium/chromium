@@ -699,6 +699,19 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
+    willEndContextMenuInteractionWithConfiguration:
+        (UIContextMenuConfiguration*)configuration
+                                          animator:
+                                              (id<UIContextMenuInteractionAnimating>)
+                                                  animator {
+  self.activeContextMenuAnimator = animator;
+  __weak __typeof(self) weakSelf = self;
+  [animator addCompletion:^{
+    weakSelf.activeContextMenuAnimator = nil;
+  }];
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
     didEndDisplayingCell:(UICollectionViewCell*)cell
       forItemAtIndexPath:(NSIndexPath*)indexPath {
   if ([cell isKindOfClass:[GridCell class]]) {

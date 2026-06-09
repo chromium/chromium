@@ -116,6 +116,9 @@ class WebStateID;
 // Tells the delegate to show the recent activity for the shared group.
 - (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup;
 
+// Tells the delegate to open the device picker to send a tab to other devices.
+- (void)sendTabToSelfWithIdentifier:(web::WebStateID)identifier;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_MENU_UI_BUNDLED_TAB_CONTEXT_MENU_DELEGATE_H_

@@ -56,6 +56,8 @@ ElementSelector* UsernameElement() {
       send_tab_to_self::kSendTabToSelfPropagateScrollPosition);
   config.features_enabled.push_back(
       send_tab_to_self::kSendTabToSelfPropagateFormFields);
+  config.features_enabled.push_back(
+      send_tab_to_self::kSendTabToSelfExtraEntryPoints);
   if ([self
           isRunningTest:@selector(testSendTabToSelfAndVerifySuccessSnackbar)]) {
     config.features_enabled.push_back(
@@ -484,6 +486,99 @@ ElementSelector* UsernameElement() {
                            @"})();";
   [ChromeEarlGrey waitForJavaScriptCondition:checkEmptyJS];
   [ChromeEarlGrey closeCurrentTab];
+}
+
+// Tests that long-pressing a tab cell in the tab switcher shows "Send to Your
+// Devices" and tapping it displays the device picker modal.
+- (void)testLongPressTabSwitcherTabToShowSendToYourDevices {
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(
+                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+
+  // Open tab switcher.
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Long press the active tab cell (index 0).
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_longPress()];
+
+  // Verify the "Send to Your Devices" menu item shows up.
+  id<GREYMatcher> sendToDevicesMenuItem =
+      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+          IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
+  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the context menu item.
+  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
+      performAction:grey_tap()];
+
+  // Verify that the device picker shows up.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       kTargetDeviceName)];
+
+  // Clean up.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSendTabToSelfModalCancelButtonId)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kSendTabToSelfModalCancelButtonId)];
+}
+
+// Tests that long-pressing a tab cell in the tab switcher shows "Send to Your
+// Devices" and tapping it displays the sign-in promo if the user is signed out.
+- (void)testLongPressTabSwitcherTabToShowSigninPromo {
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(
+                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+
+  // Open tab switcher.
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Long press the active tab cell (index 0).
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_longPress()];
+
+  // Verify the "Send to Your Devices" menu item shows up.
+  id<GREYMatcher> sendToDevicesMenuItem =
+      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+          IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
+  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the context menu item.
+  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
+      performAction:grey_tap()];
+
+  // Verify that the sign-in promo is visible.
+  [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
+
+  // Confirm the promo.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kConsistencySigninPrimaryButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // The device list should be shown.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       kTargetDeviceName)];
+
+  // Clean up.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSendTabToSelfModalCancelButtonId)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kSendTabToSelfModalCancelButtonId)];
 }
 
 @end

@@ -812,7 +812,6 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
                          block:block];
 }
 
-
 - (UIAction*)actionToShowRecentActivity:(ProceduralBlock)block {
   UIImage* image =
       DefaultSymbolWithPointSize(kHistorySymbol, kSymbolActionPointSize);
@@ -889,6 +888,16 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
                                    IDS_IOS_CONTENT_SUGGESTIONS_EDIT_PINNED_SITE)
                          image:image
                           type:MenuActionType::EditPinnedSite
+                         block:block];
+}
+
+- (UIAction*)actionToSendTabToSelfWithBlock:(ProceduralBlock)block {
+  UIImage* image =
+      CustomSymbolWithPointSize(kRecentTabsSymbol, kSymbolActionPointSize);
+  return [self actionWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION)
+                         image:image
+                          type:MenuActionType::SendTabToSelf
                          block:block];
 }
 

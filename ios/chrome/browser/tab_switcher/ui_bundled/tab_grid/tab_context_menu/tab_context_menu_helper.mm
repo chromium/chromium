@@ -11,6 +11,8 @@
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/data_sharing/public/group_data.h"
 #import "components/prefs/pref_service.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
@@ -30,6 +32,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu/tab_cell.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu/tab_item.h"
@@ -141,6 +144,7 @@ using tab_groups::SharingState;
 
   UIMenuElement* pinAction;
   UIMenuElement* shareAction;
+  UIMenuElement* sendTabToSelfAction;
   UIMenuElement* addToReadingListAction;
   UIAction* bookmarkAction;
   UIMenuElement* selectAction;
@@ -167,6 +171,12 @@ using tab_groups::SharingState;
                                 scenario:SharingScenario::TabGridItem
                                 fromView:cell];
     }];
+
+    if ([self canSendToYourDevicesForItem:item]) {
+      sendTabToSelfAction = [actionFactory actionToSendTabToSelfWithBlock:^{
+        [weakSelf.contextMenuDelegate sendTabToSelfWithIdentifier:tabID];
+      }];
+    }
 
     if (item.URL.SchemeIsHTTPOrHTTPS()) {
       addToReadingListAction =
@@ -244,13 +254,20 @@ using tab_groups::SharingState;
                                                          block:actionResult];
   }
 
+  NSMutableArray<UIMenuElement*>* shareMenuElements = [NSMutableArray array];
   // Hide the `shareAction` for tabs in groups.
   if (shareAction && !currentTabGroup) {
+    [shareMenuElements addObject:shareAction];
+  }
+  if (sendTabToSelfAction) {
+    [shareMenuElements addObject:sendTabToSelfAction];
+  }
+  if (shareMenuElements.count > 0) {
     UIMenu* shareMenu = [UIMenu menuWithTitle:@""
                                         image:nil
                                    identifier:nil
                                       options:UIMenuOptionsDisplayInline
-                                     children:@[ shareAction ]];
+                                     children:shareMenuElements];
     [menuElements addObject:shareMenu];
   }
   NSArray<UIMenuElement*>* tabActions =
@@ -432,6 +449,23 @@ using tab_groups::SharingState;
 }
 
 #pragma mark - Private
+
+// Returns `YES` if the tab `item` can be sent to another device.
+- (BOOL)canSendToYourDevicesForItem:(TabItem*)item {
+  if (!base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfExtraEntryPoints)) {
+    return NO;
+  }
+  if (self.incognito) {
+    return NO;
+  }
+  if (!item || !item.URL.is_valid()) {
+    return NO;
+  }
+  send_tab_to_self::SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(_profile);
+  return service && service->GetEntryPointDisplayReason(item.URL).has_value();
+}
 
 // Returns `YES` if the tab `item` is already bookmarked.
 - (BOOL)isTabItemBookmarked:(TabItem*)item {

@@ -181,6 +181,9 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, assign, readonly) TabGridPage activePage;
 // The currently visible page.
 @property(nonatomic, assign, readonly) TabGridPage currentPage;
+// The active context menu interaction animator, if any.
+@property(nonatomic, readonly) id<UIContextMenuInteractionAnimating>
+    activeContextMenuAnimator;
 
 // Init with tab grid view configuration, which decides which sub view
 // controller should be added.
