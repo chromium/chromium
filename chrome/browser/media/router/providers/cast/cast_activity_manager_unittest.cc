@@ -985,4 +985,51 @@ TEST_F(CastActivityManagerTest, LaunchMdnsInstantDeviceSuccess) {
   histogram_tester.ExpectTotalCount(histogram, 0);
 }
 
+// Regression test for crbug.com/500091052.
+TEST_F(CastActivityManagerTest, AddAppActivityCollision) {
+  MediaSource source(MakeSourceId(kAppId1));
+  MediaRoute route(kPresentationId, source, sink_.sink().id(), "description",
+                   true);
+
+  // First call to AddAppActivity should succeed.
+  AppActivity* activity1 = manager_->AddAppActivity(route, kAppId1);
+  ASSERT_TRUE(activity1);
+  EXPECT_EQ(1u, manager_->GetRoutes().size());
+
+  // Second call with same route_id should overwrite the existing activity
+  // instead of creating a dangling pointer.
+  AppActivity* activity2 = manager_->AddAppActivity(route, kAppId1);
+  ASSERT_TRUE(activity2);
+  EXPECT_NE(activity1, activity2);
+  EXPECT_EQ(1u, manager_->GetRoutes().size());
+
+  // Verify that the pointer in app_activities_ has been updated to the new
+  // activity.
+  EXPECT_EQ(activity2, manager_->app_activities_[route.media_route_id()]);
+}
+
+// Regression test for crbug.com/500091052.
+TEST_F(CastActivityManagerTest, AddMirroringActivityCollision) {
+  MediaSource source = MediaSource::ForTab(123);
+  MediaRoute route(kPresentationId, source, sink_.sink().id(), "description",
+                   true);
+  route.set_controller_type(RouteControllerType::kMirroring);
+
+  // First call to AddMirroringActivity should succeed.
+  CastActivity* activity1 = manager_->AddMirroringActivity(
+      route, cast_streaming_app_id_, kFrameTreeNodeId, sink_.cast_data());
+  ASSERT_TRUE(activity1);
+  EXPECT_EQ(1u, manager_->activities_.size());
+
+  // Second call with same route_id should overwrite the existing activity.
+  CastActivity* activity2 = manager_->AddMirroringActivity(
+      route, cast_streaming_app_id_, kFrameTreeNodeId, sink_.cast_data());
+  ASSERT_TRUE(activity2);
+  EXPECT_NE(activity1, activity2);
+  EXPECT_EQ(1u, manager_->activities_.size());
+
+  // Verify that activities_ map has been updated to the new activity.
+  EXPECT_EQ(activity2, manager_->activities_[route.media_route_id()].get());
+}
+
 }  // namespace media_router
