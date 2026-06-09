@@ -1013,7 +1013,7 @@ void AddressSuggestionGenerator::GenerateSuggestions(
         skip_reasons;
     if (form.fields().size() == form_structure->field_count()) {
       skip_reasons = FormFiller::GetFieldFillingSkipReasons(
-          form.fields(), *form_structure, *trigger_autofill_field,
+          *form_structure, *trigger_autofill_field,
           FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress,
           TriggerSourceFromSuggestionTriggerSource(trigger_source_), client,
           /*blocked_fields=*/{});

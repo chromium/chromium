@@ -1775,7 +1775,7 @@ void BrowserAutofillManager::FillOrPreviewForm(
   std::visit(absl::Overload{
                  [&](const AutofillProfile*) {
                    form_filler_->FillOrPreviewForm(
-                       action_persistence, form, filling_payload,
+                       action_persistence, filling_payload,
                        CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
                        trigger_source, blocked_fields, FillId::Create(),
                        /*forced_fill_values=*/{},
@@ -1792,7 +1792,7 @@ void BrowserAutofillManager::FillOrPreviewForm(
                  },
                  [&](const EntityInstance*) {
                    form_filler_->FillOrPreviewForm(
-                       action_persistence, form, filling_payload,
+                       action_persistence, filling_payload,
                        CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
                        trigger_source, blocked_fields, FillId::Create(),
                        /*forced_fill_values=*/{},
@@ -1800,7 +1800,7 @@ void BrowserAutofillManager::FillOrPreviewForm(
                  },
                  [&](const VerifiedProfile*) {
                    form_filler_->FillOrPreviewForm(
-                       action_persistence, form, filling_payload,
+                       action_persistence, filling_payload,
                        CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
                        trigger_source, blocked_fields, FillId::Create(),
                        /*forced_fill_values=*/{},
@@ -1808,7 +1808,7 @@ void BrowserAutofillManager::FillOrPreviewForm(
                  },
                  [&](const OtpFillData*) {
                    form_filler_->FillOrPreviewForm(
-                       action_persistence, form, filling_payload,
+                       action_persistence, filling_payload,
                        CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
                        trigger_source, blocked_fields, FillId::Create(),
                        /*forced_fill_values=*/{},
@@ -1832,9 +1832,9 @@ void BrowserAutofillManager::FillOrPreviewField(
   // starts storing all forms and fields.
   auto [form_structure, autofill_field] =
       GetCachedFormAndField(form.global_id(), field.global_id());
-  form_filler_->FillOrPreviewField(action_persistence, action_type, field,
-                                   autofill_field, value, filling_product,
-                                   field_type_used);
+  form_filler_->FillOrPreviewField(action_persistence, action_type,
+                                   field.global_id(), autofill_field, value,
+                                   filling_product, field_type_used);
   // Notify observers of the single-field filling event.
   NotifyObservers(&Observer::OnFillOrPreviewField, form.global_id(),
                   field.global_id(), action_persistence, value,
@@ -1897,8 +1897,8 @@ void BrowserAutofillManager::UndoAutofill(
   }
 
   FillingProduct filling_product = autofill_trigger_field->filling_product();
-  form_filler_->UndoAutofill(action_persistence, form, *form_structure,
-                             trigger_field, filling_product);
+  form_filler_->UndoAutofill(action_persistence, *form_structure,
+                             trigger_field.global_id(), filling_product);
 
   // The remaining logic is only relevant for filling.
   if (action_persistence != mojom::ActionPersistence::kPreview) {
@@ -1980,7 +1980,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
           return;
         }
         self.form_filler_->FillOrPreviewForm(
-            action_persistence, form, &credit_card,
+            action_persistence, &credit_card,
             CHECK_DEREF(cached_form_structure),
             CHECK_DEREF(cached_autofill_field), trigger_source, blocked_fields,
             FillId::Create(), /*forced_fill_values=*/{},
@@ -2381,7 +2381,7 @@ void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
     return;
   }
   form_filler_->MaybeScheduleAutomaticRefill(
-      form, *form_structure, RefillTriggerReason::kSelectOptionsChanged,
+      *form_structure, RefillTriggerReason::kSelectOptionsChanged,
       AutofillTriggerSource::kSelectOptionsChanged,
       form_structure->GetFieldById(field_id));
 }
@@ -2434,7 +2434,7 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
   }
   AnalyzeJavaScriptChangedAutofilledValue(*form_structure, *autofill_field);
   form_filler_->MaybeScheduleAutomaticRefill(
-      form, *form_structure, RefillTriggerReason::kExpirationDateFormatted,
+      *form_structure, RefillTriggerReason::kExpirationDateFormatted,
       AutofillTriggerSource::kJavaScriptChangedAutofilledValue, *autofill_field,
       old_value);
 }
@@ -2995,7 +2995,7 @@ void BrowserAutofillManager::OnFormProcessed(
   // If a form with the same FormGlobalId was previously filled, the structure
   // of the form changed, and we might be able to refill the form with other
   // information.
-  form_filler_->MaybeScheduleAutomaticRefill(form, form_structure,
+  form_filler_->MaybeScheduleAutomaticRefill(form_structure,
                                              RefillTriggerReason::kFormChanged,
                                              AutofillTriggerSource::kFormsSeen);
 }

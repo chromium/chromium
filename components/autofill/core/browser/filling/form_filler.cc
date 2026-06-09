@@ -418,7 +418,7 @@ struct FormFiller::AugmentedFillingPayload {
                                const OtpFillData*>;
 
   AugmentedFillingPayload(const FillingPayload& filling_payload,
-                          FormStructure& form_structure,
+                          FormStructure& form,
                           AutofillField& trigger_field)
       : variant(std::visit(
             absl::Overload{
@@ -429,10 +429,10 @@ struct FormFiller::AugmentedFillingPayload {
                   return credit_card;
                 },
                 [&](const EntityInstance* entity) -> Variant {
-                  return std::pair(
-                      entity, RationalizeAndDetermineAttributeTypes(
-                                  form_structure.fields(),
-                                  trigger_field.section(), entity->type()));
+                  return std::pair(entity,
+                                   RationalizeAndDetermineAttributeTypes(
+                                       form.fields(), trigger_field.section(),
+                                       entity->type()));
                 },
                 [](const VerifiedProfile* verified_profile) -> Variant {
                   return verified_profile;
@@ -611,8 +611,7 @@ bool FormFiller::RefillOptions::may_refill(
 }
 
 DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
-    const FormFieldData& field,
-    const AutofillField& autofill_field,
+    const AutofillField& field,
     const AutofillField& trigger_field,
     const RefillOptions& refill_options,
     base::flat_map<FieldType, size_t>& type_count,
@@ -621,8 +620,7 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
     AutofillTriggerSource trigger_source,
     AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   DenseSet<FieldFillingSkipReason> skip_reasons;
-  const bool is_trigger_field =
-      autofill_field.global_id() == trigger_field.global_id();
+  const bool is_trigger_field = field.global_id() == trigger_field.global_id();
 
   auto add_if = [&skip_reasons,
                  ignorable_reasons = GetIgnorableSkipReasons(trigger_source)](
@@ -635,34 +633,33 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
   // Do not fill fields that are not part of the filled section, as this has
   // higher probability to be inaccurate (a second full name field probably
   // exists not to be filled with the same info as the first full name field).
-  add_if(autofill_field.section() != trigger_field.section(),
+  add_if(field.section() != trigger_field.section(),
          FieldFillingSkipReason::kNotInFilledSection);
 
   // Some fields are rationalized so that they are only filled when focuses
   // (since we allow for example multiple phone number fields to exist in the
   // same section). Therefore we skip those fields if they're not focused.
-  add_if(autofill_field.only_fill_when_focused() && !is_trigger_field,
+  add_if(field.only_fill_when_focused() && !is_trigger_field,
          FieldFillingSkipReason::kNotFocused);
 
   // An address fields with unrecognized autocomplete attribute is only filled
   // when it is the field triggering the filling operation.
-  add_if(!is_trigger_field &&
-             autofill_field.ShouldSuppressSuggestionsAndFillingByDefault(
-                 ac_unrecognized_behavior),
-         FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute);
+  add_if(
+      !is_trigger_field && field.ShouldSuppressSuggestionsAndFillingByDefault(
+                               ac_unrecognized_behavior),
+      FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute);
 
   // Don't fill unfocusable fields, with the exception of <select> fields, for
   // the sake of filling the synthetic fields.
-  add_if(!autofill_field.is_focusable() && !autofill_field.IsSelectElement(),
+  add_if(!field.is_focusable() && !field.IsSelectElement(),
          FieldFillingSkipReason::kInvisibleField);
 
   // Do not fill fields that have been edited by the user, except if the field
   // is empty and its initial value (= cached value) was empty as well. A
   // similar check is done in ForEachMatchingFormFieldCommon(), which
   // frequently has false negatives.
-  add_if((autofill_field.properties_mask() & kUserTyped) &&
-             !(autofill_field.value().empty() &&
-               autofill_field.initial_value().empty()) &&
+  add_if((field.properties_mask() & kUserTyped) &&
+             !(field.value().empty() && field.initial_value().empty()) &&
              !is_trigger_field,
          FieldFillingSkipReason::kUserFilledFields);
 
@@ -673,14 +670,14 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
   // Also exclude the case of empty fields, because sometimes autofilled fields
   // can be cleared without the modifiers being reset (e.g. if the form is reset
   // by JS).
-  add_if(autofill_field.last_modifier() == FieldModifier::kAutofill &&
-             !autofill_field.value().empty() && !is_trigger_field &&
+  add_if(field.last_modifier() == FieldModifier::kAutofill &&
+             !field.value().empty() && !is_trigger_field &&
              !refill_options.is_refill() &&
-             !AllowPaymentSwapping(trigger_field, autofill_field,
+             !AllowPaymentSwapping(trigger_field, field,
                                    refill_options.is_refill()),
          FieldFillingSkipReason::kAlreadyAutofilled);
 
-  AutofillType autofill_type = autofill_field.Type();
+  AutofillType autofill_type = field.Type();
   FieldTypeSet field_types = autofill_type.GetTypes();
 
   // On a refill, only fill fields from type groups that were present during
@@ -703,13 +700,13 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
          FieldFillingSkipReason::kFieldTypeUnrelated);
 
   // Don't fill meaningfully pre-filled fields but overwrite placeholders.
-  add_if(ShouldSkipFieldBecauseOfMeaningfulInitialValue(autofill_field,
-                                                        is_trigger_field),
-         FieldFillingSkipReason::kValuePrefilled);
+  add_if(
+      ShouldSkipFieldBecauseOfMeaningfulInitialValue(field, is_trigger_field),
+      FieldFillingSkipReason::kValuePrefilled);
 
   // Do not fill fields that are blocked by another filling operation or
   // product.
-  add_if(blocked_fields.contains(autofill_field.global_id()),
+  add_if(blocked_fields.contains(field.global_id()),
          FieldFillingSkipReason::kBlockedByOtherFillingOperationOrProduct);
 
   return skip_reasons;
@@ -731,8 +728,7 @@ void FormFiller::Reset() {
 // static
 base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
 FormFiller::GetFieldFillingSkipReasons(
-    base::span<const FormFieldData> fields,
-    const FormStructure& form_structure,
+    const FormStructure& form,
     const AutofillField& trigger_field,
     const RefillOptions& refill_options,
     FillingProduct filling_product,
@@ -742,69 +738,64 @@ FormFiller::GetFieldFillingSkipReasons(
   // Counts the number of times a type was seen in the section to be filled.
   // This is used to limit the maximum number of fills per value.
   base::flat_map<FieldType, size_t> type_count;
-  type_count.reserve(form_structure.field_count());
+  type_count.reserve(form.fields().size());
 
   if (filling_product == FillingProduct::kAddress) {
-    blocked_fields.insert_range(
-        GetFieldsFillableByAutofillAi(form_structure, client));
+    blocked_fields.insert_range(GetFieldsFillableByAutofillAi(form, client));
   }
 
-  CHECK_EQ(fields.size(), form_structure.field_count());
   auto skip_reasons =
       base::MakeFlatMap<FieldGlobalId, DenseSet<FieldFillingSkipReason>>(
-          form_structure, {}, [](const std::unique_ptr<AutofillField>& field) {
+          form, {}, [](const std::unique_ptr<AutofillField>& field) {
             return std::make_pair(field->global_id(),
                                   DenseSet<FieldFillingSkipReason>{});
           });
-  for (auto [field, autofill_field] :
-       base::zip(fields, form_structure.fields())) {
+  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
     // Log events when the fields on the form are filled by autofill
     // suggestion.
     DenseSet<FieldFillingSkipReason> field_skip_reasons =
         GetFillingSkipReasonsForField(
-            field, *autofill_field, trigger_field, refill_options, type_count,
-            blocked_fields, filling_product, trigger_source,
-            GetAcUnrecognizedBehavior(client));
+            *field, trigger_field, refill_options, type_count, blocked_fields,
+            filling_product, trigger_source, GetAcUnrecognizedBehavior(client));
 
     // Usually, `skip_reasons[field_id].empty()` before executing the line
     // below. It may not be the case though because FieldGlobalIds may not be
     // unique among `FormData::fields_` (see crbug.com/41496988), so a previous
     // iteration may have added skip reasons for `field_id`. To err on the side
     // of caution we accumulate all skip reasons found in any iteration.
-    skip_reasons[autofill_field->global_id()].insert_all(field_skip_reasons);
+    skip_reasons[field->global_id()].insert_all(field_skip_reasons);
   }
   return skip_reasons;
 }
 
 void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
-                              FormData form,
-                              FormStructure& form_structure,
-                              const FormFieldData& trigger_field,
+                              FormStructure& form,
+                              const FieldGlobalId& trigger_field_id,
                               FillingProduct filling_product) {
-  if (!form_autofill_history_.HasHistory(trigger_field.global_id())) {
+  if (!form_autofill_history_.HasHistory(trigger_field_id)) {
     LOG_AF(log_manager())
-        << "Could not undo the filling operation on field "
-        << trigger_field.global_id()
+        << "Could not undo the filling operation on field " << trigger_field_id
         << " because history was dropped upon reaching history limit of "
         << kMaxStorableFieldFillHistory;
     return;
   }
 
   const auto fill_operation_it =
-      form_autofill_history_.GetLastFormFillingEntryForField(
-          trigger_field.global_id());
+      form_autofill_history_.GetLastFormFillingEntryForField(trigger_field_id);
 
-  std::vector<FormFieldData> fields = form.ExtractFields();
+  std::vector<FormFieldData> result_fields = base::ToVector(
+      form.fields(), [](const std::unique_ptr<AutofillField>& field) {
+        return FormFieldData(*field);
+      });
   base::flat_map<FieldGlobalId, AutofillField*> cached_fields =
       base::MakeFlatMap<FieldGlobalId, AutofillField*>(
-          form_structure.fields(), {},
-          [](const std::unique_ptr<AutofillField>& field) {
+          form.fields(), {}, [](const std::unique_ptr<AutofillField>& field) {
             return std::make_pair(field->global_id(), field.get());
           });
 
   // Remove the fields to be skipped so that we only pass fields to be modified
   // by the renderer.
-  std::erase_if(fields, [&](const FormFieldData& field) {
+  std::erase_if(result_fields, [&](const FormFieldData& field) {
     const auto field_fill_operation_it =
         form_autofill_history_.GetLastFormFillingEntryForField(
             field.global_id());
@@ -831,7 +822,7 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
         cached_fields[field.global_id()]->filling_product() != filling_product;
   });
 
-  for (FormFieldData& field : fields) {
+  for (FormFieldData& field : result_fields) {
     AutofillField& autofill_field =
         CHECK_DEREF(cached_fields[field.global_id()]);
     auto it = fill_operation_it->find(field.global_id());
@@ -866,10 +857,9 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
     // because some fields in the current entry might not be used now but
     // could still be valuable (see crbug.com/416019464).
     form_autofill_history_.EraseFieldFillingEntries(
-        fill_operation_it, base::ToVector(fields, &FormFieldData::global_id));
+        fill_operation_it,
+        base::ToVector(result_fields, &FormFieldData::global_id));
   }
-
-  form.set_fields(std::move(fields));
 
   // Do not attempt a refill after an Undo operation.
   if (GetRefillContext(form.global_id())) {
@@ -881,45 +871,44 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
   // filling, it is okay to bypass the filling security checks and hence passing
   // dummy values for `triggered_origin` and `field_type_map`.
   manager_->driver().ApplyFormAction(
-      mojom::FormActionType::kUndo, action_persistence, form.fields(),
+      mojom::FormActionType::kUndo, action_persistence, result_fields,
       FillId::Create(), /*supports_refill=*/false, url::Origin(),
       /*field_type_map=*/{}, /*section_for_clear_form_on_ios=*/Section());
 }
 
 void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                     mojom::FieldActionType action_type,
-                                    const FormFieldData& field,
-                                    AutofillField* autofill_field,
+                                    const FieldGlobalId& field_id,
+                                    AutofillField* field,
                                     const std::u16string& value,
                                     FillingProduct filling_product,
                                     std::optional<FieldType> field_type_used) {
-  if (autofill_field && action_persistence == mojom::ActionPersistence::kFill) {
+  CHECK(!field || field->global_id() == field_id);
+  if (field && action_persistence == mojom::ActionPersistence::kFill) {
     if (ShouldRecordFillingHistory(filling_product)) {
       form_autofill_history_.AddFormFillingEntry(
-          std::to_array<const AutofillField*>({autofill_field}),
-          filling_product,
+          std::to_array<const AutofillField*>({field}), filling_product,
           /*is_refill=*/false);
     }
-    autofill_field->AddFieldModifier(FieldModifier::kAutofill);
-    autofill_field->set_autofilled_type(field_type_used);
-    autofill_field->set_filling_product(filling_product);
-    autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
+    field->AddFieldModifier(FieldModifier::kAutofill);
+    field->set_autofilled_type(field_type_used);
+    field->set_filling_product(filling_product);
+    field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
         .fill_event_id = GetNextFillEventId(),
-        .had_value_before_filling = ToOptionalBoolean(!field.value().empty()),
+        .had_value_before_filling = ToOptionalBoolean(!field->value().empty()),
         .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
         .was_autofilled_before_security_policy = ToOptionalBoolean(true),
         .had_value_after_filling = ToOptionalBoolean(true)});
   }
-  manager_->driver().ApplyFieldAction(action_type, action_persistence,
-                                      field.global_id(), value);
+  manager_->driver().ApplyFieldAction(action_type, action_persistence, field_id,
+                                      value);
   manager_->OnDidFillOrPreviewField(action_persistence, field_type_used);
 }
 
 void FormFiller::FillOrPreviewForm(
     mojom::ActionPersistence action_persistence,
-    const FormData& form,
     const FillingPayload& filling_payload,
-    FormStructure& form_structure,
+    FormStructure& form,
     AutofillField& autofill_trigger_field,
     AutofillTriggerSource trigger_source,
     const base::flat_set<FieldGlobalId>& blocked_fields,
@@ -927,8 +916,7 @@ void FormFiller::FillOrPreviewForm(
     const std::map<FieldGlobalId, FillingValueAndType>& forced_fill_values,
     RefillOptions refill_options) {
   const AugmentedFillingPayload augmented_filling_payload =
-      AugmentedFillingPayload(filling_payload, form_structure,
-                              autofill_trigger_field);
+      AugmentedFillingPayload(filling_payload, form, autofill_trigger_field);
 
   LogBuffer buffer(IsLoggingActive(log_manager()));
   LOG_AF(buffer) << "action_persistence: "
@@ -938,11 +926,11 @@ void FormFiller::FillOrPreviewForm(
                         augmented_filling_payload.filling_product())
                  << Br{};
   LOG_AF(buffer) << "is refill: " << refill_options.is_refill() << Br{};
-  LOG_AF(buffer) << form_structure << Br{};
+  LOG_AF(buffer) << form << Br{};
   LOG_AF(buffer) << Tag{"table"};
 
   std::vector<FormFieldData> result_fields = base::ToVector(
-      form_structure.fields(), [](const std::unique_ptr<AutofillField>& field) {
+      form.fields(), [](const std::unique_ptr<AutofillField>& field) {
         return FormFieldData(*field);
       });
   absl::flat_hash_map<FieldGlobalId, FieldType> filled_field_types;
@@ -950,17 +938,17 @@ void FormFiller::FillOrPreviewForm(
   // `FormFiller::GetFieldFillingSkipReasons` returns for each field a generic
   // list of reason for skipping each field.
   base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
-      GetFieldFillingSkipReasons(
-          result_fields, form_structure, autofill_trigger_field, refill_options,
-          augmented_filling_payload.filling_product(), trigger_source,
-          manager_->client(), blocked_fields);
+      GetFieldFillingSkipReasons(form, autofill_trigger_field, refill_options,
+                                 augmented_filling_payload.filling_product(),
+                                 trigger_source, manager_->client(),
+                                 blocked_fields);
 
   // This loop sets the values to fill in the `result_fields`. The
   // `result_fields` are sent to the renderer, whereas the very similar
-  // `form_structure->fields()` remains in the browser process.
-  // The fill value is determined by FillForm().
+  // `form.fields()` remains in the browser process.
+  // The fill value is determined by `FillField()`.
   for (size_t i = 0; i < result_fields.size(); ++i) {
-    const AutofillField& field = CHECK_DEREF(form_structure.field(i));
+    const AutofillField& field = CHECK_DEREF(form.field(i));
     constexpr DenseSet<FieldFillingSkipReason> kPreUkmLoggingSkips{
         FieldFillingSkipReason::kNotInFilledSection,
         FieldFillingSkipReason::kNotFocused};
@@ -969,7 +957,7 @@ void FormFiller::FillOrPreviewForm(
       manager_->client()
           .GetFormInteractionsUkmLogger()
           .LogHiddenRepresentationalFieldSkipDecision(
-              manager_->driver().GetPageUkmSourceId(), form_structure, field,
+              manager_->driver().GetPageUkmSourceId(), form, field,
               !field.IsSelectElement());
     }
     if (!skip_reasons[field.global_id()].empty()) {
@@ -1030,7 +1018,7 @@ void FormFiller::FillOrPreviewForm(
   }
 
   const bool may_refill_in_future = MaybeInitializeRefillContext(
-      action_persistence, form_structure, autofill_trigger_field,
+      action_persistence, form, autofill_trigger_field,
       augmented_filling_payload, blocked_fields, fill_id, result_fields,
       filled_field_types, refill_options);
 
@@ -1039,9 +1027,9 @@ void FormFiller::FillOrPreviewForm(
   // - Fields that don't have a cached equivalent, because those fields don't
   //   have skip reasons and yet won't be filled.
   std::erase_if(result_fields,
-                [&skip_reasons, &form_structure](const FormFieldData& field) {
+                [&skip_reasons, &form](const FormFieldData& field) {
                   return !skip_reasons[field.global_id()].empty() ||
-                         !form_structure.GetFieldById(field.global_id());
+                         !form.GetFieldById(field.global_id());
                 });
   base::flat_set<FieldGlobalId> safe_filled_field_ids =
       manager_->driver().ApplyFormAction(
@@ -1060,13 +1048,13 @@ void FormFiller::FillOrPreviewForm(
       // A safe field was filled. Both functions will not return a nullptr
       // because they passed the `FieldFillingSkipReason::kFormChanged`
       // condition.
-      safe_filled_fields.push_back(form_structure.GetFieldById(field_id));
+      safe_filled_fields.push_back(form.GetFieldById(field_id));
     } else {
-      auto it = std::ranges::find(form_structure.fields(), field_id,
-                                  &FormFieldData::global_id);
-      CHECK(it != form_structure.fields().end());
+      auto it =
+          std::ranges::find(form.fields(), field_id, &FormFieldData::global_id);
+      CHECK(it != form.fields().end());
       std::string field_number =
-          base::StringPrintf("Field %zu", it - form_structure.fields().begin());
+          base::StringPrintf("Field %zu", it - form.fields().begin());
       LOG_AF(buffer) << Tr{} << field_number
                      << "Actually did not fill field because of the iframe "
                         "security policy.";
@@ -1074,10 +1062,10 @@ void FormFiller::FillOrPreviewForm(
   }
 
   if (action_persistence == mojom::ActionPersistence::kFill) {
-    form_structure.set_last_filling_timestamp(base::TimeTicks::Now());
+    form.set_last_filling_timestamp(base::TimeTicks::Now());
 
-    AppendFillLogEvents(form_structure, autofill_trigger_field,
-                        safe_filled_field_ids, skip_reasons, filling_payload,
+    AppendFillLogEvents(form, autofill_trigger_field, safe_filled_field_ids,
+                        skip_reasons, filling_payload,
                         refill_options.is_refill());
 
     // Save filling history to support undoing it later if needed.
@@ -1090,7 +1078,7 @@ void FormFiller::FillOrPreviewForm(
 
     // If the operation was a persistent fill and not a preview, update the
     // cache with the information changed during the fill operation.
-    UpdateCacheOnFill(form_structure, result_fields, safe_filled_field_ids,
+    UpdateCacheOnFill(form, result_fields, safe_filled_field_ids,
                       filled_field_types, augmented_filling_payload);
   }
 
@@ -1100,8 +1088,7 @@ void FormFiller::FillOrPreviewForm(
                         << std::move(buffer);
 
   manager_->OnDidFillOrPreviewForm(
-      action_persistence, form_structure, autofill_trigger_field,
-      safe_filled_fields,
+      action_persistence, form, autofill_trigger_field, safe_filled_fields,
       base::MakeFlatSet<FieldGlobalId>(result_fields, {},
                                        &FormFieldData::global_id),
       filling_payload, trigger_source, refill_options.reason());
@@ -1143,12 +1130,12 @@ void FormFiller::MaybeScheduleProgrammaticRefill(const FillId& fill_id) {
             // crbug.com/393114125.
             // TODO(crbug.com/466333215): Make sure crbug.com/393114125 is fixed
             // before programmatic refills move beyond prototyping.
-            const FormStructure* form_structure =
+            const FormStructure* form =
                 self->manager_->FindCachedFormById(form_id);
-            if (!form_structure) {
+            if (!form) {
               return;
             }
-            self->TriggerRefill(form_structure->ToFormData(),
+            self->TriggerRefill(form->global_id(),
                                 AutofillTriggerSource::kProgrammaticRefill,
                                 RefillTriggerReason::kProgrammaticRefill);
           },
@@ -1157,8 +1144,7 @@ void FormFiller::MaybeScheduleProgrammaticRefill(const FillId& fill_id) {
 }
 
 void FormFiller::MaybeScheduleAutomaticRefill(
-    const FormData& form,
-    const FormStructure& form_structure,
+    const FormStructure& form,
     RefillTriggerReason refill_trigger_reason,
     AutofillTriggerSource trigger_source,
     base::optional_ref<const AutofillField> field,
@@ -1167,15 +1153,15 @@ void FormFiller::MaybeScheduleAutomaticRefill(
 
   // Should not refill if a form with the same FormGlobalId has not been filled
   // before or if it has been refilled before.
-  RefillContext* refill_context = GetRefillContext(form_structure.global_id());
+  RefillContext* refill_context = GetRefillContext(form.global_id());
   if (!refill_context || !refill_context->allows_automatic_refill) {
     return;
   }
 
   // Should not refill a form that has been filled a long time ago as the UX
   // would appear strange.
-  // TODO(crbug.com/41490871): Use form_structure.last_filling_timestamp_
-  // instead of filling_context->original_fill_time.
+  // TODO(crbug.com/41490871): Use `FormStructure::last_filling_timestamp_`
+  // instead of `RefillContext::original_fill_time`.
   if (base::TimeDelta delta =
           base::TimeTicks::Now() - refill_context->original_fill_time;
       delta > limit_before_automatic_refill_) {
@@ -1190,7 +1176,7 @@ void FormFiller::MaybeScheduleAutomaticRefill(
       // TODO(crbug.com/459458715): Compare overall types directly and get rid
       // of the field attributes comparison.
       if (std::ranges::equal(
-              refill_context->filled_form.fields(), form_structure.fields(),
+              refill_context->filled_form.fields(), form.fields(),
               [](const FormFieldData& f,
                  const std::unique_ptr<AutofillField>& g) {
                 return base::FeatureList::IsEnabled(
@@ -1227,11 +1213,11 @@ void FormFiller::MaybeScheduleAutomaticRefill(
     case RefillTriggerReason::kProgrammaticRefill:
       NOTREACHED();
   }
-  ScheduleRefill(form, CHECK_DEREF(refill_context), trigger_source,
+  ScheduleRefill(form.global_id(), CHECK_DEREF(refill_context), trigger_source,
                  refill_trigger_reason);
 }
 
-void FormFiller::ScheduleRefill(const FormData& form,
+void FormFiller::ScheduleRefill(const FormGlobalId& form_id,
                                 RefillContext& refill_context,
                                 AutofillTriggerSource trigger_source,
                                 RefillTriggerReason refill_trigger_reason) {
@@ -1240,19 +1226,18 @@ void FormFiller::ScheduleRefill(const FormData& form,
   refill_context.on_refill_timer.Start(
       FROM_HERE, kWaitTimeForDynamicForms,
       base::BindRepeating(&FormFiller::TriggerRefill,
-                          weak_ptr_factory_.GetWeakPtr(), form, trigger_source,
-                          refill_trigger_reason));
+                          weak_ptr_factory_.GetWeakPtr(), form_id,
+                          trigger_source, refill_trigger_reason));
 }
 
-void FormFiller::TriggerRefill(const FormData& form,
+void FormFiller::TriggerRefill(const FormGlobalId& form_id,
                                AutofillTriggerSource trigger_source,
                                RefillTriggerReason refill_trigger_reason) {
-  FormStructure* form_structure =
-      manager_->FindCachedFormById(form.global_id(), /*pass_key=*/{});
-  if (!form_structure) {
+  FormStructure* form = manager_->FindCachedFormById(form_id, /*pass_key=*/{});
+  if (!form) {
     return;
   }
-  RefillContext* refill_context = GetRefillContext(form_structure->global_id());
+  RefillContext* refill_context = GetRefillContext(form->global_id());
   if (!refill_context) {
     // The refill attempt can happen from different paths, some of which happen
     // after waiting for a while. Therefore, although this condition has been
@@ -1278,15 +1263,13 @@ void FormFiller::TriggerRefill(const FormData& form,
                 refill_context->filled_field_signature,
             field->renderer_id());
       };
-  auto it =
-      std::ranges::max_element(*form_structure, {}, comparison_attributes);
-  AutofillField* autofill_field =
-      it != form_structure->end() ? it->get() : nullptr;
+  auto it = std::ranges::max_element(*form, {}, comparison_attributes);
+  AutofillField* trigger_field = it != form->end() ? it->get() : nullptr;
   bool found_matching_element =
-      autofill_field &&
-      autofill_field->origin() == refill_context->filled_origin &&
-      (autofill_field->global_id() == refill_context->filled_field_id ||
-       autofill_field->GetFieldSignature() ==
+      trigger_field &&
+      trigger_field->origin() == refill_context->filled_origin &&
+      (trigger_field->global_id() == refill_context->filled_field_id ||
+       trigger_field->GetFieldSignature() ==
            refill_context->filled_field_signature);
   if (!found_matching_element) {
     return;
@@ -1297,10 +1280,9 @@ void FormFiller::TriggerRefill(const FormData& form,
   std::visit(
       [&](const auto& profile_or_credit_card) {
         FillOrPreviewForm(
-            mojom::ActionPersistence::kFill, form, &profile_or_credit_card,
-            *form_structure, *autofill_field, trigger_source,
-            refill_context->blocked_fields, refill_context->fill_id,
-            refill_context->forced_fill_values,
+            mojom::ActionPersistence::kFill, &profile_or_credit_card, *form,
+            *trigger_field, trigger_source, refill_context->blocked_fields,
+            refill_context->fill_id, refill_context->forced_fill_values,
             RefillOptions::Refill(refill_context->types_originally_filled,
                                   refill_trigger_reason));
       },
@@ -1308,7 +1290,7 @@ void FormFiller::TriggerRefill(const FormData& form,
 
   // TODO(crbug.com/459458715): Consider only clearing the `RefillContext` after
   // making sure that the refill will fill at least one field.
-  SetRefillContext(form_structure->global_id(), nullptr);
+  SetRefillContext(form->global_id(), nullptr);
 }
 
 void FormFiller::SetRefillContext(FormGlobalId form_id,

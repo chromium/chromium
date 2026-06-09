@@ -114,22 +114,17 @@ class FormFiller {
     std::optional<RefillTriggerReason> reason_;
   };
 
-  // Given `field`, the corresponding `autofill_field` to fill, and the
-  // `trigger_field`, return the set of all reasons for that field to be skipped
-  // for filling. If the field should not be skipped, an empty set is returned
-  // (and not {FieldFillingSkipReason::kNotSkipped}).
+  // Given `field`, and the `trigger_field`, return the set of all reasons for
+  // that field to be skipped for filling. If the field should not be skipped,
+  // an empty set is returned (and not {FieldFillingSkipReason::kNotSkipped}).
   // `type_count` tracks the number of times a type of field has been filled.
-  // `type_groups_originally_filled` denotes, in case of a refill, what groups
-  // where filled in the initial filling.
+  // `refill_options` includes refill-related data such as what groups were
+  // filled in the initial filling.
   // `blocked_fields` are fields which must not be filled because another
   // filling operation or product of higher priority claims them.
   // `filling_product` is the type of filling calling this function.
-  // TODO(crbug.com/40281552): Make `type_groups_originally_filled` also a
-  // FieldTypeSet.
-  // TODO(crbug.com/40227496): Keep only one of 'field' and 'autofill_field'.
   static DenseSet<FieldFillingSkipReason> GetFillingSkipReasonsForField(
-      const FormFieldData& field,
-      const AutofillField& autofill_field,
+      const AutofillField& field,
       const AutofillField& trigger_field,
       const RefillOptions& refill_options,
       base::flat_map<FieldType, size_t>& type_count,
@@ -146,15 +141,11 @@ class FormFiller {
   }
 
   // Given a `form`, returns a map from each field's id to the skip reason for
-  // that field. See additional comments in GetFieldFillingSkipReason.
+  // that field. See additional comments in `GetFillingSkipReasonsForField()`.
   // `blocked_fields` are fields which must not be filled because another
   // filling operation or product of higher priority claims them.
-  // TODO(crbug.com/40227496): Keep only one of 'form' and 'form_structure'.
-  // TODO(crbug.com/40281552): Make `type_groups_originally_filled` also a
-  // FieldTypeSet.
   static base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
-  GetFieldFillingSkipReasons(base::span<const FormFieldData> fields,
-                             const FormStructure& form_structure,
+  GetFieldFillingSkipReasons(const FormStructure& form,
                              const AutofillField& trigger_field,
                              const RefillOptions& refill_options,
                              FillingProduct filling_product,
@@ -162,21 +153,19 @@ class FormFiller {
                              const AutofillClient& client,
                              base::flat_set<FieldGlobalId> blocked_fields);
 
-  // Reverts the last autofill operation on `form` that affected
-  // `trigger_field`. `renderer_action` denotes whether this is an actual
-  // filling or a preview operation on the renderer side.
-  // TODO(crbug.com/40227496): Keep only one of `form` and `form_structure`.
+  // Reverts the last autofill operation on `form` that affected the field with
+  // `trigger_field_id`. `action_persistence` denotes whether this is an actual
+  // fill or preview operation on the renderer side.
   void UndoAutofill(mojom::ActionPersistence action_persistence,
-                    FormData form,
-                    FormStructure& form_structure,
-                    const FormFieldData& trigger_field,
+                    FormStructure& form,
+                    const FieldGlobalId& trigger_field_id,
                     FillingProduct filling_product);
 
   // Records filling information if possible and routes back to the renderer.
   void FillOrPreviewField(mojom::ActionPersistence action_persistence,
                           mojom::FieldActionType action_type,
-                          const FormFieldData& field,
-                          AutofillField* autofill_field,
+                          const FieldGlobalId& field_id,
+                          AutofillField* field,
                           const std::u16string& value,
                           FillingProduct filling_product,
                           std::optional<FieldType> field_type_used);
@@ -189,10 +178,9 @@ class FormFiller {
   // TODO(crbug.com/40227071): Clean up the API.
   void FillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
-      const FormData& form,
       const FillingPayload& filling_payload,
-      FormStructure& form_structure,
-      AutofillField& autofill_field,
+      FormStructure& form,
+      AutofillField& trigger_field,
       AutofillTriggerSource trigger_source,
       const base::flat_set<FieldGlobalId>& blocked_fields,
       FillId fill_id,
@@ -216,8 +204,7 @@ class FormFiller {
   // is the one that was reformatted and `old_value` is the value `field` had
   // before the reformatting.
   void MaybeScheduleAutomaticRefill(
-      const FormData& form,
-      const FormStructure& form_structure,
+      const FormStructure& form,
       RefillTriggerReason refill_trigger_reason,
       AutofillTriggerSource trigger_source,
       base::optional_ref<const AutofillField> field = std::nullopt,
@@ -245,13 +232,13 @@ class FormFiller {
   RefillContext* GetRefillContext(const FillId& fill_id);
 
   // Schedules a call of TriggerRefill. Virtual for testing.
-  virtual void ScheduleRefill(const FormData& form,
+  virtual void ScheduleRefill(const FormGlobalId& form_id,
                               RefillContext& refill_context,
                               AutofillTriggerSource trigger_source,
                               RefillTriggerReason refill_trigger_reason);
 
-  // Attempts to refill `form`.
-  void TriggerRefill(const FormData& form,
+  // Attempts to refill the form with corresponding `form_id`.
+  void TriggerRefill(const FormGlobalId& form_id,
                      AutofillTriggerSource trigger_source,
                      RefillTriggerReason refill_trigger_reason);
 

@@ -44,8 +44,8 @@ class PerFillMetricsTest : public AutofillMetricsBaseTest,
     test_api(autofill_manager())
         .form_filler()
         .FillOrPreviewForm(
-            mojom::ActionPersistence::kFill, form, filling_payload,
-            form_structure, autofill_field, AutofillTriggerSource::kPopup,
+            mojom::ActionPersistence::kFill, filling_payload, form_structure,
+            autofill_field, AutofillTriggerSource::kPopup,
             /*blocked_fields=*/{}, FillId::Create(),
             /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
   }

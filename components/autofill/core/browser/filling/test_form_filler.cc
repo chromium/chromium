@@ -9,11 +9,11 @@
 
 namespace autofill {
 
-void TestFormFiller::ScheduleRefill(const FormData& form,
+void TestFormFiller::ScheduleRefill(const FormGlobalId& form_id,
                                     RefillContext& refill_context,
                                     AutofillTriggerSource trigger_source,
                                     RefillTriggerReason refill_trigger_reason) {
-  TriggerRefill(form, trigger_source, refill_trigger_reason);
+  TriggerRefill(form_id, trigger_source, refill_trigger_reason);
 }
 
 }  // namespace autofill
