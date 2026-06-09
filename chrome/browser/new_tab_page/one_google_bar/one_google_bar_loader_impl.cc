@@ -12,24 +12,20 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_writer.h"
+#include "base/json/json_reader.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_data.h"
-#include "chrome/common/chrome_content_client.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_id.h"
-#include "net/base/load_flags.h"
 #include "net/base/url_util.h"
-#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -98,14 +94,8 @@ bool GetStyleSheet(const base::DictValue& dict,
 
 }  // namespace safe_html
 
-std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value,
+std::optional<OneGoogleBarData> JsonToOGBData(const base::DictValue& dict,
                                               bool expect_async_bar_parts) {
-  if (!value.is_dict()) {
-    DVLOG(1) << "Parse error: top-level dictionary not found";
-    return std::nullopt;
-  }
-  const base::DictValue& dict = value.GetDict();
-
   const base::DictValue* update = dict.FindDict("update");
   if (!update) {
     DVLOG(1) << "Parse error: no update";
@@ -375,28 +365,21 @@ void OneGoogleBarLoaderImpl::LoadDone(
     return;
   }
 
-  std::string response = std::move(response_body).value();
-
-  // The response may start with )]}'. Ignore this.
-  auto remainder = base::RemovePrefix(response, kResponsePreamble);
-  if (remainder) {
-    response = std::string(*remainder);
+  std::string_view json_to_parse = *response_body;
+  if (std::optional<std::string_view> remainder =
+          base::RemovePrefix(json_to_parse, kResponsePreamble)) {
+    json_to_parse = *remainder;
   }
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      response, base::BindOnce(&OneGoogleBarLoaderImpl::JsonParsed,
-                               weak_ptr_factory_.GetWeakPtr()));
-}
 
-void OneGoogleBarLoaderImpl::JsonParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    DVLOG(1) << "Parsing JSON failed: " << result.error();
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(json_to_parse, base::JSON_PARSE_RFC);
+  if (!dict) {
+    DVLOG(1) << "Parsing JSON failed";
     Respond(Status::FATAL_ERROR, std::nullopt);
     return;
   }
 
-  std::optional<OneGoogleBarData> data =
-      JsonToOGBData(*result, async_bar_parts_);
+  std::optional<OneGoogleBarData> data = JsonToOGBData(*dict, async_bar_parts_);
   Respond(data.has_value() ? Status::OK : Status::FATAL_ERROR, data);
 }
 
