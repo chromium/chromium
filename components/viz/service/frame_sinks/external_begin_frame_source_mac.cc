@@ -294,6 +294,7 @@ void ExternalBeginFrameSourceMac::StartBeginFrame() {
   }
 
   // Start the timer.
+  CreateDelayBasedTimeSourceIfNeeded();
   time_source_->SetActive(/*active=*/true);
 }
 
