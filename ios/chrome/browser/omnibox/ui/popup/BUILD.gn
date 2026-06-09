@@ -87,8 +87,12 @@ source_set("popup_ui_protocols") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "omnibox_popup_view_controller_unittest.mm" ]
+  sources = [
+    "omnibox_popup_presenter_unittest.mm",
+    "omnibox_popup_view_controller_unittest.mm",
+  ]
   deps = [
+    ":popup",
     ":popup_ui",
     ":popup_ui_protocols",
     "//base/test:test_support",
