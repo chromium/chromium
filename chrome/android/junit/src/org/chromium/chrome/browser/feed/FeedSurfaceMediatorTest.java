@@ -13,7 +13,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
+import android.view.View;
 
 import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
@@ -62,6 +65,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for {@link FeedSurfaceMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -69,11 +73,14 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
 public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;
+    private static final int SPAN_COUNT_SMALL_WIDTH = 1;
+    private static final int SPAN_COUNT_LARGE_WIDTH = 2;
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     // Mocked JNI.
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private FeedSurfaceCoordinator mFeedSurfaceCoordinator;
+    @Mock private RecyclerView mRecyclerView;
     @Mock private IdentityServicesProvider mIdentityService;
     @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
     @Mock private PrefService mPrefService;
@@ -87,6 +94,8 @@ public class FeedSurfaceMediatorTest {
     @Mock private FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
     @Mock private FeedReliabilityLogger mReliabilityLogger;
     @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
+    @Captor private ArgumentCaptor<View.OnLayoutChangeListener> mLayoutChangeListenerCaptor;
+
     private final Context mContext = RuntimeEnvironment.application;
     private Activity mActivity;
     private FeedSurfaceMediator mFeedSurfaceMediator;
@@ -108,7 +117,7 @@ public class FeedSurfaceMediatorTest {
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
         when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
         when(mFeedSurfaceCoordinator.isActive()).thenReturn(true);
-        when(mFeedSurfaceCoordinator.getRecyclerView()).thenReturn(new RecyclerView(mActivity));
+        when(mFeedSurfaceCoordinator.getRecyclerView()).thenReturn(mRecyclerView);
         when(mFeedSurfaceCoordinator.createFeedStream(
                         eq(StreamKind.FOR_YOU), any(Stream.StreamsMediator.class)))
                 .thenReturn(mForYouStream);
@@ -118,6 +127,7 @@ public class FeedSurfaceMediatorTest {
         when(mListLayoutHelper.setColumnCount(anyInt())).thenReturn(true);
         when(mFeedSurfaceCoordinator.getSurfaceLifecycleManager())
                 .thenReturn(mFeedSurfaceLifecycleManager);
+        when(mFeedSurfaceCoordinator.getView()).thenReturn(mRecyclerView);
         SettableNonNullObservableSupplier<Boolean> hasUnreadContent =
                 ObservableSuppliers.createNonNull(false);
         when(mForYouStream.hasUnreadContent()).thenReturn(hasUnreadContent);
@@ -311,6 +321,41 @@ public class FeedSurfaceMediatorTest {
         streamsMediator.refreshStream();
 
         verify(mFeedSurfaceCoordinator).nonSwipeRefresh();
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testUpdateLayout_smallWidth_tablet() {
+        testUpdateLayoutImpl(600, SPAN_COUNT_SMALL_WIDTH);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testUpdateLayout_largeWidth_tablet() {
+        testUpdateLayoutImpl(800, SPAN_COUNT_LARGE_WIDTH);
+    }
+
+    private void testUpdateLayoutImpl(int width, int expectedSpanCount) {
+        DeviceFormFactor.setIsTabletForTesting(true);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+
+        mFeedSurfaceMediator =
+                new FeedSurfaceMediator(
+                        mFeedSurfaceCoordinator,
+                        mActivity,
+                        mock(SnapScrollHelper.class),
+                        /* actionDelegate= */ null,
+                        mProfileMock);
+        mFeedSurfaceMediator.updateContent();
+
+        verify(mRecyclerView).addOnLayoutChangeListener(mLayoutChangeListenerCaptor.capture());
+        clearInvocations(mListLayoutHelper);
+
+        mLayoutChangeListenerCaptor.getValue().onLayoutChange(null, 0, 0, width, 1000, 0, 0, 0, 0);
+
+        verify(mListLayoutHelper).setColumnCount(expectedSpanCount);
     }
 
     private FeedSurfaceMediator createMediator() {
