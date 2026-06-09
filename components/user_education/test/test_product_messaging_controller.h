@@ -13,15 +13,16 @@ namespace user_education::test {
 
 // Simulates a notice that requests to show in the `ProductMessagingController`.
 // Will hold the handle until `Release()` is called.
-class TestNotice {
+class TestProductMessage {
  public:
-  explicit TestNotice(ProductMessagingController& controller,
-                      RequiredNoticeId id,
-                      std::initializer_list<RequiredNoticeId> show_after = {},
-                      std::initializer_list<RequiredNoticeId> blocked_by = {});
-  TestNotice(const TestNotice&) = delete;
-  void operator=(const TestNotice&) = delete;
-  ~TestNotice();
+  explicit TestProductMessage(
+      ProductMessagingController& controller,
+      ProductMessageKey key,
+      std::initializer_list<ProductMessageKey> show_after = {},
+      std::initializer_list<ProductMessageKey> blocked_by = {});
+  TestProductMessage(const TestProductMessage&) = delete;
+  void operator=(const TestProductMessage&) = delete;
+  ~TestProductMessage();
 
   // Mark that the notice was shown.
   void SetShown();
@@ -29,16 +30,16 @@ class TestNotice {
   // Release the handle (which must be held).
   void Release();
 
-  RequiredNoticeId id() const { return id_; }
+  ProductMessageKey key() const { return key_; }
   bool received_priority() const { return shown_; }
   bool has_priority() const { return static_cast<bool>(handle_); }
 
  private:
-  void OnReadyToShow(RequiredNoticePriorityHandle handle);
+  void OnReadyToShow(ProductMessagingHandle handle);
 
-  const RequiredNoticeId id_;
+  const ProductMessageKey key_;
   bool shown_ = false;
-  RequiredNoticePriorityHandle handle_;
+  ProductMessagingHandle handle_;
 };
 
 }  // namespace user_education::test

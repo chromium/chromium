@@ -67,16 +67,19 @@ class MessagingCoordinator {
  private:
   friend class MessagingCoordinatorTest;
 
-  DECLARE_CLASS_REQUIRED_NOTICE_IDENTIFIER(kLowPriorityNoticeId);
-  DECLARE_CLASS_REQUIRED_NOTICE_IDENTIFIER(kHighPriorityNoticeId);
+  DECLARE_CLASS_PRODUCT_MESSAGE_KEY(kLowPriorityNoticeId,
+                                    ProductMessageType::kLowPriorityIph);
+  DECLARE_CLASS_PRODUCT_MESSAGE_KEY(kHighPriorityNoticeId,
+                                    ProductMessageType::kHighPriorityIph);
 
   void MaybeRequestPriority(bool high_priority);
   void ReleaseAll();
-  void OnPriorityReceived(RequiredNoticePriorityHandle handle);
-  void OnMessageShown(RequiredNoticeId message_id);
+  void OnPriorityReceived(ProductMessagingHandle handle);
+  void OnStatusChange(ProductMessageKey message_key,
+                      ProductMessageStatus status);
 
   PromoState promo_state_ = PromoState::kNone;
-  RequiredNoticePriorityHandle handle_;
+  ProductMessagingHandle handle_;
   base::CallbackListSubscription message_shown_subscription_;
   base::RepeatingClosureList promo_preempted_callbacks_;
   base::RepeatingClosureList promo_ready_callbacks_;

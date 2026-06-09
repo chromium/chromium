@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/callback_list.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/user_education/common/session/user_education_session_manager.h"
@@ -19,91 +20,146 @@ namespace user_education {
 
 class ProductMessagingController;
 
-// Opaque ID for required notices.
-//
-// Use DECLARE/DEFINE_REQUIRED_NOTICE_IDENTIFIER() below to create these for
-// your notices.
-DECLARE_UNIQUE_IDENTIFIER_TYPE(RequiredNoticeId);
+namespace internal {
+
+class MessagingCoordinator;
+
+// Opaque ID for required messages. Do not use directly.
+DECLARE_UNIQUE_IDENTIFIER_TYPE(ProductMessageUniqueId);
+
+}  // namespace internal
+
+// An enumeration of all known product message types, in general order of
+// priority from lowest to highest.
+enum class ProductMessageType {
+  // This value is only for filtering and must be first on the list.
+  kNone = 0,
+  kLowPriorityIph,
+  kHighPriorityIph,
+  kLegalOrComplianceNotice,
+  kMaxValue = kLegalOrComplianceNotice
+};
+
+// Used to uniquely identify a message and define its type.
+// Opaque, but the type can be retrieved.
+// Declare with the macros below.
+class ProductMessageKey {
+ public:
+  consteval ProductMessageKey() = default;
+  consteval ProductMessageKey(internal::ProductMessageUniqueId id,
+                              ProductMessageType type)
+      : id_(id), type_(type) {}
+
+  explicit constexpr operator bool() const { return !!id_; }
+  bool operator<(ProductMessageKey other) const;
+  friend constexpr bool operator==(ProductMessageKey lhs,
+                                   ProductMessageKey rhs) = default;
+
+  std::string GetName() const;
+  std::string ToString() const;
+
+  ProductMessageType type() const { return type_; }
+
+ private:
+  internal::ProductMessageUniqueId id_;
+  ProductMessageType type_ = ProductMessageType::kNone;
+};
+
+// Use these macros to declare keys.
 
 // Place this in a .h file:
-#define DECLARE_REQUIRED_NOTICE_IDENTIFIER(name) \
-  DECLARE_UNIQUE_IDENTIFIER_VALUE(::user_education::RequiredNoticeId, name)
+#define DECLARE_PRODUCT_MESSAGE_KEY(name, type)                             \
+  DECLARE_UNIQUE_IDENTIFIER_VALUE(                                          \
+      ::user_education::internal::ProductMessageUniqueId, name##UniqueId);  \
+  inline constexpr ::user_education::ProductMessageKey name(name##UniqueId, \
+                                                            type)
 
 // Place this in a .cc file:
-#define DEFINE_REQUIRED_NOTICE_IDENTIFIER(name) \
-  DEFINE_UNIQUE_IDENTIFIER_VALUE(::user_education::RequiredNoticeId, name)
+#define DEFINE_PRODUCT_MESSAGE_KEY(name) \
+  DEFINE_UNIQUE_IDENTIFIER_VALUE(        \
+      ::user_education::internal::ProductMessageUniqueId, name##UniqueId)
 
 // This can be used in tests to avoid name conflicts.
-#define DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(name) \
-  DEFINE_MACRO_LOCAL_UNIQUE_IDENTIFIER_VALUE(         \
-      __FILE__, __LINE__, ::user_education::RequiredNoticeId, name)
+#define DEFINE_LOCAL_PRODUCT_MESSAGE_KEY(name, type)                          \
+  DEFINE_MACRO_LOCAL_UNIQUE_IDENTIFIER_VALUE(                                 \
+      __FILE__, __LINE__, ::user_education::internal::ProductMessageUniqueId, \
+      name##UniqueId);                                                        \
+  static constexpr ::user_education::ProductMessageKey name(name##UniqueId,   \
+                                                            type)
 
 // This can be used to scope an identifier to a class; use this in the public
 // part of the class definition.
-#define DECLARE_CLASS_REQUIRED_NOTICE_IDENTIFIER(name)                      \
-  DECLARE_CLASS_UNIQUE_IDENTIFIER_VALUE(::user_education::RequiredNoticeId, \
-                                        name)
+#define DECLARE_CLASS_PRODUCT_MESSAGE_KEY(name, type)                      \
+  DECLARE_CLASS_UNIQUE_IDENTIFIER_VALUE(                                   \
+      ::user_education::internal::ProductMessageUniqueId, name##UniqueId); \
+  static constexpr ::user_education::ProductMessageKey name {              \
+    name##UniqueId, type                                                   \
+  }
 
 // Use this in the .cc file to define an identifier scoped to a class, this must
 // be paired with the DECLARE macro above.
-#define DEFINE_CLASS_REQUIRED_NOTICE_IDENTIFIER(Class, Name) \
-  DEFINE_CLASS_UNIQUE_IDENTIFIER_VALUE(                      \
-      Class, ::user_education::RequiredNoticeId, Name)
+#define DEFINE_CLASS_PRODUCT_MESSAGE_KEY(Class, Name)            \
+  DEFINE_CLASS_UNIQUE_IDENTIFIER_VALUE(                          \
+      Class, ::user_education::internal::ProductMessageUniqueId, \
+      Name##UniqueId)
 
-namespace internal {
-// Special value in the "show after" list that causes the notice to happen last.
-DECLARE_REQUIRED_NOTICE_IDENTIFIER(kShowAfterAllNotices);
-}  // namespace internal
+// The status of a message.
+enum class ProductMessageStatus { kNone, kQueued, kEligible, kShowing };
 
-// The owner of this object currently has priority to show a required product
-// notice. It must be held while the notice is showing and released immediately
-// after the notice is dismissed.
-class [[nodiscard]] RequiredNoticePriorityHandle final {
+using ProductMessageStatusCallback =
+    base::RepeatingCallback<void(ProductMessageKey, ProductMessageStatus)>;
+
+// The owner of this object currently has priority to show a product message
+// It must be held while the message is showing and released immediately after
+// the message is dismissed.
+class ProductMessagingHandleImpl final {
  public:
-  RequiredNoticePriorityHandle();
-  RequiredNoticePriorityHandle(RequiredNoticePriorityHandle&&) noexcept;
-  RequiredNoticePriorityHandle& operator=(
-      RequiredNoticePriorityHandle&&) noexcept;
-  ~RequiredNoticePriorityHandle();
+  ProductMessagingHandleImpl(const ProductMessagingHandleImpl&) = delete;
+  ProductMessagingHandleImpl& operator=(const ProductMessagingHandleImpl&) =
+      delete;
+  ~ProductMessagingHandleImpl();
 
-  // Whether this handle is valid.
-  explicit operator bool() const;
-  bool operator!() const;
+  ProductMessageKey message_key() const { return message_key_; }
 
-  RequiredNoticeId notice_id() const { return notice_id_; }
-
-  // Set that the notice was actually shown. Cannot be called on a null handle
-  // or after releasing. Call to specify that the given notice was actually
+  // Set that the message was actually shown. Cannot be called on a null handle
+  // or after releasing. Call to specify that the given message was actually
   // shown; if you discard or release the handle without calling this function,
-  // it is assumed that the notice was not shown.
+  // it is assumed that the message was not shown.
   void SetShown();
 
-  // Release the handle, resetting to default (null/falsy) value.
-  void Release();
+  // Set the callback that will be called if another message of strictly higher
+  // priority becomes eligible or shown. This should be set right away when the
+  // handle is received; it has no effect if the handle is not valid, and the
+  // callback will be unregistered if this object is released.
+  void SetSupersededCallback(ProductMessageStatusCallback callback);
 
  private:
   friend class ProductMessagingController;
-  RequiredNoticePriorityHandle(
-      RequiredNoticeId notice_id,
+  ProductMessagingHandleImpl(
+      ProductMessageKey message_key,
       base::WeakPtr<ProductMessagingController> controller);
 
+  void OnStatusChange(ProductMessageKey key, ProductMessageStatus status);
+
   bool shown_ = false;
-  RequiredNoticeId notice_id_;
+  ProductMessageKey message_key_;
+  ProductMessageStatusCallback superseded_callback_;
+  base::CallbackListSubscription superseded_subscription_;
   base::WeakPtr<ProductMessagingController> controller_;
 };
 
-// Callback when a required notice is ready to show. The notice should show
+using ProductMessagingHandle = std::unique_ptr<ProductMessagingHandleImpl>;
+
+// Callback when a required message is ready to show. The message should show
 // immediately.
 //
 // `handle` should be moved to a semi-permanent location and released when the
-// notice is dismissed/closes. Failure to hold or release the handle can cause
-// problems with User Education and other required notices.
-using RequiredNoticeShowCallback =
-    base::OnceCallback<void(RequiredNoticePriorityHandle handle)>;
+// message is dismissed/closes. Failure to hold or release the handle can cause
+// problems with User Education and other required messages.
+using ProductMessageReadyCallback =
+    base::OnceCallback<void(ProductMessagingHandle handle)>;
 
-// Coordinates between critical product messaging (e.g. legal notices) that must
-// show in Chrome, to ensure that (a) they do not show over each other and (b)
-// no other spontaneous User Education experiences start at the same time.
+// Coordinates between different product messaging systems.
 class ProductMessagingController final {
  public:
   ProductMessagingController();
@@ -112,115 +168,110 @@ class ProductMessagingController final {
   ~ProductMessagingController();
 
   // Register the session provider which is used to clear the set of shown
-  // notices and the storage service used to retrieve shown promos.
+  // messages and the storage service used to retrieve shown promos.
   void Init(UserEducationSessionProvider& session_provider,
             UserEducationStorageService& storage_service);
 
-  // Returns whether there are any notices queued or showing. This can be used
-  // to prevent other, lower-priority User Education experiences from showing.
-  bool has_pending_notices() const {
-    return current_notice_ || !pending_notices_.empty();
-  }
+  // Checks whether the given `message_id` is queued.
+  bool IsMessageQueued(ProductMessageKey message_key) const;
 
-  // Checks whether the given `notice_id` is queued.
-  bool IsNoticeQueued(RequiredNoticeId notice_id) const;
-
-  // Requests that `notice_id` be queued to show. When it is allowed (which
+  // Requests that `message_key` be queued to show. When it is allowed (which
   // might be as soon as the current message queue empties),
   // `ready_to_start_callback` will be called.
   //
-  // If `always_show_after` is provided, then this notice is guaranteed to show
-  // after the specified notices; otherwise the order of notices is not defined.
+  // If `always_show_after` is provided, then this message is guaranteed to show
+  // after the specified messages; otherwise the order of messages is not
+  // defined.
   //
   // The `blocked_by` list is similar to `always_show_after`, but if one of the
-  // listed notices is successfully shown, this notice will not be shown this
-  // session. Be aware that specifying one or more notices on the `blocked_by`
+  // listed messages is successfully shown, this message will not be shown this
+  // session. Be aware that specifying one or more messages on the `blocked_by`
   // list may mean `ready_to_start_callback` is never called.
   //
-  // Similarly, re-queueing a notice that is already showing or has been
+  // Similarly, re-queueing a message that is already showing or has been
   // successfully shown will have no effect, and `ready_to_start_callback` will
   // not be called.
   //
-  // The expectation is that all of the notices will be queued during browser
+  // The expectation is that all of the messages will be queued during browser
   // startup, so that even if A must show after B, but B requests to show just
   // before A, then they will still show in the correct order starting a frame
   // or two later.
-  void QueueRequiredNotice(
-      RequiredNoticeId notice_id,
-      RequiredNoticeShowCallback ready_to_start_callback,
-      std::initializer_list<RequiredNoticeId> always_show_after = {},
-      std::initializer_list<RequiredNoticeId> blocked_by = {});
+  void QueueMessage(
+      ProductMessageKey message_key,
+      ProductMessageReadyCallback ready_to_start_callback,
+      std::initializer_list<ProductMessageKey> always_show_after = {},
+      std::initializer_list<ProductMessageKey> blocked_by = {});
 
-  // Removes `notice_id` from the queue, if it is queued.
-  // Has no effect if the notice has already started to show.
-  void UnqueueRequiredNotice(RequiredNoticeId notice_id);
+  // Removes `message_id` from the queue, if it is queued.
+  // Has no effect if the message has already started to show.
+  void UnqueueMessage(ProductMessageKey message_key);
 
-  // Callback for notifications about other services' activity.
-  using StatusUpdateCallback = base::RepeatingCallback<void(RequiredNoticeId)>;
+  // Returns the status of `message`.
+  ProductMessageStatus GetProductMessageStatus(ProductMessageKey message) const;
 
-  // Adds a callback that will be called whenever a RequiredNoticeHandle will be
-  // granted. This can optionally be used to know when other systems are about
-  // to show a notice.
-  base::CallbackListSubscription AddRequiredNoticePriorityHandleGrantedCallback(
-      StatusUpdateCallback callback);
+  // Returns queued or showing messages. Can be filtered by priority and by
+  // status.
+  base::flat_map<ProductMessageKey, ProductMessageStatus> GetAllMessages(
+      std::initializer_list<ProductMessageStatus> statuses_to_retrieve =
+          {ProductMessageStatus::kQueued, ProductMessageStatus::kEligible,
+           ProductMessageStatus::kShowing},
+      ProductMessageType priority_higher_than =
+          ProductMessageType::kNone) const;
 
-  // Adds a callback that will be called when the UI of a required notice will
-  // actually be shown (not just that the handle is being held).
-  base::CallbackListSubscription AddRequiredNoticeShownCallback(
-      StatusUpdateCallback callback);
+  // Adds a callback that will be called whenever the status of a message
+  // changes.
+  base::CallbackListSubscription AddStatusUpdateCallbackForTesting(
+      ProductMessageStatusCallback callback);
 
-  bool has_current_notice() const { return static_cast<bool>(current_notice_); }
-
-  RequiredNoticeId current_notice_for_testing() const {
-    return current_notice_;
-  }
+  // Returns if any messages queued or showing.
+  bool HasPendingMessagesForTesting() const;
 
  private:
-  friend class RequiredNoticePriorityHandle;
-  struct RequiredNoticeData;
+  friend class ProductMessagingHandleImpl;
+  friend class internal::MessagingCoordinator;
+  struct ProductMessageData;
 
   bool ready_to_show() const {
-    CHECK(storage_service_) << "Must call Init() before queueing notices.";
-    return !current_notice_ && !pending_notices_.empty();
+    CHECK(storage_service_) << "Must call Init() before queueing messages.";
+    return !current_message_ && !pending_messages_.empty();
   }
 
-  // Called by RequiredNoticePriorityHandle when it is released. Clears the
-  // current notice and maybe tries to start the next.
-  void ReleaseHandle(RequiredNoticeId notice_id, bool notice_shown);
+  // Called by ProductMessagePriorityHandle when it is released. Clears the
+  // current message and maybe tries to start the next.
+  void ReleaseHandle(ProductMessageKey message_key, bool message_shown);
 
-  // Shows the next notice, if one is eligible, by calling
-  // `MaybeShowNextRequiredNoticeImpl()` on a fresh call stack.
-  void MaybeShowNextRequiredNotice();
+  // Shows the next message, if one is eligible, by calling
+  // `MaybeShowNextProductMessageImpl()` on a fresh call stack.
+  void MaybeShowNextMessage();
 
-  // Remove any queued notice that should not show.
+  // Remove any queued message that should not show.
   //
-  // A notice is blocked if another notice in its `blocked_by` list has been
-  // shown, or if the same notice has already been shown this session.
-  void PurgeBlockedNotices();
+  // A message is blocked if another message in its `blocked_by` list has been
+  // shown, or if the same message has already been shown this session.
+  void PurgeBlockedMessages();
 
-  // Actually shows the next notice, if one is eligible. Must be called on a
+  // Actually shows the next message, if one is eligible. Must be called on a
   // fresh call stack, and should only be queued by
-  // `MaybeShowNextRequiredNotice()`.
-  void MaybeShowNextRequiredNoticeImpl();
+  // `MaybeShowNextProductMessage()`.
+  void MaybeShowNextMessageImpl();
 
   // Do housekeeping associated with a new session.
   void OnNewSession();
 
-  // Notify that the notice was actually shown.
-  void OnNoticeShown(RequiredNoticeId notice_id);
+  // Notify that the message was actually shown.
+  void OnMessageShown(ProductMessageKey message_key);
 
-  // Describes the current contents of `pending_notices_` for debugging/error
+  // Describes the current contents of `pending_messages_` for debugging/error
   // purposes.
   std::string DumpData() const;
 
-  RequiredNoticeId current_notice_;
+  ProductMessageKey current_message_;
+  bool current_message_shown_ = false;
   raw_ptr<UserEducationStorageService> storage_service_ = nullptr;
-  std::map<RequiredNoticeId, RequiredNoticeData> pending_notices_;
+  std::map<ProductMessageKey, ProductMessageData> pending_messages_;
   base::CallbackListSubscription session_subscription_;
-  base::RepeatingCallbackList<StatusUpdateCallback::RunType>
-      handle_granted_callbacks_;
-  base::RepeatingCallbackList<StatusUpdateCallback::RunType>
-      notice_shown_callbacks_;
+  base::RepeatingCallbackList<ProductMessageStatusCallback::RunType>
+      status_update_callbacks_;
   base::WeakPtrFactory<ProductMessagingController> weak_ptr_factory_{this};
 };
 

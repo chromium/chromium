@@ -8,29 +8,31 @@
 
 namespace user_education::test {
 
-TestNotice::TestNotice(ProductMessagingController& controller,
-                       RequiredNoticeId id,
-                       std::initializer_list<RequiredNoticeId> show_after,
-                       std::initializer_list<RequiredNoticeId> blocked_by)
-    : id_(id) {
-  controller.QueueRequiredNotice(
-      id_, base::BindOnce(&TestNotice::OnReadyToShow, base::Unretained(this)),
-      show_after, blocked_by);
+TestProductMessage::TestProductMessage(
+    ProductMessagingController& controller,
+    ProductMessageKey key,
+    std::initializer_list<ProductMessageKey> show_after,
+    std::initializer_list<ProductMessageKey> blocked_by)
+    : key_(key) {
+  controller.QueueMessage(key_,
+                          base::BindOnce(&TestProductMessage::OnReadyToShow,
+                                         base::Unretained(this)),
+                          show_after, blocked_by);
 }
 
-TestNotice::~TestNotice() = default;
+TestProductMessage::~TestProductMessage() = default;
 
-void TestNotice::SetShown() {
+void TestProductMessage::SetShown() {
   CHECK(handle_);
-  handle_.SetShown();
+  handle_->SetShown();
 }
 
-void TestNotice::Release() {
+void TestProductMessage::Release() {
   CHECK(handle_);
-  handle_.Release();
+  handle_.reset();
 }
 
-void TestNotice::OnReadyToShow(RequiredNoticePriorityHandle handle) {
+void TestProductMessage::OnReadyToShow(ProductMessagingHandle handle) {
   CHECK(handle);
   shown_ = true;
   handle_ = std::move(handle);

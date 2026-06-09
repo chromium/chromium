@@ -1049,17 +1049,18 @@ TEST_F(BrowserFeaturePromoControllerTrackerInitializedTest,
       UserEducationServiceFactory::GetForBrowserContext(profile())
           ->product_messaging_controller();
 
-  DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kRequiredNotice);
-
-  user_education::RequiredNoticePriorityHandle handle_to_hold;
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  product_messaging_controller.QueueRequiredNotice(
+  DEFINE_LOCAL_PRODUCT_MESSAGE_KEY(
       kRequiredNotice,
-      base::BindLambdaForTesting(
-          [&](user_education::RequiredNoticePriorityHandle handle) {
-            handle_to_hold = std::move(handle);
-            run_loop.Quit();
-          }));
+      user_education::ProductMessageType::kLegalOrComplianceNotice);
+
+  user_education::ProductMessagingHandle handle_to_hold;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  product_messaging_controller.QueueMessage(
+      kRequiredNotice, base::BindLambdaForTesting(
+                           [&](user_education::ProductMessagingHandle handle) {
+                             handle_to_hold = std::move(handle);
+                             run_loop.Quit();
+                           }));
   run_loop.Run();
 
   ExpectPromoResult(kTutorialIPHFeature, FeaturePromoResult::kBlockedByPromo,
@@ -2196,19 +2197,19 @@ class RequiredNotice {
   void operator=(const RequiredNotice&) = delete;
   ~RequiredNotice() = default;
 
-  void Request(user_education::RequiredNoticeId id) {
-    CHECK(!id_);
+  void Request(user_education::ProductMessageKey key) {
+    CHECK(!key_);
     CHECK(!handle_);
-    id_ = id;
-    controller_->QueueRequiredNotice(
-        id_, base::BindOnce(&RequiredNotice::OnPriority,
-                            weak_ptr_factory_.GetWeakPtr()));
+    key_ = key;
+    controller_->QueueMessage(key_,
+                              base::BindOnce(&RequiredNotice::OnPriority,
+                                             weak_ptr_factory_.GetWeakPtr()));
   }
 
   void Release() {
     CHECK(handle_);
-    CHECK(!id_);
-    handle_.Release();
+    CHECK(!key_);
+    handle_.reset();
   }
 
   bool has_priority() const { return !!handle_; }
@@ -2218,14 +2219,14 @@ class RequiredNotice {
   }
 
  private:
-  void OnPriority(user_education::RequiredNoticePriorityHandle handle) {
+  void OnPriority(user_education::ProductMessagingHandle handle) {
     handle_ = std::move(handle);
-    id_ = user_education::RequiredNoticeId();
+    key_ = user_education::ProductMessageKey();
     callbacks_.Notify();
   }
 
-  user_education::RequiredNoticeId id_;
-  user_education::RequiredNoticePriorityHandle handle_;
+  user_education::ProductMessageKey key_;
+  user_education::ProductMessagingHandle handle_;
   base::OnceCallbackList<void()> callbacks_;
   const raw_ref<user_education::ProductMessagingController> controller_;
   base::WeakPtrFactory<RequiredNotice> weak_ptr_factory_{this};
@@ -2247,7 +2248,9 @@ class NoticeCallbackObserver : public ui::test::StateObserver<bool> {
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(NoticeCallbackObserver,
                                     kNoticeCallbackState);
 
-DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kRequiredNoticeId);
+DEFINE_LOCAL_PRODUCT_MESSAGE_KEY(
+    kRequiredNoticeId,
+    user_education::ProductMessageType::kLegalOrComplianceNotice);
 
 }  // namespace
 

@@ -20,6 +20,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_education/common/product_messaging_controller.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 
@@ -36,6 +37,11 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+DEFINE_PRODUCT_MESSAGE_KEY(kEnabledEnhancedBrowsingNotice);
+DEFINE_PRODUCT_MESSAGE_KEY(kDisabledEnhancedBrowsingNotice);
+#endif
+
 namespace safe_browsing {
 
 #if BUILDFLAG(IS_ANDROID)
@@ -45,10 +51,6 @@ const bool kRetryMechanismNotTriggered = false;
 #endif
 
 namespace {
-#if !BUILDFLAG(IS_ANDROID)
-DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kEnabledEnhancedBrowsingNotice);
-DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kDisabledEnhancedBrowsingNotice);
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 content::WebContents* GetWebContentsForProfile(Profile* profile) {
@@ -192,7 +194,7 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeTailoredSecurityService::TriggerDialogDisplay(
     bool is_enabled,
-    user_education::RequiredNoticePriorityHandle messaging_priority_handle) {
+    user_education::ProductMessagingHandle messaging_priority_handle) {
   if (is_enabled) {
     enabled_notice_handle_ = std::move(messaging_priority_handle);
   } else {
@@ -207,11 +209,11 @@ void ChromeTailoredSecurityService::TriggerDialogDisplay(
 }
 
 void ChromeTailoredSecurityService::ReleaseEnabledQueueHandle() {
-  enabled_notice_handle_.Release();
+  enabled_notice_handle_.reset();
 }
 
 void ChromeTailoredSecurityService::ReleaseDisabledQueueHandle() {
-  disabled_notice_handle_.Release();
+  disabled_notice_handle_.reset();
 }
 
 void ChromeTailoredSecurityService::QueueNotice(bool is_enabled) {
@@ -231,14 +233,14 @@ void ChromeTailoredSecurityService::QueueNotice(bool is_enabled) {
   auto& other_notice_handle =
       is_enabled ? disabled_notice_handle_ : enabled_notice_handle_;
 
-  if (!product_messaging_controller.IsNoticeQueued(notice_to_queue)) {
+  if (!product_messaging_controller.IsMessageQueued(notice_to_queue)) {
     // If the conflicting notice is currently held, release it so the new one
     // can process.
     if (other_notice_handle) {
-      other_notice_handle.Release();
+      other_notice_handle.reset();
     }
 
-    product_messaging_controller.QueueRequiredNotice(
+    product_messaging_controller.QueueMessage(
         notice_to_queue,
         base::BindOnce(&ChromeTailoredSecurityService::TriggerDialogDisplay,
                        weak_factory_.GetWeakPtr(), is_enabled),

@@ -9,8 +9,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/user_education/common/session/user_education_session_manager.h"
@@ -19,80 +22,106 @@
 
 namespace user_education {
 
-namespace internal {
-DEFINE_REQUIRED_NOTICE_IDENTIFIER(kShowAfterAllNotices);
+bool ProductMessageKey::operator<(ProductMessageKey other) const {
+  DCHECK(id_ != other.id_ || type_ == other.type_)
+      << "Found two product message keys with same id " << id_
+      << " but different types.";
+  return id_ < other.id_;
 }
 
-// RequiredNoticePriorityHandle
+std::string ProductMessageKey::GetName() const {
+  static constexpr std::string_view kSuffix = "UniqueId";
+  std::string temp = id_.GetName();
+  if (!temp.empty()) {
+    CHECK(temp.ends_with(kSuffix));
+    temp = temp.substr(0, temp.length() - kSuffix.length());
+  }
+  return temp;
+}
 
-RequiredNoticePriorityHandle::RequiredNoticePriorityHandle() = default;
+std::string ProductMessageKey::ToString() const {
+  static constexpr std::array<
+      std::string_view, static_cast<size_t>(ProductMessageType::kMaxValue) + 1U>
+      kTypeNames{"[none]", "LowPriorityIph", "HighPriorityIph",
+                 "LegalOrComplianceNotice"};
+  std::ostringstream oss;
+  oss << "ProductMessageKey{ type: "
+      << kTypeNames.at(static_cast<size_t>(type_)) << " id: " << id_.GetName()
+      << " }";
+  return oss.str();
+}
 
-RequiredNoticePriorityHandle::RequiredNoticePriorityHandle(
-    RequiredNoticeId notice_id,
+// ProductMessagingHandleImpl
+
+ProductMessagingHandleImpl::ProductMessagingHandleImpl(
+    ProductMessageKey message_key,
     base::WeakPtr<ProductMessagingController> controller)
-    : notice_id_(notice_id), controller_(controller) {}
-
-RequiredNoticePriorityHandle::RequiredNoticePriorityHandle(
-    RequiredNoticePriorityHandle&& other) noexcept
-    : notice_id_(std::exchange(other.notice_id_, RequiredNoticeId())),
-      controller_(std::move(other.controller_)) {}
-
-RequiredNoticePriorityHandle& RequiredNoticePriorityHandle::operator=(
-    RequiredNoticePriorityHandle&& other) noexcept {
-  if (this != &other) {
-    notice_id_ = std::exchange(other.notice_id_, RequiredNoticeId());
-    controller_ = std::move(other.controller_);
-  }
-  return *this;
+    : message_key_(message_key), controller_(controller) {
+  CHECK(message_key_);
+  CHECK(controller_);
 }
 
-RequiredNoticePriorityHandle::~RequiredNoticePriorityHandle() {
-  Release();
+ProductMessagingHandleImpl::~ProductMessagingHandleImpl() {
+  controller_->ReleaseHandle(message_key_, shown_);
+  controller_.reset();
+  superseded_subscription_ = {};
+  superseded_callback_.Reset();
+  message_key_ = ProductMessageKey();
 }
 
-RequiredNoticePriorityHandle::operator bool() const {
-  return notice_id_ && controller_;
-}
-
-bool RequiredNoticePriorityHandle::operator!() const {
-  return !static_cast<bool>(*this);
-}
-
-void RequiredNoticePriorityHandle::SetShown() {
-  CHECK(static_cast<bool>(this));
+void ProductMessagingHandleImpl::SetShown() {
+  CHECK(!shown_);
   shown_ = true;
-  if (controller_) {
-    controller_->OnNoticeShown(notice_id_);
-  }
+  controller_->OnMessageShown(message_key_);
 }
 
-void RequiredNoticePriorityHandle::Release() {
-  if (!*this) {
+void ProductMessagingHandleImpl::SetSupersededCallback(
+    ProductMessageStatusCallback callback) {
+  if (callback.is_null()) {
+    superseded_subscription_ = {};
+    superseded_callback_.Reset();
     return;
   }
+  CHECK(!superseded_subscription_);
+  CHECK(!superseded_callback_);
 
-  controller_->ReleaseHandle(notice_id_, shown_);
-  controller_.reset();
-  notice_id_ = RequiredNoticeId();
+  superseded_callback_ = std::move(callback);
+  superseded_subscription_ =
+      controller_->status_update_callbacks_.Add(base::BindRepeating(
+          &ProductMessagingHandleImpl::OnStatusChange, base::Unretained(this)));
 }
 
-// ProductMessagingController::RequiredNoticeData
+void ProductMessagingHandleImpl::OnStatusChange(ProductMessageKey key,
+                                                ProductMessageStatus status) {
+  CHECK(superseded_callback_);
+  CHECK(message_key_);
+  if (key.type() <= message_key_.type()) {
+    return;
+  }
+  if (status != ProductMessageStatus::kEligible &&
+      status != ProductMessageStatus::kShowing) {
+    return;
+  }
+  superseded_callback_.Run(key, status);
+}
 
-struct ProductMessagingController::RequiredNoticeData {
-  RequiredNoticeData() = default;
-  RequiredNoticeData(RequiredNoticeData&&) = default;
-  RequiredNoticeData& operator=(RequiredNoticeData&&) = default;
-  RequiredNoticeData(RequiredNoticeShowCallback callback_,
-                     std::vector<RequiredNoticeId> show_after_,
-                     std::vector<RequiredNoticeId> blocked_by_)
+// ProductMessagingController::ProductMessageData
+
+struct ProductMessagingController::ProductMessageData {
+  ProductMessageData() = default;
+  ProductMessageData(ProductMessageData&&) = default;
+  ProductMessageData& operator=(ProductMessageData&&) = default;
+  ProductMessageData(ProductMessageReadyCallback callback_,
+                     std::vector<ProductMessageKey> show_after_,
+                     std::vector<ProductMessageKey> blocked_by_)
       : callback(std::move(callback_)),
         show_after(std::move(show_after_)),
         blocked_by(std::move(blocked_by_)) {}
-  ~RequiredNoticeData() = default;
+  ~ProductMessageData() = default;
 
-  RequiredNoticeShowCallback callback;
-  std::vector<RequiredNoticeId> show_after;
-  std::vector<RequiredNoticeId> blocked_by;
+  ProductMessageReadyCallback callback;
+  std::vector<ProductMessageKey> show_after;
+  std::vector<ProductMessageKey> blocked_by;
 };
 
 // ProductMessagingController
@@ -112,81 +141,123 @@ void ProductMessagingController::Init(
           &ProductMessagingController::OnNewSession, base::Unretained(this)));
 }
 
-bool ProductMessagingController::IsNoticeQueued(
-    RequiredNoticeId notice_id) const {
-  return pending_notices_.contains(notice_id);
+bool ProductMessagingController::IsMessageQueued(
+    ProductMessageKey message_key) const {
+  return pending_messages_.contains(message_key);
 }
 
-void ProductMessagingController::QueueRequiredNotice(
-    RequiredNoticeId notice_id,
-    RequiredNoticeShowCallback ready_to_start_callback,
-    std::initializer_list<RequiredNoticeId> always_show_after,
-    std::initializer_list<RequiredNoticeId> blocked_by) {
-  CHECK(notice_id);
+void ProductMessagingController::QueueMessage(
+    ProductMessageKey message_key,
+    ProductMessageReadyCallback ready_to_start_callback,
+    std::initializer_list<ProductMessageKey> always_show_after,
+    std::initializer_list<ProductMessageKey> blocked_by) {
+  CHECK(message_key);
   CHECK(!ready_to_start_callback.is_null());
-  CHECK(!std::ranges::contains(blocked_by, internal::kShowAfterAllNotices));
 
   // Cannot re-queue the current notice.
-  if (current_notice_ == notice_id) {
+  if (current_message_ == message_key) {
     return;
   }
 
-  const auto result = pending_notices_.emplace(
-      notice_id,
-      RequiredNoticeData(std::move(ready_to_start_callback),
+  const auto result = pending_messages_.emplace(
+      message_key,
+      ProductMessageData(std::move(ready_to_start_callback),
                          std::move(always_show_after), std::move(blocked_by)));
-  CHECK(result.second) << "Duplicate required notice ID: " << notice_id;
-  MaybeShowNextRequiredNotice();
+  CHECK(result.second) << "Duplicate message ID: " << message_key.ToString();
+  status_update_callbacks_.Notify(message_key, ProductMessageStatus::kQueued);
+  MaybeShowNextMessage();
 }
 
-void ProductMessagingController::UnqueueRequiredNotice(
-    RequiredNoticeId notice_id) {
-  pending_notices_.erase(notice_id);
+void ProductMessagingController::UnqueueMessage(ProductMessageKey message_key) {
+  pending_messages_.erase(message_key);
+}
+
+// Returns the status of `message`.
+ProductMessageStatus ProductMessagingController::GetProductMessageStatus(
+    ProductMessageKey message) const {
+  if (!message) {
+    return ProductMessageStatus::kNone;
+  }
+  if (message == current_message_) {
+    return current_message_shown_ ? ProductMessageStatus::kShowing
+                                  : ProductMessageStatus::kEligible;
+  }
+  if (IsMessageQueued(message)) {
+    return ProductMessageStatus::kQueued;
+  }
+  return ProductMessageStatus::kNone;
+}
+
+// Returns queued or showing messages. Can be filtered by priority and by
+// status.
+base::flat_map<ProductMessageKey, ProductMessageStatus>
+ProductMessagingController::GetAllMessages(
+    std::initializer_list<ProductMessageStatus> statuses_to_retrieve,
+    ProductMessageType priority_higher_than) const {
+  const base::flat_set<ProductMessageStatus> filter_statuses(
+      statuses_to_retrieve);
+  base::flat_map<ProductMessageKey, ProductMessageStatus> infos;
+  if (current_message_ && current_message_.type() > priority_higher_than) {
+    if (current_message_shown_ &&
+        filter_statuses.contains(ProductMessageStatus::kShowing)) {
+      infos.emplace(current_message_, ProductMessageStatus::kShowing);
+    }
+    if (!current_message_shown_ &&
+        filter_statuses.contains(ProductMessageStatus::kEligible)) {
+      infos.emplace(current_message_, ProductMessageStatus::kEligible);
+    }
+  }
+  if (filter_statuses.contains(ProductMessageStatus::kQueued)) {
+    for (auto& [key, data] : pending_messages_) {
+      if (key.type() > priority_higher_than) {
+        infos.emplace(key, ProductMessageStatus::kQueued);
+      }
+    }
+  }
+  return infos;
 }
 
 base::CallbackListSubscription
-ProductMessagingController::AddRequiredNoticePriorityHandleGrantedCallback(
-    StatusUpdateCallback callback) {
-  return handle_granted_callbacks_.Add(std::move(callback));
+ProductMessagingController::AddStatusUpdateCallbackForTesting(
+    ProductMessageStatusCallback callback) {
+  return status_update_callbacks_.Add(std::move(callback));
 }
 
-base::CallbackListSubscription
-ProductMessagingController::AddRequiredNoticeShownCallback(
-    StatusUpdateCallback callback) {
-  return notice_shown_callbacks_.Add(std::move(callback));
+bool ProductMessagingController::HasPendingMessagesForTesting() const {
+  return current_message_ || !pending_messages_.empty();
 }
 
-void ProductMessagingController::ReleaseHandle(RequiredNoticeId notice_id,
-                                               bool notice_shown) {
-  CHECK_EQ(current_notice_, notice_id);
-  if (notice_shown) {
+void ProductMessagingController::ReleaseHandle(ProductMessageKey message_key,
+                                               bool message_shown) {
+  CHECK_EQ(current_message_, message_key);
+  if (message_shown) {
     ProductMessagingData data = storage_service_->ReadProductMessagingData();
-    const auto insert_result = data.shown_notices.insert(notice_id.GetName());
+    const auto insert_result = data.shown_notices.insert(message_key.GetName());
     if (insert_result.second) {
       storage_service_->SaveProductMessagingData(data);
     }
   }
-  current_notice_ = RequiredNoticeId();
-  MaybeShowNextRequiredNotice();
+  current_message_ = ProductMessageKey();
+  current_message_shown_ = false;
+  MaybeShowNextMessage();
 }
 
-void ProductMessagingController::MaybeShowNextRequiredNotice() {
+void ProductMessagingController::MaybeShowNextMessage() {
   if (!ready_to_show()) {
     return;
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &ProductMessagingController::MaybeShowNextRequiredNoticeImpl,
-          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&ProductMessagingController::MaybeShowNextMessageImpl,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ProductMessagingController::PurgeBlockedNotices() {
+void ProductMessagingController::PurgeBlockedMessages() {
   ProductMessagingData stored_data =
       storage_service_->ReadProductMessagingData();
-  std::vector<RequiredNoticeId> to_purge;
-  for (const auto& [id, data] : pending_notices_) {
+  std::vector<ProductMessageKey> to_purge;
+  for (const auto& [id, data] : pending_messages_) {
     if (stored_data.shown_notices.contains(id.GetName())) {
       to_purge.push_back(id);
       continue;
@@ -199,35 +270,35 @@ void ProductMessagingController::PurgeBlockedNotices() {
     }
   }
   for (auto id : to_purge) {
-    pending_notices_.erase(id);
+    pending_messages_.erase(id);
   }
 }
 
-void ProductMessagingController::MaybeShowNextRequiredNoticeImpl() {
+void ProductMessagingController::MaybeShowNextMessageImpl() {
   if (!ready_to_show()) {
     return;
   }
 
-  PurgeBlockedNotices();
-  if (pending_notices_.empty()) {
+  PurgeBlockedMessages();
+  if (pending_messages_.empty()) {
     return;
   }
 
   // Find a notice that is not waiting for any other notices to show.
-  RequiredNoticeId to_show;
-  for (const auto& [id, data] : pending_notices_) {
+  ProductMessageKey to_show;
+  for (const auto& [id, data] : pending_messages_) {
     bool excluded = false;
     bool show_after_all = false;
     for (auto after : data.show_after) {
-      if (after == internal::kShowAfterAllNotices) {
+      if (after.type() <= ProductMessageType::kLowPriorityIph) {
         show_after_all = true;
-      } else if (pending_notices_.contains(after)) {
+      } else if (pending_messages_.contains(after)) {
         excluded = true;
         break;
       }
     }
     for (auto blocker : data.blocked_by) {
-      if (pending_notices_.contains(blocker)) {
+      if (pending_messages_.contains(blocker)) {
         excluded = true;
         break;
       }
@@ -248,34 +319,38 @@ void ProductMessagingController::MaybeShowNextRequiredNoticeImpl() {
   }
 
   // Fire the next notice.
-  RequiredNoticeShowCallback cb = std::move(pending_notices_[to_show].callback);
-  pending_notices_.erase(to_show);
-  current_notice_ = to_show;
-  std::move(cb).Run(
-      RequiredNoticePriorityHandle(to_show, weak_ptr_factory_.GetWeakPtr()));
-  handle_granted_callbacks_.Notify(to_show);
+  ProductMessageReadyCallback cb =
+      std::move(pending_messages_[to_show].callback);
+  pending_messages_.erase(to_show);
+  current_message_ = to_show;
+  current_message_shown_ = false;
+  std::move(cb).Run(base::WrapUnique(
+      new ProductMessagingHandleImpl(to_show, weak_ptr_factory_.GetWeakPtr())));
+  status_update_callbacks_.Notify(to_show, ProductMessageStatus::kEligible);
 }
 
 void ProductMessagingController::OnNewSession() {
   storage_service_->ResetProductMessagingData();
 }
 
-void ProductMessagingController::OnNoticeShown(RequiredNoticeId notice_id) {
-  if (notice_id == current_notice_) {
-    notice_shown_callbacks_.Notify(notice_id);
+void ProductMessagingController::OnMessageShown(ProductMessageKey message_key) {
+  if (message_key == current_message_) {
+    current_message_shown_ = true;
+    status_update_callbacks_.Notify(message_key,
+                                    ProductMessageStatus::kShowing);
   }
 }
 
 std::string ProductMessagingController::DumpData() const {
   std::ostringstream oss;
-  for (const auto& [id, data] : pending_notices_) {
-    oss << "\n{ id: " << id << " show_after: { ";
+  for (const auto& [key, data] : pending_messages_) {
+    oss << "\n{ key: " << key.ToString() << " show_after: { ";
     for (const auto& after : data.show_after) {
-      oss << after << ", ";
+      oss << after.ToString() << ", ";
     }
     oss << "} blocked_by: { ";
     for (const auto& blocker : data.blocked_by) {
-      oss << blocker << ", ";
+      oss << blocker.ToString() << ", ";
     }
     oss << "} }";
   }
