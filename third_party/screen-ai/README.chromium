@@ -1,7 +1,7 @@
 Name: ScreenAI Library
 Short Name: screen-ai
 URL: https://source.corp.google.com/piper///depot/google3/chrome/accessibility/machine_intelligence/chrome_screen_ai
-Version: 148.07
+Version: 148.09
 Update Mechanism: Manual
 License: Apache-2.0,Apache-with-LLVM-Exception,BSD-2-Clause,BSD-3-Clause,BSD-3-Clause-Attribution,BSD-3-Clause-Open-MPI,BSD-4-Clause,BSD-4-Clause-UC,BSD-4.3RENO,BSD-Source-Code,BSL-1.0,Beerware,CC-BY-3.0,CC-BY-4.0,CC0-1.0,GPL-2.0,GPL-3.0-with-autoconf-exception,ICU,IJG,Libpng,LicenseRef-BLAS,LicenseRef-CERN,LicenseRef-Caffe,LicenseRef-FFT2D,LicenseRef-OpenGLUT,LicenseRef-PngSuite,LicenseRef-Public-Domain-Gutenberg,LicenseRef-Punycode,LicenseRef-WebM-Project-Patent,LicenseRef-base64-cpp,MIT,MIT-Khronos-old,MPL-2.0,Minpack,NAIST-2003,NCSA,SGI-B-2.0,SunPro,Unicode-3.0,Unicode-DFS-2015,Unicode-TOU,X11,Zlib,bcrypt-Solar-Designer,dtoa,libpng-2.0,libtiff
 
