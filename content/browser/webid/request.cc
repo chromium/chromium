@@ -1,7 +1,7 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "content/browser/webid/request_service.h"
+#include "content/browser/webid/request.h"
 
 #include <algorithm>
 #include <random>
@@ -147,20 +147,19 @@ bool CanBypassPermissionStatusCheck(
 
 }  // namespace
 
-RequestService::FetchData::FetchData() = default;
-RequestService::FetchData::~FetchData() = default;
+Request::FetchData::FetchData() = default;
+Request::FetchData::~FetchData() = default;
 
-RequestService::AutoReauthnInfo::AutoReauthnInfo() = default;
-RequestService::AutoReauthnInfo::~AutoReauthnInfo() = default;
-RequestService::AutoReauthnInfo::AutoReauthnInfo(const AutoReauthnInfo&) =
-    default;
-RequestService::AutoReauthnInfo& RequestService::AutoReauthnInfo::operator=(
+Request::AutoReauthnInfo::AutoReauthnInfo() = default;
+Request::AutoReauthnInfo::~AutoReauthnInfo() = default;
+Request::AutoReauthnInfo::AutoReauthnInfo(const AutoReauthnInfo&) = default;
+Request::AutoReauthnInfo& Request::AutoReauthnInfo::operator=(
     const AutoReauthnInfo&) = default;
 
-DOCUMENT_USER_DATA_KEY_IMPL(RequestService);
+DOCUMENT_USER_DATA_KEY_IMPL(Request);
 
-RequestService::RequestService(RenderFrameHost* rfh)
-    : RequestService(
+Request::Request(RenderFrameHost* rfh)
+    : Request(
           rfh,
           rfh->GetBrowserContext()->GetFederatedIdentityApiPermissionContext(),
           rfh->GetBrowserContext()
@@ -169,7 +168,7 @@ RequestService::RequestService(RenderFrameHost* rfh)
           IdentityRegistry::FromWebContents(
               WebContents::FromRenderFrameHost(rfh))) {}
 
-RequestService::RequestService(
+Request::Request(
     RenderFrameHost* rfh,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
     FederatedIdentityAutoReauthnPermissionContextDelegate*
@@ -187,7 +186,7 @@ RequestService::RequestService(
   CHECK(permission_delegate_);
 }
 
-RequestService::~RequestService() {
+Request::~Request() {
   // Ensures key data members are destructed in proper order and resolves any
   // pending promise.
   if (auth_request_token_callback_) {
@@ -207,7 +206,7 @@ RequestService::~RequestService() {
   // naturally.
   disconnect_request_.reset();
 
-  // Since RequestService is a subclass of DocumentUserData, it only lives as
+  // Since Request is a subclass of DocumentUserData, it only lives as
   // long as the current document.
   if (num_requests_ > 0) {
     Metrics::RecordNumRequestsPerDocument(
@@ -215,7 +214,7 @@ RequestService::~RequestService() {
   }
 }
 
-RequestService& RequestService::CreateForTesting(
+Request& Request::CreateForTesting(
     RenderFrameHost& host,
     FederatedIdentityApiPermissionContextDelegate* api_permission_context,
     FederatedIdentityAutoReauthnPermissionContextDelegate*
@@ -223,25 +222,25 @@ RequestService& RequestService::CreateForTesting(
     FederatedIdentityPermissionContextDelegate* permission_context,
     IdentityRegistry* identity_registry,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
-  RequestService::CreateForCurrentDocument(
-      &host, api_permission_context, auto_reauthn_permission_context,
-      permission_context, identity_registry);
-  RequestService* service = RequestService::GetForCurrentDocument(&host);
+  Request::CreateForCurrentDocument(&host, api_permission_context,
+                                    auto_reauthn_permission_context,
+                                    permission_context, identity_registry);
+  Request* service = Request::GetForCurrentDocument(&host);
   service->BindReceiver(std::move(receiver));
   return *service;
 }
 
-void RequestService::BindReceiver(
+void Request::BindReceiver(
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>
         pending_receiver) {
   receivers_.Add(this, std::move(pending_receiver));
 }
 
-void RequestService::ReportBadMessage(const char* message) {
+void Request::ReportBadMessage(const char* message) {
   receivers_.ReportBadMessage(message);
 }
 
-void RequestService::ResetAndDeleteThisForTesting() {
+void Request::ResetAndDeleteThisForTesting() {
   // Resetting the receivers_ before we destruct the objects means that
   // callbacks won't be called. This matches DocumentService::ResetAndDeleteThis
   // and is what our tests expect.
@@ -250,7 +249,7 @@ void RequestService::ResetAndDeleteThisForTesting() {
 }
 
 std::vector<IdentityProviderRequestOptionsPtr>
-RequestService::MaybeAddRegisteredProviders(
+Request::MaybeAddRegisteredProviders(
     std::vector<IdentityProviderRequestOptionsPtr>& providers) {
   std::vector<IdentityProviderRequestOptionsPtr> result;
 
@@ -286,7 +285,7 @@ RequestService::MaybeAddRegisteredProviders(
   return result;
 }
 
-void RequestService::RequestToken(
+void Request::RequestToken(
     std::vector<IdentityProviderGetParametersPtr> idp_get_params_ptrs,
     MediationRequirement requirement,
     RequestTokenCallback callback) {
@@ -295,7 +294,7 @@ void RequestService::RequestToken(
                /*navigation_handle=*/nullptr, std::move(callback));
 }
 
-void RequestService::RequestToken(
+void Request::RequestToken(
     std::vector<IdentityProviderGetParametersPtr> idp_get_params_ptrs,
     MediationRequirement requirement,
     NavigationHandle* navigation_handle,
@@ -583,7 +582,7 @@ void RequestService::RequestToken(
             CreateRpData(/*client_metadata_received=*/false),
             FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
             get_info_it->second.rp_context, rp_mode_,
-            base::BindOnce(&RequestService::OnDialogDismissed,
+            base::BindOnce(&Request::OnDialogDismissed,
                            weak_ptr_factory_.GetWeakPtr()))) {
       return;
     }
@@ -594,16 +593,15 @@ void RequestService::RequestToken(
   CHECK(!unique_idps.empty());
   if (rp_mode_ == RpMode::kPassive && idp_order_.size() == 1u) {
     request_dialog_controller_->GetPassiveDialogVolume(
-        base::BindOnce(&RequestService::OnGetPassiveDialogVolume,
+        base::BindOnce(&Request::OnGetPassiveDialogVolume,
                        weak_ptr_factory_.GetWeakPtr(), std::move(unique_idps)));
     return;
   }
   FetchEndpointsForIdps(std::move(unique_idps));
 }
 
-void RequestService::RequestUserInfo(
-    blink::mojom::IdentityProviderConfigPtr provider,
-    RequestUserInfoCallback callback) {
+void Request::RequestUserInfo(blink::mojom::IdentityProviderConfigPtr provider,
+                              RequestUserInfoCallback callback) {
   // Enforce identity-credentials-get Permissions Policy browser-side.
   // The renderer checks this, but a compromised renderer can bypass it.
   if (!render_frame_host().IsFeatureEnabled(
@@ -628,11 +626,11 @@ void RequestService::RequestUserInfo(
   user_info_requests_.insert(std::move(user_info_request));
 
   user_info_request_ptr->SetCallbackAndStart(base::BindOnce(
-      &RequestService::CompleteUserInfoRequest, weak_ptr_factory_.GetWeakPtr(),
+      &Request::CompleteUserInfoRequest, weak_ptr_factory_.GetWeakPtr(),
       user_info_request_ptr, std::move(callback)));
 }
 
-void RequestService::CancelTokenRequest() {
+void Request::CancelTokenRequest() {
   if (!auth_request_token_callback_) {
     // This can happen if the renderer requested an abort() after the browser
     // invoked the callback but before the renderer received the callback.
@@ -647,10 +645,9 @@ void RequestService::CancelTokenRequest() {
                            /*should_delay_callback=*/false);
 }
 
-void RequestService::ResolveTokenRequest(
-    const std::optional<std::string>& account_id,
-    blink::mojom::ResolveTokenParamsPtr params,
-    ResolveTokenRequestCallback callback) {
+void Request::ResolveTokenRequest(const std::optional<std::string>& account_id,
+                                  blink::mojom::ResolveTokenParamsPtr params,
+                                  ResolveTokenRequestCallback callback) {
   if (params->is_redirect_to()) {
     const blink::mojom::RedirectParamsPtr& redirect_to =
         params->get_redirect_to();
@@ -671,7 +668,7 @@ void RequestService::ResolveTokenRequest(
   std::move(callback).Run(accepted);
 }
 
-void RequestService::SetIdpSigninStatus(
+void Request::SetIdpSigninStatus(
     const url::Origin& idp_origin,
     blink::mojom::IdpSigninStatus status,
     const std::optional<blink::common::webid::LoginStatusOptions>& options,
@@ -718,8 +715,7 @@ void RequestService::SetIdpSigninStatus(
   }
 }
 
-void RequestService::RegisterIdP(const GURL& idp,
-                                 RegisterIdPCallback callback) {
+void Request::RegisterIdP(const GURL& idp, RegisterIdPCallback callback) {
   if (!IsIdPRegistrationEnabled()) {
     std::move(callback).Run(RegisterIdpStatus::kErrorFeatureDisabled);
     return;
@@ -737,11 +733,11 @@ void RequestService::RegisterIdP(const GURL& idp,
   fedcm_idp_registration_handler_ = std::make_unique<IdpRegistrationHandler>(
       render_frame_host(), network_manager_.get(), idp);
   fedcm_idp_registration_handler_->FetchConfig(
-      base::BindOnce(&RequestService::OnIdpRegistrationConfigFetched,
+      base::BindOnce(&Request::OnIdpRegistrationConfigFetched,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback), idp));
 }
 
-void RequestService::OnIdpRegistrationConfigFetched(
+void Request::OnIdpRegistrationConfigFetched(
     RegisterIdPCallback callback,
     const GURL& idp,
     std::vector<ConfigFetcher::FetchResult> fetch_results) {
@@ -756,8 +752,7 @@ void RequestService::OnIdpRegistrationConfigFetched(
   std::move(callback).Run(RegisterIdpStatus::kSuccess);
 }
 
-void RequestService::UnregisterIdP(const GURL& idp,
-                                   UnregisterIdPCallback callback) {
+void Request::UnregisterIdP(const GURL& idp, UnregisterIdPCallback callback) {
   if (!IsIdPRegistrationEnabled()) {
     std::move(callback).Run(false);
     return;
@@ -770,9 +765,8 @@ void RequestService::UnregisterIdP(const GURL& idp,
   std::move(callback).Run(true);
 }
 
-void RequestService::OnIdpSigninStatusReceived(
-    const url::Origin& idp_config_origin,
-    bool idp_signin_status) {
+void Request::OnIdpSigninStatusReceived(const url::Origin& idp_config_origin,
+                                        bool idp_signin_status) {
   if (!idp_signin_status) {
     return;
   }
@@ -787,15 +781,14 @@ void RequestService::OnIdpSigninStatusReceived(
   }
 }
 
-bool RequestService::HasPendingRequest() const {
+bool Request::HasPendingRequest() const {
   RequestPageData* page_data = GetPageData(render_frame_host().GetPage());
   bool has_pending_request = page_data->PendingWebIdentityRequest() != nullptr;
   DCHECK(has_pending_request || !auth_request_token_callback_);
   return has_pending_request;
 }
 
-void RequestService::FetchEndpointsForIdps(
-    const std::set<GURL>& idp_config_urls) {
+void Request::FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls) {
   int icon_ideal_size =
       request_dialog_controller_->GetBrandIconIdealSize(rp_mode_);
   int icon_minimum_size =
@@ -818,19 +811,18 @@ void RequestService::FetchEndpointsForIdps(
       permission_delegate_,
       AccountsFetcher::FedCmFetchingParams(
           rp_mode_, icon_ideal_size, icon_minimum_size, mediation_requirement_),
-      base::BindOnce(&RequestService::OnAccountsResultsReceived,
+      base::BindOnce(&Request::OnAccountsResultsReceived,
                      weak_ptr_factory_.GetWeakPtr()));
   fedcm_accounts_fetcher_->FetchEndpointsForIdps(
       idps, token_request_get_infos_, fedcm_metrics_.get(),
       GetEmbeddingOrigin(),
-      base::BindRepeating(&RequestService::FilterAccounts,
+      base::BindRepeating(&Request::FilterAccounts,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void RequestService::FilterAccounts(
-    const GURL& idp_config_url,
-    const GURL& idp_login_url,
-    std::vector<IdentityRequestAccountPtr>& accounts) {
+void Request::FilterAccounts(const GURL& idp_config_url,
+                             const GURL& idp_login_url,
+                             std::vector<IdentityRequestAccountPtr>& accounts) {
   auto filter = [](const IdentityRequestAccountPtr& account) {
     return account->is_filtered_out;
   };
@@ -855,7 +847,7 @@ void RequestService::FilterAccounts(
   }
 }
 
-void RequestService::OnAccountsResultsReceived(
+void Request::OnAccountsResultsReceived(
     base::TimeTicks well_known_and_config_fetched_time,
     std::vector<AccountsFetcher::Result> results) {
   SetWellKnownAndConfigFetchedTime(well_known_and_config_fetched_time);
@@ -900,11 +892,10 @@ void RequestService::OnAccountsResultsReceived(
   }
 }
 
-void RequestService::CompleteDisconnectRequest(
-    DisconnectCallback callback,
-    blink::mojom::DisconnectStatus status) {
+void Request::CompleteDisconnectRequest(DisconnectCallback callback,
+                                        blink::mojom::DisconnectStatus status) {
   // `disconnect_request_` may be null here if the completion is invoked from
-  // the RequestService destructor, which destroys
+  // the Request destructor, which destroys
   // `disconnect_request_`. The DisconnectRequest destructor would
   // trigger the callback.
   if (!disconnect_request_ &&
@@ -915,7 +906,7 @@ void RequestService::CompleteDisconnectRequest(
   disconnect_request_.reset();
 }
 
-bool RequestService::CanShowContinueOnPopup() const {
+bool Request::CanShowContinueOnPopup() const {
   if (mediation_requirement_ == MediationRequirement::kConditional) {
     // Because conditional mediation always requires a user gesture to sign in,
     // we can always allow the continuation popup.
@@ -939,7 +930,7 @@ bool RequestService::CanShowContinueOnPopup() const {
   return had_transient_user_activation_;
 }
 
-UseOtherAccountResult RequestService::ComputeUseOtherAccountResult(
+UseOtherAccountResult Request::ComputeUseOtherAccountResult(
     blink::mojom::FederatedAuthRequestResult result,
     const std::optional<GURL>& selected_idp_config_url) {
   if (result != FederatedAuthRequestResult::kSuccess) {
@@ -954,7 +945,7 @@ UseOtherAccountResult RequestService::ComputeUseOtherAccountResult(
   return UseOtherAccountResult::kUserSignsInWithExistingAccount;
 }
 
-void RequestService::OnFetchDataForIdpSucceeded(
+void Request::OnFetchDataForIdpSucceeded(
     IdpNetworkRequestManager::AccountsResponse accounts,
     std::unique_ptr<IdentityProviderInfo> idp_info) {
   fetch_data_.did_succeed_for_at_least_one_idp = true;
@@ -979,19 +970,19 @@ void RequestService::OnFetchDataForIdpSucceeded(
   MaybeShowAccountsDialog();
 }
 
-void RequestService::SetIdpLoginInfo(const GURL& idp_login_url,
-                                     const std::string& login_hint,
-                                     const std::string& domain_hint) {
+void Request::SetIdpLoginInfo(const GURL& idp_login_url,
+                              const std::string& login_hint,
+                              const std::string& domain_hint) {
   idp_login_infos_[idp_login_url] = {login_hint, domain_hint};
 }
 
-void RequestService::SetWellKnownAndConfigFetchedTime(base::TimeTicks time) {
+void Request::SetWellKnownAndConfigFetchedTime(base::TimeTicks time) {
   well_known_and_config_fetched_time_ = time;
   fedcm_metrics_->RecordWellKnownAndConfigFetchTime(
       well_known_and_config_fetched_time_ - start_time_);
 }
 
-void RequestService::OnFetchDataForIdpFailed(
+void Request::OnFetchDataForIdpFailed(
     const std::unique_ptr<IdentityProviderInfo> idp_info,
     blink::mojom::FederatedAuthRequestResult result,
     std::optional<RequestIdTokenStatus> token_status,
@@ -1015,7 +1006,7 @@ void RequestService::OnFetchDataForIdpFailed(
 }
 
 const std::optional<std::vector<IdentityRequestAccountPtr>>
-RequestService::GetAutofillSuggestions() const {
+Request::GetAutofillSuggestions() const {
   // Requires conditional FedCM to be enabled.
   if (!IsAutofillEnabled()) {
     return std::nullopt;
@@ -1034,7 +1025,7 @@ RequestService::GetAutofillSuggestions() const {
   return GetAccounts();
 }
 
-void RequestService::AssembleAndSortAccounts() {
+void Request::AssembleAndSortAccounts() {
   idp_data_for_display_.clear();
   filtered_accounts_.clear();
 
@@ -1105,7 +1096,7 @@ void RequestService::AssembleAndSortAccounts() {
   }
 }
 
-RequestService::AutoReauthnInfo RequestService::CheckAutoReauthnEligibility() {
+Request::AutoReauthnInfo Request::CheckAutoReauthnEligibility() {
   AutoReauthnInfo result;
 
   // TODO(crbug.com/40246099): Handle auto_reauthn_ for multi IDP.
@@ -1166,7 +1157,7 @@ RequestService::AutoReauthnInfo RequestService::CheckAutoReauthnEligibility() {
   return result;
 }
 
-void RequestService::MaybeShowAccountsDialog() {
+void Request::MaybeShowAccountsDialog() {
   if (!fetch_data_.pending_idps.empty()) {
     return;
   }
@@ -1291,7 +1282,7 @@ void RequestService::MaybeShowAccountsDialog() {
     if (!request_dialog_controller_->ShowVerifyingDialog(
             CreateRpData(/*client_metadata_received=*/true), auto_reauthn.idp,
             accounts_[0], SignInMode::kAuto, rp_mode_,
-            base::BindOnce(&RequestService::OnAccountsDisplayed,
+            base::BindOnce(&Request::OnAccountsDisplayed,
                            weak_ptr_factory_.GetWeakPtr()))) {
       return;
     }
@@ -1299,14 +1290,14 @@ void RequestService::MaybeShowAccountsDialog() {
     if (!request_dialog_controller_->ShowAccountsDialog(
             CreateRpData(/*client_metadata_received=*/true),
             idp_data_for_display_, accounts_, filtered_accounts_, rp_mode_,
-            base::BindOnce(&RequestService::OnAccountSelected,
+            base::BindOnce(&Request::OnAccountSelected,
                            weak_ptr_factory_.GetWeakPtr()),
-            base::BindRepeating(&RequestService::LoginToIdP,
+            base::BindRepeating(&Request::LoginToIdP,
                                 weak_ptr_factory_.GetWeakPtr(),
                                 /*can_append_hints=*/false),
-            base::BindOnce(&RequestService::OnDialogDismissed,
+            base::BindOnce(&Request::OnDialogDismissed,
                            weak_ptr_factory_.GetWeakPtr()),
-            base::BindOnce(&RequestService::OnAccountsDisplayed,
+            base::BindOnce(&Request::OnAccountsDisplayed,
                            weak_ptr_factory_.GetWeakPtr()))) {
       return;
     }
@@ -1314,15 +1305,14 @@ void RequestService::MaybeShowAccountsDialog() {
   AfterAccountsDialogShown(did_succeed_for_at_least_one_idp);
 }
 
-void RequestService::OnGetPassiveDialogVolume(
+void Request::OnGetPassiveDialogVolume(
     const std::set<GURL>& unique_idps,
     IdentityRequestDialogController::PassiveDialogVolume dialog_volume) {
   passive_dialog_volume_ = dialog_volume;
   FetchEndpointsForIdps(std::move(unique_idps));
 }
 
-void RequestService::AfterAccountsDialogShown(
-    bool did_succeed_for_at_least_one_idp) {
+void Request::AfterAccountsDialogShown(bool did_succeed_for_at_least_one_idp) {
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 
   if (identity_selection_type_ == kExplicit &&
@@ -1343,7 +1333,7 @@ void RequestService::AfterAccountsDialogShown(
       "/");
 }
 
-void RequestService::NotifyAutofillSuggestionAccepted(
+void Request::NotifyAutofillSuggestionAccepted(
     const GURL& idp,
     const std::string& account_id,
     bool show_modal,
@@ -1392,7 +1382,7 @@ void RequestService::NotifyAutofillSuggestionAccepted(
           CreateRpData(/*client_metadata_received=*/true),
           FormatOriginForDisplay(url::Origin::Create(idp)),
           get_info_it->second.rp_context, blink::mojom::RpMode::kActive,
-          base::BindOnce(&RequestService::OnDialogDismissed,
+          base::BindOnce(&Request::OnDialogDismissed,
                          weak_ptr_factory_.GetWeakPtr()))) {
     return;
   }
@@ -1416,26 +1406,25 @@ void RequestService::NotifyAutofillSuggestionAccepted(
           CreateRpData(/*client_metadata_received=*/true),
           idp_data_for_display_, selected, filtered_accounts_,
           blink::mojom::RpMode::kActive,
-          base::BindOnce(&RequestService::OnAccountSelected,
+          base::BindOnce(&Request::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr()),
-          base::BindRepeating(&RequestService::LoginToIdP,
+          base::BindRepeating(&Request::LoginToIdP,
                               weak_ptr_factory_.GetWeakPtr(),
                               /*can_append_hints=*/false),
-          base::BindOnce(&RequestService::OnDialogDismissed,
+          base::BindOnce(&Request::OnDialogDismissed,
                          weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&RequestService::OnAccountsDisplayed,
+          base::BindOnce(&Request::OnAccountsDisplayed,
                          weak_ptr_factory_.GetWeakPtr()))) {
     return;
   }
   // TODO(crbug.com/435216589): Should we call AfterAccountsDialogShown here?
 }
 
-void RequestService::OnAccountsDisplayed() {
+void Request::OnAccountsDisplayed() {
   accounts_dialog_display_time_ = base::TimeTicks::Now();
 }
 
-void RequestService::OnIdpMismatch(
-    std::unique_ptr<IdentityProviderInfo> idp_info) {
+void Request::OnIdpMismatch(std::unique_ptr<IdentityProviderInfo> idp_info) {
   const GURL& idp_config_url = idp_info->provider->config->config_url;
 
   idp_infos_[idp_config_url] = std::move(idp_info);
@@ -1470,7 +1459,7 @@ void RequestService::OnIdpMismatch(
   ShowSingleIdpFailureDialog();
 }
 
-void RequestService::ShowSingleIdpFailureDialog() {
+void Request::ShowSingleIdpFailureDialog() {
   CHECK_EQ(idp_infos_.size(), 1u);
   IdentityProviderInfo* idp_info = idp_infos_.begin()->second.get();
   url::Origin idp_origin =
@@ -1503,9 +1492,9 @@ void RequestService::ShowSingleIdpFailureDialog() {
           CreateRpData(/*client_metadata_received=*/true),
           FormatOriginForDisplay(idp_origin), idp_info->rp_context, rp_mode_,
           idp_info->metadata, filtered_accounts_,
-          base::BindOnce(&RequestService::OnDismissFailureDialog,
+          base::BindOnce(&Request::OnDismissFailureDialog,
                          weak_ptr_factory_.GetWeakPtr()),
-          base::BindRepeating(&RequestService::LoginToIdP,
+          base::BindRepeating(&Request::LoginToIdP,
                               weak_ptr_factory_.GetWeakPtr(),
                               /*can_append_hints=*/true))) {
     return;
@@ -1519,7 +1508,7 @@ void RequestService::ShowSingleIdpFailureDialog() {
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 }
 
-void RequestService::CloseModalDialogView() {
+void Request::CloseModalDialogView() {
 #if BUILDFLAG(IS_ANDROID)
   SetupIdentityRegistryFromPopup();
 #endif
@@ -1529,9 +1518,9 @@ void RequestService::CloseModalDialogView() {
   }
 }
 
-void RequestService::OnAccountSelected(const GURL& idp_config_url,
-                                       const std::string& account_id,
-                                       bool is_sign_in) {
+void Request::OnAccountSelected(const GURL& idp_config_url,
+                                const std::string& account_id,
+                                bool is_sign_in) {
   DCHECK(!account_id.empty());
   const IdentityProviderInfo& idp_info = *idp_infos_[idp_config_url];
 
@@ -1582,12 +1571,12 @@ void RequestService::OnAccountSelected(const GURL& idp_config_url,
       idp_config_url, select_account_time_ - accounts_dialog_display_time_);
 
   IdpNetworkRequestManager::ContinueOnCallback continue_on = base::BindOnce(
-      &RequestService::OnContinueOnResponseReceived,
-      weak_ptr_factory_.GetWeakPtr(), idp_info.provider->Clone());
+      &Request::OnContinueOnResponseReceived, weak_ptr_factory_.GetWeakPtr(),
+      idp_info.provider->Clone());
 
   IdpNetworkRequestManager::RedirectToCallback redirect_to;
   if (can_accept_redirect_to_) {
-    redirect_to = base::BindOnce(&RequestService::OnRedirectToResponseReceived,
+    redirect_to = base::BindOnce(&Request::OnRedirectToResponseReceived,
                                  weak_ptr_factory_.GetWeakPtr(),
                                  idp_info.provider->Clone());
   }
@@ -1630,16 +1619,16 @@ void RequestService::OnAccountSelected(const GURL& idp_config_url,
 
   network_manager_->SendTokenRequest(
       endpoint, account_id_, query, idp_blindness,
-      base::BindOnce(&RequestService::OnTokenResponseReceived,
+      base::BindOnce(&Request::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info.provider->Clone()),
       std::move(continue_on), std::move(redirect_to),
-      base::BindOnce(&RequestService::RecordErrorMetrics,
+      base::BindOnce(&Request::RecordErrorMetrics,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info.provider->Clone()));
 }
 
-void RequestService::OnDismissFailureDialog(
+void Request::OnDismissFailureDialog(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
   // Clicking the close active and swiping away the account chooser are more
   // intentional than other ways of dismissing the account chooser such as
@@ -1666,7 +1655,7 @@ void RequestService::OnDismissFailureDialog(
       /*should_delay_callback=*/false);
 }
 
-void RequestService::OnDismissErrorDialog(
+void Request::OnDismissErrorDialog(
     const GURL& idp_config_url,
     FetchStatus status,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
@@ -1679,7 +1668,7 @@ void RequestService::OnDismissErrorDialog(
                        token_error_, /*should_delay_callback=*/false);
 }
 
-void RequestService::OnDialogDismissed(
+void Request::OnDialogDismissed(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
   // If the request has already completed, ignore any subsequent dismissals.
   if (!auth_request_token_callback_) {
@@ -1744,9 +1733,9 @@ void RequestService::OnDialogDismissed(
                            /*should_delay_callback=*/false);
 }
 
-void RequestService::ShowModalDialog(DialogType dialog_type,
-                                     const GURL& idp_config_url,
-                                     const GURL& url_to_show) {
+void Request::ShowModalDialog(DialogType dialog_type,
+                              const GURL& idp_config_url,
+                              const GURL& url_to_show) {
   // Reset dialog type, since we are typically not showing a FedCM dialog while
   // the popup window is open. When using the active flow the dialog may
   // still be up in some cases, but we do not expect that browser automation
@@ -1762,7 +1751,7 @@ void RequestService::ShowModalDialog(DialogType dialog_type,
   config_url_ = idp_config_url;
   UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Popup.DialogType", dialog_type_);
 
-  auto create_registry_async = [](base::WeakPtr<RequestService> weak_this,
+  auto create_registry_async = [](base::WeakPtr<Request> weak_this,
                                   const GURL& idp_config_url,
                                   WebContents* web_contents) {
     if (web_contents && weak_this) {
@@ -1773,7 +1762,7 @@ void RequestService::ShowModalDialog(DialogType dialog_type,
 
   WebContents* web_contents = request_dialog_controller_->ShowModalDialog(
       url_to_show, rp_mode_,
-      base::BindOnce(&RequestService::OnDialogDismissed,
+      base::BindOnce(&Request::OnDialogDismissed,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(create_registry_async, weak_ptr_factory_.GetWeakPtr(),
                      idp_config_url));
@@ -1799,7 +1788,7 @@ void RequestService::ShowModalDialog(DialogType dialog_type,
   }
 }
 
-void RequestService::OnContinueOnResponseReceived(
+void Request::OnContinueOnResponseReceived(
     IdentityProviderRequestOptionsPtr idp,
     FetchStatus status,
     const GURL& continue_on) {
@@ -1844,7 +1833,7 @@ void RequestService::OnContinueOnResponseReceived(
                   continue_on);
 }
 
-void RequestService::OnRedirectToResponseReceived(
+void Request::OnRedirectToResponseReceived(
     IdentityProviderRequestOptionsPtr idp,
     FetchStatus status,
     blink::mojom::RedirectParams::Tag method,
@@ -1853,13 +1842,13 @@ void RequestService::OnRedirectToResponseReceived(
   RedirectTo(idp->config->config_url, method, redirect_to, request_body);
 }
 
-void RequestService::RedirectTo(const GURL& idp_config_url,
-                                blink::mojom::RedirectParams::Tag method,
-                                const GURL& redirect_to,
-                                const std::string& request_body) {
+void Request::RedirectTo(const GURL& idp_config_url,
+                         blink::mojom::RedirectParams::Tag method,
+                         const GURL& redirect_to,
+                         const std::string& request_body) {
   // Navigate the top-level frame to the URL specified by the IdP.
   //
-  // This is done here rather than in the callers of the RequestService because
+  // This is done here rather than in the callers of the Request because
   // that allows us to have a consistent experience regardless of how the token
   // was requested (e.g. via an interception or via the renderer process call).
   if (!can_accept_redirect_to_ || !redirect_to.SchemeIsHTTPOrHTTPS()) {
@@ -1921,9 +1910,9 @@ void RequestService::RedirectTo(const GURL& idp_config_url,
                   /*should_delay_callback=*/false);
 }
 
-void RequestService::ShowErrorDialog(const GURL& idp_config_url,
-                                     FetchStatus status,
-                                     std::optional<TokenError> token_error) {
+void Request::ShowErrorDialog(const GURL& idp_config_url,
+                              FetchStatus status,
+                              std::optional<TokenError> token_error) {
   CHECK(idp_infos_.find(idp_config_url) != idp_infos_.end());
 
   dialog_type_ = DialogType::kError;
@@ -1937,21 +1926,20 @@ void RequestService::ShowErrorDialog(const GURL& idp_config_url,
           FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
           idp_infos_[idp_config_url]->rp_context, rp_mode_,
           idp_infos_[idp_config_url]->metadata, token_error,
-          base::BindOnce(&RequestService::OnDismissErrorDialog,
+          base::BindOnce(&Request::OnDismissErrorDialog,
                          weak_ptr_factory_.GetWeakPtr(), idp_config_url,
                          status),
           token_error && !token_error->url.is_empty()
-              ? base::BindOnce(&RequestService::ShowModalDialog,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               DialogType::kErrorUrlPopup, config_url_,
-                               token_error->url)
+              ? base::BindOnce(
+                    &Request::ShowModalDialog, weak_ptr_factory_.GetWeakPtr(),
+                    DialogType::kErrorUrlPopup, config_url_, token_error->url)
               : base::NullCallback())) {
     return;
   }
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 }
 
-void RequestService::OnTokenResponseReceived(
+void Request::OnTokenResponseReceived(
     IdentityProviderRequestOptionsPtr idp,
     FetchStatus status,
     IdpNetworkRequestManager::TokenResult&& result) {
@@ -1965,10 +1953,10 @@ void RequestService::OnTokenResponseReceived(
       result.error || status.parse_status != ParseStatus::kSuccess;
   auto complete_request_callback =
       should_show_error_ui
-          ? base::BindOnce(&RequestService::ShowErrorDialog,
+          ? base::BindOnce(&Request::ShowErrorDialog,
                            weak_ptr_factory_.GetWeakPtr(),
                            idp->config->config_url, status, result.error)
-          : base::BindOnce(&RequestService::CompleteTokenRequest,
+          : base::BindOnce(&Request::CompleteTokenRequest,
                            weak_ptr_factory_.GetWeakPtr(),
                            idp->config->config_url, status,
                            std::move(result.token), result.error,
@@ -1995,8 +1983,8 @@ void RequestService::OnTokenResponseReceived(
       kTokenRequestDelay - fetch_time);
 }
 
-void RequestService::MarkUserAsSignedIn(const GURL& idp_config_url,
-                                        const std::string& account_id) {
+void Request::MarkUserAsSignedIn(const GURL& idp_config_url,
+                                 const std::string& account_id) {
   CHECK(!account_id_.empty());
   // Auto re-authentication can only be triggered when there's already a
   // sharing permission OR the IdP is exempted with 3PC access. Either way
@@ -2027,11 +2015,11 @@ void RequestService::MarkUserAsSignedIn(const GURL& idp_config_url,
   SetRequiresUserMediation(false, base::DoNothing());
 }
 
-void RequestService::CompleteTokenRequest(const GURL& idp_config_url,
-                                          FetchStatus status,
-                                          std::optional<base::Value> token,
-                                          std::optional<TokenError> token_error,
-                                          bool should_delay_callback) {
+void Request::CompleteTokenRequest(const GURL& idp_config_url,
+                                   FetchStatus status,
+                                   std::optional<base::Value> token,
+                                   std::optional<TokenError> token_error,
+                                   bool should_delay_callback) {
   DCHECK(!start_time_.is_null());
   constexpr char kIdAssertionUrl[] = "id assertion endpoint";
   if (status.parse_status != ParseStatus::kSuccess) {
@@ -2091,7 +2079,7 @@ void RequestService::CompleteTokenRequest(const GURL& idp_config_url,
                   /*should_delay_callback=*/false);
 }
 
-void RequestService::CompleteRequestWithError(
+void Request::CompleteRequestWithError(
     blink::mojom::FederatedAuthRequestResult result,
     std::optional<RequestIdTokenStatus> token_status,
     bool should_delay_callback) {
@@ -2100,7 +2088,7 @@ void RequestService::CompleteRequestWithError(
                   /*token_data=*/std::nullopt, should_delay_callback);
 }
 
-void RequestService::CompleteRequest(
+void Request::CompleteRequest(
     blink::mojom::FederatedAuthRequestResult result,
     std::optional<RequestIdTokenStatus> token_status,
     std::optional<TokenError> token_error,
@@ -2142,7 +2130,7 @@ void RequestService::CompleteRequest(
                         perfetto_track_, "delay", delay);
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&RequestService::CompleteRequestInternal,
+        base::BindOnce(&Request::CompleteRequestInternal,
                        weak_ptr_factory_.GetWeakPtr(),
                        FederatedAuthRequestResult::kError,
                        /*token_error=*/std::nullopt,
@@ -2152,7 +2140,7 @@ void RequestService::CompleteRequest(
   }
 }
 
-void RequestService::RecordMetricsAndConsoleError(
+void Request::RecordMetricsAndConsoleError(
     blink::mojom::FederatedAuthRequestResult result,
     std::optional<RequestIdTokenStatus> token_status,
     const std::optional<GURL>& selected_idp_config_url) {
@@ -2243,7 +2231,7 @@ void RequestService::RecordMetricsAndConsoleError(
   }
 }
 
-void RequestService::CompleteRequestInternal(
+void Request::CompleteRequestInternal(
     blink::mojom::FederatedAuthRequestResult result,
     std::optional<TokenError> token_error,
     const std::optional<GURL>& selected_idp_config_url,
@@ -2272,7 +2260,7 @@ void RequestService::CompleteRequestInternal(
   TRACE_EVENT_END("content.fedcm", perfetto_track_);
 }
 
-void RequestService::CleanUp() {
+void Request::CleanUp() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   permission_delegate_->RemoveIdpSigninStatusObserver(this);
@@ -2318,7 +2306,7 @@ void RequestService::CleanUp() {
   complete_request_delayed_ = false;
 }
 
-void RequestService::AddDevToolsIssue(FederatedAuthRequestResult result) {
+void Request::AddDevToolsIssue(FederatedAuthRequestResult result) {
   DCHECK_NE(result, FederatedAuthRequestResult::kSuccess);
 
   // It would be possible to add this inspector issue on the renderer, which
@@ -2339,17 +2327,17 @@ void RequestService::AddDevToolsIssue(FederatedAuthRequestResult result) {
           std::move(details)));
 }
 
-void RequestService::AddConsoleErrorMessage(FederatedAuthRequestResult result) {
+void Request::AddConsoleErrorMessage(FederatedAuthRequestResult result) {
   render_frame_host().AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError,
       GetConsoleErrorMessageFromResult(result));
 }
 
-url::Origin RequestService::GetEmbeddingOrigin() const {
+url::Origin Request::GetEmbeddingOrigin() const {
   return render_frame_host().GetMainFrame()->GetLastCommittedOrigin();
 }
 
-void RequestService::CompleteUserInfoRequest(
+void Request::CompleteUserInfoRequest(
     UserInfoRequest* request,
     RequestUserInfoCallback callback,
     blink::mojom::RequestUserInfoStatus status,
@@ -2360,7 +2348,7 @@ void RequestService::CompleteUserInfoRequest(
                      return ptr.get() == request;
                    });
   // The request may not be found if the completion is invoked from
-  // RequestService destructor. The destructor clears
+  // Request destructor. The destructor clears
   // `user_info_requests_`, which destroys the FederatedAuthUserInfoRequests it
   // contains. The FederatedAuthUserInfoRequest destructor invokes this
   // callback.
@@ -2374,8 +2362,7 @@ void RequestService::CompleteUserInfoRequest(
   }
 }
 
-std::unique_ptr<IdpNetworkRequestManager>
-RequestService::CreateNetworkManager() {
+std::unique_ptr<IdpNetworkRequestManager> Request::CreateNetworkManager() {
   if (mock_network_manager_) {
     return std::move(mock_network_manager_);
   }
@@ -2385,7 +2372,7 @@ RequestService::CreateNetworkManager() {
 }
 
 std::unique_ptr<IdentityRequestDialogController>
-RequestService::CreateDialogController() {
+Request::CreateDialogController() {
   if (mock_dialog_controller_) {
     return std::move(mock_dialog_controller_);
   }
@@ -2407,17 +2394,17 @@ RequestService::CreateDialogController() {
       web_contents);
 }
 
-void RequestService::SetNetworkManagerForTests(
+void Request::SetNetworkManagerForTests(
     std::unique_ptr<IdpNetworkRequestManager> manager) {
   mock_network_manager_ = std::move(manager);
 }
 
-void RequestService::SetDialogControllerForTests(
+void Request::SetDialogControllerForTests(
     std::unique_ptr<IdentityRequestDialogController> controller) {
   mock_dialog_controller_ = std::move(controller);
 }
 
-void RequestService::OnClose() {
+void Request::OnClose() {
   CHECK(request_dialog_controller_);
   request_dialog_controller_->CloseModalDialog();
 
@@ -2448,9 +2435,9 @@ void RequestService::OnClose() {
   }
 }
 
-bool RequestService::OnResolve(GURL idp_config_url,
-                               const std::optional<std::string>& account_id,
-                               blink::mojom::ResolveTokenParamsPtr params) {
+bool Request::OnResolve(GURL idp_config_url,
+                        const std::optional<std::string>& account_id,
+                        blink::mojom::ResolveTokenParamsPtr params) {
   // Close the pop-up window post user permission.
   if (!request_dialog_controller_) {
     return false;
@@ -2517,9 +2504,9 @@ bool RequestService::OnResolve(GURL idp_config_url,
   return true;
 }
 
-void RequestService::OnOriginMismatch(Method method,
-                                      const url::Origin& expected,
-                                      const url::Origin& actual) {
+void Request::OnOriginMismatch(Method method,
+                               const url::Origin& expected,
+                               const url::Origin& actual) {
   const char* method_string = method == Method::kClose ? "close" : "resolve";
   std::string error_messsage = base::StringPrintf(
       "IdentityProvider.%s called from incorrect origin '%s'; expected '%s'",
@@ -2528,7 +2515,7 @@ void RequestService::OnOriginMismatch(Method method,
       blink::mojom::ConsoleMessageLevel::kError, error_messsage);
 }
 
-bool RequestService::SetupIdentityRegistryFromPopup() {
+bool Request::SetupIdentityRegistryFromPopup() {
 #if BUILDFLAG(IS_ANDROID)
   if (identity_registry_) {
     return true;
@@ -2547,9 +2534,8 @@ bool RequestService::SetupIdentityRegistryFromPopup() {
   if (!rp_web_contents) {
     return false;
   }
-  RequestService* rp_auth_request =
-      GetPageData(rp_web_contents->GetPrimaryPage())
-          ->PendingWebIdentityRequest();
+  Request* rp_auth_request = GetPageData(rp_web_contents->GetPrimaryPage())
+                                 ->PendingWebIdentityRequest();
   if (!rp_auth_request) {
     return false;
   }
@@ -2567,18 +2553,18 @@ bool RequestService::SetupIdentityRegistryFromPopup() {
 #endif
 }
 
-FederatedApiPermissionStatus RequestService::GetApiPermissionStatus() {
+FederatedApiPermissionStatus Request::GetApiPermissionStatus() {
   DCHECK(api_permission_delegate_);
   return api_permission_delegate_->GetApiPermissionStatus(GetEmbeddingOrigin());
 }
 
-bool RequestService::ShouldNotifyDevtoolsForDialogType(DialogType type) {
+bool Request::ShouldNotifyDevtoolsForDialogType(DialogType type) {
   return type != DialogType::kNone && type != DialogType::kLoginToIdpPopup &&
          type != DialogType::kContinueOnPopup &&
          type != DialogType::kErrorUrlPopup;
 }
 
-void RequestService::AcceptAccountsDialogForDevtools(
+void Request::AcceptAccountsDialogForDevtools(
     const GURL& config_url,
     const IdentityRequestAccount& account) {
   bool is_sign_in = account.idp_claimed_login_state.value_or(
@@ -2587,7 +2573,7 @@ void RequestService::AcceptAccountsDialogForDevtools(
   OnAccountSelected(config_url, account.id, is_sign_in);
 }
 
-void RequestService::DismissAccountsDialogForDevtools(bool should_embargo) {
+void Request::DismissAccountsDialogForDevtools(bool should_embargo) {
   // We somewhat arbitrarily pick a reason that does/does not trigger
   // cooldown.
   IdentityRequestDialogController::DismissReason reason =
@@ -2597,18 +2583,18 @@ void RequestService::DismissAccountsDialogForDevtools(bool should_embargo) {
   OnDialogDismissed(reason);
 }
 
-void RequestService::AcceptConfirmIdpLoginDialogForDevtools() {
+void Request::AcceptConfirmIdpLoginDialogForDevtools() {
   DCHECK(login_url_.is_valid());
   LoginToIdP(/*can_append_hints=*/true, config_url_, login_url_);
 }
 
-void RequestService::DismissConfirmIdpLoginDialogForDevtools() {
+void Request::DismissConfirmIdpLoginDialogForDevtools() {
   // These values match what HandleAccountsFetchFailure passes.
   OnDismissFailureDialog(
       IdentityRequestDialogController::DismissReason::kOther);
 }
 
-bool RequestService::UseAnotherAccountForDevtools(
+bool Request::UseAnotherAccountForDevtools(
     const IdentityProviderData& provider) {
   if (!provider.idp_metadata.supports_add_account) {
     return false;
@@ -2618,18 +2604,18 @@ bool RequestService::UseAnotherAccountForDevtools(
   return true;
 }
 
-bool RequestService::HasMoreDetailsButtonForDevtools() {
+bool Request::HasMoreDetailsButtonForDevtools() {
   return token_error_ && token_error_->url.is_valid();
 }
 
-void RequestService::ClickErrorDialogGotItForDevtools() {
+void Request::ClickErrorDialogGotItForDevtools() {
   DCHECK(token_error_);
   OnDismissErrorDialog(
       config_url_, token_request_status_,
       IdentityRequestDialogController::DismissReason::kGotItButton);
 }
 
-void RequestService::ClickErrorDialogMoreDetailsForDevtools() {
+void Request::ClickErrorDialogMoreDetailsForDevtools() {
   DCHECK(token_error_ && token_error_->url.is_valid());
   ShowModalDialog(DialogType::kErrorUrlPopup, config_url_, token_error_->url);
   OnDismissErrorDialog(
@@ -2637,14 +2623,13 @@ void RequestService::ClickErrorDialogMoreDetailsForDevtools() {
       IdentityRequestDialogController::DismissReason::kMoreDetailsButton);
 }
 
-void RequestService::DismissErrorDialogForDevtools() {
+void Request::DismissErrorDialogForDevtools() {
   OnDismissErrorDialog(config_url_, token_request_status_,
                        IdentityRequestDialogController::DismissReason::kOther);
 }
 
-bool RequestService::GetAccountForAutoReauthn(
-    IdentityProviderDataPtr* out_idp_data,
-    IdentityRequestAccountPtr* out_account) {
+bool Request::GetAccountForAutoReauthn(IdentityProviderDataPtr* out_idp_data,
+                                       IdentityRequestAccountPtr* out_account) {
   for (const auto& idp_info : idp_infos_) {
     if (idp_info.second->data->has_login_status_mismatch) {
       // If we need to show IDP login status mismatch UI, we cannot
@@ -2687,7 +2672,7 @@ bool RequestService::GetAccountForAutoReauthn(
   return false;
 }
 
-bool RequestService::ShouldFailBeforeFetchingAccounts(const GURL& config_url) {
+bool Request::ShouldFailBeforeFetchingAccounts(const GURL& config_url) {
   if (mediation_requirement_ != MediationRequirement::kSilent) {
     return false;
   }
@@ -2760,12 +2745,12 @@ bool RequestService::ShouldFailBeforeFetchingAccounts(const GURL& config_url) {
   return false;
 }
 
-bool RequestService::RequiresUserMediation() {
+bool Request::RequiresUserMediation() {
   return auto_reauthn_permission_delegate_->RequiresUserMediation(origin());
 }
 
-void RequestService::SetRequiresUserMediation(bool requires_user_mediation,
-                                              base::OnceClosure callback) {
+void Request::SetRequiresUserMediation(bool requires_user_mediation,
+                                       base::OnceClosure callback) {
   auto_reauthn_permission_delegate_->SetRequiresUserMediation(
       origin(), requires_user_mediation);
   if (permission_delegate_) {
@@ -2776,9 +2761,9 @@ void RequestService::SetRequiresUserMediation(bool requires_user_mediation,
   }
 }
 
-void RequestService::LoginToIdP(bool can_append_hints,
-                                const GURL& idp_config_url,
-                                GURL login_url) {
+void Request::LoginToIdP(bool can_append_hints,
+                         const GURL& idp_config_url,
+                         GURL login_url) {
   const auto& it = idp_login_infos_.find(login_url);
   CHECK(it != idp_login_infos_.end());
   login_url_ = login_url;
@@ -2799,8 +2784,8 @@ void RequestService::LoginToIdP(bool can_append_hints,
   ShowModalDialog(DialogType::kLoginToIdpPopup, idp_config_url, login_url);
 }
 
-void RequestService::MaybeShowActiveModeModalDialog(const GURL& idp_config_url,
-                                                    const GURL& idp_login_url) {
+void Request::MaybeShowActiveModeModalDialog(const GURL& idp_config_url,
+                                             const GURL& idp_login_url) {
   if (idp_infos_.size() > 1) {
     // TODO(crbug.com/40283218): handle the active flow and the
     // Multi IdP API (what should happen if you are logged in to some
@@ -2819,7 +2804,7 @@ void RequestService::MaybeShowActiveModeModalDialog(const GURL& idp_config_url,
   return;
 }
 
-void RequestService::PreventSilentAccess(PreventSilentAccessCallback callback) {
+void Request::PreventSilentAccess(PreventSilentAccessCallback callback) {
   SetRequiresUserMediation(true, std::move(callback));
   if (permission_delegate_->HasSharingPermission(GetEmbeddingOrigin())) {
     // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
@@ -2835,7 +2820,7 @@ void RequestService::PreventSilentAccess(PreventSilentAccessCallback callback) {
   }
 }
 
-void RequestService::Disconnect(
+void Request::Disconnect(
     blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
     DisconnectCallback callback) {
   // Enforce identity-credentials-get Permissions Policy browser-side.
@@ -2876,12 +2861,12 @@ void RequestService::Disconnect(
   DisconnectRequest* disconnect_request_ptr = disconnect_request_.get();
 
   disconnect_request_ptr->SetCallbackAndStart(
-      base::BindOnce(&RequestService::CompleteDisconnectRequest,
+      base::BindOnce(&Request::CompleteDisconnectRequest,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       api_permission_delegate_);
 }
 
-void RequestService::RecordErrorMetrics(
+void Request::RecordErrorMetrics(
     IdentityProviderRequestOptionsPtr idp,
     TokenResponseType token_response_type,
     std::optional<ErrorDialogType> error_dialog_type,
@@ -2897,7 +2882,7 @@ void RequestService::RecordErrorMetrics(
   }
 }
 
-std::unique_ptr<Metrics> RequestService::CreateFedCmMetrics() {
+std::unique_ptr<Metrics> Request::CreateFedCmMetrics() {
   // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
   // prerendering page. As FederatedAithRequest runs behind the
   // BrowserInterfaceBinders, the service doesn't receive any request while
@@ -2908,7 +2893,7 @@ std::unique_ptr<Metrics> RequestService::CreateFedCmMetrics() {
   return std::make_unique<Metrics>(render_frame_host().GetPageUkmSourceId());
 }
 
-bool RequestService::IsNewlyLoggedIn(const IdentityRequestAccount& account) {
+bool Request::IsNewlyLoggedIn(const IdentityRequestAccount& account) {
   if (login_url_.is_empty() ||
       login_url_ != account.identity_provider->idp_metadata.idp_login_url) {
     return false;
@@ -2918,7 +2903,7 @@ bool RequestService::IsNewlyLoggedIn(const IdentityRequestAccount& account) {
          !account_ids_before_login_.contains(account.id);
 }
 
-bool RequestService::ShouldTerminateRequest(
+bool Request::ShouldTerminateRequest(
     const std::vector<IdentityProviderGetParametersPtr>& idp_get_params_ptrs,
     const MediationRequirement& requirement,
     NavigationHandle* navigation_handle) {
@@ -2978,11 +2963,11 @@ bool RequestService::ShouldTerminateRequest(
   return false;
 }
 
-bool RequestService::HandlePendingRequestAndCancelNewRequest(
+bool Request::HandlePendingRequestAndCancelNewRequest(
     const std::vector<GURL>& old_idp_order,
     const std::vector<IdentityProviderGetParametersPtr>& idp_get_params_ptrs,
     const MediationRequirement& requirement) {
-  RequestService* pending_request =
+  Request* pending_request =
       GetPageData(render_frame_host().GetPage())->PendingWebIdentityRequest();
 
   std::unique_ptr<Metrics> new_request_metrics = CreateFedCmMetrics();
@@ -3052,7 +3037,7 @@ bool RequestService::HandlePendingRequestAndCancelNewRequest(
   return false;
 }
 
-bool RequestService::IsUsingAmbient() const {
+bool Request::IsUsingAmbient() const {
   if (rp_mode_ != RpMode::kPassive || idp_order_.size() != 1u) {
     return false;
   }
@@ -3075,8 +3060,7 @@ bool RequestService::IsUsingAmbient() const {
   return accounts_count == 1u;
 }
 
-RelyingPartyData RequestService::CreateRpData(
-    bool client_metadata_received) const {
+RelyingPartyData Request::CreateRpData(bool client_metadata_received) const {
   // We want to show the iframe origin if any IDP requests it.
   bool show_iframe_origin = false;
   for (const auto& entry : idp_infos_) {

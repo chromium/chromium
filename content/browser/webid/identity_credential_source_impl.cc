@@ -6,8 +6,8 @@
 
 #include "base/functional/callback.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/request.h"
 #include "content/browser/webid/request_page_data.h"
-#include "content/browser/webid/request_service.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/page.h"
@@ -47,18 +47,18 @@ void IdentityCredentialSourceImpl::GetIdentityCredentialSuggestions(
   // assume these will login the user to the top-level page, and return these
   // options.
   if (page_data && page_data->PendingWebIdentityRequest()) {
-    RequestService* request_service = page_data->PendingWebIdentityRequest();
+    Request* request = page_data->PendingWebIdentityRequest();
     // These are the accounts that would be displayed in the UI, so filters such
     // as login hint have been applied already. But they may be in the accounts
     // in edge cases where they will be shown in the UI.
     const std::vector<IdentityRequestAccountPtr>& request_accounts =
-        request_service->GetAccounts();
+        request->GetAccounts();
     std::vector<IdentityRequestAccountPtr> signin_accounts;
     for (const auto& account : request_accounts) {
       const GURL& idp_config_url =
           account->identity_provider->idp_metadata.config_url;
-      auto it = request_service->idp_infos_.find(idp_config_url);
-      if (it != request_service->idp_infos_.end() &&
+      auto it = request->idp_infos_.find(idp_config_url);
+      if (it != request->idp_infos_.end() &&
           it->second->client_is_third_party_to_top_frame_origin) {
         continue;
       }
@@ -148,12 +148,12 @@ bool IdentityCredentialSourceImpl::SelectAccount(
   if (!page_data) {
     return false;
   }
-  RequestService* request_service = page_data->PendingWebIdentityRequest();
-  if (!request_service) {
+  Request* request = page_data->PendingWebIdentityRequest();
+  if (!request) {
     return false;
   }
 
-  const auto& accounts = request_service->GetAccounts();
+  const auto& accounts = request->GetAccounts();
   for (const auto& account : accounts) {
     const GURL& idp_config_url =
         account->identity_provider->idp_metadata.config_url;
@@ -163,14 +163,14 @@ bool IdentityCredentialSourceImpl::SelectAccount(
                    account->browser_trusted_login_state),
                IdentityRequestAccount::LoginState::kSignIn);
 
-      auto it = request_service->idp_infos_.find(idp_config_url);
-      CHECK(it != request_service->idp_infos_.end());
+      auto it = request->idp_infos_.find(idp_config_url);
+      CHECK(it != request->idp_infos_.end());
       if (it->second->client_is_third_party_to_top_frame_origin) {
         return false;
       }
 
-      request_service->OnAccountSelected(idp_config_url, account->id,
-                                         /*is_sign_in=*/true);
+      request->OnAccountSelected(idp_config_url, account->id,
+                                 /*is_sign_in=*/true);
       return true;
     }
   }

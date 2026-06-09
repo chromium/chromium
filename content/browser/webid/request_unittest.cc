@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/request_service.h"
+#include "content/browser/webid/request.h"
 
 #include <memory>
 #include <optional>
@@ -851,7 +851,7 @@ class TestDialogController
   bool did_show_ui_ = false;
   IdentityRequestDialogController::PassiveDialogVolume passive_dialog_volume_;
 
-  // Pointer so that the state can be queried after RequestService
+  // Pointer so that the state can be queried after Request
   // destroys TestDialogController.
   raw_ptr<State> state_;
   base::WeakPtrFactory<TestDialogController> weak_ptr_factory_{this};
@@ -961,13 +961,12 @@ class TestIdentityRegistry : public NiceMock<MockIdentityRegistry> {
 
 }  // namespace
 
-class RequestServiceTest : public RenderViewHostImplTestHarness {
+class RequestTest : public RenderViewHostImplTestHarness {
  protected:
-  explicit RequestServiceTest(std::string_view rp_url = kRpUrl)
-      : rp_url_(rp_url) {
+  explicit RequestTest(std::string_view rp_url = kRpUrl) : rp_url_(rp_url) {
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
-  ~RequestServiceTest() override = default;
+  ~RequestTest() override = default;
 
   void InitConstants() {
     kSingleAccount = {base::MakeRefCounted<IdentityRequestAccount>(
@@ -1213,13 +1212,13 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
     simulator->Commit();
 
     mojo::Remote<blink::mojom::FederatedAuthRequest> remote;
-    RequestService::CreateForTesting(
-        *static_cast<TestRenderFrameHost*>(
-            simulator->GetFinalRenderFrameHost()),
-        test_api_permission_delegate_.get(),
-        test_auto_reauthn_permission_delegate_.get(),
-        test_permission_delegate_.get(), test_identity_registry_.get(),
-        remote.BindNewPipeAndPassReceiver());
+    Request::CreateForTesting(*static_cast<TestRenderFrameHost*>(
+                                  simulator->GetFinalRenderFrameHost()),
+                              test_api_permission_delegate_.get(),
+                              test_auto_reauthn_permission_delegate_.get(),
+                              test_permission_delegate_.get(),
+                              test_identity_registry_.get(),
+                              remote.BindNewPipeAndPassReceiver());
     return remote;
   }
 
@@ -1241,7 +1240,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(rp_url_), ui::PAGE_TRANSITION_LINK);
 
-    federated_auth_request_impl_ = &RequestService::CreateForTesting(
+    federated_auth_request_impl_ = &Request::CreateForTesting(
         *main_test_rfh(), test_api_permission_delegate_.get(),
         test_auto_reauthn_permission_delegate_.get(),
         test_permission_delegate_.get(), test_identity_registry_.get(),
@@ -1436,7 +1435,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
                                   mediation_requirement,
                                   auth_helper->callback());
 
-    // Ensure that the request makes its way to RequestService.
+    // Ensure that the request makes its way to Request.
     request_remote_.FlushForTesting();
     base::RunLoop().RunUntilIdle();
   }
@@ -1448,7 +1447,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
     request_remote_.set_disconnect_handler(auth_helper->quit_closure());
 
     // Fast forward clock so that the pending
-    // RequestService::OnRejectRequest() task, if any, gets a
+    // Request::OnRejectRequest() task, if any, gets a
     // chance to run.
     if (should_fast_forward) {
       task_environment()->FastForwardBy(base::Minutes(10));
@@ -1971,8 +1970,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
   std::string rp_url_;
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
-  raw_ptr<RequestService, AcrossTasksDanglingUntriaged>
-      federated_auth_request_impl_;
+  raw_ptr<Request, AcrossTasksDanglingUntriaged> federated_auth_request_impl_;
 
   std::unique_ptr<TestIdpNetworkRequestManager> test_network_request_manager_;
 
@@ -1984,7 +1982,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<AuthRequestCallbackHelper> auth_helper_;
 
   // Enables test to inspect TestDialogController state after
-  // RequestService destroys TestDialogController. Recreated during
+  // Request destroys TestDialogController. Recreated during
   // each run of RunAuthTest().
   TestDialogController::State dialog_controller_state_;
 
@@ -1996,7 +1994,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
 };
 
 // Test successful FedCM request.
-TEST_F(RequestServiceTest, SuccessfulRequest) {
+TEST_F(RequestTest, SuccessfulRequest) {
   // Use IdpNetworkRequestManagerParamChecker to validate passed-in parameters
   // to IdpNetworkRequestManager methods.
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
@@ -2015,7 +2013,7 @@ TEST_F(RequestServiceTest, SuccessfulRequest) {
   ExpectUkmValueInEntry("DidShowUI", FedCmEntry::kEntryName, true);
 }
 
-TEST_F(RequestServiceTest, OnFedCmFederatedLoginSuccess) {
+TEST_F(RequestTest, OnFedCmFederatedLoginSuccess) {
   testing::NiceMock<MockWebContentsObserver> observer(web_contents());
 
   EXPECT_CALL(observer, OnFedCmFederatedLogin(true)).Times(1);
@@ -2024,7 +2022,7 @@ TEST_F(RequestServiceTest, OnFedCmFederatedLoginSuccess) {
               kConfigurationValid);
 }
 
-TEST_F(RequestServiceTest, OnFedCmFederatedLoginFailure) {
+TEST_F(RequestTest, OnFedCmFederatedLoginFailure) {
   testing::NiceMock<MockWebContentsObserver> observer(web_contents());
 
   EXPECT_CALL(observer, OnFedCmFederatedLogin(false)).Times(1);
@@ -2042,7 +2040,7 @@ TEST_F(RequestServiceTest, OnFedCmFederatedLoginFailure) {
 
 // Test that the FederatedEmbedderLoginRequest is notified when the FedCM flow
 // completes.
-TEST_F(RequestServiceTest, NotifiesFederatedEmbedderLoginRequest) {
+TEST_F(RequestTest, NotifiesFederatedEmbedderLoginRequest) {
   GURL idp_url(kProviderUrlFull);
   url::Origin idp_origin = url::Origin::Create(idp_url);
   std::string account_id = "account_id123";
@@ -2061,7 +2059,7 @@ TEST_F(RequestServiceTest, NotifiesFederatedEmbedderLoginRequest) {
 }
 
 // Test successful well-known fetching.
-TEST_F(RequestServiceTest, WellKnownSuccess) {
+TEST_F(RequestTest, WellKnownSuccess) {
   // Use IdpNetworkRequestManagerParamChecker to validate passed-in parameters
   // to IdpNetworkRequestManager methods.
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
@@ -2074,7 +2072,7 @@ TEST_F(RequestServiceTest, WellKnownSuccess) {
 }
 
 // Test the provider url is not in the well-known.
-TEST_F(RequestServiceTest, WellKnownNotInList) {
+TEST_F(RequestTest, WellKnownNotInList) {
   RequestExpectations request_not_in_list = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kConfigNotInWellKnown,
@@ -2096,7 +2094,7 @@ TEST_F(RequestServiceTest, WellKnownNotInList) {
 
 // Test that when the provider url is not in the well-known, it succeeds when it
 // is registered.
-TEST_F(RequestServiceTest, WellKnownNotInListButRegistered) {
+TEST_F(RequestTest, WellKnownNotInListButRegistered) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmIdPRegistration);
 
@@ -2122,7 +2120,7 @@ TEST_F(RequestServiceTest, WellKnownNotInListButRegistered) {
 }
 
 // Test that the well-known file has too many provider urls.
-TEST_F(RequestServiceTest, WellKnownHasTooManyProviderUrls) {
+TEST_F(RequestTest, WellKnownHasTooManyProviderUrls) {
   RequestExpectations expectation = {
       RequestTokenStatus::kError, FederatedAuthRequestResult::kWellKnownTooBig,
       /*standalone_console_message=*/std::nullopt,
@@ -2138,7 +2136,7 @@ TEST_F(RequestServiceTest, WellKnownHasTooManyProviderUrls) {
 }
 
 // Test that the well-known enforcement is bypassed.
-TEST_F(RequestServiceTest, WellKnownEnforcementBypassed) {
+TEST_F(RequestTest, WellKnownEnforcementBypassed) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmWithoutWellKnownEnforcement);
 
@@ -2152,7 +2150,7 @@ TEST_F(RequestServiceTest, WellKnownEnforcementBypassed) {
 }
 
 // Test that not having the filename in the well-known fails.
-TEST_F(RequestServiceTest, WellKnownHasNoFilename) {
+TEST_F(RequestTest, WellKnownHasNoFilename) {
   MockConfiguration config{kConfigurationValid};
   config.idp_info[kProviderUrlFull].well_known.provider_urls =
       std::set<std::string>{GURL(kProviderUrlFull).GetWithoutFilename().spec()};
@@ -2168,7 +2166,7 @@ TEST_F(RequestServiceTest, WellKnownHasNoFilename) {
 }
 
 // Test that request fails if config is missing token endpoint.
-TEST_F(RequestServiceTest, MissingTokenEndpoint) {
+TEST_F(RequestTest, MissingTokenEndpoint) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].config.token_endpoint = "";
   RequestExpectations expectations = {
@@ -2191,7 +2189,7 @@ TEST_F(RequestServiceTest, MissingTokenEndpoint) {
 }
 
 // Test that request fails if config has a cross-origin vc_issuance_endpoint.
-TEST_F(RequestServiceTest, InvalidVcIssuanceEndpoint) {
+TEST_F(RequestTest, InvalidVcIssuanceEndpoint) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmDelegation);
 
@@ -2218,7 +2216,7 @@ TEST_F(RequestServiceTest, InvalidVcIssuanceEndpoint) {
 }
 
 // Test that request succeeds if config has a same-origin vc_issuance_endpoint.
-TEST_F(RequestServiceTest, ValidVcIssuanceEndpoint) {
+TEST_F(RequestTest, ValidVcIssuanceEndpoint) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmDelegation);
 
@@ -2232,7 +2230,7 @@ TEST_F(RequestServiceTest, ValidVcIssuanceEndpoint) {
 
 // Test that request succeeds if config has a cross-origin vc_issuance_endpoint,
 // but delegation is disabled.
-TEST_F(RequestServiceTest, CrossOriginVcIssuanceEndpointDisabledDelegation) {
+TEST_F(RequestTest, CrossOriginVcIssuanceEndpointDisabledDelegation) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].config.vc_issuance_endpoint =
       "https://cross-origin.idp.example/issuance";
@@ -2242,7 +2240,7 @@ TEST_F(RequestServiceTest, CrossOriginVcIssuanceEndpointDisabledDelegation) {
 }
 
 // Test that request fails if config is missing accounts endpoint.
-TEST_F(RequestServiceTest, MissingAccountsEndpoint) {
+TEST_F(RequestTest, MissingAccountsEndpoint) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].config.accounts_endpoint = "";
   RequestExpectations expectations = {
@@ -2265,7 +2263,7 @@ TEST_F(RequestServiceTest, MissingAccountsEndpoint) {
 }
 
 // Test that request fails if config is missing an IDP login URL.
-TEST_F(RequestServiceTest, MissingLoginURL) {
+TEST_F(RequestTest, MissingLoginURL) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].config.idp_login_url = "";
   RequestExpectations expectations = {
@@ -2287,7 +2285,7 @@ TEST_F(RequestServiceTest, MissingLoginURL) {
 }
 
 // Test that client metadata endpoint is not required in config.
-TEST_F(RequestServiceTest, MissingClientMetadataEndpoint) {
+TEST_F(RequestTest, MissingClientMetadataEndpoint) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].config.client_metadata_endpoint = "";
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
@@ -2296,7 +2294,7 @@ TEST_F(RequestServiceTest, MissingClientMetadataEndpoint) {
 
 // Test that request fails if the accounts endpoint is in a different origin
 // than identity provider.
-TEST_F(RequestServiceTest, AccountEndpointDifferentOriginIdp) {
+TEST_F(RequestTest, AccountEndpointDifferentOriginIdp) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].config.accounts_endpoint =
       kCrossOriginAccountsEndpoint;
@@ -2312,7 +2310,7 @@ TEST_F(RequestServiceTest, AccountEndpointDifferentOriginIdp) {
 
 // Test that request fails if IDP login URL is different origin from IDP config
 // URL.
-TEST_F(RequestServiceTest, LoginUrlDifferentOriginIdp) {
+TEST_F(RequestTest, LoginUrlDifferentOriginIdp) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].config.idp_login_url =
       "https://idp2.example/login_url";
@@ -2335,7 +2333,7 @@ TEST_F(RequestServiceTest, LoginUrlDifferentOriginIdp) {
 }
 
 // Test that request fails if the idp is not https.
-TEST_F(RequestServiceTest, ProviderNotTrustworthy) {
+TEST_F(RequestTest, ProviderNotTrustworthy) {
   IdentityProviderParameters identity_provider{
       "http://idp.example/fedcm.json", kClientId, kNonce, /*login_hint=*/"",
       /*domain_hint=*/""};
@@ -2358,7 +2356,7 @@ TEST_F(RequestServiceTest, ProviderNotTrustworthy) {
 }
 
 // Test that request fails if accounts endpoint cannot be reached.
-TEST_F(RequestServiceTest, AccountEndpointCannotBeReached) {
+TEST_F(RequestTest, AccountEndpointCannotBeReached) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
       ParseStatus::kNoResponseError;
@@ -2373,7 +2371,7 @@ TEST_F(RequestServiceTest, AccountEndpointCannotBeReached) {
 }
 
 // Test that request fails if account endpoint response cannot be parsed.
-TEST_F(RequestServiceTest, AccountsCannotBeParsed) {
+TEST_F(RequestTest, AccountsCannotBeParsed) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
       ParseStatus::kInvalidResponseError;
@@ -2411,7 +2409,7 @@ TEST_F(RequestServiceTest, AccountsCannotBeParsed) {
 
 // Test that privacy policy, terms of service or RP brand icon URLs are not
 // required in client metadata.
-TEST_F(RequestServiceTest, ClientMetadataNoUrls) {
+TEST_F(RequestTest, ClientMetadataNoUrls) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].client_metadata =
       kDefaultClientMetadata;
@@ -2424,7 +2422,7 @@ TEST_F(RequestServiceTest, ClientMetadataNoUrls) {
 }
 
 // Test that privacy policy URL is not required in client metadata.
-TEST_F(RequestServiceTest, ClientMetadataNoPrivacyPolicyUrl) {
+TEST_F(RequestTest, ClientMetadataNoPrivacyPolicyUrl) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].client_metadata =
       kDefaultClientMetadata;
@@ -2434,7 +2432,7 @@ TEST_F(RequestServiceTest, ClientMetadataNoPrivacyPolicyUrl) {
 }
 
 // Test that terms of service URL is not required in client metadata.
-TEST_F(RequestServiceTest, ClientMetadataNoTermsOfServiceUrl) {
+TEST_F(RequestTest, ClientMetadataNoTermsOfServiceUrl) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].client_metadata =
       kDefaultClientMetadata;
@@ -2444,7 +2442,7 @@ TEST_F(RequestServiceTest, ClientMetadataNoTermsOfServiceUrl) {
 }
 
 // Test that RP brand icon URL is not required in client metadata.
-TEST_F(RequestServiceTest, ClientMetadataNoRpBrandIconUrl) {
+TEST_F(RequestTest, ClientMetadataNoRpBrandIconUrl) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].client_metadata =
       kDefaultClientMetadata;
@@ -2453,7 +2451,7 @@ TEST_F(RequestServiceTest, ClientMetadataNoRpBrandIconUrl) {
 }
 
 // Test that request fails if all of the endpoints in the config are invalid.
-TEST_F(RequestServiceTest, AllInvalidEndpoints) {
+TEST_F(RequestTest, AllInvalidEndpoints) {
   // Both an empty url and cross origin urls are invalid endpoints.
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].config.accounts_endpoint =
@@ -2479,8 +2477,7 @@ TEST_F(RequestServiceTest, AllInvalidEndpoints) {
 }
 
 // Tests for browser trusted login states.
-TEST_F(RequestServiceTest,
-       BrowserTrustedLoginStateShouldBeSignUpForFirstTimeUser) {
+TEST_F(RequestTest, BrowserTrustedLoginStateShouldBeSignUpForFirstTimeUser) {
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
   EXPECT_EQ(LoginState::kSignUp,
@@ -2489,8 +2486,7 @@ TEST_F(RequestServiceTest,
                                        1);
 }
 
-TEST_F(RequestServiceTest,
-       BrowserTrustedLoginStateShouldBeSignInForReturningUser) {
+TEST_F(RequestTest, BrowserTrustedLoginStateShouldBeSignInForReturningUser) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -2522,7 +2518,7 @@ TEST_F(RequestServiceTest,
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.HasSigninAccount", true, 1);
 }
 
-TEST_F(RequestServiceTest, LoginStateSuccessfulSignUpGrantsSharingPermission) {
+TEST_F(RequestTest, LoginStateSuccessfulSignUpGrantsSharingPermission) {
   EXPECT_CALL(*test_permission_delegate_, GetLastUsedTimestamp(_, _, _, _))
       .WillRepeatedly(Return(std::nullopt));
   EXPECT_CALL(
@@ -2534,7 +2530,7 @@ TEST_F(RequestServiceTest, LoginStateSuccessfulSignUpGrantsSharingPermission) {
               kConfigurationValid);
 }
 
-TEST_F(RequestServiceTest, LoginStateFailedSignUpNotGrantSharingPermission) {
+TEST_F(RequestTest, LoginStateFailedSignUpNotGrantSharingPermission) {
   EXPECT_CALL(*test_permission_delegate_, GetLastUsedTimestamp(_, _, _, _))
       .WillRepeatedly(Return(std::nullopt));
   EXPECT_CALL(*test_permission_delegate_, GrantSharingPermission(_, _, _, _))
@@ -2552,8 +2548,7 @@ TEST_F(RequestServiceTest, LoginStateFailedSignUpNotGrantSharingPermission) {
   EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
 }
 
-TEST_F(RequestServiceTest,
-       EmbedderInitiatedLoginDoesNotGrantSharingPermission) {
+TEST_F(RequestTest, EmbedderInitiatedLoginDoesNotGrantSharingPermission) {
   FederatedEmbedderLoginRequest::Set(web_contents(),
                                      OriginFromString(kProviderUrlFull),
                                      kAccountId, base::DoNothing());
@@ -2567,7 +2562,7 @@ TEST_F(RequestServiceTest,
 }
 
 // Test that auto re-authn permission is not embargoed upon explicit sign-in.
-TEST_F(RequestServiceTest, ExplicitSigninEmbargo) {
+TEST_F(RequestTest, ExplicitSigninEmbargo) {
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
@@ -2577,7 +2572,7 @@ TEST_F(RequestServiceTest, ExplicitSigninEmbargo) {
 
 // Test that auto re-authn permission is embargoed upon successful auto
 // re-authn.
-TEST_F(RequestServiceTest, AutoReauthnEmbargo) {
+TEST_F(RequestTest, AutoReauthnEmbargo) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -2614,7 +2609,7 @@ TEST_F(RequestServiceTest, AutoReauthnEmbargo) {
 
 // Test that sign-in state is enforced when the content embedder blocks the
 // sign-in, for example if there is an ongoing task by an actor.
-TEST_F(RequestServiceTest, ExplicitSigninBlockedByEmbedder) {
+TEST_F(RequestTest, ExplicitSigninBlockedByEmbedder) {
   EXPECT_CALL(
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
@@ -2653,7 +2648,7 @@ TEST_F(RequestServiceTest, ExplicitSigninBlockedByEmbedder) {
 
 // Test that auto re-authn with a single account where the account is a
 // returning user sets the sign-in mode to auto.
-TEST_F(RequestServiceTest, AutoReauthnForSingleReturningUserSingleAccount) {
+TEST_F(RequestTest, AutoReauthnForSingleReturningUserSingleAccount) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -2692,7 +2687,7 @@ TEST_F(RequestServiceTest, AutoReauthnForSingleReturningUserSingleAccount) {
 
 // Test that auto re-authn with multiple accounts and a single returning user
 // sets the sign-in mode to auto.
-TEST_F(RequestServiceTest, AutoReauthnForSingleReturningUserMultipleAccounts) {
+TEST_F(RequestTest, AutoReauthnForSingleReturningUserMultipleAccounts) {
   // Pretend the sharing permission has not been granted for this account.
   EXPECT_CALL(*test_permission_delegate_,
               GetLastUsedTimestamp(
@@ -2744,8 +2739,7 @@ TEST_F(RequestServiceTest, AutoReauthnForSingleReturningUserMultipleAccounts) {
 
 // Test that auto re-authn with multiple accounts and multiple returning users
 // sets the sign-in mode to explicit.
-TEST_F(RequestServiceTest,
-       AutoReauthnForMultipleReturningUsersMultipleAccounts) {
+TEST_F(RequestTest, AutoReauthnForMultipleReturningUsersMultipleAccounts) {
   // Pretend the sharing permission has not been granted for this account.
   EXPECT_CALL(*test_permission_delegate_,
               GetLastUsedTimestamp(
@@ -2797,7 +2791,7 @@ TEST_F(RequestServiceTest,
 
 // Test that auto re-authn with single non-returning account sets the sign-in
 // mode to explicit.
-TEST_F(RequestServiceTest, AutoReauthnForZeroReturningUsers) {
+TEST_F(RequestTest, AutoReauthnForZeroReturningUsers) {
   // Pretend the sharing permission has not been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -2834,7 +2828,7 @@ TEST_F(RequestServiceTest, AutoReauthnForZeroReturningUsers) {
 
 // Test that auto re-authn with multiple accounts and a single returning user
 // sets the sign-in mode to kExplicit if `mediation: required` is specified.
-TEST_F(RequestServiceTest,
+TEST_F(RequestTest,
        AutoReauthnForSingleReturningUserWithoutSettingAutoReauthn) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
@@ -2857,7 +2851,7 @@ TEST_F(RequestServiceTest,
 
 // Test that auto re-authn with multiple accounts and a single returning user
 // sets the sign-in mode to kExplicit if `RequiresUserMediation` is set
-TEST_F(RequestServiceTest,
+TEST_F(RequestTest,
        AutoReauthnForSingleReturningUserWithRequiresUserMediation) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
@@ -2899,8 +2893,7 @@ TEST_F(RequestServiceTest,
 
 // Test that auto re-authn with multiple accounts and a single returning user
 // sets the sign-in mode to kExplicit if "auto sign-in" is disabled.
-TEST_F(RequestServiceTest,
-       AutoReauthnForSingleReturningUserWithAutoSigninDisabled) {
+TEST_F(RequestTest, AutoReauthnForSingleReturningUserWithAutoSigninDisabled) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -2934,7 +2927,7 @@ TEST_F(RequestServiceTest,
 
 // Test that if browser has not observed sign-in in the past, the sign-in mode
 // is set to explicit regardless the account's login state.
-TEST_F(RequestServiceTest, AutoReauthnBrowserNotObservedSigninBefore) {
+TEST_F(RequestTest, AutoReauthnBrowserNotObservedSigninBefore) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -2966,7 +2959,7 @@ TEST_F(RequestServiceTest, AutoReauthnBrowserNotObservedSigninBefore) {
 // Test that if browser has not observed sign-in in the past, but the IdP has
 // third-party cookies access, the sign-in mode is set to auto if IdP claims
 // that the user is returning.
-TEST_F(RequestServiceTest,
+TEST_F(RequestTest,
        AutoReauthnBrowserNotObservedSigninButIdpHasThirdPartyCookiesAccess) {
   // Pretend the sharing permission has not been granted for this account.
   EXPECT_CALL(
@@ -3012,7 +3005,7 @@ TEST_F(RequestServiceTest,
 
 // Test that auto re-authn for a first time user sets the sign-in mode to
 // explicit.
-TEST_F(RequestServiceTest, AutoReauthnForFirstTimeUser) {
+TEST_F(RequestTest, AutoReauthnForFirstTimeUser) {
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnSettingEnabled())
@@ -3032,7 +3025,7 @@ TEST_F(RequestServiceTest, AutoReauthnForFirstTimeUser) {
 
 // Test that auto re-authn where the auto re-authn permission is blocked sets
 // the sign-in mode to explicit.
-TEST_F(RequestServiceTest, AutoReauthnWithBlockedAutoReauthnPermissions) {
+TEST_F(RequestTest, AutoReauthnWithBlockedAutoReauthnPermissions) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3064,7 +3057,7 @@ TEST_F(RequestServiceTest, AutoReauthnWithBlockedAutoReauthnPermissions) {
 
 // Test that auto re-authn where the auto re-authn cooldown is on sets
 // the sign-in mode to explicit.
-TEST_F(RequestServiceTest, AutoReauthnWithCooldown) {
+TEST_F(RequestTest, AutoReauthnWithCooldown) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3103,8 +3096,7 @@ TEST_F(RequestServiceTest, AutoReauthnWithCooldown) {
 
 // Test that no network request is sent if `mediation: silent` is used and user
 // has not granted sharing permission in the past.
-TEST_F(RequestServiceTest,
-       AutoReauthnMediationSilentFailWithNoSharingPermission) {
+TEST_F(RequestTest, AutoReauthnMediationSilentFailWithNoSharingPermission) {
   // Pretend the sharing permission has not been granted for any account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3151,7 +3143,7 @@ TEST_F(RequestServiceTest,
 
 // Test that no network request is sent if `mediation: silent` is used and auto
 // re-authn is in cooldown.
-TEST_F(RequestServiceTest, AutoReauthnMediationSilentFailWithEmbargo) {
+TEST_F(RequestTest, AutoReauthnMediationSilentFailWithEmbargo) {
   // Pretend the sharing permission has been granted for some account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3198,8 +3190,7 @@ TEST_F(RequestServiceTest, AutoReauthnMediationSilentFailWithEmbargo) {
 
 // Test that no network request is sent if `mediation: silent` is used and user
 // mediation is required, e.g. `preventSilentAccess` has been invoked
-TEST_F(RequestServiceTest,
-       AutoReauthnMediationSilentFailWithRequiresUserMediation) {
+TEST_F(RequestTest, AutoReauthnMediationSilentFailWithRequiresUserMediation) {
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
@@ -3246,7 +3237,7 @@ TEST_F(RequestServiceTest,
 
 // Test that no network request is sent if `mediation: silent` is used and user
 // has disabled "auto sign-in".
-TEST_F(RequestServiceTest,
+TEST_F(RequestTest,
        AutoReauthnMediationSilentFailWithPasswordManagerAutoSigninDisabled) {
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnSettingEnabled())
@@ -3292,8 +3283,7 @@ TEST_F(RequestServiceTest,
 }
 
 // Test `mediation: silent` could fail silently after fetching accounts
-TEST_F(RequestServiceTest,
-       AutoReauthnMediationSilentFailWithTwoReturningAccounts) {
+TEST_F(RequestTest, AutoReauthnMediationSilentFailWithTwoReturningAccounts) {
   // Pretend the sharing permission has been granted for some account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3366,7 +3356,7 @@ TEST_F(RequestServiceTest,
 }
 
 // Test `mediation: silent` fails silently after a failed accounts fetch.
-TEST_F(RequestServiceTest,
+TEST_F(RequestTest,
        AutoReauthnMediationSilentFailNotShowMismatchAfterAccountsFetch) {
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
@@ -3412,7 +3402,7 @@ TEST_F(RequestServiceTest,
 
 // Test that `mediation: required` sets the sign-in mode to explicit even though
 // other auto re-authn conditions are met.
-TEST_F(RequestServiceTest, AutoReauthnMediationRequired) {
+TEST_F(RequestTest, AutoReauthnMediationRequired) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3437,7 +3427,7 @@ TEST_F(RequestServiceTest, AutoReauthnMediationRequired) {
                       MediationRequirement::kRequired);
 }
 
-TEST_F(RequestServiceTest, MetricsForSuccessfulSignInCase) {
+TEST_F(RequestTest, MetricsForSuccessfulSignInCase) {
   // Pretends that the sharing permission has been granted for this account.
   EXPECT_CALL(*test_permission_delegate_,
               GetLastUsedTimestamp(_, _, OriginFromString(kProviderUrlFull),
@@ -3518,7 +3508,7 @@ TEST_F(RequestServiceTest, MetricsForSuccessfulSignInCase) {
 }
 
 // Test that request fails if account picker is explicitly dismissed.
-TEST_F(RequestServiceTest, MetricsForUIExplicitlyDismissed) {
+TEST_F(RequestTest, MetricsForUIExplicitlyDismissed) {
   base::HistogramTester histogram_tester_;
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
@@ -3574,7 +3564,7 @@ TEST_F(RequestServiceTest, MetricsForUIExplicitlyDismissed) {
 }
 
 // Test that request is not completed if user ignores the UI.
-TEST_F(RequestServiceTest, UIIsIgnored) {
+TEST_F(RequestTest, UIIsIgnored) {
   base::HistogramTester histogram_tester_;
 
   MockConfiguration configuration = kConfigurationValid;
@@ -3617,7 +3607,7 @@ TEST_F(RequestServiceTest, UIIsIgnored) {
       "Blink.FedCm.Timing.MismatchDialogShownDuration", 0);
 }
 
-TEST_F(RequestServiceTest, MetricsForWebContentsVisible) {
+TEST_F(RequestTest, MetricsForWebContentsVisible) {
   base::HistogramTester histogram_tester;
   // Sets RenderFrameHost to visible
   test_rvh()->SimulateWasShown();
@@ -3641,7 +3631,7 @@ TEST_F(RequestServiceTest, MetricsForWebContentsVisible) {
 
 // Test that request could succeed with auto re-authn even if the web contents
 // invisible.
-TEST_F(RequestServiceTest, MetricsForWebContentsInvisible) {
+TEST_F(RequestTest, MetricsForWebContentsInvisible) {
   base::HistogramTester histogram_tester;
   test_rvh()->SimulateWasShown();
   ASSERT_EQ(test_rvh()->GetMainRenderFrameHost()->GetVisibilityState(),
@@ -3668,7 +3658,7 @@ TEST_F(RequestServiceTest, MetricsForWebContentsInvisible) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.WebContentsActive", 1, 1);
 }
 
-TEST_F(RequestServiceTest, MetricsForFeatureIsDisabled) {
+TEST_F(RequestTest, MetricsForFeatureIsDisabled) {
   test_api_permission_delegate_->permission_override_ =
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
                      ApiPermissionStatus::BLOCKED_VARIATIONS);
@@ -3683,7 +3673,7 @@ TEST_F(RequestServiceTest, MetricsForFeatureIsDisabled) {
   ExpectStatusMetrics(TokenStatus::kDisabledInFlags);
 }
 
-TEST_F(RequestServiceTest,
+TEST_F(RequestTest,
        MetricsForFeatureIsDisabledNotDoubleCountedWithUnhandledRequest) {
   test_api_permission_delegate_->permission_override_ =
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
@@ -3700,7 +3690,7 @@ TEST_F(RequestServiceTest,
   ExpectStatusMetrics(TokenStatus::kDisabledInFlags);
 }
 
-TEST_F(RequestServiceTest,
+TEST_F(RequestTest,
        MetricsForFeatureIsDisabledNotDoubleCountedWithAbortedRequest) {
   test_api_permission_delegate_->permission_override_ =
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
@@ -3719,7 +3709,7 @@ TEST_F(RequestServiceTest,
 
 // Test that sign-in states match if IDP claims that user is signed in and
 // browser also observes that user is signed in.
-TEST_F(RequestServiceTest, MetricsForSignedInOnBothIdpAndBrowser) {
+TEST_F(RequestTest, MetricsForSignedInOnBothIdpAndBrowser) {
   // Set browser observes user is signed in.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3751,7 +3741,7 @@ TEST_F(RequestServiceTest, MetricsForSignedInOnBothIdpAndBrowser) {
 
 // Test that sign-in states match if IDP claims that user is not signed in and
 // browser also observes that user is not signed in.
-TEST_F(RequestServiceTest, MetricsForNotSignedInOnBothIdpAndBrowser) {
+TEST_F(RequestTest, MetricsForNotSignedInOnBothIdpAndBrowser) {
   // Set browser observes user is not signed in.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3776,7 +3766,7 @@ TEST_F(RequestServiceTest, MetricsForNotSignedInOnBothIdpAndBrowser) {
 
 // Test that sign-in states mismatch if IDP claims that user is signed in but
 // browser observes that user is not signed in.
-TEST_F(RequestServiceTest, MetricsForOnlyIdpClaimedSignIn) {
+TEST_F(RequestTest, MetricsForOnlyIdpClaimedSignIn) {
   // Set browser observes user is not signed in.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3808,7 +3798,7 @@ TEST_F(RequestServiceTest, MetricsForOnlyIdpClaimedSignIn) {
 
 // Test that sign-in states mismatch if IDP claims that user is not signed in
 // but browser observes that user is signed in.
-TEST_F(RequestServiceTest, MetricsForOnlyBrowserObservedSignIn) {
+TEST_F(RequestTest, MetricsForOnlyBrowserObservedSignIn) {
   // Set browser observes user is signed in.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3836,7 +3826,7 @@ TEST_F(RequestServiceTest, MetricsForOnlyBrowserObservedSignIn) {
 
 // Test that embargo is requested if the
 // IdentityRequestDialogController::ShowAccountsDialog() callback requests it.
-TEST_F(RequestServiceTest, RequestEmbargo) {
+TEST_F(RequestTest, RequestEmbargo) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError, FederatedAuthRequestResult::kShouldEmbargo,
       /*standalone_console_message=*/std::nullopt,
@@ -3854,7 +3844,7 @@ TEST_F(RequestServiceTest, RequestEmbargo) {
 
 // Test that the embargo dismiss count is reset when the user grants consent via
 // the FedCM dialog.
-TEST_F(RequestServiceTest, RemoveEmbargoOnUserConsent) {
+TEST_F(RequestTest, RemoveEmbargoOnUserConsent) {
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
   EXPECT_TRUE(test_api_permission_delegate_->embargoed_origins_.empty());
@@ -3862,7 +3852,7 @@ TEST_F(RequestServiceTest, RemoveEmbargoOnUserConsent) {
 
 // Test that token request fails if FEDERATED_IDENTITY_API content setting is
 // disabled for the RP origin.
-TEST_F(RequestServiceTest, ApiBlockedForOrigin) {
+TEST_F(RequestTest, ApiBlockedForOrigin) {
   test_api_permission_delegate_->permission_override_ =
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
                      ApiPermissionStatus::BLOCKED_SETTINGS);
@@ -3880,7 +3870,7 @@ TEST_F(RequestServiceTest, ApiBlockedForOrigin) {
 
 // Test that token request succeeds if FEDERATED_IDENTITY_API content setting is
 // enabled for RP origin but disabled for an unrelated origin.
-TEST_F(RequestServiceTest, ApiBlockedForUnrelatedOrigin) {
+TEST_F(RequestTest, ApiBlockedForUnrelatedOrigin) {
   const url::Origin kUnrelatedOrigin = OriginFromString("https://rp2.example/");
 
   test_api_permission_delegate_->permission_override_ =
@@ -3890,18 +3880,18 @@ TEST_F(RequestServiceTest, ApiBlockedForUnrelatedOrigin) {
               kConfigurationValid);
 }
 
-class RequestServiceTestCancelConsistency
-    : public RequestServiceTest,
-      public ::testing::WithParamInterface<int> {};
+class RequestTestCancelConsistency : public RequestTest,
+                                     public ::testing::WithParamInterface<int> {
+};
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
-                         RequestServiceTestCancelConsistency,
+                         RequestTestCancelConsistency,
                          ::testing::Values(false, true),
                          ::testing::PrintToStringParamName());
 
 // Test that the RP cannot use CancelTokenRequest() to determine whether
 // Option 1: FedCM dialog is shown but user has not interacted with it
 // Option 2: FedCM API is disabled via variations
-TEST_P(RequestServiceTestCancelConsistency, AccountNotSelected) {
+TEST_P(RequestTestCancelConsistency, AccountNotSelected) {
   const bool fedcm_disabled = GetParam();
 
   if (fedcm_disabled) {
@@ -3980,7 +3970,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
 
 // Test that the request fails if user proceeds with the sign in workflow after
 // disabling the API while an existing accounts dialog is shown.
-TEST_F(RequestServiceTest, ApiDisabledAfterAccountsDialogShown) {
+TEST_F(RequestTest, ApiDisabledAfterAccountsDialogShown) {
   base::HistogramTester histogram_tester_;
 
   base::RunLoop ukm_loop;
@@ -4033,7 +4023,7 @@ TEST_F(RequestServiceTest, ApiDisabledAfterAccountsDialogShown) {
 }
 
 // Test the disclosure_text_shown value in the token post data for sign-up case.
-TEST_F(RequestServiceTest, DisclosureTextShownForFirstTimeUser) {
+TEST_F(RequestTest, DisclosureTextShownForFirstTimeUser) {
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
   checker->SetExpectedTokenPostData(
@@ -4050,7 +4040,7 @@ TEST_F(RequestServiceTest, DisclosureTextShownForFirstTimeUser) {
 
 // Test the disclosure_text_shown value in the token post data for returning
 // user case.
-TEST_F(RequestServiceTest, DisclosureTextNotShownForReturningUser) {
+TEST_F(RequestTest, DisclosureTextNotShownForReturningUser) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -4075,7 +4065,7 @@ TEST_F(RequestServiceTest, DisclosureTextNotShownForReturningUser) {
 
 // Test that the values in the token post data are escaped according to the
 // application/x-www-form-urlencoded spec.
-TEST_F(RequestServiceTest, TokenEndpointPostDataEscaping) {
+TEST_F(RequestTest, TokenEndpointPostDataEscaping) {
   const std::string kAccountIdWithSpace("account id");
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts[0]->id =
@@ -4096,7 +4086,7 @@ TEST_F(RequestServiceTest, TokenEndpointPostDataEscaping) {
 
 // Test that the is_auto_selected value in the token post
 // data for sign-up case.
-TEST_F(RequestServiceTest, AutoSelectedFlagForNewUser) {
+TEST_F(RequestTest, AutoSelectedFlagForNewUser) {
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
   checker->SetExpectedTokenPostData(
@@ -4113,8 +4103,7 @@ TEST_F(RequestServiceTest, AutoSelectedFlagForNewUser) {
 
 // Test that the is_auto_selected value in the token post
 // data for returning user with `mediation:required`.
-TEST_F(RequestServiceTest,
-       AutoSelectedFlagForReturningUserWithMediationRequired) {
+TEST_F(RequestTest, AutoSelectedFlagForReturningUserWithMediationRequired) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -4140,8 +4129,7 @@ TEST_F(RequestServiceTest,
 
 // Test that the is_auto_selected value in the token post
 // data for returning user with `mediation:optional`.
-TEST_F(RequestServiceTest,
-       AutoSelectedFlagForReturningUserWithMediationOptional) {
+TEST_F(RequestTest, AutoSelectedFlagForReturningUserWithMediationOptional) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -4174,7 +4162,7 @@ TEST_F(RequestServiceTest,
 
 // Test that the is_auto_selected value in the token post
 // data for the quiet period use case.
-TEST_F(RequestServiceTest, AutoSelectedFlagIfInQuietPeriod) {
+TEST_F(RequestTest, AutoSelectedFlagIfInQuietPeriod) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -4208,7 +4196,7 @@ TEST_F(RequestServiceTest, AutoSelectedFlagIfInQuietPeriod) {
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
 }
 
-TEST_F(RequestServiceTest, RegisteredIdpInIdAssertion) {
+TEST_F(RequestTest, RegisteredIdpInIdAssertion) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmIdPRegistration);
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
@@ -4253,7 +4241,7 @@ class IdpNetworkRequestManagerClientMetadataTaskRunner
                            int rp_brand_icon_minimum_size,
                            FetchClientMetadataCallback callback) override {
     // Make copies because running the task might destroy
-    // RequestService and invalidate the references.
+    // Request and invalidate the references.
     GURL client_metadata_endpoint_url_copy = client_metadata_endpoint_url;
     std::string client_id_copy = client_id;
 
@@ -4279,7 +4267,7 @@ void NavigateToUrl(content::WebContents* web_contents, const GURL& url) {
 
 // Test that the account chooser is not shown if the page navigates prior to the
 // client metadata endpoint request completing and BFCache is enabled.
-TEST_F(RequestServiceTest, NavigateDuringClientMetadataFetchBFCacheEnabled) {
+TEST_F(RequestTest, NavigateDuringClientMetadataFetchBFCacheEnabled) {
   base::test::ScopedFeatureList list;
   list.InitWithFeaturesAndParameters(
       GetBasicBackForwardCacheFeatureForTesting(),
@@ -4306,7 +4294,7 @@ TEST_F(RequestServiceTest, NavigateDuringClientMetadataFetchBFCacheEnabled) {
 
 // Test that the account chooser is not shown if the page navigates prior to the
 // accounts endpoint request completing and BFCache is disabled.
-TEST_F(RequestServiceTest, NavigateDuringClientMetadataFetchBFCacheDisabled) {
+TEST_F(RequestTest, NavigateDuringClientMetadataFetchBFCacheDisabled) {
   base::test::ScopedFeatureList list;
   list.InitAndDisableFeature(features::kBackForwardCache);
   ASSERT_FALSE(IsBackForwardCacheEnabled());
@@ -4331,7 +4319,7 @@ TEST_F(RequestServiceTest, NavigateDuringClientMetadataFetchBFCacheDisabled) {
 
 // Test that the accounts are reordered so that accounts with a LoginState equal
 // to kSignIn are listed before accounts with a LoginState equal to kSignUp.
-TEST_F(RequestServiceTest, ReorderMultipleAccounts) {
+TEST_F(RequestTest, ReorderMultipleAccounts) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
@@ -4345,7 +4333,7 @@ TEST_F(RequestServiceTest, ReorderMultipleAccounts) {
 
 // Test that first API call with a given IDP is not affected by the
 // IdpSigninStatus bit.
-TEST_F(RequestServiceTest, IdpSigninStatusTestFirstTimeFetchSuccess) {
+TEST_F(RequestTest, IdpSigninStatusTestFirstTimeFetchSuccess) {
   EXPECT_CALL(*test_permission_delegate_,
               SetIdpSigninStatus(OriginFromString(kProviderUrlFull), true, _))
       .Times(1);
@@ -4361,7 +4349,7 @@ TEST_F(RequestServiceTest, IdpSigninStatusTestFirstTimeFetchSuccess) {
 
 // Test that first API call with a given IDP will not show a UI in case of
 // failure during fetching accounts.
-TEST_F(RequestServiceTest, IdpSigninStatusTestFirstTimeFetchNoFailureUi) {
+TEST_F(RequestTest, IdpSigninStatusTestFirstTimeFetchNoFailureUi) {
   EXPECT_CALL(*test_permission_delegate_,
               SetIdpSigninStatus(OriginFromString(kProviderUrlFull), false, _))
       .Times(1);
@@ -4381,7 +4369,7 @@ TEST_F(RequestServiceTest, IdpSigninStatusTestFirstTimeFetchNoFailureUi) {
 
 // Test that a failure UI will be displayed if the accounts fetch is failed but
 // the IdpSigninStatus claims that the user is signed in.
-TEST_F(RequestServiceTest, IdpSigninStatusTestShowFailureUi) {
+TEST_F(RequestTest, IdpSigninStatusTestShowFailureUi) {
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
 
@@ -4402,8 +4390,7 @@ TEST_F(RequestServiceTest, IdpSigninStatusTestShowFailureUi) {
 // Test that API calls will fail before sending any network request if
 // IdpSigninStatus shows that the user is not signed in with the IDP. No failure
 // UI is displayed.
-TEST_F(RequestServiceTest,
-       IdpSigninStatusTestApiFailedIfUserNotSignedInWithIdp) {
+TEST_F(RequestTest, IdpSigninStatusTestApiFailedIfUserNotSignedInWithIdp) {
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
 
@@ -4479,7 +4466,7 @@ class ParseStatusOverrideIdpNetworkRequestManager
 // 1) Failure dialog is shown due to IdP sign-in status mismatch
 // 2) User signs-in
 // 3) User selects "Continue" in account chooser dialog.
-TEST_F(RequestServiceTest, FailureUiThenSuccessfulSignin) {
+TEST_F(RequestTest, FailureUiThenSuccessfulSignin) {
   SetNetworkRequestManager(
       std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
   auto* network_manager =
@@ -4528,7 +4515,7 @@ TEST_F(RequestServiceTest, FailureUiThenSuccessfulSignin) {
 // 1) Failure dialog is shown due to IdP sign-in status mismatch
 // 2) User switches tabs
 // 3) User signs into IdP in different tab
-TEST_F(RequestServiceTest, FailureUiThenSuccessfulSigninButHidden) {
+TEST_F(RequestTest, FailureUiThenSuccessfulSigninButHidden) {
   SetNetworkRequestManager(
       std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
   auto* network_manager =
@@ -4576,7 +4563,7 @@ TEST_F(RequestServiceTest, FailureUiThenSuccessfulSigninButHidden) {
 // Test behavior for the following sequence of events:
 // 1) Failure dialog is shown due to IdP sign-in status mismatch
 // 2) In a different tab, user signs into different IdP
-TEST_F(RequestServiceTest, FailureUiSigninFromDifferentIdp) {
+TEST_F(RequestTest, FailureUiSigninFromDifferentIdp) {
   SetNetworkRequestManager(
       std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
   auto* network_manager =
@@ -4629,7 +4616,7 @@ TEST_F(RequestServiceTest, FailureUiSigninFromDifferentIdp) {
 // 3) Accounts endpoint still returns an empty list
 // That ShowFailureDialog() is called a 2nd time after the IdP sign-in status
 // update.
-TEST_F(RequestServiceTest, FailureUiAccountEndpointKeepsFailing) {
+TEST_F(RequestTest, FailureUiAccountEndpointKeepsFailing) {
   url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
 
   MockConfiguration configuration = kConfigurationValid;
@@ -4685,7 +4672,7 @@ TEST_F(RequestServiceTest, FailureUiAccountEndpointKeepsFailing) {
 // 3) A different endpoint fails during the fetch initiated by the IdP sign-in
 // status update.
 // That user is shown IdP-sign-in-failure dialog.
-TEST_F(RequestServiceTest, FailureUiThenFailDifferentEndpoint) {
+TEST_F(RequestTest, FailureUiThenFailDifferentEndpoint) {
   SetNetworkRequestManager(
       std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
   auto* network_manager =
@@ -4748,7 +4735,7 @@ TEST_F(RequestServiceTest, FailureUiThenFailDifferentEndpoint) {
 // the state transitions to sign-in if the accounts endpoint returns a
 // non-empty list of accounts.
 TEST_F(
-    RequestServiceTest,
+    RequestTest,
     IdpSigninStatusMetricsModeUndefinedTransitionsToSignedinWhenHaveAccounts) {
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = std::nullopt;
@@ -4759,7 +4746,7 @@ TEST_F(
               kConfigurationValid);
 }
 
-TEST_F(RequestServiceTest, AllSuccessfulMultiIdpRequestWithoutIdpReorder) {
+TEST_F(RequestTest, AllSuccessfulMultiIdpRequestWithoutIdpReorder) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
@@ -4818,7 +4805,7 @@ TEST_F(RequestServiceTest, AllSuccessfulMultiIdpRequestWithoutIdpReorder) {
 }
 
 // Test successful multi IDP FedCM request.
-TEST_F(RequestServiceTest, AllSuccessfulMultiIdpRequestWithIdpReorder) {
+TEST_F(RequestTest, AllSuccessfulMultiIdpRequestWithIdpReorder) {
   RequestExpectations expectations = kExpectationSuccess;
   // Since the first IDP does not set the login state of the account but the
   // second IDP has one with state set to SignIn, selecting the first account
@@ -4855,7 +4842,7 @@ TEST_F(RequestServiceTest, AllSuccessfulMultiIdpRequestWithIdpReorder) {
 
 // Test fetching information for the 1st IdP failing, and succeeding for the
 // second.
-TEST_F(RequestServiceTest, FirstIdpWellKnownInvalid) {
+TEST_F(RequestTest, FirstIdpWellKnownInvalid) {
   // Intentionally fail the 1st provider's request by having an invalid
   // well-known file.
   MockConfiguration configuration = kConfigurationMultiIdpValid;
@@ -4885,7 +4872,7 @@ TEST_F(RequestServiceTest, FirstIdpWellKnownInvalid) {
 
 // Test fetching information for the 1st IdP succeeding, and failing for the
 // second.
-TEST_F(RequestServiceTest, SecondIdpWellKnownInvalid) {
+TEST_F(RequestTest, SecondIdpWellKnownInvalid) {
   // Intentionally fail the 2nd provider's request by having an invalid
   // well-known file.
   MockConfiguration configuration = kConfigurationMultiIdpValid;
@@ -4914,7 +4901,7 @@ TEST_F(RequestServiceTest, SecondIdpWellKnownInvalid) {
 }
 
 // Test fetching information for all of the IdPs failing.
-TEST_F(RequestServiceTest, AllWellKnownsInvalid) {
+TEST_F(RequestTest, AllWellKnownsInvalid) {
   // Intentionally fail the requests for both IdPs by returning an invalid
   // well-known file.
   MockConfiguration configuration = kConfigurationMultiIdpValid;
@@ -4943,7 +4930,7 @@ TEST_F(RequestServiceTest, AllWellKnownsInvalid) {
 }
 
 // Test multi IDP FedCM request with duplicate IDPs should throw an error.
-TEST_F(RequestServiceTest, DuplicateIdpMultiIdpRequest) {
+TEST_F(RequestTest, DuplicateIdpMultiIdpRequest) {
   RequestParameters request_parameters = kDefaultMultiIdpRequestParameters;
   request_parameters.identity_providers =
       std::vector<IdentityProviderParameters>{
@@ -4965,7 +4952,7 @@ TEST_F(RequestServiceTest, DuplicateIdpMultiIdpRequest) {
 
 // Test that API can succeed with multiple IdPs, if one IdP is signed out but
 // the other isn't.
-TEST_F(RequestServiceTest, MultiIdpWithOneIdpSignedOut) {
+TEST_F(RequestTest, MultiIdpWithOneIdpSignedOut) {
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
 
@@ -4982,7 +4969,7 @@ TEST_F(RequestServiceTest, MultiIdpWithOneIdpSignedOut) {
 
 // Test that API shows all accounts if the user logs in to the IDP with the
 // mismatch UI.
-TEST_F(RequestServiceTest, MultiIdpLoginToOneIdp) {
+TEST_F(RequestTest, MultiIdpLoginToOneIdp) {
   url::Origin providerOrigin = OriginFromString(kProviderUrlFull);
   test_permission_delegate_->idp_signin_statuses_[providerOrigin] = true;
 
@@ -5031,7 +5018,7 @@ TEST_F(RequestServiceTest, MultiIdpLoginToOneIdp) {
 
 // Test that API can succeed with multiple IdPs, if all IDPs have login status
 // mismatch.
-TEST_F(RequestServiceTest, MultiIdpWithAllIdpsMismatch) {
+TEST_F(RequestTest, MultiIdpWithAllIdpsMismatch) {
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
   test_permission_delegate_
@@ -5079,7 +5066,7 @@ TEST_F(RequestServiceTest, MultiIdpWithAllIdpsMismatch) {
   ExpectUkmValue("NumIdpsMismatch", 2, 2);
 }
 
-TEST_F(RequestServiceTest, MultiIdpWithOneIdpMismatch) {
+TEST_F(RequestTest, MultiIdpWithOneIdpMismatch) {
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderTwoUrlFull)] = true;
 
@@ -5143,8 +5130,7 @@ TEST_F(RequestServiceTest, MultiIdpWithOneIdpMismatch) {
 
 // Test that API can succeed with multiple IdPs, if silent mediation is used but
 // only one IdP has a returning account.
-TEST_F(RequestServiceTest,
-       MultiIdpWithSilentMediationAndReturningAccountInSecondIdp) {
+TEST_F(RequestTest, MultiIdpWithSilentMediationAndReturningAccountInSecondIdp) {
   // Pretend the sharing permission has not been granted for any account for the
   // first IdP.
   EXPECT_CALL(
@@ -5211,8 +5197,7 @@ TEST_F(RequestServiceTest,
 
 // Test that API fails with multiple IdPs, if silent mediation is used and two
 // IdPs have a single returning account.
-TEST_F(RequestServiceTest,
-       MultiIdpWithSilentMediationAndReturningAccountInTwoIdps) {
+TEST_F(RequestTest, MultiIdpWithSilentMediationAndReturningAccountInTwoIdps) {
   // Pretend the sharing permission has been granted for exactly one account for
   // the first IdP.
   EXPECT_CALL(
@@ -5280,7 +5265,7 @@ TEST_F(RequestServiceTest,
 
 // Test that when there are two IDPs with sharing permissions but the account
 // fetch fails for one of them, mediation silent can still succeed.
-TEST_F(RequestServiceTest, MultiIdpWithSilentMediationAndOneIdpFetchFailure) {
+TEST_F(RequestTest, MultiIdpWithSilentMediationAndOneIdpFetchFailure) {
   // Mark both IDPs as logged in.
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
@@ -5354,7 +5339,7 @@ TEST_F(RequestServiceTest, MultiIdpWithSilentMediationAndOneIdpFetchFailure) {
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
 }
 
-TEST_F(RequestServiceTest, MultiIdpLoggedOut) {
+TEST_F(RequestTest, MultiIdpLoggedOut) {
   // Mark both IDPs as logged out so the request fails early.
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
@@ -5378,7 +5363,7 @@ TEST_F(RequestServiceTest, MultiIdpLoggedOut) {
   CheckAuthExpectations(kConfigurationMultiIdpValid, expectations);
 }
 
-TEST_F(RequestServiceTest, MultiIdpWithError) {
+TEST_F(RequestTest, MultiIdpWithError) {
   MockConfiguration configuration = kConfigurationMultiIdpValid;
   ErrorDialogType error_dialog_type =
       ErrorDialogType::kGenericNonEmptyWithoutUrl;
@@ -5414,7 +5399,7 @@ TEST_F(RequestServiceTest, MultiIdpWithError) {
   ExpectNoUKMPresence("Error.ErrorUrlType");
 }
 
-TEST_F(RequestServiceTest, TooManyRequests) {
+TEST_F(RequestTest, TooManyRequests) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
@@ -5467,7 +5452,7 @@ TEST_F(RequestServiceTest, TooManyRequests) {
   ExpectTwoUniqueSessionIDs();
 }
 
-TEST_F(RequestServiceTest, TooManyRequestsDifferentIdP) {
+TEST_F(RequestTest, TooManyRequestsDifferentIdP) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
@@ -5507,7 +5492,7 @@ TEST_F(RequestServiceTest, TooManyRequestsDifferentIdP) {
                         FedCmEntry::kEntryName, true);
 }
 
-TEST_F(RequestServiceTest, ActiveModeTooManyRequestsWithNewPassiveFlow) {
+TEST_F(RequestTest, ActiveModeTooManyRequestsWithNewPassiveFlow) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
@@ -5559,7 +5544,7 @@ TEST_F(RequestServiceTest, ActiveModeTooManyRequestsWithNewPassiveFlow) {
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
 }
 
-TEST_F(RequestServiceTest, ActiveModeTooManyRequestsWithNewActiveFlow) {
+TEST_F(RequestTest, ActiveModeTooManyRequestsWithNewActiveFlow) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
@@ -5614,7 +5599,7 @@ TEST_F(RequestServiceTest, ActiveModeTooManyRequestsWithNewActiveFlow) {
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
 }
 
-TEST_F(RequestServiceTest, PassiveReplacedByActiveFlow) {
+TEST_F(RequestTest, PassiveReplacedByActiveFlow) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
@@ -5714,7 +5699,7 @@ class IdpNetworkRequestMetricsRecorder : public TestIdpNetworkRequestManager {
 
 // Test that the metrics endpoint is not notified when the FedCM API is in
 // cooldown.
-TEST_F(RequestServiceTest, MetricsEndpointDuringCooldown) {
+TEST_F(RequestTest, MetricsEndpointDuringCooldown) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmMetricsEndpoint);
 
@@ -5740,8 +5725,8 @@ TEST_F(RequestServiceTest, MetricsEndpointDuringCooldown) {
 }
 
 // Test that the metrics endpoint is notified as a result of a successful
-// multi-IDP RequestService::RequestToken() call.
-TEST_F(RequestServiceTest, MetricsEndpointMultiIdp) {
+// multi-IDP Request::RequestToken() call.
+TEST_F(RequestTest, MetricsEndpointMultiIdp) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmMetricsEndpoint);
 
@@ -5765,8 +5750,8 @@ TEST_F(RequestServiceTest, MetricsEndpointMultiIdp) {
 }
 
 // Test that the metrics endpoint is notified when
-// RequestService::RequestToken() call fails.
-TEST_F(RequestServiceTest, MetricsEndpointMultiIdpFail) {
+// Request::RequestToken() call fails.
+TEST_F(RequestTest, MetricsEndpointMultiIdpFail) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmMetricsEndpoint);
 
@@ -5793,7 +5778,7 @@ TEST_F(RequestServiceTest, MetricsEndpointMultiIdpFail) {
               ElementsAre(kMetricsEndpoint, "https://idp2.example/metrics"));
 }
 
-TEST_F(RequestServiceTest, AccountsSortedWithTimestamps) {
+TEST_F(RequestTest, AccountsSortedWithTimestamps) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
   // First account is kSignUp so the fact that it has a last used timestamp
@@ -5830,7 +5815,7 @@ TEST_F(RequestServiceTest, AccountsSortedWithTimestamps) {
   EXPECT_EQ(all_accounts_for_display()[2]->id, kAccountIdNicolas);
 }
 
-TEST_F(RequestServiceTest, AccountLabelMultipleAccountsNoMatch) {
+TEST_F(RequestTest, AccountLabelMultipleAccountsNoMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -5861,7 +5846,7 @@ TEST_F(RequestServiceTest, AccountLabelMultipleAccountsNoMatch) {
   ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
-TEST_F(RequestServiceTest, AccountLabelMultipleAccountsOneMatch) {
+TEST_F(RequestTest, AccountLabelMultipleAccountsOneMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
 
   MockConfiguration configuration = kConfigurationValid;
@@ -5882,7 +5867,7 @@ TEST_F(RequestServiceTest, AccountLabelMultipleAccountsOneMatch) {
   ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
-TEST_F(RequestServiceTest, LoginHintSingleAccountIdMatch) {
+TEST_F(RequestTest, LoginHintSingleAccountIdMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].login_hint = kAccountId;
 
@@ -5902,7 +5887,7 @@ TEST_F(RequestServiceTest, LoginHintSingleAccountIdMatch) {
   ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
 }
 
-TEST_F(RequestServiceTest, LoginHintSingleAccountEmailMatch) {
+TEST_F(RequestTest, LoginHintSingleAccountEmailMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].login_hint = kEmail;
 
@@ -5922,7 +5907,7 @@ TEST_F(RequestServiceTest, LoginHintSingleAccountEmailMatch) {
   ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
 }
 
-TEST_F(RequestServiceTest, LoginHintSingleAccountNoMatch) {
+TEST_F(RequestTest, LoginHintSingleAccountNoMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].login_hint = "incorrect_login_hint";
   const RequestExpectations expectations = {
@@ -5948,7 +5933,7 @@ TEST_F(RequestServiceTest, LoginHintSingleAccountNoMatch) {
   ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
 }
 
-TEST_F(RequestServiceTest, LoginHintFirstAccountMatch) {
+TEST_F(RequestTest, LoginHintFirstAccountMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].login_hint = kAccountIdNicolas;
 
@@ -5970,7 +5955,7 @@ TEST_F(RequestServiceTest, LoginHintFirstAccountMatch) {
   ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
 }
 
-TEST_F(RequestServiceTest, LoginHintLastAccountMatch) {
+TEST_F(RequestTest, LoginHintLastAccountMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].login_hint = kAccountIdZach;
 
@@ -5996,7 +5981,7 @@ TEST_F(RequestServiceTest, LoginHintLastAccountMatch) {
   ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
 }
 
-TEST_F(RequestServiceTest, LoginHintMultipleAccountsNoMatch) {
+TEST_F(RequestTest, LoginHintMultipleAccountsNoMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].login_hint = "incorrect_login_hint";
   const RequestExpectations expectations = {
@@ -6025,7 +6010,7 @@ TEST_F(RequestServiceTest, LoginHintMultipleAccountsNoMatch) {
   ExpectUkmValueInEntry("AccountsSize.Raw", FedCmEntry::kEntryName, 3);
 }
 
-TEST_F(RequestServiceTest, DomainHintSingleAccountMatch) {
+TEST_F(RequestTest, DomainHintSingleAccountMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = kDomainHint;
 
@@ -6046,7 +6031,7 @@ TEST_F(RequestServiceTest, DomainHintSingleAccountMatch) {
   ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
-TEST_F(RequestServiceTest, DomainHintSingleAccountStarMatch) {
+TEST_F(RequestTest, DomainHintSingleAccountStarMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint =
       AccountsFetcher::kWildcardDomainHint;
@@ -6068,7 +6053,7 @@ TEST_F(RequestServiceTest, DomainHintSingleAccountStarMatch) {
   ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
-TEST_F(RequestServiceTest, DomainHintSingleAccountStarNoMatch) {
+TEST_F(RequestTest, DomainHintSingleAccountStarNoMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint =
       AccountsFetcher::kWildcardDomainHint;
@@ -6094,7 +6079,7 @@ TEST_F(RequestServiceTest, DomainHintSingleAccountStarNoMatch) {
   ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
-TEST_F(RequestServiceTest, DomainHintSingleAccountNoMatch) {
+TEST_F(RequestTest, DomainHintSingleAccountNoMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = "incorrect_domain_hint";
   const RequestExpectations expectations = {
@@ -6123,7 +6108,7 @@ TEST_F(RequestServiceTest, DomainHintSingleAccountNoMatch) {
   ExpectUkmValueInEntry("AccountsSize.Raw", FedCmEntry::kEntryName, 1);
 }
 
-TEST_F(RequestServiceTest, DomainHintNoMatch) {
+TEST_F(RequestTest, DomainHintNoMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = kDomainHint;
   const RequestExpectations expectations = {
@@ -6145,7 +6130,7 @@ TEST_F(RequestServiceTest, DomainHintNoMatch) {
   ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
-TEST_F(RequestServiceTest, DomainHintMultipleAccountsSingleMatch) {
+TEST_F(RequestTest, DomainHintMultipleAccountsSingleMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = kOtherDomainHint;
 
@@ -6171,7 +6156,7 @@ TEST_F(RequestServiceTest, DomainHintMultipleAccountsSingleMatch) {
   ExpectUkmValueInEntry("AccountsSize.ReadyToShow", FedCmEntry::kEntryName, 1);
 }
 
-TEST_F(RequestServiceTest, DomainHintMultipleAccountsMultipleMatches) {
+TEST_F(RequestTest, DomainHintMultipleAccountsMultipleMatches) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = kDomainHint;
 
@@ -6198,7 +6183,7 @@ TEST_F(RequestServiceTest, DomainHintMultipleAccountsMultipleMatches) {
   ExpectUkmValueInEntry("AccountsSize.ReadyToShow", FedCmEntry::kEntryName, 2);
 }
 
-TEST_F(RequestServiceTest, DomainHintMultipleAccountsStar) {
+TEST_F(RequestTest, DomainHintMultipleAccountsStar) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint =
       AccountsFetcher::kWildcardDomainHint;
@@ -6221,7 +6206,7 @@ TEST_F(RequestServiceTest, DomainHintMultipleAccountsStar) {
   ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
-TEST_F(RequestServiceTest, DomainHintMultipleAccountsNoMatch) {
+TEST_F(RequestTest, DomainHintMultipleAccountsNoMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = "incorrect_domain_hint";
   const RequestExpectations expectations = {
@@ -6247,7 +6232,7 @@ TEST_F(RequestServiceTest, DomainHintMultipleAccountsNoMatch) {
   ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
-TEST_F(RequestServiceTest, PictureFetch) {
+TEST_F(RequestTest, PictureFetch) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts[0]->picture =
       GURL(kAccountPicture);
@@ -6266,7 +6251,7 @@ TEST_F(RequestServiceTest, PictureFetch) {
             all_accounts_for_display()[0]->decoded_picture.Height());
 }
 
-TEST_F(RequestServiceTest, PictureFetchMultipleAccounts) {
+TEST_F(RequestTest, PictureFetchMultipleAccounts) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
   configuration.idp_info[kProviderUrlFull].accounts[0]->picture =
@@ -6293,7 +6278,7 @@ TEST_F(RequestServiceTest, PictureFetchMultipleAccounts) {
 
 // Test that when FedCmRpContext flag is enabled and rp_context is specified,
 // the FedCM request succeeds with the specified rp_context.
-TEST_F(RequestServiceTest, RpContextIsSetToNonDefaultValue) {
+TEST_F(RequestTest, RpContextIsSetToNonDefaultValue) {
   RequestParameters request_parameters = kDefaultRequestParameters;
   request_parameters.rp_context = blink::mojom::RpContext::kContinue;
   MockConfiguration configuration = kConfigurationValid;
@@ -6305,7 +6290,7 @@ TEST_F(RequestServiceTest, RpContextIsSetToNonDefaultValue) {
             blink::mojom::RpContext::kContinue);
 }
 
-TEST_F(RequestServiceTest, WellKnownInvalidContentType) {
+TEST_F(RequestTest, WellKnownInvalidContentType) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull]
       .well_known.fetch_status.parse_status =
@@ -6329,7 +6314,7 @@ TEST_F(RequestServiceTest, WellKnownInvalidContentType) {
   ExpectStatusMetrics(TokenStatus::kWellKnownInvalidContentType);
 }
 
-TEST_F(RequestServiceTest, ConfigInvalidContentType) {
+TEST_F(RequestTest, ConfigInvalidContentType) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].config.fetch_status.parse_status =
       ParseStatus::kInvalidContentTypeError;
@@ -6352,7 +6337,7 @@ TEST_F(RequestServiceTest, ConfigInvalidContentType) {
   ExpectStatusMetrics(TokenStatus::kConfigInvalidContentType);
 }
 
-TEST_F(RequestServiceTest, ClientMetadataInvalidContentType) {
+TEST_F(RequestTest, ClientMetadataInvalidContentType) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull]
       .client_metadata.fetch_status.parse_status =
@@ -6372,7 +6357,7 @@ TEST_F(RequestServiceTest, ClientMetadataInvalidContentType) {
   ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
 }
 
-TEST_F(RequestServiceTest, AccountsInvalidContentType) {
+TEST_F(RequestTest, AccountsInvalidContentType) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
       ParseStatus::kInvalidContentTypeError;
@@ -6395,7 +6380,7 @@ TEST_F(RequestServiceTest, AccountsInvalidContentType) {
   ExpectStatusMetrics(TokenStatus::kAccountsInvalidContentType);
 }
 
-TEST_F(RequestServiceTest, IdTokenInvalidContentType) {
+TEST_F(RequestTest, IdTokenInvalidContentType) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.token_response.parse_status =
       ParseStatus::kInvalidContentTypeError;
@@ -6420,7 +6405,7 @@ TEST_F(RequestServiceTest, IdTokenInvalidContentType) {
 
 // Test successful AuthZ request that returns tokens without opening
 // pop-up windows.
-TEST_F(RequestServiceTest, SuccessfulAuthZRequestNoPopUpWindow) {
+TEST_F(RequestTest, SuccessfulAuthZRequestNoPopUpWindow) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].fields = {"non_default_field"};
 
@@ -6437,7 +6422,7 @@ TEST_F(RequestServiceTest, SuccessfulAuthZRequestNoPopUpWindow) {
 
 // Test successful AuthZ request that request the opening of pop-up
 // windows.
-TEST_F(RequestServiceTest, SuccessfulAuthZRequestWithPopUpWindow) {
+TEST_F(RequestTest, SuccessfulAuthZRequestWithPopUpWindow) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmMetricsEndpoint);
 
@@ -6511,7 +6496,7 @@ TEST_F(RequestServiceTest, SuccessfulAuthZRequestWithPopUpWindow) {
 }
 
 // Test the continuation popup calling close().
-TEST_F(RequestServiceTest, ContinuationPopupCallingClose) {
+TEST_F(RequestTest, ContinuationPopupCallingClose) {
   RequestParameters parameters = kDefaultRequestParameters;
 
   MockConfiguration config = kConfigurationValid;
@@ -6567,7 +6552,7 @@ TEST_F(RequestServiceTest, ContinuationPopupCallingClose) {
 
 // Test successful AuthZ request that request the opening of pop-up
 // windows.
-TEST_F(RequestServiceTest, FailsLoadingAContinueOnForADifferentOrigin) {
+TEST_F(RequestTest, FailsLoadingAContinueOnForADifferentOrigin) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].fields = {"non_default_field"};
 
@@ -6602,7 +6587,7 @@ TEST_F(RequestServiceTest, FailsLoadingAContinueOnForADifferentOrigin) {
 }
 
 // Test metrics for a request with parameters.
-TEST_F(RequestServiceTest, RequestWithParameters) {
+TEST_F(RequestTest, RequestWithParameters) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].params_json = "{\"foo\", \"bar\"}";
 
@@ -6614,7 +6599,7 @@ TEST_F(RequestServiceTest, RequestWithParameters) {
 }
 
 // Test metrics for a request with parameters and scopes.
-TEST_F(RequestServiceTest, RequestWithParametersAndScopes) {
+TEST_F(RequestTest, RequestWithParametersAndScopes) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].fields = {"non_default_field"};
   parameters.identity_providers[0].params_json = "{\"foo\", \"bar\"}";
@@ -6633,12 +6618,12 @@ TEST_F(RequestServiceTest, RequestWithParametersAndScopes) {
 
 // Test successfully signing-in users when they are signed-out on
 // active flows.
-TEST_F(RequestServiceTest, SignInWhenSignedOutOnActiveModeWithUserActivation) {
+TEST_F(RequestTest, SignInWhenSignedOutOnActiveModeWithUserActivation) {
   ExpectSuccessfulActiveFlow();
 }
 
 // Test active flow failure outside of user activation.
-TEST_F(RequestServiceTest, ActiveFlowRequiresUserActivation) {
+TEST_F(RequestTest, ActiveFlowRequiresUserActivation) {
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
 
@@ -6661,7 +6646,7 @@ TEST_F(RequestServiceTest, ActiveFlowRequiresUserActivation) {
 }
 
 // Test the active flow request fails without delay if IdP config is wrong.
-TEST_F(RequestServiceTest, ActiveFlowWellKnownNotInList) {
+TEST_F(RequestTest, ActiveFlowWellKnownNotInList) {
   RequestExpectations request_not_in_list = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kConfigNotInWellKnown,
@@ -6691,7 +6676,7 @@ TEST_F(RequestServiceTest, ActiveFlowWellKnownNotInList) {
   EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
 }
 
-TEST_F(RequestServiceTest, ActiveFlowWithUnknownLoginStatus) {
+TEST_F(RequestTest, ActiveFlowWithUnknownLoginStatus) {
   url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
@@ -6721,7 +6706,7 @@ TEST_F(RequestServiceTest, ActiveFlowWithUnknownLoginStatus) {
 }
 
 // Test that active flow can skip the mismatch UI.
-TEST_F(RequestServiceTest, ActiveFlowSkipsMismatchUI) {
+TEST_F(RequestTest, ActiveFlowSkipsMismatchUI) {
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
   MockConfiguration configuration = kConfigurationValid;
@@ -6749,13 +6734,13 @@ TEST_F(RequestServiceTest, ActiveFlowSkipsMismatchUI) {
 }
 
 // Test that active flow shows the loading dialog.
-TEST_F(RequestServiceTest, ActiveFlowShowsLoadingUI) {
+TEST_F(RequestTest, ActiveFlowShowsLoadingUI) {
   ExpectSuccessfulActiveFlow();
   EXPECT_TRUE(dialog_controller_state_.did_show_loading_dialog);
 }
 
 // Test dismissing a active flow through the loading UI.
-TEST_F(RequestServiceTest, ActiveFlowDismissLoadingUI) {
+TEST_F(RequestTest, ActiveFlowDismissLoadingUI) {
   static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
       ->SimulateUserActivation();
 
@@ -6775,14 +6760,14 @@ TEST_F(RequestServiceTest, ActiveFlowDismissLoadingUI) {
   EXPECT_TRUE(dialog_controller_state_.did_show_loading_dialog);
 }
 
-TEST_F(RequestServiceTest, CloseModalDialogView) {
+TEST_F(RequestTest, CloseModalDialogView) {
   // Test that IdentityRegistry is notified when modal dialog view is closed.
   EXPECT_FALSE(test_identity_registry_->notified_);
   federated_auth_request_impl_->CloseModalDialogView();
   EXPECT_TRUE(test_identity_registry_->notified_);
 }
 
-class RequestServiceNewTabTest : public RequestServiceTest {
+class RequestNewTabTest : public RequestTest {
  protected:
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
@@ -6799,7 +6784,7 @@ class RequestServiceNewTabTest : public RequestServiceTest {
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL("chrome://newtab/"), ui::PAGE_TRANSITION_LINK);
 
-    federated_auth_request_impl_ = &RequestService::CreateForTesting(
+    federated_auth_request_impl_ = &Request::CreateForTesting(
         *main_test_rfh(), test_api_permission_delegate_.get(),
         test_auto_reauthn_permission_delegate_.get(),
         test_permission_delegate_.get(), test_identity_registry_.get(),
@@ -6811,7 +6796,7 @@ class RequestServiceNewTabTest : public RequestServiceTest {
   }
 };
 
-TEST_F(RequestServiceNewTabTest, SuccessfulFlow) {
+TEST_F(RequestNewTabTest, SuccessfulFlow) {
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
 }
@@ -6849,7 +6834,7 @@ class UserInfoCallbackHelper {
   base::RunLoop wait_for_callback_loop_;
 };
 
-TEST_F(RequestServiceTest, RequestUserInfoFailure) {
+TEST_F(RequestTest, RequestUserInfoFailure) {
   blink::mojom::IdentityProviderConfigPtr config =
       blink::mojom::IdentityProviderConfig::New();
   config->config_url = GURL(kIdpUrl);
@@ -6864,7 +6849,7 @@ TEST_F(RequestServiceTest, RequestUserInfoFailure) {
 
 // Tests that when an accounts dialog is shown, the appropriate metrics are
 // recorded.
-TEST_F(RequestServiceTest, AccountsDialogShownMetric) {
+TEST_F(RequestTest, AccountsDialogShownMetric) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
@@ -6882,7 +6867,7 @@ TEST_F(RequestServiceTest, AccountsDialogShownMetric) {
 
 // Tests that when a mismatch dialog is shown, the appropriate metrics are
 // recorded.
-TEST_F(RequestServiceTest, MismatchDialogShownMetric) {
+TEST_F(RequestTest, MismatchDialogShownMetric) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
@@ -6914,7 +6899,7 @@ TEST_F(RequestServiceTest, MismatchDialogShownMetric) {
 }
 
 // Tests that a mismatch dialog is shown twice.
-TEST_F(RequestServiceTest, DoubleMismatchDialog) {
+TEST_F(RequestTest, DoubleMismatchDialog) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
@@ -6955,7 +6940,7 @@ TEST_F(RequestServiceTest, DoubleMismatchDialog) {
 
 // Tests that when an accounts request is sent, the appropriate metrics are
 // recorded.
-TEST_F(RequestServiceTest, AccountsRequestSentMetric) {
+TEST_F(RequestTest, AccountsRequestSentMetric) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
@@ -6971,7 +6956,7 @@ TEST_F(RequestServiceTest, AccountsRequestSentMetric) {
 
 // Tests that when an accounts dialog is aborted, the appropriate duration
 // metrics are recorded.
-TEST_F(RequestServiceTest, AbortedAccountsDialogShownDurationMetric) {
+TEST_F(RequestTest, AbortedAccountsDialogShownDurationMetric) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
@@ -7006,7 +6991,7 @@ TEST_F(RequestServiceTest, AbortedAccountsDialogShownDurationMetric) {
 
 // Tests that when a mismatch dialog is aborted, the appropriate duration
 // metrics are recorded.
-TEST_F(RequestServiceTest, AbortedMismatchDialogShownDurationMetric) {
+TEST_F(RequestTest, AbortedMismatchDialogShownDurationMetric) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
@@ -7051,7 +7036,7 @@ TEST_F(RequestServiceTest, AbortedMismatchDialogShownDurationMetric) {
 
 // Tests that when requests are made to FedCM in succession, the appropriate
 // metrics are recorded upon destruction.
-TEST_F(RequestServiceTest, RecordNumRequestsPerDocumentMetric) {
+TEST_F(RequestTest, RecordNumRequestsPerDocumentMetric) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
@@ -7101,7 +7086,7 @@ TEST_F(RequestServiceTest, RecordNumRequestsPerDocumentMetric) {
 }
 
 // Test that an error dialog is shown when the token response is invalid.
-TEST_F(RequestServiceTest, InvalidResponseErrorDialogShown) {
+TEST_F(RequestTest, InvalidResponseErrorDialogShown) {
   MockConfiguration configuration = kConfigurationValid;
   ErrorDialogType error_dialog_type = ErrorDialogType::kGenericEmptyWithoutUrl;
   TokenResponseType token_response_type = TokenResponseType::
@@ -7137,7 +7122,7 @@ TEST_F(RequestServiceTest, InvalidResponseErrorDialogShown) {
 }
 
 // Test that an error dialog is shown when the token response is missing.
-TEST_F(RequestServiceTest, NoResponseErrorDialogShown) {
+TEST_F(RequestTest, NoResponseErrorDialogShown) {
   MockConfiguration configuration = kConfigurationValid;
   ErrorDialogType error_dialog_type = ErrorDialogType::kGenericEmptyWithoutUrl;
   TokenResponseType token_response_type = TokenResponseType::
@@ -7172,7 +7157,7 @@ TEST_F(RequestServiceTest, NoResponseErrorDialogShown) {
 }
 
 // Test that the error UI has proper url set.
-TEST_F(RequestServiceTest, ErrorUrlDisplayedWithProperUrl) {
+TEST_F(RequestTest, ErrorUrlDisplayedWithProperUrl) {
   MockConfiguration configuration = kConfigurationValid;
   ErrorDialogType error_dialog_type = ErrorDialogType::kGenericEmptyWithUrl;
   TokenResponseType token_response_type = TokenResponseType::
@@ -7213,7 +7198,7 @@ TEST_F(RequestServiceTest, ErrorUrlDisplayedWithProperUrl) {
 }
 
 // Test that permission is embargoed upon closing a mismatch dialog.
-TEST_F(RequestServiceTest, IdpSigninStatusCloseMismatchEmbargo) {
+TEST_F(RequestTest, IdpSigninStatusCloseMismatchEmbargo) {
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
 
@@ -7235,7 +7220,7 @@ TEST_F(RequestServiceTest, IdpSigninStatusCloseMismatchEmbargo) {
 
 // Test that permission is not embargoed upon closing an IDP sign-in flow
 // pop-up.
-TEST_F(RequestServiceTest, IdpSigninStatusClosePopupEmbargo) {
+TEST_F(RequestTest, IdpSigninStatusClosePopupEmbargo) {
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
 
@@ -7256,7 +7241,7 @@ TEST_F(RequestServiceTest, IdpSigninStatusClosePopupEmbargo) {
 }
 
 // Test that no registered IdP is added without a registry requested.
-TEST_F(RequestServiceTest, MaybeAddRegisteredProvidersEmptyList) {
+TEST_F(RequestTest, MaybeAddRegisteredProvidersEmptyList) {
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> providers;
 
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> result =
@@ -7266,7 +7251,7 @@ TEST_F(RequestServiceTest, MaybeAddRegisteredProvidersEmptyList) {
 }
 
 // Test that no registered IdP with only named providers requested.
-TEST_F(RequestServiceTest, MaybeAddRegisteredProvidersNamed) {
+TEST_F(RequestTest, MaybeAddRegisteredProvidersNamed) {
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> providers;
   providers.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId,
                                      /*is_registered=*/false));
@@ -7283,7 +7268,7 @@ TEST_F(RequestServiceTest, MaybeAddRegisteredProvidersNamed) {
 }
 
 // Test that a registered provider is added.
-TEST_F(RequestServiceTest, MaybeAddRegisteredProvidersAdded) {
+TEST_F(RequestTest, MaybeAddRegisteredProvidersAdded) {
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> providers;
   providers.emplace_back(NewRegisteredIdP(kClientId));
 
@@ -7305,7 +7290,7 @@ TEST_F(RequestServiceTest, MaybeAddRegisteredProvidersAdded) {
 }
 
 // Test that all registered IdPs are expanded.
-TEST_F(RequestServiceTest,
+TEST_F(RequestTest,
        MaybeAddRegisteredProvidersAllRequestsForRegisteredIdPsAreExpanded) {
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> providers;
   providers.emplace_back(NewRegisteredIdP(kClientId));
@@ -7331,7 +7316,7 @@ TEST_F(RequestServiceTest,
 }
 
 // Test that the registry can add two idps.
-TEST_F(RequestServiceTest, MaybeAddRegisteredProvidersTwoRegisteredIdPs) {
+TEST_F(RequestTest, MaybeAddRegisteredProvidersTwoRegisteredIdPs) {
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> providers;
   providers.emplace_back(NewRegisteredIdP(kClientId));
 
@@ -7355,7 +7340,7 @@ TEST_F(RequestServiceTest, MaybeAddRegisteredProvidersTwoRegisteredIdPs) {
 }
 
 // Test that registered idps are inserted inline.
-TEST_F(RequestServiceTest, MaybeAddRegisteredProvidersInsertedInline) {
+TEST_F(RequestTest, MaybeAddRegisteredProvidersInsertedInline) {
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> providers;
   providers.emplace_back(NewNamedIdP(GURL("https://idp1.example"), kClientId,
                                      /*is_registered=*/false));
@@ -7388,7 +7373,7 @@ TEST_F(RequestServiceTest, MaybeAddRegisteredProvidersInsertedInline) {
 }
 
 // Test that error dialog type metrics are recorded.
-TEST_F(RequestServiceTest, ErrorDialogTypeMetrics) {
+TEST_F(RequestTest, ErrorDialogTypeMetrics) {
   MockConfiguration configuration = kConfigurationValid;
   ErrorDialogType error_dialog_type = ErrorDialogType::kInvalidRequestWithUrl;
   configuration.token_error = TokenError(/*code=*/"invalid_request",
@@ -7414,7 +7399,7 @@ TEST_F(RequestServiceTest, ErrorDialogTypeMetrics) {
 }
 
 // Test that error dialog result metrics are recorded.
-TEST_F(RequestServiceTest, ErrorDialogResultMetrics) {
+TEST_F(RequestTest, ErrorDialogResultMetrics) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.token_error =
       TokenError(/*code=*/"", GURL("https://foo.idp.example/error"));
@@ -7440,7 +7425,7 @@ TEST_F(RequestServiceTest, ErrorDialogResultMetrics) {
 }
 
 // Test that token response type metrics are recorded.
-TEST_F(RequestServiceTest, TokenResponseTypeMetrics) {
+TEST_F(RequestTest, TokenResponseTypeMetrics) {
   MockConfiguration configuration = kConfigurationValid;
   TokenResponseType token_response_type = TokenResponseType::
       kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceived;
@@ -7467,7 +7452,7 @@ TEST_F(RequestServiceTest, TokenResponseTypeMetrics) {
 }
 
 // Test that error url type metrics are recorded.
-TEST_F(RequestServiceTest, ErrorUrlTypeMetrics) {
+TEST_F(RequestTest, ErrorUrlTypeMetrics) {
   MockConfiguration configuration = kConfigurationValid;
   ErrorUrlType error_url_type = ErrorUrlType::kCrossOriginSameSite;
   configuration.token_error = TokenError(/*code=*/"invalid_request",
@@ -7494,7 +7479,7 @@ TEST_F(RequestServiceTest, ErrorUrlTypeMetrics) {
 
 // Test that cross-site URL fails the request with the appropriate devtools
 // issue.
-TEST_F(RequestServiceTest, CrossSiteErrorDialogDevtoolsIssue) {
+TEST_F(RequestTest, CrossSiteErrorDialogDevtoolsIssue) {
   MockConfiguration configuration = kConfigurationValid;
   ErrorUrlType error_url_type = ErrorUrlType::kCrossSite;
   configuration.token_error = TokenError(
@@ -7514,8 +7499,7 @@ TEST_F(RequestServiceTest, CrossSiteErrorDialogDevtoolsIssue) {
 
 // Test that the account UI is not displayed if FedCM is disabled after accounts
 // fetch.
-TEST_F(RequestServiceTest,
-       AccountUiNotDisplayedIfFedCmDisabledAfterAccountsFetch) {
+TEST_F(RequestTest, AccountUiNotDisplayedIfFedCmDisabledAfterAccountsFetch) {
   test_api_permission_delegate_->permission_override_for_nth_ = std::make_pair(
       /*override the nth invocation=*/2,
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
@@ -7531,7 +7515,7 @@ TEST_F(RequestServiceTest,
   EXPECT_FALSE(did_show_accounts_dialog());
 }
 
-TEST_F(RequestServiceTest, DomainHintInLoginUrl) {
+TEST_F(RequestTest, DomainHintInLoginUrl) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = kDomainHint;
 
@@ -7565,7 +7549,7 @@ TEST_F(RequestServiceTest, DomainHintInLoginUrl) {
   EXPECT_EQ(login_url, expected_url);
 }
 
-TEST_F(RequestServiceTest, LoginHintInLoginUrl) {
+TEST_F(RequestTest, LoginHintInLoginUrl) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].login_hint = "hint";
 
@@ -7599,7 +7583,7 @@ TEST_F(RequestServiceTest, LoginHintInLoginUrl) {
   EXPECT_EQ(login_url, expected_url);
 }
 
-TEST_F(RequestServiceTest, DomainHintAndLoginHintInLoginUrl) {
+TEST_F(RequestTest, DomainHintAndLoginHintInLoginUrl) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = kDomainHint;
   parameters.identity_providers[0].login_hint = "hint";
@@ -7634,7 +7618,7 @@ TEST_F(RequestServiceTest, DomainHintAndLoginHintInLoginUrl) {
   EXPECT_EQ(login_url, expected_url);
 }
 
-TEST_F(RequestServiceTest, DomainHintAndLoginHintInLoginUrlWithQuery) {
+TEST_F(RequestTest, DomainHintAndLoginHintInLoginUrlWithQuery) {
   RequestParameters parameters = kDefaultRequestParameters;
   // Testing that spaces are transformed in the url.
   parameters.identity_providers[0].domain_hint = "domain hint";
@@ -7674,7 +7658,7 @@ TEST_F(RequestServiceTest, DomainHintAndLoginHintInLoginUrlWithQuery) {
   EXPECT_EQ(login_url, expected_url);
 }
 
-TEST_F(RequestServiceTest, DomainHintAddAccount) {
+TEST_F(RequestTest, DomainHintAddAccount) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = kDomainHint;
 
@@ -7705,7 +7689,7 @@ TEST_F(RequestServiceTest, DomainHintAddAccount) {
 }
 
 // Test that auto re-authn works in active mode.
-TEST_F(RequestServiceTest, AutoReauthnInActiveMode) {
+TEST_F(RequestTest, AutoReauthnInActiveMode) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -7744,8 +7728,7 @@ TEST_F(RequestServiceTest, AutoReauthnInActiveMode) {
 }
 
 // Test that IdP claimed SignUp takes precedence over browser observed SignIn.
-TEST_F(RequestServiceTest,
-       IdPClaimedSignUpTakesPrecedenceOverBrowserObservedSignIn) {
+TEST_F(RequestTest, IdPClaimedSignUpTakesPrecedenceOverBrowserObservedSignIn) {
   // Pretend the sharing permission has been granted for all accounts.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -7784,7 +7767,7 @@ TEST_F(RequestServiceTest,
 }
 
 // Test that IdP claimed SignIn does not affect browser observed SignUp.
-TEST_F(RequestServiceTest, IdPClaimedSignInDoesNotAffectBrowserObservedSignUp) {
+TEST_F(RequestTest, IdPClaimedSignInDoesNotAffectBrowserObservedSignUp) {
   // Pretend the sharing permission has NOT been granted for any account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -7821,8 +7804,7 @@ TEST_F(RequestServiceTest, IdPClaimedSignInDoesNotAffectBrowserObservedSignUp) {
 
 // Test that IdP claimed SignIn can affect browser observed SignUp if they have
 // third-party cookies access.
-TEST_F(RequestServiceTest,
-       IdPClaimedSignInAffectsBrowserObservedSignUpWith3PCAccess) {
+TEST_F(RequestTest, IdPClaimedSignInAffectsBrowserObservedSignUpWith3PCAccess) {
   // Pretend the sharing permission has NOT been granted for any account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -7864,7 +7846,7 @@ TEST_F(RequestServiceTest,
 }
 
 // Test active flow is exempted if the FedCM is disabled in  settings.
-TEST_F(RequestServiceTest, ActiveFlowNotAffectedBySettings) {
+TEST_F(RequestTest, ActiveFlowNotAffectedBySettings) {
   test_api_permission_delegate_->permission_override_ =
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
                      ApiPermissionStatus::BLOCKED_SETTINGS);
@@ -7872,14 +7854,14 @@ TEST_F(RequestServiceTest, ActiveFlowNotAffectedBySettings) {
 }
 
 // Test active flow is exempted if the FedCM is embargoed in the passive flow.
-TEST_F(RequestServiceTest, ActiveFlowNotAffectedByEmbargo) {
+TEST_F(RequestTest, ActiveFlowNotAffectedByEmbargo) {
   test_api_permission_delegate_->RecordDismissAndEmbargo(
       OriginFromString(kRpUrl));
   ExpectSuccessfulActiveFlow();
 }
 
 // Test dismissing UI in active flow does not trigger embargo.
-TEST_F(RequestServiceTest, ActiveFlowNotAffectEmbargo) {
+TEST_F(RequestTest, ActiveFlowNotAffectEmbargo) {
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
                                         ukm_loop.QuitClosure());
@@ -7915,7 +7897,7 @@ TEST_F(RequestServiceTest, ActiveFlowNotAffectEmbargo) {
 // Test ambient UI is NOT exempt from the cooldown embargo.
 // Because the ambient UI is still not entirely complete (e.g. it can't handle
 // multiple accounts, mismatch UIs, etc), we respect the cooldown embargo.
-TEST_F(RequestServiceTest, AmbientFlowDismissedByEmbargo) {
+TEST_F(RequestTest, AmbientFlowDismissedByEmbargo) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFedCmAmbientUI);
 
@@ -7935,7 +7917,7 @@ TEST_F(RequestServiceTest, AmbientFlowDismissedByEmbargo) {
 // Test dismissing UI in ambient UI does not trigger embargo.
 // While the ambient UI respects the embargo, it does not trigger / set it,
 // e.g. when the use dismisses it.
-TEST_F(RequestServiceTest, AmbientFlowDoesNotCauseAnEmbargo) {
+TEST_F(RequestTest, AmbientFlowDoesNotCauseAnEmbargo) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFedCmAmbientUI);
 
@@ -7955,7 +7937,7 @@ TEST_F(RequestServiceTest, AmbientFlowDoesNotCauseAnEmbargo) {
 }
 
 // Test that non-ambient passive flow still triggers embargo.
-TEST_F(RequestServiceTest, NonAmbientPassiveFlowStillAffectsEmbargo) {
+TEST_F(RequestTest, NonAmbientPassiveFlowStillAffectsEmbargo) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFedCmAmbientUI);
 
@@ -7977,7 +7959,7 @@ TEST_F(RequestServiceTest, NonAmbientPassiveFlowStillAffectsEmbargo) {
 
 // Tests that when background text is passed but no background color, the
 // background text is ignored.
-TEST_F(RequestServiceTest, BrandingWithTextColorAndNoBackgroundColor) {
+TEST_F(RequestTest, BrandingWithTextColorAndNoBackgroundColor) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].config.brand_text_color =
       SkColorSetRGB(10, 10, 10);
@@ -7993,7 +7975,7 @@ TEST_F(RequestServiceTest, BrandingWithTextColorAndNoBackgroundColor) {
 
 // Tests that when background text does not contrast enough with the background
 // color, the text color is ignored.
-TEST_F(RequestServiceTest, BrandingWithInsufficientContrastTextColor) {
+TEST_F(RequestTest, BrandingWithInsufficientContrastTextColor) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].config.brand_background_color =
       SkColorSetRGB(0, 0, 0);
@@ -8009,10 +7991,10 @@ TEST_F(RequestServiceTest, BrandingWithInsufficientContrastTextColor) {
   EXPECT_EQ(brand_text_color(), std::nullopt);
 }
 
-class FederatedAuthRequestExampleOrgTest : public RequestServiceTest {
+class FederatedAuthRequestExampleOrgTest : public RequestTest {
  public:
   FederatedAuthRequestExampleOrgTest()
-      : RequestServiceTest("https://rp.example.org/") {}
+      : RequestTest("https://rp.example.org/") {}
 };
 
 TEST_F(FederatedAuthRequestExampleOrgTest, WellKnownSameSite) {
@@ -8091,7 +8073,7 @@ class TestDialogControllerWithImmediateDismiss : public TestDialogController {
 };
 
 // Crash test for crbug.com/328945371.
-TEST_F(RequestServiceTest, ImmediateDismiss) {
+TEST_F(RequestTest, ImmediateDismiss) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kUiDismissedNoEmbargo,
@@ -8108,7 +8090,7 @@ TEST_F(RequestServiceTest, ImmediateDismiss) {
 }
 
 // Tests that dismissing during ShowFailureDialog() does not crash.
-TEST_F(RequestServiceTest, FailureDialogImmediateDismiss) {
+TEST_F(RequestTest, FailureDialogImmediateDismiss) {
   url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
 
   MockConfiguration configuration = kConfigurationValid;
@@ -8130,7 +8112,7 @@ TEST_F(RequestServiceTest, FailureDialogImmediateDismiss) {
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
-TEST_F(RequestServiceTest, UseOtherAccountAccountOrder) {
+TEST_F(RequestTest, UseOtherAccountAccountOrder) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.accounts_dialog_action = AccountsDialogAction::kAddAccount;
 
@@ -8191,7 +8173,7 @@ TEST_F(RequestServiceTest, UseOtherAccountAccountOrder) {
 
 // Tests that when use a different account is used and multiple accounts are
 // logged in at once, all the new accounts are part of the new_accounts().
-TEST_F(RequestServiceTest, UseOtherAccountMultipleNewAccounts) {
+TEST_F(RequestTest, UseOtherAccountMultipleNewAccounts) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.accounts_dialog_action = AccountsDialogAction::kAddAccount;
   auto dialog_controller =
@@ -8249,7 +8231,7 @@ TEST_F(RequestServiceTest, UseOtherAccountMultipleNewAccounts) {
       static_cast<int>(UseOtherAccountResult::kUserSignsInWithNewAccount));
 }
 
-TEST_F(RequestServiceTest, UseOtherAccountNoNewAccount) {
+TEST_F(RequestTest, UseOtherAccountNoNewAccount) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.accounts_dialog_action = AccountsDialogAction::kAddAccount;
   auto dialog_controller =
@@ -8285,7 +8267,7 @@ TEST_F(RequestServiceTest, UseOtherAccountNoNewAccount) {
       static_cast<int>(UseOtherAccountResult::kUserSignsInWithExistingAccount));
 }
 
-TEST_F(RequestServiceTest, UseOtherAccountThenClose) {
+TEST_F(RequestTest, UseOtherAccountThenClose) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.accounts_dialog_action = AccountsDialogAction::kAddAccount;
   auto dialog_controller =
@@ -8328,7 +8310,7 @@ TEST_F(RequestServiceTest, UseOtherAccountThenClose) {
                  static_cast<int>(UseOtherAccountResult::kUserDoesNotSignIn));
 }
 
-TEST_F(RequestServiceTest, MultipleIdpSigninDueToHint) {
+TEST_F(RequestTest, MultipleIdpSigninDueToHint) {
   url::Origin providerOrigin = OriginFromString(kProviderUrlFull);
 
   // Use an invalid login hint so login to IDP URL is shown.
@@ -8359,7 +8341,7 @@ TEST_F(RequestServiceTest, MultipleIdpSigninDueToHint) {
   }
 }
 
-TEST_F(RequestServiceTest, VerifyingDialogCancelExplicitMetrics) {
+TEST_F(RequestTest, VerifyingDialogCancelExplicitMetrics) {
   MockConfiguration config = kConfigurationValid;
   config.delay_token_response = true;
 
@@ -8373,7 +8355,7 @@ TEST_F(RequestServiceTest, VerifyingDialogCancelExplicitMetrics) {
                  static_cast<int>(VerifyingDialogResult::kCancelExplicit));
 }
 
-TEST_F(RequestServiceTest, VerifyingDialogCancelAutoReauthnMetrics) {
+TEST_F(RequestTest, VerifyingDialogCancelAutoReauthnMetrics) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -8402,7 +8384,7 @@ TEST_F(RequestServiceTest, VerifyingDialogCancelAutoReauthnMetrics) {
                  static_cast<int>(VerifyingDialogResult::kCancelAutoReauthn));
 }
 
-TEST_F(RequestServiceTest, VerifyingDialogDestroyExplicitMetrics) {
+TEST_F(RequestTest, VerifyingDialogDestroyExplicitMetrics) {
   MockConfiguration config = kConfigurationValid;
   config.delay_token_response = true;
 
@@ -8416,7 +8398,7 @@ TEST_F(RequestServiceTest, VerifyingDialogDestroyExplicitMetrics) {
                  static_cast<int>(VerifyingDialogResult::kDestroyExplicit));
 }
 
-TEST_F(RequestServiceTest, VerifyingDialogDestroyAutoReauthnMetrics) {
+TEST_F(RequestTest, VerifyingDialogDestroyAutoReauthnMetrics) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -8445,7 +8427,7 @@ TEST_F(RequestServiceTest, VerifyingDialogDestroyAutoReauthnMetrics) {
                  static_cast<int>(VerifyingDialogResult::kDestroyAutoReauthn));
 }
 
-TEST_F(RequestServiceTest, MetricsForThirdPartyCookiesEnabledInSettings) {
+TEST_F(RequestTest, MetricsForThirdPartyCookiesEnabledInSettings) {
   // Pretend that third party cookies are enabled in settings.
   EXPECT_CALL(*test_api_permission_delegate_,
               AreThirdPartyCookiesEnabledInSettings())
@@ -8466,7 +8448,7 @@ TEST_F(RequestServiceTest, MetricsForThirdPartyCookiesEnabledInSettings) {
   ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
 }
 
-TEST_F(RequestServiceTest, MetricsForThirdPartyCookiesDisabledInSettings) {
+TEST_F(RequestTest, MetricsForThirdPartyCookiesDisabledInSettings) {
   // Pretend that third party cookies are disabled in settings.
   EXPECT_CALL(*test_api_permission_delegate_,
               AreThirdPartyCookiesEnabledInSettings())
@@ -8490,7 +8472,7 @@ TEST_F(RequestServiceTest, MetricsForThirdPartyCookiesDisabledInSettings) {
 
 // Tests that we record whether the RP's URL has a path when an accounts dialog
 // is shown.
-TEST_F(RequestServiceTest, MetricsForRpUrlHasPath) {
+TEST_F(RequestTest, MetricsForRpUrlHasPath) {
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
   EXPECT_TRUE(did_show_accounts_dialog());
@@ -8499,7 +8481,7 @@ TEST_F(RequestServiceTest, MetricsForRpUrlHasPath) {
 }
 
 // Tests that we record the scroll position when an account is selected.
-TEST_F(RequestServiceTest, MetricsForAccountSelectionScrollPosition) {
+TEST_F(RequestTest, MetricsForAccountSelectionScrollPosition) {
   // Mock the `GetScrollPosition` call.
   TestRenderFrameHost* test_rfh =
       static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame());
@@ -8514,7 +8496,7 @@ TEST_F(RequestServiceTest, MetricsForAccountSelectionScrollPosition) {
                         FedCmEntry::kEntryName, 0);
 }
 
-TEST_F(RequestServiceTest, CancelReasonMetrics) {
+TEST_F(RequestTest, CancelReasonMetrics) {
   MockConfiguration config = kConfigurationValid;
   config.accounts_dialog_action = AccountsDialogAction::kClose;
   RequestExpectations expectations = {
@@ -8535,13 +8517,13 @@ TEST_F(RequestServiceTest, CancelReasonMetrics) {
 
 // Tests that the request is successful when the segmentation platform
 // recommends the ambient UI volume.
-TEST_F(RequestServiceTest, SegmentationPlatformRecommendsAmbientVolume) {
+TEST_F(RequestTest, SegmentationPlatformRecommendsAmbientVolume) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.suppressed_by_segmentation_platform = true;
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
 }
 
-TEST_F(RequestServiceTest, MetricsForConsecutiveSuccessfulRequests) {
+TEST_F(RequestTest, MetricsForConsecutiveSuccessfulRequests) {
   // First successful auth request.
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
@@ -8581,7 +8563,7 @@ TEST_F(RequestServiceTest, MetricsForConsecutiveSuccessfulRequests) {
 
 // Test that completing a disconnect request while there is a pending request
 // and then later completing the pending request does not crash.
-TEST_F(RequestServiceTest, DisconnectWithPendingRequest) {
+TEST_F(RequestTest, DisconnectWithPendingRequest) {
   // Start an auth request.
   RunAuthDontWaitForCallback(kDefaultRequestParameters, kConfigurationValid);
 
@@ -8623,10 +8605,9 @@ class FakeLocalFrameWithDelayedCallback : public FakeLocalFrame {
 };
 
 // Tests that we record the scroll position when an account is selected, even
-// when `GetScrollPosition` runs its callback after the RequestService
+// when `GetScrollPosition` runs its callback after the Request
 // object is destroyed.
-TEST_F(RequestServiceTest,
-       MetricsForAccountSelectionScrollPositionDelayedCallback) {
+TEST_F(RequestTest, MetricsForAccountSelectionScrollPositionDelayedCallback) {
   // Mock the `GetScrollPosition` call.
   FakeLocalFrameWithDelayedCallback frame(
       web_contents()->GetPrimaryMainFrame());
@@ -8641,7 +8622,7 @@ TEST_F(RequestServiceTest,
                         FedCmEntry::kEntryName, 0);
 }
 
-TEST_F(RequestServiceTest, RecordsNoncePresence) {
+TEST_F(RequestTest, RecordsNoncePresence) {
   // TODO(crbug.com/441895082): Remove this test when FedCmNonceInParams is
   // enabled by default. Nonce should be passed via params field, not as a
   // separate field.
@@ -8656,7 +8637,7 @@ TEST_F(RequestServiceTest, RecordsNoncePresence) {
 
 // Test that Blink.FedCm.HasNonceOutsideParamsOnly is not recorded when a nonce
 // is present in params.
-TEST_F(RequestServiceTest, HasNonceOutsideParamsOnly_ParamsWithNonce) {
+TEST_F(RequestTest, HasNonceOutsideParamsOnly_ParamsWithNonce) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].params_json = "{\"nonce\":\"abc\"}";
   RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
@@ -8669,7 +8650,7 @@ TEST_F(RequestServiceTest, HasNonceOutsideParamsOnly_ParamsWithNonce) {
 
 // Test that Blink.FedCm.HasNonceOutsideParamsOnly is not recorded when a nonce
 // is not present.
-TEST_F(RequestServiceTest, HasNonceOutsideParamsOnly_NoNonce) {
+TEST_F(RequestTest, HasNonceOutsideParamsOnly_NoNonce) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].nonce = "";
   RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
@@ -8682,7 +8663,7 @@ TEST_F(RequestServiceTest, HasNonceOutsideParamsOnly_NoNonce) {
 
 // Test that Blink.FedCm.HasNonceOutsideParamsOnly is not recorded when a nonce
 // is only present in params.
-TEST_F(RequestServiceTest, HasNonceOutsideParamsOnly_NonceOnlyInParams) {
+TEST_F(RequestTest, HasNonceOutsideParamsOnly_NonceOnlyInParams) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].nonce = "";
   parameters.identity_providers[0].params_json = "{\"nonce\":\"abc\"}";
@@ -8694,7 +8675,7 @@ TEST_F(RequestServiceTest, HasNonceOutsideParamsOnly_NonceOnlyInParams) {
   ExpectNoUKMPresence("HasNonceOutsideParamsOnly");
 }
 
-TEST_F(RequestServiceTest, NonceAbsenceNoRecord) {
+TEST_F(RequestTest, NonceAbsenceNoRecord) {
   // TODO(crbug.com/441895082): Remove this test when FedCmNonceInParams is
   // enabled by default. Nonce should be passed via params field, not as a
   // separate field.
@@ -8706,7 +8687,7 @@ TEST_F(RequestServiceTest, NonceAbsenceNoRecord) {
 }
 
 // Tests that LifecycleStateFailureReason is recorded when page is non-primary.
-TEST_F(RequestServiceTest, NonPrimaryPageMetrics) {
+TEST_F(RequestTest, NonPrimaryPageMetrics) {
   static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())
       ->SetLifecycleState(
           RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
@@ -8725,7 +8706,7 @@ TEST_F(RequestServiceTest, NonPrimaryPageMetrics) {
 
 // Test that if there are multiple IdPs, the UI should not be suppressed even if
 // configuration.suppressed_by_segmentation_platform is set to true.
-TEST_F(RequestServiceTest, SuppressedBySegmentationPlatformButMultipleIdps) {
+TEST_F(RequestTest, SuppressedBySegmentationPlatformButMultipleIdps) {
   // Use IdpNetworkRequestManagerParamChecker to validate passed-in parameters
   // to IdpNetworkRequestManager methods.
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
@@ -8851,7 +8832,7 @@ class TestDialogControllerWithIdentityCredentialSource
 };
 
 TEST_F(
-    RequestServiceTest,
+    RequestTest,
     IdentityCredentialSourceReturnsReturningAccountsAndResolvesFedCmRequest) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
@@ -8867,8 +8848,7 @@ TEST_F(
   EXPECT_EQ(1u, NumFetched(FetchedEndpoint::TOKEN));
 }
 
-TEST_F(RequestServiceTest,
-       IdentityCredentialSourceReturnsFilteredSigninAccounts) {
+TEST_F(RequestTest, IdentityCredentialSourceReturnsFilteredSigninAccounts) {
   MockConfiguration configuration = kConfigurationValid;
 
   // Use Nicolas (SignUp), Peter (SignIn), and Zach (SignIn).
@@ -8907,7 +8887,7 @@ TEST_F(RequestServiceTest,
   EXPECT_EQ(1u, NumFetched(FetchedEndpoint::TOKEN));
 }
 
-TEST_F(RequestServiceTest, IdentityCredentialSourceFailsOnInvalidAccountId) {
+TEST_F(RequestTest, IdentityCredentialSourceFailsOnInvalidAccountId) {
   RenderFrameHostTester::For(main_rfh())->ClearConsoleMessages();
 
   MockConfiguration configuration = kConfigurationValid;
@@ -8928,7 +8908,7 @@ TEST_F(RequestServiceTest, IdentityCredentialSourceFailsOnInvalidAccountId) {
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
-TEST_F(RequestServiceTest, IdentityCredentialSourceFailsOnInvalidOrigin) {
+TEST_F(RequestTest, IdentityCredentialSourceFailsOnInvalidOrigin) {
   RenderFrameHostTester::For(main_rfh())->ClearConsoleMessages();
 
   MockConfiguration configuration = kConfigurationValid;
@@ -8949,7 +8929,7 @@ TEST_F(RequestServiceTest, IdentityCredentialSourceFailsOnInvalidOrigin) {
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
-TEST_F(RequestServiceTest, RequestTokenDeniedByPermissionsPolicy) {
+TEST_F(RequestTest, RequestTokenDeniedByPermissionsPolicy) {
   auto remote = NavigateAndBindWithDeniedIdentityCredentialsGetPolicy();
   mojo::test::BadMessageObserver bad_message_observer;
 
@@ -8973,7 +8953,7 @@ TEST_F(RequestServiceTest, RequestTokenDeniedByPermissionsPolicy) {
             bad_message_observer.WaitForBadMessage());
 }
 
-TEST_F(RequestServiceTest, RequestUserInfoDeniedByPermissionsPolicy) {
+TEST_F(RequestTest, RequestUserInfoDeniedByPermissionsPolicy) {
   auto remote = NavigateAndBindWithDeniedIdentityCredentialsGetPolicy();
   mojo::test::BadMessageObserver bad_message_observer;
 
@@ -8987,7 +8967,7 @@ TEST_F(RequestServiceTest, RequestUserInfoDeniedByPermissionsPolicy) {
             bad_message_observer.WaitForBadMessage());
 }
 
-TEST_F(RequestServiceTest, DisconnectDeniedByPermissionsPolicy) {
+TEST_F(RequestTest, DisconnectDeniedByPermissionsPolicy) {
   auto remote = NavigateAndBindWithDeniedIdentityCredentialsGetPolicy();
   mojo::test::BadMessageObserver bad_message_observer;
 
@@ -9008,12 +8988,11 @@ struct NotifyAutofillTestParams {
   bool show_modal;
 };
 
-class RequestServiceNotifyAutofillParamTest
-    : public RequestServiceTest,
+class RequestNotifyAutofillParamTest
+    : public RequestTest,
       public ::testing::WithParamInterface<NotifyAutofillTestParams> {};
 
-TEST_P(RequestServiceNotifyAutofillParamTest,
-       NotifyAutofillSuggestionAccepted) {
+TEST_P(RequestNotifyAutofillParamTest, NotifyAutofillSuggestionAccepted) {
   NotifyAutofillTestParams params = GetParam();
   auto dialog_controller =
       std::make_unique<TestDialogController>(kConfigurationValid);
@@ -9029,7 +9008,7 @@ TEST_P(RequestServiceNotifyAutofillParamTest,
 
   std::optional<bool> callback_result;
   base::RunLoop run_loop;
-  RequestService::OnFederatedTokenReceivedCallback callback = base::BindOnce(
+  Request::OnFederatedTokenReceivedCallback callback = base::BindOnce(
       [](std::optional<bool>* callback_result, base::OnceClosure quit_closure,
          bool accepted) {
         *callback_result = accepted;
@@ -9051,7 +9030,7 @@ TEST_P(RequestServiceNotifyAutofillParamTest,
 
 INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
-    RequestServiceNotifyAutofillParamTest,
+    RequestNotifyAutofillParamTest,
     ::testing::Values(NotifyAutofillTestParams{/*unknown_idp=*/true,
                                                /*show_modal=*/true},
                       NotifyAutofillTestParams{/*unknown_idp=*/true,
@@ -9061,7 +9040,7 @@ INSTANTIATE_TEST_SUITE_P(
                       NotifyAutofillTestParams{/*unknown_idp=*/false,
                                                /*show_modal=*/false}));
 
-TEST_F(RequestServiceTest, DismissIgnoredDuringRedirectTo) {
+TEST_F(RequestTest, DismissIgnoredDuringRedirectTo) {
   base::HistogramTester histogram_tester;
 
   MockConfiguration config = kConfigurationValid;

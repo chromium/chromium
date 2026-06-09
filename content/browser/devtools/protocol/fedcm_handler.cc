@@ -9,8 +9,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/request.h"
 #include "content/browser/webid/request_page_data.h"
-#include "content/browser/webid/request_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
@@ -19,7 +19,7 @@ namespace content {
 namespace {
 namespace FedCm = protocol::FedCm;
 
-using DialogType = webid::RequestService::DialogType;
+using DialogType = webid::Request::DialogType;
 
 FedCm::DialogType ConvertDialogType(DialogType type) {
   switch (type) {
@@ -352,7 +352,7 @@ webid::RequestPageData* FedCmHandler::GetPageData() {
   return PageUserData<webid::RequestPageData>::GetOrCreateForPage(page);
 }
 
-webid::RequestService* FedCmHandler::GetFederatedAuthRequest() {
+webid::Request* FedCmHandler::GetFederatedAuthRequest() {
   webid::RequestPageData* page_data = GetPageData();
   if (!page_data) {
     return nullptr;
@@ -361,7 +361,7 @@ webid::RequestService* FedCmHandler::GetFederatedAuthRequest() {
 }
 
 const std::vector<IdentityProviderDataPtr>*
-FedCmHandler::GetIdentityProviderData(webid::RequestService* auth_request) {
+FedCmHandler::GetIdentityProviderData(webid::Request* auth_request) {
   if (!auth_request) {
     return nullptr;
   }
@@ -374,7 +374,7 @@ FedCmHandler::GetIdentityProviderData(webid::RequestService* auth_request) {
 }
 
 const std::vector<IdentityRequestAccountPtr>* FedCmHandler::GetAccounts(
-    webid::RequestService* auth_request) {
+    webid::Request* auth_request) {
   if (!auth_request) {
     return nullptr;
   }

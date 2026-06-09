@@ -25,7 +25,7 @@ namespace webid {
 class ConfigFetcher;
 class DisconnectRequestTest;
 class Metrics;
-class RequestServiceTest;
+class RequestTest;
 
 // Fetches data for a FedCM disconnect request.
 class CONTENT_EXPORT DisconnectRequest {
@@ -51,7 +51,7 @@ class CONTENT_EXPORT DisconnectRequest {
 
  private:
   friend class DisconnectRequestTest;
-  friend class RequestServiceTest;
+  friend class RequestTest;
 
   DisconnectRequest(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
@@ -76,7 +76,7 @@ class CONTENT_EXPORT DisconnectRequest {
   // Owned by |BrowserContext|
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_ =
       nullptr;
-  // Owned by |RequestService|
+  // Owned by |Request|
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 
   std::unique_ptr<Metrics> fedcm_metrics_;

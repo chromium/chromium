@@ -47,7 +47,7 @@ enum class MetricsEndpointErrorCode;
 
 // Manages network requests and maintains relevant state for interaction with
 // the Identity Provider across a FedCM transaction. Owned by
-// RequestService and has a lifetime limited to a single identity
+// Request and has a lifetime limited to a single identity
 // transaction between an RP and an IDP.
 //
 // Diagram of the permission-based data flows between the browser and the IDP:

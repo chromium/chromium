@@ -11,7 +11,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_registry.h"
-#include "content/browser/webid/request_service.h"
+#include "content/browser/webid/request.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_controller.h"
@@ -47,17 +47,15 @@ NavigationInterceptor::NavigationInterceptor(
     NavigationThrottleRegistry& registry)
     : NavigationInterceptor(
           registry,
-          base::BindRepeating(
-              [](content::RenderFrameHost* rfh) -> RequestService* {
-                return webid::RequestService::GetOrCreateForCurrentDocument(
-                    rfh);
-              })) {}
+          base::BindRepeating([](content::RenderFrameHost* rfh) -> Request* {
+            return webid::Request::GetOrCreateForCurrentDocument(rfh);
+          })) {}
 
 NavigationInterceptor::NavigationInterceptor(
     NavigationThrottleRegistry& registry,
-    RequestServiceBuilder service_builder)
+    RequestFactory request_factory)
     : content::NavigationThrottle(registry),
-      service_builder_(std::move(service_builder)) {}
+      request_factory_(std::move(request_factory)) {}
 
 NavigationInterceptor::~NavigationInterceptor() = default;
 
@@ -271,7 +269,7 @@ void NavigationInterceptor::OnHeaderParsed(
     return;
   }
 
-  service_builder_.Run(rfh)->RequestToken(
+  request_factory_.Run(rfh)->RequestToken(
       std::move(*idp_get_params_vector),
       password_manager::CredentialMediationRequirement::kOptional,
       navigation_handle(),
@@ -287,8 +285,8 @@ void NavigationInterceptor::OnTokenResponse(
     bool is_auto_selected) {
   // The token response is not used in the navigation interception flow because
   // the IdP is expected to respond with a "redirect_to" field which is handled
-  // in RequestService.
-  // We cancel this specific navigation, assuming that the RequestService
+  // in Request.
+  // We cancel this specific navigation, assuming that the Request
   // will have already started a new navigation.
   CancelDeferredNavigation(CANCEL);
 }

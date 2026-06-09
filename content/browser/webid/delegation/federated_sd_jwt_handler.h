@@ -19,7 +19,7 @@ namespace content {
 class RenderFrameHost;
 
 namespace webid {
-class RequestService;
+class Request;
 }
 
 class FederatedSdJwtHandler {
@@ -27,7 +27,7 @@ class FederatedSdJwtHandler {
   explicit FederatedSdJwtHandler(
       const blink::mojom::IdentityProviderRequestOptionsPtr& provider,
       RenderFrameHost& render_frame_host,
-      webid::RequestService* federated_auth_request_impl);
+      webid::Request* federated_auth_request_impl);
   ~FederatedSdJwtHandler();
 
   std::string ComputeUrlEncodedTokenPostDataForIssuers(
@@ -51,7 +51,7 @@ class FederatedSdJwtHandler {
   GURL config_url_;
 
   raw_ptr<RenderFrameHost> render_frame_host_;
-  raw_ptr<webid::RequestService> federated_auth_request_impl_;
+  raw_ptr<webid::Request> federated_auth_request_impl_;
 
   base::WeakPtrFactory<FederatedSdJwtHandler> weak_ptr_factory_{this};
 };

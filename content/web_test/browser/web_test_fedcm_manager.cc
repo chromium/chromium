@@ -7,13 +7,13 @@
 #include <optional>
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/request.h"
 #include "content/browser/webid/request_page_data.h"
-#include "content/browser/webid/request_service.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 
 namespace content {
 
-using DialogType = webid::RequestService::DialogType;
+using DialogType = webid::Request::DialogType;
 
 WebTestFedCmManager::WebTestFedCmManager(RenderFrameHost* render_frame_host)
     : render_frame_host_(
@@ -24,7 +24,7 @@ WebTestFedCmManager::~WebTestFedCmManager() = default;
 void WebTestFedCmManager::GetDialogType(
     blink::test::mojom::FederatedAuthRequestAutomation::GetDialogTypeCallback
         callback) {
-  webid::RequestService* auth_request = GetAuthRequestService();
+  webid::Request* auth_request = GetAuthRequest();
   if (!auth_request) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -57,7 +57,7 @@ void WebTestFedCmManager::GetDialogType(
 void WebTestFedCmManager::GetFedCmDialogTitleAndSubtitle(
     blink::test::mojom::FederatedAuthRequestAutomation::
         GetFedCmDialogTitleAndSubtitleCallback callback) {
-  webid::RequestService* auth_request = GetAuthRequestService();
+  webid::Request* auth_request = GetAuthRequest();
   if (!auth_request) {
     std::move(callback).Run(std::nullopt, std::nullopt);
     return;
@@ -74,7 +74,7 @@ void WebTestFedCmManager::GetFedCmDialogTitleAndSubtitle(
 void WebTestFedCmManager::SelectFedCmAccount(
     uint32_t account_index,
     SelectFedCmAccountCallback callback) {
-  webid::RequestService* auth_request = GetAuthRequestService();
+  webid::Request* auth_request = GetAuthRequest();
   if (!auth_request) {
     std::move(callback).Run(false);
     return;
@@ -97,7 +97,7 @@ void WebTestFedCmManager::SelectFedCmAccount(
 
 void WebTestFedCmManager::DismissFedCmDialog(
     DismissFedCmDialogCallback callback) {
-  webid::RequestService* auth_request = GetAuthRequestService();
+  webid::Request* auth_request = GetAuthRequest();
   if (!auth_request) {
     std::move(callback).Run(false);
     return;
@@ -129,7 +129,7 @@ void WebTestFedCmManager::DismissFedCmDialog(
 void WebTestFedCmManager::ClickFedCmDialogButton(
     blink::test::mojom::DialogButton button,
     ClickFedCmDialogButtonCallback callback) {
-  webid::RequestService* auth_request = GetAuthRequestService();
+  webid::Request* auth_request = GetAuthRequest();
   if (!auth_request) {
     std::move(callback).Run(false);
     return;
@@ -175,7 +175,7 @@ void WebTestFedCmManager::ClickFedCmDialogButton(
   std::move(callback).Run(false);
 }
 
-webid::RequestService* WebTestFedCmManager::GetAuthRequestService() {
+webid::Request* WebTestFedCmManager::GetAuthRequest() {
   if (!render_frame_host_) {
     return nullptr;
   }

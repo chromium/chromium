@@ -16,8 +16,8 @@ class Origin;
 namespace content {
 
 // Forwards IdpNetworkRequestManager calls to delegate. The purpose of this
-// class is to enable querying the delegate after RequestService
-// destroys the DelegatedIdpNetworkRequestManager.
+// class is to enable querying the delegate after Request destroys the
+// DelegatedIdpNetworkRequestManager.
 class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
  public:
   explicit DelegatedIdpNetworkRequestManager(

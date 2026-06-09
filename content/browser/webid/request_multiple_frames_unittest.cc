@@ -19,7 +19,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/idp_network_request_manager.h"
-#include "content/browser/webid/request_service.h"
+#include "content/browser/webid/request.h"
 #include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_auto_reauthn_permission_delegate.h"
@@ -53,8 +53,7 @@ using AuthRequestCallbackHelper =
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
 using RequesterFrameType = content::webid::RequesterFrameType;
-using RequestTokenCallback =
-    content::webid::RequestService::RequestTokenCallback;
+using RequestTokenCallback = content::webid::Request::RequestTokenCallback;
 using blink::mojom::RequestTokenStatus;
 using ::testing::NiceMock;
 
@@ -234,10 +233,10 @@ class TestFederatedIdentityModalDialogViewDelegate
 
 }  // namespace
 
-class RequestServiceMultipleFramesTest : public RenderViewHostImplTestHarness {
+class RequestMultipleFramesTest : public RenderViewHostImplTestHarness {
  protected:
-  RequestServiceMultipleFramesTest() = default;
-  ~RequestServiceMultipleFramesTest() override = default;
+  RequestMultipleFramesTest() = default;
+  ~RequestMultipleFramesTest() override = default;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
@@ -282,10 +281,10 @@ class RequestServiceMultipleFramesTest : public RenderViewHostImplTestHarness {
     DoRequestToken(request_remote, callback_helper.callback());
     request_remote.set_disconnect_handler(callback_helper.quit_closure());
 
-    // Ensure that the request makes its way to RequestService.
+    // Ensure that the request makes its way to Request.
     base::RunLoop().RunUntilIdle();
     // Fast forward clock so that the pending
-    // RequestService::OnRejectRequest() task, if any, gets a
+    // Request::OnRejectRequest() task, if any, gets a
     // chance to run.
     task_environment()->FastForwardBy(base::Minutes(10));
 
@@ -293,18 +292,17 @@ class RequestServiceMultipleFramesTest : public RenderViewHostImplTestHarness {
     request_remote.set_disconnect_handler(base::OnceClosure());
   }
 
-  RequestService* CreateRequestService(
+  Request* CreateRequest(
       RenderFrameHost& render_frame_host,
       mojo::Remote<blink::mojom::FederatedAuthRequest>& request_remote,
       TestDialogController::AccountsDialogAction accounts_dialog_action,
       TestDialogController::State* dialog_controller_state,
       TestIdpNetworkRequestManager** out_network_manager = nullptr) {
-    RequestService* federated_auth_request_impl =
-        &RequestService::CreateForTesting(
-            render_frame_host, test_api_permission_delegate_.get(),
-            mock_auto_reauthn_permission_delegate_.get(),
-            mock_permission_delegate_.get(), mock_identity_registry_.get(),
-            request_remote.BindNewPipeAndPassReceiver());
+    Request* federated_auth_request_impl = &Request::CreateForTesting(
+        render_frame_host, test_api_permission_delegate_.get(),
+        mock_auto_reauthn_permission_delegate_.get(),
+        mock_permission_delegate_.get(), mock_identity_registry_.get(),
+        request_remote.BindNewPipeAndPassReceiver());
     federated_auth_request_impl->SetDialogControllerForTests(
         std::make_unique<TestDialogController>(accounts_dialog_action,
                                                dialog_controller_state));
@@ -386,16 +384,15 @@ class RequestServiceMultipleFramesTest : public RenderViewHostImplTestHarness {
 };
 
 // Test that test harness can execute successful FedCM flow for iframe.
-TEST_F(RequestServiceMultipleFramesTest, TestHarness) {
+TEST_F(RequestMultipleFramesTest, TestHarness) {
   RenderFrameHost* iframe_rfh = content::RenderFrameHostTester::For(main_rfh())
                                     ->AppendChild(/*frame_name=*/"");
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
-  CreateRequestService(
-      *iframe_rfh, iframe_request_remote,
-      TestDialogController::AccountsDialogAction::kSelectAccount,
-      &iframe_dialog_state);
+  CreateRequest(*iframe_rfh, iframe_request_remote,
+                TestDialogController::AccountsDialogAction::kSelectAccount,
+                &iframe_dialog_state);
 
   AuthRequestCallbackHelper iframe_callback_helper;
   DoRequestTokenAndWait(iframe_request_remote, iframe_callback_helper);
@@ -405,14 +402,14 @@ TEST_F(RequestServiceMultipleFramesTest, TestHarness) {
 
 // Test that FedCM request fails on iframe if there is an in-progress FedCM
 // request for a different frame on the page.
-TEST_F(RequestServiceMultipleFramesTest, IframeTooManyRequests) {
+TEST_F(RequestMultipleFramesTest, IframeTooManyRequests) {
   base::HistogramTester histogram_tester;
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> main_frame_request_remote;
   TestDialogController::State main_frame_dialog_state;
-  CreateRequestService(*main_rfh(), main_frame_request_remote,
-                       TestDialogController::AccountsDialogAction::kNone,
-                       &main_frame_dialog_state);
+  CreateRequest(*main_rfh(), main_frame_request_remote,
+                TestDialogController::AccountsDialogAction::kNone,
+                &main_frame_dialog_state);
   DoRequestToken(main_frame_request_remote, RequestTokenCallback());
   EXPECT_TRUE(main_frame_dialog_state.did_show_accounts_dialog);
 
@@ -420,10 +417,9 @@ TEST_F(RequestServiceMultipleFramesTest, IframeTooManyRequests) {
                                     ->AppendChild(/*frame_name=*/"");
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
-  CreateRequestService(
-      *iframe_rfh, iframe_request_remote,
-      TestDialogController::AccountsDialogAction::kSelectAccount,
-      &iframe_dialog_state);
+  CreateRequest(*iframe_rfh, iframe_request_remote,
+                TestDialogController::AccountsDialogAction::kSelectAccount,
+                &iframe_dialog_state);
 
   AuthRequestCallbackHelper iframe_callback_helper;
   DoRequestTokenAndWait(iframe_request_remote, iframe_callback_helper);
@@ -436,14 +432,14 @@ TEST_F(RequestServiceMultipleFramesTest, IframeTooManyRequests) {
 
 // Test that when requests from different IdPs get rejected, a proper histogram
 // can be recorded.
-TEST_F(RequestServiceMultipleFramesTest, IframeTooManyRequestsDifferentIdP) {
+TEST_F(RequestMultipleFramesTest, IframeTooManyRequestsDifferentIdP) {
   base::HistogramTester histogram_tester;
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> main_frame_request_remote;
   TestDialogController::State main_frame_dialog_state;
-  CreateRequestService(*main_rfh(), main_frame_request_remote,
-                       TestDialogController::AccountsDialogAction::kNone,
-                       &main_frame_dialog_state);
+  CreateRequest(*main_rfh(), main_frame_request_remote,
+                TestDialogController::AccountsDialogAction::kNone,
+                &main_frame_dialog_state);
   DoRequestToken(main_frame_request_remote, RequestTokenCallback());
   EXPECT_TRUE(main_frame_dialog_state.did_show_accounts_dialog);
 
@@ -451,10 +447,9 @@ TEST_F(RequestServiceMultipleFramesTest, IframeTooManyRequestsDifferentIdP) {
                                     ->AppendChild(/*frame_name=*/"");
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
-  CreateRequestService(
-      *iframe_rfh, iframe_request_remote,
-      TestDialogController::AccountsDialogAction::kSelectAccount,
-      &iframe_dialog_state);
+  CreateRequest(*iframe_rfh, iframe_request_remote,
+                TestDialogController::AccountsDialogAction::kSelectAccount,
+                &iframe_dialog_state);
 
   // Initiates a new API call with a different IdP.
   DoRequestToken(iframe_request_remote, RequestTokenCallback(),
@@ -466,7 +461,7 @@ TEST_F(RequestServiceMultipleFramesTest, IframeTooManyRequestsDifferentIdP) {
 
 // Test that only top frame URL is available for display when FedCM is called
 // within iframes which are same-origin with the top frame.
-TEST_F(RequestServiceMultipleFramesTest, SameOriginIframe) {
+TEST_F(RequestMultipleFramesTest, SameOriginIframe) {
   base::HistogramTester histogram_tester;
 
   const char kSameOriginIframeUrl[] = "https://top-frame.example/iframe.html";
@@ -478,10 +473,9 @@ TEST_F(RequestServiceMultipleFramesTest, SameOriginIframe) {
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
-  CreateRequestService(
-      *same_origin_iframe, iframe_request_remote,
-      TestDialogController::AccountsDialogAction::kSelectAccount,
-      &iframe_dialog_state);
+  CreateRequest(*same_origin_iframe, iframe_request_remote,
+                TestDialogController::AccountsDialogAction::kSelectAccount,
+                &iframe_dialog_state);
 
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
@@ -508,7 +502,7 @@ TEST_F(RequestServiceMultipleFramesTest, SameOriginIframe) {
 
 // Test that only top frame URL is available for display when FedCM is called
 // within iframes which are same-site with the top frame.
-TEST_F(RequestServiceMultipleFramesTest, SameSiteIframe) {
+TEST_F(RequestMultipleFramesTest, SameSiteIframe) {
   base::HistogramTester histogram_tester;
 
   // Same-site but cross-origin (subdomain differs), so
@@ -523,10 +517,9 @@ TEST_F(RequestServiceMultipleFramesTest, SameSiteIframe) {
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
-  CreateRequestService(
-      *same_site_iframe, iframe_request_remote,
-      TestDialogController::AccountsDialogAction::kSelectAccount,
-      &iframe_dialog_state);
+  CreateRequest(*same_site_iframe, iframe_request_remote,
+                TestDialogController::AccountsDialogAction::kSelectAccount,
+                &iframe_dialog_state);
 
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
@@ -552,7 +545,7 @@ TEST_F(RequestServiceMultipleFramesTest, SameSiteIframe) {
 
 // Test that both top frame and iframe URLs are available for display when FedCM
 // is called within iframes which are cross-site with the top frame.
-TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframe) {
+TEST_F(RequestMultipleFramesTest, CrossSiteIframe) {
   base::HistogramTester histogram_tester;
 
   const char kCrossSiteIframeUrl[] = "https://cross-site.example/iframe.html";
@@ -564,10 +557,9 @@ TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframe) {
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
-  CreateRequestService(
-      *cross_site_iframe, iframe_request_remote,
-      TestDialogController::AccountsDialogAction::kSelectAccount,
-      &iframe_dialog_state);
+  CreateRequest(*cross_site_iframe, iframe_request_remote,
+                TestDialogController::AccountsDialogAction::kSelectAccount,
+                &iframe_dialog_state);
 
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
@@ -593,7 +585,7 @@ TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframe) {
 
 // Tests that preventSilentAccess UKM is not recorded if the embedder does not
 // have sharing permissions.
-TEST_F(RequestServiceMultipleFramesTest,
+TEST_F(RequestMultipleFramesTest,
        IframePreventSilentAccessNoSharingPermission) {
   // Same-site but cross-origin — needs PP delegation (see SameSiteIframe).
   const char kSameSiteIframeUrl[] =
@@ -605,10 +597,10 @@ TEST_F(RequestServiceMultipleFramesTest,
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
-  auto* federated_auth_request_impl = CreateRequestService(
-      *same_site_iframe, iframe_request_remote,
-      TestDialogController::AccountsDialogAction::kSelectAccount,
-      &iframe_dialog_state);
+  auto* federated_auth_request_impl =
+      CreateRequest(*same_site_iframe, iframe_request_remote,
+                    TestDialogController::AccountsDialogAction::kSelectAccount,
+                    &iframe_dialog_state);
 
   // Assume that the embeddder does not have a sharing permission, and hence UKM
   // should not be recorded.
@@ -638,7 +630,7 @@ TEST_F(RequestServiceMultipleFramesTest,
 }
 
 // Tests the preventSilentAccess UKM recorded when invoked from the main frame.
-TEST_F(RequestServiceMultipleFramesTest, MainFramePreventSilentAccess) {
+TEST_F(RequestMultipleFramesTest, MainFramePreventSilentAccess) {
   // We add an iframe but it should not affect the UKM recording since we will
   // call preventSilentAccess() from the main frame.
   const char kSameSiteIframeUrl[] =
@@ -651,9 +643,9 @@ TEST_F(RequestServiceMultipleFramesTest, MainFramePreventSilentAccess) {
   mojo::Remote<blink::mojom::FederatedAuthRequest> main_frame_request_remote;
   TestDialogController::State main_frame_dialog_state;
   auto* federated_auth_request_impl =
-      CreateRequestService(*main_rfh(), main_frame_request_remote,
-                           TestDialogController::AccountsDialogAction::kNone,
-                           &main_frame_dialog_state);
+      CreateRequest(*main_rfh(), main_frame_request_remote,
+                    TestDialogController::AccountsDialogAction::kNone,
+                    &main_frame_dialog_state);
 
   // Assume that the embeddder does has a sharing permission so that UKM is
   // recorded.
@@ -683,7 +675,7 @@ TEST_F(RequestServiceMultipleFramesTest, MainFramePreventSilentAccess) {
 
 // Tests the preventSilentAccess UKM recorded when invoked from a same site
 // iframe.
-TEST_F(RequestServiceMultipleFramesTest, SameSiteIframePreventSilentAccess) {
+TEST_F(RequestMultipleFramesTest, SameSiteIframePreventSilentAccess) {
   const char kSameSiteIframeUrl[] =
       "https://subdomain.top-frame.example/iframe.html";
   RenderFrameHost* same_site_iframe =
@@ -694,10 +686,10 @@ TEST_F(RequestServiceMultipleFramesTest, SameSiteIframePreventSilentAccess) {
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
-  auto* federated_auth_request_impl = CreateRequestService(
-      *same_site_iframe, iframe_request_remote,
-      TestDialogController::AccountsDialogAction::kSelectAccount,
-      &iframe_dialog_state);
+  auto* federated_auth_request_impl =
+      CreateRequest(*same_site_iframe, iframe_request_remote,
+                    TestDialogController::AccountsDialogAction::kSelectAccount,
+                    &iframe_dialog_state);
 
   // Assume that the embeddder does has a sharing permission so that UKM is
   // recorded.
@@ -727,7 +719,7 @@ TEST_F(RequestServiceMultipleFramesTest, SameSiteIframePreventSilentAccess) {
 
 // Tests the preventSilentAccess UKM recorded when invoked from a cross site
 // iframe.
-TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframePreventSilentAccess) {
+TEST_F(RequestMultipleFramesTest, CrossSiteIframePreventSilentAccess) {
   const char kCrossSiteIframeUrl[] = "https://cross-site.example/iframe.html";
   RenderFrameHost* cross_site_iframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
@@ -737,10 +729,10 @@ TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframePreventSilentAccess) {
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
-  auto* federated_auth_request_impl = CreateRequestService(
-      *cross_site_iframe, iframe_request_remote,
-      TestDialogController::AccountsDialogAction::kSelectAccount,
-      &iframe_dialog_state);
+  auto* federated_auth_request_impl =
+      CreateRequest(*cross_site_iframe, iframe_request_remote,
+                    TestDialogController::AccountsDialogAction::kSelectAccount,
+                    &iframe_dialog_state);
 
   // Assume that the embeddder does has a sharing permission so that UKM is
   // recorded.
@@ -771,7 +763,7 @@ TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframePreventSilentAccess) {
 
 // Tests that we send a client metadata request for cross-site iframes even if
 // all accounts are returning.
-TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframeSendClientMetadata) {
+TEST_F(RequestMultipleFramesTest, CrossSiteIframeSendClientMetadata) {
   const char kCrossSiteIframeUrl[] = "https://cross-site.example/iframe.html";
   RenderFrameHost* cross_site_iframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
@@ -782,10 +774,9 @@ TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframeSendClientMetadata) {
   mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
   TestDialogController::State iframe_dialog_state;
   TestIdpNetworkRequestManager* network_manager = nullptr;
-  CreateRequestService(
-      *cross_site_iframe, iframe_request_remote,
-      TestDialogController::AccountsDialogAction::kSelectAccount,
-      &iframe_dialog_state, &network_manager);
+  CreateRequest(*cross_site_iframe, iframe_request_remote,
+                TestDialogController::AccountsDialogAction::kSelectAccount,
+                &iframe_dialog_state, &network_manager);
   network_manager->SetSendClientIsThirdPartyToTopFrameOrigin(true);
 
   AuthRequestCallbackHelper iframe_callback_helper;

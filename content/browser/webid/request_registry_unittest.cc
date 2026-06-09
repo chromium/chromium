@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/webid/request_service.h"
+#include "content/browser/webid/request.h"
 #include "content/browser/webid/test/delegated_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_auto_reauthn_permission_delegate.h"
@@ -86,10 +86,10 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
 }  // namespace
 
-class RequestServiceRegistryTest : public RenderViewHostImplTestHarness {
+class RequestRegistryTest : public RenderViewHostImplTestHarness {
  protected:
-  RequestServiceRegistryTest() = default;
-  ~RequestServiceRegistryTest() override = default;
+  RequestRegistryTest() = default;
+  ~RequestRegistryTest() override = default;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
@@ -106,7 +106,7 @@ class RequestServiceRegistryTest : public RenderViewHostImplTestHarness {
     mock_identity_registry_ = std::make_unique<NiceMock<MockIdentityRegistry>>(
         web_contents(), /*delegate=*/nullptr, GURL(kIdpUrl));
 
-    federated_auth_request_impl_ = &RequestService::CreateForTesting(
+    federated_auth_request_impl_ = &Request::CreateForTesting(
         *main_test_rfh(), test_api_permission_delegate_.get(),
         mock_auto_reauthn_permission_delegate_.get(),
         mock_permission_delegate_.get(), mock_identity_registry_.get(),
@@ -130,7 +130,7 @@ class RequestServiceRegistryTest : public RenderViewHostImplTestHarness {
   base::test::ScopedFeatureList feature_list_;
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
-  raw_ptr<RequestService> federated_auth_request_impl_;
+  raw_ptr<Request> federated_auth_request_impl_;
 
   std::unique_ptr<TestApiPermissionDelegate> test_api_permission_delegate_;
   std::unique_ptr<StrictMock<MockPermissionDelegate>> mock_permission_delegate_;
@@ -140,9 +140,8 @@ class RequestServiceRegistryTest : public RenderViewHostImplTestHarness {
 };
 
 // Test Registering an IdP successfully.
-TEST_F(RequestServiceRegistryTest, RegistersIdPSuccessfully) {
+TEST_F(RequestRegistryTest, RegistersIdPSuccessfully) {
   GURL configURL = GURL(kIdpUrl);
-
 
   feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);
 
@@ -159,9 +158,8 @@ TEST_F(RequestServiceRegistryTest, RegistersIdPSuccessfully) {
 }
 
 // Test Registering an IdP without the feature enabled.
-TEST_F(RequestServiceRegistryTest, RegistersWithoutFeature) {
+TEST_F(RequestRegistryTest, RegistersWithoutFeature) {
   GURL configURL = GURL(kIdpUrl);
-
 
   base::RunLoop loop;
   request_remote_->RegisterIdP(
@@ -174,9 +172,8 @@ TEST_F(RequestServiceRegistryTest, RegistersWithoutFeature) {
 }
 
 // Test Registering a configURL of a different origin.
-TEST_F(RequestServiceRegistryTest, RegistersCrossOriginNotAllowed) {
+TEST_F(RequestRegistryTest, RegistersCrossOriginNotAllowed) {
   GURL configURL = GURL("https://another.example");
-
 
   feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);
 
@@ -191,7 +188,7 @@ TEST_F(RequestServiceRegistryTest, RegistersCrossOriginNotAllowed) {
 }
 
 // Test Unregistering an IdP without the feature enabled.
-TEST_F(RequestServiceRegistryTest, UnregistersWithoutFeature) {
+TEST_F(RequestRegistryTest, UnregistersWithoutFeature) {
   GURL configURL = GURL(kIdpUrl);
 
   // no call to the mock_permission_delegate_ (which is a strict)
@@ -208,7 +205,7 @@ TEST_F(RequestServiceRegistryTest, UnregistersWithoutFeature) {
 
 // Test Unregistering an IdP with the feature enabled but for a different
 // origin.
-TEST_F(RequestServiceRegistryTest, UnregisterAcrossOrigin) {
+TEST_F(RequestRegistryTest, UnregisterAcrossOrigin) {
   GURL configURL = GURL("https://another.example");
 
   feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);
@@ -225,7 +222,7 @@ TEST_F(RequestServiceRegistryTest, UnregisterAcrossOrigin) {
 }
 
 // Test Unregistering an IdP Successfully.
-TEST_F(RequestServiceRegistryTest, UnregistersIdP) {
+TEST_F(RequestRegistryTest, UnregistersIdP) {
   GURL configURL = GURL(kIdpUrl);
 
   feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);

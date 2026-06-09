@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_REQUEST_SERVICE_H_
-#define CONTENT_BROWSER_WEBID_REQUEST_SERVICE_H_
+#ifndef CONTENT_BROWSER_WEBID_REQUEST_H_
+#define CONTENT_BROWSER_WEBID_REQUEST_H_
 
 #include <memory>
 #include <string>
@@ -60,14 +60,14 @@ using MediationRequirement = ::password_manager::CredentialMediationRequirement;
 using RpMode = blink::mojom::RpMode;
 using TokenError = IdentityCredentialTokenError;
 
-// RequestService handles mojo connections from the renderer to
+// Request handles mojo connections from the renderer to
 // fulfill WebID-related requests.
 //
 // In practice, it is owned and managed by a RenderFrameHost. It accomplishes
 // that via subclassing DocumentUserData, which observes the lifecycle of a
 // RenderFrameHost and manages its own memory.
-class CONTENT_EXPORT RequestService
-    : public DocumentUserData<RequestService>,
+class CONTENT_EXPORT Request
+    : public DocumentUserData<Request>,
       public blink::mojom::FederatedAuthRequest,
       public content::FederatedIdentityPermissionContextDelegate::
           IdpSigninStatusObserver,
@@ -76,9 +76,9 @@ class CONTENT_EXPORT RequestService
  public:
   DOCUMENT_USER_DATA_KEY_DECL();
 
-  explicit RequestService(RenderFrameHost* rfh);
+  explicit Request(RenderFrameHost* rfh);
 
-  RequestService(
+  Request(
       RenderFrameHost* rfh,
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
       FederatedIdentityAutoReauthnPermissionContextDelegate*
@@ -86,13 +86,13 @@ class CONTENT_EXPORT RequestService
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       IdentityRegistry* identity_registry);
 
-  RequestService(const RequestService&) = delete;
-  RequestService& operator=(const RequestService&) = delete;
+  Request(const Request&) = delete;
+  Request& operator=(const Request&) = delete;
 
-  ~RequestService() override;
+  ~Request() override;
 
-  // Creates a RequestService for testing and binds it to the receiver.
-  static RequestService& CreateForTesting(
+  // Creates a Request for testing and binds it to the receiver.
+  static Request& CreateForTesting(
       RenderFrameHost& rfh,
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
       FederatedIdentityAutoReauthnPermissionContextDelegate*
@@ -324,7 +324,7 @@ class CONTENT_EXPORT RequestService
                        bool should_delay_callback);
 
  private:
-  friend class RequestServiceTest;
+  friend class RequestTest;
   friend class IdentityCredentialSourceImpl;  // for OnAccountSelected
   friend class TestIdentityCredentialSourceImpl;
 
@@ -687,7 +687,7 @@ class CONTENT_EXPORT RequestService
 
   perfetto::NamedTrack perfetto_track_;
 
-  // Whether this RequestService can make top level redirections, available
+  // Whether this Request can make top level redirections, available
   // currently only for interception-initiated requests.
   bool can_accept_redirect_to_{false};
 
@@ -708,10 +708,10 @@ class CONTENT_EXPORT RequestService
 
   mojo::ReceiverSet<blink::mojom::FederatedAuthRequest> receivers_;
 
-  base::WeakPtrFactory<RequestService> weak_ptr_factory_{this};
+  base::WeakPtrFactory<Request> weak_ptr_factory_{this};
 };
 
 }  // namespace webid
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_REQUEST_SERVICE_H_
+#endif  // CONTENT_BROWSER_WEBID_REQUEST_H_

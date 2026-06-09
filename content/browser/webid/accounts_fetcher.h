@@ -202,7 +202,7 @@ class AccountsFetcher {
   // Populated in OnAllConfigAndWellKnownFetched().
   base::flat_map<GURL, GURL> metrics_endpoints_;
 
-  // Owned by RequestService.
+  // Owned by Request.
   raw_ref<RenderFrameHost> render_frame_host_;
   raw_ptr<IdpNetworkRequestManager> network_manager_;
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>

@@ -13,11 +13,11 @@ RequestPageData::~RequestPageData() = default;
 
 PAGE_USER_DATA_KEY_IMPL(RequestPageData);
 
-RequestService* RequestPageData::PendingWebIdentityRequest() {
+Request* RequestPageData::PendingWebIdentityRequest() {
   return pending_web_identity_request_;
 }
 
-void RequestPageData::SetPendingWebIdentityRequest(RequestService* request) {
+void RequestPageData::SetPendingWebIdentityRequest(Request* request) {
   pending_web_identity_request_ = request;
 }
 

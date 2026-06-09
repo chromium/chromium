@@ -324,9 +324,8 @@ void Metrics::RecordRequestTokenStatus(
   // 1. The request has failed but we have not yet rejected the promise, e.g.
   // when the API is disabled. We record a metric immediately but only post a
   // task to later reject the callback.
-  // 2. The page is unloaded. This invokes the RequestService
-  // destructor. We record a metric with unhandled status since the callback is
-  // still present.
+  // 2. The page is unloaded. This invokes the Request destructor. We record a
+  // metric with unhandled status since the callback is still present.
   if (has_recorded_request_token_status_) {
     return;
   }

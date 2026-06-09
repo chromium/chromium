@@ -160,7 +160,7 @@ void UserInfoRequest::SetCallbackAndStart(
   }
 
   // ConfigFetcher is stored as a member so that it is destroyed when
-  // RequestService is destroyed.
+  // Request is destroyed.
   config_fetcher_ = std::make_unique<ConfigFetcher>(*render_frame_host_,
                                                     network_manager_.get());
   // TODO(crbug.com/390626180): It seems ok to ignore the well-known checks in

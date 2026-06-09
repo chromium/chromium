@@ -27,7 +27,7 @@ class CONTENT_EXPORT IdpRegistrationHandler {
   void FetchConfig(ConfigFetcher::RequesterCallback callback);
 
  private:
-  // Owned by RequestService.
+  // Owned by Request.
   raw_ref<RenderFrameHost> render_frame_host_;
   raw_ptr<IdpNetworkRequestManager> network_manager_;
 

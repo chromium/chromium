@@ -107,7 +107,7 @@ platforms](../../../chrome/browser/ui/views/webid/) but not on Android.
 
 ## Key Classes
 
-- `RequestService`: Concrete implementation of the mojo interface to initiate a FedCM
+- `Request`: Concrete implementation of the mojo interface to initiate a FedCM
    request. It contains most of the business logic and state necessary for FedCM requests.
 - `IdPNetworkRequestManager`: Handles all fetches needed for FedCM. It ensures we use the right
   storage partition and cookie jar for each request. This class is stateless itself.

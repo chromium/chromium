@@ -6,8 +6,8 @@
 
 #include <optional>
 
+#include "content/browser/webid/request.h"
 #include "content/browser/webid/request_page_data.h"
-#include "content/browser/webid/request_service.h"
 
 namespace content::webid {
 

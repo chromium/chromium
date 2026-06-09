@@ -11,13 +11,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
-#include "content/browser/webid/request_service.h"
+#include "content/browser/webid/request.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
 
-// Helper class for waiting for the RequestService::RequestToken()
+// Helper class for waiting for the Request::RequestToken()
 // callback.
 class FederatedAuthRequestRequestTokenCallbackHelper {
  public:
@@ -46,7 +46,7 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
   }
 
   // This can only be called once per lifetime of this object.
-  webid::RequestService::RequestTokenCallback callback() {
+  webid::Request::RequestTokenCallback callback() {
     return base::BindOnce(
         &FederatedAuthRequestRequestTokenCallbackHelper::ReceiverMethod,
         base::Unretained(this));
