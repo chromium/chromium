@@ -129,6 +129,12 @@ class TouchToFillPaymentMethodControllerImpl
 
  private:
   bool InitHideHelper(TouchToFillDelegate& delegate);
+
+  // The controller must ignore user actions if the associated WebContents is
+  // not active anymore. This is to handle race conditions between, for example,
+  // a new tab being opened and TTF being shown.
+  bool IsActiveWebContents();
+
   content::WebContents* web_contents();
 
   // Observes creation of ContentAutofillDrivers to inject a
