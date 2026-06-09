@@ -1014,7 +1014,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabsWithMinimizedWindow) {
 
   // Minimized browser.
   EnsureTabsInBrowser(browser(), 2);
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
 
   for (int i = 0; i < 8; ++i) {
     UrgentDiscardTabImmediately();

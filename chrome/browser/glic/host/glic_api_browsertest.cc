@@ -2569,7 +2569,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ExecuteJsTest({.params = base::Value(can_fetch_screenshot)});
 
   browser()->tab_strip_model()->SelectPreviousTab();
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
 
   ContinueJsTest();
 }

@@ -664,7 +664,7 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, OneTabReturnToApp) {
   GetVcTray()->CloseBubble();
 
   // Minimize the browser window; this should make the `web_contents` hidden.
-  browser_->window()->Minimize();
+  browser_->GetWindow()->Minimize();
   WAIT_FOR_CONDITION(web_contents->GetVisibility() ==
                      content::Visibility::HIDDEN);
 

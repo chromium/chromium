@@ -1365,7 +1365,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ScreenshotInMinimizedWindow) {
 
     // Minimize the window and wait until it is minimized.
     Steps(Do([this](){
-      browser()->window()->Minimize();
+      browser()->GetWindow()->Minimize();
     })),
     PollState(kIsMinimizedState, [this]() {
       return browser()->GetWindow()->IsMinimized();
@@ -1408,7 +1408,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ScreenshotInInitiallyMinimizedWindow) {
 
     // Minimize the window and wait until it is minimized.
     Steps(Do([this](){
-      browser()->window()->Minimize();
+      browser()->GetWindow()->Minimize();
     })),
     PollState(kIsMinimizedState, [this]() {
       return browser()->GetWindow()->IsMinimized();
@@ -1469,7 +1469,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ScreenshotInMinimizedWindowWithFloaty) {
 
     // // Minimize the window and wait until it is minimized.
     Steps(Do([this](){
-      browser()->window()->Minimize();
+      browser()->GetWindow()->Minimize();
     })),
     PollState(kIsMinimizedState, [this]() {
       return browser()->GetWindow()->IsMinimized();

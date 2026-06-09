@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kActivateSurfaceIncompatibilityNotice),
       ActivateSurface(kBrowserViewElementId));
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
   ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser()));
   RunTestSequence(SimulateGlicHotkey(), WaitForGlicOpen());
 }
@@ -669,7 +669,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorLocationMetricsUiTest,
   open_and_close(ChromeRelativePosition::kBelowRight);
 
   RunTestSequence(OpenGlicFloatingWindow());
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
   ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser()));
   EXPECT_FALSE(browser()->GetWindow()->IsActive());
   RunTestSequence(CloseGlicWindow());

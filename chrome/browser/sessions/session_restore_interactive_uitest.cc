@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
       base::BindRepeating(&ui::BaseWindow::IsMinimized,
                           base::Unretained(browser()->window())),
       true);
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
   EXPECT_TRUE(minimize_waiter.Wait());
 
   // Restart and session restore the tabs.
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
       base::BindRepeating(&ui::BaseWindow::IsMinimized,
                           base::Unretained(browser()->window())),
       true);
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
   EXPECT_TRUE(minimize_waiter.Wait());
 
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());

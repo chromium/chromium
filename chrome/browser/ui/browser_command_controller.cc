@@ -777,13 +777,13 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     case IDC_MINIMIZE_WINDOW:
-      browser_->window()->Minimize();
+      browser_->GetWindow()->Minimize();
       break;
     case IDC_MAXIMIZE_WINDOW:
-      browser_->window()->Maximize();
+      browser_->GetWindow()->Maximize();
       break;
     case IDC_RESTORE_WINDOW:
-      browser_->window()->Restore();
+      browser_->GetWindow()->Restore();
       break;
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)

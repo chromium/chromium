@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest, NormalToFullscreenWindow) {
 #endif
 IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest,
                        MAYBE_MaximizedToMinimizedWindow) {
-  browser()->window()->Maximize();
+  browser()->GetWindow()->Maximize();
   CheckIsMaximized(true);
 
   CheckIsMinimized(false);
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest,
 #endif
 IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest,
                        MAYBE_MaximizedToFullscreenWindow) {
-  browser()->window()->Maximize();
+  browser()->GetWindow()->Maximize();
   CheckIsMaximized(true);
 
   CheckIsFullscreen(false);
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest, ShowMinimizedWindow) {
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
   CheckIsMinimized(true);
   SendCommand("normal");
   CheckIsMinimized(false);
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest, ShowMinimizedWindow) {
 #endif
 IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest,
                        MAYBE_RestoreMaximizedWindow) {
-  browser()->window()->Maximize();
+  browser()->GetWindow()->Maximize();
   CheckIsMaximized(true);
   SendCommand("normal");
   CheckIsMaximized(false);

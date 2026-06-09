@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
                              KeepAliveRestartOption::DISABLED);
 
   // Quit and restore.
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
   CloseBrowserSynchronously(browser());
 
   chrome::NewEmptyWindow(profile);

@@ -144,7 +144,7 @@ void BrowserDelegateImpl::Activate() {
 }
 
 void BrowserDelegateImpl::Minimize() {
-  browser_->window()->Minimize();
+  browser_->GetWindow()->Minimize();
 }
 
 void BrowserDelegateImpl::Close() {

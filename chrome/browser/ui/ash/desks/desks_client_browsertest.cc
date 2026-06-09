@@ -1256,13 +1256,13 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, BrowserWindowRestorationTest) {
   aura::Window* window_2 = browser_2->GetWindow()->GetNativeWindow();
   window_2->SetBounds(browser_bounds_2);
   EXPECT_EQ(browser_bounds_2, window_2->bounds());
-  browser_2->window()->Minimize();
+  browser_2->GetWindow()->Minimize();
 
   // Create a new maximized browser.
   std::vector<GURL> browser_urls_3 = {GURL(kExampleUrl2)};
   Browser* browser_3 =
       ash::test::CreateAndShowBrowser(profile(), browser_urls_3);
-  browser_3->window()->Maximize();
+  browser_3->GetWindow()->Maximize();
 
   EXPECT_EQ(browser_bounds_1, window_1->bounds());
   EXPECT_EQ(browser_bounds_2, window_2->bounds());
@@ -1974,13 +1974,13 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBrowserWindowRestorationTest) {
   aura::Window* window_2 = browser_2->GetWindow()->GetNativeWindow();
   window_2->SetBounds(browser_bounds_2);
   EXPECT_EQ(browser_bounds_2, window_2->bounds());
-  browser_2->window()->Minimize();
+  browser_2->GetWindow()->Minimize();
 
   // Create a new maximized browser.
   std::vector<GURL> browser_urls_3 = {GURL(kExampleUrl2)};
   Browser* browser_3 =
       ash::test::CreateAndShowBrowser(profile(), browser_urls_3);
-  browser_3->window()->Maximize();
+  browser_3->GetWindow()->Maximize();
 
   EXPECT_EQ(browser_bounds_1, window_1->bounds());
   EXPECT_EQ(browser_bounds_2, window_2->bounds());

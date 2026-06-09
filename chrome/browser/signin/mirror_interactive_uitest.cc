@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
 // tab should not be opened.
 IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, BackgroundResponseIgnored) {
   // Minimize the browser window to disactivate it.
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
   ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser()));
   EXPECT_FALSE(browser()->GetWindow()->IsActive());
 

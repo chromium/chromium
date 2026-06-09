@@ -721,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
   EXPECT_FALSE(client->app_list_target_visibility());
 
   // Minimize the browser. Then show the app list and open the app result.
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
   client->ShowAppList(ash::AppListShowSource::kSearchKey);
   client->OpenSearchResult(model_updater->model_id(), app_result_id,
                            ui::EF_NONE,

@@ -1357,13 +1357,13 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchInBackground) {
 // Confirm that clicking a icon for an app running in one of 2 maximized windows
 // activates the right window.
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchMaximized) {
-  browser()->window()->Maximize();
+  browser()->GetWindow()->Maximize();
   // Load about:blank in a new window.
   Browser* browser2 = CreateBrowser(browser()->profile());
   EXPECT_NE(browser(), browser2);
   TabStripModel* tab_strip = browser2->tab_strip_model();
   int tab_count = tab_strip->count();
-  browser2->window()->Maximize();
+  browser2->GetWindow()->Maximize();
 
   ash::ShelfID shortcut_id = CreateShortcut("app1");
 

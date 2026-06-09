@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(AppListWithRecentAppBrowserTest,
                        RecentAppsShownInTabletModeAfterClearingSearch) {
   // Minimize the browser window so tablet mode launcher becomes visible
   // immediately after transition to tablet mode.
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
 
   views::View* recent_app = app_list_test_api_.GetRecentAppAt(0);
   ASSERT_TRUE(recent_app);

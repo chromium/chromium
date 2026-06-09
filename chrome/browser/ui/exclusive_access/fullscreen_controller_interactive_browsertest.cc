@@ -1597,7 +1597,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 #endif
   const display::Display original_display = GetCurrentDisplay(browser());
 
-  browser()->window()->Maximize();
+  browser()->GetWindow()->Maximize();
   EXPECT_TRUE(browser()->GetWindow()->IsMaximized());
 #if !BUILDFLAG(IS_MAC)
   const gfx::Rect maximized_bounds = browser()->window()->GetBounds();
@@ -1616,7 +1616,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 #endif
 
   // Unmaximize the window and check that the original bounds are restored.
-  browser()->window()->Restore();
+  browser()->GetWindow()->Restore();
   EXPECT_FALSE(browser()->GetWindow()->IsMaximized());
   EXPECT_EQ(original_display.id(), GetCurrentDisplay(browser()).id());
   // TODO(crbug.com/40277425): Bounds are flaky on Mac.
@@ -1687,7 +1687,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 #endif
   const display::Display original_display = GetCurrentDisplay(browser());
 
-  browser()->window()->Maximize();
+  browser()->GetWindow()->Maximize();
   EXPECT_TRUE(browser()->GetWindow()->IsMaximized());
 #if !BUILDFLAG(IS_MAC)
   const gfx::Rect maximized_bounds = browser()->window()->GetBounds();
@@ -1709,7 +1709,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 #endif
 
   // Unmaximize the window and check that the original bounds are restored.
-  browser()->window()->Restore();
+  browser()->GetWindow()->Restore();
   EXPECT_FALSE(browser()->GetWindow()->IsMaximized());
   EXPECT_EQ(original_display.id(), GetCurrentDisplay(browser()).id());
   // TODO(crbug.com/40277425): Bounds are flaky on Mac.

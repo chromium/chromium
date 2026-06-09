@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(
       {ash::AppListSearchResultType::kZeroStateHelpApp});
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
   // Minimize the browser window to show home screen.
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
   ash::AppListTestApi().WaitForAppListShowAnimation(/*is_bubble_window=*/false);
   results_waiter.Wait();
 

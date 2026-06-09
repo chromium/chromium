@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
       [(NativeWidgetMacNSWindow*)ns_window invokeOriginalIsVisibleForTesting]);
 
   // Verify minimized state.
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
   ASSERT_TRUE(browser()->GetWindow()->IsMinimized());
   EXPECT_FALSE(browser()->GetWindow()->IsVisible());
   EXPECT_FALSE([ns_window isVisible]);
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
       [(NativeWidgetMacNSWindow*)ns_window invokeOriginalIsVisibleForTesting]);
 
   // Verify restored state.
-  browser()->window()->Restore();
+  browser()->GetWindow()->Restore();
   ASSERT_FALSE(browser()->GetWindow()->IsMinimized());
   EXPECT_TRUE(browser()->GetWindow()->IsVisible());
   EXPECT_TRUE([ns_window isVisible]);
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
       [(NativeWidgetMacNSWindow*)ns_window invokeOriginalIsVisibleForTesting]);
 
   // Verify maximized state.
-  browser()->window()->Maximize();
+  browser()->GetWindow()->Maximize();
   ASSERT_TRUE(browser()->GetWindow()->IsMaximized());
   EXPECT_TRUE(browser()->GetWindow()->IsVisible());
   EXPECT_TRUE([ns_window isVisible]);
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
       [(NativeWidgetMacNSWindow*)ns_window invokeOriginalIsVisibleForTesting]);
 
   // Verify restored state.
-  browser()->window()->Restore();
+  browser()->GetWindow()->Restore();
   ASSERT_FALSE(browser()->GetWindow()->IsMaximized());
   EXPECT_TRUE(browser()->GetWindow()->IsVisible());
   EXPECT_TRUE([ns_window isVisible]);

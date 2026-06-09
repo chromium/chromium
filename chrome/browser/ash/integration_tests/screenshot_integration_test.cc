@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_P(ScreenshotIntegrationTest, DISABLED_AverageColor) {
 
   // Maximize the browser window.
   ASSERT_TRUE(browser());
-  browser()->window()->Maximize();
+  browser()->GetWindow()->Maximize();
 
   // Load a page with a solid red background.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

@@ -360,7 +360,7 @@ class KeyboardEndToEndOverscrollTest : public KeyboardEndToEndTest {
 
 IN_PROC_BROWSER_TEST_F(KeyboardEndToEndOverscrollTest,
                        ToggleKeyboardOnMaximizedWindowAffectsViewport) {
-  browser()->window()->Maximize();
+  browser()->GetWindow()->Maximize();
 
   const int old_height = GetViewportHeight(web_contents_);
 

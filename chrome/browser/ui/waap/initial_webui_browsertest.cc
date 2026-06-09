@@ -699,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   EXPECT_TRUE(new_browser->GetWindow()->IsMinimized());
 
   // Restore (open) the window.
-  new_browser->window()->Restore();
+  new_browser->GetWindow()->Restore();
   EXPECT_FALSE(new_browser->GetWindow()->IsMinimized());
 
   // Simulate presentation and paint events (which now happen after the window
@@ -732,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   // Enable session restore and minimize the current window.
   SessionStartupPref pref(SessionStartupPref::LAST);
   SessionStartupPref::SetStartupPref(profile, pref);
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
   EXPECT_TRUE(browser()->GetWindow()->IsMinimized());
 
   // Keep the profile and process alive when we close the window.
@@ -760,7 +760,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   EXPECT_TRUE(restored_browser->GetWindow()->IsMinimized());
 
   // Restore (open) the window.
-  restored_browser->window()->Restore();
+  restored_browser->GetWindow()->Restore();
   EXPECT_FALSE(restored_browser->GetWindow()->IsMinimized());
 
   // Simulate paint events (which now happen after the window is opened).

@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
                        DiscardTabsWithMinimizedWindow) {
   // Minimize browser.
   EnsureTabsInBrowser(browser(), 2);
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
 
   // Request to discard pages a few times.
   auto* helper =

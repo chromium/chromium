@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   EXPECT_EQ(0, aura_window->GetProperty(aura::client::kTopViewInset));
 
   // Verify that after minimizing, immersive mode is disabled.
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
   EXPECT_TRUE(browser()->GetWindow()->IsMinimized());
   EXPECT_FALSE(controller()->IsEnabled());
 

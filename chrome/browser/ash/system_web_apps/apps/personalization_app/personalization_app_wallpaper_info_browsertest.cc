@@ -109,7 +109,7 @@ class PersonalizationAppWallpaperInfoBrowserTest
   void SetUpOnMainThread() override {
     SystemWebAppBrowserTestBase::SetUpOnMainThread();
 
-    browser()->window()->Minimize();
+    browser()->GetWindow()->Minimize();
 
     wallpaper_controller()->OverrideDriveFsDelegateForTesting(
         std::make_unique<TestWallpaperDriveFsDelegate>());

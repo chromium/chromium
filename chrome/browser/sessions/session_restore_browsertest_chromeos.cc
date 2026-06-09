@@ -372,21 +372,21 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreMaximized) {
   // Create a second browser window and maximize it.
   Browser* browser2 =
       CreateBrowserWithParams(Browser::CreateParams(profile(), true));
-  browser2->window()->Maximize();
+  browser2->GetWindow()->Maximize();
 
   // Create two app windows and maximize the second one.
   Browser* app_browser1 =
       CreateBrowserWithParams(CreateParamsForApp(test_app_name1, true));
   Browser* app_browser2 =
       CreateBrowserWithParams(CreateParamsForApp(test_app_name2, true));
-  app_browser2->window()->Maximize();
+  app_browser2->GetWindow()->Maximize();
 
   // Create two app popup windows and maximize the second one.
   Browser* app_popup_browser1 =
       CreateBrowserWithParams(CreateParamsForAppPopup(test_app_name1, true));
   Browser* app_popup_browser2 =
       CreateBrowserWithParams(CreateParamsForAppPopup(test_app_name2, true));
-  app_popup_browser2->window()->Maximize();
+  app_popup_browser2->GetWindow()->Maximize();
 
   EXPECT_FALSE(browser()->GetWindow()->IsMaximized());
   EXPECT_TRUE(browser2->GetWindow()->IsMaximized());
@@ -430,11 +430,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, DISABLED_RestoreMaximized) {
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreMinimized) {
   // One browser window is always created by default.
   ASSERT_TRUE(browser());
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
 
   Browser* browser2 =
       CreateBrowserWithParams(Browser::CreateParams(profile(), true));
-  browser2->window()->Minimize();
+  browser2->GetWindow()->Minimize();
 
   EXPECT_TRUE(browser()->GetWindow()->IsMinimized());
   EXPECT_TRUE(browser2->GetWindow()->IsMinimized());

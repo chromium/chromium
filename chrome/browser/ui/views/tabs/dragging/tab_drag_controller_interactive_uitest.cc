@@ -3000,7 +3000,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // Maximize the initial browser window.
   {
     auto waiter = ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser());
-    browser()->window()->Maximize();
+    browser()->GetWindow()->Maximize();
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return browser()->GetWindow()->IsMaximized(); }));
     waiter.Wait();
@@ -5303,7 +5303,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragInMaximizedWindow) {
   {
     auto waiter = ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser());
-    browser()->window()->Maximize();
+    browser()->GetWindow()->Maximize();
     waiter.Wait();
   }
   ASSERT_TRUE(browser()->GetWindow()->IsMaximized());
@@ -5348,7 +5348,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   AddTabsAndResetBrowser(browser, 1);
 
   // Maximize the browser window.
-  browser->window()->Maximize();
+  browser->GetWindow()->Maximize();
   EXPECT_EQ(browser->GetWindow()->GetNativeWindow()->GetProperty(
                 aura::client::kShowStateKey),
             ui::mojom::WindowShowState::kMaximized);
@@ -5380,7 +5380,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // bounds are different from the maximized bound's origin.
   browser()->window()->SetBounds(browser()->window()->GetBounds() +
                                  gfx::Vector2d(100, 50));
-  browser()->window()->Maximize();
+  browser()->GetWindow()->Maximize();
 
   DragWindowAndVerifyOffset(this, GetTabStripForBrowser(browser()), 0);
   ASSERT_FALSE(TabDragController::IsActive());

@@ -98,7 +98,7 @@ class PersonalizationAppWallpaperDailyRefreshBrowserTest
   void SetUpOnMainThread() override {
     SystemWebAppBrowserTestBase::SetUpOnMainThread();
 
-    browser()->window()->Minimize();
+    browser()->GetWindow()->Minimize();
 
     WallpaperControllerClientImpl::Get()->SetWallpaperFetcherDelegateForTesting(
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());

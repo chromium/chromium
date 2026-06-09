@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowOcclusionInteractiveUiTest,
   EXPECT_EQ(occlusion_helper->GetOcclusionState(), OcclusionState::kVisible);
 
   // Minimize the first window.
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
 
   // The helper should report that the window is hidden.
   EXPECT_TRUE(

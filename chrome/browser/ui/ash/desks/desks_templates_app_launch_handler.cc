@@ -294,7 +294,7 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
       // window types, it's not shown.
       if (window_state_type &&
           *window_state_type == chromeos::WindowStateType::kMinimized) {
-        browser->window()->Minimize();
+        browser->GetWindow()->Minimize();
         continue;
       }
 

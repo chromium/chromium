@@ -665,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoSessionRestoreNewWindowChromeOS) {
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MaximizedApps) {
   const char* app_name = "TestApp";
   Browser* app_browser = CreateBrowserForApp(app_name, browser()->profile());
-  app_browser->window()->Maximize();
+  app_browser->GetWindow()->Maximize();
   app_browser->GetWindow()->Show();
   EXPECT_TRUE(app_browser->GetWindow()->IsMaximized());
   EXPECT_TRUE(app_browser->is_type_app());

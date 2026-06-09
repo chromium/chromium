@@ -1321,9 +1321,9 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, MinimizeRestore) {
   // Reset so we can wait for the animation to start again.
   tester->ResetWaitForAnimationStart();
 
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
   WaitForMinimize(browser());
-  browser()->window()->Restore();
+  browser()->GetWindow()->Restore();
   WaitForUnminimize(browser());
 
   // We should show again upon restore.

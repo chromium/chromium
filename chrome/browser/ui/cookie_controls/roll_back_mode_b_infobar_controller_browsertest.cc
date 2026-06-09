@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(RollBackModeBInfoBarControllerBrowserTest,
                        MinimizingWindowClosesInfoBar) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://test")));
   EXPECT_TRUE(HasRollBackModeBInfoBar(browser()));
-  browser()->window()->Minimize();
+  browser()->GetWindow()->Minimize();
   ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser()));
   EXPECT_FALSE(HasRollBackModeBInfoBar(browser()));
 }
