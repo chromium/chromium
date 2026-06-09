@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_observer.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_observer.h"
 #include "chrome/browser/ui/views/sub_apps_permission_explanation.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
@@ -246,9 +246,9 @@ void EmbeddedPermissionPromptBaseView::OnWidgetBoundsChanged(
 
   web_contents_ = current_web_contents->GetWeakPtr();
   auto* observer =
-      EmbeddedPermissionPromptObserver::FromWebContents(current_web_contents);
+      PermissionPromptObserver::FromWebContents(current_web_contents);
   if (observer) {
-    observer->NotifyEmbeddedPermissionPromptChanged(
+    observer->NotifyPermissionPromptChanged(
         /*is_showing=*/true, new_bounds.size());
   }
 }
@@ -268,9 +268,9 @@ void EmbeddedPermissionPromptBaseView::OnWidgetVisibilityChanged(
   // before the first layout bounds change occurs.
   if (!visible && web_contents_) {
     auto* observer =
-        EmbeddedPermissionPromptObserver::FromWebContents(web_contents_.get());
+        PermissionPromptObserver::FromWebContents(web_contents_.get());
     if (observer) {
-      observer->NotifyEmbeddedPermissionPromptChanged(
+      observer->NotifyPermissionPromptChanged(
           /*is_showing=*/false, gfx::Size());
     }
   }
@@ -285,9 +285,9 @@ void EmbeddedPermissionPromptBaseView::ClosingPermission() {
   // destroyed.
   if (web_contents_) {
     auto* observer =
-        EmbeddedPermissionPromptObserver::FromWebContents(web_contents_.get());
+        PermissionPromptObserver::FromWebContents(web_contents_.get());
     if (observer) {
-      observer->NotifyEmbeddedPermissionPromptChanged(
+      observer->NotifyPermissionPromptChanged(
           /*is_showing=*/false, gfx::Size());
     }
   }

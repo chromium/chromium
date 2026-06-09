@@ -389,7 +389,7 @@ static_library("ui") {
     "//chrome/browser/ui/views/eye_dropper",
     "//chrome/browser/ui/views/file_system_access",
     "//chrome/browser/ui/views/file_system_access:impl",
-    "//chrome/browser/ui/views/permissions:embedded_permission_prompt_observer",
+    "//chrome/browser/ui/views/permissions:permission_prompt_observer",
     "//chrome/browser/ui/views/status_icons",
     "//chrome/browser/ui/webauthn",
     "//chrome/browser/ui/webid",

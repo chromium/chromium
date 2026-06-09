@@ -6,10 +6,10 @@ source_set("permissions") {
   public = [ "permission_prompt_style.h" ]
 }
 
-source_set("embedded_permission_prompt_observer") {
+source_set("permission_prompt_observer") {
   sources = [
-    "embedded_permission_prompt_observer.cc",
-    "embedded_permission_prompt_observer.h",
+    "permission_prompt_observer.cc",
+    "permission_prompt_observer.h",
   ]
   deps = [ "//content/public/browser" ]
 }

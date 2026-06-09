@@ -24,9 +24,9 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
-#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_observer.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_observer.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -527,15 +527,13 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
 }
 
 namespace {
-class TestPermissionPromptObserver
-    : public EmbeddedPermissionPromptObserver::Observer {
+class TestPermissionPromptObserver : public PermissionPromptObserver::Observer {
  public:
   TestPermissionPromptObserver() = default;
   ~TestPermissionPromptObserver() override = default;
 
-  void OnEmbeddedPermissionPromptChanged(
-      bool is_showing,
-      const gfx::Size& prompt_size) override {
+  void OnPermissionPromptChanged(bool is_showing,
+                                 const gfx::Size& prompt_size) override {
     is_showing_history_.push_back(is_showing);
     sizes_.push_back(prompt_size);
   }
@@ -555,11 +553,11 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
                        PermissionPromptBubbleNotifiesObserver) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EmbeddedPermissionPromptObserver* observer =
-      EmbeddedPermissionPromptObserver::FromWebContents(web_contents);
+  PermissionPromptObserver* observer =
+      PermissionPromptObserver::FromWebContents(web_contents);
   if (!observer) {
-    EmbeddedPermissionPromptObserver::CreateForWebContents(web_contents);
-    observer = EmbeddedPermissionPromptObserver::FromWebContents(web_contents);
+    PermissionPromptObserver::CreateForWebContents(web_contents);
+    observer = PermissionPromptObserver::FromWebContents(web_contents);
   }
 
   TestPermissionPromptObserver test_observer;

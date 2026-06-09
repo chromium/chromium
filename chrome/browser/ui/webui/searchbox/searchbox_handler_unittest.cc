@@ -188,7 +188,7 @@ TEST_F(RealboxHandlerTest, OnEmbeddedPermissionPromptChanged) {
                            true, gfx::Size(100 + 40, 200 + 40)));
     EXPECT_CALL(delegate, OnEmbeddedPermissionDialogChanged(
                               true, gfx::Size(100 + 40, 200 + 40)));
-    handler_->OnEmbeddedPermissionPromptChanged(true, gfx::Size(100, 200));
+    handler_->OnPermissionPromptChanged(true, gfx::Size(100, 200));
     page_.FlushForTesting();
     testing::Mock::VerifyAndClearExpectations(&page_);
     testing::Mock::VerifyAndClearExpectations(&delegate);
@@ -200,7 +200,7 @@ TEST_F(RealboxHandlerTest, OnEmbeddedPermissionPromptChanged) {
                 OnEmbeddedPermissionPromptChanged(true, gfx::Size(0, 0)));
     EXPECT_CALL(delegate,
                 OnEmbeddedPermissionDialogChanged(true, gfx::Size(0, 0)));
-    handler_->OnEmbeddedPermissionPromptChanged(true, gfx::Size(0, 0));
+    handler_->OnPermissionPromptChanged(true, gfx::Size(0, 0));
     page_.FlushForTesting();
     testing::Mock::VerifyAndClearExpectations(&page_);
     testing::Mock::VerifyAndClearExpectations(&delegate);
@@ -212,7 +212,7 @@ TEST_F(RealboxHandlerTest, OnEmbeddedPermissionPromptChanged) {
                 OnEmbeddedPermissionPromptChanged(false, gfx::Size(0, 0)));
     EXPECT_CALL(delegate,
                 OnEmbeddedPermissionDialogChanged(false, gfx::Size(0, 0)));
-    handler_->OnEmbeddedPermissionPromptChanged(false, gfx::Size(100, 200));
+    handler_->OnPermissionPromptChanged(false, gfx::Size(100, 200));
     page_.FlushForTesting();
     testing::Mock::VerifyAndClearExpectations(&page_);
     testing::Mock::VerifyAndClearExpectations(&delegate);
@@ -224,7 +224,7 @@ TEST_F(RealboxHandlerTest, OnEmbeddedPermissionPromptChanged) {
                 OnEmbeddedPermissionPromptChanged(false, gfx::Size(0, 0)));
     EXPECT_CALL(delegate,
                 OnEmbeddedPermissionDialogChanged(false, gfx::Size(0, 0)));
-    handler_->OnEmbeddedPermissionPromptChanged(false, gfx::Size(0, 0));
+    handler_->OnPermissionPromptChanged(false, gfx::Size(0, 0));
     page_.FlushForTesting();
     testing::Mock::VerifyAndClearExpectations(&page_);
     testing::Mock::VerifyAndClearExpectations(&delegate);
