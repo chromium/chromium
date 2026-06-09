@@ -122,8 +122,6 @@ static_library("ui") {
     "webui/fileicon_source.h",
     "webui/metrics_handler.cc",
     "webui/metrics_handler.h",
-    "webui/privacy_sandbox/privacy_sandbox_internals_handler.cc",
-    "webui/privacy_sandbox/privacy_sandbox_internals_handler.h",
     "webui/privacy_sandbox/privacy_sandbox_internals_ui.cc",
     "webui/privacy_sandbox/privacy_sandbox_internals_ui.h",
   ]
@@ -1635,7 +1633,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/new_tab_page/ntp_promo",
       "//chrome/browser/ui/webui/password_manager:mojo_bindings",
       "//chrome/browser/ui/webui/password_manager:password_manager_ui_handler",
-      "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
       "//chrome/browser/ui/webui/profile_internals",
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/settings:impl",

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_PRIVACY_SANDBOX_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_PRIVACY_SANDBOX_PRIVACY_SANDBOX_INTERNALS_UI_H_
 
-#include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
@@ -13,7 +12,6 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 namespace privacy_sandbox_internals {
 
-class PrivacySandboxInternalsHandler;
 class PrivacySandboxInternalsUI;
 
 class PrivacySandboxInternalsUIConfig
@@ -35,12 +33,6 @@ class PrivacySandboxInternalsUI : public ui::MojoWebUIController {
   PrivacySandboxInternalsUI& operator=(const PrivacySandboxInternalsUI&) =
       delete;
 
-  void BindInterface(
-      mojo::PendingReceiver<privacy_sandbox_internals::mojom::PageHandler>
-          receiver);
-
- private:
-  std::unique_ptr<PrivacySandboxInternalsHandler> handler_;
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

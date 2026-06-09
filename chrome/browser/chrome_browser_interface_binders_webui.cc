@@ -236,10 +236,6 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
                                          LocationInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      privacy_sandbox_internals::mojom::PageHandler,
-      privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
       actor_internals::mojom::PageHandlerFactory, ActorInternalsUI>(map);
 
   if (base::FeatureList::IsEnabled(

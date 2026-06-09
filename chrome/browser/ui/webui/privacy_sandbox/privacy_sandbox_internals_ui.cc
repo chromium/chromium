@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/privacy_sandbox_internals_resources.h"
 #include "chrome/grit/privacy_sandbox_internals_resources_map.h"
@@ -23,8 +22,6 @@
 
 namespace privacy_sandbox_internals {
 
-using ::privacy_sandbox_internals::mojom::Page;
-using ::privacy_sandbox_internals::mojom::PageHandler;
 PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -42,14 +39,5 @@ PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
 PrivacySandboxInternalsUI::~PrivacySandboxInternalsUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PrivacySandboxInternalsUI)
-
-void PrivacySandboxInternalsUI::BindInterface(
-    mojo::PendingReceiver<privacy_sandbox_internals::mojom::PageHandler>
-        receiver) {
-  handler_ = std::make_unique<PrivacySandboxInternalsHandler>(
-      Profile::FromBrowserContext(
-          web_ui()->GetWebContents()->GetBrowserContext()),
-      std::move(receiver));
-}
 
 }  // namespace privacy_sandbox_internals

@@ -19,7 +19,7 @@ mojom("mojo_bindings") {
 if (!is_android) {
   source_set("unit_tests") {
     testonly = true
-    sources = [ "privacy_sandbox_internals_handler_unittest.cc" ]
+    sources = []
 
     deps = [
       ":mojo_bindings",

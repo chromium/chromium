@@ -3738,8 +3738,6 @@ if (!is_android) {
       "../browser/ui/webui/new_tab_page/webui_ntp_browsertest.cc",
       "../browser/ui/webui/ntp/new_tab_ui_browsertest.cc",
       "../browser/ui/webui/prefs_internals_browsertest.cc",
-      "../browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_browsertest.cc",
-      "../browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_handler_browsertest.cc",
       "../browser/ui/webui/profile_helper_browsertest.cc",
       "../browser/ui/webui/searchbox/realbox_handler_browsertest.cc",
       "../browser/ui/webui/settings/appearance_handler_browsertest.cc",
