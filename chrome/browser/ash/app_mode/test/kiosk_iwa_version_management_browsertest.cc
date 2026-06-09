@@ -29,7 +29,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
-#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_discovery_task.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -128,10 +128,10 @@ void WaitForKioskProfile() {
   ASSERT_TRUE(CurrentProfile().IsSameOrParent(profile));
 }
 
-web_app::IsolatedWebAppUpdateDiscoveryTask::CompletionStatus
+web_app::IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus
 WaitForTestAppUpdateDiscovery() {
   using UpdateDiscoveryTaskFuture = base::test::TestFuture<
-      web_app::IsolatedWebAppUpdateDiscoveryTask::CompletionStatus>;
+      web_app::IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus>;
 
   UpdateDiscoveryTaskFuture update_discovery_future;
   web_app::UpdateDiscoveryTaskResultWaiter update_discovery_waiter(
@@ -169,45 +169,45 @@ void ExpectTestAppUpdatedToVersion(
 }
 
 void ExpectAppUpdateSkipped() {
-  ASSERT_THAT(
-      WaitForTestAppUpdateDiscovery(),
-      ValueIs(
-          web_app::IsolatedWebAppUpdateDiscoveryTask::Success::kNoUpdateFound));
+  ASSERT_THAT(WaitForTestAppUpdateDiscovery(),
+              ValueIs(web_app::IsolatedWebAppUpdateCheckAndPrepareTask::
+                          Success::kNoUpdateFound));
 }
 
 void ExpectAppUpdateDiscovered() {
   ASSERT_THAT(WaitForTestAppUpdateDiscovery(),
-              ValueIs(web_app::IsolatedWebAppUpdateDiscoveryTask::Success::
-                          kUpdateFoundAndSavedInDatabase));
+              ValueIs(web_app::IsolatedWebAppUpdateCheckAndPrepareTask::
+                          Success::kUpdateFoundAndSavedInDatabase));
 }
 
 void ExpectAppDowngradeDiscovered() {
   ASSERT_THAT(WaitForTestAppUpdateDiscovery(),
-              ValueIs(web_app::IsolatedWebAppUpdateDiscoveryTask::Success::
-                          kDowngradeVersionFoundAndSavedInDatabase));
+              ValueIs(web_app::IsolatedWebAppUpdateCheckAndPrepareTask::
+                          Success::kDowngradeVersionFoundAndSavedInDatabase));
 }
 
 void ExpectAppPinnedVersionDiscovered() {
-  ASSERT_THAT(WaitForTestAppUpdateDiscovery(),
-              ValueIs(web_app::IsolatedWebAppUpdateDiscoveryTask::Success::
-                          kPinnedVersionUpdateFoundAndSavedInDatabase));
+  ASSERT_THAT(
+      WaitForTestAppUpdateDiscovery(),
+      ValueIs(web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+                  kPinnedVersionUpdateFoundAndSavedInDatabase));
 }
 
 void ExpectDowngradeNotAllowed() {
   ASSERT_THAT(WaitForTestAppUpdateDiscovery(),
-              ErrorIs(web_app::IsolatedWebAppUpdateDiscoveryTask::Error::
+              ErrorIs(web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Error::
                           kDowngradetNotAllowed));
 }
 
 void ExpectNoApplicableVersion() {
   EXPECT_THAT(WaitForTestAppUpdateDiscovery(),
-              ErrorIs(web_app::IsolatedWebAppUpdateDiscoveryTask::Error::
+              ErrorIs(web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Error::
                           kUpdateManifestNoApplicableVersion));
 }
 
 void ExpectPinnedVersionNotFoundInUpdateManifest() {
   EXPECT_THAT(WaitForTestAppUpdateDiscovery(),
-              ErrorIs(web_app::IsolatedWebAppUpdateDiscoveryTask::Error::
+              ErrorIs(web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Error::
                           kPinnedVersionNotFoundInUpdateManifest));
 }
 

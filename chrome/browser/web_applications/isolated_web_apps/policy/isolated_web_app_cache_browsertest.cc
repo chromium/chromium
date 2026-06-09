@@ -75,7 +75,7 @@ namespace em = enterprise_management;
 
 using base::test::TestFuture;
 using web_package::SignedWebBundleId;
-using DiscoveryTask = IsolatedWebAppUpdateDiscoveryTask;
+using DiscoveryTask = IsolatedWebAppUpdateCheckAndPrepareTask;
 using ApplyTask = IsolatedWebAppUpdateApplyTask;
 using UpdateDiscoveryTaskFuture = TestFuture<DiscoveryTask::CompletionStatus>;
 using UpdateApplyTaskFuture =

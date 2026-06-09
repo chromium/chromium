@@ -1,9 +1,9 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_UPDATE_ISOLATED_WEB_APP_UPDATE_DISCOVERY_TASK_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_UPDATE_ISOLATED_WEB_APP_UPDATE_DISCOVERY_TASK_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_UPDATE_ISOLATED_WEB_APP_UPDATE_CHECK_AND_PREPARE_TASK_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_UPDATE_ISOLATED_WEB_APP_UPDATE_CHECK_AND_PREPARE_TASK_H_
 
 #include <iosfwd>
 #include <memory>
@@ -27,17 +27,24 @@ namespace web_app {
 class WebAppCommandScheduler;
 class WebAppRegistrar;
 
-class IwaUpdateDiscoveryTaskParams {
+class IwaUpdateCheckAndPrepareTaskParams {
  public:
-  IwaUpdateDiscoveryTaskParams(const GURL& update_manifest_url,
-                               const UpdateChannel& update_channel,
-                               bool allow_downgrades,
-                               const std::optional<IwaVersion>& pinned_version,
-                               const IsolatedWebAppUrlInfo& url_info,
-                               bool dev_mode);
+  IwaUpdateCheckAndPrepareTaskParams(
+      const GURL& update_manifest_url,
+      const UpdateChannel& update_channel,
+      bool allow_downgrades,
+      const std::optional<IwaVersion>& pinned_version,
+      const IsolatedWebAppUrlInfo& url_info,
+      bool dev_mode,
+      bool update_manifest_check_only = false);
 
-  IwaUpdateDiscoveryTaskParams(IwaUpdateDiscoveryTaskParams&& other);
-  ~IwaUpdateDiscoveryTaskParams();
+  IwaUpdateCheckAndPrepareTaskParams(
+      IwaUpdateCheckAndPrepareTaskParams&& other);
+  IwaUpdateCheckAndPrepareTaskParams(
+      const IwaUpdateCheckAndPrepareTaskParams& other);
+  IwaUpdateCheckAndPrepareTaskParams& operator=(
+      const IwaUpdateCheckAndPrepareTaskParams& other);
+  ~IwaUpdateCheckAndPrepareTaskParams();
 
   const GURL& update_manifest_url() const { return update_manifest_url_; }
   const UpdateChannel& update_channel() const { return update_channel_; }
@@ -48,6 +55,13 @@ class IwaUpdateDiscoveryTaskParams {
   const IsolatedWebAppUrlInfo& url_info() const { return url_info_; }
   bool dev_mode() const { return dev_mode_; }
 
+  // If true, the update check task will stop once the update manifest has
+  // been fetched and version applicability has been checked. It won't download
+  // the bundle or stage the update in the database.
+  bool update_manifest_check_only() const {
+    return update_manifest_check_only_;
+  }
+
  private:
   GURL update_manifest_url_;
   UpdateChannel update_channel_;
@@ -55,9 +69,10 @@ class IwaUpdateDiscoveryTaskParams {
   std::optional<IwaVersion> pinned_version_;
   IsolatedWebAppUrlInfo url_info_;
   bool dev_mode_;
+  bool update_manifest_check_only_;
 };
 
-class IsolatedWebAppUpdateDiscoveryTask {
+class IsolatedWebAppUpdateCheckAndPrepareTask {
  public:
   enum class Success {
     kNoUpdateFound,
@@ -69,7 +84,8 @@ class IsolatedWebAppUpdateDiscoveryTask {
                                                   // is pinned. After that, no
                                                   // update should happen.
     kDowngradeVersionFoundAndSavedInDatabase,
-    kUpdateFoundAndSavedInDatabase
+    kUpdateFoundAndSavedInDatabase,
+    kUpdateFound
   };
 
   enum class Error {
@@ -102,24 +118,31 @@ class IsolatedWebAppUpdateDiscoveryTask {
   using CompletionStatus = base::expected<Success, Error>;
   using CompletionCallback = base::OnceCallback<void(CompletionStatus status)>;
 
-  IsolatedWebAppUpdateDiscoveryTask(
-      IwaUpdateDiscoveryTaskParams task_params,
+  IsolatedWebAppUpdateCheckAndPrepareTask(
+      IwaUpdateCheckAndPrepareTaskParams task_params,
       WebAppCommandScheduler& command_scheduler,
       WebAppRegistrar& registrar,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Profile& profile);
-  ~IsolatedWebAppUpdateDiscoveryTask();
+  ~IsolatedWebAppUpdateCheckAndPrepareTask();
 
-  IsolatedWebAppUpdateDiscoveryTask(const IsolatedWebAppUpdateDiscoveryTask&) =
-      delete;
-  IsolatedWebAppUpdateDiscoveryTask& operator=(
-      const IsolatedWebAppUpdateDiscoveryTask&) = delete;
+  IsolatedWebAppUpdateCheckAndPrepareTask(
+      const IsolatedWebAppUpdateCheckAndPrepareTask&) = delete;
+  IsolatedWebAppUpdateCheckAndPrepareTask& operator=(
+      const IsolatedWebAppUpdateCheckAndPrepareTask&) = delete;
 
   void Start(CompletionCallback callback);
   bool has_started() const { return has_started_; }
 
   const IsolatedWebAppUrlInfo& url_info() const {
     return task_params_.url_info();
+  }
+
+  // The version discovered by the update check. This is populated once the
+  // update manifest has been fetched and parsed, and contains the version
+  // that was determined to be applicable to the app.
+  const std::optional<IwaVersion>& discovered_version() const {
+    return discovered_version_;
   }
 
   base::Value AsDebugValue() const;
@@ -153,7 +176,7 @@ class IsolatedWebAppUpdateDiscoveryTask {
   bool has_started_ = false;
   CompletionCallback callback_;
 
-  const IwaUpdateDiscoveryTaskParams task_params_;
+  const IwaUpdateCheckAndPrepareTaskParams task_params_;
 
   raw_ref<WebAppCommandScheduler> command_scheduler_;
   raw_ref<WebAppRegistrar> registrar_;
@@ -165,20 +188,23 @@ class IsolatedWebAppUpdateDiscoveryTask {
 
   ScopedTempWebBundleFile bundle_;
   std::optional<IwaVersion> currently_installed_version_;
+  std::optional<IwaVersion> discovered_version_;
 
   std::unique_ptr<UpdateManifestFetcher> update_manifest_fetcher_;
   std::unique_ptr<IsolatedWebAppDownloader> bundle_downloader_;
 
-  base::WeakPtrFactory<IsolatedWebAppUpdateDiscoveryTask> weak_factory_{this};
+  base::WeakPtrFactory<IsolatedWebAppUpdateCheckAndPrepareTask> weak_factory_{
+      this};
 };
 
 std::ostream& operator<<(
     std::ostream& os,
-    const IsolatedWebAppUpdateDiscoveryTask::Success& success);
+    const IsolatedWebAppUpdateCheckAndPrepareTask::Success& success);
 
-std::ostream& operator<<(std::ostream& os,
-                         const IsolatedWebAppUpdateDiscoveryTask::Error& error);
+std::ostream& operator<<(
+    std::ostream& os,
+    const IsolatedWebAppUpdateCheckAndPrepareTask::Error& error);
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_UPDATE_ISOLATED_WEB_APP_UPDATE_DISCOVERY_TASK_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_UPDATE_ISOLATED_WEB_APP_UPDATE_CHECK_AND_PREPARE_TASK_H_

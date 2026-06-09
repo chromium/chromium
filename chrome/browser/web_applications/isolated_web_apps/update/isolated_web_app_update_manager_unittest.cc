@@ -53,7 +53,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_discovery_task.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
@@ -123,8 +123,8 @@ const UpdateChannel kBetaChannel = UpdateChannel::Create("beta").value();
 constexpr char kInitialIwaVersion[] = "1.0.0";
 constexpr char kUpdateIwaVersion[] = "2.0.0";
 
-using UpdateDiscoveryTaskFuture =
-    base::test::TestFuture<IsolatedWebAppUpdateDiscoveryTask::CompletionStatus>;
+using UpdateDiscoveryTaskFuture = base::test::TestFuture<
+    IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus>;
 
 class MockCommandScheduler : public WebAppCommandScheduler {
  public:
@@ -287,13 +287,13 @@ class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
     UpdateDiscoveryTaskResultWaiter waiter(provider(), GetAppId(web_bundle_id),
                                            future.GetCallback());
     EXPECT_THAT(future.Take(),
-                ValueIs(IsolatedWebAppUpdateDiscoveryTask::Success::
+                ValueIs(IsolatedWebAppUpdateCheckAndPrepareTask::Success::
                             kUpdateFoundAndSavedInDatabase));
   }
 
   void AssertAppDiscoveryTaskFailedWith(
       const web_package::SignedWebBundleId& web_bundle_id,
-      IsolatedWebAppUpdateDiscoveryTask::Error error) {
+      IsolatedWebAppUpdateCheckAndPrepareTask::Error error) {
     UpdateDiscoveryTaskFuture future;
     UpdateDiscoveryTaskResultWaiter waiter(provider(), GetAppId(web_bundle_id),
                                            future.GetCallback());
@@ -537,7 +537,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
 
   EXPECT_THAT(
       update_future.Take(),
-      ValueIs(IsolatedWebAppUpdateDiscoveryTask::Success::kNoUpdateFound));
+      ValueIs(
+          IsolatedWebAppUpdateCheckAndPrepareTask::Success::kNoUpdateFound));
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
                               *IwaVersion::Create(kInitialIwaVersion));
@@ -995,9 +996,9 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   update_manager().DiscoverUpdatesNow();
 
   // Managed update manifest was empty, no update should have been picked up.
-  AssertAppDiscoveryTaskFailedWith(GetIwa1WebBundleId(),
-                                   IsolatedWebAppUpdateDiscoveryTask::Error::
-                                       kUpdateManifestNoApplicableVersion);
+  AssertAppDiscoveryTaskFailedWith(
+      GetIwa1WebBundleId(), IsolatedWebAppUpdateCheckAndPrepareTask::Error::
+                                kUpdateManifestNoApplicableVersion);
 
   test_update_server().AddBundle(
       CreateIwa1Bundle(kManagedUpdateVersion, managed_update_url.spec()));
@@ -1040,9 +1041,9 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
 
   update_manager().DiscoverUpdatesNow();
 
-  AssertAppDiscoveryTaskFailedWith(
-      GetIwa1WebBundleId(),
-      IsolatedWebAppUpdateDiscoveryTask::Error::kUpdateManifestDownloadFailed);
+  AssertAppDiscoveryTaskFailedWith(GetIwa1WebBundleId(),
+                                   IsolatedWebAppUpdateCheckAndPrepareTask::
+                                       Error::kUpdateManifestDownloadFailed);
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
                               *IwaVersion::Create(kInitialIwaVersion));
 }
@@ -1427,8 +1428,8 @@ TEST_F(IsolatedWebAppUpdateManagerDiscoveryTimerTest,
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateDiscoveryTaskSuccess) {
   base::HistogramTester histogram_tester;
-  IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status =
-      IsolatedWebAppUpdateDiscoveryTask::Success::kNoUpdateFound;
+  IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status =
+      IsolatedWebAppUpdateCheckAndPrepareTask::Success::kNoUpdateFound;
 
   update_manager().TrackResultOfUpdateDiscoveryTaskForTesting(status);
 
@@ -1439,8 +1440,9 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateDiscoveryTaskSuccess) {
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateDiscoveryTaskFails) {
   base::HistogramTester histogram_tester;
-  IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status = base::unexpected(
-      IsolatedWebAppUpdateDiscoveryTask::Error::kUpdateManifestInvalidJson);
+  IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status =
+      base::unexpected(IsolatedWebAppUpdateCheckAndPrepareTask::Error::
+                           kUpdateManifestInvalidJson);
 
   update_manager().TrackResultOfUpdateDiscoveryTaskForTesting(status);
 

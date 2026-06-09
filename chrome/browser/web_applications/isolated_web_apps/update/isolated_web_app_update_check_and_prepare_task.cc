@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_discovery_task.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h"
 
 #include <cstdint>
 #include <optional>
@@ -107,83 +107,100 @@ constexpr auto kWebBundleDownloadTrafficAnnotation =
 
 }  // namespace
 
-IwaUpdateDiscoveryTaskParams::IwaUpdateDiscoveryTaskParams(
+IwaUpdateCheckAndPrepareTaskParams::IwaUpdateCheckAndPrepareTaskParams(
     const GURL& update_manifest_url,
     const UpdateChannel& update_channel,
     bool allow_downgrades,
     const std::optional<IwaVersion>& pinned_version,
     const IsolatedWebAppUrlInfo& url_info,
-    bool dev_mode)
+    bool dev_mode,
+    bool update_manifest_check_only)
     : update_manifest_url_(update_manifest_url),
       update_channel_(update_channel),
       allow_downgrades_(allow_downgrades),
       pinned_version_(pinned_version),
       url_info_(url_info),
-      dev_mode_(dev_mode) {}
+      dev_mode_(dev_mode),
+      update_manifest_check_only_(update_manifest_check_only) {}
 
-IwaUpdateDiscoveryTaskParams::IwaUpdateDiscoveryTaskParams(
-    IwaUpdateDiscoveryTaskParams&& other) = default;
+IwaUpdateCheckAndPrepareTaskParams::IwaUpdateCheckAndPrepareTaskParams(
+    IwaUpdateCheckAndPrepareTaskParams&& other) = default;
 
-IwaUpdateDiscoveryTaskParams::~IwaUpdateDiscoveryTaskParams() = default;
+IwaUpdateCheckAndPrepareTaskParams::IwaUpdateCheckAndPrepareTaskParams(
+    const IwaUpdateCheckAndPrepareTaskParams& other) = default;
+
+IwaUpdateCheckAndPrepareTaskParams&
+IwaUpdateCheckAndPrepareTaskParams::operator=(
+    const IwaUpdateCheckAndPrepareTaskParams& other) = default;
+
+IwaUpdateCheckAndPrepareTaskParams::~IwaUpdateCheckAndPrepareTaskParams() =
+    default;
 
 // static
-std::string IsolatedWebAppUpdateDiscoveryTask::SuccessToString(
+std::string IsolatedWebAppUpdateCheckAndPrepareTask::SuccessToString(
     Success success) {
   switch (success) {
-    case IsolatedWebAppUpdateDiscoveryTask::Success::kNoUpdateFound:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Success::kNoUpdateFound:
       return "Success::kNoUpdateFound";
-    case IsolatedWebAppUpdateDiscoveryTask::Success::kUpdateAlreadyPending:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+        kUpdateAlreadyPending:
       return "Success::kUpdateAlreadyPending";
-    case IsolatedWebAppUpdateDiscoveryTask::Success::
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
         kPinnedVersionUpdateFoundAndSavedInDatabase:
       return "Success::kPinnedVersionUpdateFoundAndSavedInDatabase";
-    case IsolatedWebAppUpdateDiscoveryTask::Success::
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
         kDowngradeVersionFoundAndSavedInDatabase:
       return "Success::kDowngradeVersionFoundAndSavedInDatabase";
-    case IsolatedWebAppUpdateDiscoveryTask::Success::
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
         kUpdateFoundAndSavedInDatabase:
       return "Success::kUpdateFoundAndDryRunSuccessful";
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Success::kUpdateFound:
+      return "Success::kUpdateFound";
   }
 }
 
 // static
-std::string IsolatedWebAppUpdateDiscoveryTask::ErrorToString(Error error) {
+std::string IsolatedWebAppUpdateCheckAndPrepareTask::ErrorToString(
+    Error error) {
   switch (error) {
-    case IsolatedWebAppUpdateDiscoveryTask::Error::
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
         kUpdateManifestDownloadFailed:
       return "Error::kUpdateManifestDownloadFailed";
-    case IsolatedWebAppUpdateDiscoveryTask::Error::kUpdateManifestInvalidJson:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
+        kUpdateManifestInvalidJson:
       return "Error::kUpdateManifestInvalidJson";
-    case IsolatedWebAppUpdateDiscoveryTask::Error::
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
         kUpdateManifestInvalidManifest:
       return "Error::kUpdateManifestInvalidManifest";
-    case IsolatedWebAppUpdateDiscoveryTask::Error::
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
         kUpdateManifestNoApplicableVersion:
       return "Error::kUpdateManifestNoApplicableVersion";
-    case IsolatedWebAppUpdateDiscoveryTask::Error::kIwaNotInstalled:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kIwaNotInstalled:
       return "Error::kIwaNotInstalled";
-    case IsolatedWebAppUpdateDiscoveryTask::Error::
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
         kPinnedVersionNotFoundInUpdateManifest:
       return "Error::kPinnedVersionNotFoundInUpdateManifest";
-    case IsolatedWebAppUpdateDiscoveryTask::Error::kDowngradetNotAllowed:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kDowngradetNotAllowed:
       return "Error::kDowngradetNotAllowed";
-    case IsolatedWebAppUpdateDiscoveryTask::Error::kBundleDownloadError:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kBundleDownloadError:
       return "Error::kBundleDownloadError";
-    case IsolatedWebAppUpdateDiscoveryTask::Error::kDownloadPathCreationFailed:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
+        kDownloadPathCreationFailed:
       return "Error::kDownloadPathCreationFailed";
-    case IsolatedWebAppUpdateDiscoveryTask::Error::kUpdateDryRunFailed:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kUpdateDryRunFailed:
       return "Error::kUpdateDryRunFailed";
     case Error::kSystemShutdown:
       return "Error::kSystemShutdown";
   }
 }
 
-IsolatedWebAppUpdateDiscoveryTask::IsolatedWebAppUpdateDiscoveryTask(
-    IwaUpdateDiscoveryTaskParams task_params,
-    WebAppCommandScheduler& command_scheduler,
-    WebAppRegistrar& registrar,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    Profile& profile)
+IsolatedWebAppUpdateCheckAndPrepareTask::
+    IsolatedWebAppUpdateCheckAndPrepareTask(
+        IwaUpdateCheckAndPrepareTaskParams task_params,
+        WebAppCommandScheduler& command_scheduler,
+        WebAppRegistrar& registrar,
+        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+        Profile& profile)
     : task_params_(std::move(task_params)),
       command_scheduler_(command_scheduler),
       registrar_(registrar),
@@ -204,10 +221,11 @@ IsolatedWebAppUpdateDiscoveryTask::IsolatedWebAppUpdateDiscoveryTask(
   }
 }
 
-IsolatedWebAppUpdateDiscoveryTask::~IsolatedWebAppUpdateDiscoveryTask() =
-    default;
+IsolatedWebAppUpdateCheckAndPrepareTask::
+    ~IsolatedWebAppUpdateCheckAndPrepareTask() = default;
 
-void IsolatedWebAppUpdateDiscoveryTask::Start(CompletionCallback callback) {
+void IsolatedWebAppUpdateCheckAndPrepareTask::Start(
+    CompletionCallback callback) {
   if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
     FailWith(Error::kSystemShutdown);
     return;
@@ -232,11 +250,11 @@ void IsolatedWebAppUpdateDiscoveryTask::Start(CompletionCallback callback) {
       task_params_.update_manifest_url(), kUpdateManifestFetchTrafficAnnotation,
       url_loader_factory_, /*report_histogram_manifest_result=*/true);
   update_manifest_fetcher_->FetchUpdateManifest(base::BindOnce(
-      &IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched,
+      &IsolatedWebAppUpdateCheckAndPrepareTask::OnUpdateManifestFetched,
       weak_factory_.GetWeakPtr()));
 }
 
-void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
+void IsolatedWebAppUpdateCheckAndPrepareTask::OnUpdateManifestFetched(
     base::expected<UpdateManifest, UpdateManifestFetcher::Error> fetch_result) {
   ASSIGN_OR_RETURN(UpdateManifest update_manifest, fetch_result,
                    [&](UpdateManifestFetcher::Error error) {
@@ -322,6 +340,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
     // we do allow overwriting a pending update with a different pending
     // update version or if there's a chance that this will yield a bundle
     // signed by a rotated key.
+    discovered_version_ = version_entry->version();
     SucceedWith(Success::kUpdateAlreadyPending);
     return;
   }
@@ -342,10 +361,18 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
       FailWith(Error::kDowngradetNotAllowed);
       return;
     case VersionChangeValidationResult::kSameVersionUpdateDisallowed:
+      discovered_version_ = version_entry->version();
       SucceedWith(Success::kNoUpdateFound);
       return;
     case VersionChangeValidationResult::kAllowed:
       break;
+  }
+
+  discovered_version_ = version_entry->version();
+
+  if (task_params_.update_manifest_check_only()) {
+    SucceedWith(Success::kUpdateFound);
+    return;
   }
 
   bundle_downloader_ = IsolatedWebAppDownloader::Create(url_loader_factory_);
@@ -355,13 +382,13 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
   }
   bundle_downloader_->DownloadInitialBytes(
       version_entry->src(), kWebBundleDownloadTrafficAnnotation,
-      base::BindOnce(
-          &IsolatedWebAppUpdateDiscoveryTask::CheckIntegrityBundleForRotatedKey,
-          weak_factory_.GetWeakPtr(), std::move(*version_entry),
-          std::move(*rotated_key)));
+      base::BindOnce(&IsolatedWebAppUpdateCheckAndPrepareTask::
+                         CheckIntegrityBundleForRotatedKey,
+                     weak_factory_.GetWeakPtr(), std::move(*version_entry),
+                     std::move(*rotated_key)));
 }
 
-void IsolatedWebAppUpdateDiscoveryTask::CheckIntegrityBundleForRotatedKey(
+void IsolatedWebAppUpdateCheckAndPrepareTask::CheckIntegrityBundleForRotatedKey(
     UpdateManifest::VersionEntry version_entry,
     std::vector<uint8_t> rotated_key,
     std::optional<std::string> initial_bytes) {
@@ -379,14 +406,14 @@ void IsolatedWebAppUpdateDiscoveryTask::CheckIntegrityBundleForRotatedKey(
   CreateTempFile(version_entry);
 }
 
-void IsolatedWebAppUpdateDiscoveryTask::CreateTempFile(
+void IsolatedWebAppUpdateCheckAndPrepareTask::CreateTempFile(
     UpdateManifest::VersionEntry version_entry) {
-  ScopedTempWebBundleFile::Create(
-      base::BindOnce(&IsolatedWebAppUpdateDiscoveryTask::OnTempFileCreated,
-                     weak_factory_.GetWeakPtr(), std::move(version_entry)));
+  ScopedTempWebBundleFile::Create(base::BindOnce(
+      &IsolatedWebAppUpdateCheckAndPrepareTask::OnTempFileCreated,
+      weak_factory_.GetWeakPtr(), std::move(version_entry)));
 }
 
-void IsolatedWebAppUpdateDiscoveryTask::OnTempFileCreated(
+void IsolatedWebAppUpdateCheckAndPrepareTask::OnTempFileCreated(
     UpdateManifest::VersionEntry version_entry,
     ScopedTempWebBundleFile bundle) {
   if (!bundle) {
@@ -400,11 +427,12 @@ void IsolatedWebAppUpdateDiscoveryTask::OnTempFileCreated(
   CHECK(bundle_downloader_);
   bundle_downloader_->DownloadSignedWebBundle(
       version_entry.src(), bundle_.path(), kWebBundleDownloadTrafficAnnotation,
-      base::BindOnce(&IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded,
-                     weak_factory_.GetWeakPtr(), version_entry.version()));
+      base::BindOnce(
+          &IsolatedWebAppUpdateCheckAndPrepareTask::OnWebBundleDownloaded,
+          weak_factory_.GetWeakPtr(), version_entry.version()));
 }
 
-void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
+void IsolatedWebAppUpdateCheckAndPrepareTask::OnWebBundleDownloaded(
     const IwaVersion& expected_version,
     int32_t net_error) {
   if (net_error != net::OK) {
@@ -430,11 +458,12 @@ void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
   command_scheduler_->PrepareAndStoreIsolatedWebAppUpdate(
       update_info, task_params_.url_info(), std::move(keep_alive_),
       std::move(profile_keep_alive_),
-      base::BindOnce(&IsolatedWebAppUpdateDiscoveryTask::OnUpdateDryRunDone,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &IsolatedWebAppUpdateCheckAndPrepareTask::OnUpdateDryRunDone,
+          weak_factory_.GetWeakPtr()));
 }
 
-void IsolatedWebAppUpdateDiscoveryTask::OnUpdateDryRunDone(
+void IsolatedWebAppUpdateCheckAndPrepareTask::OnUpdateDryRunDone(
     IsolatedWebAppUpdatePrepareAndStoreCommandResult result) {
   if (!result.has_value()) {
     debug_log_.Set("prepare_and_store_command_error", result.error().message);
@@ -455,34 +484,37 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateDryRunDone(
   SucceedWith(success_type);
 }
 
-void IsolatedWebAppUpdateDiscoveryTask::SucceedWith(Success success) {
+void IsolatedWebAppUpdateCheckAndPrepareTask::SucceedWith(Success success) {
   debug_log_.Set("end_time", base::TimeToValue(base::Time::Now()));
   debug_log_.Set("result", SuccessToString(success));
-  VLOG(1) << "Isolated Web App update discovery task succeeded: " << success;
+  VLOG(1) << "Isolated Web App update check and prepare task succeeded: "
+          << success;
   std::move(callback_).Run(success);
 }
 
-void IsolatedWebAppUpdateDiscoveryTask::FailWith(Error error) {
+void IsolatedWebAppUpdateCheckAndPrepareTask::FailWith(Error error) {
   debug_log_.Set("end_time", base::TimeToValue(base::Time::Now()));
   debug_log_.Set("result", ErrorToString(error));
-  LOG(ERROR) << "Isolated Web App update discovery task failed: " << error;
+  LOG(ERROR) << "Isolated Web App update check and prepare task failed: "
+             << error;
   std::move(callback_).Run(base::unexpected(error));
 }
 
-base::Value IsolatedWebAppUpdateDiscoveryTask::AsDebugValue() const {
+base::Value IsolatedWebAppUpdateCheckAndPrepareTask::AsDebugValue() const {
   return base::Value(debug_log_.Clone());
 }
 
 std::ostream& operator<<(
     std::ostream& os,
-    const IsolatedWebAppUpdateDiscoveryTask::Success& success) {
-  return os << IsolatedWebAppUpdateDiscoveryTask::SuccessToString(success);
+    const IsolatedWebAppUpdateCheckAndPrepareTask::Success& success) {
+  return os << IsolatedWebAppUpdateCheckAndPrepareTask::SuccessToString(
+             success);
 }
 
 std::ostream& operator<<(
     std::ostream& os,
-    const IsolatedWebAppUpdateDiscoveryTask::Error& error) {
-  return os << IsolatedWebAppUpdateDiscoveryTask::ErrorToString(error);
+    const IsolatedWebAppUpdateCheckAndPrepareTask::Error& error) {
+  return os << IsolatedWebAppUpdateCheckAndPrepareTask::ErrorToString(error);
 }
 
 }  // namespace web_app

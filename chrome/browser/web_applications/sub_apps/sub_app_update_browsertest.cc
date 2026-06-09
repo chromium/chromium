@@ -205,7 +205,8 @@ class SubAppUpdateBrowserTest : public IsolatedWebAppBrowserTestHarness {
     iwa_test_update_server_.AddBundle(builder.BuildBundle(
         bundle_id, {web_package::test::GetDefaultEd25519KeyPair()}));
 
-    base::test::TestFuture<IsolatedWebAppUpdateDiscoveryTask::CompletionStatus>
+    base::test::TestFuture<
+        IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus>
         update_future;
     UpdateDiscoveryTaskResultWaiter update_waiter(
         provider(),
@@ -214,9 +215,10 @@ class SubAppUpdateBrowserTest : public IsolatedWebAppBrowserTestHarness {
 
     EXPECT_EQ(
         1ul, provider().isolated_web_app_update_manager().DiscoverUpdatesNow());
-    EXPECT_THAT(update_future.Take(),
-                base::test::ValueIs(IsolatedWebAppUpdateDiscoveryTask::Success::
-                                        kUpdateFoundAndSavedInDatabase));
+    EXPECT_THAT(
+        update_future.Take(),
+        base::test::ValueIs(IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+                                kUpdateFoundAndSavedInDatabase));
   }
 
  protected:

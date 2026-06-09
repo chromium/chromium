@@ -102,8 +102,8 @@ constexpr char kOrphanedBundleDirectory[] = "6zsr4hjoudsu6ihf";
 
 using policy::DeveloperToolsAvailability;
 
-using UpdateDiscoveryTaskFuture =
-    base::test::TestFuture<IsolatedWebAppUpdateDiscoveryTask::CompletionStatus>;
+using UpdateDiscoveryTaskFuture = base::test::TestFuture<
+    IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus>;
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kUserMail[] = "dla@example.com";

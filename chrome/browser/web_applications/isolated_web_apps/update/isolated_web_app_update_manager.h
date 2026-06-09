@@ -29,7 +29,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_waiter.h"
-#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_discovery_task.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
@@ -104,7 +104,7 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
    public:
     virtual void OnUpdateDiscoveryTaskCompleted(
         const webapps::AppId& app_id,
-        IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {}
+        IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status) {}
 
     // Will be invoked only if the discovery task finished with
     // `kUpdateFoundAndSavedInDatabase`.
@@ -196,7 +196,7 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   }
 
   void TrackResultOfUpdateDiscoveryTaskForTesting(
-      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) const {
+      IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status) const {
     TrackResultOfUpdateDiscoveryTask(status);
   }
 
@@ -230,7 +230,7 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
     base::Value AsDebugValue() const;
     void ClearUpdateDiscoveryLog();
 
-    void Push(std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask> task);
+    void Push(std::unique_ptr<IsolatedWebAppUpdateCheckAndPrepareTask> task);
     void Push(std::unique_ptr<IsolatedWebAppUpdateApplyTask> task);
     void Clear();
 
@@ -255,15 +255,16 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
     bool IsUpdateApplyTaskQueued(const webapps::AppId& app_id) const;
 
    private:
-    void StartUpdateDiscoveryTask(IsolatedWebAppUpdateDiscoveryTask* task_ptr);
+    void StartUpdateDiscoveryTask(
+        IsolatedWebAppUpdateCheckAndPrepareTask* task_ptr);
 
     void StartUpdateApplyTask(IsolatedWebAppUpdateApplyTask* task_ptr);
 
     bool IsAnyTaskRunning() const;
 
     void OnUpdateDiscoveryTaskCompleted(
-        IsolatedWebAppUpdateDiscoveryTask* task_ptr,
-        IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status);
+        IsolatedWebAppUpdateCheckAndPrepareTask* task_ptr,
+        IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status);
 
     void OnUpdateApplyTaskCompleted(
         IsolatedWebAppUpdateApplyTask* task_ptr,
@@ -274,7 +275,8 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
     // Update discovery tasks are executed serially one after each other. Only
     // the task at the front of the queue can be running. Once finished, the
     // task will be popped from the queue.
-    base::circular_deque<std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask>>
+    base::circular_deque<
+        std::unique_ptr<IsolatedWebAppUpdateCheckAndPrepareTask>>
         update_discovery_tasks_;
     base::ListValue update_discovery_results_log_;
 
@@ -318,8 +320,8 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
           callback);
 
   void OnUpdateDiscoveryTaskCompleted(
-      std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask> task,
-      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status);
+      std::unique_ptr<IsolatedWebAppUpdateCheckAndPrepareTask> task,
+      IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status);
 
   void OnUpdateApplyWaiterFinished(
       IsolatedWebAppUrlInfo url_info,
@@ -403,10 +405,10 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   base::WeakPtrFactory<IsolatedWebAppUpdateManager> weak_factory_{this};
 
   IsolatedWebAppUpdateError FromDiscoveryTaskError(
-      const IsolatedWebAppUpdateDiscoveryTask::Error& error) const;
+      const IsolatedWebAppUpdateCheckAndPrepareTask::Error& error) const;
 
   void TrackResultOfUpdateDiscoveryTask(
-      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) const;
+      IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status) const;
 
   void TrackResultOfUpdateApplyTask(
       IsolatedWebAppApplyUpdateCommandResult status) const;

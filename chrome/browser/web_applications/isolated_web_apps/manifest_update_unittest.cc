@@ -20,7 +20,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_discovery_task.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"

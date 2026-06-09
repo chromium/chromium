@@ -43,7 +43,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_waiter.h"
-#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_discovery_task.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -94,9 +94,9 @@ IsolatedWebAppUpdateOptions& IsolatedWebAppUpdateOptions::operator=(
     IsolatedWebAppUpdateOptions&& other) = default;
 IsolatedWebAppUpdateOptions::~IsolatedWebAppUpdateOptions() = default;
 
-// This helper class acts similarly to `IsolatedWebAppUpdateDiscoveryTask`, the
-// difference being that this class is for discovering local updates for
-// dev-mode installed IWAs.
+// This helper class acts similarly to
+// `IsolatedWebAppUpdateCheckAndPrepareTask`, the difference being that this
+// class is for discovering local updates for dev-mode installed IWAs.
 class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
  public:
   using Callback =
@@ -480,10 +480,10 @@ void IsolatedWebAppUpdateManager::DiscoverUpdatesForApp(
     bool allow_downgrades,
     const std::optional<IwaVersion>& pinned_version,
     bool dev_mode) {
-  task_queue_.Push(std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
-      IwaUpdateDiscoveryTaskParams(update_manifest_url, update_channel,
-                                   allow_downgrades, pinned_version, url_info,
-                                   dev_mode),
+  task_queue_.Push(std::make_unique<IsolatedWebAppUpdateCheckAndPrepareTask>(
+      IwaUpdateCheckAndPrepareTaskParams(update_manifest_url, update_channel,
+                                         allow_downgrades, pinned_version,
+                                         url_info, dev_mode),
       provider_->scheduler(), provider_->registrar_unsafe(),
       profile_->GetURLLoaderFactory(), *profile_));
 
@@ -666,8 +666,8 @@ void IsolatedWebAppUpdateManager::CreateUpdateApplyWaiter(
 }
 
 void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
-    std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask> task,
-    IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {
+    std::unique_ptr<IsolatedWebAppUpdateCheckAndPrepareTask> task,
+    IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status) {
   TrackResultOfUpdateDiscoveryTask(status);
 
   for (auto& observer : task_observers_) {
@@ -676,16 +676,18 @@ void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
 
   if (status.has_value()) {
     switch (*status) {
-      case IsolatedWebAppUpdateDiscoveryTask::Success::
+      case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
           kUpdateFoundAndSavedInDatabase:
-      case IsolatedWebAppUpdateDiscoveryTask::Success::
+      case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
           kPinnedVersionUpdateFoundAndSavedInDatabase:
-      case IsolatedWebAppUpdateDiscoveryTask::Success::
+      case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
           kDowngradeVersionFoundAndSavedInDatabase:
         CreateUpdateApplyWaiter(task->url_info());
         break;
-      case IsolatedWebAppUpdateDiscoveryTask::Success::kNoUpdateFound:
-      case IsolatedWebAppUpdateDiscoveryTask::Success::kUpdateAlreadyPending:
+      case IsolatedWebAppUpdateCheckAndPrepareTask::Success::kNoUpdateFound:
+      case IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+          kUpdateAlreadyPending:
+      case IsolatedWebAppUpdateCheckAndPrepareTask::Success::kUpdateFound:
         break;
     }
   }
@@ -694,7 +696,7 @@ void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
 }
 
 void IsolatedWebAppUpdateManager::TrackResultOfUpdateDiscoveryTask(
-    IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) const {
+    IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status) const {
   if (!status.has_value()) {
     web_app::UmaLogExpectedStatus<IsolatedWebAppUpdateError>(
         "WebApp.Isolated.Update",
@@ -886,7 +888,7 @@ void IsolatedWebAppUpdateManager::TaskQueue::ClearUpdateDiscoveryLog() {
 }
 
 void IsolatedWebAppUpdateManager::TaskQueue::Push(
-    std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask> task) {
+    std::unique_ptr<IsolatedWebAppUpdateCheckAndPrepareTask> task) {
   update_discovery_tasks_.push_back(std::move(task));
 }
 
@@ -952,7 +954,7 @@ bool IsolatedWebAppUpdateManager::TaskQueue::IsUpdateApplyTaskQueued(
 }
 
 void IsolatedWebAppUpdateManager::TaskQueue::StartUpdateDiscoveryTask(
-    IsolatedWebAppUpdateDiscoveryTask* task_ptr) {
+    IsolatedWebAppUpdateCheckAndPrepareTask* task_ptr) {
   task_ptr->Start(base::BindOnce(
       &TaskQueue::OnUpdateDiscoveryTaskCompleted,
       // We can use `base::Unretained` here, because `this` owns the task.
@@ -977,12 +979,13 @@ bool IsolatedWebAppUpdateManager::TaskQueue::IsAnyTaskRunning() const {
 }
 
 void IsolatedWebAppUpdateManager::TaskQueue::OnUpdateDiscoveryTaskCompleted(
-    IsolatedWebAppUpdateDiscoveryTask* task_ptr,
-    IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {
+    IsolatedWebAppUpdateCheckAndPrepareTask* task_ptr,
+    IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status) {
   auto task_it = std::ranges::find_if(update_discovery_tasks_,
                                       base::MatchesUniquePtr(task_ptr));
   CHECK(task_it != update_discovery_tasks_.end());
-  std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask> task = std::move(*task_it);
+  std::unique_ptr<IsolatedWebAppUpdateCheckAndPrepareTask> task =
+      std::move(*task_it);
   update_discovery_tasks_.erase(task_it);
 
   update_discovery_results_log_.Append(task->AsDebugValue());
@@ -1024,33 +1027,35 @@ void IsolatedWebAppUpdateManager::TaskQueue::OnUpdateApplyTaskCompleted(
 }
 
 IsolatedWebAppUpdateError IsolatedWebAppUpdateManager::FromDiscoveryTaskError(
-    const IsolatedWebAppUpdateDiscoveryTask::Error& error) const {
+    const IsolatedWebAppUpdateCheckAndPrepareTask::Error& error) const {
   switch (error) {
-    case IsolatedWebAppUpdateDiscoveryTask::Error::
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
         kUpdateManifestDownloadFailed:
       return IsolatedWebAppUpdateError::kUpdateManifestDownloadFailed;
-    case IsolatedWebAppUpdateDiscoveryTask::Error::kUpdateManifestInvalidJson:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
+        kUpdateManifestInvalidJson:
       return IsolatedWebAppUpdateError::kUpdateManifestInvalidJson;
-    case IsolatedWebAppUpdateDiscoveryTask::Error::
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
         kUpdateManifestInvalidManifest:
       return IsolatedWebAppUpdateError::kUpdateManifestInvalidManifest;
-    case IsolatedWebAppUpdateDiscoveryTask::Error::
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
         kUpdateManifestNoApplicableVersion:
       return IsolatedWebAppUpdateError::kUpdateManifestNoApplicableVersion;
-    case IsolatedWebAppUpdateDiscoveryTask::Error::kIwaNotInstalled:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kIwaNotInstalled:
       return IsolatedWebAppUpdateError::kIwaNotInstalled;
-    case IsolatedWebAppUpdateDiscoveryTask::Error::
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
         kPinnedVersionNotFoundInUpdateManifest:
       return IsolatedWebAppUpdateError::kPinnedVersionNotFoundInUpdateManifest;
-    case IsolatedWebAppUpdateDiscoveryTask::Error::kDowngradetNotAllowed:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kDowngradetNotAllowed:
       return IsolatedWebAppUpdateError::kDowngradeNotAllowed;
-    case IsolatedWebAppUpdateDiscoveryTask::Error::kDownloadPathCreationFailed:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::
+        kDownloadPathCreationFailed:
       return IsolatedWebAppUpdateError::kDownloadPathCreationFailed;
-    case IsolatedWebAppUpdateDiscoveryTask::Error::kBundleDownloadError:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kBundleDownloadError:
       return IsolatedWebAppUpdateError::kBundleDownloadError;
-    case IsolatedWebAppUpdateDiscoveryTask::Error::kUpdateDryRunFailed:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kUpdateDryRunFailed:
       return IsolatedWebAppUpdateError::kUpdateDryRunFailed;
-    case IsolatedWebAppUpdateDiscoveryTask::Error::kSystemShutdown:
+    case IsolatedWebAppUpdateCheckAndPrepareTask::Error::kSystemShutdown:
       return IsolatedWebAppUpdateError::kSystemShutdown;
   }
 }
