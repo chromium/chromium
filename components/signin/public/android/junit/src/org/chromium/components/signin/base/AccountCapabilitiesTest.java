@@ -14,7 +14,6 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.Tribool;
@@ -70,6 +69,9 @@ public final class AccountCapabilitiesTest {
             case AccountCapabilitiesConstants.IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME:
                 return capabilities.isOptedInToParentalSupervision();
             case AccountCapabilitiesConstants
+                    .IS_SUBJECT_TO_ACCOUNT_LEVEL_ENTERPRISE_POLICIES_CAPABILITY_NAME:
+                return capabilities.isSubjectToAccountLevelEnterprisePolicies();
+            case AccountCapabilitiesConstants
                     .IS_SUBJECT_TO_CHROME_PRIVACY_SANDBOX_RESTRICTED_MEASUREMENT_NOTICE:
                 return capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME:
@@ -122,7 +124,9 @@ public final class AccountCapabilitiesTest {
                                     .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
                             AccountCapabilitiesConstants.CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP,
                             AccountCapabilitiesConstants
-                                    .SUPPORTS_WALLET_PRIVATE_PASSES_IN_AUTOFILL_NAME
+                                    .SUPPORTS_WALLET_PRIVATE_PASSES_IN_AUTOFILL_NAME,
+                            AccountCapabilitiesConstants
+                                    .IS_SUBJECT_TO_ACCOUNT_LEVEL_ENTERPRISE_POLICIES_CAPABILITY_NAME
                         });
         assert AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES.containsAll(params);
         return params;
@@ -147,7 +151,6 @@ public final class AccountCapabilitiesTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/501072493")
     public void testParseFromCapabilitiesResponseWithResponseYes() {
         AccountCapabilities capabilities =
                 AccountCapabilities.parseFromCapabilitiesResponse(
@@ -161,7 +164,6 @@ public final class AccountCapabilitiesTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/501072493")
     public void testParseFromCapabilitiesResponseWithResponseNo() {
         AccountCapabilities capabilities =
                 AccountCapabilities.parseFromCapabilitiesResponse(
@@ -174,7 +176,6 @@ public final class AccountCapabilitiesTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/501072493")
     public void testParseFromCapabilitiesResponseWithExceptionResponse() {
         AccountCapabilities capabilities =
                 AccountCapabilities.parseFromCapabilitiesResponse(

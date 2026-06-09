@@ -166,6 +166,15 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return isSubjectToAccountLevelEnterprisePolicies capability value.
+     */
+    public @Tribool int isSubjectToAccountLevelEnterprisePolicies() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants
+                        .IS_SUBJECT_TO_ACCOUNT_LEVEL_ENTERPRISE_POLICIES_CAPABILITY_NAME);
+    }
+
+    /**
      * @return isSubjectToChromePrivacySandboxRestrictedMeasurementNotice capability value.
      */
     public @Tribool int isSubjectToChromePrivacySandboxRestrictedMeasurementNotice() {
