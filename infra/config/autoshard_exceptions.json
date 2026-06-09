@@ -216,7 +216,7 @@
     "chromium.win": {
         "Win10 Tests x64": {
             "browser_tests": {
-                "shards": 90,
+                "shards": 97,
                 "try_builder": "win-rel"
             },
             "content_browsertests": {
