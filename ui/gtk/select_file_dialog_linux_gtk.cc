@@ -207,8 +207,11 @@ SelectFileDialogLinuxGtk::~SelectFileDialogLinuxGtk() {
   }
   for (GtkWidget* dialog : dialogs) {
     CHECK(dialog);
-    GtkWindowDestroy(dialog);
+    // `GtkWindowDestroy()` synchronously drops the only reference and frees
+    // the dialog, so run `OnFileChooserDestroy()` (which calls
+    // `g_object_set_data()` on `dialog`) first to avoid a use-after-free.
     OnFileChooserDestroy(dialog);
+    GtkWindowDestroy(dialog);
   }
   CHECK(dialogs_.empty());
 }
