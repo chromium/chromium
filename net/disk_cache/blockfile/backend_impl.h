@@ -107,6 +107,8 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   scoped_refptr<EntryImpl> OpenNextEntryImpl(Rankings::Iterator* iter);
 
   // Sets the maximum size for the total amount of data stored by this instance.
+  // This method is only called during backend creation.
+  // This is distinct from SetMaxBytes, which may be called multiple times.
   bool SetMaxSize(int64_t max_bytes);
 
   // Returns the full name for an external storage file.
@@ -308,6 +310,10 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   std::unique_ptr<Iterator> CreateIterator() override;
   void GetStats(StatsItems* stats) override;
   void OnExternalCacheHit(const std::string& key) override;
+  // Not to be confused with SetMaxSize(), which is only called during backend
+  // creation.
+  void SetMaxBytes(base::ByteSize max_bytes) override;
+  base::ByteSize GetMaxBytesForTesting() const override;
 
  private:
   using EntriesMap = std::unordered_map<CacheAddr, EntryImpl*>;

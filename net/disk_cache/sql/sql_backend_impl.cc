@@ -11,6 +11,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
+#include "base/byte_size.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -23,6 +24,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -34,6 +36,7 @@
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/sql/sql_async_task_token.h"
 #include "net/disk_cache/sql/sql_entry_impl.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
@@ -520,6 +523,15 @@ base::expected<int32_t, net::Error> SqlBackendImpl::GetEntryCount(
   // pending database operations are reflected in the result.
   store_->GetEntryCountAsync(std::move(callback));
   return base::unexpected(net::ERR_IO_PENDING);
+}
+
+void SqlBackendImpl::SetMaxBytes(base::ByteSize max_bytes) {
+  store_->SetMaxSize(base::checked_cast<int64_t>(max_bytes.InBytes()));
+  MaybeTriggerEviction(/*is_idle_time_eviction=*/false);
+}
+
+base::ByteSize SqlBackendImpl::GetMaxBytesForTesting() const {
+  return base::ByteSize(base::checked_cast<uint64_t>(store_->MaxSize()));
 }
 
 EntryResult SqlBackendImpl::OpenOrCreateEntry(const std::string& key,

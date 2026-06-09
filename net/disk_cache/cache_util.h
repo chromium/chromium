@@ -57,6 +57,11 @@ NET_EXPORT_PRIVATE int PreferredCacheSize(
     int64_t available,
     net::CacheType type = net::DISK_CACHE);
 
+// Returns the preferred max cache size given a cache path and type.
+NET_EXPORT_PRIVATE int64_t
+PreferredCacheSizeForPath(const base::FilePath& path,
+                          net::CacheType type = net::DISK_CACHE);
+
 // The default cache size should not ideally be exposed, but the blockfile
 // backend uses it for reasons that include testing.
 NET_EXPORT_PRIVATE extern const int kDefaultCacheSize;

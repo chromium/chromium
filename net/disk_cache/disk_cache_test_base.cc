@@ -157,8 +157,11 @@ void DiskCacheTestWithCache::LoadInMemoryIndex() {
 
 void DiskCacheTestWithCache::SetMaxSize(int64_t size) {
   size_ = size;
-  // Cache size should not generally be changed dynamically; it takes
-  // backend-specific knowledge to make it even semi-reasonable to do.
+  // Cache size should not generally be changed dynamically.
+  // This method only changes the initial size when creating a backend.
+  //
+  // To change the size after initialization, see the backend's SetMaxBytes
+  // method (which may not be supported by all backends).
   DCHECK(!cache_);
 }
 

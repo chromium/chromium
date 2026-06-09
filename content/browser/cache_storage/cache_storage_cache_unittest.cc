@@ -182,6 +182,14 @@ class DelayableBackend : public disk_cache::Backend {
 
   int64_t MaxFileSize() const override { return backend_->MaxFileSize(); }
 
+  void SetMaxBytes(base::ByteSize max_bytes) override {
+    backend_->SetMaxBytes(max_bytes);
+  }
+
+  base::ByteSize GetMaxBytesForTesting() const override {
+    return backend_->GetMaxBytesForTesting();
+  }
+
   // Call to continue a delayed call to OpenEntry.
   bool OpenEntryContinue() {
     if (open_entry_callback_.is_null())
@@ -354,6 +362,14 @@ class FailableBackend : public disk_cache::Backend {
     return backend_->OnExternalCacheHit(key);
   }
   int64_t MaxFileSize() const override { return backend_->MaxFileSize(); }
+
+  void SetMaxBytes(base::ByteSize max_bytes) override {
+    backend_->SetMaxBytes(max_bytes);
+  }
+
+  base::ByteSize GetMaxBytesForTesting() const override {
+    return backend_->GetMaxBytesForTesting();
+  }
 
  private:
   std::unique_ptr<disk_cache::Backend> backend_;

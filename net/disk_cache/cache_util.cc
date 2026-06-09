@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
@@ -248,6 +249,12 @@ int PreferredCacheSize(int64_t available, net::CacheType type) {
 
   DCHECK_LT(size_limit, std::numeric_limits<int32_t>::max());
   return static_cast<int32_t>(std::min(preferred_cache_size, size_limit));
+}
+
+int64_t PreferredCacheSizeForPath(const base::FilePath& path,
+                                  net::CacheType type) {
+  int64_t available = base::SysInfo::AmountOfFreeDiskSpace(path).value_or(-1);
+  return PreferredCacheSize(available, type);
 }
 
 }  // namespace disk_cache

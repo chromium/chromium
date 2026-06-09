@@ -1530,6 +1530,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.SetMaxBytes.BackendStartedOrStarting" enum="Boolean"
+    expires_after="2026-12-01">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    For each call to HttpCache::SetMaxBytes, records whether the disk cache
+    backend was already created or is at least being created. This is emitted
+    regardless of whether force_initialization is true or false for the
+    SetMaxBytes call.
+
+    HttpCache::SetMaxBytes is usually called as a result of using a setter in
+    the Android WebView HTTP Cache Quota API.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.TimeToInitDiskCache" units="ms"
     expires_after="2026-12-18">
   <owner>haihan@google.com</owner>

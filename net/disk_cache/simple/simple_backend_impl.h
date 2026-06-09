@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -89,6 +90,9 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
 
   // Returns the maximum file size permitted in this backend.
   int64_t MaxFileSize() const override;
+
+  void SetMaxBytes(base::ByteSize max_bytes) override;
+  base::ByteSize GetMaxBytesForTesting() const override;
 
   // The entry for |entry_hash| is being doomed; the backend will not attempt
   // run new operations for this |entry_hash| until the Doom is completed.

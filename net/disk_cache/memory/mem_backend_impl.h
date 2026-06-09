@@ -12,6 +12,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/linked_list.h"
 #include "base/functional/callback_forward.h"
@@ -121,6 +122,8 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend,
   std::unique_ptr<Iterator> CreateIterator() override;
   void GetStats(base::StringPairs* stats) override {}
   void OnExternalCacheHit(const std::string& key) override;
+  void SetMaxBytes(base::ByteSize max_bytes) override;
+  base::ByteSize GetMaxBytesForTesting() const override;
 
  private:
   class MemIterator;

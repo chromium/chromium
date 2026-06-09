@@ -307,11 +307,13 @@ void SimpleIndex::Initialize(base::Time cache_mtime) {
 }
 
 void SimpleIndex::SetMaxSize(uint64_t max_bytes) {
-  // Zero size means use the default.
-  if (max_bytes) {
-    max_size_ = max_bytes;
-    high_watermark_ = max_size_ - max_size_ / kEvictionMarginDivisor;
-    low_watermark_ = max_size_ - 2 * (max_size_ / kEvictionMarginDivisor);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool shrinking = max_bytes < max_size_;
+  max_size_ = max_bytes;
+  high_watermark_ = max_size_ - max_size_ / kEvictionMarginDivisor;
+  low_watermark_ = max_size_ - 2 * (max_size_ / kEvictionMarginDivisor);
+  if (shrinking) {
+    StartEvictionIfNeeded();
   }
 }
 

@@ -16587,4 +16587,167 @@ TEST_F(HttpCacheTest, InvalidationFilterRevocation) {
   EXPECT_EQ(cache.network_layer()->transaction_count(), current_count);
 }
 
+TEST_F(HttpCacheTest, SetMaxBytesBeforeInitWithoutForcedInit) {
+  base::HistogramTester histogram_tester;
+  auto* factory = new MockBackendFactory();
+  factory->SetMaxBytes(500);
+  MockHttpCache cache(base::WrapUnique(factory));
+
+  // Call SetMaxBytes before initialization, with force=false.
+  cache.http_cache()->SetMaxBytes(base::ByteSize(1000), false);
+  histogram_tester.ExpectUniqueSample(
+      "HttpCache.SetMaxBytes.BackendStartedOrStarting", false, 1);
+
+  // Backend should not be created yet.
+  EXPECT_EQ(nullptr, cache.http_cache()->GetCurrentBackend());
+
+  // Force initialization now by calling GetBackend.
+  TestGetBackendCompletionCallback cb;
+  HttpCache::GetBackendResult result =
+      cache.http_cache()->GetBackend(cb.callback());
+  result = cb.GetResult(result);
+  ASSERT_EQ(OK, result.first);
+
+  // Verify that the backend was created with the correct size.
+  EXPECT_EQ(base::ByteSize(1000), result.second->GetMaxBytesForTesting());
+}
+
+TEST_F(HttpCacheTest, SetMaxBytesBeforeInitWithForcedInit) {
+  base::HistogramTester histogram_tester;
+  auto* factory = new MockBackendFactory();
+  factory->SetMaxBytes(500);
+  MockHttpCache cache(base::WrapUnique(factory));
+
+  // Call SetMaxBytes before initialization, with force=true.
+  cache.http_cache()->SetMaxBytes(base::ByteSize(1000), true);
+  histogram_tester.ExpectUniqueSample(
+      "HttpCache.SetMaxBytes.BackendStartedOrStarting", false, 1);
+
+  // Backend should be created immediately.
+  disk_cache::Backend* backend = cache.http_cache()->GetCurrentBackend();
+  ASSERT_TRUE(backend);
+  EXPECT_EQ(base::ByteSize(1000), backend->GetMaxBytesForTesting());
+}
+
+TEST_F(HttpCacheTest, SetMaxBytesAfterInitWithoutForcedInit) {
+  base::HistogramTester histogram_tester;
+  MockHttpCache cache;
+
+  // Force init.
+  disk_cache::Backend* backend = cache.backend();
+  ASSERT_TRUE(backend);
+
+  // Call SetMaxBytes after initialization.
+  cache.http_cache()->SetMaxBytes(base::ByteSize(1000), false);
+  histogram_tester.ExpectUniqueSample(
+      "HttpCache.SetMaxBytes.BackendStartedOrStarting", true, 1);
+
+  EXPECT_EQ(base::ByteSize(1000), backend->GetMaxBytesForTesting());
+}
+
+TEST_F(HttpCacheTest, SetMaxBytesAfterInitWithForcedInit) {
+  base::HistogramTester histogram_tester;
+  MockHttpCache cache;
+
+  // Force init.
+  disk_cache::Backend* backend = cache.backend();
+  ASSERT_TRUE(backend);
+
+  // Call SetMaxBytes after initialization.
+  cache.http_cache()->SetMaxBytes(base::ByteSize(1000), true);
+  histogram_tester.ExpectUniqueSample(
+      "HttpCache.SetMaxBytes.BackendStartedOrStarting", true, 1);
+
+  EXPECT_EQ(base::ByteSize(1000), backend->GetMaxBytesForTesting());
+}
+
+TEST_F(HttpCacheTest, SetMaxBytesDuringInitWithoutForcedInit) {
+  base::HistogramTester histogram_tester;
+  auto* factory = new MockBackendFactory();
+  factory->SetMaxBytes(500);
+  factory->set_callback_later(true);
+  MockHttpCache cache(base::WrapUnique(factory));
+
+  // Start initialization by calling GetBackend.
+  TestGetBackendCompletionCallback cb;
+  HttpCache::GetBackendResult result =
+      cache.http_cache()->GetBackend(cb.callback());
+  ASSERT_EQ(ERR_IO_PENDING, result.first);
+
+  // Call SetMaxBytes during initialization.
+  cache.http_cache()->SetMaxBytes(base::ByteSize(1000), false);
+  histogram_tester.ExpectUniqueSample(
+      "HttpCache.SetMaxBytes.BackendStartedOrStarting", true, 1);
+
+  // Complete initialization.
+  factory->CompleteCreateBackend();
+  result = cb.GetResult(result);
+  ASSERT_EQ(OK, result.first);
+
+  EXPECT_TRUE(base::test::RunUntil([&result]() {
+    return result.second->GetMaxBytesForTesting() == base::ByteSize(1000);
+  }));
+}
+
+TEST_F(HttpCacheTest, SetMaxBytesDuringInitWithForcedInit) {
+  base::HistogramTester histogram_tester;
+  auto* factory = new MockBackendFactory();
+  factory->SetMaxBytes(500);
+  factory->set_callback_later(true);
+  MockHttpCache cache(base::WrapUnique(factory));
+
+  // Start initialization by calling GetBackend.
+  TestGetBackendCompletionCallback cb;
+  HttpCache::GetBackendResult result =
+      cache.http_cache()->GetBackend(cb.callback());
+  ASSERT_EQ(ERR_IO_PENDING, result.first);
+
+  // Call SetMaxBytes during initialization.
+  cache.http_cache()->SetMaxBytes(base::ByteSize(1000), true);
+  histogram_tester.ExpectUniqueSample(
+      "HttpCache.SetMaxBytes.BackendStartedOrStarting", true, 1);
+
+  // Complete initialization.
+  factory->CompleteCreateBackend();
+  result = cb.GetResult(result);
+  ASSERT_EQ(OK, result.first);
+
+  EXPECT_TRUE(base::test::RunUntil([&result]() {
+    return result.second->GetMaxBytesForTesting() == base::ByteSize(1000);
+  }));
+}
+
+TEST_F(HttpCacheTest, SetMaxBytesZeroBeforeInit) {
+  base::HistogramTester histogram_tester;
+  auto* factory = new MockBackendFactory();
+  factory->SetMaxBytes(500);
+  MockHttpCache cache(base::WrapUnique(factory));
+
+  cache.http_cache()->SetMaxBytes(base::ByteSize(0), false);
+  histogram_tester.ExpectUniqueSample(
+      "HttpCache.SetMaxBytes.BackendStartedOrStarting", false, 1);
+
+  disk_cache::Backend* backend = cache.backend();
+  ASSERT_TRUE(backend);
+  // Internally converts to 1 to avoid confusion with the special 0 value that
+  // means "pick a default".
+  EXPECT_EQ(base::ByteSize(1), backend->GetMaxBytesForTesting());
+}
+
+TEST_F(HttpCacheTest, SetMaxBytesZeroAfterInit) {
+  base::HistogramTester histogram_tester;
+  auto* factory = new MockBackendFactory();
+  factory->SetMaxBytes(500);
+  MockHttpCache cache(base::WrapUnique(factory));
+  disk_cache::Backend* backend = cache.backend();
+  ASSERT_TRUE(backend);
+
+  cache.http_cache()->SetMaxBytes(base::ByteSize(0), true);
+  histogram_tester.ExpectUniqueSample(
+      "HttpCache.SetMaxBytes.BackendStartedOrStarting", true, 1);
+  // Internally converts to 1 to avoid confusion with the special 0 value that
+  // means "pick a default".
+  EXPECT_EQ(base::ByteSize(1), backend->GetMaxBytesForTesting());
+}
+
 }  // namespace net

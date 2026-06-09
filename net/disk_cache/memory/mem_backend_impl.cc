@@ -328,6 +328,20 @@ void MemBackendImpl::OnExternalCacheHit(const std::string& key) {
     it->second->UpdateStateOnUse();
 }
 
+void MemBackendImpl::SetMaxBytes(base::ByteSize max_bytes) {
+  max_size_ = base::saturated_cast<int32_t>(max_bytes.InBytes());
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    current_max_size_ = CalculateTargetMemoryLimit();
+  } else {
+    current_max_size_ = max_size_;
+  }
+  EvictTill(current_max_size_);
+}
+
+base::ByteSize MemBackendImpl::GetMaxBytesForTesting() const {
+  return base::ByteSize(base::checked_cast<uint64_t>(max_size_));
+}
+
 void MemBackendImpl::Init(int32_t max_bytes) {
   max_size_ = max_bytes ? max_bytes : CalculateDefaultMaxSize();
   current_max_size_ = max_size_;

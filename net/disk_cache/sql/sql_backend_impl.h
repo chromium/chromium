@@ -12,6 +12,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
@@ -90,6 +91,8 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   int64_t MaxFileSize() const override;
   base::expected<int32_t, net::Error> GetEntryCount(
       GetEntryCountCallback callback) const override;
+  void SetMaxBytes(base::ByteSize max_bytes) override;
+  base::ByteSize GetMaxBytesForTesting() const override;
   EntryResult OpenOrCreateEntry(const std::string& key,
                                 net::RequestPriority priority,
                                 EntryResultCallback callback) override;

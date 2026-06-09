@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -18,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
@@ -675,6 +677,14 @@ int64_t MockDiskCache::MaxFileSize() const {
   return max_file_size_;
 }
 
+base::ByteSize MockDiskCache::GetMaxBytesForTesting() const {
+  return base::ByteSize(base::checked_cast<uint64_t>(max_bytes_));
+}
+
+void MockDiskCache::SetMaxBytes(base::ByteSize max_bytes) {
+  max_bytes_ = max_bytes.InBytes();
+}
+
 void MockDiskCache::ReleaseAll() {
   for (auto entry : entries_) {
     entry.second->Release();
@@ -716,10 +726,34 @@ const std::vector<std::string>& MockDiskCache::GetExternalCacheHits() const {
 
 //-----------------------------------------------------------------------------
 
+MockBackendFactory::MockBackendFactory() = default;
+
+MockBackendFactory::~MockBackendFactory() = default;
+
 disk_cache::BackendResult MockBackendFactory::CreateBackend(
     NetLog* net_log,
     disk_cache::BackendResultCallback callback) {
-  return disk_cache::BackendResult::Make(std::make_unique<MockDiskCache>());
+  auto backend = std::make_unique<MockDiskCache>();
+  backend->SetMaxBytes(
+      base::ByteSize(base::checked_cast<uint64_t>(max_bytes_)));
+  if (callback_later_) {
+    CHECK(pending_callback_.is_null());
+    pending_callback_ = std::move(callback);
+    pending_backend_ = std::move(backend);
+    return disk_cache::BackendResult::MakeError(net::ERR_IO_PENDING);
+  }
+  return disk_cache::BackendResult::Make(std::move(backend));
+}
+
+void MockBackendFactory::SetMaxBytes(int max_bytes) {
+  max_bytes_ = max_bytes;
+}
+
+void MockBackendFactory::CompleteCreateBackend() {
+  CHECK(!pending_callback_.is_null());
+  CHECK(pending_backend_);
+  std::move(pending_callback_)
+      .Run(disk_cache::BackendResult::Make(std::move(pending_backend_)));
 }
 
 //-----------------------------------------------------------------------------

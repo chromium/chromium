@@ -127,6 +127,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     // Returns true via `callback` if existing cache files are found, indicating
     // that early initialization of the backend is appropriate.
     virtual void HasExistingFileToLoad(base::OnceCallback<void(bool)> callback);
+
+    // Updates the max bytes that backends will be created with (if applicable
+    // for this factory).
+    virtual void SetMaxBytes(int max_bytes);
   };
 
   // A default backend factory for the common use cases.
@@ -165,6 +169,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     std::optional<CacheType> GetCacheType() const override;
     void HasExistingFileToLoad(
         base::OnceCallback<void(bool)> callback) override;
+    void SetMaxBytes(int max_bytes) override;
 
    private:
     CacheType type_;
@@ -334,6 +339,16 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // when no filters are active, decodes the URL from the cache key exactly once,
   // and iterates over all active filters to see if any match the given entry.
   bool IsInvalidated(disk_cache::Entry* entry);
+
+  // Updates the cache quota (max bytes) that backends should use.
+  // This can be used before, after, or during backend initialization, and
+  // the new value will be used for both subsequent backend creation and will
+  // be used to resize any existing backends.
+  // Note that zero is not a special value for |max_bytes| and does not select
+  // a default.
+  // If |force_initialization| is true, the backend will be initialized,
+  // allowing evictions to occur even if it had not already been initialized.
+  void SetMaxBytes(base::ByteSize max_bytes, bool force_initialization);
 
   // Causes all transactions created after this point to simulate lock timeout
   // and effectively bypass the cache lock whenever there is lock contention.

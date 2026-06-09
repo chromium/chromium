@@ -563,6 +563,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // The maximum total size of the cache.
   int64_t MaxSize() const;
 
+  // Updates the maximum total size of the cache.
+  void SetMaxSize(int64_t max_bytes);
+
   // Retrieves the count of entries.
   // Note that this value may be stale, as it doesn't account for ongoing
   // database operations.
@@ -680,7 +683,6 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   using InitResultOrError = base::expected<InitResult, Error>;
   using InitResultOrErrorCallback = base::OnceCallback<void(InitResultOrError)>;
 
-  void SetMaxSize(int64_t max_bytes);
   base::RepeatingCallback<void(Error)> CreateBarrierErrorCallback(
       ErrorCallback callback);
   size_t GetSizeOfShards() const;

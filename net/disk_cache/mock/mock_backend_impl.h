@@ -5,6 +5,7 @@
 #ifndef NET_DISK_CACHE_MOCK_MOCK_BACKEND_IMPL_H_
 #define NET_DISK_CACHE_MOCK_MOCK_BACKEND_IMPL_H_
 
+#include "base/byte_size.h"
 #include "base/types/expected.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
@@ -77,6 +78,8 @@ class BackendMock : public Backend {
               (const std::string& key),
               (override));
   MOCK_METHOD(int64_t, MaxFileSize, (), (const, override));
+  MOCK_METHOD(void, SetMaxBytes, (base::ByteSize max_bytes), (override));
+  MOCK_METHOD(base::ByteSize, GetMaxBytesForTesting, (), (const, override));
 };
 
 }  // namespace disk_cache

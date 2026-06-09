@@ -27,6 +27,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -730,6 +731,14 @@ bool BackendImpl::SetMaxSize(int64_t max_bytes) {
   user_flags_ |= kMaxSize;
   max_size_ = max_bytes;
   return true;
+}
+
+void BackendImpl::SetMaxBytes(base::ByteSize max_bytes) {
+  // Not implemented for the blockfile backend. Safe to ignore.
+}
+
+base::ByteSize BackendImpl::GetMaxBytesForTesting() const {
+  return base::ByteSize(base::checked_cast<uint64_t>(max_size_));
 }
 
 base::FilePath BackendImpl::GetFileName(Addr address) const {

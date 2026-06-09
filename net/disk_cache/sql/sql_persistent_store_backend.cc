@@ -28,7 +28,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/sys_byteorder.h"
-#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
@@ -378,9 +377,7 @@ SqlPersistentStore::InitResultOrError SqlPersistentStore::Backend::Initialize(
     result_max_bytes =
         user_max_bytes > 0
             ? user_max_bytes
-            : PreferredCacheSize(
-                  base::SysInfo::AmountOfFreeDiskSpace(path_).value_or(-1),
-                  type_);
+            : disk_cache::PreferredCacheSizeForPath(path_, type_);
   }
   std::optional<InMemoryIndexAndDoomedResIds> in_memory_data;
   if (net::features::kSqlDiskCacheLoadIndexOnInit.Get()) {
