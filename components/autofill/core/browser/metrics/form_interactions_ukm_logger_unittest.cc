@@ -1597,7 +1597,8 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
     } else if (GroupTypeOfHtmlFieldType(autocomplete) ==
                FieldTypeGroup::kCreditCard) {
       autofill_manager().FillOrPreviewForm(
-          mojom::ActionPersistence::kFill, form, first_field.global_id(),
+          mojom::ActionPersistence::kFill, form.global_id(),
+          first_field.global_id(),
           paydm().GetCreditCardByGUID("10000000-0000-0000-0000-000000000001"),
           AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
     } else {

@@ -392,9 +392,9 @@ void TouchToFillDelegateAndroidImpl::ScanCreditCard() {
 void TouchToFillDelegateAndroidImpl::OnCreditCardScanned(
     const CreditCard& card) {
   HideTouchToFill();
-  manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill, query_form_,
-                              query_field_.global_id(), &card,
-                              AutofillTriggerSource::kScanCreditCard,
+  manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill,
+                              query_form_.global_id(), query_field_.global_id(),
+                              &card, AutofillTriggerSource::kScanCreditCard,
                               /*blocked_fields=*/{});
 }
 
@@ -417,8 +417,9 @@ void TouchToFillDelegateAndroidImpl::CreditCardSuggestionSelected(
   const CreditCard& card_to_fill =
       is_virtual ? CreditCard::CreateVirtualCard(*card) : *card;
   manager_->FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, query_form_, query_field_.global_id(),
-      &card_to_fill, AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet,
+      mojom::ActionPersistence::kFill, query_form_.global_id(),
+      query_field_.global_id(), &card_to_fill,
+      AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet,
       /*blocked_fields=*/{});
 }
 
@@ -433,7 +434,8 @@ void TouchToFillDelegateAndroidImpl::BnplSuggestionSelected(
              const CreditCard& card) {
             if (delegate) {
               delegate->manager_->FillOrPreviewForm(
-                  mojom::ActionPersistence::kFill, delegate->query_form_,
+                  mojom::ActionPersistence::kFill,
+                  delegate->query_form_.global_id(),
                   delegate->query_field_.global_id(), &card,
                   AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet,
                   /*blocked_fields=*/{});
@@ -462,7 +464,8 @@ void TouchToFillDelegateAndroidImpl::IbanSuggestionSelected(
                   delegate->manager_->FillOrPreviewField(
                       mojom::ActionPersistence::kFill,
                       mojom::FieldActionType::kReplaceAll,
-                      delegate->query_form_, delegate->query_field_, value,
+                      delegate->query_form_.global_id(),
+                      delegate->query_field_.global_id(), value,
                       FillingProduct::kIban, IBAN_VALUE);
                 }
               },
@@ -475,7 +478,7 @@ void TouchToFillDelegateAndroidImpl::LoyaltyCardSuggestionSelected(
 
   manager_->FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-      query_form_, query_field_,
+      query_form_.global_id(), query_field_.global_id(),
       base::UTF8ToUTF16(loyalty_card.loyalty_card_number()),
       FillingProduct::kLoyaltyCard, LOYALTY_MEMBERSHIP_ID);
   ValuablesDataManager* vdm = manager_->client().GetValuablesDataManager();

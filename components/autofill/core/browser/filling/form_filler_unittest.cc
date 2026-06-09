@@ -271,8 +271,9 @@ class FormFillerTest
   // `FormFieldData::value`s.
   FormData UndoAutofill(FormData form, const FormFieldData& trigger_field) {
     return ApplyFormAction(std::move(form), [&](const FormData& form) {
-      autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill, form,
-                                      trigger_field);
+      autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill,
+                                      form.global_id(),
+                                      trigger_field.global_id());
     });
   }
 
@@ -431,8 +432,9 @@ TEST_F(FormFillerTest, UndoResetsFormFillingData) {
   // Undo early returns if it has no filling history for the trigger field,
   // which is initially empty, therefore calling the driver is proof that data
   // was successfully stored.
-  autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill, form,
-                                  form.fields().front());
+  autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill,
+                                  form.global_id(),
+                                  form.fields().front().global_id());
 
   EXPECT_NE(form_structure->field(0)->last_modifier(),
             FieldModifier::kAutofill);
@@ -459,10 +461,12 @@ TEST_F(FormFillerTest, UndoSavesFormFillingDataForAutofillAi) {
 
   EntityInstance passport = test::GetPassportEntityInstance();
   autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      &passport, AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
-  autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill, form,
-                                  form.fields().front());
+      mojom::ActionPersistence::kFill, form.global_id(),
+      form.fields().front().global_id(), &passport,
+      AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+  autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill,
+                                  form.global_id(),
+                                  form.fields().front().global_id());
 }
 
 TEST_F(FormFillerTest, UndoPreviewDoesNotChangeTheCache) {
@@ -484,13 +488,15 @@ TEST_F(FormFillerTest, UndoPreviewDoesNotChangeTheCache) {
   ASSERT_EQ(autofill_field->last_modifier(), FieldModifier::kAutofill);
 
   // A preview of the undo operation won't reset the autofill state.
-  autofill_manager().UndoAutofill(mojom::ActionPersistence::kPreview, form,
-                                  form.fields().front());
+  autofill_manager().UndoAutofill(mojom::ActionPersistence::kPreview,
+                                  form.global_id(),
+                                  form.fields().front().global_id());
   EXPECT_EQ(autofill_field->last_modifier(), FieldModifier::kAutofill);
 
   // An actual undo operation will reset the autofill state.
-  autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill, form,
-                                  form.fields().front());
+  autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill,
+                                  form.global_id(),
+                                  form.fields().front().global_id());
   EXPECT_NE(autofill_field->last_modifier(), FieldModifier::kAutofill);
 }
 
@@ -501,14 +507,15 @@ TEST_F(FormFillerTest, UndoSavesFieldByFieldFillingData) {
   EXPECT_CALL(autofill_driver(), ApplyFieldAction);
   autofill_manager().FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-      form, form.fields().front(), u"Some Name", FillingProduct::kAddress,
-      NAME_FULL);
+      form.global_id(), form.fields().front().global_id(), u"Some Name",
+      FillingProduct::kAddress, NAME_FULL);
   // Undo early returns if it has no filling history for the trigger field,
   // which is initially empty, therefore calling the driver is proof that data
   // was successfully stored.
   EXPECT_CALL(autofill_driver(), ApplyFormAction);
-  autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill, form,
-                                  form.fields().front());
+  autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill,
+                                  form.global_id(),
+                                  form.fields().front().global_id());
 }
 
 // Tests that for autocomplete=unrecognized fields are not filled by default,

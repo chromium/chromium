@@ -537,7 +537,8 @@ void AtMemoryManager::FillOrPreviewSearchResult(
     case mojom::ActionPersistence::kPreview:
       owner_->FillOrPreviewField(
           action_persistence, mojom::FieldActionType::kReplaceAtMemoryTrigger,
-          form, field, payload.value, FillingProduct::kAtMemory,
+          form.global_id(), field.global_id(), payload.value,
+          FillingProduct::kAtMemory,
           /*field_type_used=*/std::nullopt);
       break;
     case mojom::ActionPersistence::kFill: {
@@ -592,8 +593,8 @@ void AtMemoryManager::FillOrPreviewSearchResult(
           }
           owner_->FillOrPreviewField(
               action_persistence,
-              mojom::FieldActionType::kReplaceAtMemoryTrigger, form, field,
-              payload.value, FillingProduct::kAtMemory,
+              mojom::FieldActionType::kReplaceAtMemoryTrigger, form.global_id(),
+              field.global_id(), payload.value, FillingProduct::kAtMemory,
               /*field_type_used=*/std::nullopt);
           break;
         }
@@ -785,8 +786,9 @@ void AtMemoryManager::FillIban(
             }
             manager->owner_->FillOrPreviewField(
                 mojom::ActionPersistence::kFill,
-                mojom::FieldActionType::kReplaceAtMemoryTrigger, form, field,
-                unmasked_value, FillingProduct::kAtMemory,
+                mojom::FieldActionType::kReplaceAtMemoryTrigger,
+                form.global_id(), field.global_id(), unmasked_value,
+                FillingProduct::kAtMemory,
                 /*field_type_used=*/std::nullopt);
           },
           fill_weak_ptr_factory_.GetWeakPtr(), form, field, suggestion,
@@ -845,8 +847,9 @@ void AtMemoryManager::FillCreditCard(
 
             manager->owner_->FillOrPreviewField(
                 mojom::ActionPersistence::kFill,
-                mojom::FieldActionType::kReplaceAtMemoryTrigger, form, field,
-                fill_value, FillingProduct::kAtMemory,
+                mojom::FieldActionType::kReplaceAtMemoryTrigger,
+                form.global_id(), field.global_id(), fill_value,
+                FillingProduct::kAtMemory,
                 /*field_type_used=*/std::nullopt);
           },
           fill_weak_ptr_factory_.GetWeakPtr(), form, field, suggestion,
@@ -920,7 +923,8 @@ void AtMemoryManager::OnAutofillAiFetched(
 
   owner_->FillOrPreviewField(mojom::ActionPersistence::kFill,
                              mojom::FieldActionType::kReplaceAtMemoryTrigger,
-                             form, field, std::move(*attribute_fill_value),
+                             form.global_id(), field.global_id(),
+                             std::move(*attribute_fill_value),
                              FillingProduct::kAtMemory,
                              /*field_type_used=*/std::nullopt);
 }

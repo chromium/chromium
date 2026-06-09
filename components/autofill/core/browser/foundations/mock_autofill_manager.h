@@ -92,10 +92,7 @@ class MockAutofillManager : public AutofillManager {
               (override));
   MOCK_METHOD(bool, ShouldParseForms, (), (override));
   MOCK_METHOD(void, OnBeforeProcessParsedForms, (), (override));
-  MOCK_METHOD(void,
-              OnFormProcessed,
-              (const FormData& form_data, const FormStructure& form_structure),
-              (override));
+  MOCK_METHOD(void, OnFormProcessed, (const FormStructure& form), (override));
   MOCK_METHOD(void,
               ReportAutofillWebOTPMetrics,
               (bool used_web_otp),
@@ -104,8 +101,8 @@ class MockAutofillManager : public AutofillManager {
               FillOrPreviewField,
               (mojom::ActionPersistence action_persistence,
                mojom::FieldActionType action_type,
-               const FormData& form,
-               const FormFieldData& field,
+               const FormGlobalId& form_id,
+               const FieldGlobalId& field_id,
                const std::u16string& value,
                FillingProduct filling_product,
                std::optional<FieldType> field_type_used),

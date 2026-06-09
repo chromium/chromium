@@ -835,8 +835,8 @@ TEST_F(PaymentMethodAccessoryControllerTestForBnpl,
   autofill_manager().OnAskForValuesToFillTest(
       form, form.fields().front().global_id());
   autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      FillingPayload(&bnpl_card),
+      mojom::ActionPersistence::kFill, form.global_id(),
+      form.fields().front().global_id(), FillingPayload(&bnpl_card),
       AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet,
       /*blocked_fields=*/{});
 

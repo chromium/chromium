@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
               ShowEmailVerifiedToast(GURL("https://example.com")));
 
   manager->FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form_structure->ToFormData(), field_id,
+      mojom::ActionPersistence::kFill, form_structure->global_id(), field_id,
       &autofill_profile_.value(), AutofillTriggerSource::kPopup,
       /*blocked_fields=*/{});
 
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
   ASSERT_EQ(&manager->client(), mock_client);
 
   manager->FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form_structure->ToFormData(), field_id,
+      mojom::ActionPersistence::kFill, form_structure->global_id(), field_id,
       &autofill_profile_.value(), AutofillTriggerSource::kPopup,
       /*blocked_fields=*/{});
 
@@ -388,10 +388,10 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
   field_data.set_value(u"test@example.com");
   field_data.set_is_autofilled_according_to_renderer(true);
 
-  manager->FillOrPreviewField(mojom::ActionPersistence::kFill,
-                              mojom::FieldActionType::kReplaceAll, form_data,
-                              field_data, u"other@example.com",
-                              FillingProduct::kAddress, EMAIL_ADDRESS);
+  manager->FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+      form_data.global_id(), field_data.global_id(), u"other@example.com",
+      FillingProduct::kAddress, EMAIL_ADDRESS);
 
   popup_run_loop2.Run();
 
@@ -476,10 +476,10 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowAutocomplete) {
 
   // In autocomplete filling, field_type_used is std::nullopt and product is
   // kAutocomplete.
-  manager->FillOrPreviewField(mojom::ActionPersistence::kFill,
-                              mojom::FieldActionType::kReplaceAll, form_data,
-                              field_data, u"test@example.com",
-                              FillingProduct::kAutocomplete, std::nullopt);
+  manager->FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+      form_data.global_id(), field_data.global_id(), u"test@example.com",
+      FillingProduct::kAutocomplete, std::nullopt);
 
   // Wait for the deferred browser task to execute and trigger the popup
   // callback.

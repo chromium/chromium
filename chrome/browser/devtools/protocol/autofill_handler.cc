@@ -40,7 +40,7 @@ namespace {
 
 using protocol::Response;
 
-std::optional<autofill::FormData> FindFormDataWithField(
+std::optional<autofill::FormGlobalId> FindFormIdForField(
     autofill::ContentAutofillDriver* driver,
     autofill::FieldGlobalId id) {
   if (!driver) {
@@ -51,7 +51,7 @@ std::optional<autofill::FormData> FindFormDataWithField(
   if (!form_structure) {
     return std::nullopt;
   }
-  return form_structure->ToFormData();
+  return form_structure->global_id();
 }
 
 std::optional<std::string> GetRenderFrameDevtoolsToken(
@@ -146,7 +146,7 @@ void AutofillHandler::ContinueTrigger(
       frame_token, autofill::FieldRendererId(field_id)};
 
   autofill::ContentAutofillDriver* autofill_driver = nullptr;
-  std::optional<autofill::FormData> form;
+  std::optional<autofill::FormGlobalId> form_id;
   while (frame_rfh) {
     autofill_driver =
         autofill::ContentAutofillDriver::GetForRenderFrameHost(frame_rfh);
@@ -155,15 +155,15 @@ void AutofillHandler::ContinueTrigger(
     // between the real Autofill flow triggered manually and Autofill triggered
     // over CDP. We should change how we find the form data and use the same
     // logic as used by AutofillDriverRouter.
-    if (std::optional<autofill::FormData> rfh_form_data =
-            FindFormDataWithField(autofill_driver, global_field_id)) {
-      form = std::move(rfh_form_data);
+    if (std::optional<autofill::FormGlobalId> rfh_form_id =
+            FindFormIdForField(autofill_driver, global_field_id)) {
+      form_id = std::move(rfh_form_id);
     }
 
     frame_rfh = frame_rfh->GetParent();
   }
 
-  if (!form.has_value()) {
+  if (!form_id.has_value()) {
     callback->sendFailure(Response::InvalidRequest("Field not found"));
     return;
   }
@@ -201,7 +201,7 @@ void AutofillHandler::ContinueTrigger(
                                  base::UTF8ToUTF16(card->GetCvc()));
     static_cast<autofill::BrowserAutofillManager&>(
         autofill_driver->GetAutofillManager())
-        .FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill, *form,
+        .FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill, *form_id,
                            global_field_id, &tmp_autofill_card,
                            autofill::AutofillTriggerSource::kDevtools,
                            /*blocked_fields=*/{});
@@ -234,7 +234,7 @@ void AutofillHandler::ContinueTrigger(
     }
     static_cast<autofill::BrowserAutofillManager&>(
         autofill_driver->GetAutofillManager())
-        .FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill, *form,
+        .FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill, *form_id,
                            global_field_id, &tmp_autofill_profile,
                            autofill::AutofillTriggerSource::kDevtools,
                            /*blocked_fields=*/{});

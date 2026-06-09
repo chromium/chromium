@@ -138,9 +138,9 @@ class AutofillEventHandlerBrowserTest : public InProcessBrowserTest {
     profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
 
     TestAutofillManager* manager = autofill_manager_injector_[rfh];
-    manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                               triggered_field.global_id(), &profile,
-                               AutofillTriggerSource::kPopup,
+    manager->FillOrPreviewForm(mojom::ActionPersistence::kFill,
+                               form.global_id(), triggered_field.global_id(),
+                               &profile, AutofillTriggerSource::kPopup,
                                /*blocked_fields=*/{});
   }
 
@@ -800,9 +800,9 @@ class AutofillEventMultiFrameBrowserTest : public InProcessBrowserTest {
     test::SetCreditCardInfo(&card, kNameFull, kNumber, kExpMonth, kExpYear, "",
                             base::ASCIIToUTF16(std::string_view(kCvc)));
     TestAutofillManager* manager = autofill_manager_injector_[rfh];
-    manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                               triggered_field.global_id(), &card,
-                               AutofillTriggerSource::kPopup,
+    manager->FillOrPreviewForm(mojom::ActionPersistence::kFill,
+                               form.global_id(), triggered_field.global_id(),
+                               &card, AutofillTriggerSource::kPopup,
                                /*blocked_fields=*/{});
   }
 

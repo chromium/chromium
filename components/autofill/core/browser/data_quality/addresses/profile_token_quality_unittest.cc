@@ -72,7 +72,7 @@ class ProfileTokenQualityTest : public testing::Test,
                 const AutofillProfile& profile,
                 size_t triggering_field_index = 0) {
     autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form,
+        mojom::ActionPersistence::kFill, form.global_id(),
         form.fields()[triggering_field_index].global_id(), &profile,
         AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
   }

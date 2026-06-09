@@ -331,7 +331,7 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
   // Simulate user accepting the suggestion
   OtpFillData fill_data = {{otp_form.fields().front().global_id(), u"123456"}};
   autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, otp_form,
+      mojom::ActionPersistence::kFill, otp_form.global_id(),
       otp_form.fields().front().global_id(), &fill_data,
       AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
 
@@ -483,7 +483,7 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
   // Simulate user accepting the suggestion
   OtpFillData fill_data = {{otp_form.fields().front().global_id(), u"123456"}};
   autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, otp_form,
+      mojom::ActionPersistence::kFill, otp_form.global_id(),
       otp_form.fields().front().global_id(), &fill_data,
       AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
   // Simulate the user correcting the value.

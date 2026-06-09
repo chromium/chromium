@@ -528,15 +528,11 @@ FillingValueAndType GetFillingValueAndTypeForCreditCard(
 }
 
 bool WillFillCreditCardNumberOrCvc(
-    base::span<const FormFieldData> fields,
-    base::span<const std::unique_ptr<AutofillField>> autofill_fields,
-    const AutofillField& trigger_autofill_field,
+    base::span<const std::unique_ptr<AutofillField>> fields,
+    const AutofillField& trigger_field,
     AutofillTriggerSource trigger_source,
     bool card_has_cvc,
     AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
-  if (fields.size() != autofill_fields.size()) {
-    return false;
-  }
   FieldTypeSet fillable_field_types({CREDIT_CARD_NUMBER});
   // Add CVC field types to `fillable_field_types` if CVC storage is enabled and
   // the card to be filled has a CVC saved.
@@ -544,48 +540,30 @@ bool WillFillCreditCardNumberOrCvc(
     fillable_field_types.insert(CREDIT_CARD_VERIFICATION_CODE);
     fillable_field_types.insert(CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
   }
-  if (fillable_field_types.contains(
-          trigger_autofill_field.Type().GetCreditCardType())) {
+  if (fillable_field_types.contains(trigger_field.Type().GetCreditCardType())) {
     return true;
   }
 
-  // `fields` are received from the renderer and may be more up to date
-  // than the `autofill_fields` stored in the cache. Therefore, we need
-  // to validate for each `field` in the cache we try to fill whether it still
-  // exists in the renderer and whether it is fillable.
-  auto is_fillable_field = [&](const AutofillField& autofill_field) {
-    auto field = std::ranges::find(fields, autofill_field.global_id(),
-                                   &FormFieldData::global_id);
-    if (field == fields.end()) {
-      return false;
-    }
-
-    // Needed for FormFiller::GetFieldSkipReason() but unnecessary for this
-    // case as only finding 1 fillable credit card or CVC field is needed.
-    base::flat_map<FieldType, size_t> type_count;
-
-    // TODO(crbug.com/328478565): Cover cases where filling is skipped due
-    // to the iframe security policy.
-    return FormFiller::GetFillingSkipReasonsForField(
-               autofill_field, trigger_autofill_field,
-               FormFiller::RefillOptions::NotRefill(), type_count,
-               /*blocked_fields=*/{}, FillingProduct::kCreditCard,
-               trigger_source, ac_unrecognized_behavior)
-        .empty();
-  };
-
   auto is_fillable_credit_card_number_or_cvc_field =
-      [&trigger_autofill_field, &fillable_field_types, &is_fillable_field](
-          const std::unique_ptr<AutofillField>& autofill_field) {
+      [&](const std::unique_ptr<AutofillField>& field) {
+        // Needed for FormFiller::GetFieldSkipReason() but unnecessary for this
+        // case as only finding 1 fillable credit card or CVC field is needed.
+        base::flat_map<FieldType, size_t> type_count;
+
+        // TODO(crbug.com/328478565): Cover cases where filling is skipped due
+        // to the iframe security policy.
         return fillable_field_types.contains(
-                   autofill_field->Type().GetCreditCardType()) &&
-               autofill_field->section() == trigger_autofill_field.section() &&
-               is_fillable_field(*autofill_field);
+                   field->Type().GetCreditCardType()) &&
+               field->section() == trigger_field.section() &&
+               FormFiller::GetFillingSkipReasonsForField(
+                   *field, trigger_field,
+                   FormFiller::RefillOptions::NotRefill(), type_count,
+                   /*blocked_fields=*/{}, FillingProduct::kCreditCard,
+                   trigger_source, ac_unrecognized_behavior)
+                   .empty();
       };
 
-  // This runs O(N^2) in the worst case, but usually there aren't too many
-  // credit card number or CVC fields in a form.
-  return std::ranges::any_of(autofill_fields,
+  return std::ranges::any_of(fields,
                              is_fillable_credit_card_number_or_cvc_field);
 }
 

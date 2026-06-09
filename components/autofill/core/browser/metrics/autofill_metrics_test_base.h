@@ -264,7 +264,7 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
                          const std::string& profile_guid,
                          size_t field_index = 0) {
     autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form,
+        mojom::ActionPersistence::kFill, form.global_id(),
         form.fields()[field_index].global_id(),
         personal_data().address_data_manager().GetProfileByGUID(profile_guid),
         AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
@@ -275,7 +275,7 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
                        size_t field_index = 0) {
     autofill_manager().FillOrPreviewField(
         mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-        form, form.fields()[field_index],
+        form.global_id(), form.fields()[field_index].global_id(),
         base::UTF8ToUTF16(card.loyalty_card_number()),
         FillingProduct::kLoyaltyCard, LOYALTY_MEMBERSHIP_ID);
     autofill_manager().LogAndRecordLoyaltyCardFill(
@@ -283,8 +283,9 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
   }
 
   void UndoAutofill(const FormData& form) {
-    autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill, form,
-                                    form.fields().front());
+    autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill,
+                                    form.global_id(),
+                                    form.fields().front().global_id());
   }
 
   [[nodiscard]] FormData CreateEmptyForm() {

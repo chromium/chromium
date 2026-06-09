@@ -1024,15 +1024,15 @@ class BrowserAutofillManagerTest
     if (const AutofillProfile* profile =
             personal_data().address_data_manager().GetProfileByGUID(guid)) {
       autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill,
-                                           form, field.global_id(), profile,
-                                           trigger_source,
+                                           form.global_id(), field.global_id(),
+                                           profile, trigger_source,
                                            /*blocked_fields=*/{});
     } else if (const CreditCard* card =
                    personal_data().payments_data_manager().GetCreditCardByGUID(
                        guid)) {
       autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill,
-                                           form, field.global_id(), card,
-                                           trigger_source,
+                                           form.global_id(), field.global_id(),
+                                           card, trigger_source,
                                            /*blocked_fields=*/{});
     }
   }
@@ -1126,10 +1126,10 @@ class BrowserAutofillManagerTest
     card.SetNetworkForMaskedCard(kVisaCard);
 
     EXPECT_CALL(autofill_driver(), ApplyFormAction).Times(AtLeast(1));
-    autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, *form,
-                                         form->fields()[0].global_id(), &card,
-                                         AutofillTriggerSource::kPopup,
-                                         /*blocked_fields=*/{});
+    autofill_manager().FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, form->global_id(),
+        form->fields()[0].global_id(), &card, AutofillTriggerSource::kPopup,
+        /*blocked_fields=*/{});
   }
 
   void OnDidGetRealPan(
@@ -2410,8 +2410,9 @@ TEST_F(BrowserAutofillManagerTest,
                                                /*use_month_type=*/false);
   FormsSeen({form});
   autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      &local_card, AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+      mojom::ActionPersistence::kFill, form.global_id(),
+      form.fields().front().global_id(), &local_card,
+      AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -2425,8 +2426,9 @@ TEST_F(BrowserAutofillManagerTest,
                                                /*use_month_type=*/false);
   FormsSeen({form});
   autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      &server_card, AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+      mojom::ActionPersistence::kFill, form.global_id(),
+      form.fields().front().global_id(), &server_card,
+      AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -2450,8 +2452,9 @@ TEST_F(BrowserAutofillManagerTest,
                                                /*use_month_type=*/false);
   FormsSeen({form});
   autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      &filled_card, AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+      mojom::ActionPersistence::kFill, form.global_id(),
+      form.fields().front().global_id(), &filled_card,
+      AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -2489,8 +2492,9 @@ TEST_F(BrowserAutofillManagerTest, FillOrPreviewForm_CreditCard_Bnpl) {
                                                /*use_month_type=*/false);
   FormsSeen({form});
   autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      &bnpl_virtual_card, AutofillTriggerSource::kPopup,
+      mojom::ActionPersistence::kFill, form.global_id(),
+      form.fields().front().global_id(), &bnpl_virtual_card,
+      AutofillTriggerSource::kPopup,
       /*blocked_fields=*/{});
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -2519,10 +2523,10 @@ TEST_F(BrowserAutofillManagerTest,
                                                /*use_month_type=*/false);
   FormsSeen({form});
   CreditCard card = test::GetMaskedServerCard();
-  autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                                       form.fields().front().global_id(), &card,
-                                       AutofillTriggerSource::kPopup,
-                                       /*blocked_fields=*/{});
+  autofill_manager().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form.global_id(),
+      form.fields().front().global_id(), &card, AutofillTriggerSource::kPopup,
+      /*blocked_fields=*/{});
 }
 
 // BNPL suggestion is limited to Windows, macOS, Linux, and ChromeOS.
@@ -2551,8 +2555,9 @@ TEST_F(BrowserAutofillManagerTest,
                                                /*use_month_type=*/false);
   FormsSeen({form});
   autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      &credit_card, AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+      mojom::ActionPersistence::kFill, form.global_id(),
+      form.fields().front().global_id(), &credit_card,
+      AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
@@ -3507,8 +3512,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogIBANField) {
 
   autofill_manager().FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-      form, form.fields().front(), u"CH93 0076 2011 6238 5295 7",
-      FillingProduct::kIban, IBAN_VALUE);
+      form.global_id(), form.fields().front().global_id(),
+      u"CH93 0076 2011 6238 5295 7", FillingProduct::kIban, IBAN_VALUE);
   FormSubmitted(form);
 
   const std::vector<AutofillField::FieldLogEventType>& fill_field_log_events =
@@ -4305,8 +4310,8 @@ TEST_F(BrowserAutofillManagerTest, NullAutofillFieldDoesNotCrash) {
 
   autofill_manager().FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-      form, form.fields().front(), u"12345678", FillingProduct::kLoyaltyCard,
-      LOYALTY_MEMBERSHIP_ID);
+      form.global_id(), form.fields().front().global_id(), u"12345678",
+      FillingProduct::kLoyaltyCard, LOYALTY_MEMBERSHIP_ID);
 }
 
 TEST_F(BrowserAutofillManagerTest, DontOfferToSavePaymentsCard) {
@@ -4555,7 +4560,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(*autofill_client().GetAutofillOptimizationGuideDecider(),
               OnDidParseForm);
 
-  test_api(autofill_manager()).OnFormProcessed(form_data, form_structure);
+  test_api(autofill_manager()).OnFormProcessed(form_structure);
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -4566,7 +4571,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Test that form processing doesn't crash when we have an IBAN form but no
   // AutofillOptimizationGuideDecider present.
-  test_api(autofill_manager()).OnFormProcessed(form_data, form_structure);
+  test_api(autofill_manager()).OnFormProcessed(form_structure);
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -4638,8 +4643,8 @@ TEST_F(BrowserAutofillManagerTest,
 
   autofill_manager().FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-      form, form.fields().front(), u"CH93 0076 2011 6238 5295 7",
-      FillingProduct::kIban, IBAN_VALUE);
+      form.global_id(), form.fields().front().global_id(),
+      u"CH93 0076 2011 6238 5295 7", FillingProduct::kIban, IBAN_VALUE);
 
   FormSubmitted(form);
 
@@ -6851,8 +6856,9 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpFilling) {
 
   // Ask to fill the form.
   autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
-      &otp_fill_data, AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+      mojom::ActionPersistence::kFill, form.global_id(),
+      form.fields()[0].global_id(), &otp_fill_data,
+      AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
 
   // Verify that the right data is sent to the renderer.
   ASSERT_EQ(1u, filled_fields.size());
@@ -6891,8 +6897,9 @@ TEST_F(BrowserAutofillManagerTest, FillOrPreviewForm_BlockedFields) {
           Return(base::flat_set<FieldGlobalId>{form.fields()[0].global_id()}));
 
   autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
-      &profile, AutofillTriggerSource::kPopup, blocked_fields);
+      mojom::ActionPersistence::kFill, form.global_id(),
+      form.fields()[0].global_id(), &profile, AutofillTriggerSource::kPopup,
+      blocked_fields);
 }
 
 // Tests that blocked_fields are preserved through the asynchronous credit
@@ -6926,8 +6933,9 @@ TEST_F(BrowserAutofillManagerTest,
           Return(base::flat_set<FieldGlobalId>{form.fields()[0].global_id()}));
 
   autofill_manager().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
-      &card, AutofillTriggerSource::kPopup, blocked_fields);
+      mojom::ActionPersistence::kFill, form.global_id(),
+      form.fields()[0].global_id(), &card, AutofillTriggerSource::kPopup,
+      blocked_fields);
 }
 
 struct SuggestionMergingTestParams {

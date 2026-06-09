@@ -134,7 +134,7 @@ void FillCard(content::RenderFrameHost* rfh,
   test::SetCreditCardInfo(&card, kNameFull, kNumber, kExpMonth, kExpYear, "",
                           base::ASCIIToUTF16(std::string_view(kCvc)));
   auto& manager = TestAutofillManager::GetForRenderFrameHost(rfh);
-  manager.FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+  manager.FillOrPreviewForm(mojom::ActionPersistence::kFill, form.global_id(),
                             triggered_field.global_id(), &card,
                             AutofillTriggerSource::kPopup,
                             /*blocked_fields=*/{});

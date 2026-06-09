@@ -846,13 +846,13 @@ ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
                                *form_structure, trigger_field_id,
                                fill_data->split_part, action_persistence);
                        autofill_manager.FillOrPreviewForm(
-                           action_persistence, form_structure->ToFormData(),
+                           action_persistence, form_structure->global_id(),
                            trigger_field_id, &autofill_profile,
                            AutofillTriggerSource::kGlic, blocked_fields);
                      },
                      [&](const CreditCard& credit_card) {
                        autofill_manager.FillOrPreviewForm(
-                           action_persistence, form_structure->ToFormData(),
+                           action_persistence, form_structure->global_id(),
                            trigger_field_id, &credit_card,
                            AutofillTriggerSource::kGlic,
                            /*blocked_fields=*/{});

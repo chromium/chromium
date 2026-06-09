@@ -57,7 +57,6 @@ struct AutofillServerPrediction;
 class AutofillField;
 class CreditCardAccessManager;
 class FormData;
-class FormFieldData;
 class FormStructure;
 class LogManager;
 struct Suggestion;
@@ -321,11 +320,10 @@ class AutofillManager
 
   // Routes calls from external components to FormFiller::FillOrPreviewField.
   // Virtual for testing.
-  // TODO(crbug.com/40227496): Replace FormFieldData parameter by FieldGlobalId.
   virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                   mojom::FieldActionType action_type,
-                                  const FormData& form,
-                                  const FormFieldData& field,
+                                  const FormGlobalId& form_id,
+                                  const FieldGlobalId& field_id,
                                   const std::u16string& value,
                                   FillingProduct filling_product,
                                   std::optional<FieldType> field_type_used) = 0;
@@ -480,10 +478,8 @@ class AutofillManager
   // OnBeforeParsedForm().
   virtual void OnBeforeProcessParsedForms() = 0;
 
-  // Invoked when the given |form| has been processed to the given
-  // |form_structure|.
-  virtual void OnFormProcessed(const FormData& form_data,
-                               const FormStructure& form_structure) = 0;
+  // Invoked when `form` has been processed into a `FormStructure`.
+  virtual void OnFormProcessed(const FormStructure& form) = 0;
 
   // Returns true only if the previewed form should be cleared.
   virtual bool ShouldClearPreviewedForm() = 0;

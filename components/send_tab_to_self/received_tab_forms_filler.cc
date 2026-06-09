@@ -408,11 +408,11 @@ void ReceivedTabFormsFiller::FillForms(
           NOTREACHED();
       }
 
-      manager->FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
-                                  autofill::mojom::FieldActionType::kReplaceAll,
-                                  form.ToFormData(), *field, match.field->value,
-                                  autofill::FillingProduct::kNone,
-                                  std::nullopt);
+      manager->FillOrPreviewField(
+          autofill::mojom::ActionPersistence::kFill,
+          autofill::mojom::FieldActionType::kReplaceAll, form.global_id(),
+          field->global_id(), match.field->value,
+          autofill::FillingProduct::kNone, std::nullopt);
       // Erase the successfully filled field immediately to prevent duplicate
       // fills or double-logging in the destructor.
       pending_fields_.erase(*match.field);

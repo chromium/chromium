@@ -367,7 +367,7 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms,
       queryable_forms.push_back(form);
     }
 
-    OnFormProcessed(form, *form_structure);
+    OnFormProcessed(*form_structure);
   }
 
   if (base::FeatureList::IsEnabled(features::debug::kShowDomNodeIDs)) {
@@ -980,7 +980,7 @@ void AutofillManager::OnLoadedServerPredictions(
                       /*small_forms_were_parsed=*/client().IsTabInActorMode());
       if (base::FeatureList::IsEnabled(
               features::kAutofillServerQueryPredictionsEarly)) {
-        OnFormProcessed(form, *form_structure);
+        OnFormProcessed(*form_structure);
       }
     }
     LogServerQueryResponseMetrics(queried_forms);

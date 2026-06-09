@@ -146,27 +146,25 @@ class BrowserAutofillManager : public AutofillManager {
 
   ~BrowserAutofillManager() override;
 
-  // Fills or previews `form` with the information in `filling_payload`.
-  // `action_persistence` denotes whether the operation should fill or preview
-  // the form.
-  // `field_id` is the ID of the field that triggered the filling operation.
+  // Fills or previews the form corresponding to `form_id` with the information
+  // in `filling_payload`.
+  // `action_persistence` denotes whether the operation is a fill or preview.
   // `trigger_source` is the reason for triggering the filling operation.
   // `blocked_fields` are fields which must not be filled because another
   // filling product of higher priority claims them.
   virtual void FillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
-      const FormData& form,
-      const FieldGlobalId& field_id,
+      const FormGlobalId& form_id,
+      const FieldGlobalId& trigger_field_id,
       const FillingPayload& filling_payload,
       AutofillTriggerSource trigger_source,
       const base::flat_set<FieldGlobalId>& blocked_fields);
 
   // Routes calls from external components to FormFiller::FillOrPreviewField.
-  // TODO(crbug.com/40227496): Replace FormFieldData parameter by FieldGlobalId.
   void FillOrPreviewField(mojom::ActionPersistence action_persistence,
                           mojom::FieldActionType action_type,
-                          const FormData& form,
-                          const FormFieldData& field,
+                          const FormGlobalId& form_id,
+                          const FieldGlobalId& field_id,
                           const std::u16string& value,
                           FillingProduct filling_product,
                           std::optional<FieldType> field_type_used) override;
@@ -193,8 +191,8 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Calls FormFiller::UndoAutofill and logs metrics. Virtual for testing.
   virtual void UndoAutofill(mojom::ActionPersistence action_persistence,
-                            const FormData& form,
-                            const FormFieldData& trigger_field);
+                            const FormGlobalId& form_id,
+                            const FieldGlobalId& trigger_field_id);
 
   // Defers the suggestion selection to the password manager.
   void DelegateSelectToPasswordManager(const Suggestion& suggestion,
@@ -373,8 +371,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FieldGlobalId& field_id) override;
   bool ShouldParseForms() override;
   void OnBeforeProcessParsedForms() override;
-  void OnFormProcessed(const FormData& form,
-                       const FormStructure& form_structure) override;
+  void OnFormProcessed(const FormStructure& form) override;
 
  private:
   friend class BrowserAutofillManagerTestApi;
@@ -440,18 +437,16 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       const AutofillField* autofill_field);
 
-  // Fills or previews `form` with the information in `credit_card`.
-  // `autofill_field` is the field that triggered the filling operation.
+  // Fills or previews the form corresponding to `form_id` with the information
+  // in `credit_card`.
   // `trigger_source` is the reason for triggering the filling operation.
-  // `action_persistence` denotes whether the operation is a filling or preview
-  // operation.
+  // `action_persistence` denotes whether the operation is a fill or preview.
   // `blocked_fields` are fields which must not be filled because another
   // filling product of higher priority claims them.
   void FillOrPreviewCreditCardForm(
       mojom::ActionPersistence action_persistence,
-      const FormData& form,
-      const FormStructure& form_structure,
-      const AutofillField& autofill_field,
+      const FormStructure& form,
+      const AutofillField& trigger_field,
       const CreditCard& credit_card,
       AutofillTriggerSource trigger_source,
       const base::flat_set<FieldGlobalId>& blocked_fields);

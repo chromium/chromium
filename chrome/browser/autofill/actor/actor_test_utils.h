@@ -86,7 +86,7 @@ class TestBrowserAutofillManagerWithTestCCAM
 
   void FillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
-      const FormData& form,
+      const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       const FillingPayload& filling_payload,
       AutofillTriggerSource trigger_source,

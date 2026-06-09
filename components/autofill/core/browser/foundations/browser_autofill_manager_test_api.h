@@ -62,9 +62,8 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     manager_->autofill_ai_access_manager_ = std::move(manager);
   }
 
-  void OnFormProcessed(const FormData& form,
-                       const FormStructure& form_structure) {
-    manager_->OnFormProcessed(form, form_structure);
+  void OnFormProcessed(const FormStructure& form) {
+    manager_->OnFormProcessed(form);
   }
 
   void OnIndividualSuggestionsGenerated(

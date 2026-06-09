@@ -695,7 +695,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   {
     base::UserActionTester user_action_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form,
+        mojom::ActionPersistence::kFill, form.global_id(),
         form.fields().front().global_id(),
         paydm().GetCreditCardByGUID(kTestLocalCardId),
         AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
@@ -999,7 +999,8 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
     // Simulating filling a masked card server suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
+        mojom::ActionPersistence::kFill, form.global_id(),
+        form.fields().back().global_id(),
         paydm().GetCreditCardByGUID(kTestMaskedCardId),
         AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
     OnDidGetRealPan(PaymentsRpcResult::kSuccess, "6011000990139424");
@@ -1021,7 +1022,8 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
     // Simulating filling a masked card server suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
+        mojom::ActionPersistence::kFill, form.global_id(),
+        form.fields().back().global_id(),
         paydm().GetCreditCardByGUID(kTestMaskedCardId),
         AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
     OnDidGetRealPan(PaymentsRpcResult::kPermanentFailure, std::string());
@@ -1043,7 +1045,8 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
     // Simulating filling a masked card server suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
+        mojom::ActionPersistence::kFill, form.global_id(),
+        form.fields().back().global_id(),
         paydm().GetCreditCardByGUID(kTestMaskedCardId),
         AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
     OnDidGetRealPan(PaymentsRpcResult::kClientSideTimeout, std::string());
@@ -1078,7 +1081,8 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_BadServerResponse) {
     // Simulating filling a masked card server suggestion.
     base::HistogramTester histogram_tester;
     autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, form.fields().back().global_id(),
+        mojom::ActionPersistence::kFill, form.global_id(),
+        form.fields().back().global_id(),
         paydm().GetCreditCardByGUID(kTestMaskedCardId),
         AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
     OnDidGetRealPanWithNonHttpOkResponse();
@@ -2818,8 +2822,9 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
     EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
         .WillOnce(base::test::RunOnceCallback<1>(credit_card()));
     autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form_, triggering_field.global_id(),
-        &credit_card_, AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+        mojom::ActionPersistence::kFill, form_.global_id(),
+        triggering_field.global_id(), &credit_card_,
+        AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
   }
 
   // Sets the field values of |form_| according to the parameters.

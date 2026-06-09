@@ -154,7 +154,6 @@ void AndroidAutofillManager::OnHidePopupImpl() {
 }
 
 void AndroidAutofillManager::OnFormProcessed(
-    const FormData& form,
     const FormStructure& form_structure) {
   DenseSet<FormType> form_types =
       form_structure.GetFormTypes(GetAcUnrecognizedBehavior(client()));
@@ -266,13 +265,12 @@ void AndroidAutofillManager::FillOrPreviewForm(
 void AndroidAutofillManager::FillOrPreviewField(
     mojom::ActionPersistence action_persistence,
     mojom::FieldActionType action_type,
-    const FormData& form,
-    const FormFieldData& field,
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id,
     const std::u16string& value,
     FillingProduct filling_product,
     std::optional<FieldType> field_type_used) {
-  driver().ApplyFieldAction(action_type, action_persistence, field.global_id(),
-                            value);
+  driver().ApplyFieldAction(action_type, action_persistence, field_id, value);
 }
 
 void AndroidAutofillManager::StartNewLoggingSession() {

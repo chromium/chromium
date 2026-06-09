@@ -326,13 +326,13 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   MOCK_METHOD(void,
               UndoAutofill,
               (mojom::ActionPersistence action_persistence,
-               const FormData& form,
-               const FormFieldData& trigger_field),
+               const FormGlobalId& form_id,
+               const FieldGlobalId& trigger_field_id),
               (override));
   MOCK_METHOD(void,
               FillOrPreviewForm,
               (mojom::ActionPersistence,
-               const FormData&,
+               const FormGlobalId&,
                const FieldGlobalId&,
                const FillingPayload&,
                AutofillTriggerSource,
@@ -342,8 +342,8 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               FillOrPreviewField,
               (mojom::ActionPersistence,
                mojom::FieldActionType,
-               const FormData&,
-               const FormFieldData&,
+               const FormGlobalId&,
+               const FieldGlobalId&,
                const std::u16string&,
                FillingProduct,
                std::optional<FieldType>),
@@ -517,12 +517,12 @@ class AutofillExternalDelegateTest : public testing::Test,
     external_delegate().OnSuggestionsShown({});
   }
 
-  Matcher<const FormData&> HasQueriedFormId() {
-    return Property(&FormData::global_id, queried_form().global_id());
+  Matcher<const FormGlobalId&> HasQueriedFormId() {
+    return Eq(queried_form().global_id());
   }
 
-  Matcher<const FormFieldData&> HasQueriedFieldId() {
-    return Property(&FormFieldData::global_id, queried_field().global_id());
+  Matcher<const FieldGlobalId&> HasQueriedFieldId() {
+    return Eq(queried_field().global_id());
   }
 
   Matcher<const FieldGlobalId&> IsQueriedFieldId() {

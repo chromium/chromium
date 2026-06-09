@@ -377,11 +377,9 @@ const char* SubmissionSourceToString(SubmissionSource source) {
 
 // Checks if the `credit_card` needs to be fetched in order to complete the
 // current filling flow.
-// TODO(crbug.com/40227496): Only use parsed data.
 bool ShouldFetchCreditCard(
-    const FormData& form,
-    const FormStructure& form_structure,
-    const AutofillField& autofill_field,
+    const FormStructure& form,
+    const AutofillField& trigger_field,
     const CreditCard& credit_card,
     AutofillTriggerSource trigger_source,
     AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
@@ -390,8 +388,8 @@ bool ShouldFetchCreditCard(
     // already happened.
     return false;
   }
-  if (WillFillCreditCardNumberOrCvc(form.fields(), form_structure.fields(),
-                                    autofill_field, trigger_source,
+  if (WillFillCreditCardNumberOrCvc(form.fields(), trigger_field,
+                                    trigger_source,
                                     /*card_has_cvc=*/!credit_card.cvc().empty(),
                                     ac_unrecognized_behavior)) {
     return true;
@@ -400,7 +398,7 @@ bool ShouldFetchCreditCard(
   // the cvc, which is different every time the virtual credit card is being
   // used.
   return credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
-         autofill_field.Type().GetCreditCardType() ==
+         trigger_field.Type().GetCreditCardType() ==
              CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
 }
 
@@ -1762,88 +1760,84 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
 
 void BrowserAutofillManager::FillOrPreviewForm(
     mojom::ActionPersistence action_persistence,
-    const FormData& form,
-    const FieldGlobalId& field_id,
+    const FormGlobalId& form_id,
+    const FieldGlobalId& trigger_field_id,
     const FillingPayload& filling_payload,
     AutofillTriggerSource trigger_source,
     const base::flat_set<FieldGlobalId>& blocked_fields) {
-  auto [form_structure, autofill_field] =
-      GetCachedFormAndField(form.global_id(), field_id);
-  if (!form_structure || !autofill_field) {
+  auto [form, trigger_field] = GetCachedFormAndField(form_id, trigger_field_id);
+  if (!form || !trigger_field) {
     return;
   }
-  std::visit(absl::Overload{
-                 [&](const AutofillProfile*) {
-                   form_filler_->FillOrPreviewForm(
-                       action_persistence, filling_payload,
-                       CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
-                       trigger_source, blocked_fields, FillId::Create(),
-                       /*forced_fill_values=*/{},
-                       FormFiller::RefillOptions::NotRefill());
-                 },
-                 [&](const CreditCard* credit_card) {
-                   // We still need to take care of authentication
-                   // flows, which is why we do not forward right
-                   // away to FormFiller.
-                   FillOrPreviewCreditCardForm(
-                       action_persistence, form, CHECK_DEREF(form_structure),
-                       CHECK_DEREF(autofill_field), *credit_card,
-                       trigger_source, blocked_fields);
-                 },
-                 [&](const EntityInstance*) {
-                   form_filler_->FillOrPreviewForm(
-                       action_persistence, filling_payload,
-                       CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
-                       trigger_source, blocked_fields, FillId::Create(),
-                       /*forced_fill_values=*/{},
-                       FormFiller::RefillOptions::NotRefill());
-                 },
-                 [&](const VerifiedProfile*) {
-                   form_filler_->FillOrPreviewForm(
-                       action_persistence, filling_payload,
-                       CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
-                       trigger_source, blocked_fields, FillId::Create(),
-                       /*forced_fill_values=*/{},
-                       FormFiller::RefillOptions::NotRefill());
-                 },
-                 [&](const OtpFillData*) {
-                   form_filler_->FillOrPreviewForm(
-                       action_persistence, filling_payload,
-                       CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
-                       trigger_source, blocked_fields, FillId::Create(),
-                       /*forced_fill_values=*/{},
-                       FormFiller::RefillOptions::NotRefill());
-                 }},
-             filling_payload);
+  std::visit(
+      absl::Overload{[&](const AutofillProfile*) {
+                       form_filler_->FillOrPreviewForm(
+                           action_persistence, filling_payload,
+                           CHECK_DEREF(form), CHECK_DEREF(trigger_field),
+                           trigger_source, blocked_fields, FillId::Create(),
+                           /*forced_fill_values=*/{},
+                           FormFiller::RefillOptions::NotRefill());
+                     },
+                     [&](const CreditCard* credit_card) {
+                       // We still need to take care of authentication
+                       // flows, which is why we do not forward right
+                       // away to FormFiller.
+                       FillOrPreviewCreditCardForm(
+                           action_persistence, CHECK_DEREF(form),
+                           CHECK_DEREF(trigger_field), *credit_card,
+                           trigger_source, blocked_fields);
+                     },
+                     [&](const EntityInstance*) {
+                       form_filler_->FillOrPreviewForm(
+                           action_persistence, filling_payload,
+                           CHECK_DEREF(form), CHECK_DEREF(trigger_field),
+                           trigger_source, blocked_fields, FillId::Create(),
+                           /*forced_fill_values=*/{},
+                           FormFiller::RefillOptions::NotRefill());
+                     },
+                     [&](const VerifiedProfile*) {
+                       form_filler_->FillOrPreviewForm(
+                           action_persistence, filling_payload,
+                           CHECK_DEREF(form), CHECK_DEREF(trigger_field),
+                           trigger_source, blocked_fields, FillId::Create(),
+                           /*forced_fill_values=*/{},
+                           FormFiller::RefillOptions::NotRefill());
+                     },
+                     [&](const OtpFillData*) {
+                       form_filler_->FillOrPreviewForm(
+                           action_persistence, filling_payload,
+                           CHECK_DEREF(form), CHECK_DEREF(trigger_field),
+                           trigger_source, blocked_fields, FillId::Create(),
+                           /*forced_fill_values=*/{},
+                           FormFiller::RefillOptions::NotRefill());
+                     }},
+      filling_payload);
 }
 void BrowserAutofillManager::FillOrPreviewField(
     mojom::ActionPersistence action_persistence,
     mojom::FieldActionType action_type,
-    const FormData& form,
-    const FormFieldData& field,
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id,
     const std::u16string& value,
     FillingProduct filling_product,
     std::optional<FieldType> field_type_used) {
   // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
   // still need to offer Autocomplete. Therefore, the code below, including
-  // called functions, must handle `form_structure == nullptr` and
-  // `autofill_field == nullptr`.
+  // called functions, must handle null `form` and `field`.
   // TODO(crbug.com/433224307): Consider early returning here when the cache
   // starts storing all forms and fields.
-  auto [form_structure, autofill_field] =
-      GetCachedFormAndField(form.global_id(), field.global_id());
-  form_filler_->FillOrPreviewField(action_persistence, action_type,
-                                   field.global_id(), autofill_field, value,
-                                   filling_product, field_type_used);
+  auto [form, field] = GetCachedFormAndField(form_id, field_id);
+  form_filler_->FillOrPreviewField(action_persistence, action_type, field_id,
+                                   field, value, filling_product,
+                                   field_type_used);
   // Notify observers of the single-field filling event.
-  NotifyObservers(&Observer::OnFillOrPreviewField, form.global_id(),
-                  field.global_id(), action_persistence, value,
-                  field_type_used);
+  NotifyObservers(&Observer::OnFillOrPreviewField, form_id, field_id,
+                  action_persistence, value, field_type_used);
   if (action_persistence != mojom::ActionPersistence::kFill) {
     return;
   }
-  if (autofill_field && autofill_field->Type().GetLoyaltyCardType() ==
-                            EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
+  if (field &&
+      field->Type().GetLoyaltyCardType() == EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
     if (field_type_used == LOYALTY_MEMBERSHIP_ID) {
       LogEmailOrLoyaltyCardSuggestionAccepted(
           autofill_metrics::AutofillEmailOrLoyaltyCardAcceptanceMetricValue::
@@ -1863,13 +1857,12 @@ void BrowserAutofillManager::OnDidFillAddressFormFillingSuggestion(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     AutofillTriggerSource trigger_source) {
-  auto [form_structure, autofill_field] =
-      GetCachedFormAndField(form_id, field_id);
-  if (!form_structure || !autofill_field) {
+  auto [form, field] = GetCachedFormAndField(form_id, field_id);
+  if (!form || !field) {
     return;
   }
   metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
-      profile, *form_structure, *autofill_field, trigger_source);
+      profile, *form, *field, trigger_source);
 }
 
 void BrowserAutofillManager::OnDidFillAddressOnTypingSuggestion(
@@ -1883,22 +1876,16 @@ void BrowserAutofillManager::OnDidFillAddressOnTypingSuggestion(
 
 void BrowserAutofillManager::UndoAutofill(
     mojom::ActionPersistence action_persistence,
-    const FormData& form,
-    const FormFieldData& trigger_field) {
-  FormStructure* form_structure =
-      FindCachedFormById(form.global_id(), /*pass_key=*/{});
-  if (!form_structure) {
-    return;
-  }
-  const AutofillField* autofill_trigger_field =
-      form_structure->GetFieldById(trigger_field.global_id());
-  if (!autofill_trigger_field) {
+    const FormGlobalId& form_id,
+    const FieldGlobalId& trigger_field_id) {
+  auto [form, trigger_field] = GetCachedFormAndField(form_id, trigger_field_id);
+  if (!form || !trigger_field) {
     return;
   }
 
-  FillingProduct filling_product = autofill_trigger_field->filling_product();
-  form_filler_->UndoAutofill(action_persistence, *form_structure,
-                             trigger_field.global_id(), filling_product);
+  FillingProduct filling_product = trigger_field->filling_product();
+  form_filler_->UndoAutofill(action_persistence, *form,
+                             trigger_field->global_id(), filling_product);
 
   // The remaining logic is only relevant for filling.
   if (action_persistence != mojom::ActionPersistence::kPreview) {
@@ -1931,9 +1918,8 @@ void BrowserAutofillManager::DelegateAcceptToPasswordManager(
 
 void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     mojom::ActionPersistence action_persistence,
-    const FormData& form,
-    const FormStructure& form_structure,
-    const AutofillField& autofill_field,
+    const FormStructure& form,
+    const AutofillField& trigger_field,
     const CreditCard& credit_card,
     AutofillTriggerSource trigger_source,
     const base::flat_set<FieldGlobalId>& blocked_fields) {
@@ -1945,8 +1931,8 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       case AutofillTriggerSource::kPopup:
       case AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet:
       case AutofillTriggerSource::kGlic:
-        return ShouldFetchCreditCard(form, form_structure, autofill_field,
-                                     credit_card, trigger_source,
+        return ShouldFetchCreditCard(form, trigger_field, credit_card,
+                                     trigger_source,
                                      GetAcUnrecognizedBehavior(client()));
       case AutofillTriggerSource::kScanCreditCard:
       case AutofillTriggerSource::kDevtools:
@@ -1969,20 +1955,18 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
   // asynchronously (when the card has been successfully fetched).
   auto fill_or_preview =
       [](BrowserAutofillManager& self,
-         mojom::ActionPersistence action_persistence, const FormData& form,
-         const FieldGlobalId& field_id, const CreditCard& credit_card,
-         AutofillTriggerSource trigger_source,
+         mojom::ActionPersistence action_persistence,
+         const FormGlobalId& form_id, const FieldGlobalId& field_id,
+         const CreditCard& credit_card, AutofillTriggerSource trigger_source,
          const base::flat_set<FieldGlobalId>& blocked_fields) {
-        const FormFieldData* const field = form.FindFieldByGlobalId(field_id);
-        auto [cached_form_structure, cached_autofill_field] =
-            self.GetCachedFormAndField(form.global_id(), field_id);
-        if (!field || !cached_form_structure || !cached_autofill_field) {
+        auto [cached_form, cached_trigger_field] =
+            self.GetCachedFormAndField(form_id, field_id);
+        if (!cached_form || !cached_trigger_field) {
           return;
         }
         self.form_filler_->FillOrPreviewForm(
-            action_persistence, &credit_card,
-            CHECK_DEREF(cached_form_structure),
-            CHECK_DEREF(cached_autofill_field), trigger_source, blocked_fields,
+            action_persistence, &credit_card, CHECK_DEREF(cached_form),
+            CHECK_DEREF(cached_trigger_field), trigger_source, blocked_fields,
             FillId::Create(), /*forced_fill_values=*/{},
             FormFiller::RefillOptions::NotRefill());
       };
@@ -1991,8 +1975,8 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
   // Ultimately fills the form by calling `fill_or_preview`.
   auto on_fetched = [](base::WeakPtr<BrowserAutofillManager> self,
                        decltype(fill_or_preview) fill_or_preview,
-                       const FormData& form, const FieldGlobalId& field_id,
-                       const url::Origin& origin,
+                       const FormGlobalId& form_id,
+                       const FieldGlobalId& field_id, const url::Origin& origin,
                        AutofillTriggerSource fetched_credit_card_trigger_source,
                        const base::flat_set<FieldGlobalId>& blocked_fields,
                        const CreditCard& credit_card) {
@@ -2036,14 +2020,14 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
                                                                       origin);
     }
 
-    fill_or_preview(*self, mojom::ActionPersistence::kFill, form, field_id,
+    fill_or_preview(*self, mojom::ActionPersistence::kFill, form_id, field_id,
                     credit_card, fetched_credit_card_trigger_source,
                     blocked_fields);
   };
 
   if (action_persistence == mojom::ActionPersistence::kFill) {
     metrics_->credit_card_form_event_logger.OnDidSelectCardSuggestion(
-        credit_card, form_structure, metrics_->signin_state_for_metrics);
+        credit_card, form, metrics_->signin_state_for_metrics);
   }
 
   // Represents cases where credit cards are fetched independently of the
@@ -2060,18 +2044,20 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     GetCreditCardAccessManager()->FetchCreditCard(
         &credit_card,
         base::BindOnce(on_fetched, weak_ptr_factory_.GetWeakPtr(),
-                       fill_or_preview, form, autofill_field.global_id(),
-                       autofill_field.origin(), trigger_source,
-                       blocked_fields));
+                       fill_or_preview, form.global_id(),
+                       trigger_field.global_id(), trigger_field.origin(),
+                       trigger_source, blocked_fields));
   } else if (fetched_independently) {
     // Cards fetched independently, such as for BNPL, have all of their data on
     // creation and do not need further fetching.
-    on_fetched(weak_ptr_factory_.GetWeakPtr(), fill_or_preview, form,
-               autofill_field.global_id(), autofill_field.origin(),
-               trigger_source, blocked_fields, credit_card);
+    on_fetched(weak_ptr_factory_.GetWeakPtr(), fill_or_preview,
+               form.global_id(), trigger_field.global_id(),
+               trigger_field.origin(), trigger_source, blocked_fields,
+               credit_card);
   } else {
-    fill_or_preview(*this, action_persistence, form, autofill_field.global_id(),
-                    credit_card, trigger_source, blocked_fields);
+    fill_or_preview(*this, action_persistence, form.global_id(),
+                    trigger_field.global_id(), credit_card, trigger_source,
+                    blocked_fields);
   }
 }
 
@@ -2949,33 +2935,31 @@ void BrowserAutofillManager::OnBeforeProcessParsedForms() {
                                            .GetPaymentsSigninStateForMetrics();
 }
 
-void BrowserAutofillManager::OnFormProcessed(
-    const FormData& form,
-    const FormStructure& form_structure) {
+void BrowserAutofillManager::OnFormProcessed(const FormStructure& form) {
   // If a standalone cvc field is found in the form, query the DOM for last four
   // combinations. Used to search for the virtual card last four for a virtual
   // card saved on file of a merchant webpage.
   const bool contains_standalone_cvc_field = std::ranges::any_of(
-      form_structure.fields(), [](const std::unique_ptr<AutofillField>& field) {
+      form.fields(), [](const std::unique_ptr<AutofillField>& field) {
         return field->Type().GetCreditCardType() ==
                CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
       });
   if (contains_standalone_cvc_field) {
     FetchPotentialCardLastFourDigitsCombinationFromDOM();
   }
-  if (data_util::ContainsPhone(data_util::DetermineGroups(form_structure))) {
+  if (data_util::ContainsPhone(data_util::DetermineGroups(form))) {
     metrics_->has_observed_phone_number_field = true;
   }
 
-  for (const std::unique_ptr<AutofillField>& field : form_structure) {
+  for (const std::unique_ptr<AutofillField>& field : form) {
     if (field->html_type() == HtmlFieldType::kOneTimeCode) {
       metrics_->has_observed_one_time_code_field = true;
       break;
     }
   }
   OnDidIdentifyFormForMetrics(
-      form_structure, autofill_metrics::FormEventLoggerBase::
-                          FormIdentificationTime::kAfterLocalHeuristics);
+      form, autofill_metrics::FormEventLoggerBase::FormIdentificationTime::
+                kAfterLocalHeuristics);
   // `autofill_optimization_guide_decider` is not present on unsupported
   // platforms.
   if (auto* autofill_optimization_guide_decider =
@@ -2984,18 +2968,17 @@ void BrowserAutofillManager::OnFormProcessed(
     // parsed, as well as the information that the user has saved in the web
     // database.
     autofill_optimization_guide_decider->OnDidParseForm(
-        form_structure,
-        client().GetPersonalDataManager().payments_data_manager());
+        form, client().GetPersonalDataManager().payments_data_manager());
   }
 
   if (AutofillAiManager* ai_manager = client().GetAutofillAiManager()) {
-    ai_manager->OnFormSeen(form_structure);
+    ai_manager->OnFormSeen(form);
   }
 
   // If a form with the same FormGlobalId was previously filled, the structure
   // of the form changed, and we might be able to refill the form with other
   // information.
-  form_filler_->MaybeScheduleAutomaticRefill(form_structure,
+  form_filler_->MaybeScheduleAutomaticRefill(form,
                                              RefillTriggerReason::kFormChanged,
                                              AutofillTriggerSource::kFormsSeen);
 }
