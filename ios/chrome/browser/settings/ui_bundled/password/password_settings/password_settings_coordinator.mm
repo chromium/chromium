@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_metrics_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
@@ -725,28 +726,12 @@ constexpr const char* kDeleteAllSavedDataButtonClicked =
 
 // Helper to show the "set passcode" dialog with customizable content.
 - (void)showSetPasscodeDialogWithContent:(NSString*)content {
-  UIAlertController* alertController = [UIAlertController
-      alertControllerWithTitle:l10n_util::GetNSString(
-                                   IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE)
-                       message:content
-                preferredStyle:UIAlertControllerStyleAlert];
-
   __weak __typeof(self) weakSelf = self;
-  UIAlertAction* learnAction = [UIAlertAction
-      actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
-                style:UIAlertActionStyleDefault
-              handler:^(UIAlertAction*) {
-                [weakSelf showPasscodeHelp];
-              }];
-  [alertController addAction:learnAction];
-  UIAlertAction* okAction =
-      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
-                               style:UIAlertActionStyleDefault
-                             handler:nil];
-  [alertController addAction:okAction];
-  alertController.preferredAction = okAction;
-  [_passwordSettingsViewController presentViewController:alertController
+  UIAlertController* alert =
+      password_manager::CreateSetUpScreenLockAlert(content, ^{
+        [weakSelf showPasscodeHelp];
+      });
+  [_passwordSettingsViewController presentViewController:alert
                                                 animated:YES
                                               completion:nil];
 }

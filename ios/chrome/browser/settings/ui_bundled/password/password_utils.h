@@ -9,6 +9,7 @@
 
 #import <utility>
 
+#import "base/ios/block_types.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
@@ -29,6 +30,12 @@ bool MatchCredentialForTerm(const CredentialUIEntry& credential,
 // lowercase.
 bool MatchAffiliatedGroupsForTerm(const AffiliatedGroup& affiliated_group,
                                   const std::string& search_term);
+
+// Returns an alert prompting the user to set up a screen lock (passcode, Face
+// ID, or Touch ID).
+UIAlertController* CreateSetUpScreenLockAlert(
+    NSString* message,
+    ProceduralBlock learn_how_handler);
 
 }  // namespace password_manager
 

@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -119,6 +120,39 @@ bool MatchAffiliatedGroupsForTerm(const AffiliatedGroup& affiliated_group,
   return ContainsSubStringLowerCase(affiliated_group.GetDisplayName(),
                                     search_term) ||
          MatchGroupCredentialsForTerm(affiliated_group, search_term);
+}
+
+UIAlertController* CreateSetUpScreenLockAlert(
+    NSString* message,
+    ProceduralBlock learn_how_handler) {
+  NSString* alertMessage =
+      message.length > 0
+          ? message
+          : l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_CONTENT);
+  UIAlertController* alertController = [UIAlertController
+      alertControllerWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE)
+                       message:alertMessage
+                preferredStyle:UIAlertControllerStyleAlert];
+
+  if (learn_how_handler) {
+    UIAlertAction* learnAction = [UIAlertAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
+                  style:UIAlertActionStyleDefault
+                handler:^(UIAlertAction*) {
+                  learn_how_handler();
+                }];
+    [alertController addAction:learnAction];
+  }
+
+  UIAlertAction* okAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
+                               style:UIAlertActionStyleDefault
+                             handler:nil];
+  [alertController addAction:okAction];
+  alertController.preferredAction = okAction;
+  return alertController;
 }
 
 }  // namespace password_manager

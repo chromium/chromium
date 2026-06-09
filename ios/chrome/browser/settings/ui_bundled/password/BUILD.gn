@@ -188,6 +188,7 @@ source_set("password_utils") {
   public_deps = [
     "//base",
     "//components/password_manager/core/browser/ui",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ui/base",
   ]
@@ -197,12 +198,14 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "password_manager_view_controller_unittest.mm",
+    "password_utils_unittest.mm",
     "passwords_coordinator_unittest.mm",
     "passwords_mediator_unittest.mm",
   ]
   deps = [
     ":password",
     ":password_constants",
+    ":password_utils",
     ":ui",
     "//base",
     "//base/test:test_support",

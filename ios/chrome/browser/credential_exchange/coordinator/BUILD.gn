@@ -82,6 +82,7 @@ source_set("export_coordinator") {
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/password_exporter/coordinator",
+    "//ios/chrome/browser/settings/ui_bundled/password:password_utils",
     "//ios/chrome/browser/settings/ui_bundled/password:title_view",
     "//ios/chrome/browser/settings/ui_bundled/password:ui",
     "//ios/chrome/browser/shared/coordinator/alert",
