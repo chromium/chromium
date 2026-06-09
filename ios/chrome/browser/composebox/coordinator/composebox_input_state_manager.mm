@@ -818,6 +818,17 @@ ComposeboxStrings* ServerStringsFromInputState(
     return NO;
   }
 
+  // Enforce signed-in status check for the Drive option before evaluating
+  // server-side or local rules.
+  if (attachmentOption == ComposeboxAttachmentOption::kDrive) {
+    BOOL hasPrimaryAccount =
+        _identityManager &&
+        _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+    if (!hasPrimaryAccount) {
+      return NO;
+    }
+  }
+
   if (EnableComposeboxServerSideState()) {
     return [self isAttachmentAllowedByServer:attachmentOption];
   } else {
