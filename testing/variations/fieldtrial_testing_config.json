@@ -22795,7 +22795,9 @@
                         "ContextualTasksContextSmartTabSharing": "true"
                     },
                     "enable_features": [
-                        "ContextualTasksContext"
+                        "ContextualTasksContext",
+                        "ContextualTasksContextLogging",
+                        "ContextualTasksContextMqlsLogging"
                     ]
                 }
             ]
