@@ -47,6 +47,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDeleg
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate;
 import org.chromium.content_public.browser.WebContents;
@@ -346,6 +347,101 @@ public class TabBottomSheetWebUiTest {
         assertTrue(delegate.supportsSaveImage());
         assertTrue(delegate.supportsSearchByImage());
         assertTrue(delegate.supportsInspectElement());
+    }
+
+    @Test
+    public void testSelectionDropdownWrapper_ignoresFocusClearWhenShowing() {
+        ViewTreeObserver mockViewTreeObserver = mock(ViewTreeObserver.class);
+        when(mMockContentView.getViewTreeObserver()).thenReturn(mockViewTreeObserver);
+
+        mWebUi.setWebContents(mWebContents, true);
+
+        // Capture the wrapped delegate.
+        ArgumentCaptor<ThinWebViewAttachParams> attachParamsCaptor =
+                ArgumentCaptor.forClass(ThinWebViewAttachParams.class);
+        verify(mThinWebView).attachWebContents(any(), any(), attachParamsCaptor.capture());
+        SelectionDropdownMenuDelegate wrappedDelegate =
+                attachParamsCaptor.getValue().selectionDropdownMenuDelegate;
+        assertNotNull(wrappedDelegate);
+
+        // Capture the OnWindowFocusChangeListener.
+        ArgumentCaptor<View.OnAttachStateChangeListener> attachListenerCaptor =
+                ArgumentCaptor.forClass(View.OnAttachStateChangeListener.class);
+        verify(mMockContentView).addOnAttachStateChangeListener(attachListenerCaptor.capture());
+        View.OnAttachStateChangeListener attachListener = attachListenerCaptor.getValue();
+        attachListener.onViewAttachedToWindow(mMockContentView);
+
+        ArgumentCaptor<ViewTreeObserver.OnWindowFocusChangeListener> focusListenerCaptor =
+                ArgumentCaptor.forClass(ViewTreeObserver.OnWindowFocusChangeListener.class);
+        verify(mockViewTreeObserver).addOnWindowFocusChangeListener(focusListenerCaptor.capture());
+        ViewTreeObserver.OnWindowFocusChangeListener focusListener = focusListenerCaptor.getValue();
+
+        // 1. Show the dropdown menu.
+        Runnable dismissCallback = mock(Runnable.class);
+        wrappedDelegate.show(null, null, null, null, dismissCallback, 0, 0);
+
+        // Verify that the delegate's show is called.
+        verify(mSelectionDropdownMenuDelegate)
+                .show(any(), any(), any(), any(), any(), eq(0), eq(0));
+
+        // 2. Trigger window focus loss. Since the dropdown is showing, it should NOT clear focus.
+        Mockito.reset(mMockContentView);
+        focusListener.onWindowFocusChanged(false);
+        ShadowLooper.idleMainLooper();
+        verify(mMockContentView, times(0)).clearFocus();
+
+        // 3. Dismiss the dropdown menu when window does NOT have focus. It should clear focus.
+        when(mMockContentView.hasWindowFocus()).thenReturn(false);
+        wrappedDelegate.dismiss();
+        verify(mSelectionDropdownMenuDelegate).dismiss();
+        verify(mMockContentView, times(1)).clearFocus();
+    }
+
+    @Test
+    public void testSelectionDropdownWrapper_callbackResetsIgnoreClearFocus() {
+        ViewTreeObserver mockViewTreeObserver = mock(ViewTreeObserver.class);
+        when(mMockContentView.getViewTreeObserver()).thenReturn(mockViewTreeObserver);
+
+        mWebUi.setWebContents(mWebContents, true);
+
+        // Capture the wrapped delegate.
+        ArgumentCaptor<ThinWebViewAttachParams> attachParamsCaptor =
+                ArgumentCaptor.forClass(ThinWebViewAttachParams.class);
+        verify(mThinWebView).attachWebContents(any(), any(), attachParamsCaptor.capture());
+        SelectionDropdownMenuDelegate wrappedDelegate =
+                attachParamsCaptor.getValue().selectionDropdownMenuDelegate;
+
+        // Capture the OnWindowFocusChangeListener.
+        ArgumentCaptor<View.OnAttachStateChangeListener> attachListenerCaptor =
+                ArgumentCaptor.forClass(View.OnAttachStateChangeListener.class);
+        verify(mMockContentView).addOnAttachStateChangeListener(attachListenerCaptor.capture());
+        View.OnAttachStateChangeListener attachListener = attachListenerCaptor.getValue();
+        attachListener.onViewAttachedToWindow(mMockContentView);
+
+        ArgumentCaptor<ViewTreeObserver.OnWindowFocusChangeListener> focusListenerCaptor =
+                ArgumentCaptor.forClass(ViewTreeObserver.OnWindowFocusChangeListener.class);
+        verify(mockViewTreeObserver).addOnWindowFocusChangeListener(focusListenerCaptor.capture());
+        ViewTreeObserver.OnWindowFocusChangeListener focusListener = focusListenerCaptor.getValue();
+
+        // 1. Show the dropdown menu.
+        Runnable dismissCallback = mock(Runnable.class);
+        wrappedDelegate.show(null, null, null, null, dismissCallback, 0, 0);
+
+        // Capture the wrapped callback.
+        ArgumentCaptor<Runnable> wrappedCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mSelectionDropdownMenuDelegate)
+                .show(any(), any(), any(), any(), wrappedCallbackCaptor.capture(), eq(0), eq(0));
+        Runnable wrappedCallback = wrappedCallbackCaptor.getValue();
+
+        // 2. Trigger the callback.
+        wrappedCallback.run();
+        verify(dismissCallback).run();
+
+        // 3. Trigger window focus loss. Since the callback has run, it should clear focus.
+        Mockito.reset(mMockContentView);
+        focusListener.onWindowFocusChanged(false);
+        ShadowLooper.idleMainLooper();
+        verify(mMockContentView, times(1)).clearFocus();
     }
 
     private static class TestTabBottomSheetWebUi extends TabBottomSheetWebUi {
