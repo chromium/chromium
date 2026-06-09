@@ -530,10 +530,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(language_detection_model_service());
 
-  ASSERT_GE(kMaxPendingRequestsAllowed, 2);
-
-  // Number of renderers created by InProcessBrowserTest setup.
-  int num_renderers = 2;
+  ASSERT_GE(kMaxPendingRequestsAllowed, 1);
 
   // The intention is to queue `kMaxPendingRequestsAllowed` pending requests and
   // then one more that should fail immediately. However sometimes a request is
@@ -543,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   // TODO(https://crbug.com/364504537): Make this a unittest to avoid this race
   // condition.
   std::vector<std::unique_ptr<ModelFileGetter>> getters;
-  for (int i = 0; i < kMaxPendingRequestsAllowed - num_renderers; i++) {
+  for (int i = 0; i < kMaxPendingRequestsAllowed - 1; i++) {
     getters.emplace_back(
         std::make_unique<ModelFileGetter>(*language_detection_model_service()));
     getters.back()->RequestModelFile();
@@ -551,12 +548,8 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
 
   // This one might exceed the max depending on whether we received a request
   // from the renderer, so we never check its status.
-  std::vector<std::unique_ptr<ModelFileGetter>> maybe_getters;
-  for (int i = 0; i < num_renderers; i++) {
-    maybe_getters.emplace_back(
-        std::make_unique<ModelFileGetter>(*language_detection_model_service()));
-    maybe_getters.back()->RequestModelFile();
-  }
+  ModelFileGetter maybe_getter(*language_detection_model_service());
+  maybe_getter.RequestModelFile();
 
   // Requesting one more should definitely give an invalid file immediately.
   ASSERT_FALSE(RequestAndWaitForModelFile()->IsValid());
