@@ -4,16 +4,16 @@
 
 package org.chromium.chrome.browser.media.immersive_playback;
 
-import org.chromium.blink.mojom.ImmersivePlaybackConfirmationStatus;
-import org.chromium.blink.mojom.ImmersiveProjectionType;
-import org.chromium.blink.mojom.ImmersiveStereoMode;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.content_public.browser.ImmersivePlaybackConfirmationStatus;
+import org.chromium.content_public.browser.ImmersiveProjectionType;
+import org.chromium.content_public.browser.ImmersiveStereoMode;
 
 /** Callback for immersive playback confirmation flow. */
 @NullMarked
 public interface ImmersivePlaybackConfirmationCallback {
     void onResult(
-            @ImmersivePlaybackConfirmationStatus.EnumType int status,
-            @ImmersiveStereoMode.EnumType int stereoMode,
-            @ImmersiveProjectionType.EnumType int projectionType);
+            @ImmersivePlaybackConfirmationStatus int status,
+            @ImmersiveStereoMode int stereoMode,
+            @ImmersiveProjectionType int projectionType);
 }

@@ -11,6 +11,7 @@
 #include "chrome/android/chrome_jni_headers/XrModuleBridge_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/overlay/overlay_window_android.h"
+#include "content/public/browser/immersive_playback_options.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
@@ -31,9 +32,9 @@ class ImmersiveOverlayWindowAndroid : public OverlayWindowAndroid {
 
   // VideoOverlayWindow implementation.
   void SetImmersiveVideoOptions(
-      blink::mojom::ImmersiveOptionsPtr options) override {
-    immersive_options_ = std::move(options);
-    SetImmersiveVideoOptionsJava(immersive_options_);
+      const content::ImmersiveOptions& options) override {
+    immersive_options_ = options;
+    SetImmersiveVideoOptionsJava(immersive_options_.value());
   }
 
   void Initialize(
@@ -43,7 +44,7 @@ class ImmersiveOverlayWindowAndroid : public OverlayWindowAndroid {
     OverlayWindowAndroid::Initialize(env, self, jwindow_android);
 
     if (immersive_options_) {
-      SetImmersiveVideoOptionsJava(immersive_options_);
+      SetImmersiveVideoOptionsJava(immersive_options_.value());
     }
   }
 
@@ -69,7 +70,7 @@ class ImmersiveOverlayWindowAndroid : public OverlayWindowAndroid {
         TabAndroid::FromWebContents(web_contents)->GetJavaObject());
   }
 
-  blink::mojom::ImmersiveOptionsPtr immersive_options_;
+  std::optional<content::ImmersiveOptions> immersive_options_;
 };
 
 std::unique_ptr<content::VideoOverlayWindow>

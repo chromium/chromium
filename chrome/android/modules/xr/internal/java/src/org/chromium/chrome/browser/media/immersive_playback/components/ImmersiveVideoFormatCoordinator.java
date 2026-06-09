@@ -12,12 +12,12 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.blink.mojom.ImmersiveProjectionType;
-import org.chromium.blink.mojom.ImmersiveStereoMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoFormatRadioGroup;
 import org.chromium.chrome.browser.modules.xr.R;
+import org.chromium.content_public.browser.ImmersiveProjectionType;
+import org.chromium.content_public.browser.ImmersiveStereoMode;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.xr.scenecore.XrEntityHolder;
@@ -104,8 +104,8 @@ public class ImmersiveVideoFormatCoordinator {
     public void show(
             XrEntityHolder<?> parent,
             SizeF parentSize,
-            @ImmersiveStereoMode.EnumType int stereoMode,
-            @ImmersiveProjectionType.EnumType int projectionType) {
+            @ImmersiveStereoMode int stereoMode,
+            @ImmersiveProjectionType int projectionType) {
         ensureInitialized();
 
         if (mHolder != null && mMediator != null) {

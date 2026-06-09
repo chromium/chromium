@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/public/browser/immersive_playback_options.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -25,7 +26,6 @@
 #include "services/device/public/cpp/test/scoped_pressure_manager_overrider.h"
 #include "services/device/public/mojom/pressure_update.mojom.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -78,8 +78,7 @@ class TestVideoOverlayWindow : public VideoOverlayWindow {
       const std::vector<media_session::MediaImage>& images) override {}
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
   void SetPlaybackControlsVisibility(bool is_visible) override {}
-  void SetImmersiveVideoOptions(
-      blink::mojom::ImmersiveOptionsPtr options) override {}
+  void SetImmersiveVideoOptions(const ImmersiveOptions& options) override {}
 
  private:
   gfx::Size size_;

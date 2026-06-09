@@ -57,7 +57,7 @@ void PictureInPictureServiceImpl::StartSession(
 
   if (!request_immersive) {
     StartSessionInternal(std::move(pending_session),
-                         /*immersive_options=*/nullptr);
+                         /*immersive_options=*/std::nullopt);
   } else {
     StartSessionImmersive(std::move(pending_session));
   }
@@ -66,7 +66,7 @@ void PictureInPictureServiceImpl::StartSession(
 void PictureInPictureServiceImpl::StartSessionInternal(
     std::unique_ptr<PictureInPictureServiceImpl::PendingSession>
         pending_session,
-    blink::mojom::ImmersiveOptionsPtr immersive_options) {
+    std::optional<ImmersiveOptions> immersive_options) {
   gfx::Size window_size;
   mojo::PendingRemote<blink::mojom::PictureInPictureSession> session_remote;
 
@@ -110,14 +110,13 @@ void PictureInPictureServiceImpl::StartSessionImmersive(
 
 void PictureInPictureServiceImpl::OnImmersivePlaybackConfirmation(
     std::unique_ptr<PendingSession> pending_session,
-    blink::mojom::ImmersivePlaybackConfirmationResultPtr result) {
-  if (result->status !=
-          blink::mojom::ImmersivePlaybackConfirmationStatus::kConfirmed ||
-      !result->options) {
+    ImmersivePlaybackConfirmationResult result) {
+  if (result.status != ImmersivePlaybackConfirmationStatus::kConfirmed ||
+      !result.options) {
     return;
   }
 
-  StartSessionInternal(std::move(pending_session), std::move(result->options));
+  StartSessionInternal(std::move(pending_session), std::move(result.options));
 }
 
 PictureInPictureServiceImpl::PendingSession::PendingSession(

@@ -15,7 +15,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.blink.mojom.ImmersiveProjectionType;
+import org.chromium.content_public.browser.ImmersiveProjectionType;
 
 /** Tests for {@link ImmersiveVideoPoseManager}. */
 @RunWith(BaseRobolectricTestRunner.class)

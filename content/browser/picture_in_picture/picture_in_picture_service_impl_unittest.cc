@@ -68,8 +68,7 @@ class PictureInPictureDelegate : public WebContentsDelegate {
   MOCK_METHOD(bool, IsImmersivePlaybackEnabled, (), (const, override));
   MOCK_METHOD(void,
               RequestImmersivePlaybackConfirmation,
-              (base::OnceCallback<
-                  void(blink::mojom::ImmersivePlaybackConfirmationResultPtr)>),
+              (base::OnceCallback<void(ImmersivePlaybackConfirmationResult)>),
               (override));
 
   void EnterFullscreenModeForTab(
@@ -136,7 +135,8 @@ class TestOverlayWindow : public VideoOverlayWindow {
   void SetPlaybackControlsVisibility(bool is_visible) override {}
   MOCK_METHOD(void,
               SetImmersiveVideoOptions,
-              (blink::mojom::ImmersiveOptionsPtr options));
+              (const ImmersiveOptions& options),
+              (override));
 
  private:
   gfx::Size size_;
@@ -219,11 +219,8 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
     show_play_pause_button_ = true;
     player_id_ = 30;
 
-    default_immersive_options_ = blink::mojom::ImmersiveOptions::New();
-    default_immersive_options_->stereo_mode =
-        blink::mojom::ImmersiveStereoMode::kMono;
-    default_immersive_options_->projection_type =
-        blink::mojom::ImmersiveProjectionType::kQuad;
+    default_immersive_options_.stereo_mode = ImmersiveStereoMode::kMono;
+    default_immersive_options_.projection_type = ImmersiveProjectionType::kQuad;
   }
 
   void TearDown() override {
@@ -245,7 +242,7 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
 
   int player_id() const { return player_id_; }
 
-  const blink::mojom::ImmersiveOptionsPtr& default_immersive_options() const {
+  const ImmersiveOptions& default_immersive_options() const {
     return default_immersive_options_;
   }
 
@@ -296,7 +293,7 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
   // Required to pass a valid PendingRemote to StartSession() in the tests.
   PictureInPictureMediaPlayerReceiver media_player_receiver_;
   viz::SurfaceId surface_id_;
-  blink::mojom::ImmersiveOptionsPtr default_immersive_options_;
+  ImmersiveOptions default_immersive_options_;
   gfx::Rect source_bounds_;
   gfx::Size window_size_;
   bool show_play_pause_button_;
@@ -383,16 +380,15 @@ TEST_F(PictureInPictureServiceImplTest, EnterImmersivePlayback) {
 
   // Expect the delegate to confirm immersive playback with default options.
   EXPECT_CALL(delegate(), RequestImmersivePlaybackConfirmation(_))
-      .WillOnce([options = default_immersive_options().Clone()](
-                    base::OnceCallback<void(
-                        blink::mojom::ImmersivePlaybackConfirmationResultPtr)>
-                        callback) mutable {
-        auto result = blink::mojom::ImmersivePlaybackConfirmationResult::New();
-        result->status =
-            blink::mojom::ImmersivePlaybackConfirmationStatus::kConfirmed;
-        result->options = std::move(options);
-        std::move(callback).Run(std::move(result));
-      });
+      .WillOnce(
+          [options = default_immersive_options()](
+              base::OnceCallback<void(ImmersivePlaybackConfirmationResult)>
+                  callback) {
+            ImmersivePlaybackConfirmationResult result;
+            result.status = ImmersivePlaybackConfirmationStatus::kConfirmed;
+            result.options = options;
+            std::move(callback).Run(std::move(result));
+          });
 
   mojo::Remote<blink::mojom::PictureInPictureSession> session_remote_out;
   gfx::Size window_size_out;
@@ -425,16 +421,15 @@ TEST_F(PictureInPictureServiceImplTest, EnterImmersivePlayback_NotSupported) {
       .WillRepeatedly(testing::Return(PictureInPictureResult::kNotSupported));
 
   EXPECT_CALL(delegate(), RequestImmersivePlaybackConfirmation(_))
-      .WillOnce([options = default_immersive_options().Clone()](
-                    base::OnceCallback<void(
-                        blink::mojom::ImmersivePlaybackConfirmationResultPtr)>
-                        callback) mutable {
-        auto result = blink::mojom::ImmersivePlaybackConfirmationResult::New();
-        result->status =
-            blink::mojom::ImmersivePlaybackConfirmationStatus::kConfirmed;
-        result->options = std::move(options);
-        std::move(callback).Run(std::move(result));
-      });
+      .WillOnce(
+          [options = default_immersive_options()](
+              base::OnceCallback<void(ImmersivePlaybackConfirmationResult)>
+                  callback) {
+            ImmersivePlaybackConfirmationResult result;
+            result.status = ImmersivePlaybackConfirmationStatus::kConfirmed;
+            result.options = options;
+            std::move(callback).Run(std::move(result));
+          });
 
   mojo::Remote<blink::mojom::PictureInPictureSession> session_remote_out;
   gfx::Size window_size_out;
@@ -486,12 +481,10 @@ TEST_F(PictureInPictureServiceImplTest, EnterImmersivePlayback_DeclinedFails) {
       .WillRepeatedly(testing::Return(true));
 
   EXPECT_CALL(delegate(), RequestImmersivePlaybackConfirmation(_))
-      .WillOnce([](base::OnceCallback<void(
-                       blink::mojom::ImmersivePlaybackConfirmationResultPtr)>
+      .WillOnce([](base::OnceCallback<void(ImmersivePlaybackConfirmationResult)>
                        callback) {
-        auto result = blink::mojom::ImmersivePlaybackConfirmationResult::New();
-        result->status =
-            blink::mojom::ImmersivePlaybackConfirmationStatus::kDeclined;
+        ImmersivePlaybackConfirmationResult result;
+        result.status = ImmersivePlaybackConfirmationStatus::kDeclined;
         std::move(callback).Run(std::move(result));
       });
 
@@ -517,13 +510,12 @@ TEST_F(PictureInPictureServiceImplTest,
       .WillRepeatedly(testing::Return(true));
 
   // Capture the first confirmation callback.
-  base::OnceCallback<void(blink::mojom::ImmersivePlaybackConfirmationResultPtr)>
+  base::OnceCallback<void(ImmersivePlaybackConfirmationResult)>
       first_confirm_callback;
   EXPECT_CALL(delegate(), RequestImmersivePlaybackConfirmation(_))
       .WillOnce(
           [&first_confirm_callback](
-              base::OnceCallback<void(
-                  blink::mojom::ImmersivePlaybackConfirmationResultPtr)>
+              base::OnceCallback<void(ImmersivePlaybackConfirmationResult)>
                   callback) { first_confirm_callback = std::move(callback); });
 
   DummyPictureInPictureSessionObserver observer;
@@ -596,10 +588,9 @@ TEST_F(PictureInPictureServiceImplTest,
   EXPECT_FALSE(first_callback_called);
 
   // Now, attempt to run the first session's confirmation callback.
-  auto result = blink::mojom::ImmersivePlaybackConfirmationResult::New();
-  result->status =
-      blink::mojom::ImmersivePlaybackConfirmationStatus::kConfirmed;
-  result->options = default_immersive_options().Clone();
+  ImmersivePlaybackConfirmationResult result;
+  result.status = ImmersivePlaybackConfirmationStatus::kConfirmed;
+  result.options = default_immersive_options();
 
   std::move(first_confirm_callback).Run(std::move(result));
 

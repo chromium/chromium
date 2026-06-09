@@ -21,6 +21,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/eye_dropper.h"
 #include "content/public/browser/fullscreen_types.h"
+#include "content/public/browser/immersive_playback_options.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/navigation_controller.h"
@@ -958,8 +959,7 @@ class CONTENT_EXPORT WebContentsDelegate {
 
   // Requests a confirmation from the user to enter immersive playback.
   virtual void RequestImmersivePlaybackConfirmation(
-      base::OnceCallback<
-          void(blink::mojom::ImmersivePlaybackConfirmationResultPtr)> callback);
+      base::OnceCallback<void(ImmersivePlaybackConfirmationResult)> callback);
 
  protected:
   virtual ~WebContentsDelegate();

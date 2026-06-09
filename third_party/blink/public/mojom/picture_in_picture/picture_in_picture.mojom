@@ -9,46 +9,6 @@ import "services/media_session/public/mojom/media_session.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Represents the stereo mode for immersive Picture-in-Picture playback.
-enum ImmersiveStereoMode {
-  kMono = 0,
-  kMultiviewLeftPrimary = 1,
-  kMultiviewRightPrimary = 2,
-  kSideBySide = 3,
-  kTopBottom = 4,
-};
-
-// Represents the projection type for immersive Picture-in-Picture playback.
-enum ImmersiveProjectionType {
-  kQuad = 0,
-  kSphere = 1,
-  kHemisphere = 2,
-  kCustom = 3,
-};
-
-// Represents the options for an immersive Picture-in-Picture session.
-struct ImmersiveOptions {
-  ImmersiveStereoMode stereo_mode;
-  ImmersiveProjectionType projection_type;
-};
-
-// Represents the result of an immersive Picture-in-Picture playback
-// confirmation request.
-enum ImmersivePlaybackConfirmationStatus {
-  kConfirmed = 0,
-  kDeclined = 1,
-  kCanceled = 2,
-  kFailed = 3,
-};
-
-// Represents the result of an immersive Picture-in-Picture playback
-// confirmation.
-struct ImmersivePlaybackConfirmationResult {
-  ImmersivePlaybackConfirmationStatus status;
-  ImmersiveOptions? options;
-};
-
-
 // PictureInPictureSessionObserver is associated to a PictureInPictureSession at
 // its creation. It receives all the events associated to the session lifetime.
 interface PictureInPictureSessionObserver {

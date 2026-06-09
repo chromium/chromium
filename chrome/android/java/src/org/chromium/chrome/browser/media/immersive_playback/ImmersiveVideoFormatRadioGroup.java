@@ -10,10 +10,10 @@ import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import org.chromium.blink.mojom.ImmersiveProjectionType;
-import org.chromium.blink.mojom.ImmersiveStereoMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.content_public.browser.ImmersiveProjectionType;
+import org.chromium.content_public.browser.ImmersiveStereoMode;
 
 /** A custom RadioGroup that presents options for immersive playback formats. */
 @NullMarked

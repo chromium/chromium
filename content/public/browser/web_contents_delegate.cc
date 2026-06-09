@@ -521,10 +521,9 @@ bool WebContentsDelegate::IsImmersivePlaybackEnabled() const {
 }
 
 void WebContentsDelegate::RequestImmersivePlaybackConfirmation(
-    base::OnceCallback<
-        void(blink::mojom::ImmersivePlaybackConfirmationResultPtr)> callback) {
-  auto result = blink::mojom::ImmersivePlaybackConfirmationResult::New();
-  result->status = blink::mojom::ImmersivePlaybackConfirmationStatus::kFailed;
+    base::OnceCallback<void(ImmersivePlaybackConfirmationResult)> callback) {
+  ImmersivePlaybackConfirmationResult result;
+  result.status = ImmersivePlaybackConfirmationStatus::kFailed;
   std::move(callback).Run(std::move(result));
 }
 

@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/immersive_playback_options.h"
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -86,15 +87,14 @@ class CONTENT_EXPORT PictureInPictureServiceImpl final
 
   VideoPictureInPictureWindowControllerImpl& GetController();
 
-  void StartSessionInternal(
-      std::unique_ptr<PendingSession> pending_session,
-      blink::mojom::ImmersiveOptionsPtr immersive_options);
+  void StartSessionInternal(std::unique_ptr<PendingSession> pending_session,
+                            std::optional<ImmersiveOptions> immersive_options);
 
   void StartSessionImmersive(std::unique_ptr<PendingSession> pending_session);
 
   void OnImmersivePlaybackConfirmation(
       std::unique_ptr<PendingSession> pending_session,
-      blink::mojom::ImmersivePlaybackConfirmationResultPtr result);
+      ImmersivePlaybackConfirmationResult result);
 
   base::WeakPtrFactory<PictureInPictureServiceImpl>
       immersive_confirmation_weak_factory_{this};

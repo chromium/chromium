@@ -476,6 +476,7 @@ java_cpp_enum("content_public_android_java_enums_srcjar") {
     "//content/public/browser/android/motion_event_action.h",
     "//content/public/browser/back_forward_transition_animation_manager.h",
     "//content/public/browser/bluetooth_scanning_prompt.h",
+    "//content/public/browser/immersive_playback_options.h",
     "//content/public/browser/invalidate_type.h",
     "//content/public/browser/navigation_controller.h",
     "//content/public/browser/overlay_window.h",

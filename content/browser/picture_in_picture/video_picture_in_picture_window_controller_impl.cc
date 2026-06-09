@@ -14,6 +14,7 @@
 #include "content/browser/picture_in_picture/picture_in_picture_session.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/immersive_playback_options.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -292,7 +293,7 @@ PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
     bool show_play_pause_button,
     mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver> observer,
     const gfx::Rect& source_bounds,
-    blink::mojom::ImmersiveOptionsPtr immersive_options,
+    std::optional<content::ImmersiveOptions> immersive_options,
     mojo::PendingRemote<blink::mojom::PictureInPictureSession>* session_remote,
     gfx::Size* window_size) {
   if (window_) {
@@ -301,13 +302,13 @@ PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
     // currently only supported on Android XR, where Picture-in-Picture is
     // disabled. Furthermore, the window types for these modes are different and
     // cannot be reused.
-    if (IsImmersive() != !immersive_options.is_null()) {
+    if (IsImmersive() != immersive_options.has_value()) {
       mojo::ReportBadMessage("Inconsistent immersive state in StartSession");
       return PictureInPictureResult::kNotSupported;
     }
   }
 
-  is_immersive_ = !immersive_options.is_null();
+  is_immersive_ = immersive_options.has_value();
 
   PictureInPictureResult result = PictureInPictureResult::kNotSupported;
   WebContentsDelegate* delegate = web_contents()->GetDelegate();
@@ -346,7 +347,7 @@ PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
   // If this is an immersive Picture-in-Picture session, set the immersive
   // options on the window.
   if (immersive_options) {
-    window_->SetImmersiveVideoOptions(std::move(immersive_options));
+    window_->SetImmersiveVideoOptions(immersive_options.value());
   }
 
   // If the window is closed by the system, then the picture in picture session
@@ -370,8 +371,8 @@ void VideoPictureInPictureWindowControllerImpl::
         RequestImmersivePlaybackConfirmationCallback callback) {
   WebContentsDelegate* delegate = web_contents()->GetDelegate();
   if (!delegate || !delegate->IsImmersivePlaybackEnabled()) {
-    auto result = blink::mojom::ImmersivePlaybackConfirmationResult::New();
-    result->status = blink::mojom::ImmersivePlaybackConfirmationStatus::kFailed;
+    content::ImmersivePlaybackConfirmationResult result;
+    result.status = content::ImmersivePlaybackConfirmationStatus::kFailed;
     std::move(callback).Run(std::move(result));
     return;
   }

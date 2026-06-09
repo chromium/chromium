@@ -46,6 +46,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/format_duration.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/immersive_playback_options.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -2027,7 +2028,7 @@ void VideoOverlayWindowViews::SetPlaybackControlsVisibility(bool is_visible) {
 }
 
 void VideoOverlayWindowViews::SetImmersiveVideoOptions(
-    blink::mojom::ImmersiveOptionsPtr options) {
+    const content::ImmersiveOptions& options) {
   NOTREACHED();
 }
 

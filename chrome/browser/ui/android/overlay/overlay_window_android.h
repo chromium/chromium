@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
+#include "content/public/browser/immersive_playback_options.h"
 #include "content/public/browser/overlay_window.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
@@ -90,7 +91,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
   void SetPlaybackControlsVisibility(bool is_visible) override {}
   void SetImmersiveVideoOptions(
-      blink::mojom::ImmersiveOptionsPtr options) override {}
+      const content::ImmersiveOptions& options) override {}
 
   virtual void Initialize(
       JNIEnv* env,
@@ -106,7 +107,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void SetCameraStateJava(bool turned_on);
   void SetMediaPositionJava(const media_session::MediaPosition& position);
   void SetImmersiveVideoOptionsJava(
-      const blink::mojom::ImmersiveOptionsPtr& immersive_options);
+      const content::ImmersiveOptions& immersive_options);
 
  protected:
   // Maybe update visible actions. Returns true if update happened.

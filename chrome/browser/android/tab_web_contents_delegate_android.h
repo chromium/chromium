@@ -13,6 +13,7 @@
 #include "components/find_in_page/find_result_observer.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/paint_preview/buildflags/buildflags.h"
+#include "content/public/browser/immersive_playback_options.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "url/origin.h"
@@ -176,9 +177,8 @@ class TabWebContentsDelegateAndroid
 
   bool IsImmersivePlaybackEnabled() const override;
   void RequestImmersivePlaybackConfirmation(
-      base::OnceCallback<
-          void(blink::mojom::ImmersivePlaybackConfirmationResultPtr)> callback)
-      override;
+      base::OnceCallback<void(content::ImmersivePlaybackConfirmationResult)>
+          callback) override;
 
  private:
   std::unique_ptr<device::mojom::GeolocationContext>

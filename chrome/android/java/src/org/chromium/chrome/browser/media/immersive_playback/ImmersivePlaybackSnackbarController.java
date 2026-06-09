@@ -9,9 +9,6 @@ import android.content.Context;
 import org.chromium.base.CancelableRunnable;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.blink.mojom.ImmersivePlaybackConfirmationStatus;
-import org.chromium.blink.mojom.ImmersiveProjectionType;
-import org.chromium.blink.mojom.ImmersiveStereoMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -21,6 +18,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.content_public.browser.ImmersivePlaybackConfirmationStatus;
+import org.chromium.content_public.browser.ImmersiveProjectionType;
+import org.chromium.content_public.browser.ImmersiveStereoMode;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
@@ -184,9 +184,9 @@ public class ImmersivePlaybackSnackbarController implements SnackbarManager.Snac
     }
 
     private void reportResultAndReset(
-            @ImmersivePlaybackConfirmationStatus.EnumType int status,
-            @ImmersiveStereoMode.EnumType int stereoMode,
-            @ImmersiveProjectionType.EnumType int projectionType) {
+            @ImmersivePlaybackConfirmationStatus int status,
+            @ImmersiveStereoMode int stereoMode,
+            @ImmersiveProjectionType int projectionType) {
         cancelPendingShowTask();
         mDialog = null;
         if (mCallback != null) {

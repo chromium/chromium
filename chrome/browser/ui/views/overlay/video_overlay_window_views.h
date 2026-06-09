@@ -14,6 +14,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_widget_fade_animator.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
+#include "content/public/browser/immersive_playback_options.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "ui/display/display.h"
@@ -109,7 +110,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
   void SetPlaybackControlsVisibility(bool is_visible) override;
   void SetImmersiveVideoOptions(
-      blink::mojom::ImmersiveOptionsPtr options) override;
+      const content::ImmersiveOptions& options) override;
 
   // views::Widget:
   bool IsActive() const override;

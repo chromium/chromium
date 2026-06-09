@@ -857,40 +857,39 @@ bool TabWebContentsDelegateAndroid::IsImmersivePlaybackEnabled() const {
 }
 
 void TabWebContentsDelegateAndroid::RequestImmersivePlaybackConfirmation(
-    base::OnceCallback<
-        void(blink::mojom::ImmersivePlaybackConfirmationResultPtr)> callback) {
+    base::OnceCallback<void(content::ImmersivePlaybackConfirmationResult)>
+        callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
   if (obj.is_null()) {
-    auto result = blink::mojom::ImmersivePlaybackConfirmationResult::New();
-    result->status = blink::mojom::ImmersivePlaybackConfirmationStatus::kFailed;
+    content::ImmersivePlaybackConfirmationResult result;
+    result.status = content::ImmersivePlaybackConfirmationStatus::kFailed;
     std::move(callback).Run(std::move(result));
     return;
   }
 
   auto wrapped_callback = base::BindOnce(
-      [](base::OnceCallback<void(
-             blink::mojom::ImmersivePlaybackConfirmationResultPtr)> callback,
+      [](base::OnceCallback<void(content::ImmersivePlaybackConfirmationResult)>
+             callback,
          int packed_result) {
-        auto result_ptr =
-            blink::mojom::ImmersivePlaybackConfirmationResult::New();
+        content::ImmersivePlaybackConfirmationResult result;
 
-        result_ptr->status =
-            static_cast<blink::mojom::ImmersivePlaybackConfirmationStatus>(
+        result.status =
+            static_cast<content::ImmersivePlaybackConfirmationStatus>(
                 packed_result & 0xF);
 
-        if (result_ptr->status ==
-            blink::mojom::ImmersivePlaybackConfirmationStatus::kConfirmed) {
-          result_ptr->options = blink::mojom::ImmersiveOptions::New();
-          result_ptr->options->stereo_mode =
-              static_cast<blink::mojom::ImmersiveStereoMode>(
-                  (packed_result >> 4) & 0xF);
-          result_ptr->options->projection_type =
-              static_cast<blink::mojom::ImmersiveProjectionType>(
+        if (result.status ==
+            content::ImmersivePlaybackConfirmationStatus::kConfirmed) {
+          content::ImmersiveOptions options;
+          options.stereo_mode = static_cast<content::ImmersiveStereoMode>(
+              (packed_result >> 4) & 0xF);
+          options.projection_type =
+              static_cast<content::ImmersiveProjectionType>(
                   (packed_result >> 8) & 0xF);
+          result.options = options;
         }
 
-        std::move(callback).Run(std::move(result_ptr));
+        std::move(callback).Run(std::move(result));
       },
       std::move(callback));
 

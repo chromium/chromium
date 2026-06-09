@@ -217,6 +217,7 @@ source_set("browser_sources") {
     "hid_delegate.h",
     "histogram_fetcher.h",
     "host_zoom_map.h",
+    "immersive_playback_options.h",
     "installability_error.cc",
     "installability_error.h",
     "installed_payment_apps_finder.h",

@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.media.immersive_playback;
 
-import org.chromium.blink.mojom.ImmersiveProjectionType;
-import org.chromium.blink.mojom.ImmersiveStereoMode;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.content_public.browser.ImmersiveProjectionType;
+import org.chromium.content_public.browser.ImmersiveStereoMode;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
 
@@ -17,7 +17,7 @@ public class ImmersiveVideoPlaybackTypeUtils {
 
     /** Maps an {@link ImmersiveProjectionType} to an {@link XrSurfaceEntityShape}. */
     public static @XrSurfaceEntityShape int mapProjectionType(
-            @ImmersiveProjectionType.EnumType int projectionType) {
+            @ImmersiveProjectionType int projectionType) {
         switch (projectionType) {
             case ImmersiveProjectionType.QUAD:
                 return XrSurfaceEntityShape.QUAD;
@@ -33,7 +33,7 @@ public class ImmersiveVideoPlaybackTypeUtils {
 
     /** Maps an {@link ImmersiveStereoMode} to an {@link XrSurfaceEntityStereoMode}. */
     public static @XrSurfaceEntityStereoMode int mapStereoMode(
-            @ImmersiveStereoMode.EnumType int stereoMode) {
+            @ImmersiveStereoMode int stereoMode) {
         switch (stereoMode) {
             case ImmersiveStereoMode.MONO:
                 return XrSurfaceEntityStereoMode.MONO;

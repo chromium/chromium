@@ -119,6 +119,7 @@ robolectric_binary("xr_immersive_playback_junit_tests") {
     "//chrome/android:chrome_java",
     "//chrome/browser/android/lifecycle:java",
     "//components/thin_webview:java",
+    "//content/public/android:content_main_dex_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_test_rules_java",

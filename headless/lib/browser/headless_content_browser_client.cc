@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/immersive_playback_options.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/render_process_host.h"
@@ -50,7 +51,6 @@
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
-#include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/switches.h"
 
@@ -118,7 +118,7 @@ class HeadlessVideoOverlayWindow : public content::VideoOverlayWindow {
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
   void SetPlaybackControlsVisibility(bool is_visible) override {}
   void SetImmersiveVideoOptions(
-      blink::mojom::ImmersiveOptionsPtr options) override {}
+      const content::ImmersiveOptions& options) override {}
 
  private:
   gfx::Size size_;

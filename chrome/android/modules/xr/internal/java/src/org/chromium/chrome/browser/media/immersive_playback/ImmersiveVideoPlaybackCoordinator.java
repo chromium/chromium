@@ -14,8 +14,6 @@ import android.os.Build;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.DeviceInfo;
-import org.chromium.blink.mojom.ImmersiveProjectionType;
-import org.chromium.blink.mojom.ImmersiveStereoMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoControlAutoHideManager;
 import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoControlCoordinator;
@@ -24,6 +22,8 @@ import org.chromium.chrome.browser.media.immersive_playback.components.Immersive
 import org.chromium.chrome.browser.media.immersive_playback.components.ImmersiveVideoPoseManager;
 import org.chromium.chrome.browser.xr.scenecore.XrModule;
 import org.chromium.components.thinwebview.CompositorView;
+import org.chromium.content_public.browser.ImmersiveProjectionType;
+import org.chromium.content_public.browser.ImmersiveStereoMode;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
@@ -40,8 +40,8 @@ public class ImmersiveVideoPlaybackCoordinator
     private final ImmersiveVideoFormatCoordinator mFormatCoordinator;
     private final ImmersiveVideoControlAutoHideManager mAutoHideManager;
     private final ImmersiveVideoPoseManager mPoseManager;
-    private @ImmersiveStereoMode.EnumType int mStereoMode = ImmersiveStereoMode.MONO;
-    private @ImmersiveProjectionType.EnumType int mProjectionType = ImmersiveProjectionType.QUAD;
+    private @ImmersiveStereoMode int mStereoMode = ImmersiveStereoMode.MONO;
+    private @ImmersiveProjectionType int mProjectionType = ImmersiveProjectionType.QUAD;
 
     private static XrSceneCoreSessionManager getXrSceneCoreSessionManager(Activity activity) {
         assert DeviceInfo.isXr();
@@ -109,8 +109,7 @@ public class ImmersiveVideoPlaybackCoordinator
      * @param projectionType The projection type to use.
      */
     public void updateVideoLayout(
-            @ImmersiveStereoMode.EnumType int stereoMode,
-            @ImmersiveProjectionType.EnumType int projectionType) {
+            @ImmersiveStereoMode int stereoMode, @ImmersiveProjectionType int projectionType) {
         mStereoMode = stereoMode;
         mProjectionType = projectionType;
 

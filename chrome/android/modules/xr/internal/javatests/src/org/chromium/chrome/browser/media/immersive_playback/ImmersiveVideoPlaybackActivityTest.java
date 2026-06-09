@@ -36,8 +36,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.blink.mojom.ImmersiveProjectionType;
-import org.chromium.blink.mojom.ImmersiveStereoMode;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.VideoOverlayActivity;
 import org.chromium.chrome.browser.media.VideoOverlayActivityJni;
@@ -46,6 +44,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.content_public.browser.ImmersiveProjectionType;
+import org.chromium.content_public.browser.ImmersiveStereoMode;
 import org.chromium.content_public.browser.overlay_window.PlaybackState;
 
 import java.util.concurrent.Callable;
@@ -74,8 +74,8 @@ public class ImmersiveVideoPlaybackActivityTest {
     private static final float PLAYBACK_RATE = 1.0f;
     private static final int VIDEO_WIDTH = 640;
     private static final int VIDEO_HEIGHT = 360;
-    private static final @ImmersiveStereoMode.EnumType int STEREO_MODE = ImmersiveStereoMode.MONO;
-    private static final @ImmersiveProjectionType.EnumType int PROJECTION_TYPE =
+    private static final @ImmersiveStereoMode int STEREO_MODE = ImmersiveStereoMode.MONO;
+    private static final @ImmersiveProjectionType int PROJECTION_TYPE =
             ImmersiveProjectionType.QUAD;
 
     private final UnguessableToken mNativeWindowToken = UnguessableToken.createForTesting();

@@ -17,8 +17,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UnguessableToken;
-import org.chromium.blink.mojom.ImmersiveProjectionType;
-import org.chromium.blink.mojom.ImmersiveStereoMode;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -26,6 +24,8 @@ import org.chromium.chrome.browser.media.VideoOverlayActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.thinwebview.CompositorView;
+import org.chromium.content_public.browser.ImmersiveProjectionType;
+import org.chromium.content_public.browser.ImmersiveStereoMode;
 import org.chromium.content_public.browser.overlay_window.PlaybackState;
 
 /**
@@ -50,8 +50,8 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
         public @Nullable Long mDurationMs;
         public @Nullable Long mPositionMs;
         public @Nullable Double mPlaybackRate;
-        public @Nullable @ImmersiveStereoMode.EnumType Integer mStereoMode;
-        public @Nullable @ImmersiveProjectionType.EnumType Integer mProjectionType;
+        public @Nullable @ImmersiveStereoMode Integer mStereoMode;
+        public @Nullable @ImmersiveProjectionType Integer mProjectionType;
 
         void apply(ImmersiveVideoPlaybackActivity activity) {
             if (mStereoMode != null || mProjectionType != null) {
@@ -177,8 +177,7 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
 
     @Override
     public void setImmersiveVideoOptions(
-            @ImmersiveStereoMode.EnumType int stereoMode,
-            @ImmersiveProjectionType.EnumType int projectionType) {
+            @ImmersiveStereoMode int stereoMode, @ImmersiveProjectionType int projectionType) {
         if (mPlaybackCoordinator != null) {
             mPlaybackCoordinator.updateVideoLayout(stereoMode, projectionType);
         } else {

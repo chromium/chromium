@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.media.immersive_playback.components;
 
 import android.util.SizeF;
 
-import org.chromium.blink.mojom.ImmersiveProjectionType;
-import org.chromium.blink.mojom.ImmersiveStereoMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoFormatRadioGroup;
+import org.chromium.content_public.browser.ImmersiveProjectionType;
+import org.chromium.content_public.browser.ImmersiveStereoMode;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the format selection panel in immersive video playback. */
@@ -60,8 +60,7 @@ public class ImmersiveVideoFormatMediator {
 
     /** Sets the selected format options in the model. */
     public void setSelectedFormat(
-            @ImmersiveStereoMode.EnumType int stereoMode,
-            @ImmersiveProjectionType.EnumType int projectionType) {
+            @ImmersiveStereoMode int stereoMode, @ImmersiveProjectionType int projectionType) {
         mModel.set(ImmersiveVideoFormatProperties.SELECTED_STEREO_MODE, stereoMode);
         mModel.set(ImmersiveVideoFormatProperties.SELECTED_PROJECTION_TYPE, projectionType);
     }
