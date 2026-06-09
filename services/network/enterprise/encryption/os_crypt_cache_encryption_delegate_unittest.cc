@@ -34,55 +34,51 @@ class TestCacheEncryptionProvider
             /*is_sync_for_unittests=*/true)) {}
   ~TestCacheEncryptionProvider() override = default;
 
-  void GetEncryptor(
-      base::OnceCallback<void(scoped_refptr<os_crypt_async::Encryptor>)>
-          callback) override {
-    if (return_invalid_encryptor_) {
-      std::move(callback).Run(
-          os_crypt_async::GetTestEncryptorWithoutKeysForTesting());
-      return;
-    }
-    if (call_get_encryptor_immediately_) {
-      DoGetEncryptor(std::move(callback));
+  void GetEncryptedCacheEncryptionKey(
+      GetEncryptedCacheEncryptionKeyCallback callback) override {
+    if (call_immediately_) {
+      DoGetEncryptedCacheEncryptionKey(std::move(callback));
     } else {
-      get_encryptor_callback_ = std::move(callback);
+      get_key_callback_ = std::move(callback);
     }
   }
 
-  void GetEncryptedCacheEncryptionKey(
-      GetEncryptedCacheEncryptionKeyCallback callback) override {
+  void DoGetEncryptedCacheEncryptionKey(
+      GetEncryptedCacheEncryptionKeyCallback callback) {
     if (return_empty_key_) {
-      std::move(callback).Run({});
+      std::move(callback).Run(
+          {}, os_crypt_async::GetTestEncryptorWithoutKeysForTesting());
       return;
     }
     oscrypt_async_->GetInstance(base::BindOnce(
         [](GetEncryptedCacheEncryptionKeyCallback callback,
+           bool return_invalid_encryptor,
            scoped_refptr<os_crypt_async::Encryptor> encryptor) {
+          if (return_invalid_encryptor) {
+            std::move(callback).Run(
+                std::vector<uint8_t>{1, 2, 3},
+                os_crypt_async::GetTestEncryptorWithoutKeysForTesting());
+            return;
+          }
           const std::string primary_key_plaintext = "my primary key";
           std::string primary_key_ciphertext;
           CHECK(encryptor->EncryptString(primary_key_plaintext,
                                          &primary_key_ciphertext));
-          std::move(callback).Run(std::vector<uint8_t>(
-              primary_key_ciphertext.begin(), primary_key_ciphertext.end()));
+          std::move(callback).Run(
+              std::vector<uint8_t>(primary_key_ciphertext.begin(),
+                                   primary_key_ciphertext.end()),
+              std::move(encryptor));
         },
-        std::move(callback)));
+        std::move(callback), return_invalid_encryptor_));
   }
 
-  void DoGetEncryptor(
-      base::OnceCallback<void(scoped_refptr<os_crypt_async::Encryptor>)>
-          callback) {
-    oscrypt_async_->GetInstance(std::move(callback));
-  }
-
-  void CallGetEncryptor() {
-    if (get_encryptor_callback_) {
-      DoGetEncryptor(std::move(get_encryptor_callback_));
+  void CallGetEncryptedCacheEncryptionKey() {
+    if (get_key_callback_) {
+      DoGetEncryptedCacheEncryptionKey(std::move(get_key_callback_));
     }
   }
 
-  void set_call_get_encryptor_immediately(bool value) {
-    call_get_encryptor_immediately_ = value;
-  }
+  void set_call_immediately(bool value) { call_immediately_ = value; }
 
   void set_return_invalid_encryptor(bool value) {
     return_invalid_encryptor_ = value;
@@ -97,11 +93,10 @@ class TestCacheEncryptionProvider
 
  private:
   std::unique_ptr<os_crypt_async::OSCryptAsync> oscrypt_async_;
-  bool call_get_encryptor_immediately_ = true;
+  bool call_immediately_ = true;
   bool return_invalid_encryptor_ = false;
   bool return_empty_key_ = false;
-  base::OnceCallback<void(scoped_refptr<os_crypt_async::Encryptor>)>
-      get_encryptor_callback_;
+  GetEncryptedCacheEncryptionKeyCallback get_key_callback_;
   mojo::Receiver<network::mojom::CacheEncryptionProvider> receiver_{this};
 };
 
@@ -147,7 +142,7 @@ TEST_F(OSCryptCacheEncryptionDelegateTest, InitAfterInit) {
 }
 
 TEST_F(OSCryptCacheEncryptionDelegateTest, InitWhileInitializing) {
-  provider_.set_call_get_encryptor_immediately(false);
+  provider_.set_call_immediately(false);
   base::test::TestFuture<net::Error> future1;
   base::test::TestFuture<net::Error> future2;
   delegate_.Init(future1.GetCallback());
@@ -156,7 +151,7 @@ TEST_F(OSCryptCacheEncryptionDelegateTest, InitWhileInitializing) {
   // Ensure Init() Mojo calls reach the provider.
   task_environment_.RunUntilIdle();
 
-  provider_.CallGetEncryptor();
+  provider_.CallGetEncryptedCacheEncryptionKey();
   EXPECT_EQ(net::OK, future1.Get());
   EXPECT_EQ(net::OK, future2.Get());
 }

@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/barrier_closure.h"
 #include "base/check_is_test.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -115,47 +114,25 @@ void OSCryptCacheEncryptionDelegate::Init(
       base::BindOnce(&OSCryptCacheEncryptionDelegate::OnDisconnect,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  auto barrier_closure = base::BarrierClosure(
-      2, base::BindOnce(&OSCryptCacheEncryptionDelegate::InitCallback,
-                        weak_ptr_factory_.GetWeakPtr()));
-
-  remote_->GetEncryptor(
-      base::BindOnce(&OSCryptCacheEncryptionDelegate::OnEncryptorReceived,
-                     weak_ptr_factory_.GetWeakPtr(), barrier_closure));
-
   remote_->GetEncryptedCacheEncryptionKey(
-      base::BindOnce(&OSCryptCacheEncryptionDelegate::OnCacheKeyReceived,
-                     weak_ptr_factory_.GetWeakPtr(), barrier_closure));
+      base::BindOnce(&OSCryptCacheEncryptionDelegate::OnKeyAndEncryptorReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void OSCryptCacheEncryptionDelegate::OnEncryptorReceived(
-    base::OnceClosure done_closure,
+void OSCryptCacheEncryptionDelegate::OnKeyAndEncryptorReceived(
+    const std::vector<uint8_t>& key,
     scoped_refptr<os_crypt_async::Encryptor> encryptor) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (state_ == State::kInitializing) {
-    instance_ = std::move(encryptor);
-  }
-  std::move(done_closure).Run();
-}
-
-void OSCryptCacheEncryptionDelegate::OnCacheKeyReceived(
-    base::OnceClosure done_closure,
-    const std::vector<uint8_t>& key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (state_ == State::kInitializing) {
-    encrypted_primary_key_ = key;
-  }
-  std::move(done_closure).Run();
-}
-
-void OSCryptCacheEncryptionDelegate::InitCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ != State::kInitializing) {
     // OnDisconnect() was called during initialization. Callbacks have been
     // notified of failure already.
     return;
   }
-  if (!instance_->IsEncryptionAvailable() || encrypted_primary_key_.empty()) {
+  encrypted_primary_key_ = key;
+  instance_ = std::move(encryptor);
+
+  if (!instance_ || !instance_->IsEncryptionAvailable() ||
+      encrypted_primary_key_.empty()) {
     state_ = State::kUninitialized;
     instance_.reset();
     callbacks_.Notify(net::ERR_FAILED);

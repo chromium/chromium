@@ -68,34 +68,6 @@ class CacheEncryptionProviderImplTest : public testing::Test {
                                         base::DoNothing()};
 };
 
-TEST_F(CacheEncryptionProviderImplTest, GetEncryptor) {
-  scoped_refptr<os_crypt_async::Encryptor> returned_encryptor;
-  base::RunLoop run_loop;
-  EXPECT_CALL(os_crypt_async_, GetInstance)
-      .WillOnce([&](base::OnceCallback<void(
-                        scoped_refptr<os_crypt_async::Encryptor>)> cb,
-                    os_crypt_async::Encryptor::Option option) {
-        os_crypt_async::Encryptor::KeyRing keys;
-        keys.emplace("test_provider",
-                     os_crypt_async::Encryptor::Key(
-                         std::vector<uint8_t>(32, 1),
-                         os_crypt_async::mojom::Algorithm::kAES256GCM));
-        std::move(cb).Run(base::MakeRefCounted<TestEncryptor>(
-            std::move(keys), "test_provider", "test_provider"));
-      });
-
-  mojo::Remote<network::mojom::CacheEncryptionProvider> remote(
-      provider_.BindNewRemote());
-
-  remote->GetEncryptor(base::BindLambdaForTesting(
-      [&](scoped_refptr<os_crypt_async::Encryptor> encryptor_arg) {
-        returned_encryptor = std::move(encryptor_arg);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-
-  EXPECT_TRUE(returned_encryptor);
-}
 
 TEST_F(CacheEncryptionProviderImplTest,
        GetEncryptedCacheEncryptionKey_KeyExists) {
@@ -131,10 +103,13 @@ TEST_F(CacheEncryptionProviderImplTest,
   mojo::Remote<network::mojom::CacheEncryptionProvider> remote(
       provider.BindNewRemote());
 
-  base::test::TestFuture<const std::vector<uint8_t>&> future;
+  base::test::TestFuture<const std::vector<uint8_t>&,
+                         scoped_refptr<os_crypt_async::Encryptor>>
+      future;
   remote->GetEncryptedCacheEncryptionKey(future.GetCallback());
-  std::vector<uint8_t> returned_key = future.Take();
+  auto [returned_key, returned_encryptor] = future.Take();
 
+  EXPECT_TRUE(returned_encryptor);
   EXPECT_EQ(returned_key, *key);
 }
 
@@ -178,11 +153,15 @@ TEST_F(CacheEncryptionProviderImplTest,
   mojo::Remote<network::mojom::CacheEncryptionProvider> remote(
       provider.BindNewRemote());
 
-  base::test::TestFuture<const std::vector<uint8_t>&> future;
+  base::test::TestFuture<const std::vector<uint8_t>&,
+                         scoped_refptr<os_crypt_async::Encryptor>>
+      future;
   remote->GetEncryptedCacheEncryptionKey(future.GetCallback());
-  std::vector<uint8_t> returned_key = future.Take();
+  auto [returned_key, returned_encryptor] = future.Take();
 
   run_loop.Run();
+
+  EXPECT_TRUE(returned_encryptor);
 
   // A new key should have been generated and returned.
   EXPECT_FALSE(returned_key.empty());
@@ -219,10 +198,13 @@ TEST_F(CacheEncryptionProviderImplTest,
   mojo::Remote<network::mojom::CacheEncryptionProvider> remote(
       provider.BindNewRemote());
 
-  base::test::TestFuture<const std::vector<uint8_t>&> future;
+  base::test::TestFuture<const std::vector<uint8_t>&,
+                         scoped_refptr<os_crypt_async::Encryptor>>
+      future;
   remote->GetEncryptedCacheEncryptionKey(future.GetCallback());
-  std::vector<uint8_t> returned_key = future.Take();
+  auto [returned_key, returned_encryptor] = future.Take();
 
+  EXPECT_TRUE(returned_encryptor);
   EXPECT_FALSE(returned_key.empty());
   EXPECT_EQ(returned_key, stored_key);
 
@@ -284,12 +266,15 @@ TEST_F(CacheEncryptionProviderImplTest,
   mojo::Remote<network::mojom::CacheEncryptionProvider> remote(
       provider.BindNewRemote());
 
-  base::test::TestFuture<const std::vector<uint8_t>&> future;
+  base::test::TestFuture<const std::vector<uint8_t>&,
+                         scoped_refptr<os_crypt_async::Encryptor>>
+      future;
   remote->GetEncryptedCacheEncryptionKey(future.GetCallback());
-  std::vector<uint8_t> returned_key = future.Take();
+  auto [returned_key, returned_encryptor] = future.Take();
   run_loop.Run();
 
   // The key should have been re-encrypted with the new provider and stored.
+  EXPECT_TRUE(returned_encryptor);
   EXPECT_NE(returned_key, *old_encrypted_key);
   EXPECT_EQ(returned_key, stored_key);
 

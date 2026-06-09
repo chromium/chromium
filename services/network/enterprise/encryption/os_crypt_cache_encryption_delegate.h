@@ -62,11 +62,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OSCryptCacheEncryptionDelegate
 
  private:
   // Callbacks for initialization
-  void OnEncryptorReceived(base::OnceClosure done_closure,
-                           scoped_refptr<os_crypt_async::Encryptor> encryptor);
-  void OnCacheKeyReceived(base::OnceClosure done_closure,
-                          const std::vector<uint8_t>& key);
-  void InitCallback();
+  void OnKeyAndEncryptorReceived(
+      const std::vector<uint8_t>& key,
+      scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   void OnDisconnect();
 

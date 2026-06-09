@@ -12,14 +12,14 @@ import "components/os_crypt/async/common/encryptor.mojom";
 // operations, such as the Network Service during network service context
 // initialization.
 interface CacheEncryptionProvider {
-  // Obtain an instance of Encryptor that can be used for cache encryption.
-  GetEncryptor() => (os_crypt_async.mojom.Encryptor encryptor);
-
-  // Obtain the encrypted cache encryption key from the profile preferences.
-  // Create one if it doesn't exist.
-  // The key is encrypted with the OSCryptAsync instance that is used for the
-  // cache encryption.
+  // Obtain the encrypted cache encryption key from the profile preferences
+  // alongside the Encryptor instance that can be used for cache encryption.
+  // Create a new key if it doesn't exist.
+  // The key is encrypted with the OSCryptAsync instance, returned in this
+  // function, and used for the cache encryption.
   // The key could be re-encrypted and re-stored if os_crypt signals so (key was
   // rotated).
-  GetEncryptedCacheEncryptionKey() => (array<uint8> encrypted_key);
+  GetEncryptedCacheEncryptionKey()
+      => (array<uint8> encrypted_key,
+          os_crypt_async.mojom.Encryptor encryptor);
 };

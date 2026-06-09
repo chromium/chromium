@@ -41,9 +41,8 @@ class CacheEncryptionProviderImpl
       delete;
 
   // mojom::CacheEncryptionProvider implementation.
-  void GetEncryptor(GetEncryptorCallback callback) override;
-
-  // Returns the encrypted cache encryption key from the profile preferences.
+  // Returns the encrypted cache encryption key from the profile preferences
+  // alongside the Encryptor.
   // Create one if it doesn't exist.
   void GetEncryptedCacheEncryptionKey(
       GetEncryptedCacheEncryptionKeyCallback callback) override;

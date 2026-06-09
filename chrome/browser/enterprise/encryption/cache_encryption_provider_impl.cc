@@ -27,10 +27,6 @@ CacheEncryptionProviderImpl::CacheEncryptionProviderImpl(
 
 CacheEncryptionProviderImpl::~CacheEncryptionProviderImpl() = default;
 
-void CacheEncryptionProviderImpl::GetEncryptor(GetEncryptorCallback callback) {
-  os_crypt_async_->GetInstance(std::move(callback));
-}
-
 void CacheEncryptionProviderImpl::GetEncryptedCacheEncryptionKey(
     GetEncryptedCacheEncryptionKeyCallback callback) {
   os_crypt_async_->GetInstance(
@@ -121,7 +117,7 @@ void CacheEncryptionProviderImpl::OnEncryptorReadyForKey(
   // In case key obtaining failed, return an empty key. It will result in
   // cache initialization failure and thus cache will be disabled.
   // TODO: crbug.com/475800166 - Log errors in UMA.
-  std::move(callback).Run(encrypted_primary_key_);
+  std::move(callback).Run(encrypted_primary_key_, std::move(encryptor));
 }
 
 mojo::PendingRemote<
