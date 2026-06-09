@@ -32,27 +32,20 @@
 }
 
 - (void)execute {
-  if (self.isColdStart) {
-    [self executeFromColdStart];
-  } else {
-    [self executeFromWarmStart];
-  }
-}
-
-#pragma mark - Private
-
-- (void)executeFromWarmStart {
   SceneState* sceneState = [self sceneStateFromSessionID];
   CHECK(sceneState);
 
-  NSSet* URLContextSet = [NSSet setWithObject:_URLContext];
-  // If the SystemIdentityManager handles the URL context, return early to avoid
-  // opening the URL twice.
-  if (GetApplicationContext()
-          ->GetSystemIdentityManager()
-          ->HandleSessionOpenURLContexts(sceneState.scene, URLContextSet)) {
-    return;
+  if (!self.isColdStart) {
+    NSSet* URLContextSet = [NSSet setWithObject:_URLContext];
+    // If the SystemIdentityManager handles the URL context, return early to
+    // avoid opening the URL twice.
+    if (GetApplicationContext()
+            ->GetSystemIdentityManager()
+            ->HandleSessionOpenURLContexts(sceneState.scene, URLContextSet)) {
+      return;
+    }
   }
+
   ProfileState* profileState = sceneState.profileState;
   URLOpenerParams* options =
       [[URLOpenerParams alloc] initWithUIOpenURLContext:_URLContext];
@@ -65,21 +58,7 @@
                   initStage:profileState.initStage];
 }
 
-- (void)executeFromColdStart {
-  SceneState* sceneState = [self sceneStateFromSessionID];
-  CHECK(sceneState);
-
-  URLOpenerParams* options =
-      [[URLOpenerParams alloc] initWithUIOpenURLContext:_URLContext];
-  ProfileState* profileState = sceneState.profileState;
-
-  [URLOpener handleLaunchOptions:options
-                       tabOpener:sceneState.controller
-           connectionInformation:sceneState.controller
-              startupInformation:profileState.startupInformation
-                     prefService:profileState.profile->GetPrefs()
-                       initStage:profileState.initStage];
-}
+#pragma mark - Private
 
 - (void)extractGaiaID {
   NSURL* URL = _URLContext.URL;
