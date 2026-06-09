@@ -8,13 +8,16 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "media/base/async_destroy_video_encoder.h"
 #include "media/base/encoder_status.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder.h"
@@ -72,7 +75,6 @@ std::unique_ptr<media::VideoEncoder> CreateSoftwareEncoder(VideoCodec codec) {
       NOTREACHED() << "Unhandled codec. value=" << std::to_underlying(codec);
   }
 }
-
 
 // Must be called on the ENCODER thread, which resolves to VIDEO for hardware
 // encoding, and MAIN for software encoding.

@@ -282,6 +282,11 @@ void ClearHardwareCodecDenyListForTesting() {
 VideoCodecProfile ToProfile(VideoCodec codec) {
   switch (codec) {
     case VideoCodec::kH264:
+#if BUILDFLAG(IS_MAC)
+      if (base::FeatureList::IsEnabled(media::kCastMacForceBaselineProfile)) {
+        return H264PROFILE_BASELINE;
+      }
+#endif
       return H264PROFILE_MAIN;
     case VideoCodec::kHEVC:
       return HEVCPROFILE_MAIN;

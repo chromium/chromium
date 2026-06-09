@@ -51,6 +51,8 @@ static const std::vector<media::VideoEncodeAccelerator::SupportedProfile>
     kDefaultSupportedProfiles = {
         media::VideoEncodeAccelerator::SupportedProfile(H264PROFILE_MAIN,
                                                         kDefaultSize),
+        media::VideoEncodeAccelerator::SupportedProfile(H264PROFILE_BASELINE,
+                                                        kDefaultSize),
         media::VideoEncodeAccelerator::SupportedProfile(VP8PROFILE_ANY,
                                                         kDefaultSize),
         media::VideoEncodeAccelerator::SupportedProfile(VP9PROFILE_PROFILE0,

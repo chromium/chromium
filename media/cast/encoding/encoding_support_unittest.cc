@@ -88,8 +88,15 @@ TEST(EncodingSupportTest, GetCodecParameterString) {
             "hev1.1.6.L120.B0");
   EXPECT_EQ(GetCodecParameterString(VideoCodec::kAV1, k1080p, 30.0),
             "av01.0.08M.08");
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(GetCodecParameterString(VideoCodec::kH264, k1080p, 30.0),
+            base::FeatureList::IsEnabled(media::kCastMacForceBaselineProfile)
+                ? "avc1.420028"
+                : "avc1.4d0028");
+#else
   EXPECT_EQ(GetCodecParameterString(VideoCodec::kH264, k1080p, 30.0),
             "avc1.4d0028");
+#endif
 
   // 1080p60 tests.
   EXPECT_EQ(GetCodecParameterString(VideoCodec::kVP9, k1080p, 60.0),
@@ -98,8 +105,15 @@ TEST(EncodingSupportTest, GetCodecParameterString) {
             "hev1.1.6.L123.B0");
   EXPECT_EQ(GetCodecParameterString(VideoCodec::kAV1, k1080p, 60.0),
             "av01.0.09M.08");
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(GetCodecParameterString(VideoCodec::kH264, k1080p, 60.0),
+            base::FeatureList::IsEnabled(media::kCastMacForceBaselineProfile)
+                ? "avc1.42002a"
+                : "avc1.4d002a");
+#else
   EXPECT_EQ(GetCodecParameterString(VideoCodec::kH264, k1080p, 60.0),
             "avc1.4d002a");
+#endif
 }
 
 }  // namespace media::cast::encoding_support

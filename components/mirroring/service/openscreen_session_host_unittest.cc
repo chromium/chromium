@@ -1270,7 +1270,15 @@ TEST_F(OpenscreenSessionHostTest, CodecParameterInOffer) {
   bool found_h264 = false;
   for (const auto& stream : offer.video_streams) {
     if (stream.codec == openscreen::cast::VideoCodec::kH264) {
+#if BUILDFLAG(IS_MAC)
+      if (base::FeatureList::IsEnabled(media::kCastMacForceBaselineProfile)) {
+        EXPECT_EQ(stream.stream.codec_parameter, "avc1.420028");
+      } else {
+        EXPECT_EQ(stream.stream.codec_parameter, "avc1.4d0028");
+      }
+#else
       EXPECT_EQ(stream.stream.codec_parameter, "avc1.4d0028");
+#endif
       found_h264 = true;
     } else if (stream.codec == openscreen::cast::VideoCodec::kVp9) {
       EXPECT_EQ(stream.stream.codec_parameter, "vp09.00.40.08");
