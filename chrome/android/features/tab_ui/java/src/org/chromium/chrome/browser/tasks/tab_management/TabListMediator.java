@@ -806,7 +806,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
                     // For the tab switcher update the tab card correctly.
                     int movedTabId = movedTab.getId();
-                    if (mLayoutType != TabListLayoutType.FLAT && mThumbnailProvider != null) {
+                    if (mLayoutType == TabListLayoutType.GROUPED && mThumbnailProvider != null) {
                         int indexInModel = getIndexForTabIdWithRelatedTabs(movedTabId);
                         if (indexInModel == TabModel.INVALID_TAB_INDEX) return;
 

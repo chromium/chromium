@@ -226,6 +226,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /** Tests for {@link TabListMediator}. */
+// TODO(crbug.com/509226293): Fix inconsistent test naming in this file. Tests currently named
+// after TabListMediatorType (e.g. TabGridDialog, TabSwitcher, VerticalTabs) should be renamed
+// to use TabListLayoutType (Flat, Grouped, Nested) for consistency with underlying architecture.
+// Additionally, relocate all scattered private helper methods to the bottom of the file.
 @SuppressWarnings({
     "ArraysAsListWithZeroOrOneArgument",
     "ResultOfMethodCallIgnored",
@@ -2306,7 +2310,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabMovementWithinGroup_TabGridDialog_Forward() {
+    public void tabMovementWithinGroup_FlatLayout_Forward() {
         setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
 
         // Assume that moveTab in TabModel is finished.
@@ -2327,7 +2331,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabMovementWithinGroup_TabGridDialog_Backward() {
+    public void tabMovementWithinGroup_FlatLayout_Backward() {
         setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
 
         // Assume that moveTab in TabModel is finished.
@@ -2348,7 +2352,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabMovementWithinGroup_TabSwitcher_Forward() {
+    public void tabMovementWithinGroup_GroupedLayout_Forward() {
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
 
         // Setup three tabs with groups (mTab1, mTab2) and tab3.
@@ -2404,7 +2408,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabMovementWithinGroup_TabSwitcher_Backward() {
+    public void tabMovementWithinGroup_GroupedLayout_Backward() {
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
 
         // Setup three tabs with groups (mTab1, mTab2) and tab3.
@@ -2463,7 +2467,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabMovementWithinGroup_TabSwitcher_SelectedNotMoved() {
+    public void tabMovementWithinGroup_GroupedLayout_SelectedNotMoved() {
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
 
         // Setup three tabs grouped together.
@@ -2519,7 +2523,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabMovementWithinGroup_TabSwitcher_SelectedMoved() {
+    public void tabMovementWithinGroup_GroupedLayout_SelectedMoved() {
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
 
         // Setup three tabs grouped together.
@@ -2572,6 +2576,44 @@ public class TabListMediatorUnitTest {
         // TODO(crbug.com/40242432): Make this an assertion.
         // Thumbnail order was: tab1, tab2, tab3. Now: tab1, tab3, tab2.
         assertNotEquals(tab1Fetcher, mModelList.get(0).model.get(TabProperties.THUMBNAIL_FETCHER));
+    }
+
+    @Test
+    public void tabMovementWithinGroup_NestedLayout_Forward() {
+        Tab tab3 = setUpNestedLayoutWithTwoTabGroup(/* isCollapsed= */ false);
+
+        // Assume that moveTab in TabModel is finished.
+        doReturn(mTab1).when(mTabModel).getTabAt(POSITION2);
+        doReturn(tab3).when(mTabModel).getTabAt(POSITION1);
+
+        assertEquals(3, mModelList.size());
+        assertEquals(TAB1_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB3_ID, mModelList.get(2).model.get(TabProperties.TAB_ID));
+
+        mTabGroupObserverCaptor.getValue().didMoveWithinGroup(mTab1, POSITION1, POSITION2);
+
+        assertEquals(3, mModelList.size());
+        assertEquals(TAB3_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB1_ID, mModelList.get(2).model.get(TabProperties.TAB_ID));
+    }
+
+    @Test
+    public void tabMovementWithinGroup_NestedLayout_Backward() {
+        Tab tab3 = setUpNestedLayoutWithTwoTabGroup(/* isCollapsed= */ false);
+
+        // Assume that moveTab in TabModel is finished.
+        doReturn(mTab1).when(mTabModel).getTabAt(POSITION2);
+        doReturn(tab3).when(mTabModel).getTabAt(POSITION1);
+
+        assertEquals(3, mModelList.size());
+        assertEquals(TAB1_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB3_ID, mModelList.get(2).model.get(TabProperties.TAB_ID));
+
+        mTabGroupObserverCaptor.getValue().didMoveWithinGroup(tab3, POSITION2, POSITION1);
+
+        assertEquals(3, mModelList.size());
+        assertEquals(TAB3_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB1_ID, mModelList.get(2).model.get(TabProperties.TAB_ID));
     }
 
     @Test
