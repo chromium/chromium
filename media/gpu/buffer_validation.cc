@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <ranges>
 
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
@@ -63,10 +64,10 @@ bool VerifyGpuMemoryBufferHandle(
     return false;
   }
   // YV12 is used by ARC++ on MTK8173. Consider removing it.
-  if (pixel_format != PIXEL_FORMAT_I420 && pixel_format != PIXEL_FORMAT_YV12 &&
-      pixel_format != PIXEL_FORMAT_NV12 &&
-      pixel_format != PIXEL_FORMAT_P010LE &&
-      pixel_format != PIXEL_FORMAT_ARGB) {
+  VideoPixelFormat kSupportedFormats[] = {
+      PIXEL_FORMAT_I420,   PIXEL_FORMAT_YV12, PIXEL_FORMAT_NV12,
+      PIXEL_FORMAT_P010LE, PIXEL_FORMAT_ARGB, PIXEL_FORMAT_XR30};
+  if (!std::ranges::contains(kSupportedFormats, pixel_format)) {
     LOG(ERROR) << "Unsupported: " << pixel_format;
     return false;
   }
