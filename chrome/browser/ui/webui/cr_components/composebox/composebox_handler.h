@@ -111,7 +111,6 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
       ClearSessionHandleCallback clear_session_callback);
 
  private:
-  raw_ptr<content::WebContents> web_contents_;
   ClearSessionHandleCallback clear_session_callback_;
 
   // These are located at the end of the list of member variables to ensure the

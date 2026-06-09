@@ -93,6 +93,7 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver,
   // SearchboxHandler::Delegate:
   void OnEmbeddedPermissionDialogChanged(bool is_showing,
                                          const gfx::Size& prompt_size) override;
+  OmniboxController* GetOmniboxController() override;
 
   views::Widget* get_widget_for_testing() { return widget_.get(); }
 

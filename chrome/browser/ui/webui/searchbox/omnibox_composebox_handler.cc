@@ -76,6 +76,27 @@ class OmniboxPopupComposeboxClient : public ContextualOmniboxClient {
 
 }  // namespace
 
+void OmniboxComposeboxHandler::OpenUrl(
+    GURL url,
+    const WindowOpenDisposition disposition) {
+  // The voice permission dialog dirties the OS focus history, especially in
+  // native Windows OS. Explicitly close the Omnibox popup and claim
+  // focus for the WebContents to ensure the Omnibox does not reopen in new
+  // page.
+  if (omnibox_delegate_) {
+    OmniboxController* omnibox_controller =
+        omnibox_delegate_->GetOmniboxController();
+    if (omnibox_controller) {
+      omnibox_controller->StopAutocomplete(/*clear_result=*/true);
+      if (web_contents_) {
+        web_contents_->Focus();
+      }
+    }
+  }
+
+  ComposeboxHandler::OpenUrl(url, disposition);
+}
+
 OmniboxComposeboxHandler::OmniboxComposeboxHandler(
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
     mojo::PendingRemote<composebox::mojom::Page> pending_page,

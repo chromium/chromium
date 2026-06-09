@@ -1498,3 +1498,7 @@ void SearchboxHandler::GetPageClassification(
   std::move(callback).Run(::metrics::OmniboxEventProto::PageClassification_Name(
       classification_enum));
 }
+
+OmniboxController* SearchboxHandler::Delegate::GetOmniboxController() {
+  return nullptr;
+}
