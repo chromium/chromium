@@ -5,15 +5,16 @@
 #include "chrome/browser/private_insights/private_insights_service_factory.h"
 
 #include <memory>
-#include <utility>
 
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
+#include "base/fuzzing_buildflags.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/metrics/private_metrics/private_insights/private_insights_features.h"
-#include "components/metrics/private_metrics/private_insights/private_insights_service.h"
-#include "content/public/browser/storage_partition.h"
+
+#if !BUILDFLAG(USE_FUZZING_ENGINE)
+#include "components/metrics/private_metrics/private_insights/private_insights_features.h"  // nogncheck
+#include "components/metrics/private_metrics/private_insights/private_insights_service.h"  // nogncheck
+#endif
 
 namespace private_insights {
 
@@ -26,8 +27,12 @@ PrivateInsightsServiceFactory* PrivateInsightsServiceFactory::GetInstance() {
 // static
 PrivateInsightsService* PrivateInsightsServiceFactory::GetForProfile(
     Profile* profile) {
+#if BUILDFLAG(USE_FUZZING_ENGINE)
+  return nullptr;
+#else
   return static_cast<PrivateInsightsService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
+#endif
 }
 
 PrivateInsightsServiceFactory::PrivateInsightsServiceFactory()
@@ -45,10 +50,14 @@ PrivateInsightsServiceFactory::~PrivateInsightsServiceFactory() = default;
 std::unique_ptr<KeyedService>
 PrivateInsightsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+#if BUILDFLAG(USE_FUZZING_ENGINE)
+  return nullptr;
+#else
   if (!base::FeatureList::IsEnabled(kPrivateInsightsFeature)) {
     return nullptr;
   }
   return std::make_unique<PrivateInsightsService>();
+#endif
 }
 
 bool PrivateInsightsServiceFactory::ServiceIsCreatedWithBrowserContext() const {
