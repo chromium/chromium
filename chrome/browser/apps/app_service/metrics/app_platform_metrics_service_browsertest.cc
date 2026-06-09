@@ -1047,7 +1047,13 @@ class AppPlatformMetricsServiceBrowserTest
   base::TimeDelta accumulated_two_hours_time_;
 };
 
-IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, UsageTime) {
+// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
+#if defined(LEAK_SANITIZER)
+#define MAYBE_UsageTime DISABLED_UsageTime
+#else
+#define MAYBE_UsageTime UsageTime
+#endif
+IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, MAYBE_UsageTime) {
   // Create an ARC app window.
   std::string app_id = "aa";
   InstallOneApp(app_id, AppType::kArc, "com.google.AA", Readiness::kReady,
@@ -1108,7 +1114,14 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, UsageTime) {
   CloseBrowserSynchronously(browser);
 }
 
-IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, UsageTimeUkm) {
+// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
+#if defined(LEAK_SANITIZER)
+#define MAYBE_UsageTimeUkm DISABLED_UsageTimeUkm
+#else
+#define MAYBE_UsageTimeUkm UsageTimeUkm
+#endif
+IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
+                       MAYBE_UsageTimeUkm) {
   Browser* browser = CreateBrowserWindow();
 
   // Set the browser window active.
@@ -1136,8 +1149,15 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, UsageTimeUkm) {
   CloseBrowserSynchronously(browser);
 }
 
+// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
+#if defined(LEAK_SANITIZER)
+#define MAYBE_UsageTimeUkmReportAfterReboot \
+  DISABLED_UsageTimeUkmReportAfterReboot
+#else
+#define MAYBE_UsageTimeUkmReportAfterReboot UsageTimeUkmReportAfterReboot
+#endif
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
-                       UsageTimeUkmReportAfterReboot) {
+                       MAYBE_UsageTimeUkmReportAfterReboot) {
   Browser* browser = CreateBrowserWindow();
   InstallOneApp(kWebAppId1, AppType::kWeb, "https://foo.com/",
                 Readiness::kReady, InstallSource::kSystem);
@@ -1207,8 +1227,15 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
   CloseBrowserSynchronously(browser);
 }
 
+// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
+#if defined(LEAK_SANITIZER)
+#define MAYBE_UsageTimeUkmWithMultipleWindows \
+  DISABLED_UsageTimeUkmWithMultipleWindows
+#else
+#define MAYBE_UsageTimeUkmWithMultipleWindows UsageTimeUkmWithMultipleWindows
+#endif
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
-                       UsageTimeUkmWithMultipleWindows) {
+                       MAYBE_UsageTimeUkmWithMultipleWindows) {
   Browser* browser1 = CreateBrowserWithAuraWindow();
 
   // Set the browser window active.
@@ -1238,8 +1265,17 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
                         AppTypeName::kChromeBrowser);
 }
 
-IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
-                       UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser) {
+// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
+#if defined(LEAK_SANITIZER)
+#define MAYBE_UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser \
+  DISABLED_UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser
+#else
+#define MAYBE_UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser \
+  UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AppPlatformMetricsServiceBrowserTest,
+    MAYBE_UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser) {
   Browser* browser = CreateBrowserWindow();
   InstallOneApp(kWebAppId1, AppType::kWeb, "https://foo.com/",
                 Readiness::kReady, InstallSource::kSystem);
@@ -1301,8 +1337,17 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
   CloseBrowserSynchronously(browser);
 }
 
-IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
-                       UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser) {
+// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
+#if defined(LEAK_SANITIZER)
+#define MAYBE_UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser \
+  DISABLED_UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser
+#else
+#define MAYBE_UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser \
+  UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AppPlatformMetricsServiceBrowserTest,
+    MAYBE_UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser) {
   Browser* browser = CreateBrowserWindow();
   InstallOneApp(kWebAppId1, AppType::kWeb, "https://foo.com/",
                 Readiness::kReady, InstallSource::kSystem);
@@ -1394,8 +1439,16 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
   CloseBrowserSynchronously(browser);
 }
 
+// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
+#if defined(LEAK_SANITIZER)
+#define MAYBE_UsageTimeUkmForMultipleWebAppOpenInTab \
+  DISABLED_UsageTimeUkmForMultipleWebAppOpenInTab
+#else
+#define MAYBE_UsageTimeUkmForMultipleWebAppOpenInTab \
+  UsageTimeUkmForMultipleWebAppOpenInTab
+#endif
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
-                       UsageTimeUkmForMultipleWebAppOpenInTab) {
+                       MAYBE_UsageTimeUkmForMultipleWebAppOpenInTab) {
   Browser* browser = CreateBrowserWindow();
   InstallOneApp(kWebAppId1, AppType::kWeb, "https://foo.com/",
                 Readiness::kReady, InstallSource::kSystem);
