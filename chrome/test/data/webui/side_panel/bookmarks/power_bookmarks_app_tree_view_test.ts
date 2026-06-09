@@ -8,7 +8,6 @@ import {SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/book
 import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import {NESTED_BOOKMARKS_BASE_MARGIN, NESTED_BOOKMARKS_MARGIN_PER_DEPTH} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
-import type {DisplayItem} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/price_tracking.mojom-webui.js';
 import {PriceTrackingBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/price_tracking_browser_proxy.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
@@ -435,8 +434,7 @@ suite('TreeView', () => {
     await microtasksFinished();
 
     // Verify nested bookmarks are no longer in display list
-    const items =
-        (powerBookmarksApp.$.bookmarksList.$.list.items as DisplayItem[]);
+    const items = powerBookmarksApp.$.bookmarksList.$.list.items;
     assertFalse(items.some(item => item.bookmark.id === '6'));
 
     // And verify visual hidden state in DOM
@@ -488,8 +486,7 @@ suite('TreeView', () => {
     await microtasksFinished();
     assertFalse(
         folderRow.toggleExpand, 'Folder should be collapsed after ArrowLeft');
-    const items =
-        (powerBookmarksApp.$.bookmarksList.$.list.items as DisplayItem[]);
+    const items = powerBookmarksApp.$.bookmarksList.$.list.items;
     assertFalse(
         items.some(item => item.bookmark.id === '6'),
         'Child bookmark should not be in display list');
@@ -536,7 +533,7 @@ suite('TreeView', () => {
 
         assertEquals(
             childRow,
-            powerBookmarksApp.$.bookmarksList.shadowRoot!.activeElement,
+            powerBookmarksApp.$.bookmarksList.shadowRoot.activeElement,
             'Focus should move to the first child');
       });
 
@@ -586,7 +583,7 @@ suite('TreeView', () => {
     await microtasksFinished();
 
     assertEquals(
-        childRow, powerBookmarksApp.$.bookmarksList.shadowRoot!.activeElement,
+        childRow, powerBookmarksApp.$.bookmarksList.shadowRoot.activeElement,
         'Focus should move to the first child');
 
     childRow.dispatchEvent(ARROW_LEFT_EVENT);
@@ -595,7 +592,7 @@ suite('TreeView', () => {
 
     assertEquals(
         folderRow.id,
-        powerBookmarksApp.$.bookmarksList.shadowRoot!.activeElement!.id,
+        powerBookmarksApp.$.bookmarksList.shadowRoot.activeElement!.id,
         'Focus should move to the parent row');
   });
 
@@ -657,7 +654,7 @@ suite('TreeView', () => {
 
     // Validate index order before move in flat display list
     const list = powerBookmarksApp.$.bookmarksList.$.list;
-    let items = list.items as DisplayItem[];
+    let items = list.items;
     const indexOf5 = items.findIndex(item => item.bookmark.id === '5');
     let indexOf6 = items.findIndex(item => item.bookmark.id === '6');
     let indexOf22 = items.findIndex(item => item.bookmark.id === '22');
@@ -677,7 +674,7 @@ suite('TreeView', () => {
         'Bookmark 22 should be in folder 6 after move');
 
     // Validate index order after move in flat display list
-    items = list.items as DisplayItem[];
+    items = list.items;
     indexOf6 = items.findIndex(item => item.bookmark.id === '6');
     indexOf22 = items.findIndex(item => item.bookmark.id === '22');
     assertTrue(

@@ -1,0 +1,37 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//bookmarks-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #include=cr-hidden-style-lit sp-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  --back-button-size: 14px;
+}
+
+:host([drop-position='into']) power-bookmark-row {
+  background: var(--cr-hover-background-color);
+}
+
+sp-empty-state {
+  padding-top: 40px;
+}
+
+#folderEmptyState {
+  padding-bottom: 40px;
+}
+
+#scroller {
+  height: 100%;
+  overflow-y: auto;
+}

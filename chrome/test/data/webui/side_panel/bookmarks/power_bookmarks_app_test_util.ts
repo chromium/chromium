@@ -8,7 +8,6 @@ import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/b
 import type {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import type {PowerBookmarkRowItemElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row_item.js';
 import type {PowerBookmarksAppElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_app.js';
-import type {DisplayItem} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -95,10 +94,10 @@ export function getBookmarks(app: PowerBookmarksAppElement):
 
 export function getBookmarksInList(
     app: PowerBookmarksAppElement, listIndex: number): BookmarksTreeNode[] {
-  const listItems = (app.$.bookmarksList.$.list.items as DisplayItem[]) || [];
+  const listItems = app.$.bookmarksList.$.list.items;
   const items = listItems.map(item => item.bookmark);
   const elements =
-      app.$.bookmarksList.shadowRoot!.querySelectorAll('power-bookmark-row');
+      app.$.bookmarksList.shadowRoot.querySelectorAll('power-bookmark-row');
   const firstSecondaryIndex = Array.from(elements).findIndex(
       el => el.rowHeading === loadTimeData.getString('secondaryFilterHeading'));
   if (listIndex === 0) {
@@ -115,18 +114,15 @@ export function getBookmarkWithId(
 }
 
 export function getPowerBookmarksRowElement(
-    element: PowerBookmarksAppElement|PowerBookmarkRowElement,
-    id: string): PowerBookmarkRowElement|null {
-  const root = (element instanceof HTMLElement &&
-                element.tagName === 'POWER-BOOKMARKS-APP') ?
-      (element as PowerBookmarksAppElement).$.bookmarksList.shadowRoot :
-      element.shadowRoot;
-  return (root!.querySelector<PowerBookmarkRowElement>(`#bookmark-${id}`));
+    element: PowerBookmarksAppElement, id: string): PowerBookmarkRowElement|
+    null {
+  return element.$.bookmarksList.shadowRoot
+      .querySelector<PowerBookmarkRowElement>(`#bookmark-${id}`);
 }
 
 export function getPowerBookmarksRowItemElement(
-    element: PowerBookmarksAppElement|PowerBookmarkRowElement,
-    id: string): PowerBookmarkRowItemElement|null {
+    element: PowerBookmarksAppElement, id: string): PowerBookmarkRowItemElement|
+    null {
   const row = getPowerBookmarksRowElement(element, id);
   if (!row) {
     return null;

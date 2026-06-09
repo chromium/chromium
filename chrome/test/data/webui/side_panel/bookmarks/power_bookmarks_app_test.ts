@@ -30,7 +30,7 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createTestBookmarks, getBookmarks, getBookmarksInList, getBookmarkWithId, getPowerBookmarksRowElement, getPowerBookmarksRowItemElement, initializeAppUi} from './power_bookmarks_app_test_util.js';
+import {createTestBookmarks, getBookmarks, getBookmarksInList, getBookmarkWithId, getPowerBookmarksRowElement, getPowerBookmarksRowItemElement} from './power_bookmarks_app_test_util.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
 suite('General', () => {
@@ -50,7 +50,7 @@ suite('General', () => {
   }
 
   function getAddNewFolderButton() {
-    return powerBookmarksApp.$.bookmarksList.shadowRoot!
+    return powerBookmarksApp.$.bookmarksList.shadowRoot
         .querySelector<PowerBookmarksAddFolderButtonElement>(
             'power-bookmarks-add-folder-button')!;
   }
@@ -151,9 +151,18 @@ suite('General', () => {
       isBookmarksMigrationUiChanges: false,
     });
 
-    powerBookmarksApp = await initializeAppUi(bookmarksApi);
-    await eventToPromise(
-        'bookmark-count-recorded', powerBookmarksApp.$.bookmarksList);
+    const app = document.createElement('power-bookmarks-app');
+    const recordedPromise = eventToPromise('bookmark-count-recorded', app);
+
+    const parentElement = document.createElement('div');
+    parentElement.style.height = '500px';
+    parentElement.appendChild(app);
+    document.body.appendChild(parentElement);
+
+    await bookmarksApi.whenCalled('getAllBookmarks');
+
+    powerBookmarksApp = app;
+    await recordedPromise;
     await microtasksFinished();
     powerBookmarksApp.$.bookmarksList
         .flushNavigationElementsDebouncerForTesting();
@@ -729,7 +738,7 @@ suite('General', () => {
 
     test('SetsExpandedDescription', async () => {
       const header =
-          powerBookmarksApp.$.bookmarksList.shadowRoot!
+          powerBookmarksApp.$.bookmarksList.shadowRoot
               .querySelector<HTMLElement>('power-bookmarks-list-header')!;
       const viewButton =
           header.shadowRoot!.querySelector<HTMLElement>('#viewButton')!;
@@ -747,7 +756,7 @@ suite('General', () => {
 
     test('SetsExpandedSearchResultDescription', async () => {
       const header =
-          powerBookmarksApp.$.bookmarksList.shadowRoot!
+          powerBookmarksApp.$.bookmarksList.shadowRoot
               .querySelector<HTMLElement>('power-bookmarks-list-header')!;
       const viewButton =
           header.shadowRoot!.querySelector<HTMLElement>('#viewButton')!;
@@ -805,7 +814,7 @@ suite('General', () => {
 
       await flushTasks();
 
-      const rowElement = powerBookmarksApp.$.bookmarksList.shadowRoot!
+      const rowElement = powerBookmarksApp.$.bookmarksList.shadowRoot
                              .querySelector<PowerBookmarkRowElement>(
                                  `#bookmark-${renamedBookmarkId}`);
       assertTrue(!!rowElement);
@@ -832,7 +841,7 @@ suite('General', () => {
 
     test('ShowsFolderImages', () => {
       const header =
-          powerBookmarksApp.$.bookmarksList.shadowRoot!
+          powerBookmarksApp.$.bookmarksList.shadowRoot
               .querySelector<HTMLElement>('power-bookmarks-list-header')!;
       const viewButton =
           header.shadowRoot!.querySelector<HTMLElement>('#viewButton')!;
@@ -852,7 +861,7 @@ suite('General', () => {
 
     test('DeletesSelectedBookmarks', async () => {
       const header =
-          powerBookmarksApp.$.bookmarksList.shadowRoot!
+          powerBookmarksApp.$.bookmarksList.shadowRoot
               .querySelector<HTMLElement>('power-bookmarks-list-header')!;
       const editButton =
           header.shadowRoot!.querySelector<HTMLElement>('#editButton')!;
@@ -928,7 +937,7 @@ suite('General', () => {
       await flushTasks();
 
       const header =
-          powerBookmarksApp.$.bookmarksList.shadowRoot!
+          powerBookmarksApp.$.bookmarksList.shadowRoot
               .querySelector<HTMLElement>('power-bookmarks-list-header')!;
       const editButton =
           header.shadowRoot!.querySelector<HTMLElement>('#editButton')!;
@@ -1037,7 +1046,7 @@ suite('General', () => {
       const search = powerBookmarksApp.$.searchField;
       const labels = powerBookmarksApp.$.labels;
       const heading =
-          powerBookmarksApp.$.bookmarksList.shadowRoot!.querySelector(
+          powerBookmarksApp.$.bookmarksList.shadowRoot.querySelector(
               'power-bookmarks-list-header')!;
       const folderEmptyState =
           powerBookmarksApp.$.bookmarksList.$.folderEmptyState;
@@ -1149,7 +1158,7 @@ suite('General', () => {
     });
 
     test('SortMenuClosesOnFocusout', async () => {
-      const header = powerBookmarksApp.$.bookmarksList.shadowRoot!
+      const header = powerBookmarksApp.$.bookmarksList.shadowRoot
                          .querySelector<PowerBookmarksListHeaderElement>(
                              'power-bookmarks-list-header');
       assertTrue(!!header);

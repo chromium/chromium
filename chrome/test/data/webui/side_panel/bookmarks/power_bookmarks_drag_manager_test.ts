@@ -13,6 +13,7 @@ import type {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
@@ -81,7 +82,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
   ];
 
   function getBookmarkRow(id: string) {
-    const rows = delegate.shadowRoot!.querySelectorAll('power-bookmark-row');
+    const rows = delegate.shadowRoot.querySelectorAll('power-bookmark-row');
     for (const row of rows) {
       if (row instanceof PowerBookmarkRowElement && row.bookmark.id === id) {
         return row;
@@ -237,8 +238,11 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
       chrome.bookmarkManagerPrivate.startDrag = () => {};
 
       const folderToExpand = getBookmarkRow('5')!;
-      folderToExpand.currentListItem_.$.crUrlListItem.click();
-      await flushTasks();
+      const expandButton =
+          folderToExpand.currentListItem_.shadowRoot.querySelector<HTMLElement>(
+              '#expandButton')!;
+      expandButton.click();
+      await microtasksFinished();
 
       const draggedBookmark = getBookmarkRow('6')!;
       draggedBookmark.dispatchEvent(new DragEvent(
