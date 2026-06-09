@@ -997,17 +997,27 @@ StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
       base::WrapUnique(new DatabaseConnection(path, backing_store));
   Status s = connection->Init(name);
   if (!path.empty() && !s.ok()) {
+    bool should_retry_opening = true;
     IndexedDBDataLossInfo loss;
     if (connection->marked_for_permanent_deletion_) {
-      loss.status = blink::mojom::IDBDataLoss::Total;
-      loss.message = s.ToString();
+      if (!name) {
+        // Don't bother retrying since the caller doesn't want to create the DB.
+        should_retry_opening = false;
+      } else {
+        // Capture and surface data loss info.
+        loss.status = blink::mojom::IDBDataLoss::Total;
+        loss.message = s.ToString();
+      }
     }
-    // If opening fails, recover or destroy the DB and try once more.
-    std::move(*connection).GetCleanupTask().Run(/*force_closing=*/false);
-    connection = base::WrapUnique(new DatabaseConnection(path, backing_store));
-    s = connection->Init(name);
-    connection->data_loss_info_ = std::move(loss);
-    s.Log("IndexedDB.SQLite.OpenRetryResult");
+    if (should_retry_opening) {
+      // Recover or destroy the DB and try once more.
+      std::move(*connection).GetCleanupTask().Run(/*force_closing=*/false);
+      connection =
+          base::WrapUnique(new DatabaseConnection(path, backing_store));
+      s = connection->Init(name);
+      connection->data_loss_info_ = std::move(loss);
+      s.Log("IndexedDB.SQLite.OpenRetryResult");
+    }
   }
   if (s.ok() && erase_if_zygotic && connection->IsZygotic()) {
     s = Status::Corruption(
@@ -1246,6 +1256,10 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
 
   const bool is_new_db = !sql::MetaTable::DoesTableExist(db_.get());
   if (is_new_db) {
+    if (!name) {
+      return Fatal(Status::Corruption("Missing meta table"),
+                   SpecificEvent::kMissingMetaTable);
+    }
     IDB_RETURN_IF_ERROR(CreateSchema(db_.get(), *name));
   }
 

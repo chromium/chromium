@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/rand_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -30,8 +31,11 @@
 #include "content/browser/indexed_db/instance/backing_store_util.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
 #include "content/browser/indexed_db/status.h"
+#include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/statement.h"
 #include "sql/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
 
@@ -94,7 +98,11 @@ class DatabaseConnectionTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    CreateBackingStore();
+  }
 
+  // (Re)creates the backing store on `temp_dir_`.
+  void CreateBackingStore() {
     backing_store_ = std::make_unique<BackingStoreImpl>(
         temp_dir_.GetPath(), blob_context_,
         base::BindRepeating(&DatabaseConnectionTest::AcquireDatabaseLocks,
@@ -440,6 +448,307 @@ TEST_F(DatabaseConnectionCorruptionTest, ObjectStoreCursor) {
               return cursor->GetValue().Clone();
             });
       }));
+}
+
+class DatabaseConnectionOpenCorruptionTest : public DatabaseConnectionTest {
+ public:
+  using SpecificEvent = DatabaseConnection::SpecificEvent;
+
+  static constexpr char kSpecificEventHistogram[] =
+      "IndexedDB.SQLite.SpecificEvent.OnDisk";
+  static constexpr char kOpenRetryResultHistogram[] =
+      "IndexedDB.SQLite.OpenRetryResult";
+
+ protected:
+  // Sets up a DB and corrupts it with `corrupt`.
+  void SetUpAndCorruptDb(
+      std::u16string_view name,
+      base::FunctionRef<void(const base::FilePath&)> corrupt) {
+    std::unique_ptr<BackingStore::Database> db = OpenDb(name);
+    ASSERT_NO_FATAL_FAILURE(InitializeDbWithOneRecord(*db));
+    DropDbAndDestructDatabaseConnection(std::move(db));
+    corrupt(GetDatabasePath(name));
+  }
+
+  // Creates a DB, corrupts it with `corrupt`, and expects that it gets
+  // recreated when opened.
+  void ExpectRecreated(base::FunctionRef<void(const base::FilePath&)> corrupt,
+                       SpecificEvent event,
+                       bool data_loss_reported = true) {
+    ASSERT_NO_FATAL_FAILURE(SetUpAndCorruptDb(u"db", corrupt));
+    base::HistogramTester histograms;
+    std::unique_ptr<BackingStore::Database> db = OpenDb(u"db");
+    EXPECT_EQ(db->GetDataLossInfo().status,
+              data_loss_reported ? blink::mojom::IDBDataLoss::Total
+                                 : blink::mojom::IDBDataLoss::None);
+    EXPECT_FALSE(db->GetMetadata().object_stores.contains(kObjectStoreId));
+    DropDbAndDestructDatabaseConnection(std::move(db));
+    histograms.ExpectTotalCount(kSpecificEventHistogram, 3);
+    histograms.ExpectBucketCount(kSpecificEventHistogram,
+                                 SpecificEvent::kDatabaseOpenAttempt, 2);
+    histograms.ExpectBucketCount(kSpecificEventHistogram, event, 1);
+    histograms.ExpectUniqueSample(kOpenRetryResultHistogram,
+                                  0 /*Status::Type::kOk*/, 1);
+  }
+
+  // Calls `mutate` with a raw `sql::Database` opened on `path`.
+  static void MutateRawDb(const base::FilePath& path,
+                          base::FunctionRef<void(sql::Database&)> mutate) {
+    sql::Database db(
+        sql::DatabaseOptions().set_wal_mode(true).set_enable_triggers(true),
+        sql::test::kTestTag);
+    CHECK(db.Open(path));
+    mutate(db);
+    db.Close();
+  }
+
+  static void CorruptEmptyMetadataTable(const base::FilePath& path) {
+    MutateRawDb(path, [](sql::Database& db) {
+      CHECK(db.Execute("DELETE FROM indexed_db_metadata"));
+    });
+  }
+
+  static void CorruptToTooNew(const base::FilePath& path) {
+    MutateRawDb(path, [](sql::Database& db) {
+      sql::MetaTable meta_table;
+      CHECK(meta_table.Init(&db, /*version=*/42, /*compatible_version=*/42));
+      CHECK(meta_table.SetCompatibleVersionNumber(42));
+    });
+  }
+
+  static void CorruptToUnknownSchemaVersion(const base::FilePath& path) {
+    MutateRawDb(path, [](sql::Database& db) {
+      sql::MetaTable meta_table;
+      CHECK(meta_table.Init(&db, /*version=*/42, /*compatible_version=*/42));
+      CHECK(meta_table.SetVersionNumber(42));
+    });
+  }
+
+  static void CorruptStoredName(const base::FilePath& path) {
+    MutateRawDb(path, [](sql::Database& db) {
+      sql::Statement statement(
+          db.GetUniqueStatement("UPDATE indexed_db_metadata SET name = ?"));
+      statement.BindBlob(0, u"corrupt name");
+      CHECK(statement.Run());
+    });
+  }
+
+  static void CorruptBadDataFormatVersion(const base::FilePath& path) {
+    MutateRawDb(path, [](sql::Database& db) {
+      sql::MetaTable meta_table;
+      CHECK(meta_table.Init(&db, /*version=*/42, /*compatible_version=*/42));
+      CHECK(
+          meta_table.SetValue("v8_data_version", int64_t{0x7FFFFFFFFFFFFFFF}));
+    });
+  }
+
+  // An odd-length name BLOB can't be decoded as UTF-16.
+  static void CorruptUnreadableName(const base::FilePath& path) {
+    MutateRawDb(path, [](sql::Database& db) {
+      sql::Statement statement(
+          db.GetUniqueStatement("UPDATE indexed_db_metadata SET name = ?"));
+      statement.BindBlob(0, base::byte_span_from_cstring("odd"));
+      CHECK(statement.Run());
+    });
+  }
+
+  static void CorruptToEmptyFile(const base::FilePath& path) {
+    CHECK(base::WriteFile(path, ""));
+  }
+
+  // Leaves the IndexedDB tables but drops the `meta` table, so the DB looks new
+  // despite still holding data.
+  static void CorruptDropMetaTable(const base::FilePath& path) {
+    MutateRawDb(
+        path, [](sql::Database& db) { CHECK(db.Execute("DROP TABLE meta")); });
+  }
+
+  static void CorruptZeroedHeader(const base::FilePath& path) {
+    std::array<uint8_t, 100> zeros = {};
+    base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+    CHECK(file.IsValid());
+    CHECK(file.WriteAndCheck(0, zeros));
+  }
+
+  static void CorruptRecoverableHeader(const base::FilePath& path) {
+    CHECK(sql::test::CorruptSizeInHeader(path));
+  }
+
+  static void CorruptToZygotic(const base::FilePath& path) {
+    MutateRawDb(path, [](sql::Database& db) {
+      sql::Statement statement(
+          db.GetUniqueStatement("UPDATE indexed_db_metadata SET version = ?"));
+      statement.BindInt64(0, blink::IndexedDBDatabaseMetadata::NO_VERSION);
+      CHECK(statement.Run());
+    });
+  }
+};
+
+TEST_F(DatabaseConnectionOpenCorruptionTest, EmptyMetadataTable) {
+  ExpectRecreated(CorruptEmptyMetadataTable,
+                  SpecificEvent::kMissingMetadataTable);
+}
+
+TEST_F(DatabaseConnectionOpenCorruptionTest, TooNew) {
+  ExpectRecreated(CorruptToTooNew, SpecificEvent::kDatabaseTooNew);
+}
+
+TEST_F(DatabaseConnectionOpenCorruptionTest, UnknownSchemaVersion) {
+  ExpectRecreated(CorruptToUnknownSchemaVersion,
+                  SpecificEvent::kDatabaseSchemaUnknown);
+}
+
+TEST_F(DatabaseConnectionOpenCorruptionTest, NameMismatch) {
+  ExpectRecreated(CorruptStoredName, SpecificEvent::kDatabaseNameMismatch);
+}
+
+TEST_F(DatabaseConnectionOpenCorruptionTest, BadDataFormatVersion) {
+  ExpectRecreated(CorruptBadDataFormatVersion,
+                  SpecificEvent::kV8FormatTooNewOrMissing);
+}
+
+TEST_F(DatabaseConnectionOpenCorruptionTest, UnreadableName) {
+  ExpectRecreated(CorruptUnreadableName, SpecificEvent::kUtf16StringUnreadable);
+}
+
+TEST_F(DatabaseConnectionOpenCorruptionTest, EmptyFile) {
+  ASSERT_NO_FATAL_FAILURE(SetUpAndCorruptDb(u"db", CorruptToEmptyFile));
+  base::HistogramTester histograms;
+  std::unique_ptr<BackingStore::Database> db = OpenDb(u"db");
+  // DB just gets created from scratch with no error reported.
+  EXPECT_EQ(db->GetDataLossInfo().status, blink::mojom::IDBDataLoss::None);
+  EXPECT_FALSE(db->GetMetadata().object_stores.contains(kObjectStoreId));
+  DropDbAndDestructDatabaseConnection(std::move(db));
+  histograms.ExpectUniqueSample(kSpecificEventHistogram,
+                                SpecificEvent::kDatabaseOpenAttempt, 1);
+  histograms.ExpectTotalCount(kOpenRetryResultHistogram, 0);
+}
+
+TEST_F(DatabaseConnectionOpenCorruptionTest, DropMetaTable) {
+  // The data tables survive, so the first open's CreateSchema collides with
+  // them and fails; the retry razes the DB and recreates it empty. The failed
+  // open logs no SQL-error event because its transaction rollback clears the
+  // error code before cleanup sees it.
+  ASSERT_NO_FATAL_FAILURE(SetUpAndCorruptDb(u"db", CorruptDropMetaTable));
+  base::HistogramTester histograms;
+  std::unique_ptr<BackingStore::Database> db = OpenDb(u"db");
+  EXPECT_EQ(db->GetDataLossInfo().status, blink::mojom::IDBDataLoss::None);
+  EXPECT_FALSE(db->GetMetadata().object_stores.contains(kObjectStoreId));
+  DropDbAndDestructDatabaseConnection(std::move(db));
+  histograms.ExpectUniqueSample(kSpecificEventHistogram,
+                                SpecificEvent::kDatabaseOpenAttempt, 2);
+  histograms.ExpectUniqueSample(kOpenRetryResultHistogram,
+                                0 /*Status::Type::kOk*/, 1);
+}
+
+TEST_F(DatabaseConnectionOpenCorruptionTest, ZeroedHeader) {
+  // Zeroing the header defeats recovery, so the DB is recreated empty.
+  ExpectRecreated(CorruptZeroedHeader, SpecificEvent::kDatabaseHadSqlError,
+                  /*data_loss_reported=*/false);
+}
+
+TEST_F(DatabaseConnectionOpenCorruptionTest, RecoverableHeader) {
+  ASSERT_NO_FATAL_FAILURE(SetUpAndCorruptDb(u"db", CorruptRecoverableHeader));
+  base::HistogramTester histograms;
+  std::unique_ptr<BackingStore::Database> db = OpenDb(u"db");
+  EXPECT_EQ(db->GetDataLossInfo().status, blink::mojom::IDBDataLoss::None);
+#if BUILDFLAG(IS_FUCHSIA)
+  // Recovery isn't supported, so the DB is deleted and recreated empty.
+  EXPECT_FALSE(db->GetMetadata().object_stores.contains(kObjectStoreId));
+#else
+  // Recovery preserves the data.
+  EXPECT_TRUE(db->GetMetadata().object_stores.contains(kObjectStoreId));
+#endif
+  DropDbAndDestructDatabaseConnection(std::move(db));
+
+  // The first open hits a SQL error, then the retry recovers (non-Fuchsia) or
+  // recreates (Fuchsia) successfully.
+  histograms.ExpectTotalCount(kSpecificEventHistogram, 3);
+  histograms.ExpectBucketCount(kSpecificEventHistogram,
+                               SpecificEvent::kDatabaseOpenAttempt, 2);
+  histograms.ExpectBucketCount(kSpecificEventHistogram,
+                               SpecificEvent::kDatabaseHadSqlError, 1);
+  histograms.ExpectUniqueSample(kOpenRetryResultHistogram,
+                                0 /*Status::Type::kOk*/, 1);
+}
+
+TEST_F(DatabaseConnectionOpenCorruptionTest, ZygoticDatabase) {
+  // The database is used as-is since this is "content" corruption.
+  ASSERT_NO_FATAL_FAILURE(SetUpAndCorruptDb(u"db", CorruptToZygotic));
+  base::HistogramTester histograms;
+  std::unique_ptr<BackingStore::Database> db = OpenDb(u"db");
+  EXPECT_EQ(db->GetDataLossInfo().status, blink::mojom::IDBDataLoss::None);
+  EXPECT_TRUE(db->GetMetadata().object_stores.contains(kObjectStoreId));
+  DropDbAndDestructDatabaseConnection(std::move(db));
+  histograms.ExpectUniqueSample(kSpecificEventHistogram,
+                                SpecificEvent::kDatabaseOpenAttempt, 1);
+  histograms.ExpectTotalCount(kOpenRetryResultHistogram, 0);
+}
+
+TEST_F(DatabaseConnectionOpenCorruptionTest, EnumerateAll) {
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpAndCorruptDb(u"name mismatch db", CorruptStoredName));
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpAndCorruptDb(u"empty file db", CorruptToEmptyFile));
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpAndCorruptDb(u"dropped meta db", CorruptDropMetaTable));
+  ASSERT_NO_FATAL_FAILURE(SetUpAndCorruptDb(u"too new db", CorruptToTooNew));
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpAndCorruptDb(u"unreadable name db", CorruptUnreadableName));
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpAndCorruptDb(u"unknown schema db", CorruptToUnknownSchemaVersion));
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpAndCorruptDb(u"empty metadata db", CorruptEmptyMetadataTable));
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpAndCorruptDb(u"bad data format db", CorruptBadDataFormatVersion));
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpAndCorruptDb(u"recoverable db", CorruptRecoverableHeader));
+  ASSERT_NO_FATAL_FAILURE(SetUpAndCorruptDb(u"zeroed db", CorruptZeroedHeader));
+  ASSERT_NO_FATAL_FAILURE(SetUpAndCorruptDb(u"zygotic db", CorruptToZygotic));
+
+  // Re-init the backing store to ensure the database files are read from disk.
+  backing_store()->FlushForTesting();
+  CreateBackingStore();
+
+  base::HistogramTester histograms;
+  ASSERT_OK_AND_ASSIGN(std::vector<blink::mojom::IDBNameAndVersionPtr> entries,
+                       backing_store()->GetDatabaseNamesAndVersions());
+  std::vector<std::pair<std::u16string, int64_t>> names_and_versions;
+  for (const blink::mojom::IDBNameAndVersionPtr& entry : entries) {
+    names_and_versions.emplace_back(entry->name, entry->version);
+  }
+
+  // Name-mismatch is surfaced under its corrupt stored name (enumeration has no
+  // name to validate against). On non-Fuchsia, the recoverable DB is also
+  // surfaced since recovery restores it. Everything else is dropped.
+#if BUILDFLAG(IS_FUCHSIA)
+  EXPECT_THAT(names_and_versions,
+              testing::UnorderedElementsAre(testing::Pair(u"corrupt name", 1)));
+#else
+  EXPECT_THAT(names_and_versions, testing::UnorderedElementsAre(
+                                      testing::Pair(u"corrupt name", 1),
+                                      testing::Pair(u"recoverable db", 1)));
+#endif
+
+  // The dropped databases are deleted from disk.
+  EXPECT_TRUE(base::PathExists(GetDatabasePath(u"name mismatch db")));
+  EXPECT_FALSE(base::PathExists(GetDatabasePath(u"empty file db")));
+  EXPECT_FALSE(base::PathExists(GetDatabasePath(u"dropped meta db")));
+  EXPECT_FALSE(base::PathExists(GetDatabasePath(u"too new db")));
+  EXPECT_FALSE(base::PathExists(GetDatabasePath(u"unreadable name db")));
+  EXPECT_FALSE(base::PathExists(GetDatabasePath(u"unknown schema db")));
+  EXPECT_FALSE(base::PathExists(GetDatabasePath(u"empty metadata db")));
+  EXPECT_FALSE(base::PathExists(GetDatabasePath(u"bad data format db")));
+  EXPECT_FALSE(base::PathExists(GetDatabasePath(u"zeroed db")));
+  EXPECT_FALSE(base::PathExists(GetDatabasePath(u"zygotic db")));
+#if BUILDFLAG(IS_FUCHSIA)
+  EXPECT_FALSE(base::PathExists(GetDatabasePath(u"recoverable db")));
+#else
+  EXPECT_TRUE(base::PathExists(GetDatabasePath(u"recoverable db")));
+#endif
+
+  histograms.ExpectTotalCount(
+      "IndexedDB.SQLite.OpenToReadMetadataResult.OnDisk", 11);
 }
 
 }  // namespace content::indexed_db::sqlite

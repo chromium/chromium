@@ -292,6 +292,7 @@ class CONTENT_EXPORT DatabaseConnection {
 
  private:
   friend class BackingStoreSqliteTest;
+  friend class DatabaseConnectionOpenCorruptionTest;
   FRIEND_TEST_ALL_PREFIXES(DatabaseConnectionTest, TooNew);
 
   // Destroys the DatabaseConnection pointed to by `db`, if appropriate, i.e. if
@@ -313,9 +314,9 @@ class CONTENT_EXPORT DatabaseConnection {
   bool in_memory() const { return path_.empty(); }
 
   // All startup/initialization tasks that can error are performed here. Will
-  // return Status::OK() on success. `name` must be provided if the database is
-  // new. If the database is pre-existing, `name` may not be provided, but if it
-  // is, it must match the database's stored name.
+  // return Status::OK() on success. A new database is created only if `name` is
+  // provided. If the database is pre-existing, `name` may not be provided, but
+  // if it is, it must match the database's stored name.
   Status Init(std::optional<std::u16string_view> name);
 
   bool HasActiveVersionChangeTransaction() const {
@@ -415,7 +416,11 @@ class CONTENT_EXPORT DatabaseConnection {
     // Other errors.
     kLegacyBlobFileDeletionFailed = 18,
 
-    kMaxValue = kLegacyBlobFileDeletionFailed,
+    // Another mode of fatal corruption where the `sql::MetaTable` is missing in
+    // a file that looks like a valid database.
+    kMissingMetaTable = 19,
+
+    kMaxValue = kMissingMetaTable,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:IndexedDbSqliteSpecificEvent)
 
