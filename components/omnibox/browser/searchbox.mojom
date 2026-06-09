@@ -115,7 +115,7 @@ struct TabInfo {
   mojo_base.mojom.TimeTicks last_active;
 };
 
-// Represents a file attachment who's upload was started browser-side (currently
+// Represents a file attachment whose upload was started browser-side (currently
 // an image or PDF only).
 struct FileAttachment {
   // A client-side unique identifier referring to a specific file upload. The
@@ -130,6 +130,12 @@ struct FileAttachment {
   string? image_data_url;
   // The error type if the upload failed.
   composebox_query.mojom.ContextUploadErrorType? error_type;
+  // The URL of the file icon, if available. This is currently only populated
+  // for Google Drive files via the OnePick 3P API in
+  // chrome-untrusted://drive-picker-host. The URL is validated to originate
+  // from a trusted Google domain by DrivePickerSanitizer in the trusted
+  // browser process before being populated here.
+  url.mojom.Url? icon_url;
 };
 
 // Represents a tab attachment chosen browser-side and communicated to WebUI.
@@ -529,8 +535,8 @@ interface Page {
 
   // Notifies the size of the permission prompt and that it is
   // showing or being hidden.
-  OnEmbeddedPermissionPromptChanged(bool is_showing,
-                                    gfx.mojom.Size prompt_size);
+  OnEmbeddedPermissionPromptChanged(
+      bool is_showing, gfx.mojom.Size prompt_size);
 
   // Sets the tab IDs that should be shown as selected before tabs are selected.
   SetRestoredTabIds(array<int32> ids);

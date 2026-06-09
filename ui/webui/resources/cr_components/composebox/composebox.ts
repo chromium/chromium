@@ -888,8 +888,11 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     const composeboxFile = ComposeboxFile.createFromFile(
         fileAttachment.uuid as unknown as UnguessableToken,
         {name: fileAttachment.name, type: fileAttachment.mimeType},
-        pendingStatus ?? ContextUploadStatus.kNotUploaded,
-        {dataUrl: fileAttachment.imageDataUrl ?? null, supportsUnimodal: true});
+        pendingStatus ?? ContextUploadStatus.kNotUploaded, {
+          dataUrl: fileAttachment.imageDataUrl ?? null,
+          iconUrl: fileAttachment.iconUrl ?? null,
+          supportsUnimodal: true,
+        });
     this.onFileContextAdded(composeboxFile);
   }
 

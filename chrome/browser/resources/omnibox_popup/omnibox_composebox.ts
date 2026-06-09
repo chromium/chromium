@@ -242,8 +242,11 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     const composeboxFile = ComposeboxFile.createFromFile(
         fileAttachment.uuid,
         {name: fileAttachment.name, type: fileAttachment.mimeType},
-        pendingStatus ?? ContextUploadStatus.kNotUploaded,
-        {dataUrl: fileAttachment.imageDataUrl ?? null, supportsUnimodal: true});
+        pendingStatus ?? ContextUploadStatus.kNotUploaded, {
+          dataUrl: fileAttachment.imageDataUrl ?? null,
+          iconUrl: fileAttachment.iconUrl,
+          supportsUnimodal: true,
+        });
     this.onFileContextAdded(composeboxFile);
   }
 

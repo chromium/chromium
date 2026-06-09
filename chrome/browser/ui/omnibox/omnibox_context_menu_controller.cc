@@ -157,6 +157,7 @@ void HandleDriveUploadResponse(
     file_attachment->name = file->file_name;
     file_attachment->mime_type = file->mime_type;
     file_attachment->image_data_url = file->thumbnail_url;
+    file_attachment->icon_url = file->icon_url;
 
     file_attachments.push_back(
         searchbox::mojom::SearchContextAttachment::NewFileAttachment(
