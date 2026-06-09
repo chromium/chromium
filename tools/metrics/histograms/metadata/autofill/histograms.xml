@@ -5584,7 +5584,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.NameTokenVerificationStatusAtProfileUsage.{NameType}"
-    enum="AufofillStructuredTokenVerificationStatus" expires_after="2026-06-28">
+    enum="AufofillStructuredTokenVerificationStatus" expires_after="2026-12-28">
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
