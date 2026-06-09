@@ -503,11 +503,11 @@ Refer to README.md for content description and update process.
  <item id="save_to_drive" added_in_milestone="141" content_hash_code="0012bc0c" os_list="linux,windows,chromeos" file_path="chrome/browser/save_to_drive/drive_uploader.cc" />
  <item id="corp_messaging_client_receive_client_messages" added_in_milestone="142" content_hash_code="059366dc" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/corp_messaging_client.cc" />
  <item id="corp_messaging_client_send_host_message" added_in_milestone="142" content_hash_code="003280dd" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/corp_messaging_client.cc" />
- <item id="private_ai_client" added_in_milestone="142" content_hash_code="04662b54" os_list="linux,windows,chromeos" file_path="components/private_ai/websocket_client.cc" />
+ <item id="private_ai_client" added_in_milestone="142" content_hash_code="04662b54" os_list="linux,windows,chromeos,android" file_path="components/private_ai/websocket_client.cc" />
  <item id="webrtc_rtc_transport" added_in_milestone="142" content_hash_code="0456b8fc" os_list="linux,windows,android,chromeos" file_path="third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_dependencies.cc" />
  <item id="email_verification" added_in_milestone="143" content_hash_code="028efd71" os_list="linux,windows,android,chromeos" file_path="content/browser/webid/delegation/email_verifier_network_request_manager.cc" />
  <item id="amount_extraction_model_execution" added_in_milestone="144" content_hash_code="05d4d2fd" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc" />
- <item id="private_ai_get_token" added_in_milestone="144" content_hash_code="007f254e" os_list="linux,windows,chromeos" file_path="components/private_ai/phosphor/config_http.cc" />
+ <item id="private_ai_get_token" added_in_milestone="144" content_hash_code="007f254e" os_list="linux,windows,chromeos,android" file_path="components/private_ai/phosphor/config_http.cc" />
  <item id="metrics_report_private_metrics" added_in_milestone="144" content_hash_code="0811746a" os_list="linux,windows,android,chromeos" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="scam_detection_model_execution" added_in_milestone="145" content_hash_code="01f2a65e" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc" />
  <item id="sync_device_statistics_metrics" added_in_milestone="145" content_hash_code="06d02833" os_list="linux,windows,android,chromeos" file_path="components/sync/service/device_statistics_request_impl.cc" />
