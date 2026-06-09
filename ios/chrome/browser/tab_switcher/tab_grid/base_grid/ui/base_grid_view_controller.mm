@@ -1214,6 +1214,14 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 
 - (void)populateItems:(NSArray<GridItemIdentifier*>*)items
     selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
+  [self populateItems:items
+      selectedItemIdentifier:selectedItemIdentifier
+                  completion:nil];
+}
+
+- (void)populateItems:(NSArray<GridItemIdentifier*>*)items
+    selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier
+                completion:(void (^)(void))completion {
   CHECK(!HasDuplicateGroupsAndTabsIdentifiers(items));
   // Call self.view to ensure that the collection view is created.
   [self view];
@@ -1242,7 +1250,7 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
   [snapshot reconfigureItemsWithIdentifiers:items];
   [self.diffableDataSource applySnapshot:snapshot
                     animatingDifferences:YES
-                              completion:nil];
+                              completion:completion];
 
   [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
   [self updateVisibleCellIdentifiers];
@@ -1381,8 +1389,32 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
 }
 
 - (void)bringItemIntoView:(GridItemIdentifier*)item animated:(BOOL)animated {
+  // Scrolling in UICollectionView can be flaky in tests due to layout race
+  // conditions. We attempt to scroll synchronously for immediate visual
+  // feedback. We also scroll asynchronously as a fallback to ensure scrolling
+  // happens after pending layout updates are processed.
+  [self scrollToItem:item animated:animated];
+
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (!weakSelf || weakSelf.collectionView.isTracking) {
+      return;
+    }
+    [weakSelf scrollToItem:item animated:animated];
+  });
+}
+
+// Helper to scroll to `item` if it is not already visible.
+- (void)scrollToItem:(GridItemIdentifier*)item animated:(BOOL)animated {
   NSIndexPath* indexPath =
       [self.diffableDataSource indexPathForItemIdentifier:item];
+  if (!indexPath) {
+    return;
+  }
+  if ([self.collectionView.indexPathsForVisibleItems
+          containsObject:indexPath]) {
+    return;
+  }
   [self.collectionView
       scrollToItemAtIndexPath:indexPath
              atScrollPosition:UICollectionViewScrollPositionCenteredVertically

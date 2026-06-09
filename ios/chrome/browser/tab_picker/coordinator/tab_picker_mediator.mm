@@ -296,14 +296,21 @@
     }
   }
 
-  [_gridConsumer populateItems:items
-        selectedItemIdentifier:[self activeIdentifier]];
-
-  // Defer scrolling to ensure the collection view layout is finalized.
   __weak __typeof(self) weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf bringActiveGridItemIntoView];
-  });
+  [_gridConsumer populateItems:items
+        selectedItemIdentifier:[self activeIdentifier]
+                    completion:^{
+                      [weakSelf bringActiveItemIntoViewAfterPopulation:items];
+                    }];
+}
+
+/// Brings the active item into view after the grid has been populated.
+- (void)bringActiveItemIntoViewAfterPopulation:
+    (NSArray<GridItemIdentifier*>*)items {
+  GridItemIdentifier* activeIdentifier = [self activeIdentifier];
+  if (activeIdentifier && [items containsObject:activeIdentifier]) {
+    [_gridConsumer bringItemIntoView:activeIdentifier animated:NO];
+  }
 }
 
 - (void)cancelPlaceholderForRealizedWebState:
@@ -364,11 +371,6 @@
   [self.snackbarPresenter showCannotAttachTabError];
   [self removeFromSelectionItemID:itemID];
   [self reconfigureGridItem:itemID];
-}
-
-/// Brings the active grid item into view.
-- (void)bringActiveGridItemIntoView {
-  [_gridConsumer bringItemIntoView:[self activeIdentifier] animated:NO];
 }
 
 #pragma mark - WebStateDeferredExecutorDelegate

@@ -33,6 +33,14 @@ class WebStateID;
 - (void)populateItems:(NSArray<GridItemIdentifier*>*)items
     selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier;
 
+// Tells the consumer to replace its current set of items with `items` and
+// update the selected item to be `selectedItem`. It's an error to pass an
+// `items` array containing items without unique IDs. `completion` is called
+// when the items are populated and layout is finalized.
+- (void)populateItems:(NSArray<GridItemIdentifier*>*)items
+    selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier
+                completion:(void (^)(void))completion;
+
 // Tells the consumer to insert `item` before the given `nextItemIdentifier` and
 // update the selected item identifier to be `selectedItemIdentifier`. It's an
 // error if `item`'s duplicates an item already passed to the consumer (and not

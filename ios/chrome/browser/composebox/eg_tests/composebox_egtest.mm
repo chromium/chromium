@@ -100,10 +100,12 @@ void OpenTabPicker() {
       performAction:grey_tap()];
 
   // Tap the select tabs button.
-  id<GREYMatcher> selectTabsMatcher =
-      grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                     IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION),
-                 grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> selectTabsMatcher = grey_allOf(
+      grey_accessibilityID(kComposeboxSelectTabsActionAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:selectTabsMatcher];
+  [[EarlGrey selectElementWithMatcher:selectTabsMatcher]
+      assertWithMatcher:grey_enabled()];
   [[EarlGrey selectElementWithMatcher:selectTabsMatcher]
       performAction:grey_tap()];
 }
@@ -761,6 +763,60 @@ void RemoveAttachmentWithTitle(NSString* title) {
       waitForUIElementToAppearWithMatcher:
           grey_accessibilityID(
               kComposeboxImageGenerationButtonAccessibilityIdentifier)];
+}
+
+// Tests that the tab picker scrolls to the active tab when opened with many
+// tabs.
+- (void)testTabPickerScrollsToActiveTab {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+
+  [ComposeboxAppInterface setFuseboxEligible:YES];
+  [ComposeboxAppInterface enableAllTools];
+
+  // Close all normal tabs and open 10 tabs.
+  [ChromeEarlGrey closeAllNormalTabs];
+  NSUInteger totalNumberOfTabs = 10;
+  std::vector<GURL> URLS;
+
+  for (NSUInteger i = 0; i < totalNumberOfTabs; ++i) {
+    URLS.push_back(
+        self.testServer->GetURL(base::StringPrintf(kPageURL, i + 1)));
+    [ChromeEarlGrey openNewTab];
+    [ChromeEarlGrey loadURL:URLS[i]];
+    [ChromeEarlGrey waitForPageToFinishLoading];
+  }
+
+  // Wait for the last tab to load to ensure it has the correct title and the
+  // grid is populated.
+  [ChromeEarlGrey
+      waitForWebStateContainingText:base::StringPrintf(kPageContent,
+                                                       totalNumberOfTabs)];
+  ConditionBlock titleCondition = ^{
+    return [[ChromeEarlGrey currentTabTitle]
+        containsString:base::SysUTF8ToNSString(
+                           base::StringPrintf(kPageTitle, totalNumberOfTabs))];
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForPageLoadTimeout, titleCondition),
+             @"Page title failed to update.");
+
+  [ChromeEarlGrey waitForMainTabCount:totalNumberOfTabs];
+
+  OpenTabPicker();
+
+  // The last tab opened is the active one.
+  NSString* currentPageTitle = base::SysUTF8ToNSString(
+      base::StringPrintf(kPageTitle, totalNumberOfTabs));
+
+  // Check that the last tab is visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_allOf(
+                                              TabWithTitle(currentPageTitle),
+                                              grey_sufficientlyVisible(), nil)
+                                  timeout:base::Seconds(10)];
 }
 
 @end
