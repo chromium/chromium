@@ -7,8 +7,14 @@
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/switches.h"
 
@@ -62,7 +68,6 @@ TEST_F(ProtocolHandlersManagerServiceTest, PRE_ProtocolHandlerSanityCheck) {
 
   const auto* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(profile());
-  DCHECK(registry);
   ASSERT_FALSE(registry->HasDefaultHandler("ipfs"));
 }
 
@@ -73,8 +78,45 @@ TEST_F(ProtocolHandlersManagerServiceTest, ProtocolHandlerSanityCheck) {
 
   const auto* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(profile());
-  DCHECK(registry);
   ASSERT_TRUE(registry->HasDefaultHandler("ipfs"));
+}
+
+TEST_F(ProtocolHandlersManagerServiceTest,
+       ExtensionHandlerDefaultNotAllowedInIncognito) {
+  CreateExtensionService(true);
+  service()->Init();
+  EXPECT_TRUE(registry()->enabled_extensions().GetByID(kId));
+
+  const auto* handler_registry =
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(profile());
+  ASSERT_TRUE(handler_registry->HasDefaultHandler("ipfs"));
+
+  auto handlers = handler_registry->GetHandlersFor("ipfs");
+  ASSERT_EQ(1u, handlers.size());
+  EXPECT_FALSE(handlers[0].is_allowed_in_incognito());
+}
+
+TEST_F(ProtocolHandlersManagerServiceTest,
+       ExtensionHandlerAllowedInIncognitoWhenEnabled) {
+  CreateExtensionService(true);
+  service()->Init();
+  EXPECT_TRUE(registry()->enabled_extensions().GetByID(kId));
+
+  // Set incognito enabled for the extension.
+  ExtensionPrefs::Get(profile())->SetIsIncognitoEnabled(kId, true);
+
+  // Disable and re-enable to trigger OnExtensionLoaded again.
+  registrar()->DisableExtension(kId,
+                                {extensions::disable_reason::DISABLE_RELOAD});
+  registrar()->EnableExtension(kId);
+
+  const auto* handler_registry =
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(profile());
+  ASSERT_TRUE(handler_registry->HasDefaultHandler("ipfs"));
+
+  auto handlers = handler_registry->GetHandlersFor("ipfs");
+  ASSERT_EQ(1u, handlers.size());
+  EXPECT_TRUE(handlers[0].is_allowed_in_incognito());
 }
 
 }  // namespace extensions

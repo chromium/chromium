@@ -30,6 +30,10 @@ class ProtocolHandlersManager : public BrowserContextKeyedAPI,
 
   // BrowserContextKeyedAPI support:
   static const char* service_name() { return "ProtocolHandlersManager"; }
+  // OTR profiles each get their own instance so that extension handler
+  // registrations in the OTR ProtocolHandlerRegistry are kept in sync when
+  // extensions are reloaded (e.g. after an incognito-permission toggle).
+  static const bool kServiceHasOwnInstanceInIncognito = true;
 
   // ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,

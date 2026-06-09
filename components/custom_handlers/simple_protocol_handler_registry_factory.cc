@@ -11,6 +11,7 @@
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/browser/browser_context.h"
 
 namespace custom_handlers {
 
@@ -27,7 +28,8 @@ std::unique_ptr<KeyedService> BuildProtocolHandlerRegistryService(
   // We can't ensure the UserPref has been set, so we pass a nullptr
   // PrefService.
   return custom_handlers::ProtocolHandlerRegistry::Create(
-      nullptr, std::make_unique<TestProtocolHandlerRegistryDelegate>());
+      nullptr, std::make_unique<TestProtocolHandlerRegistryDelegate>(),
+      context->IsOffTheRecord());
 }
 
 // static

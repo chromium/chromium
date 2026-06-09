@@ -25,19 +25,16 @@ ProtocolHandlerRegistryFactory* ProtocolHandlerRegistryFactory::GetInstance() {
 std::unique_ptr<KeyedService> BuildProtocolHandlerRegistryService(
     content::BrowserContext* context) {
   // Each profile gets its own ProtocolHandlerRegistry instance
-  // (ProfileSelection::kOwnInstance). When using OTR contexts (incognito and
-  // guest) we are constructing the registry with a null PrefService so it
-  // doesn't inherit the originating profile's handlers via OverlayUserPrefStore
-  // read-through and do not persist registrations. Predefined handlers (e.g.
-  // mailto) are still installed by ProtocolHandlerRegistry::Create regardless
-  // of prefs.
-  PrefService* prefs = nullptr;
-  if (!context->IsOffTheRecord()) {
-    prefs = user_prefs::UserPrefs::Get(context);
-    CHECK(prefs);
-  }
+  // (ProfileSelection::kOwnInstance). OTR contexts receive a non-null
+  // PrefService whose OverlayUserPrefStore reads through to the originating
+  // profile's prefs; the registry's insertion guard rejects disallowed
+  // handlers loaded from that overlay. OTR writes go to the ephemeral
+  // overlay and are not persisted to disk.
+  PrefService* prefs = user_prefs::UserPrefs::Get(context);
+  CHECK(prefs);
   return custom_handlers::ProtocolHandlerRegistry::Create(
-      prefs, std::make_unique<ChromeProtocolHandlerRegistryDelegate>());
+      prefs, std::make_unique<ChromeProtocolHandlerRegistryDelegate>(),
+      context->IsOffTheRecord());
 }
 
 // static
