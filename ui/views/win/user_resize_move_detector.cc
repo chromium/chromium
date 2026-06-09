@@ -10,6 +10,8 @@
 
 namespace views {
 
+static bool g_in_move_resize_loop = false;
+
 UserResizeMoveDetector::UserResizeMoveDetector(
     HWNDMessageHandlerDelegate* hwnd_delegate)
     : hwnd_delegate_(hwnd_delegate) {}
@@ -22,6 +24,7 @@ void UserResizeMoveDetector::OnEnterSizeMove() {
 
 void UserResizeMoveDetector::OnSizing() {
   if (state_ == State::kInSizeMove) {
+    g_in_move_resize_loop = true;
     state_ = State::kInSizing;
     hwnd_delegate_->HandleBeginUserResize();
   }
@@ -29,6 +32,7 @@ void UserResizeMoveDetector::OnSizing() {
 
 void UserResizeMoveDetector::OnMoving() {
   if (state_ == State::kInSizeMove) {
+    g_in_move_resize_loop = true;
     state_ = State::kInMoving;
     hwnd_delegate_->HandleBeginUserDrag();
   }
@@ -40,7 +44,13 @@ void UserResizeMoveDetector::OnExitSizeMove() {
   } else if (state_ == State::kInMoving) {
     hwnd_delegate_->HandleEndUserDrag();
   }
+  g_in_move_resize_loop = false;
   state_ = State::kNotResizing;
+}
+
+// static
+bool UserResizeMoveDetector::InMoveResizeLoop() {
+  return g_in_move_resize_loop;
 }
 
 }  // namespace views
