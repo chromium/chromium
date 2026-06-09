@@ -1875,16 +1875,11 @@ void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties) {
                              : connection_->default_screen().white_pixel;
 
   switch (properties.type) {
-    case PlatformWindowType::kMenu:
-      req.override_redirect = x11::Bool32(true);
-      break;
-    case PlatformWindowType::kTooltip:
-      req.override_redirect = x11::Bool32(true);
-      break;
-    case PlatformWindowType::kPopup:
-      req.override_redirect = x11::Bool32(true);
-      break;
+    case PlatformWindowType::kBubble:
     case PlatformWindowType::kDrag:
+    case PlatformWindowType::kMenu:
+    case PlatformWindowType::kPopup:
+    case PlatformWindowType::kTooltip:
       req.override_redirect = x11::Bool32(true);
       break;
     default:

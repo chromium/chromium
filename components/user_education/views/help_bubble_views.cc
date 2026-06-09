@@ -127,11 +127,12 @@ bool HelpBubbleViews::ToggleFocusForAccessibility() {
 
   if (auto* const anchor = GetAnchorView()) {
     if (anchor->GetViewAccessibility().IsAccessibilityFocusable()) {
-#if BUILDFLAG(IS_MAC)
-      // Mac does not automatically pass activation on focus, so we have to do
-      // it manually.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      // Mac and Linux do not automatically pass activation on focus, so we have
+      // to do it manually.
       anchor->GetWidget()->Activate();
-#else
+#endif
+#if !BUILDFLAG(IS_MAC)
       // Focus the anchor. We can't request focus for an accessibility-only view
       // until we turn on keyboard accessibility for its focus manager.
       anchor->GetFocusManager()->SetKeyboardAccessible(true);
@@ -142,11 +143,12 @@ bool HelpBubbleViews::ToggleFocusForAccessibility() {
       // An AccessiblePaneView can receive focus, but is not necessarily itself
       // accessibility focusable. Use the built-in functionality for focusing
       // elements of AccessiblePaneView instead.
-#if BUILDFLAG(IS_MAC)
-      // Mac does not automatically pass activation on focus, so we have to do
-      // it manually.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      // Mac and Linux do not automatically pass activation on focus, so we have
+      // to do it manually.
       anchor->GetWidget()->Activate();
-#else
+#endif
+#if !BUILDFLAG(IS_MAC)
       // You can't focus an accessible pane if it's already in accessibility
       // mode, so avoid doing that; the SetPaneFocus() call will go back into
       // accessibility navigation mode.
