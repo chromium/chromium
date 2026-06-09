@@ -92,6 +92,13 @@ class TestSystemIdentityManager : public SystemIdentityManager {
                          FetchCapabilitiesCallback callback) final {
     NOTREACHED();
   }
+  void FetchCapabilitiesWithPartial(
+      id<SystemIdentity> identity,
+      const std::vector<std::string>& names,
+      FetchCapabilitiesCompletion completion,
+      FetchPartialCapabilitiesCallback partial_callback) final {
+    NOTREACHED();
+  }
   bool HandleMDMNotification(id<SystemIdentity> identity,
                              NSArray<id<SystemIdentity>>* active_identities,
                              id<RefreshAccessTokenError> error,
