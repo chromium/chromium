@@ -145,7 +145,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
     private void testPrefetchRequestResponseSuccess(boolean runOnWorkerThread) throws Throwable {
         // Do the prefetch request.
         TestAwPrefetchCallback callback =
-                startPrefetchAndWaitV2(runOnWorkerThread, mPrefetchUrl, getAwPrefetchParameters());
+                startPrefetchAndWait(runOnWorkerThread, mPrefetchUrl, getAwPrefetchParameters());
 
         // wait then do the checks
         callback.mOnStatusUpdatedHelper.waitForNext();
@@ -187,7 +187,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
     private void testPrefetchRequestHTTPSOnlySupported(boolean runOnWorkerThread) throws Throwable {
         // Do the prefetch request.
         TestAwPrefetchCallback callback =
-                startPrefetchAndWaitV2(
+                startPrefetchAndWait(
                         runOnWorkerThread, "http://www.example.com", getAwPrefetchParameters());
 
         // wait then do the checks
@@ -240,7 +240,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
 
             // Do the prefetch request.
             TestAwPrefetchCallback callback =
-                    startPrefetchAndWaitV2(
+                    startPrefetchAndWait(
                             runOnWorkerThread, "https://www.example.com", prefetchParameters);
 
             // wait then do the checks
@@ -299,7 +299,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
 
         // Do the prefetch request.
         TestAwPrefetchCallback callback =
-                startPrefetchAndWaitV2(runOnWorkerThread, mPrefetchUrl, prefetchParameters);
+                startPrefetchAndWait(runOnWorkerThread, mPrefetchUrl, prefetchParameters);
 
         // wait then do the checks
         callback.mOnStatusUpdatedHelper.waitForNext();
@@ -317,10 +317,10 @@ public class AwPrefetchTest extends AwParameterizedTest {
             CountDownLatch latch = new CountDownLatch(1);
             callback2 = new TestAwPrefetchCallback();
             // We call `startPrefetchRequestAsync()` directly instead of
-            // `startPrefetchAndWaitV2()` because when OMT is enabled, this
+            // `startPrefetchAndWait()` because when OMT is enabled, this
             // duplicate request fails PrePrefetch and falls back to the UI
             // thread. This runs the key listener on the UI thread, which
-            // violates `startPrefetchAndWaitV2()`'s assertion that it runs
+            // violates `startPrefetchAndWait()`'s assertion that it runs
             // on the worker thread.
             // TODO(crbug.com/519611014): Consider revisiting this behavior
             // where PrePrefetch duplication failure falls back to a normal
@@ -338,7 +338,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
             Assert.assertTrue("Prefetch should start", latch.await(5, TimeUnit.SECONDS));
         } else {
             callback2 =
-                    startPrefetchAndWaitV2(
+                    startPrefetchAndWait(
                             runOnWorkerThread, prefetchUrlWithQueryParams, prefetchParameters);
         }
 
@@ -365,7 +365,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
         // Finally, do a third request with an unexpected query parameter.
         String prefetchUrlWithUnexpectedQueryParam = prefetchUrlWithQueryParams + "&q=help";
         TestAwPrefetchCallback callback3 =
-                startPrefetchAndWaitV2(
+                startPrefetchAndWait(
                         runOnWorkerThread, prefetchUrlWithUnexpectedQueryParam, prefetchParameters);
 
         // wait then do the checks
@@ -411,7 +411,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
     private void testPrefetchCancellation(boolean runOnWorkerThread) throws Throwable {
         // Do the prefetch request.
         TestAwPrefetchCallback callback =
-                startPrefetchAndWaitV2(runOnWorkerThread, mPrefetchUrl, getAwPrefetchParameters());
+                startPrefetchAndWait(runOnWorkerThread, mPrefetchUrl, getAwPrefetchParameters());
 
         // Wait for the prefetch success & key for cancellation.
         callback.mOnStatusUpdatedHelper.waitForNext();
@@ -705,7 +705,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
             throws Throwable {
         // Do the prefetch request.
         TestAwPrefetchCallback callback =
-                startPrefetchAndWaitV2(runOnWorkerThread, mPrefetchUrl, getAwPrefetchParameters());
+                startPrefetchAndWait(runOnWorkerThread, mPrefetchUrl, getAwPrefetchParameters());
 
         // wait then do the checks
         callback.mOnStatusUpdatedHelper.waitForNext();
@@ -763,7 +763,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
 
         // --- 2. Execute Prefetch Request ---
         TestAwPrefetchCallback prefetchCallback =
-                startPrefetchAndWaitV2(runOnWorkerThread, mPrefetchUrl, prefetchParameters);
+                startPrefetchAndWait(runOnWorkerThread, mPrefetchUrl, prefetchParameters);
         prefetchCallback.mOnStatusUpdatedHelper.waitForNext(); // Wait for status update
 
         // --- 3. FIRST CHECK: Nothing saved after ONLY calling prefetch ---
@@ -884,7 +884,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
 
             // Make a prefetch request with the exact same URL as the navigation.
             TestAwPrefetchCallback callback =
-                    startPrefetchAndWaitV2(runOnWorkerThread, url, getAwPrefetchParameters());
+                    startPrefetchAndWait(runOnWorkerThread, url, getAwPrefetchParameters());
             callback.mOnStatusUpdatedHelper.waitForNext();
 
             // Cancel the prefetch so that the histogram is logged.
@@ -955,7 +955,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
             // Make a prefetch request with the exact same URL as the navigation.
             final String url = getUrl(BASIC_PREFETCH_RELATIVE_PATH);
             TestAwPrefetchCallback callback =
-                    startPrefetchAndWaitV2(runOnWorkerThread, url, getAwPrefetchParameters());
+                    startPrefetchAndWait(runOnWorkerThread, url, getAwPrefetchParameters());
             callback.mOnStatusUpdatedHelper.waitForNext();
 
             // Cancel the prefetch so that the histogram is logged.
@@ -1010,7 +1010,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
         AwPrefetchParameters prefetchParameters =
                 new AwPrefetchParameters(additionalHeaders, null, true);
         TestAwPrefetchCallback callback =
-                startPrefetchAndWaitV2(runOnWorkerThread, testUrl, prefetchParameters);
+                startPrefetchAndWait(runOnWorkerThread, testUrl, prefetchParameters);
         callback.mOnStatusUpdatedHelper.waitForNext();
         Assert.assertEquals(
                 "Prefetch should complete successfully.",
@@ -1080,7 +1080,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
 
         // Perform a standard prefetch to populate the cache with a cacheable response.
         TestAwPrefetchCallback callback =
-                startPrefetchAndWaitV2(runOnWorkerThread, testUrl, getAwPrefetchParameters());
+                startPrefetchAndWait(runOnWorkerThread, testUrl, getAwPrefetchParameters());
         callback.mOnStatusUpdatedHelper.waitForNext();
         Assert.assertEquals(
                 "Prefetch should complete successfully.",
@@ -1164,7 +1164,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
 
         // Do the prefetch request.
         TestAwPrefetchCallback callback =
-                startPrefetchAndWaitV2(runOnWorkerThread, mPrefetchUrl, prefetchParameters);
+                startPrefetchAndWait(runOnWorkerThread, mPrefetchUrl, prefetchParameters);
 
         // wait then do the checks
         callback.mOnStatusUpdatedHelper.waitForNext();
@@ -1187,7 +1187,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
     public void testPrePrefetchServedAndConsumed_WorkerThread_OMTEnabled() throws Throwable {
         // PrePrefetch is triggered under the flag enabled.
         TestAwPrefetchCallback callback =
-                startPrefetchAndWaitV2(
+                startPrefetchAndWait(
                         /* runOnWorkerThread= */ true, mPrefetchUrl, getAwPrefetchParameters());
 
         callback.mOnStatusUpdatedHelper.waitForNext();
@@ -1257,7 +1257,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
 
         // Call `startPrefetchRequestAsync()` directly here because we expect the PrePrefetch to
         // fail and fallback to standard prefetch on the UI thread. The helper method
-        // `startPrefetchAndWaitV2()` has strict assertions that the key listener must be called
+        // `startPrefetchAndWait()` has strict assertions that the key listener must be called
         // on a background worker thread, which is not true in this fallback case.
         prefetchManager.startPrefetchRequestAsync(
                 SystemClock.uptimeMillis(),
@@ -1335,7 +1335,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
     private void testPrefetchHasExpectedXRequestedWithHeader(boolean runOnWorkerThread)
             throws Throwable {
         TestAwPrefetchCallback callback =
-                startPrefetchAndWaitV2(runOnWorkerThread, mPrefetchUrl, getAwPrefetchParameters());
+                startPrefetchAndWait(runOnWorkerThread, mPrefetchUrl, getAwPrefetchParameters());
         callback.mOnStatusUpdatedHelper.waitForNext();
 
         HashMap<String, String> prefetchHeaders =
@@ -1365,7 +1365,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
 
         // 1. Normal Prefetch on UI thread.
         TestAwPrefetchCallback prefetchCallback =
-                startPrefetchAndWaitV2(
+                startPrefetchAndWait(
                         /* runOnWorkerThread= */ false, prefetchUrl, getAwPrefetchParameters());
         prefetchCallback.mOnStatusUpdatedHelper.waitForNext();
         HashMap<String, String> prefetchHeaders =
@@ -1377,7 +1377,7 @@ public class AwPrefetchTest extends AwParameterizedTest {
 
         // PrePrefetch is triggered under the flag enabled.
         TestAwPrefetchCallback prePrefetchCallback =
-                startPrefetchAndWaitV2(
+                startPrefetchAndWait(
                         /* runOnWorkerThread= */ true, prePrefetchUrl, getAwPrefetchParameters());
         prePrefetchCallback.mOnStatusUpdatedHelper.waitForNext();
         HashMap<String, String> prePrefetchHeaders =
@@ -1409,13 +1409,13 @@ public class AwPrefetchTest extends AwParameterizedTest {
                 mBrowserContext);
     }
 
-    private TestAwPrefetchCallback startPrefetchAndWaitV2(
+    private TestAwPrefetchCallback startPrefetchAndWait(
             boolean runOnWorkerThread, String url, AwPrefetchParameters prefetchParameters)
             throws Exception {
-        return startPrefetchAndWaitV2(runOnWorkerThread, url, prefetchParameters, mPrefetchManager);
+        return startPrefetchAndWait(runOnWorkerThread, url, prefetchParameters, mPrefetchManager);
     }
 
-    private TestAwPrefetchCallback startPrefetchAndWaitV2(
+    private TestAwPrefetchCallback startPrefetchAndWait(
             boolean runOnWorkerThread,
             String url,
             AwPrefetchParameters prefetchParameters,
