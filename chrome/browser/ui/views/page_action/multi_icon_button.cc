@@ -211,7 +211,13 @@ void MultiIconButton::Update(
     plus_more_label->SetProperty(views::kMarginsKey,
                                  gfx::Insets::TLBR(0, 8, 0, 0));
     plus_more_label->SetEnabledColor(ui::kColorSysOnSurface);
+    plus_more_label->SetLineHeight(kAnchoredMessageIconSize);
   }
+
+  // Enforce that the icon row doesn't grow larger than the icon size, even if a
+  // font tries to push the line height up (ie. 17px line height vs 16px icons).
+  container->SetPreferredSize(gfx::Size(container->GetPreferredSize().width(),
+                                        kAnchoredMessageIconSize));
 
   content_container_ = AddChildView(std::move(container));
   content_container_->SetCanProcessEventsWithinSubtree(false);

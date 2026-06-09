@@ -33,6 +33,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -53,7 +54,7 @@ namespace page_actions {
 const int kChipContainerHeight = 36;
 const int kChipIconSize = 20;
 const int kAnchoredMessageHeight = 52;
-const gfx::Insets kAnchoredMessageMarginsInset = gfx::Insets::TLBR(8, 16, 8, 9);
+const int kAnchoredMessageLeftInset = 16;
 const gfx::Insets kAnchoredMessageIconMarginsInset =
     gfx::Insets::TLBR(0, 0, 0, 12);
 const int kAnchoredMessageIconSize = 18;
@@ -150,7 +151,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetBackgroundColor(ui::kColorSysSurface);
   set_corner_radius(kAnchoredMessageHeight / 2);
-  set_margins(kAnchoredMessageMarginsInset);
+  set_margins(gfx::Insets());
 
   auto* animating_layout =
       SetLayoutManager(std::make_unique<views::AnimatingLayoutManager>());
@@ -165,6 +166,8 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
   top_row_ = AddChildView(std::make_unique<views::View>());
+  top_row_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(8, kAnchoredMessageLeftInset, 8, 9)));
   auto* top_row_layout =
       top_row_->SetLayoutManager(std::make_unique<views::FlexLayout>());
   top_row_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
@@ -238,7 +241,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   bottom_container_->SetProperty(views::kElementIdentifierKey,
                                  kAnchoredMessageExpandedContentId);
   bottom_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(), 8));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
   bottom_container_->SetVisible(false);
 
   UpdateContent(model);
@@ -320,10 +323,25 @@ void AnchoredMessageBubbleView::UpdateContent(
 
     auto* separator =
         bottom_container_->AddChildView(std::make_unique<views::Separator>());
-    separator->SetProperty(views::kMarginsKey, gfx::Insets::VH(8, 0));
+    separator->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 6, 0));
+
+    auto* items_container =
+        bottom_container_->AddChildView(std::make_unique<views::View>());
+    items_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical,
+        gfx::Insets::TLBR(0, kAnchoredMessageLeftInset, 8, 12), 0));
 
     if (expandable_content->heading) {
-      auto* title_label = bottom_container_->AddChildView(
+      auto* heading_row =
+          items_container->AddChildView(std::make_unique<views::View>());
+      auto* heading_layout =
+          heading_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 8));
+      heading_layout->set_cross_axis_alignment(
+          views::BoxLayout::CrossAxisAlignment::kCenter);
+      heading_layout->set_minimum_cross_axis_size(32);
+
+      auto* title_label = heading_row->AddChildView(
           std::make_unique<views::Label>(*expandable_content->heading));
       title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       title_label->SetTextStyle(views::style::STYLE_BODY_4_MEDIUM);
@@ -333,16 +351,18 @@ void AnchoredMessageBubbleView::UpdateContent(
       // the bubble.
       title_label->SetPreferredSize(
           gfx::Size(0, title_label->GetPreferredSize().height()));
+      heading_layout->SetFlexForView(title_label, 1);
     }
 
     for (const auto& item : expandable_content->items) {
       auto* item_row =
-          bottom_container_->AddChildView(std::make_unique<views::View>());
+          items_container->AddChildView(std::make_unique<views::View>());
       auto* item_layout =
           item_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
               views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 8));
       item_layout->set_cross_axis_alignment(
           views::BoxLayout::CrossAxisAlignment::kCenter);
+      item_layout->set_minimum_cross_axis_size(32);
 
       if (item.icon) {
         auto* item_icon =
