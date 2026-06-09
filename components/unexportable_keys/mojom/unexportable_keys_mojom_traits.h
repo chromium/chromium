@@ -71,6 +71,52 @@ struct StructTraits<unexportable_keys::mojom::UnexportableSigningKeyIdDataView,
       unexportable_keys::mojom::UnexportableSigningKeyIdDataView data,
       unexportable_keys::UnexportableSigningKeyId* output);
 };
+
+template <>
+struct StructTraits<
+    unexportable_keys::mojom::UnexportableAttestationKeyIdDataView,
+    unexportable_keys::UnexportableAttestationKeyId> {
+  static const base::UnguessableToken& key_id(
+      const unexportable_keys::UnexportableAttestationKeyId& input) {
+    return input.value();
+  }
+
+  static bool Read(
+      unexportable_keys::mojom::UnexportableAttestationKeyIdDataView data,
+      unexportable_keys::UnexportableAttestationKeyId* output);
+};
+
+template <>
+struct EnumTraits<unexportable_keys::mojom::AttestationFormat,
+                  crypto::AttestationStatement::Format> {
+  static unexportable_keys::mojom::AttestationFormat ToMojom(
+      crypto::AttestationStatement::Format format);
+
+  static crypto::AttestationStatement::Format FromMojom(
+      unexportable_keys::mojom::AttestationFormat mojo_format);
+};
+
+template <>
+struct StructTraits<unexportable_keys::mojom::AttestationStatementDataView,
+                    crypto::AttestationStatement> {
+  static crypto::AttestationStatement::Format format(
+      const crypto::AttestationStatement& input) {
+    return input.format;
+  }
+
+  static const std::vector<uint8_t>& statement(
+      const crypto::AttestationStatement& input) {
+    return input.statement;
+  }
+
+  static const std::vector<uint8_t>& signature(
+      const crypto::AttestationStatement& input) {
+    return input.signature;
+  }
+
+  static bool Read(unexportable_keys::mojom::AttestationStatementDataView data,
+                   crypto::AttestationStatement* output);
+};
 }  // namespace mojo
 
 #endif  // COMPONENTS_UNEXPORTABLE_KEYS_MOJOM_UNEXPORTABLE_KEYS_MOJOM_TRAITS_H_

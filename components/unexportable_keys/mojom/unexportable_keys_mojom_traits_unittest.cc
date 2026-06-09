@@ -31,4 +31,28 @@ TEST(UnexportableKeysTraitsTest, UnexportableSigningKeyId) {
   EXPECT_EQ(input, output);
 }
 
+TEST(UnexportableKeysTraitsTest, UnexportableAttestationKeyId) {
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  UnexportableAttestationKeyId input(token);
+  UnexportableAttestationKeyId output;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::UnexportableAttestationKeyId>(
+          input, output));
+  EXPECT_EQ(input, output);
+}
+
+TEST(UnexportableKeysTraitsTest, AttestationStatement) {
+  crypto::AttestationStatement input;
+  input.format = crypto::AttestationStatement::Format::kSecureEnclave;
+  input.statement = {1, 2, 3};
+  input.signature = {4, 5, 6};
+
+  crypto::AttestationStatement output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::AttestationStatement>(
+      input, output));
+  EXPECT_EQ(input.format, output.format);
+  EXPECT_EQ(input.statement, output.statement);
+  EXPECT_EQ(input.signature, output.signature);
+}
+
 }  // namespace unexportable_keys

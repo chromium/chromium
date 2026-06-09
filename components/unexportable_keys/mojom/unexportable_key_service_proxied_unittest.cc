@@ -91,6 +91,25 @@ class FakeUnexportableKeyServiceProxy : public mojom::UnexportableKeyService {
     }
   }
 
+  void GenerateAttestationKey(
+      const std::vector<crypto::SignatureVerifier::SignatureAlgorithm>&
+          acceptable_algorithms,
+      BackgroundTaskPriority priority,
+      GenerateAttestationKeyCallback callback) override {
+    // TODO(crbug.com/501306852): Implement this.
+    std::move(callback).Run(
+        base::unexpected(ServiceError::kOperationNotSupported));
+  }
+
+  void FromWrappedAttestationKey(
+      const std::vector<uint8_t>& wrapped_key,
+      BackgroundTaskPriority priority,
+      FromWrappedAttestationKeyCallback callback) override {
+    // TODO(crbug.com/501306852): Implement this.
+    std::move(callback).Run(
+        base::unexpected(ServiceError::kOperationNotSupported));
+  }
+
   void Sign(const UnexportableSigningKeyId& key_id,
             const std::vector<uint8_t>& data,
             BackgroundTaskPriority priority,
@@ -104,6 +123,16 @@ class FakeUnexportableKeyServiceProxy : public mojom::UnexportableKeyService {
       std::vector<uint8_t> signature = {0x11, 0x22, 0x33, 0x44};
       std::move(callback).Run(std::move(signature));
     }
+  }
+
+  void Certify(const UnexportableAttestationKeyId& attestation_key_id,
+               const UnexportableSigningKeyId& signing_key_id,
+               const std::vector<uint8_t>& challenge,
+               BackgroundTaskPriority priority,
+               CertifyCallback callback) override {
+    // TODO(crbug.com/501306852): Implement this.
+    std::move(callback).Run(
+        base::unexpected(ServiceError::kOperationNotSupported));
   }
 
   void GetAllKeysForGarbageCollection(

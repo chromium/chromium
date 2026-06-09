@@ -134,6 +134,25 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::FromWrappedSigningKey(
           .Then(std::move(callback)));
 }
 
+void unexportable_keys::UnexportableKeyServiceProxyImpl::GenerateAttestationKey(
+    const std::vector<crypto::SignatureVerifier::SignatureAlgorithm>&
+        acceptable_algorithms,
+    BackgroundTaskPriority priority,
+    GenerateAttestationKeyCallback callback) {
+  // TODO(crbug.com/501306852): Implement this.
+  std::move(callback).Run(
+      base::unexpected(ServiceError::kOperationNotSupported));
+}
+
+void unexportable_keys::UnexportableKeyServiceProxyImpl::
+    FromWrappedAttestationKey(const std::vector<uint8_t>& wrapped_key,
+                              BackgroundTaskPriority priority,
+                              FromWrappedAttestationKeyCallback callback) {
+  // TODO(crbug.com/501306852): Implement this.
+  std::move(callback).Run(
+      base::unexpected(ServiceError::kOperationNotSupported));
+}
+
 void unexportable_keys::UnexportableKeyServiceProxyImpl::Sign(
     const UnexportableSigningKeyId& key_id,
     const std::vector<uint8_t>& data,
@@ -141,6 +160,17 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::Sign(
     SignCallback callback) {
   unexportable_key_service_->SignSlowlyAsync(key_id, data, priority,
                                              std::move(callback));
+}
+
+void unexportable_keys::UnexportableKeyServiceProxyImpl::Certify(
+    const UnexportableAttestationKeyId& attestation_key_id,
+    const UnexportableSigningKeyId& signing_key_id,
+    const std::vector<uint8_t>& challenge,
+    BackgroundTaskPriority priority,
+    CertifyCallback callback) {
+  // TODO(crbug.com/501306852): Implement this.
+  std::move(callback).Run(
+      base::unexpected(ServiceError::kOperationNotSupported));
 }
 
 void unexportable_keys::UnexportableKeyServiceProxyImpl::

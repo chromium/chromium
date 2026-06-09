@@ -34,6 +34,18 @@ mojom("mojom") {
           mojom = "unexportable_keys.mojom.UnexportableSigningKeyId"
           cpp = "::unexportable_keys::UnexportableSigningKeyId"
         },
+        {
+          mojom = "unexportable_keys.mojom.UnexportableAttestationKeyId"
+          cpp = "::unexportable_keys::UnexportableAttestationKeyId"
+        },
+        {
+          mojom = "unexportable_keys.mojom.AttestationFormat"
+          cpp = "::crypto::AttestationStatement::Format"
+        },
+        {
+          mojom = "unexportable_keys.mojom.AttestationStatement"
+          cpp = "::crypto::AttestationStatement"
+        },
       ]
       traits_headers = [
         "//components/unexportable_keys/mojom/unexportable_keys_mojom_traits.h",
