@@ -215,11 +215,6 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         super.onStart();
         assert isContentsInitialized();
 
-        if (!verifyOpenerOrigin(getIntent(), mParentWebContents)) {
-            finish();
-            return;
-        }
-
         mInitiatorTabObserver =
                 new EmptyTabObserver() {
                     @Override
@@ -302,6 +297,16 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
 
     @Override
     public void initializeCompositor() {
+        // Guard against the asynchronous startup gap. Because initializeCompositor()
+        // is posted to the UI thread, the opener WebContents could have navigated
+        // to a different origin before the child WebContents delegate is attached.
+        // If that happens, verify the origin to abort and prevent origin spoofing.
+        if (mParentWebContents == null
+                || mParentWebContents.isDestroyed()
+                || !verifyOpenerOrigin(getIntent(), mParentWebContents)) {
+            finish();
+            return;
+        }
         PopupCreatorFactory.setInstance(new PopupCreatorImpl());
         ActivityWindowAndroid windowAndroid = getWindowAndroid();
         if (windowAndroid == null) {
