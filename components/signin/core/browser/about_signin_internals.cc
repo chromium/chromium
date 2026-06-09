@@ -11,6 +11,7 @@
 #include <tuple>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
@@ -833,6 +834,11 @@ base::DictValue AboutSigninInternals::SigninStatus::ToValue(
               signin_client->GetPrefs())) {
         entry.Set("isBound", identity_manager->HasAccountWithBoundRefreshToken(
                                  account_info.account_id));
+      }
+      if (base::FeatureList::IsEnabled(switches::kEnableMtlsTokenBinding)) {
+        entry.Set("mtlsTokenBinding",
+                  identity_manager->HasAccountWithRefreshTokenBoundToMtls(
+                      account_info.account_id));
       }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
       account_info_section.Append(std::move(entry));

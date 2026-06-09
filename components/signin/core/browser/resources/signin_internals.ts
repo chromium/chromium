@@ -27,6 +27,7 @@ interface AccountInfo {
   hasRefreshToken?: boolean;
   hasAuthError?: boolean;
   isBound?: boolean;
+  mtlsTokenBinding?: boolean;
 }
 
 interface RefreshTokenEvent {
@@ -166,6 +167,8 @@ function getAccountInfoHtml(infos: AccountInfo[]) {
           <td>Has refresh token</td>
           <td>Has persistent auth error</td>
           <td ?hidden="${infos[0]!.isBound == null}">Is bound to the device</td>
+          <td ?hidden="${infos[0]!.mtlsTokenBinding == null}"
+              >Is bound to mTLS certificate</td>
         </tr>
         ${infos.map(item => html`
           <tr>
@@ -173,6 +176,8 @@ function getAccountInfoHtml(infos: AccountInfo[]) {
             <td>${item.hasRefreshToken}</td>
             <td>${item.hasAuthError}</td>
             <td ?hidden="${item.isBound == null}">${item.isBound}</td>
+            <td ?hidden="${item.mtlsTokenBinding == null}"
+                >${item.mtlsTokenBinding}</td>
           </tr>
         `)}
       </table>
