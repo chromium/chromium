@@ -3854,7 +3854,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC)
-    public void glicItemDisabled_EnterpriseDisallowed() {
+    public void glicItemDisabled_NotEnabled() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isIncognito()).thenReturn(false);

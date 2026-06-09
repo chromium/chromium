@@ -173,6 +173,10 @@ inline constexpr char kGlicGeminiEnterpriseSettings[] =
 inline constexpr char kGlicPartitionNeedsCookieSync[] =
     "glic.partition_needs_cookie_sync";
 
+// Boolean pref that tracks if the Glic profile was previously ineligible.
+inline constexpr char kGlicPreviouslyNotAllowed[] =
+    "glic.previously_not_allowed";
+
 #if BUILDFLAG(IS_MAC)
 inline constexpr char kGlicUseAltOSIcon[] = "glic.use_alt_os_icon";
 #endif

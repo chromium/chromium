@@ -167,6 +167,10 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // Code inside should use instance method IsAllowed() instead.
   static bool IsEnabledForProfile(Profile* profile);
 
+  // Returns true if the user was previously determined to be ineligible for
+  // Glic.
+  static bool WasPreviouslyNotAllowed(Profile* profile);
+
   // Returns true if the profile has completed the FRE.
   static bool HasConsentedForProfile(Profile* profile);
 

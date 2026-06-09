@@ -544,6 +544,47 @@ TEST_F(GlicEnablingProfileEligibilityTest, Eligible) {
   EXPECT_TRUE(GlicEnabling::IsProfileEligible(profile()));
 }
 
+TEST_F(GlicEnablingProfileEligibilityTest, WasPreviouslyNotAllowedTest) {
+  // 1. Initially, when signed out and never previously evaluated, it defaults
+  // to false (not previously not allowed).
+  EXPECT_FALSE(GlicEnabling::WasPreviouslyNotAllowed(profile()));
+
+  // 2. Sign in a capable account.
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_use_model_execution_features(true);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  // 3. Now they should be eligible, and not previously not allowed.
+  EXPECT_FALSE(GlicEnabling::WasPreviouslyNotAllowed(profile()));
+
+  // 4. Become ineligible while signed in.
+  mutator.set_can_use_model_execution_features(false);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  // 5. They are now ineligible but still signed in, so previously not allowed
+  // should be true.
+  EXPECT_TRUE(GlicEnabling::WasPreviouslyNotAllowed(profile()));
+
+  // 6. Make them eligible again.
+  mutator.set_can_use_model_execution_features(true);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+  EXPECT_FALSE(GlicEnabling::WasPreviouslyNotAllowed(profile()));
+
+  // 7. Sign out.
+#if !BUILDFLAG(IS_CHROMEOS)
+  signin::ClearPrimaryAccount(identity_test_env->identity_manager());
+
+  // 8. Even after signing out, WasPreviouslyNotAllowed should remain false.
+  EXPECT_FALSE(GlicEnabling::WasPreviouslyNotAllowed(profile()));
+#endif
+}
+
 class GlicEnablingProfileReadyStateTestBase
     : public GlicEnablingProfileEligibilityTest {
  public:
