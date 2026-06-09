@@ -733,6 +733,7 @@ void MirroringActivity::OnSessionSet(const CastSession& session) {
   if (!mirroring_type_) {
     return;
   }
+  will_start_mirroring_timestamp_ = base::Time::Now();
   // We use unretained here because weak pointers may be passed safely between
   // sequences, but must always be dereferenced and invalidated on the same
   // SequencedTaskRunner otherwise checking the pointer would be racey. See more
@@ -762,8 +763,6 @@ void MirroringActivity::StartSession(const std::string& destination_id,
                                    : has_audio ? SessionType::AUDIO_ONLY
                                                : SessionType::VIDEO_ONLY;
 
-  will_start_mirroring_timestamp_ = base::Time::Now();
-
   // Bind Mojo receivers for the interfaces this object implements.
   mojo::PendingRemote<mirroring::mojom::SessionObserver> observer_remote;
   observer_receiver_.Bind(observer_remote.InitWithNewPipeAndPassReceiver());
@@ -776,6 +775,9 @@ void MirroringActivity::StartSession(const std::string& destination_id,
                               ? cast_source->target_playout_delay()
                               : GetCastMirroringPlayoutDelay();
   should_fetch_stats_on_start_ = enable_rtcp_reporting;
+  if (did_start_mirroring_timestamp_ && enable_rtcp_reporting) {
+    ScheduleFetchMirroringStats();
+  }
 
   // If this fails, it's probably because CreateMojoBindings() hasn't been
   // called.
