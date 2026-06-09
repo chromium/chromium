@@ -1,8 +1,0 @@
-ci/android-cast-arm-dbg
-ci/android-cast-arm-rel
-ci/android-cast-arm64-dbg
-ci/android-cast-arm64-rel
-try/android-cast-arm-dbg
-try/android-cast-arm-rel
-try/android-cast-arm64-dbg
-try/android-cast-arm64-rel
