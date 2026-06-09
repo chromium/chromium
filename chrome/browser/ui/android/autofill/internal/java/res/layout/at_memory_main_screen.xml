@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/at_memory_search_bar_height"
+        android:orientation="horizontal"
+        android:background="@drawable/at_memory_search_bar_background">
+
+        <EditText
+            android:id="@+id/search_query_input"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:hint="@string/at_memory_search_hint"
+            android:drawableStart="@drawable/search_spark"
+            android:drawablePadding=
+                "@dimen/at_memory_search_bar_drawable_padding"
+            android:paddingStart="@dimen/at_memory_search_bar_padding_start"
+            android:paddingEnd="@dimen/at_memory_search_bar_padding_end"
+            android:paddingTop="@dimen/at_memory_search_bar_padding_vertical"
+            android:paddingBottom="@dimen/at_memory_search_bar_padding_vertical"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:background="@null" />
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/clear_search_button"
+            android:layout_width="@dimen/at_memory_icon_button_size"
+            android:layout_height="@dimen/at_memory_icon_button_size"
+            android:layout_gravity="center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/btn_delete_24dp"
+            android:scaleType="centerInside"
+            android:visibility="gone"
+            android:contentDescription=
+                "@string/accessibility_toolbar_btn_delete_url" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/suggestions_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/at_memory_suggestions_margin_top"
+            android:background="@drawable/at_memory_suggestions_bg"
+            android:clipToOutline="true"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/at_memory_bottom_sheet_suggestion_item"/>
+    </FrameLayout>
+
+</LinearLayout>

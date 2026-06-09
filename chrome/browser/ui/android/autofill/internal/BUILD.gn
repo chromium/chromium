@@ -24,12 +24,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetSuggestionViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetView.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetViewBinder.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutContent.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutCoordinator.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutMediator.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutProperties.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutView.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorOptionsAdapter.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialog.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridge.java",
@@ -92,9 +86,6 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediatorTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetViewTest.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutCoordinatorTest.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutMediatorTest.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutViewTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridgeTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridgeTest.java",
@@ -136,10 +127,7 @@ robolectric_library("junit") {
 android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.ui.autofill.internal"
-  sources = [
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetViewRenderTest.java",
-    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutViewRenderTest.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetViewRenderTest.java" ]
   deps = [
     ":java",
     ":java_resources",
@@ -171,8 +159,9 @@ android_resources("java_resources") {
     "java/res/drawable/at_memory_suggestions_bg.xml",
     "java/res/layout/at_memory_bottom_sheet.xml",
     "java/res/layout/at_memory_bottom_sheet_suggestion_item.xml",
-    "java/res/layout/at_memory_flyout_bottom_sheet.xml",
     "java/res/layout/at_memory_flyout_chip.xml",
+    "java/res/layout/at_memory_flyout_screen.xml",
+    "java/res/layout/at_memory_main_screen.xml",
     "java/res/layout/authenticator_option.xml",
     "java/res/layout/authenticator_selection_dialog.xml",
     "java/res/layout/autofill_error_dialog.xml",

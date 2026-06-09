@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
   <dimen name="authenticator_option_details_margin_start">24dp</dimen>
   <dimen name="authenticator_option_description_margin_top">3dp</dimen>
   <dimen name="authenticator_option_vertical_margin">8dp</dimen>
@@ -22,7 +22,8 @@ found in the LICENSE file.
 
   <dimen name="at_memory_bottom_sheet_divider_height">2dp</dimen>
   <dimen name="at_memory_flyout_default_margin">16dp</dimen>
-  <dimen name="at_memory_flyout_chip_padding_vertical">6dp</dimen>
+  <!-- TODO(crbug.com/513146609): Remove UnusedResources suppression once integrated in Part 2. -->
+  <dimen name="at_memory_flyout_chip_padding_vertical" tools:ignore="UnusedResources">6dp</dimen>
   <dimen name="at_memory_suggestion_default_margin">16dp</dimen>
   <dimen name="at_memory_suggestion_item_padding_vertical">12dp</dimen>
   <dimen name="at_memory_suggestion_icon_size">24dp</dimen>
