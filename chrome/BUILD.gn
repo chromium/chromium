@@ -1187,10 +1187,6 @@ if (is_win) {
       "Resources",
     ]
 
-    if (is_chrome_branded) {
-      framework_contents += [ "Default Apps" ]
-    }
-
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
     configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
     configs += [ "//build/config/compiler:thinlto_optimize_max" ]
