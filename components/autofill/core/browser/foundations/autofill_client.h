@@ -416,6 +416,9 @@ class AutofillClient {
   // notice.
   virtual bool ShouldShowPersonalContextAutofillNotice() const;
 
+  // Marks the Personal Context notice as acknowledged.
+  virtual void MarkPersonalContextInAutofillNoticeAsAcknowledged();
+
   // Gets the AutocompleteHistoryManager instance associated with the client.
   virtual AutocompleteHistoryManager* GetAutocompleteHistoryManager() = 0;
 

@@ -124,6 +124,8 @@ bool AutofillClient::ShouldShowPersonalContextAutofillNotice() const {
   return false;
 }
 
+void AutofillClient::MarkPersonalContextInAutofillNoticeAsAcknowledged() {}
+
 AutofillComposeDelegate* AutofillClient::GetComposeDelegate() {
   return nullptr;
 }

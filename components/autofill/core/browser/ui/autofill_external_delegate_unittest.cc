@@ -3744,6 +3744,14 @@ TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_ServerCard) {
       pdm().payments_data_manager().GetCreditCardByGUID(server_card.guid()));
 }
 
+// Tests that the personal context notice is removed and the pref is updated.
+TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_PersonalContextNotice) {
+  EXPECT_FALSE(autofill_client().is_personal_context_notice_acknowledged());
+  EXPECT_TRUE(external_delegate().RemoveSuggestion(
+      Suggestion(SuggestionType::kPersonalContextNotice)));
+  EXPECT_TRUE(autofill_client().is_personal_context_notice_acknowledged());
+}
+
 TEST_F(AutofillExternalDelegateTest, RecordSuggestionTypeOnSuggestionAccepted) {
   base::HistogramTester histogram_tester;
   IssueOnQuery();

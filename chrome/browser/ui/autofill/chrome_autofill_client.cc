@@ -451,6 +451,15 @@ bool ChromeAutofillClient::ShouldShowPersonalContextAutofillNotice() const {
   return service && service->ShouldShowPersonalContextAutofillNotice();
 }
 
+void ChromeAutofillClient::MarkPersonalContextInAutofillNoticeAsAcknowledged() {
+  Profile* profile = GetProfile();
+  personal_context::PersonalContextFirstRunService* service =
+      PersonalContextFirstRunServiceFactory::GetForProfile(profile);
+  if (service) {
+    service->MarkPersonalContextInAutofillNoticeAsAcknowledged();
+  }
+}
+
 SingleFieldFillRouter& ChromeAutofillClient::GetSingleFieldFillRouter() {
   return single_field_fill_router_;
 }

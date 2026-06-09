@@ -149,6 +149,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   WalletPassAccessManager* GetWalletPassAccessManager() final;
   SingleFieldFillRouter& GetSingleFieldFillRouter() final;
   bool ShouldShowPersonalContextAutofillNotice() const override;
+  void MarkPersonalContextInAutofillNoticeAsAcknowledged() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() final;
   AutofillComposeDelegate* GetComposeDelegate() final;
   accessibility_annotator::AccessibilityQueryService*
