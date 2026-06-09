@@ -491,6 +491,28 @@ base::Value GenerateSdJwtSensitiveBundledWithDpc() {
   return ParseJsonAndCheck(kJson);
 }
 
+base::Value GenerateOpenid4VpRequestWithEmptyClaims() {
+  constexpr char kJson[] = R"({
+  "response_type": "vp_token",
+  "response_mode": "dc_api",
+  "client_id": "web-origin:https://www.digital-credentials.dev",
+  "nonce": "d_xvsQ_PF1oPVZbjAfWu_xgwh3dJf_W5zgWB3U2xWw8",
+  "dcql_query": {
+    "credentials": [
+      {
+        "id": "cred1",
+        "format": "mso_mdoc",
+        "meta": {
+          "doctype_value": "org.iso.18013.5.1.mDL"
+        },
+        "claims": []
+      }
+    ]
+  }
+})";
+  return ParseJsonAndCheck(kJson);
+}
+
 // Does depth-first traversal of nested dicts rooted at `root`. Returns first
 // matching base::Value with key `find_key`.
 base::Value* FindValueWithKey(base::Value& root, const std::string& find_key) {
@@ -649,7 +671,7 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
   paths->GetList().resize(0);
 
   EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, std::move(request)),
-            std::nullopt);
+            InterstitialType::kLowRisk);
 }
 
 TEST_F(DigitalIdentityRequestImplInterstitialTest,
@@ -796,6 +818,13 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocolDCQL_ComputeInterstitialType_SdJwtAgeOnly) {
   EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol, GenerateSdJwtAgeOnly()),
             std::nullopt);
+}
+
+TEST_F(DigitalIdentityRequestImplInterstitialTest,
+       Openid4VpProtocolDCQL_ComputeInterstitialType_EmptyClaims) {
+  EXPECT_EQ(ComputeInterstitialType(kOpenid4vpProtocol,
+                                    GenerateOpenid4VpRequestWithEmptyClaims()),
+            InterstitialType::kLowRisk);
 }
 
 TEST_F(DigitalIdentityRequestImplInterstitialTest,
@@ -1006,7 +1035,6 @@ class DigitalIdentityRequestImplTest : public RenderViewHostTestHarness {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  // base::test::ScopedCommandLine command_line_;
 
   raw_ptr<MockDigitalIdentityProvider> mock_digital_identity_provider_;
   ContentBrowserClientWithMockDigitalIdentityProvider content_browser_client_;

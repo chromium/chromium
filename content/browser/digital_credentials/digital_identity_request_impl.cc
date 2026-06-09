@@ -233,21 +233,27 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
       continue;
     }
 
+    bool is_phone =
+        std::ranges::all_of(vct_values, CanVctValueBypassInterstitial);
+    if (is_phone && !vct_values.empty()) {
+      continue;
+    }
+
     bool is_mdl =
         format && *format == kMdocFormat && doctype_value == kMdlDocumentType;
     if (is_mdl) {
+      if (claims.empty()) {
+        return false;
+      }
       continue;
     }
 
     bool is_sdjwt = format && (*format == "dc+sd-jwt" ||
                                *format == "dc-authorization+sd-jwt");
     if (is_sdjwt) {
-      continue;
-    }
-
-    bool is_phone =
-        std::ranges::all_of(vct_values, CanVctValueBypassInterstitial);
-    if (is_phone && !vct_values.empty()) {
+      if (claims.empty()) {
+        return false;
+      }
       continue;
     }
 
