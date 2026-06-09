@@ -104,6 +104,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:badge",
     "//ios/chrome/browser/infobars/model/overlays",
+    "//ios/chrome/browser/intelligence/actor/model:tab_helper",
     "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/itunes_urls/model",

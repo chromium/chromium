@@ -100,6 +100,10 @@ class ActorTask : public web::WebStateObserver,
  private:
   friend class ActorTaskTest;
 
+  // Sets the actuation state on all controlled `WebState`s based on
+  // `actuating`.
+  void SetActuatingOnWebStates(bool actuating);
+
   // Sets the task state and logs the transition.
   void SetState(ActorTaskState new_state);
 

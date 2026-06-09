@@ -10,6 +10,7 @@
 #import "base/types/strong_alias.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
@@ -628,6 +629,41 @@ TEST_F(ActorTaskTest, StateTransitionsToReflectingBeforeTimeoutCallback) {
 
   EXPECT_TRUE(callback_executed);
   EXPECT_EQ(ActorTaskState::kReflecting, state_in_callback);
+}
+
+// Test that calling `Stop()` on the task stops actuation on controlled
+// `WebState`s.
+TEST_F(ActorTaskTest, StopSetsActuatingStateToFalse) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  ActorTabHelper::CreateForWebState(web_state.get());
+  ActorTabHelper* helper = ActorTabHelper::FromWebState(web_state.get());
+  ASSERT_NE(helper, nullptr);
+  EXPECT_FALSE(helper->IsActuating());
+
+  SetTaskState(ActorTaskState::kActing);
+  AddControlledWebState(web_state->GetWeakPtr());
+  EXPECT_TRUE(helper->IsActuating());
+
+  task_->Stop(ActorTaskStoppedReason::kTaskComplete);
+  EXPECT_FALSE(helper->IsActuating());
+}
+
+// Test that adding a controlled `WebState` with `ActorTabHelper` sets actuating
+// to true, and destroying the task stops actuation without removing the helper.
+TEST_F(ActorTaskTest, ActorTabHelperActuatingState) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  ActorTabHelper::CreateForWebState(web_state.get());
+  ActorTabHelper* helper = ActorTabHelper::FromWebState(web_state.get());
+  ASSERT_NE(helper, nullptr);
+  EXPECT_FALSE(helper->IsActuating());
+
+  SetTaskState(ActorTaskState::kActing);
+  AddControlledWebState(web_state->GetWeakPtr());
+  EXPECT_TRUE(helper->IsActuating());
+
+  task_.reset();
+  EXPECT_NE(ActorTabHelper::FromWebState(web_state.get()), nullptr);
+  EXPECT_FALSE(helper->IsActuating());
 }
 
 }  // namespace actor

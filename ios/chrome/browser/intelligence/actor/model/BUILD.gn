@@ -16,6 +16,7 @@ source_set("model") {
     "snackbar_actor_task_updates_observer.mm",
   ]
   deps = [
+    ":tab_helper",
     "//base",
     "//components/actor/core:journal",
     "//components/keyed_service/core",
@@ -45,16 +46,30 @@ source_set("model") {
   ]
 }
 
+source_set("tab_helper") {
+  sources = [
+    "actor_tab_helper.h",
+    "actor_tab_helper.mm",
+    "actor_tab_helper_observer.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "actor_engine_unittest.mm",
     "actor_service_unittest.mm",
+    "actor_tab_helper_unittest.mm",
     "actor_task_unittest.mm",
     "snackbar_actor_task_updates_observer_unittest.mm",
   ]
   deps = [
     ":model",
+    ":tab_helper",
     "//base/test:test_support",
     "//components/actor/core:journal",
     "//components/optimization_guide/proto:optimization_guide_proto",

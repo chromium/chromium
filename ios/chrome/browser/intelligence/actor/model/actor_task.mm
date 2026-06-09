@@ -16,6 +16,7 @@
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/journal_details_builder.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/web/public/web_state.h"
@@ -82,6 +83,20 @@ void LogAddControlledWebState(AggregatedJournal* journal,
                std::move(details));
 }
 
+// Returns true if the task state corresponds to an actuating state.
+bool IsActuatingState(ActorTaskState state) {
+  switch (state) {
+    case ActorTaskState::kActing:
+    case ActorTaskState::kReflecting:
+      return true;
+    case ActorTaskState::kInit:
+      return false;
+    // TODO(crbug.com/496164697): Add all states and remove the default case.
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 ActorTask::ActorTask(ActorTaskId task_id,
@@ -104,6 +119,7 @@ ActorTask::ActorTask(ActorTaskId task_id,
 }
 
 ActorTask::~ActorTask() {
+  SetActuatingOnWebStates(false);
   load_timeout_timer_.Stop();
   observers_ = nil;
 }
@@ -164,6 +180,10 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
     LogAddControlledWebState(journal_, task_id_,
                              web_state->GetUniqueIdentifier());
     controlled_web_states_.push_back(web_state->GetWeakPtr());
+    if (ActorTabHelper* tab_helper = ActorTabHelper::FromWebState(web_state)) {
+      const bool is_actuating = IsActuatingState(state_);
+      tab_helper->SetActuating(is_actuating);
+    }
     [observers_ actorTaskWithID:task_id_
                  didAddWebState:web_state->GetUniqueIdentifier()];
   }
@@ -238,6 +258,7 @@ void ActorTask::OnPageLoadedTimeout() {
 
 void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
   [observers_ actorTaskDidStopWithID:task_id_ finalState:state_];
+  SetActuatingOnWebStates(false);
   // TODO(crbug.com/496164697): Implement and test.
 }
 
@@ -273,10 +294,32 @@ bool ActorTask::allow_incognito_web_states() const {
   return allow_incognito_web_states_;
 }
 
+void ActorTask::SetActuatingOnWebStates(bool actuating) {
+  for (const base::WeakPtr<web::WebState>& web_state_weak :
+       controlled_web_states_) {
+    web::WebState* web_state = web_state_weak.get();
+    if (!web_state) {
+      continue;
+    }
+    ActorTabHelper* tab_helper = ActorTabHelper::FromWebState(web_state);
+    if (!tab_helper) {
+      continue;
+    }
+    tab_helper->SetActuating(actuating);
+  }
+}
+
 void ActorTask::SetState(ActorTaskState new_state) {
   LogTaskStateTransition(journal_, task_id_, state_, new_state);
   ActorTaskState old_state = state_;
   state_ = new_state;
+
+  bool old_is_actuating = IsActuatingState(old_state);
+  bool new_is_actuating = IsActuatingState(new_state);
+  if (old_is_actuating != new_is_actuating) {
+    SetActuatingOnWebStates(new_is_actuating);
+  }
+
   [observers_ actorTaskWithID:task_id_
                didChangeState:new_state
                     fromState:old_state];
