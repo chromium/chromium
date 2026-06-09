@@ -415,7 +415,8 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
            {kActionTabSearch, "PinnedTabSearchButton"},
            {kActionSidePanelShowGlic, "PinnedGlicButton"},
            {kActionSidePanelShowTabsFromOtherDevices,
-            "PinnedTabsFromOtherDevicesButton"}});
+            "PinnedTabsFromOtherDevicesButton"},
+           {kGlicButtonElementId, "GlicButtonElementId"}});
 
   const auto it = identifier_to_action_name_map->find(identifier);
   return it == identifier_to_action_name_map->end()

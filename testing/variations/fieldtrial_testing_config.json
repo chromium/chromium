@@ -25293,6 +25293,10 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IPH_VerticalTabstripTutorialFeature",
+                        "OmniboxResizingPrioritization",
+                        "ToolbarAppMenuLabelResizing",
+                        "ToolbarGlicButtonResizing",
+                        "ToolbarProfileChipResizing",
                         "VerticalTabsLaunch",
                         "VerticalTabsNewBadge"
                     ]
