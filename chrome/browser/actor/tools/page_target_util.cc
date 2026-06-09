@@ -8,6 +8,9 @@
 
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gfx/geometry/point.h"
@@ -144,6 +147,36 @@ autofill::FieldGlobalId GetFieldIdFromPageTarget(
               optimization_guide::GetRenderFrameForDocumentIdentifier(
                   *web_contents,
                   node_info->document_identifier.serialized_token())) {
+        // Validation check: ensure that the target frame's underlying widget
+        // matches the widget returned by hit testing at the targeted
+        // coordinate. This prevents a compromised renderer from redirecting
+        // a coordinate-targeted action to its own frame via a spoofed
+        // popup_window.
+        if (std::holds_alternative<gfx::Point>(target)) {
+          const gfx::Point& point = std::get<gfx::Point>(target);
+          float dsf = 1.0f;
+          if (web_contents->GetRenderWidgetHostView()) {
+            dsf =
+                web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor();
+          }
+
+          // The target point is provided in visual-viewport-relative device
+          // pixels (BlinkSpace). We must scale it to view-relative DIPs first
+          // before passing to FindWidgetAtPoint. Testing the unscaled point
+          // would introduce an aliasing vulnerability under non-1.0 scale
+          // factors.
+          gfx::PointF point_dip(point);
+          if (dsf > 0.0f) {
+            point_dip.InvScale(1.0f / dsf);
+          }
+
+          content::RenderWidgetHost* actual_rwh =
+              web_contents->FindWidgetAtPoint(point_dip);
+          if (!actual_rwh || actual_rwh != rfh->GetRenderWidgetHost()) {
+            return {};
+          }
+        }
+
         return autofill::FieldGlobalId(
             autofill::LocalFrameToken(rfh->GetFrameToken().value()),
             autofill::FieldRendererId(node_info->node->content_attributes()
