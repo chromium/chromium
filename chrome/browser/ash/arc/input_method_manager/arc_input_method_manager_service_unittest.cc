@@ -17,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
@@ -973,7 +972,6 @@ TEST_F(ArcInputMethodManagerServiceTest, DisableFallbackVirtualKeyboard) {
   auto* client = ChromeKeyboardControllerClient::Get();
   client->ClearEnableFlag(keyboard::KeyboardEnableFlag::kAndroidDisabled);
   client->SetEnableFlag(keyboard::KeyboardEnableFlag::kTouchEnabled);
-  base::RunLoop().RunUntilIdle();  // Allow observers to fire and process.
   ASSERT_FALSE(
       client->IsEnableFlagSet(keyboard::KeyboardEnableFlag::kAndroidDisabled));
 
