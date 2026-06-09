@@ -5,6 +5,7 @@
 #include "components/exo/seat.h"
 
 #include <linux/input-event-codes.h>
+
 #include <memory>
 #include <variant>
 
@@ -33,6 +34,7 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/env.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/display/screen.h"
@@ -334,8 +336,19 @@ void Seat::OnWebCustomDataRead(
     base::OnceClosure callback,
     const std::string& mime_type,
     const std::vector<uint8_t>& data) {
-  writer->WritePickledData(base::Pickle::WithData(data),
-                           ui::ClipboardFormatType::DataTransferCustomType());
+  // |data| comes from a guest VM. Re-serialize and drop FilesApp-internal
+  // `fs/*` keys so a guest cannot forge fs/tag + fs/sources and drive
+  // FilesApp / HoldingSpace into operating on host paths it was never shared.
+  if (auto map = ui::ReadCustomDataIntoMap(data)) {
+    std::erase_if(*map,
+                  [](const auto& kv) { return kv.first.starts_with(u"fs/"); });
+    if (!map->empty()) {
+      base::Pickle pickle;
+      ui::WriteCustomDataToPickle(*map, &pickle);
+      writer->WritePickledData(
+          pickle, ui::ClipboardFormatType::DataTransferCustomType());
+    }
+  }
   std::move(callback).Run();
 }
 
