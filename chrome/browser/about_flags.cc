@@ -8294,9 +8294,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"quick-share-v2", flag_descriptions::kQuickShareV2Name,
      flag_descriptions::kQuickShareV2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickShareV2)},
-    {"enable-palm-suppression", flag_descriptions::kEnablePalmSuppressionName,
-     flag_descriptions::kEnablePalmSuppressionDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ui::kEnablePalmSuppression)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"enable-experimental-cookie-features",

@@ -163,15 +163,10 @@ void InputDeviceFactoryEvdev::AttachInputDevice(
       DetachInputDevice(path);
 
     if (converter->type() == InputDeviceType::INPUT_DEVICE_INTERNAL &&
-        converter->HasPen() &&
-        base::FeatureList::IsEnabled(kEnablePalmSuppression)) {
+        converter->HasPen()) {
       converter->SetPalmSuppressionCallback(
           base::BindRepeating(&InputDeviceFactoryEvdev::EnablePalmSuppression,
                               base::Unretained(this)));
-    }
-
-    if (converter->type() == InputDeviceType::INPUT_DEVICE_INTERNAL &&
-        converter->HasPen()) {
       converter->SetReportStylusStateCallback(
           base::BindRepeating(&InputDeviceFactoryEvdev::SetLatestStylusState,
                               base::Unretained(this)));

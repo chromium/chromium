@@ -7266,11 +7266,6 @@ inline constexpr char kEnableNeuralStylusPalmRejectionDescription[] =
     "Experimental: Enable Neural Palm detection. Not compatible with all "
     "devices.";
 
-inline constexpr char kEnablePalmSuppressionName[] =
-    "Enable Palm Suppression with Stylus.";
-inline constexpr char kEnablePalmSuppressionDescription[] =
-    "If enabled, suppresses touch when a stylus is on a touchscreen.";
-
 inline constexpr char kEnableFastTouchpadClickName[] =
     "Enable Fast Touchpad Click";
 inline constexpr char kEnableFastTouchpadClickDescription[] =

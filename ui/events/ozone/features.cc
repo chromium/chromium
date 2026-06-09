@@ -21,9 +21,6 @@ BASE_FEATURE(kEnableKeyboardUsedPalmSuppression,
 BASE_FEATURE(kEnableNeuralPalmDetectionFilter,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Used for marking the whole screen as a palm when any palm is detected.
-BASE_FEATURE(kEnablePalmSuppression, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether libinput is used to handle touchpad.
 BASE_FEATURE(kLibinputHandleTouchpad, base::FEATURE_DISABLED_BY_DEFAULT);
 

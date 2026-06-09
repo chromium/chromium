@@ -3901,12 +3901,6 @@
     "expiry_milestone": 162
   },
   {
-    "name": "enable-palm-suppression",
-    "owners": [ "robsc@chromium.org", "napper@chromium.org", "hcutts@chromium.org", "chromeos-tango@google.com" ],
-    // Flag used to test no-full-palm suppression on screen.
-    "expiry_milestone": -1
-  },
-  {
     "name": "enable-parallel-downloading",
     "owners": [ "qinmin@chromium.org", "xingliu@chromium.org", "dtrainor@chromium.org" ],
     // This flag is used by dev teams on Android to disable this feature, since

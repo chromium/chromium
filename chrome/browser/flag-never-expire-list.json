@@ -59,7 +59,6 @@
   "enable-libinput-to-handle-touchpad",
   "enable-logging-js-console-messages",
   "enable-network-logging-to-file",
-  "enable-palm-suppression",
   "enable-parallel-downloading",
   "enable-perfetto-system-tracing",
   "enable-quic",
