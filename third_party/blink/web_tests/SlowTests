@@ -1082,3 +1082,6 @@ crbug.com/40284969 external/wpt/performance-timeline/navigation-id-reset.tentati
 
 # Gardener 2026-05-07
 crbug.com/443229243 inspector-protocol/page/reload-with-script.js [ Slow ]
+
+# Gardener 2026-06-09
+crbug.com/517936094 external/wpt/wasm/core/simd/simd_f64x2_arith.wast.js.html [ Slow ]
