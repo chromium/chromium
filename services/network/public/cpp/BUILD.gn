@@ -131,6 +131,8 @@ component("cpp") {
     "record_ontransfersizeupdate_utils.h",
     "request_destination.cc",
     "request_destination.h",
+    "request_header_to_enum.cc",
+    "request_header_to_enum.h",
     "request_mode.cc",
     "request_mode.h",
     "resolve_host_client_base.cc",
