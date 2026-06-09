@@ -5401,15 +5401,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "glic-mi-tab-context-menu",
-    "owners": [
-      "sanaakbani@google.com",
-      "perrier@chromium.org",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "glic-os-icon-variant",
     "owners": [ "andreaxg@google.com", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 160

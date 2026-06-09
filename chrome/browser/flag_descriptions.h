@@ -8303,11 +8303,6 @@ inline constexpr char kGlicSelectionPromptName[] = "Glic Selection Prompt";
 inline constexpr char kGlicSelectionPromptDescription[] =
     "Enables the Glic prompt suggestion when text is selected.";
 
-inline constexpr char kGlicMITabContextMenuName[] =
-    "Glic Multi-Instance Tab Context Menu";
-inline constexpr char kGlicMITabContextMenuDescription[] =
-    "Enables the Glic context menu for the tabs in the tabstrip.";
-
 inline constexpr char kGlicShareImageName[] = "Glic Share Image";
 inline constexpr char kGlicShareImageDescription[] =
     "Enables the Create Image with Gemini context menu item";
