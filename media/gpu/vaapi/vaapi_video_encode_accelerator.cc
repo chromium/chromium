@@ -657,6 +657,12 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForMappableSIEncoding(
                spatial_layer_resolutions.size());
   auto source_rect = frame.visible_rect();
   for (const gfx::Size& encode_size : spatial_layer_resolutions) {
+    if (encode_size.width() > source_rect.width() ||
+        encode_size.height() > source_rect.height()) {
+      NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
+                   "Only down scaling is supported in spatial layer encoding"});
+      return false;
+    }
     const bool engage_vpp = source_rect != gfx::Rect(encode_size);
     // Crop and scale |source_surface| to a surface whose size is |encode_size|.
     // The size of a reconstructed surface is also |encode_size|.
