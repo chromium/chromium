@@ -82,12 +82,6 @@ public class PageZoomManager {
         return HostZoomMap.getDefaultZoomLevel(mDelegate.getBrowserContextHandle());
     }
 
-    /** Returns the adjusted default zoom level of the current Profile. */
-    @VisibleForTesting
-    public double getAdjustedDefaultZoomLevel() {
-        return HostZoomMap.getAdjustedDefaultZoomLevel(mDelegate.getBrowserContextHandle());
-    }
-
     /** Returns the WebContents of the current tab. */
     @VisibleForTesting
     public @Nullable WebContents getWebContents() {

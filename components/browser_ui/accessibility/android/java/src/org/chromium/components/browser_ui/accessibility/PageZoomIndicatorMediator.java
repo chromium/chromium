@@ -81,7 +81,7 @@ class PageZoomIndicatorMediator {
 
     @VisibleForTesting
     boolean isZoomLevelDefault() {
-        return Math.abs(mManager.getZoomLevel() - mManager.getAdjustedDefaultZoomLevel()) < 0.0001;
+        return Math.abs(mManager.getZoomLevel() - mManager.getDefaultZoomLevel()) < 0.0001;
     }
 
     boolean isCurrentTabNull() {

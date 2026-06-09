@@ -167,20 +167,6 @@ public class HostZoomMap {
         return HostZoomMapImpl.getDefaultZoomLevel(context);
     }
 
-    /**
-     * Get the default zoom level for a given browser context handle (e.g. Profile), that has been
-     * adjusted for OS-level font setting.
-     *
-     * @param context BrowserContextHandle to get default for.
-     * @return double default zoom level.
-     */
-    public static double getAdjustedDefaultZoomLevel(BrowserContextHandle context) {
-        return HostZoomMapImpl.adjustZoomLevel(
-                HostZoomMapImpl.getDefaultZoomLevel(context),
-                (1.0f / sSystemFontScale),
-                (1.0f / sTransparentZoomAdjustment));
-    }
-
     public static void setSystemFontScaleForTesting(float systemFontScale) {
         HostZoomMapImpl.setSystemFontScaleForTesting(systemFontScale);
     }
