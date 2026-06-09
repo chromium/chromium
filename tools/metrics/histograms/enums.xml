@@ -8065,6 +8065,7 @@ from previous Chrome versions.
   <int value="-2003097010" label="TerminalSftp:enabled"/>
   <int value="-2002754843" label="FedCmButtonMode:enabled"/>
   <int value="-2002461806" label="ShoppingAssist:enabled"/>
+  <int value="-2002226992" label="GlicOSIconVariant:disabled"/>
   <int value="-2001869199" label="ShillSandboxing:enabled"/>
   <int value="-2001125545" label="OmniboxShortcutsAndroid:enabled"/>
   <int value="-2001098269" label="DelayMediaSinkDiscovery:enabled"/>
@@ -16525,6 +16526,7 @@ from previous Chrome versions.
   <int value="753258862" label="ReloadTabUiResourcesIfChanged:disabled"/>
   <int value="753375390" label="ThrottleMainFrameTo60Hz:disabled"/>
   <int value="753474609" label="CanvasNoise:disabled"/>
+  <int value="753658881" label="GlicOSIconVariant:enabled"/>
   <int value="753818991" label="RouteMatching:disabled"/>
   <int value="753826639"
       label="OmniboxContextualSearchSingleLensAction:disabled"/>

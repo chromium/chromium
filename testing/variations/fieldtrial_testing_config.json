@@ -11977,6 +11977,42 @@
             ]
         }
     ],
+    "GlicOSIconVariant": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Tab",
+                    "params": {
+                        "variant": "0"
+                    },
+                    "enable_features": [
+                        "GlicOSIconVariant"
+                    ]
+                },
+                {
+                    "name": "Enabled_Ball",
+                    "params": {
+                        "variant": "1"
+                    },
+                    "enable_features": [
+                        "GlicOSIconVariant"
+                    ]
+                },
+                {
+                    "name": "Enabled_Square",
+                    "params": {
+                        "variant": "2"
+                    },
+                    "enable_features": [
+                        "GlicOSIconVariant"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicPdfSummarizeButton": [
         {
             "platforms": [
