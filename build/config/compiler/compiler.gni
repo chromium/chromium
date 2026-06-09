@@ -114,7 +114,7 @@ if (is_mac && use_lld) {
   declare_args() {
     # Enables the `--read-workers` flag for LLD.
     # Currently only implemented for Mach-O (macOS) in LLD.
-    enable_lld_read_workers = false
+    enable_lld_read_workers = true
   }
 
   if (enable_lld_read_workers) {
