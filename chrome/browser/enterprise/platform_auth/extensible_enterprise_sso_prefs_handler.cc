@@ -14,7 +14,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
@@ -38,9 +38,13 @@ using ScopedPropList = base::apple::ScopedCFTypeRef<CFPropertyListRef>;
 namespace {
 
 const CFStringRef kExtensibleSSOPrefName(CFSTR("com.apple.extensiblesso"));
-base::NoDestructor<
-    base::RepeatingCallback<std::unique_ptr<CFPreferencesObserver>()>>
-    g_cf_prefs_observer_override_for_testing;
+base::RepeatingCallback<std::unique_ptr<CFPreferencesObserver>()>&
+GetCfPrefsOverrideForTesting() {
+  static base::NoDestructor<
+      base::RepeatingCallback<std::unique_ptr<CFPreferencesObserver>()>>
+      cf_prefs_observer_override_for_testing;
+  return *cf_prefs_observer_override_for_testing;
+}
 
 base::ListValue ParseConfiguration(CFPreferencesObserver::Config config) {
   if (!config.extension_id || !config.team_id || !config.hosts) {
@@ -193,9 +197,9 @@ const CFStringRef ExtensibleEnterpriseSSOPrefsHandler::kOktaSSOTeamID(
 ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
     PrefService* local_state)
     : local_state_(local_state) {
-  if (*g_cf_prefs_observer_override_for_testing) {
+  if (GetCfPrefsOverrideForTesting()) {
     CHECK_IS_TEST();
-    cf_preferences_observer_ = g_cf_prefs_observer_override_for_testing->Run();
+    cf_preferences_observer_ = GetCfPrefsOverrideForTesting().Run();  // IN-TEST
   } else {
     // This class is used to make an OS call on browser process's construction,
     // which would cause the OS call to be made in browser tests that don't
@@ -257,7 +261,7 @@ void ExtensibleEnterpriseSSOPrefsHandler::
     OverrideCFPreferenceObserverForTesting(
         base::RepeatingCallback<std::unique_ptr<CFPreferencesObserver>()>
             cf_prefs_observer_override) {
-  *g_cf_prefs_observer_override_for_testing =
+  GetCfPrefsOverrideForTesting() =  // IN-TEST
       std::move(cf_prefs_observer_override);
 }
 
