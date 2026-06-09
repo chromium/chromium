@@ -172,7 +172,7 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
 
   // Low-level methods to force the focus to change (and optionally provide
   // a reason). If the focus change should only happen if the view is
-  // currenty focusable, enabled, and visible, call view->RequestFocus().
+  // currently focusable, enabled, and visible, call view->RequestFocus().
   void SetFocusedViewWithReason(View* view, FocusChangeReason reason);
   void SetFocusedView(View* view);
 
