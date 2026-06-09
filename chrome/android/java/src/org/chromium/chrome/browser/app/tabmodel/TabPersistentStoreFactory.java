@@ -128,6 +128,7 @@ public class TabPersistentStoreFactory {
      * @param isNonOtrOnly Whether the shadow store should only handle non-OTR data. If true,
      *     incognito tab state will not be restored and may be destroyed if a TabStateStore is
      *     returned.
+     * @param isFromRecreating Whether the current activity was recreated.
      */
     public static @Nullable TabPersistentStore buildShadowStore(
             @Nullable PersistentStoreMigrationManager migrationManager,
@@ -140,7 +141,8 @@ public class TabPersistentStoreFactory {
             String windowTag,
             CipherFactory cipherFactory,
             String orchestratorTag,
-            boolean isNonOtrOnly) {
+            boolean isNonOtrOnly,
+            boolean isFromRecreating) {
         TabCreatorManager shadowTabCreatorManager =
                 incognito -> incognito ? incognitoShadowTabCreator : regularShadowTabCreator;
 
@@ -173,7 +175,7 @@ public class TabPersistentStoreFactory {
                             ModelTrackingOrchestrator::new,
                             ActiveTabCache::new,
                             /* isAuthoritative= */ false,
-                            /* isFromRecreating= */ false);
+                            isFromRecreating);
             buildShadowTabStateStoreCatchupTracker(authoritativeStore, tabStateStore);
             shadowTabPersistentStore = tabStateStore;
         } else if (shadowStoreType == StoreType.LEGACY) {

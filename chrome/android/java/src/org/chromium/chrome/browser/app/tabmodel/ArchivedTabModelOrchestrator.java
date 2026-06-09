@@ -581,7 +581,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                             ARCHIVED_WINDOW_TAG,
                             mCipherFactory,
                             ARCHIVED_TAG,
-                            /* isNonOtrOnly= */ true);
+                            /* isNonOtrOnly= */ true,
+                            /* isFromRecreating= */ false);
             if (mShadowTabPersistentStore != null) {
                 mShadowTabPersistentStore.onNativeLibraryReady();
             }

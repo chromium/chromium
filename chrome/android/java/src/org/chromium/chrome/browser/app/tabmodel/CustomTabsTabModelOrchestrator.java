@@ -132,7 +132,8 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
                             getCustomTabsWindowTag(mActivity.getTaskId()),
                             mCipherFactory,
                             TabPersistentStoreImpl.CLIENT_TAG_CUSTOM,
-                            /* isNonOtrOnly= */ false);
+                            /* isNonOtrOnly= */ false,
+                            /* isFromRecreating= */ false);
             if (mShadowTabPersistentStore != null) {
                 mShadowTabPersistentStore.onNativeLibraryReady();
             }

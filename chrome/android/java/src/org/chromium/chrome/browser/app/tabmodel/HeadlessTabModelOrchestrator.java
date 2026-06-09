@@ -104,7 +104,8 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
                         windowTag,
                         sCipherInstance,
                         HEADLESS_TAG,
-                        /* isNonOtrOnly= */ true);
+                        /* isNonOtrOnly= */ true,
+                        /* isFromRecreating= */ false);
 
         mTabModelSelector.selectModel(false);
         mTabPersistentStore.addObserver(
