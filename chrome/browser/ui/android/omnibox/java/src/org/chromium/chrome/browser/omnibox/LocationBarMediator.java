@@ -2846,13 +2846,9 @@ class LocationBarMediator
                         ? mLocationBarDataProvider.getDefaultRequestType()
                         : mCurrentInput.getRequestType();
 
-        FuseboxSessionState fuseboxSessionState = null;
-        if (OmniboxFeatures.sShowModelPicker.getValue()) {
-            fuseboxSessionState = FuseboxSessionState.from(mLocationBarDataProvider);
-        }
-
         mUrlCoordinator.setUrlBarHintText(
-                mSearchEngineUtils.getOmniboxHintText(requestType, fuseboxSessionState));
+                mSearchEngineUtils.getOmniboxHintText(
+                        requestType, FuseboxSessionState.from(mLocationBarDataProvider)));
     }
 
     /* package */ ToolbarWidthConsumer getBookmarkButtonToolbarWidthConsumer() {
