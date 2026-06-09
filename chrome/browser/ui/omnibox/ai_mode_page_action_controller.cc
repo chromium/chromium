@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
@@ -49,6 +50,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+const char kIconSourceHistogram[] = "Omnibox.AiModePageAction.IconSource";
 
 page_actions::PageActionController* GetPageActionController(
     BrowserWindowInterface& bwi) {
@@ -232,23 +235,26 @@ bool AiModePageActionController::ShouldShowPageAction(
 
 void AiModePageActionController::SetPageActionVisibility(bool is_visible) {
   if (!is_visible) {
-    Hide();
+    Hide(IconSource::kInvisible);
     return;
   }
 
   const auto& config = ai_mode_button_config::GetCurrentAiModeButtonConfig();
   if (config.id == SearchEngineType::SEARCH_ENGINE_GOOGLE) {
-    ShowAndOverrideImage(ui::ImageModel::FromImageGenerator(
-        base::BindRepeating([](const ui::ColorProvider* color_provider) {
-          return gfx::CreateVectorIcon(
-              features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
-                                                : omnibox::kSearchSparkOldIcon,
-              GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
-              color_provider->GetColor(kColorOmniboxIconForegroundTonal));
-        }),
-        gfx::Size(
-            GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
-            GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize))));
+    ShowAndOverrideImage(
+        ui::ImageModel::FromImageGenerator(
+            base::BindRepeating([](const ui::ColorProvider* color_provider) {
+              return gfx::CreateVectorIcon(
+                  features::IsRoundedIconsEnabled()
+                      ? omnibox::kSearchSparkIcon
+                      : omnibox::kSearchSparkOldIcon,
+                  GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
+                  color_provider->GetColor(kColorOmniboxIconForegroundTonal));
+            }),
+            gfx::Size(
+                GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
+                GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize))),
+        IconSource::kVectorIcon);
 
   } else {
     GURL favicon_url(config.favicon_url);
@@ -262,12 +268,14 @@ void AiModePageActionController::SetPageActionVisibility(bool is_visible) {
     // `image` will be empty if not cached. In which case, let
     // `OnFaviconFetchedLocally()` handle visibility and the image.
     if (!image.IsEmpty()) {
-      ShowAndOverrideImage(SizedImageModel(image));
+      ShowAndOverrideImage(SizedImageModel(image),
+                           IconSource::kMemoryFaviconCache);
     }
   }
 }
 
-void AiModePageActionController::Hide() {
+void AiModePageActionController::Hide(IconSource source) {
+  base::UmaHistogramEnumeration(kIconSourceHistogram, source);
   if (page_actions::PageActionController* page_action_controller =
           GetPageActionController(*bwi_)) {
     page_action_controller->HideSuggestionChip(kActionAiMode);
@@ -276,7 +284,9 @@ void AiModePageActionController::Hide() {
 }
 
 void AiModePageActionController::ShowAndOverrideImage(
-    const ui::ImageModel& image_model) {
+    const ui::ImageModel& image_model,
+    IconSource source) {
+  base::UmaHistogramEnumeration(kIconSourceHistogram, source);
   if (page_actions::PageActionController* page_action_controller =
           GetPageActionController(*bwi_)) {
     page_action_controller->OverrideImage(kActionAiMode, image_model);
@@ -294,7 +304,8 @@ void AiModePageActionController::OnFaviconFetchedLocally(
     FetchFaviconFromNetwork(favicon_url);
     return;
   }
-  ShowAndOverrideImage(SizedImageModel(favicon));
+  ShowAndOverrideImage(SizedImageModel(favicon),
+                       IconSource::kDiskDbFaviconCache);
 }
 
 void AiModePageActionController::FetchFaviconFromNetwork(
@@ -303,7 +314,7 @@ void AiModePageActionController::FetchFaviconFromNetwork(
       BitmapFetcherServiceFactory::GetForBrowserContext(
           base::to_address(profile_));
   if (!fetcher_service) {
-    Hide();
+    Hide(IconSource::kFailedIcon);
     return;
   }
 
@@ -316,11 +327,12 @@ void AiModePageActionController::FetchFaviconFromNetwork(
 void AiModePageActionController::OnFaviconFetchedFromNetwork(SkBitmap bitmap) {
   if (bitmap.empty() ||
       !ShouldShowPageAction(base::to_address(profile_), *location_bar_view_)) {
-    Hide();
+    Hide(IconSource::kFailedIcon);
     return;
   }
   gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-  ShowAndOverrideImage(SizedImageModel(gfx::Image(image_skia)));
+  ShowAndOverrideImage(SizedImageModel(gfx::Image(image_skia)),
+                       IconSource::kNetworkFetch);
 }
 
 }  // namespace omnibox

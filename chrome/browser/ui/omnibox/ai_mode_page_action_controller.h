@@ -72,6 +72,26 @@ class AiModePageActionController : public OmniboxEditModel::Observer {
                                    LocationBarView& location_bar_view);
 
  private:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(AiModePageActionIconSource)
+  enum class IconSource {
+    // The page action was not shown.
+    kInvisible = 0,
+    // A built-in vector icon was used.
+    kVectorIcon = 1,
+    // The icon was loaded from omnibox's in-memory `FaviconCache`.
+    kMemoryFaviconCache = 2,
+    // The icon was loaded from the on-disk DB cache via `FaviconService`.
+    kDiskDbFaviconCache = 3,
+    // The icon was loaded from a network request via `BitmapFetcherService`.
+    kNetworkFetch = 4,
+    // The icon failed to load.
+    kFailedIcon = 5,
+    kMaxValue = kFailedIcon,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AiModePageActionIconSource)
+
   // Helper for `UpdatePageAction()`. Updates visibility and override image:
   // - If DSE is google, will use built-in image.
   // - If DSE is 3p, will check the in-memory favicon cache.
@@ -81,11 +101,13 @@ class AiModePageActionController : public OmniboxEditModel::Observer {
   //   request to fetch the icon.
   void SetPageActionVisibility(bool is_visible);
 
-  // Helper for `SetPageActionVisibility()` to update visibility.
-  void Hide();
+  // Helper for `SetPageActionVisibility()` to update visibility. `source` used
+  // for logging.
+  void Hide(IconSource source);
 
   // Helper for `SetPageActionVisibility()` to update the image and visibility.
-  void ShowAndOverrideImage(const ui::ImageModel& image);
+  // `source` used for logging.
+  void ShowAndOverrideImage(const ui::ImageModel& image, IconSource source);
 
   // Helpers used in `SetPageActionVisibility()` to asynchronously fetch the
   // favicon.

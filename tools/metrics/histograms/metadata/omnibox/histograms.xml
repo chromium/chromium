@@ -918,6 +918,36 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
 </histogram>
 
+<histogram name="Omnibox.AiModePageAction.IconSource"
+    enum="AiModePageActionIconSource" expires_after="2027-06-01">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The source of the icon for the AI mode page action. Logged exactly once when
+    the icon is updated or hidden. When shown, logs where the icon was sourced
+    from. Logged when the page action is explicitly hidden. Logged when the page
+    action is requested to be shown, but the icon fails to load, and the page
+    action is therefore hidden.
+
+    Can be logged multiple times if the page action is shown/hidden multiple
+    times, even if caused by a single user action. E.g., focusing the omnibox on
+    the NTP will trigger the show-page-action logic 5 times, and will log this
+    histogram 5 times. This makes this histogram pretty difficult to interpret
+    since the 1st show may log `kNetworkFetch` while the next 4 shows may log
+    `kMemoryFaviconCache`, giving a false impression that most times the icon
+    was cached.
+
+    When the page action is shown, it'll attempt to update its icon. If google
+    is the DSE, it will use a built-in vector icon. Else if the 3rd party's
+    favicon is in the omnibox's in-memory favicon cache, it will use that cached
+    icon. Else if the favicon is in the on-disk DB favicon cache, it will use
+    that cached icon. Else if a network request to fetch the icon succeeds, it
+    will use that fetched icon. Else it will hide the page action. Each of these
+    cases will log a corresponding value. Exactly 1 of these will be logged when
+    the page action is shown or hidden.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.AnswerParseSuccess" enum="BooleanSuccess"
     expires_after="2026-11-29">
   <owner>jdonnelly@chromium.org</owner>

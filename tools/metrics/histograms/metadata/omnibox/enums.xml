@@ -78,6 +78,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:AiModeActivationSource,//ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h:AiModeActivationSource) -->
 
+<!-- LINT.IfChange(AiModePageActionIconSource) -->
+
+<enum name="AiModePageActionIconSource">
+  <summary>The source of the icon for the AI mode page action.</summary>
+  <int value="0" label="kInvisible"/>
+  <int value="1" label="kVectorIcon"/>
+  <int value="2" label="kMemoryFaviconCache"/>
+  <int value="3" label="kDiskDbFaviconCache"/>
+  <int value="4" label="kNetworkFetch"/>
+  <int value="5" label="kFailedIcon"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/omnibox/ai_mode_page_action_controller.h:AiModePageActionIconSource) -->
+
 <!-- LINT.IfChange(AutocompleteRequestType) -->
 
 <enum name="AutocompleteRequestType">
