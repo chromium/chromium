@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.util.Pair;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.AuthenticatorStatus;
@@ -118,7 +119,9 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     }
 
     public static void overrideFido2CredentialRequestForTesting(Fido2CredentialRequest request) {
+        Fido2CredentialRequest oldValue = sFido2CredentialRequestOverrideForTesting;
         sFido2CredentialRequestOverrideForTesting = request;
+        ResettersForTesting.register(() -> sFido2CredentialRequestOverrideForTesting = oldValue);
     }
 
     private Fido2CredentialRequest getFido2CredentialRequest() {
