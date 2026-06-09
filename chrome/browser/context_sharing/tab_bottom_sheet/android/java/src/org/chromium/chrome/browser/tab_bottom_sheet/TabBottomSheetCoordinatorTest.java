@@ -725,6 +725,32 @@ public class TabBottomSheetCoordinatorTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":resize_webview/false")
+    public void testFixedHeightCalculation_AccountsForBottomControls() {
+        int bottomMargin = 400;
+        when(mMockBottomSheetController.isAnchoredToBottomControls()).thenReturn(true);
+        when(mMockBottomSheetController.getContainerBottomMargin()).thenReturn(bottomMargin);
+
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        // Run the runnable posted in tryToShowBottomSheet()
+        ShadowLooper.idleMainLooper();
+
+        View expandedContent = mView.findViewById(R.id.expanded_content_group);
+        assertEquals(
+                /* viewportHeight - bottomMargin = 1000 - 400 = 600 */ 600,
+                expandedContent.getLayoutParams().height);
+
+        int newMargin = 500;
+        when(mMockBottomSheetController.getContainerBottomMargin()).thenReturn(newMargin);
+        observer.onContainerBottomMarginChanged(newMargin);
+
+        assertEquals(
+                /* viewportHeight - newMargin = 1000 - 500 = 500 */ 500,
+                expandedContent.getLayoutParams().height);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":resize_webview/false")
     public void testOnContainerSizeChanged_ActivityPaused_DoesNotChangeHeight() {
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
         View expandedContent = mView.findViewById(R.id.expanded_content_group);
