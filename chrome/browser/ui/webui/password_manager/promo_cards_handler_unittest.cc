@@ -102,6 +102,12 @@ class PromoCardsHandlerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     static_cast<content::WebUIMessageHandler*>(handler_)->DisallowJavascript();
+    handler_ = nullptr;
+    card1_ = nullptr;
+    card2_ = nullptr;
+    // Explicitly clear handlers to destroy them before the Profile is destroyed
+    // in ChromeRenderViewHostTestHarness::TearDown().
+    web_ui_.GetHandlersForTesting()->clear();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 

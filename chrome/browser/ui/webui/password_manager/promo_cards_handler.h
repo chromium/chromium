@@ -59,7 +59,7 @@ class PromoCardsHandler : public content::WebUIMessageHandler {
                            scoped_refptr<os_crypt_async::Encryptor> encryptor);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<Profile> profile_;
 
   std::vector<std::unique_ptr<PasswordPromoCardBase>> promo_cards_;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

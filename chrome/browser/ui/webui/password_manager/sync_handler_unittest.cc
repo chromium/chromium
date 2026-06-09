@@ -64,6 +64,10 @@ class SyncHandlerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     static_cast<content::WebUIMessageHandler*>(handler_)->DisallowJavascript();
+    handler_ = nullptr;
+    // Explicitly clear handlers to destroy them before the Profile is destroyed
+    // in ChromeRenderViewHostTestHarness::TearDown().
+    web_ui_.GetHandlersForTesting()->clear();
     mock_sync_service_ = nullptr;
     identity_test_env_adaptor_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
