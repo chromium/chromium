@@ -119,7 +119,8 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   void ShutdownOnThread(
       DedicatedTaskRunnerForResource task_runner_for_resource);
 
-  // Created, used and deleted on the code cache thread.
+  // Created, used and deleted on the code cache thread. Disabled when
+  // PersistentCacheForCodeCache is enabled.
   std::unique_ptr<GeneratedCodeCache> generated_js_code_cache_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<GeneratedCodeCache> generated_wasm_code_cache_
@@ -128,12 +129,19 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
       GUARDED_BY_CONTEXT(sequence_checker_);
 
 #if !BUILDFLAG(IS_FUCHSIA)
-  // When used instead of `generated_js_code_cache_` this stores the code
-  // following the same isolation principles but using two keys instead of one.
-  // The first key is used to get a `PersistentCache` associated with an
-  // isolation context from the collection. This ensures that each isolation
-  // context uses a separate database file. The second key is the prefixed
-  // resource URL or the hash digest of a serialized script.
+  // Created and used when either PersistentCacheForCodeCache or
+  // InlineScriptCache is enabled.
+  // When the former is enabled, this replaces all of `generated_*_code_cache_`
+  // above and stores the code following the same isolation principles but using
+  // two keys instead of one. The first key is used to get a `PersistentCache`
+  // associated with an isolation context from the collection. This ensures that
+  // each isolation context uses a separate database file. The second key is the
+  // prefixed resource URL of a serialized script.
+  // When the latter is enabled, this stores source-keyed code cache entries
+  // with the two-keys keying. The second key is the source hash digest (SHA256)
+  // of a serialized script.
+  // Note that those two features can be enabled at the same time and share the
+  // same collection in that case.
   std::unique_ptr<persistent_cache::PersistentCacheCollection>
       persistent_cache_collection_ GUARDED_BY_CONTEXT(sequence_checker_);
 #endif  // !BUILDFLAG(IS_FUCHSIA)
