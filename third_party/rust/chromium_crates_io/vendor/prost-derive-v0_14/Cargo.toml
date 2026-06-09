@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.82"
+rust-version = "1.85"
 name = "prost-derive"
-version = "0.14.3"
+version = "0.14.4"
 authors = [
     "Dan Burkert <dan@danburkert.com>",
     "Lucio Franco <luciofranco14@gmail.com>",
@@ -51,3 +51,6 @@ version = "1"
 [dependencies.syn]
 version = "2"
 features = ["extra-traits"]
+
+[lints.clippy]
+collapsible_if = "allow"

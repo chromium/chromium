@@ -61,12 +61,17 @@ impl Field {
         for attr in attrs {
             if let Some(t) = tag_attr(attr)? {
                 set_option(&mut tag, t, "duplicate tag attributes")?;
-            } else if let Some(map_ty) =
-                attr.path().get_ident().and_then(|i| MapTy::from_str(&i.to_string()))
+            } else if let Some(map_ty) = attr
+                .path()
+                .get_ident()
+                .and_then(|i| MapTy::from_str(&i.to_string()))
             {
                 let (k, v): (String, String) = match attr {
                     Meta::NameValue(MetaNameValue {
-                        value: Expr::Lit(ExprLit { lit: Lit::Str(lit), .. }),
+                        value:
+                            Expr::Lit(ExprLit {
+                                lit: Lit::Str(lit), ..
+                            }),
                         ..
                     }) => {
                         let items = lit.value();
@@ -104,9 +109,12 @@ impl Field {
         }
 
         Ok(match (types, tag.or(inferred_tag)) {
-            (Some((map_ty, key_ty, value_ty)), Some(tag)) => {
-                Some(Field { map_ty, key_ty, value_ty, tag })
-            }
+            (Some((map_ty, key_ty, value_ty)), Some(tag)) => Some(Field {
+                map_ty,
+                key_ty,
+                value_ty,
+                tag,
+            }),
             _ => None,
         })
     }
@@ -168,8 +176,8 @@ impl Field {
         }
     }
 
-    /// Returns an expression which evaluates to the result of merging a decoded
-    /// key value pair into the map.
+    /// Returns an expression which evaluates to the result of merging a decoded key value pair
+    /// into the map.
     pub fn merge(&self, prost_path: &Path, ident: TokenStream) -> TokenStream {
         let key_mod = self.key_ty.module();
         let km = quote!(#prost_path::encoding::#key_mod::merge);
@@ -252,7 +260,11 @@ impl Field {
 
             let get = Ident::new(&format!("get_{ident}"), Span::call_site());
             let insert = Ident::new(&format!("insert_{ident}"), Span::call_site());
-            let take_ref = if self.key_ty.is_numeric() { quote!(&) } else { quote!() };
+            let take_ref = if self.key_ty.is_numeric() {
+                quote!(&)
+            } else {
+                quote!()
+            };
 
             let get_doc = format!(
                 "Returns the enum value for the corresponding key in `{ident}`, \
@@ -282,8 +294,8 @@ impl Field {
 
     /// Returns a newtype wrapper around the map, implementing nicer Debug
     ///
-    /// The Debug tries to convert any enumerations met into the variants if
-    /// possible, instead of outputting the raw numbers.
+    /// The Debug tries to convert any enumerations met into the variants if possible, instead of
+    /// outputting the raw numbers.
     pub fn debug(&self, prost_path: &Path, wrapper_name: TokenStream) -> TokenStream {
         let type_name = match self.map_ty {
             MapTy::HashMap => Ident::new("HashMap", Span::call_site()),
@@ -379,8 +391,8 @@ impl ValueTy {
 
     /// Returns a newtype wrapper around the ValueTy for nicer debug.
     ///
-    /// If the contained value is enumeration, it tries to convert it to the
-    /// variant. If not, it just forwards the implementation.
+    /// If the contained value is enumeration, it tries to convert it to the variant. If not, it
+    /// just forwards the implementation.
     fn debug(&self, prost_path: &Path) -> TokenStream {
         match self {
             ValueTy::Scalar(ty) => fake_scalar(ty.clone()).debug(prost_path, quote!(ValueWrapper)),

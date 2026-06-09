@@ -50,13 +50,19 @@ impl Field {
             None => bail!("group field is missing a tag attribute"),
         };
 
-        Ok(Some(Field { label: label.unwrap_or(Label::Optional), tag }))
+        Ok(Some(Field {
+            label: label.unwrap_or(Label::Optional),
+            tag,
+        }))
     }
 
     pub fn new_oneof(attrs: &[Meta]) -> Result<Option<Field>, Error> {
         if let Some(mut field) = Field::new(attrs, None)? {
             if let Some(attr) = attrs.iter().find(|attr| Label::from_attr(attr).is_some()) {
-                bail!("invalid attribute for oneof field: {}", attr.path().into_token_stream());
+                bail!(
+                    "invalid attribute for oneof field: {}",
+                    attr.path().into_token_stream()
+                );
             }
             field.label = Label::Required;
             Ok(Some(field))

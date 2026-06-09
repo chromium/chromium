@@ -47,7 +47,10 @@ impl Field {
         };
 
         if !unknown_attrs.is_empty() {
-            bail!("unknown attribute(s): #[prost({})]", quote!(#(#unknown_attrs),*));
+            bail!(
+                "unknown attribute(s): #[prost({})]",
+                quote!(#(#unknown_attrs),*)
+            );
         }
 
         let tag = match tag.or(inferred_tag) {
@@ -56,8 +59,10 @@ impl Field {
         };
 
         let has_default = default.is_some();
-        let default = default
-            .map_or_else(|| Ok(DefaultValue::new(&ty)), |lit| DefaultValue::from_lit(&ty, lit))?;
+        let default = default.map_or_else(
+            || Ok(DefaultValue::new(&ty)),
+            |lit| DefaultValue::from_lit(&ty, lit),
+        )?;
 
         let kind = match (label, packed, has_default) {
             (None, Some(true), _)
@@ -153,8 +158,7 @@ impl Field {
         }
     }
 
-    /// Returns an expression which evaluates to the encoded length of the
-    /// field.
+    /// Returns an expression which evaluates to the encoded length of the field.
     pub fn encoded_len(&self, prost_path: &Path, ident: TokenStream) -> TokenStream {
         let module = self.ty.module();
         let encoded_len_fn = match self.kind {
@@ -437,12 +441,20 @@ impl Ty {
             Meta::Path(ref name) if name.is_ident("bytes") => Ty::Bytes(BytesTy::Vec),
             Meta::NameValue(MetaNameValue {
                 ref path,
-                value: Expr::Lit(ExprLit { lit: Lit::Str(ref l), .. }),
+                value:
+                    Expr::Lit(ExprLit {
+                        lit: Lit::Str(ref l),
+                        ..
+                    }),
                 ..
             }) if path.is_ident("bytes") => Ty::Bytes(BytesTy::try_from_str(&l.value())?),
             Meta::NameValue(MetaNameValue {
                 ref path,
-                value: Expr::Lit(ExprLit { lit: Lit::Str(ref l), .. }),
+                value:
+                    Expr::Lit(ExprLit {
+                        lit: Lit::Str(ref l),
+                        ..
+                    }),
                 ..
             }) if path.is_ident("enumeration") => Ty::Enumeration(parse_str::<Path>(&l.value())?),
             Meta::List(ref meta_list) if meta_list.path.is_ident("enumeration") => {
@@ -550,8 +562,7 @@ impl Ty {
         }
     }
 
-    /// Returns false if the scalar type is length delimited (i.e., `string` or
-    /// `bytes`).
+    /// Returns false if the scalar type is length delimited (i.e., `string` or `bytes`).
     pub fn is_numeric(&self) -> bool {
         !matches!(self, Ty::String | Ty::Bytes(..))
     }
@@ -661,7 +672,7 @@ impl DefaultValue {
                 let value = value.trim();
 
                 if let Ty::Enumeration(ref path) = *ty {
-                    let variant = Ident::new(value, Span::call_site());
+                    let variant = parse_str::<Ident>(value)?;
                     return Ok(DefaultValue::Enumeration(quote!(#path::#variant)));
                 }
 
@@ -809,5 +820,18 @@ impl ToTokens for DefaultValue {
             DefaultValue::Enumeration(ref value) => value.to_tokens(tokens),
             DefaultValue::Path(ref value) => value.to_tokens(tokens),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{DefaultValue, Ty};
+    use syn::{parse_str, Lit, Path};
+
+    #[test]
+    fn from_lit_rejects_invalid_enumeration_default_without_panic() {
+        let ty = Ty::Enumeration(parse_str::<Path>("ExampleEnum").unwrap());
+        let lit = parse_str::<Lit>("\"not-valid!\"").unwrap();
+        assert!(DefaultValue::from_lit(&ty, lit).is_err());
     }
 }

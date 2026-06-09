@@ -112,8 +112,7 @@ impl Field {
         }
     }
 
-    /// Returns an expression which evaluates to the encoded length of the
-    /// field.
+    /// Returns an expression which evaluates to the encoded length of the field.
     pub fn encoded_len(&self, prost_path: &Path, ident: TokenStream) -> TokenStream {
         match *self {
             Field::Scalar(ref scalar) => scalar.encoded_len(prost_path, ident),
@@ -226,17 +225,14 @@ impl fmt::Display for Label {
     }
 }
 
-/// Get the items belonging to the 'prost' list attribute, e.g. `#[prost(foo,
-/// bar="baz")]`.
+/// Get the items belonging to the 'prost' list attribute, e.g. `#[prost(foo, bar="baz")]`.
 fn prost_attrs(attrs: Vec<Attribute>) -> Result<Vec<Meta>, Error> {
     let mut result = Vec::new();
     for attr in attrs.iter() {
         if let Meta::List(meta_list) = &attr.meta {
             if meta_list.path.is_ident("prost") {
                 result.extend(
-                    meta_list
-                        .parse_args_with(Punctuated::<Meta, Token![,]>::parse_terminated)?
-                        .into_iter(),
+                    meta_list.parse_args_with(Punctuated::<Meta, Token![,]>::parse_terminated)?,
                 )
             }
         }
@@ -264,8 +260,8 @@ pub fn set_bool(b: &mut bool, message: &str) -> Result<(), Error> {
     }
 }
 
-/// Unpacks an attribute into a (key, boolean) pair, returning the boolean
-/// value. If the key doesn't match the attribute, `None` is returned.
+/// Unpacks an attribute into a (key, boolean) pair, returning the boolean value.
+/// If the key doesn't match the attribute, `None` is returned.
 fn bool_attr(key: &str, attr: &Meta) -> Result<Option<bool>, Error> {
     if !attr.path().is_ident(key) {
         return Ok(None);
@@ -274,11 +270,23 @@ fn bool_attr(key: &str, attr: &Meta) -> Result<Option<bool>, Error> {
         Meta::Path(..) => Ok(Some(true)),
         Meta::List(ref meta_list) => Ok(Some(meta_list.parse_args::<LitBool>()?.value())),
         Meta::NameValue(MetaNameValue {
-            value: Expr::Lit(ExprLit { lit: Lit::Str(ref lit), .. }),
+            value:
+                Expr::Lit(ExprLit {
+                    lit: Lit::Str(ref lit),
+                    ..
+                }),
             ..
-        }) => lit.value().parse::<bool>().map_err(Error::from).map(Option::Some),
+        }) => lit
+            .value()
+            .parse::<bool>()
+            .map_err(Error::from)
+            .map(Option::Some),
         Meta::NameValue(MetaNameValue {
-            value: Expr::Lit(ExprLit { lit: Lit::Bool(LitBool { value, .. }), .. }),
+            value:
+                Expr::Lit(ExprLit {
+                    lit: Lit::Bool(LitBool { value, .. }),
+                    ..
+                }),
             ..
         }) => Ok(Some(value)),
         _ => bail!("invalid {key} attribute"),
@@ -300,8 +308,15 @@ pub(super) fn tag_attr(attr: &Meta) -> Result<Option<u32>, Error> {
     }
     match *attr {
         Meta::List(ref meta_list) => Ok(Some(meta_list.parse_args::<LitInt>()?.base10_parse()?)),
-        Meta::NameValue(MetaNameValue { value: Expr::Lit(ref expr), .. }) => match expr.lit {
-            Lit::Str(ref lit) => lit.value().parse::<u32>().map_err(Error::from).map(Option::Some),
+        Meta::NameValue(MetaNameValue {
+            value: Expr::Lit(ref expr),
+            ..
+        }) => match expr.lit {
+            Lit::Str(ref lit) => lit
+                .value()
+                .parse::<u32>()
+                .map_err(Error::from)
+                .map(Option::Some),
             Lit::Int(ref lit) => Ok(Some(lit.base10_parse()?)),
             _ => bail!("invalid tag attribute: {attr:?}"),
         },
@@ -322,7 +337,11 @@ fn tags_attr(attr: &Meta) -> Result<Option<Vec<u32>>, Error> {
                 .collect::<Result<Vec<_>, _>>()?,
         )),
         Meta::NameValue(MetaNameValue {
-            value: Expr::Lit(ExprLit { lit: Lit::Str(ref lit), .. }),
+            value:
+                Expr::Lit(ExprLit {
+                    lit: Lit::Str(ref lit),
+                    ..
+                }),
             ..
         }) => lit
             .value()
