@@ -11,7 +11,7 @@ emulator_package {
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-37.0/google_apis_ps16k/x86_64"
-  version: "whwvcGrcu4DBEJ00DFWTeQfXzo4Zz4UnqWG_ELE39Y8C"  # r4, CP21.260330.005
+  version: "zjRg5mDaLw2Ewvu6CCbZeFSaOKYMePO7RltXzk5dt1QC"  # r5, CP21.260330.012
 }
 system_image_name: "system-images;android-37.0;google_apis_ps16k;x86_64"
 
