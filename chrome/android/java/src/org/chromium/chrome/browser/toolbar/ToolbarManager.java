@@ -2540,7 +2540,8 @@ public class ToolbarManager
                             mChromeAndroidTaskSupplier,
                             mBrowserControlsSizer,
                             mTabModelSelectorSupplier,
-                            mSnackbarManager);
+                            mSnackbarManager,
+                            mUserEducationHelper);
         }
 
         Profile profile = tabModelSelector.getModel(false).getProfile();

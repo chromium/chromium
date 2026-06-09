@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.bottombar;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
@@ -295,7 +296,7 @@ public class BottomBarMediatorUnitTest {
     @Test
     public void testTintChanged() {
         createMediator(/* shouldIncludeHomeButton= */ true);
-        assert mMediator != null;
+        assertNotNull(mMediator);
         verify(mThemeColorProvider).addTintObserver(mMediator);
 
         mMediator.onTintChanged(null, null, BrandedColorScheme.INCOGNITO);

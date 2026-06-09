@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
@@ -73,6 +74,7 @@ public class GlicActionCoordinatorUnitTest {
     @Mock private GlicKeyedService mGlicKeyedService;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Tracker mTracker;
+    @Mock private UserEducationHelper mUserEducationHelper;
 
     private ActionRegistry mActionRegistry;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
@@ -112,7 +114,8 @@ public class GlicActionCoordinatorUnitTest {
                         mTaskSupplier,
                         mBrowserControlsVisibilityManager,
                         mTabModelSelectorSupplier,
-                        mSnackbarManager);
+                        mSnackbarManager,
+                        mUserEducationHelper);
 
         mTabSupplier.set(mTab);
         ShadowLooper.idleMainLooper();

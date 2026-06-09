@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.ui.drawable.DirtyDotDrawableWrapper;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -57,6 +58,7 @@ public class GlicActionCoordinator {
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final Activity mActivity;
     private final SnackbarManager mSnackbarManager;
+    private final UserEducationHelper mUserEducationHelper;
     private @Nullable GlicTaskMenuCoordinator mTaskMenuCoordinator;
     private final Drawable mDefaultDrawable;
     private final Drawable mFilledDrawable;
@@ -72,12 +74,14 @@ public class GlicActionCoordinator {
             Supplier<@Nullable ChromeAndroidTask> taskSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
-            SnackbarManager snackbarManager) {
+            SnackbarManager snackbarManager,
+            UserEducationHelper userEducationHelper) {
         mActivity = activity;
         mToggleGlicCallback = toggleGlicCallback;
         mTabSupplier = tabSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mSnackbarManager = snackbarManager;
+        mUserEducationHelper = userEducationHelper;
         mGlicActionModelSupplier = actionRegistry.get(ActionId.GLIC);
 
         mStateController =
@@ -132,6 +136,7 @@ public class GlicActionCoordinator {
     private void onModelChanged(@Nullable PropertyModel model) {
         if (model == null) return;
         model.set(ActionProperties.ON_PRESS_CALLBACK, this::onGlicActionPressed);
+        model.set(ActionProperties.USER_EDUCATION_HELPER, mUserEducationHelper);
         updateButtonState();
     }
 

@@ -81,9 +81,14 @@ public class BottomBarMediator
 
     /**
      * @param model The property model to update.
+     * @param buttonManager The {@link BottomBarButtonManager} for the bottom bar buttons.
      * @param themeColorProvider The provider to observe theme changes from.
      * @param tabSupplier Supplier of the current tab.
+     * @param homepageEnabledSupplier Supplier of whether the homepage is enabled.
      * @param visibilityDelegate Delegate to handle compositor-level visibility changes.
+     * @param shouldIncludeHomeButton Whether the home button should be included in the bottom bar.
+     * @param profileSupplier Supplier of the current profile.
+     * @param omniboxFocusStateSupplier Supplier of the omnibox focus state.
      */
     public BottomBarMediator(
             PropertyModel model,
