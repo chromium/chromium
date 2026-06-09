@@ -9,6 +9,9 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
+#include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -17,6 +20,19 @@
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 
 namespace blink {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(InlineScriptCacheFetchResult)
+enum class InlineScriptCacheFetchResult {
+  kFetchedNonEmpty = 0,
+  kFetchedEmpty = 1,
+  kTimedOut = 2,
+  kSkippedForSmallScript = 3,
+  kMaxValue = kSkippedForSmallScript,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:InlineScriptCacheFetchResult)
 
 // The blink-side interface of `mojom::blink::CodeCacheHost`. This class is a
 // thin wrapper around the mojo version except for a mojo-less functionality to
@@ -54,7 +70,24 @@ class BLINK_PLATFORM_EXPORT CodeCacheHost {
   virtual mojom::blink::CodeCacheHost* operator->() = 0;
 
  protected:
+  class InlineScriptCacheFetcher;
+
   CodeCacheHost() = default;
+
+  using InlineScriptCacheFetchTrigger = base::FunctionRef<void(
+      base::HeapArray<uint8_t> source_hash,
+      base::OnceCallback<void(mojo_base::BigBuffer)> callback)>;
+
+  // A thread-safe implementation of fetching inline script on a worker thread
+  // while blocking the main thread. `fetch_trigger` is called on the main
+  // thread if necessary and should asynchronously start cache fetch on a worker
+  // thread When called. Once the fetch operation is completed, the `callback`
+  // function of `InlineScriptCacheFetchTrigger` must be called immediately in
+  // the worker thread to unblock the main thread; otherwise, the main thread
+  // will be kept blocked until the significant, designated time has passed.
+  static mojo_base::BigBuffer FetchInlineScriptCacheSyncInternal(
+      const ParkableString& script_source,
+      InlineScriptCacheFetchTrigger fetch_trigger);
 };
 
 }  // namespace blink

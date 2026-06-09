@@ -61,7 +61,6 @@ class PersistentCodeCacheHost : public CodeCacheHost,
 
  private:
   class AsyncCodeCacheHost;
-  class InlineScriptCacheFetcher;
 
   void OnFetchCachedCodeReply(FetchCachedCodeCallback callback,
                               base::Time response_time,

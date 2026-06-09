@@ -7524,7 +7524,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Fetch skipped because script is too small"/>
 </enum>
 
-<!-- LINT.ThenChange(//third_party/blink/renderer/platform/loader/fetch/persistent_code_cache_host.cc:InlineScriptCacheFetchResult) -->
+<!-- LINT.ThenChange(//third_party/blink/renderer/platform/loader/fetch/code_cache_host.h:InlineScriptCacheFetchResult) -->
 
 <enum name="InnerHTMLFastPathParserParseResult">
   <int value="0" label="Content was successfully parsed"/>
