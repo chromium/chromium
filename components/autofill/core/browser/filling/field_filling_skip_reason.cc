@@ -19,8 +19,6 @@ std::string_view GetSkipFieldFillLogMessage(
       return "Skipped: Only fill when focused";
     case FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute:
       return "Skipped: Unrecognized autocomplete attribute";
-    case FieldFillingSkipReason::kFormChanged:
-      return "Skipped: Form has changed";
     case FieldFillingSkipReason::kInvisibleField:
       return "Skipped: Invisible field";
     case FieldFillingSkipReason::kValuePrefilled:

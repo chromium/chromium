@@ -122,11 +122,6 @@ class MockAutofillDriver : public TestAutofillDriver {
               (override));
 };
 
-auto HasValue(std::u16string value) {
-  return Property("FormFieldData::value", &FormFieldData::value,
-                  std::move(value));
-}
-
 // Takes a FormFieldData argument.
 auto AutofilledWith(std::u16string value) {
   return AllOf(
@@ -357,38 +352,6 @@ TEST_F(FormFillerTest, FillTriggeredSection) {
             FieldModifier::kAutofill);
   EXPECT_EQ(form_structure->field(1)->last_modifier(),
             FieldModifier::kAutofill);
-}
-
-// Test that if the form cache is outdated because a field has changed, filling
-// is aborted after that field.
-TEST_F(FormFillerTest, DoNotFillIfFormFieldChanged) {
-  FormData form = test::CreateTestAddressFormData();
-  FormsSeen({form});
-  test_api(form).field(-1) = FormFieldData();
-
-  AutofillProfile profile = test::GetFullProfile();
-  std::vector<FormFieldData> filled_fields =
-      AutofillForm(form, form.fields().front(), &profile).fields();
-
-  EXPECT_THAT(filled_fields.back(), HasValue(u""));
-  filled_fields.pop_back();
-  EXPECT_THAT(filled_fields, Each(Not(HasValue(u""))));
-}
-
-// Test that if the form cache is outdated because the form has changed, filling
-// is aborted because of that change.
-TEST_F(FormFillerTest, DoNotFillIfFormChanged) {
-  FormData form = test::CreateTestAddressFormData();
-  FormsSeen({form});
-  test_api(form).Remove(-1);
-
-  EXPECT_CALL(autofill_driver(), ApplyFormAction).Times(0);
-  AutofillProfile profile = test::GetFullProfile();
-  form_filler().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, form, &profile, *GetFormStructure(form),
-      *GetAutofillField(form.global_id(), form.fields().front().global_id()),
-      AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
-      /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
 }
 
 TEST_F(FormFillerTest, SkipPreFilledFields) {
@@ -624,17 +587,19 @@ TEST_F(FormFillerTest, FillCreditCardForm_StripCardNumber) {
   test::SetCreditCardInfo(&credit_card_separator, "Elvis Presley",
                           "4234-5678-9012-3456",  // Visa
                           "04", "2999", "1");
-  FormData form =
+  FormData form1 =
       test::GetFormData({.fields = {{.autocomplete_attribute = "cc-number"}}});
-  FormsSeen({form});
+  FormData form2 =
+      test::GetFormData({.fields = {{.autocomplete_attribute = "cc-number"}}});
+  FormsSeen({form1, form2});
 
   std::vector<FormFieldData> filled_fields =
-      AutofillForm(form, form.fields().front(), &credit_card_whitespace)
+      AutofillForm(form1, form1.fields().front(), &credit_card_whitespace)
           .fields();
   EXPECT_THAT(filled_fields[0], AutofilledWith(u"4234567890123456"));
 
   filled_fields =
-      AutofillForm(form, form.fields().front(), &credit_card_separator)
+      AutofillForm(form2, form2.fields().front(), &credit_card_separator)
           .fields();
   EXPECT_THAT(filled_fields[0], AutofilledWith(u"4234567890123456"));
 }

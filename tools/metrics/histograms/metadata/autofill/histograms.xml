@@ -8059,17 +8059,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.SkippingFormFillDueToChangedFieldCount"
-    enum="Boolean" expires_after="2026-12-12">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records whether an autofill operation was skipped because the number of
-    fields to be filled is different than that number of fields registered in
-    the form cache.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.SmsOtp.UnrecognizedGmsCoreErrorCode"
     units="error code" expires_after="2026-10-31">
   <owner>koerber@google.com</owner>

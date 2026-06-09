@@ -78,7 +78,7 @@ void FormAutofillHistory::AddFormFillingEntry(
                 field->global_id(),
                 FieldFillingEntry(
                     field->value(),
-                    field->is_autofilled_according_to_renderer(/*pass_key=*/{}),
+                    field->is_autofilled_according_to_renderer(),
                     field->field_modifiers(/*pass_key=*/{}),
                     field->autofill_source_profile_guid(),
                     field->autofilled_type(), field->filling_product(),

@@ -2979,6 +2979,8 @@ TEST_F(AutofillMetricsSeamlessnessTest,
   };
 
   SeeForm(form_);
+  FormStructure& form_structure =
+      *test_api(autofill_manager()).FindCachedFormById(form_.global_id());
 
   credit_card().clear_cvc();
 
@@ -2993,6 +2995,7 @@ TEST_F(AutofillMetricsSeamlessnessTest,
   SetFormValues({CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
                 /*is_autofilled_according_to_renderer=*/true,
                 /*is_user_typed=*/false);
+  test_api(form_structure).UpdateFormData(form_);
 
   // Fakes an Autofill with the following behavior:
   // - before security and assuming a complete profile: kFullFill;
@@ -3006,6 +3009,7 @@ TEST_F(AutofillMetricsSeamlessnessTest,
   SetFormValues({CREDIT_CARD_NUMBER},
                 /*is_autofilled_according_to_renderer=*/true,
                 /*is_user_typed=*/false);
+  test_api(form_structure).UpdateFormData(form_);
 
   SubmitForm(form_);
   DeleteDriverToCommitMetrics();

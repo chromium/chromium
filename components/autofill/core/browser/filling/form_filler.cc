@@ -651,11 +651,6 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
                  ac_unrecognized_behavior),
          FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute);
 
-  // Skip if the form has changed in the meantime, which may happen with
-  // refills.
-  add_if(autofill_field.global_id() != field.global_id(),
-         FieldFillingSkipReason::kFormChanged);
-
   // Don't fill unfocusable fields, with the exception of <select> fields, for
   // the sake of filling the synthetic fields.
   add_if(!autofill_field.is_focusable() && !autofill_field.IsSelectElement(),
@@ -714,7 +709,7 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
 
   // Do not fill fields that are blocked by another filling operation or
   // product.
-  add_if(blocked_fields.contains(field.global_id()),
+  add_if(blocked_fields.contains(autofill_field.global_id()),
          FieldFillingSkipReason::kBlockedByOtherFillingOperationOrProduct);
 
   return skip_reasons;
@@ -946,27 +941,10 @@ void FormFiller::FillOrPreviewForm(
   LOG_AF(buffer) << form_structure << Br{};
   LOG_AF(buffer) << Tag{"table"};
 
-  if (action_persistence == mojom::ActionPersistence::kFill) {
-    base::UmaHistogramBoolean(
-        "Autofill.SkippingFormFillDueToChangedFieldCount",
-        form_structure.field_count() != form.fields().size());
-  }
-  if (form_structure.field_count() != form.fields().size()) {
-    LOG_AF(buffer)
-        << Tr{} << "*"
-        << "Skipped filling of form because the number of fields to be "
-           "filled differs from the number of fields registered in the form "
-           "cache."
-        << CTag{"table"};
-    LOG_AF(log_manager()) << LoggingScope::kFilling
-                          << LogMessage::kSendFillingData << Br{}
-                          << std::move(buffer);
-    return;
-  }
-
-  std::vector<FormFieldData> result_fields = form.fields();
-  CHECK_EQ(result_fields.size(), form_structure.field_count());
-
+  std::vector<FormFieldData> result_fields = base::ToVector(
+      form_structure.fields(), [](const std::unique_ptr<AutofillField>& field) {
+        return FormFieldData(*field);
+      });
   absl::flat_hash_map<FieldGlobalId, FieldType> filled_field_types;
 
   // `FormFiller::GetFieldFillingSkipReasons` returns for each field a generic
@@ -982,23 +960,21 @@ void FormFiller::FillOrPreviewForm(
   // `form_structure->fields()` remains in the browser process.
   // The fill value is determined by FillForm().
   for (size_t i = 0; i < result_fields.size(); ++i) {
-    const AutofillField& autofill_field = CHECK_DEREF(form_structure.field(i));
+    const AutofillField& field = CHECK_DEREF(form_structure.field(i));
     constexpr DenseSet<FieldFillingSkipReason> kPreUkmLoggingSkips{
         FieldFillingSkipReason::kNotInFilledSection,
-        FieldFillingSkipReason::kFormChanged,
         FieldFillingSkipReason::kNotFocused};
-    if (!kPreUkmLoggingSkips.contains_any(
-            skip_reasons[autofill_field.global_id()]) &&
-        !autofill_field.is_focusable()) {
+    if (!kPreUkmLoggingSkips.contains_any(skip_reasons[field.global_id()]) &&
+        !field.is_focusable()) {
       manager_->client()
           .GetFormInteractionsUkmLogger()
           .LogHiddenRepresentationalFieldSkipDecision(
-              manager_->driver().GetPageUkmSourceId(), form_structure,
-              autofill_field, !autofill_field.IsSelectElement());
+              manager_->driver().GetPageUkmSourceId(), form_structure, field,
+              !field.IsSelectElement());
     }
-    if (!skip_reasons[autofill_field.global_id()].empty()) {
+    if (!skip_reasons[field.global_id()].empty()) {
       const FieldFillingSkipReason skip_reason =
-          *skip_reasons[autofill_field.global_id()].begin();
+          *skip_reasons[field.global_id()].begin();
       LOG_AF(buffer) << Tr{} << base::StringPrintf("Field %zu", i)
                      << GetSkipFieldFillLogMessage(skip_reason);
       continue;
@@ -1009,8 +985,8 @@ void FormFiller::FillOrPreviewForm(
     const bool allow_suggestion_swapping =
         // TODO(crbug.com/393114125): Change to use
         // `AutofillField::field_modifiers_`.
-        form.fields()[i].is_autofilled_according_to_renderer() &&
-        AllowPaymentSwapping(autofill_trigger_field, autofill_field,
+        result_fields[i].is_autofilled_according_to_renderer() &&
+        AllowPaymentSwapping(autofill_trigger_field, field,
                              refill_options.is_refill());
 
     // Fill the data from `augmented_filling_payload` into `result_form`, which
@@ -1018,20 +994,20 @@ void FormFiller::FillOrPreviewForm(
     // the fields can also be emptied. In that scenario,
     // `field.is_autofilled_according_to_renderer()` becomes false.
     const std::optional<FieldType> filled_field_type =
-        FillField(autofill_field, augmented_filling_payload, forced_fill_values,
+        FillField(field, augmented_filling_payload, forced_fill_values,
                   result_fields[i], action_persistence, trigger_source,
                   allow_suggestion_swapping, &failure_to_fill);
     const bool is_newly_autofilled_or_emptied = filled_field_type.has_value();
     const bool autofilled_value_did_not_change =
-        form.fields()[i].is_autofilled_according_to_renderer() &&
+        field.is_autofilled_according_to_renderer() &&
         result_fields[i].is_autofilled_according_to_renderer() &&
-        form.fields()[i].value() == result_fields[i].value();
+        field.value() == result_fields[i].value();
 
     if (is_newly_autofilled_or_emptied && autofilled_value_did_not_change) {
-      skip_reasons[form.fields()[i].global_id()].insert(
+      skip_reasons[field.global_id()].insert(
           FieldFillingSkipReason::kAutofilledValueDidNotChange);
     } else if (!is_newly_autofilled_or_emptied) {
-      skip_reasons[form.fields()[i].global_id()].insert(
+      skip_reasons[field.global_id()].insert(
           FieldFillingSkipReason::kNoValueToFill);
     } else {
       CHECK(filled_field_type);
@@ -1039,10 +1015,10 @@ void FormFiller::FillOrPreviewForm(
                                  *filled_field_type);
     }
 
-    const bool has_value_before = !form.fields()[i].value().empty();
+    const bool has_value_before = !field.value().empty();
     const bool has_value_after = !result_fields[i].value().empty();
     const bool is_autofilled_before =
-        form.fields()[i].is_autofilled_according_to_renderer();
+        field.last_modifier() == FieldModifier::kAutofill;
     const bool is_autofilled_after =
         result_fields[i].is_autofilled_according_to_renderer();
     LOG_AF(buffer)
