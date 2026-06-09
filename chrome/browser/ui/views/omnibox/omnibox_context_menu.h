@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_CONTEXT_MENU_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_CONTEXT_MENU_H_
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -16,6 +17,8 @@
 namespace views {
 class MenuItemView;
 class MenuRunner;
+class View;
+class ViewShadow;
 class Widget;
 }  // namespace views
 
@@ -67,6 +70,10 @@ class OmniboxContextMenu : public views::MenuDelegate,
   base::RepeatingClosure on_menu_closed_;
   // The web contents of the Omnibox AIM Web UI.
   base::WeakPtr<content::WebContents> web_contents_;
+
+  // The drop shadows of the menus, mapped from the shadowed container view.
+  base::flat_map<raw_ptr<views::View>, std::unique_ptr<views::ViewShadow>>
+      view_shadows_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_CONTEXT_MENU_H_
