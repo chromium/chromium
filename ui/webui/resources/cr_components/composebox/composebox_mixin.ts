@@ -163,6 +163,14 @@ export const ComposeboxEmbedderMixin =
             voiceSearchCoherenceEnabled: {type: Boolean},
             isListening: {type: Boolean},
             tabFaviconChipsToCoinsEnabled: {type: Boolean},
+            energyEffectEnabled: {
+              reflect: true,
+              type: Boolean,
+            },
+            energyEffectAnimationEnabled: {
+              reflect: true,
+              type: Boolean,
+            },
           };
         }
 
@@ -195,6 +203,8 @@ export const ComposeboxEmbedderMixin =
 
         accessor tabFaviconChipsToCoinsEnabled: boolean =
             loadTimeData.getBoolean('tabFaviconChipsToCoinsEnabled');
+        accessor energyEffectEnabled: boolean = false;
+        accessor energyEffectAnimationEnabled: boolean = false;
 
         browserTabContextAdded: boolean = false;
         pendingUploads: Set<UnguessableToken> = new Set();
@@ -2424,6 +2434,8 @@ export interface ComposeboxEmbedderMixinInterface extends
   hasVoiceSearchError: boolean;
   isListening: boolean;
   voiceSearchCoherenceEnabled: boolean;
+  energyEffectEnabled: boolean;
+  energyEffectAnimationEnabled: boolean;
 
   // Embedder-provided methods for DOM and Mojo access
   updateInputPlaceholder(): void;
