@@ -10,19 +10,13 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/ref_counted_memory.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "content/public/renderer/render_thread_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 

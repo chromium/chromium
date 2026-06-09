@@ -33,14 +33,11 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/visual_utils.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/http/http_status_code.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/safe_browsing/core/browser/referring_app_info.h"  // nogncheck

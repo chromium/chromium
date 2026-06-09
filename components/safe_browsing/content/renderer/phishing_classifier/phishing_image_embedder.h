@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_visual_feature_extractor.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 

@@ -5,12 +5,10 @@
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier_delegate.h"
 
 #include <memory>
-#include <set>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -19,19 +17,14 @@
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/phishing_classifier/features.h"
 #include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
-#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_view.h"
 
 using content::RenderThread;
 
