@@ -295,7 +295,11 @@ public class TabStripSceneLayerTest {
                         /* scrimOpacity= */ eq(0.3f),
                         eq(leftPadding),
                         eq(rightPadding),
-                        eq(topPadding));
+                        eq(topPadding),
+                        anyFloat(),
+                        anyBoolean(),
+                        anyInt(),
+                        anyInt());
         verify(mTabStripSceneMock).finishBuildingFrame(1L);
     }
 

@@ -780,7 +780,7 @@ public class StripLayoutTab extends StripLayoutView {
     /**
      * @return How far to vertically offset the tab content.
      */
-    public float getContentOffsetY() {
+    public static float getContentOffsetY() {
         return FOLIO_CONTENT_OFFSET_Y - (TOP_MARGIN_DP / 2);
     }
 
@@ -808,7 +808,7 @@ public class StripLayoutTab extends StripLayoutView {
     /**
      * @return How far to offset the top of the tab container from the top of the tab strip.
      */
-    public float getTopMargin() {
+    public static float getTopMargin() {
         return TOP_MARGIN_DP;
     }
 

@@ -17,6 +17,7 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.OffsetTag;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
@@ -170,6 +171,13 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             float topPaddingPx) {
         final int width = Math.round(layoutHelper.getWidth() * mDpToPx);
         final int height = Math.round(layoutHelper.getHeight() * mDpToPx);
+        boolean shouldShowDivider = trailingButtonsCoordinator.shouldShowDivider();
+        int dividerResId = R.drawable.bg_tabstrip_tab_divider;
+        int dividerTint =
+                TabUiThemeUtil.getDividerTint(
+                        layoutHelper.getContext(), layoutHelper.isIncognito());
+        float dividerY =
+                (StripLayoutTab.getTopMargin() + StripLayoutTab.getContentOffsetY()) * mDpToPx;
         TabStripSceneLayerJni.get()
                 .updateTabStripLayer(
                         mNativePtr,
@@ -181,7 +189,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         scrimOpacity,
                         leftPaddingPx,
                         rightPaddingPx,
-                        topPaddingPx);
+                        topPaddingPx,
+                        dividerY,
+                        shouldShowDivider,
+                        dividerResId,
+                        dividerTint);
 
         TintedCompositorButton newTabButton = layoutHelper.getNewTabButton();
         boolean newTabButtonVisible = newTabButton.isVisible();
@@ -414,10 +426,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             Math.round(st.getDrawY() * mDpToPx),
                             Math.round(st.getWidth() * mDpToPx),
                             Math.round(st.getHeight() * mDpToPx),
-                            Math.round(st.getContentOffsetY() * mDpToPx),
+                            Math.round(StripLayoutTab.getContentOffsetY() * mDpToPx),
                             Math.round(st.getDividerOffsetX() * mDpToPx),
                             Math.round(st.getBottomMargin() * mDpToPx),
-                            Math.round(st.getTopMargin() * mDpToPx),
+                            Math.round(StripLayoutTab.getTopMargin() * mDpToPx),
                             Math.round(st.getCloseButtonPadding() * mDpToPx),
                             closeButton.getOpacity(),
                             Math.round(widthToHideTabTitle * mDpToPx),
@@ -519,7 +531,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float scrimOpacity,
                 float leftPaddingPx,
                 float rightPaddingPx,
-                float topPaddingPx);
+                float topPaddingPx,
+                float dividerY,
+                boolean shouldShowDivider,
+                int dividerResourceId,
+                int dividerTint);
 
         void updateNewTabButton(
                 long nativeTabStripSceneLayer,

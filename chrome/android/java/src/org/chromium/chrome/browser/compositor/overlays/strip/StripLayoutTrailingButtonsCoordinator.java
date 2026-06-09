@@ -99,6 +99,7 @@ public class StripLayoutTrailingButtonsCoordinator {
     public static final float GLIC_BUTTON_INNER_CORNER_RADIUS_DP = 2.f;
     private static final float GLIC_ACTOR_BUTTON_GAP_DP = 2.f;
     private static final float GLIC_ACTOR_TEXT_HIDE_THRESHOLD_DP = 700.f;
+    private static final float WINDOW_CONTROLS_DIVIDER_WIDTH_DP = 2.f;
 
     // Slop values used in #updateTouchTargetInsets to ensure at least a 48dp touch target in the
     // Glic and Glic Actor buttons.
@@ -158,7 +159,8 @@ public class StripLayoutTrailingButtonsCoordinator {
     private boolean mIsGlicUiVisible;
     private boolean mIsMsbVisible;
     private int mLastGlicActorButtonState = ButtonState.DEFAULT;
-    private boolean mIsUnfocusedInDw;
+    private boolean mIsTopResumedActivity;
+    private boolean mIsAppInDesktopWindow;
 
     // Animations
     private static final int ANIM_BUTTONS_FADE_MS = 150;
@@ -925,7 +927,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             boolean animate, float targetGlicWidth, float targetActorWidth) {
         if (mGlicButton == null || mGlicActorButton == null) return;
 
-        float targetOpacity = mIsUnfocusedInDw ? GLIC_BUTTON_UNFOCUSED_OPACITY : 1.0f;
+        float targetOpacity = isUnfocusedInDw() ? GLIC_BUTTON_UNFOCUSED_OPACITY : 1.0f;
         boolean targetActorVisible = shouldGlicActorBeVisible();
 
         if (animate) {
@@ -1004,11 +1006,10 @@ public class StripLayoutTrailingButtonsCoordinator {
 
         // 1. X Positions
         if (!LocalizationUtils.isLayoutRtl()) {
-            float rightSideAnchor = mWidth - mRightPadding;
+            float rightSideAnchor = mWidth - mRightPadding - getGlicButtonEndOffset();
             if (mIsMsbVisible) {
                 rightSideAnchor -= StripLayoutHelperManager.BUTTON_DESIRED_TOUCH_TARGET_SIZE;
             }
-            rightSideAnchor -= GLIC_BUTTON_END_SLOP_DP;
             if (isGlicActorButtonVisible()) {
                 mGlicActorButton.setDrawX(rightSideAnchor - mGlicActorButton.getWidth());
                 rightSideAnchor -= mGlicActorButton.getWidth() + GLIC_ACTOR_BUTTON_GAP_DP;
@@ -1022,11 +1023,10 @@ public class StripLayoutTrailingButtonsCoordinator {
                                 + mDismissButtonXOffset);
             }
         } else {
-            float leftSideAnchor = mLeftPadding;
+            float leftSideAnchor = mLeftPadding + getGlicButtonEndOffset();
             if (mIsMsbVisible) {
                 leftSideAnchor += StripLayoutHelperManager.BUTTON_DESIRED_TOUCH_TARGET_SIZE;
             }
-            leftSideAnchor += GLIC_BUTTON_END_SLOP_DP;
             if (isGlicActorButtonVisible()) {
                 mGlicActorButton.setDrawX(leftSideAnchor);
                 leftSideAnchor += mGlicActorButton.getWidth() + GLIC_ACTOR_BUTTON_GAP_DP;
@@ -1095,9 +1095,10 @@ public class StripLayoutTrailingButtonsCoordinator {
      */
     public void updateGlicButtonOpacity(
             boolean isAppInDesktopWindow, boolean isTopResumedActivity) {
+        mIsAppInDesktopWindow = isAppInDesktopWindow;
+        mIsTopResumedActivity = isTopResumedActivity;
         if (mGlicButton == null || mGlicActorButton == null) return;
-        mIsUnfocusedInDw = isAppInDesktopWindow && !isTopResumedActivity;
-        float targetOpacity = mIsUnfocusedInDw ? GLIC_BUTTON_UNFOCUSED_OPACITY : 1.0f;
+        float targetOpacity = isUnfocusedInDw() ? GLIC_BUTTON_UNFOCUSED_OPACITY : 1.0f;
         mGlicButton.setOpacity(targetOpacity);
         mGlicActorButton.setOpacity(targetOpacity);
     }
@@ -1106,12 +1107,11 @@ public class StripLayoutTrailingButtonsCoordinator {
     public float getTrailingButtonsWidthWithPadding() {
         float width = 0.0f;
         if (isGlicButtonVisible()) {
-            width += mGlicButton.getWidth() + GLIC_BUTTON_START_SLOP_DP + GLIC_BUTTON_END_SLOP_DP;
-        }
-        if (isGlicActorButtonVisible()) {
-            // Add spacing gap regardless of whether primary Glic button is showing.
-            width += GLIC_ACTOR_BUTTON_GAP_DP;
-            width += mGlicActorButton.getWidth();
+            width += mGlicButton.getWidth() + GLIC_BUTTON_START_SLOP_DP + getGlicButtonEndOffset();
+
+            if (isGlicActorButtonVisible()) {
+                width += GLIC_ACTOR_BUTTON_GAP_DP + mGlicActorButton.getWidth();
+            }
         }
         return width;
     }
@@ -1274,6 +1274,25 @@ public class StripLayoutTrailingButtonsCoordinator {
             mStateController.updateObservations(mProfile);
         }
         return mStateController;
+    }
+
+    /** Returns whether the window controls divider should be shown. */
+    public boolean shouldShowDivider() {
+        return isGlicButtonVisible() && mIsAppInDesktopWindow;
+    }
+
+    /**
+     * Returns the layout space offset at the end of the Glic button in DP. This includes the base
+     * end slop (6dp) to keep touch targets within valid bounds, plus the window controls divider
+     * width (2dp) if visible.
+     */
+    private float getGlicButtonEndOffset() {
+        return GLIC_BUTTON_END_SLOP_DP
+                + (shouldShowDivider() ? WINDOW_CONTROLS_DIVIDER_WIDTH_DP : 0.f);
+    }
+
+    private boolean isUnfocusedInDw() {
+        return mIsAppInDesktopWindow && !mIsTopResumedActivity;
     }
 
     /**

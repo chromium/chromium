@@ -45,6 +45,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       right_fade_(cc::slim::SolidColorLayer::Create()),
       left_padding_layer_(cc::slim::SolidColorLayer::Create()),
       right_padding_layer_(cc::slim::SolidColorLayer::Create()),
+      window_controls_divider_(cc::slim::UIResourceLayer::Create()),
       glic_button_container_(cc::slim::Layer::Create()),
       glic_button_(cc::slim::UIResourceLayer::Create()),
       glic_button_background_(cc::slim::SolidColorLayer::Create()),
@@ -82,6 +83,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   scrim_layer_->SetIsDrawable(true);
   left_padding_layer_->SetIsDrawable(true);
   right_padding_layer_->SetIsDrawable(true);
+  window_controls_divider_->SetIsDrawable(true);
 
   // When the ScrollingStripStacker is used, the new tab button and tabs scroll,
   // while the incognito button and left/right fade stay fixed. Put the new tab
@@ -154,6 +156,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   tab_strip_layer_->AddChild(model_selector_button_background_);
   tab_strip_layer_->AddChild(model_selector_button_);
   tab_strip_layer_->AddChild(model_selector_button_keyboard_focus_ring_);
+  tab_strip_layer_->AddChild(window_controls_divider_);
 
   layer()->AddChild(background_layer_);
 }
@@ -249,7 +252,11 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
                                              float scrim_opacity,
                                              float left_padding,
                                              float right_padding,
-                                             float top_padding) {
+                                             float top_padding,
+                                             float divider_y,
+                                             bool should_show_divider,
+                                             int32_t divider_resource_id,
+                                             int32_t divider_tint) {
   gfx::RectF content(0, y_offset, width, height);
   layer()->SetPosition(gfx::PointF(0, y_offset));
   background_layer_->SetBounds(gfx::Size(width, height));
@@ -282,6 +289,34 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
     right_padding_layer_->SetPosition(gfx::PointF(width - right_padding, 0));
     right_padding_layer_->SetBackgroundColor(
         SkColor4f::FromColor(background_color));
+  }
+
+  // Update the window controls divider.
+  if (!should_show_divider) {
+    window_controls_divider_->SetHideLayerAndSubtree(true);
+  } else {
+    window_controls_divider_->SetHideLayerAndSubtree(false);
+
+    DCHECK(resource_manager_);
+    ui::Resource* divider_resource =
+        resource_manager_->GetStaticResourceWithTint(divider_resource_id,
+                                                     divider_tint, true);
+
+    window_controls_divider_->SetUIResourceId(
+        divider_resource->ui_resource()->id());
+    window_controls_divider_->SetBounds(divider_resource->size());
+
+    // Position the window controls divider at the same y-level as the tab
+    // dividers.
+    float y_pos = divider_y;
+
+    float x_pos;
+    if (l10n_util::IsLayoutRtl()) {
+      x_pos = left_padding;
+    } else {
+      x_pos = width - right_padding - divider_resource->size().width();
+    }
+    window_controls_divider_->SetPosition(gfx::PointF(x_pos, y_pos));
   }
 
   // Hide scrim layer if it's not visible.

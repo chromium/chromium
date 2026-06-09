@@ -1947,6 +1947,11 @@ public class StripLayoutHelperManager
         return mTabStripDragHandler;
     }
 
+    /** Returns true if the current tab model is incognito. */
+    public boolean isIncognito() {
+        return mIsIncognito;
+    }
+
     public void setIsIncognitoForTesting(boolean isIncognito) {
         mIsIncognito = isIncognito;
     }
