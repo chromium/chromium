@@ -85,6 +85,7 @@ public class HistoryPage extends BasicNativePage {
                         /* launchedForApp= */ false,
                         /* showAppFilter= */ true,
                         ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING),
+                        HistoryManager.SearchConfiguration.IN_TOOLBAR,
                         /* openHistoryItemCallback= */ null,
                         host::createEdgeToEdgePadAdjuster);
         mTitle = host.getContext().getString(R.string.menu_history);

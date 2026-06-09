@@ -247,6 +247,7 @@ public class HistoryUiTest {
                         /* launchedForApp= */ false,
                         /* showAppFilter= */ isAppSpecificHistoryEnabled,
                         /* shouldClusterByDomain= */ false,
+                        HistoryManager.SearchConfiguration.IN_TOOLBAR,
                         /* openHistoryItemCallback= */ null,
                         /* edgeToEdgePadAdjusterGenerator= */ null);
         mContentManager = mHistoryManager.getContentManagerForTests();
@@ -868,6 +869,7 @@ public class HistoryUiTest {
                         /* launchedForApp= */ false,
                         /* showAppFilter= */ true,
                         /* shouldClusterByDomain= */ false,
+                        HistoryManager.SearchConfiguration.IN_TOOLBAR,
                         /* openHistoryItemCallback= */ null,
                         /* edgeToEdgePadAdjusterGenerator= */ null);
         mContentManager = mHistoryManager.getContentManagerForTests();
@@ -928,6 +930,7 @@ public class HistoryUiTest {
                         /* launchedForApp= */ true,
                         /* showAppFilter= */ false,
                         /* shouldClusterByDomain= */ false,
+                        HistoryManager.SearchConfiguration.IN_TOOLBAR,
                         /* openHistoryItemCallback= */ null,
                         /* edgeToEdgePadAdjusterGenerator= */ null);
 
@@ -970,6 +973,7 @@ public class HistoryUiTest {
                         /* launchedForApp= */ true,
                         /* showAppFilter= */ false,
                         /* shouldClusterByDomain= */ false,
+                        HistoryManager.SearchConfiguration.IN_TOOLBAR,
                         /* openHistoryItemCallback= */ null,
                         /* edgeToEdgePadAdjusterGenerator= */ null);
         InfoHeaderPref headerPref = mHistoryManager.getInfoHeaderPrefForTests();
@@ -1151,6 +1155,7 @@ public class HistoryUiTest {
                         /* launchedForApp= */ false,
                         /* showAppFilter= */ false,
                         /* shouldClusterByDomain= */ false,
+                        HistoryManager.SearchConfiguration.IN_TOOLBAR,
                         /* openHistoryItemCallback= */ null,
                         /* edgeToEdgePadAdjusterGenerator= */ null);
 

@@ -62,6 +62,8 @@ public class HubToolbarMediator {
         HubSearchEntrypoint.INCOGNITO_LOUPE,
         HubSearchEntrypoint.TAB_GROUPS_SEARCHBOX,
         HubSearchEntrypoint.TAB_GROUPS_LOUPE,
+        HubSearchEntrypoint.HISTORY_SEARCHBOX,
+        HubSearchEntrypoint.HISTORY_LOUPE,
         HubSearchEntrypoint.NUM_ENTRIES
     })
     public @interface HubSearchEntrypoint {
@@ -71,9 +73,11 @@ public class HubToolbarMediator {
         int INCOGNITO_LOUPE = 3;
         int TAB_GROUPS_SEARCHBOX = 4;
         int TAB_GROUPS_LOUPE = 5;
+        int HISTORY_SEARCHBOX = 6;
+        int HISTORY_LOUPE = 7;
 
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 6;
+        int NUM_ENTRIES = 8;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:HubSearchEntrypoint)
@@ -382,10 +386,12 @@ public class HubToolbarMediator {
         // toggling panes. This logic filters out clicks unless the pane is hub search eligible.
         if (shouldOmitFocusedPaneForHubSearch(focusedPaneId)) return;
 
+        String url = focusedPaneId == PaneId.HISTORY ? "chrome://history/" : getOriginalNtpUrl();
+
         mSearchActivityClient.requestOmniboxForResult(
                 mSearchActivityClient
                         .newIntentBuilder()
-                        .setPageUrl(new GURL(getOriginalNtpUrl()))
+                        .setPageUrl(new GURL(url))
                         .setIncognito(mPropertyModel.get(IS_INCOGNITO))
                         .setResolutionType(ResolutionType.OPEN_IN_CHROME)
                         .build());
@@ -418,6 +424,12 @@ public class HubToolbarMediator {
                                 ? HubSearchEntrypoint.TAB_GROUPS_SEARCHBOX
                                 : HubSearchEntrypoint.TAB_GROUPS_LOUPE;
                 break;
+            case PaneId.HISTORY:
+                action =
+                        isSearchBox
+                                ? HubSearchEntrypoint.HISTORY_SEARCHBOX
+                                : HubSearchEntrypoint.HISTORY_LOUPE;
+                break;
             default:
                 assert false : "Invalid focused pane id " + focusedPaneId;
                 action = HubSearchEntrypoint.REGULAR_SEARCHBOX;
@@ -430,6 +442,7 @@ public class HubToolbarMediator {
     private boolean shouldOmitFocusedPaneForHubSearch(@PaneId int focusedPaneId) {
         return focusedPaneId != PaneId.TAB_SWITCHER
                 && focusedPaneId != PaneId.INCOGNITO_TAB_SWITCHER
+                && focusedPaneId != PaneId.HISTORY
                 && maybeExcludeHubSearchForTabGroupsPane(focusedPaneId);
     }
 

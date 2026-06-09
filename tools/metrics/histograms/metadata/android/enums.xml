@@ -1239,6 +1239,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Incognito loupe"/>
   <int value="4" label="Tab groups searchbox"/>
   <int value="5" label="Tab groups loupe"/>
+  <int value="6" label="History searchbox"/>
+  <int value="7" label="History loupe"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/hub/internal/android/java/src/org/chromium/chrome/browser/hub/HubToolbarMediator.java:HubSearchEntrypoint) -->

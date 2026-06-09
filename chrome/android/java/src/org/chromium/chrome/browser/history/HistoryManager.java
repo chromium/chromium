@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.IntDef;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -62,6 +63,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -75,6 +78,16 @@ public class HistoryManager
                 SnackbarController,
                 HistoryContentManager.Observer,
                 BackPressHandler {
+
+    @IntDef({SearchConfiguration.IN_TOOLBAR, SearchConfiguration.NONE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SearchConfiguration {
+        /** Search is handled by the HistoryManagerToolbar. */
+        int IN_TOOLBAR = 0;
+
+        /** Search is disabled or handled externally (e.g. by the Hub). */
+        int NONE = 1;
+    }
 
     static final String HISTORY_CLUSTERS_VISIBLE_PREF = "history_clusters.visible";
 
@@ -134,6 +147,8 @@ public class HistoryManager
      * @param shouldShowClearData Whether the 'Clear browsing data' button should be shown.
      * @param launchedForApp Whether history UI is launched for app-specific history.
      * @param showAppFilter Whether history page will show app filter UI.
+     * @param shouldClusterByDomain Whether adjacent history items will be grouped by domain.
+     * @param searchConfiguration The search UI configuration for the history manager.
      * @param openHistoryItemCallback Optional callback which is run when a history item is opened
      *     (not called when history manager is in a separate activity).
      * @param edgeToEdgePadAdjusterGenerator Generator of {@link EdgeToEdgePadAdjuster} to update
@@ -157,6 +172,7 @@ public class HistoryManager
             boolean launchedForApp,
             boolean showAppFilter,
             boolean shouldClusterByDomain,
+            @SearchConfiguration int searchConfiguration,
             @Nullable Runnable openHistoryItemCallback,
             @Nullable Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator) {
         mProfile = profile;
@@ -271,15 +287,19 @@ public class HistoryManager
         /* If the current device is LFF device w/ physical keyboard attached,
          * then initialize the search box only; Otherwise initialize the whole toolbar
          */
-        if (!mIsLargeFormFactorDevice) {
-            mToolbar.initializeSearchView(
-                    this, R.string.history_manager_search, R.id.search_menu_id);
+        if (searchConfiguration == SearchConfiguration.IN_TOOLBAR) {
+            if (!mIsLargeFormFactorDevice) {
+                mToolbar.initializeSearchView(
+                        this, R.string.history_manager_search, R.id.search_menu_id);
+            } else {
+                mToolbar.initializeInlineSearchView(this, R.id.search_menu_id);
+                ViewGroup searchBoxContainer =
+                        mToolbar.initializeSearchBoxContainer(
+                                mSelectableListLayout, R.string.history_manager_search);
+                mSelectableListLayout.addInlineSearchBox(searchBoxContainer);
+            }
         } else {
-            mToolbar.initializeInlineSearchView(this, R.id.search_menu_id);
-            ViewGroup searchBoxContainer =
-                    mToolbar.initializeSearchBoxContainer(
-                            mSelectableListLayout, R.string.history_manager_search);
-            mSelectableListLayout.addInlineSearchBox(searchBoxContainer);
+            mToolbar.getMenu().removeItem(R.id.search_menu_id);
         }
 
         mToolbar.setInfoMenuItem(R.id.info_menu_id);
