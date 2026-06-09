@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.text.TextPaint;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -31,6 +32,14 @@ import java.util.Locale;
 @NullMarked
 public final class StringUtils {
     @VisibleForTesting static final String ELLIPSIS = "\u2026";
+
+    private static final ThreadLocal<TextPaint> sTextPaint =
+            ThreadLocal.withInitial(
+                    () -> {
+                        TextPaint paint = new TextPaint();
+                        paint.setTextSize(16f);
+                        return paint;
+                    });
 
     @VisibleForTesting
     private static final int[] BYTES_AVAILABLE_STRINGS = {
@@ -187,9 +196,21 @@ public final class StringUtils {
         return DownloadUtils.getStringForBytes(context, BYTES_AVAILABLE_STRINGS, bytes);
     }
 
+    // Returns whether the given string contains only ASCII characters.
+    private static boolean isPureAscii(String s) {
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            if (s.charAt(i) > 0x7F) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
-     * Abbreviate a file name into a given number of characters with ellipses.
-     * e.g. "thisisaverylongfilename.txt" => "thisisave....txt".
+     * Abbreviate a file name into a given number of characters with ellipses. e.g.
+     * "thisisaverylongfilename.txt" => "thisisave....txt".
+     *
      * @param fileName File name to abbreviate.
      * @param limit Character limit.
      * @return Abbreviated file name.
@@ -197,18 +218,80 @@ public final class StringUtils {
     public static String getAbbreviatedFileName(String fileName, int limit) {
         assert limit >= 1; // Abbreviated file name should at least be 1 characters (a...)
 
-        if (TextUtils.isEmpty(fileName) || fileName.length() <= limit) return fileName;
+        if (TextUtils.isEmpty(fileName)) return fileName;
 
-        // Find the file name extension
-        int index = fileName.lastIndexOf(".");
-        int extensionLength = fileName.length() - index;
+        if (isPureAscii(fileName)) {
+            if (fileName.length() <= limit) return fileName;
 
-        // If the extension is too long, just use truncate the string from beginning.
-        if (extensionLength >= limit) {
-            return fileName.substring(0, limit) + ELLIPSIS;
+            int index = fileName.lastIndexOf(".");
+            int extensionLength = fileName.length() - index;
+
+            if (index == -1 || extensionLength >= limit) {
+                return fileName.substring(0, limit) + ELLIPSIS;
+            }
+            int remainingLength = limit - extensionLength;
+            return fileName.substring(0, remainingLength) + ELLIPSIS + fileName.substring(index);
         }
-        int remainingLength = limit - extensionLength;
-        return fileName.substring(0, remainingLength) + ELLIPSIS + fileName.substring(index);
+
+        // For non-ASCII/Unicode string:
+        TextPaint paint = sTextPaint.get();
+
+        float charWidth = paint.measureText("x");
+        float maxBudget = charWidth * limit;
+
+        float totalWidth = paint.measureText(fileName);
+        if (totalWidth <= maxBudget
+                && (fileName.length() <= limit
+                        || fileName.codePointCount(0, fileName.length()) <= limit)) {
+            return fileName;
+        }
+
+        int index = fileName.lastIndexOf(".");
+        if (index == -1) {
+            return truncateByWidth(paint, fileName, maxBudget, limit) + ELLIPSIS;
+        }
+
+        String extension = fileName.substring(index);
+        String baseName = fileName.substring(0, index);
+
+        float extensionWidth = paint.measureText(extension);
+        int extensionCodePoints = extension.codePointCount(0, extension.length());
+
+        // If the extension is too long, just truncate the string from beginning.
+        if (extensionWidth >= maxBudget || extensionCodePoints >= limit) {
+            return truncateByWidth(paint, fileName, maxBudget, limit) + ELLIPSIS;
+        }
+
+        // Truncate the base name to fit in the remaining budget
+        float remainingBudget = maxBudget - extensionWidth;
+        int remainingLength = limit - extensionCodePoints;
+        String truncatedBase = truncateByWidth(paint, baseName, remainingBudget, remainingLength);
+
+        return truncatedBase + ELLIPSIS + extension;
+    }
+
+    // Truncate the string from the end to fit in the given width budget and Unicode character
+    // limit.
+    private static String truncateByWidth(
+            TextPaint paint, String s, float maxBudget, int unicodeCharLimit) {
+        if (TextUtils.isEmpty(s)) return "";
+
+        // Only measure up to the maximum possible chars we could ever return.
+        // Since 1 code point <= 2 Java chars, unicodeCharLimit code points <= unicodeCharLimit * 2
+        // chars.
+        int endRange = Math.min(s.length(), unicodeCharLimit * 2);
+        int charsFit = paint.breakText(s, 0, endRange, true, maxBudget, null);
+
+        int end = 0;
+        int count = 0;
+        // Now enforce the unicode character limit
+        while (end < charsFit && count < unicodeCharLimit) {
+            int next = end + Character.charCount(s.codePointAt(end));
+            if (next > charsFit) break;
+            end = next;
+            count++;
+        }
+        return s.substring(0, end);
     }
 
     /**
