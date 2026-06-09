@@ -1572,6 +1572,11 @@ inline constexpr char kPageToolsFeatureUnavailabilityName[] =
 inline constexpr char kPageToolsFeatureUnavailabilityDescription[] =
     "Enables the PageToolsFeatureUnavailability feature.";
 
+inline constexpr char kPasswordManagerActorLoginName[] =
+    "Password Manager Actor Login";
+inline constexpr char kPasswordManagerActorLoginDescription[] =
+    "Enables logging in on websites using actor tools.";
+
 inline constexpr char kPasswordRemovalFromDeleteBrowsingDataName[] =
     "Removal of Passwords from Quick Delete Browsing Data";
 inline constexpr char kPasswordRemovalFromDeleteBrowsingDataDescription[] =

@@ -5986,6 +5986,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "ios-password-manager-actor-login",
+    "owners": ["ginnyhuang@chromium.org", "kaklilu@chromium.org"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ios-proactive-password-generation-bottom-sheet",
     "owners": [
       "cloutierc@google.com",

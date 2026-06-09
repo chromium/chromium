@@ -2902,6 +2902,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kComposeboxDriveContextMenuOptionDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxDriveContextMenuOption)},
+    {"ios-password-manager-actor-login",
+     flag_descriptions::kPasswordManagerActorLoginName,
+     flag_descriptions::kPasswordManagerActorLoginDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::kActorLogin)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
