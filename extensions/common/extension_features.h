@@ -157,13 +157,6 @@ BASE_DECLARE_FEATURE(kExtensionLocalizationGuid);
 // A replacement key for declaring icons, in addition to supporting dark mode.
 BASE_DECLARE_FEATURE(kExtensionIconVariants);
 
-// A feature to allow legacy MV2 extensions, even if they are not supported by
-// the browser or experiment configuration. This is important to allow
-// developers of MV2 extensions to continue loading, running, and testing their
-// extensions for as long as MV2 is supported in any variant.
-// TODO(https://crbug.com/431097630): Remove this feature.
-BASE_DECLARE_FEATURE(kAllowLegacyMV2Extensions);
-
 // If enabled, allows an extension to specify protocol_handlers keys in the
 // Manifest, registering a group of custom handlers so that the browser can
 // handle navigation requests to URLs with unknown schemes. This feature

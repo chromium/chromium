@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,7 +15,6 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -190,32 +188,6 @@ TEST_F(ManifestV2ExperimentManagerUnitTest,
         extension->location()));
     EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionEnable(*extension));
   }
-}
-
-// A test harness that enables the kAllowLegacyMV2Extensions feature.
-class ManifestV2ExperimentManagerUnitTestWithAllowLegacy
-    : public ManifestV2ExperimentManagerUnitTest {
- public:
-  ManifestV2ExperimentManagerUnitTestWithAllowLegacy() = default;
-  ~ManifestV2ExperimentManagerUnitTestWithAllowLegacy() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      extensions_features::kAllowLegacyMV2Extensions};
-};
-
-// Tests that unpacked extensions *are* installable with the
-// "kAllowLegacyMV2Extensions" flag.
-TEST_F(ManifestV2ExperimentManagerUnitTestWithAllowLegacy,
-       ShouldBlockInstallation_UnpackedExtensionsWithLegacyMV2Extensions) {
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("test")
-          .SetManifestVersion(2)
-          .SetLocation(mojom::ManifestLocation::kUnpacked)
-          .Build();
-  EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
-      extension->manifest_version(), extension->GetType(),
-      extension->location()));
 }
 
 // Tests that the proper manifest group is used when emitting metrics for

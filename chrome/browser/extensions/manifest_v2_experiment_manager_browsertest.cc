@@ -10,7 +10,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
@@ -25,7 +24,6 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/unpacked_installer.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 #include "extensions/test/test_extension_dir.h"
@@ -312,74 +310,6 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
       u"Cannot install extension because it uses an unsupported "
       u"manifest version.",
       install_error);
-}
-
-class ManifestV2ExperimentWithLegacyExtensionSupportTest
-    : public ManifestV2ExperimentManagerBrowserTest {
- public:
-  ManifestV2ExperimentWithLegacyExtensionSupportTest() = default;
-  ~ManifestV2ExperimentWithLegacyExtensionSupportTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      extensions_features::kAllowLegacyMV2Extensions};
-};
-
-// Tests that legacy unpacked MV2 extensions are still allowed (and aren't
-// auto-disabled) if the kAllowLegacyMV2Extensions feature is enabled.
-IN_PROC_BROWSER_TEST_F(
-    ManifestV2ExperimentWithLegacyExtensionSupportTest,
-    PRE_MV2ExtensionsAreNotDisabledIfLegacyExtensionSwitchIsApplied) {
-  // Load two extensions: a packed extension and an unpacked extension.
-  const Extension* packed_extension =
-      AddMV2Extension("Test Packed MV2 Extension");
-  ASSERT_TRUE(packed_extension);
-  EXPECT_EQ(mojom::ManifestLocation::kInternal, packed_extension->location());
-
-  const Extension* unpacked_extension =
-      LoadExtension(test_data_dir_.AppendASCII("simple_mv2"));
-  ASSERT_TRUE(unpacked_extension);
-  EXPECT_EQ(mojom::ManifestLocation::kUnpacked, unpacked_extension->location());
-}
-IN_PROC_BROWSER_TEST_F(
-    ManifestV2ExperimentWithLegacyExtensionSupportTest,
-    MV2ExtensionsAreNotDisabledIfLegacyExtensionSwitchIsApplied) {
-  WaitForExtensionSystemReady();
-
-  // The packed extension should have been disabled.
-  const Extension* packed_extension = GetExtensionByName(
-      "Test Packed MV2 Extension", extension_registry()->disabled_extensions());
-  ASSERT_TRUE(packed_extension);
-  const ExtensionId packed_extension_id = packed_extension->id();
-
-  EXPECT_THAT(extension_prefs()->GetDisableReasons(packed_extension_id),
-              testing::UnorderedElementsAre(
-                  disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
-
-  // The user is not allowed to re-enable the packed extension; the flag only
-  // applies to unpacked extensions.
-  ExtensionSystem* system = ExtensionSystem::Get(profile());
-  disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
-  EXPECT_TRUE(system->management_policy()->MustRemainDisabled(packed_extension,
-                                                              &disable_reason));
-  EXPECT_EQ(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION,
-            disable_reason);
-
-  // The unpacked extension should still be enabled.
-  const Extension* unpacked_extension = GetExtensionByName(
-      "Simple MV2 Extension", extension_registry()->enabled_extensions());
-  ASSERT_TRUE(unpacked_extension);
-  const ExtensionId unpacked_extension_id = unpacked_extension->id();
-
-  EXPECT_TRUE(
-      extension_prefs()->GetDisableReasons(unpacked_extension_id).empty());
-
-  // The user is allowed to re-enable the unpacked extension (if it were to be
-  // disabled)
-  disable_reason = disable_reason::DISABLE_NONE;
-  EXPECT_FALSE(system->management_policy()->MustRemainDisabled(
-      unpacked_extension, &disable_reason));
-  EXPECT_EQ(disable_reason::DISABLE_NONE, disable_reason);
 }
 
 }  // namespace extensions

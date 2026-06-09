@@ -132,23 +132,6 @@ bool ShouldDisableLegacyExtensions() {
   return true;
 }
 
-// Returns true if unpacked extensions should be blocked.
-// This is true only for cases where MV2 extensions are fully unsupported.
-bool ShouldBlockUnpackedExtensions() {
-  if (!ShouldDisableLegacyExtensions()) {
-    return false;
-  }
-
-  // If the developer has flipped the explicit flag to allow legacy MV2
-  // extensions, we allow the unpacked extension to be loaded.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kAllowLegacyMV2Extensions)) {
-    return false;
-  }
-
-  return true;
-}
-
 }  // namespace
 
 ManifestV2ExperimentManager::ManifestV2ExperimentManager(
@@ -191,13 +174,6 @@ bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
     return false;
   }
 
-  // Unpacked extensions are special-cased (since developers need to be able to
-  // continue supporting them). Check if unpacked extensions are blocked.
-  if (Manifest::IsUnpackedLocation(manifest_location) &&
-      !ShouldBlockUnpackedExtensions()) {
-    return false;
-  }
-
   // Otherwise, if the extension is affected by the deprecation, it should be
   // blocked.
   return impact_checker_.IsExtensionAffected(manifest_version, manifest_type,
@@ -207,13 +183,6 @@ bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
 bool ManifestV2ExperimentManager::ShouldBlockExtensionEnable(
     const Extension& extension) {
   if (!ShouldDisableLegacyExtensions()) {
-    return false;
-  }
-
-  // Block unpacked extension enablement only if unpacked extensions are
-  // blocked.
-  if (Manifest::IsUnpackedLocation(extension.location()) &&
-      !ShouldBlockUnpackedExtensions()) {
     return false;
   }
 
@@ -264,19 +233,9 @@ void ManifestV2ExperimentManager::DisableAffectedExtensions() {
       ExtensionRegistry::Get(browser_context_);
   std::set<scoped_refptr<const Extension>> extensions_to_disable;
 
-  // Whether unpacked extensions are exempt from being disabled.
-  // Note that this is distinct from `ShouldBlockUnpackedExtensions()`, since
-  // unpacked extensions are only blocked in "unsupported" phase, but they may
-  // be *disabled* in other phases.
-  bool unpacked_extensions_are_exempt = base::FeatureList::IsEnabled(
-      extensions_features::kAllowLegacyMV2Extensions);
+  // Disable all applicable MV2 extensions.
   for (const auto& extension : extension_registry->enabled_extensions()) {
     if (!impact_checker_.IsExtensionAffected(*extension)) {
-      continue;
-    }
-
-    if (Manifest::IsUnpackedLocation(extension->location()) &&
-        unpacked_extensions_are_exempt) {
       continue;
     }
 
