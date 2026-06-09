@@ -92,20 +92,6 @@ source_set("ink") {
     "src/ink/rendering/skia/common_internal/sksl_common_shader_helper_functions.h",
     "src/ink/rendering/skia/common_internal/sksl_fragment_shader_helper_functions.h",
     "src/ink/rendering/skia/common_internal/sksl_vertex_shader_helper_functions.h",
-    "src/ink/rendering/skia/native/internal/create_mesh_specification.cc",
-    "src/ink/rendering/skia/native/internal/create_mesh_specification.h",
-    "src/ink/rendering/skia/native/internal/mesh_drawable.cc",
-    "src/ink/rendering/skia/native/internal/mesh_drawable.h",
-    "src/ink/rendering/skia/native/internal/mesh_specification_cache.cc",
-    "src/ink/rendering/skia/native/internal/mesh_specification_cache.h",
-    "src/ink/rendering/skia/native/internal/mesh_uniform_data.cc",
-    "src/ink/rendering/skia/native/internal/mesh_uniform_data.h",
-    "src/ink/rendering/skia/native/internal/path_drawable.cc",
-    "src/ink/rendering/skia/native/internal/path_drawable.h",
-    "src/ink/rendering/skia/native/internal/shader_cache.cc",
-    "src/ink/rendering/skia/native/internal/shader_cache.h",
-    "src/ink/rendering/skia/native/skia_renderer.cc",
-    "src/ink/rendering/skia/native/skia_renderer.h",
     "src/ink/strokes/in_progress_stroke.cc",
     "src/ink/strokes/in_progress_stroke.h",
     "src/ink/strokes/input/internal/stroke_input_validation_helpers.cc",
@@ -189,10 +175,7 @@ source_set("ink") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
-  public_deps = [
-    "//skia",
-    "//third_party/abseil-cpp:absl",
-  ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
 
   deps = [ "//third_party/libtess2" ]
 
@@ -295,6 +278,24 @@ source_set("ink") {
       "src/ink/strokes/internal/jni/stroke_jni.cc",
       "src/ink/strokes/internal/jni/stroke_jni_helper.h",
     ]
+  } else {
+    sources += [
+      "src/ink/rendering/skia/native/internal/create_mesh_specification.cc",
+      "src/ink/rendering/skia/native/internal/create_mesh_specification.h",
+      "src/ink/rendering/skia/native/internal/mesh_drawable.cc",
+      "src/ink/rendering/skia/native/internal/mesh_drawable.h",
+      "src/ink/rendering/skia/native/internal/mesh_specification_cache.cc",
+      "src/ink/rendering/skia/native/internal/mesh_specification_cache.h",
+      "src/ink/rendering/skia/native/internal/mesh_uniform_data.cc",
+      "src/ink/rendering/skia/native/internal/mesh_uniform_data.h",
+      "src/ink/rendering/skia/native/internal/path_drawable.cc",
+      "src/ink/rendering/skia/native/internal/path_drawable.h",
+      "src/ink/rendering/skia/native/internal/shader_cache.cc",
+      "src/ink/rendering/skia/native/internal/shader_cache.h",
+      "src/ink/rendering/skia/native/skia_renderer.cc",
+      "src/ink/rendering/skia/native/skia_renderer.h",
+    ]
+    public_deps += [ "//skia" ]
   }
 }
 
