@@ -503,9 +503,13 @@ bool SubmenuView::IsShowing() const {
 }
 
 void SubmenuView::ShowAt(const MenuHost::InitParams& init_params) {
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   if (host_) {
     host_->SetMenuHostBounds(init_params.bounds);
     host_->ShowMenuHost(init_params.do_capture);
+    if (!weak_this) {
+      return;
+    }
   } else {
     host_ = new MenuHost(this);
     // Force construction of the scroll view container.
@@ -516,9 +520,8 @@ void SubmenuView::ShowAt(const MenuHost::InitParams& init_params) {
 
     MenuHost::InitParams new_init_params = init_params;
     new_init_params.contents_view = detached_scroll_view_container_.release();
-    base::WeakPtr<SubmenuView> weak_ptr = weak_ptr_factory_.GetWeakPtr();
     host_->InitMenuHost(new_init_params);
-    if (!weak_ptr) {
+    if (!weak_this) {
       return;
     }
   }
@@ -606,7 +609,13 @@ void SubmenuView::Hide() {
       }
     }
 
+    // Hardening `this` from synchronous notifications causing the termination
+    // of the entire MenuController/MenuRunner chain.
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     host_->HideMenuHost();
+    if (!weak_this) {
+      return;
+    }
     GetMenuItem()->UpdateAccessibleExpandedCollapsedState();
   }
 

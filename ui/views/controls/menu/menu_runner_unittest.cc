@@ -37,9 +37,11 @@
 #include "ui/views/test/menu_test_utils.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_utils.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -711,6 +713,77 @@ TEST_F(MenuRunnerImplTest, NestedMenuRunnersDestroyedOutOfOrder) {
   menu_runner->Release();
 }
 
+// Regression test demonstrating that the host_-exists branch of
+// SubmenuView::ShowAt lacks a WeakPtr liveness guard after ShowMenuHost.
+// On macOS, Widget::ShowInactive() can synchronously trigger a focus change
+// (NSWindowDidBecomeKey) that destroys the menu owner — and with it the
+// SubmenuView that is on the stack. This test simulates that re-entrant
+// destruction on all platforms by hooking the synchronous
+// AnyWidgetObserver::OnAnyWidgetShown notification (fired from
+// HandleShowRequested at the tail of ShowInactive) and releasing the
+// MenuRunner from there. Under ASAN this triggers heap-use-after-free in
+// SubmenuView::ShowAt at the GetMenuItem()/GetRowCount() calls that follow
+// the unguarded ShowMenuHost.
+TEST_F(MenuRunnerImplTest, SubmenuReentrantDestructionDuringReshow) {
+  // Build a root menu containing one submenu item so that the nested
+  // SubmenuView can be shown, hidden (host_ retained), and re-shown.
+  auto root = std::make_unique<TestMenuItemView>(menu_delegate());
+  MenuItemView* sub_item = root->AppendSubMenu(100, u"Sub");
+  sub_item->AppendMenuItem(101, u"Leaf");
+  SubmenuView* nested_submenu = sub_item->GetSubmenu();
+  ASSERT_TRUE(nested_submenu);
+
+  internal::MenuRunnerImpl* menu_runner =
+      new internal::MenuRunnerImpl(std::move(root));
+  menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(gfx::Size(200, 200)),
+                         MenuAnchorPosition::kTopLeft);
+
+  // Directly open the nested submenu so its MenuHost (host_) is created.
+  MenuHost::InitParams params;
+  params.parent = owner();
+  params.context = owner();
+  params.bounds = gfx::Rect(10, 10, 100, 100);
+  params.do_capture = false;
+  nested_submenu->ShowAt(params);
+  ASSERT_TRUE(nested_submenu->host());
+  Widget* nested_host = nested_submenu->host();
+
+  // Hide the nested submenu. SubmenuView::Hide() retains host_, so the next
+  // ShowAt() will take the unguarded `if (host_)` re-show branch.
+  nested_submenu->Hide();
+  ASSERT_TRUE(nested_submenu->host());
+  ASSERT_FALSE(nested_submenu->IsShowing());
+
+  // Arm a synchronous observer that fires from inside Widget::ShowInactive()
+  // (via HandleShowRequested) on the re-show. From there, simulate the macOS
+  // focus-change teardown by releasing the running MenuRunner: this drives
+  // Cancel(kDestroyed) -> ExitMenu() -> MenuRunnerImpl::OnMenuClosed(),
+  // which calls DestroyAllMenuHosts() (sets destroying_ on the on-stack
+  // MenuHost so ShowMenuHost returns cleanly) and then `delete this`,
+  // freeing the entire MenuItemView tree including `nested_submenu`.
+  bool fired = false;
+  AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+  observer.set_shown_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        if (fired || widget != nested_host) {
+          return;
+        }
+        fired = true;
+        menu_runner->Release();
+      }));
+
+  // Re-show the nested submenu. Control flow:
+  //   SubmenuView::ShowAt -> host_->ShowMenuHost -> Widget::ShowInactive ->
+  //   HandleShowRequested -> AnyWidgetObserver shown_callback -> Release() ->
+  //   ... -> ~SubmenuView (nested_submenu freed) ->
+  //   ShowMenuHost early-returns on destroying_ ->
+  //   ShowAt continues at GetMenuItem()/GetRowCount() with `this` freed.
+  // ASAN reports heap-use-after-free here.
+  nested_submenu->ShowAt(params);
+
+  EXPECT_TRUE(fired);
+}
+
 // Tests that when there are two separate MenuControllers, and the active one is
 // deleted first, that shutting down the MenuRunner of the original
 // MenuController properly closes its controller. This should not crash on ASAN
@@ -1013,6 +1086,89 @@ TEST_F(MenuRunnerTest, FirstMenuItemSelectedWhenOpenedFromKeyboard) {
   EXPECT_TRUE(IsItemSelected(TestCommandIds::kItem1));
   EXPECT_FALSE(IsItemSelected(TestCommandIds::kItem2));
   EXPECT_FALSE(IsItemSelected(3));
+}
+
+// -----------------------------------------------------------------------------
+// Regression / proof-of-concept tests for SubmenuView::Hide() use-after-free.
+//
+// SubmenuView::Hide() performs several synchronous external dispatches
+// (accessibility notifications and Widget::Hide()) and then continues to
+// dereference `this` (host_, parent_menu_item_, scroll_animator_) without any
+// liveness re-check. The sibling method ShowAt() was previously hardened with a
+// WeakPtr re-check after InitMenuHost(); Hide() was not. These tests model the
+// production failure mode where a synchronous observer destroys the owning
+// MenuRunner mid-dispatch, freeing the SubmenuView while Hide() is still on the
+// stack.
+// -----------------------------------------------------------------------------
+
+namespace {
+
+// Destroys the owning MenuRunnerImpl when the menu host widget is hidden.
+// Models a platform activation/visibility handler closing the browser UI that
+// owns the context menu (the same hazard the in-tree comment at
+// menu_host.cc documents for the symmetric ShowInactive() path).
+class ReleaseOnHostHidden : public WidgetObserver {
+ public:
+  explicit ReleaseOnHostHidden(internal::MenuRunnerImpl* runner)
+      : runner_(runner) {}
+
+  void OnWidgetVisibilityChanged(Widget* widget, bool visible) override {
+    if (visible || fired_) {
+      return;
+    }
+    fired_ = true;
+    widget->RemoveObserver(this);
+    // Full production destruction chain:
+    //   MenuRunnerImpl::Release -> Cancel(kDestroyed) -> ExitMenu ->
+    //   OnMenuClosed -> delete this -> ~MenuItemView -> ~SubmenuView.
+    runner_->Release();
+  }
+
+  bool fired() const { return fired_; }
+
+ private:
+  raw_ptr<internal::MenuRunnerImpl, DisableDanglingPtrDetection> runner_;
+  bool fired_ = false;
+};
+
+}  // namespace
+
+// SubmenuView::Hide() calls host_->HideMenuHost() which invokes Widget::Hide(),
+// synchronously notifying WidgetObservers. If an observer destroys the
+// MenuRunner, ~SubmenuView frees `this`. Hide() then resumes at the next line
+// and reads this->parent_menu_item_ via GetMenuItem(), then
+// this->scroll_animator_ — both from freed storage.
+//
+// On ASAN builds this test is expected to report heap-use-after-free with
+// SubmenuView::Hide() on both the use and free stacks.
+TEST_F(MenuRunnerImplTest, SubmenuHideUseAfterFreeViaWidgetHide) {
+  internal::MenuRunnerImpl* menu_runner =
+      new internal::MenuRunnerImpl(CreateMenuItemView());
+  menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
+                         MenuAnchorPosition::kTopLeft,
+                         ui::mojom::MenuSourceType::kNone, 0);
+
+  SubmenuView* submenu = menu_item_view()->GetSubmenu();
+  ASSERT_TRUE(submenu);
+  ASSERT_TRUE(submenu->IsShowing());
+  Widget* host = submenu->GetWidget();
+  ASSERT_TRUE(host);
+
+  ReleaseOnHostHidden observer(menu_runner);
+  host->AddObserver(&observer);
+
+  // The fixture's raw_ptr to the root MenuItemView will dangle once the runner
+  // is released inside the observer; clear it up-front.
+  ResetMenuItemView();
+
+  // Enters the vulnerable function. host_->HideMenuHost() -> Widget::Hide() ->
+  // OnWidgetVisibilityChanged -> Release() -> ... -> ~SubmenuView frees `this`;
+  // execution resumes at GetMenuItem() / scroll_animator_->is_scrolling() with
+  // a freed `this`.
+  submenu->Hide();
+
+  // Only reached if Hide() has been hardened with a liveness re-check.
+  EXPECT_TRUE(observer.fired());
 }
 
 }  // namespace views::test
