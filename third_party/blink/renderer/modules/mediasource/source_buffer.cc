@@ -281,9 +281,10 @@ void SourceBuffer::setMode(const V8AppendMode& new_mode,
   // is protected from destruction (applicable especially for MSE-in-Worker
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
-  if (!source_->RunUnlessElementGoneOrClosingUs(
-          blink::BindOnce(&SourceBuffer::SetMode_Locked, WrapPersistent(this),
-                          new_mode.AsEnum(), Unretained(&exception_state)))) {
+  if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
+          &SourceBuffer::SetMode_Locked, WrapPersistent(this),
+          new_mode.AsEnum(),
+          blink::subtle::UnretainedException(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -409,7 +410,7 @@ void SourceBuffer::setTimestampOffset(double offset,
   // an attachment because !IsRemoved().
   if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &SourceBuffer::SetTimestampOffset_Locked, WrapPersistent(this),
-          offset, Unretained(&exception_state)))) {
+          offset, blink::subtle::UnretainedException(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -705,7 +706,8 @@ ScriptPromise<IDLUndefined> SourceBuffer::appendEncodedChunks(
   // have |source_| and |source_| must have an attachment because !IsRemoved().
   if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &SourceBuffer::AppendEncodedChunks_Locked, WrapPersistent(this),
-          std::move(buffer_queue), size, Unretained(&exception_state)))) {
+          std::move(buffer_queue), size,
+          blink::subtle::UnretainedException(&exception_state)))) {
     // TODO(crbug.com/878133): Determine in specification what the specific,
     // app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -853,9 +855,9 @@ void SourceBuffer::remove(double start,
   // is protected from destruction (applicable especially for MSE-in-Worker
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
-  if (!source_->RunUnlessElementGoneOrClosingUs(
-          blink::BindOnce(&SourceBuffer::Remove_Locked, WrapPersistent(this),
-                          start, end, Unretained(&exception_state)))) {
+  if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
+          &SourceBuffer::Remove_Locked, WrapPersistent(this), start, end,
+          blink::subtle::UnretainedException(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -957,7 +959,7 @@ void SourceBuffer::changeType(const String& type,
   // because !IsRemoved().
   if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &SourceBuffer::ChangeType_Locked, WrapPersistent(this), type,
-          Unretained(&exception_state)))) {
+          blink::subtle::UnretainedException(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -1939,7 +1941,7 @@ void SourceBuffer::AppendBufferInternal(base::span<const unsigned char> data,
   // |source_| and |source_| must have an attachment because !IsRemoved().
   if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &SourceBuffer::AppendBufferInternal_Locked, WrapPersistent(this),
-          data, Unretained(&exception_state)))) {
+          data, blink::subtle::UnretainedException(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(

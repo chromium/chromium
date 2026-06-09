@@ -13,6 +13,15 @@
 
 namespace blink {
 
+class StackAllocatedObject {
+   STACK_ALLOCATED();
+};
+
+class TraceableObject {
+ public:
+  void Trace(Visitor*) const {}
+};
+
 class UnretainableObject : public GarbageCollected<UnretainableObject> {};
 class UnretainableMixin : public GarbageCollectedMixin {};
 class UnretainableImpl : public GarbageCollected<UnretainableImpl>,
@@ -28,6 +37,28 @@ class UnretainableImpl : public GarbageCollected<UnretainableImpl>,
     class type : public ::blink::type {};\
     type name
 
+void StackAllocatedCannotBeUnretained() {
+  {
+    DECLARE_UNIQUE(StackAllocatedObject, obj);
+    std::ignore = base::BindOnce([] (void*) {}, Unretained(&obj));  // expected-error@*:* {{blink::Unretained() with GCed, traceable or stack-allocated type is forbidden}}
+  }
+  {
+    DECLARE_UNIQUE(StackAllocatedObject, obj);
+    std::ignore = blink::BindOnce([] (void*) {}, Unretained(&obj));  // expected-error@*:* {{blink::Unretained() with GCed, traceable or stack-allocated type is forbidden}}
+  }
+}
+
+void TraceableCannotBeUnretained() {
+  {
+    DECLARE_UNIQUE(TraceableObject, obj);
+    std::ignore = base::BindOnce([] (void*) {}, Unretained(&obj));  // expected-error@*:* {{blink::Unretained() with GCed, traceable or stack-allocated type is forbidden}}
+  }
+  {
+    DECLARE_UNIQUE(TraceableObject, obj);
+    std::ignore = blink::BindOnce([] (void*) {}, Unretained(&obj));  // expected-error@*:* {{blink::Unretained() with GCed, traceable or stack-allocated type is forbidden}}
+  }
+}
+
 void GarbageCollectedCannotBeUnretained() {
   {
     DECLARE_UNIQUE(UnretainableObject, obj);
@@ -39,7 +70,18 @@ void GarbageCollectedCannotBeUnretained() {
   }
   {
     DECLARE_UNIQUE(UnretainableObject, obj);
-    std::ignore = blink::BindOnce([] (void*) {}, blink::Unretained(&obj));  // expected-error@*:* {{blink::Unretained() + GCed type is forbidden}}
+    std::ignore = blink::BindOnce([] (void*) {}, blink::Unretained(&obj));  // expected-error@*:* {{blink::Unretained() with GCed, traceable or stack-allocated type is forbidden}}
+  }
+}
+
+void GarbageCollectedCannotBeUnretainedException() {
+  {
+    DECLARE_UNIQUE(UnretainableObject, obj);
+    std::ignore = base::BindOnce([] (void*) {}, blink::subtle::UnretainedException(&obj));  // expected-error@*:* {{UnretainedException() may only be applied to non-GC'd types.}}
+  }
+  {
+    DECLARE_UNIQUE(UnretainableObject, obj);
+    std::ignore = blink::BindOnce([] (void*) {}, blink::subtle::UnretainedException(&obj));  // expected-error@*:* {{UnretainedException() may only be applied to non-GC'd types.}}
   }
 }
 
@@ -54,7 +96,18 @@ void GCMixinCannotBeUnretained() {
   }
   {
     DECLARE_UNIQUE(UnretainableMixin, obj);
-    std::ignore = blink::BindOnce([] (void*) {}, blink::Unretained(&obj));  // expected-error@*:* {{blink::Unretained() + GCed type is forbidden}}
+    std::ignore = blink::BindOnce([] (void*) {}, blink::Unretained(&obj));  // expected-error@*:* {{blink::Unretained() with GCed, traceable or stack-allocated type is forbidden}}
+  }
+}
+
+void GCMixinCannotBeUnretainedException() {
+  {
+    DECLARE_UNIQUE(UnretainableMixin, obj);
+    std::ignore = base::BindOnce([] (void*) {}, blink::subtle::UnretainedException(&obj));  // expected-error@*:* {{UnretainedException() may only be applied to non-GC'd types.}}
+  }
+  {
+    DECLARE_UNIQUE(UnretainableMixin, obj);
+    std::ignore = blink::BindOnce([] (void*) {}, blink::subtle::UnretainedException(&obj));  // expected-error@*:* {{UnretainedException() may only be applied to non-GC'd types.}}
   }
 }
 
@@ -69,7 +122,18 @@ void GCImplWithMixinCannotBeUnretained() {
   }
   {
     DECLARE_UNIQUE(UnretainableImpl, obj);
-    std::ignore = blink::BindOnce([] (void*) {}, blink::Unretained(&obj));  // expected-error@*:* {{blink::Unretained() + GCed type is forbidden}}
+    std::ignore = blink::BindOnce([] (void*) {}, blink::Unretained(&obj));  // expected-error@*:* {{blink::Unretained() with GCed, traceable or stack-allocated type is forbidden}}
+  }
+}
+
+void GCImplWithMixinCannotBeUnretainedException() {
+  {
+    DECLARE_UNIQUE(UnretainableImpl, obj);
+    std::ignore = base::BindOnce([] (void*) {}, blink::subtle::UnretainedException(&obj));  // expected-error@*:* {{UnretainedException() may only be applied to non-GC'd types.}}
+  }
+  {
+    DECLARE_UNIQUE(UnretainableImpl, obj);
+    std::ignore = blink::BindOnce([] (void*) {}, blink::subtle::UnretainedException(&obj));  // expected-error@*:* {{UnretainedException() may only be applied to non-GC'd types.}}
   }
 }
 

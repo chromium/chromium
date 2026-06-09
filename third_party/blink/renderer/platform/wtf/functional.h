@@ -130,7 +130,12 @@ class UnretainedWrapper final {
   T* Value() const { return ptr_; }
 
  private:
-  GC_PLUGIN_IGNORE("crbug.com/428987863") T* ptr_;
+  // If the Clang GC plugin flags this field, it means you are attempting
+  // to pass a GC-managed or stack-allocated object via Unretained().
+  // If the usage has been manually verified to be safe (e.g., the object
+  // is guaranteed to outlive the callback, or the callback is synchronous),
+  // use blink::subtle::UnretainedException() instead.
+  T* ptr_;
 };
 
 template <typename T>
@@ -145,17 +150,59 @@ class CrossThreadUnretainedWrapper final {
 
 template <typename T>
 UnretainedWrapper<T> Unretained(T* value) {
-  static_assert(!IsGarbageCollectedTypeV<T>,
-                "blink::Unretained() + GCed type is forbidden");
+  static_assert(!IsGarbageCollectedTypeV<T> && !IsTraceableV<T> &&
+                    !IsStackAllocatedTypeV<T>,
+                "blink::Unretained() with GCed, traceable or stack-allocated "
+                "type is forbidden");
   return UnretainedWrapper<T>(value);
 }
 
 template <typename T>
 UnretainedWrapper<T> Unretained(const raw_ptr<T>& value) {
-  static_assert(!IsGarbageCollectedTypeV<T>,
-                "blink::Unretained() + GCed type is forbidden");
+  static_assert(!IsGarbageCollectedTypeV<T> && !IsTraceableV<T> &&
+                    !IsStackAllocatedTypeV<T>,
+                "blink::Unretained() with GCed, traceable or stack-allocated "
+                "type is forbidden");
   return UnretainedWrapper<T>(value.get());
 }
+
+template <typename T>
+class UnretainedExceptionWrapper final {
+ public:
+  explicit UnretainedExceptionWrapper(T* ptr) : ptr_(ptr) {}
+  T* Value() const { return ptr_; }
+
+ private:
+  GC_PLUGIN_IGNORE("crbug.com/428987863") T* ptr_;
+};
+
+namespace subtle {
+
+// WARNING: Passing a traceable type via `UnretainedException` is extremely
+// dangerous and highly likely to result in use-after-free vulnerabilities.
+// The GC cannot track this pointer. Manually verifying that the target
+// outlives all pending tasks is extremely difficult and error-prone.
+// Passing a stack-allocated type via `UnretainedException` is similarly
+// dangerous and is likely to result in use-after-free vulnerabilities
+// when the function returns and the object goes out of scope.
+// Only use this if you are absolutely certain of safety (e.g. the target is
+// guaranteed to cancel all pending tasks before destruction, or the closure
+// does not outlive the stack-allocated object).
+template <typename T>
+UnretainedExceptionWrapper<T> UnretainedException(T* value) {
+  static_assert(!IsGarbageCollectedTypeV<T>,
+                "UnretainedException() may only be applied to non-GC'd types.");
+  return UnretainedExceptionWrapper<T>(value);
+}
+
+template <typename T>
+UnretainedExceptionWrapper<T> UnretainedException(const raw_ptr<T>& value) {
+  static_assert(!IsGarbageCollectedTypeV<T>,
+                "UnretainedException() may only be applied to non-GC'd types.");
+  return UnretainedExceptionWrapper<T>(value.get());
+}
+
+}  // namespace subtle
 
 template <typename T>
 CrossThreadUnretainedWrapper<T> CrossThreadUnretained(T* value) {
@@ -372,9 +419,9 @@ template <typename FunctionType, typename... BoundParameters>
 
 template <typename T>
 using CrossThreadRepeatingFunction = CrossThreadFunction<T>;
+
 using CrossThreadRepeatingClosure = CrossThreadFunction<void()>;
 using CrossThreadClosure = CrossThreadFunction<void()>;
-
 using CrossThreadOnceClosure = CrossThreadOnceFunction<void()>;
 
 }  // namespace blink
@@ -391,6 +438,13 @@ struct BindUnwrapTraits<blink::RetainedRefWrapper<T>> {
 template <typename T>
 struct BindUnwrapTraits<blink::UnretainedWrapper<T>> {
   static T* Unwrap(const blink::UnretainedWrapper<T>& wrapped) {
+    return wrapped.Value();
+  }
+};
+
+template <typename T>
+struct BindUnwrapTraits<blink::UnretainedExceptionWrapper<T>> {
+  static T* Unwrap(const blink::UnretainedExceptionWrapper<T>& wrapped) {
     return wrapped.Value();
   }
 };

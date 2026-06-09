@@ -231,7 +231,8 @@ SourceBuffer* MediaSource::addSourceBuffer(const String& type,
   if (!RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &MediaSource::AddSourceBuffer_Locked, WrapPersistent(this), type,
           nullptr /* audio_config */, nullptr /* video_config */,
-          Unretained(&exception_state), Unretained(&source_buffer)))) {
+          blink::subtle::UnretainedException(&exception_state),
+          blink::subtle::UnretainedException(&source_buffer)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     LogAndThrowDOMException(exception_state,
@@ -352,7 +353,8 @@ SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
   if (!RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &MediaSource::AddSourceBuffer_Locked, WrapPersistent(this), null_type,
           std::move(audio_config), std::move(video_config),
-          Unretained(&exception_state), Unretained(&source_buffer)))) {
+          blink::subtle::UnretainedException(&exception_state),
+          blink::subtle::UnretainedException(&source_buffer)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     LogAndThrowDOMException(exception_state,
@@ -944,7 +946,7 @@ void MediaSource::setDuration(double duration,
   // case). Note, we must be open, therefore we must have an attachment.
   if (!RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &MediaSource::DurationChangeAlgorithm, WrapPersistent(this), duration,
-          Unretained(&exception_state)))) {
+          blink::subtle::UnretainedException(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     LogAndThrowDOMException(exception_state,

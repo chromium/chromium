@@ -72,10 +72,11 @@ SensorTestContext::SensorTestContext()
   // Necessary for SensorProxy::ShouldSuspendUpdates() to work correctly.
   testing_scope_.GetPage().GetFocusController().SetFocused(true);
 
+  // TODO(https://crbug.com/521917543): avoid UnretainedException().
   testing_scope_.GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::WebSensorProvider::Name_,
       BindRepeating(&SensorTestContext::BindSensorProviderRequest,
-                    Unretained(this)));
+                    blink::subtle::UnretainedException(this)));
 }
 
 SensorTestContext::~SensorTestContext() {

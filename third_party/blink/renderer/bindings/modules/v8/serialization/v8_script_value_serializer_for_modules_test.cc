@@ -369,7 +369,8 @@ T SubtleCryptoSync(V8TestingScope& scope, PMF func, Args&&... args) {
                 *out = result;
                 std::move(quit_closure).Run();
               },
-              Unretained(&result), run_loop.QuitClosure())),
+              blink::subtle::UnretainedException(&result),
+              run_loop.QuitClosure())),
       scheduler::GetSingleThreadTaskRunnerForTesting());
   // The promise may resolve synchronously.
   scope.PerformMicrotaskCheckpoint();

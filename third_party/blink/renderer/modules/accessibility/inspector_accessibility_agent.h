@@ -124,7 +124,9 @@ class MODULES_EXPORT InspectorAccessibilityAgent
     void Fired() override { (agent_->*function_)(this, document_); }
 
     base::OnceClosure BindTimerClosure() final {
-      return BindOnce(&DocumentTimer::RunInternalTrampoline, Unretained(this),
+      // TODO(https://crbug.com/521917543): avoid UnretainedException().
+      return BindOnce(&DocumentTimer::RunInternalTrampoline,
+                      blink::subtle::UnretainedException(this),
                       WrapWeakPersistent(agent_.Get()),
                       WrapWeakPersistent(document_.Get()));
     }

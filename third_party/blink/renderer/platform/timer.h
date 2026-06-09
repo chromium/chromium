@@ -185,8 +185,9 @@ class HeapTaskRunnerTimer final : public TimerBase {
   void Fired() final { (object_->*function_)(this); }
 
   base::OnceClosure BindTimerClosure() final {
+    // TODO(https://crbug.com/521917543): avoid UnretainedException().
     return blink::BindOnce(&HeapTaskRunnerTimer::RunInternalTrampoline,
-                           blink::Unretained(this),
+                           blink::subtle::UnretainedException(this),
                            WrapWeakPersistent(object_.Get()));
   }
 

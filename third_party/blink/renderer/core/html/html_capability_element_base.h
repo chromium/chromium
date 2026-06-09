@@ -330,8 +330,10 @@ class CORE_EXPORT HTMLCapabilityElementBase
     void Fired() final { (element_->*function_)(this); }
 
     base::OnceClosure BindTimerClosure() final {
+      // TODO(https://crbug.com/521917543): avoid UnretainedException().
       return BindOnce(&DisableReasonExpireTimer::RunInternalTrampoline,
-                      Unretained(this), WrapWeakPersistent(element_.Get()));
+                      blink::subtle::UnretainedException(this),
+                      WrapWeakPersistent(element_.Get()));
     }
 
    private:
