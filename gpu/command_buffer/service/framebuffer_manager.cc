@@ -697,6 +697,13 @@ bool Framebuffer::GetReadBufferIsMultisampledTexture() const {
              : false;
 }
 
+bool Framebuffer::GetReadBufferIsMultisampledRenderbuffer() const {
+  const Attachment* attachment = GetReadBufferAttachment();
+  return attachment ? attachment->IsRenderbufferAttachment() &&
+                          attachment->samples() > 1
+                    : false;
+}
+
 GLsizei Framebuffer::GetSamples() const {
   // Assume the framebuffer is complete, so return any attachment's samples.
   auto iter = attachments_.begin();
