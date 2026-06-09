@@ -13,6 +13,7 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -44,12 +45,13 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
   }
 
  protected:
-  void CreateDelegate(bool is_enhanced_protection_enabled) {
+  void CreateDelegate(bool is_enhanced_protection_enabled,
+                      policy::ManagementService* management_service = nullptr) {
     SetEnhancedProtectionPrefForTests(&pref_service_,
                                       is_enhanced_protection_enabled);
     delegate_ =
         std::make_unique<ClientSideDetectionIntelligentScanDelegateDesktop>(
-            pref_service_, &mock_opt_guide_);
+            pref_service_, &mock_opt_guide_, management_service);
   }
 
   void EnableOnDeviceModel() {
@@ -934,6 +936,42 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTestKillSwitchEnabled,
       .Times(0);
   CreateDelegate(/*is_enhanced_protection_enabled=*/true);
 
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kNotSupportedOnDevice);
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       TestOnDeviceModelNoFetchForManagedProfile) {
+  std::vector<std::unique_ptr<policy::ManagementStatusProvider>> providers;
+  policy::ManagementService management_service(std::move(providers));
+  management_service.SetManagementAuthoritiesForTesting(
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  CreateDelegate(/*is_enhanced_protection_enabled=*/false, &management_service);
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kNotSupportedOnDevice);
+
+  // We expect that AddOnDeviceModelAvailabilityChangeObserver is NOT called
+  // even when ESB is enabled because the profile is managed.
+  EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .Times(0);
+
+  SetEnhancedProtectionPrefForTests(&pref_service_, true);
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       TestOnDeviceModelNoFetchForManagedProfileAtStartup) {
+  std::vector<std::unique_ptr<policy::ManagementStatusProvider>> providers;
+  policy::ManagementService management_service(std::move(providers));
+  management_service.SetManagementAuthoritiesForTesting(
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  // Expect no observer registration even if ESB is already enabled at startup.
+  EXPECT_CALL(mock_opt_guide_, AddOnDeviceModelAvailabilityChangeObserver(_, _))
+      .Times(0);
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true, &management_service);
   EXPECT_EQ(delegate_->GetIntelligentScanModelType(
                 /*log_failed_eligibility_reason=*/true),
             ModelType::kNotSupportedOnDevice);
