@@ -606,7 +606,7 @@ public class KeyboardShortcutsTest {
     @SmallTest
     public void testToggleCaretBrowsing() {
         // Ensure we handle F7 key (this was previously ignored)
-        assertTrue(keyDown(KeyEvent.KEYCODE_F7, 0, true));
+        assertTrue(dispatchKeyEvent(KeyEvent.KEYCODE_F7, 0));
 
         // Ensure we trigger the caret browsing dialog
         verify(mMenuOrKeyboardActionController)
