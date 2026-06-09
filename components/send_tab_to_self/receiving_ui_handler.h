@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SEND_TAB_TO_SELF_RECEIVING_UI_HANDLER_H_
-#define CHROME_BROWSER_SEND_TAB_TO_SELF_RECEIVING_UI_HANDLER_H_
+#ifndef COMPONENTS_SEND_TAB_TO_SELF_RECEIVING_UI_HANDLER_H_
+#define COMPONENTS_SEND_TAB_TO_SELF_RECEIVING_UI_HANDLER_H_
 
 #include <string>
 
@@ -17,9 +17,6 @@ class SendTabToSelfEntry;
 // model. Implementors of this interface should override all functions and
 // update the UI accordingly. They should also register themselves with the
 // ReceivingUIRegistry.
-// TODO(crbug.com/519101926): Consider moving this interface to
-// components/send_tab_to_self to allow iOS to use it and unify the receiving
-// flow.
 class ReceivingUiHandler {
  public:
   ReceivingUiHandler() = default;
@@ -37,4 +34,4 @@ class ReceivingUiHandler {
 
 }  // namespace send_tab_to_self
 
-#endif  // CHROME_BROWSER_SEND_TAB_TO_SELF_RECEIVING_UI_HANDLER_H_
+#endif  // COMPONENTS_SEND_TAB_TO_SELF_RECEIVING_UI_HANDLER_H_

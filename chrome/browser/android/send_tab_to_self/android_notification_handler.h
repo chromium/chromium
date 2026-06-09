@@ -13,8 +13,8 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
+#include "components/send_tab_to_self/receiving_ui_handler.h"
 
 namespace content {
 class NavigationHandle;

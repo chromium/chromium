@@ -4,7 +4,6 @@
 
 source_set("send_tab_to_self") {
   sources = [
-    "receiving_ui_handler.h",
     "send_tab_to_self_client_service.h",
     "send_tab_to_self_client_service_factory.h",
     "send_tab_to_self_page_handler.h",

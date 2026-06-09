@@ -92,6 +92,18 @@ void SendTabToSelfBrowserAgent::BrowserDestroyed(Browser* browser) {
 
 void SendTabToSelfBrowserAgent::OnEntriesAddedRemotely(
     base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries) {
+  DisplayNewEntries(new_entries);
+}
+
+void SendTabToSelfBrowserAgent::OnEntriesRemovedRemotely(
+    base::span<const std::string> guids) {
+  DismissEntries(guids);
+}
+
+#pragma mark - ReceivingUiHandler
+
+void SendTabToSelfBrowserAgent::DisplayNewEntries(
+    base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries) {
   if (new_entries.empty()) {
     return;
   }
@@ -126,7 +138,7 @@ void SendTabToSelfBrowserAgent::OnEntriesAddedRemotely(
   DisplayInfoBar(web_state, new_entries.back());
 }
 
-void SendTabToSelfBrowserAgent::OnEntriesRemovedRemotely(
+void SendTabToSelfBrowserAgent::DismissEntries(
     base::span<const std::string> guids) {
   if (guids.empty()) {
     return;

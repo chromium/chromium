@@ -22,6 +22,7 @@ static_library("send_tab_to_self") {
     "proto_conversions.h",
     "received_tab_forms_filler.cc",
     "received_tab_forms_filler.h",
+    "receiving_ui_handler.h",
     "send_tab_to_self_bridge.cc",
     "send_tab_to_self_bridge.h",
     "send_tab_to_self_commit_tracker.cc",

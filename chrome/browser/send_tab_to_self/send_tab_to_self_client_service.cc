@@ -9,7 +9,7 @@
 
 #include "base/containers/span.h"
 #include "build/build_config.h"
-#include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
+#include "components/send_tab_to_self/receiving_ui_handler.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 
 namespace send_tab_to_self {

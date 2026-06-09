@@ -10,8 +10,8 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/send_tab_to_self/receiving_ui_handler.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 
