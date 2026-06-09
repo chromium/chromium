@@ -73,6 +73,13 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
     callback_ = std::move(callback);
   }
 
+  // Ensures `dialog_` is initialized and returns it.
+  DigitalIdentityMultiStepDialog* EnsureDialogCreated();
+
+  // Called to end the request with an error.
+  void EndRequestWithError(
+      content::DigitalIdentityProvider::RequestStatusForMetrics);
+
  private:
   // Called whenever some significant event occurs during the transaction.
   void OnEvent(const std::string& qr_url,
@@ -89,8 +96,6 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
       base::expected<content::digital_credentials::cross_device::Response,
                      content::digital_credentials::cross_device::Error>);
 
-  // Ensures `dialog_` is initialized and returns it.
-  DigitalIdentityMultiStepDialog* EnsureDialogCreated();
 
   // Shows dialog which prompts user to manually turn on bluetooth.
   void ShowBluetoothManualTurnOnDialog();
@@ -114,9 +119,6 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   // canceling the dialog.
   void OnCanceled();
 
-  // Called to end the request with an error.
-  void EndRequestWithError(
-      content::DigitalIdentityProvider::RequestStatusForMetrics);
 
   // The web contents to which the dialog is modal to.
   base::WeakPtr<content::WebContents> web_contents_;

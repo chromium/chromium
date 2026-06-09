@@ -399,8 +399,19 @@ void DigitalIdentityProviderDesktop::EndRequestWithError(
     return;
   }
 
+  // `dialog_.reset()` can synchronously close the UI which (via activation
+  // observers) may destroy the hosting WebContents, resulting in the
+  // synchronous destruction of the frame-bound Mojo DocumentService
+  // `DigitalIdentityRequestImpl` and therefore `this`.
+  //
+  // To avoid a Use-After-Free, move the callback to a local variable on the
+  // stack before resetting the dialog or the manual bluetooth controller (both
+  // of which could trigger synchronous teardown via UI events).
+  auto local_callback = std::move(callback_);
+
   bluetooth_manual_dialog_controller_.reset();
   dialog_.reset();
+  // `this` may be deleted at this point.
 
-  std::move(callback_).Run(base::unexpected(status));
+  std::move(local_callback).Run(base::unexpected(status));
 }
