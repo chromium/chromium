@@ -151,7 +151,7 @@ def GenerateArgs(config_path, platform, override_args=None):
   # but since this is generated without command line args we err on the side
   # of caution and remove that experiment.
   def ShouldSkipExperiment(experiment):
-    if experiment.get('disable_benchmarking', "false") == "true":
+    if experiment.get('disable_benchmarking', False):
       return True
     experiment_features = (experiment.get('disable_features', [])
                            + experiment.get('enable_features', []))

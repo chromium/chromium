@@ -86,7 +86,7 @@ class FieldTrialUtilUnittest(unittest.TestCase):
               "name": "Default",
               "params": {"id": "abc"},
               "enable_features": ["a", "b"],
-              "disable_benchmarking": "true"
+              "disable_benchmarking": true
             }
           ]
         }
@@ -100,7 +100,7 @@ class FieldTrialUtilUnittest(unittest.TestCase):
               "params": {"url": "http://www.google.com"},
               "enable_features": ["x"],
               "disable_features": ["y"],
-              "disable_benchmarking": "false"
+              "disable_benchmarking": false
             }
           ]
         }
