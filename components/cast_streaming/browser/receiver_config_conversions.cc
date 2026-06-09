@@ -18,53 +18,6 @@
 namespace cast_streaming {
 namespace {
 
-int GetMaxChannelCount(media::ChannelLayout channel_layout) {
-  switch (channel_layout) {
-    case media::CHANNEL_LAYOUT_MONO:
-      return 1;
-    case media::CHANNEL_LAYOUT_STEREO:
-    case media::CHANNEL_LAYOUT_STEREO_DOWNMIX:
-    case media::CHANNEL_LAYOUT_1_1:
-      return 2;
-    case media::CHANNEL_LAYOUT_2_1:
-    case media::CHANNEL_LAYOUT_SURROUND:
-    case media::CHANNEL_LAYOUT_2POINT1:
-    case media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC:
-      return 3;
-    case media::CHANNEL_LAYOUT_4_0:
-    case media::CHANNEL_LAYOUT_2_2:
-    case media::CHANNEL_LAYOUT_QUAD:
-    case media::CHANNEL_LAYOUT_3_1:
-    case media::CHANNEL_LAYOUT_3_1_BACK:
-      return 4;
-    case media::CHANNEL_LAYOUT_5_0:
-    case media::CHANNEL_LAYOUT_5_0_BACK:
-    case media::CHANNEL_LAYOUT_4_1:
-    case media::CHANNEL_LAYOUT_4_1_QUAD_SIDE:
-      return 5;
-    case media::CHANNEL_LAYOUT_5_1:
-    case media::CHANNEL_LAYOUT_5_1_BACK:
-    case media::CHANNEL_LAYOUT_6_0:
-    case media::CHANNEL_LAYOUT_6_0_FRONT:
-    case media::CHANNEL_LAYOUT_HEXAGONAL:
-    case media::CHANNEL_LAYOUT_5_1_4_DOWNMIX:
-      return 6;
-    case media::CHANNEL_LAYOUT_7_0:
-    case media::CHANNEL_LAYOUT_6_1:
-    case media::CHANNEL_LAYOUT_6_1_BACK:
-    case media::CHANNEL_LAYOUT_6_1_FRONT:
-    case media::CHANNEL_LAYOUT_7_0_FRONT:
-      return 7;
-    case media::CHANNEL_LAYOUT_7_1:
-    case media::CHANNEL_LAYOUT_7_1_WIDE:
-    case media::CHANNEL_LAYOUT_7_1_WIDE_BACK:
-    case media::CHANNEL_LAYOUT_OCTAGONAL:
-      return 8;
-    default:
-      return 1;
-  }
-}
-
 openscreen::cast::Dimensions ToOpenscreenType(const gfx::Rect& rect,
                                               int frame_rate) {
   return openscreen::cast::Dimensions{
@@ -111,7 +64,12 @@ openscreen::cast::AudioLimits ToOpenscreenAudioLimitsType(
     osp_limits.applies_to_all_codecs = true;
   }
 
-  osp_limits.max_channels = GetMaxChannelCount(limits.channel_layout);
+  const int max_channels =
+      media::ChannelLayoutToChannelCount(limits.channel_layout);
+  // Layouts with no fixed channel count (e.g. BITSTREAM, DISCRETE) return 0.
+  // We default to 1 channel (mono) to ensure we always have a valid
+  // configuration.
+  osp_limits.max_channels = std::max(max_channels, 1);
   osp_limits.max_delay =
       std::chrono::milliseconds(limits.max_delay.InMilliseconds());
   if (limits.max_sample_rate) {
