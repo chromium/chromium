@@ -10,11 +10,11 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/time/time.h"
 #include "chrome/browser/media/mirroring_service_host.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
@@ -31,7 +31,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
 namespace media_router {
@@ -135,7 +134,7 @@ class MirroringActivity : public CastActivity,
                            MultipleMediaControllersNotified);
 
   void HandleParseJsonResult(const std::string& route_id,
-                             data_decoder::DataDecoder::ValueOrError result);
+                             const base::JSONReader::Result& result);
 
   void StopMirroring();
 

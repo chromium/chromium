@@ -23,7 +23,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -414,8 +413,6 @@ class DialMediaRouteProviderTest : public ::testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
-
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   network::TestURLLoaderFactory loader_factory_;
 

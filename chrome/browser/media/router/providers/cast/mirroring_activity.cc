@@ -31,7 +31,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/media/cast_mirroring_service_host_factory.h"
-#include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
@@ -568,10 +567,9 @@ void MirroringActivity::OnRemotingStateChanged(bool is_remoting) {
 void MirroringActivity::OnMessage(mirroring::mojom::CastMessagePtr message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   DCHECK(message);
-  GetDataDecoder().ParseJson(
-      message->json_format_data,
-      base::BindOnce(&MirroringActivity::HandleParseJsonResult,
-                     weak_ptr_factory_.GetWeakPtr(), route().media_route_id()));
+  HandleParseJsonResult(route().media_route_id(),
+                        base::JSONReader::ReadAndReturnValueWithError(
+                            message->json_format_data, base::JSON_PARSE_RFC));
 }
 
 void MirroringActivity::OnAppMessage(
@@ -679,7 +677,7 @@ std::string MirroringActivity::GetRouteDescription(
 
 void MirroringActivity::HandleParseJsonResult(
     const std::string& route_id,
-    data_decoder::DataDecoder::ValueOrError result) {
+    const base::JSONReader::Result& result) {
   CastSession* session = GetSession();
   if (!session) {
     // TODO(crbug.com/1457011): If we're reaching here, determine why.
@@ -691,29 +689,39 @@ void MirroringActivity::HandleParseJsonResult(
     return;
   }
 
-  if (!result.has_value() || !result.value().is_dict()) {
+  if (!result.has_value()) {
     // TODO(crbug.com/41426190): Record UMA metric for parse result.
     logger_.get()->LogError(
         media_router::mojom::LogCategory::kMirroring, kLoggerComponent,
-        base::StrCat({"Failed to parse Cast client message:", result.error()}),
+        base::StrCat(
+            {"Failed to parse Cast client message:", result.error().message}),
         route().media_sink_id(), route().media_source().id(),
         route().presentation_id());
     return;
   }
 
-  const std::string message_namespace =
-      GetMirroringNamespace(result.value().GetDict());
-  if (message_namespace == mirroring::mojom::kWebRtcNamespace) {
-    logger_.get()->LogInfo(
+  const base::DictValue* dict = result->GetIfDict();
+  if (!dict) {
+    logger_.get()->LogError(
         media_router::mojom::LogCategory::kMirroring, kLoggerComponent,
-        base::StrCat({"WebRTC message received: ",
-                      GetScrubbedLogMessage(result.value().GetDict())}),
+        "Failed to parse Cast client message: Not a dictionary",
         route().media_sink_id(), route().media_source().id(),
         route().presentation_id());
+    return;
+  }
+
+  const std::string message_namespace = GetMirroringNamespace(*dict);
+  if (message_namespace == mirroring::mojom::kWebRtcNamespace) {
+    logger_.get()->LogInfo(media_router::mojom::LogCategory::kMirroring,
+                           kLoggerComponent,
+                           base::StrCat({"WebRTC message received: ",
+                                         GetScrubbedLogMessage(*dict)}),
+                           route().media_sink_id(), route().media_source().id(),
+                           route().presentation_id());
   }
 
   openscreen::cast::proto::CastMessage cast_message =
-      cast_channel::CreateCastMessage(message_namespace, std::move(*result),
+      cast_channel::CreateCastMessage(message_namespace, *result,
                                       message_handler_->source_id(),
                                       session->destination_id());
   if (message_handler_->SendCastMessage(cast_data_.cast_channel_id,

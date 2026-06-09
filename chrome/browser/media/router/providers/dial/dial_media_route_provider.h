@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -24,7 +25,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace url {
 class Origin;
@@ -139,7 +139,7 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
                              const std::vector<url::Origin>& origins);
 
   void HandleParsedRouteMessage(const MediaRoute::Id& route_id,
-                                data_decoder::DataDecoder::ValueOrError result);
+                                base::JSONReader::Result result);
   void HandleClientConnect(const DialActivity& activity,
                            const MediaSinkInternal& sink);
   void SendCustomDialLaunchMessage(const MediaRoute::Id& route_id,
