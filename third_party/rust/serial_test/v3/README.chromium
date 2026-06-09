@@ -1,7 +1,7 @@
 Name: serial_test
 URL: https://crates.io/crates/serial_test
-Version: 3.4.0
-Revision: 9a307f24c2e1eaa1dc0113a575cee48883849e3f
+Version: 3.5.0
+Revision: 6181f64de942180231fdb9098dd0894bbd9e7472
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: MIT
 License File: //third_party/rust/chromium_crates_io/vendor/serial_test-v3/LICENSE

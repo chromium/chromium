@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.68"
 name = "serial_test_derive"
-version = "3.4.0"
+version = "3.5.0"
 authors = ["Tom Parker-Shemilt <palfrey@tevp.net>"]
 build = false
 autolib = false

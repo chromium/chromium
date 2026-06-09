@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.68"
 name = "serial_test"
-version = "3.4.0"
+version = "3.5.0"
 authors = ["Tom Parker-Shemilt <palfrey@tevp.net>"]
 build = false
 autolib = false
@@ -111,12 +111,8 @@ default-features = false
 version = "^0.12"
 default-features = false
 
-[dependencies.scc]
-version = "2"
-default-features = false
-
 [dependencies.serial_test_derive]
-version = "~3.4.0"
+version = "~3.5.0"
 
 [dev-dependencies.itertools]
 version = ">=0.4"

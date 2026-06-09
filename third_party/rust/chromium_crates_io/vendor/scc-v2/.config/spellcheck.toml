@@ -1,6 +1,0 @@
-dev_comments = true
-
-[Hunspell]
-extra_dictionaries = [ "glossary.txt" ]
-search_dirs = [ "." ]
-use_builtin = true

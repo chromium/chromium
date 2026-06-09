@@ -32,7 +32,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "serial_test"
   cargo_pkg_description = "Allows for the creation of serialised Rust tests"
   cargo_pkg_repository = "https://github.com/palfrey/serial_test/"
-  cargo_pkg_version = "3.4.0"
+  cargo_pkg_version = "3.5.0"
 
   allow_unsafe = false
 
@@ -40,7 +40,6 @@ cargo_crate("lib") {
     "//third_party/rust/log/v0_4:lib",
     "//third_party/rust/once_cell/v1:lib",
     "//third_party/rust/parking_lot/v0_12:lib",
-    "//third_party/rust/scc/v2:lib",
     "//third_party/rust/serial_test_derive/v3:lib",
   ]
   features = [ "logging" ]

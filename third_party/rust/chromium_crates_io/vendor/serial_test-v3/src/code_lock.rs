@@ -1,7 +1,42 @@
 use crate::rwlock::{Locks, MutexGuardWrapper};
 use once_cell::sync::OnceCell;
-use scc::{hash_map::Entry, HashMap};
-use std::sync::atomic::AtomicU32;
+use std::{
+    collections::HashMap,
+    sync::{atomic::AtomicU32, Mutex},
+};
+
+pub(crate) struct ValueRef(UniqueReentrantMutex);
+
+impl ValueRef {
+    pub fn get(&self) -> &UniqueReentrantMutex {
+        &self.0
+    }
+}
+
+pub(crate) struct LockMap {
+    inner: Mutex<HashMap<String, UniqueReentrantMutex>>,
+}
+
+impl LockMap {
+    fn new() -> Self {
+        LockMap {
+            inner: Mutex::new(HashMap::new()),
+        }
+    }
+
+    pub fn get(&self, key: &str) -> Option<ValueRef> {
+        self.inner.lock().unwrap().get(key).cloned().map(ValueRef)
+    }
+
+    fn get_or_insert(
+        &self,
+        key: &str,
+        f: impl FnOnce() -> UniqueReentrantMutex,
+    ) -> UniqueReentrantMutex {
+        let mut map = self.inner.lock().unwrap();
+        map.entry(key.to_owned()).or_insert_with(f).clone()
+    }
+}
 
 #[derive(Clone)]
 pub(crate) struct UniqueReentrantMutex {
@@ -41,11 +76,11 @@ impl UniqueReentrantMutex {
 }
 
 #[inline]
-pub(crate) fn global_locks() -> &'static HashMap<String, UniqueReentrantMutex> {
+pub(crate) fn global_locks() -> &'static LockMap {
     #[cfg(feature = "test_logging")]
     let _ = env_logger::builder().try_init();
-    static LOCKS: OnceCell<HashMap<String, UniqueReentrantMutex>> = OnceCell::new();
-    LOCKS.get_or_init(HashMap::new)
+    static LOCKS: OnceCell<LockMap> = OnceCell::new();
+    LOCKS.get_or_init(LockMap::new)
 }
 
 /// Check if the current thread is holding a serial lock
@@ -117,17 +152,7 @@ impl UniqueReentrantMutex {
 }
 
 pub(crate) fn check_new_key(name: &str) {
-    // Check if a new key is needed. Just need a read lock, which can be done in sync with everyone else
-    if global_locks().contains(name) {
-        return;
-    };
-
-    // This is the rare path, which avoids the multi-writer situation mostly
-    let entry = global_locks().entry(name.to_owned());
-    match entry {
-        Entry::Occupied(o) => o,
-        Entry::Vacant(v) => v.insert_entry(UniqueReentrantMutex::new_mutex(name)),
-    };
+    global_locks().get_or_insert(name, || UniqueReentrantMutex::new_mutex(name));
 }
 
 #[cfg(test)]

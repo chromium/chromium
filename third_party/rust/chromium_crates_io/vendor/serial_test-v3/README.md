@@ -4,7 +4,7 @@
 [![Docs](https://docs.rs/serial_test/badge.svg)](https://docs.rs/serial_test/)
 [![MIT license](https://img.shields.io/crates/l/serial_test.svg)](./LICENSE)
 [![Build Status](https://github.com/palfrey/serial_test/actions/workflows/ci.yml/badge.svg)](https://github.com/palfrey/serial_test/actions)
-[![MSRV: 1.68.2](https://flat.badgen.net/badge/MSRV/1.68.2/purple)](https://blog.rust-lang.org/2023/03/28/Rust-1.68.2.html)
+[![MSRV: 1.68.0](https://flat.badgen.net/badge/MSRV/1.68.0/purple)](https://blog.rust-lang.org/2023/03/09/Rust-1.68.0/)
 
 `serial_test` allows for the creation of serialised Rust tests using the `serial` attribute
 e.g.
@@ -52,7 +52,7 @@ fn test_with_timeout() {
 This can be combined with keys: `#[serial(my_key, inner_attrs = [timeout(1000)])]`
 
 ## Usage
-The minimum supported Rust version here is 1.68.2. Note this is minimum _supported_, as it may well compile with lower versions, but they're not supported at all. Upgrades to this will require at a major version bump. 1.x supports 1.51 if you need a lower version than that.
+The minimum supported Rust version here is 1.68.0. Note this is minimum _supported_, as it may well compile with lower versions, but they're not supported at all. Upgrades to this will require at a major version bump. 1.x supports 1.51 if you need a lower version than that.
 
 Add to your Cargo.toml
 ```toml
