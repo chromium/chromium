@@ -4300,16 +4300,6 @@ static_library("ui") {
       "views/sharing/sharing_icon_view.h",
       "views/sharing/sharing_window_controller.cc",
       "views/sharing/sharing_window_controller.h",
-      "views/sharing_hub/preview_view.cc",
-      "views/sharing_hub/preview_view.h",
-      "views/sharing_hub/screenshot/screenshot_captured_bubble.cc",
-      "views/sharing_hub/screenshot/screenshot_captured_bubble.h",
-      "views/sharing_hub/sharing_hub_bubble_action_button.cc",
-      "views/sharing_hub/sharing_hub_bubble_action_button.h",
-      "views/sharing_hub/sharing_hub_bubble_util.cc",
-      "views/sharing_hub/sharing_hub_bubble_util.h",
-      "views/sharing_hub/sharing_hub_icon_view.cc",
-      "views/sharing_hub/sharing_hub_icon_view.h",
       "views/simple_web_view_dialog.cc",
       "views/simple_web_view_dialog.h",
       "views/site_data/page_specific_site_data_dialog.cc",
@@ -4749,6 +4739,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/personal_context",
       "//chrome/browser/ui/views/send_tab_to_self",
       "//chrome/browser/ui/views/send_tab_to_self:impl",
+      "//chrome/browser/ui/views/sharing_hub",
+      "//chrome/browser/ui/views/sharing_hub:impl",
       "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
       "//chrome/browser/ui/views/tabs/projects",
       "//chrome/browser/ui/views/tabs/shared",
@@ -4934,6 +4926,14 @@ static_library("ui") {
       # - c/b/ui/views/chrome_layout_provider.h
       # - c/b/ui/views/controls/subpage_view.h
       "//chrome/browser/ui/views/commerce:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # the following headers get modularized:
+      # - c/b/ui/browser_command_controller.h
+      # - c/b/ui/view_ids.h
+      # - c/b/ui/views/chrome_layout_provider.h
+      # - c/b/ui/views/chrome_typography.h
+      "//chrome/browser/ui/views/sharing_hub:impl",
     ]
 
     if (is_linux) {
@@ -5053,8 +5053,6 @@ static_library("ui") {
         "views/policy/idle_dialog_view.cc",
         "views/policy/idle_dialog_view.h",
         "views/screen_capture_notification_ui_views.cc",
-        "views/sharing_hub/sharing_hub_bubble_view_impl.cc",
-        "views/sharing_hub/sharing_hub_bubble_view_impl.h",
         "views/shortcuts/create_desktop_shortcut.cc",
         "views/shortcuts/create_desktop_shortcut.h",
         "views/shortcuts/create_desktop_shortcut_delegate.cc",

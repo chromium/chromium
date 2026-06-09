@@ -90,6 +90,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/views/location_bar/cookie_controls",
+    "//chrome/browser/ui/views/sharing_hub",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/user_education",

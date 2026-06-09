@@ -145,6 +145,7 @@ source_set("impl") {
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/page_info",
+      "//chrome/browser/ui/views/sharing_hub",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/views/zoom",
       "//chrome/browser/ui/web_applications",

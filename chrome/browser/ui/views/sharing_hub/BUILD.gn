@@ -1,0 +1,88 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("sharing_hub") {
+  public = [
+    "preview_view.h",
+    "screenshot/screenshot_captured_bubble.h",
+    "sharing_hub_bubble_util.h",
+    "sharing_hub_icon_view.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/share",
+    "//chrome/browser/sharing_hub",
+    "//chrome/browser/ui/views/location_bar",
+    "//ui/base",
+    "//ui/views",
+  ]
+
+  if (!is_chromeos) {
+    public += [
+      "sharing_hub_bubble_action_button.h",
+      "sharing_hub_bubble_view_impl.h",
+    ]
+    public_deps += [ "//chrome/browser/ui/sharing_hub" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "preview_view.cc",
+    "screenshot/screenshot_captured_bubble.cc",
+    "sharing_hub_bubble_util.cc",
+    "sharing_hub_icon_view.cc",
+  ]
+  deps = [
+    ":sharing_hub",
+    "//chrome/browser/image_editor",
+    "//chrome/browser/image_editor:image_editor_component_util",
+    "//chrome/browser/ui/qrcode_generator",
+    "//chrome/browser/ui/sharing_hub",
+    "//chrome/browser/ui/views/send_tab_to_self",
+    "//components/omnibox/browser:vector_icons",
+    "//components/url_formatter",
+    "//ui/strings:ui_strings",
+  ]
+  if (!is_chromeos) {
+    sources += [
+      "sharing_hub_bubble_action_button.cc",
+      "sharing_hub_bubble_view_impl.cc",
+    ]
+    deps += [
+      "//chrome/browser/image_editor",
+      "//chrome/browser/image_editor:image_editor_component_util",
+      "//chrome/browser/ui/qrcode_generator",
+    ]
+  }
+}
+
+if (is_win || is_mac || is_linux) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "preview_view_unittest.cc",
+      "sharing_hub_bubble_view_impl_unittest.cc",
+    ]
+    deps = [
+      ":sharing_hub",
+      "//chrome/browser/share",
+      "//chrome/browser/ui/sharing_hub:test_support_ui",
+      "//chrome/test:test_support",
+      "//skia",
+      "//testing/gtest",
+      "//ui/gfx",
+      "//ui/gfx:test_support",
+      "//ui/views",
+    ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
+}

@@ -58,6 +58,7 @@ source_set("impl") {
     "//chrome/browser/ui/sharing_hub",
     "//chrome/browser/ui/signin",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/sharing_hub",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/user_education",
     "//components/pref_registry",

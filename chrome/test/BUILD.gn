@@ -8956,19 +8956,12 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac || is_linux) {
-    sources += [
-      "../browser/ui/extensions/settings_overridden_dialog_unittest.cc",
-      "../browser/ui/views/sharing_hub/preview_view_unittest.cc",
-      "../browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl_unittest.cc",
-    ]
+    sources +=
+        [ "../browser/ui/extensions/settings_overridden_dialog_unittest.cc" ]
 
     deps += [
       "//chrome/browser/sharing_hub:unit_tests",
-
-      # TODO(crbug.com/419210492): Remove this dependency when
-      # chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl_unittest.cc
-      # (above) gets componentized.
-      "//chrome/browser/ui/sharing_hub:test_support_ui",
+      "//chrome/browser/ui/views/sharing_hub:unit_tests",
     ]
   }
 
