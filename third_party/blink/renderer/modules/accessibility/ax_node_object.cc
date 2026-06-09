@@ -2570,8 +2570,9 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (IsA<HTMLTextAreaElement>(*GetNode()))
     return ax::mojom::blink::Role::kTextField;
 
-  if (HeadingLevel())
+  if (GetNode()->GetElementType() == ElementType::kHTMLHeadingElement) {
     return ax::mojom::blink::Role::kHeading;
+  }
 
   if (IsA<HTMLDivElement>(*GetNode()))
     return RoleFromLayoutObjectOrNode();

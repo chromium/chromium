@@ -634,6 +634,36 @@ TEST_F(AccessibilityTest,
   EXPECT_EQ(kSelectedStateUndefined, item2->IsSelected());
 }
 
+class AccessibilityChildFrameTest : public AccessibilityTest {
+ public:
+  AccessibilityChildFrameTest()
+      : AccessibilityTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {
+  }
+};
+
+// Regression test for crbug.com/440841515: an <iframe role="heading"> must stay
+// an embedding element across role recomputation, so SerializeChildTreeID()
+// keeps treating it as a child-tree owner.
+TEST_F(AccessibilityChildFrameTest,
+       IframeWithAriaHeadingRoleStaysEmbeddingElement) {
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+      <iframe id="frame" role="heading" src="http://test.com"></iframe>)HTML");
+  SetChildFrameHTML("<!DOCTYPE html><body></body>");
+  UpdateAllLifecyclePhasesForTest();
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  AXObject* ax_frame = GetAXObjectByElementId("frame");
+  ASSERT_NE(nullptr, ax_frame);
+  EXPECT_EQ(ax::mojom::Role::kHeading, ax_frame->RoleValue());
+  EXPECT_TRUE(ax_frame->IsEmbeddingElement());
+
+  // A second role computation must preserve the native role.
+  ax_frame->UpdateRole();
+  EXPECT_EQ(ax::mojom::Role::kHeading, ax_frame->RoleValue());
+  EXPECT_TRUE(ax_frame->IsEmbeddingElement());
+}
+
 }  // namespace test
 
 TEST_F(AccessibilityTest, RadioButtonsInGroupInTableRows) {
