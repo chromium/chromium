@@ -268,6 +268,9 @@ class CORE_EXPORT GridLayoutTrackCollection
   bool IsDependentOnAvailableSize() const;
 
   wtf_size_t FirstNonCollapsedLineIndex() const;
+  bool HasNonCollapsedLine() const {
+    return FirstNonCollapsedLineIndex() != kNotFound;
+  }
 
   const Vector<wtf_size_t>& CollapsedTrackIndexes() const {
     return collapsed_track_indexes_;

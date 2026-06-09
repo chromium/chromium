@@ -167,21 +167,22 @@ class CORE_EXPORT GapSegmentStateAggregator {
   void ProcessItem(const GridSpan& primary_span,
                    const GridSpan& secondary_span);
 
-  // Finalizes and adds each `GapSegmentStateRange` for `gap` at `gap_index`
-  // along the primary axis. Creates continuous ranges of gap segments that
-  // share the same state by comparing the cell states of tracks adjacent to
-  // `gap`, determined using `gap_index`.
+  // Finalizes and adds each `GapSegmentStateRange` for `gap` along the primary
+  // axis. Creates continuous ranges of gap segments that share the same state
+  // by comparing the cell states of the tracks adjacent to `gap`: the track
+  // at `track_index` (immediately before `gap`) and the track at
+  // `track_index + 1` (immediately after `gap`).
   template <typename T>
   std::enable_if_t<std::is_same_v<T, MainGap> || std::is_same_v<T, CrossGap>,
                    void>
-  FinalizeGapSegmentStateRangesFor(T& gap, wtf_size_t gap_index) const;
+  FinalizeGapSegmentStateRangesFor(T& gap, wtf_size_t track_index) const;
 
   wtf_size_t GetCellCount() const { return cell_count_; }
 
  private:
-  // Updates the cell states for the track at `gap_index` along the primary
+  // Updates the cell states for the track at `track_index` along the primary
   // axis, for all cells covered by `secondary_span`.
-  void UpdateGapStateFor(wtf_size_t gap_index,
+  void UpdateGapStateFor(wtf_size_t track_index,
                          const GridSpan& secondary_span,
                          CellState cell_state);
 

@@ -1509,26 +1509,14 @@ class GapAccumulator {
     // range [1, `row_track_count` - 1).
     //
     // [1] https://www.w3.org/TR/css-gaps-1/#gap-intersection-point
-    // TODO(samomekarajr): This is currently O(nlogn) but can be optimized to
-    // be O(n) if we find the first range index and increment it as we go.
-    wtf_size_t row_line_index = rows.FirstNonCollapsedLineIndex();
-    if (row_line_index == kNotFound) {
+    if (!rows.HasNonCollapsedLine()) {
       return;
     }
-    // Start from the next line index since gaps are between tracks.
-    ++row_line_index;
-    for (; row_line_index < row_track_count - 1; ++row_line_index) {
-      const wtf_size_t range_index =
-          rows.RangeIndexFromGridLine(row_line_index);
-      if (rows.RangeProperties(range_index)
-              .HasProperty(TrackSpanProperties::kIsCollapsed)) {
-        continue;
-      }
-
-      LayoutUnit row_midpoint =
-          LayoutUnit(row_tracks[row_line_index] - (row_gutter_size_ / 2.0f));
+    ForEachNonCollapsedInnerLine(rows, [&](wtf_size_t line_index) {
+      const LayoutUnit row_midpoint =
+          LayoutUnit(row_tracks[line_index] - (row_gutter_size_ / 2.0f));
       gap_geometry_->AddMainGap(row_midpoint);
-    }
+    });
 
     content_block_start_ = row_tracks[0];
     content_block_end_ = row_tracks[row_track_count - 1];
@@ -1559,27 +1547,14 @@ class GapAccumulator {
     // track, and the last gap ends at the second-to-last track. So gaps are
     // defined in the track range [1, `col_track_count` - 1).
     // See: https://www.w3.org/TR/css-gaps-1/#gap-intersection-point
-    // TODO(samomekarajr): This is currently O(nlogn) but can be optimized to
-    // be O(n) if we find the first range index and increment it as we go.
-    wtf_size_t col_line_index = columns.FirstNonCollapsedLineIndex();
-    if (col_line_index == kNotFound) {
+    if (!columns.HasNonCollapsedLine()) {
       return;
     }
-    // Start from the next line index since gaps are between tracks.
-    ++col_line_index;
-    for (; col_line_index < col_track_count - 1; ++col_line_index) {
-      const wtf_size_t range_index =
-          columns.RangeIndexFromGridLine(col_line_index);
-      if (columns.RangeProperties(range_index)
-              .HasProperty(TrackSpanProperties::kIsCollapsed)) {
-        continue;
-      }
-      LayoutUnit col_midpoint =
-          LayoutUnit(col_tracks[col_line_index] - (col_gutter_size_ / 2.0f));
-      LogicalOffset cross_gap_offset =
-          LogicalOffset(col_midpoint, LayoutUnit());
-      gap_geometry_->AddCrossGap(cross_gap_offset);
-    }
+    ForEachNonCollapsedInnerLine(columns, [&](wtf_size_t line_index) {
+      const LayoutUnit col_midpoint =
+          LayoutUnit(col_tracks[line_index] - (col_gutter_size_ / 2.0f));
+      gap_geometry_->AddCrossGap(LogicalOffset(col_midpoint, LayoutUnit()));
+    });
 
     content_inline_start_ = col_tracks[0];
     content_inline_end_ = col_tracks[col_track_count - 1];
@@ -1677,12 +1652,12 @@ class GapAccumulator {
     // cell states collected during `AggregateCellStates`.
     if (main_gaps_aggregator_.GetCellCount() > 0 &&
         gap_geometry_->MainGapCount() > 0) {
-      FinalizeAxisRanges(rows, GapAxis::kMain);
+      FinalizeMainGapRanges(rows);
     }
 
     if (cross_gaps_aggregator_.GetCellCount() > 0 &&
         gap_geometry_->CrossGapCount() > 0) {
-      FinalizeAxisRanges(columns, GapAxis::kCross);
+      FinalizeCrossGapRanges(columns);
     }
 
     gap_geometry_->SetContentInlineOffsets(content_inline_start_,
@@ -1696,26 +1671,21 @@ class GapAccumulator {
   }
 
  private:
-  enum class GapAxis { kMain, kCross };
-
-  // Finalizes each gap's `GapSegmentStateRanges` using the adjacent track
-  // index as the key, adjusting for collapsed tracks.
+  // Calls `callback(line_index)` for each non-collapsed inner grid line in
+  // `tracks`, in increasing line order. The leading and trailing outer edges
+  // of the grid content are not visited, so each visited line is a gap line.
   //
-  // TODO(samomekarajr): Apply the same range-based iteration to
-  // `BuildMainGaps` and `BuildCrossGaps`, which still walk every line with
-  // an O(nlogn) `RangeIndexFromGridLine` lookup per line.
-  void FinalizeAxisRanges(const GridLayoutTrackCollection& tracks,
-                          GapAxis axis) {
-    const wtf_size_t gap_count = axis == GapAxis::kMain
-                                     ? gap_geometry_->MainGapCount()
-                                     : gap_geometry_->CrossGapCount();
+  // Callers must ensure that `tracks` has at least one non-collapsed line.
+  template <typename Callback>
+  static void ForEachNonCollapsedInnerLine(
+      const GridLayoutTrackCollection& tracks,
+      Callback callback) {
     const wtf_size_t first_non_collapsed_line =
         tracks.FirstNonCollapsedLineIndex();
-    wtf_size_t gap_index = 0;
-    for (wtf_size_t range_index = 0;
-         range_index < tracks.RangeCount() && gap_index < gap_count;
-         ++range_index) {
-      // Skip collapsed ranges, as the don't contribute to the gap geometry.
+    CHECK_NE(first_non_collapsed_line, kNotFound);
+    const wtf_size_t range_count = tracks.RangeCount();
+    for (wtf_size_t range_index = 0; range_index < range_count; ++range_index) {
+      // Skip collapsed ranges, as they don't contribute to the gap geometry.
       if (tracks.RangeProperties(range_index)
               .HasProperty(TrackSpanProperties::kIsCollapsed)) {
         continue;
@@ -1727,24 +1697,40 @@ class GapAccumulator {
       wtf_size_t line_index = start_line;
 
       // The first non-collapsed range's leading line is the outer edge of
-      // the grid content, so it's not a gap and we skip it.
+      // the grid content, so it's not a gap and we skip it. The trailing
+      // outer edge is excluded naturally by the `line_index < end_line`
+      // bound on the inner loop below.
       if (start_line == first_non_collapsed_line) {
         ++line_index;
       }
 
-      for (; line_index < end_line && gap_index < gap_count; ++line_index) {
-        const wtf_size_t track_index = line_index - 1;
-        if (axis == GapAxis::kMain) {
-          main_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
-              gap_geometry_->MainGapAt(gap_index), track_index);
-        } else {
-          cross_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
-              gap_geometry_->CrossGapAt(gap_index), track_index);
-        }
-        ++gap_index;
+      for (; line_index < end_line; ++line_index) {
+        callback(line_index);
       }
     }
-    CHECK_EQ(gap_index, gap_count);
+  }
+
+  // Finalizes each main/cross gap's `GapSegmentStateRanges` using the adjacent
+  // track index as the key, adjusting for collapsed tracks.
+  void FinalizeMainGapRanges(const GridLayoutTrackCollection& rows) {
+    CHECK_EQ(rows.Direction(), kForRows);
+    wtf_size_t gap_index = 0;
+    ForEachNonCollapsedInnerLine(rows, [&](wtf_size_t line_index) {
+      main_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
+          gap_geometry_->MainGapAt(gap_index), line_index - 1);
+      ++gap_index;
+    });
+    CHECK_EQ(gap_index, gap_geometry_->MainGapCount());
+  }
+  void FinalizeCrossGapRanges(const GridLayoutTrackCollection& columns) {
+    CHECK_EQ(columns.Direction(), kForColumns);
+    wtf_size_t gap_index = 0;
+    ForEachNonCollapsedInnerLine(columns, [&](wtf_size_t line_index) {
+      cross_gaps_aggregator_.FinalizeGapSegmentStateRangesFor(
+          gap_geometry_->CrossGapAt(gap_index), line_index - 1);
+      ++gap_index;
+    });
+    CHECK_EQ(gap_index, gap_geometry_->CrossGapCount());
   }
 
   GapGeometry* gap_geometry_ = nullptr;
