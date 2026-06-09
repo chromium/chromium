@@ -71,11 +71,25 @@ class LatencyInfo;
 enum class DomCode : uint32_t;
 }  // namespace ui
 
+namespace mojo {
+template <typename T>
+class PendingReceiver;
+template <typename T>
+class PendingRemote;
+}  // namespace mojo
+
+namespace viz::mojom {
+class CompositorFrameSink;
+class CompositorFrameSinkClient;
+}  // namespace viz::mojom
+
 namespace content {
 
 class DevicePosturePlatformProvider;
 class MouseWheelPhaseHandler;
 class RenderWidgetHostImpl;
+class RenderFrameHostImpl;
+class UnboundedSurfaceWindow;
 class ScopedViewTransitionResources;
 class TextInputManager;
 class TouchSelectionControllerClientManager;
@@ -416,6 +430,19 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // Tells the View to destroy itself.
   virtual void Destroy();
 
+  // Unbounded element API methods.
+  virtual void CreateUnboundedSurface(RenderFrameHostImpl* parent_rfh,
+                                      const gfx::Rect& bounds_in_screen);
+  virtual void UpdateUnboundedSurfaceBounds(const gfx::Rect& bounds_in_screen);
+  virtual void DismissUnboundedSurface();
+  virtual bool HasActiveUnboundedSurface() const;
+  virtual viz::FrameSinkId GetUnboundedSurfaceFrameSinkId() const;
+  virtual viz::LocalSurfaceId GetUnboundedSurfaceLocalSurfaceId() const;
+  virtual void GetUnboundedSurfaceCompositorFrameSink(
+      mojo::PendingReceiver<viz::mojom::CompositorFrameSink> sink,
+      mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client);
+  virtual UnboundedSurfaceWindow* GetUnboundedSurfaceWindowForTesting() const;
+
   // Updates the tooltip text and its position and displays the requested
   // tooltip on the screen. The |bounds| parameter corresponds to the bounds of
   // the renderer-side element (in widget-relative DIPS) on which the tooltip
@@ -645,6 +672,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // The model object. Access is protected to allow access to
   // RenderWidgetHostViewChildFrame.
   raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> host_;
+
+  std::unique_ptr<UnboundedSurfaceWindow> unbounded_surface_window_;
 
   // Whether this view is a frame or a popup.
   WidgetType widget_type_ = WidgetType::kFrame;

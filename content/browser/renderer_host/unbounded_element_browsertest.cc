@@ -7,14 +7,15 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/renderer_host/unbounded_surface_window.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
-#include "content/test/content_browser_test_utils_internal.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -27,8 +28,8 @@ class UnboundedElementBrowserTest : public ContentBrowserTest {
   UnboundedElementBrowserTest() = default;
   ~UnboundedElementBrowserTest() override = default;
   void SetUp() override {
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/508672616): Not yet implemented on Android.
+#if !BUILDFLAG(IS_MAC)
+    // TODO(crbug.com/508672616): Not yet completed for non-Mac platforms.
     GTEST_SKIP();
 #else
     feature_list_.InitWithFeatures(
@@ -215,9 +216,10 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, CompositorPopupAllocation) {
   EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
   WaitForFrameReady();
 
-  ASSERT_EQ(1u, web_contents()->GetPopupWidgets().size());
-  RenderWidgetHostView* popup_view = web_contents()->GetPopupWidgets()[0];
-  gfx::Rect bounds = popup_view->GetViewBounds();
+  UnboundedSurfaceWindow* window =
+      primary_main_frame_host()->GetUnboundedSurfaceWindowForTesting();
+  ASSERT_TRUE(window);
+  gfx::Rect bounds = window->GetBoundsForTesting();
   EXPECT_EQ(100, bounds.width());
   EXPECT_EQ(100, bounds.height());
 }
@@ -275,13 +277,17 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementHighDPIBrowserTest,
   EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
   WaitForFrameReady();
 
-  ASSERT_EQ(1u, web_contents()->GetPopupWidgets().size());
-  RenderWidgetHostView* popup_view = web_contents()->GetPopupWidgets()[0];
+  UnboundedSurfaceWindow* window =
+      primary_main_frame_host()->GetUnboundedSurfaceWindowForTesting();
+  ASSERT_TRUE(window);
 
-  float dsf = popup_view->GetDeviceScaleFactor();
+  float dsf = primary_main_frame_host()
+                  ->GetRenderWidgetHost()
+                  ->GetView()
+                  ->GetDeviceScaleFactor();
   EXPECT_EQ(2.0f, dsf);
 
-  gfx::Rect bounds = popup_view->GetViewBounds();
+  gfx::Rect bounds = window->GetBoundsForTesting();
   EXPECT_EQ(100, bounds.width());
   EXPECT_EQ(100, bounds.height());
 }
@@ -315,22 +321,19 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
     window.getComputedStyle(document.querySelector('.item')).visibility;
   )"));
 
-  ASSERT_EQ(1u, web_contents()->GetPopupWidgets().size());
-  RenderWidgetHostView* popup_view = web_contents()->GetPopupWidgets()[0];
-  RenderWidgetHostImpl* rwhi =
-      static_cast<RenderWidgetHostImpl*>(popup_view->GetRenderWidgetHost());
   RenderFrameHostImpl* rfh =
       static_cast<RenderFrameHostImpl*>(primary_main_frame_host());
-  EXPECT_EQ(rwhi, rfh->active_unbounded_widget());
-  gfx::Rect popup_bounds = popup_view->GetViewBounds();
+  UnboundedSurfaceWindow* window = rfh->GetUnboundedSurfaceWindowForTesting();
+  ASSERT_TRUE(window);
+  gfx::Rect popup_bounds = window->GetBoundsForTesting();
   EXPECT_GE(popup_bounds.width(), 200);
   EXPECT_GE(popup_bounds.height(), 90);
 }
 
 IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, PopupInputEventRouting) {
-#if !BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/508672616): RouteMouseEventToPopupViewForTesting is not yet
-  // implemented on non-Mac platforms.
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
+  // popup container positioning and coordinate conversion issues.
   GTEST_SKIP();
 #else
   GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -351,21 +354,23 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, PopupInputEventRouting) {
   EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
   WaitForFrameReady();
 
-  ASSERT_EQ(1u, web_contents()->GetPopupWidgets().size());
-  RenderWidgetHostView* popup_view = web_contents()->GetPopupWidgets()[0];
+  RenderFrameHostImpl* rfh =
+      static_cast<RenderFrameHostImpl*>(primary_main_frame_host());
+  UnboundedSurfaceWindow* window = rfh->GetUnboundedSurfaceWindowForTesting();
+  ASSERT_TRUE(window);
 
   blink::WebMouseEvent event(blink::WebInputEvent::Type::kMouseMove,
                              blink::WebInputEvent::kNoModifiers,
                              base::TimeTicks::Now());
   event.button = blink::WebMouseEvent::Button::kNoButton;
-  gfx::Rect popup_bounds = popup_view->GetViewBounds();
+  gfx::Rect popup_bounds = window->GetBoundsForTesting();
   const int kMouseOffsetX = 50;
   const int kMouseOffsetY = 50;
   event.SetPositionInWidget(kMouseOffsetX, kMouseOffsetY);
   event.SetPositionInScreen(popup_bounds.x() + kMouseOffsetX,
                             popup_bounds.y() + kMouseOffsetY);
 
-  RouteMouseEventToPopupViewMacForTesting(popup_view, event);
+  window->RouteMouseEvent(event);
   RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
 
   EXPECT_EQ(kMouseOffsetX,
@@ -377,9 +382,9 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, PopupInputEventRouting) {
 
 IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
                        PopupOutsideViewportInputEventRouting) {
-#if !BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/508672616): RouteMouseEventToPopupViewForTesting is not yet
-  // implemented on non-Mac platforms.
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/508672616): Not yet working on ChromeOS due to Aura/Ash
+  // popup container positioning and coordinate conversion issues.
   GTEST_SKIP();
 #else
   GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -405,21 +410,23 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
   WaitForFrameReady();
 
-  ASSERT_EQ(1u, web_contents()->GetPopupWidgets().size());
-  RenderWidgetHostView* popup_view = web_contents()->GetPopupWidgets()[0];
+  RenderFrameHostImpl* rfh =
+      static_cast<RenderFrameHostImpl*>(primary_main_frame_host());
+  UnboundedSurfaceWindow* window = rfh->GetUnboundedSurfaceWindowForTesting();
+  ASSERT_TRUE(window);
 
   blink::WebMouseEvent event(blink::WebInputEvent::Type::kMouseMove,
                              blink::WebInputEvent::kNoModifiers,
                              base::TimeTicks::Now());
   event.button = blink::WebMouseEvent::Button::kNoButton;
-  gfx::Rect popup_bounds = popup_view->GetViewBounds();
+  gfx::Rect popup_bounds = window->GetBoundsForTesting();
   const int kMouseOffsetX = 50;
   const int kMouseOffsetY = 70;
   event.SetPositionInWidget(kMouseOffsetX, kMouseOffsetY);
   event.SetPositionInScreen(popup_bounds.x() + kMouseOffsetX,
                             popup_bounds.y() + kMouseOffsetY);
 
-  RouteMouseEventToPopupViewMacForTesting(popup_view, event);
+  window->RouteMouseEvent(event);
   RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
 
   // The expected document coordinates are calculated as:

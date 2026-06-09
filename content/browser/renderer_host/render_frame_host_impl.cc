@@ -331,6 +331,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -11227,6 +11228,10 @@ void RenderFrameHostImpl::DismissUnboundedSurface() {
     unbounded_surface_client_.reset();
   }
 
+  if (RenderWidgetHostViewBase* root_view = GetUnboundedSurfaceRootView()) {
+    root_view->DismissUnboundedSurface();
+  }
+
   RenderFrameHostImpl* outermost = GetOutermostMainFrame();
   if (outermost && outermost != this) {
     outermost->DismissUnboundedSurface();
@@ -11286,8 +11291,9 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
   if (!outermost) {
     return;
   }
-  RenderWidgetHostView* parent_view = GetRenderWidgetHost()->GetView();
-  if (!parent_view) {
+  RenderWidgetHostViewBase* parent_view = nullptr;
+  RenderWidgetHostViewBase* view = GetUnboundedSurfaceRootView(&parent_view);
+  if (!view) {
     return;
   }
 
@@ -11303,37 +11309,15 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
       &RenderFrameHostImpl::DismissUnboundedSurface, base::Unretained(this)));
   outermost->active_unbounded_frame_ = GetWeakPtr();
 
-  // Allocate a dedicated popup widget for the unbounded element rendering
-  // surface. The popup is used only as a container for the rendering surface
-  // where unbounded content will be painted. It does not represent DOM content
-  // directly, which is why it doesn't have a corresponding WebWidget. For that
-  // reason, this widget is purposely left in `waiting_for_init_`, permanently,
-  // so that it doesn't try to talk back to the non-existent WebWidget. The
-  // widget is self-owned and will be destroyed automatically when the popup is
-  // closed.
-  int32_t widget_route_id = GetProcess()->GetNextRoutingID();
-  mojo::PendingAssociatedRemote<blink::mojom::Widget> widget_remote;
-  auto widget_receiver = widget_remote.InitWithNewEndpointAndPassReceiver();
-  mojo::PendingAssociatedRemote<blink::mojom::WidgetHost> widget_host_remote;
-  mojo::PendingAssociatedRemote<blink::mojom::PopupWidgetHost>
-      popup_widget_host_remote;
-  RenderWidgetHostImpl* widget = delegate_->CreateNewPopupWidget(
-      site_instance_->group()->GetSafeRef(), widget_route_id,
-      popup_widget_host_remote.InitWithNewEndpointAndPassReceiver(),
-      widget_host_remote.InitWithNewEndpointAndPassReceiver(),
-      std::move(widget_remote), GetGlobalId());
-  if (widget) {
-    active_unbounded_widget_ = widget->GetWeakPtr();
-    RenderWidgetHostViewBase* widget_host_view =
-        static_cast<RenderWidgetHostViewBase*>(widget->GetView());
-    if (widget_host_view) {
-      float dsf = GetScaleFactorForView(parent_view);
-      gfx::Rect initial_rect = gfx::ScaleToRoundedRect(bounds, 1.f / dsf);
-      initial_rect.Offset(parent_view->GetViewBounds().OffsetFromOrigin());
-      widget_host_view->InitAsPopup(parent_view, initial_rect, initial_rect);
-      unbounded_surface_client_->OnSurfaceAllocated(
-          widget->GetFrameSinkId(), widget_host_view->GetLocalSurfaceId());
-    }
+  float dsf = GetScaleFactorForView(parent_view);
+  gfx::Rect bounds_in_screen = gfx::ScaleToRoundedRect(bounds, 1.f / dsf);
+  bounds_in_screen.Offset(parent_view->GetViewBounds().OffsetFromOrigin());
+
+  view->CreateUnboundedSurface(this, bounds_in_screen);
+  if (view->HasActiveUnboundedSurface()) {
+    unbounded_surface_client_->OnSurfaceAllocated(
+        view->GetUnboundedSurfaceFrameSinkId(),
+        view->GetUnboundedSurfaceLocalSurfaceId());
   }
 }
 
@@ -11344,12 +11328,12 @@ void RenderFrameHostImpl::GetCompositorFrameSink(
     mojo::ReportBadMessage("kUnboundedElement feature must be enabled.");
     return;
   }
-  if (!active_unbounded_widget_) {
+  RenderWidgetHostViewBase* view = GetUnboundedSurfaceRootView();
+  if (!view || !view->HasActiveUnboundedSurface()) {
     return;
   }
-  active_unbounded_widget_->CreateFrameSink(
-      std::move(sink), std::move(client),
-      mojo::PendingRemote<blink::mojom::RenderInputRouterClient>());
+  view->GetUnboundedSurfaceCompositorFrameSink(std::move(sink),
+                                               std::move(client));
 }
 
 void RenderFrameHostImpl::UpdateBounds(const gfx::Rect& bounds) {
@@ -11357,31 +11341,46 @@ void RenderFrameHostImpl::UpdateBounds(const gfx::Rect& bounds) {
     mojo::ReportBadMessage("kUnboundedElement feature must be enabled.");
     return;
   }
-  if (!active_unbounded_widget_) {
+  RenderWidgetHostViewBase* parent_view = nullptr;
+  RenderWidgetHostViewBase* view = GetUnboundedSurfaceRootView(&parent_view);
+  if (!view || !view->HasActiveUnboundedSurface()) {
     return;
   }
-  RenderWidgetHostViewBase* widget_host_view =
-      static_cast<RenderWidgetHostViewBase*>(
-          active_unbounded_widget_->GetView());
-  if (!widget_host_view) {
-    return;
-  }
-  RenderWidgetHostView* parent_view = GetRenderWidgetHost()->GetView();
   // TODO(crbug.com/508672616): This will break in some circumstances (such as
   // going between monitors with different DSFs, mixed DSF multi-monitor
   // setups, or dynamic scaling changes) and we need to propagate changes to
   // the renderer.
   float dsf = GetScaleFactorForView(parent_view);
-  gfx::Rect updated_rect = gfx::ScaleToRoundedRect(bounds, 1.f / dsf);
-  if (parent_view) {
-    updated_rect.Offset(parent_view->GetViewBounds().OffsetFromOrigin());
-  }
-  widget_host_view->SetBounds(updated_rect);
+  gfx::Rect bounds_in_screen = gfx::ScaleToRoundedRect(bounds, 1.f / dsf);
+  bounds_in_screen.Offset(parent_view->GetViewBounds().OffsetFromOrigin());
+  view->UpdateUnboundedSurfaceBounds(bounds_in_screen);
   if (unbounded_surface_client_.is_bound()) {
     unbounded_surface_client_->OnSurfaceAllocated(
-        active_unbounded_widget_->GetFrameSinkId(),
-        widget_host_view->GetLocalSurfaceId());
+        view->GetUnboundedSurfaceFrameSinkId(),
+        view->GetUnboundedSurfaceLocalSurfaceId());
   }
+}
+
+RenderWidgetHostViewBase* RenderFrameHostImpl::GetUnboundedSurfaceRootView(
+    RenderWidgetHostViewBase** out_parent_view) {
+  DCHECK(!out_parent_view || !*out_parent_view) << "Pointer should start null";
+  if (RenderWidgetHostViewBase* parent_view =
+          static_cast<RenderWidgetHostViewBase*>(
+              GetRenderWidgetHost()->GetView())) {
+    if (out_parent_view) {
+      *out_parent_view = parent_view;
+    }
+    return parent_view->GetRootView();
+  }
+  return nullptr;
+}
+
+UnboundedSurfaceWindow*
+RenderFrameHostImpl::GetUnboundedSurfaceWindowForTesting() {
+  if (RenderWidgetHostViewBase* view = GetUnboundedSurfaceRootView()) {
+    return view->GetUnboundedSurfaceWindowForTesting();  // IN-TEST
+  }
+  return nullptr;
 }
 
 void RenderFrameHostImpl::CreateNewPopupWidget(

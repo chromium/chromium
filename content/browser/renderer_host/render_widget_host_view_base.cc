@@ -37,6 +37,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/scoped_view_transition_resources.h"
 #include "content/browser/renderer_host/text_input_manager.h"
+#include "content/browser/renderer_host/unbounded_surface_window.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
@@ -910,6 +911,52 @@ display::ScreenInfos RenderWidgetHostViewBase::GetNewScreenInfosForUpdate() {
 void RenderWidgetHostViewBase::DidNavigate() {
   if (host())
     host()->SynchronizeVisualProperties();
+}
+
+void RenderWidgetHostViewBase::CreateUnboundedSurface(
+    RenderFrameHostImpl* parent_rfh,
+    const gfx::Rect& bounds_in_screen) {}
+
+void RenderWidgetHostViewBase::UpdateUnboundedSurfaceBounds(
+    const gfx::Rect& bounds_in_screen) {
+  if (unbounded_surface_window_) {
+    unbounded_surface_window_->SetBounds(bounds_in_screen);
+  }
+}
+
+void RenderWidgetHostViewBase::DismissUnboundedSurface() {
+  unbounded_surface_window_.reset();
+}
+
+bool RenderWidgetHostViewBase::HasActiveUnboundedSurface() const {
+  return !!unbounded_surface_window_;
+}
+
+viz::FrameSinkId RenderWidgetHostViewBase::GetUnboundedSurfaceFrameSinkId()
+    const {
+  return unbounded_surface_window_ ? unbounded_surface_window_->GetFrameSinkId()
+                                   : viz::FrameSinkId();
+}
+
+viz::LocalSurfaceId
+RenderWidgetHostViewBase::GetUnboundedSurfaceLocalSurfaceId() const {
+  return unbounded_surface_window_
+             ? unbounded_surface_window_->GetLocalSurfaceId()
+             : viz::LocalSurfaceId();
+}
+
+void RenderWidgetHostViewBase::GetUnboundedSurfaceCompositorFrameSink(
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSink> sink,
+    mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client) {
+  if (unbounded_surface_window_) {
+    unbounded_surface_window_->GetCompositorFrameSink(std::move(sink),
+                                                      std::move(client));
+  }
+}
+
+UnboundedSurfaceWindow*
+RenderWidgetHostViewBase::GetUnboundedSurfaceWindowForTesting() const {
+  return unbounded_surface_window_.get();
 }
 
 WebContentsAccessibility*
