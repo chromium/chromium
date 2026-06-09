@@ -72,3 +72,9 @@
   background-color: var(--cr-active-background-color);
   outline: none;
 }
+
+@media (forced-colors: active) {
+  .new-folder-row:not([disabled]):focus {
+    outline: var(--cr-focus-outline-hcm);
+  }
+}
