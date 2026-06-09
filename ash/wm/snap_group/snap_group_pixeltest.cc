@@ -359,7 +359,7 @@ TEST_P(SnapGroupWindowCyclePixelTest, WindowCycleViewInPortrait) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(
           "window_cycle_with_snap_group_secondary_focused_in_portrait"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 1,
       window_cycle_widget));
 
   // Verify the visuals with primary-snapped window gets focused.
@@ -367,7 +367,7 @@ TEST_P(SnapGroupWindowCyclePixelTest, WindowCycleViewInPortrait) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(
           "window_cycle_with_snap_group_primary_focused_in_portrait"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 1,
       window_cycle_widget));
 }
 

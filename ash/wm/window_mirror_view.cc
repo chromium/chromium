@@ -15,6 +15,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -98,6 +99,7 @@ void WindowMirrorView::Layout(PassKey) {
   // Reposition such that the client area is the only part visible.
   transform.Translate(-client_area_bounds.x(), -client_area_bounds.y());
   GetMirrorLayer()->SetTransform(transform);
+  GetMirrorLayer()->SetClipRect(client_area_bounds);
 }
 
 bool WindowMirrorView::GetNeedsNotificationWhenVisibleBoundsChange() const {
@@ -140,8 +142,6 @@ void WindowMirrorView::InitLayerOwner() {
 
   ui::Layer* mirror_layer = GetMirrorLayer();
   layer()->Add(mirror_layer);
-  // This causes us to clip the non-client areas of the window.
-  layer()->SetMasksToBounds(true);
 
   // Some extra work is needed when the source window is minimized, tucked
   // offscreen or is on an inactive desk.
