@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/search/audio_wave.js';
+import 'chrome://resources/cr_components/search/recording_wave.js';
 
 import type {AudioWaveElement, Bump} from 'chrome://resources/cr_components/search/audio_wave.js';
 import {bezierEasing, weightedAverage} from 'chrome://resources/cr_components/search/audio_wave.js';
+import type {RecordingWaveElement} from 'chrome://resources/cr_components/search/recording_wave.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -53,6 +55,10 @@ suite('Composebox audio wave animation', () => {
     audioWaveElement.style.height = '100px';
 
     await microtasksFinished();
+  });
+
+  teardown(() => {
+    audioWaveElement.remove();
   });
 
   test('svg elements are created and mapped', () => {
@@ -513,4 +519,106 @@ suite('Composebox audio wave animation', () => {
       Math.random = originalRandom;
     }
   });
+});
+
+suite('Composebox recording wave colors', () => {
+  let recordingWaveElement: RecordingWaveElement;
+  let originalMatchMedia: typeof window.matchMedia;
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    recordingWaveElement = document.createElement('recording-wave');
+    document.body.appendChild(recordingWaveElement);
+    await microtasksFinished();
+
+    originalMatchMedia = window.matchMedia;
+  });
+
+  teardown(() => {
+    recordingWaveElement.remove();
+    window.matchMedia = originalMatchMedia;
+  });
+
+  function setPrefersColorSchemeDark(isDark: boolean) {
+    window.matchMedia = (query: string) => {
+      return {
+        matches: query.includes('dark') && isDark,
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      } as unknown as MediaQueryList;
+    };
+  }
+
+  test(
+      'dark theme colors are shown if prefers-color-scheme dark ' +
+          'and darkThemeColorsEnabled is true',
+      async () => {
+        setPrefersColorSchemeDark(true);
+        recordingWaveElement.darkThemeColorsEnabled = true;
+        recordingWaveElement.isListening = true;
+        await recordingWaveElement.updateComplete;
+        await microtasksFinished();
+
+        // Spawn all bars to set their colors.
+        const barsData = (recordingWaveElement as any).barsData_;
+        barsData.forEach((bar: any) => {
+          bar.isUnspawned = false;
+        });
+
+        // Wait for animation frame to apply styles.
+        await new Promise(resolve => requestAnimationFrame(resolve));
+
+        const pills =
+            recordingWaveElement.$.barsContainer.querySelectorAll('.bar-pill');
+        assertEquals(100, pills.length);
+        const lastPill = pills[99] as HTMLElement;
+
+        // Dark stop for ratio 1.0 is rgb(55, 70, 109).
+        assertEquals('rgb(55, 70, 109)', lastPill.style.background);
+
+        // Verify that the CSS variable is set to the dark theme color.
+        const computedStyle = getComputedStyle(recordingWaveElement);
+        assertEquals(
+            '#37466d',
+            computedStyle.getPropertyValue('--color-recording-wave').trim());
+      });
+
+  test(
+      'dark theme colors are not shown if darkThemeColorsEnabled is false',
+      async () => {
+        setPrefersColorSchemeDark(true);
+        recordingWaveElement.darkThemeColorsEnabled = false;
+        recordingWaveElement.isListening = true;
+        await recordingWaveElement.updateComplete;
+        await microtasksFinished();
+
+        // Spawn all bars to set their colors.
+        const barsData = (recordingWaveElement as any).barsData_;
+        barsData.forEach((bar: any) => {
+          bar.isUnspawned = false;
+        });
+
+        // Wait for animation frame to apply styles.
+        await new Promise(resolve => requestAnimationFrame(resolve));
+
+        const pills =
+            recordingWaveElement.$.barsContainer.querySelectorAll('.bar-pill');
+        assertEquals(100, pills.length);
+        const lastPill = pills[99] as HTMLElement;
+
+        // Light stop for ratio 1.0 is rgb(236, 240, 255).
+        assertEquals('rgb(236, 240, 255)', lastPill.style.background);
+
+        // Verify that the CSS variable is NOT set to the dark theme color
+        // (retains light color).
+        const computedStyle = getComputedStyle(recordingWaveElement);
+        assertEquals(
+            '#c9d2ff',
+            computedStyle.getPropertyValue('--color-recording-wave').trim());
+      });
 });

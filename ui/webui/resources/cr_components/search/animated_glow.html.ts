@@ -69,6 +69,7 @@ export function getHtml(this: SearchAnimatedGlowElement) {
        ${this.requiresVoice && this.coloredTicTacVoiceAnimationEnabled ?
            html`<recording-wave id='recordingWave'
                 class='audio-animation'
+                .darkThemeColorsEnabled="${this.darkThemeColorsEnabled}"
                 .isListening="${this.isListening}">
                 </recording-wave>`
            : ''}

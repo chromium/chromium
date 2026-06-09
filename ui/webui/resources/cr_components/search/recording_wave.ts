@@ -289,10 +289,15 @@ export class RecordingWaveElement extends CrLitElement {
         reflect: true,
         type: Boolean,
       },
+      darkThemeColorsEnabled: {
+        reflect: true,
+        type: Boolean,
+      },
     };
   }
 
   accessor isListening: boolean = false;
+  accessor darkThemeColorsEnabled: boolean = true;
 
   private barsData_: Bar[] = [];
   private lastDrawTimestamp_: number = performance.now();
@@ -309,6 +314,15 @@ export class RecordingWaveElement extends CrLitElement {
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+
+    if (changedProperties.has('isListening') ||
+        changedProperties.has('darkThemeColorsEnabled')) {
+      const isDark =
+          window.matchMedia('(prefers-color-scheme: dark)').matches &&
+          this.darkThemeColorsEnabled;
+      this.style.setProperty(
+          '--color-recording-wave', isDark ? '#37466d' : '#c9d2ff');
+    }
 
     if (changedProperties.has('isListening')) {
       if (this.isListening) {
@@ -375,7 +389,8 @@ export class RecordingWaveElement extends CrLitElement {
       return;
     }
 
-    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches &&
+        this.darkThemeColorsEnabled;
     const stops = isDark ? DARK_STOPS : LIGHT_STOPS;
 
     const now = performance.now();
