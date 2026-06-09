@@ -60,7 +60,7 @@ import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
+import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridgeJni;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
@@ -111,7 +111,7 @@ public final class StatusMediatorUnitTest {
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private FuseboxSessionState mFuseboxSessionState;
     @Mock private AutocompleteInput mAutocompleteInput;
-    @Mock private SearchEngineUtils mSearchEngineUtils;
+    @Mock private SearchEngineService mSearchEngineService;
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private PermissionDialogController mPermissionDialogController;
@@ -153,7 +153,7 @@ public final class StatusMediatorUnitTest {
 
     @Before
     public void setUp() {
-        SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
+        SearchEngineService.setInstanceForTesting(mSearchEngineService);
         TrackerFactory.setTrackerForTests(mTracker);
         CookieControlsBridgeJni.setInstanceForTesting(mCookieControlsBridgeJniMock);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeNatives);
@@ -1091,7 +1091,7 @@ public final class StatusMediatorUnitTest {
 
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
-        verify(mSearchEngineUtils)
+        verify(mSearchEngineService)
                 .retrieveFavicon(eq(geminiTemplate), mFaviconCallbackCaptor.capture());
 
         StatusIconResource geminiIcon = new StatusIconResource("gemini_icon", null, 0);
@@ -1119,7 +1119,7 @@ public final class StatusMediatorUnitTest {
         siteSearchDataSupplier.set(wikiData);
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
-        verify(mSearchEngineUtils)
+        verify(mSearchEngineService)
                 .retrieveFavicon(eq(wikiTemplate), mFaviconCallbackCaptor.capture());
 
         // 2. User changes suggestion from @wiki to @gemini

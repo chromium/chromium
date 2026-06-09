@@ -62,9 +62,9 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineIconObserver;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineNameObserver;
+import org.chromium.chrome.browser.omnibox.SearchEngineService;
+import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineIconObserver;
+import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
@@ -136,7 +136,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private final SnackbarManager mSnackbarManager;
     private final Boolean mIsTablet;
     private final Supplier<Integer> mTabStripHeightSupplier;
-    private final SearchEngineUtils mSearchEngineUtils;
+    private final SearchEngineService mSearchEngineService;
     private final BackPressManager mBackPressManager;
     private final int mNtpSearchBoxTransitionStartOffset;
     private final int mNtpSearchBoxTopMarginWithoutLogo;
@@ -268,7 +268,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mSnackbarManager = snackbarManager;
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
-        mSearchEngineUtils = SearchEngineUtils.getForProfile(mProfile);
+        mSearchEngineService = SearchEngineService.getForProfile(mProfile);
 
         Resources resources = mActivity.getResources();
         mNtpSearchBoxTopMarginWithoutLogo =
@@ -372,7 +372,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         mSearchEngineIconObserver =
                 (newIcon) -> assumeNonNull(mNtpSearchBox).setSearchEngineIcon(newIcon);
-        mSearchEngineUtils.addIconObserver(mSearchEngineIconObserver);
+        mSearchEngineService.addIconObserver(mSearchEngineIconObserver);
         setSearchBoxTextAppearance();
 
         initializeSearchBoxTextView();
@@ -400,7 +400,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         // Initialize Searchbox observers
         mSearchEngineNameObserver = this::onSearchBoxHintTextChanged;
-        mSearchEngineUtils.addSearchEngineNameObserver(mSearchEngineNameObserver);
+        mSearchEngineService.addSearchEngineNameObserver(mSearchEngineNameObserver);
 
         mInitialized = true;
 
@@ -485,7 +485,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     public void onSearchBoxHintTextChanged() {
         if (mNtpSearchBox != null) {
             mNtpSearchBox.setSearchBoxHintText(
-                    mSearchEngineUtils.getOmniboxHintText(
+                    mSearchEngineService.getOmniboxHintText(
                             AutocompleteRequestType.SEARCH, /* fuseboxSessionState= */ null));
         }
     }
@@ -1298,12 +1298,12 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mMostRecentTabSupplier.set(null);
 
         if (mSearchEngineNameObserver != null) {
-            mSearchEngineUtils.removeSearchEngineNameObserver(mSearchEngineNameObserver);
+            mSearchEngineService.removeSearchEngineNameObserver(mSearchEngineNameObserver);
             mSearchEngineNameObserver = null;
         }
 
         if (mSearchEngineIconObserver != null) {
-            mSearchEngineUtils.removeIconObserver(mSearchEngineIconObserver);
+            mSearchEngineService.removeIconObserver(mSearchEngineIconObserver);
             mSearchEngineIconObserver = null;
         }
 

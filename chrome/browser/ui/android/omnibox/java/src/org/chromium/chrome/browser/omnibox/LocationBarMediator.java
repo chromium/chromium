@@ -74,7 +74,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.Observer;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineNameObserver;
+import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineNameObserver;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
@@ -275,7 +275,7 @@ class LocationBarMediator
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
             ObservableSuppliers.createNonNull(false);
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private @Nullable SearchEngineUtils mSearchEngineUtils;
+    private @Nullable SearchEngineService mSearchEngineService;
     private @Nullable AddToHomescreenCoordinator mAddToHomescreenCoordinatorForTesting;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final FuseboxCoordinator mFuseboxCoordinator;
@@ -439,8 +439,8 @@ class LocationBarMediator
         if (templateUrlService != null) {
             templateUrlService.removeObserver(this);
         }
-        if (mSearchEngineUtils != null) {
-            mSearchEngineUtils.removeSearchEngineNameObserver(this);
+        if (mSearchEngineService != null) {
+            mSearchEngineService.removeSearchEngineNameObserver(this);
         }
         mStatusCoordinator = null;
         mAutocompleteCoordinator.removeOmniboxSuggestionsDropdownScrollListener(this);
@@ -1767,13 +1767,13 @@ class LocationBarMediator
         assumeNonNull(mOmniboxPrerender);
         mOmniboxPrerender.initializeForProfile(profile);
 
-        if (mSearchEngineUtils != null) {
-            mSearchEngineUtils.removeSearchEngineNameObserver(this);
+        if (mSearchEngineService != null) {
+            mSearchEngineService.removeSearchEngineNameObserver(this);
         }
 
-        mSearchEngineUtils = SearchEngineUtils.getForProfile(profile);
-        mSearchEngineUtils.addSearchEngineNameObserver(this);
-        mLocationBarLayout.setSearchEngineUtils(mSearchEngineUtils);
+        mSearchEngineService = SearchEngineService.getForProfile(profile);
+        mSearchEngineService.addSearchEngineNameObserver(this);
+        mLocationBarLayout.setSearchEngineService(mSearchEngineService);
     }
 
     /**
@@ -2347,7 +2347,7 @@ class LocationBarMediator
     private void updateSearchEngineStatusIconShownState() {
         // The search engine icon will be the first visible focused view when it's showing.
         boolean shouldShowSearchEngineLogo =
-                mSearchEngineUtils == null || mSearchEngineUtils.shouldShowSearchEngineLogo();
+                mSearchEngineService == null || mSearchEngineService.shouldShowSearchEngineLogo();
 
         // This branch will be hit if the search engine logo should be shown.
         if (shouldShowSearchEngineLogo && mLocationBarLayout instanceof LocationBarPhone) {
@@ -2831,8 +2831,8 @@ class LocationBarMediator
     @Override
     public void onSearchEngineNameChanged() {
         // Edge case / SearchActivity could be triggering focus before Profile (and by proxy -
-        // SearchEngineUtils) is available.
-        if (mSearchEngineUtils == null) return;
+        // SearchEngineService) is available.
+        if (mSearchEngineService == null) return;
         if (mEmbedderUiOverrides.isEmbedderControlledHint()) return;
 
         if (mCurrentInput != null && mCurrentInput.getSiteSearchData() != null) {
@@ -2847,7 +2847,7 @@ class LocationBarMediator
                         : mCurrentInput.getRequestType();
 
         mUrlCoordinator.setUrlBarHintText(
-                mSearchEngineUtils.getOmniboxHintText(
+                mSearchEngineService.getOmniboxHintText(
                         requestType, FuseboxSessionState.from(mLocationBarDataProvider)));
     }
 

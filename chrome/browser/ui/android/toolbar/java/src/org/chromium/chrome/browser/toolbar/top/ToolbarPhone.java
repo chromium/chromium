@@ -73,7 +73,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable;
 import org.chromium.chrome.browser.omnibox.LocationBarBackgroundDrawable.HairlineBehavior;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
+import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -1323,7 +1323,7 @@ public class ToolbarPhone extends ToolbarLayout
         // implementation details.
         var profile = getToolbarDataProvider().getProfile();
         if (profile == null
-                || SearchEngineUtils.getForProfile(profile).shouldShowSearchEngineLogo()) {
+                || SearchEngineService.getForProfile(profile).shouldShowSearchEngineLogo()) {
             locationBarBaseTranslationX += getLocationBarOffsetForFocusAnimation(hasFocus());
         }
 
@@ -1904,7 +1904,7 @@ public class ToolbarPhone extends ToolbarLayout
             // omnibox background when animating in.
             var profile = getToolbarDataProvider().getProfile();
             if ((profile == null
-                            || SearchEngineUtils.getForProfile(profile)
+                            || SearchEngineService.getForProfile(profile)
                                     .shouldShowSearchEngineLogo())
                     && isLocationBarShownInNtp()
                     && urlHasFocus()
@@ -3668,7 +3668,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         var profile = getToolbarDataProvider().getProfile();
         if (profile == null
-                || !SearchEngineUtils.getForProfile(profile).shouldShowSearchEngineLogo()) {
+                || !SearchEngineService.getForProfile(profile).shouldShowSearchEngineLogo()) {
             return 0;
         }
 

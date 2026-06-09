@@ -155,7 +155,7 @@ public class SearchEngineIconUtils {
     }
 
     // TODO(crbug.com/483929347): Replace this logic with the implementation from
-    // SearchEngineUtils.java and have SearchEngineUtils call this class to prevent inconsistent
+    // SearchEngineService.java and have SearchEngineService call this class to prevent inconsistent
     // icons.
     private static void fetchIconFromGoogleServer(
             Context context,

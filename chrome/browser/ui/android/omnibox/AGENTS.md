@@ -14,7 +14,7 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 *   **`fusebox`**: Contains implementation for the experimental Fusebox/refinement UI inside the omnibox flow.
 
 ### Key Architectural Guidelines
-*   **SearchEngineUtils Role**: Serves as an asset and string provider, handling default search engine details and related icons/strings.
+*   **SearchEngineService Role**: Serves as an asset and string provider, handling default search engine details and related icons/strings.
 *   **Strict Responsibility Boundaries**: Components must strictly adhere to their designated domain and responsibilities:
     *   The `suggestions` UI stack must focus strictly on layout and rendering. It **must not** attempt to understand or manage the backend mechanics of how Autocomplete works.
     *   The voice recognition handler (e.g., `VoiceRecognitionHandler`) should not formulate URLs.

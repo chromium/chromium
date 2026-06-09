@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
+import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelper;
@@ -122,7 +122,7 @@ public class NewTabPageCoordinatorUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Supplier<Integer> mTabStripHeightSupplier;
     @Mock private Supplier<GURL> mComposeplateUrlSupplier;
-    @Mock private SearchEngineUtils mSearchEngineUtils;
+    @Mock private SearchEngineService mSearchEngineService;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private IdentityManager mIdentityManager;
     @Mock private SigninManager mSigninManager;
@@ -164,7 +164,7 @@ public class NewTabPageCoordinatorUnitTest {
         when(mWindowAndroid.getContext()).thenReturn(contextWeakReference);
 
         // Setup for search.
-        SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
+        SearchEngineService.setInstanceForTesting(mSearchEngineService);
 
         when(mMostRecentTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
         when(mTab.getProfile()).thenReturn(mProfile);

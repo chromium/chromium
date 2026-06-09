@@ -31,8 +31,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
-import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineIconObserver;
+import org.chromium.chrome.browser.omnibox.SearchEngineService;
+import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineIconObserver;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxFeatureUtils;
@@ -123,7 +123,7 @@ public class StatusMediator
     private @StringRes int mSecurityIconDescriptionRes;
     private @ColorRes int mNavigationIconTintRes;
     private @Nullable CookieControlsBridge mCookieControlsBridge;
-    private @Nullable SearchEngineUtils mSearchEngineUtils;
+    private @Nullable SearchEngineService mSearchEngineService;
     private @Nullable StatusIconResource mSearchEngineIcon;
     private @Nullable StatusIconResource mSiteSearchFavicon;
     private @Nullable NullableObservableSupplier<SiteSearchData> mSiteSearchDataSupplier;
@@ -210,11 +210,11 @@ public class StatusMediator
 
         mProfileSupplier.addSyncObserverAndPostIfNonNull(
                 p -> {
-                    if (mSearchEngineUtils != null) {
-                        mSearchEngineUtils.removeIconObserver(this);
+                    if (mSearchEngineService != null) {
+                        mSearchEngineService.removeIconObserver(this);
                     }
-                    mSearchEngineUtils = SearchEngineUtils.getForProfile(p);
-                    mSearchEngineUtils.addIconObserver(this);
+                    mSearchEngineService = SearchEngineService.getForProfile(p);
+                    mSearchEngineService.addIconObserver(this);
                     mImageSupplier.setProfile(p);
                     updateLocationBarIcon(IconTransitionType.CROSSFADE);
                 });
@@ -225,9 +225,9 @@ public class StatusMediator
     }
 
     public void destroy() {
-        if (mSearchEngineUtils != null) {
-            mSearchEngineUtils.removeIconObserver(this);
-            mSearchEngineUtils = null;
+        if (mSearchEngineService != null) {
+            mSearchEngineService.removeIconObserver(this);
+            mSearchEngineService = null;
         }
 
         mPermissionStatusHandler.destroy();
@@ -903,7 +903,7 @@ public class StatusMediator
         mSiteSearchFavicon = null;
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
 
-        if (siteSearchData == null || mSearchEngineUtils == null) return;
+        if (siteSearchData == null || mSearchEngineService == null) return;
 
         TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
         if (templateUrlService == null) return;
@@ -912,7 +912,7 @@ public class StatusMediator
                 templateUrlService.getTemplateUrlForKeyword(siteSearchData.keyword);
         if (templateUrl == null) return;
 
-        mSearchEngineUtils.retrieveFavicon(
+        mSearchEngineService.retrieveFavicon(
                 templateUrl,
                 icon -> {
                     // Only set the icon if the SiteSearchData has not changed. There might be edge

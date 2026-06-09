@@ -56,13 +56,13 @@ import java.util.Objects;
  * search engine functionality.
  */
 @NullMarked
-public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserver {
+public class SearchEngineService implements Destroyable, TemplateUrlServiceObserver {
     private static final int MAX_IMAGE_CACHE_SIZE_BYTES = 4096;
-    private static final String TAG = "DSEUtils";
-    private static final ProfileKeyedMap<SearchEngineUtils> sProfileMap =
+    private static final String TAG = "DSEService";
+    private static final ProfileKeyedMap<SearchEngineService> sProfileMap =
             ProfileKeyedMap.createMapOfDestroyables();
 
-    private static @Nullable SearchEngineUtils sInstanceForTesting;
+    private static @Nullable SearchEngineService sInstanceForTesting;
 
     private final Context mContext;
     private final Profile mProfile;
@@ -102,7 +102,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     }
 
     @VisibleForTesting
-    SearchEngineUtils(Profile profile, FaviconHelper faviconHelper) {
+    SearchEngineService(Profile profile, FaviconHelper faviconHelper) {
         mProfile = profile;
         mIsOffTheRecord = profile.isOffTheRecord();
         mFaviconHelper = faviconHelper;
@@ -130,17 +130,17 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         onTemplateURLServiceChanged();
     }
 
-    /** Get the instance of SearchEngineUtils associated with the supplied Profile. */
-    public static SearchEngineUtils getForProfile(Profile profile) {
+    /** Get the instance of SearchEngineService associated with the supplied Profile. */
+    public static SearchEngineService getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
         if (sInstanceForTesting != null) return sInstanceForTesting;
 
         assert profile != null;
-        return sProfileMap.getForProfile(profile, SearchEngineUtils::buildForProfile);
+        return sProfileMap.getForProfile(profile, SearchEngineService::buildForProfile);
     }
 
-    private static SearchEngineUtils buildForProfile(Profile profile) {
-        return new SearchEngineUtils(profile, new FaviconHelper());
+    private static SearchEngineService buildForProfile(Profile profile) {
+        return new SearchEngineService(profile, new FaviconHelper());
     }
 
     @Override
@@ -440,7 +440,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     }
 
     /** Set the instance for testing. */
-    public static void setInstanceForTesting(SearchEngineUtils instance) {
+    public static void setInstanceForTesting(SearchEngineService instance) {
         sInstanceForTesting = instance;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }

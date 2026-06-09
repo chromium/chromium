@@ -202,7 +202,7 @@ public class LocationBarMediatorTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ObjectAnimator mUrlAnimator;
     @Mock private View mRootView;
-    @Mock private SearchEngineUtils mSearchEngineUtils;
+    @Mock private SearchEngineService mSearchEngineService;
     @Mock private AutocompleteLoadCallback mAutocompleteLoadCallback;
     @Mock private LoadUrlParams mLoadUrlParams;
     @Mock private LoadUrlResult mLoadUrlResult;
@@ -279,9 +279,9 @@ public class LocationBarMediatorTest {
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
 
         mUrlBarData = UrlBarData.create(null, "text", 0, 0, "text");
-        lenient().doReturn(true).when(mSearchEngineUtils).shouldShowSearchEngineLogo();
-        lenient().doReturn(true).when(mSearchEngineUtils).isDefaultSearchEngineGoogle();
-        SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
+        lenient().doReturn(true).when(mSearchEngineService).shouldShowSearchEngineLogo();
+        lenient().doReturn(true).when(mSearchEngineService).isDefaultSearchEngineGoogle();
+        SearchEngineService.setInstanceForTesting(mSearchEngineService);
         lenient().doReturn(mUrlBarData).when(mLocationBarDataProvider).getUrlBarData();
         lenient()
                 .doReturn(ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false))
@@ -2765,7 +2765,7 @@ public class LocationBarMediatorTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         doReturn("search engine hint text")
-                .when(mSearchEngineUtils)
+                .when(mSearchEngineService)
                 .getOmniboxHintText(anyInt(), any());
 
         mMediator.onSearchEngineNameChanged();
@@ -2774,7 +2774,7 @@ public class LocationBarMediatorTest {
 
         mMediator.onUrlFocusChange(false);
         doReturn("search engine hint text unfocused")
-                .when(mSearchEngineUtils)
+                .when(mSearchEngineService)
                 .getOmniboxHintText(anyInt(), any());
     }
 
@@ -2821,11 +2821,11 @@ public class LocationBarMediatorTest {
 
         String searchHint = "search or something";
         doReturn(searchHint)
-                .when(mSearchEngineUtils)
+                .when(mSearchEngineService)
                 .getOmniboxHintText(eq(AutocompleteRequestType.SEARCH), any());
         String aiHint = "ai or something";
         doReturn(aiHint)
-                .when(mSearchEngineUtils)
+                .when(mSearchEngineService)
                 .getOmniboxHintText(eq(AutocompleteRequestType.AI_MODE), any());
 
         mMediator.onUrlFocusChange(/* hasFocus= */ true);
