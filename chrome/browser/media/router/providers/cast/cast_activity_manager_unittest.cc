@@ -181,6 +181,20 @@ class CastActivityManagerTest : public testing::Test,
     CastActivityManager::SetActitityFactoryForTest(nullptr);
   }
 
+  AppActivity* AddAppActivity(const MediaRoute& route,
+                              const std::string& app_id) {
+    return manager_->AddAppActivity(route, app_id);
+  }
+
+  CastActivity* AddMirroringActivity(
+      const MediaRoute& route,
+      const std::string& app_id,
+      content::FrameTreeNodeId frame_tree_node_id,
+      const CastSinkExtraData& cast_data) {
+    return manager_->AddMirroringActivity(route, app_id, frame_tree_node_id,
+                                          cast_data);
+  }
+
   // from CastActivityFactoryForTest
   std::unique_ptr<AppActivity> MakeAppActivity(
       const MediaRoute& route,
@@ -992,20 +1006,21 @@ TEST_F(CastActivityManagerTest, AddAppActivityCollision) {
                    true);
 
   // First call to AddAppActivity should succeed.
-  AppActivity* activity1 = manager_->AddAppActivity(route, kAppId1);
+  AppActivity* activity1 = AddAppActivity(route, kAppId1);
   ASSERT_TRUE(activity1);
   EXPECT_EQ(1u, manager_->GetRoutes().size());
 
   // Second call with same route_id should overwrite the existing activity
   // instead of creating a dangling pointer.
-  AppActivity* activity2 = manager_->AddAppActivity(route, kAppId1);
+  AppActivity* activity2 = AddAppActivity(route, kAppId1);
   ASSERT_TRUE(activity2);
   EXPECT_NE(activity1, activity2);
   EXPECT_EQ(1u, manager_->GetRoutes().size());
 
   // Verify that the pointer in app_activities_ has been updated to the new
   // activity.
-  EXPECT_EQ(activity2, manager_->app_activities_[route.media_route_id()]);
+  EXPECT_EQ(activity2,
+            manager_->app_activities_for_testing().at(route.media_route_id()));
 }
 
 // Regression test for crbug.com/500091052.
@@ -1016,20 +1031,46 @@ TEST_F(CastActivityManagerTest, AddMirroringActivityCollision) {
   route.set_controller_type(RouteControllerType::kMirroring);
 
   // First call to AddMirroringActivity should succeed.
-  CastActivity* activity1 = manager_->AddMirroringActivity(
+  CastActivity* activity1 = AddMirroringActivity(
       route, cast_streaming_app_id_, kFrameTreeNodeId, sink_.cast_data());
   ASSERT_TRUE(activity1);
-  EXPECT_EQ(1u, manager_->activities_.size());
+  EXPECT_EQ(1u, manager_->activities_for_testing().size());
 
   // Second call with same route_id should overwrite the existing activity.
-  CastActivity* activity2 = manager_->AddMirroringActivity(
+  CastActivity* activity2 = AddMirroringActivity(
       route, cast_streaming_app_id_, kFrameTreeNodeId, sink_.cast_data());
   ASSERT_TRUE(activity2);
   EXPECT_NE(activity1, activity2);
-  EXPECT_EQ(1u, manager_->activities_.size());
+  EXPECT_EQ(1u, manager_->activities_for_testing().size());
 
   // Verify that activities_ map has been updated to the new activity.
-  EXPECT_EQ(activity2, manager_->activities_[route.media_route_id()].get());
+  EXPECT_EQ(
+      activity2,
+      manager_->activities_for_testing().at(route.media_route_id()).get());
+}
+
+TEST_F(CastActivityManagerTest, AddMirroringActivityOverwritesAppActivity) {
+  MediaSource source = MediaSource::ForTab(123);
+  MediaRoute route(kPresentationId, source, sink_.sink().id(), "description",
+                   true);
+  route.set_controller_type(RouteControllerType::kGeneric);
+
+  AppActivity* activity1 = AddAppActivity(route, kAppId1);
+  ASSERT_TRUE(activity1);
+  EXPECT_EQ(1u, manager_->activities_for_testing().size());
+  EXPECT_EQ(activity1,
+            manager_->app_activities_for_testing().at(route.media_route_id()));
+
+  // Adding a mirroring activity with the same route ID should overwrite the app
+  // activity and remove it from app_activities_.
+  CastActivity* activity2 = AddMirroringActivity(
+      route, cast_streaming_app_id_, kFrameTreeNodeId, sink_.cast_data());
+  ASSERT_TRUE(activity2);
+  EXPECT_NE(activity1, activity2);
+  EXPECT_EQ(1u, manager_->activities_for_testing().size());
+  EXPECT_TRUE(
+      manager_->app_activities_for_testing().find(route.media_route_id()) ==
+      manager_->app_activities_for_testing().end());
 }
 
 }  // namespace media_router

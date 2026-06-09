@@ -562,6 +562,7 @@ CastActivity* CastActivityManager::AddMirroringActivity(
   // Use insert_or_assign to avoid Use-After-Free on route ID collision.
   // See crbug.com/500091052.
   activities_.insert_or_assign(route.media_route_id(), std::move(activity));
+  app_activities_.erase(route.media_route_id());
   return activity_ptr;
 }
 
@@ -1182,12 +1183,6 @@ CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(
   if (app_params) {
     this->app_params = app_params->Clone();
   }
-}
-
-void CastActivityManager::AddMirroringActivityForTest(
-    const MediaRoute::Id& route_id,
-    std::unique_ptr<MirroringActivity> mirroring_activity) {
-  activities_.emplace(route_id, std::move(mirroring_activity));
 }
 
 void CastActivityManager::HandleMissingSinkOnJoin(
