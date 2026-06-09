@@ -46,8 +46,8 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBar;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link BottomBarContainerCoordinator}. */
@@ -66,7 +66,7 @@ public class BottomBarContainerCoordinatorUnitTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private ActionRegistry mActionRegistry;
     @Mock private Profile mProfile;
-    @Mock private UserEducationHelper mUserEducationHelper;
+    @Mock private ModalDialogManager mModalDialogManager;
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
@@ -79,6 +79,7 @@ public class BottomBarContainerCoordinatorUnitTest {
     private FrameLayout mBottomBarContainer;
     private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
+    private SettableNonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private BottomBarContainerCoordinator mCoordinator;
 
     @Before
@@ -93,18 +94,20 @@ public class BottomBarContainerCoordinatorUnitTest {
                             mBottomBarContainer = new FrameLayout(mActivity);
                             mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
                             mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
+                            mModalDialogManagerSupplier =
+                                    ObservableSuppliers.createNonNull(mModalDialogManager);
                             mProfileSupplier.set(mProfile);
                             mCoordinator =
                                     new BottomBarContainerCoordinator(
                                             mBottomBarContainer,
-                                            mUserEducationHelper,
                                             mRequestLayerUpdateCallback,
                                             mActionRegistry,
                                             mTabSupplier,
                                             mThemeColorProvider,
                                             mHomepageEnabledSupplier,
                                             mProfileSupplier,
-                                            mOmniboxFocusStateSupplier);
+                                            mOmniboxFocusStateSupplier,
+                                            mModalDialogManagerSupplier);
                         });
     }
 

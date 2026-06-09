@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -26,6 +27,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 public class BottomBarPromoDialogCoordinator
         implements ModalDialogProperties.Controller, Destroyable {
+
     /** Listener interface to notify dialog events. */
     public interface BottomBarPromoDialogListener {
         /** Called when the promo dialog is accepted by the user. */
@@ -44,15 +46,16 @@ public class BottomBarPromoDialogCoordinator
      * Constructs a {@link BottomBarPromoDialogCoordinator} instance.
      *
      * @param context The {@link Context} used to retrieve resources and inflate the layout.
-     * @param modalDialogManager The {@link ModalDialogManager} used to display the dialog.
+     * @param modalDialogManagerSupplier The supplier of {@link ModalDialogManager} used to display
+     *     the dialog.
      * @param profileSupplier The supplier of the active {@link Profile} used for feature tracking.
      */
     public BottomBarPromoDialogCoordinator(
             Context context,
-            ModalDialogManager modalDialogManager,
+            NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             NullableObservableSupplier<Profile> profileSupplier) {
         mContext = context;
-        mModalDialogManager = modalDialogManager;
+        mModalDialogManager = modalDialogManagerSupplier.get();
         mProfileSupplier = profileSupplier;
     }
 
@@ -62,6 +65,7 @@ public class BottomBarPromoDialogCoordinator
         if (mDialogModel != null) {
             mModalDialogManager.dismissDialog(
                     mDialogModel, DialogDismissalCause.ACTIVITY_DESTROYED);
+            mDialogModel = null;
         }
     }
 

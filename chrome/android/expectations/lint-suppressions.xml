@@ -148,10 +148,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.actor_notification_body_will_stop_task_long_running` appears to be unused"/>
     <ignore regexp="The resource `R.string.actor_notification_body_will_stop_task_no_response` appears to be unused"/>
     <!-- TODO(crbug.com/517591009): Remove temporarily suppress bottom bar strings. -->
-    <ignore regexp="The resource `R.string.iph_android_bottom_bar_dialog_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.iph_android_bottom_bar_dialog_description` appears to be unused"/>
-    <ignore regexp="The resource `R.string.iph_android_bottom_bar_trigger_iph` appears to be unused"/>
-    <ignore regexp="The resource `R.string.iph_android_bottom_bar_dialog_ack` appears to be unused"/>
     <ignore regexp="The resource `R.string.settings_show_gemini_in_bottom_bar_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.settings_show_gemini_in_bottom_bar_summary` appears to be unused"/>
     <!-- Strings used by Desktop Android extensions, which are not built in all configurations. -->

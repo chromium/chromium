@@ -2426,14 +2426,14 @@ public class ToolbarManager
         BottomBarContainerCoordinator bottomBarContainerCoordinator =
                 new BottomBarContainerCoordinator(
                         bottomAppBarContainer.findViewById(R.id.bottom_container_slot),
-                        mUserEducationHelper,
                         mBottomControlsStacker::requestLayerUpdate,
                         assumeNonNull(mActionRegistry),
                         mCurrentTabSupplier,
                         mAppThemeColorProvider,
                         mHomepageEnabledSupplier,
                         mProfileSupplier,
-                        mOmniboxFocusStateSupplier);
+                        mOmniboxFocusStateSupplier,
+                        mModalDialogManagerSupplier);
         bottomBarContainerOneshotSupplier.set(bottomBarContainerCoordinator);
 
         if (mBottomBarHostManager != null) {
@@ -2520,6 +2520,7 @@ public class ToolbarManager
         if (mActionRegistry != null) {
             PropertyModel newTabModel = mActionRegistry.get(ActionId.NEW_TAB).get();
             assert newTabModel != null : "NEW_TAB action should be registered";
+            newTabModel.set(ActionProperties.USER_EDUCATION_HELPER, mUserEducationHelper);
             newTabModel.set(
                     ActionProperties.ON_PRESS_CALLBACK,
                     v -> {

@@ -4,33 +4,29 @@
 
 package org.chromium.chrome.browser.ui.bottombar;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
 
-import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.ActionId;
-import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.HomeActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.glic.GlicActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.tabswitcher.TabSwitcherActionButtonBinder;
-import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarButtonManager.ActionConfig;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -46,53 +42,33 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
     private final BottomBarView mView;
     private final PropertyModelChangeProcessor<PropertyModel, BottomBarView, PropertyKey> mMcp;
     private final BottomBarButtonManager mButtonManager;
-    private final NullableObservableSupplier<PropertyModel> mGlicSupplier;
-    private final NullableObservableSupplier<PropertyModel> mNewTabSupplier;
-    private final Callback<@Nullable PropertyModel> mGlicModelObserver;
-    private final Callback<@Nullable PropertyModel> mNewTabModelObserver;
-    private final IphIntent mGlicIph;
-    private final IphIntent mNewTabIph;
+    private final BottomBarPromoDialogCoordinator mPromoDialogCoordinator;
 
     /**
      * @param parent The parent view to inflate the bottom bar into.
+     * @param actionRegistry The {@link ActionRegistry}.
      * @param themeColorProvider The provider to observe theme changes from.
      * @param tabSupplier Supplier of the current tab.
+     * @param homepageEnabledSupplier Supplier of whether the homepage is enabled.
      * @param visibilityDelegate Delegate to handle compositor-level visibility changes.
+     * @param profileSupplier Supplier of the current profile.
+     * @param omniboxFocusStateSupplier Supplier of the omnibox focus state.
+     * @param modalDialogManagerSupplier Supplier of the {@link ModalDialogManager}.
      */
     public BottomBarCoordinator(
             ViewGroup parent,
-            UserEducationHelper userEducationHelper,
             ActionRegistry actionRegistry,
             ThemeColorProvider themeColorProvider,
             NullableObservableSupplier<Tab> tabSupplier,
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             BottomBarMediator.VisibilityDelegate visibilityDelegate,
             NullableObservableSupplier<Profile> profileSupplier,
-            NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier) {
-        mGlicSupplier = actionRegistry.get(ActionId.GLIC);
-        mNewTabSupplier = actionRegistry.get(ActionId.NEW_TAB);
-
-        mNewTabIph =
-                new IphIntent.Builder(FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB)
-                        .setStringResId(R.string.iph_android_bottom_bar_new_tab)
-                        .setAccessibilityResId(R.string.iph_android_bottom_bar_new_tab)
-                        .build();
-
-        mGlicIph =
-                new IphIntent.Builder(FeatureConstants.ANDROID_BOTTOM_BAR_GLIC)
-                        .setStringResId(R.string.iph_android_bottom_bar_glic)
-                        .setAccessibilityResId(R.string.iph_android_bottom_bar_glic)
-                        .build();
-
-        mGlicModelObserver = model -> onGlicModelChanged(model, userEducationHelper);
-        mGlicSupplier.addSyncObserverAndCallIfNonNull(mGlicModelObserver);
-
-        mNewTabModelObserver = model -> onNewTabModelChanged(model, userEducationHelper);
-        mNewTabSupplier.addSyncObserverAndCallIfNonNull(mNewTabModelObserver);
-
+            NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
+            NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+        Context context = parent.getContext();
         mView =
                 (BottomBarView)
-                        LayoutInflater.from(parent.getContext())
+                        LayoutInflater.from(context)
                                 .inflate(R.layout.bottom_bar_layout, parent, false);
 
         boolean shouldIncludeHomeButton = BottomBarConfigUtils.shouldIncludeHomeButtonIfEnabled();
@@ -102,6 +78,10 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
 
         mButtonManager =
                 new BottomBarButtonManager(configs, actionRegistry, mModel, ActionId.NEW_TAB);
+
+        mPromoDialogCoordinator =
+                new BottomBarPromoDialogCoordinator(
+                        context, modalDialogManagerSupplier, profileSupplier);
 
         mMediator =
                 new BottomBarMediator(
@@ -113,7 +93,10 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
                         visibilityDelegate,
                         shouldIncludeHomeButton,
                         profileSupplier,
-                        omniboxFocusStateSupplier);
+                        omniboxFocusStateSupplier,
+                        mPromoDialogCoordinator,
+                        actionRegistry);
+        mPromoDialogCoordinator.setListener(mMediator);
 
         mMcp = PropertyModelChangeProcessor.create(mModel, mView, BottomBarViewBinder::bind);
     }
@@ -179,22 +162,6 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
         return configs;
     }
 
-    private void onGlicModelChanged(
-            @Nullable PropertyModel model, UserEducationHelper userEducationHelper) {
-        if (model != null) {
-            model.set(ActionProperties.USER_EDUCATION_HELPER, userEducationHelper);
-            model.set(ActionProperties.IPH_INTENT, mGlicIph);
-        }
-    }
-
-    private void onNewTabModelChanged(
-            @Nullable PropertyModel model, UserEducationHelper userEducationHelper) {
-        if (model != null) {
-            model.set(ActionProperties.USER_EDUCATION_HELPER, userEducationHelper);
-            model.set(ActionProperties.IPH_INTENT, mNewTabIph);
-        }
-    }
-
     @Override
     public View getView() {
         return mView;
@@ -214,7 +181,6 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
         mMediator.destroy();
         mMcp.destroy();
         mButtonManager.destroy();
-        mGlicSupplier.removeObserver(mGlicModelObserver);
-        mNewTabSupplier.removeObserver(mNewTabModelObserver);
+        mPromoDialogCoordinator.destroy();
     }
 }
