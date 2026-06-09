@@ -407,7 +407,7 @@ found in the LICENSE file.
     <dimen name="autofill_bottom_sheet_credit_card_width">40dp</dimen>
     <dimen name="autofill_bottom_sheet_loading_view_bottom_margin">64dp</dimen>
     <dimen name="autofill_bottom_sheet_logo_height">32dp</dimen>
-    <dimen name="autofill_bottom_sheet_google_pay_pill_width">60dp</dimen>
+    <dimen name="autofill_bottom_sheet_google_pay_pill_width">36dp</dimen>
 
     <!-- Autofill "save card" anchored dialog dimensions. -->
     <dimen name="anchored_dialog_elevation">3dp</dimen>

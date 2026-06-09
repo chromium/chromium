@@ -127,7 +127,10 @@ static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
   ui_info.loading_description = loading_description;
   ui_info.is_chrome_branding_enabled = is_chrome_branding_enabled;
   ui_info.is_for_bottom_sheet = is_for_bottom_sheet;
-  ui_info.google_pay_pill_logo_id = IDR_AUTOFILL_GOOGLE_PAY_PILL;
+  ui_info.google_pay_pill_logo_id =
+      base::FeatureList::IsEnabled(features::kAutofillEnableGradientGoogleLogos)
+          ? IDR_AUTOFILL_GOOGLE_PAY_PILL_WITH_GRADIENT
+          : IDR_AUTOFILL_GOOGLE_PAY_PILL;
   return ui_info;
 }
 

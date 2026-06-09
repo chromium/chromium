@@ -274,7 +274,10 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
           views::Builder<views::ImageView>()
               .SetImage(ui::ImageModel::FromImage(
                   ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-                      IDR_AUTOFILL_GOOGLE_PAY_PILL)))
+                      base::FeatureList::IsEnabled(
+                          features::kAutofillEnableGradientGoogleLogos)
+                          ? IDR_AUTOFILL_GOOGLE_PAY_PILL_WITH_GRADIENT
+                          : IDR_AUTOFILL_GOOGLE_PAY_PILL)))
               .SetProperty(views::kFlexBehaviorKey,
                            views::FlexSpecification(
                                views::LayoutOrientation::kHorizontal,

@@ -91,6 +91,7 @@ android_resources("minimal_java_resources") {
     "//components/payments/content/android/minimal_java_res/drawable/credit_card.xml",
     "//components/payments/content/android/minimal_java_res/drawable/google_pay.xml",
     "//components/payments/content/android/minimal_java_res/drawable/googlepay_pill.xml",
+    "//components/payments/content/android/minimal_java_res/drawable/googlepay_pill_with_gradient.xml",
     "//components/payments/content/android/minimal_java_res/drawable/googlewallet.xml",
     "//components/payments/content/android/minimal_java_res/drawable/payments_icon.xml",
     "//components/payments/content/android/minimal_java_res/drawable/payments_item_background.xml",

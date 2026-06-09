@@ -24,8 +24,11 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
 import org.chromium.components.autofill.payments.CardDetail;
 import org.chromium.components.autofill.payments.LegalMessageLine;
@@ -113,7 +116,51 @@ public class AutofillSaveCardBottomSheetRenderTest {
 
     @Test
     @Feature({"RenderTest"})
+    @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS})
     public void testUploadSave() throws Exception {
+        setUpSaveCardBottomSheetContent(
+                new AutofillSaveCardUiInfo.Builder()
+                        .withIsForUpload(true)
+                        .withLogoIcon(R.drawable.google_pay)
+                        .withLogoIconDescription("Google Pay logo")
+                        .withCardDetail(
+                                new CardDetail(R.drawable.visa_card, "Card label", "Card sublabel"))
+                        .withLegalMessageLines(
+                                Arrays.asList(
+                                        new LegalMessageLine(
+                                                "Legal message line #1",
+                                                Arrays.asList(
+                                                        new Link(
+                                                                /* start= */ 0,
+                                                                /* end= */ 5,
+                                                                /* url= */ "https://example.com"))),
+                                        new LegalMessageLine("Legal message line #2")))
+                        .withTitleText("Title text")
+                        .withConfirmText("Confirm text")
+                        .withCancelText("Cancel text")
+                        .withDescriptionText("Description text.")
+                        .withIsChromeBrandingEnabled(true)
+                        .withCardDescription("")
+                        .withLoadingDescription("")
+                        .withGooglePayPillLogo(R.drawable.googlepay_pill_with_gradient)
+                        .build());
+        runOnUiThreadBlocking(
+                () -> {
+                    mBottomSheetController.requestShowContent(
+                            mSaveCardBottomSheetContent, /* animate= */ false);
+                });
+        ViewGroup activityContentView =
+                sActivityTestRule.getActivity().findViewById(android.R.id.content);
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // Render the activity to show the content sheet and its contents.
+        mRenderTestRule.render(activityContentView, "save_card_bottom_sheet_content_upload");
+    }
+
+    @Test
+    @Feature({"RenderTest"})
+    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS})
+    public void testUploadSave_WithGradientGoogleLogosDisabled() throws Exception {
         setUpSaveCardBottomSheetContent(
                 new AutofillSaveCardUiInfo.Builder()
                         .withIsForUpload(true)
