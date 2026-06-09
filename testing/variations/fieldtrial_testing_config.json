@@ -10322,6 +10322,26 @@
             ]
         }
     ],
+    "EnableSpellcheckRegionalSignal": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableSpellcheckRegionalSignal"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableTLS13EarlyData": [
         {
             "platforms": [
