@@ -112,6 +112,12 @@ public class PermissionStatusHandler implements PermissionDialogController.Obser
      */
     void destroy() {
         mPermissionDialogController.removeObserver(this);
+        // Drop any pending Runnables (e.g. mFinishIconAnimationRunnable posted with a long
+        // delay) so they don't keep this handler — and the Activity it references via
+        // mContext — alive in the main MessageQueue after destroy.
+        mHandler.removeCallbacksAndMessages(null);
+        mFinishIconAnimationRunnable = null;
+        mShowClapperQuietIconRunnable = null;
     }
 
     @Override
