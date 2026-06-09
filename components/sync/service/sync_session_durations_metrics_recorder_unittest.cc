@@ -130,11 +130,15 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
 };
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest, WebSignedOut) {
+  identity_test_env_.SetCookieAccounts({});
+
   base::HistogramTester ht;
   StartAndEndSession(kSessionTime);
 
   ExpectOneSessionWithDuration(ht, {"WithoutAccount"}, kSessionTime);
   ExpectNoSession(ht, {"WithAccount"});
+  ht.ExpectTimeBucketCount(
+      "Signin.SessionWithCookieSigninStatusUnknown.Duration", kSessionTime, 0);
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest, WebSignedIn) {
@@ -146,6 +150,8 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, WebSignedIn) {
 
   ExpectOneSessionWithDuration(ht, {"WithAccount"}, kSessionTime);
   ExpectNoSession(ht, {"WithoutAccount"});
+  ht.ExpectTotalCount("Signin.SessionWithCookieSigninStatusUnknown.Duration",
+                      0);
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
@@ -163,6 +169,8 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
 
   ExpectOneSessionWithDuration(ht, {"WithAccount"}, kSessionTime);
   ExpectNoSession(ht, {"WithoutAccount"});
+  ht.ExpectTimeBucketCount(
+      "Signin.SessionWithCookieSigninStatusUnknown.Duration", kSessionTime, 1);
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
@@ -180,6 +188,8 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
 
   ExpectOneSessionWithDuration(ht, {"WithoutAccount"}, kSessionTime);
   ExpectNoSession(ht, {"WithAccount"});
+  ht.ExpectTimeBucketCount(
+      "Signin.SessionWithCookieSigninStatusUnknown.Duration", kSessionTime, 1);
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest, NotOptedInToSync_SignedOut) {

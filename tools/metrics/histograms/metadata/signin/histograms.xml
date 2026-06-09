@@ -3227,6 +3227,27 @@ accounts .-->
   </summary>
 </histogram>
 
+<histogram name="Signin.SessionWithCookieSigninStatusUnknown.Duration"
+    units="ms" expires_after="2026-09-05">
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram is recorded when the session is ending and only if the web
+    sign-in status is unknown. It records the duration of the session that was
+    spent in an &quot;Unknown&quot; state. This histogram is used to validate
+    that long sessions with &quot;Unknown&quot; cookie sign-in status are short.
+
+    An &quot;Unknown&quot; sign-in state indicates that the list of accounts in
+    cookie jar haven't been refreshed for the current session yet. During this
+    time, Chrome only has access to a cached, potentially stale list of accounts
+    from disk.
+
+    This time is measured in milliseconds and the session duration (session
+    start and session end points, including the exclusion of idle time) follows
+    the same definition as the one used for the Session.TotalDuration histogram.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SetCookieSuccess" enum="BooleanSuccess"
     expires_after="never">
 <!-- expires-never: For monitoring setting cookies in the cookie jar after an

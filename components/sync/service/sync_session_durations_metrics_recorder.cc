@@ -262,6 +262,8 @@ void SyncSessionDurationsMetricsRecorder::LogSigninDuration(
     base::TimeDelta session_length) {
   FeatureState cookie_status_to_log = cookie_signin_status_;
   if (cookie_status_to_log == FeatureState::UNKNOWN) {
+    base::UmaHistogramLongTimes(
+        "Signin.SessionWithCookieSigninStatusUnknown.Duration", session_length);
     if (base::FeatureList::IsEnabled(
             kSyncFixWebSigninSessionDurationForShortLivedSessions)) {
       // Compute the cookie signin status even if the accounts in the cookie jar
