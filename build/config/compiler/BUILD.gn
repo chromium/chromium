@@ -576,11 +576,13 @@ config("compiler") {
   if (is_clang) {
     # Flags for diagnostics.
     cflags += [ "-fcolor-diagnostics" ]
-    if (!is_win) {
-      cflags += [ "-fdiagnostics-show-inlining-chain" ]
-    } else {
-      # Combine after https://github.com/llvm/llvm-project/pull/192241
-      cflags += [ "/clang:-fdiagnostics-show-inlining-chain" ]
+    if (!is_wasm) {
+      if (!is_win) {
+        cflags += [ "-fdiagnostics-show-inlining-chain" ]
+      } else {
+        # Combine after https://github.com/llvm/llvm-project/pull/192241
+        cflags += [ "/clang:-fdiagnostics-show-inlining-chain" ]
+      }
     }
     if (diagnostics_print_source_range_info && !is_win) {
       cflags += [ "-fdiagnostics-print-source-range-info" ]
@@ -1576,7 +1578,7 @@ config("clang_warning_suppression") {
 # See also: https://crbug.com/40891132#comment10
 ubsan_hardening("c_array_bounds") {
   sanitizer = "array-bounds"
-  condition = !(is_asan && target_cpu == "x86")
+  condition = !(is_asan && target_cpu == "x86") && !is_wasm
 
   # Because we've enabled array-bounds sanitizing we also want to suppress
   # the related warning about "unsafe-buffer-usage-in-static-sized-array",
@@ -1590,6 +1592,7 @@ ubsan_hardening("c_array_bounds") {
 # `NOTREACHED()` at the end of such functions.
 ubsan_hardening("return") {
   sanitizer = "return"
+  condition = !is_wasm
 }
 
 config("rustc_revision") {
@@ -1921,13 +1924,17 @@ config("default_warnings") {
 
       # TODO(crbug.com/376641662): Fix and re-enable.
       "-Wno-nontrivial-memcall",
-
-      # TODO(crbug.com/432275627): Fix and re-enable.
-      "-Wno-uninitialized-const-pointer",
-
-      # TODO(crbug.com/495753203): Fix and re-enable.
-      "-Wno-unused-but-set-global",
     ]
+
+    if (!is_wasm) {
+      cflags += [
+        # TODO(crbug.com/432275627): Fix and re-enable.
+        "-Wno-uninitialized-const-pointer",
+
+        # TODO(crbug.com/495753203): Fix and re-enable.
+        "-Wno-unused-but-set-global",
+      ]
+    }
 
     cflags_cc += [
       # TODO(crbug.com/328490295): Fix and re-enable for C flags.
