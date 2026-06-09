@@ -143,7 +143,9 @@ bool AiModePageActionController::ShouldShowPageAction(
   // If the feature is enabled to hide the AIM entrypoint for URL suggestions,
   // don't show the AIM entrypoint if the default match is a URL suggestion.
   if (base::FeatureList::IsEnabled(
-          omnibox::kHideAimEntrypointForUrlSuggestions)) {
+          omnibox::kHideAimEntrypointForUrlSuggestions) ||
+      base::FeatureList::IsEnabled(
+          omnibox::kWebUIOmniboxDynamicAiModeButton)) {
     const AutocompleteResult& result =
         omnibox_controller->autocomplete_controller()->result();
     if (result.default_match() &&
