@@ -50,54 +50,6 @@ page_actions::PageActionController* GetPageActionController(
   return tab_interface->GetTabFeatures()->page_action_controller();
 }
 
-void SetPageActionVisibility(
-    page_actions::PageActionController& page_action_controller,
-    OmniboxClient* client,
-    base::OnceCallback<void(const gfx::Image&)> on_favicon_fetched,
-    bool visible) {
-  if (!visible) {
-    page_action_controller.HideSuggestionChip(kActionAiMode);
-    page_action_controller.Hide(kActionAiMode);
-    return;
-  }
-
-  const auto& config = ai_mode_button_config::GetCurrentAiModeButtonConfig();
-  if (config.id == SearchEngineType::SEARCH_ENGINE_GOOGLE) {
-    page_action_controller.OverrideImage(
-        kActionAiMode,
-        ui::ImageModel::FromImageGenerator(
-            base::BindRepeating([](const ui::ColorProvider* color_provider) {
-              return gfx::CreateVectorIcon(
-                  features::IsRoundedIconsEnabled()
-                      ? omnibox::kSearchSparkIcon
-                      : omnibox::kSearchSparkOldIcon,
-                  GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
-                  color_provider->GetColor(kColorOmniboxIconForegroundTonal));
-            }),
-            gfx::Size(
-                GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
-                GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize))));
-
-  } else {
-    GURL favicon_url(config.favicon_url);
-    gfx::Image image = client->GetFaviconForIconUrl(
-        favicon_url, std::move(on_favicon_fetched));
-    if (image.IsEmpty()) {
-      // `image` will be empty if not cached. Hide this page action until it's
-      // returned async.
-      page_action_controller.HideSuggestionChip(kActionAiMode);
-      page_action_controller.Hide(kActionAiMode);
-      return;
-    }
-    page_action_controller.OverrideImage(kActionAiMode,
-                                         ui::ImageModel::FromImage(image));
-  }
-
-  page_action_controller.Show(kActionAiMode);
-  page_action_controller.ShowSuggestionChip(kActionAiMode,
-                                            {.should_animate = false});
-}
-
 }  // namespace
 
 namespace omnibox {
@@ -139,12 +91,7 @@ void AiModePageActionController::UpdatePageAction() {
     NotifyOmniboxTriggeredFeatureService(
         *location_bar_view_->GetOmniboxController());
   }
-  SetPageActionVisibility(
-      *page_action_controller,
-      location_bar_view_->GetOmniboxController()->client(),
-      base::BindOnce(&AiModePageActionController::OnFaviconFetched,
-                     weak_factory_.GetWeakPtr()),
-      is_visible);
+  SetPageActionVisibility(is_visible);
 }
 
 // static
@@ -214,8 +161,7 @@ bool AiModePageActionController::ShouldShowPageAction(
   // don't show the AIM entrypoint if the default match is a URL suggestion.
   if (base::FeatureList::IsEnabled(
           omnibox::kHideAimEntrypointForUrlSuggestions) ||
-      base::FeatureList::IsEnabled(
-          omnibox::kWebUIOmniboxDynamicAiModeButton)) {
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxDynamicAiModeButton)) {
     const AutocompleteResult& result =
         omnibox_controller->autocomplete_controller()->result();
     if (result.default_match() &&
@@ -256,6 +202,58 @@ bool AiModePageActionController::ShouldShowPageAction(
   }
 
   return has_focus;
+}
+
+void AiModePageActionController::SetPageActionVisibility(bool is_visible) {
+  page_actions::PageActionController* page_action_controller =
+      GetPageActionController(*bwi_);
+  CHECK(page_action_controller);
+
+  if (!is_visible) {
+    page_action_controller->HideSuggestionChip(kActionAiMode);
+    page_action_controller->Hide(kActionAiMode);
+    return;
+  }
+
+  const auto& config = ai_mode_button_config::GetCurrentAiModeButtonConfig();
+  if (config.id == SearchEngineType::SEARCH_ENGINE_GOOGLE) {
+    page_action_controller->OverrideImage(
+        kActionAiMode,
+        ui::ImageModel::FromImageGenerator(
+            base::BindRepeating([](const ui::ColorProvider* color_provider) {
+              return gfx::CreateVectorIcon(
+                  features::IsRoundedIconsEnabled()
+                      ? omnibox::kSearchSparkIcon
+                      : omnibox::kSearchSparkOldIcon,
+                  GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
+                  color_provider->GetColor(kColorOmniboxIconForegroundTonal));
+            }),
+            gfx::Size(
+                GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
+                GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize))));
+
+  } else {
+    GURL favicon_url(config.favicon_url);
+    OmniboxClient* client =
+        location_bar_view_->GetOmniboxController()->client();
+    gfx::Image image = client->GetFaviconForIconUrl(
+        favicon_url,
+        base::BindOnce(&AiModePageActionController::OnFaviconFetched,
+                       weak_factory_.GetWeakPtr()));
+    if (image.IsEmpty()) {
+      // `image` will be empty if not cached. Hide this page action until it's
+      // returned async.
+      page_action_controller->HideSuggestionChip(kActionAiMode);
+      page_action_controller->Hide(kActionAiMode);
+      return;
+    }
+    page_action_controller->OverrideImage(kActionAiMode,
+                                          ui::ImageModel::FromImage(image));
+  }
+
+  page_action_controller->Show(kActionAiMode);
+  page_action_controller->ShowSuggestionChip(kActionAiMode,
+                                             {.should_animate = false});
 }
 
 void AiModePageActionController::OnFaviconFetched(const gfx::Image& favicon) {

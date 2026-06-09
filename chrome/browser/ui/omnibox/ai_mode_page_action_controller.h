@@ -60,6 +60,9 @@ class AiModePageActionController : public OmniboxEditModel::Observer {
                                    LocationBarView& location_bar_view);
 
  private:
+  // Helper for `UpdatePageAction()`.
+  void SetPageActionVisibility(bool is_visible);
+
   // Callback used in `UpdatePageAction()` to asynchronously fetch the favicon.
   void OnFaviconFetched(const gfx::Image& favicon);
 
