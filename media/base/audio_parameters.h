@@ -224,21 +224,23 @@ class MEDIA_EXPORT AudioParameters {
   };
 
   struct HardwareCapabilities {
-    HardwareCapabilities(int min_frames_per_buffer,
-                         int max_frames_per_buffer,
-                         int default_frames_per_buffer,
-                         bool require_offload)
+    constexpr HardwareCapabilities(int min_frames_per_buffer,
+                                   int max_frames_per_buffer,
+                                   int default_frames_per_buffer,
+                                   bool require_offload)
         : min_frames_per_buffer(min_frames_per_buffer),
           max_frames_per_buffer(max_frames_per_buffer),
           default_frames_per_buffer(default_frames_per_buffer),
           require_audio_offload(require_offload) {}
-    HardwareCapabilities(int min_frames_per_buffer, int max_frames_per_buffer)
+    constexpr HardwareCapabilities(int min_frames_per_buffer,
+                                   int max_frames_per_buffer)
         : min_frames_per_buffer(min_frames_per_buffer),
           max_frames_per_buffer(max_frames_per_buffer) {}
-    HardwareCapabilities(int bitstream_formats, bool require_encapsulation)
+    constexpr HardwareCapabilities(int bitstream_formats,
+                                   bool require_encapsulation)
         : bitstream_formats(bitstream_formats),
           require_encapsulation(require_encapsulation) {}
-    HardwareCapabilities() = default;
+    constexpr HardwareCapabilities() = default;
 
     // Minimum and maximum buffer sizes supported by the audio hardware. Opening
     // a device with frames_per_buffer set to a value between min and max should
