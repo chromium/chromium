@@ -195,11 +195,12 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
 }
 
 bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
+  BrowserWindowInterface* const bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+
   // Please keep the entries in alphabetized order base on the type.
   switch (type) {
     case InfoBarType::kAlternateNav: {
-      BrowserWindowInterface* const bwi =
-          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
       if (!bwi || !bwi->GetActiveTabInterface()) {
         return false;
       }
@@ -215,8 +216,6 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
       return true;
     }
     case InfoBarType::kCollectedCookies: {
-      BrowserWindowInterface* const bwi =
-          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
       if (!bwi || !bwi->GetActiveTabInterface()) {
         return false;
       }
@@ -234,9 +233,7 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
     }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     case InfoBarType::kDefaultBrowser: {
-      BrowserWindowInterface* const bwi =
-          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-      Profile* profile = bwi->GetProfile();
+      Profile* profile = bwi ? bwi->GetProfile() : nullptr;
 
       if (!profile) {
         return false;
@@ -247,9 +244,7 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
       return true;
     }
     case InfoBarType::kSessionRestore: {
-      BrowserWindowInterface* const bwi =
-          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-      Profile* profile = bwi->GetProfile();
+      Profile* profile = bwi ? bwi->GetProfile() : nullptr;
 
       if (!profile) {
         return false;
@@ -262,8 +257,6 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
     }
 #endif
     case InfoBarType::kDevTools: {
-      BrowserWindowInterface* const bwi =
-          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
       if (!bwi || !bwi->GetActiveTabInterface()) {
         return false;
       }
@@ -282,9 +275,7 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
     }
     case InfoBarType::kExtensionDevTools: {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      BrowserWindowInterface* const bwi =
-          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-      Profile* profile = bwi->GetProfile();
+      Profile* profile = bwi ? bwi->GetProfile() : nullptr;
       if (!profile) {
         return false;
       }
@@ -313,9 +304,7 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
     }
     case InfoBarType::kIncognitoConnectability: {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      BrowserWindowInterface* const bwi =
-          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-      Profile* profile = bwi->GetProfile();
+      Profile* profile = bwi ? bwi->GetProfile() : nullptr;
       if (!profile || !bwi->GetActiveTabInterface()) {
         return false;
       }
@@ -389,8 +378,6 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
 #endif
 #if BUILDFLAG(ENABLE_PLUGINS)
     case InfoBarType::kReloadPlugin: {
-      BrowserWindowInterface* const bwi =
-          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
       if (!bwi || !bwi->GetActiveTabInterface()) {
         return false;
       }
@@ -408,9 +395,7 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
 #if BUILDFLAG(IS_MAC)
     case InfoBarType::kKeystone: {
 #if BUILDFLAG(ENABLE_UPDATER)
-      BrowserWindowInterface* const bwi =
-          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-      Profile* profile = bwi->GetProfile();
+      Profile* profile = bwi ? bwi->GetProfile() : nullptr;
 
       if (!profile) {
         return false;
@@ -444,9 +429,7 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     case InfoBarType::kThemeInstalled: {
-      BrowserWindowInterface* const bwi =
-          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-      Profile* profile = bwi->GetProfile();
+      Profile* profile = bwi ? bwi->GetProfile() : nullptr;
       if (!profile) {
         return false;
       }
