@@ -851,6 +851,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     @Override
     public void onDestroy() {
         mMediator.destroy();
+        mModelList.clear();
         destroyEmptyView();
         if (mTabListEmptyCoordinator != null) {
             mTabListEmptyCoordinator.removeListObserver();

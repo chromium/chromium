@@ -315,7 +315,8 @@ public class TabListModel extends ModelList {
     }
 
     private void destroyTabGroupColorViewProviderIfNotNull(PropertyModel model) {
-        if (model.get(CARD_TYPE) == TAB) {
+        int cardType = model.get(CARD_TYPE);
+        if (cardType == TAB || cardType == TAB_GROUP) {
             @Nullable TabGroupColorViewProvider provider =
                     model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
             if (provider != null) provider.destroy();
