@@ -179,4 +179,28 @@ TEST_F(EmfPrintingTest, PageBreak) {
   }
 }
 
+TEST(EmfTest, RemainingMetafileSize) {
+  Emf emf;
+  EXPECT_TRUE(emf.Init());
+  EXPECT_TRUE(emf.context());
+  ::Rectangle(emf.context(), 10, 10, 190, 190);
+  EXPECT_TRUE(emf.FinishDocument());
+
+  uint32_t total_size = emf.GetDataSize();
+  EXPECT_GT(total_size, 0u);
+
+  RECT page_bounds = emf.GetPageBounds(1).ToRECT();
+  base::win::ScopedCreateDC hdc(CreateCompatibleDC(nullptr));
+  ASSERT_TRUE(hdc.is_valid());
+  Emf::Enumerator emf_enum(emf, hdc.Get(), &page_bounds);
+
+  uint32_t remaining_size = total_size;
+  for (const auto& record : emf_enum) {
+    remaining_size -= record.record()->nSize;
+  }
+
+  EXPECT_EQ(emf_enum.context_.remaining_metafile_size, remaining_size);
+  EXPECT_EQ(remaining_size, 0u);
+}
+
 }  // namespace printing

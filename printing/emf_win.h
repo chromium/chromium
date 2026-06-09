@@ -166,6 +166,7 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) Emf::Enumerator {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EmfPrintingTest, Enumerate);
+  FRIEND_TEST_ALL_PREFIXES(EmfTest, RemainingMetafileSize);
 
   // Processes one EMF record and saves it in the items_ array.
   static int CALLBACK EnhMetaFileProc(HDC hdc,
