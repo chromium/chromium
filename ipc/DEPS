@@ -7,19 +7,19 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "ipc_(test|perftest)_(base|util)\.(cc|h)": [
+  "ipc_(test|perftest)_(base|util)\\.(cc|h)": [
     "+mojo/core/embedder",
     "+mojo/core/test",
   ],
-  ".*(unit|perf)tests?\.cc": [
+  ".*(unit|perf)tests?\\.cc": [
     "+mojo/core/embedder",
     "+mojo/core/test",
   ],
-  "param_traits_protobuf_utils\.h": [
+  "param_traits_protobuf_utils\\.h": [
     # Support serializing RepeatedField / RepeatedPtrField:
     "+third_party/protobuf/src/google/protobuf/repeated_field.h",
   ],
-  "run_all_unittests\.cc": [
+  "run_all_unittests\\.cc": [
     "+third_party/ipcz/src/test",
     "+third_party/ipcz/src/test_buildflags.h",
   ],
