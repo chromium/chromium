@@ -19,6 +19,10 @@
 class PrefService;
 class OptimizationGuideKeyedService;
 
+namespace policy {
+class ManagementService;
+}
+
 namespace safe_browsing {
 
 // Client Side Detection Desktop implementation of IntelligentScanDelegate. This
@@ -30,7 +34,8 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
  public:
   ClientSideDetectionIntelligentScanDelegateDesktop(
       PrefService& pref,
-      OptimizationGuideKeyedService* opt_guide);
+      OptimizationGuideKeyedService* opt_guide,
+      policy::ManagementService* management_service);
   ~ClientSideDetectionIntelligentScanDelegateDesktop() override;
 
   ClientSideDetectionIntelligentScanDelegateDesktop(
@@ -104,6 +109,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
 
   const raw_ref<PrefService> pref_;
   const raw_ptr<OptimizationGuideKeyedService> opt_guide_;
+  const raw_ptr<policy::ManagementService> management_service_;
 
   // PrefChangeRegistrar used to track when the enhanced protection state
   // changes.
