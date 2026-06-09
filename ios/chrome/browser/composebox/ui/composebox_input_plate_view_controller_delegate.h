@@ -58,6 +58,10 @@ enum class FuseboxAttachmentButtonType;
 - (void)composeboxViewControllerDidTapFileButton:
     (ComposeboxInputPlateViewController*)composeboxViewController;
 
+/// Informs the delegate that a user did tap on the drive button.
+- (void)composeboxViewControllerDidTapDriveButton:
+    (ComposeboxInputPlateViewController*)composeboxViewController;
+
 /// Informs the delegate that a user did tap on the attach tabs button.
 - (void)composeboxViewControllerDidTapAttachTabsButton:
     (ComposeboxInputPlateViewController*)composeboxViewController;

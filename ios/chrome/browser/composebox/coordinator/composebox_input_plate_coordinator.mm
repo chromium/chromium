@@ -483,6 +483,17 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   [_pickerPresenter presentFilePicker];
 }
 
+- (void)composeboxViewControllerDidTapDriveButton:
+    (ComposeboxInputPlateViewController*)composeboxViewController {
+  // TODO(crbug.com/515377633): Record the Drive attachment metric.
+  if (![_mediator canAddMoreAttachments]) {
+    [self showMaxAttachmentSnackbarError];
+    return;
+  }
+
+  [_pickerPresenter presentDriveFilePicker];
+}
+
 - (void)composeboxViewControllerDidTapAttachTabsButton:
     (ComposeboxInputPlateViewController*)viewController {
   if (![_mediator canAddMoreAttachments]) {
