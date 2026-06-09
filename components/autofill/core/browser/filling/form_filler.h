@@ -260,7 +260,7 @@ class FormFiller {
   // initialized, indicating a possibility for a refill to happen eventually.
   bool MaybeInitializeRefillContext(
       mojom::ActionPersistence action_persistence,
-      const FormData& form,
+      const FormStructure& form,
       const AutofillField& autofill_trigger_field,
       const AugmentedFillingPayload& augmented_filling_payload,
       const base::flat_set<FieldGlobalId>& blocked_fields,

@@ -1054,7 +1054,7 @@ void FormFiller::FillOrPreviewForm(
   }
 
   const bool may_refill_in_future = MaybeInitializeRefillContext(
-      action_persistence, form, autofill_trigger_field,
+      action_persistence, form_structure, autofill_trigger_field,
       augmented_filling_payload, blocked_fields, fill_id, result_fields,
       filled_field_types, refill_options);
 
@@ -1358,7 +1358,7 @@ FormFiller::RefillContext* FormFiller::GetRefillContext(const FillId& fill_id) {
 
 bool FormFiller::MaybeInitializeRefillContext(
     mojom::ActionPersistence action_persistence,
-    const FormData& form,
+    const FormStructure& form,
     const AutofillField& autofill_trigger_field,
     const AugmentedFillingPayload& augmented_filling_payload,
     const base::flat_set<FieldGlobalId>& blocked_fields,
@@ -1372,8 +1372,8 @@ bool FormFiller::MaybeInitializeRefillContext(
     return false;
   }
 
-  FormData refill_form = form;
-  refill_form.set_fields(result_fields);
+  FormData refill_form = form.ToFormData();
+  refill_form.set_fields(std::move(result_fields));
 
   SetRefillContext(
       form.global_id(),
