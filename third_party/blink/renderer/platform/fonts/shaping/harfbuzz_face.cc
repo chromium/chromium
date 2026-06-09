@@ -271,9 +271,11 @@ static void HarfBuzzGetGlyphHorizontalAdvances(
     void* user_data) {
   HarfBuzzFontData* hb_font_data =
       reinterpret_cast<HarfBuzzFontData*>(font_data);
+  CHECK_EQ(glyph_stride % 4, 0u);
+  CHECK_EQ(advance_stride % 4, 0u);
   SkFontGetGlyphWidthForHarfBuzz(
       hb_font_data->EnsureStrikeRef(), hb_font_data->font_.isSubpixel(), count,
-      first_glyph, glyph_stride, first_advance, advance_stride);
+      first_glyph, glyph_stride / 4, first_advance, advance_stride / 4);
 }
 
 static hb_bool_t HarfBuzzGetGlyphVerticalOrigin(hb_font_t* hb_font,
