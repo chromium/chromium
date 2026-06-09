@@ -64,6 +64,8 @@ specific_include_rules = {
     "+chrome/browser/browser_process_platform_part.h",
     "+chrome/browser/global_features.h",
     "+chrome/browser/ui/settings_window_manager_chromeos.h",
+    "+chrome/browser/ui/ui_features.h",
+    "+chrome/grit/generated_resources.h",
     "+mojo/public",
     "+testing/gmock",
     "+testing/gtest",

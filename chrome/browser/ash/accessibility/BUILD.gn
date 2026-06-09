@@ -216,6 +216,7 @@ source_set("browser_tests") {
     "//chrome/browser/extensions/api/braille_display_private:controller",
     "//chrome/browser/speech",
     "//chrome/browser/speech:test_support",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/ash/input_method",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/shelf",
