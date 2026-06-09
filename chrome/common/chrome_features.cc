@@ -1284,11 +1284,6 @@ const base::FeatureParam<std::string> kIndigoComponentAttribute{
 
 BASE_FEATURE(kSystemNotifications, base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_MAC)
-// Enables the usage of Apple's new Notification API.
-BASE_FEATURE(kNewMacNotificationAPI, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC)
-
 // When kNoReferrers is enabled, most HTTP requests will provide empty
 // referrers instead of their ordinary behavior.
 BASE_FEATURE(kNoReferrers, base::FEATURE_DISABLED_BY_DEFAULT);

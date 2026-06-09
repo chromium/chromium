@@ -8159,13 +8159,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kNotificationOneTapUnsubscribeOnDesktop)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC)
-    {"enable-new-mac-notification-api",
-     flag_descriptions::kNewMacNotificationAPIName,
-     flag_descriptions::kNewMacNotificationAPIDescription, kOsMac,
-     FEATURE_VALUE_TYPE(features::kNewMacNotificationAPI)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"exo-gamepad-vibration", flag_descriptions::kExoGamepadVibrationName,
      flag_descriptions::kExoGamepadVibrationDescription, kOsCrOS,

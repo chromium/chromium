@@ -1956,11 +1956,6 @@ inline constexpr char
     kApplyClientsideModelPredictionsForPasswordTypesDescription[] =
         "Enable using clientside model predictions to fill password forms.";
 
-inline constexpr char kNewMacNotificationAPIName[] =
-    "Determines which notification API to use on macOS devices";
-inline constexpr char kNewMacNotificationAPIDescription[] =
-    "Enables the usage of Apple's new notification API";
-
 inline constexpr char kEnableFencedFramesDeveloperModeName[] =
     "Enable the `FencedFrameConfig` constructor.";
 inline constexpr char kEnableFencedFramesDeveloperModeDescription[] =

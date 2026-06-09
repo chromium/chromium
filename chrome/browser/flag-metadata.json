@@ -3843,11 +3843,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-new-mac-notification-api",
-    "owners": [ "knollr@chromium.org", "peter@chromium.org" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "enable-new-startup-flow",
     "owners": [ "fedegermi@google.com", "bling-fundamentals@google.com" ],
     "expiry_milestone": 160
