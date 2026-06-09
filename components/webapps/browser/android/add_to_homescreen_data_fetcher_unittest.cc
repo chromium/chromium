@@ -31,6 +31,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -670,6 +671,25 @@ TEST_F(AddToHomescreenDataFetcherTest,
   EXPECT_FALSE(fetcher->primary_icon().drawsNothing());
   EXPECT_EQ(fetcher->shortcut_info().best_primary_icon_url,
             GURL(kDefaultIconUrl));
+}
+
+TEST_F(AddToHomescreenDataFetcherTest, PendingNavigation) {
+  GURL committed_url("https://www.attacker.com/");
+  NavigateAndCommit(committed_url);
+
+  GURL pending_url("https://www.victim.com/");
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateBrowserInitiated(pending_url,
+                                                           web_contents());
+  navigation->Start();
+
+  EXPECT_EQ(web_contents()->GetVisibleURL(), pending_url);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), committed_url);
+
+  ObserverWaiter waiter;
+  std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
+
+  EXPECT_EQ(fetcher->shortcut_info().url, committed_url);
 }
 
 }  // namespace webapps

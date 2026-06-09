@@ -49,7 +49,7 @@ namespace {
 // screen shortcut.
 GURL GetShortcutUrl(content::WebContents* web_contents) {
   return dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
-      web_contents->GetVisibleURL());
+      web_contents->GetLastCommittedURL());
 }
 
 InstallableParams ParamsToFetchInstallableData() {
