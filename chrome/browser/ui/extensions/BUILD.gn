@@ -321,6 +321,29 @@ source_set("browser_tests") {
   sources = []
   deps = []
 
+  # Tests for Win, Mac, Linux, Chrome OS and desktop Android.
+  # TODO(crbug.com/469417243): This file is incorrectly depended on by
+  # non-desktop-Android. Refactor other BUILD.gn files so we can
+  # assert(enable_extensions_core) in this file and eliminate if()s.
+  if (enable_extensions_core) {
+    sources += [
+      "extension_action_view_model_browsertest.cc",
+      "extensions_menu_view_model_browsertest.cc",
+      "extensions_toolbar_view_model_browsertest.cc",
+    ]
+
+    deps += [
+      ":extensions",
+      "//base/test:test_support",
+      "//chrome/browser/extensions",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//extensions:test_support",
+      "//net:test_support",
+      "//testing/gtest",
+    ]
+  }
+
   if (!is_android) {
     sources += [
       "controlled_home_dialog_controller_browsertest.cc",
@@ -337,12 +360,9 @@ source_set("browser_tests") {
     public_deps = [ ":extension_enable_flow_delegate" ]
 
     deps += [
-      ":extensions",
-      "//base/test:test_support",
       "//chrome/app:command_ids",
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/apps/app_service:test_support",
-      "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/preloading/prerender",
       "//chrome/browser/profiles:profile",
@@ -361,7 +381,6 @@ source_set("browser_tests") {
       "//chrome/common:non_code_constants",
       "//chrome/common/extensions",
       "//chrome/common/extensions/api",
-      "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/proxy_config",
       "//components/search_engines",
@@ -371,8 +390,6 @@ source_set("browser_tests") {
       "//components/webapps/common",
       "//content/public/browser",
       "//content/public/common",
-      "//content/test:test_support",
-      "//extensions:test_support",
       "//extensions/browser",
       "//extensions/common",
       "//extensions/common:common_constants",
@@ -380,10 +397,8 @@ source_set("browser_tests") {
       "//extensions/common:mojom_shared",
       "//extensions/common:mojom_shared_cpp_sources",
       "//net",
-      "//net:test_support",
       "//pdf:buildflags",
       "//pdf:features",
-      "//testing/gtest",
       "//third_party/blink/public/common",
       "//third_party/blink/public/common:headers",
       "//ui/base",

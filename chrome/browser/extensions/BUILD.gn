@@ -2346,9 +2346,6 @@ source_set("browser_tests") {
 
     # TODO(crbug.com/469417243): Move to BUILD.gn files closer to sources.
     "//chrome/browser/task_manager/providers/web_contents/extension_tag_browsertest.cc",
-    "//chrome/browser/ui/extensions/extension_action_view_model_browsertest.cc",
-    "//chrome/browser/ui/extensions/extensions_menu_view_model_browsertest.cc",
-    "//chrome/browser/ui/extensions/extensions_toolbar_view_model_browsertest.cc",
     "//chrome/renderer/extensions/script_context_browsertest.cc",
   ]
 
