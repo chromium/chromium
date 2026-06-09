@@ -7,6 +7,7 @@
 #import "base/base64.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
+#import "components/search_engines/util.h"
 #import "ios/chrome/browser/cobrowse/model/assistant_aim_tab_helper.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -74,6 +75,11 @@ void AimCobrowseJavaScriptFeature::ScriptMessageReceived(
     return;
   }
   if (!message.is_main_frame()) {
+    return;
+  }
+  std::optional<GURL> request_url = message.request_url();
+  if (!request_url ||
+      (!IsAimURL(*request_url) && !IsAimZeroStateURL(*request_url))) {
     return;
   }
   if (!message.body() || !message.body()->is_dict()) {

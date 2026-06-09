@@ -150,7 +150,7 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageFromChildFrameIgnored) {
       std::make_unique<base::Value>(std::move(body)),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/false,
-      /*request_url=*/GURL("https://www.google.com"),
+      /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
       /*security_origin=*/url::Origin::Create(GURL("https://www.google.com")));
 
   // Directly deliver the script message using the fixture helper.
@@ -178,7 +178,7 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageNoTabHelperIgnored) {
       std::make_unique<base::Value>(std::move(body)),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
-      /*request_url=*/GURL("https://www.google.com"),
+      /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
       /*security_origin=*/url::Origin::Create(GURL("https://www.google.com")));
 
   // Directly deliver the script message using the fixture helper.
@@ -205,7 +205,7 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageNoBodyIgnored) {
       /*body=*/nullptr,
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
-      /*request_url=*/GURL("https://www.google.com"),
+      /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
       /*security_origin=*/url::Origin::Create(GURL("https://www.google.com")));
 
   DeliverScriptMessage(&web_state_, script_message);
@@ -233,7 +233,7 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageBodyNotDictIgnored) {
       std::make_unique<base::Value>(std::move(body)),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
-      /*request_url=*/GURL("https://www.google.com"),
+      /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
       /*security_origin=*/url::Origin::Create(GURL("https://www.google.com")));
 
   DeliverScriptMessage(&web_state_, script_message);
@@ -264,7 +264,7 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageMissingKeyIgnored) {
       std::make_unique<base::Value>(std::move(body)),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
-      /*request_url=*/GURL("https://www.google.com"),
+      /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
       /*security_origin=*/url::Origin::Create(GURL("https://www.google.com")));
 
   DeliverScriptMessage(&web_state_, script_message);
@@ -295,7 +295,7 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageInvalidBase64Ignored) {
       std::make_unique<base::Value>(std::move(body)),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
-      /*request_url=*/GURL("https://www.google.com"),
+      /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
       /*security_origin=*/url::Origin::Create(GURL("https://www.google.com")));
 
   DeliverScriptMessage(&web_state_, script_message);
@@ -328,7 +328,7 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageInvalidProtobufIgnored) {
       std::make_unique<base::Value>(std::move(body)),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
-      /*request_url=*/GURL("https://www.google.com"),
+      /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
       /*security_origin=*/url::Origin::Create(GURL("https://www.google.com")));
 
   DeliverScriptMessage(&web_state_, script_message);
@@ -370,11 +370,84 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessagePropagatedSuccessfully) {
       std::make_unique<base::Value>(std::move(body)),
       /*is_user_interacting=*/true,
       /*is_main_frame=*/true,
-      /*request_url=*/GURL("https://www.google.com"),
+      /*request_url=*/GURL("https://www.google.com/search?udm=50&q=test"),
       /*security_origin=*/url::Origin::Create(GURL("https://www.google.com")));
 
   DeliverScriptMessage(&web_state_, script_message);
 
   EXPECT_TRUE(callback_invoked);
   EXPECT_TRUE(handshake_received);
+}
+
+// Tests that script messages from invalid URLs (e.g. www.google.com without
+// udm=50) are ignored.
+TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageFromInvalidUrlIgnored) {
+  AssistantAimTabHelper::CreateForWebState(&web_state_);
+  AssistantAimTabHelper* tab_helper =
+      AssistantAimTabHelper::FromWebState(&web_state_);
+  ASSERT_NE(tab_helper, nullptr);
+
+  bool callback_invoked = false;
+  tab_helper->SetMessageCallback(base::BindRepeating(
+      [](bool* invoked, const lens::AimToClientMessage& msg) {
+        *invoked = true;
+      },
+      &callback_invoked));
+
+  lens::AimToClientMessage message;
+  message.mutable_handshake_response();
+  std::string serialized_message;
+  message.SerializeToString(&serialized_message);
+  std::string base64_message = base::Base64Encode(serialized_message);
+
+  base::DictValue dict;
+  dict.Set("message", base::Value(base64_message));
+  base::Value body(std::move(dict));
+
+  web::ScriptMessage script_message(
+      std::make_unique<base::Value>(std::move(body)),
+      /*is_user_interacting=*/true,
+      /*is_main_frame=*/true,
+      /*request_url=*/GURL("https://www.google.com"),
+      /*security_origin=*/url::Origin::Create(GURL("https://www.google.com")));
+
+  DeliverScriptMessage(&web_state_, script_message);
+
+  EXPECT_FALSE(callback_invoked);
+}
+
+// Tests that script messages from AMP URLs are ignored.
+TEST_F(AimCobrowseJavaScriptFeatureTest, ScriptMessageFromAmpUrlIgnored) {
+  AssistantAimTabHelper::CreateForWebState(&web_state_);
+  AssistantAimTabHelper* tab_helper =
+      AssistantAimTabHelper::FromWebState(&web_state_);
+  ASSERT_NE(tab_helper, nullptr);
+
+  bool callback_invoked = false;
+  tab_helper->SetMessageCallback(base::BindRepeating(
+      [](bool* invoked, const lens::AimToClientMessage& msg) {
+        *invoked = true;
+      },
+      &callback_invoked));
+
+  lens::AimToClientMessage message;
+  message.mutable_handshake_response();
+  std::string serialized_message;
+  message.SerializeToString(&serialized_message);
+  std::string base64_message = base::Base64Encode(serialized_message);
+
+  base::DictValue dict;
+  dict.Set("message", base::Value(base64_message));
+  base::Value body(std::move(dict));
+
+  web::ScriptMessage script_message(
+      std::make_unique<base::Value>(std::move(body)),
+      /*is_user_interacting=*/true,
+      /*is_main_frame=*/true,
+      /*request_url=*/GURL("https://amp.google.com/search?udm=50&q=test"),
+      /*security_origin=*/url::Origin::Create(GURL("https://amp.google.com")));
+
+  DeliverScriptMessage(&web_state_, script_message);
+
+  EXPECT_FALSE(callback_invoked);
 }
