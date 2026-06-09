@@ -67,6 +67,7 @@ suite('Pincher', function() {
 
   test('Zoom Out', function() {
     pincher.reset();
+    useFontScaling(1.5, false);
     const t = new Touch();
 
     // Make sure start event doesn't change state
@@ -85,7 +86,7 @@ suite('Pincher', function() {
     t.updateTouchPoint(0, 150, 150);
     t.updateTouchPoint(1, 250, 250);
     pincher.handleTouchMove(t.events());
-    chaiAssert.isBelow(pincher.status().clampedScale, 0.9);
+    chaiAssert.isBelow(pincher.status().clampedScale, 1.3);
 
     // Make sure end event doesn't change state
     oldState = pincher.status();
@@ -123,8 +124,9 @@ suite('Pincher', function() {
     chaiAssert.deepEqual(oldState, pincher.status());
   });
 
-  test('Zomm Out And Pan', function() {
+  test('Zoom Out And Pan', function() {
     pincher.reset();
+    useFontScaling(1.5, false);
     const t = new Touch();
     t.addTouchPoint(100, 100);
     pincher.handleTouchStart(t.events());
@@ -143,7 +145,7 @@ suite('Pincher', function() {
 
     chaiAssert.closeTo(pincher.status().shiftX, 10, 1e-5);
     chaiAssert.closeTo(pincher.status().shiftY, -5, 1e-5);
-    chaiAssert.isBelow(pincher.status().clampedScale, 0.9);
+    chaiAssert.isBelow(pincher.status().clampedScale, 1.3);
   });
 
   test('Reversible', function() {
@@ -176,6 +178,7 @@ suite('Pincher', function() {
 
   test('Multitouch Zoom Out', function() {
     pincher.reset();
+    useFontScaling(1.5, false);
     const t = new Touch();
 
     let oldState = pincher.status();
@@ -213,11 +216,12 @@ suite('Pincher', function() {
     pincher.handleTouchEnd(t.events());
     chaiAssert.deepEqual(oldState, pincher.status());
 
-    chaiAssert.isBelow(pincher.status().clampedScale, 0.9);
+    chaiAssert.isBelow(pincher.status().clampedScale, 1.3);
   });
 
   test('Zoom Out Then Multi', function() {
     pincher.reset();
+    useFontScaling(1.5, false);
     const t = new Touch();
 
     let oldState = pincher.status();
@@ -232,7 +236,7 @@ suite('Pincher', function() {
     t.updateTouchPoint(0, 150, 150);
     t.updateTouchPoint(1, 250, 250);
     pincher.handleTouchMove(t.events());
-    chaiAssert.isBelow(pincher.status().clampedScale, 0.9);
+    chaiAssert.isBelow(pincher.status().clampedScale, 1.3);
 
     // Make sure adding and removing more point doesn't change state
     oldState = pincher.status();
@@ -268,6 +272,7 @@ suite('Pincher', function() {
 
   test('Cancel', function() {
     pincher.reset();
+    useFontScaling(1.5, false);
     const t = new Touch();
 
     t.addTouchPoint(100, 100);
@@ -277,7 +282,7 @@ suite('Pincher', function() {
     t.updateTouchPoint(0, 150, 150);
     t.updateTouchPoint(1, 250, 250);
     pincher.handleTouchMove(t.events());
-    chaiAssert.isBelow(pincher.status().clampedScale, 0.9);
+    chaiAssert.isBelow(pincher.status().clampedScale, 1.3);
 
     const oldState = pincher.status();
     t.releaseTouchPoint(1);
@@ -292,7 +297,7 @@ suite('Pincher', function() {
     t.updateTouchPoint(0, 100, 100);
     t.updateTouchPoint(1, 300, 300);
     pincher.handleTouchMove(t.events());
-    chaiAssert.closeTo(pincher.status().clampedScale, 1, 1e-5);
+    chaiAssert.closeTo(pincher.status().clampedScale, 1.5, 1e-2);
   });
 
   test('Singularity', function() {
@@ -315,6 +320,7 @@ suite('Pincher', function() {
 
   test('Min Span', function() {
     pincher.reset();
+    useFontScaling(1.5, false);
     const t = new Touch();
 
     t.addTouchPoint(50, 50);
@@ -324,7 +330,7 @@ suite('Pincher', function() {
     t.updateTouchPoint(0, 100, 100);
     t.updateTouchPoint(1, 100, 100);
     pincher.handleTouchMove(t.events());
-    chaiAssert.isBelow(pincher.status().clampedScale, 0.9);
+    chaiAssert.isBelow(pincher.status().clampedScale, 1.3);
     chaiAssert.isAbove(pincher.status().clampedScale, 0);
     chaiAssert.isAbove(pincher.status().scale, 0);
 

@@ -24,12 +24,7 @@ namespace {
 
 class DistilledPageJsTest : public content::ContentBrowserTest {
  protected:
-  explicit DistilledPageJsTest()
-      : content::ContentBrowserTest(), distilled_page_(nullptr) {
-#if BUILDFLAG(IS_ANDROID)
-    feature_list_.InitAndDisableFeature(kReaderModeDistillInApp);
-#endif
-  }
+  explicit DistilledPageJsTest() : distilled_page_(nullptr) {}
   ~DistilledPageJsTest() override = default;
 
   void SetUpOnMainThread() override {

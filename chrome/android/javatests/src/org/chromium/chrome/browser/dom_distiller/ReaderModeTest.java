@@ -442,13 +442,6 @@ public class ReaderModeTest {
         String fontSizeMax = "\"32px\"";
         String fontSizeMin = "\"8px\"";
 
-        // CCT and in-app apply different CSS.
-        if (activity instanceof CustomTabActivity) {
-            fontSizeDefault = "\"14px\"";
-            fontSizeMax = "\"28px\"";
-            fontSizeMin = "\"7px\"";
-        }
-
         noopTo().waitFor(new TabFontSizeCondition(tab, fontSizeDefault));
         // Max is 200% font size.
         dialog.setFontSizeSliderToMaxTo().waitFor(new TabFontSizeCondition(tab, fontSizeMax));

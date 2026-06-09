@@ -462,11 +462,9 @@ class DistilledPagePrefsFeatureTest
  public:
   void SetUp() override {
     if (GetParam()) {
-      std::vector<base::test::FeatureRef> enabled_features = {
-          kReaderModeDistillInApp, kReaderModeSupportNewFonts};
-      scoped_feature_list_.InitWithFeatures(enabled_features, {});
+      scoped_feature_list_.InitAndEnableFeature(kReaderModeSupportNewFonts);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(kReaderModeDistillInApp);
+      scoped_feature_list_.InitAndDisableFeature(kReaderModeSupportNewFonts);
     }
     DistilledPagePrefsTest::SetUp();
   }
@@ -541,16 +539,12 @@ TEST_F(DistilledPagePrefsTest,
   distilled_page_prefs_->RemoveObserver(&obs);
 }
 
-TEST_P(DistilledPagePrefsFeatureTest, TestClampDefaultFontScaling) {
+TEST_F(DistilledPagePrefsTest, TestClampDefaultFontScaling) {
   TestingObserver obs;
   distilled_page_prefs_->AddObserver(&obs);
 
-  float min_font_scale = kMinFontScaleAndroidCCT;
-  float max_font_scale = kMaxFontScaleAndroidCCT;
-  if (GetParam()) {
-    min_font_scale = kMinFontScaleAndroidInApp;
-    max_font_scale = kMaxFontScaleAndroidInApp;
-  }
+  float min_font_scale = kMinFontScaleAndroidInApp;
+  float max_font_scale = kMaxFontScaleAndroidInApp;
 
   // Test clamping for values smaller than the minimum.
   distilled_page_prefs_->SetDefaultFontScaling(min_font_scale - 0.5f);

@@ -110,10 +110,8 @@ std::string FakeDistilledPage::GetPageHtmlWithScripts() {
   std::string min_scale = "0.5";
   std::string max_scale = "2.0";
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kReaderModeDistillInApp)) {
-    min_scale = "1.0";
-    max_scale = "2.5";
-  }
+  min_scale = "1.0";
+  max_scale = "2.5";
 #endif
   base::ReplaceFirstSubstringAfterOffset(&viewer_js, 0, "$MIN_SCALE",
                                          min_scale);

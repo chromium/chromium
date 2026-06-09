@@ -70,14 +70,7 @@ const char kLexendCssClass[] = "Lexend";
 // LINT.ThenChange(//components/dom_distiller/core/css/distilledpage_common.css)
 
 std::string GetVersionedCss() {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(dom_distiller::kReaderModeDistillInApp)) {
-    return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-        IDR_DISTILLER_NEW_CSS);
-  }
-  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-      IDR_DISTILLER_CSS);
-#elif BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
       IDR_DISTILLER_NEW_CSS);
 #else
@@ -338,9 +331,7 @@ static std::string GetMinPinchZoomScale() {
 #if BUILDFLAG(IS_ANDROID)
   // Make the minimum pinch zoom value to be 1.0 for distillation in app to
   // align with prefs UI.
-  if (base::FeatureList::IsEnabled(kReaderModeDistillInApp)) {
-    min_scale = kMinFontScaleAndroidInApp;
-  }
+  min_scale = kMinFontScaleAndroidInApp;
 #endif
   return base::NumberToString(min_scale);
 }
@@ -350,9 +341,7 @@ static std::string GetMaxPinchZoomScale() {
 #if BUILDFLAG(IS_ANDROID)
   // Make the maximum pinch zoom value to be 2.5 for distillation in app to
   // align with prefs UI.
-  if (base::FeatureList::IsEnabled(kReaderModeDistillInApp)) {
-    max_scale = kMaxFontScaleAndroidInApp;
-  }
+  max_scale = kMaxFontScaleAndroidInApp;
 #endif
   return base::NumberToString(max_scale);
 }

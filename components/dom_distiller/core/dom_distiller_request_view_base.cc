@@ -22,15 +22,7 @@ namespace dom_distiller {
 
 namespace {
 float GetBaseFontSize() {
-  float base_font_size = 16.0f;
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(dom_distiller::kReaderModeDistillInApp)) {
-    base_font_size = 16.0f;
-  } else {
-    base_font_size = 14.0f;
-  }
-#endif
-  return base_font_size;
+  return 16.0f;
 }
 }  // namespace
 

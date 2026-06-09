@@ -70,15 +70,8 @@ bool DistilledPagePrefs::IsUserPrefFontAvailable(
 #if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
   return true;
 #else
-  bool new_fonts_enabled = false;
-#if BUILDFLAG(IS_ANDROID)
-  new_fonts_enabled =
-      base::FeatureList::IsEnabled(dom_distiller::kReaderModeDistillInApp) &&
+  bool new_fonts_enabled =
       base::FeatureList::IsEnabled(dom_distiller::kReaderModeSupportNewFonts);
-#else  // IS_IOS
-  new_fonts_enabled =
-      base::FeatureList::IsEnabled(dom_distiller::kReaderModeSupportNewFonts);
-#endif
   return new_fonts_enabled || font_family == mojom::FontFamily::kSansSerif ||
          font_family == mojom::FontFamily::kSerif ||
          font_family == mojom::FontFamily::kMonospace;
@@ -207,17 +200,9 @@ void DistilledPagePrefs::RemoveObserver(Observer* obs) {
 
 #if BUILDFLAG(IS_ANDROID)
 void DistilledPagePrefs::ClampDefaultFontScaling() {
-  float min_font_scale;
-  float max_font_scale;
-  if (base::FeatureList::IsEnabled(dom_distiller::kReaderModeDistillInApp)) {
-    min_font_scale = kMinFontScaleAndroidInApp;
-    max_font_scale = kMaxFontScaleAndroidInApp;
-  } else {
-    min_font_scale = kMinFontScaleAndroidCCT;
-    max_font_scale = kMaxFontScaleAndroidCCT;
-  }
   default_font_scaling_ =
-      std::clamp(default_font_scaling_, min_font_scale, max_font_scale);
+      std::clamp(default_font_scaling_, kMinFontScaleAndroidInApp,
+                 kMaxFontScaleAndroidInApp);
 }
 #endif
 
