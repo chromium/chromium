@@ -21,6 +21,7 @@ class TranslateManager;
 }
 
 namespace password_manager {
+class PasswordManagerClient;
 class PasswordManagerDriver;
 }
 
@@ -51,6 +52,11 @@ class ActorLoginDelegateClient {
 
   // Returns the preference service associated with the profile.
   virtual PrefService* GetPrefs() = 0;
+
+  // Returns the password manager client. This might return `nullptr` if the
+  // user is using a third-party password manager on Android.
+  virtual password_manager::PasswordManagerClient*
+  GetPasswordManagerClient() = 0;
 
   // Returns the password manager driver associated with the primary main frame
   // of the page.

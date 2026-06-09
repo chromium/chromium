@@ -212,14 +212,14 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
         web_contents_.get(), GURL(kTestUrl));
 
     delegate_client_ = std::make_unique<FakeActorLoginDelegateClient>(
-        profile(), test_origin_, &mock_driver_);
+        profile(), test_origin_, &mock_driver_, &client_);
 
     mock_tab_interface_ = std::make_unique<tabs::MockTabInterface>();
     tabs::TabLookupFromWebContents::CreateForWebContents(
         web_contents_.get(), mock_tab_interface_.get());
 
     delegate_ = ActorLoginDelegateImpl::CreateForUserData(
-        web_contents_.get(), delegate_client_.get(), &client_);
+        web_contents_.get(), delegate_client_.get());
 
     client_.profile_store()->Init();
     client_.account_store()->Init();
@@ -344,8 +344,10 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentials_NullClient) {
   // Create a delegate with nullptr client and nullptr driver.
   ActorLoginDelegateImpl::RemoveFromUserDataForTesting(web_contents_.get());
   delegate_ = nullptr;
+  delegate_client_ = std::make_unique<FakeActorLoginDelegateClient>(
+      profile(), test_origin_, &mock_driver_, nullptr);
   auto* delegate = ActorLoginDelegateImpl::CreateForUserData(
-      web_contents_.get(), delegate_client_.get(), nullptr);
+      web_contents_.get(), delegate_client_.get());
 
   base::test::TestFuture<CredentialsOrError> future;
   delegate->GetCredentials(/*has_sign_in_with_google_button=*/false,
@@ -368,8 +370,10 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentials_NullClient_HasPasswords) {
   // Create a delegate with nullptr client and nullptr driver.
   ActorLoginDelegateImpl::RemoveFromUserDataForTesting(web_contents_.get());
   delegate_ = nullptr;
+  delegate_client_ = std::make_unique<FakeActorLoginDelegateClient>(
+      profile(), test_origin_, &mock_driver_, nullptr);
   auto* delegate = ActorLoginDelegateImpl::CreateForUserData(
-      web_contents_.get(), delegate_client_.get(), nullptr);
+      web_contents_.get(), delegate_client_.get());
 
   base::test::TestFuture<CredentialsOrError> future;
   delegate->GetCredentials(/*has_sign_in_with_google_button=*/false,

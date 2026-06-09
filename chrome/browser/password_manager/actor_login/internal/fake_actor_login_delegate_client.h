@@ -21,6 +21,7 @@ class ActorLoginWebContentInterface;
 }  // namespace actor_login
 
 namespace password_manager {
+class PasswordManagerClient;
 class PasswordManagerDriver;
 }  // namespace password_manager
 
@@ -34,13 +35,15 @@ class FakeActorLoginDelegateClient : public ActorLoginDelegateClient {
  public:
   FakeActorLoginDelegateClient(Profile* profile,
                                const url::Origin& origin,
-                               password_manager::PasswordManagerDriver* driver);
+                               password_manager::PasswordManagerDriver* driver,
+                               password_manager::PasswordManagerClient* client);
   ~FakeActorLoginDelegateClient() override;
 
   // ActorLoginDelegateClient implementation:
   void SetActorLoginWebContentInterface(
       ActorLoginWebContentInterface* web_interface) override;
   PrefService* GetPrefs() override;
+  password_manager::PasswordManagerClient* GetPasswordManagerClient() override;
   password_manager::PasswordManagerDriver*
   GetPasswordManagerDriverForMainFrame() override;
   ukm::SourceId GetPageUkmSourceIdForMainFrame() override;
@@ -109,6 +112,7 @@ class FakeActorLoginDelegateClient : public ActorLoginDelegateClient {
   bool test_requires_federated_button_click_ = false;
   url::Origin origin_;
   raw_ptr<password_manager::PasswordManagerDriver> driver_ = nullptr;
+  raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
   raw_ptr<ActorLoginWebContentInterface> web_interface_ = nullptr;
   raw_ptr<FakeActorLoginSiwgController> siwg_controller_ = nullptr;
   bool is_remove_federated_embedder_login_request_called_ = false;

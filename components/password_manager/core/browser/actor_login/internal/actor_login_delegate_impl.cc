@@ -44,10 +44,10 @@ const int kActorLoginDelegateUserDataKey = 0;
 }  // namespace
 
 ActorLoginDelegateImpl::ActorLoginDelegateImpl(
-    ActorLoginDelegateClient* actor_login_delegate_client,
-    password_manager::PasswordManagerClient* password_manager_client)
+    ActorLoginDelegateClient* actor_login_delegate_client)
     : actor_login_delegate_client_(actor_login_delegate_client),
-      password_manager_client_(password_manager_client) {
+      password_manager_client_(
+          actor_login_delegate_client->GetPasswordManagerClient()) {
   CHECK(actor_login_delegate_client_);
   actor_login_delegate_client_->SetActorLoginWebContentInterface(this);
 }
@@ -65,12 +65,11 @@ ActorLoginDelegateImpl* ActorLoginDelegateImpl::FromUserData(
 // static
 ActorLoginDelegateImpl* ActorLoginDelegateImpl::CreateForUserData(
     base::SupportsUserData* user_data,
-    ActorLoginDelegateClient* actor_login_delegate_client,
-    password_manager::PasswordManagerClient* password_manager_client) {
+    ActorLoginDelegateClient* actor_login_delegate_client) {
   CHECK(user_data);
   CHECK(actor_login_delegate_client);
-  auto delegate = base::WrapUnique(new ActorLoginDelegateImpl(
-      actor_login_delegate_client, password_manager_client));
+  auto delegate =
+      base::WrapUnique(new ActorLoginDelegateImpl(actor_login_delegate_client));
   auto* delegate_raw_ptr = delegate.get();
   user_data->SetUserData(&kActorLoginDelegateUserDataKey, std::move(delegate));
   return delegate_raw_ptr;

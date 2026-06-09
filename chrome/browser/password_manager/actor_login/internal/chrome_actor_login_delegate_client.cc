@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/buildflags.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_web_content_interface.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -48,6 +49,16 @@ void ChromeActorLoginDelegateClient::SetActorLoginWebContentInterface(
 PrefService* ChromeActorLoginDelegateClient::GetPrefs() {
   return Profile::FromBrowserContext(GetWebContents().GetBrowserContext())
       ->GetPrefs();
+}
+
+password_manager::PasswordManagerClient*
+ChromeActorLoginDelegateClient::GetPasswordManagerClient() {
+  if (auto* driver_factory =
+          password_manager::ContentPasswordManagerDriverFactory::
+              FromWebContents(&GetWebContents())) {
+    return driver_factory->password_client();
+  }
+  return nullptr;
 }
 
 password_manager::PasswordManagerDriver*

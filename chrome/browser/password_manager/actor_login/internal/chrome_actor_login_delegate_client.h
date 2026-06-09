@@ -49,6 +49,7 @@ class ChromeActorLoginDelegateClient
   void SetActorLoginWebContentInterface(
       ActorLoginWebContentInterface* web_interface) override;
   PrefService* GetPrefs() override;
+  password_manager::PasswordManagerClient* GetPasswordManagerClient() override;
   password_manager::PasswordManagerDriver*
   GetPasswordManagerDriverForMainFrame() override;
   ukm::SourceId GetPageUkmSourceIdForMainFrame() override;

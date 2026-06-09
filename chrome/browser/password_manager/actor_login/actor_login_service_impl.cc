@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/password_manager/actor_login/internal/chrome_actor_login_delegate_client.h"
-#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate_impl.h"
@@ -23,13 +22,9 @@ ActorLoginDelegate* GetOrCreateDelegate(content::WebContents* web_contents) {
   ActorLoginDelegateImpl* delegate =
       ActorLoginDelegateImpl::FromUserData(web_contents);
   if (!delegate) {
-    password_manager::ContentPasswordManagerDriver* driver =
-        password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
-            web_contents->GetPrimaryMainFrame());
     ActorLoginDelegateClient* client =
         ChromeActorLoginDelegateClient::GetOrCreateForWebContents(web_contents);
-    delegate = ActorLoginDelegateImpl::CreateForUserData(
-        web_contents, client, driver ? driver->client() : nullptr);
+    delegate = ActorLoginDelegateImpl::CreateForUserData(web_contents, client);
   }
   return delegate;
 }

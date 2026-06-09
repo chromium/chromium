@@ -47,10 +47,9 @@ class FakeActorLoginFederatedCredentialFetcher
 FakeActorLoginDelegateClient::FakeActorLoginDelegateClient(
     Profile* profile,
     const url::Origin& origin,
-    password_manager::PasswordManagerDriver* driver)
-    : profile_(profile),
-      origin_(origin),
-      driver_(driver) {}
+    password_manager::PasswordManagerDriver* driver,
+    password_manager::PasswordManagerClient* client)
+    : profile_(profile), origin_(origin), driver_(driver), client_(client) {}
 
 FakeActorLoginDelegateClient::~FakeActorLoginDelegateClient() = default;
 
@@ -61,6 +60,11 @@ void FakeActorLoginDelegateClient::SetActorLoginWebContentInterface(
 
 PrefService* FakeActorLoginDelegateClient::GetPrefs() {
   return profile_->GetPrefs();
+}
+
+password_manager::PasswordManagerClient*
+FakeActorLoginDelegateClient::GetPasswordManagerClient() {
+  return client_;
 }
 
 password_manager::PasswordManagerDriver*
