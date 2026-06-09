@@ -6,14 +6,12 @@
 
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "media/base/media_switches.h"
 
 namespace system_permission_settings {
 
@@ -35,17 +33,6 @@ class PlatformHandleImpl : public PlatformHandle {
   bool CanPrompt(ContentSettingsType type) override { return false; }
 
   bool IsDenied(ContentSettingsType type) override {
-    if (!ash::privacy_hub_util::IsPrivacyHubAvailable()) {
-      return false;
-    }
-
-    if ((type == ContentSettingsType::MEDIASTREAM_CAMERA ||
-         type == ContentSettingsType::MEDIASTREAM_MIC) &&
-        base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kUseFakeDeviceForMediaStream)) {
-      return false;
-    }
-
     return ash::privacy_hub_util::ContentBlocked(type);
   }
 
