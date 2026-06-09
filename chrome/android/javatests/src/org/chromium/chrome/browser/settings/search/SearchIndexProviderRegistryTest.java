@@ -12,6 +12,7 @@ import android.content.res.Resources;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -23,7 +24,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -50,7 +50,6 @@ import java.util.List;
     ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS,
     ChromeFeatureList.PLUS_ADDRESSES_ENABLED
 })
-@DisableLeakChecks("crbug.com/512492984 (SearchIndexProviderRegistryTest)")
 public class SearchIndexProviderRegistryTest {
 
     @ClassRule
@@ -65,6 +64,13 @@ public class SearchIndexProviderRegistryTest {
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
         sContext = sActivityTestRule.getActivity();
+    }
+
+    @AfterClass
+    public static void tearDownSuite() {
+        // Clear the static reference to BlankUiTestActivity so it doesn't get retained
+        // via the test class after the activity is finished.
+        sContext = null;
     }
 
     @Before
