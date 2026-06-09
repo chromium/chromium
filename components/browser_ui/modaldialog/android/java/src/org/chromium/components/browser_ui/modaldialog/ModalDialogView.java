@@ -141,7 +141,9 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         super.onFinishInflate();
 
         mTitleScrollView = findViewById(R.id.modal_dialog_title_scroll_view);
+        mTitleScrollView.disableScrollbarOnTablet();
         mModalDialogScrollView = findViewById(R.id.modal_dialog_scroll_view);
+        mModalDialogScrollView.disableScrollbarOnTablet();
         mTitleContainer = findViewById(R.id.title_container);
         mTitleView = mTitleContainer.findViewById(R.id.title);
         mTitleIcon = mTitleContainer.findViewById(R.id.title_icon);

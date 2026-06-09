@@ -531,6 +531,7 @@ public class PaymentRequestUi
         // Create all the possible sections.
         mSectionSeparators = new ArrayList<>();
         mPaymentContainer = mRequestView.findViewById(R.id.option_container);
+        mPaymentContainer.disableScrollbarOnTablet();
         mPaymentContainerLayout = mRequestView.findViewById(R.id.payment_container_layout);
         mRetryErrorView = mRequestView.findViewById(R.id.retry_error);
         mOrderSummarySection =

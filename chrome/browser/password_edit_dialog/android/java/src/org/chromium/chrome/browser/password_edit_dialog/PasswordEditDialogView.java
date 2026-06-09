@@ -24,6 +24,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.util.List;
@@ -51,6 +52,8 @@ class PasswordEditDialogView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        FadingEdgeScrollView scrollView = findViewById(R.id.password_edit_dialog_scroll_view);
+        scrollView.disableScrollbarOnTablet();
         mFooterView = findViewById(R.id.footer);
         mUsernameView = findViewById(R.id.username_view);
         mUsernameInputLayout = findViewById(R.id.username_input_layout);

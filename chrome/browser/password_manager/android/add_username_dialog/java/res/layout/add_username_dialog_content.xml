@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2023 The Chromium Authors
+<!--
+Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
-found in the LICENSE file. -->
+found in the LICENSE file.
+-->
 
 <org.chromium.chrome.browser.add_username_dialog.AddUsernameDialogContentView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -12,6 +14,7 @@ found in the LICENSE file. -->
     android:orientation="vertical"
     style="@style/AlertDialogContent">
   <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
+      android:id="@+id/add_username_dialog_scroll_view"
       android:layout_width="match_parent"
       android:layout_height="0dp"
       android:layout_weight="1">

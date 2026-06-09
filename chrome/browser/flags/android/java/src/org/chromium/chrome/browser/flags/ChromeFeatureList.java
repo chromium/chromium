@@ -413,6 +413,8 @@ public abstract class ChromeFeatureList {
     public static final String DESKTOP_UA_ON_CONNECTED_DISPLAY = "DesktopUAOnConnectedDisplay";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DISABLE_PARTNER_HOMEPAGE_ANDROID = "DisablePartnerHomepageAndroid";
+    public static final String DISABLE_SCROLLBAR_OF_FADING_EDGE_SCROLLVIEW =
+            "DisableScrollbarOfFadingEdgeScrollView";
     public static final String DISCO_FEED_ENDPOINT = "DiscoFeedEndpoint";
     public static final String DISPLAY_EDGE_TO_EDGE_FULLSCREEN = "DisplayEdgeToEdgeFullscreen";
     public static final String DISPLAY_WILDCARD_CONTENT_SETTINGS =

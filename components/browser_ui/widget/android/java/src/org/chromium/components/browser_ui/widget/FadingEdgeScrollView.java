@@ -16,6 +16,9 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -79,14 +82,27 @@ public class FadingEdgeScrollView extends ScrollView {
     }
 
     /**
+     * Disables the vertical scrollbar on tablet if precision pointer is supported and the feature
+     * is enabled.
+     */
+    public void disableScrollbarOnTablet() {
+        if (DeviceInput.supportsPrecisionPointer()
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.DISABLE_SCROLLBAR_OF_FADING_EDGE_SCROLLVIEW)) {
+            setVerticalScrollBarEnabled(false);
+        }
+    }
+
+    /**
      * Draws a line at the top or bottom of the view. This should be called from dispatchDraw() so
      * it gets drawn on top of the View's children.
      *
-     * @param canvas       The canvas on which to draw.
-     * @param position     Where to draw the line: either POSITION_TOP or POSITION_BOTTOM.
-     * @param edgeStrength A value between 0 and 1 indicating the relative size of the line. 0
-     *                     means no line at all. 1 means a fully opaque line.
-     * @param edgeType     How to draw the line.
+     * @param canvas The canvas on which to draw.
+     * @param position Where to draw the line: either POSITION_TOP or POSITION_BOTTOM.
+     * @param edgeStrength A value between 0 and 1 indicating the relative size of the line. 0 means
+     *     no line at all. 1 means a fully opaque line.
+     * @param edgeType How to draw the line.
      */
     private void drawBoundaryLine(
             Canvas canvas, int position, float edgeStrength, @EdgeType int edgeType) {
