@@ -72,6 +72,10 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
     int allowed_operations,
     ui::mojom::DragEventSource source) {
   CHECK(!drag_drop_in_progress_);
+  if (desktop_host_->IsInNativeMoveResizeLoop()) {
+    return ui::PreferredDragOperation(
+        ui::DragDropTypes::DropEffectToDragOperation(DROPEFFECT_NONE));
+  }
   gfx::Point touch_screen_point;
   if (source == ui::mojom::DragEventSource::kTouch) {
     source_window->GetHost()->ConvertDIPToPixels(&touch_screen_point);

@@ -899,6 +899,11 @@ void HWNDMessageHandler::EndMoveLoop() {
   ::SendMessage(hwnd(), WM_CANCELMODE, 0, 0);
 }
 
+// static
+bool HWNDMessageHandler::IsInNativeMoveResizeLoop() {
+  return UserResizeMoveDetector::InMoveResizeLoop();
+}
+
 void HWNDMessageHandler::SendFrameChanged() {
   ::SetWindowPos(hwnd(), nullptr, 0, 0, 0, 0,
                  SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOCOPYBITS |

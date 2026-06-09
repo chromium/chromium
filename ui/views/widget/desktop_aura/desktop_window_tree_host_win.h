@@ -93,6 +93,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // false.
   void FinishTouchDrag(gfx::Point screen_point);
 
+  // Returns true if any window is in a move/resize loop.
+  bool IsInNativeMoveResizeLoop() const;
+
  protected:
   // Overridden from DesktopWindowTreeHost:
   void Init(const Widget::InitParams& params) override;
