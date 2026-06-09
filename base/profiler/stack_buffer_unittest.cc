@@ -19,7 +19,8 @@ namespace base {
 TEST(StackBufferTest, BufferAllocated) {
   const unsigned int kBufferSize = 32 * 1024;
   StackBuffer stack_buffer(kBufferSize);
-  EXPECT_EQ(stack_buffer.size(), kBufferSize);
+  EXPECT_EQ(stack_buffer.size_bytes(), kBufferSize);
+  EXPECT_EQ(stack_buffer.size(), kBufferSize / sizeof(uintptr_t));
   // Without volatile, the compiler could simply optimize away the entire for
   // loop below.
   volatile uintptr_t* buffer = stack_buffer.buffer();

@@ -35,14 +35,24 @@ class BASE_EXPORT StackBuffer {
 
   ~StackBuffer();
 
+  base::span<const uintptr_t> as_span() const { return buffer_.as_span(); }
+
+  base::span<uintptr_t> as_span() { return buffer_.as_span(); }
+
   // Returns a kPlatformStackAlignment-aligned pointer to the stack buffer.
-  uintptr_t* buffer() const {
-    // Aligned during allocation.
-    return buffer_.get();
-  }
+  const uintptr_t* buffer() const { return buffer_.data(); }
+
+  uintptr_t* buffer() { return buffer_.data(); }
+
+  const uintptr_t* data() const { return buffer_.data(); }
+
+  uintptr_t* data() { return buffer_.data(); }
 
   // Size in bytes.
-  size_t size() const { return size_; }
+  size_t size_bytes() const { return buffer_.as_span().size_bytes(); }
+
+  // Size in elements.
+  size_t size() const { return buffer_.size(); }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Tell the kernel that we no longer need the data currently in the upper
@@ -60,11 +70,8 @@ class BASE_EXPORT StackBuffer {
 #endif
 
  private:
-  // The size in bytes of the requested buffer allocation.
-  const size_t size_;
-
   // The buffer to store the stack. Already aligned.
-  const std::unique_ptr<uintptr_t, AlignedFreeDeleter> buffer_;
+  AlignedHeapArray<uintptr_t> buffer_;
 };
 
 }  // namespace base

@@ -166,7 +166,7 @@ void CopyStackSignalHandler(int n, siginfo_t* siginfo, void* sigcontext) {
 
   const uintptr_t bottom = RegisterContextStackPointer(params->context);
   const uintptr_t top = params->stack_base_address;
-  if ((top - bottom) > params->stack_buffer->size()) {
+  if ((top - bottom) > params->stack_buffer->size_bytes()) {
     // The stack exceeds the size of the allocated buffer. The buffer is sized
     // such that this shouldn't happen under typical execution so we can safely
     // punt in this situation.

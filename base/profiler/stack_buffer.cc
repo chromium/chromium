@@ -33,11 +33,11 @@ void StackBuffer::MarkUpperBufferContentsAsUnneeded(size_t retained_bytes) {
 
   // Avoid passing a negative discard_size to madvise(). Doing so would randomly
   // discard large amounts of memory causing weird crashes.
-  CHECK_LE(actual_retained_bytes, size_);
+  CHECK_LE(actual_retained_bytes, size_bytes());
 
-  uint8_t* start_of_discard = UNSAFE_TODO(
-      reinterpret_cast<uint8_t*>(buffer_.get()) + actual_retained_bytes);
-  size_t discard_size = size_ - actual_retained_bytes;
+  uintptr_t* start_of_discard =
+      &buffer_[actual_retained_bytes / sizeof(uintptr_t)];
+  size_t discard_size = size_bytes() - actual_retained_bytes;
   int result = madvise(start_of_discard, discard_size, MADV_DONTNEED);
 
   DPCHECK(result == 0) << "madvise failed: ";
@@ -56,16 +56,16 @@ StackBuffer::StackBuffer(size_t buffer_size)
     // We also need the |size_| to be a multiple of the page size so that we
     // don't pass partial pages to madvise(). This isn't documented but the
     // program will consistently crash otherwise.
-    : size_(bits::AlignUp(buffer_size, GetPageSize())),
-      buffer_(static_cast<uintptr_t*>(AlignedAlloc(size_, GetPageSize()))) {
+    : buffer_(AlignedUninit<uintptr_t>(
+          bits::AlignUp(buffer_size, GetPageSize()) / sizeof(uintptr_t),
+          GetPageSize())) {
   // Our (very large) buffer may already have data written to it & thus have
   // backing pages. Tell the kernel we don't need the current contents.
   MarkUpperBufferContentsAsUnneeded(0);
 }
 #else   // #if BUILDFLAG(IS_CHROMEOS)
-    : size_(buffer_size),
-      buffer_(static_cast<uintptr_t*>(
-          AlignedAlloc(size_, kPlatformStackAlignment))) {
+    : buffer_(AlignedUninit<uintptr_t>(buffer_size / sizeof(uintptr_t),
+                                       kPlatformStackAlignment)) {
   static_assert(std::has_single_bit(kPlatformStackAlignment));
 }
 #endif  // !#if BUILDFLAG(IS_CHROMEOS)

@@ -265,16 +265,14 @@ TEST(StackCopierTest, StackCopy_NonAlignedStackPointerAlignedRewrite) {
 TEST(StackCopierTest, CloneStack) {
   StackBuffer original_stack(kTestStackBufferSize);
   // Fill the stack buffer with increasing uintptr_t values.
-  std::iota(&original_stack.buffer()[0],
-            UNSAFE_TODO(&original_stack.buffer()[0] +
-                        (original_stack.size() / sizeof(uintptr_t))),
-            100);
+  std::ranges::iota(original_stack.as_span(), 100);
+
   // Replace the third value with an address within the buffer.
-  UNSAFE_TODO(original_stack.buffer()[2]) =
-      reinterpret_cast<uintptr_t>(&UNSAFE_TODO(original_stack.buffer()[1]));
+  original_stack.as_span()[2] =
+      reinterpret_cast<uintptr_t>(&original_stack.as_span()[1]);
 
   uintptr_t stack_top = reinterpret_cast<uintptr_t>(original_stack.buffer()) +
-                        original_stack.size();
+                        original_stack.size_bytes();
   CopyFunctions copy_functions;
   RegisterContext thread_context;
   SetRegisterContextStackPointer(
@@ -282,14 +280,14 @@ TEST(StackCopierTest, CloneStack) {
   std::unique_ptr<StackBuffer> cloned_stack =
       copy_functions.CloneStack(original_stack, &stack_top, &thread_context);
 
-  EXPECT_EQ(original_stack.buffer()[0], cloned_stack->buffer()[0]);
-  UNSAFE_TODO(EXPECT_EQ(original_stack.buffer()[1], cloned_stack->buffer()[1]));
-  UNSAFE_TODO(EXPECT_EQ(reinterpret_cast<uintptr_t>(&cloned_stack->buffer()[1]),
-                        cloned_stack->buffer()[2]));
-  UNSAFE_TODO(EXPECT_EQ(original_stack.buffer()[3], cloned_stack->buffer()[3]));
+  EXPECT_EQ(original_stack.as_span()[0], cloned_stack->as_span()[0]);
+  EXPECT_EQ(original_stack.as_span()[1], cloned_stack->as_span()[1]);
+  EXPECT_EQ(reinterpret_cast<uintptr_t>(&cloned_stack->as_span()[1]),
+            cloned_stack->as_span()[2]);
+  EXPECT_EQ(original_stack.as_span()[3], cloned_stack->as_span()[3]);
   uintptr_t expected_stack_top =
       reinterpret_cast<uintptr_t>(cloned_stack->buffer()) +
-      original_stack.size();
+      original_stack.size_bytes();
   EXPECT_EQ(RegisterContextStackPointer(&thread_context),
             reinterpret_cast<uintptr_t>(cloned_stack->buffer()));
   EXPECT_EQ(stack_top, expected_stack_top);

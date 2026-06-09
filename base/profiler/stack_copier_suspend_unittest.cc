@@ -153,8 +153,7 @@ TEST(StackCopierSuspendTest, CopyStackBufferTooSmall) {
       std::make_unique<StackBuffer>((stack.size() - 1) * sizeof(stack[0]));
   // Make the buffer different than the input stack.
   constexpr uintptr_t kBufferInitializer = 100;
-  size_t stack_buffer_elements =
-      stack_buffer->size() / sizeof(stack_buffer->buffer()[0]);
+  size_t stack_buffer_elements = stack_buffer->size();
   std::fill_n(stack_buffer->buffer(), stack_buffer_elements,
               kBufferInitializer);
   uintptr_t stack_top = 0;

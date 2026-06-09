@@ -98,7 +98,7 @@ class TestStackCopierDelegate : public StackCopier::Delegate {
 #endif
 TEST(StackCopierSignalTest, MAYBE_CopyStack) {
   StackBuffer stack_buffer(/* buffer_size = */ 1 << 20);
-  UNSAFE_TODO(memset(stack_buffer.buffer(), 0, stack_buffer.size()));
+  std::ranges::fill(stack_buffer.as_span(), 0);
   uintptr_t stack_top = 0;
   TimeTicks timestamp;
   RegisterContext context;
@@ -110,11 +110,8 @@ TEST(StackCopierSignalTest, MAYBE_CopyStack) {
   StackCopierSignal copier(std::move(thread_delegate));
 
   // Copy the sentinel values onto the stack.
-  uint32_t sentinels[std::size(kStackSentinels)];
-  for (size_t i = 0; i < std::size(kStackSentinels); ++i) {
-    UNSAFE_TODO(sentinels[i]) = kStackSentinels[i];
-  }
-  base::debug::Alias((void*)sentinels);  // Defeat compiler optimizations.
+  std::array<uint32_t, kStackSentinels.size()> sentinels = kStackSentinels;
+  base::debug::Alias(sentinels.data());  // Defeat compiler optimizations.
 
   bool result = copier.CopyStack(&stack_buffer, &stack_top, &timestamp,
                                  &context, &stack_copier_delegate);
@@ -144,7 +141,7 @@ TEST(StackCopierSignalTest, MAYBE_CopyStack) {
 #endif
 TEST(StackCopierSignalTest, MAYBE_CopyStackTimestamp) {
   StackBuffer stack_buffer(/* buffer_size = */ 1 << 20);
-  UNSAFE_TODO(memset(stack_buffer.buffer(), 0, stack_buffer.size()));
+  std::ranges::fill(stack_buffer.as_span(), 0);
   uintptr_t stack_top = 0;
   TimeTicks timestamp;
   RegisterContext context;
@@ -177,7 +174,7 @@ TEST(StackCopierSignalTest, MAYBE_CopyStackTimestamp) {
 #endif
 TEST(StackCopierSignalTest, MAYBE_CopyStackDelegateInvoked) {
   StackBuffer stack_buffer(/* buffer_size = */ 1 << 20);
-  UNSAFE_TODO(memset(stack_buffer.buffer(), 0, stack_buffer.size()));
+  std::ranges::fill(stack_buffer.as_span(), 0);
   uintptr_t stack_top = 0;
   TimeTicks timestamp;
   RegisterContext context;
@@ -209,7 +206,7 @@ TEST(StackCopierSignalTest, MAYBE_CopyStackDelegateInvoked) {
 #endif
 TEST(StackCopierSignalTest, MAYBE_CopyStackFromOtherThread) {
   StackBuffer stack_buffer(/* buffer_size = */ 1 << 20);
-  UNSAFE_TODO(memset(stack_buffer.buffer(), 0, stack_buffer.size()));
+  std::ranges::fill(stack_buffer.as_span(), 0);
   uintptr_t stack_top = 0;
   TimeTicks timestamp;
   RegisterContext context{};

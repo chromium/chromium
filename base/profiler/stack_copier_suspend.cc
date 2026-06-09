@@ -54,7 +54,7 @@ bool StackCopierSuspend::CopyStack(StackBuffer* stack_buffer,
     // largest stack region allocation on the platform, but check just in case
     // it isn't *and* the actual stack itself exceeds the buffer allocation
     // size.
-    if ((top - bottom) > stack_buffer->size()) {
+    if ((top - bottom) > stack_buffer->size_bytes()) {
       return false;
     }
 
