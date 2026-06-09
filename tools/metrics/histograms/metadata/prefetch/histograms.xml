@@ -70,6 +70,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/preloading/prefetch/prefetch_params.cc:GetMetricsSuffixTriggerTypeAndEagerness) -->
 
+<variants name="ValidateResourceRequestHeaders">
+  <variant name="CorsExemptHeaders"
+      summary="ResourceRequest::cors_exempt_headers"/>
+  <variant name="Headers" summary="ResourceRequest::headers"/>
+</variants>
+
+<variants name="ValidateResourceRequestMode">
+  <variant name="AfterWillCreateURLLoaderFactory"
+      summary="after WillCreateURLLoaderFactory"/>
+  <variant name="OnRequestConstruction"
+      summary="upon PrefetchContainer request construction"/>
+</variants>
+
 <variants name="WasServed">
   <variant name="NotServed" summary="not served"/>
   <variant name="Served" summary="served"/>
@@ -553,6 +566,40 @@ chromium-metrics-reviews@google.com.
     TriggerType and Eagerness as {TriggerTypeAndEagerness}.
   </summary>
   <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrePrefetchRequestValidation.{ValidateResourceRequestMode}.{ValidateResourceRequestHeaders}.HasMismatch"
+    enum="Boolean" expires_after="2026-12-31">
+  <owner>taiyo@chromium.org</owner>
+  <owner>hiroshige@chromium.org</owner>
+  <summary>
+    Records if there are any mismatched headers in
+    {ValidateResourceRequestHeaders} in ValidateResourceRequestForPrePrefetch.
+    Logged for every PrePrefetch-initiated prefetch
+    {ValidateResourceRequestMode}.
+  </summary>
+  <token key="ValidateResourceRequestHeaders"
+      variants="ValidateResourceRequestHeaders"/>
+  <token key="ValidateResourceRequestMode"
+      variants="ValidateResourceRequestMode"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrePrefetchRequestValidation.{ValidateResourceRequestMode}.{ValidateResourceRequestHeaders}.Mismatched"
+    enum="RequestHeader" expires_after="2026-12-31">
+  <owner>taiyo@chromium.org</owner>
+  <owner>hiroshige@chromium.org</owner>
+  <summary>
+    Records the header name of every mismatched header in
+    {ValidateResourceRequestHeaders} in ValidateResourceRequestForPrePrefetch.
+    Logged for every mismatched header for every PrePrefetch-initiated
+    prefetches {ValidateResourceRequestMode}.
+  </summary>
+  <token key="ValidateResourceRequestHeaders"
+      variants="ValidateResourceRequestHeaders"/>
+  <token key="ValidateResourceRequestMode"
+      variants="ValidateResourceRequestMode"/>
 </histogram>
 
 <histogram
