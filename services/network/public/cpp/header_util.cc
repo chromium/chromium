@@ -14,6 +14,9 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/http/http_util.h"
+#include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
@@ -90,6 +93,17 @@ bool IsRequestHeaderSafe(std::string_view key, std::string_view value) {
   // Proxy headers are destined for the proxy, so shouldn't be set by callers.
   if (base::StartsWith(key, "Proxy-", base::CompareCase::INSENSITIVE_ASCII))
     return false;
+
+  if (base::EqualsCaseInsensitiveASCII(key, "X-HTTP-Method") ||
+      base::EqualsCaseInsensitiveASCII(key, "X-HTTP-Method-Override") ||
+      base::EqualsCaseInsensitiveASCII(key, "X-Method-Override")) {
+    net::HttpUtil::ValuesIterator method_iterator(value, ',');
+    while (method_iterator.GetNext()) {
+      if (cors::IsForbiddenMethod(method_iterator.value())) {
+        return false;
+      }
+    }
+  }
 
   return true;
 }
