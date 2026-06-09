@@ -442,6 +442,11 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Whether we are currently displaying the Live session dormant snackbar.
   bool is_showing_live_session_dormant_snackbar_ = false;
 
+  // Track if we have triggered feature engagement for Gemini Live IPH or New
+  // Badge.
+  bool has_triggered_gemini_live_iph_ = false;
+  bool has_triggered_gemini_live_new_badge_ = false;
+
   // Weak pointer factory.
   // Observers for GeminiBrowserAgent.
   base::ObserverList<Observer> observers_;
