@@ -31,7 +31,7 @@ from typing import NewType, TYPE_CHECKING, Any, Optional, List, Dict, Set, \
 
 from error import AuditorError, ErrorType
 import util
-from util import UniqueId, HashCode
+from util import UniqueId, HashCode, extract_annotation_id
 
 from datetime import datetime
 
@@ -148,7 +148,7 @@ class Annotation:
     self.type = Annotation.Type.COMPLETING
     self.proto = traffic_annotation_pb2.NetworkTrafficAnnotation()
 
-    self.second_id: UniqueId = ""
+    self.second_id = UniqueId("")
 
     # TODO(nicolaso): Remove file and line from the proto in
     # traffic_annotation.proto.
@@ -156,7 +156,7 @@ class Annotation:
     self.line: int = 0
 
     self.is_loaded_from_archive = False
-    self.archived_content_hash_code: HashCode = -1
+    self.archived_content_hash_code = HashCode(-1)
     self.archived_added_in_milestone = 0
 
     self.is_merged = False
@@ -164,7 +164,7 @@ class Annotation:
   @property
   def unique_id(self) -> UniqueId:
     # Transparently expose the unique_id stored in the proto for convenience.
-    return self.proto.unique_id
+    return UniqueId(self.proto.unique_id)
 
   @unique_id.setter
   def unique_id(self, unique_id: UniqueId):
@@ -1007,7 +1007,7 @@ class Exporter:
       annotation = ArchivedAnnotation(**kwargs)
       self.archive[annotation.id] = annotation
 
-  def load_grouping_xml(self, grouping_path: str) -> None:
+  def load_grouping_xml(self, grouping_path: Path) -> None:
     """Loads grouping from grouping.xml into self.grouping_archive."""
     logger.info("Parsing {}.".format(grouping_path.relative_to(SRC_DIR)))
 
@@ -1036,7 +1036,7 @@ class Exporter:
           kwargs: Dict[str, Any] = dict(traffic_annotation_item.attrib)
           self.required_field_check(GROUPING_REQUIRED_FIELDS, kwargs,
                                     traffic_annotation_item)
-          unique_id = str(kwargs["id"])
+          unique_id = UniqueId(str(kwargs["id"]))
 
           kwargs["sender_name"] = sender_name
           kwargs["group_name"] = group_name
@@ -1047,14 +1047,14 @@ class Exporter:
           self.grouping_id_sender[unique_id] = sender
 
   def required_field_check(self, REQUIRED_FIELDS: List[str],
-                           kwargs: Dict[str, any], item: Any):
+                           kwargs: Dict[str, Any], item: Any):
     # Check that all required attribs are present.
     for field in REQUIRED_FIELDS:
       if field not in kwargs:
         raise ValueError("Missing attribute '{}' in xml: {}".format(
             field, ElementTree.tostring(item, "unicode")))
 
-  def compare_field_check(self, FIELDS: List[str], kwargs: Dict[str, any],
+  def compare_field_check(self, FIELDS: List[str], kwargs: Dict[str, Any],
                           item: Any):
     # Check for unknown attribs. and raise the error message to more readable.
     unknown_fields = kwargs.keys() - set(FIELDS)
@@ -1453,8 +1453,9 @@ class Auditor:
       return True
     return any(r.match(posix_path) for r in safe_list[exception_type])
 
-  def process_file(self, relative_path: Path, compdb_files: Set[str],
-                   path_filters: List[str]) -> List[Annotation]:
+  def process_file(
+      self, relative_path: Path, compdb_files: Set[str],
+      path_filters: List[str]) -> Optional[List[extractor.Annotation]]:
     absolute_path = SRC_DIR / relative_path
 
     # Skip files based on compdb and path_filters. Java and header files aren't
@@ -1753,7 +1754,7 @@ class Auditor:
             Annotation.load_from_archive(archived))
 
   def run_all_checks(self, path_filters: List[str], report_xml_updates: bool,
-                     grouping_path: str) -> List[AuditorError]:
+                     grouping_path: Path) -> List[AuditorError]:
     """Performs all checks on extracted annotations, and writes annotations.xml.
 
     If test_only is True, returns the changes that would be made to

@@ -13,7 +13,13 @@ from google.protobuf import text_format
 from google.protobuf.descriptor import FieldDescriptor
 from google.protobuf.message import Message
 from pathlib import Path
-from typing import NewType, Any, Optional, List, Iterable
+from typing import NewType, Any, Optional, List, Iterable, TYPE_CHECKING
+
+if TYPE_CHECKING:
+  import traffic_annotation_pb2
+  from traffic_annotation_pb2 import NetworkTrafficAnnotation as \
+    traffic_annotation
+  from auditor import Annotation
 
 UniqueId = NewType("UniqueId", str)
 HashCode = NewType("HashCode", int)
@@ -45,9 +51,9 @@ def import_compiled_proto(build_path) -> Any:
     return traffic_annotation_pb2
   except ImportError as e:
     logger.critical(
-      "Failed to import the compiled traffic annotation proto. Make sure "
-      "you're on Linux or Windows and Chrome is built in '{}' before "
-      "running this script.".format(build_path))
+        "Failed to import the compiled traffic annotation proto. Make sure "
+        "you're on Linux or Windows and Chrome is built in '{}' before "
+        "running this script.".format(build_path))
     raise
 
 

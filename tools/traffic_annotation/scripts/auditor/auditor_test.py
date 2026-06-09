@@ -15,7 +15,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-from typing import cast, Tuple
+from typing import cast, Tuple, List
 
 from auditor import *
 from error import *
@@ -72,7 +72,7 @@ class AuditorTest(unittest.TestCase):
     language = extractor.LANGUAGE_MAPPING[Path(lines[0]).suffix]
     type_name = extractor.AnnotationType(lines[2])
     extracted_annotation = extractor.Annotation(language=language,
-                                                file_path=lines[0],
+                                                file_path=Path(lines[0]),
                                                 line_number=int(lines[1]),
                                                 type_name=type_name,
                                                 unique_id=lines[3],
@@ -659,9 +659,9 @@ class AuditorTest(unittest.TestCase):
   def test_load_from_archive(self):
     """Tests that Annotation.load_from_archive() works as expected."""
     archived = ArchivedAnnotation(type=Annotation.Type.PARTIAL,
-                                  id="foobar",
-                                  second_id="baz",
-                                  content_hash_code=32,
+                                  id=UniqueId("foobar"),
+                                  second_id=UniqueId("baz"),
+                                  content_hash_code=HashCode(32),
                                   os_list=["linux", "windows"],
                                   added_in_milestone=62,
                                   semantics_fields=[2, 3],
