@@ -50,7 +50,6 @@ import java.util.function.Function;
  */
 @NullMarked
 public class IncognitoNtpOmniboxAutofocusManager {
-    private static @Nullable IncognitoNtpOmniboxAutofocusManager sInstanceForTesting;
     private final Set<Tab> mProcessedTabs = new HashSet<>();
 
     /**
@@ -155,7 +154,6 @@ public class IncognitoNtpOmniboxAutofocusManager {
             @NonNull
                     Function<View, IncognitoNtpUtils.IncognitoNtpContentMetrics>
                             ntpContentMetricsProvider) {
-        sInstanceForTesting = this;
         mOmniboxStub = omniboxStub;
         mTabModelSelector = tabModelSelector;
         mLayoutManager = layoutManager;
@@ -543,10 +541,8 @@ public class IncognitoNtpOmniboxAutofocusManager {
         }
     }
 
-    public static void setAutofocusEnabledForTesting(boolean enabled) {
-        if (sInstanceForTesting != null) {
-            sInstanceForTesting.updateAutofocusEnabledState(enabled);
-        }
+    public void setAutofocusEnabledForTesting(boolean enabled) {
+        updateAutofocusEnabledState(enabled);
     }
 
     public static void setAutofocusAllowedWithPredictionForTesting(Boolean allowed) {

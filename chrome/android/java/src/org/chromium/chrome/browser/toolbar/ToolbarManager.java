@@ -2328,6 +2328,11 @@ public class ToolbarManager
         return mLocationBar.getOmniboxStub().isUrlBarFocused();
     }
 
+    public @Nullable IncognitoNtpOmniboxAutofocusManager
+            getIncognitoNtpOmniboxAutofocusManagerForTesting() {
+        return mIncognitoNtpOmniboxAutofocusManager;
+    }
+
     /** Returns the UrlBar text excluding the autocomplete text. */
     public String getUrlBarTextWithoutAutocomplete() {
         assert mLocationBar instanceof LocationBarCoordinator

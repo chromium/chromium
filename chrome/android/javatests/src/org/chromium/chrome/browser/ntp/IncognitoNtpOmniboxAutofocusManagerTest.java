@@ -670,7 +670,14 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     private void setAccessibilityEnabled(boolean enabled) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    IncognitoNtpOmniboxAutofocusManager.setAutofocusEnabledForTesting(!enabled);
+                    IncognitoNtpOmniboxAutofocusManager manager =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getToolbarManager()
+                                    .getIncognitoNtpOmniboxAutofocusManagerForTesting();
+                    if (manager != null) {
+                        manager.setAutofocusEnabledForTesting(!enabled);
+                    }
                 });
     }
 
