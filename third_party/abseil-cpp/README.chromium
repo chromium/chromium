@@ -28,6 +28,7 @@ third_party/abseil-cpp/BUILD.gn target
 
 3. From your source root run third_party/abseil-cpp/generate_def_files.py to
    regenerate Windows symbol definition files.
+   NOTE: This must be run from a non-Windows host that has target_os=["win"] in its .gclient
 
 4. If abseil adds new features, update styleguide/c++/c++-features.md and add headers for that feature into exclude list in root DEPS
 
@@ -51,4 +52,4 @@ Local Modifications:
 * Patches from //third_party/abseil-cpp/patches have been applied.
 
 * Increment this number to silence presubmits about modifying files in
-  third_party when regenerating absl .def files: 3
+  third_party when regenerating absl .def files: 4

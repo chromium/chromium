@@ -99,7 +99,9 @@
 // the source location type is an alias of std::source_location type, use the
 // feature macro ABSL_USES_STD_SOURCE_LOCATION.
 //
-#define ABSL_OPTION_USE_STD_SOURCE_LOCATION 2
+// std::source_location is banned in Chrome, and disabling it save significant
+// binary size. https://crbug.com/517512695
+#define ABSL_OPTION_USE_STD_SOURCE_LOCATION 0
 
 // ABSL_OPTION_USE_STD_ORDERING
 //
