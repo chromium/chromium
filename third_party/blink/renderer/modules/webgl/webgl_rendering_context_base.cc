@@ -6582,8 +6582,10 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
       unpack_color_space_is_srgb) {
     // Try using optimized CPU-GPU path for some formats: e.g. Y16 and Y8. It
     // leaves early for other formats or if frame is stored on GPU.
-    ScopedUnpackParametersResetRestore unpack_params(
-        this, unpack_flip_y_ || unpack_premultiply_alpha_);
+    // Unconditionally reset unpack state: PaintCanvasVideoRenderer hands a
+    // tightly-sized buffer to gl->Tex(Sub)Image2D, so any active
+    // UNPACK_ROW_LENGTH/SKIP_* would make the GLES2 client over-read it.
+    ScopedUnpackParametersResetRestore unpack_params(this);
 
     // TODO(crbug.com/378688985): UNPACK_COLORSPACE_CONVERSION_WEBGL shouldn't
     // affect alpha type (and the format doesn't even have alpha channel).

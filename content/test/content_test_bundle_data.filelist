@@ -8044,6 +8044,7 @@ data/gpu/webgl2_conformance_win_runtimes.json
 data/gpu/webgl_extension_test.html
 data/gpu/webgl_test_page.html
 data/gpu/webgl_with_select_element.html
+data/gpu/webgl_y16_uploads.html
 data/gpu/webgpu-caching.html
 data/gpu/webgpu-context-lost.html
 data/gpu/webgpu-domain-blocking-page1.html

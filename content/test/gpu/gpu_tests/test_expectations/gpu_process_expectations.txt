@@ -137,6 +137,10 @@ crbug.com/1305020 [ mac asan intel-0x3e9b ] GpuProcess_webgpu_iframe_removed [ S
 # Fails on Fuchsia cast receiver - not important to fix
 crbug.com/500083376 [ fuchsia ] GpuProcess_vulkan_vma_race [ Skip ]
 
+# Test requires SwiftShader which isn't available on some platforms
+crbug.com/513197846 [ android ] GpuProcess_webgl_y16_uploads [ Skip ]
+crbug.com/513197846 [ fuchsia ] GpuProcess_webgl_y16_uploads [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
