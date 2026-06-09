@@ -25,6 +25,7 @@
  *  --cr-checkbox-size
  *  --cr-checkbox-unchecked-box-color
  */
+import {isMac} from '//resources/js/platform.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -171,7 +172,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
   }
 
   protected onKeydown_(e: KeyboardEvent) {
-    if (e.key !== ' ' && e.key !== 'Enter') {
+    if (e.key !== ' ' && (e.key !== 'Enter' || (isMac && e.ctrlKey))) {
       return;
     }
 
@@ -187,7 +188,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
   }
 
   protected onKeyup_(e: KeyboardEvent) {
-    if (e.key === ' ' || e.key === 'Enter') {
+    if (e.key === ' ' || (e.key === 'Enter' && !(isMac && e.ctrlKey))) {
       e.preventDefault();
       e.stopPropagation();
     }
