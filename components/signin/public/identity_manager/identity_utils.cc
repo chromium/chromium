@@ -74,14 +74,9 @@ base::flat_set<GaiaId> GetAllGaiaIdsForKeyedPreferences(
   // cookies.
 
   // `base::flat_set` has an optimized constructor from a vector.
-  base::flat_set<GaiaId> gaia_ids(base::ToVector(
-      accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts(),
-      &gaia::ListedAccount::gaia_id));
-
-  for (const gaia::ListedAccount& account :
-       accounts_in_cookie_jar_info.GetSignedOutAccounts()) {
-    gaia_ids.insert(account.gaia_id);
-  }
+  base::flat_set<GaiaId> gaia_ids(
+      base::ToVector(accounts_in_cookie_jar_info.GetAllAccounts(),
+                     &gaia::ListedAccount::gaia_id));
 
   // If there is a Primary account, also keep it even if it was removed (not in
   // the cookie jar at all).
