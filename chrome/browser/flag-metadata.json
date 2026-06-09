@@ -8048,6 +8048,15 @@
     "expiry_milestone": 150
   },
   {
+    "name": "read-aloud-native",
+    "owners": [
+      "andresmolina@google.com",
+      "read-aloud-tiger-team@google.com",
+      "//ui/accessibility/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "read-anything-docs-integration",
     "owners": [ "abigailbklein@google.com", "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 155
