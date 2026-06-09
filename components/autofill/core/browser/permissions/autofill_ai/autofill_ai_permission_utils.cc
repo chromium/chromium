@@ -65,8 +65,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 // Checks whether `country_code` belongs to a country where Wallet is
 // supported.
 [[nodiscard]] bool IsWalletSupportedCountry(
-    const GeoIpCountryCode& country_code,
-    std::optional<EntityType> entity_type) {
+    const GeoIpCountryCode& country_code) {
   // List of countries where Wallet is supported.
   constexpr static auto kWalletSupportedCountries =
       base::MakeFixedFlatSet<std::string_view>(
@@ -96,27 +95,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     // Assumes a valid country if the country is not set.
     return true;
   }
-
-  if (!kWalletSupportedCountries.contains(country_code.value())) {
-    return false;
-  }
-
-  // The entity type is not set for confirming whether the Wallet promotion can
-  // be shown.
-  if (!entity_type) {
-    return true;
-  }
-
-  if (GetWalletPassType(*entity_type,
-                        EntityInstance::RecordType::kServerWallet) !=
-      EntityInstance::WalletPassType::kPrivate) {
-    return true;
-  }
-
-  // List of countries in which private passes are not supported.
-  constexpr static auto kPrivatePassExclusions =
-      base::MakeFixedFlatSet<std::string_view>({"FR", "OM"});
-  return !kPrivatePassExclusions.contains(country_code.value());
+  return kWalletSupportedCountries.contains(country_code.value());
 }
 
 // Checks whether `country_code` belongs to a permitted GeoIp.
@@ -462,7 +441,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     return false;
   }
   switch (action) {
-    case AutofillAiAction::kImportToWallet:
+    case AutofillAiAction::kImportToWallet: {
       CHECK(entity_type) << "An entity type is required to check if an entity "
                             "can be upstreamed";
       if (GetWalletPassType(*entity_type,
@@ -472,20 +451,32 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
         break;
       }
 
-      // For private passes, underaged users are not allowed to save.
-      // TODO(crbug.com/495779639): This `can_use_model_execution_features()`
-      // check is a very hacky way to check whether the user is underaged.
-      // Consider defining a separate capability or syncing a separate setting
-      // through ACCOUNT_SETTING instead.
-      if (identity_manager
+      const AccountCapabilities& capabilities =
+          identity_manager
               ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
                   signin::ConsentLevel::kSignin))
-              .capabilities.can_use_model_execution_features() !=
-          signin::Tribool::kTrue) {
-        MaybeOutputReason(debug_message, "User is underaged.");
-        return false;
+              .capabilities;
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillAiWalletPrivatePassesCapability)) {
+        if (capabilities.supports_wallet_private_passes_in_autofill() !=
+            signin::Tribool::kTrue) {
+          MaybeOutputReason(
+              debug_message,
+              "Account doesn't support private passes in Autofill.");
+          return false;
+        }
+      } else {
+        // Prior to AutofillAiWalletPrivatePassesCapability age requirements
+        // were hackily enforced via an unrelated capability that happened to
+        // have this definition.
+        if (capabilities.can_use_model_execution_features() !=
+            signin::Tribool::kTrue) {
+          MaybeOutputReason(debug_message, "User is underaged.");
+          return false;
+        }
       }
       break;
+    }
     case AutofillAiAction::kAddLocalEntityInstanceInSettings:
     case AutofillAiAction::kCrowdsourcingVote:
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
@@ -548,7 +539,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   switch (action) {
     case AutofillAiAction::kImportToWallet:
     case AutofillAiAction::kWalletDataSharingPromotion:
-      if (!IsWalletSupportedCountry(country_code, entity_type)) {
+      if (!IsWalletSupportedCountry(country_code)) {
         return false;
       }
       break;
