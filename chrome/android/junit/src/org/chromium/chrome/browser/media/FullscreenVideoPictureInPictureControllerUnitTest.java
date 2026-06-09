@@ -182,7 +182,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         // Stash while media is playing.
         mWebContentsObserverCaptor.getValue().mediaStartedPlaying(0, true, true);
         mController.onStashReported(true);
-        verify(mMediaSession, times(1)).suspend(SuspendType.UI);
+        verify(mMediaSession, times(1)).suspend(SuspendType.SYSTEM);
         mWebContentsObserverCaptor.getValue().mediaStoppedPlaying(0);
 
         // Un-stash while media is still paused.
@@ -191,7 +191,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
                 FullscreenVideoPictureInPictureController.UNSTASH_DELAY_MILLIS + 10L,
                 TimeUnit.MILLISECONDS);
         runUntilIdle();
-        verify(mMediaSession, times(1)).resume();
+        verify(mMediaSession, times(1)).resume(SuspendType.SYSTEM);
     }
 
     /**
@@ -207,7 +207,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
         // Stashing paused video should do nothing.
         mController.onStashReported(true);
-        verify(mMediaSession, times(0)).suspend(SuspendType.UI);
+        verify(mMediaSession, times(0)).suspend(SuspendType.SYSTEM);
 
         // Un-stash should also do nothing.
         mController.onStashReported(false);
@@ -215,7 +215,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
                 FullscreenVideoPictureInPictureController.UNSTASH_DELAY_MILLIS + 10L,
                 TimeUnit.MILLISECONDS);
         runUntilIdle();
-        verify(mMediaSession, times(0)).resume();
+        verify(mMediaSession, times(0)).resume(SuspendType.SYSTEM);
     }
 
     /** If video starts playing during a normal stash, unstash should no-op. */
@@ -226,7 +226,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         // Stash normally.
         mWebContentsObserverCaptor.getValue().mediaStartedPlaying(0, true, true);
         mController.onStashReported(true);
-        verify(mMediaSession, times(1)).suspend(SuspendType.UI);
+        verify(mMediaSession, times(1)).suspend(SuspendType.SYSTEM);
         mWebContentsObserverCaptor.getValue().mediaStoppedPlaying(0);
 
         // Restart playback while still stashed.
@@ -238,7 +238,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
                 FullscreenVideoPictureInPictureController.UNSTASH_DELAY_MILLIS + 10L,
                 TimeUnit.MILLISECONDS);
         runUntilIdle();
-        verify(mMediaSession, times(0)).resume();
+        verify(mMediaSession, times(0)).resume(SuspendType.SYSTEM);
     }
 
     @Test
@@ -254,7 +254,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         mController.onResume();
         verify(mActivity, times(0)).moveTaskToBack(true);
         // The media should be paused, though, just as if pip had closed.
-        verify(mMediaSession, times(1)).suspend(SuspendType.UI);
+        verify(mMediaSession, times(1)).suspend(SuspendType.SYSTEM);
 
         // When the device is unlocked, we will get `onStart`.  This should cause pip to close
         // because it's still deferred from the `onResume` call, above.

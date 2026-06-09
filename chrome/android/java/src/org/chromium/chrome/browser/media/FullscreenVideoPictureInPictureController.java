@@ -307,7 +307,7 @@ public class FullscreenVideoPictureInPictureController {
         // `stashed`.  Also note that `mIsSuspendedForStash` can be reset elsewhere, to help to
         // account for missed events from Android.
         if (mIsPlaying && stashed && !mIsSuspendedForStash) {
-            mediaSession.suspend(SuspendType.UI);
+            mediaSession.suspend(SuspendType.SYSTEM);
             mIsSuspendedForStash = true;
         } else if (!mIsPlaying && !stashed && mIsSuspendedForStash) {
             // Don't resume if we didn't pause it on the transition into stash.  For example, don't
@@ -335,7 +335,7 @@ public class FullscreenVideoPictureInPictureController {
         if (mediaSession == null || mIsPlaying || !mIsSuspendedForStash) {
             return;
         }
-        mediaSession.resume();
+        mediaSession.resume(SuspendType.SYSTEM);
         mIsSuspendedForStash = false;
     }
 
@@ -636,7 +636,7 @@ public class FullscreenVideoPictureInPictureController {
             final MediaSession mediaSession = getMediaSession();
 
             if (mediaSession != null && mIsPlaying) {
-                mediaSession.suspend(SuspendType.UI);
+                mediaSession.suspend(SuspendType.SYSTEM);
             }
         }
     }

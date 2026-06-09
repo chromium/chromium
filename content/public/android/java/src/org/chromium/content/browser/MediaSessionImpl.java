@@ -79,8 +79,8 @@ public class MediaSessionImpl extends MediaSession {
     }
 
     @Override
-    public void resume() {
-        MediaSessionImplJni.get().resume(mNativeMediaSessionAndroid);
+    public void resume(@SuspendType.EnumType int suspendType) {
+        MediaSessionImplJni.get().resume(mNativeMediaSessionAndroid, suspendType);
     }
 
     @Override
@@ -196,7 +196,9 @@ public class MediaSessionImpl extends MediaSession {
 
     @NativeMethods
     public interface Natives {
-        void resume(long nativeMediaSessionAndroid);
+        void resume(
+                long nativeMediaSessionAndroid,
+                @JniType("media_session::mojom::MediaSession::SuspendType") int suspendType);
 
         void suspend(
                 long nativeMediaSessionAndroid,

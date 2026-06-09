@@ -26,8 +26,12 @@ public abstract class MediaSession {
      */
     public abstract ObserverList.RewindableIterator<MediaSessionObserver> getObserversForTesting();
 
-    /** Resumes the media session. */
-    public abstract void resume();
+    /**
+     * Resumes the media session.
+     *
+     * @param suspendType The type of the suspend request, from MediaSession.SuspendType.
+     */
+    public abstract void resume(@SuspendType.EnumType int suspendType);
 
     /**
      * Suspends the media session.

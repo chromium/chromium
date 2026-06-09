@@ -163,7 +163,7 @@ public class MediaSessionHelper implements MediaImageCallback {
 
                     if (mMediaSessionObserver.getMediaSession() == null) return;
 
-                    mMediaSessionObserver.getMediaSession().resume();
+                    mMediaSessionObserver.getMediaSession().resume(SuspendType.UI);
                 }
 
                 @Override
