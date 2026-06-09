@@ -321,6 +321,17 @@ public class WebContentsAccessibilityTest {
         return mActivityTestRule.performActionOnUiThread(viewId, action.getId(), args, criteria);
     }
 
+    private boolean performActionOnUiThread(
+            int viewId,
+            AccessibilityNodeInfoCompat.AccessibilityActionCompat action,
+            Bundle args,
+            Callable<Boolean> criteria,
+            String errorMsg)
+            throws ExecutionException, Throwable {
+        return mActivityTestRule.performActionOnUiThread(
+                viewId, action.getId(), args, criteria, errorMsg);
+    }
+
     private void executeJS(String method) {
         mActivityTestRule.executeJS(method);
     }
@@ -4213,6 +4224,44 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
+     * Focuses the first element in {@code expectedIdSequence}. Performs {@link
+     * AccessibilityActionCompat#ACTION_NEXT_HTML_ELEMENT} and checks that each of the subsequent
+     * elements in {@code expectedIdSequence} gets accessibility focus. Differs from {@link
+     * assertAccessibilityFocusMoves} in that it passes an empty {@link
+     * AccessibilityNodeInfo#ACTION_ARGUMENT_HTML_ELEMENT_STRING}.
+     */
+    private void assertNextMovesAccessibilityFocusInSequence(String[] expectedIdSequence)
+            throws Throwable {
+        Assert.assertTrue(expectedIdSequence.length > 1);
+
+        String fromId = expectedIdSequence[0];
+        int fromVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, fromId);
+        mActivityTestRule.focusNode(fromVirtualViewId);
+
+        for (int i = 1; i < expectedIdSequence.length; ++i) {
+            fromId = expectedIdSequence[i - 1];
+            fromVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, fromId);
+            String expectedToId = expectedIdSequence[i];
+            int expectedToVirtualViewId =
+                    waitForNodeMatching(sViewIdResourceNameMatcher, expectedToId);
+            Bundle bundle = new Bundle();
+            bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, "");
+            String errorMsg =
+                    String.format(
+                            "Expected ACTION_NEXT_HTML_ELEMENT to move focus from %s to %s",
+                            fromId, expectedToId);
+
+            Assert.assertTrue(
+                    performActionOnUiThread(
+                            fromVirtualViewId,
+                            ACTION_NEXT_HTML_ELEMENT,
+                            bundle,
+                            () -> isNodeAccessibilityFocused(expectedToVirtualViewId),
+                            errorMsg));
+        }
+    }
+
+    /**
      * Tests that TalkBack's Browse Mode table navigation (e.g., Ctrl + Alt + Arrows) correctly
      * delegates focus to the interactive widget inside a gridcell. This ensures the inner link
      * receives focus and can be activated, rather than focus getting trapped on the non-interactive
@@ -4429,6 +4478,138 @@ public class WebContentsAccessibilityTest {
                 bottomLeftVirtualViewId, ACTION_NEXT_HTML_ELEMENT, "COLUMN", rightVirtualViewId);
 
         assertAccessibilityFocusDoesNotMove(rightVirtualViewId, ACTION_NEXT_HTML_ELEMENT, "ROW");
+    }
+
+    /** Test that ANDROID_NEXT_HTML_ELEMENT skips all MathML nodes under that math root. */
+    @Test
+    @MediumTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_ANDROID_MATH)
+    public void testPerformAction_nextHtmlElement_mathRoot() throws Throwable {
+        setupTestWithHTML(
+"""
+<button id='before_button'>before</button>
+<math id='math_root'>
+  <mrow intent='point($x, $y)'>
+    <mo>(</mo>
+    <mi arg='x'>0</mi>
+    <mo>,</mo>
+    <mi arg='y'>5</mi>
+    <mo>)</mo>"
+  </mrow>
+</math>
+<button id='after_button'>after</button>\
+""");
+        assertNextMovesAccessibilityFocusInSequence(
+                new String[] {"before_button", "math_root", "after_button"});
+    }
+
+    /** Test that ANDROID_NEXT_HTML_ELEMENT visits non-MathML (HTML) nodes under MathML root. */
+    @Test
+    @MediumTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_ANDROID_MATH)
+    public void testPerformAction_nextHtmlElement_visitHtmlUnderMathRoot() throws Throwable {
+        setupTestWithHTML(
+"""
+<button id='before_button'>before</button>
+<math id='math_root'>
+  <msqrt>
+    <mn>2</mn>
+    <mtext>
+      <button id='edit_button'>edit</button>
+      <button id='reset_button'>edit</button>
+    </mtext>
+  </msqrt>
+</math>
+<button id='after_button'>after</button>\
+""");
+        assertNextMovesAccessibilityFocusInSequence(
+                new String[] {
+                    "before_button", "math_root", "edit_button", "reset_button", "after_button"
+                });
+    }
+
+    /**
+     * Test that ANDROID_NEXT_HTML_ELEMENT skips the <mtext> node when the <mtext> node has a child
+     * <br>
+     * node.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_ANDROID_MATH)
+    public void testPerformAction_nextHtmlElement_mtextHasBr() throws Throwable {
+        setupTestWithHTML(
+"""
+<button id='before_button'>before</button>
+<math id='math_root'>
+  <mtext>
+    Hello<br/>world
+  </mtext>
+</math>
+<button id='after_button'>after</button>\
+""");
+        assertNextMovesAccessibilityFocusInSequence(
+                new String[] {"before_button", "math_root", "after_button"});
+    }
+
+    /** Test that ANDROID_NEXT_HTML_ELEMENTS can skip a large amount of MathML elements. */
+    @Test
+    @MediumTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_ANDROID_MATH)
+    public void testPerformAction_nextHtmlElement_largeMathMlMatrix() throws Throwable {
+        // Generate MathML for 10x10 matrix.
+        StringBuilder mtable = new StringBuilder();
+        mtable.append("<mtable>");
+        for (int i = 0; i < 10; ++i) {
+            mtable.append("<mtr>");
+            for (int j = 0; j < 10; ++j) {
+                mtable.append("<mtd><mn>1</mn></mtd>");
+            }
+            mtable.append("</mtr>");
+        }
+        mtable.append("</mtable>");
+
+        setupTestWithHTML(
+"""
+<button id='before_button'>before</button>
+<math id='math_root'>
+  <mrow>
+    <mo>[</mo>\
+"""
+                        + mtable.toString()
+                        +
+"""
+    <mo>]</mo>
+  </mrow>
+</math>
+<button id='after_button'>after</button>\
+""");
+        assertNextMovesAccessibilityFocusInSequence(
+                new String[] {"before_button", "math_root", "after_button"});
+    }
+
+    /** Test that a screen reader can request Chromium to programmatically focus a MathML node. */
+    @Test
+    @MediumTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_ANDROID_MATH)
+    public void testMathMlCanBeProgrammaticallyFocused() throws Throwable {
+        setupTestWithHTML(
+"""
+<math>
+  <mn id='mn1'>1</mn>
+  <mn>2</mn>
+  </math>
+<button id='button_id'>button</button>\
+""");
+        int mn1VirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "mn1");
+        int buttonId = waitForNodeMatching(sViewIdResourceNameMatcher, "button_id");
+
+        Assert.assertTrue(
+                performActionOnUiThread(mn1VirtualViewId, ACTION_ACCESSIBILITY_FOCUS, null));
+        CriteriaHelper.pollUiThread(() -> isNodeAccessibilityFocused(mn1VirtualViewId));
+
+        // ACTION_NEXT_HTML_ELEMENT should still ignore MathML nodes.
+        assertAccessibilityFocusMoves(
+                mn1VirtualViewId, ACTION_NEXT_HTML_ELEMENT, /* htmlElementString= */ "", buttonId);
     }
 
     // ------------------ Misc tests that cannot be done as tree/event tests ------------------ //

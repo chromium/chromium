@@ -592,6 +592,16 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
     return false;
   }
 
+  if (features::IsAccessibilityAndroidMathEnabled()) {
+    if (GetRole() == ax::mojom::Role::kMathMLMath) {
+      return true;
+    }
+
+    if (ui::IsMath(GetRole())) {
+      return false;
+    }
+  }
+
   // Otherwise, focusable nodes are always interesting. Note that IsFocusable()
   // already skips over things like iframes and child frames that are
   // technically focusable but shouldn't be exposed as focusable on Android.

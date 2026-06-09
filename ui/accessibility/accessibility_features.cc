@@ -333,6 +333,11 @@ bool IsAccessibilityMagnificationFollowsFocusEnabled() {
       ::features::kAccessibilityMagnificationFollowsFocus);
 }
 
+BASE_FEATURE(kAccessibilityAndroidMath, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityAndroidMathEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityAndroidMath);
+}
+
 BASE_FEATURE(kReadAloudNative, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAloudNativeEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAloudNative);

@@ -262,6 +262,10 @@ AX_BASE_EXPORT bool IsAccessibilityInlineLineSeparatorsEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnificationFollowsFocus);
 AX_BASE_EXPORT bool IsAccessibilityMagnificationFollowsFocusEnabled();
 
+// Enables MathML support for Android.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityAndroidMath);
+AX_BASE_EXPORT bool IsAccessibilityAndroidMathEnabled();
+
 // Controls the new native C++ implementation for Read Aloud on Android,
 // replacing the previous Speakr service integration.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAloudNative);

@@ -396,22 +396,41 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     }
 
     /**
-     * Helper method to perform an action on the UI, then poll for a given criteria to verify
-     * the action was completed.
+     * Helper method to perform an action on the UI, then poll for a given criteria to verify the
+     * action was completed.
      *
-     * @param viewId int                   virtualViewId of the given node
-     * @param action int                   desired AccessibilityNodeInfo action
-     * @param args Bundle                  action bundle
-     * @param criteria Callable<Boolean>   criteria to poll against to verify completion
-     * @return boolean                     return value of performAction
-     * @throws ExecutionException          Error
-     * @throws Throwable                   Error
+     * @param viewId int virtualViewId of the given node
+     * @param action int desired AccessibilityNodeInfo action
+     * @param args Bundle action bundle
+     * @param criteria Callable<Boolean> criteria to poll against to verify completion
+     * @return boolean return value of performAction
+     * @throws ExecutionException Error
+     * @throws Throwable Error
      */
     public boolean performActionOnUiThread(
             int viewId, int action, Bundle args, Callable<Boolean> criteria)
             throws ExecutionException, Throwable {
+        return performActionOnUiThread(viewId, action, args, criteria, NODE_TIMEOUT_ERROR);
+    }
+
+    /**
+     * Helper method to perform an action on the UI, then poll for a given criteria to verify the
+     * action was completed.
+     *
+     * @param viewId int virtualViewId of the given node
+     * @param action int desired AccessibilityNodeInfo action
+     * @param args Bundle action bundle
+     * @param criteria Callable<Boolean> criteria to poll against to verify completion
+     * @param exceptionMsg message to output if criteria is not satisfied within timeout
+     * @return boolean return value of performAction
+     * @throws ExecutionException Error
+     * @throws Throwable Error
+     */
+    public boolean performActionOnUiThread(
+            int viewId, int action, Bundle args, Callable<Boolean> criteria, String exceptionMsg)
+            throws ExecutionException, Throwable {
         boolean returnValue = performActionOnUiThread(viewId, action, args);
-        CriteriaHelper.pollUiThread(criteria, NODE_TIMEOUT_ERROR);
+        CriteriaHelper.pollUiThread(criteria, exceptionMsg);
         return returnValue;
     }
 
