@@ -758,8 +758,14 @@ void DigitalIdentityRequestImpl::Abort() {
     return;
   }
 
+  base::WeakPtr<DigitalIdentityRequestImpl> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   if (update_interstitial_on_abort_callback_) {
     std::move(update_interstitial_on_abort_callback_).Run();
+  }
+
+  if (!weak_this) {
+    return;
   }
 
   CompleteRequestWithError(RequestStatusForMetrics::kErrorAborted);
