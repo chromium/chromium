@@ -100,6 +100,7 @@ class MEDIA_EXPORT AudioFileReader {
   bool DecodePacket(const ScopedAVPacket& packet);
   void FinalizeDecodedBuffer(scoped_refptr<AudioBuffer> buffer,
                              bool is_final_output);
+  void MaybeTrimAacFinalBuffer(AudioBuffer* buffer);
   void OnOutput(scoped_refptr<AudioBuffer> buffer);
   bool IsMp3File();
 
@@ -131,6 +132,10 @@ class MEDIA_EXPORT AudioFileReader {
   // Hold onto the most recent decoded buffer so final-output adjustments, such
   // as AAC tail trimming, are only applied after decode output is complete.
   scoped_refptr<AudioBuffer> pending_output_buffer_;
+
+  // Tracks the total number of frames emitted so far in the current Read()
+  // session.
+  int num_frames_emitted_ = 0;
 
   // Temporary pointer to the vector of audio buses for the current Read() call.
   raw_ptr<std::vector<std::unique_ptr<AudioBus>>> decoded_audio_packets_ =

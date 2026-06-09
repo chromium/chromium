@@ -175,6 +175,7 @@ size_t AudioFileReader::Read(
       << "AudioFileReader::Read() : reader is not opened!";
 
   base::AutoReset packet_reset(&decoded_audio_packets_, decoded_audio_packets);
+  num_frames_emitted_ = 0;
 
   bool decode_success = true;
   auto packet = ScopedAVPacket::Allocate();
@@ -234,15 +235,40 @@ void AudioFileReader::FinalizeDecodedBuffer(scoped_refptr<AudioBuffer> buffer,
     return;
   }
 
-  // AAC decoding doesn't properly trim the last packet in a stream, so if we
-  // have duration information, use it to set the correct length to avoid extra
-  // silence from being output. In the case where we are also discarding some
-  // portion of the packet (as indicated by a negative pts), we further want to
-  // adjust the duration downward by however much exists before zero.
-  if (is_final_output && config_->codec() == AudioCodec::kAAC &&
-      last_packet_duration_ > base::TimeDelta()) {
-    int frames_read = buffer->frame_count();
+  if (is_final_output) {
+    MaybeTrimAacFinalBuffer(buffer.get());
+  }
 
+  if (!buffer->frame_count()) {
+    return;
+  }
+
+  num_frames_emitted_ += buffer->frame_count();
+
+  if (decoded_audio_packets_) {
+    decoded_audio_packets_->push_back(
+        AudioBuffer::WrapOrCopyToAudioBus(std::move(buffer)));
+  }
+}
+
+void AudioFileReader::MaybeTrimAacFinalBuffer(AudioBuffer* buffer) {
+  if (config_->codec() != AudioCodec::kAAC) {
+    return;
+  }
+
+  // AAC encoders introduce padding (priming and remainder samples) to fill
+  // fixed-size transform blocks. We need to trim these padding samples from
+  // the end of the stream to ensure gapless playback.
+  //
+  // We attempt two methods:
+  // 1. Packet-duration based trim (precise, uses sample table metadata).
+  // 2. Container-duration based trim (fallback, uses overall track duration).
+
+  // Method 1: Try to trim based on the last packet's duration reported by the
+  // demuxer (usually derived from the `stts` sample table). This is preferred
+  // because it uses the stream's native timescale and is sample-accurate.
+  if (last_packet_duration_ > base::TimeDelta()) {
+    int frames_read = buffer->frame_count();
     const base::TimeDelta frame_duration =
         AudioTimestampHelper::FramesToTime(frames_read, sample_rate());
 
@@ -253,19 +279,37 @@ void AudioFileReader::FinalizeDecodedBuffer(scoped_refptr<AudioBuffer> buffer,
                << new_frames_read << " based on packet duration.";
       frames_read = new_frames_read;
 
-      // The above process may delete the entire packet.
-      if (!frames_read) {
-        return;
-      }
-
-      // Otherwise, trim the empty frames at the end.
+      // Trim the empty frames at the end.
       buffer->TrimEnd(buffer->frame_count() - frames_read);
+      return;
     }
   }
 
-  if (decoded_audio_packets_) {
-    decoded_audio_packets_->push_back(
-        AudioBuffer::WrapOrCopyToAudioBus(std::move(buffer)));
+  // Method 2: If the demuxer did not report a shortened duration for the last
+  // packet (common for encoders like Apple's `afconvert` that rely solely on
+  // the edit list `elst` to specify track duration), we fall back to trimming
+  // based on the overall container duration.
+  //
+  // This is a fallback because container duration (often in milliseconds or
+  // movie timescale) can suffer from minor precision loss when converted back
+  // to sample frames.
+  //
+  // We exclude raw AAC streams (ADTS) because they lack container headers and
+  // their duration is only an estimate, which is not reliable for trimming.
+  if (HasKnownDuration() &&
+      glue_->container() !=
+          container_names::MediaContainerName::kContainerAAC) {
+    const base::TimeDelta raw_duration = ConvertFromTimeBase(
+        {1, AV_TIME_BASE}, glue_->format_context()->duration);
+    const int expected_total_frames =
+        AudioTimestampHelper::TimeToFrames(raw_duration, sample_rate());
+    const int max_remaining_frames =
+        std::max(0, expected_total_frames - num_frames_emitted_);
+    if (buffer->frame_count() > max_remaining_frames) {
+      DVLOG(2) << "Shrinking AAC frame from " << buffer->frame_count() << " to "
+               << max_remaining_frames << " based on container duration.";
+      buffer->TrimEnd(buffer->frame_count() - max_remaining_frames);
+    }
   }
 }
 

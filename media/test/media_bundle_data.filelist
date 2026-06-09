@@ -505,6 +505,7 @@ data/test-25fps.vp9_2
 data/test-25fps.vp9_2.json
 data/test_key_system_instantiation.html
 data/testsrc-no-durations-h264.mkv
+data/tiny-clip.mp4
 data/tos-h264-opus.mp4
 data/track-disabled.mp4
 data/trailing-garbage.mp3

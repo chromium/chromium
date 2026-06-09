@@ -275,8 +275,13 @@ TEST_P(AudioFileReaderTest, AAC) {
 }
 
 TEST_P(AudioFileReaderTest, AAC_SinglePacket) {
-  RunTest("440hz-10ms.m4a", "3.84,4.25,4.33,3.58,3.27,3.16,", 1, 44100,
-          base::Microseconds(69660), 3073, 960);
+  RunTest("440hz-10ms.m4a", "3.77,4.53,4.75,3.48,3.67,3.76,", 1, 44100,
+          base::Microseconds(69660), 3073, 441);
+}
+
+TEST_P(AudioFileReaderTest, AAC_TinyClipRepro) {
+  RunTest("tiny-clip.mp4", "-1.77,1.15,-5.82,-1.21,-3.43,2.93,", 2, 48000,
+          base::Microseconds(680042), 32643, 30011);
 }
 
 TEST_P(AudioFileReaderTest, AAC_ADTS) {

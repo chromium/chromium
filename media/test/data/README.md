@@ -96,6 +96,10 @@ ffmpeg -filter_complex "smptehdbars=size=1280x720" -t 30 -c:v libx264 -y bars.mp
 ffmpeg -i bars.mp4 -ss 10 -copyts -c copy -movflags +faststart -y bars2.mp4
 ```
 
+#### tiny-clip.mp4
+AAC audio in MP4 container, encoded with Apple's `afconvert` in TVBR mode. It has a 2112 sample priming gap and a 644 sample remainder gap. The target audio duration is 30011 samples, but the last packet duration is not shortened in the sample table (`stts`), relying on the edit list (`elst`) for trimming. Used to test AAC end trimming.
+Source: https://jakearchibald.github.io/aac-decode-bug/tiny-clip.mp4
+
 ### FLAC
 
 #### bear-flac.mp4
