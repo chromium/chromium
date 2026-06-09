@@ -15,6 +15,7 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/build_time.h"
+#include "base/byte_size.h"
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -2303,6 +2304,19 @@ void NetworkContext::NotifyExternalCacheHit(const GURL& url,
   }
   cache->OnExternalCacheHit(url, http_method, key, include_credentials);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void NetworkContext::SetHttpCacheMaxSize(base::ByteSize http_cache_max_size,
+                                         bool force_initialization) {
+  // Note: we do not update params_->http_cache_max_size.
+  net::HttpCache* cache =
+      url_request_context_->http_transaction_factory()->GetCache();
+  if (!cache) {
+    return;
+  }
+  cache->SetMaxBytes(http_cache_max_size, force_initialization);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void NetworkContext::SetCorsOriginAccessListsForOrigin(
     const url::Origin& source_origin,

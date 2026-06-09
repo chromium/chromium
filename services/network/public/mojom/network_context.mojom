@@ -8,6 +8,7 @@ import "components/content_settings/core/common/content_settings.mojom";
 import "components/unexportable_keys/mojom/unexportable_key_service.mojom";
 import "components/variations/variations.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/byte_size.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -400,6 +401,8 @@ struct NetworkContextParams {
   bool http_cache_enabled = true;
   // Maximum size of the HTTP cache. 0 means to use the default size.
   // Ignored if the cache is disabled.
+  // This is only the initial value used for initialization. The maximum size
+  // may later be updated dynamically using NetworkContext::SetHttpCacheMaxSize.
   int32 http_cache_max_size = 0;
 
   // A factory to broker file operations needed for the HTTP cache on some
@@ -1149,6 +1152,33 @@ interface NetworkContext {
                          string http_method,
                          NetworkIsolationKey key,
                          bool include_credentials);
+
+  // Updates the HTTP cache max size (quota size). The new quota is applied
+  // where possible. The cache implementation may clamp the requested quota to a
+  // supported range.
+  //
+  // Note that this method does not use the same semantics as
+  // NetworkContextParams.http_cache_max_size where zero is a special value. In
+  // this method, zero just means the minimum possible size.
+  //
+  // Has no effect if the HTTP cache is disabled.
+  //
+  // Changing the value MAY trigger cache entry evictions or other expensive
+  // disk operations. Evictions MAY occur even if the quota size increases
+  // relative to the original http_cache_max_size value if the on-disk size is
+  // greater than either value.
+  //
+  // If the disk cache backend hasn't yet been initialized and
+  // force_initialization is true, this will trigger its initialization, which
+  // may allow it to perform evictions in case it had not been started already.
+  //
+  // This should not be relied on as a mechanism for deliberate data retention
+  // control. (See other cache clearing methods instead.)
+  //
+  // Enabled only on Android as this is only invoked via a WebView API.
+  [EnableIf=is_android]
+  SetHttpCacheMaxSize(mojo_base.mojom.ByteSize http_cache_max_size,
+                      bool force_initialization);
 
   // Clears the host cache. This will affect all NetworkContexts that share the
   // same HostResolved as the NetworkContext this is called on.

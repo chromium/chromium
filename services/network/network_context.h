@@ -16,6 +16,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -308,6 +309,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                               const std::string& http_method,
                               const net::NetworkIsolationKey& key,
                               bool include_credentials) override;
+#if BUILDFLAG(IS_ANDROID)
+  void SetHttpCacheMaxSize(base::ByteSize http_cache_max_size,
+                           bool force_initialization) override;
+#endif  // BUILDFLAG(IS_ANDROID)
   void ClearCorsPreflightCache(
       mojom::ClearDataFilterPtr filter,
       ClearCorsPreflightCacheCallback callback) override;

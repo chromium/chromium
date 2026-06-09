@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
@@ -1684,6 +1685,132 @@ TEST_F(NetworkContextTest, DiskCacheSize) {
   histogram_tester.ExpectUniqueSample("HttpCache.MaxFileSizeOnInit",
                                       max_file_size / 1024, 1);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(NetworkContextTest, SetHttpCacheMaxSizeAfterBackendInit) {
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  // Explicitly clear file_paths to force in-memory cache.
+  context_params->file_paths.reset();
+  context_params->http_cache_enabled = true;
+
+  const base::ByteSize kInitialSize = base::MiBU(20);
+  const base::ByteSize kNewSize = base::MiBU(10);
+  context_params->http_cache_max_size =
+      base::checked_cast<int32_t>(kInitialSize.InBytes());
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  disk_cache::Backend* backend = WaitForCacheBackend(*network_context);
+  ASSERT_TRUE(backend);
+
+  // Verify initial size.
+  EXPECT_EQ(kInitialSize, backend->GetMaxBytesForTesting());
+
+  // Call the Mojo endpoint.
+  network_context->SetHttpCacheMaxSize(kNewSize, false);
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return backend->GetMaxBytesForTesting() == kNewSize; }));
+
+  // Verify that setting size to 0 doesn't crash.
+  // (It could result in any size.)
+  network_context->SetHttpCacheMaxSize(base::ByteSize(0), true);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(NetworkContextTest, SetHttpCacheMaxSizeBeforeUnforcedBackendInit) {
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  // Explicitly clear file_paths to force in-memory cache.
+  context_params->file_paths.reset();
+  context_params->http_cache_enabled = true;
+
+  const base::ByteSize kInitialSize = base::MiBU(20);
+  const base::ByteSize kNewSize = base::MiBU(10);
+  context_params->http_cache_max_size =
+      base::checked_cast<int32_t>(kInitialSize.InBytes());
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  // There should not be a backend yet.
+  ASSERT_EQ(nullptr, network_context->url_request_context()
+                         ->http_transaction_factory()
+                         ->GetCache()
+                         ->GetCurrentBackend());
+
+  // Invoke the resize before calling `WaitForCacheBackend()` to ensure
+  // the operation is queued or correctly forces initialization.
+  network_context->SetHttpCacheMaxSize(kNewSize, false);
+  task_environment_.RunUntilIdle();
+
+  // There should still not be a backend yet.
+  ASSERT_EQ(nullptr, network_context->url_request_context()
+                         ->http_transaction_factory()
+                         ->GetCache()
+                         ->GetCurrentBackend());
+
+  // Now trigger the initialization and wait.
+  disk_cache::Backend* backend = WaitForCacheBackend(*network_context);
+  ASSERT_TRUE(backend);
+
+  // Verify the new limit is successfully applied to the underlying backend.
+  EXPECT_EQ(kNewSize, backend->GetMaxBytesForTesting());
+}
+
+TEST_F(NetworkContextTest, SetHttpCacheMaxSizeBeforeForcedBackendInit) {
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  // Explicitly clear file_paths to force in-memory cache.
+  context_params->file_paths.reset();
+  context_params->http_cache_enabled = true;
+
+  const base::ByteSize kInitialSize = base::MiBU(20);
+  const base::ByteSize kNewSize = base::MiBU(10);
+  context_params->http_cache_max_size =
+      base::checked_cast<int32_t>(kInitialSize.InBytes());
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  // There should not be a backend yet.
+  ASSERT_EQ(nullptr, network_context->url_request_context()
+                         ->http_transaction_factory()
+                         ->GetCache()
+                         ->GetCurrentBackend());
+
+  // Invoke the resize before calling `WaitForCacheBackend()` to ensure
+  // the operation is queued or correctly forces initialization.
+  network_context->SetHttpCacheMaxSize(kNewSize, true);
+
+  // Now trigger the initialization and wait.
+  disk_cache::Backend* backend = WaitForCacheBackend(*network_context);
+  ASSERT_TRUE(backend);
+
+  // Verify the new limit is successfully applied to the underlying backend.
+  EXPECT_EQ(kNewSize, backend->GetMaxBytesForTesting());
+}
+
+TEST_F(NetworkContextTest, SetHttpCacheMaxSizeNoCache) {
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->http_cache_enabled = false;
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  // There should not be an HTTP Cache at all.
+  ASSERT_EQ(nullptr, network_context->url_request_context()
+                         ->http_transaction_factory()
+                         ->GetCache());
+
+  // Ensure this doesn't crash when the internal `GetCache()` returns nullptr.
+  network_context->SetHttpCacheMaxSize(base::MiBU(10), true);
+  task_environment_.RunUntilIdle();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // This makes sure that network_session_configurator::ChooseCacheType is
 // connected to NetworkContext.
