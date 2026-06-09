@@ -78,12 +78,12 @@ def _extract_cl_info(revision: str) -> ClInfo:
     commit_time = datetime.datetime.fromtimestamp(timestamp,
                                                   tz=datetime.timezone.utc)
     body = '\n'.join(lines[1:])
-    change_ids = re.findall(r'^Change-Id:\s*(I[0-9a-f]{40})', body,
+    cl_numbers = re.findall(r'^Reviewed-on:\s*https://\S+/\+/(\d+)', body,
                             re.MULTILINE)
-    if not change_ids:
+    if not cl_numbers:
         raise ValueError(
-            f'Change-Id not found in commit description for {revision}')
-    change_id = change_ids[-1]
+            f'Reviewed-on URL not found in commit description for {revision}')
+    cl_number = int(cl_numbers[-1])
     cp_match = re.search(r'^Cr-Commit-Position:\s*[^@]+@\{#(\d+)\}', body,
                          re.MULTILINE)
     if not cp_match:
@@ -93,7 +93,7 @@ def _extract_cl_info(revision: str) -> ClInfo:
     commit_position = int(cp_match.group(1))
     return ClInfo(
         revision=revision,
-        change_id=change_id,
+        cl_number=cl_number,
         commit_time=commit_time,
         commit_position=commit_position,
         description=body,

@@ -45,8 +45,8 @@ class ClInfo:
     """Information representing a changelist/commit."""
     # The git revision of the CL.
     revision: str
-    # The Gerrit change ID.
-    change_id: str
+    # The Gerrit CL number.
+    cl_number: int
     # The time the CL landed in the UTC timezone.
     commit_time: datetime.datetime
     # The Chromium commit position extracted from the CL description.

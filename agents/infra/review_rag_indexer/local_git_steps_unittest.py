@@ -50,7 +50,7 @@ class ExtractClInfoTest(unittest.TestCase):
             1717448400
             This is a commit message
 
-            Change-Id: I8d32dfe70ab3a533ec82eecac99ccebc07b610ea
+            Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/7880853
             Cr-Commit-Position: refs/heads/main@{#1641065}
             """)
 
@@ -58,8 +58,7 @@ class ExtractClInfoTest(unittest.TestCase):
 
         self.assertIsInstance(info, ClInfo)
         self.assertEqual(info.revision, 'rev1')
-        self.assertEqual(info.change_id,
-                         'I8d32dfe70ab3a533ec82eecac99ccebc07b610ea')
+        self.assertEqual(info.cl_number, 7880853)
         self.assertEqual(
             info.commit_time,
             datetime.datetime(2024,
@@ -79,20 +78,18 @@ class ExtractClInfoTest(unittest.TestCase):
             ['git', 'show', '-s', '--format=%ct%n%B', 'rev1'],
             encoding='utf-8')
 
-    def test_extract_cl_info_multiple_change_ids(self):
+    def test_extract_cl_info_multiple_reviewed_on(self):
         self.mock_check_output.return_value = textwrap.dedent("""\
             1717448400
             Revert commit
 
-            Change-Id: I1111111111111111111111111111111111111111
-            Original Change-Id: I2222222222222222222222222222222222222222
-            Change-Id: I3333333333333333333333333333333333333333
+            Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/11111
+            Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/22222
             Cr-Commit-Position: refs/heads/main@{#12345}
             """)
         info = local_git_steps._extract_cl_info('rev1')
         self.assertIsInstance(info, ClInfo)
-        self.assertEqual(info.change_id,
-                         'I3333333333333333333333333333333333333333')
+        self.assertEqual(info.cl_number, 22222)
         self.assertEqual(info.commit_position, 12345)
 
     def test_extract_cl_info_missing_commit_position(self):
@@ -100,23 +97,23 @@ class ExtractClInfoTest(unittest.TestCase):
             1717448400
             This is a commit message without commit position
 
-            Change-Id: I8d32dfe70ab3a533ec82eecac99ccebc07b610ea
+            Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/7880853
             """)
         with self.assertRaises(ValueError) as cm:
             local_git_steps._extract_cl_info('rev1')
         self.assertIn('Cr-Commit-Position not found in commit description',
                       str(cm.exception))
 
-    def test_extract_cl_info_missing_change_id(self):
+    def test_extract_cl_info_missing_reviewed_on(self):
         self.mock_check_output.return_value = textwrap.dedent("""\
             1717448400
-            This is a commit message without change ID
+            This is a commit message without Reviewed-on
 
             Cr-Commit-Position: refs/heads/main@{#1641065}
             """)
         with self.assertRaises(ValueError) as cm:
             local_git_steps._extract_cl_info('rev1')
-        self.assertIn('Change-Id not found in commit description',
+        self.assertIn('Reviewed-on URL not found in commit description',
                       str(cm.exception))
 
 
@@ -247,8 +244,8 @@ class ProcessRevisionsTest(unittest.TestCase):
             'commit1~1': {
                 'revision':
                 'commit1~1',
-                'change_id':
-                'Iinit',
+                'cl_number':
+                0,
                 'commit_time':
                 datetime.datetime(2026,
                                   6,
@@ -265,8 +262,8 @@ class ProcessRevisionsTest(unittest.TestCase):
             'commit1': {
                 'revision':
                 'commit1',
-                'change_id':
-                'I1111',
+                'cl_number':
+                1111,
                 'commit_time':
                 datetime.datetime(2026,
                                   6,
@@ -283,8 +280,8 @@ class ProcessRevisionsTest(unittest.TestCase):
             'commit2': {
                 'revision':
                 'commit2',
-                'change_id':
-                'I2222',
+                'cl_number':
+                2222,
                 'commit_time':
                 datetime.datetime(2026,
                                   6,
@@ -301,8 +298,8 @@ class ProcessRevisionsTest(unittest.TestCase):
             'commit3': {
                 'revision':
                 'commit3',
-                'change_id':
-                'I3333',
+                'cl_number':
+                3333,
                 'commit_time':
                 datetime.datetime(2026,
                                   6,
@@ -379,8 +376,8 @@ class ProcessRevisionsTest(unittest.TestCase):
         cl_info = {
             'revision':
             'commit1',
-            'change_id':
-            'I1111',
+            'cl_number':
+            1111,
             'commit_time':
             datetime.datetime(2026,
                               6,
@@ -399,7 +396,7 @@ class ProcessRevisionsTest(unittest.TestCase):
             if rev == 'commit1~1':
                 return ClInfo(
                     revision='commit1~1',
-                    change_id='Iinit',
+                    cl_number=0,
                     commit_time=datetime.datetime(
                         2026, 6, 3, 20, 0, 0, tzinfo=datetime.timezone.utc),
                     commit_position=99,
@@ -429,8 +426,8 @@ class ProcessRevisionsTest(unittest.TestCase):
         cl_info = {
             'revision':
             'commit1',
-            'change_id':
-            'I1111',
+            'cl_number':
+            1111,
             'commit_time':
             datetime.datetime(2026,
                               6,
@@ -449,7 +446,7 @@ class ProcessRevisionsTest(unittest.TestCase):
             if rev == 'commit1~1':
                 return ClInfo(
                     revision='commit1~1',
-                    change_id='Iinit',
+                    cl_number=0,
                     commit_time=datetime.datetime(
                         2026, 6, 3, 20, 0, 0, tzinfo=datetime.timezone.utc),
                     commit_position=99,
@@ -478,8 +475,8 @@ class ProcessRevisionsTest(unittest.TestCase):
         cl_info = {
             'revision':
             'commit1',
-            'change_id':
-            'I1111',
+            'cl_number':
+            1111,
             'commit_time':
             datetime.datetime(2026,
                               6,
@@ -498,7 +495,7 @@ class ProcessRevisionsTest(unittest.TestCase):
             if rev == 'commit1~1':
                 return ClInfo(
                     revision='commit1~1',
-                    change_id='Iinit',
+                    cl_number=0,
                     commit_time=datetime.datetime(
                         2026, 6, 3, 20, 0, 0, tzinfo=datetime.timezone.utc),
                     commit_position=99,
