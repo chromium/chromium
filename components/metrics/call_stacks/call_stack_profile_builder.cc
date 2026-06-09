@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
+#include "base/profiler/stack_sampling_profiler.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -61,6 +62,10 @@ CallStackProfileBuilder::CallStackProfileBuilder(
     base::OnceClosure completed_callback)
     : work_id_recorder_(work_id_recorder) {
   completed_callback_ = std::move(completed_callback);
+  // Reserve capacity for the expected number of samples to avoid repeated
+  // vector reallocations during collection.
+  sample_timestamps_.reserve(
+      base::StackSamplingProfiler::SamplingParams{}.samples_per_profile);
   sampled_profile_.set_process(
       ToExecutionContextProcess(profile_params.process));
   sampled_profile_.set_thread(ToExecutionContextThread(profile_params.thread));
