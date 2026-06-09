@@ -61,8 +61,8 @@ class SendTabToSelfLocal;
 // The java version of this class: SendTabToSelfEntry.java
 class SendTabToSelfEntry {
  public:
-  // Creates a SendTabToSelf entry. |url| and |title| are the main fields of the
-  // entry.
+  // Creates a SendTabToSelf entry. `url` and `title` are the main fields of the
+  // entry. `url` must be valid as per IsValidUrl().
   SendTabToSelfEntry(std::string guid,
                      const GURL& url,
                      std::string title,
@@ -103,7 +103,7 @@ class SendTabToSelfEntry {
   bool IsReceived() const;
   base::Time GetReceivedTime() const;
 
-  // The state of this entry's notification: if it has been |dismissed|.
+  // The state of this entry's notification: if it has been `dismissed`.
   void SetNotificationDismissed(bool notification_dismissed);
   bool GetNotificationDismissed() const;
 
@@ -117,19 +117,23 @@ class SendTabToSelfEntry {
   // local storage.
   SendTabToSelfLocal AsLocalProto() const;
 
+  // Returns true if the URL is valid and has a supported scheme (HTTP or
+  // HTTPS).
+  static bool IsValidUrl(const GURL& url);
+
   // Creates a SendTabToSelfEntry from the protobuf format.
-  // If creation time is not set, it will be set to |now|.
+  // If creation time is not set, it will be set to `now`.
   static std::unique_ptr<SendTabToSelfEntry> FromProto(
       const sync_pb::SendTabToSelfSpecifics& pb_entry,
       base::Time now);
 
   // Creates a SendTabToSelfEntry from the protobuf format.
-  // If creation time is not set, it will be set to |now|.
+  // If creation time is not set, it will be set to `now`.
   static std::unique_ptr<SendTabToSelfEntry> FromLocalProto(
       const SendTabToSelfLocal& pb_entry,
       base::Time now);
 
-  // Returns if the Entry has expired based on the |current_time|.
+  // Returns if the Entry has expired based on the `current_time`.
   bool IsExpired(base::Time current_time) const;
 
   // Creates a SendTabToSelfEntry consisting of only the required fields.

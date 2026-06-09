@@ -5,6 +5,7 @@
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 
 #include "components/prefs/pref_service.h"
+#include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -35,7 +36,7 @@ std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
     syncer::SyncService* sync_service,
     SendTabToSelfModel* send_tab_to_self_model,
     PrefService* pref_service) {
-  if (!url_to_share.SchemeIsHTTPOrHTTPS()) {
+  if (!SendTabToSelfEntry::IsValidUrl(url_to_share)) {
     return std::nullopt;
   }
 

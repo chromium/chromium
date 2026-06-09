@@ -120,6 +120,11 @@ class SendTabToSelfBubbleControllerBrowserTest : public SigninBrowserTestBase {
         }));
   }
 
+  void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
   void ExpectToastShown(ToastId expected_id,
                         int message_id,
                         const std::u16string& replacement = u"",
@@ -155,6 +160,10 @@ class SendTabToSelfBubbleControllerBrowserTest : public SigninBrowserTestBase {
   }
 
  protected:
+  GURL empty_url() const {
+    return embedded_test_server()->GetURL("/empty.html");
+  }
+
   base::CallbackListSubscription create_services_subscription_;
 };
 
@@ -171,7 +180,7 @@ class SendTabToSelfPostSendToastBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                        BubbleShowsToast_Desktop) {
-  GURL test_url("about:blank");
+  GURL test_url = empty_url();
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -204,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                        BubbleShowsToast_Phone) {
-  GURL test_url("about:blank");
+  GURL test_url = empty_url();
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -237,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                        BubbleShowsToast_Tablet) {
-  GURL test_url("about:blank");
+  GURL test_url = empty_url();
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -269,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                        BubbleShowsThrottledToast) {
-  GURL test_url("about:blank");
+  GURL test_url = empty_url();
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -306,8 +315,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                        ContextMenuShowsToast) {
-  GURL test_url(
-      "data:text/html;charset=utf-8,<html><body><p>Test</p></body></html>");
+  GURL test_url = empty_url();
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -339,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
                        BubbleShowsFailureToast) {
-  GURL test_url("about:blank");
+  GURL test_url = empty_url();
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -378,7 +386,7 @@ class SendTabToSelfPostSendToastDisabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastDisabledBrowserTest,
                        BubbleShowsFailureNotification) {
-  GURL test_url("about:blank");
+  GURL test_url = empty_url();
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -422,14 +430,10 @@ class SendTabToSelfScrollPositionBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
                        ScrollPositionPropagated_HappyPath) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   // Using a page with significant content ensures the renderer can generate
   // a selector for the center of the viewport.
-  GURL test_url(
-      "data:text/html;charset=utf-8,<html><body>"
-      "<p style='text-align: center'>This is some test content "
-      "that is long enough to be selected by the text fragment "
-      "generator.</p></body></html>");
+  GURL test_url =
+      embedded_test_server()->GetURL("/send_tab_to_self/scroll.html");
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -469,7 +473,6 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
                        ScrollPositionPropagated_EmptyPage) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
 
   content::WebContents* web_contents =
@@ -508,14 +511,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
                        ScrollPositionPropagated_ScrolledPage) {
-  // Use a data URL to avoid external dependencies. The page is long enough to
-  // require scrolling.
-  GURL test_url(
-      "data:text/html;charset=utf-8,<html><body>"
-      "<div style='height: 2000px'>Spacer Top</div>"
-      "<p id='text' style='text-align: center'>Some interesting text</p>"
-      "<div style='height: 2000px'>Spacer Bottom</div>"
-      "</body></html>");
+  GURL test_url =
+      embedded_test_server()->GetURL("/send_tab_to_self/scroll.html");
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -525,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
   EXPECT_TRUE(content::ExecJs(
       web_contents,
       "new Promise(r => {"
-      "  document.getElementById('text').scrollIntoView("
+      "  document.getElementById('target').scrollIntoView("
       "      {behavior: 'instant', block: 'center', inline: 'center'});"
       "  requestAnimationFrame(() => "
       "    requestAnimationFrame(r)"
@@ -564,10 +561,12 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollPositionBrowserTest,
   EXPECT_FALSE(
       observer.last_added_entry()->GetPageContext().scroll_position.IsEmpty());
   // Verify that the generated selector matches the expected text.
-  EXPECT_EQ(observer.last_added_entry()
-                ->GetPageContext()
-                .scroll_position.text_fragment.text_start,
-            "interesting");
+  EXPECT_THAT(
+      observer.last_added_entry()
+          ->GetPageContext()
+          .scroll_position.text_fragment.text_start,
+      testing::AnyOf(testing::HasSubstr("fox"), testing::HasSubstr("jumps"),
+                     testing::HasSubstr("dog")));
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -575,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        ShowPromoBubble) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL("about:blank")));
+  ASSERT_TRUE(content::NavigateToURL(web_contents, empty_url()));
 
   StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
   ASSERT_TRUE(sync_service);
@@ -595,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
                        PromoBubbleAccept_OpensDiceSignInTab) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL("about:blank")));
+  ASSERT_TRUE(content::NavigateToURL(web_contents, empty_url()));
 
   // Trigger the 'Offer Sign-In' state by overriding the entry point display
   // reason.

@@ -67,6 +67,7 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
             browser()->profile());
+    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
@@ -125,7 +126,7 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
 // a success toast after a device is selected.
 IN_PROC_BROWSER_TEST_F(SendTabToSelfInteractiveUiTest,
                        SendTabShowsBubbleAndToast) {
-  const GURL test_url("chrome://flags/");
+  const GURL test_url = embedded_test_server()->GetURL("/empty.html");
   RunTestSequence(
       InstrumentTab(kPrimaryTabId),
       NavigateWebContents(kPrimaryTabId, test_url),
@@ -180,7 +181,7 @@ class SendTabToSelfDeviceSelectionInteractiveUiTest
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
                        SendTabShowsBubbleAndToastDeviceSelection) {
-  const GURL test_url("chrome://flags/");
+  const GURL test_url = embedded_test_server()->GetURL("/empty.html");
   RunTestSequence(
       InstrumentTab(kPrimaryTabId),
       NavigateWebContents(kPrimaryTabId, test_url),
@@ -230,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
                        SendTabMultipleDevicesDeviceSelection) {
-  const GURL test_url("chrome://flags/");
+  const GURL test_url = embedded_test_server()->GetURL("/empty.html");
   RunTestSequence(
       InstrumentTab(kPrimaryTabId),
       NavigateWebContents(kPrimaryTabId, test_url),
@@ -296,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
                        CancelClosesBubbleWithoutSending) {
-  const GURL test_url("chrome://flags/");
+  const GURL test_url = embedded_test_server()->GetURL("/empty.html");
   RunTestSequence(
       InstrumentTab(kPrimaryTabId),
       NavigateWebContents(kPrimaryTabId, test_url), Do([this]() {

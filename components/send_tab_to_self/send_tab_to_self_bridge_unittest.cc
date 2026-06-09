@@ -116,6 +116,16 @@ sync_pb::DataTypeState StateWithEncryption(
   return state;
 }
 
+syncer::EntityData CreateEntityData(const std::string& guid,
+                                    const std::string& url) {
+  syncer::EntityData entity_data;
+  sync_pb::SendTabToSelfSpecifics* specifics =
+      entity_data.specifics.mutable_send_tab_to_self();
+  specifics->set_guid(guid);
+  specifics->set_url(url);
+  return entity_data;
+}
+
 class MockSendTabToSelfModelObserver : public SendTabToSelfModelObserver {
  public:
   MOCK_METHOD(void,
@@ -714,6 +724,49 @@ TEST_F(SendTabToSelfBridgeTest, AddInvalidEntries) {
                                          kLocalDeviceCacheGuid, PageContext(),
                                          NavigationHistory(),
                                          mock_callback_fail_3.Get()));
+
+  // Add Entry should fail on invalid schemes.
+  base::MockCallback<base::OnceCallback<void(SendTabToSelfResult)>>
+      mock_callback_fail_scheme_1;
+  EXPECT_CALL(mock_callback_fail_scheme_1,
+              Run(SendTabToSelfResult::kFailureInvalidUrl));
+  EXPECT_EQ(nullptr, bridge()->SendEntry(GURL("chrome://flags"), "d",
+                                         kLocalDeviceCacheGuid, PageContext(),
+                                         NavigationHistory(),
+                                         mock_callback_fail_scheme_1.Get()));
+
+  base::MockCallback<base::OnceCallback<void(SendTabToSelfResult)>>
+      mock_callback_fail_scheme_2;
+  EXPECT_CALL(mock_callback_fail_scheme_2,
+              Run(SendTabToSelfResult::kFailureInvalidUrl));
+  EXPECT_EQ(nullptr,
+            bridge()->SendEntry(GURL("about:blank"), "d", kLocalDeviceCacheGuid,
+                                PageContext(), NavigationHistory(),
+                                mock_callback_fail_scheme_2.Get()));
+}
+
+TEST_F(SendTabToSelfBridgeTest, IsEntityDataValid) {
+  InitializeBridge();
+
+  // Valid entries.
+  EXPECT_TRUE(bridge()->IsEntityDataValid(
+      CreateEntityData("guid", "http://www.google.com")));
+  EXPECT_TRUE(bridge()->IsEntityDataValid(
+      CreateEntityData("guid", "https://www.google.com")));
+
+  // Invalid entries.
+  EXPECT_FALSE(bridge()->IsEntityDataValid(
+      CreateEntityData("", "http://www.google.com")));  // Empty GUID.
+  EXPECT_FALSE(
+      bridge()->IsEntityDataValid(CreateEntityData("guid", "")));  // Empty URL.
+  EXPECT_FALSE(bridge()->IsEntityDataValid(
+      CreateEntityData("guid", "invalid_url")));  // Invalid URL.
+  EXPECT_FALSE(bridge()->IsEntityDataValid(
+      CreateEntityData("guid", "chrome://flags")));  // Invalid scheme.
+  EXPECT_FALSE(bridge()->IsEntityDataValid(
+      CreateEntityData("guid", "about:blank")));  // Invalid scheme.
+  EXPECT_FALSE(bridge()->IsEntityDataValid(CreateEntityData(
+      "guid", "file:///sdcard/test.html")));  // Invalid scheme.
 }
 
 // Tests that the pending commit callback is fired with success when the

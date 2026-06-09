@@ -31,6 +31,7 @@
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/send_tab_to_self/proto_conversions.h"
 #include "components/send_tab_to_self/send_tab_to_self_commit_tracker.h"
+#include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
@@ -329,9 +330,10 @@ std::string SendTabToSelfBridge::GetStorageKey(
 bool SendTabToSelfBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   CHECK(entity_data.specifics.has_send_tab_to_self());
-  sync_pb::SendTabToSelfSpecifics specifics =
+  const sync_pb::SendTabToSelfSpecifics& specifics =
       entity_data.specifics.send_tab_to_self();
-  return !specifics.guid().empty() && GURL(specifics.url()).is_valid();
+  return !specifics.guid().empty() &&
+         SendTabToSelfEntry::IsValidUrl(GURL(specifics.url()));
 }
 
 sync_pb::EntitySpecifics
@@ -425,7 +427,7 @@ const SendTabToSelfEntry* SendTabToSelfBridge::SendEntry(
     return nullptr;
   }
 
-  if (!url.is_valid()) {
+  if (!SendTabToSelfEntry::IsValidUrl(url)) {
     std::move(commit_confirmation).Run(SendTabToSelfResult::kFailureInvalidUrl);
     return nullptr;
   }

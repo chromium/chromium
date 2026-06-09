@@ -63,10 +63,13 @@ class SendTabToSelfModel {
   virtual std::vector<const SendTabToSelfEntry*>
   GetUnopenedEntriesTargetedToLocalDevice() const = 0;
 
-  // Adds |url| at the top of the entries. The entry title will be a
-  // trimmed copy of |title|. Allows clients to modify the state of the model
+  // Adds `url` at the top of the entries. The entry title will be a
+  // trimmed copy of `title`. Allows clients to modify the state of the model
   // as driven by user behaviors.
-  // Returns the entry if it was successfully added to the local model.
+  // Returns the entry if it was successfully added to the local model. The
+  // operation requires `url` to be valid (as per
+  // SendTabToSelfEntry::IsValidUrl()) to succeed; otherwise, it returns nullptr
+  // and `commit_confirmation` is invoked with kFailureInvalidUrl.
   // `commit_confirmation` is an asynchronous callback that will be invoked
   // once the entry has been successfully queued in the local sync pipeline or
   // if it failed to be queued. Callers do not need to check IsReady() before
@@ -80,7 +83,7 @@ class SendTabToSelfModel {
       NavigationHistory navigation_history,
       base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation) = 0;
 
-  // Dismiss entry with key |guid|. Allows clients to modify the state
+  // Dismiss entry with key `guid`. Allows clients to modify the state
   // of the model as driven by user behaviors.
   virtual void DismissEntry(std::string_view guid) = 0;
 

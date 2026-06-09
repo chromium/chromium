@@ -94,7 +94,7 @@ SendTabToSelfEntry::SendTabToSelfEntry(
       page_context_(page_context),
       navigation_history_(std::move(navigation_history)) {
   DCHECK(!guid_.empty());
-  DCHECK(url_.is_valid());
+  DCHECK(IsValidUrl(url_));
 }
 
 SendTabToSelfEntry::~SendTabToSelfEntry() = default;
@@ -215,6 +215,11 @@ SendTabToSelfLocal SendTabToSelfEntry::AsLocalProto() const {
   return local_entry;
 }
 
+// static
+bool SendTabToSelfEntry::IsValidUrl(const GURL& url) {
+  return url.is_valid() && url.SchemeIsHTTPOrHTTPS();
+}
+
 std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromProto(
     const sync_pb::SendTabToSelfSpecifics& pb_entry,
     base::Time now) {
@@ -225,7 +230,7 @@ std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromProto(
 
   GURL url(pb_entry.url());
 
-  if (!url.is_valid()) {
+  if (!IsValidUrl(url)) {
     return nullptr;
   }
 
@@ -297,7 +302,7 @@ std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromRequiredFields(
     std::string guid,
     const GURL& url,
     std::string target_device_sync_cache_guid) {
-  if (guid.empty() || !url.is_valid()) {
+  if (guid.empty() || !IsValidUrl(url)) {
     return nullptr;
   }
   return std::make_unique<SendTabToSelfEntry>(

@@ -158,6 +158,11 @@ TEST(SendTabToSelfEntry, FromRequiredFields) {
           "1", GURL("http://example.com"), "", "", "target_device",
           MatchesPageContext(IsEmpty()),
           MatchesNavigationHistory(IsEmpty(), testing::Eq(std::nullopt)))));
+
+  EXPECT_EQ(nullptr, SendTabToSelfEntry::FromRequiredFields(
+                         "1", GURL("chrome://flags"), "target_device"));
+  EXPECT_EQ(nullptr, SendTabToSelfEntry::FromRequiredFields(
+                         "1", GURL("about:blank"), "target_device"));
 }
 
 // Tests that the send tab to self entry is correctly parsed from
@@ -178,6 +183,24 @@ TEST(SendTabToSelfEntry, FromProto) {
           pb_entry.device_name(), pb_entry.target_device_sync_cache_guid(),
           MatchesPageContext(IsEmpty()),
           MatchesNavigationHistory(IsEmpty(), testing::Eq(std::nullopt)))));
+}
+
+TEST(SendTabToSelfEntry, FromProto_InvalidUrl) {
+  sync_pb::SendTabToSelfSpecifics pb_entry;
+  pb_entry.set_guid("1");
+  pb_entry.set_device_name("device");
+  pb_entry.set_target_device_sync_cache_guid("device");
+  pb_entry.set_shared_time_usec(1);
+
+  // Invalid scheme.
+  pb_entry.set_url("chrome://flags");
+  EXPECT_EQ(nullptr,
+            SendTabToSelfEntry::FromProto(pb_entry, base::Time::FromTimeT(10)));
+
+  // Invalid URL.
+  pb_entry.set_url("invalid_url");
+  EXPECT_EQ(nullptr,
+            SendTabToSelfEntry::FromProto(pb_entry, base::Time::FromTimeT(10)));
 }
 
 // Tests that the send tab to self entry expiry works as expected
