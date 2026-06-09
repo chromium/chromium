@@ -6,6 +6,7 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Pode voltar aqui para reabrir separadores que tenha fechado recentemente.</translation>
 <translation id="1016495303386450659">Item atualizado</translation>
+<translation id="1018804590490383958">Ler e preencher automaticamente</translation>
 <translation id="1019990162050689579">Atividade da app Gemini</translation>
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1030376737535466765">Abrir Gestor de Palavras-passe</translation>
@@ -550,6 +551,7 @@
 <translation id="284581348330507117">Crie palavras-passe únicas</translation>
 <translation id="2856883624744451946">Dê um nome ao grupo</translation>
 <translation id="2858204748079866344">Para proteger a sua privacidade, o Chrome não irá preencher automaticamente a palavra-passe neste campo.</translation>
+<translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (mais em dispositivos sincronizados)}other{# sites (mais em dispositivos sincronizados)}}</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Quando a sua segurança está em risco, envia para a Google URLs de algumas páginas que visita.</translation>
@@ -1539,6 +1541,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Escol. posição barra de endereço</translation>
 <translation id="6307241780749477694">Valide a sua identidade para aceder a todas as suas palavras-passe neste dispositivo</translation>
+<translation id="6307792728709337290">Guarde o seu cartão na sua Conta Google para o preencher automaticamente nesta compra e em compras futuras feitas no Chrome.</translation>
 <translation id="6316141353357700666">Escolha a palavra-passe que quer usar na lista que é apresentada.</translation>
 <translation id="6321526113093607004">Adicionar aos Marcadores</translation>
 <translation id="6327249202318869726">O Gemini está desativado para a sua conta. Contacte o seu administrador para mais informações.</translation>

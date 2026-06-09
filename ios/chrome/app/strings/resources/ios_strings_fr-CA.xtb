@@ -6,6 +6,7 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Vous pouvez revenir ici plus tard pour rouvrir les onglets que vous avez fermés récemment</translation>
 <translation id="1016495303386450659">Élément mis à jour</translation>
+<translation id="1018804590490383958">Balayer et remplir automatiquement</translation>
 <translation id="1019990162050689579">Activité dans les applis Gemini</translation>
 <translation id="102916930470544692">Clé d'accès</translation>
 <translation id="1030376737535466765">Ouvrir le gestionnaire de mots de passe</translation>
@@ -550,6 +551,7 @@
 <translation id="284581348330507117">Créer des mots de passe uniques</translation>
 <translation id="2856883624744451946">Nom du groupe</translation>
 <translation id="2858204748079866344">Afin de protéger votre confidentialité, Chrome ne remplira pas automatiquement ce champ avec votre mot de passe.</translation>
+<translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (et plus sur les appareils synchronisés)}one{# site (et plus sur les appareils synchronisés)}other{# sites (et plus sur les appareils synchronisés)}}</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Envoie des URL de certaines pages que vous visitez à Google, lorsque votre sécurité pourrait être compromise</translation>
@@ -1539,6 +1541,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Choisir la position de votre barre d'adresse</translation>
 <translation id="6307241780749477694">Confirmez qu'il s'agit bien de vous pour obtenir tous vos mots de passe sur cet appareil</translation>
+<translation id="6307792728709337290">Enregistrez votre carte dans votre compte Google pour remplir automatiquement les informations associées pour cet achat et vos futurs achats effectués sur Chrome.</translation>
 <translation id="6316141353357700666">Choisissez le mot de passe que vous souhaitez utiliser dans la liste qui s'affiche.</translation>
 <translation id="6321526113093607004">Ajouter aux favoris</translation>
 <translation id="6327249202318869726">Gemini est désactivé pour votre compte. Communiquez avec votre administrateur pour en savoir plus.</translation>

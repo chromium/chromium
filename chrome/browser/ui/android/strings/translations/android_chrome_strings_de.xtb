@@ -357,6 +357,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="253498598929009420">Die Website kann dann den Bildschirminhalt sehen</translation>
 <translation id="2535807170289627159">Alle Tabs</translation>
 <translation id="2536728043171574184">Eine Offline-Kopie dieser Seite wird angezeigt.</translation>
+<translation id="2537574774089209541">Einige Tools wurden verschoben, damit du beim Surfen ganz einfach auf Gemini zugreifen kannst</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, ausgewählter, angepinnter, stummgeschalteter Inkognitotab</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, Tab</translation>
@@ -405,6 +406,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2751271371269891762">Wenn du auf allen deinen Geräten auf deine Lesezeichen und andere Daten zugreifen möchtest, melde dich als <ph name="EMAIL" /> an</translation>
 <translation id="2760805590727089264">MM/JJ</translation>
 <translation id="2762000892062317888">gerade eben</translation>
+<translation id="276378135349383280">Gemini in der unteren Symbolleiste anzeigen</translation>
 <translation id="276969039800130567">Angemeldet als <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> Sekunden übrig</translation>
 <translation id="2779651927720337254">fehlgeschlagen</translation>
@@ -604,6 +606,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3614126103057878858">Preisinformationen</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3616798734782988169">Vergewissere dich, dass du <ph name="DOWNLOAD_DOMAIN" /> vertrauen kannst</translation>
 <translation id="3619255692378312441">Zugriff verwalten</translation>
 <translation id="3622349720008044802">Fenster verwalten</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{und 1 weitere Website}other{und # weitere Websites}}</translation>
@@ -634,6 +637,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3738139272394829648">Zum Suchen antippen</translation>
 <translation id="3739455665973395693">Keine kompromittierten Passwörter in deinem Google-Konto</translation>
 <translation id="3739899004075612870">Als Lesezeichen in <ph name="PRODUCT_NAME" /> gespeichert</translation>
+<translation id="3740290940447881599">Vergewissere dich, dass du dieser Website vertrauen kannst</translation>
 <translation id="3740525748616366977">Die Sprachsuche ist auf diesem Gerät nicht verfügbar</translation>
 <translation id="3763110477555836428">Beim Bezahlen mit dieser Karte wird eine virtuelle Kartennummer eingegeben, um deine tatsächlichen Kartendetails zu schützen. Du kannst diese Einstellung in Google Wallet verwalten. <ph name="BEGIN_LINK1" />Weitere Informationen zu virtuellen Karten<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Einige Daten wurden noch nicht gespeichert</translation>
@@ -1533,6 +1537,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7291910923717764901">Für diese Seite wurden Bildbeschreibungen hinzugefügt</translation>
 <translation id="7293429513719260019">Sprache auswählen</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, ausgewählter, angepinnter Tab für die Freigabe</translation>
+<translation id="7304003340539141201">Gemini auffordern, dich bei deinen Tabs und Aufgaben zu unterstützen</translation>
 <translation id="7311244614769792472">Keine Ergebnisse gefunden</translation>
 <translation id="7314734791127433392">Passwörter können nicht geprüft werden</translation>
 <translation id="7324354302972299151">„Do Not Track“-Anfrage senden</translation>
@@ -1879,6 +1884,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8696297579102085705">An mein Gerät senden</translation>
 <translation id="8697753151306746444">Stattdessen Fenster oder Bildschirm freigeben</translation>
 <translation id="8699120352855309748">Übersetzen dieser Sprachen nicht anbieten</translation>
+<translation id="8700565880437506364">Neu: Gemini in Chrome</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8715286883001906001">Passwörter in deinem Google-Konto sicherer machen</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> wird geschlossen</translation>
@@ -1946,6 +1952,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8996847606757455498">Anderen Anbieter auswählen</translation>
 <translation id="8998837250940831980">Tab konnte nicht minimiert werden. Versuche es später noch einmal.</translation>
 <translation id="9001604755921395912">In Chrome-Inkognitotab öffnen</translation>
+<translation id="9010094279589497751">Gemini jederzeit schnell öffnen</translation>
 <translation id="9012585441087414258">Schützt vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind. Wenn sich eine Seite verdächtig verhält, werden URLs und Teile von Seiteninhalten an Google Safe Browsing gesendet.</translation>
 <translation id="9019199799064251516">Ohne Autoprofilsperre fortfahren?</translation>
 <translation id="9022774213089566801">Häufig besucht</translation>
@@ -2003,6 +2010,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="9190355771000652811">Verwende in der Adressleiste diese Tastenkombination zusammen mit den Tastenkürzeln für Suchmaschinen und die Websitesuche.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, ausgewählter Inkognitotab angepinnt</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Zuletzt geprüft: vor 1 Minute}other{Zuletzt geprüft: vor # Minuten}}</translation>
+<translation id="9202894533863490414">Von dieser Website herunterladen?</translation>
 <translation id="9204836675896933765">Noch 1 Datei</translation>
 <translation id="9205933215779845960">Diese Seite konnte nicht gefunden werden. Prüfe die Schreibweise oder versuche es mit einer Suchanfrage bei <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

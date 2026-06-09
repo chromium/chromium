@@ -246,6 +246,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2082238445998314030">Tulos <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Näytetään tiivis näkymä</translation>
 <translation id="2093731487903423814">15 viime minuuttia</translation>
+<translation id="2094298041331405438">Sulje kaikki incognito-ikkunat napauttamalla tästä</translation>
 <translation id="2096577711562668473">Vaihdetaanko automaattista täyttöpalvelua?</translation>
 <translation id="2109384632594340939">profiilikuvasi</translation>
 <translation id="2111511281910874386">Siirry sivulle</translation>
@@ -507,6 +508,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3114507951000454849">Lue päivän uutiset <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Lisätietoja</translation>
 <translation id="3123734510202723619">Ilmoitukset</translation>
+<translation id="3132267803114336523">Sulje kaikki incognito-ikkunat napauttamalla incognito-ilmaisinta</translation>
 <translation id="3134385238404760368">Ei viimeaikaisia välilehtiä</translation>
 <translation id="3135655388926735587">Valitse Viimeaikaiset välilehdet</translation>
 <translation id="314939179385989105">Chromen etusivu</translation>

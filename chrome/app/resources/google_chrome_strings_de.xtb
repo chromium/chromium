@@ -150,6 +150,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="2580411288591421699">Die Google Chrome-Version kann nicht installiert werden, da sie aktuell ausgeführt wird. Schließe Google Chrome und versuche es noch einmal.</translation>
 <translation id="2586406160782125153">Dadurch werden deine Browserdaten von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="259935314519650377">Die heruntergeladene Installationsdatei konnte nicht im Cache gespeichert werden. Fehler: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Mit Gemini in Chrome einen schnellen Überblick über dieses Dokument erhalten und Fragen dazu stellen</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="263447411082773721">Passwörter, Lesezeichen und Verlauf werden auf allen Geräten synchronisiert. Wenn du deinen Standardbrowser auf Chrome aktualisierst, kannst du ganz einfach auf die vertrauten Funktionen zugreifen. Chrome wird für den Schnellzugriff an die Taskleiste angepinnt.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -748,6 +749,7 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="8624541899164515475">Einstellungen, werden in neuem Tab geöffnet.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome wird in einer Minute neu gestartet}other{Chrome wird in # Minuten neu gestartet}}</translation>
 <translation id="8637932705841171563">Wenn du dein Fenster teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chrome zulassen</translation>
+<translation id="8642497536370021917">Damit du Chrome-Daten in deinem Google-Konto jederzeit verwenden und speichern kannst, bestätige deine Identität</translation>
 <translation id="8656634243791296665">Gemini in Chrome Dev öffnen</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Die Erweiterung legt auch die Seite fest, die beim Start von Chrome angezeigt wird.</translation>

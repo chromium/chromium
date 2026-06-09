@@ -246,6 +246,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. od <ph name="TOTAL_RESULTS" /> rezultata</translation>
 <translation id="2091863218454846791">Ovo je kompaktni prikaz</translation>
 <translation id="2093731487903423814">poslednjih 15 minuta</translation>
+<translation id="2094298041331405438">Dodirnite ovde da biste zatvorili sve prozore bez arhiviranja</translation>
 <translation id="2096577711562668473">Želite da promenite uslugu automatskog popunjavanja?</translation>
 <translation id="2109384632594340939">slika profila</translation>
 <translation id="2111511281910874386">Idi na stranicu</translation>
@@ -507,6 +508,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3114507951000454849">Čitajte današnje vesti <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Još detalja</translation>
 <translation id="3123734510202723619">Saopštenja</translation>
+<translation id="3132267803114336523">Da biste zatvorili sve prozore bez arhiviranja, dodirnite indikator režima bez arhiviranja</translation>
 <translation id="3134385238404760368">Nema nedavnih kartica</translation>
 <translation id="3135655388926735587">Dodirnite Nedavne kartice</translation>
 <translation id="314939179385989105">Chrome početna stranica</translation>

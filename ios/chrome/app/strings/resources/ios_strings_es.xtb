@@ -6,6 +6,7 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Puedes volver aquí para abrir de nuevo las últimas pestañas que hayas cerrado recientemente.</translation>
 <translation id="1016495303386450659">Elemento actualizado</translation>
+<translation id="1018804590490383958">Escanear y autocompletar</translation>
 <translation id="1019990162050689579">Actividad en la aplicación Gemini</translation>
 <translation id="102916930470544692">Llave de acceso</translation>
 <translation id="1030376737535466765">Abrir el Gestor de contraseñas</translation>
@@ -550,6 +551,7 @@
 <translation id="284581348330507117">Crea contraseñas únicas</translation>
 <translation id="2856883624744451946">Nombre del grupo</translation>
 <translation id="2858204748079866344">Para proteger tu privacidad, Chrome no autocompletará tu contraseña en este campo.</translation>
+<translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 sitio (más en dispositivos sincronizados)}other{# sitios (más en dispositivos sincronizados)}}</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2876369937070532032">Envía a Google las URL de algunas de las páginas que visitas cuando tu seguridad corre peligro</translation>
@@ -1539,6 +1541,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Elige la posición de la barra</translation>
 <translation id="6307241780749477694">Verifica que eres tú para acceder a todas tus contraseñas en este dispositivo</translation>
+<translation id="6307792728709337290">Guarda tu tarjeta en tu cuenta de Google para autocompletarla en esta compra y en las que hagas en Chrome en el futuro.</translation>
 <translation id="6316141353357700666">Elige la contraseña que quieras usar de la lista que aparece.</translation>
 <translation id="6321526113093607004">Añadir a marcadores</translation>
 <translation id="6327249202318869726">Gemini está desactivado en tu cuenta. Ponte en contacto con tu administrador para obtener más información.</translation>
