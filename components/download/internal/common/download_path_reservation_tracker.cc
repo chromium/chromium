@@ -212,6 +212,9 @@ struct CreateReservationInfo {
   DownloadPathReservationTracker::FilenameConflictAction conflict_action;
   bool is_transient = false;
   bool is_forced_path = false;
+  // Whether the download path was selected by user (e.g., "Save As" or
+  // resumption).
+  bool is_user_selected_path = false;
 };
 
 // Check if |target_path| is writable.
@@ -259,7 +262,7 @@ PathValidationResult ValidatePathAndResolveConflicts(
   // directory via symlink/junction traversal.
   bool path_escaped = false;
   if (!info.is_transient && !info.is_forced_path &&
-      !info.default_download_path.empty() &&
+      !info.is_user_selected_path && !info.default_download_path.empty() &&
       base::PathExists(info.default_download_path)) {
     base::FilePath absolute_default_path =
         base::MakeAbsoluteFilePath(info.default_download_path);
@@ -543,7 +546,11 @@ void DownloadPathReservationTracker::GetReservedPath(
                                 download_item->GetStartTime(),
                                 conflict_action,
                                 download_item->IsTransient(),
-                                !download_item->GetForcedFilePath().empty()};
+                                !download_item->GetForcedFilePath().empty(),
+                                (download_item->GetTargetDisposition() ==
+                                 DownloadItem::TARGET_DISPOSITION_PROMPT) ||
+                                    (download_item->GetLastReason() !=
+                                     download::DOWNLOAD_INTERRUPT_REASON_NONE)};
 
   GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&CreateReservation, info, reserved_path),
