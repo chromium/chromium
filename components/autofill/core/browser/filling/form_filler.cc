@@ -949,17 +949,6 @@ void FormFiller::FillOrPreviewForm(
   // The fill value is determined by `FillField()`.
   for (size_t i = 0; i < result_fields.size(); ++i) {
     const AutofillField& field = CHECK_DEREF(form.field(i));
-    constexpr DenseSet<FieldFillingSkipReason> kPreUkmLoggingSkips{
-        FieldFillingSkipReason::kNotInFilledSection,
-        FieldFillingSkipReason::kNotFocused};
-    if (!kPreUkmLoggingSkips.contains_any(skip_reasons[field.global_id()]) &&
-        !field.is_focusable()) {
-      manager_->client()
-          .GetFormInteractionsUkmLogger()
-          .LogHiddenRepresentationalFieldSkipDecision(
-              manager_->driver().GetPageUkmSourceId(), form, field,
-              !field.IsSelectElement());
-    }
     if (!skip_reasons[field.global_id()].empty()) {
       const FieldFillingSkipReason skip_reason =
           *skip_reasons[field.global_id()].begin();

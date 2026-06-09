@@ -161,13 +161,6 @@ class FormInteractionsUkmLogger {
                     const DenseSet<FormTypeNameForLogging>& form_types,
                     base::TimeTicks form_parsed_timestamp);
 
-  // Logs whether the autofill decided to skip or to fill each
-  // hidden/representational field.
-  void LogHiddenRepresentationalFieldSkipDecision(ukm::SourceId ukm_source_id,
-                                                  const FormStructure& form,
-                                                  const AutofillField& field,
-                                                  bool is_skipped);
-
  private:
   bool CanLog(ukm::SourceId ukm_source_id) const;
   int64_t MillisecondsSinceFormParsed(base::TimeTicks form_parsed_timestamp,

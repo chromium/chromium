@@ -43,8 +43,6 @@ using AutofillStatus = FormInteractionsUkmLogger::AutofillStatus;
 
 using UkmSuggestionsShownType = ukm::builders::Autofill_SuggestionsShown;
 using UkmSuggestionFilledType = ukm::builders::Autofill_SuggestionFilled;
-using UkmLogHiddenRepresentationalFieldSkipDecisionType =
-    ukm::builders::Autofill_HiddenRepresentationalFieldSkipDecision;
 using UkmFormEventType = ukm::builders::Autofill_FormEvent;
 using UkmEditedAutofilledFieldAtSubmission =
     ukm::builders::Autofill_EditedAutofilledFieldAtSubmission;
@@ -69,65 +67,6 @@ class FormInteractionsUkmLoggerTest : public AutofillMetricsBaseTest,
   void SetUp() override { SetUpHelper(); }
   void TearDown() override { TearDownHelper(); }
 };
-
-// Test that we log the skip decisions for hidden fields correctly.
-TEST_F(FormInteractionsUkmLoggerTest,
-       LogHiddenRepresentationalFieldSkipDecision) {
-  RecreateProfile();
-
-  // Metric is going to be recorded only for non-focusable select fields.
-  FormData form = CreateForm({
-      CreateTestFormField("Name", "name", "",
-                          FormControlType::kInputText),  // don't record
-      CreateTestFormField("Street", "street", "",
-                          FormControlType::kInputText),  // don't record
-      CreateTestFormField("City", "city", "",
-                          FormControlType::kInputText),  // don't record
-      CreateTestFormField("State", "state", "",
-                          FormControlType::kSelectOne),  // record
-      CreateTestFormField("Country", "country", "",
-                          FormControlType::kSelectOne)  // don't record
-  });
-
-  test_api(form).field(1).set_is_focusable(false);
-  test_api(form).field(2).set_role(FormFieldData::RoleAttribute::kPresentation);
-  test_api(form).field(3).set_is_focusable(false);
-  test_api(form).field(4).set_role(FormFieldData::RoleAttribute::kPresentation);
-
-  std::vector<FieldType> field_types = {NAME_FULL, ADDRESS_HOME_LINE1,
-                                        ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
-                                        ADDRESS_HOME_COUNTRY};
-
-  std::vector<FieldSignature> field_signature;
-  for (auto it = form.fields().begin() + 1; it != form.fields().end(); ++it) {
-    field_signature.push_back(Collapse(CalculateFieldSignatureForField(*it)));
-  }
-
-  FormSignature form_signature = Collapse(CalculateFormSignature(form));
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  // Simulate filling form.
-  {
-    base::UserActionTester user_action_tester;
-    FillTestProfile(form);
-  }
-
-  using Ukm = UkmLogHiddenRepresentationalFieldSkipDecisionType;
-  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
-              Each(form.main_frame_origin().GetURL()));
-  EXPECT_THAT(
-      GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
-      UkmEventsAre({{{Ukm::kFormSignatureName, form_signature.value()},
-                     {Ukm::kFieldSignatureName, field_signature[2].value()},
-                     {Ukm::kFieldTypeGroupName, FieldTypeGroup::kAddress},
-                     {Ukm::kFieldOverallTypeName, ADDRESS_HOME_STATE},
-                     {Ukm::kHeuristicTypeName, ADDRESS_HOME_STATE},
-                     {Ukm::kServerTypeName, ADDRESS_HOME_STATE},
-                     {Ukm::kHtmlFieldTypeName, HtmlFieldType::kUnspecified},
-                     {Ukm::kHtmlFieldModeName, HtmlFieldMode::kNone},
-                     {Ukm::kIsSkippedName, false}}}));
-}
 
 // Verify that when submitting an autofillable form, the proper type of
 // the edited fields is correctly logged to UKM.

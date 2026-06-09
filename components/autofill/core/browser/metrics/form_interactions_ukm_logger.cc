@@ -801,50 +801,6 @@ void FormInteractionsUkmLogger::LogFocusedComplexFormAtFormRemove(
   builder.Record(autofill_client_->GetUkmRecorder());
 }
 
-void FormInteractionsUkmLogger::LogHiddenRepresentationalFieldSkipDecision(
-    ukm::SourceId ukm_source_id,
-    const FormStructure& form,
-    const AutofillField& field,
-    bool is_skipped) {
-  if (!CanLog(ukm_source_id)) {
-    return;
-  }
-
-  FieldTypeSet field_types = field.Type().GetTypes();
-  auto next_field_type = [&field_types, it = field_types.begin()]() mutable {
-    return it != field_types.end() ? std::optional(static_cast<uint64_t>(*it++))
-                                   : std::nullopt;
-  };
-
-  FieldTypeGroupSet field_type_groups = field.Type().GetGroups();
-  auto next_field_type_group = [&field_type_groups,
-                                it = field_type_groups.begin()]() mutable {
-    return it != field_type_groups.end()
-               ? std::optional(static_cast<uint64_t>(*it++))
-               : std::nullopt;
-  };
-
-  using UkmEvent =
-      ukm::builders::Autofill_HiddenRepresentationalFieldSkipDecision;
-  UkmEvent e(ukm_source_id);
-  e.SetFormSignature(HashFormSignature(form.form_signature()));
-  e.SetFieldSignature(HashFieldSignature(field.GetFieldSignature()));
-  MaybeSet(e, &UkmEvent::SetFieldTypeGroup, next_field_type_group());
-  MaybeSet(e, &UkmEvent::SetFieldTypeGroup2, next_field_type_group());
-  MaybeSet(e, &UkmEvent::SetFieldTypeGroup3, next_field_type_group());
-  MaybeSet(e, &UkmEvent::SetFieldTypeGroup4, next_field_type_group());
-  MaybeSet(e, &UkmEvent::SetFieldOverallType, next_field_type());
-  MaybeSet(e, &UkmEvent::SetFieldOverallType2, next_field_type());
-  MaybeSet(e, &UkmEvent::SetFieldOverallType3, next_field_type());
-  MaybeSet(e, &UkmEvent::SetFieldOverallType4, next_field_type());
-  e.SetHeuristicType(static_cast<int>(field.heuristic_type()));
-  e.SetServerType(static_cast<int>(field.server_type()));
-  e.SetHtmlFieldType(static_cast<int>(field.html_type()));
-  e.SetHtmlFieldMode(static_cast<int>(field.html_mode()));
-  e.SetIsSkipped(is_skipped);
-  e.Record(autofill_client_->GetUkmRecorder());
-}
-
 void FormInteractionsUkmLogger::LogKeyMetrics(
     ukm::SourceId ukm_source_id,
     const DenseSet<FormTypeNameForLogging>& form_types,
