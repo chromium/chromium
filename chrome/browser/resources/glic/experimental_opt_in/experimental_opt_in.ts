@@ -9,10 +9,10 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import { loadTimeData } from '//resources/js/load_time_data.js';
-import { getRequiredElement } from '//resources/js/util.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {getRequiredElement} from '//resources/js/util.js';
 
-import { ExperimentalOptInPageHandler } from './glic_experimental_opt_in.mojom-webui.js';
+import {ExperimentalOptInPageHandler} from './glic_experimental_opt_in.mojom-webui.js';
 
 const handler = ExperimentalOptInPageHandler.getRemote();
 
@@ -28,6 +28,7 @@ enum FailureType {
   GENERIC_ERROR,
 }
 
+const TRANSITION_DURATION_MS = 250;
 // Setup target height and width custom properties immediately at load to
 // prevent layout shifts.
 const defaultHeight =
@@ -38,6 +39,8 @@ document.documentElement.style.setProperty(
     '--glic-experimental-opt-in-height', `${defaultHeight}px`);
 document.documentElement.style.setProperty(
     '--glic-experimental-opt-in-width', `${defaultWidth}px`);
+document.documentElement.style.setProperty(
+    '--glic-transition-duration', `${TRANSITION_DURATION_MS}ms`);
 
 function init() {
   const webview = getRequiredElement<chrome.webviewTag.WebView>('webview');
@@ -53,6 +56,47 @@ function init() {
   const optInOrigin = new URL(optInUrl).origin;
 
   let hasError = false;
+
+  const skeleton = document.getElementById('skeleton-container');
+  if (skeleton) {
+    try {
+      skeleton.setAttribute(
+          'state',
+          loadTimeData.getString('glicRequiredExperimentalOptInState'));
+    } catch (e) {
+      console.error('Failed to get opt-in state', e);
+      hasError = true;
+      showFailureState(FailureType.GENERIC_ERROR);
+    }
+  }
+
+  let transitioned = false;
+  const transitionToWebview = () => {
+    if (transitioned) {
+      return;
+    }
+    transitioned = true;
+
+    const skeleton = document.getElementById('skeleton-container');
+    if (skeleton) {
+      skeleton.classList.add('fade-out');
+    }
+    // Force visual layout reflow so transitioning class opacity takes effect
+    // correctly.
+    webview.offsetHeight;
+    webview.classList.add('visible');
+
+    setTimeout(() => {
+      if (skeleton) {
+        skeleton.classList.add('hidden');
+        skeleton.classList.remove('fade-out');
+      }
+    }, TRANSITION_DURATION_MS);
+  };
+
+  webview.addEventListener('contentload', transitionToWebview);
+  webview.addEventListener('loadstop', transitionToWebview);
+
   let loadingTimeoutId: number | null = null;
 
   function clearWatchdog() {
@@ -100,6 +144,10 @@ function init() {
 
     errorPanel.hidden = false;
     webview.hidden = true;
+    const skeleton = document.getElementById('skeleton-container');
+    if (skeleton) {
+      skeleton.classList.add('hidden');
+    }
     window.resizeTo(defaultWidth, 502);
   }
 
@@ -167,8 +215,12 @@ function init() {
 
   async function tryLoad() {
     errorPanel.hidden = true;
-    webview.hidden = false;
+    webview.hidden = true;
     hasError = false;
+    const skeleton = document.getElementById('skeleton-container');
+    if (skeleton) {
+      skeleton.classList.remove('hidden', 'fade-out');
+    }
 
     // Immediate pre-flight check. If the browser is already offline, show the
     // connection issue UI immediately and stop.
@@ -199,7 +251,9 @@ function init() {
       webview.setAttribute('src', url);
     }
   }
-  tryLoad();
+  if (!hasError) {
+    tryLoad();
+  }
 
   webview.addEventListener(
       'loadcommit', ((e: Event) => {

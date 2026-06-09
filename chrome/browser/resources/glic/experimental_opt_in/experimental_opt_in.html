@@ -42,9 +42,61 @@
     </div>
   </section>
 
+  <div id="skeleton-container" class="shimmer-container">
+    <div class="skeleton-block top-logo shimmer" style="--shimmer-delay: 0ms;"></div>
+    <div class="skeleton-block title shimmer" style="--shimmer-delay: 100ms;"></div>
+
+    <div class="skeleton-glic">
+      <div class="skeleton-card">
+        <div class="skeleton-segment-glic">
+          <div class="skeleton-block segment-icon shimmer" style="--shimmer-delay: 200ms;"></div>
+          <div class="segment-text">
+            <div class="skeleton-block segment-line shimmer" style="--shimmer-delay: 200ms; width: 100%;"></div>
+            <div class="skeleton-block segment-line shimmer" style="--shimmer-delay: 250ms; width: 95%;"></div>
+            <div class="skeleton-block segment-line shimmer" style="--shimmer-delay: 300ms; width: 70%;"></div>
+          </div>
+        </div>
+        <div class="skeleton-segment-glic">
+          <div class="skeleton-block segment-icon shimmer" style="--shimmer-delay: 300ms;"></div>
+          <div class="segment-text">
+            <div class="skeleton-block segment-line shimmer" style="--shimmer-delay: 300ms; width: 100%;"></div>
+            <div class="skeleton-block segment-line shimmer" style="--shimmer-delay: 350ms; width: 85%;"></div>
+          </div>
+        </div>
+        <div class="skeleton-segment-glic">
+          <div class="skeleton-block segment-icon shimmer" style="--shimmer-delay: 400ms;"></div>
+          <div class="segment-text">
+            <div class="skeleton-block segment-line shimmer" style="--shimmer-delay: 400ms; width: 100%;"></div>
+            <div class="skeleton-block segment-line shimmer" style="--shimmer-delay: 450ms; width: 95%;"></div>
+            <div class="skeleton-block segment-line shimmer" style="--shimmer-delay: 500ms; width: 65%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="skeleton-block footer-line shimmer" style="--shimmer-delay: 500ms;"></div>
+      <div class="dots-indicator">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+
+    <div class="skeleton-experimental">
+      <div class="skeleton-card">
+        <div class="skeleton-segment shimmer" style="--shimmer-delay: 200ms;"></div>
+        <div class="skeleton-segment shimmer" style="--shimmer-delay: 300ms;"></div>
+        <div class="skeleton-segment shimmer" style="--shimmer-delay: 400ms;"></div>
+        <div class="skeleton-segment shimmer" style="--shimmer-delay: 500ms;"></div>
+      </div>
+    </div>
+
+    <div class="buttons-row">
+      <div class="skeleton-block button-pill shimmer" style="--shimmer-delay: 600ms;"></div>
+      <div class="skeleton-block button-pill shimmer" style="--shimmer-delay: 700ms;"></div>
+    </div>
+  </div>
+
   <!-- The existing webview -->
-  <webview id="webview" partition="glicexperimentalpart" autosize="on" minwidth="512" maxwidth="512" minheight="200"
-    maxheight="800">
+  <webview id="webview" partition="glicexperimentalpart" autosize="on"
+      minheight="200" maxheight="800">
   </webview>
   <script type="module" src="experimental_opt_in.js"></script>
 </body>
