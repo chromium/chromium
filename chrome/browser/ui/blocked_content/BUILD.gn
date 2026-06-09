@@ -136,7 +136,6 @@ source_set("unit_tests") {
   if (is_android) {
     deps += [
       "//chrome/browser/android",
-      "//components/infobars/android",
       "//components/messages/android:test_support",
       "//components/ukm:test_support",
     ]

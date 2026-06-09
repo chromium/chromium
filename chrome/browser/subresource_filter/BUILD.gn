@@ -68,7 +68,6 @@ if (is_android) {
       "//chrome/test/android:chrome_java_integration_test_support",
       "//components/browser_ui/modaldialog/android:java",
       "//components/browser_ui/modaldialog/android:java_resources",
-      "//components/infobars/android:java",
       "//components/messages/android:java",
       "//components/messages/android/internal:java",
       "//components/messages/android/test:test_support_java",

@@ -7547,7 +7547,6 @@ test("unit_tests") {
       "//components/feed/core/shared_prefs:feed_shared_prefs",
       "//components/gcm_driver/instance_id/android:instance_id_driver_java",
       "//components/gcm_driver/instance_id/android:instance_id_driver_test_support_java",
-      "//components/infobars/android",
       "//components/location/android:test_support",
       "//components/media_router/browser:test_support",
       "//components/messages/android:test_support",

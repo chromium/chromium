@@ -1102,7 +1102,6 @@ static_library("ui") {
       "//components/feed/core/v2:feed_core_v2",
       "//components/feed/core/v2/public:common",
       "//components/fullscreen_control",
-      "//components/infobars/android",
       "//components/infobars/content",
       "//components/javascript_dialogs/android:jni_headers",
       "//components/messages/android",

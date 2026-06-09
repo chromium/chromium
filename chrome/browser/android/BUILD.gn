@@ -652,7 +652,6 @@ if (is_android) {
       "//components/feed/core/v2:feed_core_v2",
       "//components/image_fetcher:android",
       "//components/image_fetcher/core:metrics",
-      "//components/infobars/android",
       "//components/installedapp/android",
       "//components/javascript_dialogs/android:jni_headers",
       "//components/language/android:language_bridge",
