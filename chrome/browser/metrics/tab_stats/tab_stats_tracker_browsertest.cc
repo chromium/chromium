@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
       display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
   const gfx::Size size(work_area.width() / 3, work_area.height() / 2);
   gfx::Rect browser_rect(work_area.origin(), size);
-  browser()->window()->SetBounds(browser_rect);
+  browser()->GetWindow()->SetBounds(browser_rect);
   browser_rect.set_x(browser_rect.right());
   window2->browser_window_interface()->GetWindow()->SetBounds(browser_rect);
   auto expected_window1_tab1_visibility = content::Visibility::VISIBLE;

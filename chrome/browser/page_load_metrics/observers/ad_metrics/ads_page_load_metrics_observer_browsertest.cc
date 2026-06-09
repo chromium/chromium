@@ -3351,7 +3351,7 @@ class DevToolsAdsTest : public AdsPageLoadMetricsObserverBrowserTest,
 // Tests that when ad frames are added to a page, the ad metrics are properly
 // calculated and returned via the Ads.getAdMetrics command.
 IN_PROC_BROWSER_TEST_F(DevToolsAdsTest, GetAdMetrics) {
-  browser()->window()->SetBounds(gfx::Rect(0, 0, 800, 600));
+  browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 800, 600));
 
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule(
@@ -3430,7 +3430,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAdsTest, GetAdMetrics) {
 // navigating away from an existing page. Validates that we are checking the new
 // APLMO.
 IN_PROC_BROWSER_TEST_F(DevToolsAdsTest, GetAdMetrics_PageNavigated) {
-  browser()->window()->SetBounds(gfx::Rect(0, 0, 800, 600));
+  browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 800, 600));
 
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule(

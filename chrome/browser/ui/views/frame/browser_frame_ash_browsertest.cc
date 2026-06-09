@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestParam,
 
   // The bounds passed via |initial_bounds| should be respected regardless of
   // the window type.
-  EXPECT_EQ(original_bounds, browser->window()->GetBounds());
+  EXPECT_EQ(original_bounds, browser->GetWindow()->GetBounds());
 
   // Close the browser and re-create the browser window with the same app name.
   // Don't provide initial bounds. The bounds should have been saved, but for
@@ -72,13 +72,13 @@ IN_PROC_BROWSER_TEST_P(BrowserTestParam,
   if (!is_test_app) {
     expectation =
         display::Screen::Get()
-            ->GetDisplayNearestPoint(browser->window()->GetBounds().origin())
+            ->GetDisplayNearestPoint(browser->GetWindow()->GetBounds().origin())
             .work_area();
     expectation.ClampToCenteredSize(original_bounds.size());
     expectation.set_y(original_bounds.y());
   }
 
-  EXPECT_EQ(expectation, browser->window()->GetBounds())
+  EXPECT_EQ(expectation, browser->GetWindow()->GetBounds())
       << (is_test_app ? "for app window" : "for tabbed browser window");
 }
 

@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLiveSiteTest,
 
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_contents, "Long-string-to-test-select-to-speak");
-  gfx::Rect bounds = browser()->window()->GetBounds();
+  gfx::Rect bounds = browser()->GetWindow()->GetBounds();
   generator_->PressKey(ui::VKEY_LWIN, 0 /* flags */);
   generator_->MoveMouseTo(bounds.x() + 8, bounds.y() + 200);
   generator_->PressLeftButton();

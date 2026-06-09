@@ -62,7 +62,7 @@ bool BrowserDelegateImpl::IsOffTheRecord() const {
 }
 
 gfx::Rect BrowserDelegateImpl::GetBounds() const {
-  return browser_->window()->GetBounds();
+  return browser_->GetWindow()->GetBounds();
 }
 
 content::WebContents* BrowserDelegateImpl::GetActiveWebContents() const {

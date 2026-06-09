@@ -132,8 +132,8 @@ class GlicInstanceCoordinatorUiTest : public test::InteractiveGlicTest {
         gfx::Point(work_area_bounds.width() / 3 + work_area_bounds.x(),
                    work_area_bounds.height() / 3 + work_area_bounds.y()),
         cell_size);
-    browser()->window()->SetBounds(browser_bounds);
-    browser_bounds = browser()->window()->GetBounds();
+    browser()->GetWindow()->SetBounds(browser_bounds);
+    browser_bounds = browser()->GetWindow()->GetBounds();
 
     // The test places the browser in the center cell. For the test to be valid,
     // there must be enough space around the browser for the GlicWidget to
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest, TestInitialBounds) {
   // Use default location if Glic button location results in an invalid widget
   // location. Move browser window so that it is mostly off the screen to the
   // right.
-  browser()->window()->SetBounds(
+  browser()->GetWindow()->SetBounds(
       {{top_right.x() + 500, top_right.y() + 50}, {900, 900}});
   initial_bounds =
       GlicWidget::GetInitialBounds(browser(), GlicWidget::GetInitialSize());
@@ -621,8 +621,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorLocationMetricsUiTest,
       gfx::Point(work_area_bounds.width() / 3 + work_area_bounds.x(),
                  work_area_bounds.height() / 3 + work_area_bounds.y()),
       cell_size);
-  browser()->window()->SetBounds(browser_bounds);
-  browser_bounds = browser()->window()->GetBounds();
+  browser()->GetWindow()->SetBounds(browser_bounds);
+  browser_bounds = browser()->GetWindow()->GetBounds();
 
   base::HistogramTester tester;
 

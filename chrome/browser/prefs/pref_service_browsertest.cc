@@ -39,7 +39,7 @@ const gfx::Rect window_frame = gfx::Rect(20, 40, 600, 600);
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(PreservedWindowPlacement, PRE_Test) {
-  browser()->window()->SetBounds(window_frame);
+  browser()->GetWindow()->SetBounds(window_frame);
 }
 
 // Fails on Chrome OS as the browser thinks it is restarting after a crash, see
@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(PreservedWindowPlacement, MAYBE_Test) {
            "See b/464087732.";
   }
 #endif
-  gfx::Rect bounds = browser()->window()->GetRestoredBounds();
+  gfx::Rect bounds = browser()->GetWindow()->GetRestoredBounds();
   gfx::Rect expected_bounds(window_frame);
   ASSERT_EQ(expected_bounds.ToString(), bounds.ToString());
 }
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(PreferenceServiceTest, Test) {
   base::DictValue& root_dict = root->GetDict();
 
   // Retrieve the screen rect for the launched window
-  gfx::Rect bounds = browser()->window()->GetRestoredBounds();
+  gfx::Rect bounds = browser()->GetWindow()->GetRestoredBounds();
 
   // Retrieve the expected rect values from "Preferences"
   std::string kBrowserWindowPlacement(prefs::kBrowserWindowPlacement);

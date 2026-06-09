@@ -672,7 +672,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
                        DiscardTabsWithOccludedWindow) {
   // This browser will be occluded.
   EnsureTabsInBrowser(browser(), 2);
-  browser()->window()->SetBounds(gfx::Rect(10, 10, 10, 10));
+  browser()->GetWindow()->SetBounds(gfx::Rect(10, 10, 10, 10));
   // Create another browser which occludes the previous browser.
   BrowserWindowInterface* const other_browser = CreateBrowserWithTabs(1);
   EXPECT_NE(other_browser, browser());

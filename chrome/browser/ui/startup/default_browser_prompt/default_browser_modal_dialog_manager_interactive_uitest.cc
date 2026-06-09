@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_P(DefaultBrowserModalDialogManagerInteractiveTest,
       Do([this]() {
         // Resize the parent browser window to trigger any layout/positioning
         // updates and verify that no crash occurs.
-        browser()->window()->SetBounds(gfx::Rect(10, 10, 800, 600));
+        browser()->GetWindow()->SetBounds(gfx::Rect(10, 10, 800, 600));
       }),
       VerifyHistogram(
           GetParam() ? "DefaultBrowser.ModalDialogWithSettingsIllustration."

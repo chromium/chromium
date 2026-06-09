@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2DefaultWindowBounds) {
       display::Screen::Get()->GetDisplayForNewWindows().work_area();
   int x = (work_area.width() - 960) / 2;
   int y = (work_area.height() - 600) / 2;
-  EXPECT_EQ(browser->window()->GetBounds(), gfx::Rect(x, y, 960, 600));
+  EXPECT_EQ(browser->GetWindow()->GetBounds(), gfx::Rect(x, y, 960, 600));
 }
 
 // Test that the Help App logs metric when launching the app using the

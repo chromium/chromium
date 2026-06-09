@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, Bounds) {
 
   // Set known window bounds.
   const gfx::Rect window_bounds_1 = gfx::Rect(10, 10, 800, 600);
-  browser()->window()->SetBounds(window_bounds_1);
+  browser()->GetWindow()->SetBounds(window_bounds_1);
 
   // Fetch bounds using the surface.
   gfx::Rect bounds_1;
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, Bounds) {
 
   // Set new window bounds.
   const gfx::Rect window_bounds_2 = gfx::Rect(50, 50, 800, 600);
-  browser()->window()->SetBounds(window_bounds_2);
+  browser()->GetWindow()->SetBounds(window_bounds_2);
 
   // Fetch bounds using the surface.
   gfx::Rect bounds_2;

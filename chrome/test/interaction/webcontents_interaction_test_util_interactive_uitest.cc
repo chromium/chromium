@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
                             owner->GetElementBoundsInScreen(kButtonQuery);
                         EXPECT_FALSE(element_rect.IsEmpty());
                         const gfx::Rect window_rect =
-                            browser()->window()->GetBounds();
+                            browser()->GetWindow()->GetBounds();
                         EXPECT_TRUE(window_rect.Contains(element_rect))
                             << "Expected window rect " << window_rect.ToString()
                             << " to contain element rect "
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
                         auto* const owner =
                             element->AsA<TrackedElementWebContents>()->owner();
                         const gfx::Rect window_rect =
-                            browser()->window()->GetBounds();
+                            browser()->GetWindow()->GetBounds();
                         const gfx::Rect container_rect =
                             owner->GetElementBoundsInScreen(kContainerQuery);
 

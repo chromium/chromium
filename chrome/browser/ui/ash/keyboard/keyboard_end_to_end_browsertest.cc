@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(
   // Set the window bounds so that it does not overlap with the keyboard.
   // The virtual keyboard takes up no more than half the screen height.
   gfx::Size screen_bounds = GetScreenBounds();
-  browser()->window()->SetBounds(
+  browser()->GetWindow()->SetBounds(
       gfx::Rect(0, 0, screen_bounds.width(), screen_bounds.height() / 2));
 
   const int old_height = GetViewportHeight(web_contents_);
@@ -404,24 +404,24 @@ IN_PROC_BROWSER_TEST_F(
   // window size so that when it moves upwards, it will no longer overlap with
   // the keyboard.
   gfx::Size screen_bounds = GetScreenBounds();
-  browser()->window()->SetBounds(gfx::Rect(0, screen_bounds.height() / 2,
-                                           screen_bounds.width(),
-                                           screen_bounds.height() / 2));
-  const auto old_browser_bounds = browser()->window()->GetBounds();
+  browser()->GetWindow()->SetBounds(gfx::Rect(0, screen_bounds.height() / 2,
+                                              screen_bounds.width(),
+                                              screen_bounds.height() / 2));
+  const auto old_browser_bounds = browser()->GetWindow()->GetBounds();
   const int old_height = GetViewportHeight(web_contents_);
 
   FocusAndShowKeyboard();
   ASSERT_TRUE(WaitUntilShown());
 
-  EXPECT_LT(browser()->window()->GetBounds().y(), old_browser_bounds.y());
-  EXPECT_EQ(browser()->window()->GetBounds().height(),
+  EXPECT_LT(browser()->GetWindow()->GetBounds().y(), old_browser_bounds.y());
+  EXPECT_EQ(browser()->GetWindow()->GetBounds().height(),
             old_browser_bounds.height());
   EXPECT_EQ(GetViewportHeight(web_contents_), old_height);
 
   HideKeyboard();
   ASSERT_TRUE(WaitUntilHidden());
 
-  EXPECT_EQ(browser()->window()->GetBounds(), old_browser_bounds);
+  EXPECT_EQ(browser()->GetWindow()->GetBounds(), old_browser_bounds);
   EXPECT_EQ(GetViewportHeight(web_contents_), old_height);
 }
 
@@ -432,23 +432,23 @@ IN_PROC_BROWSER_TEST_F(
   // window size so that when it moves upwards, it will still overlap with
   // the keyboard.
   gfx::Size screen_bounds = GetScreenBounds();
-  browser()->window()->SetBounds(gfx::Rect(0, screen_bounds.height() / 3,
-                                           screen_bounds.width(),
-                                           screen_bounds.height() / 3 * 2));
-  const auto old_browser_bounds = browser()->window()->GetBounds();
+  browser()->GetWindow()->SetBounds(gfx::Rect(0, screen_bounds.height() / 3,
+                                              screen_bounds.width(),
+                                              screen_bounds.height() / 3 * 2));
+  const auto old_browser_bounds = browser()->GetWindow()->GetBounds();
   const int old_height = GetViewportHeight(web_contents_);
 
   FocusAndShowKeyboard();
   ASSERT_TRUE(WaitUntilShown());
 
-  EXPECT_LT(browser()->window()->GetBounds().y(), old_browser_bounds.y());
-  EXPECT_EQ(browser()->window()->GetBounds().height(),
+  EXPECT_LT(browser()->GetWindow()->GetBounds().y(), old_browser_bounds.y());
+  EXPECT_EQ(browser()->GetWindow()->GetBounds().height(),
             old_browser_bounds.height());
   EXPECT_LT(GetViewportHeight(web_contents_), old_height);
 
   HideKeyboard();
   ASSERT_TRUE(WaitUntilHidden());
 
-  EXPECT_EQ(browser()->window()->GetBounds(), old_browser_bounds);
+  EXPECT_EQ(browser()->GetWindow()->GetBounds(), old_browser_bounds);
   EXPECT_EQ(GetViewportHeight(web_contents_), old_height);
 }

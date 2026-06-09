@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest, NarrowPage) {
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshots not supported in all testing environments."),
       Do([this]() {
-        browser()->window()->SetBounds(gfx::Rect(0, 0, 400, 800));
+        browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 400, 800));
       }),
       OpenSkillsPage(GURL(chrome::kChromeUISkillsURL)
                          .Resolve(chrome::kChromeUISkillsYourSkillsPath)),

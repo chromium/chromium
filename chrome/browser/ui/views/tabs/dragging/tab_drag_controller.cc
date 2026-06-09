@@ -2701,7 +2701,7 @@ Browser* TabDragController::CreateBrowserForDrag(TabDragContext* source,
   // We need to reset them again so they are honored. On ChromeOS, this is
   // handled in NativeWidgetAura.
   if (!open_as_web_app) {
-    browser->window()->SetBounds(gfx::Rect(initial_size));
+    browser->GetWindow()->SetBounds(gfx::Rect(initial_size));
   }
 #endif
 

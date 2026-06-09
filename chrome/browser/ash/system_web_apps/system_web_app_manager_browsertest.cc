@@ -1018,7 +1018,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerDefaultBoundsTest, HasDefaultBounds) {
   EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
   EXPECT_EQ(kDefaultBounds,
             web_app::AppBrowserController::From(browser)->GetDefaultBounds());
-  EXPECT_EQ(kDefaultBounds, browser->window()->GetBounds());
+  EXPECT_EQ(kDefaultBounds, browser->GetWindow()->GetBounds());
 }
 
 // Tests that SWA are correctly uninstalled across restarts.

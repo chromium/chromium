@@ -424,7 +424,7 @@ class CaptionBubbleControllerViewsTest
   }
 
   void SetWindowBounds(const gfx::Rect& bounds) {
-    browser()->window()->SetBounds(bounds);
+    browser()->GetWindow()->SetBounds(bounds);
     base::RunLoop().RunUntilIdle();
   }
 

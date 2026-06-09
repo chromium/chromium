@@ -344,14 +344,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, MAYBE_PopupResizeWindow) {
   ASSERT_TRUE(widget);
 
   // Resize window smaller.
-  gfx::Rect current_browser_bounds = browser()->window()->GetBounds();
+  gfx::Rect current_browser_bounds = browser()->GetWindow()->GetBounds();
   gfx::Rect new_browser_bounds = current_browser_bounds;
   new_browser_bounds.set_width(current_browser_bounds.width() - 200);
-  browser()->window()->SetBounds(new_browser_bounds);
+  browser()->GetWindow()->SetBounds(new_browser_bounds);
 
   // Give it a moment to layout.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return browser()->window()->GetBounds().width() ==
+    return browser()->GetWindow()->GetBounds().width() ==
            new_browser_bounds.width();
   }));
 
@@ -367,10 +367,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, MAYBE_PopupResizeWindow) {
 
   // Resize window larger.
   new_browser_bounds.set_width(current_browser_bounds.width() + 200);
-  browser()->window()->SetBounds(new_browser_bounds);
+  browser()->GetWindow()->SetBounds(new_browser_bounds);
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return browser()->window()->GetBounds().width() ==
+    return browser()->GetWindow()->GetBounds().width() ==
            current_browser_bounds.width() + 200;
   }));
 

@@ -882,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   navigation_observer.Wait();
 
   new_browser->GetWindow()->Show();
-  new_browser->window()->SetBounds(expected_bounds);
+  new_browser->GetWindow()->SetBounds(expected_bounds);
 
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
 
@@ -900,7 +900,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   // Move the browser a bit and then close it. This is to make sure that when we
   // create a new browser, its bounds are actually coming from the template.
-  new_browser->window()->SetBounds(expected_bounds + gfx::Vector2d(10, 10));
+  new_browser->GetWindow()->SetBounds(expected_bounds + gfx::Vector2d(10, 10));
   web_app::CloseAndWait(new_browser);
 
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);

@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
   int expected_height = work_area.height() * aspect_ratio / 2;
   int x = (work_area.width() - expected_width) / 2;
   int y = (work_area.height() - expected_height) / 2;
-  EXPECT_EQ(browser->window()->GetBounds(),
+  EXPECT_EQ(browser->GetWindow()->GetBounds(),
             gfx::Rect(x, y, expected_width, expected_height));
 }
 
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
   int expected_height = work_area.width() * aspect_ratio / 2;
   int x = (work_area.width() - expected_width) / 2;
   int y = (work_area.height() - expected_height) / 2;
-  EXPECT_EQ(browser->window()->GetBounds(),
+  EXPECT_EQ(browser->GetWindow()->GetBounds(),
             gfx::Rect(x, y, expected_width, expected_height));
 }
 
@@ -98,8 +98,8 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
   Browser* browser;
   LaunchApp(ash::SystemWebAppType::ECHE, &browser);
 
-  EXPECT_GE(browser->window()->GetBounds().width(), min_size.width());
-  EXPECT_GE(browser->window()->GetBounds().height(), min_size.height());
+  EXPECT_GE(browser->GetWindow()->GetBounds().width(), min_size.width());
+  EXPECT_GE(browser->GetWindow()->GetBounds().height(), min_size.height());
 }
 
 IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, HiddenInLauncherAndSearch) {

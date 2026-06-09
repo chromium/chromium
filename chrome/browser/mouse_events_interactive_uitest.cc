@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_TestOnMouseOut) {
 #if BUILDFLAG(IS_WIN)
 // Mac/Linux are flaky; http://crbug.com/40845791.
 IN_PROC_BROWSER_TEST_F(MouseEventsTest, MouseDownOnBrowserCaption) {
-  gfx::Rect browser_bounds = browser()->window()->GetBounds();
+  gfx::Rect browser_bounds = browser()->GetWindow()->GetBounds();
   ui_controls::SendMouseMove(browser_bounds.x() + 200, browser_bounds.y() + 10);
   ui_controls::SendMouseClick(ui_controls::LEFT);
 

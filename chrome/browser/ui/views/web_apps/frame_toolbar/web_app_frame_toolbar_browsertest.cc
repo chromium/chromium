@@ -3320,12 +3320,12 @@ IN_PROC_BROWSER_TEST_F(
     std::string script =
         base::StringPrintf(script_template, move_command, move_command);
 
-    gfx::Rect bounds_before = helper()->app_browser()->window()->GetBounds();
+    gfx::Rect bounds_before = helper()->app_browser()->GetWindow()->GetBounds();
     SCOPED_TRACE(testing::Message()
                  << " move-command: " << move_command
                  << " popup-before: " << bounds_before.ToString());
     EXPECT_EQ(content::EvalJs(web_contents, script), "move fired");
-    gfx::Rect bounds_after = helper()->app_browser()->window()->GetBounds();
+    gfx::Rect bounds_after = helper()->app_browser()->GetWindow()->GetBounds();
     EXPECT_NE(bounds_before.ToString(), bounds_after.ToString());
   }
 }

@@ -1624,7 +1624,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FitWindow) {
   EnsureFindBoxOpenForBrowser(popup);
 
   ASSERT_LE(GetFindBarWidthForBrowser(popup),
-            popup->window()->GetBounds().width());
+            popup->GetWindow()->GetBounds().width());
 }
 
 IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,

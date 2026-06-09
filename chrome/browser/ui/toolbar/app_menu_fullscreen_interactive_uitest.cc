@@ -132,7 +132,7 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
                           browser->GetWindow()->GetNativeWindow());
                   auto display_size = display.bounds().size();
                   auto workarea_size = display.work_area().size();
-                  auto window_size = browser->window()->GetBounds().size();
+                  auto window_size = browser->GetWindow()->GetBounds().size();
                   DLOG(INFO) << "display_size = " << display_size.ToString()
                              << " workspace_size = " << workarea_size.ToString()
                              << " window_size = " << window_size.ToString();

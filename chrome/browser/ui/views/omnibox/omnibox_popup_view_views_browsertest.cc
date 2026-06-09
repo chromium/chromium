@@ -1294,7 +1294,7 @@ class OmniboxPopupPermissionBrowserTest : public InProcessBrowserTest {
         browser()->GetWindow()->GetNativeWindow());
     WidgetBoundsWaiter browser_waiter(browser_widget);
     WidgetBoundsWaiter popup_waiter(popup_widget);
-    browser()->window()->SetBounds(bounds);
+    browser()->GetWindow()->SetBounds(bounds);
     browser_waiter.Wait();
     popup_waiter.Wait();
   }

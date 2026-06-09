@@ -110,8 +110,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                                         /*expect_popup_to_be_shown=*/true));
 
   // Move the window, which should close the popup.
-  gfx::Rect new_bounds = browser()->window()->GetBounds() - gfx::Vector2d(1, 1);
-  browser()->window()->SetBounds(new_bounds);
+  gfx::Rect new_bounds =
+      browser()->GetWindow()->GetBounds() - gfx::Vector2d(1, 1);
+  browser()->GetWindow()->SetBounds(new_bounds);
 
   autofill_external_delegate().WaitForPopupHidden();
   EXPECT_TRUE(autofill_external_delegate().popup_hidden());
@@ -123,9 +124,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                                         /*expect_popup_to_be_shown=*/true));
 
   // Resize the window, which should cause the popup to hide.
-  gfx::Rect new_bounds = browser()->window()->GetBounds();
+  gfx::Rect new_bounds = browser()->GetWindow()->GetBounds();
   new_bounds.Inset(1);
-  browser()->window()->SetBounds(new_bounds);
+  browser()->GetWindow()->SetBounds(new_bounds);
 
   autofill_external_delegate().WaitForPopupHidden();
   EXPECT_TRUE(autofill_external_delegate().popup_hidden());
@@ -136,8 +137,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
   constexpr float kSize = 100.0f;
   // Set to smallest possible size. The actual minimum size is larger and
   // platform dependent.
-  browser()->window()->SetBounds(gfx::Rect(1, 1));
-  gfx::Rect window_bounds = browser()->window()->GetBounds();
+  browser()->GetWindow()->SetBounds(gfx::Rect(1, 1));
+  gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
   // Position the popup in the lower right corner so that there is not enough
   // space to display it.
   EXPECT_TRUE(GenerateTestAutofillPopup(

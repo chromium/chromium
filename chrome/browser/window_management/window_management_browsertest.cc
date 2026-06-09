@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
 #endif
 #endif
   const gfx::Rect new_bounds(1000, 150, 600, 500);
-  browser()->window()->SetBounds(new_bounds);
+  browser()->GetWindow()->SetBounds(new_bounds);
 
   auto* await_change_width = R"(
       (async () => {

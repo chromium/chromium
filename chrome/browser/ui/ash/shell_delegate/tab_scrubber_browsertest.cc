@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, FullScreenBrowser) {
   // to prevent any interference on this test.
   auto event_generator = CreateEventGenerator(browser());
   event_generator->MoveMouseTo(
-      gfx::Point(0, browser()->window()->GetBounds().height()));
+      gfx::Point(0, browser()->GetWindow()->GetBounds().height()));
   AddTabs(browser(), 6);
   browser()->tab_strip_model()->ActivateTabAt(4);
 

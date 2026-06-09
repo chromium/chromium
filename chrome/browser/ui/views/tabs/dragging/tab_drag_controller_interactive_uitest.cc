@@ -641,7 +641,7 @@ Browser* TabDragControllerTest::CreateAnotherBrowserAndResize() {
                                 ->GetActiveWebContents()
                                 ->GetContainerBounds();
     auto window_decoration_width =
-        container_bounds.x() - browser()->window()->GetBounds().x();
+        container_bounds.x() - browser()->GetWindow()->GetBounds().x();
     // We need to correct for the decorations drawn to the right of the first
     // window and to the left of the second window.
     browser_rect.set_x(browser_rect.right() - 2 * window_decoration_width);
@@ -2315,7 +2315,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
     GTEST_SKIP() << "Skipping test because it fails with InitialWebUI "
                     "enabled. See crbug.com/477426026.";
   }
-  const gfx::Rect initial_bounds(browser()->window()->GetBounds());
+  const gfx::Rect initial_bounds(browser()->GetWindow()->GetBounds());
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   tabs::TabHandle dragged_tab =
@@ -2388,8 +2388,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   constexpr float kSmallWindowScaleFactor = 0.5f;
   gfx::Rect small_rect(
-      browser_small->window()->GetBounds().origin(),
-      gfx::ScaleToFlooredSize(browser_small->window()->GetBounds().size(),
+      browser_small->GetWindow()->GetBounds().origin(),
+      gfx::ScaleToFlooredSize(browser_small->GetWindow()->GetBounds().size(),
                               kSmallWindowScaleFactor));
   ui_test_utils::SetAndWaitForBounds(*browser_small, small_rect);
 
@@ -2511,7 +2511,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   }
 #endif
 
-  const gfx::Rect initial_bounds(browser()->window()->GetBounds());
+  const gfx::Rect initial_bounds(browser()->GetWindow()->GetBounds());
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
@@ -2937,7 +2937,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
           ->GetDisplayNearestWindow(browser()->GetWindow()->GetNativeWindow())
           .work_area();
   ui_test_utils::SetAndWaitForBounds(*browser(), work_area);
-  const gfx::Rect initial_bounds(browser()->window()->GetBounds());
+  const gfx::Rect initial_bounds(browser()->GetWindow()->GetBounds());
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
@@ -2962,7 +2962,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   // The bounds of the initial window should not have changed.
   EXPECT_EQ(initial_bounds.ToString(),
-            browser()->window()->GetBounds().ToString());
+            browser()->GetWindow()->GetBounds().ToString());
 
   EXPECT_FALSE(GetIsDragged(browser()));
   EXPECT_FALSE(GetIsDragged(new_browser));
@@ -3502,7 +3502,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, MAYBE_DragAll) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   browser()->tab_strip_model()->SelectTabAt(0);
-  const gfx::Rect initial_bounds = browser()->window()->GetBounds();
+  const gfx::Rect initial_bounds = browser()->GetWindow()->GetBounds();
 
   // Move to the first tab and drag it enough so that it would normally
   // detach.
@@ -3537,7 +3537,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, MAYBE_DragAll) {
   // Remaining browser window should not be maximized
   EXPECT_FALSE(browser()->GetWindow()->IsMaximized());
 
-  const gfx::Rect final_bounds = browser()->window()->GetBounds();
+  const gfx::Rect final_bounds = browser()->GetWindow()->GetBounds();
 
   // The following expectations might not hold on platforms where we can't
   // control the browser's bounds.
@@ -3565,7 +3565,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
-  const gfx::Rect initial_bounds = browser()->window()->GetBounds();
+  const gfx::Rect initial_bounds = browser()->GetWindow()->GetBounds();
 
   // Drag the only tab with a small horizontal offset that stays within the
   // tab strip. We must NOT use GetDetachY() here because in fullscreen our
@@ -3589,7 +3589,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
 
   // The window bounds should not have changed.
-  EXPECT_EQ(initial_bounds, browser()->window()->GetBounds());
+  EXPECT_EQ(initial_bounds, browser()->GetWindow()->GetBounds());
 }
 
 // Same as above but with vertical tab strip enabled. Unlike horizontal tabs,
@@ -5001,7 +5001,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // Create another browser.
   Browser* browser2 = CreateAnotherBrowserAndResize();
   TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
-  const gfx::Rect initial_bounds(browser2->window()->GetBounds());
+  const gfx::Rect initial_bounds(browser2->GetWindow()->GetBounds());
 
   // Place the first browser directly below the second in such a way that
   // dragging a tab upwards will drag it directly into the second browser's
@@ -5014,7 +5014,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   tabstrip_bounds = tabstrip->ConvertRectToWidget(tabstrip_bounds);
   gfx::Rect bounds = initial_bounds;
   bounds.Offset(0, tabstrip_bounds.bottom());
-  browser()->window()->SetBounds(bounds);
+  browser()->GetWindow()->SetBounds(bounds);
 
   // Ensure the first browser is on top so clicks go to it.
   ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
@@ -5048,7 +5048,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   // Also make sure that the drag to window position has not changed.
   EXPECT_EQ(initial_bounds.ToString(),
-            browser2->window()->GetBounds().ToString());
+            browser2->GetWindow()->GetBounds().ToString());
 }
 
 // Flaky. https://crbug.com/40748225
@@ -5378,8 +5378,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   AddTabsAndResetBrowser(browser(), 1);
   // Moves the browser window slightly to ensure that the browser's restored
   // bounds are different from the maximized bound's origin.
-  browser()->window()->SetBounds(browser()->window()->GetBounds() +
-                                 gfx::Vector2d(100, 50));
+  browser()->GetWindow()->SetBounds(browser()->GetWindow()->GetBounds() +
+                                    gfx::Vector2d(100, 50));
   browser()->GetWindow()->Maximize();
 
   DragWindowAndVerifyOffset(this, GetTabStripForBrowser(browser()), 0);
@@ -5630,9 +5630,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
                             .work_area();
   const gfx::Size size(work_area.width() / 3, work_area.height() / 2);
   gfx::Rect browser_rect(work_area.origin(), size);
-  app_browser1->window()->SetBounds(browser_rect);
+  app_browser1->GetWindow()->SetBounds(browser_rect);
   browser_rect.set_x(browser_rect.right());
-  app_browser2->window()->SetBounds(browser_rect);
+  app_browser2->GetWindow()->SetBounds(browser_rect);
 
   // Close normal browser since other code expects only 1 browser to start.
   CloseBrowserSynchronously(browser());
@@ -5842,10 +5842,10 @@ IN_PROC_BROWSER_TEST_P(
     // display. Do not use SetBounds() or related, it may move the browser
     // window to the secondary display in some configurations like Mash.
     int target_x = displays.first.bounds().right() -
-                   browser()->window()->GetBounds().width() / 2 + 20;
+                   browser()->GetWindow()->GetBounds().width() / 2 + 20;
     const gfx::Point target_point =
         GetCenterInScreenCoordinates(tab_strip->tab_at(0)) +
-        gfx::Vector2d(target_x - browser()->window()->GetBounds().x(),
+        gfx::Vector2d(target_x - browser()->GetWindow()->GetBounds().x(),
                       GetDetachY(tab_strip));
     DragTabAndNotify(
         tab_strip,
@@ -5865,7 +5865,8 @@ IN_PROC_BROWSER_TEST_P(
   // dropped near the edge.
   const gfx::Point tab_0_center =
       GetCenterInScreenCoordinates(tab_strip->tab_at(0));
-  const int offset_x = tab_0_center.x() - browser()->window()->GetBounds().x();
+  const int offset_x =
+      tab_0_center.x() - browser()->GetWindow()->GetBounds().x();
   const int detach_y = tab_0_center.y() + GetDetachY(tab_strip);
   const int first_display_warp_edge_x = displays.first.bounds().right() - 1;
   const gfx::Point second_display_target_point(
@@ -5927,7 +5928,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   ui_test_utils::SetAndWaitForBounds(*browser(), work_area);
   // It's possible the window will not fit in half the screen, in which case we
   // will position the windows as well as we can.
-  work_area.set_x(browser()->window()->GetBounds().right());
+  work_area.set_x(browser()->GetWindow()->GetBounds().right());
   // Sanity check: second browser should still be on the second display.
   ASSERT_LT(work_area.x(), second_display.work_area().right());
   ui_test_utils::SetAndWaitForBounds(*browser2, work_area);
@@ -6342,7 +6343,7 @@ IN_PROC_BROWSER_TEST_P(
       screen->GetDisplayNearestWindow(browser()->GetWindow()->GetNativeWindow())
           .id());
 
-  browser()->window()->SetBounds(displays.second.work_area());
+  browser()->GetWindow()->SetBounds(displays.second.work_area());
   EXPECT_EQ(
       displays.second.id(),
       screen->GetDisplayNearestWindow(browser()->GetWindow()->GetNativeWindow())

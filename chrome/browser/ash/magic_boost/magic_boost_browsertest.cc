@@ -921,7 +921,7 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, ShowDisclaimerViewOnMultiScreen) {
 
   // Sets the second display to be the window screen. Right click on the web
   // content to show the opt in card.
-  browser()->window()->SetBounds(displays[1].work_area());
+  browser()->GetWindow()->SetBounds(displays[1].work_area());
   event_generator().SetTargetWindow(root_windows[1]);
   NavigateToReadOnlyWeb();
   event_generator().MoveMouseTo(displays[1].work_area().CenterPoint());
@@ -960,7 +960,7 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, ShowDisclaimerViewOnMultiScreen) {
     // on the second screen.
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kHMRConsentStatus, std::to_underlying(init_hmr_status));
-    browser()->window()->SetBounds(displays[0].work_area());
+    browser()->GetWindow()->SetBounds(displays[0].work_area());
     event_generator().SetTargetWindow(root_windows[0]);
     NavigateToReadOnlyWeb();
     event_generator().MoveMouseTo(displays[0].work_area().CenterPoint());
@@ -983,7 +983,7 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, ShowDisclaimerViewOnMultiScreen) {
     // on the third screen.
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kHMRConsentStatus, std::to_underlying(init_hmr_status));
-    browser()->window()->SetBounds(displays[2].work_area());
+    browser()->GetWindow()->SetBounds(displays[2].work_area());
     event_generator().SetTargetWindow(root_windows[2]);
     NavigateToReadOnlyWeb();
     event_generator().MoveMouseTo(displays[2].work_area().CenterPoint());
@@ -1005,7 +1005,7 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, ShowDisclaimerViewOnMultiScreen) {
     // Without resetting the hmr consent status, it should show mahi menu and
     // close the dicaimer view after right clicking on the read only web content
     // again on the first screen.
-    browser()->window()->SetBounds(displays[0].work_area());
+    browser()->GetWindow()->SetBounds(displays[0].work_area());
     event_generator().SetTargetWindow(root_windows[0]);
     NavigateToReadOnlyWeb();
     event_generator().MoveMouseTo(displays[0].work_area().CenterPoint());
@@ -1050,7 +1050,7 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, ShowDisclaimerViewOnMultiScreen) {
   // on the first screen.
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kHMRConsentStatus, std::to_underlying(init_hmr_status));
-  browser()->window()->SetBounds(displays[0].work_area());
+  browser()->GetWindow()->SetBounds(displays[0].work_area());
   event_generator().SetTargetWindow(root_windows[0]);
   NavigateToReadOnlyWeb();
   event_generator().MoveMouseTo(displays[0].work_area().CenterPoint());
@@ -1071,7 +1071,7 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, ShowDisclaimerViewOnMultiScreen) {
   // on the third screen.
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kHMRConsentStatus, std::to_underlying(init_hmr_status));
-  browser()->window()->SetBounds(displays[2].work_area());
+  browser()->GetWindow()->SetBounds(displays[2].work_area());
   event_generator().SetTargetWindow(root_windows[2]);
   NavigateToReadOnlyWeb();
   event_generator().MoveMouseTo(displays[2].work_area().CenterPoint());
@@ -1091,7 +1091,7 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, ShowDisclaimerViewOnMultiScreen) {
   // Without resetting the hmr consent status, it should show mahi menu and
   // close the dicaimer view after right clicking on the read only web content
   // again on the first screen.
-  browser()->window()->SetBounds(displays[0].work_area());
+  browser()->GetWindow()->SetBounds(displays[0].work_area());
   event_generator().SetTargetWindow(root_windows[0]);
   NavigateToReadOnlyWeb();
   event_generator().MoveMouseTo(displays[0].work_area().CenterPoint());

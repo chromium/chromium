@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 
   // Force a larger window size to give the popup room to grow.
-  browser()->window()->SetBounds(gfx::Rect(0, 0, 1280, 1024));
+  browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 1280, 1024));
 
   browser()->profile()->GetPrefs()->SetInteger(
       contextual_search::kSearchContentSharingSettings,
@@ -986,7 +986,7 @@ IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
                        MAYBE_HasSuggestionLabel) {
   const DeepQuery kSuggestionLabel = {"omnibox-popup-app", "#context",
                                       "#description"};
-  browser()->window()->SetBounds(gfx::Rect(0, 0, 1280, 1024));
+  browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 1280, 1024));
   std::u16string expected_text =
       l10n_util::GetStringUTF16(IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL);
   RunTestSequence(

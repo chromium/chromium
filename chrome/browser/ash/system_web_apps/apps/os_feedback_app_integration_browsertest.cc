@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, DefaultWindowBounds) {
   int x = (work_area.width() - expected_width) / 2;
   int y = (work_area.height() - expected_height) / 2;
   EXPECT_EQ(gfx::Rect(x, y, expected_width, expected_height),
-            app_browser->window()->GetBounds());
+            app_browser->GetWindow()->GetBounds());
 }
 
 // Test that when the policy UserFeedbackAllowed is true, the Feedback App

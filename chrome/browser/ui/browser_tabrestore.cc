@@ -124,8 +124,8 @@ void LoadRestoredTabIfVisible(Browser* browser,
   // loaded.
   if (!webui_browser::IsWebUIBrowserEnabled()) {
     DCHECK(!browser->window()->GetContentsSize().IsEmpty() ||
-           (browser->window()->GetBounds().IsEmpty() &&
-            browser->window()->GetRestoredBounds().IsEmpty()));
+           (browser->GetWindow()->GetBounds().IsEmpty() &&
+            browser->GetWindow()->GetRestoredBounds().IsEmpty()));
   }
   DCHECK_EQ(web_contents->GetSize(), browser->window()->GetContentsSize());
 
@@ -211,7 +211,7 @@ WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
   // Fallback to the restore bounds if it's empty as the window is not shown
   // yet and the bounds may not be available on all platforms.
   if (size.IsEmpty()) {
-    size = browser->window()->GetRestoredBounds().size();
+    size = browser->GetWindow()->GetRestoredBounds().size();
   }
   raw_web_contents->Resize(gfx::Rect(size));
 

@@ -1084,7 +1084,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PWASizeIsCorrectlyRestored) {
   CloseAndWait(app_browser);
 
   Browser* const new_browser = LaunchWebAppBrowser(app_id);
-  EXPECT_EQ(new_browser->window()->GetBounds(), bounds);
+  EXPECT_EQ(new_browser->GetWindow()->GetBounds(), bounds);
 }
 
 // Tests that using window.open to create a popup window out of scope results in
@@ -1689,9 +1689,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DetailedInstallDialog,
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, SecondWindowSizeMatches) {
   const webapps::AppId app_id = InstallPWA(GURL(kExampleURL));
   Browser* first_browser = LaunchWebAppBrowserAndWait(app_id);
-  const gfx::Size first_size = first_browser->window()->GetBounds().size();
+  const gfx::Size first_size = first_browser->GetWindow()->GetBounds().size();
   Browser* second_browser = LaunchWebAppBrowserAndWait(app_id);
-  const gfx::Size second_size = second_browser->window()->GetBounds().size();
+  const gfx::Size second_size = second_browser->GetWindow()->GetBounds().size();
   constexpr int kTolerance = 50;  // Empirically derived, should be reduced.
   EXPECT_LT(std::abs(first_size.width() - second_size.width()), kTolerance);
   EXPECT_LT(std::abs(first_size.height() - second_size.height()), kTolerance);
@@ -1702,8 +1702,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, SecondWindowOffset) {
   const webapps::AppId app_id = InstallPWA(GURL(kExampleURL));
   Browser* first_browser = LaunchWebAppBrowserAndWait(app_id);
   Browser* second_browser = LaunchWebAppBrowserAndWait(app_id);
-  EXPECT_NE(first_browser->window()->GetBounds().OffsetFromOrigin(),
-            second_browser->window()->GetBounds().OffsetFromOrigin());
+  EXPECT_NE(first_browser->GetWindow()->GetBounds().OffsetFromOrigin(),
+            second_browser->GetWindow()->GetBounds().OffsetFromOrigin());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, SetBounds) {

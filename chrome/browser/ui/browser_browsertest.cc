@@ -2184,10 +2184,10 @@ IN_PROC_BROWSER_TEST_F(KioskModeTest, DoNotExitFullscreen) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskModeTest, DoNotChangeBounds) {
-  gfx::Rect old_bounds = browser()->window()->GetBounds();
+  gfx::Rect old_bounds = browser()->GetWindow()->GetBounds();
 
-  browser()->window()->SetBounds(gfx::Rect(10, 10, 10, 10));
-  gfx::Rect new_bounds = browser()->window()->GetBounds();
+  browser()->GetWindow()->SetBounds(gfx::Rect(10, 10, 10, 10));
+  gfx::Rect new_bounds = browser()->GetWindow()->GetBounds();
 
   ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
   ASSERT_EQ(old_bounds, new_bounds);
@@ -2605,7 +2605,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
   // Force an initial resize. This works around a test-only problem on Chrome OS
   // where the shelf may not be created before the initial test browser window
   // opens, which leads to sizing issues in WebContents resize.
-  browser()->window()->SetBounds(gfx::Rect(10, 20, 600, 400));
+  browser()->GetWindow()->SetBounds(gfx::Rect(10, 20, 600, 400));
   // Let the message loop run so that resize actually takes effect.
   content::RunAllPendingInMessageLoop();
 
@@ -2818,7 +2818,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
                                  true);
     params.initial_bounds = gfx::Rect(0, 0, 100, 122);
     Browser* browser = Browser::Create(params);
-    gfx::Rect bounds = browser->window()->GetBounds();
+    gfx::Rect bounds = browser->GetWindow()->GetBounds();
 
     // Should be EXPECT_EQ, but this width is inconsistent across platforms.
     // See https://crbug.com/41227805.
@@ -2837,7 +2837,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
     params.initial_bounds = gfx::Rect(0, 0, 100, 122);
     params.trusted_source = true;
     Browser* browser = Browser::Create(params);
-    gfx::Rect bounds = browser->window()->GetBounds();
+    gfx::Rect bounds = browser->GetWindow()->GetBounds();
 
     // Should be EXPECT_EQ, but this width is inconsistent across platforms.
     // See https://crbug.com/41227805.
@@ -2855,7 +2855,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
         "app-name", false, gfx::Rect(0, 0, 100, 122), browser()->profile(),
         true);
     Browser* browser = Browser::Create(params);
-    gfx::Rect bounds = browser->window()->GetBounds();
+    gfx::Rect bounds = browser->GetWindow()->GetBounds();
 
     // Should be EXPECT_EQ, but this width is inconsistent across platforms.
     // See https://crbug.com/41227805.
@@ -2871,7 +2871,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
         "app-name", true, gfx::Rect(0, 0, 100, 122), browser()->profile(),
         true);
     Browser* browser = Browser::Create(params);
-    gfx::Rect bounds = browser->window()->GetBounds();
+    gfx::Rect bounds = browser->GetWindow()->GetBounds();
 
     // Should be EXPECT_EQ, but this width is inconsistent across platforms.
     // See https://crbug.com/41227805.
@@ -2887,7 +2887,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
         Browser::CreateParams::CreateForDevTools(browser()->profile());
     params.initial_bounds = gfx::Rect(0, 0, 100, 122);
     Browser* browser = Browser::Create(params);
-    gfx::Rect bounds = browser->window()->GetBounds();
+    gfx::Rect bounds = browser->GetWindow()->GetBounds();
 
     // Should be EXPECT_EQ, but this width is inconsistent across platforms.
     // See https://crbug.com/41227805.

@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(BackGestureBrowserTest, TouchActions) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
 
   aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
-  const gfx::Rect bounds = browser()->window()->GetBounds();
+  const gfx::Rect bounds = browser()->GetWindow()->GetBounds();
   const gfx::Point start_point = bounds.left_center();
   const gfx::Point end_point =
       gfx::Point(start_point.x() + 200, start_point.y());
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(BackGestureBrowserTest, PreventDefault) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
 
   aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
-  const gfx::Rect bounds = browser()->window()->GetBounds();
+  const gfx::Rect bounds = browser()->GetWindow()->GetBounds();
   BackGestureEventRecorder recorder;
   browser_window->AddPreTargetHandler(&recorder);
 

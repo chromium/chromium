@@ -542,12 +542,12 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowBounds) {
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Deliberately change the bounds of the first window to something different.
-  gfx::Rect bounds = browser()->window()->GetBounds();
+  gfx::Rect bounds = browser()->GetWindow()->GetBounds();
   bounds.set_width(700);
   bounds.set_height(480);
   bounds.Offset(20, 20);
-  browser()->window()->SetBounds(bounds);
-  gfx::Rect bounds2 = browser()->window()->GetBounds();
+  browser()->GetWindow()->SetBounds(bounds);
+  gfx::Rect bounds2 = browser()->GetWindow()->GetBounds();
   ASSERT_EQ(bounds, bounds2);
 
   // Close the first window.

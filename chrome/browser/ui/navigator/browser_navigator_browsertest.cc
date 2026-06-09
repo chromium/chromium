@@ -2293,7 +2293,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
   {
 #if BUILDFLAG(IS_CHROMEOS)
     // Put the opener on display 1.
-    browser()->window()->SetBounds(display1.work_area());
+    browser()->GetWindow()->SetBounds(display1.work_area());
 #else
     // Make the MockScreen report the opener as being on display 1.
     mock_screen().set_display_nearest_window(display1);
@@ -2327,7 +2327,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
   {
 #if BUILDFLAG(IS_CHROMEOS)
     // Put the opener on display 2.
-    browser()->window()->SetBounds(display2.work_area());
+    browser()->GetWindow()->SetBounds(display2.work_area());
 #else
     // Make the MockScreen report the opener as being on display 2.
     mock_screen().set_display_nearest_window(display2);

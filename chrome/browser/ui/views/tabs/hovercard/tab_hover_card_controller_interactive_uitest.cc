@@ -143,7 +143,7 @@ class TabHoverCardInteractiveUiTest
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // Because Ozone makes it impossible to target a point not in a window in
     // tests, instead target the extreme upper left of the browser window.
-    upper_left = browser()->window()->GetBounds().origin();
+    upper_left = browser()->GetWindow()->GetBounds().origin();
 #endif
     ui_controls::SendMouseMoveNotifyWhenDone(upper_left.x(), upper_left.y(),
                                              run_loop.QuitClosure());

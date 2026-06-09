@@ -954,7 +954,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 
   // Place the window far enough from the edge so that the arrow (which is to
   // the left of the region view) is within the display bounds.
-  browser()->window()->SetBounds(
+  browser()->GetWindow()->SetBounds(
       gfx::Rect(display_bounds.x() + 100, display_bounds.y() + 100, 800, 600));
 
   BrowserRootView::DropIndex index;
@@ -989,7 +989,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   // display_bounds.x().
   // Setting the window x to the display bounds x should ensure the arrow (which
   // is to the left of the region view) is outside the display bounds.
-  browser()->window()->SetBounds(
+  browser()->GetWindow()->SetBounds(
       gfx::Rect(display_bounds.x(), display_bounds.y(), 800, 600));
 
   BrowserRootView::DropIndex index;
@@ -1024,8 +1024,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   // In RTL, default arrow is to the right of the strip, at right() + kSize.
   // We need right() + kSize + kSize (for arrow width) <=
   // display_bounds.right(). So right() <= display_bounds.right() - 2 * kSize.
-  browser()->window()->SetBounds(gfx::Rect(display_bounds.right() - 800 - 100,
-                                           display_bounds.y() + 100, 800, 600));
+  browser()->GetWindow()->SetBounds(gfx::Rect(
+      display_bounds.right() - 800 - 100, display_bounds.y() + 100, 800, 600));
 
   BrowserRootView::DropIndex index;
   index.index = 0;
@@ -1061,7 +1061,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   // We want region_view()->GetBoundsInScreen().right() + DropArrow::kSize >
   // display_bounds.right().
   // Setting the window right to the display bounds right should ensure it.
-  browser()->window()->SetBounds(
+  browser()->GetWindow()->SetBounds(
       gfx::Rect(display_bounds.right() - 800, display_bounds.y(), 800, 600));
 
   BrowserRootView::DropIndex index;

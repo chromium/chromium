@@ -617,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
           .supports_global_screen_coordinates) {
     GTEST_SKIP() << "Only test when global screen coordinates aren't supported";
   }
-  browser()->window()->SetBounds(gfx::Rect(0, 0, 1000, 1000));
+  browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 1000, 1000));
 
   group_ = browser()->tab_strip_model()->AddToNewGroup({0});
   ASSERT_TRUE(group_.has_value());

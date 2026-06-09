@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
 
   auto check_bounds = [&](const gfx::Rect& set, const gfx::Rect& actual) {
     if (centered_in_window) {
-      gfx::Rect expected = browser()->window()->GetBounds();
+      gfx::Rect expected = browser()->GetWindow()->GetBounds();
       expected.ClampToCenteredSize(set.size());
       EXPECT_EQ(expected, actual);
     } else {

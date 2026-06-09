@@ -4002,7 +4002,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
   RunFunctionAsync(function.get(), args);
 
   Browser* popup_browser = browser_opened.Wait();
-  gfx::Rect bounds = popup_browser->window()->GetBounds();
+  gfx::Rect bounds = popup_browser->GetWindow()->GetBounds();
   EXPECT_EQ(bounds.x(), TestDelegate::kTestBounds.x());
   EXPECT_EQ(bounds.y(), TestDelegate::kTestBounds.y());
   // The final width and height can contain platform-specific offsets for the

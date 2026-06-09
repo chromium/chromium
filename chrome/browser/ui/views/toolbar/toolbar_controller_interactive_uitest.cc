@@ -122,7 +122,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest,
             ? std::nullopt
             : std::make_optional(overflow_threshold);
 
-    default_browser_width_ = browser()->window()->GetBounds().width();
+    default_browser_width_ = browser()->GetWindow()->GetBounds().width();
     ASSERT_GT(default_browser_width_, overflow_threshold_width_);
   }
 

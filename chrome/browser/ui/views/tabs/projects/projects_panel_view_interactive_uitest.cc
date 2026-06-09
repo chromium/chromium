@@ -94,7 +94,7 @@ class ProjectsPanelInteractiveUiTest : public InteractiveBrowserTest {
 
     // Resize the window to be wide enough to accommodate a wide vertical tab
     // strip and the toolbar.
-    browser()->window()->SetBounds(
+    browser()->GetWindow()->SetBounds(
         gfx::Rect(0, 0, kBrowserWindowWidth, kBrowserWindowHeight));
 
     // Enter Vertical Tabs mode.

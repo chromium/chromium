@@ -74,17 +74,17 @@ IN_PROC_BROWSER_TEST_F(PopupTest, OpenLeftAndTopZeroCoordinates) {
   Browser* popup =
       OpenPopup(browser(), "open('.', '', 'left=0,top=0,width=50,height=50')");
   const display::Display display = GetDisplayNearestBrowser(popup);
-  gfx::Rect expected(popup->window()->GetBounds().size());
+  gfx::Rect expected(popup->GetWindow()->GetBounds().size());
   expected.AdjustToFit(display.work_area());
 #if BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/40815883) Desktop Linux window bounds are inaccurate.
   expected.Outset(50);
-  EXPECT_TRUE(expected.Contains(popup->window()->GetBounds()))
+  EXPECT_TRUE(expected.Contains(popup->GetWindow()->GetBounds()))
       << " expected: " << expected.ToString()
-      << " popup: " << popup->window()->GetBounds().ToString()
+      << " popup: " << popup->GetWindow()->GetBounds().ToString()
       << " work_area: " << display.work_area().ToString();
 #else
-  EXPECT_EQ(expected.ToString(), popup->window()->GetBounds().ToString())
+  EXPECT_EQ(expected.ToString(), popup->GetWindow()->GetBounds().ToString())
       << " work_area: " << display.work_area().ToString();
 #endif
 }
@@ -115,10 +115,10 @@ IN_PROC_BROWSER_TEST_F(PopupTest, OpenClampedToCurrentDisplay) {
     // work_area: 0,0 1280x800 popup: 1,20 1280x800
     work_area.Outset(50);
 #endif
-    EXPECT_TRUE(work_area.Contains(popup->window()->GetBounds()))
+    EXPECT_TRUE(work_area.Contains(popup->GetWindow()->GetBounds()))
         << " script: " << script
         << " work_area: " << display.work_area().ToString()
-        << " popup: " << popup->window()->GetBounds().ToString();
+        << " popup: " << popup->GetWindow()->GetBounds().ToString();
   }
 }
 
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(PopupTest, MoveClampedToCurrentDisplay) {
   const display::Display display = GetDisplayNearestBrowser(browser());
   for (const char* const script : kMoveScripts) {
     Browser* popup = OpenPopup(browser(), kOpenPopup);
-    gfx::Rect popup_bounds = popup->window()->GetBounds();
+    gfx::Rect popup_bounds = popup->GetWindow()->GetBounds();
     content::WebContents* popup_contents =
         popup->tab_strip_model()->GetActiveWebContents();
     SCOPED_TRACE(testing::Message()
@@ -147,10 +147,10 @@ IN_PROC_BROWSER_TEST_F(PopupTest, MoveClampedToCurrentDisplay) {
     content::ExecuteScriptAsync(popup_contents, script);
     // Wait for a substantial move, bounds change during init.
     WaitForBoundsChange(popup, /*move_by=*/40, /*resize_by=*/0);
-    EXPECT_NE(popup_bounds.origin(), popup->window()->GetBounds().origin());
-    EXPECT_EQ(popup_bounds.size(), popup->window()->GetBounds().size());
-    EXPECT_TRUE(display.work_area().Contains(popup->window()->GetBounds()))
-        << " popup-after: " << popup->window()->GetBounds().ToString();
+    EXPECT_NE(popup_bounds.origin(), popup->GetWindow()->GetBounds().origin());
+    EXPECT_EQ(popup_bounds.size(), popup->GetWindow()->GetBounds().size());
+    EXPECT_TRUE(display.work_area().Contains(popup->GetWindow()->GetBounds()))
+        << " popup-after: " << popup->GetWindow()->GetBounds().ToString();
   }
 }
 
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(PopupTest, ResizeClampedToCurrentDisplay) {
   const display::Display display = GetDisplayNearestBrowser(browser());
   for (const char* const script : kResizeScripts) {
     Browser* popup = OpenPopup(browser(), kOpenPopup);
-    gfx::Rect popup_bounds = popup->window()->GetBounds();
+    gfx::Rect popup_bounds = popup->GetWindow()->GetBounds();
     content::WebContents* popup_contents =
         popup->tab_strip_model()->GetActiveWebContents();
     SCOPED_TRACE(testing::Message()
@@ -176,9 +176,9 @@ IN_PROC_BROWSER_TEST_F(PopupTest, ResizeClampedToCurrentDisplay) {
     content::ExecuteScriptAsync(popup_contents, script);
     // Wait for a substantial resize, bounds change during init.
     WaitForBoundsChange(popup, /*move_by=*/0, /*resize_by=*/99);
-    EXPECT_NE(popup_bounds.size(), popup->window()->GetBounds().size());
-    EXPECT_TRUE(display.work_area().Contains(popup->window()->GetBounds()))
-        << " popup-after: " << popup->window()->GetBounds().ToString();
+    EXPECT_NE(popup_bounds.size(), popup->GetWindow()->GetBounds().size());
+    EXPECT_TRUE(display.work_area().Contains(popup->GetWindow()->GetBounds()))
+        << " popup-after: " << popup->GetWindow()->GetBounds().ToString();
   }
 }
 
@@ -198,8 +198,8 @@ IN_PROC_BROWSER_TEST_F(PopupTest, NoopenerPositioning) {
                               opener_popup->GetWindow()->GetNativeWindow()))
       .Wait();
 
-  EXPECT_EQ(noopener_popup->window()->GetBounds().ToString(),
-            opener_popup->window()->GetBounds().ToString());
+  EXPECT_EQ(noopener_popup->GetWindow()->GetBounds().ToString(),
+            opener_popup->GetWindow()->GetBounds().ToString());
 }
 
 // Tests for Additional Windowing Controls on popup windows.
@@ -242,12 +242,12 @@ IN_PROC_BROWSER_TEST_F(PopupTest_AdditionalWindowingControls,
     content::WebContents* popup_contents =
         popup->tab_strip_model()->GetActiveWebContents();
 
-    gfx::Rect bounds_before = popup->window()->GetBounds();
+    gfx::Rect bounds_before = popup->GetWindow()->GetBounds();
     SCOPED_TRACE(testing::Message()
                  << " move-command: " << move_command
                  << " popup-before: " << bounds_before.ToString());
     EXPECT_EQ(content::EvalJs(popup_contents, script), "move fired");
-    gfx::Rect bounds_after = popup->window()->GetBounds();
+    gfx::Rect bounds_after = popup->GetWindow()->GetBounds();
     EXPECT_NE(bounds_before.ToString(), bounds_after.ToString());
   }
 }

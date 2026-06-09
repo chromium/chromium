@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
   NavigateViaLinkClickToURLAndWait(app_browser, test_web_app_start_url());
 
   const gfx::Rect bounds = gfx::Rect(50, 50, 550, 500);
-  app_browser->window()->SetBounds(bounds);
+  app_browser->GetWindow()->SetBounds(bounds);
   CloseAndWait(app_browser);
 
   content::WebContentsAddedObserver new_contents_observer;

@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(OcclusionVisibilityInteractiveUITest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  browser()->window()->SetBounds(gfx::Rect(100, 100, 640, 480));
+  browser()->GetWindow()->SetBounds(gfx::Rect(100, 100, 640, 480));
   browser()->GetWindow()->Show();
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
@@ -72,9 +72,9 @@ IN_PROC_BROWSER_TEST_F(OcclusionVisibilityInteractiveUITest,
 
   {
     VisibilityWaiter waiter(web_contents, content::Visibility::OCCLUDED);
-    gfx::Rect bounds = browser()->window()->GetBounds();
+    gfx::Rect bounds = browser()->GetWindow()->GetBounds();
     bounds.Outset(50);
-    browser2->window()->SetBounds(bounds);
+    browser2->GetWindow()->SetBounds(bounds);
     browser2->GetWindow()->Show();
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser2));
     waiter.Wait();

@@ -25,7 +25,7 @@ IN_PROC_BROWSER_TEST_F(WindowsBoundsChangedEventTest, Move) {
       browser()->GetWindow()->GetNativeWindow()->GetRootWindow());
 
   // Simulates a user drag to move the browser window.
-  const gfx::Rect rect = browser()->window()->GetBounds();
+  const gfx::Rect rect = browser()->GetWindow()->GetBounds();
   generator.MoveMouseTo(rect.top_center() + gfx::Vector2d(0, 5));
 
   generator.PressLeftButton();
@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(WindowsBoundsChangedEventTest, Move) {
   generator.ReleaseLeftButton();
 
   // Verifies that the window is actually moved.
-  const gfx::Rect final_rect = browser()->window()->GetBounds();
+  const gfx::Rect final_rect = browser()->GetWindow()->GetBounds();
   ASSERT_NE(rect, final_rect);
 
   listener.Reply(base::StringPrintf(
@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(WindowsBoundsChangedEventTest, Resize) {
       browser()->GetWindow()->GetNativeWindow()->GetRootWindow());
 
   // Simulates a user drag to resize the browser window.
-  const gfx::Rect rect = browser()->window()->GetBounds();
+  const gfx::Rect rect = browser()->GetWindow()->GetBounds();
   gfx::Point resize_handle(rect.right(), rect.bottom());
   generator.MoveMouseTo(resize_handle);
 
@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(WindowsBoundsChangedEventTest, Resize) {
   generator.ReleaseLeftButton();
 
   // Verifies that the window is actually resized.
-  const gfx::Rect final_rect = browser()->window()->GetBounds();
+  const gfx::Rect final_rect = browser()->GetWindow()->GetBounds();
   ASSERT_NE(rect, final_rect);
 
   listener.Reply(base::StringPrintf(

@@ -81,7 +81,7 @@ class DevToolsManagerDelegateTest : public InProcessBrowserTest {
   }
 
   bool IsWindowBoundsEqual(gfx::Rect expected) {
-    return browser()->window()->GetBounds() == expected;
+    return browser()->GetWindow()->GetBounds() == expected;
   }
 
   void CheckWindowBounds(gfx::Rect expected) {
@@ -90,12 +90,12 @@ class DevToolsManagerDelegateTest : public InProcessBrowserTest {
                             base::Unretained(this), expected),
         true, base::Seconds(1))
         .Wait();
-    EXPECT_EQ(expected, browser()->window()->GetBounds());
+    EXPECT_EQ(expected, browser()->GetWindow()->GetBounds());
   }
 };
 
 IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest, NormalWindowChangeBounds) {
-  browser()->window()->SetBounds(gfx::Rect(100, 100, 600, 600));
+  browser()->GetWindow()->SetBounds(gfx::Rect(100, 100, 600, 600));
   CheckWindowBounds(gfx::Rect(100, 100, 600, 600));
   UpdateBounds();
   CheckWindowBounds(gfx::Rect(200, 100, 600, 400));

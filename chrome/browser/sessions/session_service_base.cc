@@ -678,8 +678,8 @@ void SessionServiceBase::BuildCommandsForBrowser(
 
   command_storage_manager()->AppendRebuildCommand(
       sessions::CreateSetWindowBoundsCommand(
-          browser->session_id(), browser->window()->GetRestoredBounds(),
-          browser->window()->GetRestoredState()));
+          browser->session_id(), browser->GetWindow()->GetRestoredBounds(),
+          browser->GetWindow()->GetRestoredState()));
 
   command_storage_manager()->AppendRebuildCommand(
       sessions::CreateSetWindowTypeCommand(

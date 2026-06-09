@@ -346,8 +346,8 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs,
   EXPECT_NE(nullptr, second_browser);
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 3u);
 
-  auto bounds1 = first_browser->window()->GetRestoredBounds();
-  auto bounds2 = second_browser->window()->GetRestoredBounds();
+  auto bounds1 = first_browser->GetWindow()->GetRestoredBounds();
+  auto bounds2 = second_browser->GetWindow()->GetRestoredBounds();
   // We've already hit the bottom bounds, so the y axis didn't move.
   EXPECT_EQ(bounds1.x() + WindowSizer::kWindowTilePixels, bounds2.x());
 
@@ -356,11 +356,11 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs,
   gfx::Rect previous_bounds = bounds2;
   for (int i = 0; i < 10; i++) {
     Browser* next_browser = LaunchMockSWA();
-    if (previous_bounds == next_browser->window()->GetRestoredBounds()) {
+    if (previous_bounds == next_browser->GetWindow()->GetRestoredBounds()) {
       hit_the_bottom_right = true;
       break;
     }
-    previous_bounds = next_browser->window()->GetRestoredBounds();
+    previous_bounds = next_browser->GetWindow()->GetRestoredBounds();
   }
 
   EXPECT_TRUE(hit_the_bottom_right);

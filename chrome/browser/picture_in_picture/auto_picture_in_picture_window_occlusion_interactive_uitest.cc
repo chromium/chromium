@@ -110,8 +110,8 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowOcclusionInteractiveUiTest,
   // Position the windows so they don't overlap.
   gfx::Rect browser_position_1(0, 0, 500, 500);
   gfx::Rect browser_position_2(600, 0, 500, 500);
-  browser()->window()->SetBounds(browser_position_1);
-  browser2->window()->SetBounds(browser_position_2);
+  browser()->GetWindow()->SetBounds(browser_position_1);
+  browser2->GetWindow()->SetBounds(browser_position_2);
 
   OcclusionStateWaiter occlusion_state_waiter;
   auto occlusion_helper = AutoPictureInPictureWindowOcclusionHelperBase::Create(
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowOcclusionInteractiveUiTest,
   EXPECT_EQ(occlusion_helper->GetOcclusionState(), OcclusionState::kVisible);
 
   // Move the second window to completely occlude the first window.
-  browser2->window()->SetBounds(browser_position_1);
+  browser2->GetWindow()->SetBounds(browser_position_1);
 
   // The helper should report that the window is occluded.
   EXPECT_TRUE(
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowOcclusionInteractiveUiTest,
   EXPECT_EQ(occlusion_helper->GetOcclusionState(), OcclusionState::kOccluded);
 
   // Move the second window back to not overlapping.
-  browser2->window()->SetBounds(browser_position_2);
+  browser2->GetWindow()->SetBounds(browser_position_2);
 
   // The helper should report that the window is visible.
   EXPECT_TRUE(

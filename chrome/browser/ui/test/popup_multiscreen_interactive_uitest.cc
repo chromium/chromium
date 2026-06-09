@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, Basic) {
   std::vector<display::Display> displays =
       display::Screen::Get()->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
-    browser()->window()->SetBounds(opener_display.work_area());
+    browser()->GetWindow()->SetBounds(opener_display.work_area());
     ASSERT_EQ(opener_display.id(), GetDisplayNearestBrowser(browser()).id());
     for (const char* url : {"/simple.html", "about:blank"}) {
       const std::string open_script =
@@ -107,10 +107,10 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, Basic) {
       EXPECT_EQ(opener_display.id(), popup_display.id())
           << " expected: " << opener_display.work_area().ToString()
           << " actual: " << popup_display.work_area().ToString()
-          << " popup: " << popup->window()->GetBounds().ToString()
+          << " popup: " << popup->GetWindow()->GetBounds().ToString()
           << " script: " << open_script;
       // The popup is constrained to the available bounds of its screen.
-      const gfx::Rect popup_bounds = popup->window()->GetBounds();
+      const gfx::Rect popup_bounds = popup->GetWindow()->GetBounds();
       EXPECT_TRUE(popup_display.work_area().Contains(popup_bounds))
           << " work_area: " << popup_display.work_area().ToString()
           << " popup: " << popup_bounds.ToString();
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, OpenOnAnotherScreen) {
   std::vector<display::Display> displays =
       display::Screen::Get()->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
-    browser()->window()->SetBounds(opener_display.work_area());
+    browser()->GetWindow()->SetBounds(opener_display.work_area());
     ASSERT_EQ(opener_display.id(), GetDisplayNearestBrowser(browser()).id());
     for (const display::Display& target_display : displays) {
       for (const char* url : {"/simple.html", "about:blank"}) {
@@ -139,11 +139,11 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, OpenOnAnotherScreen) {
         EXPECT_EQ(expected_display.id(), popup_display.id())
             << " expected: " << expected_display.work_area().ToString()
             << " actual: " << popup_display.work_area().ToString()
-            << " opener: " << browser()->window()->GetBounds().ToString()
-            << " popup: " << popup->window()->GetBounds().ToString()
+            << " opener: " << browser()->GetWindow()->GetBounds().ToString()
+            << " popup: " << popup->GetWindow()->GetBounds().ToString()
             << " script: " << open_script;
         // The popup is constrained to the available bounds of its screen.
-        const gfx::Rect popup_bounds = popup->window()->GetBounds();
+        const gfx::Rect popup_bounds = popup->GetWindow()->GetBounds();
         EXPECT_TRUE(popup_display.work_area().Contains(popup_bounds))
             << " work_area: " << popup_display.work_area().ToString()
             << " popup: " << popup_bounds.ToString();
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest,
   display::Screen* screen = display::Screen::Get();
   std::vector<display::Display> displays = screen->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
-    browser()->window()->SetBounds(opener_display.work_area());
+    browser()->GetWindow()->SetBounds(opener_display.work_area());
     ASSERT_EQ(opener_display.id(), GetDisplayNearestBrowser(browser()).id());
     gfx::Point opener_display_center = opener_display.work_area().CenterPoint();
     for (const display::Display& target_display : displays) {
@@ -184,8 +184,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest,
               testing::Message()
               << "\n"
               << "script: " << open_script << " " << move_script << "\n"
-              << "opener: " << browser()->window()->GetBounds().ToString()
-              << " popup: " << popup->window()->GetBounds().ToString());
+              << "opener: " << browser()->GetWindow()->GetBounds().ToString()
+              << " popup: " << popup->GetWindow()->GetBounds().ToString());
           content::ExecuteScriptAsync(opener_contents, move_script);
           WaitForBoundsChange(popup, /*move_by=*/40, /*resize_by=*/0);
         }
@@ -197,11 +197,11 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest,
         EXPECT_EQ(expected_display.id(), popup_display.id())
             << " expected: " << expected_display.work_area().ToString()
             << " actual: " << popup_display.work_area().ToString()
-            << " opener: " << browser()->window()->GetBounds().ToString()
-            << " popup: " << popup->window()->GetBounds().ToString()
+            << " opener: " << browser()->GetWindow()->GetBounds().ToString()
+            << " popup: " << popup->GetWindow()->GetBounds().ToString()
             << " script: " << open_script << " " << move_script;
         // The popup is constrained to the available bounds of its screen.
-        const gfx::Rect popup_bounds = popup->window()->GetBounds();
+        const gfx::Rect popup_bounds = popup->GetWindow()->GetBounds();
         EXPECT_TRUE(popup_display.work_area().Contains(popup_bounds))
             << " work_area: " << popup_display.work_area().ToString()
             << " popup: " << popup_bounds.ToString();
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, CrossOriginIFrame) {
   std::vector<display::Display> displays =
       display::Screen::Get()->GetAllDisplays();
   for (const display::Display& opener_display : displays) {
-    browser()->window()->SetBounds(opener_display.work_area());
+    browser()->GetWindow()->SetBounds(opener_display.work_area());
     ASSERT_EQ(opener_display.id(), GetDisplayNearestBrowser(browser()).id());
     for (const bool iframe_policy_granted : {true, false}) {
       content::RenderFrameHost* cross_origin_iframe =
@@ -268,8 +268,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, CrossOriginIFrame) {
           EXPECT_EQ(expected_display.id(), popup_display.id())
               << " expected: " << expected_display.work_area().ToString()
               << " actual: " << popup_display.work_area().ToString()
-              << " opener: " << browser()->window()->GetBounds().ToString()
-              << " popup: " << popup->window()->GetBounds().ToString()
+              << " opener: " << browser()->GetWindow()->GetBounds().ToString()
+              << " popup: " << popup->GetWindow()->GetBounds().ToString()
               << " script: " << open_script;
         }
       }
