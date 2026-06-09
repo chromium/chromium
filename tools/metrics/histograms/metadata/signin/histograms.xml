@@ -3731,6 +3731,7 @@ kept as long as profile signout is possible -->
     <variant name=".AUTOFILL_WALLET_CREDENTIAL"
         summary="autofill wallet credentials"/>
     <variant name=".BOOKMARK" summary="pages bookmarked in Chrome"/>
+    <variant name=".DEVICE_INFO" summary="device info"/>
     <variant name=".EXTENSION" summary="extensions from the Chrome Web Store"/>
     <variant name=".PASSWORD"
         summary="passwords and passkeys saved in Google Account"/>

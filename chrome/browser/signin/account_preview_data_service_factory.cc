@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
 
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
@@ -24,6 +25,7 @@
 AccountPreviewDataServiceFactory::AccountPreviewDataServiceFactory()
     : ProfileKeyedServiceFactory("AccountPreviewDataService") {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(ProfileMetricsServiceFactory::GetInstance());
 }
 
 AccountPreviewDataServiceFactory::~AccountPreviewDataServiceFactory() = default;
@@ -59,11 +61,15 @@ AccountPreviewDataServiceFactory::BuildServiceInstanceForBrowserContext(
   network_delay_helper = std::make_unique<WaitForNetworkCallbackHelperChrome>(
       /*should_disable_metrics_for_testing=*/profile->AsTestingProfile());
 #endif
+  metrics::ProfileMetricsService* profile_metrics_service =
+      ProfileMetricsServiceFactory::GetForProfile(profile);
+
   return std::make_unique<signin::AccountPreviewDataServiceImpl>(
       IdentityManagerFactory::GetForProfile(profile), prefs,
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      std::move(network_delay_helper), chrome::GetChannel());
+      std::move(network_delay_helper), chrome::GetChannel(),
+      profile_metrics_service);
 }
 
 void AccountPreviewDataServiceFactory::RegisterProfilePrefs(

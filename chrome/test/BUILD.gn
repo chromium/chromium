@@ -4744,6 +4744,7 @@ if (!is_android) {
     if (enable_dice_support) {
       sources += [
         "../browser/signin/account_metrics_id_allocator_browsertest.cc",
+        "../browser/signin/account_preview_data_service_browsertest.cc",
         "../browser/signin/accounts_policy_manager_browsertest.cc",
         "../browser/signin/chrome_signin_client_browsertest.cc",
         "../browser/signin/dice_browsertest.cc",

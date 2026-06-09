@@ -39,7 +39,7 @@ class ProfileMetricsService : public KeyedService {
   // These methods exactly mirror those in base/metrics/histogram_functions.h.
   // See usage comments in those methods for more details.
   template <typename T>
-  void UmaHistogramEnumeration(std::string_view name, T sample) {
+  void UmaHistogramEnumeration(std::string_view name, T sample) const {
     base::UmaHistogramEnumeration(name, sample);
     if (!histogram_suffix_.empty()) {
       base::UmaHistogramEnumeration(base::StrCat({name, histogram_suffix_}),
@@ -48,7 +48,9 @@ class ProfileMetricsService : public KeyedService {
   }
 
   template <typename T>
-  void UmaHistogramEnumeration(std::string_view name, T sample, T enum_size) {
+  void UmaHistogramEnumeration(std::string_view name,
+                               T sample,
+                               T enum_size) const {
     base::UmaHistogramEnumeration(name, sample, enum_size);
     if (!histogram_suffix_.empty()) {
       base::UmaHistogramEnumeration(base::StrCat({name, histogram_suffix_}),
@@ -56,19 +58,23 @@ class ProfileMetricsService : public KeyedService {
     }
   }
 
-  void UmaHistogramBoolean(std::string_view name, bool sample);
+  void UmaHistogramBoolean(std::string_view name, bool sample) const;
 
   void UmaHistogramCounts100(std::string_view name, int sample) const;
 
-  void UmaHistogramCounts1000(std::string_view name, int sample);
+  void UmaHistogramCounts1000(std::string_view name, int sample) const;
 
-  void UmaHistogramSparse(std::string_view name, int sample);
+  void UmaHistogramCounts10000(std::string_view name, int sample) const;
+
+  void UmaHistogramCounts100000(std::string_view name, int sample) const;
+
+  void UmaHistogramSparse(std::string_view name, int sample) const;
 
   void UmaHistogramCustomTimes(std::string_view name,
                                base::TimeDelta sample,
                                base::TimeDelta min,
                                base::TimeDelta max,
-                               size_t buckets);
+                               size_t buckets) const;
 
  private:
   const ProfileMetricsContext profile_metrics_context_;
