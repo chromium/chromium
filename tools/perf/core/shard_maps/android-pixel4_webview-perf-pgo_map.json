@@ -227,7 +227,7 @@
             }
         },
         "crossbench": {
-            "shell.embedder.benchmark": {
+            "shell.embedder.crossbench": {
                 "crossbench_name": "embedder",
                 "arguments": [
                     "--wpr=crossbench_android_loading_000.wprgo",
@@ -235,7 +235,7 @@
                     "--splashscreen=skip",
                     "--probe=trace_processor:{\"queries\":[\"wv_startup_memory\"]}",
                     "--probe=perfetto:{\"textproto\": \"syshealth_plus_webview\"}",
-                    "--cuj-config=config/team/woa/staggered_wv_startup_cuj_config.hjson",
+                    "--cuj-config=../../third_party/crossbench/config/team/woa/staggered_wv_startup_cuj_config.hjson",
                     "--android-activity=ManuallyTriggeredStartupActivity",
                     "--repetitions=50",
                     "--cool-down-threshold=moderate"
