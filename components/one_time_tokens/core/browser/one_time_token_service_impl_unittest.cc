@@ -104,7 +104,10 @@ class MockGmailOtpBackend : public GmailOtpBackend {
   // This is needed for `SimulateOtpArrived` to have a callback to run.
   ExpiringSubscription CreateMockSubscription(base::Time expiration,
                                               Callback callback) {
-    return subscription_manager_.Subscribe(expiration, std::move(callback));
+    auto subscription =
+        subscription_manager_.Subscribe(expiration, std::move(callback));
+    last_handle_ = subscription.handle();
+    return subscription;
   }
 
   bool HasPendingRetrieveGmailOtpCallbacks() {
@@ -115,8 +118,14 @@ class MockGmailOtpBackend : public GmailOtpBackend {
     return subscription_manager_.GetNumberSubscribers();
   }
 
+  base::Time GetLastSubscriptionExpirationTime() const {
+    return last_handle_ ? subscription_manager_.GetExpirationTime(*last_handle_)
+                        : base::Time();
+  }
+
  private:
   ExpiringSubscriptionManager<CallbackSignature> subscription_manager_;
+  std::optional<ExpiringSubscriptionHandle> last_handle_;
 };
 
 // A helper class to collect results from the OneTimeTokenService callbacks.
@@ -629,6 +638,46 @@ TEST_F(OneTimeTokenServiceImplTest, GmailResubscribeAfterExpiration) {
       OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)));
+}
+
+// Test that new Gmail subscriptions renew the existing Gmail backend
+// subscription.
+TEST_F(OneTimeTokenServiceImplTest, GmailSubscriptionRenewal) {
+  OneTimeTokenServiceImpl service(/*sms_otp_backend=*/nullptr,
+                                  gmail_otp_backend_.get());
+  OneTimeTokenServiceTestObserver observer(OneTimeTokenSource::kGmail);
+
+  // First subscription.
+  EXPECT_CALL(*gmail_otp_backend_, Subscribe)
+      .WillOnce([&](base::Time expiration, GmailOtpBackend::Callback callback) {
+        return gmail_otp_backend_->CreateMockSubscription(expiration,
+                                                          std::move(callback));
+      });
+  auto subscription1 = service.Subscribe(
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
+      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+                          base::Unretained(&observer)));
+
+  base::Time initial_expiration =
+      gmail_otp_backend_->GetLastSubscriptionExpirationTime();
+  EXPECT_EQ(initial_expiration, base::Time::Now() + kCacheDurationForOldTokens);
+
+  // Fast forward by 1 minute.
+  task_environment_.FastForwardBy(base::Minutes(1));
+
+  // Second subscription should extend the existing backend subscription.
+  // We expect NO new call to Subscribe.
+  EXPECT_CALL(*gmail_otp_backend_, Subscribe).Times(0);
+
+  auto subscription2 = service.Subscribe(
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
+      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+                          base::Unretained(&observer)));
+
+  base::Time renewed_expiration =
+      gmail_otp_backend_->GetLastSubscriptionExpirationTime();
+  EXPECT_EQ(renewed_expiration, base::Time::Now() + kCacheDurationForOldTokens);
+  EXPECT_GT(renewed_expiration, initial_expiration);
 }
 
 // Test GetRecentOneTimeTokens returns cached Gmail tokens.

@@ -143,10 +143,16 @@ void OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend(
 }
 
 void OneTimeTokenServiceImpl::RetrieveGmailOtpIfNeeded() {
-  if (!gmail_.backend || !gmail_subscription_manager_.GetNumberSubscribers() ||
-      gmail_subscription_.IsAlive()) {
+  if (!gmail_.backend || !gmail_subscription_manager_.GetNumberSubscribers()) {
     return;
   }
+
+  if (gmail_subscription_.IsAlive()) {
+    gmail_subscription_.SetExpirationTime(base::Time::Now() +
+                                          kCacheDurationForOldTokens);
+    return;
+  }
+
   gmail_subscription_ = gmail_.backend->Subscribe(
       base::Time::Now() + kCacheDurationForOldTokens,
       base::BindRepeating(
