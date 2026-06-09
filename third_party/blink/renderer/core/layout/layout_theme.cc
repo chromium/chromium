@@ -306,9 +306,8 @@ void LayoutTheme::AdjustStyle(const Element& element,
   // value.
   switch (appearance) {
     case AppearanceValue::kMenulist:
-      return AdjustMenuListStyle(builder);
     case AppearanceValue::kMenulistButton:
-      return AdjustMenuListButtonStyle(builder);
+      return AdjustMenuListStyle(builder);
     case AppearanceValue::kSliderThumbHorizontal:
     case AppearanceValue::kSliderThumbVertical:
       return AdjustSliderThumbStyle(builder);
@@ -509,9 +508,9 @@ void LayoutTheme::AdjustMenuListStyle(ComputedStyleBuilder& builder) const {
   // https://bugs.webkit.org/show_bug.cgi?id=21287
   builder.SetOverflowX(EOverflow::kVisible);
   builder.SetOverflowY(EOverflow::kVisible);
+  // Height is locked to auto on all browsers.
+  builder.ResetLineHeight();
 }
-
-void LayoutTheme::AdjustMenuListButtonStyle(ComputedStyleBuilder&) const {}
 
 void LayoutTheme::AdjustSliderThumbStyle(ComputedStyleBuilder& builder) const {
   AdjustSliderThumbSize(builder);

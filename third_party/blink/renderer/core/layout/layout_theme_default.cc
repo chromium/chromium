@@ -219,18 +219,6 @@ void LayoutThemeDefault::AdjustSearchFieldCancelButtonStyle(
   builder.SetHeight(Length::Fixed(cancel_button_size));
 }
 
-void LayoutThemeDefault::AdjustMenuListStyle(
-    ComputedStyleBuilder& builder) const {
-  LayoutTheme::AdjustMenuListStyle(builder);
-  // Height is locked to auto on all browsers.
-  builder.ResetLineHeight();
-}
-
-void LayoutThemeDefault::AdjustMenuListButtonStyle(
-    ComputedStyleBuilder& builder) const {
-  AdjustMenuListStyle(builder);
-}
-
 // The following internal paddings are in addition to the user-supplied padding.
 // Matches the Firefox behavior.
 
