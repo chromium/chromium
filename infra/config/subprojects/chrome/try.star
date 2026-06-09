@@ -160,6 +160,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
     builder = "chromeos-betty-compile-chrome",
     cq_settings = try_.cq_settings(
         equivalent_builder = "chrome:try/chromeos-betty-chrome-noop",
@@ -170,6 +171,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
     builder = "chromeos-betty-chrome-gtest",
     cq_settings = try_.cq_settings(
         equivalent_builder = "chrome:try/chromeos-betty-chrome-gtest-and-cqtast",
