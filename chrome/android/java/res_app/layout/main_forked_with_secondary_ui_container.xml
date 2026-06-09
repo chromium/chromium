@@ -116,12 +116,6 @@ TODO(http://crbug.com/485940935): Delete this.
             app:inflatedId="@+id/ntp_realbox_results_container"
             app:layout="@layout/suggestions_result_container" />
 
-        <org.chromium.chrome.browser.ui.BottomContainer
-            android:id="@+id/bottom_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|bottom" />
-
         <!-- Toolbar size area painted black to avoid the action bar showing the window background -->
         <View
             android:id="@+id/action_bar_black_background"
@@ -256,6 +250,12 @@ TODO(http://crbug.com/485940935): Delete this.
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <org.chromium.chrome.browser.ui.BottomContainer
+            android:id="@+id/bottom_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom" />
 
         <ViewStub
             android:id="@+id/status_indicator_stub"

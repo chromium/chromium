@@ -232,6 +232,13 @@ public class EmbeddedPermissionPromptTest {
         try {
             setNativeContentSetting(type, url, value);
             final ChromeActivity activity = mActivityTestRule.getActivity();
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        // Dismiss snackbars showing warnings (e.g.
+                        // BYPASS_PEPC_SECURITY_FOR_TESTING)
+                        // to prevent them from blocking the dialog.
+                        activity.getSnackbarManager().dismissAllSnackbars();
+                    });
             activity.getWindowAndroid().setAndroidPermissionDelegate(testAndroidPermissionDelegate);
 
             mActivityTestRule.setUpUrl(TEST_PAGE);
