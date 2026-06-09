@@ -413,6 +413,14 @@ D3D12VideoEncodeAccelerator::~D3D12VideoEncodeAccelerator() {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
+  // Wait for any in-flight copy to complete before the members are destroyed,
+  // so that the resources backing the copy (e.g. `upload_buffer_`,
+  // `input_texture_`) are not released while the GPU may still be reading from
+  // or writing to them.
+  if (copy_command_queue_) {
+    copy_command_queue_->WaitSync();
+  }
+
   if (!error_occurred_ && encoded_at_least_one_frame_) {
     base::UmaHistogramEnumeration(
         GetEncoderStatusHistogramName(config_.output_profile),
