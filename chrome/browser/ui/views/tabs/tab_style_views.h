@@ -23,7 +23,6 @@ struct ui::metadata::TypeConverter<TabStyle::TabColors>
   static ui::metadata::ValidStrings GetValidStrings();
 };
 
-class BrowserFrameView;
 class Tab;
 
 namespace gfx {
@@ -89,8 +88,6 @@ class TabStyleViews {
   const TabStyle* tab_style() const { return tab_style_; }
 
  private:
-  BrowserFrameView* GetFrameView();
-
   const raw_ptr<const TabStyle> tab_style_;
 };
 
