@@ -28,7 +28,12 @@ bool WebXrFrame::IsValid() const {
 
 void WebXrFrame::Recycle() {
   DCHECK(!state_locked);
-  DCHECK(reclaimed_sync_tokens.empty());
+  if (shared_buffer) {
+    DCHECK(!shared_buffer->reclaimed_sync_token.HasData());
+  }
+  if (camera_image_shared_buffer) {
+    DCHECK(!camera_image_shared_buffer->reclaimed_sync_token.HasData());
+  }
   index = -1;
   deferred_start_processing.Reset();
   recycle_once_unlocked = false;

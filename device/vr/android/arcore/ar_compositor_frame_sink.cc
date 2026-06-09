@@ -283,11 +283,11 @@ void ArCompositorFrameSink::ReclaimResources(
     // we've got all of the resources associated with a frame cleared before we
     // actually clear the frame. First determine which buffer this ResourceId
     // was associated with and then clear it.
+    WebXrSharedBuffer* matched_buffer = nullptr;
     if (resource.id == rendering_frame->shared_buffer->id) {
-      rendering_frame->shared_buffer->id = viz::kInvalidResourceId;
-    }
-    if (resource.id == rendering_frame->camera_image_shared_buffer->id) {
-      rendering_frame->camera_image_shared_buffer->id = viz::kInvalidResourceId;
+      matched_buffer = rendering_frame->shared_buffer.get();
+    } else if (resource.id == rendering_frame->camera_image_shared_buffer->id) {
+      matched_buffer = rendering_frame->camera_image_shared_buffer.get();
     }
 
     // In order to keep our map size small we can remove this association as it
@@ -299,9 +299,12 @@ void ArCompositorFrameSink::ReclaimResources(
     // token to determine when the frame is *actually* done. Given that each
     // frame can have multiple buffers associated with it, we'll store the token
     // until we get all of the buffers associated with the frame returned.
-    rendering_frame->reclaimed_sync_tokens.push_back(
-        rendering_frame->shared_buffer->shared_image->EndExport(
-            std::move(resource.shared_image_export_result)));
+    if (matched_buffer) {
+      matched_buffer->id = viz::kInvalidResourceId;
+      matched_buffer->reclaimed_sync_token =
+          matched_buffer->shared_image->EndExport(
+              std::move(resource.shared_image_export_result));
+    }
 
     // Once we've cleared all of the buffers on the frame that were passed to
     // viz, we can tell our parent that the frame is ready to be reclaimed
