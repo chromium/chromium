@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>:visited cannot change alpha of SVG stop-color</title>
+<link rel="help" href="https://drafts.csswg.org/selectors-4/#link">
+<link rel="help" href="https://svgwg.org/svg2-draft/painting.html#StopColorProperty">
+<link rel="match" href="visited-link-context-alpha-ref.html">
+<!--
+Test that :visited styles cannot change the alpha of SVG stop-color
+when it resolves currentColor.
+The :visited privacy mitigation requires that the alpha channel of a
+resolved :visited color is clamped to the unvisited alpha.
+
+If this test passes, one should see a 100x100 green square.
+
+If the bug is present, the square would be transparent (showing the
+white background) because the visited alpha (0) leaked through
+stop-color: currentColor.
+-->
+<style>
+  body { margin: 0;}
+  a:link    { color: rgba(0, 128, 0, 1); }
+  a:visited { color: rgba(0, 128, 0, 0); }
+</style>
+<a href="">
+  <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+    <defs>
+      <linearGradient id="g">
+        <stop offset="0" stop-color="currentColor"/>
+        <stop offset="1" stop-color="currentColor"/>
+      </linearGradient>
+    </defs>
+    <rect width="100" height="100" fill="url(#g)"/>
+  </svg>
+</a>
