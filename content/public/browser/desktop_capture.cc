@@ -47,23 +47,11 @@ bool CGDisplayStreamCreateIsAvailable() {
 
 namespace content::desktop_capture {
 
-#if BUILDFLAG(IS_WIN)
-// This feature controls the rollout of a field trial experiment that enables
-// a heuristic for finding the editor window of a presentation application
-// (e.g., PowerPoint) when the user shares the slideshow window.
-// TODO(crbug.com/409473386): Remove this feature once it has been in stable for
-// at least one milestone.
-BASE_FEATURE(kUseHeuristicForFindingEditor, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
   auto options = webrtc::DesktopCaptureOptions::CreateDefault();
   // Leave desktop effects enabled during WebRTC captures.
   options.set_disable_effects(false);
 #if BUILDFLAG(IS_WIN)
-  options.full_screen_window_detector()->SetHeuristicForFindingEditor(
-      base::FeatureList::IsEnabled(kUseHeuristicForFindingEditor));
-
   // TODO(crbug.com/webrtc/15045): Possibly remove this flag. Keeping for now
   // to force fallback to GDI.
   static BASE_FEATURE(kDirectXCapturer, "DirectXCapturer",
