@@ -86,7 +86,8 @@ void TranslateJavaScriptFeature::ScriptMessageReceived(
 
   TranslateController* translate_controller =
       TranslateController::FromWebState(web_state);
-  translate_controller->OnJavascriptCommandReceived(message.body()->GetDict());
+  translate_controller->OnJavascriptCommandReceived(message.security_origin(),
+                                                    message.body()->GetDict());
 }
 
 }  // namespace translate

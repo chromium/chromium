@@ -45,6 +45,17 @@ function installCallbacks() {
       'translationTime': cr.googleTranslate.translationTime,
     });
   };
+
+  /**
+   * A custom javascript loader to use native side network request.
+   */
+  cr.googleTranslate.customJavaScriptLoader = function(url: string) {
+    sendWebKitMessage('TranslateMessage', {
+      'command': 'loadJavascript',
+      'url': url,
+      'frameId': gCrWeb.getFrameId(),
+    });
+  };
 }
 
 function startTranslation(sourceLanguage: string, targetLanguage: string) {

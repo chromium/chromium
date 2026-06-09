@@ -121,6 +121,12 @@ cr.googleTranslate = (function() {
    */
   let resultCallback;
 
+  /**
+   * A custom javascript loader to use native side network request.
+   * @type {function(url: string): void}
+   */
+  let customJavaScriptLoader;
+
   function checkLibReady() {
     if (lib.isAvailable()) {
       readyTime = performance.now();
@@ -204,6 +210,16 @@ cr.googleTranslate = (function() {
     set resultCallback(callback) {
       if (!resultCallback) {
         resultCallback = callback;
+      }
+    },
+
+    /**
+     * Setter for customJavaScriptLoader. No op if already set.
+     * @param {function(url: string): void} callback The function to be invoked.
+     */
+    set customJavaScriptLoader(callback) {
+      if (!customJavaScriptLoader) {
+        customJavaScriptLoader = callback;
       }
     },
 
@@ -392,6 +408,12 @@ cr.googleTranslate = (function() {
       if (!url.startsWith(securityOrigin)) {
         console.error('Translate: ' + url + ' is not allowed to load.');
         errorCode = ERROR['BAD_ORIGIN'];
+        return;
+      }
+
+      // Use `customJavaScriptLoader` if set instead of `XMLHttpRequest` below.
+      if (customJavaScriptLoader) {
+        customJavaScriptLoader(url);
         return;
       }
 

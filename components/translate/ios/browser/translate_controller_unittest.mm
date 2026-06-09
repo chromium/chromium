@@ -17,7 +17,7 @@
 #include "ios/web/public/test/web_task_environment.h"
 #include "net/http/http_status_code.h"
 #include "testing/platform_test.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace translate {
 
@@ -27,8 +27,6 @@ class TranslateControllerTest : public PlatformTest,
   TranslateControllerTest()
       : fake_web_state_(std::make_unique<web::FakeWebState>()),
         fake_browser_state_(std::make_unique<web::FakeBrowserState>()),
-        fake_main_frame_(web::FakeWebFrame::Create(/*frame_id=*/"",
-                                                   /*is_main_frame=*/true)),
         error_type_(TranslateErrors::NONE),
         ready_time_(0),
         load_time_(0),
@@ -37,6 +35,7 @@ class TranslateControllerTest : public PlatformTest,
         on_translate_complete_called_(false) {
     fake_web_state_->SetBrowserState(fake_browser_state_.get());
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    frames_manager->AddWebFrame(web::FakeWebFrame::CreateMainWebFrame());
     web_frames_manager_ = frames_manager.get();
     web::ContentWorld content_world =
         TranslateJavaScriptFeature::GetInstance()->GetSupportedContentWorld();
@@ -44,6 +43,11 @@ class TranslateControllerTest : public PlatformTest,
                                          std::move(frames_manager));
     TranslateController::CreateForWebState(fake_web_state_.get());
     translate_controller_observation_.Observe(translate_controller());
+  }
+
+  void SetUp() override {
+    translate_controller()->translate_script_injected_frame_id_ =
+        web::kMainFakeFrameId;
   }
 
   // TranslateController::Observer methods.
@@ -78,7 +82,6 @@ class TranslateControllerTest : public PlatformTest,
       web::WebTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   std::unique_ptr<web::FakeBrowserState> fake_browser_state_;
-  std::unique_ptr<web::FakeWebFrame> fake_main_frame_;
   raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
   TranslateErrors error_type_;
   double ready_time_;
@@ -101,7 +104,7 @@ TEST_F(TranslateControllerTest, OnTranslateScriptReadyTimeoutCalled) {
   command.Set("loadTime", .0);
   command.Set("readyTime", .0);
   translate_controller()->OnJavascriptCommandReceived(
-      base::DictValue(std::move(command)));
+      url::Origin(), base::DictValue(std::move(command)));
   EXPECT_TRUE(on_script_ready_called_);
   EXPECT_FALSE(on_translate_complete_called_);
   EXPECT_FALSE(error_type_ == TranslateErrors::NONE);
@@ -120,7 +123,7 @@ TEST_F(TranslateControllerTest, OnTranslateScriptReadyCalled) {
   command.Set("loadTime", some_load_time);
   command.Set("readyTime", some_ready_time);
   translate_controller()->OnJavascriptCommandReceived(
-      base::DictValue(std::move(command)));
+      url::Origin(), base::DictValue(std::move(command)));
   EXPECT_TRUE(on_script_ready_called_);
   EXPECT_FALSE(on_translate_complete_called_);
   EXPECT_TRUE(error_type_ == TranslateErrors::NONE);
@@ -141,7 +144,7 @@ TEST_F(TranslateControllerTest, TranslationSuccess) {
   command.Set("pageSourceLanguage", some_source_language);
   command.Set("translationTime", some_translation_time);
   translate_controller()->OnJavascriptCommandReceived(
-      base::DictValue(std::move(command)));
+      url::Origin(), base::DictValue(std::move(command)));
   EXPECT_FALSE(on_script_ready_called_);
   EXPECT_TRUE(on_translate_complete_called_);
   EXPECT_TRUE(error_type_ == TranslateErrors::NONE);
@@ -157,7 +160,7 @@ TEST_F(TranslateControllerTest, TranslationFailure) {
   command.Set("errorCode",
               static_cast<double>(TranslateErrors::INITIALIZATION_ERROR));
   translate_controller()->OnJavascriptCommandReceived(
-      base::DictValue(std::move(command)));
+      url::Origin(), base::DictValue(std::move(command)));
   EXPECT_FALSE(on_script_ready_called_);
   EXPECT_TRUE(on_translate_complete_called_);
   EXPECT_FALSE(error_type_ == TranslateErrors::NONE);

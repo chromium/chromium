@@ -7,6 +7,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -18,6 +19,14 @@
 #include "components/translate/core/common/translate_errors.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_user_data.h"
+
+namespace network {
+class SimpleURLLoader;
+}
+
+namespace url {
+class Origin;
+}
 
 namespace web {
 class WebFrame;
@@ -70,34 +79,20 @@ class TranslateController : public web::WebStateUserData<TranslateController> {
                         const std::string& target_language);
 
   // Called when a JavaScript command is received.
-  void OnJavascriptCommandReceived(const base::DictValue& payload);
+  void OnJavascriptCommandReceived(url::Origin security_origin,
+                                   const base::DictValue& payload);
 
  private:
   TranslateController(web::WebState* web_state);
   friend class web::WebStateUserData<TranslateController>;
-
-  FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest,
-                           OnJavascriptCommandReceived);
-  FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest,
-                           OnIFrameJavascriptCommandReceived);
-  FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest,
-                           OnTranslateScriptReadyTimeoutCalled);
-  FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest,
-                           OnTranslateScriptReadyCalled);
-  FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest, TranslationSuccess);
-  FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest, TranslationFailure);
-  FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest, OnTranslateLoadJavascript);
-  FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest,
-                           OnTranslateSendRequestWithValidCommand);
-  FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest,
-                           OnTranslateSendRequestWithBadURL);
-  FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest,
-                           OnTranslateSendRequestWithBadMethod);
+  friend class TranslateControllerTest;
 
   // Methods to handle specific JavaScript commands.
   // The command is ignored if `payload` format is unexpected.
   void OnTranslateReady(const base::DictValue& payload);
   void OnTranslateComplete(const base::DictValue& payload);
+  void OnLoadJavascript(url::Origin security_origin,
+                        const base::DictValue& payload);
 
   // The main frame of `web_state_`, if any.
   web::WebFrame* GetMainWebFrame();
@@ -106,6 +101,17 @@ class TranslateController : public web::WebStateUserData<TranslateController> {
   raw_ptr<web::WebState> web_state_;
 
   base::ObserverList<Observer> observers_;
+
+  // The WebFrame ID for the frame from `web_state_` which the translate script
+  // was last injected.
+  std::optional<std::string> translate_script_injected_frame_id_;
+
+  // Loader used to fetch the translate script.
+  std::unique_ptr<network::SimpleURLLoader> script_loader_;
+
+  // Called when the script is loaded.
+  void OnScriptLoaded(std::string frame_id,
+                      std::optional<std::string> response_body);
 };
 
 }  // namespace translate
