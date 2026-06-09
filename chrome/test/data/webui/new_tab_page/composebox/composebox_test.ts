@@ -31,8 +31,6 @@ suite('NewTabPageComposeboxTest', () => {
     });
   });
 
-
-
   test('lens icon click calls handler', async () => {
     createComposeboxElement(testProxy);
 
@@ -59,8 +57,6 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(event.defaultPrevented);
   });
 
-
-
   test(
       'cr-composebox-submit is rendered when searchboxNextEnabled is false',
       async () => {
@@ -74,8 +70,6 @@ suite('NewTabPageComposeboxTest', () => {
 
         assertTrue(!!composeboxSubmit);
       });
-
-
 
   test(
       'cr-composebox-submit is rendered when searchboxLayoutMode is TallBottomContext',
@@ -94,8 +88,6 @@ suite('NewTabPageComposeboxTest', () => {
 
         assertTrue(!!composeboxSubmit);
       });
-
-
 
   test('submit button is a no-op when disabled', async () => {
     createComposeboxElement(testProxy);
@@ -148,9 +140,6 @@ suite('NewTabPageComposeboxTest', () => {
     const submitButton = getSubmitIcon(testProxy);
     assertTrue(submitButton.hasAttribute('disabled'));
   });
-
-
-
 
   test('isCollapsible attribute sets expanding state when true', async () => {
     createComposeboxElement(testProxy);

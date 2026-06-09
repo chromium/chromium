@@ -74,7 +74,9 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
               .state="${this.composeboxState_}"
               .usePecApi="${this.usePecApi_}"
               .showVoiceSearch="${true}"
+              .smartTabSharingVisible="${this.smartTabSharingVisible_}"
               @close-composebox="${this.onCloseComposebox_}"
+              @voice-search-action="${this.onComposeVoiceSearchAction_}"
               .submitButtonIconType="${SubmitButtonIconType.FORWARD}"
               .clearAllInputsWhenSubmittingQuery="${true}">
           </ntp-composebox>

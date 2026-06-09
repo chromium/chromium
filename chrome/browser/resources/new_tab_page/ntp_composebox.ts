@@ -11,6 +11,8 @@ import '//resources/cr_components/composebox/error_scrim.js';
 import '//resources/cr_components/composebox/file_carousel.js';
 import '//resources/cr_components/composebox/composebox_tool_chip.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_components/composebox/composebox_voice_search.js';
+import '//resources/cr_components/search/animated_glow.js';
 
 import type {ComposeboxFile} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
@@ -22,6 +24,7 @@ import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composeb
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
 import type {ComposeboxFileCarouselElement} from '//resources/cr_components/composebox/file_carousel.js';
+import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -106,6 +109,7 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
 
   override connectedCallback() {
     super.connectedCallback();
+    this.animationState = GlowAnimationState.EXPANDING;
     this.focusInput();
   }
 
