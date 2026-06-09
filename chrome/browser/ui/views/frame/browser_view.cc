@@ -3699,12 +3699,26 @@ BrowserView::GetNativeViewHostsForTopControlsSlide() {
 void BrowserView::ReparentTopContainerForStartOfImmersive() {
   top_container()->SetPaintToLayer();
   top_container()->layer()->SetFillsBoundsOpaquely(false);
-  top_container()->SetProperty(views::kViewDoesNotLayOutChildren, false);
 
   ReparentTabStripAndWebAppViewsToTopContainer(
       TabStripAndWebAppViewsReparentedState::kImmersiveMode);
 
   CHECK(overlay_view_tracker_);
+
+  // Note: while `BrowserViewLayout` is responsible for positioning controls in
+  // the top container, these controls can still internally invalidate. When the
+  // top container is not in the browser view, invalidations are not propagated
+  // up to the browser view, and the layout is not triggered.
+  //
+  // Therefore, let the top container lay itself out when it is not parented to
+  // the browser view.
+  //
+  // A more correct solution would be to let invalidations in the top container
+  // transfer over to the browser. See https://crbug.com/520458975 for analysis.
+  if (!Contains(overlay_view_tracker_.view())) {
+    top_container()->SetProperty(views::kViewDoesNotLayOutChildren, false);
+  }
+
   overlay_view_tracker_.view()->AddChildView(top_container());
 
   overlay_view_tracker_.view()->SetVisible(true);
@@ -3728,6 +3742,10 @@ void BrowserView::ReparentTopContainerForEndOfImmersive() {
       TabStripAndWebAppViewsReparentedState::kImmersiveMode);
 
   EnsureFocusOrder();
+
+  // See comment in `ReparentTopContainerForStartOfImmersive()`; this isn't
+  // strictly necessary on all platforms but doesn't break anything either as
+  // this is the default state.
   top_container()->SetProperty(views::kViewDoesNotLayOutChildren, true);
 }
 
