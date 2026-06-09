@@ -122,8 +122,6 @@ static_library("ui") {
     "webui/fileicon_source.h",
     "webui/metrics_handler.cc",
     "webui/metrics_handler.h",
-    "webui/privacy_sandbox/privacy_sandbox_internals_ui.cc",
-    "webui/privacy_sandbox/privacy_sandbox_internals_ui.h",
   ]
 
   defines = []

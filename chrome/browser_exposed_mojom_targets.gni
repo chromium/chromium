@@ -53,7 +53,6 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/ui/webui/password_manager:mojo_bindings",
   "//chrome/browser/ui/webui/personal_context:mojo_bindings",
   "//chrome/browser/ui/webui/personal_context_internals:mojo_bindings",
-  "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
   "//chrome/browser/ui/webui/private_ai_internals:mojo_bindings",
   "//chrome/browser/ui/webui/reset_password:mojo_bindings",
   "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings",
