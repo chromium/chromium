@@ -11776,8 +11776,10 @@ if (!is_android) {
       "//chrome/test/data/web_page_replay_go_helper_scripts/automation_helper.js",
       "//components/test/data/autofill/web_page_replay_support_files/",
       "//third_party/catapult/telemetry/telemetry/bin/",
-      "//third_party/webpagereplay/",
     ]
+    if (!is_chromeos) {
+      data += [ "//third_party/webpagereplay/" ]
+    }
 
     if (is_linux || is_chromeos || is_win) {
       data_deps = [ "//chrome:packed_resources" ]
