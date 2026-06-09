@@ -61,7 +61,8 @@ class CodeCacheHostImplTest : public testing::Test,
 
     feature_list_.InitWithFeatures(
         {blink::features::kUsePersistentCacheForCodeCache,
-         net::features::kSplitCacheByNetworkIsolationKey},
+         net::features::kSplitCacheByNetworkIsolationKey,
+         blink::features::kInlineScriptCache},
         {});
     CHECK(temp_dir_.CreateUniqueTempDir());
     generated_code_cache_context_ =
