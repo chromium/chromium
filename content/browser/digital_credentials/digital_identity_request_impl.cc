@@ -654,13 +654,24 @@ void DigitalIdentityRequestImpl::Get(
     return;
   }
 
-  update_interstitial_on_abort_callback_ =
-      provider_->ShowDigitalIdentityInterstitial(
-          *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
-          *interstitial_type,
-          base::BindOnce(&DigitalIdentityRequestImpl::OnInterstitialDone,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         std::move(request_to_send)));
+  // ShowDigitalIdentityInterstitial can synchronously exit fullscreen on
+  // Windows, which can spin the message loop and destroy the WebContents and
+  // `this`. We use a WeakPtr to guard against this potential UAF.
+  base::WeakPtr<DigitalIdentityRequestImpl> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+
+  auto abort_callback = provider_->ShowDigitalIdentityInterstitial(
+      *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
+      *interstitial_type,
+      base::BindOnce(&DigitalIdentityRequestImpl::OnInterstitialDone,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(request_to_send)));
+
+  if (!weak_this) {
+    return;
+  }
+
+  update_interstitial_on_abort_callback_ = std::move(abort_callback);
 }
 
 void DigitalIdentityRequestImpl::Create(
