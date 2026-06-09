@@ -51,7 +51,6 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ash/file_suggest/local_file_suggestion_provider.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -63,6 +62,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/download_item_utils.h"
@@ -759,7 +759,9 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
   // Swap out the registered holding space client with a mock.
   testing::NiceMock<MockHoldingSpaceClient> client;
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(
-      ProfileHelper::Get()->GetUserByProfile(GetProfile())->GetAccountId(),
+      BrowserContextHelper::Get()
+          ->GetUserByBrowserContext(GetProfile())
+          ->GetAccountId(),
       &client, HoldingSpaceController::Get()->model());
   ASSERT_EQ(&client, HoldingSpaceController::Get()->client());
 

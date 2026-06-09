@@ -143,7 +143,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/drive:test_support",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_suggest",
-    "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
