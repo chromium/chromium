@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_entry_flow_result.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
@@ -691,7 +692,20 @@
 // Updates the consumer with the latest state of the assistant button.
 - (void)updateAssistantButton {
   AppBarAssistantButtonState state = AppBarAssistantButtonState::kAccount;
-  if (IsPageActionMenuEnabled()) {
+  BOOL geminiAllowed = NO;
+  if (_geminiService) {
+    geminiAllowed = _geminiService->IsProfileEligibleForGemini();
+    if (!geminiAllowed && _authenticationService &&
+        !_authenticationService->HasPrimaryIdentity()) {
+      // If the profile is ineligible, it might be just because the user is
+      // signed out. We still want to show the Gemini button (disabled) for
+      // signed-out users to encourage sign-in, unless a local enterprise
+      // policy explicitly disables it.
+      geminiAllowed = gemini::GeminiAllowedByPolicy(_prefService);
+    }
+  }
+
+  if (IsPageActionMenuEnabled() && geminiAllowed) {
     state = AppBarAssistantButtonState::kAsk;
   } else if (IsAimCobrowseEnabled() && IsAssistantContainerEnabled()) {
     state = AppBarAssistantButtonState::kAIM;
