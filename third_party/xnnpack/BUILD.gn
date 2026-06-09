@@ -95,7 +95,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":f16-vexp_x64",
       ":f16-vgelu_x64",
       ":f16-vhswish_f16c-no-avx2-no-fma",
+      ":f16-vlog_avx512f",
       ":f16-vlog_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-avx512fp16",
+      ":f16-vlog_f16c-no-avx2-no-fma",
       ":f16-vlog_x64",
       ":f16-vlrelu_f16c-no-avx2-no-fma",
       ":f16-vmulcaddc_f16c-fma-no-avx2",
@@ -637,7 +639,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":f16-vexp_x64_standalone",
       ":f16-vgelu_x64_standalone",
       ":f16-vhswish_f16c-no-avx2-no-fma_standalone",
+      ":f16-vlog_avx512f_standalone",
       ":f16-vlog_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-avx512fp16_standalone",
+      ":f16-vlog_f16c-no-avx2-no-fma_standalone",
       ":f16-vlog_x64_standalone",
       ":f16-vlrelu_f16c-no-avx2-no-fma_standalone",
       ":f16-vmulcaddc_f16c-fma-no-avx2_standalone",
@@ -2153,6 +2157,7 @@ if (build_with_chromium) {
       "src/src/subgraph.c",
       "src/src/tensor.c",
       "src/src/xnnpack/fingerprint_check.c",
+      "src/src/xnnpack/init-once.c",
     ]
 
     deps = xnnpack_deps + [
@@ -2201,6 +2206,7 @@ if (build_with_internal_optimization_guide) {
       "src/src/subgraph.c",
       "src/src/tensor.c",
       "src/src/xnnpack/fingerprint_check.c",
+      "src/src/xnnpack/init-once.c",
     ]
 
     deps = xnnpack_standalone_deps + [
@@ -5132,6 +5138,61 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   }
 
   if (build_with_chromium) {
+    source_set("f16-vlog_avx512f") {
+      cflags = [ "-mavx512f" ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f16-vlog/gen/f16-f32acc-vlog-avx512f-rational-1-3-div.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+    }
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f16-vlog_avx512f_standalone") {
+      cflags = [ "-mavx512f" ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f16-vlog/gen/f16-f32acc-vlog-avx512f-rational-1-3-div.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  if (build_with_chromium) {
     source_set(
         "f16-vlog_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-avx512fp16") {
       cflags = [
@@ -5149,7 +5210,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vlog/gen/f16-vlog-avx512fp16-rational-3-3-div.c",
+        "src/src/f16-vlog/gen/f16-vlog-avx512fp16-rational-1-3-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5187,7 +5248,70 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vlog/gen/f16-vlog-avx512fp16-rational-3-3-div.c",
+        "src/src/f16-vlog/gen/f16-vlog-avx512fp16-rational-1-3-div.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  if (build_with_chromium) {
+    source_set("f16-vlog_f16c-no-avx2-no-fma") {
+      cflags = [
+        "-mf16c",
+        "-mno-avx2",
+        "-mno-fma",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f16-vlog/gen/f16-f32acc-vlog-f16c-rational-1-3-div.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+    }
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f16-vlog_f16c-no-avx2-no-fma_standalone") {
+      cflags = [
+        "-mf16c",
+        "-mno-avx2",
+        "-mno-fma",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f16-vlog/gen/f16-f32acc-vlog-f16c-rational-1-3-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5216,7 +5340,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vlog/gen/f16-vlog-scalar-rational-3-3-div.c",
+        "src/src/f16-vlog/gen/f16-f32acc-vlog-scalar-rational-1-3-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5242,7 +5366,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vlog/gen/f16-vlog-scalar-rational-3-3-div.c",
+        "src/src/f16-vlog/gen/f16-f32acc-vlog-scalar-rational-1-3-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -39082,7 +39206,7 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vlog/gen/f16-vlog-neonfp16arith-rational-3-3-div.c",
+        "src/src/f16-vlog/gen/f16-vlog-neonfp16arith-rational-1-3-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -39108,7 +39232,7 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vlog/gen/f16-vlog-neonfp16arith-rational-3-3-div.c",
+        "src/src/f16-vlog/gen/f16-vlog-neonfp16arith-rational-1-3-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -39137,7 +39261,8 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vlog/gen/f16-vlog-scalar-rational-3-3-div.c",
+        "src/src/f16-vlog/gen/f16-f32acc-vlog-neonfp16-rational-1-3-div.c",
+        "src/src/f16-vlog/gen/f16-f32acc-vlog-scalar-rational-1-3-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -39163,7 +39288,8 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vlog/gen/f16-vlog-scalar-rational-3-3-div.c",
+        "src/src/f16-vlog/gen/f16-f32acc-vlog-neonfp16-rational-1-3-div.c",
+        "src/src/f16-vlog/gen/f16-f32acc-vlog-scalar-rational-1-3-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53042,7 +53168,7 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vlog/gen/f16-vlog-rvvfp16arith-rational-3-3-div-u8v.c",
+        "src/src/f16-vlog/gen/f16-vlog-rvvfp16arith-rational-1-3-div-u8v.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53071,7 +53197,7 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vlog/gen/f16-vlog-rvvfp16arith-rational-3-3-div-u8v.c",
+        "src/src/f16-vlog/gen/f16-vlog-rvvfp16arith-rational-1-3-div-u8v.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53100,7 +53226,7 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vlog/gen/f16-vlog-scalar-rational-3-3-div.c",
+        "src/src/f16-vlog/gen/f16-f32acc-vlog-scalar-rational-1-3-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53126,7 +53252,7 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vlog/gen/f16-vlog-scalar-rational-3-3-div.c",
+        "src/src/f16-vlog/gen/f16-f32acc-vlog-scalar-rational-1-3-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]

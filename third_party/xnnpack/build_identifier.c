@@ -109,8 +109,10 @@
 // - external/xnnpack+/src/f16-vexp/gen/f16-vexp-scalar-poly-3.c
 // - external/xnnpack+/src/f16-vgelu/gen/f16-vgelu-scalar-rational-6-4-div.c
 // - external/xnnpack+/src/f16-vhswish/gen/f16-vhswish-f16c-u16.c
-// - external/xnnpack+/src/f16-vlog/gen/f16-vlog-avx512fp16-rational-3-3-div.c
-// - external/xnnpack+/src/f16-vlog/gen/f16-vlog-scalar-rational-3-3-div.c
+// - external/xnnpack+/src/f16-vlog/gen/f16-f32acc-vlog-avx512f-rational-1-3-div.c
+// - external/xnnpack+/src/f16-vlog/gen/f16-f32acc-vlog-f16c-rational-1-3-div.c
+// - external/xnnpack+/src/f16-vlog/gen/f16-f32acc-vlog-scalar-rational-1-3-div.c
+// - external/xnnpack+/src/f16-vlog/gen/f16-vlog-avx512fp16-rational-1-3-div.c
 // - external/xnnpack+/src/f16-vlrelu/gen/f16-vlrelu-f16c-u16.c
 // - external/xnnpack+/src/f16-vmulcaddc/gen/f16-vmulcaddc-c8-minmax-fma3-2x.c
 // - external/xnnpack+/src/f16-vrnd/gen/f16-vrndd-f16c-u16.c
@@ -1023,6 +1025,7 @@
 // - external/xnnpack+/src/x8-transposec/gen/x8-transposec-16x16-reuse-mov-sse2.c
 // - external/xnnpack+/src/x8-transposec/gen/x8-transposec-2x4-scalar-int.c
 // - external/xnnpack+/src/x8-transposec/gen/x8-transposec-32x32-reuse-switch-avx2.c
+// - external/xnnpack+/src/xnnpack/init-once.c
 // - external/xnnpack+/src/xx-copy/xx-copy-scalar-memcpy.c
 // - external/xnnpack+/src/xx-fill/xx-fill-scalar-u16.c
 // - external/xnnpack+/src/xx-fill/xx-fill-sse2-u64.c
@@ -1036,10 +1039,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-   79,  73, 193,   4, 206, 203, 113,  78,
-  175, 243, 202,  42, 229,  46, 219, 192,
-  170,  92, 157,  10,  59, 188, 113, 238,
-  158,  68, 200,  58, 206, 122,  95, 174
+  149,  84,  21,  26,  73, 251,  59, 244,
+  253, 110, 214,  50,  68, 139,  23, 119,
+   68,  77, 105, 219, 200,  39, 120,  12,
+   33, 139, 117, 178, 107,  80,  49,  69
 };
 
 size_t xnn_experimental_get_build_identifier_size() {

@@ -434,7 +434,7 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/util.h",
     ]
 
-    deps = [ "//third_party/fp16" ]
+    public_deps = [ "//third_party/fp16" ]
 
     configs += [ ":tflite_flags" ]
   }
@@ -541,7 +541,6 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/kernels/internal/reference/batch_matmul.h",
       "src/tensorflow/lite/kernels/internal/reference/binary_function.h",
       "src/tensorflow/lite/kernels/internal/reference/ceil.h",
-      "src/tensorflow/lite/kernels/internal/reference/comparisons.cc",
       "src/tensorflow/lite/kernels/internal/reference/comparisons.h",
       "src/tensorflow/lite/kernels/internal/reference/concatenation.h",
       "src/tensorflow/lite/kernels/internal/reference/conv.h",
