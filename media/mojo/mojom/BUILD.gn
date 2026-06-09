@@ -1090,6 +1090,7 @@ source_set("unit_tests") {
 
   sources = [
     "audio_decoder_config_mojom_traits_unittest.cc",
+    "audio_parameters_mojom_traits_unittest.cc",
     "audio_processing_mojom_traits_unittest.cc",
     "cdm_key_information_mojom_traits_unittest.cc",
     "channel_layout_mojom_traits_unittest.cc",

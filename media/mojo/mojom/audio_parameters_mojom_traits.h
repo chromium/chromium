@@ -11,6 +11,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_point.h"
 #include "media/mojo/mojom/audio_parameters.mojom-shared.h"
+#include "media/mojo/mojom/channel_layout_mojom_traits.h"
 #include "media/mojo/mojom/media_types.mojom-shared.h"
 #include "media/mojo/mojom/media_types_enum_mojom_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -74,18 +75,15 @@ struct StructTraits<media::mojom::AudioParametersDataView,
       const media::AudioParameters& input) {
     return input.format();
   }
-  static media::ChannelLayout channel_layout(
+  static const media::ChannelLayoutConfig& channel_layout_config(
       const media::AudioParameters& input) {
-    return input.channel_layout();
+    return input.channel_layout_config();
   }
   static int32_t sample_rate(const media::AudioParameters& input) {
     return input.sample_rate();
   }
   static int32_t frames_per_buffer(const media::AudioParameters& input) {
     return input.frames_per_buffer();
-  }
-  static int32_t channels(const media::AudioParameters& input) {
-    return input.channels();
   }
   static uint32_t effects(const media::AudioParameters& input) {
     return input.effects();

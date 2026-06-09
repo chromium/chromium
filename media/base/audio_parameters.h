@@ -261,6 +261,7 @@ class MEDIA_EXPORT AudioParameters {
     bool require_encapsulation = false;
     // Require audio processing offload.
     bool require_audio_offload = false;
+    bool operator==(const HardwareCapabilities& other) const = default;
   };
 
   // Returns a string which contains the full bitmask for the given `mask`.

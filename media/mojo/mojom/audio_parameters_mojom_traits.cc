@@ -140,39 +140,30 @@ bool StructTraits<
     media::mojom::AudioParametersDataView,
     media::AudioParameters>::Read(media::mojom::AudioParametersDataView input,
                                   media::AudioParameters* output) {
-  if (input.sample_rate() < 0 || input.frames_per_buffer() < 0 ||
-      input.channels() < 0 ||
-      input.channels() > media::limits::kAbsoluteMaxChannels) {
+  if (input.sample_rate() < 0 || input.frames_per_buffer() < 0) {
     return false;
   }
 
   media::AudioParameters::Format format;
-  media::ChannelLayout channel_layout;
+  media::ChannelLayoutConfig channel_layout_config;
   std::vector<media::Point> mic_positions;
   media::AudioLatency::Type latency_tag;
   std::optional<media::AudioParameters::HardwareCapabilities>
       hardware_capabilities;
 
-  if (!input.ReadFormat(&format) || !input.ReadChannelLayout(&channel_layout) ||
+  if (!input.ReadFormat(&format) ||
+      !input.ReadChannelLayoutConfig(&channel_layout_config) ||
       !input.ReadMicPositions(&mic_positions) ||
       !input.ReadLatencyTag(&latency_tag) ||
       !input.ReadHardwareCapabilities(&hardware_capabilities)) {
     return false;
   }
 
-  if (channel_layout != media::CHANNEL_LAYOUT_DISCRETE &&
-      input.channels() != media::ChannelLayoutToChannelCount(channel_layout)) {
-    return false;
-  }
-
+  *output =
+      media::AudioParameters(format, channel_layout_config, input.sample_rate(),
+                             input.frames_per_buffer());
   if (hardware_capabilities) {
-    *output = media::AudioParameters(
-        format, {channel_layout, input.channels()}, input.sample_rate(),
-        input.frames_per_buffer(), *hardware_capabilities);
-  } else {
-    *output =
-        media::AudioParameters(format, {channel_layout, input.channels()},
-                               input.sample_rate(), input.frames_per_buffer());
+    output->set_hardware_capabilities(hardware_capabilities);
   }
 
   // Forbid bitstream formats if passthrough is disabled.

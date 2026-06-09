@@ -46,10 +46,9 @@ struct AudioParametersHardwareCapabilities {
 
 struct AudioParameters {
   AudioParametersFormat format;
-  ChannelLayout channel_layout;
+  ChannelLayoutConfig channel_layout_config;
   int32 sample_rate;
   int32 frames_per_buffer;
-  int32 channels;
   uint32 effects;
   array<gfx.mojom.Point3F> mic_positions;
   AudioLatencyType latency_tag;
