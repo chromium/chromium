@@ -1013,6 +1013,60 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
+                       SameOriginNavigationInStaticBlockList_Click) {
+  base::HistogramTester histogram_tester;
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+     {
+       "navigation_blocked": [
+         { "from": "[*.]example.com", "to": "[*.]example.com" }
+       ]
+     }
+   )json");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+
+  ClickTarget("#link", mojom::ActionResultCode::kActionsBlockedForSiteRisk);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
+                       SameOriginNavigationInStaticBlockList_Navigate) {
+  base::HistogramTester histogram_tester;
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/empty.html");
+  SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
+    {
+      "navigation_blocked": [
+        { "from": "[*.]example.com", "to": "[*.]example.com" }
+      ]
+    }
+  )json");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  ActResultFuture result;
+  actor_task().Act(
+      ToRequestList(MakeNavigateRequest(*active_tab(), start_url.spec())),
+      result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  histogram_tester.ExpectUniqueSample(
+      "Actor.NavigationGating.GatingDecision2",
+      ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
+  histogram_tester.ExpectBucketCount("Actor.NavigationGating.AppliedGate", true,
+                                     1);
+  histogram_tester.ExpectUniqueSample(kSameOriginSourceHistogram, true, 1);
+  histogram_tester.ExpectUniqueSample(kSameSiteSourceHistogram, true, 1);
+  histogram_tester.ExpectUniqueSample(kSameOriginInitiatorHistogram, false, 1);
+  histogram_tester.ExpectUniqueSample(kSameSiteInitiatorHistogram, false, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        CrossOriginNavigationInStaticBlockListAndAllowList) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
