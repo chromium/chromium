@@ -957,6 +957,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     NSMutableDictionary* mutableAttributes = [textAttributes mutableCopy];
     mutableAttributes[NSFontAttributeName] =
         AssistantButtonFontSize(self.traitCollection);
+    mutableAttributes[NSForegroundColorAttributeName] =
+        ButtonsForegroundColor();
     return mutableAttributes;
   };
 
