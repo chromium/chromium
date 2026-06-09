@@ -49,6 +49,8 @@ suite('extension controlled message', function() {
     const manageLink =
         message.shadowRoot!.querySelector<HTMLElement>('#manageLink');
     assertTrue(!!manageLink);
+    assertEquals(
+        'Opens in new tab', manageLink.getAttribute('aria-description'));
     manageLink.click();
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, `chrome://extensions/?id=${message.extensionId}`);

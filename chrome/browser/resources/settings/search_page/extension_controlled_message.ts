@@ -42,8 +42,8 @@ export class ExtensionControlledMessageElement extends
         'controlledByExtensionWithoutDisableOption';
 
     return this.i18nAdvanced(disclaimerStringId, {
-      substitutions: [name],
-      attrs: ['id'],
+      substitutions: [name, this.i18n('opensInNewTab')],
+      attrs: ['id', 'aria-description'],
     });
   }
 

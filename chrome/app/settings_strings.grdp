@@ -397,10 +397,10 @@
      An extension is controlling this setting
    </message>
     <message name="IDS_SETTINGS_CONTROLLED_BY_EXTENSION_WITH_DISABLE_AND_MANAGE_OPTION" desc="Text of the disclaimer that a setting's value is being controlled by an extension. `Disable` link immediately disables the extension. `Manage` link goes to the Details > Extension Options link; either `chrome://extensions/?options=ID ` or `chrome-extension://ID/options.html`">
-      The "<ph name="NAME">$1<ex>Adblocker plusplus</ex></ph>" extension is controlling this setting. To change your default search engine, <ph name="BEGIN_LINK_DISABLE">&lt;a href="#" id="disableLink"&gt;</ph>disable the extension<ph name="END_LINK_DISABLE">&lt;/a&gt;</ph> or <ph name="BEGIN_LINK_MANAGE">&lt;a href="#" id="manageLink"&gt;</ph>manage its settings<ph name="END_LINK_MANAGE">&lt;/a&gt;</ph>.
+      The "<ph name="NAME">$1<ex>Adblocker plusplus</ex></ph>" extension is controlling this setting. To change your default search engine, <ph name="BEGIN_LINK_DISABLE">&lt;a href="#" id="disableLink"&gt;</ph>disable the extension<ph name="END_LINK_DISABLE">&lt;/a&gt;</ph> or <ph name="BEGIN_LINK_MANAGE">&lt;a href="#" id="manageLink" aria-description="$2"&gt;</ph>manage its settings<ph name="END_LINK_MANAGE">&lt;/a&gt;</ph>.
     </message>
     <message name="IDS_SETTINGS_CONTROLLED_BY_EXTENSION_WITH_MANAGE_OPTION" desc="Text of the disclaimer that a setting's value is being controlled by an extension. `See details` link goes to the Details > Extension Options link; either `chrome://extensions/?options=ID ` or `chrome-extension://ID/options.html`">
-      The "<ph name="NAME">$1<ex>Adblocker plusplus</ex></ph>" extension was added by your organization's policy and is controlling this setting. <ph name="BEGIN_LINK">&lt;a href="#" id="manageLink"&gt;</ph>See details<ph name="END_LINK">&lt;/a&gt;</ph>
+      The "<ph name="NAME">$1<ex>Adblocker plusplus</ex></ph>" extension was added by your organization's policy and is controlling this setting. <ph name="BEGIN_LINK">&lt;a href="#" id="manageLink" aria-description="$2"&gt;</ph>See details<ph name="END_LINK">&lt;/a&gt;</ph>
     </message>
     <message name="IDS_SETTINGS_CLEAR" desc="Label used on a menu item or button to delete an item.">
       Delete
