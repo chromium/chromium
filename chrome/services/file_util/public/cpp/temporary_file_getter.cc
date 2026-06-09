@@ -4,6 +4,8 @@
 
 #include "chrome/services/file_util/public/cpp/temporary_file_getter.h"
 
+#include "build/build_config.h"
+
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 
@@ -12,17 +14,25 @@ namespace {
 constexpr int kMaxNumberOfFilesAllowed = 10;
 
 base::File TemporaryFileGetterHelper(int num_files_requested) {
-  base::FilePath temp_path;
-  base::File temp_file;
-  if (num_files_requested <= kMaxNumberOfFilesAllowed &&
-      base::CreateTemporaryFile(&temp_path)) {
-    temp_file.Initialize(
-        temp_path, (base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-                    base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
-                    base::File::FLAG_DELETE_ON_CLOSE));
-  } else {
-    temp_file = base::File();
+  if (num_files_requested > kMaxNumberOfFilesAllowed) {
+    return base::File();
   }
+
+  base::FilePath temp_dir;
+  if (!base::GetTempDir(&temp_dir)) {
+    return base::File();
+  }
+
+  base::FilePath temp_path;
+  base::File temp_file = base::CreateAndOpenTemporaryFileInDir(
+      temp_dir, &temp_path,
+      base::File::FLAG_WIN_TEMPORARY | base::File::FLAG_DELETE_ON_CLOSE);
+  if (!temp_file.IsValid()) {
+    return base::File();
+  }
+
+
+
   return temp_file;
 }
 }  // namespace
