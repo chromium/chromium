@@ -58,15 +58,19 @@ class FileStreamForwarderTest : public testing::Test {
     // Prepare a file system.
     constexpr char kURLOrigin[] = "http://origin/";
 
+    base::RunLoop open_file_system_loop;
     context_->OpenFileSystem(
         blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
         /*bucket=*/std::nullopt, storage::kFileSystemTypeTemporary,
         storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
-        base::BindOnce([](const storage::FileSystemURL& root_url,
-                          const std::string& name, base::File::Error result) {
-          EXPECT_EQ(base::File::FILE_OK, result);
-        }));
-    base::RunLoop().RunUntilIdle();
+        base::BindOnce(
+            [](base::RunLoop* run_loop, const storage::FileSystemURL&,
+               const std::string&, base::File::Error result) {
+              EXPECT_EQ(base::File::FILE_OK, result);
+              run_loop->Quit();
+            },
+            &open_file_system_loop));
+    open_file_system_loop.Run();
 
     // Prepare a 64KB file in the file system.
     url_ = context_->CreateCrackedFileSystemURL(
