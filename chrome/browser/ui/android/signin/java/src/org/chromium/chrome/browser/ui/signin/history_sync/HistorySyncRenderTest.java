@@ -16,6 +16,7 @@ import android.content.res.Configuration;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,7 +35,6 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -65,7 +65,6 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures({ChromeFeatureList.USE_ALTERNATE_HISTORY_SYNC_ILLUSTRATION})
 @DoNotBatch(reason = "This test relies on native initialization")
-@DisableLeakChecks("crbug.com/512492471 (IdentityManagerImpl)")
 public class HistorySyncRenderTest {
     /** Parameter provider for night mode state and device orientation. */
     public static class NightModeAndOrientationParameterProvider implements ParameterProvider {
@@ -132,6 +131,17 @@ public class HistorySyncRenderTest {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mActivityTestRule.launchActivity(null);
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
+    }
+
+    @After
+    public void tearDown() {
+        if (mHistorySyncCoordinator != null) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mHistorySyncCoordinator.destroy();
+                        mHistorySyncCoordinator = null;
+                    });
+        }
     }
 
     @Test

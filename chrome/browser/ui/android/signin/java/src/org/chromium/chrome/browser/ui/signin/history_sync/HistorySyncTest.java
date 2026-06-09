@@ -45,7 +45,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -73,7 +72,6 @@ import org.chromium.ui.test.util.ViewUtils;
 @RunWith(ContentJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "This test relies on native initialization")
-@DisableLeakChecks("crbug.com/512492471 (IdentityManagerImpl)")
 public class HistorySyncTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -104,6 +102,13 @@ public class HistorySyncTest {
 
     @After
     public void tearDown() {
+        if (mHistorySyncCoordinator != null) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mHistorySyncCoordinator.destroy();
+                        mHistorySyncCoordinator = null;
+                    });
+        }
         mSigninTestRule.forceSignOut();
     }
 
