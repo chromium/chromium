@@ -6,6 +6,7 @@
 
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -231,5 +232,108 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
                     /*custom_body_field=*/nullptr, /*show_progress_bar=*/false);
     EXPECT_TRUE(dialog_test_api.GetWidgetDelegate()->IsDialogButtonEnabled(
         ui::mojom::DialogButton::kOk));
+  }
+}
+
+namespace {
+
+// Subclass to expose protected methods for testing.
+class TestDigitalIdentityProviderDesktop
+    : public DigitalIdentityProviderDesktop {
+ public:
+  using DigitalIdentityProviderDesktop::EndRequestWithError;
+  using DigitalIdentityProviderDesktop::EnsureDialogCreated;
+  using DigitalIdentityProviderDesktop::set_callback_for_testing;
+  using DigitalIdentityProviderDesktop::set_rp_origin_for_testing;
+  using DigitalIdentityProviderDesktop::set_web_contents_for_testing;
+
+  // Calls the protected ShowQrCodeDialog.
+  void SetUpAndShowQrDialog(content::WebContents* web_contents,
+                            base::OnceClosure callback) {
+    set_web_contents_for_testing(web_contents->GetWeakPtr());
+    set_rp_origin_for_testing(url::Origin::Create(GURL("https://rp.example")));
+    set_callback_for_testing(base::BindOnce(
+        [](base::OnceClosure callback,
+           base::expected<
+               TestDigitalIdentityProviderDesktop::DigitalCredential,
+               content::DigitalIdentityProvider::RequestStatusForMetrics>
+               result) { std::move(callback).Run(); },
+        std::move(callback)));
+    ShowQrCodeDialog("FIDO:/0123456789", RequestInfo::RequestType::kGet);
+  }
+
+  DigitalIdentityMultiStepDialog* GetDialog() { return EnsureDialogCreated(); }
+};
+
+class ProviderDestroyerOnWidgetClosingObserver : public views::WidgetObserver {
+ public:
+  explicit ProviderDestroyerOnWidgetClosingObserver(
+      base::OnceClosure destruction_callback)
+      : destruction_callback_(std::move(destruction_callback)) {}
+
+  void OnWidgetClosing(views::Widget* widget) override {
+    widget->RemoveObserver(this);
+    if (destruction_callback_) {
+      std::move(destruction_callback_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure destruction_callback_;
+};
+
+}  // namespace
+
+// Regression test for UAF in
+// DigitalIdentityProviderDesktop::EndRequestWithError when the owner is
+// synchronously destroyed during dialog close.
+IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
+                       EndRequestWithErrorOwnerDestroyedDuringDialogClose) {
+  auto provider = std::make_unique<TestDigitalIdentityProviderDesktop>();
+
+  base::RunLoop run_loop;
+  // Show the dialog via the real ShowQrCodeDialog flow.
+  provider->SetUpAndShowQrDialog(GetActiveWebContents(),
+                                 run_loop.QuitClosure());
+
+  // Retrieve the widget robustly using TestApi and EnsureDialogCreated.
+  // Wrap `TestApi` in a nested scope so it is destroyed before the message
+  // loop runs. Otherwise, when the loop runs and triggers the UAF teardown,
+  // the dialog is deleted, leaving `TestApi` holding a dangling raw_ptr.
+  views::Widget* widget = nullptr;
+  {
+    DigitalIdentityMultiStepDialog* dialog = provider->GetDialog();
+    DigitalIdentityMultiStepDialog::TestApi dialog_test_api(dialog);
+    widget = dialog_test_api.GetWidget();
+  }
+  ASSERT_TRUE(widget);
+  base::WeakPtr<views::Widget> weak_widget = widget->GetWeakPtr();
+
+  // Set up the observer to synchronously destroy the provider when the widget
+  // closes.
+  ProviderDestroyerOnWidgetClosingObserver observer(base::BindOnce(
+      [](std::unique_ptr<TestDigitalIdentityProviderDesktop>* provider) {
+        provider->reset();
+      },
+      base::Unretained(&provider)));
+  widget->AddObserver(&observer);
+
+  // Trigger cancellation. OnDialogCanceled() will PostTask a call to
+  // OnCanceled() -> EndRequestWithError().
+  static_cast<views::DialogDelegate*>(widget->widget_delegate())
+      ->CancelDialog();
+  ASSERT_FALSE(widget->IsClosed());
+
+  // Run the message loop to execute the posted tasks.
+  // This will run EndRequestWithError(), triggering the UAF if the bug exists.
+  run_loop.Run();
+
+  // Verify that the provider was safely destroyed (pointer is null).
+  EXPECT_FALSE(provider);
+
+  // Clean up if the widget is still alive.
+  if (weak_widget) {
+    weak_widget->RemoveObserver(&observer);
+    views::test::WidgetDestroyedWaiter(weak_widget.get()).Wait();
   }
 }
