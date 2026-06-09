@@ -7,7 +7,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "heavy_ad_helper_browsertest\.cc": [
+  "heavy_ad_helper_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/ui/browser.h",
     "+chrome/test",

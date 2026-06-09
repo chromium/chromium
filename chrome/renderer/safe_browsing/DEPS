@@ -14,12 +14,12 @@ include_rules = [
 # These are browser tests which run in single process mode, and so access both
 # code from the browser and the renderer.
 specific_include_rules = {
-  "phishing_classifier_browsertest\.cc": [
+  "phishing_classifier_browsertest\\.cc": [
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+content/public/browser",
   ],
-  "phishing_classifier_delegate_browsertest\.cc": [
+  "phishing_classifier_delegate_browsertest\\.cc": [
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_commands.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",

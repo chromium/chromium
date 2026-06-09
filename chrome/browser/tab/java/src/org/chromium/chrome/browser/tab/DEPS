@@ -36,12 +36,12 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  'Tab\.java': [
+  'Tab\\.java': [
     "-components",
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/view",
   ],
 
-  'TabDelegateFactory\.java': [
+  'TabDelegateFactory\\.java': [
     "+chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfInfo.java",
   ],
 

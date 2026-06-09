@@ -14,22 +14,22 @@ specific_include_rules = {
     "+components/web_package",
     "+skia/public/mojom/bitmap.mojom.h",
   ],
-  "extension_context_menu_browsertest\.cc": [
+  "extension_context_menu_browsertest\\.cc": [
     "+ash/wm/window_pin_util.h",
   ],
-  "pdf_viewer_private_apitest\.cc": [
+  "pdf_viewer_private_apitest\\.cc": [
     "+pdf/mojom",
   ],
-  "tls_socket_unittest\.cc": [
+  "tls_socket_unittest\\.cc": [
     "+services/network/network_context.h",
   ],
-  "tcp_socket_unittest\.cc": [
+  "tcp_socket_unittest\\.cc": [
     "+services/network/network_context.h",
   ],
-  "udp_socket_unittest\.cc": [
+  "udp_socket_unittest\\.cc": [
     "+services/network/network_context.h",
   ],
-  "window_open_apitest\.cc": [
+  "window_open_apitest\\.cc": [
     "+ash/wm/window_pin_util.h",
   ],
 }

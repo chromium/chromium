@@ -13,7 +13,7 @@ include_rules = [
   "+chrome/updater/app/server/win/updater_legacy_idl.h",
 ]
 specific_include_rules = {
-  ".*_test\.cc": [
+  ".*_test\\.cc": [
     "+chrome/install_static/test",
     "+chrome/installer/util",
   ]

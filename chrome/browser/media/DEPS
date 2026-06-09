@@ -12,13 +12,13 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "cast_mirroring_performance_browsertest\.cc": [
+  "cast_mirroring_performance_browsertest\\.cc": [
     "+third_party/openscreen/src/platform/base/error.h"
   ],
-  "cast_remoting_connector\.cc": [
+  "cast_remoting_connector\\.cc": [
     "+chrome/browser/ui/views/media_router/media_remoting_dialog_view.h",
   ],
-  "output_protection_proxy\.h": [
+  "output_protection_proxy\\.h": [
     "+ash/display/output_protection_delegate.h",
   ],
 }

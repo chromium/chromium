@@ -642,7 +642,7 @@ specific_include_rules = {
   "shared_storage_browsertest.cc": [
     "+components/services/storage/shared_storage/shared_storage_manager.h",
   ],
-  "fake_server_helper_android\.cc": [
+  "fake_server_helper_android\\.cc": [
     "+components/saved_tab_groups",
   ],
   r"android/omnibox/composebox_query_controller_bridge\.cc": [

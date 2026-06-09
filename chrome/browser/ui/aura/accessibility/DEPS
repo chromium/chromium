@@ -9,7 +9,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "automation_manager_aura_browsertest\.cc": [
+  "automation_manager_aura_browsertest\\.cc": [
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",

@@ -4,7 +4,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "settings_security_key_handler(|_unittest)\.(cc|h)": [
+  "settings_security_key_handler(|_unittest)\\.(cc|h)": [
     "+device/fido",
   ],
   "settings_localized_strings_provider.cc": [

@@ -4,10 +4,10 @@ include_rules = [
   "+chrome/services/util_win/util_win_impl.h",
 ]
 specific_include_rules = {
-  "process_memory_metrics_emitter_browsertest\.cc": [
+  "process_memory_metrics_emitter_browsertest\\.cc": [
     "+third_party/iaccessible2",
   ],
-  "dwa_browsertest\.cc": [
+  "dwa_browsertest\\.cc": [
     "+third_party/federated_compute",
   ],
 }

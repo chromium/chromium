@@ -126,16 +126,16 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "chrome_render_frame_observer\.h": [
+  "chrome_render_frame_observer\\.h": [
     "+components/actor/core/task_id.h",
   ],
-  "chrome_content_renderer_client_browsertest\.cc": [
+  "chrome_content_renderer_client_browsertest\\.cc": [
     "+chrome/browser/profiles/profile_io_data.h",
     "+chrome/browser/ui",
     "+chrome/browser/ui/tabs",
     "+content/public/browser/browser_thread.h",
   ],
-  "ash_merge_session_loader_throttle\.cc": [
+  "ash_merge_session_loader_throttle\\.cc": [
     "+components/google/core/common/google_util.h",
   ],
 }

@@ -8,7 +8,7 @@ include_rules = [
   "+content/public/common/content_switches.h",
 ]
 specific_include_rules = {
-  "service_unittest\.cc": [
+  "service_unittest\\.cc": [
     "+third_party/crashpad/crashpad/client"
   ]
 }

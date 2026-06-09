@@ -27,7 +27,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*(test|test_utils)\.cc": [
+  ".*(test|test_utils)\\.cc": [
     "+chrome/browser/browser_features.h",
     "+chrome/browser/policy/policy_test_utils.h",
     "+chrome/browser/prefs/browser_prefs.h",

@@ -12,7 +12,7 @@ specific_include_rules = {
     "+components/saved_tab_groups/android",
   ],
 
-  '.*TestHelper\.java': [
+  '.*TestHelper\\.java': [
     "+chrome/android",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",

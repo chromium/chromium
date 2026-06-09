@@ -15,7 +15,7 @@ include_rules = [
 # (it's possible that non-test dependencies might also be okay, because after all
 # //chrome/browser/DEPS allows all "+components/metrics" dependencies).
 specific_include_rules = {
-  ".*test\.cc": [
+  ".*test\\.cc": [
     "+components/metrics/content/subprocess_metrics_provider.h",
   ]
 }

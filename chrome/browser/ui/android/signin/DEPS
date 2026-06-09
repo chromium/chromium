@@ -8,7 +8,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "WebSigninAccountPickerDelegate.*\.java"
+  "WebSigninAccountPickerDelegate.*\\.java"
   : [
   "+content/public/android/java/src/org/chromium/content_public/browser/LoadUrlParams.java"
   ],

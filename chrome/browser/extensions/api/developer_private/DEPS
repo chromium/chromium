@@ -10,7 +10,7 @@ specific_include_rules = {
 
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
   # https://crbug.com/40131924
-  "developer_private_api\.cc": [
+  "developer_private_api\\.cc": [
     "+chrome/browser/apps/app_service/app_launch_params.h",
   ],
 }

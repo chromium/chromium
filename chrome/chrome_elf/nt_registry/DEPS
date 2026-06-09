@@ -7,7 +7,7 @@ include_rules = [
   "+chrome/chrome_elf/nt_registry/nt_registry_functions.h",
 ]
 specific_include_rules = {
-  ".*_unittest\.cc": [
+  ".*_unittest\\.cc": [
     "+base",
   ]
 }

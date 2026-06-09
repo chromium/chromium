@@ -1,11 +1,11 @@
 specific_include_rules = {
-  "glic_widget\.cc": [
+  "glic_widget\\.cc": [
     "+ash/wm/window_util.h",
     "+ash/frame/frame_view_ash.h",
     "+chromeos/ui/base/window_properties.h",
     "+chromeos/ui/wm/window_util.h"
   ],
-  "glic_side_panel_coordinator_android\.cc": [
+  "glic_side_panel_coordinator_android\\.cc": [
     "+chrome/android/features/tab_ui/jni_headers/TabBottomSheetNativeInterface_jni.h",
   ]
 }

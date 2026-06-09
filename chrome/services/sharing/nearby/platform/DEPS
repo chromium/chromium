@@ -41,7 +41,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "wifi_lan_medium_unittest\.cc": [
+  "wifi_lan_medium_unittest\\.cc": [
     "+chromeos/ash/services/network_config/in_process_instance.h",
   ],
 }

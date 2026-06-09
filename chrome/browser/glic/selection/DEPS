@@ -1,5 +1,5 @@
 specific_include_rules = {
-  "selection_overlay_interactive_uitests\.cc": [
+  "selection_overlay_interactive_uitests\\.cc": [
     "+ash/shell.h",
   ],
 }

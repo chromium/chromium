@@ -14,34 +14,34 @@ specific_include_rules = {
   "browser_user_education_service.cc": [
     "+ash/user_education/views/help_bubble_factory_views_ash.h",
   ],
-  "chrome_web_dialog_view\.cc": [
+  "chrome_web_dialog_view\\.cc": [
     "+ash/multi_user/multi_user_window_manager.h",
     "+ash/shell.h",
     "+ash/utility/wm_util.h",
   ],
-  "chrome_views_delegate_ash\.cc": [
+  "chrome_views_delegate_ash\\.cc": [
     "+ash/shell.h",
   ],
-  "isolated_web_app_installer_view_browsertest\.cc": [
+  "isolated_web_app_installer_view_browsertest\\.cc": [
     "+ash/shell.h",
   ],
-  "qrcode_generator\.*": [
+  "qrcode_generator\\.*": [
     "+components/qr_code_generator/bitmap_generator.h",
   ],
-  "save_card_bubble_views_browsertest\.cc": [
+  "save_card_bubble_views_browsertest\\.cc": [
     "+chromeos/ash/services/multidevice_setup/public/cpp/prefs.h",
   ],
-  "screen_capture_notification_ui_views\.cc": [
+  "screen_capture_notification_ui_views\\.cc": [
     "+ash/shell.h",
   ],
-  "status_bubble_views\.cc": [
+  "status_bubble_views\\.cc": [
     "+ash/shell.h",
     "+ash/wm/window_state.h",
   ],
-  "tab_group_editor_bubble_view\.cc": [
+  "tab_group_editor_bubble_view\\.cc": [
     "+ash/ash_element_identifiers.h",
   ],
-  "tab_group_editor_bubble_view_browsertest\.cc": [
+  "tab_group_editor_bubble_view_browsertest\\.cc": [
     "+ash/ash_element_identifiers.h",
   ],
   ".*test.*": [
@@ -59,7 +59,7 @@ specific_include_rules = {
     "+chromeos/ash/experiences/arc/session",
     "+chromeos/ash/experiences/arc/test",
   ],
-  "web_app_frame_toolbar_browsertest\.cc": [
+  "web_app_frame_toolbar_browsertest\\.cc": [
     "+components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h",
   ],
 }

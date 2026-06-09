@@ -4,7 +4,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "chrome_elf_init.*\.cc": [
+  "chrome_elf_init.*\\.cc": [
     "+chrome/chrome_elf",
   ],
 }

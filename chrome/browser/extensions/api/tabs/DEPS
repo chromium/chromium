@@ -4,7 +4,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "tabs_api_unittest\.cc": [
+  "tabs_api_unittest\\.cc": [
     "+ash/test",
   ],
 }

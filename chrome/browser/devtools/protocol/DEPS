@@ -1,18 +1,18 @@
 specific_include_rules = {
-  "window_manager_handler\.cc": [
+  "window_manager_handler\\.cc": [
     "+ash/shell.h",
     "+ash/wm/overview/overview_controller.h",
   ],
-  "devtools_printtopdf_browsertest\.cc": [
+  "devtools_printtopdf_browsertest\\.cc": [
     "+pdf/pdf.h",
   ],
   "page_handler.*": [
     "+components/printing/browser/print_to_pdf",
   ],
-  "pwa_handler\.cc": [
+  "pwa_handler\\.cc": [
     "+components/web_package/signed_web_bundles"
   ],
-  "devtools_iwa_browsertest\.cc": [
+  "devtools_iwa_browsertest\\.cc": [
     "+components/web_package/signed_web_bundles"
   ]
 }

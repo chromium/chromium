@@ -6,12 +6,12 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "chrome_payment_request_delegate\.cc": [
+  "chrome_payment_request_delegate\\.cc": [
     # This delegate is hardcoded to construct a Views dialog right now, since it
     # is only used on Views platforms.
     "+chrome/browser/ui/views",
   ],
-  "secure_payment_confirmation_authenticator_browsertest\.cc": [
+  "secure_payment_confirmation_authenticator_browsertest\\.cc": [
     "+device/fido/virtual_fido_device_factory.h",
   ],
   ".*PaymentRequestIntegrationTest.java": [

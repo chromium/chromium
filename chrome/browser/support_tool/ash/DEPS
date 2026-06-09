@@ -19,7 +19,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "shill_data_collector\.cc": [
+  "shill_data_collector\\.cc": [
     "+dbus/object_path.h",
   ],
   "ui_hierarchy_data_collector_browsertest\.cc": [

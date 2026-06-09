@@ -20,7 +20,7 @@ include_rules = [
 
 specific_include_rules = {
     # Allow OverrideContextWrapperTestRule to depend on platform-only PackageManagerWrapper
-    "OverrideContextWrapperTestRule\.java": [
+    "OverrideContextWrapperTestRule\\.java": [
         "+components/cronet/android/platform-only/org/chromium/base/test/util/PackageManagerWrapper.java",
     ],
 }

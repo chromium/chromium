@@ -20,7 +20,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "ntp_tiles_browsertest\.cc": [
+  "ntp_tiles_browsertest\\.cc": [
     "+chrome/browser/ui/browser.h",
     "+chrome/test/base/in_process_browser_test.h",
     "+chrome/test/base/mixin_based_in_process_browser_test.h",

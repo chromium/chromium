@@ -16,7 +16,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".+_unittests*\.cc": [
+  ".+_unittests*\\.cc": [
     "+chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h",
   ],
 }

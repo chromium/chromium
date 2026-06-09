@@ -17,7 +17,7 @@ include_rules = [
 # Test files may access VRService as they will either move with it, or we can
 # expose test-specific interfaces if needed.
 specific_include_rules = {
-  ".*test.*\.cc": [
+  ".*test.*\\.cc": [
     "+device/vr/test/test_hook.h",
   ]
 }

@@ -5,7 +5,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "browsertest\.cc": [
+  "browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/metrics/chrome_metrics_service_accessor.h",
     "+chrome/browser/net/profile_network_context_service.h",

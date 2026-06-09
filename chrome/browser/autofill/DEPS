@@ -9,7 +9,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "PersonalDataManagerTest\.java": [
+  "PersonalDataManagerTest\\.java": [
     '+components/image_fetcher/android/java/src/org/chromium/components/image_fetcher/test/TestImageFetcher.java',
   ],
 }

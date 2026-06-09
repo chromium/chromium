@@ -14,24 +14,24 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "downgrade_manager_delegate_impl\.cc": [
+  "downgrade_manager_delegate_impl\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
-  "snapshot_file_collector\.cc": [
+  "snapshot_file_collector\\.cc": [
     "+chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h",
     "+chrome/browser/profiles/profile_avatar_icon_util.h",
     "+chrome/browser/profiles/profile_shortcut_manager_win.h",
     "+chrome/browser/web_applications/chrome_pwa_launcher/last_browser_file_util.h",
   ],
-  "user_data_downgrade_browsertest\.cc": [
+  "user_data_downgrade_browsertest\\.cc": [
     "+chrome/browser/chrome_browser_main.h",
     "+chrome/browser/chrome_browser_main_extra_parts.h",
     "+chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h",
   ],
-  "user_data_downgrade_unittest\.cc": [
+  "user_data_downgrade_unittest\\.cc": [
     "+chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h",
   ],
-  "user_data_snapshot_browsertest\.cc": [
+  "user_data_snapshot_browsertest\\.cc": [
     "+chrome/browser/bookmarks/bookmark_model_factory.h",
     "+chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h",
     "+chrome/browser/history/history_service_factory.h",

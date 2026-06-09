@@ -6,37 +6,37 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "chrome_screen_enumerator\.cc": [
+  "chrome_screen_enumerator\\.cc": [
     "+ui/display/screen.h",
     "+ash/shell.h",
   ],
-  "desktop_capture_access_handler\.cc": [
+  "desktop_capture_access_handler\\.cc": [
     "+ash/shell.h",
   ],
-  "desktop_media_list_ash\.cc": [
+  "desktop_media_list_ash\\.cc": [
     "+ash/shell.h",
     "+ash/wm/desks/desks_util.h",
     "+ash/wm/window_properties.h",
   ],
-  "display_media_access_handler\.cc": [
+  "display_media_access_handler\\.cc": [
     "+ash/shell.h",
   ],
   "media_stream_focus_delegate.cc": [
     "+modules/desktop_capture/desktop_capture_options.h",
   ],
-  "get_all_screen_media_browsertest\.cc": [
+  "get_all_screen_media_browsertest\\.cc": [
     "+ash/shell.h",
   ],
-  ".*_unittest\.cc": [
+  ".*_unittest\\.cc": [
     "+ash/test/ash_test_base.h",
   ],
-  "get_all_screens_media_browsertest\.cc": [
+  "get_all_screens_media_browsertest\\.cc": [
     "+ash/shell.h",
   ],
-  "multi_capture/multi_capture_usage_indicator_service_browsertest\.cc": [
+  "multi_capture/multi_capture_usage_indicator_service_browsertest\\.cc": [
     "+components/web_package/test_support/signed_web_bundles/key_pair.h",
   ],
-  "rtc_diagnostic_logging_unittest\.cc": [
+  "rtc_diagnostic_logging_unittest\\.cc": [
     "+chrome/renderer/media/webrtc_logging_agent_impl.h",
   ],
 }
