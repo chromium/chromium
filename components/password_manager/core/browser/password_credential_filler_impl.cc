@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "url/origin.h"
 
 namespace password_manager {
 
@@ -84,6 +85,10 @@ PasswordCredentialFillerImpl::GetSubmissionReadinessState() const {
 
 GURL PasswordCredentialFillerImpl::GetFrameUrl() const {
   return driver_ ? driver_->GetLastCommittedURL() : GURL();
+}
+
+url::Origin PasswordCredentialFillerImpl::GetFrameOrigin() const {
+  return driver_ ? driver_->GetLastCommittedOrigin() : url::Origin();
 }
 
 base::WeakPtr<PasswordCredentialFiller>

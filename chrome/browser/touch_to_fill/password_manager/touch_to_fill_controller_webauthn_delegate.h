@@ -16,6 +16,7 @@
 #include "chrome/browser/webauthn/shared_types.h"
 #include "chrome/browser/webauthn/touch_to_fill_credential_receiver.h"
 #include "ui/gfx/native_ui_types.h"
+#include "url/origin.h"
 
 namespace content {
 class WebContents;
@@ -68,6 +69,7 @@ class TouchToFillControllerWebAuthnDelegate
   void OnDismiss(base::OnceClosure action_completed) override;
   void OnCredManDismissed(base::OnceClosure action_completed) override;
   GURL GetFrameUrl() override;
+  url::Origin GetFrameOrigin() override;
   bool ShouldShowTouchToFill() override;
   bool ShouldTriggerSubmission() override;
   bool ShouldShowHybridOption() override;

@@ -110,6 +110,7 @@ bool TouchToFillController::Show(
   // If the render frame host has been destroyed already, the url will be empty
   // in which case Show() should never be called.
   CHECK(!url.is_empty());
+  url::Origin origin = ttf_delegate_->GetFrameOrigin();
 
   switch (GetResponsibleDisplayTarget(credentials_)) {
     case DisplayTarget::kNone:
@@ -127,7 +128,7 @@ bool TouchToFillController::Show(
         no_passkeys_bridge_ = std::make_unique<NoPasskeysBottomSheetBridge>();
       }
       no_passkeys_bridge_->Show(
-          GetNativeView()->GetWindowAndroid(), url::Origin::Create(url).host(),
+          GetNativeView()->GetWindowAndroid(), origin.host(),
           base::BindOnce(&TouchToFillController::OnDismiss,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindOnce(&TouchToFillController::OnHybridSignInSelected,
@@ -169,8 +170,7 @@ bool TouchToFillController::Show(
 
       return view_->Show(url,
                          TouchToFillView::IsOriginSecure(
-                             network::IsOriginPotentiallyTrustworthy(
-                                 url::Origin::Create(url))),
+                             network::IsOriginPotentiallyTrustworthy(origin)),
                          *sorted_credentials, flags);
   }
 }
@@ -182,7 +182,7 @@ void TouchToFillController::OnCredentialSelected(
   if (credential.match_type() ==
       password_manager_util::GetLoginMatchType::kGrouped) {
     std::string current_origin =
-        GetDisplayOrigin(url::Origin::Create(ttf_delegate_->GetFrameUrl()));
+        GetDisplayOrigin(ttf_delegate_->GetFrameOrigin());
     // Use `cred->display_name()` instead of origin here to correctly display
     // credentials saved for android apps.
     grouped_credential_sheet_controller_->ShowAcknowledgeSheet(

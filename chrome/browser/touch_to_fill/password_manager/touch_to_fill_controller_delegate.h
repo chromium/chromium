@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view.h"
 #include "ui/gfx/native_ui_types.h"
+#include "url/origin.h"
 
 namespace password_manager {
 class PasskeyCredential;
@@ -63,6 +64,10 @@ class TouchToFillControllerDelegate {
   // Gets the last committed URL for the frame that triggered this sheet to be
   // created.
   virtual GURL GetFrameUrl() = 0;
+
+  // Gets the last committed origin for the frame that triggered this sheet to
+  // be created.
+  virtual url::Origin GetFrameOrigin() = 0;
 
   // Returns whether TTF is eligible for showing for the currently focused field
   // (e. g. it should not be triggered for the new password field).

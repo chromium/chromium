@@ -320,7 +320,7 @@ class ChromePasswordManagerClient
 #if BUILDFLAG(IS_ANDROID)
   webauthn::WebAuthnCredManDelegate* GetWebAuthnCredManDelegateForDriver(
       password_manager::PasswordManagerDriver* driver) override;
-  void MarkSharedCredentialsAsNotified(const GURL& url) override;
+  void MarkSharedCredentialsAsNotified(const url::Origin& origin) override;
 #endif  // BUILDFLAG(IS_ANDROID)
   version_info::Channel GetChannel() const override;
   void RefreshPasswordManagerSettingsIfNeeded() const override;

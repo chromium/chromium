@@ -1990,7 +1990,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   shared_not_notified_account.sharing_notification_displayed = true;
   EXPECT_CALL(*profile_store, UpdateLogin(shared_not_notified_profile, _));
   EXPECT_CALL(*account_store, UpdateLogin(shared_not_notified_account, _));
-  GetClient()->MarkSharedCredentialsAsNotified(kURL);
+  GetClient()->MarkSharedCredentialsAsNotified(origin);
 }
 
 #endif  //  BUILDFLAG(IS_ANDROID)
