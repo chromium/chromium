@@ -204,6 +204,8 @@ void FocusPreviousTabGroup(BrowserWindowInterface* browser);
 // Takes all ungrouped tabs and places them in a new group.
 // Returns true if a group was made, and false otherwise.
 bool GroupAllUngroupedTabs(BrowserWindowInterface* browser);
+// Returns true if there is at least one ungrouped, non-pinned tab.
+bool CanGroupAllUngroupedTabs(BrowserWindowInterface* browser);
 // Creates a new tab at the end of the group which last had the active tab.
 void AddNewTabToRecentGroup(BrowserWindowInterface* browser);
 // Unfocuses the currently focused tab group, if any.

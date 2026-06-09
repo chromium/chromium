@@ -20,11 +20,13 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -56,6 +58,14 @@
 class BrowserCommandControllerTest : public BrowserWithTestWindowTest {
  public:
   BrowserCommandControllerTest() = default;
+
+  void WaitForTabGroupSyncServiceInitialized() {
+    auto observer =
+        std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+                browser()->profile()));
+    observer->Wait();
+  }
 };
 
 TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {
@@ -640,6 +650,39 @@ TEST_F(BrowserCommandControllerTest,
 
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("TabGroups_GroupAllUngroupedTabs"));
+}
+
+TEST_F(BrowserCommandControllerTest,
+       GroupAllUngroupedTabsDisabledWhenNoUngroupedTabs) {
+  chrome::BrowserCommandController command_controller(browser());
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+  const GURL url("https://google.com");
+
+  // Ensure the service is initialized before making any changes to tab groups.
+  WaitForTabGroupSyncServiceInitialized();
+
+  AddTab(browser(), url);
+  EXPECT_TRUE(command_controller.IsCommandEnabled(IDC_GROUP_UNGROUPED_TABS));
+
+  tab_strip_model->SetTabPinned(0, true);
+  EXPECT_FALSE(command_controller.IsCommandEnabled(IDC_GROUP_UNGROUPED_TABS));
+
+  tab_strip_model->SetTabPinned(0, false);
+  EXPECT_TRUE(command_controller.IsCommandEnabled(IDC_GROUP_UNGROUPED_TABS));
+
+  tab_strip_model->AddToNewGroup({0});
+  EXPECT_FALSE(command_controller.IsCommandEnabled(IDC_GROUP_UNGROUPED_TABS));
+
+  AddTab(browser(), url);
+  tab_strip_model->SetTabPinned(0, true);
+  EXPECT_FALSE(command_controller.IsCommandEnabled(IDC_GROUP_UNGROUPED_TABS));
+
+  AddTab(browser(), url);
+  EXPECT_TRUE(command_controller.IsCommandEnabled(IDC_GROUP_UNGROUPED_TABS));
+
+  tab_strip_model->SetTabPinned(1, true);
+  EXPECT_FALSE(command_controller.IsCommandEnabled(IDC_GROUP_UNGROUPED_TABS));
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)

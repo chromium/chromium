@@ -1540,6 +1540,15 @@ void BrowserCommandController::OnTabStripModelChanged(
   UpdateCommandsForTabStripStateChanged();
 }
 
+void BrowserCommandController::TabGroupedStateChanged(
+    TabStripModel* tab_strip_model,
+    std::optional<tab_groups::TabGroupId> old_group,
+    std::optional<tab_groups::TabGroupId> new_group,
+    tabs::TabInterface* tab,
+    int index) {
+  UpdateCommandsForTabStripStateChanged();
+}
+
 void BrowserCommandController::OnTabChangedAt(tabs::TabInterface* tab,
                                               int index,
                                               TabChangeType change_type) {
@@ -1549,6 +1558,11 @@ void BrowserCommandController::OnTabChangedAt(tabs::TabInterface* tab,
     UpdateCommandsForFind();
     UpdateCommandsForMediaRouter();
   }
+}
+
+void BrowserCommandController::OnTabPinnedStateChanged(tabs::TabInterface* tab,
+                                                       int index) {
+  UpdateCommandsForTabStripStateChanged();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2511,6 +2525,8 @@ void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
                                         CanMoveActiveTabToNewWindow(browser_));
   command_updater_.UpdateCommandEnabled(IDC_NEW_SPLIT_TAB,
                                         browser_->is_type_normal());
+  command_updater_.UpdateCommandEnabled(IDC_GROUP_UNGROUPED_TABS,
+                                        CanGroupAllUngroupedTabs(browser_));
   UpdateCommandsForBookmarkEditing();
 }
 
