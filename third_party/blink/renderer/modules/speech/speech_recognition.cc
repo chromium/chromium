@@ -523,9 +523,15 @@ void SpeechRecognition::OnPhrasesDelete(
 }
 
 void SpeechRecognition::OnConnectionError() {
+  // On-device recognition (`process_locally_`) has no network, so a dropped
+  // pipe (e.g. an unexpected service crash) maps to "aborted" instead of the
+  // default "network" code, which only applies to cloud-based recognition.
+  media::mojom::blink::SpeechRecognitionErrorCode error_code =
+      process_locally_
+          ? media::mojom::blink::SpeechRecognitionErrorCode::kAborted
+          : media::mojom::blink::SpeechRecognitionErrorCode::kNetwork;
   ErrorOccurred(media::mojom::blink::SpeechRecognitionError::New(
-      media::mojom::blink::SpeechRecognitionErrorCode::kNetwork,
-      media::mojom::blink::SpeechAudioErrorDetails::kNone));
+      error_code, media::mojom::blink::SpeechAudioErrorDetails::kNone));
   Ended();
 }
 
