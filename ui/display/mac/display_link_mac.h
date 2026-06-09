@@ -18,6 +18,7 @@ class ImageTransportSurfaceOverlayMacTest;
 
 namespace viz {
 class ExternalBeginFrameSourceMacTest;
+class MockDisplayLinkMac;
 }
 
 namespace ui {
@@ -54,6 +55,7 @@ class DISPLAY_EXPORT VSyncCallbackMac {
   friend class ExternalDisplayLinkMac;
   friend struct MetalObjCState;
   friend struct ObjCState;
+  friend class viz::MockDisplayLinkMac;
 
   friend class gpu::ImageTransportSurfaceOverlayMacTest;
   friend class viz::ExternalBeginFrameSourceMacTest;

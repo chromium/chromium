@@ -20,7 +20,7 @@
 
 namespace viz {
 class OutputSurface;
-class ExternalBeginFrameSourceMacTest;
+class ExternalBeginFrameSourceMacWrapper;
 
 // An external begin frame source for use on macOS. This listens to a
 // DisplayLinkMac in order to tick.
@@ -75,7 +75,11 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
       MultipleHWRefreshRatesCallback callback);
 
  private:
-  friend class ExternalBeginFrameSourceMacTest;
+  friend class ExternalBeginFrameSourceMacWrapper;
+
+  // Wraps ui::DisplayLinkMac::GetForDisplay to allow mocking the DisplayLink
+  // instance in unit tests via the ExternalBeginFrameSourceMacWrapper subclass.
+  virtual scoped_refptr<ui::DisplayLinkMac> GetForDisplay(int64_t display_id);
 
   void CreateDelayBasedTimeSourceIfNeeded();
 
