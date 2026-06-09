@@ -417,6 +417,13 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
         mViewHolder.addView(getCurrentChildView());
         switch (child) {
             case ChildView.SIGNIN:
+                // Destroy any pre-existing sign-in coordinator (e.g. after a configuration
+                // change while already on the sign-in view) so its mediator can unregister its
+                // AccountManagerFacade observer and release the Activity context.
+                if (mSigninCoordinator != null) {
+                    mSigninCoordinator.destroy();
+                    mSigninCoordinator = null;
+                }
                 mSigninCoordinator =
                         new FullscreenSigninCoordinator(
                                 mActivity,
