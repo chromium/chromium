@@ -693,6 +693,9 @@ bool IsFullscreenNextIAEnabled() {
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
                      focusOmnibox:(BOOL)focusOmnibox
                     inheritOpener:(BOOL)inheritOpener {
+  if (self.inNewTabAnimation) {
+    return;
+  }
   const BOOL offTheRecord = _isOffTheRecord;
   ProceduralBlock oldForegroundTabWasAddedCompletionBlock =
       self.foregroundTabWasAddedCompletionBlock;
