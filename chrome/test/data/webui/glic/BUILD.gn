@@ -26,6 +26,7 @@ ts_library("build_extra_ts") {
     "browser_tests/glic_api_browsertest.ts",
     "browser_tests/new_glic_api_browsertest.ts",
     "browser_tests/glic_actor_task_lifecycle_browsertest.ts",
+    "browser_tests/glic_cue_target_browsertest.ts",
     "browser_tests/glic_experimental_triggering_message_handler_browsertest.ts",
     "browser_tests/glic_api_interactive_uitest.ts",
     "browser_tests/glic_drag_and_drop_interactive_uitest.ts",

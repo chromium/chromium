@@ -3372,8 +3372,6 @@ if (!is_android) {
       "../browser/fast_shutdown_browsertest.cc",
       "../browser/feedback/report_unsafe_site_dialog_browsertest.cc",
       "../browser/feedback/system_logs/log_sources/chrome_internal_log_source_browsertest.cc",
-      "../browser/glic/suggestions/contextual_cueing_service_browsertest.cc",
-      "../browser/glic/suggestions/zero_state_suggestions_browsertest.cc",
       "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_browsertest.cc",
       "../browser/hid/hid_browsertest.cc",
       "../browser/icon_loader_browsertest.cc",
@@ -11500,8 +11498,6 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/window_management:interactive_ui_tests",
       ]
     }
-
-    sources += [ "../browser/glic/suggestions/contextual_cueing_helper_interactive_uitest.cc" ]
 
     deps += [
       "//chrome/browser/actor:interactive_ui_tests",
