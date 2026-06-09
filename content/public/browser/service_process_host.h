@@ -206,6 +206,20 @@ class CONTENT_EXPORT ServiceProcessHost {
     return remote;
   }
 
+  // Launches a service process and binds to the given ObservedServiceRemote,
+  // automatically wiring the observer hub. The caller only needs to register
+  // observers on the ObservedServiceRemote before calling this.
+  //
+  // Must be called from the UI thread.
+  template <typename ObservedRemote,
+            typename = typename ObservedRemote::InterfaceType>
+  static void Launch(ObservedRemote& observed, Options options = {}) {
+    using Interface = typename ObservedRemote::InterfaceType;
+    options.WithObserver(observed.AsWeakObserver());
+    Launch(observed.remote().BindNewPipeAndPassReceiver(), std::move(options),
+           GetServiceSandboxType<Interface>());
+  }
+
   // Yields information about currently active service processes. Must be called
   // from the UI Thread only.
   static std::vector<ServiceProcessInfo> GetRunningProcessInfo();

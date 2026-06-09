@@ -37,7 +37,6 @@
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/media/audio_input_device_manager.h"
-#include "content/browser/renderer_host/media/audio_service_listener.h"
 #include "content/browser/renderer_host/media/in_process_video_capture_provider.h"
 #include "content/browser/renderer_host/media/media_capture_devices_impl.h"
 #include "content/browser/renderer_host/media/media_devices_manager.h"
@@ -1619,8 +1618,6 @@ MediaStreamManager::MediaStreamManager(
   }
   InitializeMaybeAsync(std::move(video_capture_provider));
 
-  audio_service_listener_ = std::make_unique<AudioServiceListener>();
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(kReleaseVideoSourceProviderIfNotInUse)) {
     video_capture_hosts_.set_disconnect_handler(base::BindRepeating(
@@ -1646,11 +1643,6 @@ AudioInputDeviceManager* MediaStreamManager::audio_input_device_manager()
   // May be called on any thread, provided that we are not in shutdown.
   DCHECK(audio_input_device_manager_.get());
   return audio_input_device_manager_.get();
-}
-
-AudioServiceListener* MediaStreamManager::audio_service_listener() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return audio_service_listener_.get();
 }
 
 MediaDevicesManager* MediaStreamManager::media_devices_manager() {

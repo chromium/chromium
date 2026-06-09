@@ -8,11 +8,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/threading/sequence_local_storage_slot.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
@@ -22,15 +20,8 @@ namespace content {
 // audio::mojom::AudioService), providing compile-time safety — observers
 // of one service can't accidentally register with another service's hub.
 //
-// The caller that launches the service should own this instance, tying
-// its lifetime to the service remote.
-//
-// Usage:
-//   ServiceProcessObserverHub<audio::mojom::AudioService> hub_;
-//   // At launch:
-//   options.WithObserver(hub_.AsWeakPtr());
-//   // Observers:
-//   hub_.AddObserver(listener);
+// Prefer using ObservedServiceRemote<T> which pairs this hub with a
+// mojo::Remote and integrates with ServiceProcessHost::Launch.
 template <typename ServiceInterface>
 class ServiceProcessObserverHub : public ServiceProcessHost::Observer {
  public:
@@ -67,8 +58,26 @@ class ServiceProcessObserverHub : public ServiceProcessHost::Observer {
   }
 
  private:
+  // NOTE ON ORDERING: When a service process dies, two mojo disconnect
+  // callbacks are posted to the UI thread independently:
+  //   1. The service interface pipe disconnect (e.g. reset_on_disconnect on
+  //      the audio::mojom::AudioService remote)
+  //   2. The child process host channel disconnect (triggers
+  //      OnChildDisconnected → NotifyCrashed → this observer)
+  //
+  // Their relative ordering is NOT guaranteed. If (1) fires first, the
+  // caller may relaunch the service (calling AsWeakPtr() and receiving a new
+  // OnServiceProcessLaunched) before (2) delivers the crash notification for
+  // the OLD instance. The !current_process_info_ guards below handle this
+  // by silently dropping stale terminate/crash notifications that arrive
+  // after the hub has already moved on to a new instance.
+
   void OnServiceProcessLaunched(const ServiceProcessInfo& info) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK(!current_process_info_ ||
+          current_process_info_->service_process_id() !=
+              info.service_process_id())
+        << "Duplicate OnServiceProcessLaunched for same service_process_id";
     current_process_info_ = info.Duplicate();
     for (auto& observer : observers_) {
       observer.OnServiceLaunched(info);
@@ -78,6 +87,10 @@ class ServiceProcessObserverHub : public ServiceProcessHost::Observer {
   void OnServiceProcessTerminatedNormally(
       const ServiceProcessInfo& info) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    if (!current_process_info_ || current_process_info_->service_process_id() !=
+                                      info.service_process_id()) {
+      return;
+    }
     current_process_info_.reset();
     for (auto& observer : observers_) {
       observer.OnServiceTerminatedNormally(info);
@@ -86,6 +99,10 @@ class ServiceProcessObserverHub : public ServiceProcessHost::Observer {
 
   void OnServiceProcessCrashed(const ServiceProcessInfo& info) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    if (!current_process_info_ || current_process_info_->service_process_id() !=
+                                      info.service_process_id()) {
+      return;
+    }
     current_process_info_.reset();
     for (auto& observer : observers_) {
       observer.OnServiceCrashed(info);
@@ -95,20 +112,6 @@ class ServiceProcessObserverHub : public ServiceProcessHost::Observer {
   std::optional<ServiceProcessInfo> current_process_info_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<ServiceProcessObserverHub> weak_factory_{this};
-};
-
-// Pairs a service remote with its observer hub, with lifetime tied to the
-// UI-thread sequence via SequenceLocalStorageSlot. Supports teardown and
-// re-creation between unit tests.
-template <typename ServiceInterface>
-struct ServiceProcessState {
-  mojo::Remote<ServiceInterface> remote;
-  ServiceProcessObserverHub<ServiceInterface> observer_hub;
-
-  static ServiceProcessState& GetOrCreate() {
-    static base::SequenceLocalStorageSlot<ServiceProcessState> slot;
-    return slot.GetOrCreateValue();
-  }
 };
 
 }  // namespace content

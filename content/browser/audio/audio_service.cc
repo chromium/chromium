@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/deferred_sequenced_task_runner.h"
@@ -14,9 +15,12 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/browser_main_loop.h"
+#include "content/browser/renderer_host/media/audio_service_listener.h"
+#include "content/public/browser/audio_service_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/observed_service_remote.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -105,6 +109,12 @@ void LaunchAudioServiceInProcess(
           BrowserMainLoop::GetAudioManager(), std::move(receiver)));
 }
 
+ObservedServiceRemote<audio::mojom::AudioService>& GetAudioServiceRemote() {
+  static base::NoDestructor<ObservedServiceRemote<audio::mojom::AudioService>>
+      remote;
+  return *remote;
+}
+
 void LaunchAudioServiceOutOfProcess(
     mojo::PendingReceiver<audio::mojom::AudioService> receiver,
     uint32_t codec_bitmask) {
@@ -132,6 +142,7 @@ void LaunchAudioServiceOutOfProcess(
       ServiceProcessHost::Options()
           .WithDisplayName("Audio Service")
           .WithExtraCommandLineSwitches(std::move(switches))
+          .WithObserver(GetAudioServiceRemote().AsWeakObserver())
           .Pass());
 }
 
@@ -168,22 +179,29 @@ uint32_t ScanEdidBitstreams() {
 
 }  // namespace
 
+AudioServiceListener& GetAudioServiceListener() {
+  static base::NoDestructor<AudioServiceListener> listener;
+  return *listener;
+}
+
 audio::mojom::AudioService& GetAudioService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   if (g_service_override) {
     return *g_service_override;
   }
 
-  // NOTE: We use sequence-local storage slot not because we support access from
-  // any sequence, but to limit the lifetime of this Remote to the lifetime of
-  // UI-thread sequence. This is to support re-creation after task environment
-  // shutdown and reinitialization e.g. between unit tests.
-  static base::SequenceLocalStorageSlot<
-      mojo::Remote<audio::mojom::AudioService>>
-      remote_slot;
-  auto& remote = remote_slot.GetOrCreateValue();
-  if (!remote) {
-    auto receiver = remote.BindNewPipeAndPassReceiver();
+  auto& observed = GetAudioServiceRemote();
+  if (!observed.remote()) {
+    // Ensure the listener is registered before the service launches so it
+    // receives the OnServiceLaunched notification.
+    GetAudioServiceListener();
+
+    // The receiver is extracted here and passed through LaunchAudioService,
+    // which eventually calls LaunchAudioServiceOutOfProcess. That function
+    // wires the observer hub via AsWeakObserver(). We can't use
+    // ServiceProcessHost::Launch(observed) directly because the EDID path
+    // posts the receiver to a thread pool task before launching.
+    auto receiver = observed.remote().BindNewPipeAndPassReceiver();
 #ifdef PASS_EDID_ON_COMMAND_LINE
     // The EDID scan is done in a COM STA thread and the result
     // passed to the audio service launcher.
@@ -196,9 +214,9 @@ audio::mojom::AudioService& GetAudioService() {
 #else
     LaunchAudioService(std::move(receiver), 0);
 #endif  // PASS_EDID_ON_COMMAND_LINE
-    remote.reset_on_disconnect();
+    observed.remote().reset_on_disconnect();
   }
-  return *remote.get();
+  return *observed.remote().get();
 }
 
 base::AutoReset<audio::mojom::AudioService*>
@@ -206,6 +224,11 @@ OverrideAudioServiceForTesting(  // IN-TEST
     audio::mojom::AudioService* service) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return {&g_service_override, service};
+}
+
+void ResetAudioServiceForTesting() {  // IN-TEST
+  GetAudioServiceRemote().remote().reset();
+  GetAudioServiceListener().ResetForTesting();  // IN-TEST
 }
 
 std::unique_ptr<media::AudioSystem> CreateAudioSystemForAudioService() {
@@ -217,6 +240,25 @@ std::unique_ptr<media::AudioSystem> CreateAudioSystemForAudioService() {
 
 AudioServiceStreamFactoryBinder GetAudioServiceStreamFactoryBinder() {
   return base::BindRepeating(&BindStreamFactoryFromAnySequence);
+}
+
+void AddAudioServiceProcessObserver(AudioServiceProcessObserver* observer) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetAudioServiceRemote().AddObserver(observer);
+}
+
+void RemoveAudioServiceProcessObserver(AudioServiceProcessObserver* observer) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetAudioServiceRemote().RemoveObserver(observer);
+}
+
+base::ProcessId GetProcessIdForAudioService() {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::Process process = GetAudioServiceListener().GetProcess();
+  if (process.IsValid()) {
+    return process.Pid();
+  }
+  return base::kNullProcessId;
 }
 
 }  // namespace content
