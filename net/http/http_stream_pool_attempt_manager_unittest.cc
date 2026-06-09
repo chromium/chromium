@@ -469,9 +469,11 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
 class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
  public:
+  // TODO(crbug.com/463794414): Enable per-priority task queues for these tests.
   HttpStreamPoolAttemptManagerTest()
       : TestWithTaskEnvironment(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+            {features::kNetworkServicePerPriorityTaskQueues}) {
     FLAGS_quic_enable_http3_grease_randomness = false;
     feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
     InitializeSession();

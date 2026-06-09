@@ -602,7 +602,11 @@ class CapturePreconnectHttpStreamPoolDelegate
 class HttpStreamFactoryTest : public TestWithTaskEnvironment,
                               public ::testing::WithParamInterface<bool> {
  public:
-  HttpStreamFactoryTest() {
+  // TODO(crbug.com/463794414): Enable per-priority task queues for these tests.
+  HttpStreamFactoryTest()
+      : TestWithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::DEFAULT,
+            {features::kNetworkServicePerPriorityTaskQueues}) {
     if (HappyEyeballsV3Enabled()) {
       feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
     } else {
