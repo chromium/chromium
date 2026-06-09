@@ -208,6 +208,7 @@ function_registration("api_registration") {
     "module/module.h",
     "tabs/tabs_api.h",
     "terminal/terminal_private_api.h",
+    "web_view/chrome_web_view_internal_api.h",
   ]
 
   deps = [
