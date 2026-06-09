@@ -135,19 +135,16 @@ void GenerateResourceOnSynTokenReleased(
     scoped_refptr<CommandBufferHelper> command_buffer_helper,
     FrameAvailableCB frame_available_cb) {
   // ProduceVideo may go through GLTextureImageBacking which uses GL calls
-  // (e.g. glGenTextures), so a GL context must be current. When Graphite/Dawn
-  // is in use, the D3D shared image is consumed via the Dawn path instead, so
-  // forcing a GL MakeCurrent is unnecessary (and risks losing the shared
-  // context if the GL context is unavailable).
+  // (e.g. glGenTextures), so a GL context must be current to avoid operating
+  // on a stale foreign context left current by a prior scheduler task.
   auto* shared_image_stub = command_buffer_helper->GetSharedImageStub();
   if (!shared_image_stub || !shared_image_stub->shared_context_state()) {
     RETURN_ON_FAILURE_WITH_CALLBACK(E_FAIL,
                                     "Failed to get shared context state");
   }
-  const bool needs_gl =
-      !shared_image_stub->shared_context_state()->IsGraphiteDawn();
-  if (!shared_image_stub->shared_context_state()->MakeCurrent(nullptr,
-                                                              needs_gl)) {
+  if (!shared_image_stub->shared_context_state()->MakeCurrent(
+          nullptr,
+          /*needs_gl=*/true)) {
     RETURN_ON_FAILURE_WITH_CALLBACK(E_FAIL, "Failed to make context current");
   }
 

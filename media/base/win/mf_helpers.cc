@@ -1083,8 +1083,7 @@ void GenerateResourceOnSyncTokenReleased(
   }
 
   auto shared_context_state = shared_image_stub->shared_context_state();
-  const bool needs_gl = !shared_context_state->IsGraphiteDawn();
-  if (!shared_context_state->MakeCurrent(nullptr, needs_gl)) {
+  if (!shared_context_state->MakeCurrent(nullptr, /*needs_gl=*/true)) {
     RETURN_ON_FAILURE_WITH_CALLBACK(E_FAIL, "Failed to make context current");
   }
 
