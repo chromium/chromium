@@ -4440,8 +4440,18 @@ void RenderFrameImpl::AbortClientNavigationImpl(bool for_new_navigation) {
 void RenderFrameImpl::DidChangeSelection(bool is_empty_selection,
                                          blink::SyncCondition force_sync) {
   if (!GetLocalRootWebFrameWidget()->HandlingInputEvent() &&
-      !GetLocalRootWebFrameWidget()->HandlingSelectRange())
-    return;
+      !GetLocalRootWebFrameWidget()->HandlingSelectRange()) {
+    // `EditContext::updateSelection` can be invoked from async event handlers
+    // (e.g. selectionchange) outside of an input-event scope. We must still
+    // propagate selection to the browser.
+    const bool is_editcontext_active =
+        frame_->GetInputMethodController() &&
+        frame_->GetInputMethodController()->IsEditContextActive() &&
+        base::FeatureList::IsEnabled(features::kEditContextSelectionSync);
+    if (!is_editcontext_active) {
+      return;
+    }
+  }
 
   if (is_empty_selection)
     selection_text_.clear();

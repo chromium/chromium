@@ -195,6 +195,11 @@ BASE_FEATURE(kDocumentIsolationPolicyWithoutSiteIsolation,
 // Enable document policy negotiation mechanism.
 BASE_FEATURE(kDocumentPolicyNegotiation, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled `EditContext::updateSelection` calls from async selectionchange
+// handlers sync the selection to the browser.
+// See https://crbug.com/516839844
+BASE_FEATURE(kEditContextSelectionSync, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, the renderer is killed if a renderer process provides
 // an Origin header on a navigation request.
 BASE_FEATURE(kKillOnUnexpectedOriginHeader, base::FEATURE_ENABLED_BY_DEFAULT);

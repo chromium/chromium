@@ -580,4 +580,56 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
       << "Text replacement should be accepted on space.";
 }
 
+// Tests that selection is synced between browser and renderer when
+// `EditContext::updateSelection` is called from a selectionchange handler. The
+// browser's cached selectedRange must reflect the current selection for IME
+// queries.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       EditContextSelectionSyncOnUpdateSelection) {
+  if (!base::FeatureList::IsEnabled(features::kEditContextSelectionSync)) {
+    GTEST_SKIP();
+  }
+  GURL url(
+      "data:text/html,"
+      "<div id=editor contenteditable style='font-size:20px'>hello world</div>"
+      "<script>"
+      "const editor = document.getElementById('editor');"
+      "const ec = new EditContext({text: 'hello world'});"
+      "editor.editContext = ec;"
+      "document.addEventListener('selectionchange', () => {"
+      "  const sel = document.getSelection();"
+      "  if (sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {"
+      "    ec.updateSelection(sel.anchorOffset, sel.focusOffset);"
+      "  }"
+      "});"
+      "</script>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  EXPECT_TRUE(ExecJs(shell(), "editor.focus()"));
+
+  TextSelectionWaiter selection_waiter(rwhv_mac);
+
+  // Select "hello" in the renderer to trigger selection sync to browser.
+  EXPECT_TRUE(ExecJs(shell(), "const range = document.createRange();"
+                              "range.setStart(editor.firstChild, 0);"
+                              "range.setEnd(editor.firstChild, 5);"
+                              "const sel = document.getSelection();"
+                              "sel.removeAllRanges();"
+                              "sel.addRange(range);"));
+
+  // Wait for selection sync between browser and renderer process.
+  selection_waiter.Wait();
+
+  // Verify the browser-side cached selection matches the renderer's selection.
+  NSRange selected_range = [rwhv_cocoa selectedRange];
+  EXPECT_EQ(0lu, selected_range.location);
+  EXPECT_EQ(5lu, selected_range.length);
+}
+
 }  // namespace content
