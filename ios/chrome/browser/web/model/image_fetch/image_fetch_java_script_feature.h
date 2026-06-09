@@ -11,6 +11,10 @@
 #include "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
+namespace web {
+class WebFrame;
+}
+
 class GURL;
 
 // A feature which can retrieve image data from a webpage.
@@ -46,7 +50,7 @@ class ImageFetchJavaScriptFeature : public web::JavaScriptFeature {
   // along with the response.
   //
   // Upon success or failure, this will invoke the appropriate Handler method.
-  void GetImageData(web::WebState* web_state, int call_id, const GURL& url);
+  void GetImageData(web::WebFrame* frame, int call_id, const GURL& url);
 
  private:
   // Tests are added as friends so that they can call the

@@ -40,6 +40,12 @@ constexpr CGFloat kPreviewImageScale = 2.0;
   // The URL of the image to load.
   NSURL* _imageURL;
 
+  // The frame ID of the subframe containing the image, if any.
+  NSString* _frameID;
+
+  // The origin of the subframe containing the image, if any.
+  url::Origin _frameOrigin;
+
   // Image transcoder used to convert untrusted image data into safe
   // locally-encoded image data, which can then be safely decoded using UIImage
   // in Chrome process.
@@ -63,11 +69,16 @@ constexpr CGFloat kPreviewImageScale = 2.0;
   UIView* _spinnerView;
 }
 
-- (instancetype)initWithSrcURL:(NSURL*)URL webState:(web::WebState*)webState {
+- (instancetype)initWithSrcURL:(NSURL*)URL
+                      webState:(web::WebState*)webState
+                       frameID:(NSString*)frameID
+                   frameOrigin:(url::Origin)frameOrigin {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _imageURL = [URL copy];
     _webState = webState->GetWeakPtr();
+    _frameID = [frameID copy];
+    _frameOrigin = std::move(frameOrigin);
   }
   return self;
 }
@@ -78,9 +89,11 @@ constexpr CGFloat kPreviewImageScale = 2.0;
   const GURL& lastCommittedURL = _webState->GetLastCommittedURL();
   web::Referrer referrer(lastCommittedURL, web::ReferrerPolicyDefault);
 
+  std::string frameIDStr = _frameID ? base::SysNSStringToUTF8(_frameID) : "";
+
   __weak __typeof(self) weakSelf = self;
   imageFetcher->GetImageData(net::GURLWithNSURL(_imageURL), referrer,
-                             ^(NSData* data) {
+                             frameIDStr, _frameOrigin, ^(NSData* data) {
                                [weakSelf imageDataReceived:data];
                              });
 }

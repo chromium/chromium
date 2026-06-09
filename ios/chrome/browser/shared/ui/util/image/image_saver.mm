@@ -51,6 +51,8 @@
 - (void)saveImageAtURL:(const GURL&)URL
               referrer:(const web::Referrer&)referrer
               webState:(web::WebState*)webState
+               frameID:(const std::string&)frameID
+           frameOrigin:(const url::Origin&)frameOrigin
     baseViewController:(UIViewController*)baseViewController {
   self.baseViewController = baseViewController;
 
@@ -58,7 +60,7 @@
   DCHECK(tabHelper);
 
   __weak ImageSaver* weakSelf = self;
-  tabHelper->GetImageData(URL, referrer, ^(NSData* data) {
+  tabHelper->GetImageData(URL, referrer, frameID, frameOrigin, ^(NSData* data) {
     [weakSelf didGetImageData:data];
   });
 }

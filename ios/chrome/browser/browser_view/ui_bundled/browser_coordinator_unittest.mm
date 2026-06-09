@@ -87,6 +87,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
+#import "url/origin.h"
 
 // Test fixture for BrowserCoordinator testing.
 class BrowserCoordinatorTest : public PlatformTest {
@@ -442,10 +443,12 @@ TEST_F(BrowserCoordinatorTest, StartsAndStopsSaveToPhotosCoordinator) {
   GURL fakeImageURL("http://www.example.com/image.jpg");
   web::Referrer fakeImageReferrer;
   web::WebState* webState = GetActiveWebState();
-  SaveImageToPhotosCommand* command =
-      [[SaveImageToPhotosCommand alloc] initWithImageURL:fakeImageURL
-                                                referrer:fakeImageReferrer
-                                                webState:webState];
+  SaveImageToPhotosCommand* command = [[SaveImageToPhotosCommand alloc]
+      initWithImageURL:fakeImageURL
+              referrer:fakeImageReferrer
+              webState:webState
+               frameID:"fake_frame_id"
+           frameOrigin:url::Origin::Create(GURL("http://chromium.test/"))];
 
   // Tests that -[BrowserCoordinator saveImageToPhotos:] starts the
   // SaveToPhotosCoordinator.
@@ -456,7 +459,9 @@ TEST_F(BrowserCoordinatorTest, StartsAndStopsSaveToPhotosCoordinator) {
                                    browser:browser_.get()
                                   imageURL:command.imageURL
                                   referrer:command.referrer
-                                  webState:command.webState.get()])
+                                  webState:command.webState.get()
+                                   frameID:command.frameID
+                               frameOrigin:command.frameOrigin])
       .andReturn(mockSaveToPhotosCoordinator);
   OCMExpect([(SaveToPhotosCoordinator*)mockSaveToPhotosCoordinator start]);
   [handler saveImageToPhotos:command];

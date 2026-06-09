@@ -14,6 +14,9 @@
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_java_script_feature.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
@@ -98,9 +101,20 @@ class ImageFetchTabHelperTest : public PlatformTest {
 
   web::WebState* web_state() { return web_state_.get(); }
 
+  web::WebFrame* main_frame() {
+    web::WebFrame* frame = ImageFetchJavaScriptFeature::GetInstance()
+                               ->GetWebFramesManager(web_state())
+                               ->GetMainWebFrame();
+    EXPECT_TRUE(frame);
+    return frame;
+  }
+
+  std::string main_frame_id() { return main_frame()->GetFrameId(); }
+
+  url::Origin main_frame_origin() { return main_frame()->GetSecurityOrigin(); }
+
   web::ScopedTestingWebClient web_client_;
-  web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::MainThreadType::IO};
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
 
@@ -127,18 +141,17 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromCanvas) {
       ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
 
-  __block bool callback_invoked = false;
+  base::RunLoop run_loop;
+  __block base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   image_fetch_tab_helper()->GetImageData(GURL(kImageUrl), web::Referrer(),
+                                         main_frame_id(), main_frame_origin(),
                                          ^(NSData* data) {
                                            ASSERT_TRUE(data);
                                            EXPECT_NSEQ(GetExpectedData(), data);
-                                           callback_invoked = true;
+                                           quit_closure.Run();
                                          });
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForGetImageDataTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return callback_invoked;
-  }));
+  run_loop.Run();
   histogram_tester_.ExpectUniqueSample(
       kUmaGetImageDataByJsResult,
       ContextMenuGetImageDataByJsResult::kCanvasSucceed, 1);
@@ -162,18 +175,17 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromXmlHttpRequest) {
               kImageData],
       ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
-  __block bool callback_invoked = false;
+  base::RunLoop run_loop;
+  __block base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   image_fetch_tab_helper()->GetImageData(GURL(kImageUrl), web::Referrer(),
+                                         main_frame_id(), main_frame_origin(),
                                          ^(NSData* data) {
                                            ASSERT_TRUE(data);
                                            EXPECT_NSEQ(GetExpectedData(), data);
-                                           callback_invoked = true;
+                                           quit_closure.Run();
                                          });
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForGetImageDataTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return callback_invoked;
-  }));
+  run_loop.Run();
   histogram_tester_.ExpectUniqueSample(
       kUmaGetImageDataByJsResult,
       ContextMenuGetImageDataByJsResult::kXMLHttpRequestSucceed, 1);
@@ -194,18 +206,17 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsFail) {
       ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
 
-  __block bool callback_invoked = false;
+  base::RunLoop run_loop;
+  __block base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   image_fetch_tab_helper()->GetImageData(GURL(kImageUrl), web::Referrer(),
+                                         main_frame_id(), main_frame_origin(),
                                          ^(NSData* data) {
                                            ASSERT_TRUE(data);
                                            EXPECT_NSEQ(GetExpectedData(), data);
-                                           callback_invoked = true;
+                                           quit_closure.Run();
                                          });
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForGetImageDataTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return callback_invoked;
-  }));
+  run_loop.Run();
   histogram_tester_.ExpectUniqueSample(
       kUmaGetImageDataByJsResult, ContextMenuGetImageDataByJsResult::kFail, 1);
 }
@@ -223,18 +234,17 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsTimeout) {
       ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
 
-  __block bool callback_invoked = false;
+  base::RunLoop run_loop;
+  __block base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   image_fetch_tab_helper()->GetImageData(GURL(kImageUrl), web::Referrer(),
+                                         main_frame_id(), main_frame_origin(),
                                          ^(NSData* data) {
                                            ASSERT_TRUE(data);
                                            EXPECT_NSEQ(GetExpectedData(), data);
-                                           callback_invoked = true;
+                                           quit_closure.Run();
                                          });
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForGetImageDataTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return callback_invoked;
-  }));
+  run_loop.Run();
   histogram_tester_.ExpectUniqueSample(
       kUmaGetImageDataByJsResult, ContextMenuGetImageDataByJsResult::kTimeout,
       1);
@@ -253,20 +263,19 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateDestroy) {
       ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
 
-  __block bool callback_invoked = false;
+  base::RunLoop run_loop;
+  __block base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   image_fetch_tab_helper()->GetImageData(GURL(kImageUrl), web::Referrer(),
+                                         main_frame_id(), main_frame_origin(),
                                          ^(NSData* data) {
                                            ASSERT_TRUE(data);
                                            EXPECT_NSEQ(GetExpectedData(), data);
-                                           callback_invoked = true;
+                                           quit_closure.Run();
                                          });
 
   web_state_.reset();
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForGetImageDataTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return callback_invoked;
-  }));
+  run_loop.Run();
   histogram_tester_.ExpectTotalCount(kUmaGetImageDataByJsResult, 0);
 }
 
@@ -283,20 +292,120 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateNavigate) {
       ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
 
-  __block bool callback_invoked = false;
+  base::RunLoop run_loop;
+  __block base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   image_fetch_tab_helper()->GetImageData(GURL(kImageUrl), web::Referrer(),
+                                         main_frame_id(), main_frame_origin(),
                                          ^(NSData* data) {
                                            ASSERT_TRUE(data);
                                            EXPECT_NSEQ(GetExpectedData(), data);
-                                           callback_invoked = true;
+                                           quit_closure.Run();
                                          });
 
   web::test::LoadHtml(@"<html>new</html>", web_state()),
       GURL("http://new.webpage.com/");
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForGetImageDataTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return callback_invoked;
-  }));
+  run_loop.Run();
   histogram_tester_.ExpectTotalCount(kUmaGetImageDataByJsResult, 0);
+}
+
+// Tests that ImageFetchTabHelper::GetImageData falls back to using ImageFetcher
+// when the origin is mismatched (wrong domain).
+TEST_F(ImageFetchTabHelperTest,
+       GetImageDataWithMismatchedOriginFallsbackToImageFetcher) {
+  url::Origin mismatched_origin =
+      url::Origin::Create(GURL("https://mismatch.origin/"));
+  base::RunLoop run_loop;
+  __block base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  image_fetch_tab_helper()->GetImageData(GURL(kImageUrl), web::Referrer(),
+                                         main_frame_id(), mismatched_origin,
+                                         ^(NSData* data) {
+                                           ASSERT_TRUE(data);
+                                           EXPECT_NSEQ(GetExpectedData(), data);
+                                           quit_closure.Run();
+                                         });
+
+  run_loop.Run();
+  histogram_tester_.ExpectTotalCount(kUmaGetImageDataByJsResult, 0);
+}
+
+// Tests that ImageFetchTabHelper::GetImageData falls back to using ImageFetcher
+// when the frame is null.
+TEST_F(ImageFetchTabHelperTest,
+       GetImageDataWithNullFrameFallsbackToImageFetcher) {
+  base::RunLoop run_loop;
+  __block base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  image_fetch_tab_helper()->GetImageData(GURL(kImageUrl), web::Referrer(),
+                                         "invalid-frame-id",
+                                         main_frame_origin(), ^(NSData* data) {
+                                           ASSERT_TRUE(data);
+                                           EXPECT_NSEQ(GetExpectedData(), data);
+                                           quit_closure.Run();
+                                         });
+
+  run_loop.Run();
+  histogram_tester_.ExpectTotalCount(kUmaGetImageDataByJsResult, 0);
+}
+
+// Tests that ImageFetchTabHelper::GetImageData can successfully get image data
+// from a subframe (iframe).
+TEST_F(ImageFetchTabHelperTest, GetImageDataFromSubframeSucceeds) {
+  NSString* html =
+      @"<html>"
+       "  <iframe id='iframe' srcdoc='<html><body><img "
+       "src=\"http://www.chrooooooooooome.com/\"></body></html>'></iframe>"
+       "</html>";
+  web::test::LoadHtml(html, web_state());
+
+  web::WebFramesManager* frames_manager =
+      ImageFetchJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state());
+
+  __block web::WebFrame* subframe = nullptr;
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForGetImageDataTimeout, ^{
+    for (web::WebFrame* frame : frames_manager->GetAllWebFrames()) {
+      if (!frame->IsMainFrame()) {
+        subframe = frame;
+        return YES;
+      }
+    }
+    return NO;
+  }));
+  ASSERT_TRUE(subframe);
+
+  NSString* inject_script = [NSString
+      stringWithFormat:
+          @"const imageFetchApi = "
+          @"__gCrWeb.getRegisteredApi('imageFetch');"
+          @"function getImageData(id, url) { "
+           "window.webkit.messageHandlers['ImageFetchMessageHandler']."
+           " postMessage({'id': id, 'data': btoa('%s'), 'from':'canvas'});"
+           "};"
+           "imageFetchApi.addFunction('getImageData', getImageData); true;",
+          kImageData];
+
+  __block bool js_executed = false;
+  subframe->ExecuteJavaScript(base::SysNSStringToUTF16(inject_script),
+                              base::BindOnce(^(const base::Value* result) {
+                                js_executed = true;
+                              }));
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForGetImageDataTimeout, ^{
+    return js_executed;
+  }));
+
+  base::RunLoop run_loop2;
+  __block base::RepeatingClosure quit_closure2 = run_loop2.QuitClosure();
+  image_fetch_tab_helper()->GetImageData(
+      GURL(kImageUrl), web::Referrer(), subframe->GetFrameId(),
+      subframe->GetSecurityOrigin(), ^(NSData* data) {
+        ASSERT_TRUE(data);
+        EXPECT_NSEQ(GetExpectedData(), data);
+        quit_closure2.Run();
+      });
+
+  run_loop2.Run();
+  histogram_tester_.ExpectUniqueSample(
+      kUmaGetImageDataByJsResult,
+      ContextMenuGetImageDataByJsResult::kCanvasSucceed, 1);
 }

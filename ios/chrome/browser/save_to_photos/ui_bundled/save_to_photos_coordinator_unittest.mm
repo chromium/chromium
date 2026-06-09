@@ -46,6 +46,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "url/origin.h"
 
 namespace {
 
@@ -161,7 +162,10 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
                            browser:browser_.get()
                           imageURL:GURL(kFakeImageUrl)
                           referrer:web::Referrer()
-                          webState:GetActiveWebState()];
+                          webState:GetActiveWebState()
+                           frameID:"fake_frame_id"
+                       frameOrigin:url::Origin::Create(
+                                       GURL("http://chromium.test/"))];
   }
 
   // Returns the browser's active web state.
@@ -224,7 +228,9 @@ TEST_F(SaveToPhotosCoordinatorTest, StartsAndDisconnectsMediator) {
   OCMExpect([[mock_save_to_photos_mediator_ ignoringNonObjectArgs]
       startWithImageURL:GURL()
                referrer:web::Referrer()
-               webState:GetActiveWebState()]);
+               webState:GetActiveWebState()
+                frameID:""
+            frameOrigin:url::Origin()]);
   [coordinator start];
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_);
 

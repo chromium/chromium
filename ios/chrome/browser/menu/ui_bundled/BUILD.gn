@@ -38,6 +38,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/window_activities/model",
     "//ios/public/provider/chrome/browser/context_menu:context_menu_api",
     "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ios/web/public/ui",
     "//net",
     "//ui/base",
     "//url",

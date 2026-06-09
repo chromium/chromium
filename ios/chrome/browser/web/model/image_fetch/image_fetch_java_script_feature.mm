@@ -47,18 +47,17 @@ ImageFetchJavaScriptFeature* ImageFetchJavaScriptFeature::GetInstance() {
   return instance.get();
 }
 
-void ImageFetchJavaScriptFeature::GetImageData(web::WebState* web_state,
+void ImageFetchJavaScriptFeature::GetImageData(web::WebFrame* frame,
                                                int call_id,
                                                const GURL& url) {
-  web::WebFrame* main_frame = GetWebFramesManager(web_state)->GetMainWebFrame();
-  if (!main_frame) {
+  if (!frame) {
     return;
   }
 
   base::ListValue parameters;
   parameters.Append(call_id);
   parameters.Append(url.spec());
-  CallJavaScriptFunction(main_frame, "imageFetch.getImageData", parameters);
+  CallJavaScriptFunction(frame, "imageFetch.getImageData", parameters);
 }
 
 std::optional<std::string>

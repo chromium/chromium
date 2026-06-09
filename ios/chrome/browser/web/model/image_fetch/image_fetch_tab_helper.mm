@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_java_script_feature.h"
 #import "ios/web/common/referrer_util.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -96,24 +98,34 @@ void ImageFetchTabHelper::WebStateDestroyed(web::WebState* web_state) {
 
 void ImageFetchTabHelper::GetImageData(const GURL& url,
                                        const web::Referrer& referrer,
+                                       const std::string& frame_id,
+                                       const url::Origin& frame_origin,
                                        ImageDataCallback callback) {
+  web::WebFrame* frame = ImageFetchJavaScriptFeature::GetInstance()
+                             ->GetWebFramesManager(web_state_)
+                             ->GetFrameWithId(frame_id);
+  if (!frame) {
+    FetchImageDataWithFetcher(url, referrer, callback);
+    return;
+  }
+
+  if (frame->GetSecurityOrigin() != frame_origin) {
+    FetchImageDataWithFetcher(url, referrer, callback);
+    return;
+  }
+
   // `this` is captured into the callback of GetImageDataByJs, which will always
   // be invoked before the `this` is destroyed, so it's safe.
   GetImageDataByJs(
-      url, kGetImageDataByJsTimeout,
+      url, frame, kGetImageDataByJsTimeout,
       base::BindOnce(&ImageFetchTabHelper::JsCallbackOfGetImageData,
                      base::Unretained(this), url, referrer, callback));
 }
 
-void ImageFetchTabHelper::JsCallbackOfGetImageData(
+void ImageFetchTabHelper::FetchImageDataWithFetcher(
     const GURL& url,
     const web::Referrer& referrer,
-    ImageDataCallback callback,
-    const std::string* data) {
-  if (data) {
-    callback([NSData dataWithBytes:data->c_str() length:data->size()]);
-    return;
-  }
+    ImageDataCallback callback) {
   ImageFetcher::FromWebState(web_state_)
       ->FetchImageData(
           url,
@@ -128,9 +140,27 @@ void ImageFetchTabHelper::JsCallbackOfGetImageData(
           /*send_cookies=*/true);
 }
 
+void ImageFetchTabHelper::JsCallbackOfGetImageData(
+    const GURL& url,
+    const web::Referrer& referrer,
+    ImageDataCallback callback,
+    const std::string* data) {
+  if (data) {
+    callback([NSData dataWithBytes:data->c_str() length:data->size()]);
+    return;
+  }
+  FetchImageDataWithFetcher(url, referrer, callback);
+}
+
 void ImageFetchTabHelper::GetImageDataByJs(const GURL& url,
+                                           web::WebFrame* frame,
                                            base::TimeDelta timeout,
                                            JsCallback&& callback) {
+  if (!frame) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   ++call_id_;
   DCHECK_EQ(js_callbacks_.count(call_id_), 0UL);
   js_callbacks_.insert({call_id_, std::move(callback)});
@@ -141,7 +171,7 @@ void ImageFetchTabHelper::GetImageDataByJs(const GURL& url,
                           weak_ptr_factory_.GetWeakPtr(), call_id_),
       timeout);
 
-  ImageFetchJavaScriptFeature::GetInstance()->GetImageData(web_state_, call_id_,
+  ImageFetchJavaScriptFeature::GetInstance()->GetImageData(frame, call_id_,
                                                            url);
 }
 

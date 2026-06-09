@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <string>
+
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -47,6 +49,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/origin.h"
 
 namespace {
 
@@ -108,6 +111,8 @@ class FakeImageFetchTabHelper : public ImageFetchTabHelper {
   // ImageFetchTabHelper
   void GetImageData(const GURL& url,
                     const web::Referrer& referrer,
+                    const std::string& frame_id,
+                    const url::Origin& frame_origin,
                     ImageDataCallback callback) override {
     get_image_data_called_ = true;
     image_url_ = url;
@@ -230,6 +235,16 @@ class SaveToPhotosMediatorTest : public PlatformTest {
         ImageFetchTabHelper::FromWebState(web_state_.get()));
   }
 
+  // Starts the mediator with standard parameters.
+  void StartMediator(SaveToPhotosMediator* mediator) {
+    [mediator
+        startWithImageURL:GURL(kFakeImageUrl)
+                 referrer:web::Referrer()
+                 webState:web_state_.get()
+                  frameID:"fake_frame_id"
+              frameOrigin:url::Origin::Create(GURL("http://chromium.test/"))];
+  }
+
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   // ScopedTestingLocalState needed for the authentication service and profile
@@ -255,9 +270,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
 TEST_F(SaveToPhotosMediatorTest, StartGetsImageData) {
   // Create and start mediator.
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
-  [mediator startWithImageURL:GURL(kFakeImageUrl)
-                     referrer:web::Referrer()
-                     webState:web_state_.get()];
+  StartMediator(mediator);
 
   // Test that the image fetch tab helper was called with the given image URL.
   FakeImageFetchTabHelper* image_fetch_tab_helper =
@@ -306,9 +319,7 @@ TEST_F(SaveToPhotosMediatorTest, ShowsAccountPickerIfNoDefaultAccountInPrefs) {
   // Start the mediator and run until the image has been fetched and
   // processed by the mediator.
   SetUpImageFetchTabHelperQuitClosure();
-  [mediator startWithImageURL:GURL(kFakeImageUrl)
-                     referrer:web::Referrer()
-                     webState:web_state_.get()];
+  StartMediator(mediator);
   task_environment_.RunUntilQuit();
 
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
@@ -340,9 +351,7 @@ TEST_F(SaveToPhotosMediatorTest,
   // Start the mediator and run until the image has been fetched and
   // processed by the mediator.
   SetUpImageFetchTabHelperQuitClosure();
-  [mediator startWithImageURL:GURL(kFakeImageUrl)
-                     referrer:web::Referrer()
-                     webState:web_state_.get()];
+  StartMediator(mediator);
   task_environment_.RunUntilQuit();
 
   histogram_tester_.ExpectUniqueSample(
@@ -378,9 +387,7 @@ TEST_F(SaveToPhotosMediatorTest,
   // Start the mediator and run until the image has been fetched and processed
   // by the mediator.
   SetUpImageFetchTabHelperQuitClosure();
-  [mediator startWithImageURL:GURL(kFakeImageUrl)
-                     referrer:web::Referrer()
-                     webState:web_state_.get()];
+  StartMediator(mediator);
   task_environment_.RunUntilQuit();
 
   // Test that the PhotosService has not been used to upload an image yet.
@@ -448,9 +455,7 @@ TEST_F(SaveToPhotosMediatorTest, DidCancelBeforeUploadDismissesAccountPicker) {
   // Start the mediator and run until the image has been fetched and processed
   // by the mediator.
   SetUpImageFetchTabHelperQuitClosure();
-  [mediator startWithImageURL:GURL(kFakeImageUrl)
-                     referrer:web::Referrer()
-                     webState:web_state_.get()];
+  StartMediator(mediator);
   task_environment_.RunUntilQuit();
 
   // Test that the PhotosService has not been used to upload an image yet.
@@ -494,9 +499,7 @@ TEST_F(SaveToPhotosMediatorTest, SnackbarOpenButtonOpensPhotosAppIfInstalled) {
   // Start the mediator and run until the image has been fetched and processed
   // by the mediator.
   SetUpImageFetchTabHelperQuitClosure();
-  [mediator startWithImageURL:GURL(kFakeImageUrl)
-                     referrer:web::Referrer()
-                     webState:web_state_.get()];
+  StartMediator(mediator);
   task_environment_.RunUntilQuit();
 
   // Expect the success snackbar (with a non-nil completion) is shown and save
@@ -584,9 +587,7 @@ TEST_F(SaveToPhotosMediatorTest,
   // Start the mediator and run until the image has been fetched and processed
   // by the mediator.
   SetUpImageFetchTabHelperQuitClosure();
-  [mediator startWithImageURL:GURL(kFakeImageUrl)
-                     referrer:web::Referrer()
-                     webState:web_state_.get()];
+  StartMediator(mediator);
   task_environment_.RunUntilQuit();
 
   // Expect the success snackbar (with a non-nil completion) is shown and save
@@ -667,9 +668,7 @@ TEST_F(SaveToPhotosMediatorTest, ShowsTryAgainOrCancelAlertIfUploadFails) {
   // Start the mediator and run until the image has been fetched and processed
   // by the mediator.
   SetUpImageFetchTabHelperQuitClosure();
-  [mediator startWithImageURL:GURL(kFakeImageUrl)
-                     referrer:web::Referrer()
-                     webState:web_state_.get()];
+  StartMediator(mediator);
   task_environment_.RunUntilQuit();
 
   // Set up the PhotosService to simulate upload failure.
@@ -737,9 +736,7 @@ TEST_F(SaveToPhotosMediatorTest, ReauthIfInvalidAuth) {
       showReauthForIdentity:fake_identity_]);
 
   SetUpImageFetchTabHelperQuitClosure();
-  [mediator startWithImageURL:GURL(kFakeImageUrl)
-                     referrer:web::Referrer()
-                     webState:web_state_.get()];
+  StartMediator(mediator);
   task_environment_.RunUntilQuit();
 
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
@@ -768,9 +765,7 @@ TEST_F(SaveToPhotosMediatorTest, OpenSignInIfSignedOutAndFeatureEnabled) {
   // Start the mediator and run until the image has been fetched and
   // processed by the mediator.
   SetUpImageFetchTabHelperQuitClosure();
-  [mediator startWithImageURL:GURL(kFakeImageUrl)
-                     referrer:web::Referrer()
-                     webState:web_state_.get()];
+  StartMediator(mediator);
   task_environment_.RunUntilQuit();
 
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);

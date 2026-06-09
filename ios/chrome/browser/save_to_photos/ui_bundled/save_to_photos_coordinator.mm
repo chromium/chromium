@@ -56,6 +56,8 @@
   GURL _imageURL;
   web::Referrer _referrer;
   base::WeakPtr<web::WebState> _webState;
+  std::string _frameID;
+  url::Origin _frameOrigin;
   SaveToPhotosMediator* _mediator;
   UIAlertController* _alertController;
   StoreKitCoordinator* _storeKitCoordinator;
@@ -68,13 +70,17 @@
                                    browser:(Browser*)browser
                                   imageURL:(const GURL&)imageURL
                                   referrer:(const web::Referrer&)referrer
-                                  webState:(web::WebState*)webState {
+                                  webState:(web::WebState*)webState
+                                   frameID:(const std::string&)frameID
+                               frameOrigin:(const url::Origin&)frameOrigin {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _imageURL = imageURL;
     _referrer = referrer;
     CHECK(webState);
     _webState = webState->GetWeakPtr();
+    _frameID = frameID;
+    _frameOrigin = frameOrigin;
   }
   return self;
 }
@@ -111,7 +117,9 @@
   _mediator.delegate = self;
   [_mediator startWithImageURL:_imageURL
                       referrer:_referrer
-                      webState:_webState.get()];
+                      webState:_webState.get()
+                       frameID:_frameID
+                   frameOrigin:_frameOrigin];
 }
 
 - (void)stop {

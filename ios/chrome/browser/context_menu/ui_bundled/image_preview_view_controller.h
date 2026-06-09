@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "url/origin.h"
+
 namespace web {
 class WebState;
 }
@@ -17,6 +19,8 @@ class WebState;
 
 - (instancetype)initWithSrcURL:(NSURL*)URL
                       webState:(web::WebState*)webState
+                       frameID:(NSString*)frameID
+                   frameOrigin:(url::Origin)frameOrigin
     NS_DESIGNATED_INITIALIZER;
 
 // Starts the loading of `URL` so it can be displayed in the preview.

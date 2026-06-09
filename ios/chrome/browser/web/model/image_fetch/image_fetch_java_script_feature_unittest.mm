@@ -10,6 +10,9 @@
 #import "base/functional/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -154,7 +157,10 @@ TEST_F(ImageFetchJavaScriptFeatureTest, TestGetSameDomainImageData) {
                                                  image_url.spec().c_str()],
                       page_url, web_state());
 
-  feature_.GetImageData(web_state(), kCallJavaScriptId, image_url);
+  web::WebFrame* main_frame =
+      feature_.GetWebFramesManager(web_state())->GetMainWebFrame();
+  ASSERT_TRUE(main_frame);
+  feature_.GetImageData(main_frame, kCallJavaScriptId, image_url);
   WaitForResult();
 
   ASSERT_TRUE(message_received_);
@@ -180,7 +186,10 @@ TEST_F(ImageFetchJavaScriptFeatureTest, TestGetCrossDomainImageData) {
                                                  image_url.spec().c_str()],
                       page_url, web_state());
 
-  feature_.GetImageData(web_state(), kCallJavaScriptId, image_url);
+  web::WebFrame* main_frame =
+      feature_.GetWebFramesManager(web_state())->GetMainWebFrame();
+  ASSERT_TRUE(main_frame);
+  feature_.GetImageData(main_frame, kCallJavaScriptId, image_url);
   WaitForResult();
 
   ASSERT_TRUE(message_received_);
@@ -203,7 +212,10 @@ TEST_F(ImageFetchJavaScriptFeatureTest, TestGetDelayedImageData) {
                                                  image_url.spec().c_str()],
                       page_url, web_state());
 
-  feature_.GetImageData(web_state(), kCallJavaScriptId, image_url);
+  web::WebFrame* main_frame =
+      feature_.GetWebFramesManager(web_state())->GetMainWebFrame();
+  ASSERT_TRUE(main_frame);
+  feature_.GetImageData(main_frame, kCallJavaScriptId, image_url);
   WaitForResult();
 
   ASSERT_TRUE(message_received_);

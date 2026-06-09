@@ -11,6 +11,10 @@ class GURL;
 @protocol SigninPresenter;
 @protocol SystemIdentity;
 
+#import <string>
+
+#import "url/origin.h"
+
 namespace web {
 struct Referrer;
 class WebState;
@@ -23,6 +27,8 @@ class WebState;
                                   imageURL:(const GURL&)imageURL
                                   referrer:(const web::Referrer&)referrer
                                   webState:(web::WebState*)webState
+                                   frameID:(const std::string&)frameID
+                               frameOrigin:(const url::Origin&)frameOrigin
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

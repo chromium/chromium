@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string>
+
+#import "url/origin.h"
+
 class AuthenticationService;
 class ChromeAccountManagerService;
 @protocol GoogleOneCommands;
@@ -77,7 +81,9 @@ extern NSString* const kGooglePhotosAppURLScheme;
 //      b. Otherwise, the account picker is presented through the `delegate`.
 - (void)startWithImageURL:(const GURL&)imageURL
                  referrer:(const web::Referrer&)referrer
-                 webState:(web::WebState*)webState;
+                 webState:(web::WebState*)webState
+                  frameID:(const std::string&)frameID
+              frameOrigin:(const url::Origin&)frameOrigin;
 
 // Resumes the process of saving the image with the given `identity`. If
 // `askEveryTime` is NO, then the Gaia ID of `identity` will be memorized so the

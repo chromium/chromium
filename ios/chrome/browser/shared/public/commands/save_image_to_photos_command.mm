@@ -12,12 +12,16 @@
 
 - (instancetype)initWithImageURL:(GURL)imageURL
                         referrer:(web::Referrer)referrer
-                        webState:(web::WebState*)webState {
+                        webState:(web::WebState*)webState
+                         frameID:(std::string)frameID
+                     frameOrigin:(url::Origin)frameOrigin {
   self = [super init];
   if (self) {
     _imageURL = imageURL;
     _referrer = referrer;
     _webState = webState->GetWeakPtr();
+    _frameID = frameID;
+    _frameOrigin = frameOrigin;
   }
   return self;
 }

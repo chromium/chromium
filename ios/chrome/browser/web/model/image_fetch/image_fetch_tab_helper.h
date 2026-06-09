@@ -50,8 +50,11 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
   //   1. Call injected JavaScript to get the image data from web page;
   //   2. If JavaScript fails or does not send a message back in 300ms, try
   //   downloading the image by image_fetcher::FetchImageData.
+  // `frame_id` should not be empty.
   virtual void GetImageData(const GURL& url,
                             const web::Referrer& referrer,
+                            const std::string& frame_id,
+                            const url::Origin& frame_origin,
                             ImageDataCallback callback);
 
   // ImageFetchJavaScriptFeature::Handler.
@@ -79,6 +82,7 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
   // the method 1 would fail. If the JavaScript does not respond after
   // `timeout`, the `callback` will be invoked with nullptr.
   void GetImageDataByJs(const GURL& url,
+                        web::WebFrame* frame,
                         base::TimeDelta timeout,
                         JsCallback&& callback);
 
@@ -93,6 +97,11 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
                                 const web::Referrer& referrer,
                                 ImageDataCallback callback,
                                 const std::string* data);
+
+  // Fetches image data using ImageFetcher.
+  void FetchImageDataWithFetcher(const GURL& url,
+                                 const web::Referrer& referrer,
+                                 ImageDataCallback callback);
 
   // WebState this tab helper is attached to.
   raw_ptr<web::WebState> web_state_ = nullptr;

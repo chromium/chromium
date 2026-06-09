@@ -85,6 +85,8 @@ const int kNoActiveCopy = 0;
 - (void)copyImageAtURL:(const GURL&)url
               referrer:(const web::Referrer&)referrer
               webState:(web::WebState*)webState
+               frameID:(const std::string&)frameID
+           frameOrigin:(const url::Origin&)frameOrigin
     baseViewController:(UIViewController*)baseViewController {
   __weak ImageCopier* weakSelf = self;
 
@@ -102,7 +104,7 @@ const int kNoActiveCopy = 0;
   ImageFetchTabHelper* tabHelper = ImageFetchTabHelper::FromWebState(webState);
   DCHECK(tabHelper);
   NSString* urlStr = base::SysUTF8ToNSString(url.spec());
-  tabHelper->GetImageData(url, referrer, ^(NSData* data) {
+  tabHelper->GetImageData(url, referrer, frameID, frameOrigin, ^(NSData* data) {
     // Check that the copy has not been canceled.
     if (callbackID == weakSelf.activeID) {
       [weakSelf stopAlert];

@@ -51,6 +51,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/origin.h"
 
 namespace {
 
@@ -87,6 +88,9 @@ constexpr char kDownloadConnectorsAnalysisPref[] = R"([
 web::ContextMenuParams GetContextMenuParamsWithImageUrl(const char* image_url) {
   web::ContextMenuParams params;
   params.src_url = GURL(image_url);
+  params.frame_id = "fake_frame_id";
+  params.frame_security_origin =
+      url::Origin::Create(GURL("https://allowed.com/"));
   return params;
 }
 
@@ -259,6 +263,7 @@ TEST_F(ContextMenuConfigurationProviderTest,
       [actionFactory actionToSaveToPhotosWithImageURL:GURL(kImageUrl)
                                              referrer:web::Referrer()
                                              webState:GetActiveWebState()
+                                               params:paramsWithImage
                                                 block:nil];
 
   // Test that there is an element with the expected title in the submenu.
@@ -309,6 +314,7 @@ TEST_F(ContextMenuConfigurationProviderTest,
       [actionFactory actionToSaveToPhotosWithImageURL:GURL(kImageUrl)
                                              referrer:web::Referrer()
                                              webState:GetActiveWebState()
+                                               params:paramsWithImage
                                                 block:nil];
 
   // Test that there is an element with the expected title in the submenu.
@@ -520,6 +526,7 @@ TEST_F(ContextMenuConfigurationProviderTest,
       [actionFactory actionToSaveToPhotosWithImageURL:GURL(kImageUrl)
                                              referrer:web::Referrer()
                                              webState:GetActiveWebState()
+                                               params:paramsWithImage
                                                 block:nil];
 
   // Test that there is an element with the expected title in the submenu for

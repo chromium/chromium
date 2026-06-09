@@ -7,6 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import <string>
+
+#import "url/origin.h"
+
 class Browser;
 class GURL;
 
@@ -27,6 +31,8 @@ class WebState;
 - (void)copyImageAtURL:(const GURL&)url
               referrer:(const web::Referrer&)referrer
               webState:(web::WebState*)webState
+               frameID:(const std::string&)frameID
+           frameOrigin:(const url::Origin&)frameOrigin
     baseViewController:(UIViewController*)baseViewController;
 
 // Stops the image copier.

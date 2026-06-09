@@ -7,7 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string>
+
 #import "base/memory/weak_ptr.h"
+#import "url/origin.h"
 
 class GURL;
 namespace web {
@@ -20,7 +23,9 @@ class WebState;
 
 - (instancetype)initWithImageURL:(GURL)imageURL
                         referrer:(web::Referrer)referrer
-                        webState:(web::WebState*)webState;
+                        webState:(web::WebState*)webState
+                         frameID:(std::string)frameID
+                     frameOrigin:(url::Origin)frameOrigin;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -32,6 +37,12 @@ class WebState;
 
 // The web state "containing" the image.
 @property(nonatomic, assign, readonly) base::WeakPtr<web::WebState> webState;
+
+// The frame ID where the image resides.
+@property(nonatomic, assign, readonly) std::string frameID;
+
+// The origin of the frame where the image resides.
+@property(nonatomic, assign, readonly) url::Origin frameOrigin;
 
 @end
 

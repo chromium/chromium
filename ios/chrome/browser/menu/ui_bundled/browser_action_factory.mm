@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/ui/context_menu_params.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -277,13 +278,17 @@
 - (UIAction*)actionToSaveToPhotosWithImageURL:(const GURL&)imageURL
                                      referrer:(const web::Referrer&)referrer
                                      webState:(web::WebState*)webState
+                                       params:
+                                           (const web::ContextMenuParams&)params
                                         block:(ProceduralBlock)block {
   __weak id<SaveToPhotosCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SaveToPhotosCommands);
-  SaveImageToPhotosCommand* command =
-      [[SaveImageToPhotosCommand alloc] initWithImageURL:imageURL
-                                                referrer:referrer
-                                                webState:webState];
+  SaveImageToPhotosCommand* command = [[SaveImageToPhotosCommand alloc]
+      initWithImageURL:imageURL
+              referrer:referrer
+              webState:webState
+               frameID:params.frame_id
+           frameOrigin:params.frame_security_origin];
 
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* image =

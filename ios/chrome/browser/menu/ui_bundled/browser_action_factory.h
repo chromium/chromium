@@ -18,6 +18,7 @@ class GURL;
 
 namespace web {
 class WebState;
+struct ContextMenuParams;
 }
 
 // Factory providing methods to create UIActions that depends on the provided
@@ -80,6 +81,8 @@ class WebState;
 - (UIAction*)actionToSaveToPhotosWithImageURL:(const GURL&)url
                                      referrer:(const web::Referrer&)referrer
                                      webState:(web::WebState*)webState
+                                       params:
+                                           (const web::ContextMenuParams&)params
                                         block:(ProceduralBlock)block;
 
 // Creates a UIAction instance whose title and icon are configured for opening a

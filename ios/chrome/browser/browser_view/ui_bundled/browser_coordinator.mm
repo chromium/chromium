@@ -4610,7 +4610,9 @@ const char kChromeAppStoreUrl[] =
                          browser:self.browser
                         imageURL:command.imageURL
                         referrer:command.referrer
-                        webState:command.webState.get()];
+                        webState:command.webState.get()
+                         frameID:command.frameID
+                     frameOrigin:command.frameOrigin];
   [self.saveToPhotosCoordinator start];
 }
 
