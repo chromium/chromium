@@ -602,11 +602,10 @@ DecodedDrawImage SoftwareImageDecodeCache::GetDecodedImageForDrawInternal(
   if (!decoded_image)
     return DecodedDrawImage();
 
-  auto decoded_draw_image =
-      DecodedDrawImage(std::move(decoded_image), cache_entry->gainmap_image(),
-                       cache_entry->hdr_metadata(), nullptr,
-                       cache_entry->src_rect_offset(), GetScaleAdjustment(key),
-                       GetDecodedFilterQuality(key), cache_entry->is_budgeted);
+  auto decoded_draw_image = DecodedDrawImage(
+      std::move(decoded_image), cache_entry->gainmap_image(), nullptr,
+      cache_entry->src_rect_offset(), GetScaleAdjustment(key),
+      GetDecodedFilterQuality(key), cache_entry->is_budgeted);
   return decoded_draw_image;
 }
 

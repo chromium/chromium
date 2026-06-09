@@ -457,6 +457,9 @@ void PaintOpReader::Read(PaintImage* image) {
     NOTREACHED();
   }
 
+  gfx::HDRMetadata hdr_metadata;
+  Read(&hdr_metadata);
+
   if (serialized_type == PaintOp::SerializedImageType::kMailbox) {
     if (!options_.shared_image_provider) {
       SetInvalid(DeserializationError::kMissingSharedImageProvider);
@@ -501,6 +504,7 @@ void PaintOpReader::Read(PaintImage* image) {
                  .set_texture_image(std::move(sk_image),
                                     PaintImage::kNonLazyStableId)
                  .set_reinterpret_as_srgb(reinterpret_as_srgb)
+                 .set_hdr_metadata(hdr_metadata)
                  .TakePaintImage();
     return;
   }
@@ -536,12 +540,12 @@ void PaintOpReader::Read(PaintImage* image) {
     PaintImageBuilder builder =
         PaintImageBuilder::WithDefault()
             .set_id(PaintImage::GetNextId())
-            .set_texture_image(entry->image(), PaintImage::kNonLazyStableId);
+            .set_texture_image(entry->image(), PaintImage::kNonLazyStableId)
+            .set_hdr_metadata(hdr_metadata);
     if (entry->HasGainmap()) {
       builder = std::move(builder).set_gainmap_texture_image(
           entry->gainmap_image(), entry->gainmap_info());
     }
-    builder = std::move(builder).set_hdr_metadata(entry->hdr_metadata());
     *image = builder.TakePaintImage();
   }
 }

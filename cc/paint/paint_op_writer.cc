@@ -423,7 +423,8 @@ void PaintOpWriter::Write(const DrawImage& draw_image,
 
   *scale_adjustment = decoded_draw_image.scale_adjustment();
 
-  WriteImage(decoded_draw_image, paint_image.GetReinterpretAsSRGB());
+  WriteImage(decoded_draw_image, paint_image.GetHDRMetadata(),
+             paint_image.GetReinterpretAsSRGB());
 }
 
 void PaintOpWriter::Write(scoped_refptr<SkottieWrapper> skottie) {
@@ -452,20 +453,23 @@ void PaintOpWriter::Write(scoped_refptr<SkottieWrapper> skottie) {
 }
 
 void PaintOpWriter::WriteImage(const DecodedDrawImage& decoded_draw_image,
+                               const gfx::HDRMetadata& hdr_metadata,
                                bool reinterpret_as_srgb) {
   if (!decoded_draw_image.mailbox().IsZero()) {
-    WriteImage(decoded_draw_image.mailbox(), reinterpret_as_srgb);
+    WriteImage(decoded_draw_image.mailbox(), hdr_metadata, reinterpret_as_srgb);
     return;
   }
 
   std::optional<uint32_t> id = decoded_draw_image.transfer_cache_entry_id();
   // In the case of a decode failure, id may not be set. Send an invalid ID.
   WriteImage(id.value_or(kInvalidImageTransferCacheEntryId),
-             decoded_draw_image.transfer_cache_entry_needs_mips());
+             decoded_draw_image.transfer_cache_entry_needs_mips(),
+             hdr_metadata);
 }
 
 void PaintOpWriter::WriteImage(uint32_t transfer_cache_entry_id,
-                               bool needs_mips) {
+                               bool needs_mips,
+                               const gfx::HDRMetadata& hdr_metadata) {
   if (transfer_cache_entry_id == kInvalidImageTransferCacheEntryId) {
     Write(static_cast<uint8_t>(PaintOp::SerializedImageType::kNoImage));
     return;
@@ -473,15 +477,18 @@ void PaintOpWriter::WriteImage(uint32_t transfer_cache_entry_id,
 
   Write(
       static_cast<uint8_t>(PaintOp::SerializedImageType::kTransferCacheEntry));
+  Write(hdr_metadata);
   Write(transfer_cache_entry_id);
   Write(needs_mips);
 }
 
 void PaintOpWriter::WriteImage(const gpu::Mailbox& mailbox,
+                               const gfx::HDRMetadata& hdr_metadata,
                                bool reinterpret_as_srgb) {
   DCHECK(!mailbox.IsZero());
 
   Write(static_cast<uint8_t>(PaintOp::SerializedImageType::kMailbox));
+  Write(hdr_metadata);
 
   EnsureBytes(sizeof(mailbox.name));
   if (!valid_) {
@@ -765,9 +772,11 @@ void PaintOpWriter::Write(const PaintShader* shader,
     DCHECK_EQ(scale_adjustment.height(), 1.f);
   } else {
     if (!mailbox.IsZero()) {
-      WriteImage(mailbox, shader->image_.GetReinterpretAsSRGB());
+      WriteImage(mailbox, shader->image_.GetHDRMetadata(),
+                 shader->image_.GetReinterpretAsSRGB());
     } else {
-      WriteImage(paint_image_transfer_cache_id, paint_image_needs_mips);
+      WriteImage(paint_image_transfer_cache_id, paint_image_needs_mips,
+                 shader->image_.GetHDRMetadata());
     }
   }
 

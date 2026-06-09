@@ -1324,7 +1324,6 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
   // Retrieve the SkImages and sampling.
   sk_sp<SkImage> sk_image;
   sk_sp<SkImage> gainmap_sk_image;
-  gfx::HDRMetadata hdr_metadata;
   SkSamplingOptions sampling = op->sampling;
   // If the SkImages are from an ImageProvider, keep them in scope.
   ImageProvider::ScopedResult scoped_result;
@@ -1345,7 +1344,6 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
 
     sk_image = decoded_image.image();
     gainmap_sk_image = decoded_image.gainmap_image();
-    hdr_metadata = decoded_image.hdr_metadata();
     SkSize scale_adjustment = SkSize::Make(
         op->scale_adjustment.width() * decoded_image.scale_adjustment().width(),
         op->scale_adjustment.height() *
@@ -1367,7 +1365,6 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
       sk_image = op->image.GetSwSkImage();
     }
     gainmap_sk_image = op->image.gainmap_sk_image_;
-    hdr_metadata = op->image.hdr_metadata_;
     if (!IsScaleAdjustmentIdentity(op->scale_adjustment)) {
       save_restore.emplace(canvas, /*doSave=*/true);
       canvas->scale(1.f / op->scale_adjustment.width(),
@@ -1391,7 +1388,7 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
   if (ToneMapUtil::UseGlobalToneMapFilter(sk_image.get(),
                                           canvas->imageInfo().colorSpace())) {
     ToneMapUtil::AddGlobalToneMapFilterToPaint(
-        paint, sk_image.get(), hdr_metadata,
+        paint, sk_image.get(), op->image.hdr_metadata_,
         ComputeEffectiveHdrHeadroom(flags, params));
   }
   SkTiledImageUtils::DrawImage(canvas, sk_image.get(), op->left, op->top,
@@ -1442,7 +1439,6 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
   // Retrieve the SkImages, adjusted source rect, and sampling.
   sk_sp<SkImage> sk_image;
   sk_sp<SkImage> gainmap_sk_image;
-  gfx::HDRMetadata hdr_metadata;
   SkRect adjusted_src;
   SkSamplingOptions sampling;
   // If the SkImages are from an ImageProvider, keep them in scope.
@@ -1478,7 +1474,6 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
         decoded_image.filter_quality(), scale);
     sk_image = decoded_image.image();
     gainmap_sk_image = decoded_image.gainmap_image();
-    hdr_metadata = decoded_image.hdr_metadata();
   } else {
     adjusted_src = AdjustSrcRectForScale(op->src, op->scale_adjustment);
     SkM44 matrix = canvas->getLocalToDevice() *
@@ -1495,15 +1490,13 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
       sk_image = op->image.GetSwSkImage();
     }
     gainmap_sk_image = op->image.gainmap_sk_image_;
-    hdr_metadata = op->image.hdr_metadata_;
   }
   if (!sk_image) {
     return;
   }
 
   auto draw_proc = [op, adjusted_src, sampling, sk_image, gainmap_sk_image,
-                    flags, params,
-                    hdr_metadata](SkCanvas* c, const SkPaint& p) {
+                    flags, params](SkCanvas* c, const SkPaint& p) {
     // If the PaintImage uses a gainmap shader, then replace DrawImage with
     // a shader.
     if (op->image.HasGainmapInfo() && gainmap_sk_image) {
@@ -1520,7 +1513,7 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
                                             c->imageInfo().colorSpace())) {
       SkPaint tonemap_paint = p;
       ToneMapUtil::AddGlobalToneMapFilterToPaint(
-          tonemap_paint, sk_image.get(), hdr_metadata,
+          tonemap_paint, sk_image.get(), op->image.hdr_metadata_,
           ComputeEffectiveHdrHeadroom(flags, params));
       DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, sampling,
                     &tonemap_paint, op->constraint);

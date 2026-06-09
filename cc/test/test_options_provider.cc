@@ -113,7 +113,7 @@ ImageProvider::ScopedResult TestOptionsProvider::GetRasterContent(
   // Create a transfer cache entry for this image.
   ClientImageTransferCacheEntry cache_entry(
       ClientImageTransferCacheEntry::Image(&bitmap.pixmap()),
-      false /* needs_mips */, gfx::HDRMetadata());
+      false /* needs_mips */);
   const uint32_t data_size = cache_entry.SerializedSize();
   auto data = PaintOpWriter::AllocateAlignedBuffer(data_size);
   if (!cache_entry.Serialize(data.as_span())) {

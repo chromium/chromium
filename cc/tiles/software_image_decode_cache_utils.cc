@@ -178,9 +178,9 @@ SoftwareImageDecodeCacheUtils::DoDecodeImage(
     }
   }
 
-  return std::make_unique<CacheEntry>(
-      target_image, target_gainmap_image, paint_image.GetHDRMetadata(),
-      std::move(target_pixels), SkSize::Make(0, 0));
+  return std::make_unique<CacheEntry>(target_image, target_gainmap_image,
+                                      std::move(target_pixels),
+                                      SkSize::Make(0, 0));
 }
 
 // static
@@ -277,8 +277,7 @@ SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate(
   }
 
   return std::make_unique<CacheEntry>(
-      target_image, target_gainmap_image, candidate_image.hdr_metadata(),
-      std::move(target_pixels),
+      target_image, target_gainmap_image, std::move(target_pixels),
       SkSize::Make(-key.src_rect().x(), -key.src_rect().y()));
 }
 
@@ -461,14 +460,12 @@ SoftwareImageDecodeCacheUtils::CacheEntry::CacheEntry()
 SoftwareImageDecodeCacheUtils::CacheEntry::CacheEntry(
     sk_sp<SkImage> image,
     sk_sp<SkImage> gainmap_image,
-    const gfx::HDRMetadata& hdr_metadata,
     std::unique_ptr<base::DiscardableMemory> in_memory,
     const SkSize& src_rect_offset)
     : is_locked(true),
       memory(std::move(in_memory)),
       image_(std::move(image)),
       gainmap_image_(std::move(gainmap_image)),
-      hdr_metadata_(hdr_metadata),
       src_rect_offset_(src_rect_offset),
       tracing_id_(g_next_tracing_id_.GetNext()) {
   DCHECK(memory);
@@ -492,7 +489,6 @@ void SoftwareImageDecodeCacheUtils::CacheEntry::MoveImageMemoryTo(
   entry->src_rect_offset_ = std::move(src_rect_offset_);
   entry->image_ = std::move(image_);
   entry->gainmap_image_ = std::move(gainmap_image_);
-  entry->hdr_metadata_ = hdr_metadata_;
 }
 
 bool SoftwareImageDecodeCacheUtils::CacheEntry::Lock() {
