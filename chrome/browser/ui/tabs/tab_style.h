@@ -38,9 +38,6 @@ class TabStyle {
     // The hit test region. May be extended into a rectangle that touches the
     // top of the bounding box when the window is maximized, for Fitts' Law.
     kHitTest,
-    // The area inside the tab where children can be rendered, used to clip
-    // child views. Does not have to be the same shape as the border.
-    kInteriorClip,
     // The path used for focus rings.
     kHighlight,
   };

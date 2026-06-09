@@ -225,7 +225,6 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
   if ((path_type == TabStyle::PathType::kFill &&
        state != TabStyle::TabSelectionState::kActive) ||
       path_type == TabStyle::PathType::kHighlight ||
-      path_type == TabStyle::PathType::kInteriorClip ||
       path_type == TabStyle::PathType::kHitTest) {
     float top_left_corner_radius = content_corner_radius;
     float top_right_corner_radius = content_corner_radius;
@@ -233,11 +232,8 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     float bottom_right_corner_radius = content_corner_radius;
     float tab_height = GetLayoutConstant(LayoutConstant::kTabHeight) * scale;
 
-    // The tab displays favicon animations that can emerge from the toolbar. The
-    // interior clip needs to extend the entire height of the toolbar to support
-    // this. Detached tab shapes do not need to respect this.
-    if (path_type != TabStyle::PathType::kInteriorClip &&
-        path_type != TabStyle::PathType::kHitTest) {
+    // The hit test extends the full height to make it easier to select tabs.
+    if (path_type != TabStyle::PathType::kHitTest) {
       tab_height -= GetLayoutConstant(LayoutConstant::kTabStripPadding) * scale;
       tab_height -=
           GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap) * scale;
@@ -929,7 +925,8 @@ TabStyle::TabSelectionState TabStyleViewsImpl::GetSelectionState() const {
 bool TabStyleViewsImpl::ShouldCompactLeadingEdge(
     TabStyle::PathType path_type) const {
   // If the tab is the first in the list
-  return tab_->controller()->tab_at(0) == tab_ &&
+  return tab_->controller()->GetTabCount() > 0 &&
+         tab_->controller()->tab_at(0) == tab_ &&
          tab_->controller()->ShouldCompactLeadingEdge();
 }
 

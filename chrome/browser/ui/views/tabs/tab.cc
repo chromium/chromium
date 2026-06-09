@@ -777,7 +777,7 @@ void Tab::PaintChildren(const views::PaintInfo& info) {
   const float paint_recording_scale = info.paint_recording_scale_x();
 
   const SkPath clip_path = tab_style_views()->GetPath(
-      TabStyle::PathType::kInteriorClip, paint_recording_scale, {});
+      TabStyle::PathType::kFill, paint_recording_scale, {});
 
   clip_recorder.ClipPathWithAntiAliasing(clip_path);
   View::PaintChildren(info);
