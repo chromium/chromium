@@ -31,6 +31,7 @@ std::unique_ptr<ProfileManagementStepController> CreateIntroStep(
 
 std::unique_ptr<ProfileManagementStepController> CreateDefaultBrowserStep(
     ProfilePickerWebContentsHost* host,
+    Profile* profile,
     base::OnceClosure step_completed_callback);
 
 std::unique_ptr<ProfileManagementStepController> CreateFeatureShowcaseStep(

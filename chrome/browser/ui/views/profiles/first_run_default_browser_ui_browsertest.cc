@@ -99,9 +99,12 @@ class FirstRunDefaultBrowserPixelTest
                                            base::DoNothing()),
         ProfileManagementFlowController::Step::kDefaultBrowser,
         /*step_controller_factory=*/
-        base::BindRepeating([](ProfilePickerWebContentsHost* host) {
-          return CreateDefaultBrowserStep(host, base::DoNothing());
-        }));
+        base::BindRepeating(
+            [](Profile* profile, ProfilePickerWebContentsHost* host)
+                -> std::unique_ptr<ProfileManagementStepController> {
+              return CreateDefaultBrowserStep(host, profile, base::DoNothing());
+            },
+            browser()->profile()));
     profile_picker_view_->views::View::AddObserver(this);
     profile_picker_view_->ShowAndWait(GetParam().pixel_test_param.window_size);
   }

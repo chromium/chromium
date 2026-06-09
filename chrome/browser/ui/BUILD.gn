@@ -3165,6 +3165,8 @@ static_library("ui") {
       sources += [
         "views/profiles/dice_web_signin_interception_bubble_view.cc",
         "views/profiles/dice_web_signin_interception_bubble_view.h",
+        "views/profiles/feature_showcase/default_browser_step_eligibility_checker.cc",
+        "views/profiles/feature_showcase/default_browser_step_eligibility_checker.h",
         "views/profiles/feature_showcase/feature_showcase_eligibility_tracker.cc",
         "views/profiles/feature_showcase/feature_showcase_eligibility_tracker.h",
         "views/profiles/feature_showcase/feature_showcase_step_eligibility_checker.h",

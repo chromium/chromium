@@ -59,6 +59,7 @@ FeatureShowcaseEligibilityTracker::FeatureShowcaseEligibilityTracker(
 FeatureShowcaseEligibilityTracker::~FeatureShowcaseEligibilityTracker() =
     default;
 
+// TODO(crbug.com/507795442): Introduce a unified timeout mechanism.
 void FeatureShowcaseEligibilityTracker::EvaluateEligibleSteps(
     Profile& profile,
     base::OnceCallback<void(const std::vector<std::string>&)> callback) {
