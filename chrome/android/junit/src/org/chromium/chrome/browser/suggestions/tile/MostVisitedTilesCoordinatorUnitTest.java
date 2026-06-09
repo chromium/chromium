@@ -66,16 +66,21 @@ public class MostVisitedTilesCoordinatorUnitTest {
     }
 
     @Test
-    public void testUpdateMvtWidth_WithWidth() {
+    public void testCalculateTabletMvtWidth() {
         int totalWidth = 1000;
         when(mMvTilesContainerLayout.getVisibility()).thenReturn(View.VISIBLE);
-        mCoordinator.updateMvtWidth(totalWidth);
-        verify(mMediator).updateMvtWidth(eq(totalWidth));
+        mCoordinator.calculateTabletMvtWidth(totalWidth);
+        verify(mMediator).updateMvtOnTablet(eq(totalWidth));
 
         clearInvocations(mMediator);
         when(mMvTilesContainerLayout.getVisibility()).thenReturn(View.GONE);
-        mCoordinator.updateMvtWidth(totalWidth);
-        verify(mMediator, never()).updateMvtWidth(any(Integer.class));
+        verify(mMediator, never()).updateMvtOnTablet(any(Integer.class));
+    }
+
+    @Test
+    public void testUpdateMvtOnTablet() {
+        mCoordinator.updateMvtOnTablet();
+        verify(mMediator).updateMvtOnTablet(eq(/* totalWidth= */ null));
     }
 
     @Test

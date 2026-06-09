@@ -45,9 +45,7 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
 
         Resources resources = getResources();
-        mTileViewWidth =
-                resources.getDimensionPixelSize(
-                        mIsTablet ? R.dimen.tile_view_width_condensed : R.dimen.tile_view_width);
+        mTileViewWidth = resources.getDimensionPixelSize(R.dimen.tile_view_width);
         mIntervalPaddingsTablet =
                 resources.getDimensionPixelSize(R.dimen.tile_view_padding_interval_tablet);
         mEdgePaddingsTablet =

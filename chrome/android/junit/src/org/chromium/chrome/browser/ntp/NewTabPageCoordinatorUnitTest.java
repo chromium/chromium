@@ -417,7 +417,7 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    public void testElementsMaxWidthLimit() {
+    public void testSearchBoxAndComposeplateMaxWidthLimit() {
         NewTabPageLayout layout = mCoordinator.getNewTabPageLayout();
         int maxSearchBoxWidthPx =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.ntp_search_box_max_width);
@@ -427,24 +427,12 @@ public class NewTabPageCoordinatorUnitTest {
         int measureWidth = maxSearchBoxWidthPx * 10;
         mCoordinator.onMeasure(measureWidth);
 
-        // The max width cap is applied to Search Box, Composeplate and MVT on all platforms
-        // to ensure visual alignment. On tablets, smaller tiles are used internally to fit.
-        int expectedBoundedWidth = maxSearchBoxWidthPx;
-
         View searchBoxView = layout.findViewById(R.id.search_box);
         assertNotNull(searchBoxView);
-        assertEquals(expectedBoundedWidth, searchBoxView.getLayoutParams().width);
+        assertEquals(maxSearchBoxWidthPx, searchBoxView.getLayoutParams().width);
 
         View composeplateView = layout.findViewById(R.id.composeplate_view);
         assertNotNull(composeplateView);
-        assertEquals(expectedBoundedWidth, composeplateView.getLayoutParams().width);
-
-        View logoView = layout.findViewById(R.id.logo_container_view);
-        assertNotNull(logoView);
-        assertEquals(measureWidth, logoView.getLayoutParams().width);
-
-        View mvtView = layout.findViewById(R.id.mv_tiles_container);
-        assertNotNull(mvtView);
-        assertEquals(expectedBoundedWidth, mvtView.getLayoutParams().width);
+        assertEquals(maxSearchBoxWidthPx, composeplateView.getLayoutParams().width);
     }
 }

@@ -383,7 +383,7 @@ public class MostVisitedMediatorUnitTest {
     }
 
     @Test
-    public void testUpdateMvtWidth_Tablet() {
+    public void testUpdateMvtOnTablet() {
         createMediator(/* isTablet= */ true);
         int totalWidth = 1000;
         ViewGroup.MarginLayoutParams marginLayoutParams =
@@ -400,11 +400,10 @@ public class MostVisitedMediatorUnitTest {
                 NtpCustomizationUtils.isInNarrowWindowOnTablet(/* isTablet= */ true, mUiConfig));
 
         int lateralMargin = mResources.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin);
-        mMediator.updateMvtWidth(totalWidth);
+        mMediator.updateMvtOnTablet(totalWidth);
         verifyLayoutParams(marginLayoutParams, LayoutParams.WRAP_CONTENT, lateralMargin);
 
         // Test case of narrow window on tablets.
-        when(mMvTilesLayout.contentFitsOnTablet(totalWidth)).thenReturn(false);
         UiConfig.DisplayStyle displayStyleRegular =
                 new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
         when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleRegular);
@@ -413,35 +412,9 @@ public class MostVisitedMediatorUnitTest {
         int lateralMarginNarrowWindowTablet =
                 mResources.getDimensionPixelSize(
                         R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet);
-        mMediator.updateMvtWidth(totalWidth);
-        verifyLayoutParams(marginLayoutParams, totalWidth, lateralMarginNarrowWindowTablet);
-    }
-
-    @Test
-    public void testUpdateMvtWidth_Phone() {
-        createMediator(/* isTablet= */ false);
-        int totalWidth = 1000;
-        ViewGroup.MarginLayoutParams marginLayoutParams =
-                new ViewGroup.MarginLayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        when(mMvTilesContainerLayout.getLayoutParams()).thenReturn(marginLayoutParams);
-
-        // On phones, the display style shouldn't trigger narrow window tablet logic.
-        UiConfig.DisplayStyle displayStyleRegular =
-                new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
-        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleRegular);
-        assertFalse(
-                NtpCustomizationUtils.isInNarrowWindowOnTablet(/* isTablet= */ false, mUiConfig));
-
-        int lateralMargin = mResources.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin);
-
-        // When width is provided, it should be applied directly.
-        mMediator.updateMvtWidth(totalWidth);
-        verifyLayoutParams(marginLayoutParams, totalWidth, lateralMargin);
-
-        // When width is null, it should fall back to MATCH_PARENT.
-        mMediator.updateMvtWidth(null);
-        verifyLayoutParams(marginLayoutParams, LayoutParams.MATCH_PARENT, lateralMargin);
+        mMediator.updateMvtOnTablet(totalWidth);
+        verifyLayoutParams(
+                marginLayoutParams, LayoutParams.WRAP_CONTENT, lateralMarginNarrowWindowTablet);
     }
 
     private void createMediator() {

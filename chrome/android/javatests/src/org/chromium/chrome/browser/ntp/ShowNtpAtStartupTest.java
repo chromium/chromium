@@ -615,7 +615,6 @@ public class ShowNtpAtStartupTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/442027285
     @EnableFeatures(START_SURFACE_RETURN_TIME_IMMEDIATE)
-    @DisabledTest(message = "https://crbug.com/442027285")
     public void testMvtLayoutHorizontalMargin() {
         mActivityTestRule.startOnNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

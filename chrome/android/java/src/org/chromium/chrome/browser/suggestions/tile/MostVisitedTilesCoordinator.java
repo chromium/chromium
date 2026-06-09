@@ -44,7 +44,6 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final UiConfig mUiConfig;
     private final View mMvTilesContainerLayout;
-    private final boolean mIsTablet;
     private MostVisitedTilesMediator mMediator;
     private @Nullable TileRenderer mRenderer;
     private @Nullable UserEducationHelper mUserEducationHelper;
@@ -70,7 +69,6 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         mActivity = activity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mMvTilesContainerLayout = mvTilesContainerLayout;
-        mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
 
         MostVisitedTilesLayout tilesLayout =
                 mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
@@ -83,11 +81,9 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                 MostVisitedTilesViewBinder::bind);
         mRenderer =
                 new TileRenderer(
-                        mActivity,
-                        SuggestionsConfig.getTileStyle(mUiConfig, mIsTablet),
-                        TITLE_LINES,
-                        /* imageFetcher= */ null);
+                        mActivity, SuggestionsConfig.getTileStyle(mUiConfig), TITLE_LINES, null);
 
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mMediator =
                 new MostVisitedTilesMediator(
                         activity,
@@ -95,7 +91,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                         mvTilesContainerLayout,
                         mRenderer,
                         propertyModel,
-                        mIsTablet,
+                        isTablet,
                         snapshotTileGridChangedRunnable,
                         tileCountChangedRunnable);
     }
@@ -120,8 +116,8 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
             mRenderer =
                     new TileRenderer(
                             mActivity,
-                            SuggestionsConfig.getTileStyle(mUiConfig, mIsTablet),
-                            /* titleLines= */ 1,
+                            SuggestionsConfig.getTileStyle(mUiConfig),
+                            1,
                             suggestionsUiDelegate.getImageFetcher());
         } else {
             mRenderer.setImageFetcher(suggestionsUiDelegate.getImageFetcher());
@@ -154,15 +150,19 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         mMediator.updateMvtVisibility();
     }
 
-    /**
-     * Updates the width and margins of the MV tiles container.
-     *
-     * @param totalWidth The total width of the MV tiles layout.
-     */
-    public void updateMvtWidth(int totalWidth) {
+    /** Updates the width of the MV tiles container when used in NTP on the tablet. */
+    public void calculateTabletMvtWidth(int totalWidth) {
         if (mMvTilesContainerLayout.getVisibility() == GONE) return;
 
-        mMediator.updateMvtWidth(totalWidth);
+        mMediator.updateMvtOnTablet(totalWidth);
+    }
+
+    /**
+     * Updates whether the MV tiles layout stays in the center of the container when used in NTP on
+     * the tablet by changing the width of its container. Also updates the lateral margins.
+     */
+    public void updateMvtOnTablet() {
+        mMediator.updateMvtOnTablet(/* totalWidth= */ null);
     }
 
     /**
