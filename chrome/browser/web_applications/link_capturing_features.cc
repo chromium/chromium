@@ -10,7 +10,7 @@
 
 namespace apps::features {
 
-BASE_FEATURE(kUpdateAppStringsOnSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUpdateAppStringsOnSettings, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/377760841): Remove dead code flag; never enabled.
 BASE_FEATURE(kNavigationCapturingOnExistingFrames,
