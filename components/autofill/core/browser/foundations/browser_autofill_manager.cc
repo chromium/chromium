@@ -104,6 +104,7 @@
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
+#include "components/autofill/core/browser/payments/ai_card_recommendation_manager.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
@@ -870,6 +871,16 @@ payments::BnplManager* BrowserAutofillManager::GetPaymentsBnplManager() {
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
   return bnpl_manager_.get();
+}
+
+payments::AiCardRecommendationManager&
+BrowserAutofillManager::GetAiCardRecommendationManager() {
+  if (!ai_card_recommendation_manager_) {
+    ai_card_recommendation_manager_ =
+        std::make_unique<payments::AiCardRecommendationManager>(this);
+  }
+
+  return *ai_card_recommendation_manager_;
 }
 
 bool BrowserAutofillManager::ShouldParseForms() {
@@ -2662,6 +2673,7 @@ void BrowserAutofillManager::Reset() {
     touch_to_fill_delegate_->Reset();
   }
   form_filler_->Reset();
+  ai_card_recommendation_manager_.reset();
   amount_extraction_manager_.reset();
   bnpl_manager_.reset();
 

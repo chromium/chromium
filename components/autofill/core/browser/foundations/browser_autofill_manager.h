@@ -71,6 +71,7 @@ class FormFieldData;
 struct SuggestionsContext;
 
 namespace payments {
+class AiCardRecommendationManager;
 class AmountExtractionManager;
 class BnplManager;
 }  // namespace payments
@@ -246,6 +247,11 @@ class BrowserAutofillManager : public AutofillManager {
   // Gets the amount extraction manager owned by `this`. This will be used for
   // flows that require amount extraction from the page.
   virtual payments::AmountExtractionManager& GetAmountExtractionManager();
+
+  // Gets the AI card recommendation manager owned by `this`. This will be used
+  // to handle AI-based card recommendation flows.
+  virtual payments::AiCardRecommendationManager&
+  GetAiCardRecommendationManager();
 
   // Handles post-filling logic of `form`, like notifying observers and logging
   // form metrics.
@@ -665,6 +671,12 @@ class BrowserAutofillManager : public AutofillManager {
   // amount from merchant websites.
   // Lazily initialized: access only through GetAmountExtractionManager().
   std::unique_ptr<payments::AmountExtractionManager> amount_extraction_manager_;
+
+  // The AI card recommendation manager. This will be used to handle AI-based
+  // card recommendation flows.
+  // Lazily initialized: access only through GetAiCardRecommendationManager().
+  std::unique_ptr<payments::AiCardRecommendationManager>
+      ai_card_recommendation_manager_;
 
   // Helper class to autofill forms and fields. Do not use directly, use
   // form_filler() instead, because tests inject test objects.

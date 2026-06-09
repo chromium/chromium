@@ -589,6 +589,8 @@ static_library("browser") {
     "network/autofill_ai/wallet_pass_access_manager_impl.cc",
     "network/autofill_ai/wallet_pass_access_manager_impl.h",
     "payments/account_info_getter.h",
+    "payments/ai_card_recommendation_manager.cc",
+    "payments/ai_card_recommendation_manager.h",
     "payments/amount_extraction_heuristic_regexes.cc",
     "payments/amount_extraction_heuristic_regexes.h",
     "payments/amount_extraction_manager.cc",
