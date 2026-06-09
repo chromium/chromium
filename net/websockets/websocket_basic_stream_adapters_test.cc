@@ -98,6 +98,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_socket_address.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_test.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_clock.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_connection_id_generator.h"
@@ -1557,6 +1558,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, DisconnectDropsPendingReadCallback) {
 TEST_P(WebSocketQuicStreamAdapterTest, DisconnectDropsPendingWriteCallback) {
   // Set a very low buffer threshold so that buffered data immediately exceeds
   // it, causing Write() to return ERR_IO_PENDING.
+  quic::test::QuicFlagSaver flag_saver;
   SetQuicheFlag(quic_buffered_data_threshold, 1);
 
   int client_packet_number = 1;
@@ -2354,6 +2356,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, WritePendingWhenBufferFull) {
   // Set a threshold so we can control when buffer crosses it.
   // With threshold=100, first write of 90 bytes succeeds, second write of 20
   // bytes (total 110 >= 100) returns ERR_IO_PENDING.
+  quic::test::QuicFlagSaver flag_saver;
   SetQuicheFlag(quic_buffered_data_threshold, 100);
 
   int client_packet_number = 1;
@@ -2557,6 +2560,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, WritePendingWhenBufferFull) {
 // Tests that receiving a RST_STREAM from the server while a Write() is pending
 // correctly completes the write callback with an error.
 TEST_P(WebSocketQuicStreamAdapterTest, RstStreamReceivedWhileWritePending) {
+  quic::test::QuicFlagSaver flag_saver;
   SetQuicheFlag(quic_buffered_data_threshold, 100);
 
   int client_packet_number = 1;
@@ -2771,6 +2775,7 @@ TEST_P(WebSocketQuicStreamAdapterTest,
   // Set a very low buffer threshold. When combined with flow control blocking,
   // any buffered data will exceed this threshold and cause Write() to return
   // ERR_IO_PENDING.
+  quic::test::QuicFlagSaver flag_saver;
   SetQuicheFlag(quic_buffered_data_threshold, 1);
 
   int packet_number = 1;
@@ -2885,6 +2890,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, WriteCallbackDestroysAdapter) {
   // Set a very low buffer threshold. When combined with flow control blocking,
   // any buffered data will exceed this threshold and cause Write() to return
   // ERR_IO_PENDING.
+  quic::test::QuicFlagSaver flag_saver;
   SetQuicheFlag(quic_buffered_data_threshold, 1);
 
   int packet_number = 1;
