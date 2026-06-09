@@ -391,7 +391,13 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
   }
 }
 
-TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
+// TODO(crbug.com/514291799): Re-enable when not flakey on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MediastreamMic DISABLED_MediastreamMic
+#else
+#define MAYBE_MediastreamMic MediastreamMic
+#endif
+TEST_F(ContentSettingBubbleModelTest, MAYBE_MediastreamMic) {
   // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
   // setting bubble.
   base::test::ScopedFeatureList scoped_list;
@@ -530,7 +536,15 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
   EXPECT_FALSE(new_bubble_content.manage_text.empty());
 }
 
-TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
+// TODO(crbug.com/514291799): Re-enable when not flakey on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AccumulateMediastreamMicAndCamera \
+  DISABLED_AccumulateMediastreamMicAndCamera
+#else
+#define MAYBE_AccumulateMediastreamMicAndCamera \
+  AccumulateMediastreamMicAndCamera
+#endif
+TEST_F(ContentSettingBubbleModelTest, MAYBE_AccumulateMediastreamMicAndCamera) {
   // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
   // setting bubble.
   base::test::ScopedFeatureList scoped_list;
