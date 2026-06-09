@@ -613,6 +613,7 @@
 <translation id="3635073343384702370">若有已存密碼，Chrome 可執行安全檢查</translation>
 <translation id="3636940436873918441">偏好語言</translation>
 <translation id="3637744895182738742">如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">開啟 Google 應用程式主畫面</translation>
 <translation id="368329460027487650">已登出。開啟登入選項。</translation>
@@ -637,6 +638,7 @@
 <translation id="3739899004075612870">已加入 <ph name="PRODUCT_NAME" /> 書籤</translation>
 <translation id="3740290940447881599">請確認你信任這個網站</translation>
 <translation id="3740525748616366977">這部裝置不支援語音搜尋功能</translation>
+<translation id="3756823472711156529">還原群組</translation>
 <translation id="3763110477555836428">使用這張卡片結帳時，系統會填入虛擬卡號，保護你的實際卡片資料。你可以在 Google 錢包管理卡片。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡片<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">部分資料尚未儲存</translation>
 <translation id="3770620323585347665">命名視窗</translation>

@@ -187,6 +187,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1125550662859510761">Looks like <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Native)</translation>
 <translation id="1125816658532547876">Use your passwords on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Wallpaper and style</translation>
+<translation id="1126475802377716263">{0,plural, =1{Sharing 1 tab}other{Sharing # tabs}}</translation>
 <translation id="1126696498560056882">Manage accounts on this device</translation>
 <translation id="1128591060186966949">Edit search engine</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -1769,6 +1770,7 @@ You can manage this account’s settings by installing the Family Link app on yo
     <ph name="BEGIN_LINK" />
     Help Centre<ph name="END_LINK" />.</translation>
 <translation id="22649924370461580">Saved tab groups</translation>
+<translation id="2265924028278810827">Parent app: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP over USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth disabled</translation>
 <translation id="2268182915828370037">Turn off file sync?</translation>
@@ -1964,6 +1966,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2406942743794219791">Confirm the default search engine that you want</translation>
 <translation id="2407671304279211586">Select DNS provider</translation>
 <translation id="2408018932941436077">Saving card</translation>
+<translation id="2408601796549249241">Gemini bottom sheet at full height</translation>
 <translation id="2408762424059547338">Better protects you from attacks by turning off JavaScript optimisation</translation>
 <translation id="2408955596600435184">Enter your PIN</translation>
 <translation id="2409378541210421746">Edit language selection</translation>
@@ -2720,6 +2723,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2932483646085333864">Sign out then sign in again to start sync</translation>
 <translation id="2932883381142163287">Report abuse</translation>
 <translation id="2933632078076743449">Last update</translation>
+<translation id="2933653107553951760">Restore group</translation>
 <translation id="2934225044529065415">Can't access camera</translation>
 <translation id="2935314715123552088">Disable active eSIM profile</translation>
 <translation id="2935654492420446828">Add a school account later</translation>
@@ -2814,6 +2818,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001144475369593262">Child accounts</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{No keys customised}=1{1 customised key}other{{COUNT} customised keys}}</translation>
+<translation id="3002864108328203174">Gemini bottom sheet at half height.</translation>
 <translation id="3003144360685731741">Preferred networks</translation>
 <translation id="3003253259757197230">URLs that you visit are sent to Google to predict what sites you might visit next and to show you additional info about the page that you're visiting</translation>
 <translation id="3003623123441819449">CSS cache</translation>
@@ -3855,6 +3860,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3756485814916578707">Casting screen</translation>
 <translation id="3756578970075173856">Set PIN</translation>
 <translation id="3756806135608816820">Sites can ask to look for Bluetooth devices</translation>
+<translation id="3756823472711156529">Restore group</translation>
 <translation id="3757567010566591880">Unpin from Toolbar</translation>
 <translation id="3757645900890881944">Search tools</translation>
 <translation id="3757733214359997190">No sites found</translation>
@@ -4826,6 +4832,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4444304522807523469">Access document scanners attached via USB or on the local network</translation>
 <translation id="4444512841222467874">If space isn’t made available, users and data may be automatically removed.</translation>
 <translation id="4445446646109808714">End User Licence Agreement: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">Restore split view</translation>
 <translation id="4446933390699670756">Mirrored</translation>
 <translation id="4448560527907365660">Save and see more</translation>
 <translation id="4449247303975391730">Manage permissions</translation>
@@ -4959,6 +4966,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4562364000855074606">Block apps installed on this <ph name="DEVICE_TYPE" />. To restrict downloading apps or content, go to Google Play settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Initial input language is Chinese</translation>
 <translation id="4563382028841851106">Remove from account</translation>
+<translation id="4563883094055457792">R&amp;estore split view</translation>
 <translation id="4564245002465020751">Finish setting up on your phone</translation>
 <translation id="456449593072900590">Delete on exit</translation>
 <translation id="4565377596337484307">Hide password</translation>
@@ -5863,6 +5871,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5221516927483787768">Unable to cast <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Insecure download blocked</translation>
 <translation id="5222676887888702881">Sign out</translation>
+<translation id="5222710719845250566">Restore window</translation>
 <translation id="5225324770654022472">Show apps shortcut</translation>
 <translation id="52254442782792731">Current visibility setting is not set yet</translation>
 <translation id="5225463052809312700">Turn on camera</translation>
@@ -7235,6 +7244,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6266984048393265562">Customise profile</translation>
 <translation id="6267166720438879315">Select a certificate to which you want to authenticate <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Open with <ph name="APP" /></translation>
+<translation id="6269392226729599142">Restore split view</translation>
 <translation id="6270309713620950855">Mute nudge</translation>
 <translation id="6270391203985052864">Sites can ask to send notifications</translation>
 <translation id="6270770586500173387">Send <ph name="BEGIN_LINK1" />system and app information<ph name="END_LINK1" />, and <ph name="BEGIN_LINK2" />metrics<ph name="END_LINK2" /></translation>
@@ -8978,6 +8988,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">Storage, power, language</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> download unsuccessful</translation>
+<translation id="7551303452605464331">R&amp;estore split view</translation>
 <translation id="7551643184018910560">Pin to shelf</translation>
 <translation id="7552191410769096467">To share or join tab groups, you need to sign in and turn on sync</translation>
 <translation id="7552196109089297786">Sign out of Microsoft</translation>
@@ -11130,6 +11141,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9087949559523851360">Add restricted user</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> is blocked by enterprise policy</translation>
 <translation id="90885733430013283">Wi-Fi SSID</translation>
+<translation id="9088578317174654338">Gemini bottom sheet closed.</translation>
 <translation id="9089416786594320554">Input methods</translation>
 <translation id="9089959054554410481">Change touchpad scrolling direction</translation>
 <translation id="9090044809052745245">How your device appears to others</translation>

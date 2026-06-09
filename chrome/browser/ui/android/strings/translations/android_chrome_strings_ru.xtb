@@ -244,6 +244,7 @@
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" />, всего <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Включен компактный вид</translation>
 <translation id="2093731487903423814">за последние 15 минут</translation>
+<translation id="2094298041331405438">Нажмите здесь, чтобы закрыть все окна в режиме инкогнито</translation>
 <translation id="2096577711562668473">Заменить сервис автозаполнения?</translation>
 <translation id="2109384632594340939">фото профиля</translation>
 <translation id="2111511281910874386">Перейти на страницу</translation>
@@ -505,6 +506,7 @@
 <translation id="3114507951000454849">Будьте в курсе новостей <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Подробнее</translation>
 <translation id="3123734510202723619">Оповещения</translation>
+<translation id="3132267803114336523">Чтобы закрыть все окна в режиме инкогнито, нажмите на значок этого режима</translation>
 <translation id="3134385238404760368">Нет недавних вкладок</translation>
 <translation id="3135655388926735587">Выберите "Недавние вкладки".</translation>
 <translation id="314939179385989105">Главная страница Chrome</translation>

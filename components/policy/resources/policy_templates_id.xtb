@@ -486,7 +486,6 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
       Jika kebijakan ini diaktifkan, pintasan keyboard internasional yang ditingkatkan akan aktif.
       Jika tidak disetel, kebijakan ini akan diaktifkan untuk perangkat terkelola dan diaktifkan untuk perangkat yang dimiliki oleh konsumen.
       Perhatikan bahwa ini hanya kebijakan sementara untuk memungkinkan pengguna terkelola agar tetap dapat menggunakan pintasan lama yang tidak digunakan lagi. Kebijakan ini tidak akan digunakan lagi setelah pintasan keyboard khusus tersedia.</translation>
-<translation id="1359459742455216057">ID unik untuk aplikasi <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="1361661842732478894">Tampilkan tombol Layar Utama di toolbar</translation>
 <translation id="1363275621236827384">Mengaktifkan kueri ke Quirks Server untuk profil hardware</translation>
 <translation id="1363839375295535439">Jika kebijakan ini disetel ke Aktif atau tidak disetel, LPAC Sandbox akan diaktifkan untuk layanan pencetakan setiap kali konfigurasi sistem mendukungnya.
@@ -9306,7 +9305,6 @@ Jika kebijakan ini disetel ke Aktif, data akan dikumpulkan dan diupload ke <ph n
 
 Untuk <ph name="PRODUCT_NAME" />, kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Untuk <ph name="PRODUCT_OS_NAME" />, kebijakan ini selalu berlaku.</translation>
-<translation id="6714333117401088746">ID project <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> yang sesuai dengan instance <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> yang akan diaktifkan.</translation>
 <translation id="6720330829631914048">Jam berlalu sejak awal hari dalam format 24 jam.</translation>
 <translation id="6720862827454058309">Ganti pemetaan ruang alamat IP</translation>
 <translation id="6721252203593581486">WebSQL di konteks pihak ketiga (misalnya, iframe lintas situs) nonaktif secara default mulai dari M97 dan akan dihapus sepenuhnya di M101.

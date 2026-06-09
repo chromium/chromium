@@ -476,7 +476,6 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
       정책을 사용 설정하면 개선된 국제 키보드 단축키가 사용됩니다.
       정책을 설정하지 않으면 정책이 관리 기기와 일반 사용자 소유의 기기 모두에서 사용 설정됩니다.
       이는 관리 대상 사용자가 지원 중단된 기존 단축키를 계속 사용할 수 있도록 허용하기 위한 임시 정책일 뿐입니다. 맞춤 키보드 단축키가 제공되면 이 정책은 지원 중단됩니다.</translation>
-<translation id="1359459742455216057"><ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 앱의 고유 식별자입니다.</translation>
 <translation id="1361661842732478894">툴바에 홈 버튼 표시</translation>
 <translation id="1363275621236827384">하드웨어 프로필 Quirks 서버에 검색어를 사용합니다.</translation>
 <translation id="1363839375295535439">이 정책을 사용 설정하거나 설정하지 않은 상태로 두면 시스템 구성에서 지원하는 경우 항상 인쇄 서비스에 LPAC 샌드박스를 사용 설정합니다.
@@ -9070,7 +9069,6 @@ false로 설정되면 Crostini 컨테이너로 포트 전달이 사용 중지됩
 
 <ph name="PRODUCT_NAME" />의 경우 정책은 기기가 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />으로 등록되어 있을 때만 적용됩니다.
 <ph name="PRODUCT_OS_NAME" />의 경우 정책이 항상 적용됩니다.</translation>
-<translation id="6714333117401088746">사용 설정할 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 인스턴스에 대응되는 <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> 프로젝트의 ID입니다.</translation>
 <translation id="6720330829631914048">하루가 시작된 이후 경과한 시간(24시간 형식)입니다.</translation>
 <translation id="6720862827454058309">IP 주소 공간 매핑 재정의</translation>
 <translation id="6721252203593581486">타사 컨텍스트에서 WebSQL(예: 크로스 사이트 iframe)은 M97부터 기본적으로 사용 중지되며 M101에서 완전히 삭제됩니다.

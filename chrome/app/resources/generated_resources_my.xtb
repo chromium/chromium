@@ -187,6 +187,7 @@
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (မူရင်း) ဟု ယူဆရပါသည်</translation>
 <translation id="1125816658532547876">သင့် <ph name="DEVICE_TYPE" /> တွင် စကားဝှက်များ သုံးပါ</translation>
 <translation id="1125921926864945797">နောက်ခံနှင့် ပုံစံ</translation>
+<translation id="1126475802377716263">{0,plural, =1{တဘ် ၁ ခု မျှဝေနေသည်}other{တဘ် # ခု မျှဝေနေသည်}}</translation>
 <translation id="1126696498560056882">ဤစက်ပေါ်ရှိ အကောင့်များကို စီမံခန့်ခွဲခြင်း</translation>
 <translation id="1128591060186966949">ရှာဖွေမှုအင်ဂျင်ကို တည်းဖြတ်ပါ</translation>
 <translation id="1129348283834595293">ဆိုက်ဘာသိပ္ပံ</translation>
@@ -1767,6 +1768,7 @@
     <ph name="BEGIN_LINK" />
     ကူညီရေးဌာန<ph name="END_LINK" /> သို့ သွားပါ။</translation>
 <translation id="22649924370461580">သိမ်းထားသည့် တဘ်အုပ်စုများ</translation>
+<translation id="2265924028278810827">ပင်မအက်ပ်- <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">USB မှတစ်ဆင့် IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">ဘလူးတုရှ် ပိတ်ထား</translation>
 <translation id="2268182915828370037">ဖိုင်စင့်ခ်လုပ်ခြင်း ပိတ်မလား။</translation>
@@ -1962,6 +1964,7 @@
 <translation id="2406942743794219791">သင်အသုံးပြုလိုသော မူရင်းရှာဖွေရေး အင်ဂျင်ကို အတည်ပြုပါ</translation>
 <translation id="2407671304279211586">DNS ပံ့ပိုးသူ ရွေးရန်</translation>
 <translation id="2408018932941436077">ကတ်ကို သိမ်းနေသည်</translation>
+<translation id="2408601796549249241">Gemini အောက်ခြေအပိုဆောင်း စာမျက်နှာကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်</translation>
 <translation id="2408762424059547338">JavaScript အကောင်းဆုံးချိန်ညှိခြင်းကို ပိတ်ခြင်းဖြင့် တိုက်ခိုက်မှုများမှ သင့်ကို ပိုမိုကာကွယ်ပေးသည်</translation>
 <translation id="2408955596600435184">သင့်ပင်နံပါတ်ကို ထည့်ပါ</translation>
 <translation id="2409378541210421746">ဘာသာစကားရွေးချယ်မှုကို ပြင်ရန်</translation>
@@ -2719,6 +2722,7 @@
 <translation id="2932483646085333864">စင့်ခ်စတင်ပြုလုပ်ရန် ထွက်ပြီး ပြန်လည်၍ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="2932883381142163287">အလွဲသုံးစားပြုခြင်းအား အစီရင်ခံရန်</translation>
 <translation id="2933632078076743449">နောက်ဆုံးအပ်ဒိတ်</translation>
+<translation id="2933653107553951760">အုပ်စုကို ပြန်ယူရန်</translation>
 <translation id="2934225044529065415">ကင်မရာကို သုံး၍မရပါ</translation>
 <translation id="2935314715123552088">လက်ရှိ eSIM ပရိုဖိုင်ကို ပိတ်ရန်</translation>
 <translation id="2935654492420446828">ကျောင်းအကောင့်ကို နောင်တွင် ထည့်ခြင်း</translation>
@@ -2813,6 +2817,7 @@
 <translation id="3000461861112256445">မိုနိုအသံ</translation>
 <translation id="3001144475369593262">ကလေး အကောင့်များ</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{စိတ်ကြိုက်လုပ်ထားသည့် ကီးမရှိပါ}=1{စိတ်ကြိုက်လုပ်ထားသည့် ကီး ၁ ခု}other{စိတ်ကြိုက်လုပ်ထားသည့် ကီး {COUNT} ခု}}</translation>
+<translation id="3002864108328203174">Gemini အောက်ခြေအပိုဆောင်း စာမျက်နှာကို မြင်ကွင်းတစ်ဝက် ဖွင့်ထားသည်။</translation>
 <translation id="3003144360685731741">ပိုနှစ်သက်သည့် ကွန်ရက်များ</translation>
 <translation id="3003253259757197230">နောက်တစ်ကြိမ် သင်ဝင်ကြည့်မည့် ဝဘ်ဆိုက်များကို ခန့်မှန်းရန် သင်ကြည့်ထားသော URL များကို Google သို့ ပို့ပြီး သင်ပြန်ကြည့်မည့် စာမျက်နှာအကြောင်း ထပ်ဆောင်းအချက်အလက်များကို ပြပေးသည်</translation>
 <translation id="3003623123441819449">CSS ကက်ရှ</translation>
@@ -3854,6 +3859,7 @@
 <translation id="3756485814916578707">ဖန်သားပြင်ကို ကာစ်လုပ်နေသည်</translation>
 <translation id="3756578970075173856">'ပင်နံပါတ်' သတ်မှတ်ပါ</translation>
 <translation id="3756806135608816820">ဘလူးတုသ်သုံးစက်များ ရှာရန် ဝဘ်ဆိုက်များက ခွင့်တောင်းနိုင်သည်</translation>
+<translation id="3756823472711156529">အုပ်စုကို ပြန်ယူရန်</translation>
 <translation id="3757567010566591880">ကိရိယာဘားမှ ပင်ဖြုတ်ရန်</translation>
 <translation id="3757645900890881944">ရှာဖွေရေးတူးလ်များ</translation>
 <translation id="3757733214359997190">မည်သည့်ဝဘ်ဆိုက်မျှ မရှိပါ</translation>
@@ -4824,6 +4830,7 @@
 <translation id="4444304522807523469">USB သို့မဟုတ် ဒေသခံ ကွန်ရက်မှ တစ်ဆင့် ချိတ်ဆက်ထားသည့် စာတမ်း စကင်နာများးကို ရယူသုံးရန်</translation>
 <translation id="4444512841222467874">နေရာလွတ်မရှိတော့လျှင် အသုံးပြုသူနှင့် ဒေတာများကို အလိုအလျောက် ဖယ်ရှားသွားပါမည်။</translation>
 <translation id="4445446646109808714">အသုံးပြုသူ လိုင်စင်သဘောတူညီချက်- <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">မြင်ကွင်းခွဲသို့ ပြန်ပြောင်းရန်</translation>
 <translation id="4446933390699670756">စကရင်ပွားထား</translation>
 <translation id="4448560527907365660">သိမ်းပြီး နောက်ထပ်ကြည့်ရန်</translation>
 <translation id="4449247303975391730">ခွင့်ပြုချက်များကို စီမံရန်</translation>
@@ -4957,6 +4964,7 @@
 <translation id="4562364000855074606">ဤ <ph name="DEVICE_TYPE" /> တွင် ထည့်သွင်းထားသော အက်ပ်များကို ပိတ်ထားနိုင်သည်။ အက်ပ်များ (သို့) အကြောင်းအရာ ဒေါင်းလုဒ်လုပ်ခြင်းကို ကန့်သတ်ရန် Google Play ဆက်တင်များသို့ သွားပါ။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">အဦးဆုံးထည့်သွင်းရန် နည်းလမ်းမှာ တရုတ်ဖြစ်</translation>
 <translation id="4563382028841851106">အကောင့်မှ ဖယ်ရှားရန်</translation>
+<translation id="4563883094055457792">မြင်ကွင်းခွဲသို့ ပြန်ပြောင်းရန်</translation>
 <translation id="4564245002465020751">သင့်ဖုန်းတွင် စနစ်ထည့်သွင်းမှု အပြီးသတ်ပါ</translation>
 <translation id="456449593072900590">ထွက်ချိန်တွင် ဖျက်ရန်</translation>
 <translation id="4565377596337484307">စကားဝှက်ကို ဖျောက်ရန်</translation>
@@ -5861,6 +5869,7 @@
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> ကို ကာစ်လုပ်၍မရပါ</translation>
 <translation id="5222403284441421673">လုံခြုံမှုမရှိသည့် ဒေါင်းလုဒ်ကို ပိတ်ထားခြင်း</translation>
 <translation id="5222676887888702881">ထွက်ခွာရန်</translation>
+<translation id="5222710719845250566">ဝင်းဒိုး ပြန်ယူရန်</translation>
 <translation id="5225324770654022472">အက်ပ်များ၏ ဖြတ်လမ်းကို ပြပေးရန်</translation>
 <translation id="52254442782792731">လက်ရှိမြင်နိုင်မှုဆက်တင်ကို မသတ်မှတ်ရသေးပါ</translation>
 <translation id="5225463052809312700">ကင်မရာဖွင့်ရန်</translation>
@@ -7235,6 +7244,7 @@
 <translation id="6266984048393265562">ပရိုဖိုင်ကို စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> သို့သင်ကိုယ်တိုင် စစ်မှန်ကြောင်း သက်သေပြရန် အသိမှတ်ပြုလက်မှတ် ရွေးပါ</translation>
 <translation id="6268252012308737255"><ph name="APP" />ဖြင့် ဖွင့်ရန်</translation>
+<translation id="6269392226729599142">မြင်ကွင်းခွဲသို့ ပြန်ပြောင်းရန်</translation>
 <translation id="6270309713620950855">သတိပေးနှိုးဆော်ချက် အသံပိတ်ရန်</translation>
 <translation id="6270391203985052864">ဝဘ်ဆိုက်များက အကြောင်းကြားချက်များပို့ရန် တောင်းဆိုနိုင်သည်</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />စနစ်နှင့် အက်ပ်အချက်အလက်များ <ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />မက်ထရစ်များ<ph name="END_LINK2" /> ကိုပို့ရန်</translation>
@@ -8975,6 +8985,7 @@
 <translation id="7550830279652415241">စာညှပ်များ_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">သိုလှောင်ခန်း၊ ပါဝါ၊ ဘာသာစကား</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> အား အောင်မြင်စွာ ဒေါင်းလုပ်ရယူပြီး၏</translation>
+<translation id="7551303452605464331">မြင်ကွင်းခွဲသို့ ပြန်ပြောင်းရန်</translation>
 <translation id="7551643184018910560">စင်သို့ ပင်ထိုးရန်</translation>
 <translation id="7552191410769096467">တဘ်အုပ်စုများကို မျှဝေရန် (သို့) ၎င်းတို့တွင် ပါဝင်ရန် လက်မှတ်ထိုးဝင်ပြီး စင့်ခ်လုပ်ခြင်း ဖွင့်ရန်လိုအပ်သည်</translation>
 <translation id="7552196109089297786">Microsoft မှ ထွက်ရန်</translation>
@@ -11127,6 +11138,7 @@
 <translation id="9087949559523851360">ကန့်သတ်ထားသော အသုံးပြုသူကို ထည့်ရန်</translation>
 <translation id="9088234649737575428">စီးပွားရေးလုပ်ငန်းဆိုင်ရာ မူဝါဒအရ <ph name="PLUGIN_NAME" /> ကို ပိတ်ဆို့ထားသည်</translation>
 <translation id="90885733430013283">WiFi SSID</translation>
+<translation id="9088578317174654338">Gemini အောက်ခြေအပိုဆောင်း စာမျက်နှာကို ပိတ်လိုက်သည်။</translation>
 <translation id="9089416786594320554">ထည့်သွင်းနည်းများ</translation>
 <translation id="9089959054554410481">တာ့ချ်ပက်လှိမ့်သည့် ဦးတည်ချက်ကို ပြောင်းရန်</translation>
 <translation id="9090044809052745245">အခြားသူများက သင့်စက်ကို မြင်ရပုံ</translation>

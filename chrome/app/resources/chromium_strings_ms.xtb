@@ -116,6 +116,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="2236949375853147973">Aktiviti Saya</translation>
 <translation id="2238130810669087193">Untuk mendapatkan alamat anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chromium. Alamat ini akan disimpan dalam Google Account anda selepas anda log masuk.</translation>
 <translation id="2241627712206172106">Jika anda berkongsi komputer, rakan dan keluarga boleh menyemak imbas secara berasingan dan menyediakan Chromium sebagaimana yang mereka mahukan.</translation>
+<translation id="22571759390241347">Kemahiran dalam Chromium</translation>
 <translation id="2283803047247799269">Cari tab ini dengan Carian Imej</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium mengesyorkan penjedaan tab yang memperlahankan penyemak imbas anda}other{Chromium mengesyorkan penjedaan tab yang memperlahankan penyemak imbas anda}}</translation>
 <translation id="2307973900865360088">Kekalkan dalam Dok</translation>
@@ -190,6 +191,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="3003694935412297923">Semua tugasan</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromium perlu mengesahkan identiti anda sebelum sesetengah data boleh disimpan dalam Google Account anda dan digunakan pada semua peranti anda. Jika anda log keluar sekarang, data ini (1 item) akan dipadamkan.}other{Chromium perlu mengesahkan identiti anda sebelum sesetengah data boleh disimpan dalam Google Account anda dan digunakan pada semua peranti anda. Jika anda log keluar sekarang, data ini ({count} item) akan dipadamkan.}}</translation>
 <translation id="3013473503895162900">Buka <ph name="URL" /> dalam tab baharu dalam Chromium.</translation>
+<translation id="302551344979399011">Inovasi AI seperti kemahiran disimpan pada Google Account anda dan diurus secara berasingan daripada penyegerakan Chromium</translation>
 <translation id="3032787606318309379">Menambah ke Chromium...</translation>
 <translation id="3038232873781883849">Menunggu untuk memasang...</translation>
 <translation id="3045032126857188731">Bahasa terjemahan: <ph name="LANGUAGE" /></translation>
@@ -381,6 +383,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="5289287148052354622">Dapatkan apl Chromium</translation>
 <translation id="5294316920224716406">Apabila menyemak imbas dalam Mod Inkognito, Chromium akan memberi anda amaran sebelum memuatkan laman menggunakan sambungan yang tidak selamat</translation>
 <translation id="5313228254328109263">Perkhidmatan Dalaman Pengemas Kini Chromium</translation>
+<translation id="5324450571874973775">Gunakan ciri ini bersama ciri Gemini yang lain dalam Chromium</translation>
 <translation id="5346389065299425353">Perincikan carian anda dengan menambahkan berbilang tab, fail dan alatan</translation>
 <translation id="5348677704241861105">Gunakan Gemini dalam Chromium untuk mendapatkan ikhtisar pantas bagi dokumen ini dan mengemukakan pertanyaan</translation>
 <translation id="5352264705793813212">Chromium menemukan beberapa syor keselamatan untuk semakan anda</translation>
@@ -672,6 +675,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8318772038038596122">Organisasi anda menutup Chromium apabila apl tersebut tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Simpan sebagai imej</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> menggunakan Chromium sebelum ini</translation>
+<translation id="8351551329754447960">Dayakan Kemahiran dalam Chromium</translation>
 <translation id="8359544530202147897">Kemas kinikan Chromium untuk terus menggunakan data Chromium dalam Google Account anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Untuk mendapatkan kemaskinian Chromium yang akan datang, anda memerlukan Windows 10 atau yang lebih baharu. Komputer ini menggunakan Windows 8.</translation>
 <translation id="8362914115861174987">Terjemahkan kepada</translation>

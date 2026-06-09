@@ -187,6 +187,7 @@
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> જેવું લાગે છે (મૂળ)</translation>
 <translation id="1125816658532547876">તમારા <ph name="DEVICE_TYPE" /> પર તમારા પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="1125921926864945797">વૉલપેપર અને શૈલી</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 ટૅબ શેર કરી રહ્યાં છીએ}one{# ટૅબ શેર કરી રહ્યાં છીએ}other{# ટૅબ શેર કરી રહ્યાં છીએ}}</translation>
 <translation id="1126696498560056882">આ ડિવાઇસ પરના એકાઉન્ટ મેનેજ કરો</translation>
 <translation id="1128591060186966949">શોધ એન્જિનમાં ફેરફાર કરો</translation>
 <translation id="1129348283834595293">સાઇબરપન્ક</translation>
@@ -1754,6 +1755,7 @@
 <translation id="2263679799334060788">તમારો પ્રતિસાદ અમને Google Castને બહેતર બનાવવામાં સહાય કરે છે અને તે પ્રશંસાને પાત્ર છે.
     કાસ્ટ કરવા સાથેની સમસ્યાઓના નિવારણ માટે, કૃપા કરીને <ph name="BEGIN_LINK" />સહાયતા કેન્દ્ર<ph name="END_LINK" />નો સંદર્ભ લો.</translation>
 <translation id="22649924370461580">સાચવેલા ટૅબના ગ્રૂપ</translation>
+<translation id="2265924028278810827">પેરન્ટ ઍપ: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">USB પર IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth અક્ષમ છે</translation>
 <translation id="2268182915828370037">ફાઇલને સિંક કરવાનું બંધ કરીએ?</translation>
@@ -1949,6 +1951,7 @@
 <translation id="2406942743794219791">તમને ડિફૉલ્ટ તરીકે જોઈતું શોધ એન્જિન કન્ફર્મ કરો</translation>
 <translation id="2407671304279211586">DNS પ્રદાતા પસંદ કરો</translation>
 <translation id="2408018932941436077">કાર્ડ સાચવી રહ્યાં છીએ</translation>
+<translation id="2408601796549249241">Gemini બોટમ શીટ પૂર્ણ ઊંચાઈએ ખોલી</translation>
 <translation id="2408762424059547338">JavaScript ઑપ્ટિમાઇઝેશન બંધ કરીને અટૅકથી તમને બહેતર રીતે સુરક્ષિત કરે છે</translation>
 <translation id="2408955596600435184">તમારો PIN દાખલ કરો</translation>
 <translation id="2409378541210421746">ભાષાની પસંદગીમાં ફેરફાર કરો</translation>
@@ -2705,6 +2708,7 @@
 <translation id="2932483646085333864">સિંક ચાલુ કરવા માટે સાઇન આઉટ કરો પછી ફરી સાઇન કરો</translation>
 <translation id="2932883381142163287">દુરુપયોગ જણાવો</translation>
 <translation id="2933632078076743449">છેલ્લે અપડેટ</translation>
+<translation id="2933653107553951760">ગ્રૂપ રિસ્ટોર કરો</translation>
 <translation id="2934225044529065415">કૅમેરાને ઍક્સેસ કરી શકાતો નથી</translation>
 <translation id="2935314715123552088">સક્રિય ઇ-સિમ પ્રોફાઇલ બંધ કરો</translation>
 <translation id="2935654492420446828">પછીથી સ્કૂલનું એકાઉન્ટ ઉમેરો</translation>
@@ -2799,6 +2803,7 @@
 <translation id="3000461861112256445">મૉનો ઑડિઓ</translation>
 <translation id="3001144475369593262">બાળકના એકાઉન્ટ</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{કસ્ટમાઇઝ કરેલી કોઈ કી નથી}=1{1 કસ્ટમાઇઝ કરેલી કી}one{{COUNT} કસ્ટમાઇઝ કરેલી કી}other{{COUNT} કસ્ટમાઇઝ કરેલી કી}}</translation>
+<translation id="3002864108328203174">Gemini બોટમ શીટ અડધી ઊંચાઈએ ખોલી.</translation>
 <translation id="3003144360685731741">પસંદગીના નેટવર્ક્સ</translation>
 <translation id="3003253259757197230">તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે તેમજ તમે જેની મુલાકાત લઈ રહ્યાં હો તે પેજ વિશે વધારાની માહિતી તમને બતાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="3003623123441819449">CSS કૅશ મેમરી</translation>
@@ -3840,6 +3845,7 @@
 <translation id="3756485814916578707">સ્ક્રીનને કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="3756578970075173856">પિન સેટ કરો</translation>
 <translation id="3756806135608816820">બ્લૂટૂથ ડિવાઇસ શોધવા માટે સાઇટ પૂછી શકશે</translation>
+<translation id="3756823472711156529">ગ્રૂપ રિસ્ટોર કરો</translation>
 <translation id="3757567010566591880">ટૂલબારથી અનપિન કરો</translation>
 <translation id="3757645900890881944">Searchના ટૂલ</translation>
 <translation id="3757733214359997190">કોઈ સાઇટ મળી નથી</translation>
@@ -4811,6 +4817,7 @@
 <translation id="4444304522807523469">USB અથવા સ્થાનિક નેટવર્ક મારફતે જોડાયેલ દસ્તાવેજ સ્કેનર્સની ઍક્સેસ</translation>
 <translation id="4444512841222467874">જો સ્થાન ઉપલબ્ધ બનાવવામાં ન આવે, તો વપરાશકર્તાઓ અને ડેટા ઑટોમૅટિક રીતે કાઢી નાખવામાં આવી શકે છે.</translation>
 <translation id="4445446646109808714">વાપરનાર લાઇસન્સ કરાર: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">વિભાજિત વ્યૂ રિસ્ટોર કરો</translation>
 <translation id="4446933390699670756">પ્રતિબિંબિત</translation>
 <translation id="4448560527907365660">સાચવો અને વધુ સુવિધાઓ જુઓ</translation>
 <translation id="4449247303975391730">પરવાનગીઓને મેનેજ કરો</translation>
@@ -4944,6 +4951,7 @@
 <translation id="4562364000855074606">આ <ph name="DEVICE_TYPE" /> પર ઇન્સ્ટૉલ કરેલી ઍપને બ્લૉક કરો. ઍપ અથવા કન્ટેન્ટ ડાઉનલોડ કરવા પર પ્રતિબંધ મૂકવા માટે, Google Playના સેટિંગ પર જાઓ. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">પ્રારંભિક ઇનપુટ ભાષા ચીની છે</translation>
 <translation id="4563382028841851106">એકાઉન્ટમાંથી કાઢી નાખો</translation>
+<translation id="4563883094055457792">વિભાજિત વ્યૂ રિસ્ટોર કરો</translation>
 <translation id="4564245002465020751">તમારા ફોન પર સેટઅપની પ્રક્રિયા પૂર્ણ કરો</translation>
 <translation id="456449593072900590">બહાર નીકળવા પર ડિલીટ કરો</translation>
 <translation id="4565377596337484307">પાસવર્ડ છુપાવો</translation>
@@ -5848,6 +5856,7 @@
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> કાસ્ટ કરી શકતા નથી</translation>
 <translation id="5222403284441421673">બ્લૉક કરેલા અસુરક્ષિત ડાઉનલોડ</translation>
 <translation id="5222676887888702881">સાઇન આઉટ</translation>
+<translation id="5222710719845250566">વિન્ડો રિસ્ટોર કરો</translation>
 <translation id="5225324770654022472">ઍપ્લિકેશનો શોર્ટકટ બતાવો</translation>
 <translation id="52254442782792731">દૃશ્યતાનું વર્તમાન સેટિંગ હજી સુધી સેટ કર્યું નથી</translation>
 <translation id="5225463052809312700">કૅમેરા ચાલુ કરો</translation>
@@ -7222,6 +7231,7 @@ USB ડિવાઇસ</translation>
 <translation id="6266984048393265562">પ્રોફાઇલ કસ્ટમાઇઝ કરો</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> પર પોતાને પ્રમાણિત કરવા માટે એક પ્રમાણપત્ર પસંદ કરો</translation>
 <translation id="6268252012308737255"><ph name="APP" /> સાથે ખોલો</translation>
+<translation id="6269392226729599142">વિભાજિત વ્યૂ રિસ્ટોર કરો</translation>
 <translation id="6270309713620950855">સંકેત મ્યૂટ કરો</translation>
 <translation id="6270391203985052864">સાઇટ તમને નોટિફિકેશન મોકલવા માટે પૂછી શકે છે</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />સિસ્ટમ અને ઍપ્લિકેશન માહિતી<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />મેટ્રિક્સ<ph name="END_LINK2" /> મોકલો</translation>
@@ -8967,6 +8977,7 @@ USB ડિવાઇસ</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">સ્ટોરેજ, પાવર, ભાષા</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ડાઉનલોડ અસફળ થયું</translation>
+<translation id="7551303452605464331">વિભાજિત વ્યૂ રિસ્ટોર કરો</translation>
 <translation id="7551643184018910560">શેલ્ફ પર પિન કરો</translation>
 <translation id="7552191410769096467">ટૅબના ગ્રૂપ શેર કરવા અથવા તેમાં જોડાવા માટે, તમારે સાઇન ઇન કરીને સિંક કરવાની જરૂર છે</translation>
 <translation id="7552196109089297786">Microsoftમાંથી સાઇન આઉટ કરો</translation>
@@ -11114,6 +11125,7 @@ USB ડિવાઇસ</translation>
 <translation id="9087949559523851360">પ્રતિબંધિત વપરાશકર્તા ઉમેરો</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" />, એન્ટરપ્રાઇઝ પૉલિસી દ્વારા અવરોધિત કરેલું છે</translation>
 <translation id="90885733430013283">વાઇ-ફાઇ SSID</translation>
+<translation id="9088578317174654338">Gemini બોટમ શીટ બંધ કરી.</translation>
 <translation id="9089416786594320554">ઇનપુટ પદ્ધતિઓ</translation>
 <translation id="9089959054554410481">ટચપૅડ સ્ક્રોલિંગની દિશાને બદલો</translation>
 <translation id="9090044809052745245">અન્ય લોકોને તમારું ડિવાઇસ આ નામે દેખાશે</translation>

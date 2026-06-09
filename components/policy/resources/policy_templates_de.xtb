@@ -308,6 +308,13 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="1214639335214075459">Videodecodierung durch GPU-Hardware aktivieren</translation>
 <translation id="1214942205301731697">Verwendung des Entwicklermodus auf der Seite „Erweiterungen“ nicht zulassen</translation>
 <translation id="1216919699175573511">Unterstützung für Signed HTTP Exchange (SXG) aktivieren</translation>
+<translation id="1217033439268053263">Diese Richtlinie wurde eingestellt. Du kannst stattdessen die <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> verwenden. Damit wird diese Richtlinie überschrieben und eine bessere Feinabstimmung ermöglicht.
+
+      Erzwingt den moderaten eingeschränkten Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> und verhindert, dass Nutzer diese Einstellung ändern.
+
+      Wenn diese Einstellung aktiviert ist, wird in <ph name="YOUTUBE_PRODUCT_NAME" /> immer mindestens der eingeschränkte Modus „Moderat“ erzwungen.
+
+      Ist diese Einstellung deaktiviert oder nicht konfiguriert, wird der eingeschränkte Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> nicht durch <ph name="PRODUCT_NAME" /> erzwungen. Der eingeschränkte Modus kann möglicherweise jedoch trotzdem durch externe Richtlinien wie <ph name="YOUTUBE_PRODUCT_NAME" />-Richtlinien erzwungen werden.</translation>
 <translation id="1219027971768347970">Standardkonfiguration für die Audio-Sandbox verwenden</translation>
 <translation id="1219036692926668273"><ph name="HAPPY_EYEBALLS_V3" />-Algorithmus wird verwendet.</translation>
 <translation id="1221359380862872747">Bei Demo-Anmeldung angegebene URLs laden</translation>
@@ -469,7 +476,6 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
       Wenn diese Richtlinie aktiviert ist, werden verbesserte internationale Tastenkürzel aktiviert.
       Ist die Richtlinie nicht konfiguriert, wird sie für verwaltete und nutzereigene Geräte aktiviert.
       Beachte, dass es sich hierbei um eine vorübergehende Richtlinie handelt, die dafür sorgt, dass alte Tastenkürzel weiterhin von verwalteten Nutzern verwendet werden können. Diese Richtlinie wird verworfen, sobald benutzerdefinierte Tastenkürzel verfügbar sind.</translation>
-<translation id="1359459742455216057">Die eindeutige Kennung der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> App.</translation>
 <translation id="1361661842732478894">„Home“-Button in der Symbolleiste anzeigen</translation>
 <translation id="1363275621236827384">Abfragen an Quirks-Server für Hardwareprofile aktivieren</translation>
 <translation id="1363839375295535439">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die LPAC-Sandbox für Druckdienste aktiviert, sofern dies von der Systemkonfiguration unterstützt wird.
@@ -549,6 +555,7 @@ Diese Richtlinie gilt nicht für den Inkognitomodus und funktioniert darin auch 
 <translation id="1417888712677507140">JavaScript-Dialogfelder blockieren, die von einem anderen Quell-Subframe ausgelöst wurden</translation>
 <translation id="1418387035898607074">Safe Browsing-Überprüfung für den Dateidownload von vertrauenswürdigen Quellen überspringen</translation>
 <translation id="1419020637569060510">Einschränkungen zur Nutzung eines verwalteten Kontos als sekundäres Konto in Chrome OS hinzufügen</translation>
+<translation id="1423311643274506889">Erzwingen, dass in der Google Suche SafeSearch verwendet wird und der eingeschränkte Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> mindestens auf „Moderat“ festgelegt ist</translation>
 <translation id="1423359855587524289">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann die App die Autorisierung „vorläufige“ Benachrichtigungen von iOS verwenden, um Benachrichtigungen im Benachrichtigungscenter von iOS anzuzeigen.
 
 Wenn die Richtlinie deaktiviert ist, verwendet die App keine vorläufigen Benachrichtigungen.</translation>
@@ -2104,6 +2111,7 @@ Der Nutzer kann ein Google Fotos-Bild als Hintergrund auswählen, wenn diese Ric
 <translation id="2393862222659066027">Liste mit URLs öffnen und die letzte Sitzung wiederherstellen</translation>
 <translation id="239416486107542256">In den Einstellungen von F11 wird die Tastenkombination verwendet, die den Strg- und den Umschalttaste-Modifikator enthält</translation>
 <translation id="2394429297128584919">Nicht zulassen, dass Seiten beim Schließen synchrone XHR-Anfragen senden</translation>
+<translation id="2398817690049129302">Sicheren Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> erzwingen</translation>
 <translation id="2399987589969059485">Über diese Richtlinie kannst du festlegen, welche Variationen in <ph name="PRODUCT_NAME" /> zulässig sind.
 
       Mit Variationen sind kleine Konfigurationsänderungen an <ph name="PRODUCT_NAME" /> möglich, ohne dass eine neue Version veröffentlicht werden muss. Dazu werden bestehende Funktionen aktiviert oder deaktiviert. Weitere Informationen findest du unter https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework.
@@ -2571,6 +2579,7 @@ Ist diese Richtlinie deaktiviert oder nicht konfiguriert, werden keine „<ph na
 Informationen zu Einschränkungen für <ph name="PRIVATE_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/private-network-access/.</translation>
 <translation id="2600005880585324062"><ph name="PRODUCT_NAME" /> soll entscheiden, welche Ursprünge von anderen SameSite-Ursprüngen isoliert werden sollen.</translation>
 <translation id="26023406105317310">Kerberos-Konten konfigurieren</translation>
+<translation id="2603163741218691337">Löschen von <ph name="YOUTUBE_PRODUCT_NAME" />-Cookies nicht einschränken</translation>
 <translation id="2603237557651009842">WebPrinting API auf diesen Websites blockieren</translation>
 <translation id="2603382859270873566">Unterstützung für die PPB_VideoDecoder(Dev) API aktivieren.</translation>
 <translation id="2604182581880595781">Richtlinien für Netzwerkfreigaben konfigurieren.</translation>
@@ -3346,6 +3355,7 @@ Ist diese Richtlinie deaktiviert oder nicht konfiguriert, wird das unverankerte 
 <translation id="3142410959002029864">Durch die Richtlinie wird der standardmäßige Duplexmodus überschrieben. Wenn der Modus nicht verfügbar ist, wird die Richtlinie ignoriert.</translation>
 <translation id="3143203373436771188">Beim Aufrufen von Office-Dokumenten, die normalerweise im <ph name="BASIC_EDITOR_NAME" /> geöffnet werden, diese im <ph name="BASIC_EDITOR_NAME" /> öffnen</translation>
 <translation id="3144173889708944482">Wenn <ph name="PRINTERS_BLOCKLIST" /> für <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer nicht verwenden können. Mit Ausnahme der in dieser Richtlinie aufgeführten IDs können die Nutzer auf alle Drucker zugreifen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY_NAME" /> angegeben ist.</translation>
+<translation id="3144419820067745871"><ph name="YOUTUBE_PRODUCT_NAME" /> (wird seit Version 135 unterstützt)</translation>
 <translation id="3146711617256415776">Stimmen für Text-zu-Sprache bei Enhanced Network nicht zulassen, wenn die Funktion „Vorlesen“ verwendet wird</translation>
 <translation id="315013437951136266">Funktion „<ph name="IP_PROTECTION_NAME" />“ aktivieren.</translation>
 <translation id="3150351525324499342"><ph name="PRODUCT_NAME" />-Symbol nicht standardmäßig in der Symbolleiste anzeigen, sondern Nutzer auswählen lassen</translation>
@@ -4208,6 +4218,7 @@ Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer die <p
 Diese Richtlinie wird ab Version 144 von <ph name="PRODUCT_NAME" /> mit der Einstellung der Protected Audience API eingestellt.</translation>
 <translation id="3733014427925403568">Wochentag des Intervalls.</translation>
 <translation id="3736879847913515635">"Person hinzufügen" im Nutzermanager aktivieren</translation>
+<translation id="3741204225338304131">Minimalen eingeschränkten Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> erzwingen</translation>
 <translation id="3744984310825999317">Zulassen, dass <ph name="PEPPER_NAME" /> einen neuen Decoder für die hardwarebeschleunigte Videodecodierung verwendet.</translation>
 <translation id="3749259744154402564">Nicht unterstützt</translation>
 <translation id="3749511622128647337">Audioausgabe deaktivieren</translation>
@@ -5530,6 +5541,7 @@ Altes Verhalten: Wenn in „beforeunload“ ein Aufruf von „event.preventDefau
       Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Der Platzhalter „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="4624417808625504735">Verwendung von JIT durch JavaScript auf diesen Websites blockieren</translation>
 <translation id="46321462262887935">Tasten der obersten Reihe als Funktionstasten nutzen (Nutzer kann dies ändern)</translation>
+<translation id="4635757219046879316">Mindestens den moderaten eingeschränkten Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> erzwingen</translation>
 <translation id="4636354638176939375">Erstellung von betreuten Nutzern deaktivieren</translation>
 <translation id="4637701328641064644">Mit dieser Richtlinie wird festgelegt, ob Blob-URLs beim Abrufen und Navigieren partitioniert werden.
 Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Blob-URLs partitioniert.
@@ -6123,6 +6135,7 @@ Diese Einstellung steuert die Darstellung von Werbeinhalten, einschließlich Beg
 
       In „<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />“ wird beschrieben, wie du Apps an die <ph name="PRODUCT_OS_NAME" />-Ablage anpinnen kannst.</translation>
 <translation id="494613465159630803">Cast Receiver</translation>
+<translation id="4947257516265472776">Strikt eingeschränkten Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> erzwingen</translation>
 <translation id="494924690085329212">Nach Nutzerabmeldung neu starten, wenn Android gestartet wurde.</translation>
 <translation id="4950447493143157880">Integrierten DNS-Client nie verwenden</translation>
 <translation id="4953541641325278286">Keiner Website erlauben, den Inaktivitätsstatus des Nutzers zu erkennen</translation>
@@ -6744,6 +6757,13 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, bestimmt der Brow
       Wenn das Attribut <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> in einer <ph name="GET_DISPLAY_MEDIA_SET_NAME" />-Anfrage definiert ist, werden alle Bildschirmoberflächen automatisch aufgenommen, ohne dass eine explizite Genehmigung durch den Nutzer erforderlich ist.
       Ist die Richtlinie nicht konfiguriert, steht <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> keinen Web-Apps zur Verfügung.
 Zur Verbesserung des Datenschutzes kann diese Richtlinie ab <ph name="PRODUCT_NAME" />-Version 116 nicht mehr dynamisch aktualisiert werden. Der Nutzer kann sich somit darauf verlassen, dass nach der Anmeldung keine Seiten den Bildschirm erfassen können, denen das nicht schon zu Beginn der Sitzung erlaubt war.</translation>
+<translation id="5351894784463048975">Diese Richtlinie wurde eingestellt. Verwende stattdessen die <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> und die <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Diese Richtlinie wird ignoriert, wenn entweder die <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, die <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> oder die eingestellte <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> konfiguriert ist.
+
+      Erzwingt die Ausführung der Google Websuche mit aktivierter SafeSearch-Funktion und verhindert, dass Nutzer diese Einstellung ändern. Durch diese Einstellung wird in <ph name="YOUTUBE_PRODUCT_NAME" /> auch der moderate eingeschränkte Modus erzwungen.
+
+      Wenn du diese Einstellung aktivierst, sind in der Google Suche SafeSearch und in <ph name="YOUTUBE_PRODUCT_NAME" /> der moderate eingeschränkte Modus immer aktiv.
+
+      Wenn du diese Einstellung deaktivierst oder nicht konfigurierst, werden SafeSearch in der Google Suche und der eingeschränkte Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> nicht erzwungen.</translation>
 <translation id="5361167871898066799">Autokorrektur bei Nutzung der physischen Tastatur steuern</translation>
 <translation id="5361708558735884308">Mit dieser Richtlinie kann auf die aufgeführten URLs zugegriffen werden (als Ausnahmen von „<ph name="URL_BLOCKLIST_POLICY_NAME" />“). Informationen zum Format der Einträge in der Liste findest du in der Beschreibung der Richtlinie. Beispielsweise werden alle Anfragen blockiert, wenn du „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ auf * setzt. Du kannst diese Richtlinie verwenden, um den Zugriff auf eine eingeschränkte Liste mit URLs zu erlauben. Mit ihr lassen sich bei Verwendung des unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegebenen Formats Ausnahmen für bestimmte Schemas, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist. Die Richtlinie „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ hat Vorrang vor „<ph name="URL_BLOCKLIST_POLICY_NAME" />“. Diese Richtlinie ist auf 1.000 Einträge beschränkt.
 
@@ -7053,6 +7073,7 @@ Weitere Informationen findest du auch unter https://wiki.samba.org/index.php/Sam
 
       Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/.</translation>
 <translation id="554903022911579950">Kerberos</translation>
+<translation id="5549325536554939195">In <ph name="YOUTUBE_PRODUCT_NAME" /> mindestens den eingeschränkten Modus „Moderat“ erzwingen</translation>
 <translation id="555022085242359084">Hohen Kontrast auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="555077880566103058">Automatische Ausführung des Plug-ins "<ph name="FLASH_PLUGIN_NAME" />" für alle Websites zulassen</translation>
 <translation id="5555361544583789006">Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, dürfen Nutzern in <ph name="PRODUCT_NAME" /> Produktinformationen auf einem ganzen Tab angezeigt werden.
@@ -7516,6 +7537,15 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Mit <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> ist entweder eine exakte Versionsangabe wie "13305.0.0" oder ein Versionspräfix wie "13305" gemeint.
       Die Werte für <ph name="WARNING_PERIOD_PROPERTY_NAME" /> und <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> sind optional und werden in Tagen angegeben. Der Standardwert liegt bei 0 Tagen.
       Das Attribut <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> ist optional und der Standardwert "False".</translation>
+<translation id="5876812185674131521">Verhindert das manuelle Löschen von <ph name="YOUTUBE_PRODUCT_NAME" />-Cookies.
+
+Diese Richtlinie soll verhindern, dass Nutzer nach dem manuellen Löschen ihrer <ph name="YOUTUBE_PRODUCT_NAME" />-Cookies über die Seite mit den Websiteeinstellungen ohne Autorisierung auf <ph name="YOUTUBE_PRODUCT_NAME" /> zugreifen.
+
+Wenn die Richtlinie aktiviert ist, können <ph name="YOUTUBE_PRODUCT_NAME" />-Cookies nicht manuell gelöscht werden.
+
+Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können <ph name="YOUTUBE_PRODUCT_NAME" />-Cookies normal gelöscht werden.
+
+Hinweis: Diese Richtlinie verhindert nur das manuelle Löschen über die Benutzeroberfläche der Websiteeinstellungen. Sie verhindert nicht das automatische Löschen durch die Richtlinien „<ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />“ oder „<ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" />“. Wenn die Richtlinie „<ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />“ aktiviert ist, können Nutzer außerdem alle ihre Cookies über das Dialogfeld „Browserdaten löschen“ löschen.</translation>
 <translation id="5879014913445067283">Steuerung der Erkennung von Netzwerkfreigaben über <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">"Zum Suchen antippen" aktivieren</translation>
 <translation id="5882345429632338713">Verzögerung vor dem Starten eines alternativen Browsers (Millisekunden)</translation>
@@ -7759,6 +7789,7 @@ Diese Richtlinie wird ab M124 eingestellt.</translation>
 <translation id="6035597431797865964">Zulassen, dass bei verwalteten Gastsitzungen Anzeigeeigenschaften dauerhaft festgelegt werden</translation>
 <translation id="6036459377708946958">Tag im Monat (1–31), an dem die Updateprüfung durchgeführt werden soll, angegeben in der lokalen Zeit des Geräts. Diese Richtlinie wird nur verwendet, wenn „frequency“ auf „MONTHLY“ gesetzt ist. Falls der Wert höher ist als die maximale Anzahl von Tagen in einem bestimmten Monat, wird der jeweils letzte Tag des Monats gewählt.</translation>
 <translation id="6036523166753287175">Firewallausnahme über Host für Remote-Zugriff aktivieren</translation>
+<translation id="6037328895573728112">Löschen von <ph name="YOUTUBE_PRODUCT_NAME" />-Cookies einschränken</translation>
 <translation id="603768430528561926">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer von Geräten in Unternehmen Angebote einlösen, indem sie <ph name="PRODUCT_OS_NAME" /> registrieren.
 
       Ist die Richtlinie deaktiviert, können solche Nutzer diese Angebote nicht einlösen.</translation>
@@ -8469,6 +8500,7 @@ Weitere Informationen findest du in der Richtlinie <ph name="HTTPS_ONLY_MODE_POL
 Ist sie deaktiviert, ist die <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> auf keiner Webseite verfügbar.
 
 Zugehörige Funktionen mit generativer KI sind für Konten von Bildungseinrichtungen oder Unternehmenskonten nicht verfügbar.</translation>
+<translation id="6466693757921765054">Diese Richtlinie hat keine Auswirkungen auf die <ph name="ANDROID_NAME" /> <ph name="YOUTUBE_PRODUCT_NAME" /> App. Wenn der sichere Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> erzwungen werden soll, darf das Installieren der <ph name="ANDROID_NAME" /> <ph name="YOUTUBE_PRODUCT_NAME" /> App nicht zugelassen werden.</translation>
 <translation id="6467613372414922590">Hosts für natives Messaging, die ohne Berechtigung des Administrators installiert wurden, auf Nutzerebene zulassen</translation>
 <translation id="6467707081687600148">Mit dieser Richtlinie wird ein automatischer Neustart nach einem Update von <ph name="PRODUCT_OS_NAME" /> geplant.
 
@@ -8891,7 +8923,6 @@ Wenn die Richtlinie aktiviert ist, werden Daten erhoben und in die <ph name="GOO
 
 Sie wird für <ph name="PRODUCT_NAME" /> nur angewendet, wenn das Gerät mit „<ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />“ registriert ist.
 Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
-<translation id="6714333117401088746">Die ID des Projekts „<ph name="GOOGLE_CLOUD_PRODUCT_NAME" />“, das der zu aktivierenden <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Instanz entspricht.</translation>
 <translation id="6720330829631914048">Zahl der seit Beginn des Tages verstrichenen Stunden (im 24-Stunden-Format).</translation>
 <translation id="6720862827454058309">Zuordnungen von IP-Adressbereichen überschreiben</translation>
 <translation id="6721252203593581486">WebSQL ist im Zusammenhang mit Drittanbietern (z. B. websiteübergreifende iFrames) ab M97 standardmäßig deaktiviert und wird in M101 vollständig entfernt.
@@ -8968,6 +8999,7 @@ Wird die Richtlinie deaktiviert, wird das Symbol für den Zugriff auf experiment
 
       „chrome://flags“ und alle weiteren Möglichkeiten zum Aktivieren oder Deaktivieren von Browserfunktionen funktionieren weiter wie gewohnt, unabhängig davon, ob diese Richtlinie aktiviert oder deaktiviert ist.</translation>
 <translation id="6794273802619210652">Bedienungshilfe „Mimik-Steuerung“ aktivieren</translation>
+<translation id="6795338611092628062">Verwendung von SafeSearch in der Google Suche oder im eingeschränkten Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> nicht erzwingen</translation>
 <translation id="6795485990775913659">Drucken nur ohne PIN zulassen</translation>
 <translation id="6796215185873669533">Standardmäßig Browsereinstellungen für die Hauptversion im User-Agent-String verwenden.</translation>
 <translation id="6800181452282128474">Keine Anfragen an Quirks Server stellen</translation>
@@ -9292,6 +9324,13 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
        Konfiguriere diese Richtlinie nicht, wenn du dich für eine andere Methode zur Festlegung der Proxyrichtlinien entschieden hast.
 
        Hinweis: Ausführliche Beispiele findest du in den Chromium-Projekten ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
+<translation id="7001463504545085491">Wenn die Richtlinie konfiguriert ist, wird ein minimaler eingeschränkter Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> erzwungen und es wird verhindert, dass Nutzer einen weniger eingeschränkten Modus auswählen. Wird diese Richtlinie
+
+* auf „Strikt“ festgelegt, ist der strikt eingeschränkte Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> immer aktiv.
+
+      * auf „Moderat“ festgelegt, kann der Nutzer in <ph name="YOUTUBE_PRODUCT_NAME" /> nur den moderaten eingeschränkten Modus und den strikt eingeschränkten Modus auswählen, jedoch den eingeschränkten Modus nicht deaktivieren.
+
+      * auf „Aus“ festgelegt oder nicht konfiguriert, wird der eingeschränkte Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> nicht durch Chrome erzwungen. Der eingeschränkte Modus wird jedoch möglicherweise trotzdem durch externe Richtlinien wie <ph name="YOUTUBE_PRODUCT_NAME" />-Richtlinien erzwungen.</translation>
 <translation id="7001915679435065291">Wenn die Richtlinie auf „1“ gesetzt ist, dürfen alle Websites Bilder anzeigen. Ist die Richtlinie auf „2“ gesetzt, wird das Anzeigen von Bildern blockiert.
 
 Wird die Richtlinie nicht konfiguriert, werden Bilder zugelassen, aber Nutzer können diese Einstellung ändern.</translation>
@@ -9699,6 +9738,7 @@ Hinweis: Wenn du diese Richtlinie verwendest, um die Zeitzone automatisch zu erm
 <translation id="7179187054027029272">Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, steht Nutzern, Apps und Erweiterungen mit entsprechenden Berechtigungen der Vollbildmodus (in dem nur Webinhalte angezeigt werden) zur Verfügung.
 
       Ist sie auf "False" gesetzt, können Nutzer, Apps und Erweiterungen nicht in den Vollbildmodus wechseln.</translation>
+<translation id="7180529638251181928">Eingeschränkten Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> nicht erzwingen</translation>
 <translation id="718126088895133062">Mit dieser Richtlinie wird die Nutzer-ID zur <ph name="PLUGIN_VM_NAME" />-Lizenzierung für dieses Gerät angegeben.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Rechtschreibfehler mithilfe eines Google-Webdienstes korrigieren</translation>
@@ -11232,6 +11272,7 @@ Eine ausführliche Beschreibung aller Werte findest du unter RFC 8828, Abschnit
 <translation id="82530263956734297">Aus der Sperrliste auszuschließende Erweiterungs-IDs</translation>
 <translation id="8254749125469750814">Nicht mit einem Cloud-Dienst prüfen, ob eine Erweiterung installiert werden kann oder nicht.</translation>
 <translation id="8256006033157034334">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen „<ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />“.</translation>
+<translation id="8256324351037372224">Eingeschränkten Modus in <ph name="YOUTUBE_PRODUCT_NAME" /> nicht erzwingen</translation>
 <translation id="8256688113167012935">Gibt an, welchen Kontonamen <ph name="PRODUCT_OS_NAME" /> für das entsprechende lokale Gerätekonto auf der Anmeldeseite anzeigt.
 
       Wenn diese Richtlinie eingerichtet ist, wird auf der Anmeldeseite des entsprechenden lokalen Gerätekontos der angegebene String für die bildbasierte Auswahl bei der Anmeldung verwendet.

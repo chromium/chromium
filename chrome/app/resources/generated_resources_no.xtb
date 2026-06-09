@@ -1452,6 +1452,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2039464276165755892">Skjul varselinnhold når andre personer registreres</translation>
 <translation id="2040460856718599782">Beklager!  Det oppsto en feil da vi forsøkte å autentisere deg. Kontroller påloggingslegitimasjonen, og prøv på nytt.</translation>
 <translation id="2040822390690632244">Oppdateringer, hjelp, utvikleralternativer</translation>
+<translation id="2040827008689966558">Åpne den lukkede delte visningen på nytt</translation>
 <translation id="2040894699575719559">Posisjonen er blokkert</translation>
 <translation id="2042279886444479655">Aktive profiler</translation>
 <translation id="2044014337866019681">Du må verifisere <ph name="ACCOUNT" /> for å låse opp økten.</translation>
@@ -4569,6 +4570,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4275397969489577657">Slå på loggføring av aktivitetsstrømmer</translation>
 <translation id="4275788652681621337">Lukk sidepanelet</translation>
 <translation id="4275830172053184480">Start enheten din på nytt</translation>
+<translation id="4276390967705106170">Åpne i en ny nettleserfane</translation>
 <translation id="4276598757692536305">Skriverens PPD</translation>
 <translation id="4277434192562187284">XML-konfigurasjonskilde</translation>
 <translation id="4278390842282768270">Tillatt</translation>
@@ -5493,6 +5495,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4946998421534856407">Appoversikt-tasten + oppoverpil</translation>
 <translation id="4947376546135294974">Data fra nettstedet du besøker</translation>
 <translation id="4949898053053527676">Det ser ut til at søket ditt ikke ga noen søkeresultater</translation>
+<translation id="4949954144207118092">Åpne i en eksisterende <ph name="APP_NAME" />-fane</translation>
 <translation id="4950100687509657457">Opprett profil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{en fil}other{# filer}}</translation>
 <translation id="495170559598752135">Handlinger</translation>
@@ -7620,6 +7623,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6563055593659435495">Kan ikke opprette forbindelse med telefonen din. Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og wifi er slått på.</translation>
 <translation id="6564343790052433242">For å opprette en passnøkkel for <ph name="APP_NAME" /> må Google Passordlagring være på</translation>
 <translation id="6565899972286925956">Lag hva som helst</translation>
+<translation id="6566648465417201421">Åpne den lukkede delte visningen på nytt</translation>
 <translation id="656679903990115526">Skann denne med telefonen for å lagre og autofylle passordene dine, slik at du kan logge på nettsteder og apper enkelt</translation>
 <translation id="6568283005472142698">Fanesøk</translation>
 <translation id="6569931898053264308">Middels store besparelser</translation>
@@ -7955,6 +7959,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6805478749741295868">Dette er en AI-funksjon på forsøksstadiet. Det kan hende at den gjør feil.</translation>
 <translation id="6805817411033102703">Tilbakemeldinger om delte fanegrupper</translation>
 <translation id="6806089545527108739">Ikke tillat, men spør senere</translation>
+<translation id="6806123901116522137">Gå til AI-innovasjoner</translation>
 <translation id="6806781719264274042">Bare kontaktene dine med Google-konto. <ph name="LINK_BEGIN" />Se kontakter<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">For å fortsette, sett inn sikkerhetsnøkkelen, og berør den</translation>
 <translation id="6808166974213191158">ChromeOS Flex System Image Writer</translation>
@@ -8608,6 +8613,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7282992757463864530">Informasjonsfelt</translation>
 <translation id="7283555985781738399">Gjestemodus</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Denne enheten blir lagret i 1 dag, og du kan koble til uten noen kode neste gang. Dette er angitt av administratoren din.}other{Denne enheten blir lagret i {DAYS} dager, og du kan koble til uten noen kode neste gang. Dette er angitt av administratoren din.}}</translation>
+<translation id="7284386549235597598">Dette avslutter oppgaven som Gemini jobber med nå.</translation>
 <translation id="7284411326658527427">Hver person kan gi kontoen sin et personlig preg og holde dataene sine private.</translation>
 <translation id="7285008278689343502">Grand Teton nasjonalpark</translation>
 <translation id="7286867818472074330">Velg passnøkkel</translation>
@@ -8678,6 +8684,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7336799713063880535">Varsler er blokkert.</translation>
 <translation id="7337258336304389677">Bruk telefonen eller nettbrettet</translation>
 <translation id="7339052793671338107">Håndtak for endring av størrelsen på sidepanelet (dra-aktivert)</translation>
+<translation id="733918220174231019">Avslutt oppgaven for å fortsette</translation>
 <translation id="7339763383339757376">PKCS #7, enkelt sertifikat</translation>
 <translation id="7339785458027436441">Kontroller staving mens du skriver</translation>
 <translation id="7339898014177206373">Nytt vindu</translation>
@@ -8828,6 +8835,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7432200167665670017">Administratoren din har blokkert «<ph name="EXTENSION_NAME" />» – app-ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Arkiver</translation>
 <translation id="7433333862363162673">Snarvei for å fjerne merking</translation>
+<translation id="7433495118028038748">Ja, avslutt oppgaven</translation>
 <translation id="7433957986129316853">Nei</translation>
 <translation id="7434100547946193426">Andre apper</translation>
 <translation id="7434509671034404296">Utvikler</translation>

@@ -187,6 +187,7 @@
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (നേറ്റീവ്) പോലെ തോന്നുന്നു</translation>
 <translation id="1125816658532547876"><ph name="DEVICE_TYPE" /> എന്നതിൽ നിങ്ങളുടെ പാസ്‌വേഡുകൾ ഉപയോഗിക്കുക</translation>
 <translation id="1125921926864945797">വാൾപേപ്പറും സ്റ്റൈലും</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 ടാബ് പങ്കിടുന്നു}other{# ടാബുകൾ പങ്കിടുന്നു}}</translation>
 <translation id="1126696498560056882">ഈ ഉപകരണത്തിലെ അക്കൗണ്ടുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="1128591060186966949">തിരയൽ യന്ത്രം എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="1129348283834595293">സൈബർപങ്ക്</translation>
@@ -1752,6 +1753,7 @@
 <translation id="2263371730707937087">സ്‌ക്രീൻ റീഫ്രഷ് നിരക്ക്</translation>
 <translation id="2263679799334060788">Google Cast മെച്ചപ്പെടുത്താൻ നിങ്ങളുടെ ഫീഡ്‌ബാക്ക്, ഞങ്ങളെ സഹായിക്കുന്നു. ഇത് അഭിനന്ദനാർഹമാണ്. കാസ്‌റ്റിലെ പ്രശ്‌ന പരിഹാരത്തിന്, <ph name="BEGIN_LINK" /> സഹായകേന്ദ്രം<ph name="END_LINK" /> സന്ദർശിക്കുക.</translation>
 <translation id="22649924370461580">സംരക്ഷിച്ച ടാബ് ഗ്രൂപ്പുകൾ</translation>
+<translation id="2265924028278810827">പേരന്റ് ആപ്പ്: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">USB (IPPUSB) വഴി IPP</translation>
 <translation id="2268130516524549846">Bluetooth അപ്രാപ്‌തമാക്കി</translation>
 <translation id="2268182915828370037">ഫയൽ സമന്വയിപ്പിക്കൽ ഓഫാക്കണോ?</translation>
@@ -1947,6 +1949,7 @@
 <translation id="2406942743794219791">നിങ്ങൾക്ക് ആവശ്യമുള്ള ഡിഫോൾട്ട് തിരയൽ എഞ്ചിൻ സ്ഥിരീകരിക്കുക</translation>
 <translation id="2407671304279211586">DNS ദാതാവിനെ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2408018932941436077">കാർഡ് സംരക്ഷിക്കുന്നു</translation>
+<translation id="2408601796549249241">Gemini ബോട്ടം ഷീറ്റ് മുഴുവൻ ഉയരത്തിൽ</translation>
 <translation id="2408762424059547338">JavaScript ഒപ്റ്റിമൈസേഷൻ ഓഫാക്കുന്നതിലൂടെ ആക്രമണങ്ങളിൽ നിന്ന് നിങ്ങളെ മികച്ച രീതിയിൽ പരിരക്ഷിക്കുന്നു</translation>
 <translation id="2408955596600435184">നിങ്ങളുടെ പിൻ നൽകുക</translation>
 <translation id="2409378541210421746">ഭാഷാ സെലക്ഷൻ എഡിറ്റ് ചെയ്യുക</translation>
@@ -2703,6 +2706,7 @@
 <translation id="2932483646085333864">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, സൈൻ ഔട്ട് ചെയ്‌ത്‌ വീണ്ടും സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2932883381142163287">ദുരുപയോഗം റിപ്പോര്‍ട്ട് ചെയ്യുക</translation>
 <translation id="2933632078076743449">അവസാനം അപ്ഡേറ്റ് ചെയ്‌തത്</translation>
+<translation id="2933653107553951760">ഗ്രൂപ്പ് പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="2934225044529065415">ക്യാമറാ ആക്‌സസ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="2935314715123552088">സജീവമായ ഇ-സിം പ്രൊഫൈൽ പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="2935654492420446828">സ്‌കൂൾ അക്കൗണ്ട് പിന്നീട് ചേർക്കുക</translation>
@@ -2797,6 +2801,7 @@
 <translation id="3000461861112256445">മോണോ ഓഡിയോ</translation>
 <translation id="3001144475369593262">കുട്ടികളുടെ അക്കൗണ്ടുകൾ</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{കീകളൊന്നും ഇഷ്ടാനുസൃതമാക്കിയിട്ടില്ല}=1{ഇഷ്ടാനുസൃതമാക്കിയ ഒരു കീ}other{ഇഷ്ടാനുസൃതമാക്കിയ {COUNT} കീകൾ}}</translation>
+<translation id="3002864108328203174">Gemini ബോട്ടം ഷീറ്റ് പകുതി ഉയരത്തിൽ.</translation>
 <translation id="3003144360685731741">തിരഞ്ഞെടുത്ത നെറ്റ്‌വർക്കുകൾ</translation>
 <translation id="3003253259757197230">നിങ്ങൾ അടുത്തതായി ഏതൊക്കെ സൈറ്റുകളായിരിക്കും സന്ദർശിക്കുകയെന്ന് പ്രവചിക്കാനും സന്ദർശിക്കുന്ന പേജിനെക്കുറിച്ചുള്ള കൂടുതൽ വിവരങ്ങൾ കാണിക്കാനും, നിങ്ങൾ സന്ദർശിക്കുന്ന URL-കൾ Google-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="3003623123441819449">CSS കാഷെ</translation>
@@ -3838,6 +3843,7 @@
 <translation id="3756485814916578707">സ്‌ക്രീൻ കാസ്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="3756578970075173856">പിൻ സജ്ജീകരിക്കുക</translation>
 <translation id="3756806135608816820">സൈറ്റുകൾക്ക് Bluetooth ഉപകരണങ്ങൾ തിരയാൻ ആവശ്യപ്പെടാനാകും</translation>
+<translation id="3756823472711156529">ഗ്രൂപ്പ് പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="3757567010566591880">ടൂൾബാറിൽ നിന്ന് അൺപിൻ ചെയ്യുക</translation>
 <translation id="3757645900890881944">തിരയൽ ഉപകരണങ്ങൾ</translation>
 <translation id="3757733214359997190">സൈറ്റുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
@@ -4808,6 +4814,7 @@
 <translation id="4444304522807523469">USB വഴിയോ പ്രാദേശിക നെറ്റ്‌വർക്കിലോ അറ്റാച്ച് ചെയ്‌ത പ്രമാണ സ്‌കാനറുകൾ ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="4444512841222467874">ഇടം സൃഷ്‌ടിച്ചില്ലെങ്കിൽ, ഉപയോക്താക്കളും വിവരങ്ങളും സ്വയം നീക്കംചെയ്യപ്പെടും.</translation>
 <translation id="4445446646109808714">അന്തിമ ഉപയോക്തൃ ലൈസൻസ് ഉടമ്പടി: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">സ്പ്ലിറ്റ് വ്യൂ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="4446933390699670756">മിറർ ചെയ്‌തു</translation>
 <translation id="4448560527907365660">സംരക്ഷിച്ച് കൂടുതൽ കാണുക</translation>
 <translation id="4449247303975391730">അനുമതികൾ മാനേജ് ചെയ്യുക</translation>
@@ -4941,6 +4948,7 @@
 <translation id="4562364000855074606">ഈ <ph name="DEVICE_TYPE" /> എന്നതിൽ ഇൻസ്റ്റാൾ ചെയ്ത ആപ്പുകൾ ബ്ലോക്ക് ചെയ്യുക. ആപ്പുകളോ ഉള്ളടക്കമോ ഡൗൺലോഡ് ചെയ്യുന്നത് നിയന്ത്രിക്കാൻ, Google Play ക്രമീകരണത്തിലേക്ക് പോകുക. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">പ്രാരംഭ ഇന്‍‌പുട്ട് ഭാഷ ചൈനീസ് ആണ്</translation>
 <translation id="4563382028841851106">അക്കൗണ്ടിൽ നിന്ന് നീക്കം ചെയ്യുക</translation>
+<translation id="4563883094055457792">സ്പ്ലിറ്റ് വ്യൂ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="4564245002465020751">നിങ്ങളുടെ ഫോണിലെ സജ്ജീകരണം പൂർത്തിയാക്കുക</translation>
 <translation id="456449593072900590">പുറത്തുകടക്കുമ്പോൾ ഇല്ലാതാക്കുക</translation>
 <translation id="4565377596337484307">പാസ്‌വേഡ് മറയ്ക്കുക</translation>
@@ -5845,6 +5853,7 @@
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> കാസ്‌റ്റ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="5222403284441421673">സുരക്ഷിതമല്ലാത്ത ഡൗൺലോഡ് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
+<translation id="5222710719845250566">വിൻഡോ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="5225324770654022472">ആപ്പുകളുടെ കുറുക്കുവഴികൾ കാണിക്കുക</translation>
 <translation id="52254442782792731">നിലവിലെ ദൃശ്യപരതാ ക്രമീകരണം ഇതുവരെ സജ്ജീകരിച്ചിട്ടില്ല</translation>
 <translation id="5225463052809312700">ക്യാമറ ഓണാക്കുക</translation>
@@ -7217,6 +7226,7 @@
 <translation id="6266984048393265562">പ്രൊഫൈൽ ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="6267166720438879315">നിങ്ങളെ <ph name="HOST_NAME" /> ലേക്ക് പരിശോധിച്ചുറപ്പിക്കാൻ ഒരു സര്‍ട്ടിഫിക്കറ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6268252012308737255"><ph name="APP" /> ഉപയോഗിച്ച് തുറക്കുക</translation>
+<translation id="6269392226729599142">സ്പ്ലിറ്റ് വ്യൂ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="6270309713620950855">നഡ്‌ജ് മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="6270391203985052864">അറിയിപ്പുകൾ അയയ്ക്കാൻ സൈറ്റുകൾക്ക് അനുവാദം ചോദിക്കേണ്ടി വരും</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />സിസ്‌റ്റവും ആപ്പ് വിവരവും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />മെട്രിക്‌സും<ph name="END_LINK2" /> അയയ്‌ക്കുക</translation>
@@ -8959,6 +8969,7 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">സ്റ്റോറേജ്, പവർ, ഭാഷ</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ഡൗൺലോഡ് പരാജയപ്പെട്ടു</translation>
+<translation id="7551303452605464331">സ്പ്ലിറ്റ് വ്യൂ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="7551643184018910560">ഷെൽഫിലേക്ക് പിൻ ചെയ്യുക</translation>
 <translation id="7552191410769096467">ടാബ് ഗ്രൂപ്പുകൾ പങ്കിടാൻ അല്ലെങ്കിൽ അവയിൽ ചേരാൻ, നിങ്ങൾ സൈൻ ഇൻ ചെയ്ത ശേഷം സമന്വയിപ്പിക്കൽ ഓണാക്കേണ്ടതുണ്ട്</translation>
 <translation id="7552196109089297786">Microsoft-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക</translation>
@@ -11110,6 +11121,7 @@
 <translation id="9087949559523851360">നിയന്ത്രിത ഉപയോക്താവിനെ ചേർക്കുക</translation>
 <translation id="9088234649737575428">എന്റർപ്രൈസ് നയം <ph name="PLUGIN_NAME" /> എന്നതിനെ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="90885733430013283">വൈഫൈ SSID</translation>
+<translation id="9088578317174654338">Gemini ബോട്ടം ഷീറ്റ് അടച്ചു.</translation>
 <translation id="9089416786594320554">ഇൻപുട്ട്  രീതികൾ</translation>
 <translation id="9089959054554410481">ടച്ച്പാഡ് സ്‍ക്രോൾ ചെയ്യൽ ദിശ മാറ്റുക</translation>
 <translation id="9090044809052745245">നിങ്ങളുടെ ഉപകരണം മറ്റുള്ളവർക്ക് എങ്ങനെ ദൃശ്യമാകുന്നു</translation>

@@ -2575,6 +2575,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2822551631199737692">Kamera sedang digunakan</translation>
 <translation id="2822634587701817431">Kecilkan / Kembangkan</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> sedang menggunakan tetapan proksi daripada pentadbir anda</translation>
+<translation id="2825200993288778739">Bina kemahiran anda sendiri atau tambahkan daripada pustaka kemahiran</translation>
 <translation id="282525059261716597">Baris perintah:</translation>
 <translation id="2825758591930162672">Kunci Awam Subjek</translation>
 <translation id="2826576843404243001">Untuk laman yang tidak menyokong sambungan selamat, dapatkan amaran sebelum melawat laman tersebut. Anda tidak boleh menukar tetapan ini kerana anda telah mendayakan Perlindungan Lanjutan.</translation>
@@ -4652,6 +4653,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">Tunjukkan <ph name="FILE_NAME" /> dalam Pencari</translation>
 <translation id="4322394346347055525">Tutup Tab Lain</translation>
+<translation id="4322400254469690320">Temukan <ph name="FILENAME" /> anda dalam folder <ph name="FEATURE_NAME" /></translation>
 <translation id="4324577459193912240">Fail tidak lengkap</translation>
 <translation id="4325433082696797523">Storan dan kuasa</translation>
 <translation id="4325515113816851466">Pilihan ibu/bapa anda tidak akan digunakan selepas anda log keluar</translation>
@@ -6647,6 +6649,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5826993284769733527">Separa lut sinar</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5827591412833386477">Tunjukkan laman dalam kumpulan yang sama</translation>
+<translation id="5827835011646404677">Kemahiran disimpan pada Google Account anda</translation>
 <translation id="5828181959764767444">Matahari terbenam</translation>
 <translation id="5828545842856466741">Tambah profil...</translation>
 <translation id="5828633471261496623">Mencetak...</translation>
@@ -7970,6 +7973,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6805478749741295868">Ciri ini merupakan ciri AI percubaan dan tidak sentiasa betul.</translation>
 <translation id="6805817411033102703">Maklum balas kumpulan tab kongsi</translation>
 <translation id="6806089545527108739">Jangan benarkan tetapi tanya kemudian</translation>
+<translation id="6806123901116522137">Akses Inovasi AI</translation>
 <translation id="6806781719264274042">Hanya kenalan anda yang mempunyai Google Account. <ph name="LINK_BEGIN" />Lihat kenalan<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">Untuk meneruskan, masukkan dan sentuh kunci keselamatan anda</translation>
 <translation id="6808166974213191158">Penulis Imej Sistem Chrome OS Flex</translation>
@@ -11219,6 +11223,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="9130015405878219958">Mod tidak sah dimasukkan.</translation>
 <translation id="9130135798965366513">Untuk meneruskan pendaftaran, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi <ph name="FIELDS_STRING" /> anda dengan laman ini. Lihat <ph name="BEGIN_LINK1" />dasar privasi<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />syarat perkhidmatan<ph name="END_LINK2" /> laman ini.</translation>
 <translation id="9130364135697530260">Kandungan terbenam pada laman ini boleh menggunakan maklumat yang disimpan tentang anda</translation>
+<translation id="9130857050314385402">Tajuk tab dan URL dihantar kepada Google apabila anda menggunakan kemahiran</translation>
 <translation id="9131209053278896908">Sekat laman yang dipaparkan di sini</translation>
 <translation id="9131487537093447019">Hantar mesej kepada dan terima mesej daripada peranti Bluetooth.</translation>
 <translation id="9133568201369135151">Pengumpulan data diagnostik selesai. Beberapa maklumat peribadi anda disertakan dalam data ini.</translation>

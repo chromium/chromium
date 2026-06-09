@@ -475,7 +475,6 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
       Als je dit beleid toepast, staan verbeterde sneltoetsen voor internationale toetsenborden aan.
       Als je dit beleid niet instelt, wordt het niet toegepast op beheerde apparaten en wel toegepast op apparaten van consumenten.
       Houd er rekening mee dat dit een tijdelijk beleid is zodat beheerde gebruikers nog steeds beëindigde verouderde sneltoetsen kunnen gebruiken. Dit beleid wordt beëindigd nadat aangepaste sneltoetsen beschikbaar zijn gekomen.</translation>
-<translation id="1359459742455216057">De unieke ID van de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-app.</translation>
 <translation id="1361661842732478894">Startknop op de werkbalk tonen</translation>
 <translation id="1363275621236827384">Query's naar Quirks Server sturen voor hardwareprofielen</translation>
 <translation id="1363839375295535439">Als je het beleid aanzet of niet instelt, wordt de LPAC-sandbox voor afdrukservices aangezet als de systeemconfiguratie dit ondersteunt.
@@ -8894,7 +8893,6 @@ Als dit beleid wordt toegepast, worden de gegevens verzameld en geüpload naar <
 
 Voor <ph name="PRODUCT_NAME" /> is dit beleid alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Voor <ph name="PRODUCT_OS_NAME" /> is dit beleid altijd van kracht.</translation>
-<translation id="6714333117401088746">De ID van het <ph name="GOOGLE_CLOUD_PRODUCT_NAME" />-project dat overeenkomt met de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-instantie die moet worden aangezet.</translation>
 <translation id="6720330829631914048">Verstreken uren sinds het begin van de dag (in 24-uursnotatie).</translation>
 <translation id="6720862827454058309">Toewijzingen van IP-adresruimtes overschrijven</translation>
 <translation id="6721252203593581486">WebSQL in contexten van derden (bijv. iframes voor meerdere sites) staat standaard uit vanaf M97 en wordt helemaal verwijderd in M101.

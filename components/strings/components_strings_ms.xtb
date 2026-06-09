@@ -269,6 +269,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="1408696301184924537">Untuk membuat autolengkap IBAN selepas ini, simpan maklumat ini dalam Google Account anda</translation>
 <translation id="1408787208417187241">Tiga kokot atas</translation>
+<translation id="1410306713026702438"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />. <ph name="SUGGESTION_TYPE" />. <ph name="MATCH_POSITION" /> daripada <ph name="NUM_MATCHES_IN_GROUP" /> dalam kumpulan <ph name="GROUP_HEADER" />.</translation>
 <translation id="1410365862999780287">Orang lain yang menggunakan peranti ini tidak akan melihat aktiviti anda, oleh itu anda boleh menyemak imbas secara sulit. Hal ini tidak mengubah cara data dikumpulkan oleh laman web yang anda lawati dan perkhidmatan yang digunakan, termasuk Google. Muat turun, penanda halaman dan item senarai bacaan akan disimpan.</translation>
 <translation id="1410941016594047814">Sampul Undangan</translation>
 <translation id="1413235258620101697">CVC kad ini akan disulitkan dan disimpan dalam Google Wallet untuk semak keluar yang lebih pantas</translation>
@@ -660,6 +661,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2045871135676061132">Sampul Peribadi</translation>
 <translation id="2046951263634619614">Penjual Buku</translation>
 <translation id="2048261947532620704">Menterjemah halaman</translation>
+<translation id="2055016614992422886">Perbualan</translation>
 <translation id="2059166748188874810">Perbandaran</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
 <translation id="2064568741209980952">Kredit &amp; Pinjaman</translation>
@@ -3558,6 +3560,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6550245281449521513">Kunci tetikus tidak dibenarkan</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, baharu</translation>
 <translation id="6552566579578780089">Pembayaran</translation>
+<translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />. <ph name="SUGGESTION_TYPE" />. <ph name="MATCH_POSITION" /> daripada <ph name="NUM_MATCHES_IN_GROUP" /> dalam kumpulan <ph name="GROUP_HEADER" />.</translation>
 <translation id="6554732001434021288">Terakhir dilawati <ph name="NUM_DAYS" /> hari yang lalu</translation>
 <translation id="6556866813142980365">Buat semula</translation>
 <translation id="6557715786897013164">14 x 17 in</translation>

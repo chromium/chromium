@@ -486,7 +486,6 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa gi
       Bu politika etkinleştirilirse iyileştirilmiş uluslararası klavye kısayolları etkinleştirilir.
       Bu politika ayarlanmadan bırakılırsa hem yönetilen cihazlar için hem de tüketiciye ait cihazlar için etkin olur.
       Bunun, yönetilen kullanıcıların kullanımdan kaldırılmış eski kısayolları kullanmaya devam edebilmelerini sağlamaya yönelik geçici bir politika olduğunu unutmayın. Bu politika, özelleştirilmiş klavye kısayolları kullanıma sunulduktan sonra kullanımdan kaldırılacaktır.</translation>
-<translation id="1359459742455216057"><ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> uygulamasının benzersiz tanımlayıcısıdır.</translation>
 <translation id="1361661842732478894">Araç çubuğunda home düğmesini göster</translation>
 <translation id="1363275621236827384">Quirks Server'dan donanım profillerini sorgulamayı etkinleştir</translation>
 <translation id="1363839375295535439">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa sistem yapılandırması desteklediğinde yazdırma hizmetleri için LPAC korumalı alanı etkinleştirilir.
@@ -2954,7 +2953,7 @@ Bu politika yalnızca bulut kullanıcı politikası olarak ayarlanabilir.</trans
 <translation id="2853757230661166968">Uygulamaların, varsayılan sistem kısayollarını yakalamasına ve geçersiz kılmasına olanak tanır.</translation>
 <translation id="285480231336205327">Yüksek kontrast modunu etkinleştir</translation>
 <translation id="285627849510728211">Gelişmiş pil şarj modu gün yapılandırmasını ayarla</translation>
-<translation id="2856348870384508185">Chrome önerilerini devre dışı bırak</translation>
+<translation id="2856348870384508185">Chrome'dan önerileri devre dışı bırak</translation>
 <translation id="2856932965866813330">Kullanıcı kimlik bilgilerinin diğer kullanıcılarla paylaşılmasını etkinleştir</translation>
 <translation id="28600673996840076">Google profil resmini veya yerel resimleri kullanarak kullanıcı avatarı resminin özelleştirilmesine izin ver.</translation>
 <translation id="2864207379891420023">Uzantı yükleme izin listesini yapılandır</translation>
@@ -5931,11 +5930,11 @@ Politika, Devre Dışı değerine ayarlanırsa Kimlik Bilgisi Sağlayıcı uzant
 <translation id="4789450349513792856">Bu sitelerde pop-up'ları engelle</translation>
 <translation id="4790391579868456557">Aramada gerekli ve gerekli olmayan çerezleri kullan.</translation>
 <translation id="4790588245699320140">Google Asistan'ın ekran içeriğine erişmesine izin ver</translation>
-<translation id="4797001637482545491">Bu ayar, Chrome'un alakalı anlarda yapay zeka özellikleri önermesine olanak tanır.
+<translation id="4797001637482545491">Bu ayar, Chrome'un doğru anlarda yapay zeka özellikleri önermesine olanak tanır.
 
-0/ayarlanmadı = Chrome önerileri, kullanıcılar için etkinleştirilir.
+0/ayarlanmadı = Kullanıcılar için Chrome'dan öneriler etkinleştirilir.
 
-1 = Chrome önerileri, kullanıcılar için devre dışı bırakılır.
+1 = Kullanıcılar için Chrome'dan öneriler devre dışı bırakılır.
 
 Daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=chrome_suggestions adresindeki Yardım Merkezi makalesini inceleyin.</translation>
 <translation id="4799820756794591883">TLS 1.3 Eary Data, TLS el sıkışmasıyla aynı anda HTTP isteği göndermek için kullanılan bir TLS 1.3 uzantısıdır.
@@ -9091,7 +9090,6 @@ Bu politika Etkin değerine ayarlandığında veriler toplanıp <ph name="GOOGLE
 
 <ph name="PRODUCT_NAME" /> için bu politika yalnızca makinenin <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> kaydı yapıldığında geçerli olur.
 <ph name="PRODUCT_OS_NAME" /> için bu politika her zaman geçerlidir.</translation>
-<translation id="6714333117401088746">Etkinleştirilecek <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> örneğine karşılık gelen <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> projesinin kimliği.</translation>
 <translation id="6720330829631914048">Günün başlangıcından itibaren kaç saat geçtiği (24 saatlik biçimde).</translation>
 <translation id="6720862827454058309">IP adresi alanı eşlemelerini geçersiz kıl</translation>
 <translation id="6721252203593581486">Üçüncü taraf bağlamındaki WebSQL (ör. siteler arası iframe'ler), M97 itibarıyla varsayılan olarak kapalıdır ve M101'de tamamen kaldırılacaktır.
@@ -11841,7 +11839,7 @@ kısayolları yapılandırmasına olanak tanır.</translation>
 
 Politika ayarlanırsa sınıra uymak için eski anlık görüntüler gerektiğinde silinir. Politika 0 değerine ayarlanırsa anlık görüntü alınmaz</translation>
 <translation id="8446679541472571487">Oturum açma sırasında yapay zeka giriş ekranını göster</translation>
-<translation id="8451205236854734195">Chrome önerilerine izin ver</translation>
+<translation id="8451205236854734195">Chrome'dan önerilere izin ver</translation>
 <translation id="8451988835943702790">Ana sayfa olarak Yeni Sekme Sayfası'nı kullan</translation>
 <translation id="8452787853105404870">ChromeOS Flex iyileştirmelerini desteklemek için donanım verilerini Google'a gönder</translation>
 <translation id="8453218444172088993">Kullanıcılar için <ph name="PRIVACY_SANDBOX_NAME" /> reklam konuları ayarını devre dışı bırak.</translation>

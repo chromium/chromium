@@ -476,7 +476,6 @@ Si se inhabilita la política o se deja sin definir, la configuración de restau
       Si se habilita esta política, se activarán las combinaciones de teclas internacionales mejoradas.
       Si no se le asigna ningún valor, esta política estará habilitada en dispositivos gestionados y en dispositivos propiedad de consumidores.
       Ten en cuenta que esta política es temporal y su objetivo es permitir que los usuarios gestionados puedan usar combinaciones de teclas antiguas y obsoletas. Esta política quedará obsoleta cuando estén disponibles las combinaciones de teclas personalizadas.</translation>
-<translation id="1359459742455216057">Identificador único de la aplicación <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="1361661842732478894">Mostrar el botón de inicio en la barra de herramientas</translation>
 <translation id="1363275621236827384">Habilitar consultas a Quirks Server para los perfiles de hardware</translation>
 <translation id="1363839375295535439">Si se habilita esta política o no se define, se habilitará el entorno aislado de LPAC para los servicios de impresión siempre que la configuración del sistema lo admita.
@@ -8983,7 +8982,6 @@ Si se habilita, se recogerán y subirán los datos a la <ph name="GOOGLE_ADMIN_C
 
 En el caso de <ph name="PRODUCT_NAME" />, esta política solo es efectiva si el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
-<translation id="6714333117401088746">El ID del proyecto de <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> correspondiente a la instancia de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> que se va a habilitar.</translation>
 <translation id="6720330829631914048">Horas que han pasado desde el inicio del día, en formato de 24 horas.</translation>
 <translation id="6720862827454058309">Anular asignaciones de espacio de direcciones IP</translation>
 <translation id="6721252203593581486">WebSQL está desactivada en contextos de terceros (por ejemplo, iframes entre sitios) de forma predeterminada desde la versión M97 y se eliminará por completo en la versión M101.

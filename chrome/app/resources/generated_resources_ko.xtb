@@ -187,6 +187,7 @@
 <translation id="1125550662859510761"><ph name="WIDTH" />x<ph name="HEIGHT" />(기본)처럼 보입니다.</translation>
 <translation id="1125816658532547876"><ph name="DEVICE_TYPE" />에서 비밀번호를 사용하세요</translation>
 <translation id="1125921926864945797">배경화면 및 스타일</translation>
+<translation id="1126475802377716263">{0,plural, =1{탭 1개 공유 중}other{탭 #개 공유 중}}</translation>
 <translation id="1126696498560056882">이 기기에서 계정 관리</translation>
 <translation id="1128591060186966949">검색엔진 수정</translation>
 <translation id="1129348283834595293">사이버펑크</translation>
@@ -1770,6 +1771,7 @@
     <ph name="BEGIN_LINK" />
 고객센터<ph name="END_LINK" />를 확인하세요.</translation>
 <translation id="22649924370461580">저장된 탭 그룹</translation>
+<translation id="2265924028278810827">상위 앱: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">USB를 통한 IPP(IPPUSB)</translation>
 <translation id="2268130516524549846">블루투스를 사용 안 함</translation>
 <translation id="2268182915828370037">파일 동기화를 사용 중지하시겠습니까?</translation>
@@ -1966,6 +1968,7 @@
 <translation id="2406942743794219791">원하는 기본 검색엔진 확인</translation>
 <translation id="2407671304279211586">DNS 제공업체 선택</translation>
 <translation id="2408018932941436077">카드 저장 중</translation>
+<translation id="2408601796549249241">Gemini 하단 시트가 전체 높이로 열렸습니다.</translation>
 <translation id="2408762424059547338">JavaScript 최적화를 사용 중지하여 공격으로부터 사용자를 더 효과적으로 보호합니다</translation>
 <translation id="2408955596600435184">PIN 입력</translation>
 <translation id="2409378541210421746">언어 선택 수정</translation>
@@ -2722,6 +2725,7 @@
 <translation id="2932483646085333864">동기화를 시작하려면 로그아웃한 후 다시 로그인하세요.</translation>
 <translation id="2932883381142163287">악용사례 신고</translation>
 <translation id="2933632078076743449">최종 업데이트</translation>
+<translation id="2933653107553951760">그룹 복원</translation>
 <translation id="2934225044529065415">카메라에 액세스할 수 없음</translation>
 <translation id="2935314715123552088">활성 eSIM 프로필 사용 중지</translation>
 <translation id="2935654492420446828">학교 계정 나중에 추가하기</translation>
@@ -2816,6 +2820,7 @@
 <translation id="3000461861112256445">모노 오디오</translation>
 <translation id="3001144475369593262">어린이 계정</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{맞춤설정된 키 없음}=1{맞춤설정된 키 1개}other{맞춤설정된 키 {COUNT}개}}</translation>
+<translation id="3002864108328203174">Gemini 하단 시트가 절반 높이로 열렸습니다.</translation>
 <translation id="3003144360685731741">기본 설정된 네트워크</translation>
 <translation id="3003253259757197230">다음에 방문할 사이트를 예측하고 현재 방문 중인 페이지에 관한 추가 정보를 표시하기 위해 내가 방문한 URL이 Google에 전송됩니다.</translation>
 <translation id="3003623123441819449">CSS 캐시</translation>
@@ -3857,6 +3862,7 @@
 <translation id="3756485814916578707">화면 전송 중</translation>
 <translation id="3756578970075173856">PIN 설정</translation>
 <translation id="3756806135608816820">사이트의 블루투스 기기 검색 요청 허용</translation>
+<translation id="3756823472711156529">그룹 복원</translation>
 <translation id="3757567010566591880">툴바에서 고정 해제</translation>
 <translation id="3757645900890881944">Google 검색 도구</translation>
 <translation id="3757733214359997190">사이트를 찾을 수 없습니다.</translation>
@@ -4826,6 +4832,7 @@
 <translation id="4444304522807523469">USB나 로컬 네트워크에 포함된 문서 스캐너에 액세스</translation>
 <translation id="4444512841222467874">저장 공간이 충분하지 않으면 사용자 및 데이터가 자동으로 삭제될 수 있습니다.</translation>
 <translation id="4445446646109808714">최종 사용자 라이선스 계약: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">분할 뷰 복원</translation>
 <translation id="4446933390699670756">미러링</translation>
 <translation id="4448560527907365660">저장 및 더보기</translation>
 <translation id="4449247303975391730">권한 관리</translation>
@@ -4959,6 +4966,7 @@
 <translation id="4562364000855074606">이 <ph name="DEVICE_TYPE" />에 설치된 앱을 차단합니다. 앱 또는 콘텐츠 다운로드를 제한하려면 Google Play 설정으로 이동하세요. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">중국어를 초기 입력 언어로 설정</translation>
 <translation id="4563382028841851106">계정에서 삭제</translation>
+<translation id="4563883094055457792">분할 뷰 복원(&amp;E)</translation>
 <translation id="4564245002465020751">휴대전화 설정 마치기</translation>
 <translation id="456449593072900590">종료 시 삭제</translation>
 <translation id="4565377596337484307">비밀번호 숨김</translation>
@@ -5863,6 +5871,7 @@
 <translation id="5221516927483787768"><ph name="HOST_NAME" />을(를) 전송할 수 없습니다</translation>
 <translation id="5222403284441421673">안전하지 않은 다운로드가 차단됨</translation>
 <translation id="5222676887888702881">로그아웃</translation>
+<translation id="5222710719845250566">창 복원</translation>
 <translation id="5225324770654022472">앱 단축키 표시</translation>
 <translation id="52254442782792731">현재 공개 범위가 아직 설정되어 있지 않음</translation>
 <translation id="5225463052809312700">카메라 켜기</translation>
@@ -7235,6 +7244,7 @@
 <translation id="6266984048393265562">프로필 맞춤설정</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" />에 대해 인증을 받으려면 인증서를 선택하세요.</translation>
 <translation id="6268252012308737255"><ph name="APP" />(으)로 열기</translation>
+<translation id="6269392226729599142">분할 뷰 복원</translation>
 <translation id="6270309713620950855">알림 음소거</translation>
 <translation id="6270391203985052864">사이트에서 알림 전송 허용을 요청할 수 있음</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />시스템 및 앱 정보<ph name="END_LINK1" />와 <ph name="BEGIN_LINK2" />통계<ph name="END_LINK2" /> 전송</translation>
@@ -8977,6 +8987,7 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">스토리지, 전원, 언어</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" />을(를) 다운로드하지 못함</translation>
+<translation id="7551303452605464331">분할 뷰 복원(&amp;E)</translation>
 <translation id="7551643184018910560">앱 표시줄에 고정</translation>
 <translation id="7552191410769096467">탭 그룹을 공유하거나 탭 그룹에 참여하려면 로그인한 다음 동기화를 사용 설정해야 합니다.</translation>
 <translation id="7552196109089297786">Microsoft에서 로그아웃</translation>
@@ -11129,6 +11140,7 @@
 <translation id="9087949559523851360">제한된 사용자 추가</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" />이(가) 기업 정책에 의해 차단되었습니다.</translation>
 <translation id="90885733430013283">Wi-Fi SSID</translation>
+<translation id="9088578317174654338">Gemini 하단 시트가 닫혔습니다.</translation>
 <translation id="9089416786594320554">입력 방법</translation>
 <translation id="9089959054554410481">터치패드 스크롤 방향 변경</translation>
 <translation id="9090044809052745245">기기가 다른 사용자에게 표시되는 방식</translation>

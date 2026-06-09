@@ -187,6 +187,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1125550662859510761">Vyzerá ako <ph name="WIDTH" /> x <ph name="HEIGHT" /> (natívne)</translation>
 <translation id="1125816658532547876">Používajte heslá v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Tapeta a štýl</translation>
+<translation id="1126475802377716263">{0,plural, =1{Zdieľa sa 1 karta}few{Zdieľajú sa # karty}many{Sharing # tabs}other{Zdieľa sa # kariet}}</translation>
 <translation id="1126696498560056882">Spravovať účty v tomto zariadení</translation>
 <translation id="1128591060186966949">Úprava vyhľadávača</translation>
 <translation id="1129348283834595293">Kyberpunk</translation>
@@ -1756,6 +1757,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2263371730707937087">Frekvencia obnovenia obrazovky</translation>
 <translation id="2263679799334060788">Vaša spätná väzba nám pomáha zlepšovať Google Cast, a preto si ju ceníme. Pomoc s riešením problémov s prenosom nájdete v <ph name="BEGIN_LINK" />centre pomoci<ph name="END_LINK" />.</translation>
 <translation id="22649924370461580">Uložené skupiny kariet</translation>
+<translation id="2265924028278810827">Nadradená aplikácia: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP cez USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Rozhranie Bluetooth je deaktivované</translation>
 <translation id="2268182915828370037">Chcete vypnúť synchronizáciu súborov?</translation>
@@ -1951,6 +1953,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2406942743794219791">Potvrďte požadovaný predvolený vyhľadávač</translation>
 <translation id="2407671304279211586">Vybrať poskytovateľa DNS</translation>
 <translation id="2408018932941436077">Karta sa ukladá</translation>
+<translation id="2408601796549249241">Dolný hárok Gemini na celú výšku</translation>
 <translation id="2408762424059547338">Lepšie vás chráni pred útokmi vypnutím optimalizácie JavaScriptu</translation>
 <translation id="2408955596600435184">Zadajte kód PIN</translation>
 <translation id="2409378541210421746">Úprava výberu jazyka</translation>
@@ -2707,6 +2710,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2932483646085333864">Ak chcete spustiť synchronizáciu, odhláste sa a potom sa znova prihláste</translation>
 <translation id="2932883381142163287">Nahlásiť zneužitie</translation>
 <translation id="2933632078076743449">Posledná aktualizácia</translation>
+<translation id="2933653107553951760">Obnoviť skupinu</translation>
 <translation id="2934225044529065415">Nie je možné získať prístup ku kamere</translation>
 <translation id="2935314715123552088">Deaktivovať aktívny profil eSIM</translation>
 <translation id="2935654492420446828">Pridajte školský účet neskôr</translation>
@@ -2801,6 +2805,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3000461861112256445">Zvuk mono</translation>
 <translation id="3001144475369593262">Podradené účty</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Nie sú prispôsobené žiadne klávesy}=1{1 prispôsobený kláves}few{{COUNT} prispôsobené klávesy}many{{COUNT} customized keys}other{{COUNT} prispôsobených klávesov}}</translation>
+<translation id="3002864108328203174">Dolný hárok Gemini na polovičnú výšku</translation>
 <translation id="3003144360685731741">Preferované siete</translation>
 <translation id="3003253259757197230">Webové adresy, ktoré navštevujete, sa odosielajú Googlu, aby mohol predpokladať weby, ktoré navštívite ako ďalšie, a zobrazovať vám ďalšie informácie o navštevovanej stránke</translation>
 <translation id="3003623123441819449">Vyrovnávacia pamäť CSS</translation>
@@ -3842,6 +3847,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3756485814916578707">Prenáša sa obrazovka</translation>
 <translation id="3756578970075173856">Nastavenie kódu PIN</translation>
 <translation id="3756806135608816820">Weby môžu žiadať o povolenie vyhľadávať zariadenia s rozhraním Bluetooth</translation>
+<translation id="3756823472711156529">Obnoviť skupinu</translation>
 <translation id="3757567010566591880">Odopnúť z panela s nástrojmi</translation>
 <translation id="3757645900890881944">Vyhľadávacie nástroje</translation>
 <translation id="3757733214359997190">Nenašli sa žiadne weby</translation>
@@ -4813,6 +4819,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4444304522807523469">Mať prístup ku skenerom dokumentov pripojeným cez USB alebo v miestnej sieti</translation>
 <translation id="4444512841222467874">Ak nie je dostatok miesta, môže dôjsť k automatickému odstráneniu používateľov a dát.</translation>
 <translation id="4445446646109808714">Licenčná zmluva s koncovým používateľom: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">Obnoviť rozdelené zobrazenie</translation>
 <translation id="4446933390699670756">Zrkadlené</translation>
 <translation id="4448560527907365660">Uložiť a zobraziť viac</translation>
 <translation id="4449247303975391730">Spravovať povolenia</translation>
@@ -4946,6 +4953,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4562364000855074606">Blokujte aplikácie nainštalované v tomto zariadení <ph name="DEVICE_TYPE" />. Obmedziť sťahovanie aplikácií alebo obsahu môžete v Nastaveniach služby Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Úvodný jazyk vstupu: čínština</translation>
 <translation id="4563382028841851106">Odstrániť z účtu</translation>
+<translation id="4563883094055457792">Obnoviť rozdelené zobrazenie</translation>
 <translation id="4564245002465020751">Dokončenie nastavovania v telefóne</translation>
 <translation id="456449593072900590">Odstrániť pri ukončení</translation>
 <translation id="4565377596337484307">Skryť heslo</translation>
@@ -5849,6 +5857,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> sa nedá prenášať</translation>
 <translation id="5222403284441421673">Bolo zablokované nezabezpečené sťahovanie</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
+<translation id="5222710719845250566">Obnoviť okno</translation>
 <translation id="5225324770654022472">Zobrazovať odkaz aplikácií</translation>
 <translation id="52254442782792731">Aktuálne nastavenie viditeľnosti zatiaľ nie je nakonfigurované</translation>
 <translation id="5225463052809312700">Zapnúť kameru</translation>
@@ -7220,6 +7229,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6266984048393265562">Prispôsobiť profil</translation>
 <translation id="6267166720438879315">Vyberte certifikát, ktorý overí vašu osobu pre <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Otvoriť pomocou aplikácie <ph name="APP" /></translation>
+<translation id="6269392226729599142">Obnoviť rozdelené zobrazenie</translation>
 <translation id="6270309713620950855">Štuchnutie vypnutého zvuku</translation>
 <translation id="6270391203985052864">Weby môžu žiadať o odosielanie upozornení</translation>
 <translation id="6270770586500173387">Posielať <ph name="BEGIN_LINK1" />informácie o systéme a aplikáciách<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metriky<ph name="END_LINK2" /></translation>
@@ -8966,6 +8976,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7550830279652415241">záložky_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">Ukladací priestor, napájanie, jazyk</translation>
 <translation id="7551059576287086432">Nepodarilo sa stiahnuť súbor <ph name="FILE_NAME" /></translation>
+<translation id="7551303452605464331">Obnoviť rozdelené zobrazenie</translation>
 <translation id="7551643184018910560">Pripnúť na poličku</translation>
 <translation id="7552191410769096467">Ak chcete zdieľať skupiny kariet alebo sa k nim pripojiť, musíte sa prihlásiť a zapnúť synchronizáciu</translation>
 <translation id="7552196109089297786">Odhlásiť sa zo služby Microsoft</translation>
@@ -11118,6 +11129,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9087949559523851360">Pridať obmedzeného používateľa</translation>
 <translation id="9088234649737575428">Doplnok <ph name="PLUGIN_NAME" /> je blokovaný podnikovými pravidlami</translation>
 <translation id="90885733430013283">SSID siete Wi‑Fi</translation>
+<translation id="9088578317174654338">Dolný hárok Gemini je zavretý.</translation>
 <translation id="9089416786594320554">Metódy vstupu</translation>
 <translation id="9089959054554410481">Zmena smeru posúvania na touchpade</translation>
 <translation id="9090044809052745245">Ako sa vaše zariadenie zobrazuje ostatným</translation>

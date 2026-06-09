@@ -476,7 +476,6 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de re
       Inversement, si elle est activée, ils le sont aussi.
       Si elle n'est pas configurée, elle est désactivée pour les appareils gérés et activée pour les appareils non gérés.
       Notez qu'il s'agit d'une règle temporaire afin que les utilisateurs gérés puissent quand même utiliser les anciens raccourcis obsolètes. Elle prendra fin une fois que des raccourcis clavier personnalisés seront disponibles.</translation>
-<translation id="1359459742455216057">Identifiant unique de l'appli <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="1361661842732478894">Afficher le bouton Accueil dans la barre d'outils</translation>
 <translation id="1363275621236827384">Activer l'envoi de requêtes de profils matériels à Quirks Server</translation>
 <translation id="1363839375295535439">Si cette règle est activée ou qu'elle n'est pas configurée, le bac à sable LPAC est activé pour les services d'impression lorsque la configuration du système le permet.
@@ -8936,7 +8935,6 @@ Si elle est activée, les données sont collectées et importées dans la <ph na
 
 Concernant <ph name="PRODUCT_NAME" />, cette règle n'est appliquée que si l'appareil est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Cette règle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="6714333117401088746">ID du projet <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> correspondant à l'instance <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> qui doit être activée.</translation>
 <translation id="6720330829631914048">Heures écoulées depuis le début de la journée (format 24 heures).</translation>
 <translation id="6720862827454058309">Remplacer les mappages d'espace d'adressage IP</translation>
 <translation id="6721252203593581486">WebSQL dans des contextes tiers (ex. : les cadres iFrame intersites) est désactivé par défaut à partir de M97 et sera entièrement supprimé dans M101.

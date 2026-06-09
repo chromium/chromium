@@ -244,6 +244,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2082238445998314030">Résultat <ph name="RESULT_NUMBER" /> sur <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Affichage de la vue compacte en cours…</translation>
 <translation id="2093731487903423814">dernières 15 minutes</translation>
+<translation id="2094298041331405438">Touchez ici pour fermer toutes les fenêtres de navigation privée</translation>
 <translation id="2096577711562668473">Modifier le service de remplissage automatique?</translation>
 <translation id="2109384632594340939">photo de profil</translation>
 <translation id="2111511281910874386">Accéder à la page</translation>
@@ -505,6 +506,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3114507951000454849">Actualités du jour <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Plus de détails</translation>
 <translation id="3123734510202723619">Annonces</translation>
+<translation id="3132267803114336523">Pour fermer toutes les fenêtres de navigation privée, touchez l'indicateur de navigation privée</translation>
 <translation id="3134385238404760368">Aucun onglet récent</translation>
 <translation id="3135655388926735587">Toucher Onglets récents</translation>
 <translation id="314939179385989105">Page d'accueil de Chrome</translation>
@@ -613,6 +615,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3635073343384702370">Chrome peut vérifier vos mots de passe lorsque vous les enregistrez</translation>
 <translation id="3636940436873918441">Langues préférées</translation>
 <translation id="3637744895182738742">Si vous avez oublié votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> – <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> : <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Accéder à l'onglet d'accueil de l'appli Google</translation>
 <translation id="368329460027487650">Déconnecté. Ouvre les options de connexion.</translation>
@@ -637,6 +640,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3739899004075612870">Ajouté aux favoris dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740290940447881599">Assurez-vous de faire confiance à ce site</translation>
 <translation id="3740525748616366977">Cet appareil ne prend pas en charge la recherche vocale</translation>
+<translation id="3756823472711156529">Restaurer le groupe</translation>
 <translation id="3763110477555836428">Un numéro de carte virtuelle sera rempli lorsque vous paierez avec cette carte pour protéger vos informations. Gérez cela dans Google Portefeuille. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Certaines données ne sont pas encore enregistrées</translation>
 <translation id="3770620323585347665">Nommer la fenêtre</translation>

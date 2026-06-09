@@ -116,6 +116,7 @@
 <translation id="2236949375853147973">Minha atividade</translation>
 <translation id="2238130810669087193">Para acessar seus endereços e muito mais em todos os seus dispositivos, faça login no Chromium. O endereço será salvo na sua Conta do Google depois que você fizer login.</translation>
 <translation id="2241627712206172106">Se você usa um computador compartilhado, seus amigos e familiares podem navegar separadamente e configurar o Chromium da maneira que desejarem.</translation>
+<translation id="22571759390241347">Habilidades no Chromium</translation>
 <translation id="2283803047247799269">Pesquise nesta guia com a pesquisa por imagens</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{O Chromium recomenda pausar a guia que está deixando o navegador mais lento}one{O Chromium recomenda pausar a guia que está deixando o navegador mais lento}other{O Chromium recomenda pausar as guias que estão deixando o navegador mais lento}}</translation>
 <translation id="2307973900865360088">Manter no Dock</translation>
@@ -190,6 +191,7 @@
 <translation id="3003694935412297923">Todas as tarefas</translation>
 <translation id="3012615494352020668">{count,plural, =1{O Chromium precisa confirmar sua identidade para que alguns dados sejam salvos na sua Conta do Google e usados em todos os seus dispositivos. Se você sair agora, esses dados (1 item) serão excluídos.}one{O Chromium precisa confirmar sua identidade para que alguns dados sejam salvos na sua Conta do Google e usados em todos os seus dispositivos. Se você sair agora, esses dados ({count} item) serão excluídos.}other{O Chromium precisa confirmar sua identidade para que alguns dados sejam salvos na sua Conta do Google e usados em todos os seus dispositivos. Se você sair agora, esses dados ({count} itens) serão excluídos.}}</translation>
 <translation id="3013473503895162900">Abrir <ph name="URL" /> em uma nova guia do Chromium.</translation>
+<translation id="302551344979399011">As inovações de IA, como as habilidades, são salvas na Conta do Google e gerenciadas separadamente da sincronização do Chromium</translation>
 <translation id="3032787606318309379">Adicionando ao Chromium...</translation>
 <translation id="3038232873781883849">Aguardando instalação...</translation>
 <translation id="3045032126857188731">Idioma traduzido: <ph name="LANGUAGE" /></translation>
@@ -379,6 +381,7 @@
 <translation id="5289287148052354622">Baixar o Chromium</translation>
 <translation id="5294316920224716406">Quando você está no modo de navegação anônima, o Chromium avisa antes de carregar um site usando uma conexão sem segurança</translation>
 <translation id="5313228254328109263">Chromium Updater Internal Service</translation>
+<translation id="5324450571874973775">Use com outros recursos do Gemini no Chromium</translation>
 <translation id="5346389065299425353">Aprofunde sua pesquisa adicionando várias guias, arquivos e ferramentas</translation>
 <translation id="5348677704241861105">Confira uma visão geral rápida deste documento e faça perguntas com o Gemini no Chromium</translation>
 <translation id="5352264705793813212">O Chromium encontrou algumas recomendações de segurança para sua avaliação</translation>
@@ -666,6 +669,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8318772038038596122">Sua organização vai fechar o Chromium se ele não for usado por <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Salvar como imagem</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> estava usando o Chromium anteriormente</translation>
+<translation id="8351551329754447960">Ativar habilidades no Chromium</translation>
 <translation id="8359544530202147897">Atualize o Chromium para continuar usando os dados dele na sua Conta do Google <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Para receber as próximas atualizações do Chromium, você precisa ter do Windows 10 ou versão mais recente. Este computador está usando o Windows 8.</translation>
 <translation id="8362914115861174987">Traduzir para </translation>

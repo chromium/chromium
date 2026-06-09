@@ -187,6 +187,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1125550662859510761">Vypadá jako <ph name="WIDTH" /> × <ph name="HEIGHT" /> (nativní)</translation>
 <translation id="1125816658532547876">Používejte svá hesla na zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Tapeta a styl</translation>
+<translation id="1126475802377716263">{0,plural, =1{Sdílí se 1 karta}few{Sdílí se # karty}many{Sdílí se # karty}other{Sdílí se # karet}}</translation>
 <translation id="1126696498560056882">Spravovat účty v tomto zařízení</translation>
 <translation id="1128591060186966949">Úprava vyhledávače</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -1756,6 +1757,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2263371730707937087">Obnovovací frekvence obrazovky</translation>
 <translation id="2263679799334060788">Vaše zpětná vazba nám pomáhá technologii Google Cast vylepšovat a velmi ji oceňujeme. Pokud potřebujete pomoci odstranit problémy s odesíláním, přejděte do <ph name="BEGIN_LINK" />centra nápovědy<ph name="END_LINK" />.</translation>
 <translation id="22649924370461580">Uložené skupiny karet</translation>
+<translation id="2265924028278810827">Nadřazená aplikace: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP přes USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Rozhraní Bluetooth deaktivováno</translation>
 <translation id="2268182915828370037">Vypnout synchronizaci souborů?</translation>
@@ -1951,6 +1953,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2406942743794219791">Potvrďte požadovaný výchozí vyhledávač</translation>
 <translation id="2407671304279211586">Vybrat poskytovatele DNS</translation>
 <translation id="2408018932941436077">Ukládání karty</translation>
+<translation id="2408601796549249241">Spodní panel Gemini je otevřený na celou výšku</translation>
 <translation id="2408762424059547338">Lépe vás ochrání před útoky tím, že vypne optimalizaci JavaScriptu</translation>
 <translation id="2408955596600435184">Zadejte PIN</translation>
 <translation id="2409378541210421746">Upravit výběr jazyka</translation>
@@ -2707,6 +2710,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2932483646085333864">Chcete-li zahájit synchronizaci, odhlaste se a poté se znovu přihlaste.</translation>
 <translation id="2932883381142163287">Nahlásit zneužití</translation>
 <translation id="2933632078076743449">Poslední aktualizace</translation>
+<translation id="2933653107553951760">Obnovit skupinu</translation>
 <translation id="2934225044529065415">Nepodařilo se získat přístup ke kameře</translation>
 <translation id="2935314715123552088">Deaktivovat aktivní profil eSIM karty</translation>
 <translation id="2935654492420446828">Školní účet přidáte později</translation>
@@ -2801,6 +2805,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3000461861112256445">Zvuk mono</translation>
 <translation id="3001144475369593262">Dětské účty</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Žádné přizpůsobené klávesy}=1{1 přizpůsobená klávesa}few{{COUNT} přizpůsobené klávesy}many{{COUNT} přizpůsobené klávesy}other{{COUNT} přizpůsobených kláves}}</translation>
+<translation id="3002864108328203174">Spodní panel Gemini je otevřený na polovinu výšky.</translation>
 <translation id="3003144360685731741">Preferované sítě</translation>
 <translation id="3003253259757197230">Navštívené adresy URL se odesílají do Googlu, aby mohl předvídat, které weby byste mohli navštívit jako další, a mohl vám také zobrazit další informace o stránce, kterou si právě prohlížíte</translation>
 <translation id="3003623123441819449">Mezipaměť CSS</translation>
@@ -3840,6 +3845,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3756485814916578707">Odesílání obsahu obrazovky</translation>
 <translation id="3756578970075173856">Nastavit PIN</translation>
 <translation id="3756806135608816820">Weby mohou žádat o vyhledání zařízení Bluetooth</translation>
+<translation id="3756823472711156529">Obnovit skupinu</translation>
 <translation id="3757567010566591880">Odepnout z lišty</translation>
 <translation id="3757645900890881944">Vyhledávací nástroje</translation>
 <translation id="3757733214359997190">Nebyly nalezeny žádné weby</translation>
@@ -4810,6 +4816,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4444304522807523469">Přístup ke skenerům dokumentů připojeným přes USB nebo v místní síti</translation>
 <translation id="4444512841222467874">Pokud neuvolníte místo, může dojít k automatickému odebrání uživatelů a dat.</translation>
 <translation id="4445446646109808714">Licenční smlouva s koncovým uživatelem: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">Obnovit rozdělené zobrazení</translation>
 <translation id="4446933390699670756">Zrcadleno</translation>
 <translation id="4448560527907365660">Uložit a zobrazit další</translation>
 <translation id="4449247303975391730">Spravovat oprávnění</translation>
@@ -4943,6 +4950,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4562364000855074606">Blokovat aplikace nainstalované na tomto zařízení <ph name="DEVICE_TYPE" />. Pokud chcete omezit stahování aplikací nebo obsahu, přejděte do Nastavení Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Výchozí jazyk zadávání je čínština</translation>
 <translation id="4563382028841851106">Odebrat z účtu</translation>
+<translation id="4563883094055457792">O&amp;bnovit rozdělené zobrazení</translation>
 <translation id="4564245002465020751">Dokončete nastavení na telefonu</translation>
 <translation id="456449593072900590">Při opuštění vymazat</translation>
 <translation id="4565377596337484307">Skrýt heslo</translation>
@@ -5846,6 +5854,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> nelze odesílat</translation>
 <translation id="5222403284441421673">Bylo zablokováno nezabezpečené stahování</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
+<translation id="5222710719845250566">Obnovit okno</translation>
 <translation id="5225324770654022472">Zobrazit zástupce aplikací</translation>
 <translation id="52254442782792731">Aktuální nastavení viditelnosti ještě není zadáno</translation>
 <translation id="5225463052809312700">Zapnout kameru</translation>
@@ -7214,6 +7223,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6266984048393265562">Upravit profil</translation>
 <translation id="6267166720438879315">Vyberte certifikát pro ověření na serveru <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Otevřít v aplikaci <ph name="APP" /></translation>
+<translation id="6269392226729599142">Obnovit rozdělené zobrazení</translation>
 <translation id="6270309713620950855">Připomenutí ztlumení</translation>
 <translation id="6270391203985052864">Weby mohou žádat o oprávnění zasílat vám oznámení</translation>
 <translation id="6270770586500173387">Posílat <ph name="BEGIN_LINK1" />informace o systému a aplikacích<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metriky<ph name="END_LINK2" /></translation>
@@ -8960,6 +8970,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7550830279652415241">záložky_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">Úložiště, napájení, jazyk</translation>
 <translation id="7551059576287086432">Stažení souboru <ph name="FILE_NAME" /> bylo úspěšné</translation>
+<translation id="7551303452605464331">O&amp;bnovit rozdělené zobrazení</translation>
 <translation id="7551643184018910560">Připnout k poličce</translation>
 <translation id="7552191410769096467">Pokud chcete sdílet skupiny karet nebo se k nim připojit, musíte se přihlásit a zapnout synchronizaci</translation>
 <translation id="7552196109089297786">Odhlásit se z účtu Microsoft</translation>
@@ -11111,6 +11122,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9087949559523851360">Přidat uživatele s omezenými oprávněními</translation>
 <translation id="9088234649737575428">Plugin <ph name="PLUGIN_NAME" /> je blokován podnikovými zásadami</translation>
 <translation id="90885733430013283">SSID sítě Wi-Fi</translation>
+<translation id="9088578317174654338">Spodní panel Gemini je zavřený.</translation>
 <translation id="9089416786594320554">Metody zadávání</translation>
 <translation id="9089959054554410481">Změna směru posouvání pomocí touchpadu</translation>
 <translation id="9090044809052745245">Jak se vaše zařízení zobrazuje ostatním</translation>

@@ -610,6 +610,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3635073343384702370">Chrome pot comprovar les teves contrasenyes quan les deses</translation>
 <translation id="3636940436873918441">Idiomes preferits</translation>
 <translation id="3637744895182738742">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chrome del compte<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Ves a l'inici de l'aplicació Google</translation>
 <translation id="368329460027487650">Has tancat la sessió. Obre les opcions per iniciar la sessió.</translation>
@@ -633,6 +634,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3739455665973395693">No hi ha cap contrasenya en perill al teu Compte de Google</translation>
 <translation id="3739899004075612870">Afegit a les adreces de: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">La cerca per veu no està disponible en aquest dispositiu</translation>
+<translation id="3756823472711156529">Restaura el grup</translation>
 <translation id="3763110477555836428">S'utilitzarà un número de targeta virtual per a l'emplenament quan tramitis una compra amb aquesta targeta a fi de protegir les teves dades reals. Gestiona-ho a Google Wallet. <ph name="BEGIN_LINK1" />Més informació sobre les targetes virtuals<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Encara no s\u2019han desat algunes dades</translation>
 <translation id="3770620323585347665">Posa nom a la finestra</translation>

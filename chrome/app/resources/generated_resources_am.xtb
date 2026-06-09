@@ -187,6 +187,7 @@
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ይመስላል (ቤተኛ)</translation>
 <translation id="1125816658532547876">የይለፍ ቃላትዎን በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይጠቀሙ</translation>
 <translation id="1125921926864945797">ልጣፍ እና ቅጥ</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 ትርን በማጋራት ላይ}one{# ትርን በማጋራት ላይ}other{# ትሮችን በማጋራት ላይ}}</translation>
 <translation id="1126696498560056882">በዚህ መሣሪያ ላይ ያሉ መለያዎችን ያቀናብሩ</translation>
 <translation id="1128591060186966949">የፍለጋ ፕሮግራምን ያርትዑ</translation>
 <translation id="1129348283834595293">ሳይበርፓንክ</translation>
@@ -1764,6 +1765,7 @@
 <translation id="2263679799334060788">ግብረመልስዎ Google Castን ለማሻሻል ይረዳናል እንዲሁም ምስጋና ይቸረዋል።
     በcast ላይ ለሚከሰቱ ችግሮች መላ ለመፈለግ ለማገዝ እባክዎ <ph name="BEGIN_LINK" />የእገዛ ማዕከልን<ph name="END_LINK" /> ይመልከቱ።</translation>
 <translation id="22649924370461580">የተቀመጡ የትር ቡድኖች</translation>
+<translation id="2265924028278810827">የወላጅ መተግበሪያ፦ <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP በዩኤስቢ ላይ (IPPUSB)</translation>
 <translation id="2268130516524549846">ብሉቱዝ ተሰናክሏል</translation>
 <translation id="2268182915828370037">የፋይል ስምረት ይጥፋ?</translation>
@@ -1959,6 +1961,7 @@
 <translation id="2406942743794219791">የሚፈልጉትን ነባሪ የፍለጋ ፕሮግራም ያረጋግጡ</translation>
 <translation id="2407671304279211586">የዲኤንኤስ አቅራቢ ይምረጡ</translation>
 <translation id="2408018932941436077">ካርድን በማስቀመጥ ላይ</translation>
+<translation id="2408601796549249241">የGemini የግርጌ ሉህ በሙሉ ቁመት</translation>
 <translation id="2408762424059547338">የጃቫስክሪፕት ማትባትን በማጥፋት ከጥቃቶች በተሻለ ይጠብቅዎታል</translation>
 <translation id="2408955596600435184">የእርስዎን ፒን ያስገቡ</translation>
 <translation id="2409378541210421746">የቋንቋ ምርጫ አርትዕ</translation>
@@ -2715,6 +2718,7 @@
 <translation id="2932483646085333864">ስምረትን ለመጀመር ዘግተው ይውጡና እንደገና ይግቡ</translation>
 <translation id="2932883381142163287">የአላግባብ መጠቀምን ሪፖርት ያድርጉ</translation>
 <translation id="2933632078076743449">የመጨረሻ ዝማኔ</translation>
+<translation id="2933653107553951760">ቡድንን ወደነበረበት መልስ</translation>
 <translation id="2934225044529065415">ካሜራን መድረስ አይቻልም</translation>
 <translation id="2935314715123552088">ንቁ የኢሲም መገለጫን አሰናክል</translation>
 <translation id="2935654492420446828">የትምህርት ቤት መለያን በኋላ ላይ ያክሉ</translation>
@@ -2809,6 +2813,7 @@
 <translation id="3000461861112256445">ሞኖ ኦዲዮ</translation>
 <translation id="3001144475369593262">የልጅ መለያዎች</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{ምንም ቁልፎች አልተበጁም}=1{1 የተበጀ ቁልፍ}one{{COUNT} የተበጀ ቁልፍ}other{{COUNT} የተበጁ ቁልፎች}}</translation>
+<translation id="3002864108328203174">የGemini የግርጌ ሉህ በግማሽ ቁመት።</translation>
 <translation id="3003144360685731741">ተመራጭ አውታረ መረቦች</translation>
 <translation id="3003253259757197230">እርስዎ የሚጎበኟቸው ዩአርኤሎች ቀጥሎ የትኛዎቹን ጣቢያዎች ሊጎበኙ እንደሚችሉ ለመተንበይ እና እየጎበኙ ስላሉት ገጽ ተጨማሪ መረጃን ለማሳየት ወደ Google ይላካሉ</translation>
 <translation id="3003623123441819449">የሲ ኤስ ኤስ መሸጎጫ</translation>
@@ -3850,6 +3855,7 @@
 <translation id="3756485814916578707">ማያ ገጽን Cast በማድረግ ላይ</translation>
 <translation id="3756578970075173856">ፒን ያዘጋጁ</translation>
 <translation id="3756806135608816820">ጣቢያዎች የብሉቱዝ መሣሪያዎችን ለመፈለግ መጠየቅ ይችላሉ</translation>
+<translation id="3756823472711156529">ቡድንን ወደነበረበት መልስ</translation>
 <translation id="3757567010566591880">ከመሣሪያ አሞሌ ንቀል</translation>
 <translation id="3757645900890881944">የፍለጋ መሣሪያዎች</translation>
 <translation id="3757733214359997190">ምንም ጣቢያዎች አልተገኙም</translation>
@@ -4819,6 +4825,7 @@
 <translation id="4444304522807523469">በዩ.ኤስ.ቢ ወይም በአካባቢ አውታረ መረብ በኩል የተያያዙ የሰነድ ቃኚዎችን ይድረስባቸው</translation>
 <translation id="4444512841222467874">ቦታ ካልተገኘ ተጠቃሚዎች እና ውሂብ በራስ-ሰር ሊወገዱ ይችላሉ።</translation>
 <translation id="4445446646109808714">የዋና ተጠቃሚ የፈቃድ ስምምነት፦ <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">የተከፈለ ዕይታን ወደነበረበት መልስ</translation>
 <translation id="4446933390699670756">ተንጸባርቋል</translation>
 <translation id="4448560527907365660">አስቀምጥ እና ተጨማሪ አሳይ</translation>
 <translation id="4449247303975391730">ፈቃዶችን ያስተዳድሩ</translation>
@@ -4952,6 +4959,7 @@
 <translation id="4562364000855074606">በዚህ <ph name="DEVICE_TYPE" /> ላይ የተጫኑ መተግበሪያዎችን ያግዱ። መተግበሪያዎችን ወይም ይዘትን ማውረድ ለመገደብ ወደ የGoogle Play ቅንብሮች ይሂዱ። <ph name="BEGIN_LINK_LEARN_MORE" />የበለጠ ለመረዳት<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">የመጀመሪያው የግቤት ቋንቋ ቻይንኛ ነው</translation>
 <translation id="4563382028841851106">ከመለያ አስወግድ</translation>
+<translation id="4563883094055457792">የተከፈለ ዕይታን ወደነበረበት መ&amp;ልስ</translation>
 <translation id="4564245002465020751">በስልክዎ ላይ ማዋቀርን ይጨርሱ</translation>
 <translation id="456449593072900590">በመውጫ ላይ ይሰርዙ</translation>
 <translation id="4565377596337484307">የይለፍ ቃል ደብቅ</translation>
@@ -5856,6 +5864,7 @@
 <translation id="5221516927483787768"><ph name="HOST_NAME" />ን cast ማድረግ አልተቻለም</translation>
 <translation id="5222403284441421673">ደህንነቱ ያልተጠበቀ ውርድ ታግዷል</translation>
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>
+<translation id="5222710719845250566">ወደነበረበት የመመለስ መስኮት</translation>
 <translation id="5225324770654022472">የመተግበሪያዎች አቋራጮችን አሳይ</translation>
 <translation id="52254442782792731">አሁን ያለው የታይነት ቅንብር እስካሁን አልተቀናበረም</translation>
 <translation id="5225463052809312700">ካሜራን አብራ</translation>
@@ -7228,6 +7237,7 @@
 <translation id="6266984048393265562">መገለጫን አብጅ</translation>
 <translation id="6267166720438879315">ራስዎን ለ<ph name="HOST_NAME" /> ለማረጋገጥ  ሰርቲፊኬት ይምረጡ</translation>
 <translation id="6268252012308737255">በ<ph name="APP" /> ክፈት</translation>
+<translation id="6269392226729599142">የተከፈለ ዕይታን ወደነበረበት መልስ</translation>
 <translation id="6270309713620950855">የድምጸ-ከል ገፋ ማድረጊያ</translation>
 <translation id="6270391203985052864">ጣቢያዎች ማሳወቂያዎችን ለመላክ መጠየቅ ይችላሉ</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />የስርዓት እና መተግበሪያ መረጃ<ph name="END_LINK1" />፣ እና <ph name="BEGIN_LINK2" />መለኪያዎች<ph name="END_LINK2" />ን ላክ</translation>
@@ -8973,6 +8983,7 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">ማከማቻ፣ ኃይል፣ ቋንቋ</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ማውረድ አልተሳካም</translation>
+<translation id="7551303452605464331">የተከፈለ ዕይታን ወደነበረበት መ&amp;ልስ</translation>
 <translation id="7551643184018910560">መደርደሪያ ላይ ሰካ</translation>
 <translation id="7552191410769096467">የትር ቡድኖችን ለማጋራት ወይም ለመቀላቀል በመለያ መግባት እና ሥምረትን ማብራት ያስፈልግዎታል</translation>
 <translation id="7552196109089297786">ከMicrosoft ዘግተህ ውጣ</translation>
@@ -11130,6 +11141,7 @@ nil</translation>
 <translation id="9087949559523851360">የተገደበ ተጠቃሚን አክል</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> በድርጅት መመሪያ ታግዷል</translation>
 <translation id="90885733430013283">የWiFi ኤስኤስአይዲ</translation>
+<translation id="9088578317174654338">የGemini የግርጌ ሉህ ተዘግቷል።</translation>
 <translation id="9089416786594320554">የግቤት ስልቶች</translation>
 <translation id="9089959054554410481">የመዳሰሻ ሰሌዳ ማሸብለል አቅጣጫን ይለውጡ</translation>
 <translation id="9090044809052745245">የእርስዎ መሣሪያ ለሌሎች እንዴት እንደሚታይ</translation>

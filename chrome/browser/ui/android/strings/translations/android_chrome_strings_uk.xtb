@@ -613,6 +613,7 @@
 <translation id="3635073343384702370">Chrome зможе перевірити ваші паролі, коли ви їх збережете</translation>
 <translation id="3636940436873918441">Вибрані мови</translation>
 <translation id="3637744895182738742">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />видаліть дані Chrome у своєму обліковому записі<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> (<ph name="TAB_COUNT" />)</translation>
 <translation id="3653111872753786013">"<ph name="WEBSITE_TITLE" />": <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Перейти на головну сторінку додатка Google</translation>
 <translation id="368329460027487650">Ви вийшли. Натисніть, щоб переглянути параметри входу.</translation>
@@ -637,6 +638,7 @@
 <translation id="3739899004075612870">Створено закладку в продукті <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740290940447881599">Переконайтеся, що цей сайт надійний</translation>
 <translation id="3740525748616366977">Голосовий пошук недоступний на цьому пристрої</translation>
+<translation id="3756823472711156529">Відновити групу</translation>
 <translation id="3763110477555836428">Щоб захистити дані справжньої картки, під час оплати за її допомогою натомість заповнюватиметься номер віртуальної картки. Ви можете керувати цим налаштуванням у Google Гаманці. <ph name="BEGIN_LINK1" />Докладніше про віртуальні картки<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Деякі дані ще не збережено</translation>
 <translation id="3770620323585347665">Введіть назву вікна</translation>

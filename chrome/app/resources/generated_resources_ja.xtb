@@ -187,6 +187,7 @@
 <translation id="1125550662859510761">表示上のサイズ: <ph name="WIDTH" />x<ph name="HEIGHT" />（ネイティブ）</translation>
 <translation id="1125816658532547876"><ph name="DEVICE_TYPE" /> でパスワードを使用する</translation>
 <translation id="1125921926864945797">壁紙とスタイル</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 個のタブを共有中}other{# 個のタブを共有中}}</translation>
 <translation id="1126696498560056882">このデバイスのアカウントを管理</translation>
 <translation id="1128591060186966949">検索エンジンの編集</translation>
 <translation id="1129348283834595293">サイバーパンク</translation>
@@ -1752,6 +1753,7 @@
 <translation id="2263371730707937087">画面のリフレッシュ レート</translation>
 <translation id="2263679799334060788">お送りいただいたフィードバックは、Google Cast の改善に役立てさせていただきます。Google Cast に関する問題のトラブルシューティングについては、<ph name="BEGIN_LINK" />ヘルプセンター<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="22649924370461580">保存したタブグループ</translation>
+<translation id="2265924028278810827">親アプリ: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP over USB（IPPUSB）</translation>
 <translation id="2268130516524549846">Bluetooth オフ</translation>
 <translation id="2268182915828370037">ファイルの同期をオフにしますか？</translation>
@@ -1946,6 +1948,7 @@
 <translation id="2406942743794219791">デフォルトで使用する検索エンジンを確認してください</translation>
 <translation id="2407671304279211586">DNS プロバイダを選択</translation>
 <translation id="2408018932941436077">カードを保存しています</translation>
+<translation id="2408601796549249241">Gemini のボトムシートが画面全体に表示されています</translation>
 <translation id="2408762424059547338">JavaScript の最適化を無効にして、攻撃からユーザーを保護します</translation>
 <translation id="2408955596600435184">PIN を入力してください</translation>
 <translation id="2409378541210421746">言語の選択を編集</translation>
@@ -2701,6 +2704,7 @@
 <translation id="2932483646085333864">同期を開始するには、ログアウトして再度ログインします</translation>
 <translation id="2932883381142163287">不正行為を報告</translation>
 <translation id="2933632078076743449">最終更新日</translation>
+<translation id="2933653107553951760">グループを復元</translation>
 <translation id="2934225044529065415">カメラにアクセスできません</translation>
 <translation id="2935314715123552088">アクティブな eSIM プロファイルを無効にする</translation>
 <translation id="2935654492420446828">学校用アカウントは後で追加します</translation>
@@ -2795,6 +2799,7 @@
 <translation id="3000461861112256445">モノラル音声</translation>
 <translation id="3001144475369593262">子アカウント</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{カスタマイズされたキーはありません}=1{1 個のカスタマイズされたキー}other{{COUNT} 個のカスタマイズされたキー}}</translation>
+<translation id="3002864108328203174">Gemini のボトムシートが画面の下半分に表示されています。</translation>
 <translation id="3003144360685731741">優先ネットワーク</translation>
 <translation id="3003253259757197230">アクセスした URL が Google に送信され、次にアクセスするサイトの予測と、アクセスしているページに関する追加情報の表示が行われます</translation>
 <translation id="3003623123441819449">CSS キャッシュ</translation>
@@ -3833,6 +3838,7 @@
 <translation id="3756485814916578707">画面をキャストしています</translation>
 <translation id="3756578970075173856">PIN を設定</translation>
 <translation id="3756806135608816820">サイトが Bluetooth デバイスの検出を要求できるようにする</translation>
+<translation id="3756823472711156529">グループを復元</translation>
 <translation id="3757567010566591880">ツールバーの固定を解除</translation>
 <translation id="3757645900890881944">検索ツール</translation>
 <translation id="3757733214359997190">サイトが見つかりません</translation>
@@ -4802,6 +4808,7 @@
 <translation id="4444304522807523469">USB 接続またはローカル ネットワーク上のドキュメント スキャナーへのアクセス</translation>
 <translation id="4444512841222467874">十分な空き領域がない場合、ユーザーとデータが自動的に削除される可能性があります。</translation>
 <translation id="4445446646109808714">エンドユーザー使用許諾契約: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">分割ビューを復元</translation>
 <translation id="4446933390699670756">ミラーリング</translation>
 <translation id="4448560527907365660">保存してもっと見る</translation>
 <translation id="4449247303975391730">権限を管理</translation>
@@ -4935,6 +4942,7 @@
 <translation id="4562364000855074606">この <ph name="DEVICE_TYPE" /> でアプリのインストールをブロックします。アプリやコンテンツのダウンロードを制限するには、Google Play の設定にアクセスしてください。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">初期の入力言語を中国語にする</translation>
 <translation id="4563382028841851106">アカウントから削除</translation>
+<translation id="4563883094055457792">分割ビューを復元(&amp;E)</translation>
 <translation id="4564245002465020751">スマートフォンで設定を完了</translation>
 <translation id="456449593072900590">終了時に削除</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
@@ -5836,6 +5844,7 @@
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> をキャストできません</translation>
 <translation id="5222403284441421673">安全でないダウンロードがブロックされました</translation>
 <translation id="5222676887888702881">ログアウト</translation>
+<translation id="5222710719845250566">ウィンドウを復元</translation>
 <translation id="5225324770654022472">アプリのショートカットを表示</translation>
 <translation id="52254442782792731">公開設定はまだ設定されていません</translation>
 <translation id="5225463052809312700">カメラをオンにする</translation>
@@ -7206,6 +7215,7 @@
 <translation id="6266984048393265562">プロファイルをカスタマイズ</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> での認証に使用する証明書を選択してください</translation>
 <translation id="6268252012308737255"><ph name="APP" /> で開く</translation>
+<translation id="6269392226729599142">分割ビューを復元</translation>
 <translation id="6270309713620950855">ミュートの通知</translation>
 <translation id="6270391203985052864">通知を送信するかどうかの確認をサイトに許可する</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />システムとアプリの情報<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />指標<ph name="END_LINK2" />を送信する</translation>
@@ -8947,6 +8957,7 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">ストレージ、電源、言語</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> をダウンロードできませんでした</translation>
+<translation id="7551303452605464331">分割ビューを復元(&amp;E)</translation>
 <translation id="7551643184018910560">シェルフに固定</translation>
 <translation id="7552191410769096467">タブグループを共有するか、タブグループに参加するには、ログインして同期をオンにする必要があります</translation>
 <translation id="7552196109089297786">Microsoft からログアウト</translation>
@@ -11098,6 +11109,7 @@
 <translation id="9087949559523851360">制限付きユーザーの追加</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> は会社のポリシーによってブロックされています</translation>
 <translation id="90885733430013283">Wi-Fi の SSID</translation>
+<translation id="9088578317174654338">Gemini のボトムシートが閉じられました。</translation>
 <translation id="9089416786594320554">入力方法</translation>
 <translation id="9089959054554410481">タッチパッドのスクロール方向を変更する</translation>
 <translation id="9090044809052745245">ほかのデバイスでのこのデバイスの表示名です</translation>

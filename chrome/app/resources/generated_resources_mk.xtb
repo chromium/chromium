@@ -187,6 +187,7 @@
 <translation id="1125550662859510761">Изгледа како <ph name="WIDTH" /> x <ph name="HEIGHT" /> (матична)</translation>
 <translation id="1125816658532547876">Користете ги вашите лозинки на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Тапет и стил</translation>
+<translation id="1126475802377716263">{0,plural, =1{Се споделува 1 картичка}one{Се споделуваат # картичка}other{Се споделуваат # картички}}</translation>
 <translation id="1126696498560056882">Управувајте со сметките на уредов</translation>
 <translation id="1128591060186966949">Уредете го пребарувачот</translation>
 <translation id="1129348283834595293">Сајберпанк</translation>
@@ -1769,6 +1770,7 @@
     <ph name="BEGIN_LINK" />
     Центарот за помош<ph name="END_LINK" />.</translation>
 <translation id="22649924370461580">Зачувани групи картички</translation>
+<translation id="2265924028278810827">Надредена апликација: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP преку USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth е оневозможен</translation>
 <translation id="2268182915828370037">Да се исклучи синхронизацијата на датотеките?</translation>
@@ -1964,6 +1966,7 @@
 <translation id="2406942743794219791">Потврдете го стандардниот пребарувач што го сакате</translation>
 <translation id="2407671304279211586">Изберете давател на услуги на DNS</translation>
 <translation id="2408018932941436077">Се зачувува картичката</translation>
+<translation id="2408601796549249241">Долниот лист со Gemini е отворен на целосна висина</translation>
 <translation id="2408762424059547338">Подобро ве штити од напади така што ја исклучува оптимизацијата на JavaScript</translation>
 <translation id="2408955596600435184">Внесете го вашиот PIN</translation>
 <translation id="2409378541210421746">Изменете го избраниот јазик</translation>
@@ -2720,6 +2723,7 @@
 <translation id="2932483646085333864">Одјавете се, па повторно најавете се за да започнете со синхронизација</translation>
 <translation id="2932883381142163287">Пријави злоупотреба</translation>
 <translation id="2933632078076743449">Последно ажурирање</translation>
+<translation id="2933653107553951760">Врати ја групата</translation>
 <translation id="2934225044529065415">Не може да пристапи до камерата</translation>
 <translation id="2935314715123552088">Оневозможи го активниот профил на eSIM</translation>
 <translation id="2935654492420446828">Додајте училишна сметка подоцна</translation>
@@ -2814,6 +2818,7 @@
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001144475369593262">Детски сметки</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Нема приспособени копчиња}=1{1 приспособено копче}one{{COUNT} приспособено копче}other{{COUNT} приспособени копчиња}}</translation>
+<translation id="3002864108328203174">Долниот лист со Gemini е отворен на половина висина.</translation>
 <translation id="3003144360685731741">Претпочитани мрежи</translation>
 <translation id="3003253259757197230">URL-адресите што ги отворате се испраќаат во Google за предвидување за тоа кои се следните сајтови што ќе ги отворите и прикажување дополнителни детали за страницата што сте ја отвориле.</translation>
 <translation id="3003623123441819449">CSS кеш</translation>
@@ -3855,6 +3860,7 @@
 <translation id="3756485814916578707">Се емитува екранот</translation>
 <translation id="3756578970075173856">Поставете PIN</translation>
 <translation id="3756806135608816820">Сајтовите може да прашуваат дали да бараат уреди со Bluetooth</translation>
+<translation id="3756823472711156529">Врати ја групата</translation>
 <translation id="3757567010566591880">Откачи од алатникот</translation>
 <translation id="3757645900890881944">Алатки за пребарување</translation>
 <translation id="3757733214359997190">Не се најдени сајтови</translation>
@@ -4826,6 +4832,7 @@
 <translation id="4444304522807523469">Пристап до скенери за документи поврзани преку USB или на локалната мрежа</translation>
 <translation id="4444512841222467874">Ако не се ослободи простор, автоматски може да се отстранат корисници и податоци.</translation>
 <translation id="4445446646109808714">Договор за лиценца со краен корисник: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">Врати го поделениот приказ</translation>
 <translation id="4446933390699670756">Отсликано</translation>
 <translation id="4448560527907365660">Зачувајте и видете повеќе</translation>
 <translation id="4449247303975391730">Управувајте со дозволите</translation>
@@ -4959,6 +4966,7 @@
 <translation id="4562364000855074606">Блокирајте ги апликациите инсталирани на овој <ph name="DEVICE_TYPE" />. За да го ограничите преземањето апликации или содржини, одете во „Поставки за Google Play“. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Првичниот јазик на внесување е кинески</translation>
 <translation id="4563382028841851106">Отстрани од сметката</translation>
+<translation id="4563883094055457792">В&amp;рати го поделениот приказ</translation>
 <translation id="4564245002465020751">Завршете го поставувањето на вашиот телефон</translation>
 <translation id="456449593072900590">Избриши при затворање</translation>
 <translation id="4565377596337484307">Скриј ја лозинката</translation>
@@ -5863,6 +5871,7 @@
 <translation id="5221516927483787768">Не може да се емитува <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Блокирано е небезбедно преземање</translation>
 <translation id="5222676887888702881">Одјави се</translation>
+<translation id="5222710719845250566">Врати го прозорецот</translation>
 <translation id="5225324770654022472">Покажи кратенка за апликации</translation>
 <translation id="52254442782792731">Не е избрана поставка за видливоста</translation>
 <translation id="5225463052809312700">Вклучи ја камерата</translation>
@@ -7235,6 +7244,7 @@
 <translation id="6266984048393265562">Приспособете го профилот</translation>
 <translation id="6267166720438879315">Изберете сертификат за да се автентицирате на <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Отвори со <ph name="APP" /></translation>
+<translation id="6269392226729599142">Врати го поделениот приказ</translation>
 <translation id="6270309713620950855">Исклучи звук на потсетувањето</translation>
 <translation id="6270391203985052864">Сајтовите можат да прашуваат дали да испраќаат известувања</translation>
 <translation id="6270770586500173387">Испрати <ph name="BEGIN_LINK1" />информации за системот и апликацијата<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />метриката<ph name="END_LINK2" /></translation>
@@ -8979,6 +8989,7 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">Простор, напојување, јазик</translation>
 <translation id="7551059576287086432">Преземањето на <ph name="FILE_NAME" /> е неуспешно</translation>
+<translation id="7551303452605464331">В&amp;рати го поделениот приказ</translation>
 <translation id="7551643184018910560">Прикачи на полицата</translation>
 <translation id="7552191410769096467">За да споделувате или да се придружувате во групи картички, треба да се најавите и да вклучите синхронизација</translation>
 <translation id="7552196109089297786">Одјавете се од Microsoft</translation>
@@ -11131,6 +11142,7 @@
 <translation id="9087949559523851360">Додај ограничен корисник</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> е блокиран од политиката на претпријатието</translation>
 <translation id="90885733430013283">ССИД на Wi-Fi мрежи</translation>
+<translation id="9088578317174654338">Долниот лист со Gemini е затворен.</translation>
 <translation id="9089416786594320554">Влезни методи</translation>
 <translation id="9089959054554410481">Променете ја насоката на лизгање на допирната подлога</translation>
 <translation id="9090044809052745245">Како вашиот уред се појавува кај другите</translation>

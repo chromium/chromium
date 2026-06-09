@@ -613,6 +613,7 @@
 <translation id="3635073343384702370">Chrome може да ги проверува вашите лозинки кога ги зачувувате</translation>
 <translation id="3636940436873918441">Претпочитани јазици</translation>
 <translation id="3637744895182738742">Ако сте ја заборавиле лозинката или сакате да ја промените поставкава, <ph name="BEGIN_LINK" />избришете ги податоците од Chrome во вашата сметка<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> – <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Одете на почетната картичка во апликацијата Google</translation>
 <translation id="368329460027487650">Одјавено. Отвора опции за најавување.</translation>
@@ -637,6 +638,7 @@
 <translation id="3739899004075612870">Обележано во <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740290940447881599">Уверете се дека имате доверба во сајтов</translation>
 <translation id="3740525748616366977">Гласовното пребарување не е достапено на уредов</translation>
+<translation id="3756823472711156529">Врати ја групата</translation>
 <translation id="3763110477555836428">Ќе се пополни број на виртуелна картичка кога ќе платите со картичкава за да се заштитат вашите вистински податоци. Управувајте во Google Wallet. <ph name="BEGIN_LINK1" />Дознајте повеќе за виртуелните картички<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Некои податоци сѐ уште не се зачувани</translation>
 <translation id="3770620323585347665">Именувајте го прозорецот</translation>

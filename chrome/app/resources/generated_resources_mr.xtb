@@ -1458,6 +1458,7 @@
 <translation id="2039464276165755892">इतर कोणीतरी आढळल्यावर सूचनेचा आशय लपवा</translation>
 <translation id="2040460856718599782">अरेरे! तुम्हाला ऑथेंटिकेट करण्याचा प्रयत्न करताना काहीतरी चूक झाली. कृपया तुमची साइन इन क्रेडेंशियल दोनदा तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2040822390690632244">अपडेट, मदत, डेव्हलपर पर्याय</translation>
+<translation id="2040827008689966558">बंद केलेले विभाजित दृश्य पुन्हा उघडा</translation>
 <translation id="2040894699575719559">स्थान ब्लॉक केले</translation>
 <translation id="2042279886444479655">ॲक्टिव्ह प्रोफाइल</translation>
 <translation id="2044014337866019681">कृपया सेशन अनलॉक करण्यासाठी तुम्ही <ph name="ACCOUNT" /> ची पडताळणी करत आहात याची खात्री करा.</translation>
@@ -4575,6 +4576,7 @@
 <translation id="4275397969489577657">इव्हेंट स्ट्रीम लॉगिंग सुरू करा</translation>
 <translation id="4275788652681621337">साइड पॅनल बंद करा</translation>
 <translation id="4275830172053184480">तुमचा डिव्हाइस रीस्टार्ट करा</translation>
+<translation id="4276390967705106170">नवीन ब्राउझर टॅबमध्ये उघडा</translation>
 <translation id="4276598757692536305">प्रिंटर PPD</translation>
 <translation id="4277434192562187284">XML कॉन्फिगरेशन स्रोत</translation>
 <translation id="4278390842282768270">अनुमत</translation>
@@ -5500,6 +5502,7 @@
 <translation id="4946998421534856407">launcher + अप अ‍ॅरो</translation>
 <translation id="4947376546135294974">तुम्ही भेट देत असलेल्या साइटवरील डेटा</translation>
 <translation id="4949898053053527676">तुमच्या शोधासाठी कोणतेही शोध परिणाम नाहीत असे दिसते</translation>
+<translation id="4949954144207118092">सद्य <ph name="APP_NAME" /> टॅबमध्ये उघडा</translation>
 <translation id="4950100687509657457">प्रोफाइल तयार करा</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{फाइल}other{# फाइल}}</translation>
 <translation id="495170559598752135">क्रिया</translation>
@@ -7631,6 +7634,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6563055593659435495">तुमच्या फोनशी कनेक्शन सुरू ठेवू शकत नाही. तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
 <translation id="6564343790052433242"><ph name="APP_NAME" /> साठी पासकी तयार करण्याकरिता, Google Password Manager सुरू असणे आवश्यक आहे</translation>
 <translation id="6565899972286925956">काहीही तयार करा</translation>
+<translation id="6566648465417201421">बंद केलेले विभाजित दृश्य पुन्हा उघडा</translation>
 <translation id="656679903990115526">साइट आणि अ‍ॅप्समध्ये सहजपणे साइन इन करण्यासाठी तुमचे पासवर्ड सेव्ह व ऑटोफिल करण्याकरिता हे तुमच्या फोनने स्कॅन करा</translation>
 <translation id="6568283005472142698">टॅब शोध</translation>
 <translation id="6569931898053264308">मध्यम बचती</translation>
@@ -7966,6 +7970,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6805478749741295868">हे AI चे प्रायोगिक वैशिष्ट्य आहे आणि ते नेहमीच बरोबर असेल असे नाही.</translation>
 <translation id="6805817411033102703">शेअर केलेल्या टॅब गटांविषयीचा फीडबॅक</translation>
 <translation id="6806089545527108739">अनुमती देऊ नका, पण नंतर विचारा</translation>
+<translation id="6806123901116522137">AI प्रयोग यावर जा</translation>
 <translation id="6806781719264274042">फक्त Google खाते असलेले तुमचे संपर्क. <ph name="LINK_BEGIN" />संपर्क पहा<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">पुढे सुरू ठेवण्यासाठी, तुमची सिक्युरिटी की घाला आणि त्यांना स्पर्श करा</translation>
 <translation id="6808166974213191158">ChromeOS Flex सिस्टीम इमेज रायटर</translation>
@@ -8619,6 +8624,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7282992757463864530">इन्फोबार</translation>
 <translation id="7283555985781738399">अतिथी मोड</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{हे डिव्हाइस एका दिवसासाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}other{हे डिव्हाइस {DAYS} दिवसांसाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}}</translation>
+<translation id="7284386549235597598">यामुळे Gemini सध्या ज्यावर काम करत आहे ती टास्क संपेल.</translation>
 <translation id="7284411326658527427">प्रत्येक व्यक्ती स्वतःचे खाते पर्सनलाइझ करू शकते आणि डेटा खाजगी ठेवू शकते.</translation>
 <translation id="7285008278689343502">ग्रँड टेटन नॅशनल पार्क</translation>
 <translation id="7286867818472074330">पासकी निवडा</translation>
@@ -8689,6 +8695,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7336799713063880535">सूचना ब्लॉक केल्या.</translation>
 <translation id="7337258336304389677">तुमचा फोन किंवा टॅबलेट वापरा</translation>
 <translation id="7339052793671338107">साइड पॅनल हँडलचा आकार बदला (ड्रॅग करण्यायोग्य)</translation>
+<translation id="733918220174231019">पुढे सुरू ठेवण्यासाठी टास्क संपवा</translation>
 <translation id="7339763383339757376">PKCS #7, एकल सर्टिफिकेट</translation>
 <translation id="7339785458027436441">टाइप करताना शब्दलेखन तपासा</translation>
 <translation id="7339898014177206373">नवीन विंडो</translation>
@@ -8839,6 +8846,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7432200167665670017">तुमच्या ॲडमिनने "<ph name="EXTENSION_NAME" />" ब्लॉक केले आहे - अ‍ॅप आयडी <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">संग्रहित करा</translation>
 <translation id="7433333862363162673">निवड शॉर्टकट साफ करा</translation>
+<translation id="7433495118028038748">होय, टास्क संपवा</translation>
 <translation id="7433957986129316853">ठेवा</translation>
 <translation id="7434100547946193426">इतर अ‍ॅप्स</translation>
 <translation id="7434509671034404296">डेव्हलपर</translation>

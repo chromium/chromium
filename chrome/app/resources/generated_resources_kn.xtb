@@ -187,6 +187,7 @@
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ಸ್ಥಳೀಯ) ನಂತೆ ತೋರುತ್ತಿದೆ</translation>
 <translation id="1125816658532547876">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="1125921926864945797">ವಾಲ್‌ಪೇಪರ್ ಮತ್ತು ಶೈಲಿ</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 ಟ್ಯಾಬ್ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ}one{# ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ}other{# ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ}}</translation>
 <translation id="1126696498560056882">ಈ ಸಾಧನದಲ್ಲಿ ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1128591060186966949">ಹುಡುಕಾಟ ಇಂಜಿನ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="1129348283834595293">ಸೈಬರ್‌ಪಂಕ್</translation>
@@ -1761,6 +1762,7 @@
     <ph name="BEGIN_LINK" />
     ಸಹಾಯ ಕೇಂದ್ರವನ್ನು<ph name="END_LINK" /> ಉಲ್ಲೇಖಿಸಿ.</translation>
 <translation id="22649924370461580">ಸೇವ್ ಮಾಡಿದ ಟ್ಯಾಬ್ ಗುಂಪುಗಳು</translation>
+<translation id="2265924028278810827">ಪೋಷಕ ಆ್ಯಪ್: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">USB ನಲ್ಲಿ IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">ಬ್ಲೂಟೂತ್‌ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2268182915828370037">ಫೈಲ್ ಸಿಂಕ್ ಅನ್ನು ಆಫ್ ಮಾಡಬೇಕೆ?</translation>
@@ -1956,6 +1958,7 @@
 <translation id="2406942743794219791">ನಿಮಗೆ ಬೇಕಾದ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="2407671304279211586">DNS ಪೂರೈಕೆದಾರರನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2408018932941436077">ಕಾರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
+<translation id="2408601796549249241">Gemini ಕೆಳಭಾಗದ ಶೀಟ್ ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆದಿದೆ</translation>
 <translation id="2408762424059547338">JavaScript ಆಪ್ಟಿಮೈಸೇಷನ್ ಅನ್ನು ಆಫ್ ಮಾಡುವ ಮೂಲಕ ದಾಳಿಗಳಿಂದ ನಿಮ್ಮನ್ನು ಉತ್ತಮವಾಗಿ ರಕ್ಷಿಸುತ್ತದೆ</translation>
 <translation id="2408955596600435184">ನಿಮ್ಮ ಪಿನ್ ನಮೂದಿಸಿ</translation>
 <translation id="2409378541210421746">ಭಾಷೆಯ ಆಯ್ಕೆಯನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
@@ -2712,6 +2715,7 @@
 <translation id="2932483646085333864">ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು ಸೈನ್‌ ಔಟ್ ಮಾಡಿ ನಂತರ ಮರಳಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2932883381142163287">ನಿಂದನೆ ವರದಿ ಮಾಡಿ</translation>
 <translation id="2933632078076743449">ಕೊನೆಯ ಅಪ್‌ಡೇಟ್‌</translation>
+<translation id="2933653107553951760">ಗುಂಪನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="2934225044529065415">ಕ್ಯಾಮರಾ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="2935314715123552088">ಸಕ್ರಿಯ eSIM ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2935654492420446828">ನಂತರ ಶಾಲೆಯ ಖಾತೆಯೊಂದನ್ನು ಸೇರಿಸಿ</translation>
@@ -2806,6 +2810,7 @@
 <translation id="3000461861112256445">ಮೊನೊ ಆಡಿಯೊ</translation>
 <translation id="3001144475369593262">ಮಕ್ಕಳ ಖಾತೆಗಳು</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{ಯಾವುದೇ ಕೀಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲಾಗಿಲ್ಲ}=1{1 ಕಸ್ಟಮೈಸ್ ಮಾಡಿದ ಕೀ}one{{COUNT} ಕಸ್ಟಮೈಸ್ ಮಾಡಿದ ಕೀಗಳು}other{{COUNT} ಕಸ್ಟಮೈಸ್ ಮಾಡಿದ ಕೀಗಳು}}</translation>
+<translation id="3002864108328203174">Gemini ಕೆಳಭಾಗದ ಶೀಟ್ ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="3003144360685731741">ಆದ್ಯತೆಯ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="3003253259757197230">ನೀವು ಮುಂದೆ ಯಾವ ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಬಹುದು ಎಂಬುದನ್ನು ಊಹಿಸಲು ಮತ್ತು ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟದ ಕುರಿತಾದ ಹೆಚ್ಚುವರಿ ಮಾಹಿತಿಯನ್ನು ನಿಮಗೆ ತೋರಿಸಲು ನೀವು ಭೇಟಿ ನೀಡುವ URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="3003623123441819449">CSS ಕ್ಯಾಷ್</translation>
@@ -3846,6 +3851,7 @@
 <translation id="3756485814916578707">ಬಿತ್ತರಿಸುವ ಸ್ಕ್ರೀನ್‌</translation>
 <translation id="3756578970075173856">ಪಿನ್ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="3756806135608816820">ಸೈಟ್‌ಗಳು ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಹುಡುಕಲು ಅನುಮತಿಸುವಂತೆ ಕೇಳಬಹುದು</translation>
+<translation id="3756823472711156529">ಗುಂಪನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="3757567010566591880">ಟೂಲ್‌ಬಾರ್‌ನಿಂದ ಅನ್‌ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="3757645900890881944">ಹುಡುಕಾಟ ಟೂಲ್‌ಗಳು</translation>
 <translation id="3757733214359997190">ಯಾವುದೇ ಸೈಟ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
@@ -4817,6 +4823,7 @@
 <translation id="4444304522807523469">USB ಅಥವಾ ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್ ಮೂಲಕ ಲಗತ್ತಿಸಲಾದ ಡಾಕ್ಯುಮೆಂಟ್ ಸ್ಕ್ಯಾನರ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="4444512841222467874">ಸ್ಥಳಾವಕಾಶವನ್ನು ಲಭ್ಯವಾಗಿಸದೇ ಇದ್ದರೆ, ಬಳಕೆದಾರರು ಮತ್ತು ಡೇಟಾವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆಗೆದುಹಾಕಬಹುದು.</translation>
 <translation id="4445446646109808714">ಅಂತಿಮ ಬಳಕೆದಾರ ಪರವಾನಗಿ ಒಪ್ಪಂದ: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">ಸ್ಪ್ಲಿಟ್ ವ್ಯೂ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="4446933390699670756">ಪ್ರತಿಬಿಂಬಿತ</translation>
 <translation id="4448560527907365660">ಸೇವ್ ಮಾಡಿ ಹಾಗೂ ಇನ್ನಷ್ಟು ನೋಡಿ</translation>
 <translation id="4449247303975391730">ಅನುಮತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -4950,6 +4957,7 @@
 <translation id="4562364000855074606">ಈ <ph name="DEVICE_TYPE" /> ಸಾಧನದಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ. ಆ್ಯಪ್‌ಗಳು ಅಥವಾ ಕಂಟೆಂಟ್‌ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲು, Google Play ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">ಚೈನೀಸ್‌ನ ಆರಂಭದ ಇನ್‌ಪುಟ್ ಭಾಷೆ</translation>
 <translation id="4563382028841851106">ಖಾತೆಯಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
+<translation id="4563883094055457792">ಸ್ಪ್ಲಿಟ್ ವ್ಯೂ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="4564245002465020751">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಸೆಟಪ್ ಮಾಡುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="456449593072900590">ನಿರ್ಗಮಿಸಿದಾಗ ಅಳಿಸಿ</translation>
 <translation id="4565377596337484307">ಪಾಸ್‌ವರ್ಡ್ ಮರೆಮಾಡಿ</translation>
@@ -5854,6 +5862,7 @@
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> ಅನ್ನು ಬಿತ್ತರಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="5222403284441421673">ಅಸುರಕ್ಷಿತ ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5222676887888702881">ಸೈನ್ ಔಟ್</translation>
+<translation id="5222710719845250566">ವಿಂಡೋವನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="5225324770654022472">ಅಪ್ಲಿಕೇಶನ್‌ಗಳ ಶಾರ್ಟ್‌ಕಟ್ ತೋರಿಸು</translation>
 <translation id="52254442782792731">ಪ್ರಸ್ತುತ ಗೋಚರತೆ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಇನ್ನೂ ಹೊಂದಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="5225463052809312700">ಕ್ಯಾಮರಾ ಆನ್ ಮಾಡಿ</translation>
@@ -7226,6 +7235,7 @@
 <translation id="6266984048393265562">ಪ್ರೊಫೈಲ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್‌ ಮಾಡಿ</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> ಗೆ ನಿಮ್ಮನ್ನು ಪ್ರಮಾಣೀಕರಿಸಲು ಒಂದು ಪ್ರಮಾಣಪತ್ರವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="6268252012308737255"><ph name="APP" /> ರಿಂದ ತೆರೆಯಿರಿ</translation>
+<translation id="6269392226729599142">ಸ್ಪ್ಲಿಟ್ ವ್ಯೂ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="6270309713620950855">ನಡ್ಜ್ ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="6270391203985052864">ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಬಹುದೇ ಎಂದು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />ಸಿಸ್ಟಂ ಮತ್ತು ಆ್ಯಪ್ ಮಾಹಿತಿ<ph name="END_LINK1" /> ಮತ್ತು <ph name="BEGIN_LINK2" />ಮಾಪನಗಳನ್ನು<ph name="END_LINK2" /> ಕಳುಹಿಸಿ</translation>
@@ -8971,6 +8981,7 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">ಸಂಗ್ರಹಣೆ, ಪವರ್, ಭಾಷೆ</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="7551303452605464331">ಸ್ಪ್ಲಿಟ್ ವ್ಯೂ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="7551643184018910560">ಶೆಲ್ಫ್‌ಗೆ ಪಿನ್‌ ಮಾಡು</translation>
 <translation id="7552191410769096467">ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಅಥವಾ ಸೇರಿಕೊಳ್ಳಲು, ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ ಮತ್ತು ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ</translation>
 <translation id="7552196109089297786">Microsoft ನ ಸೈನ್‌ ಔಟ್‌</translation>
@@ -11120,6 +11131,7 @@
 <translation id="9087949559523851360">ನಿರ್ಬಂಧಿತ ಬಳಕೆದಾರರನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="9088234649737575428">ಎಂಟರ್‌ಪ್ರೈಸ್ ನೀತಿಗಳಿಂದ <ph name="PLUGIN_NAME" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="90885733430013283">ವೈಫೈ SSID</translation>
+<translation id="9088578317174654338">Gemini ಕೆಳಭಾಗದ ಶೀಟ್ ಅನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>
 <translation id="9089416786594320554">ಇನ್‌ಪುಟ್ ವಿಧಾನಗಳು</translation>
 <translation id="9089959054554410481">ಟಚ್‌ಪ್ಯಾಡ್ ಸ್ಕ್ರೋಲ್ ಮಾಡುವ ದಿಕ್ಕನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="9090044809052745245">ಇತರರಿಗೆ ನಿಮ್ಮ ಸಾಧನವು ಹೇಗೆ ಕಾಣಿಸುತ್ತದೆ</translation>

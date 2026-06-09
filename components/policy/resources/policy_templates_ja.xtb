@@ -470,7 +470,6 @@ URL パターンは、<ph name="CONTROLLED_FRAME_ALLOWED_FOR_URLS_POLICY_NAME" /
       このポリシーを有効に設定した場合、改善された国際キーボード ショートカットが有効になります。
       未設定の場合、このポリシーは管理対象のデバイスに対して有効になり、ユーザーが所有するデバイスに対しても有効になります。
       なお、これは管理対象のユーザーが、サポートの終了した従来のショートカットを引き続き使用できるようにするための一時的なポリシーです。このポリシーは、キーボード ショートカットのカスタマイズが可能になった時点でサポート終了となります。</translation>
-<translation id="1359459742455216057"><ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> アプリの固有識別子。</translation>
 <translation id="1361661842732478894">ツールバーにホームボタンを表示する</translation>
 <translation id="1363275621236827384">ハードウェア プロファイルを Quirks サーバーに問い合わせられるようにする</translation>
 <translation id="1363839375295535439">このポリシーを有効に設定するか未設定のままにした場合、システム設定でサポートされていれば、印刷サービスで LPAC サンドボックスが有効になります。
@@ -8634,7 +8633,6 @@ False に設定すると、P2P は使用されません。
 
 <ph name="PRODUCT_NAME" /> の場合、このポリシーは <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> で登録されたマシンでのみ有効です。
 <ph name="PRODUCT_OS_NAME" /> の場合、このポリシーは常に有効です。</translation>
-<translation id="6714333117401088746">有効にする <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> インスタンスに対応する <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> プロジェクトの ID。</translation>
 <translation id="6720330829631914048">1 日の開始時間からの経過時間（24 時間表示）です。</translation>
 <translation id="6720862827454058309">IP アドレス空間のマッピングをオーバーライドする</translation>
 <translation id="6721252203593581486">サードパーティのコンテキスト（クロスサイト iframe など）での WebSQL は M97 の時点ではデフォルトでオフになっており、M101 では完全に削除されます。

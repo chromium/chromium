@@ -269,6 +269,7 @@
 <translation id="1407135791313364759">सबै खोल्नुहोस्</translation>
 <translation id="1408696301184924537">यो IBAN अर्को पटक अटोफिल गर्न यसलाई आफ्नो Google खातामा सेभ गर्नुहोस्</translation>
 <translation id="1408787208417187241">सिरानमा तीन स्टिच</translation>
+<translation id="1410306713026702438"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />। <ph name="SUGGESTION_TYPE" />। <ph name="GROUP_HEADER" /> समूहमा भएका <ph name="NUM_MATCHES_IN_GROUP" /> मध्ये <ph name="MATCH_POSITION" />।</translation>
 <translation id="1410365862999780287">यो डिभाइस प्रयोग गर्ने अन्य मान्छेहरूले तपाईंको गतिविधि नदेख्ने भएकाले तपाईं अझ बढी गोप्य तरिकाले ब्राउज गर्न सक्नुहुन्छ। यसो गर्दा Google सहित तपाईंले खोल्ने वेबसाइट तथा ती वेबसाइटले प्रयोग गर्ने सेवाहरूले जानकारी सङ्कलन गर्ने तरिका परिवर्तन हुने छैन। डाउनलोड गरिएका सामग्री, बुकमार्क र रिडिङ लिस्टमा भएका वस्तुहरू सेभ गरिने छन्।</translation>
 <translation id="1410941016594047814">Envelope Invite</translation>
 <translation id="1413235258620101697">अझ छिटो चेकआउट गर्न सकियोस् भन्नाका लागि यो कार्डको CVC इन्क्रिप्ट गरिने छ र Google Wallet मा सेभ गरिने छ</translation>
@@ -660,6 +661,7 @@
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">पुस्तकका खुद्रा बिक्रेताहरू</translation>
 <translation id="2048261947532620704">पेज अनुवाद गरिँदै छ</translation>
+<translation id="2055016614992422886">वार्तालाप</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2059202684901022309">२२ x ३४ इन्च</translation>
 <translation id="2064568741209980952">क्रेडिट तथा ऋण</translation>
@@ -3555,6 +3557,7 @@
 <translation id="6550245281449521513">माउस लक गर्ने अनुमति दिन अस्वीकार गरिएको छ</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, नयाँ</translation>
 <translation id="6552566579578780089">भुक्तानीहरू</translation>
+<translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />। <ph name="SUGGESTION_TYPE" />। <ph name="GROUP_HEADER" /> समूहमा भएका <ph name="NUM_MATCHES_IN_GROUP" /> मध्ये <ph name="MATCH_POSITION" />।</translation>
 <translation id="6554732001434021288">पछिल्लो पटक <ph name="NUM_DAYS" /> दिनअघि खोलिएको</translation>
 <translation id="6556866813142980365">फेरि गर्नुहोस्</translation>
 <translation id="6557715786897013164">१४ x १७ इन्च</translation>

@@ -1454,6 +1454,7 @@
 <translation id="2039464276165755892">وقتی فرد دیگری شناسایی می‌شود، محتوای اعلان پنهان شود</translation>
 <translation id="2040460856718599782">متأسفانه هنگام اصالت‌سنجی شما مشکلی پیش آمد. لطفاً اعتبارنامه‌های ورود به سیستمتان را دوباره بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="2040822390690632244">به‌روزرسانی‌ها، راهنما، گزینه‌های توسعه‌دهندگان</translation>
+<translation id="2040827008689966558">باز کردن مجدد «نمای دونیمه» بسته‌شده</translation>
 <translation id="2040894699575719559">مکان مسدود شد</translation>
 <translation id="2042279886444479655">نمایه‌های فعال</translation>
 <translation id="2044014337866019681">لطفاً مطمئن شوید <ph name="ACCOUNT" /> را به‌تأیید می‌رسانید تا قفل جلسه باز شود.</translation>
@@ -4573,6 +4574,7 @@
 <translation id="4275397969489577657">فعال کردن گزارش‌گیری از جریان رویداد</translation>
 <translation id="4275788652681621337">بستن پانل کناری</translation>
 <translation id="4275830172053184480">راه‌اندازی دستگاه خود</translation>
+<translation id="4276390967705106170">باز کردن در زبانه مرورگر جدید</translation>
 <translation id="4276598757692536305">‏چاپگر PPD</translation>
 <translation id="4277434192562187284">‏منبع پیکربندی XML</translation>
 <translation id="4278390842282768270">اجازه داشتن</translation>
@@ -5498,6 +5500,7 @@
 <translation id="4946998421534856407">راه‌انداز + بالابر</translation>
 <translation id="4947376546135294974">داده‌های برگرفته از سایتی که بازدید می‌کنید</translation>
 <translation id="4949898053053527676">به‌نظر می‌رسد نتیجه‌ای برای جستجوی شما وجود ندارد.</translation>
+<translation id="4949954144207118092">باز کردن <ph name="APP_NAME" /> در زبانه موجود</translation>
 <translation id="4950100687509657457">ایجاد نمایه</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{یک فایل}one{# فایل}other{# فایل}}</translation>
 <translation id="495170559598752135">کنش‌ها</translation>
@@ -7627,6 +7630,7 @@
 <translation id="6563055593659435495">‏اتصال به تلفن قطع می‌شود. مطمئن شوید تلفنتان همین اطراف باشد و قفل آن باز و بلوتوث و Wi-Fi در آن روشن باشد.</translation>
 <translation id="6564343790052433242">‏برای ایجاد گذرکلید برای <ph name="APP_NAME" />، «مدیر گذرواژه Google» باید روشن باشد</translation>
 <translation id="6565899972286925956">هرچه می‌خواهید خلق کنید</translation>
+<translation id="6566648465417201421">باز کردن مجدد «نمای دونیمه» بسته‌شده</translation>
 <translation id="656679903990115526">این را با تلفنتان اسکن کنید تا گذرواژه‌هایتان را ذخیره و تکمیل خودکار کنید و بتوانید به‌راحتی به سیستم سایت‌ها و برنامه‌ها وارد شوید</translation>
 <translation id="6568283005472142698">جستجوی زبانه</translation>
 <translation id="6569931898053264308">صرفه‌جویی‌های متوسط</translation>
@@ -7964,6 +7968,7 @@
 <translation id="6805478749741295868">این یک قابلیت آزمایشی هوش مصنوعی است و ممکن است اشتباه بکند.</translation>
 <translation id="6805817411033102703">بازخورد درباره گروه‌های زبانه هم‌رسانی‌شده</translation>
 <translation id="6806089545527108739">اجازه داده نشود اما بعداً سؤال شود</translation>
+<translation id="6806123901116522137">رفتن به «نوآوری‌های هوشواره‌ای»</translation>
 <translation id="6806781719264274042">‏فقط مخاطبینی که «حساب Google» دارند. <ph name="LINK_BEGIN" />مشاهده مخاطبین<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">برای ادامه، کلید امنیتی را وارد کنید و لمس کنید</translation>
 <translation id="6808166974213191158">‏ایجادکننده تصویر سیستم ChromeOS Flex</translation>
@@ -8617,6 +8622,7 @@
 <translation id="7282992757463864530">نوار اطلاعات</translation>
 <translation id="7283555985781738399">حالت مهمان</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{این دستگاه به‌مدت یک روز ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}one{این دستگاه به‌مدت {DAYS} روز ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}other{این دستگاه به‌مدت {DAYS} روز ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}}</translation>
+<translation id="7284386549235597598">‏با این کار، تکلیفی که Gemini اکنون روی آن کار می‌کند پایان می‌یابد</translation>
 <translation id="7284411326658527427">هر فرد می‌تواند حسابش را شخصی‌سازی کند و داده‌ها را خصوصی نگه دارد.</translation>
 <translation id="7285008278689343502">پارک ملی گرند تیتون</translation>
 <translation id="7286867818472074330">انتخاب گذرکلید</translation>
@@ -8687,6 +8693,7 @@
 <translation id="7336799713063880535">اعلان‌ها مسدود شدند.</translation>
 <translation id="7337258336304389677">استفاده از تلفن یا رایانه لوحی</translation>
 <translation id="7339052793671338107">دسته تغییر اندازه پانل کناری (کشیدنی)</translation>
+<translation id="733918220174231019">برای ادامه دادن، تکلیف را به‌پایان برسانید</translation>
 <translation id="7339763383339757376">‏PKCS #7، گواهی تکی</translation>
 <translation id="7339785458027436441">بررسی املا هنگام تایپ</translation>
 <translation id="7339898014177206373">پنجرهٔ جدید</translation>
@@ -8837,6 +8844,7 @@
 <translation id="7432200167665670017">دامنه شما «<ph name="EXTENSION_NAME" />» - با شناسه برنامه <ph name="EXTENSION_ID" /> را مسدود کرده است</translation>
 <translation id="7433103263856598557">بایگانی</translation>
 <translation id="7433333862363162673">پاک کردن میان‌بر انتخاب</translation>
+<translation id="7433495118028038748">بله، پایان دادن به تکلیف</translation>
 <translation id="7433957986129316853">حفظ شود</translation>
 <translation id="7434100547946193426">سایر برنامه‌ها</translation>
 <translation id="7434509671034404296">توسعه‌دهنده</translation>

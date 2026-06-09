@@ -613,6 +613,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3635073343384702370">Chrome kan bara kontrollera dina lösenord om du sparar dem</translation>
 <translation id="3636940436873918441">Föredragna språk</translation>
 <translation id="3637744895182738742">Om du har glömt lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> – <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Öppna startskärmen i Google-appen</translation>
 <translation id="368329460027487650">Utloggad. Öppnar inloggningsalternativen.</translation>
@@ -637,6 +638,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3739899004075612870">Bokmärket har lagts till i <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740290940447881599">Se till att du litar på den här webbplatsen</translation>
 <translation id="3740525748616366977">Röstsökning är inte tillgängligt på enheten</translation>
+<translation id="3756823472711156529">Återställ grupp</translation>
 <translation id="3763110477555836428">Ett virtuellt kortnummer fylls i när du betalar med det här kortet för att skydda dina faktiska uppgifter. Hantera detta i Google Wallet. <ph name="BEGIN_LINK1" />Läs mer om virtuella kort<ph name="END_LINK1" />.</translation>
 <translation id="376561056759077985">Viss data har inte sparats ännu</translation>
 <translation id="3770620323585347665">Namnge fönstret</translation>

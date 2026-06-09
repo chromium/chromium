@@ -187,6 +187,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1125550662859510761">Megjelenés: <ph name="WIDTH" /> × <ph name="HEIGHT" /> (natív)</translation>
 <translation id="1125816658532547876">Használja jelszavait <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="1125921926864945797">Háttérkép és stílus</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 lap megosztva}other{# lap megosztva}}</translation>
 <translation id="1126696498560056882">Fiókok kezelése ezen az eszközön</translation>
 <translation id="1128591060186966949">Keresőmotor beállítása</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -1767,6 +1768,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
     <ph name="BEGIN_LINK" />
     súgót<ph name="END_LINK" />.</translation>
 <translation id="22649924370461580">Elmentett lapcsoportok</translation>
+<translation id="2265924028278810827">Fölérendelt alkalmazás: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP over USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth letiltva</translation>
 <translation id="2268182915828370037">Kikapcsolja a fájlszinkronizálást?</translation>
@@ -1962,6 +1964,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2406942743794219791">A használni kívánt alapértelmezett keresőmotor megerősítése</translation>
 <translation id="2407671304279211586">DNS-szolgáltató kiválasztása</translation>
 <translation id="2408018932941436077">Kártya mentése folyamatban</translation>
+<translation id="2408601796549249241">A Gemini alsó lapja teljes magasságban megnyitva.</translation>
 <translation id="2408762424059547338">A JavaScript-optimalizálás kikapcsolásával jobban megvédi Önt a támadásoktól</translation>
 <translation id="2408955596600435184">PIN-kód megadása</translation>
 <translation id="2409378541210421746">Nyelvválasztás szerkesztése</translation>
@@ -2718,6 +2721,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2932483646085333864">A szinkronizálás megkezdéséhez jelentkezzen ki, majd jelentkezzen be újra</translation>
 <translation id="2932883381142163287">Visszaélés bejelentése</translation>
 <translation id="2933632078076743449">Utolsó frissítés</translation>
+<translation id="2933653107553951760">Csoport visszaállítása</translation>
 <translation id="2934225044529065415">Nem lehet hozzáférni a kamerához</translation>
 <translation id="2935314715123552088">Aktív eSIM-profil letiltása</translation>
 <translation id="2935654492420446828">Iskolai fiók későbbi hozzáadása</translation>
@@ -2812,6 +2816,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3000461861112256445">Monó hang</translation>
 <translation id="3001144475369593262">Gyermekfiókok</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Nincs személyre szabott billentyű}=1{1 személyre szabott billentyű}other{{COUNT} személyre szabott billentyű}}</translation>
+<translation id="3002864108328203174">A Gemini alsó lapja félmagasságban megnyitva.</translation>
 <translation id="3003144360685731741">Előnyben részesített hálózatok</translation>
 <translation id="3003253259757197230">Az Ön által felkeresett URL-ek el lesznek küldve a Google-nak, hogy előrejelezzük, mely webhelyeket fogja esetleg legközelebb felkeresni, valamint hogy további információkat jelenítsünk meg az aktuálisan megnyitott oldalról.</translation>
 <translation id="3003623123441819449">CSS-gyorsítótár</translation>
@@ -3853,6 +3858,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3756485814916578707">Képernyőtartalom átküldése</translation>
 <translation id="3756578970075173856">PIN-kód beállítása</translation>
 <translation id="3756806135608816820">A webhelyek engedélyt kérhetnek Bluetooth-eszközök keresésére</translation>
+<translation id="3756823472711156529">Csoport visszaállítása</translation>
 <translation id="3757567010566591880">Kitűzés feloldása az eszköztáron</translation>
 <translation id="3757645900890881944">Keresőeszközök</translation>
 <translation id="3757733214359997190">A program nem talált egy webhelyet sem</translation>
@@ -4823,6 +4829,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4444304522807523469">USB-kapcsolaton vagy a helyi hálózaton keresztül csatlakoztatott szkennerek elérése</translation>
 <translation id="4444512841222467874">Ha nem szabadít fel tárhelyet, előfordulhat, hogy a rendszer automatikusan eltávolít bizonyos felhasználókat és adatokat.</translation>
 <translation id="4445446646109808714">Végfelhasználói licencszerződés: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">Osztott nézet visszaállítása</translation>
 <translation id="4446933390699670756">Tükrözött</translation>
 <translation id="4448560527907365660">Mentés és továbbiak megtekintése</translation>
 <translation id="4449247303975391730">Engedélyek kezelése</translation>
@@ -4956,6 +4963,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4562364000855074606">Az erre a(z) <ph name="DEVICE_TYPE" /> eszközre telepített alkalmazások letiltása. Az alkalmazások és tartalmak letöltésének korlátozásához lépjen a Google Play beállításaihoz. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="4563210852471260509">Az alapértelmezett beviteli nyelv a kínai</translation>
 <translation id="4563382028841851106">Eltávolítás a fiókból</translation>
+<translation id="4563883094055457792">Osztott néz&amp;et visszaállítása</translation>
 <translation id="4564245002465020751">Fejezze be a beállítást a telefonján</translation>
 <translation id="456449593072900590">Törlés kilépéskor</translation>
 <translation id="4565377596337484307">Jelszó elrejtése</translation>
@@ -5860,6 +5868,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5221516927483787768">Sikertelen átküldés: <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Nem biztonságos letöltés letiltva</translation>
 <translation id="5222676887888702881">Kijelentkezés</translation>
+<translation id="5222710719845250566">Ablak visszaállítása</translation>
 <translation id="5225324770654022472">Alkalmazások parancsikon megjelenítése</translation>
 <translation id="52254442782792731">Jelenleg nincs megadott láthatósági beállítás</translation>
 <translation id="5225463052809312700">Kamera bekapcsolása</translation>
@@ -7233,6 +7242,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6266984048393265562">Profil személyre szabása</translation>
 <translation id="6267166720438879315">Válasszon tanúsítványt a <ph name="HOST_NAME" /> hitelesítéséhez</translation>
 <translation id="6268252012308737255">Megnyitás ezzel: <ph name="APP" /></translation>
+<translation id="6269392226729599142">Osztott nézet visszaállítása</translation>
 <translation id="6270309713620950855">Némítás megbökéssel</translation>
 <translation id="6270391203985052864">A webhelyek rákérdezhetnek, hogy küldjenek-e Önnek értesítéseket</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />Redszer- és alkalmazásadatok<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />mutatószámok<ph name="END_LINK2" /> küldése</translation>
@@ -8975,6 +8985,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">Tárhely, teljesítmény, nyelv</translation>
 <translation id="7551059576287086432">A(z) <ph name="FILE_NAME" /> letöltése nem sikerült</translation>
+<translation id="7551303452605464331">Osztott néz&amp;et visszaállítása</translation>
 <translation id="7551643184018910560">Rögzítés a polcra</translation>
 <translation id="7552191410769096467">Lapcsoportok megosztásához vagy a hozzájuk való csatlakozáshoz be kell jelentkeznie, és be kell kapcsolnia a szinkronizálást</translation>
 <translation id="7552196109089297786">Kijelentkezés a Microsoftból</translation>
@@ -11127,6 +11138,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="9087949559523851360">Korlátozott felhasználó felvétele</translation>
 <translation id="9088234649737575428">A(z) <ph name="PLUGIN_NAME" /> beépülő modult letiltotta a vállalati házirend</translation>
 <translation id="90885733430013283">Wi-Fi-SSID</translation>
+<translation id="9088578317174654338">A Gemini alsó lapja bezárva.</translation>
 <translation id="9089416786594320554">Beviteli módszerek</translation>
 <translation id="9089959054554410481">Érintőpad görgetési irányának módosítása</translation>
 <translation id="9090044809052745245">Eszköze így jelenik meg mások számára</translation>

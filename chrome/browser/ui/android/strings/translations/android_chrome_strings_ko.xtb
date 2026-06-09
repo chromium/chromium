@@ -613,6 +613,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3635073343384702370">비밀번호를 저장하면 Chrome에서 확인할 수 있습니다.</translation>
 <translation id="3636940436873918441">기본 언어</translation>
 <translation id="3637744895182738742">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google 앱 홈으로 이동</translation>
 <translation id="368329460027487650">로그아웃했습니다. 로그인 옵션을 엽니다.</translation>
@@ -637,6 +638,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> 북마크에 추가됨</translation>
 <translation id="3740290940447881599">이 사이트를 신뢰할 수 있는지 확인하세요</translation>
 <translation id="3740525748616366977">이 기기에서는 음성 검색을 사용할 수 없습니다.</translation>
+<translation id="3756823472711156529">그룹 복원</translation>
 <translation id="3763110477555836428">이 카드로 결제하면 실제 정보를 보호하기 위해 가상 카드 번호가 입력됩니다. Google 월렛에서 관리하세요. <ph name="BEGIN_LINK1" />가상 카드에 대해 자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">일부 데이터가 아직 저장되지 않음</translation>
 <translation id="3770620323585347665">창 이름 지정</translation>

@@ -187,6 +187,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1125550662859510761">Ser ut som <ph name="WIDTH" /> × <ph name="HEIGHT" /> (fast)</translation>
 <translation id="1125816658532547876">Använd dina lösenord på <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Bakgrund och stil</translation>
+<translation id="1126475802377716263">{0,plural, =1{Delar 1 flik}other{Delar # flikar}}</translation>
 <translation id="1126696498560056882">Hantera konton på den här enheten</translation>
 <translation id="1128591060186966949">Redigera sökmotor</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -1769,6 +1770,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
     <ph name="BEGIN_LINK" />
     hjälpcentret<ph name="END_LINK" /> om du vill felsöka problem med Cast.</translation>
 <translation id="22649924370461580">Sparade flikgrupper</translation>
+<translation id="2265924028278810827">Överordnad app: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP över USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth inaktiverat</translation>
 <translation id="2268182915828370037">Vill du inaktivera filsynkronisering?</translation>
@@ -1964,6 +1966,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2406942743794219791">Bekräfta vilken standardsökmotor du vill använda</translation>
 <translation id="2407671304279211586">Välj DNS-leverantör</translation>
 <translation id="2408018932941436077">Kortet sparas</translation>
+<translation id="2408601796549249241">Gemini-arket på nedre delen av skärmen har öppnats över hela skärmen</translation>
 <translation id="2408762424059547338">Skyddar dig bättre mot attacker genom att inaktivera JavaScript-optimering</translation>
 <translation id="2408955596600435184">Ange din pinkod</translation>
 <translation id="2409378541210421746">Redigera språkval</translation>
@@ -2720,6 +2723,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2932483646085333864">Synkroniseringen påbörjas när du har loggat ut och loggat in igen</translation>
 <translation id="2932883381142163287">Anmäl otillåten användning</translation>
 <translation id="2933632078076743449">Senast uppdaterat</translation>
+<translation id="2933653107553951760">Återställ grupp</translation>
 <translation id="2934225044529065415">Ingen kameraåtkomst</translation>
 <translation id="2935314715123552088">Inaktivera aktiv eSIM-profil</translation>
 <translation id="2935654492420446828">Lägg till ett skolkonto senare</translation>
@@ -2814,6 +2818,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3000461861112256445">Monoljud</translation>
 <translation id="3001144475369593262">Barnkonton</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Inga anpassade tangenter}=1{1 anpassad tangent}other{{COUNT} anpassade tangenter}}</translation>
+<translation id="3002864108328203174">Gemini-arket på nedre delen av skärmen har öppnats över halva skärmen.</translation>
 <translation id="3003144360685731741">Prioriterade nätverk</translation>
 <translation id="3003253259757197230">Webbadresser som du besöker skickas till Google för att förutse vilka webbplatser du kanske vill besöka härnäst och för att visa mer information om den sida du besöker</translation>
 <translation id="3003623123441819449">CSS-cacheminne</translation>
@@ -3855,6 +3860,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3756485814916578707">Skärmen castas</translation>
 <translation id="3756578970075173856">Ange pinkod</translation>
 <translation id="3756806135608816820">Webbplatser kan begära att få söka efter Bluetooth-enheter</translation>
+<translation id="3756823472711156529">Återställ grupp</translation>
 <translation id="3757567010566591880">Lossa från verktygsfältet</translation>
 <translation id="3757645900890881944">Sökverktyg</translation>
 <translation id="3757733214359997190">Inga webbplatser hittades</translation>
@@ -4826,6 +4832,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4444304522807523469">Åtkomst till dokumentskannrar som är anslutna via USB eller i det lokala nätverket</translation>
 <translation id="4444512841222467874">Om du inte frigör utrymme kan användare och data tas bort automatiskt.</translation>
 <translation id="4445446646109808714">Licensavtal för slutanvändare: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">Återställ delad vy</translation>
 <translation id="4446933390699670756">Speglat</translation>
 <translation id="4448560527907365660">Spara och se mer</translation>
 <translation id="4449247303975391730">Hantera behörigheter</translation>
@@ -4959,6 +4966,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4562364000855074606">Blockera appar som har installerats på denna <ph name="DEVICE_TYPE" />. Öppna inställningarna för Google Play om du vill begränsa nedladdning av appar eller innehåll. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Det ursprungliga inmatningsspråket är kinesiska</translation>
 <translation id="4563382028841851106">Ta bort från konto</translation>
+<translation id="4563883094055457792">Återställ delad vy</translation>
 <translation id="4564245002465020751">Slutför konfigureringen på telefonen</translation>
 <translation id="456449593072900590">Radera när du stänger webbläsaren</translation>
 <translation id="4565377596337484307">Dölj lösenord</translation>
@@ -5863,6 +5871,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5221516927483787768">Det gick inte att casta <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">En osäker nedladdning blockerades</translation>
 <translation id="5222676887888702881">Logga ut</translation>
+<translation id="5222710719845250566">Återställ fönster</translation>
 <translation id="5225324770654022472">Visa genväg för appar</translation>
 <translation id="52254442782792731">Den aktuella synlighetsinställningen har inte angetts än</translation>
 <translation id="5225463052809312700">Slå på kameran</translation>
@@ -7235,6 +7244,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6266984048393265562">Anpassa profil</translation>
 <translation id="6267166720438879315">Välj ett certifikat för att styrka din identitet för <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Öppna med <ph name="APP" /></translation>
+<translation id="6269392226729599142">Återställ delad vy</translation>
 <translation id="6270309713620950855">Påminnelse om att mikrofonen är avstängd</translation>
 <translation id="6270391203985052864">Webbplatser får be om tillåtelse att skicka aviseringar</translation>
 <translation id="6270770586500173387">Skicka <ph name="BEGIN_LINK1" />system- och appinformation<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />statistik<ph name="END_LINK2" /></translation>
@@ -8978,6 +8988,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">Lagring, ström, språk</translation>
 <translation id="7551059576287086432">Det gick inte att ladda ned <ph name="FILE_NAME" /></translation>
+<translation id="7551303452605464331">Återställ delad vy</translation>
 <translation id="7551643184018910560">Fäst på hyllan</translation>
 <translation id="7552191410769096467">Om du vill dela eller gå med i flikgrupper måste du logga in och aktivera synkronisering</translation>
 <translation id="7552196109089297786">Logga ut från Microsoft</translation>
@@ -11130,6 +11141,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9087949559523851360">Lägg till begränsad användare</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> har blockerats av en företagspolicy</translation>
 <translation id="90885733430013283">SSID för wifi</translation>
+<translation id="9088578317174654338">Gemini-arket på nedre delen av skärmen har stängts.</translation>
 <translation id="9089416786594320554">Inmatningsmetoder</translation>
 <translation id="9089959054554410481">Ändra scrollningsriktning för styrplattan</translation>
 <translation id="9090044809052745245">Hur enheten visas för andra</translation>

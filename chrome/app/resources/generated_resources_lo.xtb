@@ -187,6 +187,7 @@
 <translation id="1125550662859510761">ຄວາມລະອຽດ <ph name="WIDTH" /> x <ph name="HEIGHT" /> (ເດີມ)</translation>
 <translation id="1125816658532547876">ໃຊ້ລະຫັດຜ່ານຂອງທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="1125921926864945797">ຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ</translation>
+<translation id="1126475802377716263">{0,plural, =1{ກຳລັງແບ່ງປັນ 1 ແຖບ}other{ກຳລັງແບ່ງປັນ # ແຖບ}}</translation>
 <translation id="1126696498560056882">ຈັດການບັນຊີໃນອຸປະກອນນີ້</translation>
 <translation id="1128591060186966949">ແກ້ໄຂໂປຣແກຣມຊອກຫາ</translation>
 <translation id="1129348283834595293">ໄຊເບີພັງຄ໌</translation>
@@ -1767,6 +1768,7 @@
 <ph name="BEGIN_LINK" />
 ສູນຊ່ວຍເຫຼືອ<ph name="END_LINK" />.</translation>
 <translation id="22649924370461580">ກຸ່ມແຖບທີ່ບັນທຶກໄວ້</translation>
+<translation id="2265924028278810827">ແອັບຫຼັກ: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP ຜ່ານ USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth ປິດໃຊ້ງານແລ້ວ</translation>
 <translation id="2268182915828370037">ປິດການຊິ້ງໄຟລ໌ບໍ?</translation>
@@ -1963,6 +1965,7 @@
 <translation id="2406942743794219791">ຢືນຢັນໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນທີ່ທ່ານຕ້ອງການ</translation>
 <translation id="2407671304279211586">ເລືອກຜູ້ໃຫ້ບໍລິການ DNS</translation>
 <translation id="2408018932941436077">ກຳລັງບັນທຶກບັດ</translation>
+<translation id="2408601796549249241">ຊີດລຸ່ມສຸດຂອງ Gemini ແບບເຕັມໜ້າຈໍ</translation>
 <translation id="2408762424059547338">ປົກປ້ອງທ່ານຈາກການໂຈມຕີໄດ້ດີຍິ່ງຂຶ້ນໂດຍປິດການເພີ່ມປະສິດທິພາບ JavaScript</translation>
 <translation id="2408955596600435184">​ປ້ອນ​ລະ​ຫັດ PIN ຂອງ​ທ່ານ</translation>
 <translation id="2409378541210421746">ແກ້ໄຂການເລືອກພາສາ</translation>
@@ -2719,6 +2722,7 @@
 <translation id="2932483646085333864">ອອກຈາກລະບົບ ຈາກນັ້ນເຂົ້າສູ່ລະບົບອີກຄັ້ງເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="2932883381142163287">ລາຍງານການນຳ​ໃຊ້​ຜິດ</translation>
 <translation id="2933632078076743449">ອັບເດດຫຼ້າສຸດ</translation>
+<translation id="2933653107553951760">ກູ້ຄືນກຸ່ມ</translation>
 <translation id="2934225044529065415">ບໍ່ສາມາດເຂົ້າເຖິງກ້ອງໄດ້</translation>
 <translation id="2935314715123552088">ປິດການນຳໃຊ້ໂປຣໄຟລ໌ eSIM ທີ່ນຳໃຊ້ຢູ່</translation>
 <translation id="2935654492420446828">ເພີ່ມບັນຊີໂຮງຮຽນໃນພາຍຫຼັງ</translation>
@@ -2813,6 +2817,7 @@
 <translation id="3000461861112256445">ສຽງໂມໂນ</translation>
 <translation id="3001144475369593262">ບັນຊີເດັກ</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{ບໍ່ມີປຸ່ມທີ່ປັບແຕ່ງ}=1{ມີປຸ່ມທີ່ປັບແຕ່ງ 1 ລາຍການ}other{ມີປຸ່ມທີ່ປັບແຕ່ງ {COUNT} ລາຍການ}}</translation>
+<translation id="3002864108328203174">ຊີດລຸ່ມສຸດຂອງ Gemini ແບບເຄິ່ງໜ້າຈໍ.</translation>
 <translation id="3003144360685731741">ເຄືອ​ຂ່າຍ​ທີ່ມັກ</translation>
 <translation id="3003253259757197230">ລະບົບຈະສົ່ງ URL ທີ່ທ່ານໄດ້ເຂົ້າເບິ່ງໄປຫາ Google ເພື່ອຄາດເດົາເວັບໄຊຕໍ່ໄປທີ່ທ່ານອາດຈະເຂົ້າເບິ່ງ ແລະ ສະແດງຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບໜ້າທີ່ທ່ານກຳລັງເຂົ້າເບິ່ງ</translation>
 <translation id="3003623123441819449">ແຄຊ໌ CSS</translation>
@@ -3854,6 +3859,7 @@
 <translation id="3756485814916578707">ກຳລັງສົ່ງສັນຍານໜ້າຈໍ</translation>
 <translation id="3756578970075173856">ຕັ້ງຄ່າ PIN</translation>
 <translation id="3756806135608816820">ເວັບໄຊຕ່າງໆສາມາດຂໍໃຫ້ຊອກຫາອຸປະກອນ Bluetooth ໄດ້</translation>
+<translation id="3756823472711156529">ກູ້ຄືນກຸ່ມ</translation>
 <translation id="3757567010566591880">ຖອນໝຸດຈາກແຖບເຄື່ອງມື</translation>
 <translation id="3757645900890881944">ເຄື່ອງມືໃນການຄົ້ນຫາ</translation>
 <translation id="3757733214359997190">ບໍ່ເຫັນເວັບໄຊໃດ</translation>
@@ -4825,6 +4831,7 @@
 <translation id="4444304522807523469">ເຂົ້າ​ຫາ​ເຄື່ອງ​ສະ​ແກນ​ເອ​ກະ​ສານ​ຄັດ​ຕິດ​ຜ່ານ USB ຫຼື​ຢູ່​ເທິງ​ເຄືອ​ຂ່າຍ​ກັບ​ທີ່</translation>
 <translation id="4444512841222467874">ຖ້າບໍ່ສ້າງພື້ນທີ່ຫວ່າງ, ຜູ້ໃຊ້ ແລະ ຂໍ້ມູນອາດຈະຖືກລຶບອອກໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="4445446646109808714">ຂໍ້ຕົກລົງໃບອະນຸຍາດຜູ້ໃຊ້ປາຍທາງ: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">ກູ້ຄືນມຸມມອງແຍກ</translation>
 <translation id="4446933390699670756">ແຍງ​ເບິ່ງ​ແລ້ວ</translation>
 <translation id="4448560527907365660">ບັນທຶກ ແລະ ເບິ່ງເພີ່ມເຕີມ</translation>
 <translation id="4449247303975391730">ຈັດການການອະນຸຍາດ</translation>
@@ -4958,6 +4965,7 @@
 <translation id="4562364000855074606">ບລັອກແອັບທີ່ຕິດຕັ້ງຢູ່ <ph name="DEVICE_TYPE" /> ນີ້. ເພື່ອຈຳກັດການດາວໂຫຼດແອັບ ຫຼື ເນື້ອຫາ, ໃຫ້ໄປທີ່ການຕັ້ງຄ່າ Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">ພາສາປ້ອນເຂົ້າເບື້ອງຕົ້ນແມ່ນພາສາຈີນ</translation>
 <translation id="4563382028841851106">ລຶບອອກຈາກບັນຊີ</translation>
+<translation id="4563883094055457792">ກູ້ຄືນມຸມມອງແຍກ</translation>
 <translation id="4564245002465020751">ກຳລັງສຳເລັດການຕັ້ງຄ່າຢູ່ໂທລະສັບຂອງທ່ານ</translation>
 <translation id="456449593072900590">ລຶບຕອນອອກ</translation>
 <translation id="4565377596337484307">ເຊື່ອງລະຫັດຜ່ານ</translation>
@@ -5862,6 +5870,7 @@
 <translation id="5221516927483787768">ບໍ່ສາມາດສົ່ງສັນຍານ <ph name="HOST_NAME" /> ໄດ້</translation>
 <translation id="5222403284441421673">ບລັອກການດາວໂຫຼດທີ່ບໍ່ປອດໄພໄວ້ແລ້ວ</translation>
 <translation id="5222676887888702881">ອອກຈາກລະບົບ</translation>
+<translation id="5222710719845250566">ກູ້ຄືນໜ້າຈໍ</translation>
 <translation id="5225324770654022472">ສະ​ແດງ​ທາງລັດແອັບ</translation>
 <translation id="52254442782792731">ການຕັ້ງຄ່າການສະແດງໃນປັດຈຸບັນແມ່ນບໍ່ທັນໄດ້ຕັ້ງຄ່າເທື່ອ</translation>
 <translation id="5225463052809312700">ເປີດກ້ອງຖ່າຍຮູບ</translation>
@@ -7233,6 +7242,7 @@
 <translation id="6266984048393265562">ປັບແຕ່ງໂປຣໄຟລ໌</translation>
 <translation id="6267166720438879315">ເລືອກໃບຢັ້ງຢືນເພື່ອຮັບຮອງຕົວທ່ານເອງໃຫ້ <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">ເປີດດ້ວຍ <ph name="APP" /></translation>
+<translation id="6269392226729599142">ກູ້ຄືນມຸມມອງແຍກ</translation>
 <translation id="6270309713620950855">ປິດສຽງການສະກິດ</translation>
 <translation id="6270391203985052864">ເວັບໄຊສາມາດຂໍໃຫ້ສົ່ງການແຈ້ງເຕືອນໄດ້</translation>
 <translation id="6270770586500173387">ສົ່ງ <ph name="BEGIN_LINK1" />ຂໍ້ມູນລະບົບ ແລະ ແອັບ<ph name="END_LINK1" />, ແລະ <ph name="BEGIN_LINK2" />ເມຕຣິກ<ph name="END_LINK2" /></translation>
@@ -8974,6 +8984,7 @@
 <translation id="7550830279652415241">ບຸກມາກ_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">ບ່ອນຈັດເກັບຂໍ້ມູນ, ພະລັງງານ, ພາສາ</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> ດາວ​ນ​໌​ໂຫລດ​ບໍ່​ສໍາ​ເລັດ</translation>
+<translation id="7551303452605464331">ກູ້ຄືນມຸມມອງແຍກ</translation>
 <translation id="7551643184018910560">ປັກໝຸດໃສ່ຖ້ານ</translation>
 <translation id="7552191410769096467">ເພື່ອແບ່ງປັນ ຫຼື ເຂົ້າຮ່ວມກຸ່ມແຖບ, ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບ ແລະ ເປີດການຊິ້ງ</translation>
 <translation id="7552196109089297786">ອອກຈາກລະບົບ Microsoft</translation>
@@ -11126,6 +11137,7 @@
 <translation id="9087949559523851360">ເພີ່ມຜູ້ໃຊ້ທີ່ຖືກຈຳກັດ</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> ຖືກບລັອກໄວ້ຕາມນະໂຍບາຍວິສາຫະກິດ</translation>
 <translation id="90885733430013283">WiFi SSID</translation>
+<translation id="9088578317174654338">ປິດຊີດລຸ່ມສຸດຂອງ Gemini ແລ້ວ.</translation>
 <translation id="9089416786594320554">ວິ​ທີ​ການ​ປ້ອນເຂົ້າ</translation>
 <translation id="9089959054554410481">ປ່ຽນທິດທາງການເລື່ອນແຜ່ນສຳຜັດ</translation>
 <translation id="9090044809052745245">ອຸປະກອນຂອງທ່ານປາກົດຕໍ່ກັບຄົນອື່ນແນວໃດ</translation>

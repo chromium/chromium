@@ -613,6 +613,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3635073343384702370">Chrome dapat memeriksa sandi jika Anda menyimpannya</translation>
 <translation id="3636940436873918441">Bahasa pilihan</translation>
 <translation id="3637744895182738742">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Buka Beranda Aplikasi Google</translation>
 <translation id="368329460027487650">Logout. Buka opsi untuk login.</translation>
@@ -637,6 +638,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3739899004075612870">Dibookmark di <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740290940447881599">Pastikan Anda memercayai situs ini</translation>
 <translation id="3740525748616366977">Penelusuran suara tidak tersedia di perangkat ini</translation>
+<translation id="3756823472711156529">Pulihkan grup</translation>
 <translation id="3763110477555836428">Nomor kartu virtual akan diisi saat Anda melakukan check out dengan kartu ini untuk melindungi detail kartu Anda yang sebenarnya. Kelola di Google Wallet. <ph name="BEGIN_LINK1" />Pelajari lebih lanjut kartu virtual<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Beberapa data belum disimpan</translation>
 <translation id="3770620323585347665">Beri nama jendela</translation>

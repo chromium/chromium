@@ -187,6 +187,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Lokal)</translation>
 <translation id="1125816658532547876">Parolları <ph name="DEVICE_TYPE" /> cihazında istifadə edin</translation>
 <translation id="1125921926864945797">Divar kağızı və üslub</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 tab paylaşılır}other{# tab paylaşılır}}</translation>
 <translation id="1126696498560056882">Bu cihazdakı hesabları idarə edin</translation>
 <translation id="1128591060186966949">Axtarış mühərrikinə düzəliş edin</translation>
 <translation id="1129348283834595293">Kiberpank</translation>
@@ -1759,6 +1760,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
    <ph name="BEGIN_LINK" />
     yardım mərkəzinə<ph name="END_LINK" /> istinad edin.</translation>
 <translation id="22649924370461580">Yadda saxlanmış tab qrupları</translation>
+<translation id="2265924028278810827">Valideyn Tətbiqi: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP USB-də (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth deaktiv edildi</translation>
 <translation id="2268182915828370037">Fayl sinxronlaşdırması deaktiv edilsin?</translation>
@@ -1954,6 +1956,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2406942743794219791">İstədiyiniz defolt axtarış sistemini təsdiqləyin</translation>
 <translation id="2407671304279211586">DNS provayderini seçin</translation>
 <translation id="2408018932941436077">Kart yadda saxlanılır</translation>
+<translation id="2408601796549249241">Gemini üzrə tam hündürlükdə açılmış aşağıdakı vərəq</translation>
 <translation id="2408762424059547338">JavaScript optimallaşdırmasını söndürməklə sizi hücumlardan daha yaxşı qoruyur</translation>
 <translation id="2408955596600435184">PİN kodunuzu daxil edin</translation>
 <translation id="2409378541210421746">Dil seçimini redaktə edin</translation>
@@ -2710,6 +2713,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2932483646085333864">Sinxronizasiyanı başlamaq üçün çıxın və yenidən daxil olun</translation>
 <translation id="2932883381142163287">Sui-istifadəni xəbər verin</translation>
 <translation id="2933632078076743449">Son Güncəlləmə</translation>
+<translation id="2933653107553951760">Qrupu bərpa edin</translation>
 <translation id="2934225044529065415">Kameraya giriş alınmır</translation>
 <translation id="2935314715123552088">Aktiv eSIM profilini deaktiv edin</translation>
 <translation id="2935654492420446828">Daha sonra məktəb hesabı əlavə edin</translation>
@@ -2804,6 +2808,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001144475369593262">Uşaq hesabları</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Düymə fərdiləşdirilməyib}=1{1 fərdiləşdirilmiş düymə}other{{COUNT} fərdiləşdirilmiş düymə}}</translation>
+<translation id="3002864108328203174">Gemini üzrə yarım hündürlükdə açılmış aşağıdakı vərəq.</translation>
 <translation id="3003144360685731741">Üstünlük verilən şəbəkələr</translation>
 <translation id="3003253259757197230">Növbəti axtarışları proqnozlaşdırmaq və baxdığınız səhifə haqqında əlavə məlumat göstərmək üçün daxil olduğunuz URL-lər Google-a göndərilir</translation>
 <translation id="3003623123441819449">CSS Keşi</translation>
@@ -3845,6 +3850,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3756485814916578707">Ekran yayımlanır</translation>
 <translation id="3756578970075173856">PIN ayarlayın</translation>
 <translation id="3756806135608816820">Saytlar Bluetooth cihazlarını axtarmağı istəyə bilər</translation>
+<translation id="3756823472711156529">Qrupu bərpa edin</translation>
 <translation id="3757567010566591880">Alətlər panelinə bərkitməyin</translation>
 <translation id="3757645900890881944">Axtarış alətləri</translation>
 <translation id="3757733214359997190">Sayt tapılmadı</translation>
@@ -4814,6 +4820,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4444304522807523469">USB vasitəsilə qoşulmuş və ya lokal şəbəkədə olan sənəd skanerlərinə girin</translation>
 <translation id="4444512841222467874">Boş yer əlçatan olmadıqda, istifadəçilər və data avtomatik silinə bilər.</translation>
 <translation id="4445446646109808714">Son İstifadəçinin Lisenziya Müqaviləsi: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">Bölünmüş görünüşü bərpa edin</translation>
 <translation id="4446933390699670756">Güzgülü</translation>
 <translation id="4448560527907365660">Yadda saxlayın və digərlərinə baxın</translation>
 <translation id="4449247303975391730">İcazələri idarə edin</translation>
@@ -4947,6 +4954,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4562364000855074606">Bu <ph name="DEVICE_TYPE" /> cihazında quraşdırılan tətbiqləri bloklayın. Tətbiqlər və ya kontentin endirilməsini məhdudlaşdırmaq üçün Google Play Ayarlarına keçin. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">İlkin daxiletmə dili Çin dilidir</translation>
 <translation id="4563382028841851106">Hesabdan silin</translation>
+<translation id="4563883094055457792">Bölünmüş görünüşü bərpa edin</translation>
 <translation id="4564245002465020751">Telefonunuzda ayarlamanı tamamlayın</translation>
 <translation id="456449593072900590">Çıxarkən silin</translation>
 <translation id="4565377596337484307">Parolu gizlədin</translation>
@@ -5851,6 +5859,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> yayımlamaq olmur</translation>
 <translation id="5222403284441421673">Təhlükəli endirmə blok edildi</translation>
 <translation id="5222676887888702881">Hesabdan çıxın</translation>
+<translation id="5222710719845250566">Pəncərəni bərpa edin</translation>
 <translation id="5225324770654022472">Tətbiqlərin qısayolunu göstərin</translation>
 <translation id="52254442782792731">Cari görünmə ayarı hələ ayarlanmayıb</translation>
 <translation id="5225463052809312700">Kameranı aktiv edin</translation>
@@ -7223,6 +7232,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6266984048393265562">Profili fərdiləşdirin</translation>
 <translation id="6267166720438879315">Özünüzü <ph name="HOST_NAME" /> üzrə doğrulamaq üçün sertifikat seçin</translation>
 <translation id="6268252012308737255"><ph name="APP" /> ilə açın</translation>
+<translation id="6269392226729599142">Bölünmüş Görünüşü bərpa edin</translation>
 <translation id="6270309713620950855">Xatırlatma bildirişini susdurun</translation>
 <translation id="6270391203985052864">Saytlar bildiriş göndərilməsini tələb edə bilər</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />Sistem və tətbiq məlumatı<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />ölçüləri<ph name="END_LINK2" /> göndərin</translation>
@@ -8965,6 +8975,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">Yaddaş, enerji, dil</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> endirmə uğursuz oldu</translation>
+<translation id="7551303452605464331">Bölünmüş Görünüşü bərpa edin</translation>
 <translation id="7551643184018910560">Rəfə sancaqlayın</translation>
 <translation id="7552191410769096467">Tab qruplarını paylaşmaq və ya onlara qoşulmaq üçün daxil olmalı və sinxronlaşdırmanı aktiv etməlisiniz</translation>
 <translation id="7552196109089297786">Microsoft-dan çıxın</translation>
@@ -11115,6 +11126,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="9087949559523851360">Məhdudlaşdırılmış istifadəçi əlavə edin</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> sahibkarlıq qaydaları tərəfindən blok edilib</translation>
 <translation id="90885733430013283">WiFi SSID</translation>
+<translation id="9088578317174654338">Gemini üzrə Aşağıdakı Vərəq bağlandı.</translation>
 <translation id="9089416786594320554">Daxiletmə metodları</translation>
 <translation id="9089959054554410481">Taçpedi sürüşdürmə istiqamətini dəyişin</translation>
 <translation id="9090044809052745245">Cihazınız başqalarına necə görünür</translation>

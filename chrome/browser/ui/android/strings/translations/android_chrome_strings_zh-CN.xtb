@@ -613,6 +613,7 @@
 <translation id="3635073343384702370">您需要先保存密码，然后才能使用 Chrome 的密码检查功能</translation>
 <translation id="3636940436873918441">首选语言</translation>
 <translation id="3637744895182738742">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">在 Google 应用中打开“首页”标签页</translation>
 <translation id="368329460027487650">已退出账号。打开登录选项。</translation>
@@ -637,6 +638,7 @@
 <translation id="3739899004075612870">已在 <ph name="PRODUCT_NAME" /> 中添加书签</translation>
 <translation id="3740290940447881599">请确保您信任此网站</translation>
 <translation id="3740525748616366977">无法在此设备上使用语音搜索</translation>
+<translation id="3756823472711156529">恢复分组</translation>
 <translation id="3763110477555836428">使用此卡结账时，系统会填写虚拟卡号，以保护您的真实详细信息。在 Google 钱包中管理。<ph name="BEGIN_LINK1" />详细了解虚拟卡<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">部分数据尚未保存</translation>
 <translation id="3770620323585347665">为窗口命名</translation>

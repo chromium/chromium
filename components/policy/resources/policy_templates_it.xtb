@@ -484,7 +484,6 @@ Se la policy viene disattivata o se non viene configurata, gli elementi da avvia
       Se viene attivata, le scorciatoie da tastiera internazionali migliorate vengono abilitate.
       Se non viene configurata, questa policy viene attivata per i dispositivi gestiti e per i dispositivi di proprietà del consumatore.
       Tieni presente che questa policy è temporanea per consentire agli utenti gestiti di poter ancora utilizzare le scorciatoie precedenti deprecate. Verrà ritirata quando le scorciatoie da tastiera personalizzate saranno disponibili.</translation>
-<translation id="1359459742455216057">L'identificatore univoco dell'app <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="1361661842732478894">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
 <translation id="1363275621236827384">Attiva le query in Quirks Server per i profili hardware</translation>
 <translation id="1363839375295535439">Se la policy viene attivata o se non viene configurata, la sandbox LPAC per i servizi di stampa viene attivata ogni volta che la configurazione del sistema supporta l'operazione.
@@ -9068,7 +9067,6 @@ Se la policy viene impostata su Enabled, i dati vengono raccolti e caricati sull
 
 Per <ph name="PRODUCT_NAME" />, questa policy viene applicata soltanto se la macchina viene registrata con il token <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Per <ph name="PRODUCT_OS_NAME" />, questa policy viene sempre applicata.</translation>
-<translation id="6714333117401088746">L'ID del progetto <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> corrispondente all'istanza <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> da attivare.</translation>
 <translation id="6720330829631914048">Le ore trascorse dall'inizio della giornata nel formato di 24 ore.</translation>
 <translation id="6720862827454058309">Esegui l'override delle mappature dello spazio di indirizzi IP</translation>
 <translation id="6721252203593581486">WebSQL in contesti di terze parti (ad es. iframe tra siti) è disattivato per impostazione predefinita a partire da M97 e verrà completamente rimosso in M101.

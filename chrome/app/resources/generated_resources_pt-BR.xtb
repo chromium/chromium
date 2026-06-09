@@ -2574,6 +2574,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2822551631199737692">Câmera em uso</translation>
 <translation id="2822634587701817431">Encolher / Expandir</translation>
 <translation id="2824942875887026017">O <ph name="IDS_SHORT_PRODUCT_NAME" /> está usando as configurações de proxy do seu administrador</translation>
+<translation id="2825200993288778739">Crie ou adicione da biblioteca de habilidades</translation>
 <translation id="282525059261716597">Linha de comando:</translation>
 <translation id="2825758591930162672">Chave pública do requerente</translation>
 <translation id="2826576843404243001">Receba um aviso antes de acessar sites que não têm suporte a conexões seguras. Não é possível mudar essa configuração, porque a Proteção Avançada está ativada.</translation>
@@ -4652,6 +4653,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">Mostrar <ph name="FILE_NAME" /> no Finder</translation>
 <translation id="4322394346347055525">Fechar outras guias</translation>
+<translation id="4322400254469690320">Encontre o arquivo <ph name="FILENAME" /> na pasta <ph name="FEATURE_NAME" /></translation>
 <translation id="4324577459193912240">Arquivo incompleto</translation>
 <translation id="4325433082696797523">Armazenamento e energia</translation>
 <translation id="4325515113816851466">As escolhas da sua família não serão aplicadas depois que você sair da conta</translation>
@@ -6648,6 +6650,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5826993284769733527">Semitransparente</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5827591412833386477">Mostrar sites no mesmo grupo</translation>
+<translation id="5827835011646404677">As habilidades são salvas na sua Conta do Google</translation>
 <translation id="5828181959764767444">Pôr do sol</translation>
 <translation id="5828545842856466741">Adicionar perfil…</translation>
 <translation id="5828633471261496623">Imprimindo...</translation>
@@ -7973,6 +7976,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6805478749741295868">Esse é um recurso de IA experimental, e o resultado nem sempre é o esperado.</translation>
 <translation id="6805817411033102703">Feedback sobre grupos de guias compartilhados</translation>
 <translation id="6806089545527108739">Não permitir, mas perguntar mais tarde</translation>
+<translation id="6806123901116522137">Acessar as inovações de IA</translation>
 <translation id="6806781719264274042">Apenas seus contatos com uma Conta do Google. <ph name="LINK_BEGIN" />Ver contatos<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">Para continuar, insira sua chave de segurança e toque nela</translation>
 <translation id="6808166974213191158">Gravador da imagem do sistema ChromeOS Flex</translation>
@@ -11221,6 +11225,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9130015405878219958">Modo inválido inserido.</translation>
 <translation id="9130135798965366513">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu <ph name="FIELDS_STRING" /> com esse site. Consulte a <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço<ph name="END_LINK2" />.</translation>
 <translation id="9130364135697530260">O conteúdo incorporado neste site pode usar as informações salvas sobre você</translation>
+<translation id="9130857050314385402">Os títulos e URLs das guias são enviados ao Google quando você usa a habilidade</translation>
 <translation id="9131209053278896908">Os sites bloqueados aparecem aqui</translation>
 <translation id="9131487537093447019">Enviar mensagens para e receber mensagens de dispositivos Bluetooth.</translation>
 <translation id="9133568201369135151">A coleta de dados de diagnóstico foi concluída. Algumas informações pessoais suas estão incluídas nesses dados.</translation>

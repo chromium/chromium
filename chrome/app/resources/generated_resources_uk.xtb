@@ -187,6 +187,7 @@
 <translation id="1125550662859510761"><ph name="WIDTH" />x<ph name="HEIGHT" /> (оригінальна)</translation>
 <translation id="1125816658532547876">Користуйтеся своїми паролями на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Оформлення й стиль</translation>
+<translation id="1126475802377716263">{0,plural, =1{Надається доступ до 1 вкладки}one{Надається доступ до # вкладки}few{Надається доступ до # вкладок}many{Надається доступ до # вкладок}other{Надається доступ до # вкладки}}</translation>
 <translation id="1126696498560056882">Керувати обліковими записами на цьому пристрої</translation>
 <translation id="1128591060186966949">Змінити пошукову систему</translation>
 <translation id="1129348283834595293">Кіберпанк</translation>
@@ -1769,6 +1770,7 @@
     <ph name="BEGIN_LINK" />
     довідковий центр<ph name="END_LINK" />.</translation>
 <translation id="22649924370461580">Збережені групи вкладок</translation>
+<translation id="2265924028278810827">Батьківський додаток: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP через USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth вимкнено</translation>
 <translation id="2268182915828370037">Вимкнути синхронізацію файлів?</translation>
@@ -1964,6 +1966,7 @@
 <translation id="2406942743794219791">Підтвердьте пошукову систему за умовчанням</translation>
 <translation id="2407671304279211586">Вибрати постачальника послуг DNS</translation>
 <translation id="2408018932941436077">Зберігання картки</translation>
+<translation id="2408601796549249241">Нижній екран Gemini відкрито на всю висоту</translation>
 <translation id="2408762424059547338">Посилює захист від атак, вимикаючи оптимізацію JavaScript</translation>
 <translation id="2408955596600435184">Введіть PIN-код</translation>
 <translation id="2409378541210421746">Змінити мову</translation>
@@ -2720,6 +2723,7 @@
 <translation id="2932483646085333864">Щоб почати синхронізацію, вийдіть з облікового запису та ввійдіть у нього знову</translation>
 <translation id="2932883381142163287">Повідомити про порушення</translation>
 <translation id="2933632078076743449">Останнє оновлення</translation>
+<translation id="2933653107553951760">Відновити групу</translation>
 <translation id="2934225044529065415">Немає доступу до камери</translation>
 <translation id="2935314715123552088">Вимкнути активний профіль eSIM</translation>
 <translation id="2935654492420446828">Додати обліковий запис закладу освіти пізніше</translation>
@@ -2814,6 +2818,7 @@
 <translation id="3000461861112256445">Монофонічне аудіо</translation>
 <translation id="3001144475369593262">Облікові записи дитини</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Клавіші не налаштовано}=1{Налаштовано 1 клавішу}one{Налаштовано {COUNT} клавішу}few{Налаштовано {COUNT} клавіші}many{Налаштовано {COUNT} клавіш}other{Налаштовано {COUNT} клавіші}}</translation>
+<translation id="3002864108328203174">Нижній екран Gemini відкрито на половину висоти.</translation>
 <translation id="3003144360685731741">Рекомендовані мережі</translation>
 <translation id="3003253259757197230">URL-адреси сторінок, які ви відвідуєте, надсилаються в Google, щоб ми могли показувати вам додаткову інформацію про них і передбачати, які сайти ви можете відвідати наступними</translation>
 <translation id="3003623123441819449">Кеш CSS</translation>
@@ -3855,6 +3860,7 @@
 <translation id="3756485814916578707">Трансляція екрана</translation>
 <translation id="3756578970075173856">Налаштувати PIN-код</translation>
 <translation id="3756806135608816820">Сайти можуть просити дозвіл шукати пристрої з Bluetooth</translation>
+<translation id="3756823472711156529">Відновити групу</translation>
 <translation id="3757567010566591880">Відкріпити від панелі інструментів</translation>
 <translation id="3757645900890881944">Інструменти пошуку</translation>
 <translation id="3757733214359997190">Не знайдено сайтів</translation>
@@ -4826,6 +4832,7 @@
 <translation id="4444304522807523469">Отримувати доступ до сканерів документів, під’єднаних через USB або локальну мережу</translation>
 <translation id="4444512841222467874">Якщо не звільнити місце, користувачів і дані може бути автоматично вилучено.</translation>
 <translation id="4445446646109808714">Ліцензійна угода кінцевого користувача: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">Відновити паралельний перегляд</translation>
 <translation id="4446933390699670756">Трансляція</translation>
 <translation id="4448560527907365660">Зберегти й показати інші функції</translation>
 <translation id="4449247303975391730">Керувати дозволами</translation>
@@ -4959,6 +4966,7 @@
 <translation id="4562364000855074606">Блокувати додатки, установлені на цьому пристрої <ph name="DEVICE_TYPE" />. Щоб обмежити завантаження додатків або контенту, перейдіть у налаштування Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Початкова мова введення – китайська</translation>
 <translation id="4563382028841851106">Вилучити з облікового запису</translation>
+<translation id="4563883094055457792">&amp;Відновити паралельний перегляд</translation>
 <translation id="4564245002465020751">Завершіть налаштування на телефоні</translation>
 <translation id="456449593072900590">Видаляти під час виходу</translation>
 <translation id="4565377596337484307">Сховати пароль</translation>
@@ -5862,6 +5870,7 @@
 <translation id="5221516927483787768">Не вдалося транслювати сайт <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Незахищене завантаження заблоковано</translation>
 <translation id="5222676887888702881">Вийти</translation>
+<translation id="5222710719845250566">Відновити вікно</translation>
 <translation id="5225324770654022472">Показувати ярлики додатків</translation>
 <translation id="52254442782792731">Видимість наразі не налаштовано</translation>
 <translation id="5225463052809312700">Увімкнути камеру</translation>
@@ -7230,6 +7239,7 @@
 <translation id="6266984048393265562">Налаштувати профіль</translation>
 <translation id="6267166720438879315">Виберіть сертифікат, щоб ідентифікувати себе на <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Відкрити за допомогою додатка <ph name="APP" /></translation>
+<translation id="6269392226729599142">Відновити паралельний перегляд</translation>
 <translation id="6270309713620950855">Нагадування про вимкнений мікрофон</translation>
 <translation id="6270391203985052864">Сайти можуть просити дозвіл надсилати сповіщення</translation>
 <translation id="6270770586500173387">Надсилати <ph name="BEGIN_LINK1" />інформацію про систему й додатки<ph name="END_LINK1" />, а також <ph name="BEGIN_LINK2" />показники<ph name="END_LINK2" /></translation>
@@ -8978,6 +8988,7 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">Сховище, живлення, мова</translation>
 <translation id="7551059576287086432">Не вдалося завантажити файл "<ph name="FILE_NAME" />"</translation>
+<translation id="7551303452605464331">&amp;Відновити паралельний перегляд</translation>
 <translation id="7551643184018910560">Закріпити на панелі запуску</translation>
 <translation id="7552191410769096467">Щоб ділитися групами вкладок або приєднуватися до них, потрібно ввійти в обліковий запис і ввімкнути синхронізацію</translation>
 <translation id="7552196109089297786">Вийти з облікового запису Microsoft</translation>
@@ -11130,6 +11141,7 @@
 <translation id="9087949559523851360">Додати користувача з обмеженими правами</translation>
 <translation id="9088234649737575428">Плагін <ph name="PLUGIN_NAME" /> заблоковано політикою підприємства</translation>
 <translation id="90885733430013283">Ім’я мережі Wi-Fi</translation>
+<translation id="9088578317174654338">Нижній екран Gemini закрито.</translation>
 <translation id="9089416786594320554">Методи введення</translation>
 <translation id="9089959054554410481">Змінити напрямок прокручування на сенсорній панелі</translation>
 <translation id="9090044809052745245">Назва пристрою, яку бачитимуть інші</translation>

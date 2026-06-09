@@ -613,6 +613,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3635073343384702370">Сырсөздөрүңүздү сактаганда Chrome аларды текшере алат</translation>
 <translation id="3636940436873918441">Тандалган тилдер</translation>
 <translation id="3637744895182738742">Эгер сыр сүйлөмүңүздү унутуп калсаңыз же бул параметрди өзгөрткүңүз келсе, <ph name="BEGIN_LINK" />аккаунтуңуздагы Chrome маалыматын өчүрүңүз<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" />, <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google колдонмосунун башкы бетине өтүү</translation>
 <translation id="368329460027487650">Аккаунтуңуздан чыктыңыз. Кирүү параметрлерин ачат.</translation>
@@ -637,6 +638,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> кызматына жаңы кыстарма кошулду</translation>
 <translation id="3740290940447881599">Бул сайт ишенимдүү экенин текшериңиз</translation>
 <translation id="3740525748616366977">Бул түзмөктө айтып издөө мүмкүнчүлүгү жок</translation>
+<translation id="3756823472711156529">Топту калыбына келтирүү</translation>
 <translation id="3763110477555836428">Чыныгы маалыматыңызды коргоо үчүн бул карта менен төлөгөнүңүздө виртуалдык картанын номери толтурулат. Параметрлерди Google Капчыктан өзгөртө аласыз. <ph name="BEGIN_LINK1" />Виртуалдык карталар жөнүндө кеңири маалымат алыңыз<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Айрым маалымат азырынча сактала элек</translation>
 <translation id="3770620323585347665">Терезене аталыш коюу</translation>

@@ -269,6 +269,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408696301184924537">Salve o IBAN na sua Conta do Google para que ele seja usado automaticamente da próxima vez</translation>
 <translation id="1408787208417187241">Três grampos na parte superior</translation>
+<translation id="1410306713026702438"><ph name="SUGGESTION_TITLE" />, <ph name="SUGGESTION_DESCRIPTION" />. <ph name="SUGGESTION_TYPE" />. <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES_IN_GROUP" /> no grupo <ph name="GROUP_HEADER" />.</translation>
 <translation id="1410365862999780287">Como outros usuários deste dispositivo não terão acesso à sua atividade, você pode navegar com mais privacidade. Isso não vai mudar a forma como os dados são coletados pelos sites que você acessa e pelos serviços que eles usam, incluindo o Google. Os itens da Lista de Leitura, downloads e favoritos ainda serão salvos.</translation>
 <translation id="1410941016594047814">Envelope de convite</translation>
 <translation id="1413235258620101697">O CVC desse cartão será criptografado e salvo na Carteira do Google para agilizar pagamentos</translation>
@@ -660,6 +661,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2045871135676061132">Envelope pessoal</translation>
 <translation id="2046951263634619614">Lojas de livros</translation>
 <translation id="2048261947532620704">Traduzindo página</translation>
+<translation id="2055016614992422886">Conversa</translation>
 <translation id="2059166748188874810">Município</translation>
 <translation id="2059202684901022309">22 x 34 pol.</translation>
 <translation id="2064568741209980952">Crédito e empréstimo</translation>
@@ -3557,6 +3559,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6550245281449521513">Bloqueio do mouse não permitido</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, novidade</translation>
 <translation id="6552566579578780089">Pagamentos</translation>
+<translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />. <ph name="SUGGESTION_TYPE" />. <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES_IN_GROUP" /> no grupo <ph name="GROUP_HEADER" />.</translation>
 <translation id="6554732001434021288">Última visita: <ph name="NUM_DAYS" /> dias atrás</translation>
 <translation id="6556866813142980365">Refazer</translation>
 <translation id="6557715786897013164">14 x 17 pol.</translation>

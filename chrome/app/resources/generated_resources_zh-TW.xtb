@@ -187,6 +187,7 @@
 <translation id="1125550662859510761">螢幕解析度：<ph name="WIDTH" /> x <ph name="HEIGHT" /> (原生)</translation>
 <translation id="1125816658532547876">在「<ph name="DEVICE_TYPE" />」上使用密碼</translation>
 <translation id="1125921926864945797">桌布和樣式</translation>
+<translation id="1126475802377716263">{0,plural, =1{正在分享 1 個分頁}other{正在分享 # 個分頁}}</translation>
 <translation id="1126696498560056882">管理這部裝置上的帳戶</translation>
 <translation id="1128591060186966949">編輯搜尋引擎</translation>
 <translation id="1129348283834595293">賽博龐克</translation>
@@ -1756,6 +1757,7 @@
 <translation id="2263371730707937087">畫面重新整理頻率</translation>
 <translation id="2263679799334060788">你的寶貴意見可協助我們讓 Google Cast 更臻完美。如需排解投放問題的相關說明，請參閱<ph name="BEGIN_LINK" />說明中心<ph name="END_LINK" />的文章。</translation>
 <translation id="22649924370461580">已儲存的分頁群組</translation>
+<translation id="2265924028278810827">上層應用程式：<ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">USB 型 IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">藍牙已停用</translation>
 <translation id="2268182915828370037">要關閉檔案同步處理功能嗎？</translation>
@@ -1951,6 +1953,7 @@
 <translation id="2406942743794219791">確認要使用的預設搜尋引擎</translation>
 <translation id="2407671304279211586">選取 DNS 供應商</translation>
 <translation id="2408018932941436077">正在儲存信用卡</translation>
+<translation id="2408601796549249241">Gemini 底部功能表已顯示在整個畫面</translation>
 <translation id="2408762424059547338">關閉 JavaScript 最佳化功能，進一步防範攻擊</translation>
 <translation id="2408955596600435184">請輸入你的 PIN 碼</translation>
 <translation id="2409378541210421746">編輯語言選項</translation>
@@ -2707,6 +2710,7 @@
 <translation id="2932483646085333864">如要開始同步處理，請先登出，再重新登入</translation>
 <translation id="2932883381142163287">檢舉濫用情形</translation>
 <translation id="2933632078076743449">上次更新時間</translation>
+<translation id="2933653107553951760">還原群組</translation>
 <translation id="2934225044529065415">無法存取攝影機</translation>
 <translation id="2935314715123552088">停用使用中的 eSIM 設定檔</translation>
 <translation id="2935654492420446828">稍後再新增學校帳戶</translation>
@@ -2801,6 +2805,7 @@
 <translation id="3000461861112256445">單聲道音訊</translation>
 <translation id="3001144475369593262">兒童帳戶</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{沒有自訂按鍵}=1{1 個自訂按鍵}other{{COUNT} 個自訂按鍵}}</translation>
+<translation id="3002864108328203174">Gemini 底部功能表顯示在畫面下半部。</translation>
 <translation id="3003144360685731741">慣用網路</translation>
 <translation id="3003253259757197230">系統會將你造訪的網址傳送給 Google，預測你接下來可能會前往的網站，並顯示所在網頁的其他相關資訊</translation>
 <translation id="3003623123441819449">CSS 快取</translation>
@@ -3839,6 +3844,7 @@
 <translation id="3756485814916578707">正在投放螢幕畫面</translation>
 <translation id="3756578970075173856">設定 PIN 碼</translation>
 <translation id="3756806135608816820">網站可要求掃描藍牙裝置</translation>
+<translation id="3756823472711156529">還原群組</translation>
 <translation id="3757567010566591880">從工具列中取消固定</translation>
 <translation id="3757645900890881944">搜尋工具</translation>
 <translation id="3757733214359997190">找不到任何網站</translation>
@@ -4809,6 +4815,7 @@
 <translation id="4444304522807523469">存取透過 USB 附加或是在區域網路上的文件掃描器</translation>
 <translation id="4444512841222467874">如果未釋出可用空間，系統可能會自動移除使用者和資料。</translation>
 <translation id="4445446646109808714">使用者授權協議：<ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">還原分割畫面</translation>
 <translation id="4446933390699670756">鏡像模式</translation>
 <translation id="4448560527907365660">儲存並查看更多功能</translation>
 <translation id="4449247303975391730">管理權限</translation>
@@ -4939,6 +4946,7 @@
 <translation id="4562364000855074606">禁止在這部 <ph name="DEVICE_TYPE" /> 上安裝應用程式。如要限制下載應用程式或內容，請前往 Google Play 設定。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">初始輸入語言為中文</translation>
 <translation id="4563382028841851106">從帳戶中移除</translation>
+<translation id="4563883094055457792">還原分割畫面(&amp;E)</translation>
 <translation id="4564245002465020751">在手機上完成設定</translation>
 <translation id="456449593072900590">結束時刪除</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
@@ -5842,6 +5850,7 @@
 <translation id="5221516927483787768">無法投放 <ph name="HOST_NAME" />。</translation>
 <translation id="5222403284441421673">已封鎖不安全的下載內容</translation>
 <translation id="5222676887888702881">登出</translation>
+<translation id="5222710719845250566">還原視窗</translation>
 <translation id="5225324770654022472">顯示應用程式捷徑</translation>
 <translation id="52254442782792731">目前尚未設定瀏覽權限</translation>
 <translation id="5225463052809312700">開啟攝影機</translation>
@@ -7209,6 +7218,7 @@
 <translation id="6266984048393265562">自訂設定檔</translation>
 <translation id="6267166720438879315">請選取你在 <ph name="HOST_NAME" /> 的驗證憑證</translation>
 <translation id="6268252012308737255">使用「<ph name="APP" />」開啟</translation>
+<translation id="6269392226729599142">還原分割畫面</translation>
 <translation id="6270309713620950855">將自動提醒設為靜音</translation>
 <translation id="6270391203985052864">網站可以要求傳送通知給你</translation>
 <translation id="6270770586500173387">傳送<ph name="BEGIN_LINK1" />系統和應用程式資訊<ph name="END_LINK1" />，以及<ph name="BEGIN_LINK2" />指標<ph name="END_LINK2" />資訊</translation>
@@ -8951,6 +8961,7 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">儲存空間、電力、語言</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> 下載失敗</translation>
+<translation id="7551303452605464331">還原分割畫面(&amp;E)</translation>
 <translation id="7551643184018910560">固定至檔案櫃</translation>
 <translation id="7552191410769096467">必須登入並開啟同步功能，才能分享或加入分頁群組</translation>
 <translation id="7552196109089297786">登出 Microsoft</translation>
@@ -11103,6 +11114,7 @@
 <translation id="9087949559523851360">新增受限制的使用者</translation>
 <translation id="9088234649737575428">「<ph name="PLUGIN_NAME" />」遭到企業政策封鎖</translation>
 <translation id="90885733430013283">Wi-Fi SSID</translation>
+<translation id="9088578317174654338">Gemini 底部功能表已關閉。</translation>
 <translation id="9089416786594320554">輸入法</translation>
 <translation id="9089959054554410481">變更觸控板捲動方向</translation>
 <translation id="9090044809052745245">裝置向他人顯示的名稱</translation>

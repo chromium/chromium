@@ -244,6 +244,7 @@
 <translation id="2082238445998314030">نتیجہ <ph name="RESULT_NUMBER" /> از <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">مختصر منظر دکھایا جا رہا ہے</translation>
 <translation id="2093731487903423814">آخری 15 منٹ</translation>
+<translation id="2094298041331405438">تمام پوشیدگی ونڈوز کو بند کرنے کے لیے یہاں تھپتھپائیں</translation>
 <translation id="2096577711562668473">آٹو فِل سروس کو تبدیل کریں؟</translation>
 <translation id="2109384632594340939">پروفائل کی تصویر</translation>
 <translation id="2111511281910874386">صفحہ پر جائیں</translation>
@@ -505,6 +506,7 @@
 <translation id="3114507951000454849">آج کی خبریں پڑھیں <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">مزید تفصیلات</translation>
 <translation id="3123734510202723619">اعلانات</translation>
+<translation id="3132267803114336523">تمام پوشیدگی ونڈوز کو بند کرنے کے لیے، پوشیدگی انڈیکیٹر پر تھپتھپائیں</translation>
 <translation id="3134385238404760368">کوئی حالیہ ٹیب نہیں</translation>
 <translation id="3135655388926735587">حالیہ ٹیبز پر تھپتھپائیں</translation>
 <translation id="314939179385989105">‏Chrome کا ہوم پیج</translation>
@@ -613,6 +615,7 @@
 <translation id="3635073343384702370">‏جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chrome انہیں چیک کر سکتا ہے</translation>
 <translation id="3636940436873918441">ترجیحی زبانیں</translation>
 <translation id="3637744895182738742">‏اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">‏‫Google ایپ ہوم پر جائیں</translation>
 <translation id="368329460027487650">سائن آؤٹ ہو گئے۔ سائن ان کرنے کے اختیارات کھولتا ہے۔</translation>
@@ -637,6 +640,7 @@
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> میں بُک مارک کر دیا گیا</translation>
 <translation id="3740290940447881599">یقینی بنائیں کہ آپ اس سائٹ پر بھروسہ کرتے ہیں</translation>
 <translation id="3740525748616366977">اس آلہ پر صوتی تلاش دستیاب نہیں ہے</translation>
+<translation id="3756823472711156529">گروپ کو بحال کریں</translation>
 <translation id="3763110477555836428">‏آپ کی اصل تفصیلات کی حفاظت کیلئے، آپ کے اس کارڈ سے چیک آؤٹ کرنے پر، ایک ورچوئل کارڈ نمبر پُر ہو جائے گا۔ ‫Google والٹ میں نظم کریں۔ <ph name="BEGIN_LINK1" />ورچوئل کارڈز کے بارے میں مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">کچھ ڈیٹا ابھی تک محفوظ نہیں ہوا ہے</translation>
 <translation id="3770620323585347665">نام کی ونڈو</translation>

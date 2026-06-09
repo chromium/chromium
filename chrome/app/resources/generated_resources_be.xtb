@@ -187,6 +187,7 @@
 <translation id="1125550662859510761">Здаецца, гэта <ph name="WIDTH" /> × <ph name="HEIGHT" /> (уласная)</translation>
 <translation id="1125816658532547876">Выкарыстоўвайце свае паролі на прыладзе "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="1125921926864945797">Шпалеры і стыль</translation>
+<translation id="1126475802377716263">{0,plural, =1{Абагульваецца 1 укладка}one{Абагульваецца # укладка}few{Абагульваецца # укладкі}many{Абагульваецца # укладак}other{Абагульваецца # укладкі}}</translation>
 <translation id="1126696498560056882">Кіраваць уліковымі запісамі на гэтай прыладзе</translation>
 <translation id="1128591060186966949">Змяніць сістэму пошуку</translation>
 <translation id="1129348283834595293">Кіберпанк</translation>
@@ -1753,6 +1754,7 @@
 <translation id="2263371730707937087">Частата абнаўлення экрана</translation>
 <translation id="2263679799334060788">Ваш водгук дапаможа палепшыць Google Cast, і мы цэнім гэта. Каб атрымаць дапамогу па пошуку і выпраўленні непаладак з Cast, наведайце<ph name="BEGIN_LINK" />даведачны цэнтр<ph name="END_LINK" />.</translation>
 <translation id="22649924370461580">Захаваныя групы ўкладак</translation>
+<translation id="2265924028278810827">Бацькоўская праграма: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP-over-USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth выключаны</translation>
 <translation id="2268182915828370037">Выключыць сінхранізацыю?</translation>
@@ -1948,6 +1950,7 @@
 <translation id="2406942743794219791">Выберыце, якую пошукавую сістэму вы хочаце выкарыстоўваць у якасці стандартнай</translation>
 <translation id="2407671304279211586">Выбраць пастаўшчыка паслуг DNS</translation>
 <translation id="2408018932941436077">Ідзе захаванне даных карткі</translation>
+<translation id="2408601796549249241">Ніжні аркуш Gemini адкрыты на ўсю вышыню</translation>
 <translation id="2408762424059547338">Каб палепшыць абарону ад атак, аптымізацыя JavaScript адключаецца</translation>
 <translation id="2408955596600435184">Увядзіце PIN-код</translation>
 <translation id="2409378541210421746">Змяніць выбар мовы</translation>
@@ -2704,6 +2707,7 @@
 <translation id="2932483646085333864">Каб пачаць сінхранізацыю, выйдзіце з уліковага запісу, а потым увайдзіце зноў</translation>
 <translation id="2932883381142163287">Паскардзіцца на парушэнне</translation>
 <translation id="2933632078076743449">Апошняе абнаўленне</translation>
+<translation id="2933653107553951760">Аднавіць групу</translation>
 <translation id="2934225044529065415">Не ўдалося атрымаць доступ да камеры</translation>
 <translation id="2935314715123552088">Адключыць дзеючы профіль eSIM-карты</translation>
 <translation id="2935654492420446828">Дадаць навучальны ўліковы запіс пазней</translation>
@@ -2798,6 +2802,7 @@
 <translation id="3000461861112256445">Монафанія</translation>
 <translation id="3001144475369593262">Уліковыя запісы дзіцяці</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Няма наладжаных клавіш}=1{1 наладжаная клавіша}one{{COUNT} наладжаная клавіша}few{{COUNT} наладжаных клавіш}many{{COUNT} наладжаных клавіш}other{{COUNT} наладжанай клавішы}}</translation>
+<translation id="3002864108328203174">Ніжні аркуш Gemini адкрыты на палову вышыні.</translation>
 <translation id="3003144360685731741">Прыярытэтныя сеткі</translation>
 <translation id="3003253259757197230">URL-адрасы старонак, якія вы наведваеце, адпраўляюцца ў Google, каб можна было прадказваць, якія сайты вы можаце наведаць далей, і паказваць вам дадатковую інфармацыю пра старонку, на якой вы знаходзіцеся</translation>
 <translation id="3003623123441819449">Кэш CSS</translation>
@@ -3837,6 +3842,7 @@
 <translation id="3756485814916578707">Экран трансліруецца</translation>
 <translation id="3756578970075173856">Задаць PIN-код</translation>
 <translation id="3756806135608816820">Сайты могуць запытваць дазвол на пошук прылад з Bluetooth</translation>
+<translation id="3756823472711156529">Аднавіць групу</translation>
 <translation id="3757567010566591880">Адмацаваць ад панэлі інструментаў</translation>
 <translation id="3757645900890881944">Інструменты пошуку</translation>
 <translation id="3757733214359997190">Сайты не знойдзены</translation>
@@ -4808,6 +4814,7 @@
 <translation id="4444304522807523469">Доступ для сканераў дакументаў, падключаных праз USB або па лакальнай сетцы</translation>
 <translation id="4444512841222467874">Калі месца не будзе хапаць, могуць быць аўтаматычна выдалены карыстальнікі і даныя.</translation>
 <translation id="4445446646109808714">Ліцэнзійнае пагадненне канцавога карыстальніка: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">Аднавіць падзелены прагляд</translation>
 <translation id="4446933390699670756">Адлюстраваны</translation>
 <translation id="4448560527907365660">Захаваць налады і паглядзець больш</translation>
 <translation id="4449247303975391730">Кіраваць дазволамі</translation>
@@ -4941,6 +4948,7 @@
 <translation id="4562364000855074606">Блакіруйце праграмы, усталяваныя на гэтай прыладзе "<ph name="DEVICE_TYPE" />". Каб абмежаваць спампоўванне праграм або змесціва, перайдзіце ў налады Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Пачатковая мова ўводу – кітайская</translation>
 <translation id="4563382028841851106">Выдаліць з уліковага запісу</translation>
+<translation id="4563883094055457792">А&amp;днавіць падзелены прагляд</translation>
 <translation id="4564245002465020751">Завяршыце наладжванне на тэлефоне</translation>
 <translation id="456449593072900590">Выдаляць пры выхадзе</translation>
 <translation id="4565377596337484307">Схаваць пароль</translation>
@@ -5845,6 +5853,7 @@
 <translation id="5221516927483787768">Не ўдаецца трансліраваць <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Небяспечная спампоўка заблакіравана</translation>
 <translation id="5222676887888702881">Выйсці</translation>
+<translation id="5222710719845250566">Аднавіць акно</translation>
 <translation id="5225324770654022472">Паказваць ярлык праграм</translation>
 <translation id="52254442782792731">Бягучая налада бачнасці: яшчэ не зададзена</translation>
 <translation id="5225463052809312700">Уключыць камеру</translation>
@@ -7216,6 +7225,7 @@
 <translation id="6266984048393265562">Наладзіць профіль</translation>
 <translation id="6267166720438879315">Выберыце сертыфікат для аўтэнтыфікацыі сябе на хосце <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Адкрыць у праграме <ph name="APP" /></translation>
+<translation id="6269392226729599142">Аднавіць падзелены прагляд</translation>
 <translation id="6270309713620950855">Выключыць гук напамінаў</translation>
 <translation id="6270391203985052864">Сайтам дазволена запытваць дазвол на паказ апавяшчэнняў</translation>
 <translation id="6270770586500173387">Адправіць <ph name="BEGIN_LINK1" />звесткі пра сістэму і праграмы<ph name="END_LINK1" />, а таксама <ph name="BEGIN_LINK2" />паказчыкі<ph name="END_LINK2" /></translation>
@@ -8964,6 +8974,7 @@
 <translation id="7550830279652415241">закладкі_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">Сховішча, сілкаванне, мова</translation>
 <translation id="7551059576287086432">Не ўдалося спампаваць файл "<ph name="FILE_NAME" />"</translation>
+<translation id="7551303452605464331">А&amp;днавіць падзелены прагляд</translation>
 <translation id="7551643184018910560">Замацаваць на паліцы</translation>
 <translation id="7552191410769096467">Каб абагульваць групы ўкладак і далучацца да іх, неабходна ўвайсці ва ўліковы запіс і ўключыць сінхранізацыю</translation>
 <translation id="7552196109089297786">Выйсці з уліковага запісу Microsoft</translation>
@@ -11113,6 +11124,7 @@
 <translation id="9087949559523851360">Дадаць карыстальніка з абмежаваннямі</translation>
 <translation id="9088234649737575428">Убудова "<ph name="PLUGIN_NAME" />" заблакіравана карпаратыўнай палітыкай</translation>
 <translation id="90885733430013283">SSID для Wi-Fi</translation>
+<translation id="9088578317174654338">Ніжні аркуш Gemini закрыты.</translation>
 <translation id="9089416786594320554">Метады ўводу</translation>
 <translation id="9089959054554410481">Змяніць кірунак прагорткі сэнсарнай панэлі</translation>
 <translation id="9090044809052745245">Назва прылады, якую бачаць іншыя карыстальнікі</translation>

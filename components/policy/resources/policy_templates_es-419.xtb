@@ -488,7 +488,6 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
       Si habilitas esta política, se activarán las combinaciones de teclas internacionales mejoradas.
       Si no la estableces, se habilitará esta política para los dispositivos administrados y se habilitará para los dispositivos que pertenezcan a los usuarios.
       Ten en cuenta que esta es solo una política temporaria para permitir que los usuarios administrados sigan usando las combinaciones de teclas heredadas que se dieron de baja. Esta política se dará de baja después de que las combinaciones de teclas personalizadas estén disponibles.</translation>
-<translation id="1359459742455216057">El identificador único para la app de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="1361661842732478894">Mostrar el botón Página principal en la barra de herramientas</translation>
 <translation id="1363275621236827384">Habilitar las consultas a Quirks Server para perfiles de hardware</translation>
 <translation id="1363839375295535439">Si habilitas la política o no la estableces, se habilitará la zona de pruebas de LPAC para los servicios de impresión siempre que la configuración del sistema lo admita.
@@ -9295,7 +9294,6 @@ Si la habilitas, los datos se recopilan y se suben a <ph name="GOOGLE_ADMIN_CONS
 
 Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
 Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="6714333117401088746">El ID del proyecto <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> correspondiente a la instancia de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> que se habilitará.</translation>
 <translation id="6720330829631914048">Las horas transcurridas desde que comienza el día (en formato de 24 horas).</translation>
 <translation id="6720862827454058309">Anular las asignaciones de espacio de direcciones IP</translation>
 <translation id="6721252203593581486">WebSQL en contextos de terceros (p. ej., iframes entre sitios) está desactivado de forma predeterminada a partir de la versión M97 y se quitará por completo en la versión M101.

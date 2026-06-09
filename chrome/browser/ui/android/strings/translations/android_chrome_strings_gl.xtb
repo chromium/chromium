@@ -613,6 +613,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3635073343384702370">Chrome pode comprobar os teus contrasinais cando os gardes</translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637744895182738742">Se esqueciches a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" />: <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Ir ao inicio da aplicación Google</translation>
 <translation id="368329460027487650">Tes a sesión pechada. Abre as opcións de inicio de sesión.</translation>
@@ -637,6 +638,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3739899004075612870">Engadiuse aos marcadores en <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740290940447881599">Faino só se sabes de certo que o sitio é de confianza</translation>
 <translation id="3740525748616366977">A busca por voz non está dispoñible neste dispositivo</translation>
+<translation id="3756823472711156529">Restaurar grupo</translation>
 <translation id="3763110477555836428">Cando pagues con esta tarxeta, introducirase un número de tarxeta virtual para protexer os teus datos reais. Xestiona esta opción en Google Wallet. <ph name="BEGIN_LINK1" />Consulta máis información sobre as tarxetas virtuais<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Algúns datos aínda non se gardaron</translation>
 <translation id="3770620323585347665">Pór nome á ventá</translation>

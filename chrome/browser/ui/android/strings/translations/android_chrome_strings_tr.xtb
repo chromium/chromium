@@ -613,6 +613,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3635073343384702370">Kaydetmeniz halinde Chrome, şifrelerinizi kontrol edebilir</translation>
 <translation id="3636940436873918441">Tercih edilen diller</translation>
 <translation id="3637744895182738742">Parolanızı unuttuysanız veya bu ayarı değiştirmek istiyorsanız <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini silin<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" />-<ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google uygulamasının ana sayfasına gidin</translation>
 <translation id="368329460027487650">Oturum kapatıldı. Oturum açma seçeneklerini açar.</translation>
@@ -637,6 +638,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> üzerinde yer işareti koyuldu</translation>
 <translation id="3740290940447881599">Bu siteye güvendiğinizden emin olun</translation>
 <translation id="3740525748616366977">Sesle Arama bu cihazda kullanılamıyor</translation>
+<translation id="3756823472711156529">Grubu geri yükle</translation>
 <translation id="3763110477555836428">Bu kartla ödeme yaptığınızda gerçek bilgilerinizin korunması için sanal kart numarası girilir. Google Cüzdan'da yönetin. <ph name="BEGIN_LINK1" />Sanal kartlar hakkında daha fazla bilgi<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Bazı veriler henüz kaydedilmedi</translation>
 <translation id="3770620323585347665">Pencereye ad ver</translation>

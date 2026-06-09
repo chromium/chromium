@@ -1448,6 +1448,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2039464276165755892">Oculte o conteúdo da notificação quando outra pessoa é detetada</translation>
 <translation id="2040460856718599782">Ups! Ocorreu um erro ao tentar autenticá-lo. Verifique bem as suas credenciais de início de sessão e tente novamente.</translation>
 <translation id="2040822390690632244">Atualizações, ajuda, opções de programador</translation>
+<translation id="2040827008689966558">Reabrir vista dividida fechada</translation>
 <translation id="2040894699575719559">Localização bloqueada</translation>
 <translation id="2042279886444479655">Perfis ativos</translation>
 <translation id="2044014337866019681">Certifique-se de que está a validar a conta <ph name="ACCOUNT" /> para desbloquear a sessão.</translation>
@@ -4565,6 +4566,7 @@ Quer pará-lo?</translation>
 <translation id="4275397969489577657">Ativar o registo de transmissões de eventos</translation>
 <translation id="4275788652681621337">Feche o painel lateral</translation>
 <translation id="4275830172053184480">Reiniciar o dispositivo</translation>
+<translation id="4276390967705106170">Abrir num novo separador do navegador</translation>
 <translation id="4276598757692536305">PPD da impressora</translation>
 <translation id="4277434192562187284">Origem da configuração XML</translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -5490,6 +5492,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4946998421534856407">Launcher + seta para cima</translation>
 <translation id="4947376546135294974">Dados do site que está a visitar</translation>
 <translation id="4949898053053527676">Não existem resultados para a sua pesquisa</translation>
+<translation id="4949954144207118092">Abrir num separador da app <ph name="APP_NAME" /> existente</translation>
 <translation id="4950100687509657457">Criar perfil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{um ficheiro}other{# ficheiros}}</translation>
 <translation id="495170559598752135">Ações</translation>
@@ -7620,6 +7623,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6563055593659435495">Não é possível manter uma ligação com o seu telemóvel. Certifique-se de que o telemóvel está próximo, desbloqueado e com o Bluetooth e o Wi-Fi ativados.</translation>
 <translation id="6564343790052433242">Para criar uma chave de acesso para <ph name="APP_NAME" />, o Gestor de Palavras-passe da Google tem de estar ativado</translation>
 <translation id="6565899972286925956">Crie o que quiser</translation>
+<translation id="6566648465417201421">Reabrir vista dividida fechada</translation>
 <translation id="656679903990115526">Faça a leitura deste código com o telemóvel para guardar e preencher automaticamente as suas palavras-passe e iniciar sessão facilmente em sites e apps</translation>
 <translation id="6568283005472142698">Pesquisa de separadores</translation>
 <translation id="6569931898053264308">Poupanças médias</translation>
@@ -7955,6 +7959,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6805478749741295868">Esta é uma funcionalidade de IA experimental e nem sempre acerta.</translation>
 <translation id="6805817411033102703">Feedback sobre os grupos de separadores partilhados</translation>
 <translation id="6806089545527108739">Não permitir, mas perguntar mais tarde</translation>
+<translation id="6806123901116522137">Aceder a Inovações de IA</translation>
 <translation id="6806781719264274042">Apenas os seus contactos com uma Conta Google. <ph name="LINK_BEGIN" />Veja os contactos<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">Para continuar, insira e toque na chave de segurança.</translation>
 <translation id="6808166974213191158">Criador de imagem do sistema do ChromeOS Flex</translation>
@@ -8608,6 +8613,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7282992757463864530">Barra de informações</translation>
 <translation id="7283555985781738399">Modo convidado</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Este dispositivo vai ser guardado durante 1 dia e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}other{Este dispositivo vai ser guardado durante {DAYS} dias e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}}</translation>
+<translation id="7284386549235597598">Esta ação termina a tarefa em que o Gemini está a trabalhar atualmente.</translation>
 <translation id="7284411326658527427">Cada pessoa pode personalizar a respetiva conta e manter os dados privados.</translation>
 <translation id="7285008278689343502">Parque Nacional de Grand Teton</translation>
 <translation id="7286867818472074330">Selecionar chave de acesso</translation>
@@ -8678,6 +8684,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7336799713063880535">Notific. bloqueadas</translation>
 <translation id="7337258336304389677">Use o seu telemóvel ou tablet</translation>
 <translation id="7339052793671338107">Indicador de redimensionamento do painel lateral (arrastável)</translation>
+<translation id="733918220174231019">Termine a tarefa para continuar</translation>
 <translation id="7339763383339757376">PKCS #7, certificado único</translation>
 <translation id="7339785458027436441">Rever a ortografia durante a escrita</translation>
 <translation id="7339898014177206373">Nova janela</translation>
@@ -8828,6 +8835,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7432200167665670017">O seu administrador bloqueou "<ph name="EXTENSION_NAME" />" – ID da app <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Arquivar</translation>
 <translation id="7433333862363162673">Limpar atalho de seleção</translation>
+<translation id="7433495118028038748">Sim, terminar tarefa</translation>
 <translation id="7433957986129316853">Manter</translation>
 <translation id="7434100547946193426">Outras apps</translation>
 <translation id="7434509671034404296">Programador</translation>

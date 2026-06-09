@@ -483,7 +483,6 @@ Se a política for definida como "Desativada" ou não for definida, as configura
       Se ela estiver ativada, a melhoria ficará ativada.
       Se a política for deixada sem definição, ela ficará ativada em dispositivos gerenciados e dispositivos de consumidores.
       Observe que esta é uma política temporária para permitir que os usuários gerenciados continuem usando atalhos legados descontinuados. Esta política será descontinuada quando os atalhos personalizados ficarem disponíveis.</translation>
-<translation id="1359459742455216057">Identificador exclusivo do app <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="1361661842732478894">Mostrar o botão "Página inicial" na barra de ferramentas</translation>
 <translation id="1363275621236827384">Permitir consultas no Servidor Quirks para perfis de hardware</translation>
 <translation id="1363839375295535439">Se a política for ativada ou não for definida, permite que o sandbox do LPAC seja ativado para serviços de impressão sempre que a configuração do sistema permitir.
@@ -9280,7 +9279,6 @@ Quando a política é ativada, os dados são coletados e enviados por upload par
 
 Para o <ph name="PRODUCT_NAME" />, esta política só é eficaz quando a máquina está registrada no <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
-<translation id="6714333117401088746">O ID do projeto <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> correspondente à instância do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> a ser ativada.</translation>
 <translation id="6720330829631914048">Horas decorridas desde o começo do dia (no formato de 24 horas).</translation>
 <translation id="6720862827454058309">Substituir mapeamentos de espaço de endereço IP</translation>
 <translation id="6721252203593581486">O WebSQL em contextos de terceiros (por exemplo, iframes entre sites) fica desativado por padrão a partir do M97 e será totalmente removido no M101.

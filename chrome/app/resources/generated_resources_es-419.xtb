@@ -187,6 +187,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1125550662859510761">Resolución: <ph name="WIDTH" /> × <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1125816658532547876">Usa tus contraseñas en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Fondo y estilo</translation>
+<translation id="1126475802377716263">{0,plural, =1{Se está compartiendo 1 pestaña}other{Se están compartiendo # pestañas}}</translation>
 <translation id="1126696498560056882">Administrar cuentas en este dispositivo</translation>
 <translation id="1128591060186966949">Editar el motor de búsqueda</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -1753,6 +1754,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2263371730707937087">Frecuencia de actualización de la pantalla</translation>
 <translation id="2263679799334060788">Agradecemos tus comentarios, ya que nos ayudan a mejorar Google Cast. Si quieres obtener asistencia para solucionar problemas de transmisión, visita el <ph name="BEGIN_LINK" />Centro de ayuda<ph name="END_LINK" />.</translation>
 <translation id="22649924370461580">Grupos de pestañas guardados</translation>
+<translation id="2265924028278810827">App principal: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP por USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth desactivado</translation>
 <translation id="2268182915828370037">¿Quieres desactivar la sincronización de archivos?</translation>
@@ -1948,6 +1950,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2406942743794219791">Confirma el motor de búsqueda predeterminado que quieres</translation>
 <translation id="2407671304279211586">Seleccionar proveedor de DNS</translation>
 <translation id="2408018932941436077">Guardando la tarjeta</translation>
+<translation id="2408601796549249241">Hoja inferior de Gemini en altura completa</translation>
 <translation id="2408762424059547338">Te protege mejor de los ataques desactivando la optimización de JavaScript</translation>
 <translation id="2408955596600435184">Ingresa tu PIN</translation>
 <translation id="2409378541210421746">Editar selección de idioma</translation>
@@ -2704,6 +2707,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2932483646085333864">Salir y volver a acceder para iniciar la sincronización</translation>
 <translation id="2932883381142163287">Informar sobre abusos</translation>
 <translation id="2933632078076743449">Última actualización</translation>
+<translation id="2933653107553951760">Restablecer grupo</translation>
 <translation id="2934225044529065415">No se puede acceder a la cámara</translation>
 <translation id="2935314715123552088">Inhabilitar el perfil de eSIM activo</translation>
 <translation id="2935654492420446828">Agrega una cuenta de institución educativa más tarde</translation>
@@ -2798,6 +2802,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001144475369593262">Cuentas de niños</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{No hay teclas personalizadas}=1{1 tecla personalizada}other{{COUNT} teclas personalizadas}}</translation>
+<translation id="3002864108328203174">Hoja inferior de Gemini a media altura.</translation>
 <translation id="3003144360685731741">Redes preferidas</translation>
 <translation id="3003253259757197230">Se enviarán a Google las URLs que visites para predecir los sitios que posiblemente vayas a visitar y mostrarte información adicional sobre la página que estés visitando</translation>
 <translation id="3003623123441819449">Caché CSS</translation>
@@ -3839,6 +3844,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3756485814916578707">Transmitiendo pantalla</translation>
 <translation id="3756578970075173856">Establecer un PIN</translation>
 <translation id="3756806135608816820">Permitir que los sitios soliciten permiso para buscar dispositivos Bluetooth</translation>
+<translation id="3756823472711156529">Restablecer grupo</translation>
 <translation id="3757567010566591880">Dejar de fijar en la Barra de herramientas</translation>
 <translation id="3757645900890881944">Herramientas de Búsqueda</translation>
 <translation id="3757733214359997190">No se encontraron sitios</translation>
@@ -4810,6 +4816,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4444304522807523469">Acceder a los escáneres de documentos conectados vía USB o en la red local</translation>
 <translation id="4444512841222467874">Si no liberas espacio, es posible que se quiten usuarios y datos de forma automática.</translation>
 <translation id="4445446646109808714">Contrato de licencia para el usuario final: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">Restablecer vista dividida</translation>
 <translation id="4446933390699670756">Duplicado</translation>
 <translation id="4448560527907365660">Guardar y ver más</translation>
 <translation id="4449247303975391730">Administrar permisos</translation>
@@ -4943,6 +4950,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4562364000855074606">Bloquea las apps instaladas en tu <ph name="DEVICE_TYPE" />. Para restringir la descarga de apps o contenido, ve a la configuración de Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">El idioma inicial de entrada es chino</translation>
 <translation id="4563382028841851106">Quitar de la cuenta</translation>
+<translation id="4563883094055457792">R&amp;establecer vista dividida</translation>
 <translation id="4564245002465020751">Termina la configuración en el teléfono</translation>
 <translation id="456449593072900590">Borrar al salir</translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
@@ -5847,6 +5855,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5221516927483787768">No se puede transmitir <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Se bloqueó una descarga no segura</translation>
 <translation id="5222676887888702881">Salir</translation>
+<translation id="5222710719845250566">Restablecer ventana</translation>
 <translation id="5225324770654022472">Mostrar acceso directo a las aplicaciones</translation>
 <translation id="52254442782792731">Aún no se estableció la configuración de visibilidad actual</translation>
 <translation id="5225463052809312700">Activar la cámara</translation>
@@ -7219,6 +7228,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6266984048393265562">Personalizar el perfil</translation>
 <translation id="6267166720438879315">Seleccionar un certificado para autenticarte como <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Abrir con <ph name="APP" /></translation>
+<translation id="6269392226729599142">Restablecer vista dividida</translation>
 <translation id="6270309713620950855">Aviso de micrófono silenciado</translation>
 <translation id="6270391203985052864">Los sitios pueden preguntarte si quieres recibir notificaciones</translation>
 <translation id="6270770586500173387">Enviar <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /> e <ph name="BEGIN_LINK1" />información de apps y el sistema<ph name="END_LINK1" /></translation>
@@ -8962,6 +8972,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">Almacenamiento, energía, lenguaje</translation>
 <translation id="7551059576287086432">Se descargó <ph name="FILE_NAME" /> correctamente.</translation>
+<translation id="7551303452605464331">R&amp;establecer vista dividida</translation>
 <translation id="7551643184018910560">Fijar en la barra</translation>
 <translation id="7552191410769096467">Para compartir grupos de pestañas o unirte a ellos, debes acceder y activar la sincronización</translation>
 <translation id="7552196109089297786">Salir de Microsoft</translation>
@@ -11114,6 +11125,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9087949559523851360">Agregar un usuario restringido</translation>
 <translation id="9088234649737575428">La política empresarial bloqueó <ph name="PLUGIN_NAME" /></translation>
 <translation id="90885733430013283">SSID de Wi-Fi</translation>
+<translation id="9088578317174654338">Se cerró la hoja inferior de Gemini.</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="9089959054554410481">Cambia la dirección de desplazamiento del panel táctil</translation>
 <translation id="9090044809052745245">Cómo ven tu dispositivo los demás</translation>

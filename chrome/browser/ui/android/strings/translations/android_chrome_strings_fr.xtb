@@ -613,6 +613,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3635073343384702370">Chrome ne peut vérifier vos mots de passe que si vous les enregistrez</translation>
 <translation id="3636940436873918441">Langues préférées</translation>
 <translation id="3637744895182738742">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> : <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Accéder à la page d'accueil de l'appli Google</translation>
 <translation id="368329460027487650">Déconnecté. Ouvre les options de connexion.</translation>
@@ -637,6 +638,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3739899004075612870">Favori ajouté dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740290940447881599">Vérifiez que ce site est fiable</translation>
 <translation id="3740525748616366977">La recherche vocale n'est pas disponible sur cet appareil</translation>
+<translation id="3756823472711156529">Restaurer le groupe</translation>
 <translation id="3763110477555836428">Un numéro de carte virtuelle sera renseigné lorsque vous paierez avec cette carte pour protéger vos informations réelles. Gérez-la dans Google Wallet. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Certaines données ne sont pas encore enregistrées</translation>
 <translation id="3770620323585347665">Nommer la fenêtre</translation>

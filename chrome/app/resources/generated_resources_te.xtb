@@ -187,6 +187,7 @@
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ఉన్నట్టుంది (అసలైనది)</translation>
 <translation id="1125816658532547876">మీ <ph name="DEVICE_TYPE" />‌లో మీ పాస్‌వర్డ్‌లను ఉపయోగించండి</translation>
 <translation id="1125921926864945797">వాల్‌పేపర్, స్టయిల్</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 ట్యాబ్ షేర్ అవుతోంది}other{# ట్యాబ్‌లు షేర్ అవుతున్నాయి}}</translation>
 <translation id="1126696498560056882">ఈ పరికరంలోని ఖాతాలను మేనేజ్ చేయండి</translation>
 <translation id="1128591060186966949">సెర్చ్ ఇంజిన్‌ను ఎడిట్ చేయండి</translation>
 <translation id="1129348283834595293">సైబర్‌పంక్</translation>
@@ -1766,6 +1767,7 @@
     <ph name="BEGIN_LINK" />
     సహాయ కేంద్రం<ph name="END_LINK" />ను సందర్శించండి.</translation>
 <translation id="22649924370461580">సేవ్ చేయబడిన ట్యాబ్ గ్రూప్‌లు</translation>
+<translation id="2265924028278810827">పేరెంట్ యాప్: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">USB ద్వారా IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">బ్లూటూత్‌ నిలిపివేయబడింది</translation>
 <translation id="2268182915828370037">ఫైల్ సింక్‌ను ఆఫ్ చేయాలా?</translation>
@@ -1961,6 +1963,7 @@
 <translation id="2406942743794219791">మీకు కావలసిన ఆటోమేటిక్ సెట్టింగ్ సెర్చ్ ఇంజిన్‌ను నిర్ధారించండి</translation>
 <translation id="2407671304279211586">DNS ప్రొవైడర్‌ను ఎంచుకోండి</translation>
 <translation id="2408018932941436077">కార్డ్ సేవ్ అవుతోంది</translation>
+<translation id="2408601796549249241">Gemini దిగువున ఉన్న షీట్ పూర్తి ఎత్తులో ఉంది</translation>
 <translation id="2408762424059547338">JavaScript ఆప్టిమైజేషన్‌ను ఆఫ్ చేయడం ద్వారా దాడుల నుండి మిమ్మల్ని మెరుగ్గా రక్షిస్తుంది</translation>
 <translation id="2408955596600435184">మీ PINని నమోదు చేయండి</translation>
 <translation id="2409378541210421746">భాష ఎంపికను ఎడిట్ చేయండి</translation>
@@ -2717,6 +2720,7 @@
 <translation id="2932483646085333864">సింక్‌ను ప్రారంభించడానికి సైన్ అవుట్ చేసి, సైన్ ఇన్ చేయండి</translation>
 <translation id="2932883381142163287">దుర్వినియోగాన్ని రిపోర్ట్ చేయి</translation>
 <translation id="2933632078076743449">చివరి అప్‌డేట్</translation>
+<translation id="2933653107553951760">గ్రూప్‌ను రీస్టోర్ చేయండి</translation>
 <translation id="2934225044529065415">కెమెరాను యాక్సెస్ చేయడం సాధ్యపడదు</translation>
 <translation id="2935314715123552088">యాక్టివ్‌గా ఉన్న eSIM ప్రొఫైల్స్‌ను డిజేబుల్ చేయండి</translation>
 <translation id="2935654492420446828">పాఠశాల ఖాతాను తర్వాత జోడించండి</translation>
@@ -2811,6 +2815,7 @@
 <translation id="3000461861112256445">మోనో ఆడియో</translation>
 <translation id="3001144475369593262">చిన్నారి ఖాతాలు</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{అనుకూలంగా మార్చిన కీలు ఏవీ లేవు}=1{అనుకూలంగా మార్చిన 1 కీ}other{అనుకూలంగా మార్చిన {COUNT} కీలు}}</translation>
+<translation id="3002864108328203174">Gemini దిగువున ఉన్న షీట్ సగం ఎత్తులో ఉంది.</translation>
 <translation id="3003144360685731741">ప్రాధాన్య నెట్‌వర్క్‌లు</translation>
 <translation id="3003253259757197230">మీరు చూసే URLలు మీరు తర్వాత ఏ సైట్‌లను చూడవచ్చో అంచనా వేయడానికి, మీరు చూసే పేజీ గురించిన అదనపు సమాచారాన్ని మీకు చూపడానికి Googleకు పంపబడతాయి</translation>
 <translation id="3003623123441819449">CSS క్యాష్</translation>
@@ -3852,6 +3857,7 @@
 <translation id="3756485814916578707">స్క్రీన్‌ను ప్రసారం చేయడం</translation>
 <translation id="3756578970075173856">పిన్‌ని సెట్ చేయండి</translation>
 <translation id="3756806135608816820">బ్లూటూత్ పరికరాల కోసం వెతకమని సైట్‌లు అడగవచ్చు</translation>
+<translation id="3756823472711156529">గ్రూప్‌ను రీస్టోర్ చేయండి</translation>
 <translation id="3757567010566591880">టూల్‌బార్ నుండి పిన్‌ను తీసివేయండి</translation>
 <translation id="3757645900890881944">Search టూల్స్</translation>
 <translation id="3757733214359997190">సైట్‌లు ఏవీ కనుగొనబడలేదు</translation>
@@ -4823,6 +4829,7 @@
 <translation id="4444304522807523469">USB ద్వారా లేదా స్థానిక నెట్‌వర్క్‌లో జోడించిన డాక్యుమెంట్‌ స్కానర్‌లను యాక్సెస్ చేయండి</translation>
 <translation id="4444512841222467874">స్థలం ఖాళీ చేయకపోతే, వినియోగదారులు మరియు డేటా ఆటోమేటిక్‌గా తీసివేయబడవచ్చు.</translation>
 <translation id="4445446646109808714">ఎండ్ యూజర్ లైసెన్స్ ఒప్పందం: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">స్ప్లిట్ వ్యూను రీస్టోర్ చేయండి</translation>
 <translation id="4446933390699670756">ప్రతిబింబితం</translation>
 <translation id="4448560527907365660">సేవ్ చేసి మరిన్ని చూడండి</translation>
 <translation id="4449247303975391730">అనుమతులను మేనేజ్ చేయండి</translation>
@@ -4956,6 +4963,7 @@
 <translation id="4562364000855074606">ఈ <ph name="DEVICE_TYPE" />లో ఇన్‌స్టాల్ చేసిన యాప్‌లను బ్లాక్ చేయండి. యాప్‌లు లేదా కంటెంట్‌ను డౌన్‌లోడ్ చేయడాన్ని పరిమితం చేయడానికి, Google Play సెట్టింగ్‌లకు వెళ్లండి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">ప్రారంభ ఇన్‌పుట్ భాష చైనీస్</translation>
 <translation id="4563382028841851106">ఖాతా నుండి తీసివేయండి</translation>
+<translation id="4563883094055457792">స్ప్లిట్ వ్యూను రీస్టోర్ చేయండి</translation>
 <translation id="4564245002465020751">మీ ఫోన్‌లో సెటప్‌ను పూర్తి చేయండి</translation>
 <translation id="456449593072900590">ఎగ్జిట్ అయినప్పుడు తొలగించండి</translation>
 <translation id="4565377596337484307">పాస్‌వర్డ్‌ను దాచిపెట్టు</translation>
@@ -5860,6 +5868,7 @@
 <translation id="5221516927483787768"><ph name="HOST_NAME" />‌ను ప్రసారం చేయడం సాధ్యపడలేదు</translation>
 <translation id="5222403284441421673">సురక్షితం కాని డౌన్‌లోడ్‌ బ్లాక్ చేయబడింది</translation>
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
+<translation id="5222710719845250566">విండోను రీస్టోర్ చేయండి</translation>
 <translation id="5225324770654022472">యాప్‌ల షార్ట్‌కట్‌ను చూపండి</translation>
 <translation id="52254442782792731">ప్రస్తుత విజిబిలిటీ సెట్టింగ్ ఇంకా సెట్ చేయబడలేదు</translation>
 <translation id="5225463052809312700">కెమెరాను ఆన్ చేయి</translation>
@@ -7231,6 +7240,7 @@
 <translation id="6266984048393265562">ప్రొఫైల్‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" />కు మిమ్మల్ని మీరు ప్రమాణీకరించడానికి ఒక సర్టిఫికెట్‌ను ఎంచుకోండి</translation>
 <translation id="6268252012308737255"><ph name="APP" />‌తో తెరవండి</translation>
+<translation id="6269392226729599142">స్ప్లిట్ వ్యూను రీస్టోర్ చేయండి</translation>
 <translation id="6270309713620950855">ఆటోమేటిక్ రిమైండర్‌ను మ్యూట్ చేయండి</translation>
 <translation id="6270391203985052864">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడుగగలవు</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />సిస్టమ్, యాప్‌ సమాచారాన్ని<ph name="END_LINK1" /> మరియు <ph name="BEGIN_LINK2" />గణాంకాలను<ph name="END_LINK2" /> పంపు</translation>
@@ -8974,6 +8984,7 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">స్టోరేజ్, పవర్, భాష</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది</translation>
+<translation id="7551303452605464331">స్ప్లిట్ వ్యూను రీస్టోర్ చేయండి</translation>
 <translation id="7551643184018910560">అరకు పిన్ చేయండి</translation>
 <translation id="7552191410769096467">ట్యాబ్ గ్రూప్‌లను షేర్ చేయడానికి లేదా వాటిలో చేరడానికి, మీరు సైన్ ఇన్ చేసి, సింక్‌ను ఆన్ చేయాలి</translation>
 <translation id="7552196109089297786">Microsoft నుండి సైన్ అవుట్ చేయండి</translation>
@@ -11123,6 +11134,7 @@
 <translation id="9087949559523851360">పరిమితం చేయబడిన యూజర్‌ను జోడించండి</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> ఎంటర్‌ప్రైజ్ విధానం వలన బ్లాక్ చేయబడింది</translation>
 <translation id="90885733430013283">Wi-Fi SSID</translation>
+<translation id="9088578317174654338">Gemini దిగువున ఉన్న షీట్ మూసివేయడం జరిగింది.</translation>
 <translation id="9089416786594320554">ఇన్‌పుట్ పద్ధతులు</translation>
 <translation id="9089959054554410481">టచ్‌ప్యాడ్ స్క్రోలింగ్ దిశను మార్చండి</translation>
 <translation id="9090044809052745245">మీ పరికరం ఇతరులకు ఇలా కనిపిస్తుంది</translation>

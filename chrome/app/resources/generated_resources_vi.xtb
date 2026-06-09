@@ -1458,6 +1458,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2039464276165755892">Ẩn nội dung thông báo khi phát hiện có người khác</translation>
 <translation id="2040460856718599782">Rất tiếc! Đã xảy ra sự cố khi tìm cách xác thực bạn. Vui lòng kiểm tra kỹ thông tin xác thực đăng nhập của bạn và thử lại.</translation>
 <translation id="2040822390690632244">Nội dung cập nhật, trợ giúp, tuỳ chọn cho nhà phát triển</translation>
+<translation id="2040827008689966558">Mở lại chế độ xem màn hình chia đôi đã đóng</translation>
 <translation id="2040894699575719559">Đã chặn quyền truy cập vị trí</translation>
 <translation id="2042279886444479655">Các hồ sơ đang hoạt động</translation>
 <translation id="2044014337866019681">Để mở khóa phiên này, hãy đảm bảo rằng bạn đang xác minh <ph name="ACCOUNT" />.</translation>
@@ -4577,6 +4578,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4275397969489577657">Bật ghi nhật ký luồng sự kiện</translation>
 <translation id="4275788652681621337">Đóng bảng điều khiển bên</translation>
 <translation id="4275830172053184480">Khởi động lại thiết bị của bạn</translation>
+<translation id="4276390967705106170">Mở trong thẻ trình duyệt mới</translation>
 <translation id="4276598757692536305">Tệp PPD của máy in</translation>
 <translation id="4277434192562187284">Nguồn cấu hình XML</translation>
 <translation id="4278390842282768270">Được cho phép</translation>
@@ -5502,6 +5504,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4946998421534856407">trình chạy + mũi tên lên</translation>
 <translation id="4947376546135294974">Dữ liệu từ trang web mà bạn đang truy cập</translation>
 <translation id="4949898053053527676">Có vẻ như không có kết quả tìm kiếm nào cho cụm từ bạn đang tìm kiếm</translation>
+<translation id="4949954144207118092">Mở trong thẻ <ph name="APP_NAME" /> hiện có</translation>
 <translation id="4950100687509657457">Tạo hồ sơ</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{một tệp}other{# tệp}}</translation>
 <translation id="495170559598752135">Tác vụ</translation>
@@ -7631,6 +7634,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6563055593659435495">Không duy trì được kết nối với điện thoại của bạn. Hãy đảm bảo điện thoại của bạn ở gần, đã mở khoá, đang bật Bluetooth và Wi-Fi.</translation>
 <translation id="6564343790052433242">Để tạo khoá truy cập cho <ph name="APP_NAME" />, bạn phải bật Trình quản lý mật khẩu của Google</translation>
 <translation id="6565899972286925956">Tạo bất cứ thứ gì</translation>
+<translation id="6566648465417201421">Mở lại chế độ xem màn hình chia đôi đã đóng</translation>
 <translation id="656679903990115526">Quét mã này bằng điện thoại để lưu và tự động điền mật khẩu, nhờ đó dễ dàng đăng nhập vào các trang web và ứng dụng</translation>
 <translation id="6568283005472142698">Tìm thẻ</translation>
 <translation id="6569931898053264308">Mức tiết kiệm trung bình</translation>
@@ -7966,6 +7970,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6805478749741295868">Đây là tính năng AI thử nghiệm và không phải lúc nào cũng chính xác.</translation>
 <translation id="6805817411033102703">Ý kiến phản hồi về nhóm thẻ được chia sẻ</translation>
 <translation id="6806089545527108739">Không cho phép nhưng có thể hỏi sau</translation>
+<translation id="6806123901116522137">Chuyển đến phần Phát kiến về AI</translation>
 <translation id="6806781719264274042">Chỉ những người liên hệ có Tài khoản Google. <ph name="LINK_BEGIN" />Xem người liên hệ<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">Để tiếp tục, hãy cắm rồi chạm vào khóa bảo mật của bạn</translation>
 <translation id="6808166974213191158">Trình ghi ảnh hệ thống ChromeOS Flex</translation>
@@ -8621,6 +8626,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7282992757463864530">Thanh thông tin</translation>
 <translation id="7283555985781738399">Chế độ khách</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Thiết bị này sẽ được lưu trong 1 ngày và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}other{Thiết bị này sẽ được lưu trong {DAYS} ngày và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}}</translation>
+<translation id="7284386549235597598">Thao tác này sẽ kết thúc việc cần làm mà Gemini đang thực hiện.</translation>
 <translation id="7284411326658527427">Mỗi người đều có thể điều chỉnh tài khoản theo cách riêng và bảo mật dữ liệu.</translation>
 <translation id="7285008278689343502">Vườn quốc gia Grand Teton</translation>
 <translation id="7286867818472074330">Chọn khoá truy cập</translation>
@@ -8691,6 +8697,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7336799713063880535">Đã chặn thông báo.</translation>
 <translation id="7337258336304389677">Sử dụng điện thoại hoặc máy tính bảng của bạn</translation>
 <translation id="7339052793671338107">Ô điều khiển thay đổi kích thước của bảng điều khiển bên (có thể kéo được)</translation>
+<translation id="733918220174231019">Kết thúc việc cần làm để tiếp tục</translation>
 <translation id="7339763383339757376">PKCS #7, chứng chỉ đơn</translation>
 <translation id="7339785458027436441">Kiểm tra Chính tả Trong khi Nhập</translation>
 <translation id="7339898014177206373">Cửa sổ mới</translation>
@@ -8841,6 +8848,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7432200167665670017">Quản trị viên đã chặn "<ph name="EXTENSION_NAME" />" – Mã ứng dụng <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Lưu trữ</translation>
 <translation id="7433333862363162673">Phím tắt xoá lựa chọn</translation>
+<translation id="7433495118028038748">Có, kết thúc việc cần làm</translation>
 <translation id="7433957986129316853">Giữ nguyên</translation>
 <translation id="7434100547946193426">Ứng dụng khác</translation>
 <translation id="7434509671034404296">Nhà phát triển</translation>

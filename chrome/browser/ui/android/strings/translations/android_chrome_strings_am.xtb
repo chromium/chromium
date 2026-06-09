@@ -613,6 +613,7 @@
 <translation id="3635073343384702370">Chrome እርስዎ የይለፍ ቃላትዎን ሲያስቀምጧቸው መፈተሽ ይችላል</translation>
 <translation id="3636940436873918441">የተመረጡ ቋንቋዎች</translation>
 <translation id="3637744895182738742">የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChrome ውሂብ ይሰርዙ<ph name="END_LINK" />።</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />፦ <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">ወደ የGoogle መተግበሪያ መነሻ ሂድ</translation>
 <translation id="368329460027487650">ዘግተው ወጥተዋል። በመለያ ለመግባት አማራጮችን ይክፈቱ።</translation>
@@ -637,6 +638,7 @@
 <translation id="3739899004075612870">በ<ph name="PRODUCT_NAME" /> ውስጥ ዕልባት ተቀምጦለታል</translation>
 <translation id="3740290940447881599">ይህን ጣቢያ እንደሚያምኑት ያረጋግጡ</translation>
 <translation id="3740525748616366977">የድምፅ ፍለጋ በዚህ መሣሪያ ላይ አይገኝም</translation>
+<translation id="3756823472711156529">ቡድንን ወደነበረበት መልስ</translation>
 <translation id="3763110477555836428">ትክክለኛ ዝርዝሮችዎን ለመጠበቅ በዚህ ካርድ ግዢ ሲያጠናቅቁ የምናባዊ ካርድ ቁጥር ይሞላል። በGoogle Wallet ውስጥ ያስተዳድሩ። <ph name="BEGIN_LINK1" />ስለ ምናባዊ ካርዶች የበለጠ ይወቁ<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">የተወሰነ ውሂብ እስካሁን አልተቀመጠም</translation>
 <translation id="3770620323585347665">መስኮትን ይሰይሙ</translation>
@@ -683,7 +685,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />፣ የተሰካ የሥዕል-ላይ-ሥዕል ትር</translation>
 <translation id="3950820424414687140">በመለያ ይግቡ</translation>
 <translation id="395377504920307820">ያለመለያ ተጠቀም</translation>
-<translation id="3955353672249727801">ገፅ ወደ የንባብ ዝርዝር ታክሏል</translation>
+<translation id="3955353672249727801">ገጽ ወደ የንባብ ዝርዝር ታክሏል</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome ዝግጁ ሲሆን ገጽዎን ይጭነዋል}one{Chrome ዝግጁ ሲሆን ገጾችዎን ይጭነዋል}other{Chrome ዝግጁ ሲሆን ገጾችዎን ይጭነዋል}}</translation>
 <translation id="3969142555815019568">Chrome የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም</translation>
 <translation id="3969863827134279083">ወደላይ አውጣ</translation>

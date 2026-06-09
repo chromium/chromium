@@ -187,6 +187,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1125550662859510761">Noteiktā izšķirtspēja: <ph name="WIDTH" /> x <ph name="HEIGHT" /> (iebūvētā)</translation>
 <translation id="1125816658532547876">Izmantojiet paroles savā ierīcē (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="1125921926864945797">Fona tapete un stils</translation>
+<translation id="1126475802377716263">{0,plural, =1{Tiek kopīgota 1 cilne}zero{Tiek kopīgotas # cilnes}one{Tiek kopīgota # cilne}other{Tiek kopīgotas # cilnes}}</translation>
 <translation id="1126696498560056882">Pārvaldīt kontus šajā ierīcē</translation>
 <translation id="1128591060186966949">Meklētājprogrammas rediģēšana</translation>
 <translation id="1129348283834595293">Kiberpanks</translation>
@@ -1756,6 +1757,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2263371730707937087">Ekrāna atsvaidzināšanas biežums</translation>
 <translation id="2263679799334060788">Mēs novērtējam jūsu atsauksmes — tās palīdz mums uzlabot pakalpojumu Google Cast. Lai saņemtu palīdzību apraides problēmu novēršanā, apmeklējiet <ph name="BEGIN_LINK" />palīdzības centru<ph name="END_LINK" />.</translation>
 <translation id="22649924370461580">Saglabātās ciļņu grupas</translation>
+<translation id="2265924028278810827">Galvenā lietotne: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP, izmantojot USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth atspējots</translation>
 <translation id="2268182915828370037">Vai izslēgt failu sinhronizāciju?</translation>
@@ -1951,6 +1953,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2406942743794219791">Apstipriniet vēlamo noklusējuma meklētājprogrammu</translation>
 <translation id="2407671304279211586">Atlasiet DNS pakalpojumu sniedzēju</translation>
 <translation id="2408018932941436077">Karte tiek saglabāta.</translation>
+<translation id="2408601796549249241">Gemini ekrāna apakšdaļas lapa ir atvērta pilnā augstumā.</translation>
 <translation id="2408762424059547338">Labāka aizsardzība pret uzbrukumiem, izslēdzot JavaScript optimizāciju.</translation>
 <translation id="2408955596600435184">Ievadiet PIN kodu</translation>
 <translation id="2409378541210421746">Rediģēt valodas atlasi</translation>
@@ -2707,6 +2710,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="2932483646085333864">Lai sāktu sinhronizēšanu, izrakstieties un pierakstieties vēlreiz.</translation>
 <translation id="2932883381142163287">Ziņot par ļaunprātīgu izmantošanu</translation>
 <translation id="2933632078076743449">Pēdējoreiz atjaunināts</translation>
+<translation id="2933653107553951760">Atjaunot grupu</translation>
 <translation id="2934225044529065415">Nevar piekļūt kamerai</translation>
 <translation id="2935314715123552088">Atspējot aktīvu eSIM profilu</translation>
 <translation id="2935654492420446828">Skolas kontu varēs pievienot vēlāk</translation>
@@ -2801,6 +2805,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001144475369593262">Bērnu konti</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Nav pielāgotu taustiņu}=1{Viens pielāgots taustiņš}zero{{COUNT} pielāgotu taustiņu}one{{COUNT} pielāgots taustiņš}other{{COUNT} pielāgoti taustiņi}}</translation>
+<translation id="3002864108328203174">Gemini ekrāna apakšdaļas lapa ir atvērta pusekrāna augstumā.</translation>
 <translation id="3003144360685731741">Vēlamie tīkli</translation>
 <translation id="3003253259757197230">Uzņēmumam Google tiek sūtīti jūsu apmeklētie vietrāži URL, lai prognozētu, kuras vietnes jūs varētu apmeklēt turpmāk, un rādītu jums papildinformāciju par apmeklēto lapu.</translation>
 <translation id="3003623123441819449">CSS kešatmiņa</translation>
@@ -3840,6 +3845,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3756485814916578707">Notiek ekrāna apraide</translation>
 <translation id="3756578970075173856">PIN iestatīšana</translation>
 <translation id="3756806135608816820">Atļaut vietnēm pieprasīt atļauju meklēt Bluetooth ierīces</translation>
+<translation id="3756823472711156529">Atjaunot grupu</translation>
 <translation id="3757567010566591880">Atspraust no rīkjoslas</translation>
 <translation id="3757645900890881944">Meklēšanas rīki</translation>
 <translation id="3757733214359997190">Neviena vietne netika atrasta</translation>
@@ -4811,6 +4817,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4444304522807523469">Piekļūt dokumentu skeneriem, kas pievienoti, izmantojot USB vai lokālajā tīklā</translation>
 <translation id="4444512841222467874">Ja netiks atbrīvota vieta, lietotāji un dati var tikt automātiski noņemti.</translation>
 <translation id="4445446646109808714">Galalietotāja licences līgums: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">Atjaunot dalīto skatu</translation>
 <translation id="4446933390699670756">Spoguļots</translation>
 <translation id="4448560527907365660">Saglabāt un skatīt vairāk</translation>
 <translation id="4449247303975391730">Pārvaldīt atļaujas</translation>
@@ -4944,6 +4951,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4562364000855074606">Bloķējiet šajā ierīcē (<ph name="DEVICE_TYPE" />) instalētās lietotnes. Lai ierobežotu lietotņu vai satura lejupielādi, pārejiet uz Google Play iestatījumiem. <ph name="BEGIN_LINK_LEARN_MORE" />Uzzināt vairāk<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Sākotnējā ievades valoda ir ķīniešu valoda</translation>
 <translation id="4563382028841851106">Noņemt no konta</translation>
+<translation id="4563883094055457792">A&amp;tjaunot dalīto skatu</translation>
 <translation id="4564245002465020751">Iestatīšanas pabeigšana tālrunī</translation>
 <translation id="456449593072900590">Dzēst aizverot</translation>
 <translation id="4565377596337484307">Slēpt paroli</translation>
@@ -5848,6 +5856,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5221516927483787768">Nevar veikt apraidi no vietnes <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Tika bloķēta nedroša lejupielāde</translation>
 <translation id="5222676887888702881">Izrakstīties</translation>
+<translation id="5222710719845250566">Atjaunot logu</translation>
 <translation id="5225324770654022472">Rādīt lietotņu saīsnes</translation>
 <translation id="52254442782792731">Pašreizējais redzamības iestatījums vēl nav iestatīts.</translation>
 <translation id="5225463052809312700">Ieslēgt kameru</translation>
@@ -7216,6 +7225,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6266984048393265562">Pielāgot profilu</translation>
 <translation id="6267166720438879315">Atlasiet sertifikātu, lai autentificētu sevi vietnē <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Atvērt lietotnē <ph name="APP" /></translation>
+<translation id="6269392226729599142">Atjaunot dalīto skatu</translation>
 <translation id="6270309713620950855">Atgādinājums par izslēgtu skaņu</translation>
 <translation id="6270391203985052864">Vietnēs var lūgt atļauju sūtīt paziņojumus</translation>
 <translation id="6270770586500173387">Sūtīt <ph name="BEGIN_LINK1" />sistēmas un lietotņu informāciju<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />metriku<ph name="END_LINK2" /></translation>
@@ -8963,6 +8973,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">Krātuve, enerģija, valoda</translation>
 <translation id="7551059576287086432">Neizdevās lejupielādēt failu <ph name="FILE_NAME" /></translation>
+<translation id="7551303452605464331">A&amp;tjaunot dalīto skatu</translation>
 <translation id="7551643184018910560">Piespraust plauktam</translation>
 <translation id="7552191410769096467">Lai kopīgotu vai pievienotos ciļņu grupām, jums ir jāpierakstās un jāieslēdz sinhronizācija</translation>
 <translation id="7552196109089297786">Izrakstīties no Microsoft</translation>
@@ -11115,6 +11126,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="9087949559523851360">Lietotāja ar ierobežotām iespējām pievienošana</translation>
 <translation id="9088234649737575428">Spraudnis <ph name="PLUGIN_NAME" /> tika bloķēts saskaņā ar uzņēmuma politiku</translation>
 <translation id="90885733430013283">Wi-Fi SSID</translation>
+<translation id="9088578317174654338">Gemini ekrāna apakšdaļas lapa ir aizvērta.</translation>
 <translation id="9089416786594320554">Ievades metodes</translation>
 <translation id="9089959054554410481">Skārienpaliktņa ritināšanas virziena maiņa</translation>
 <translation id="9090044809052745245">Citiem redzamais ierīces nosaukums</translation>

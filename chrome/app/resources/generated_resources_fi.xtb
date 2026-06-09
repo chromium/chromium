@@ -1457,6 +1457,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2039464276165755892">Piilota ilmoitussisältö, kun toinen henkilö havaitaan</translation>
 <translation id="2040460856718599782">Hups! Jotain meni vikaan todennuksen aikana. Tarkista kirjautumistietosi ja yritä uudelleen.</translation>
 <translation id="2040822390690632244">Päivitykset, ohjeet, kehittäjäasetukset</translation>
+<translation id="2040827008689966558">Avaa suljettu jaettu näkymä uudelleen</translation>
 <translation id="2040894699575719559">Sijainti estetty</translation>
 <translation id="2042279886444479655">Aktiiviset profiilit</translation>
 <translation id="2044014337866019681">Avaa istunto varmistamalla, että vahvistamasi tili on <ph name="ACCOUNT" />.</translation>
@@ -4573,6 +4574,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4275397969489577657">Ota tapahtumastreamin kirjaaminen käyttöön</translation>
 <translation id="4275788652681621337">Sulje sivupaneeli</translation>
 <translation id="4275830172053184480">Käynnistä laite uudelleen</translation>
+<translation id="4276390967705106170">Avaa uudella selaimen välilehdellä</translation>
 <translation id="4276598757692536305">Tulostimen PPD</translation>
 <translation id="4277434192562187284">XML-määrityksen lähde</translation>
 <translation id="4278390842282768270">Sallittu</translation>
@@ -5498,6 +5500,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4946998421534856407">käynnistysohjelma + ylänuoli</translation>
 <translation id="4947376546135294974">Data sivustolta, jolla olet</translation>
 <translation id="4949898053053527676">Haullasi ei löytynyt hakutuloksia</translation>
+<translation id="4949954144207118092">Avaa nykyisellä sovelluksen (<ph name="APP_NAME" />) välilehdellä</translation>
 <translation id="4950100687509657457">Luo profiili</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{tiedosto}other{# tiedostoa}}</translation>
 <translation id="495170559598752135">Toiminnot</translation>
@@ -7627,6 +7630,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6563055593659435495">Menetimme yhteyden puhelimeesi. Varmista, että puhelin on lähellä, sen lukitus on avattu ja Bluetooth ja Wi-Fi ovat päällä.</translation>
 <translation id="6564343790052433242">Google Salasanojen on oltava päällä, jotta voit luoda avainkoodin tänne: <ph name="APP_NAME" /></translation>
 <translation id="6565899972286925956">Luo mitä tahansa</translation>
+<translation id="6566648465417201421">Avaa suljettu jaettu näkymä uudelleen</translation>
 <translation id="656679903990115526">Skannaa tämä puhelimella, niin voit tallentaa ja täyttää salasanat automaattisesti ja kirjautua sivustoille ja sovelluksiin helposti</translation>
 <translation id="6568283005472142698">Välilehtihaku</translation>
 <translation id="6569931898053264308">Kohtalaiset säästöt</translation>
@@ -7962,6 +7966,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6805478749741295868">Tämä on kokeellinen tekoälyominaisuus, joka ei välttämättä osu aina oikeaan.</translation>
 <translation id="6805817411033102703">Palaute jaetuista välilehtiryhmistä</translation>
 <translation id="6806089545527108739">Älä salli mutta kysy myöhemmin</translation>
+<translation id="6806123901116522137">Siirry tekoälyinnovaatioihin</translation>
 <translation id="6806781719264274042">Vain kontaktisi, joilla on Google-tili. <ph name="LINK_BEGIN" />Näytä kontaktit<ph name="LINK_END" /></translation>
 <translation id="6808039367995747522">Aseta suojausavain ja kosketa sitä, niin voit jatkaa</translation>
 <translation id="6808166974213191158">ChromeOS Flex ‑järjestelmän näköistiedoston kirjoittaja</translation>
@@ -8615,6 +8620,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7282992757463864530">Tietopalkki</translation>
 <translation id="7283555985781738399">Vierastila</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Laite tallennetaan päiväksi, ja seuraavalla kerralla voit luoda yhteyden ilman koodia. Järjestelmänvalvoja asettaa sen.}other{Laite tallennetaan {DAYS} päiväksi, ja seuraavalla kerralla voit luoda yhteyden ilman koodia. Järjestelmänvalvoja asettaa sen.}}</translation>
+<translation id="7284386549235597598">Tämä lopettaa tehtävän, jonka parissa Gemini tällä hetkellä työskentelee.</translation>
 <translation id="7284411326658527427">Jokainen henkilö voi tehdä tilistään omannäköisen ja pitää datansa yksityisenä.</translation>
 <translation id="7285008278689343502">Grand Tetonin kansallispuisto</translation>
 <translation id="7286867818472074330">Valitse avainkoodi</translation>
@@ -8685,6 +8691,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7336799713063880535">Ilmoitukset estetty</translation>
 <translation id="7337258336304389677">Käytä puhelinta tai tablettia</translation>
 <translation id="7339052793671338107">Sivupaneelin rajauskahva (vedettävä)</translation>
+<translation id="733918220174231019">Jatka lopettamalla tehtävä</translation>
 <translation id="7339763383339757376">PKCS #7, yksittäinen varmenne</translation>
 <translation id="7339785458027436441">Tarkista oikeinkirjoitus kirjoittaessa</translation>
 <translation id="7339898014177206373">Uusi ikkuna</translation>
@@ -8835,6 +8842,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7432200167665670017">Järjestelmänvalvojasi on estänyt "<ph name="EXTENSION_NAME" />" – sovellustunnus <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Arkistoi</translation>
 <translation id="7433333862363162673">Tyhjennä valinta ‑pikanäppäin</translation>
+<translation id="7433495118028038748">Kyllä, lopeta tehtävä</translation>
 <translation id="7433957986129316853">Säilytä</translation>
 <translation id="7434100547946193426">Muut sovellukset</translation>
 <translation id="7434509671034404296">Kehittäjille</translation>

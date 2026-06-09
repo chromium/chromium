@@ -187,6 +187,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1125550662859510761">Duket si <ph name="WIDTH" /> x <ph name="HEIGHT" /> (origjinale)</translation>
 <translation id="1125816658532547876">Përdor fjalëkalimet e tua në <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Imazhi i sfondit dhe stili</translation>
+<translation id="1126475802377716263">{0,plural, =1{Po ndahet 1 skedë}other{Po ndahen # skeda}}</translation>
 <translation id="1126696498560056882">Menaxho llogaritë në këtë pajisje</translation>
 <translation id="1128591060186966949">Redakto motorin e kërkimit</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -1753,6 +1754,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2263679799334060788">Komentet e tua na ndihmojnë të përmirësojmë Google Cast dhe ne i vlerësojmë shumë ato.
 Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph name="BEGIN_LINK" />qendra e ndihmës<ph name="END_LINK" />.</translation>
 <translation id="22649924370461580">Grupet e ruajtura të skedave</translation>
+<translation id="2265924028278810827">Aplikacioni mëmë: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">IPP përmes USB-së (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth-i u çaktivizua</translation>
 <translation id="2268182915828370037">Të çaktivizohet sinkronizimi i skedarëve?</translation>
@@ -1948,6 +1950,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2406942743794219791">Konfirmo motorin e parazgjedhur të kërkimit që dëshiron</translation>
 <translation id="2407671304279211586">Zgjidh ofruesin e DNS-së</translation>
 <translation id="2408018932941436077">Po ruhet karta</translation>
+<translation id="2408601796549249241">"Fleta e poshtme" e Gemini në lartësi të plotë</translation>
 <translation id="2408762424059547338">Të mbron më mirë nga sulmet duke e çaktivizuar optimizimin e JavaScript</translation>
 <translation id="2408955596600435184">Fut kodin PIN</translation>
 <translation id="2409378541210421746">Modifiko zgjedhjen e gjuhës</translation>
@@ -2704,6 +2707,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2932483646085333864">Dil dhe identifikohu përsëri për të nisur sinkronizimin</translation>
 <translation id="2932883381142163287">Raporto abuzim</translation>
 <translation id="2933632078076743449">Përditësimi i fundit</translation>
+<translation id="2933653107553951760">Restauro grupin</translation>
 <translation id="2934225044529065415">Nuk mund të qasesh te kamera</translation>
 <translation id="2935314715123552088">Çaktivizo profilin aktiv të kartës eSIM</translation>
 <translation id="2935654492420446828">Shto një llogari shkolle më vonë</translation>
@@ -2798,6 +2802,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3000461861112256445">Audioja mono</translation>
 <translation id="3001144475369593262">Llogaritë e fëmijëve</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Asnjë tast i personalizuar}=1{1 tast i personalizuar}other{{COUNT} taste të personalizuara}}</translation>
+<translation id="3002864108328203174">"Fleta e poshtme" e Gemini në gjysmë lartësi.</translation>
 <translation id="3003144360685731741">Rrjetet e preferuara</translation>
 <translation id="3003253259757197230">URL-të që viziton dërgohen te Google për të parashikuar sajtet që mund të vizitosh në vijim dhe për të shfaqur informacione shtesë për faqen që po viziton ti</translation>
 <translation id="3003623123441819449">Memoria specifike e CSS-së</translation>
@@ -3839,6 +3844,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3756485814916578707">Ekrani po transmetohet</translation>
 <translation id="3756578970075173856">Cakto kodin PIN</translation>
 <translation id="3756806135608816820">Sajtet mund të pyesin që të kërkojnë për pajisjet me Bluetooth</translation>
+<translation id="3756823472711156529">Restauro grupin</translation>
 <translation id="3757567010566591880">Zhgozhdo nga shiriti i veglave</translation>
 <translation id="3757645900890881944">Kërko veglat</translation>
 <translation id="3757733214359997190">Nuk u gjet asnjë sajt</translation>
@@ -4810,6 +4816,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4444304522807523469">Qasu te skanerët e dokumenteve të lidhur me USB ose në rrjetin lokal</translation>
 <translation id="4444512841222467874">Nëse nuk është bërë e disponueshme hapësira, përdoruesit dhe të dhënat mund të hiqen automatikisht.</translation>
 <translation id="4445446646109808714">Marrëveshja për licencën e përdoruesit fundor: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">Restauro pamjen e ndarë</translation>
 <translation id="4446933390699670756">I pasqyruar</translation>
 <translation id="4448560527907365660">Ruaj dhe shiko më shumë</translation>
 <translation id="4449247303975391730">Menaxho lejet</translation>
@@ -4943,6 +4950,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4562364000855074606">Blloko aplikacionet e instaluara në këtë <ph name="DEVICE_TYPE" />. Për të kufizuar shkarkimin e aplikacioneve ose përmbajtjeve, shko te "Cilësimet" e Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Gjuha fillestare e hyrjes është kinezishtja</translation>
 <translation id="4563382028841851106">Hiq nga llogaria</translation>
+<translation id="4563883094055457792">Restauro pamjen e ndarë</translation>
 <translation id="4564245002465020751">Përfundo konfigurimin në telefonin tënd</translation>
 <translation id="456449593072900590">Fshi në dalje</translation>
 <translation id="4565377596337484307">Fshih fjalëkalimin</translation>
@@ -5846,6 +5854,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> nuk mund të transmetohet</translation>
 <translation id="5222403284441421673">Një shkarkim i pasigurt u bllokua</translation>
 <translation id="5222676887888702881">Dil</translation>
+<translation id="5222710719845250566">Restauro dritaren</translation>
 <translation id="5225324770654022472">Shfaq shkurtoren e aplikacioneve</translation>
 <translation id="52254442782792731">Cilësimi aktual i dukshmërisë nuk është caktuar ende</translation>
 <translation id="5225463052809312700">Aktivizo kamerën</translation>
@@ -7217,6 +7226,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6266984048393265562">Personalizo profilin</translation>
 <translation id="6267166720438879315">Zgjidh një certifikatë për të verifikuar veten te <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Hape me <ph name="APP" /></translation>
+<translation id="6269392226729599142">Restauro "Pamjen e ndarë"</translation>
 <translation id="6270309713620950855">Shtyrja e vendosjes në heshtje</translation>
 <translation id="6270391203985052864">Sajtet mund të kërkojnë të dërgojnë njoftime</translation>
 <translation id="6270770586500173387">Dërgo <ph name="BEGIN_LINK1" />informacionet e sistemit dhe të aplikacionit<ph name="END_LINK1" />, si dhe <ph name="BEGIN_LINK2" />metrikën<ph name="END_LINK2" /></translation>
@@ -8959,6 +8969,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">Hapësira ruajtëse, energjia, gjuha</translation>
 <translation id="7551059576287086432">Shkarkimi i <ph name="FILE_NAME" /> nuk u krye me sukses</translation>
+<translation id="7551303452605464331">Restauro "Pamjen e ndarë"</translation>
 <translation id="7551643184018910560">Gozhdo në raft</translation>
 <translation id="7552191410769096467">Për të ndarë ose për t'u bashkuar në grupet e skedave, duhet të identifikohesh dhe të aktivizosh sinkronizimin</translation>
 <translation id="7552196109089297786">Dil nga Microsoft</translation>
@@ -11111,6 +11122,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9087949559523851360">Shto përdorues të kufizuar</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> është bllokuar nga politika e ndërmarrjes</translation>
 <translation id="90885733430013283">Identifikuesi SSID i WiFi</translation>
+<translation id="9088578317174654338">"Fleta e poshtme" e Gemini u mbyll.</translation>
 <translation id="9089416786594320554">Metodat e hyrjes</translation>
 <translation id="9089959054554410481">Ndrysho drejtimin e lëvizjes së bllokut me prekje</translation>
 <translation id="9090044809052745245">Si u shfaqet të tjerëve pajisja jote</translation>
