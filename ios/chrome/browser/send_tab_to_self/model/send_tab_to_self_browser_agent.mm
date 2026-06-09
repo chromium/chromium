@@ -23,11 +23,14 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/send_tab_to_self/model/ios_send_tab_to_self_infobar_delegate.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_load_navigation_user_data.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -69,10 +72,23 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
       model_(
           SendTabToSelfSyncServiceFactory::GetForProfile(browser_->GetProfile())
               ->GetSendTabToSelfModel()) {
+  browser_observation_.Observe(browser_);
   model_observation_.Observe(model_.get());
+  UrlLoadingNotifierBrowserAgent* loading_notifier =
+      UrlLoadingNotifierBrowserAgent::FromBrowser(browser_);
+  if (loading_notifier) {
+    url_loading_observation_.Observe(loading_notifier);
+  }
 }
 
 SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() = default;
+
+void SendTabToSelfBrowserAgent::BrowserDestroyed(Browser* browser) {
+  url_loading_observation_.Reset();
+  model_observation_.Reset();
+  browser_observation_.Reset();
+  CleanUpObserversAndVariables();
+}
 
 void SendTabToSelfBrowserAgent::OnEntriesAddedRemotely(
     base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries) {
@@ -189,4 +205,19 @@ void SendTabToSelfBrowserAgent::CleanUpObserversAndVariables() {
 
   web_state_observation_.Reset();
   pending_web_state_ = nullptr;
+}
+
+void SendTabToSelfBrowserAgent::TabWillLoadUrl(
+    const UrlLoadParams& params,
+    base::WeakPtr<web::WebState> web_state) {
+  if (!web_state) {
+    return;
+  }
+  // Always remove old data to ensure we don't use stale GUIDs.
+  SendTabToSelfLoadNavigationUserData::RemoveFromWebState(web_state.get());
+
+  if (params.is_from_send_tab_to_self()) {
+    SendTabToSelfLoadNavigationUserData::CreateForWebState(
+        web_state.get(), params.send_tab_to_self_entry_guid);
+  }
 }

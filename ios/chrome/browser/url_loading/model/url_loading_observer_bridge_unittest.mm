@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_observer.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_observer_bridge.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -67,12 +68,15 @@ class UrlLoadingObserverBridgeTest : public PlatformTest {
 // Tests `TabWillLoadUrl` forwarding.
 TEST_F(UrlLoadingObserverBridgeTest, TabWillLoadUrl) {
   const GURL url(kTestUrl);
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(url);
+  params.web_params.transition_type = ui::PageTransition::PAGE_TRANSITION_TYPED;
+
   auto web_state = std::make_unique<web::FakeWebState>();
-  OCMExpect([observer() tabWillLoadURL:url
+  OCMExpect([observer() tabWillLoadURL:params.web_params.url
                         transitionType:ui::PageTransition::PAGE_TRANSITION_TYPED
                               webState:web_state->GetWeakPtr()]);
-  url_loading_notifier()->TabWillLoadUrl(
-      url, ui::PageTransition::PAGE_TRANSITION_TYPED, web_state->GetWeakPtr());
+
+  url_loading_notifier()->TabWillLoadUrl(params, web_state->GetWeakPtr());
   EXPECT_OCMOCK_VERIFY(observer());
 }
 

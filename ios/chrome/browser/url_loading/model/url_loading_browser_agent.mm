@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_load_navigation_user_data.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -264,8 +263,7 @@ void UrlLoadingBrowserAgent::LoadUrlInTab(const UrlLoadParams& params,
 
   ProfileIOS* profile = browser_->GetProfile();
 
-  notifier_->TabWillLoadUrl(web_params.url, web_params.transition_type,
-                            web_state);
+  notifier_->TabWillLoadUrl(params, web_state);
 
   // NOTE: This check for the Crash Host URL is here to avoid the URL from
   // ending up in the history causing the app to crash at every subsequent
@@ -350,16 +348,6 @@ void UrlLoadingBrowserAgent::LoadUrlInTab(const UrlLoadParams& params,
   }
 
   target_web_state->GetNavigationManager()->LoadURLWithParams(web_params);
-
-  // Send Tab to Self navigations require a reliable way to be identified later
-  // in the navigation lifecycle for handling things like scroll restoration and
-  // form filling. We attach this user data to the WebState here.
-  // TODO(crbug.com/519101926): Consider using UrlLoadingObserver to encapsulate
-  // this.
-  if (params.is_from_send_tab_to_self()) {
-    SendTabToSelfLoadNavigationUserData::CreateForWebState(
-        target_web_state, params.send_tab_to_self_entry_guid);
-  }
 
   notifier_->TabDidLoadUrl(web_params.url, web_params.transition_type,
                            web_state);
@@ -541,16 +529,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(
   web::WebState* web_state =
       insertion_agent->InsertWebState(params.web_params, insertion_params);
 
-  // Send Tab to Self navigations require a reliable way to be identified later
-  // in the navigation lifecycle for handling things like scroll restoration and
-  // form filling. We attach this user data to the WebState here because it is
-  // the exact moment the tab is created for the STTS action.
-  // TODO(crbug.com/519101926): Consider using UrlLoadingObserver to encapsulate
-  // this.
-  if (params.is_from_send_tab_to_self()) {
-    SendTabToSelfLoadNavigationUserData::CreateForWebState(
-        web_state, params.send_tab_to_self_entry_guid);
-  }
+  notifier_->TabWillLoadUrl(params, web_state->GetWeakPtr());
 
   // If the tab was created as "unrealized" (e.g. `instant_load`
   // being false) then do not force a load. The tab will load

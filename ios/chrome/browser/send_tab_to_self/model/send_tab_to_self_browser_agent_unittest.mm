@@ -16,6 +16,7 @@
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_load_navigation_user_data.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -23,6 +24,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -58,6 +61,7 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_scene_commands_
                      forProtocol:@protocol(SceneCommands)];
+    UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     SendTabToSelfBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = SendTabToSelfBrowserAgent::FromBrowser(browser_.get());
     model_ = static_cast<FakeSendTabToSelfModel*>(
@@ -253,6 +257,41 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteRemovePending) {
 
   // No infobar should be added since the pending entry was removed.
   EXPECT_EQ(0UL, infobar_manager->infobars().size());
+}
+
+// Tests that SendTabToSelfLoadNavigationUserData is correctly attached or
+// detached when TabWillLoadUrl is triggered.
+TEST_F(SendTabToSelfBrowserAgentTest, TestTabWillLoadUrl) {
+  web::WebState* web_state = AppendNewWebState(GURL("http://www.blank.com"));
+
+  // 1. Trigger with non-STTS parameters. No user data should be attached.
+  UrlLoadParams params =
+      UrlLoadParams::InCurrentTab(GURL("http://www.test.com"));
+  EXPECT_FALSE(params.is_from_send_tab_to_self());
+  UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get())
+      ->TabWillLoadUrl(params, web_state->GetWeakPtr());
+  EXPECT_EQ(nullptr,
+            SendTabToSelfLoadNavigationUserData::FromWebState(web_state));
+
+  // 2. Trigger with STTS parameters. User data should be attached.
+  UrlLoadParams stts_params =
+      UrlLoadParams::InCurrentTab(GURL("http://www.test.com"));
+  stts_params.send_tab_to_self_entry_guid = "stts_guid_123";
+  EXPECT_TRUE(stts_params.is_from_send_tab_to_self());
+  UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get())
+      ->TabWillLoadUrl(stts_params, web_state->GetWeakPtr());
+
+  SendTabToSelfLoadNavigationUserData* user_data =
+      SendTabToSelfLoadNavigationUserData::FromWebState(web_state);
+  ASSERT_NE(nullptr, user_data);
+  EXPECT_EQ("stts_guid_123", user_data->entry_guid());
+
+  // 3. Trigger again with non-STTS parameters. The existing user data should be
+  // removed.
+  UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get())
+      ->TabWillLoadUrl(params, web_state->GetWeakPtr());
+  EXPECT_EQ(nullptr,
+            SendTabToSelfLoadNavigationUserData::FromWebState(web_state));
 }
 
 }  // anonymous namespace

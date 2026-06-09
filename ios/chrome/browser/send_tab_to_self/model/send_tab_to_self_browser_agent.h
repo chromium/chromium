@@ -13,9 +13,14 @@
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/send_tab_to_self/send_tab_to_self_model_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_observer.h"
 #import "ios/web/public/web_state_observer.h"
+
+class UrlLoadingNotifierBrowserAgent;
+struct UrlLoadParams;
 
 namespace web {
 class WebState;
@@ -35,9 +40,14 @@ class SendTabToSelfBrowserAgent
     : public BrowserUserData<SendTabToSelfBrowserAgent>,
       public send_tab_to_self::SendTabToSelfModelObserver,
       public WebStateListObserver,
-      public web::WebStateObserver {
+      public web::WebStateObserver,
+      public UrlLoadingObserver,
+      public BrowserObserver {
  public:
   ~SendTabToSelfBrowserAgent() override;
+
+  // BrowserObserver::
+  void BrowserDestroyed(Browser* browser) override;
 
   // SendTabToSelfModelObserver::
 
@@ -58,6 +68,10 @@ class SendTabToSelfBrowserAgent
   // WebStateObserver::
   void WasShown(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
+
+  // UrlLoadingObserver::
+  void TabWillLoadUrl(const UrlLoadParams& params,
+                      base::WeakPtr<web::WebState> web_state) override;
 
  private:
   friend class BrowserUserData<SendTabToSelfBrowserAgent>;
@@ -80,6 +94,11 @@ class SendTabToSelfBrowserAgent
 
   // The WebState that is being observed for activation, if any.
   raw_ptr<web::WebState> pending_web_state_ = nullptr;
+
+  base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};
+
+  base::ScopedObservation<UrlLoadingNotifierBrowserAgent, UrlLoadingObserver>
+      url_loading_observation_{this};
 
   base::ScopedObservation<WebStateList, WebStateListObserver>
       web_state_list_observation_{this};

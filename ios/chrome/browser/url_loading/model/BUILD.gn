@@ -39,7 +39,6 @@ source_set("model") {
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
-    "//ios/chrome/browser/send_tab_to_self/model:user_data",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/state",

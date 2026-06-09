@@ -14,6 +14,8 @@ namespace web {
 class WebState;
 }  // namespace web
 
+struct UrlLoadParams;
+
 // Observer used to update listeners of change of state in url loading.
 class UrlLoadingObserver : public base::CheckedObserver {
  public:
@@ -21,6 +23,12 @@ class UrlLoadingObserver : public base::CheckedObserver {
   UrlLoadingObserver& operator=(const UrlLoadingObserver&) = delete;
 
   ~UrlLoadingObserver() override;
+
+  // The loader will load a URL with the given parameters in the given tab.
+  // The default implementation delegates to the GURL version of this method
+  // for backward compatibility.
+  virtual void TabWillLoadUrl(const UrlLoadParams& params,
+                              base::WeakPtr<web::WebState> web_state);
 
   // The loader will load `URL` in the given tab. Next state will be
   // one of: tabFailedToLoadURL, tabDidPrerenderURL,

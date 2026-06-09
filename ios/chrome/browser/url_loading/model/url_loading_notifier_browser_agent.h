@@ -15,6 +15,7 @@ namespace web {
 class WebState;
 }
 
+struct UrlLoadParams;
 class UrlLoadingObserver;
 
 // A class containing static functions to notify observers of url loading
@@ -35,11 +36,8 @@ class UrlLoadingNotifierBrowserAgent
   // Removes `observer` from the list of observers.
   void RemoveObserver(UrlLoadingObserver* observer);
 
-  // The loader will load `url` in the given tab. Next state will be
-  // one of: TabFailedToLoadUrl, TabDidPrerenderUrl,
-  // TabDidReloadUrl or TabDidLoadUrl.
-  void TabWillLoadUrl(const GURL& url,
-                      ui::PageTransition transition_type,
+  // The loader will load a URL with the given parameters in the given tab.
+  void TabWillLoadUrl(const UrlLoadParams& params,
                       base::WeakPtr<web::WebState> web_state);
 
   // The loader didn't succeed loading the requested `url` in the given tab.
