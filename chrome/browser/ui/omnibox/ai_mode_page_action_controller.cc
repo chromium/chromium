@@ -11,6 +11,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -25,6 +26,9 @@
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "components/favicon/core/favicon_service.h"
+#include "components/favicon_base/favicon_types.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_client.h"
@@ -330,6 +334,19 @@ void AiModePageActionController::OnFaviconFetchedFromNetwork(SkBitmap bitmap) {
     Hide(IconSource::kFailedIcon);
     return;
   }
+
+  // Store fetched icon into favicon cache.
+  const auto& config = ai_mode_button_config::GetCurrentAiModeButtonConfig();
+  GURL favicon_url(config.favicon_url);
+  favicon::FaviconService* favicon_service =
+      FaviconServiceFactory::GetForProfile(base::to_address(profile_),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  if (favicon_service) {
+    favicon_service->SetFavicons({favicon_url}, favicon_url,
+                                 favicon_base::IconType::kFavicon,
+                                 gfx::Image::CreateFrom1xBitmap(bitmap));
+  }
+
   gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
   ShowAndOverrideImage(SizedImageModel(gfx::Image(image_skia)),
                        IconSource::kNetworkFetch);
