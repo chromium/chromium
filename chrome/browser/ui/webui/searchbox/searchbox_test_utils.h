@@ -100,7 +100,7 @@ class MockSearchboxPage : public searchbox::mojom::Page {
   MOCK_METHOD(void, UpdateAimPopupEligibility, (bool eligible), (override));
   MOCK_METHOD(void, UpdateContentSharingPolicy, (bool enabled), (override));
   MOCK_METHOD(void,
-              OnEmbeddedPermissionPromptChanged,
+              OnPermissionPromptChanged,
               (bool, const gfx::Size&),
               (override));
   MOCK_METHOD(void,

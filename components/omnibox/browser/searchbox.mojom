@@ -535,8 +535,8 @@ interface Page {
 
   // Notifies the size of the permission prompt and that it is
   // showing or being hidden.
-  OnEmbeddedPermissionPromptChanged(
-      bool is_showing, gfx.mojom.Size prompt_size);
+  OnPermissionPromptChanged(bool is_showing,
+                            gfx.mojom.Size prompt_size);
 
   // Sets the tab IDs that should be shown as selected before tabs are selected.
   SetRestoredTabIds(array<int32> ids);

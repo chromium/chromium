@@ -1431,7 +1431,7 @@ void SearchboxHandler::OnPermissionPromptChanged(bool is_showing,
                              height > 0 ? height + kPromptHeightBuffer : 0);
   }
 
-  page_->OnEmbeddedPermissionPromptChanged(is_showing, size_with_buffer);
+  page_->OnPermissionPromptChanged(is_showing, size_with_buffer);
 
   if (omnibox_delegate_) {
     omnibox_delegate_->OnEmbeddedPermissionDialogChanged(is_showing,

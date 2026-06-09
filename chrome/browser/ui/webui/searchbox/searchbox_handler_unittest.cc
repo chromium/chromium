@@ -186,14 +186,14 @@ class MockSearchboxHandlerDelegate : public SearchboxHandler::Delegate {
 };
 }  // namespace
 
-TEST_F(RealboxHandlerTest, OnEmbeddedPermissionPromptChanged) {
+TEST_F(RealboxHandlerTest, OnPermissionPromptChanged) {
   MockSearchboxHandlerDelegate delegate;
   handler_->set_delegate(&delegate);
 
   // Case: is_showing=true, non-zero size (adds buffer)
   {
-    EXPECT_CALL(page_, OnEmbeddedPermissionPromptChanged(
-                           true, gfx::Size(100 + 40, 200 + 40)));
+    EXPECT_CALL(page_,
+                OnPermissionPromptChanged(true, gfx::Size(100 + 40, 200 + 40)));
     EXPECT_CALL(delegate, OnEmbeddedPermissionDialogChanged(
                               true, gfx::Size(100 + 40, 200 + 40)));
     handler_->OnPermissionPromptChanged(true, gfx::Size(100, 200));
@@ -204,8 +204,7 @@ TEST_F(RealboxHandlerTest, OnEmbeddedPermissionPromptChanged) {
 
   // Case: is_showing=true, zero size (does not add buffer)
   {
-    EXPECT_CALL(page_,
-                OnEmbeddedPermissionPromptChanged(true, gfx::Size(0, 0)));
+    EXPECT_CALL(page_, OnPermissionPromptChanged(true, gfx::Size(0, 0)));
     EXPECT_CALL(delegate,
                 OnEmbeddedPermissionDialogChanged(true, gfx::Size(0, 0)));
     handler_->OnPermissionPromptChanged(true, gfx::Size(0, 0));
@@ -216,8 +215,7 @@ TEST_F(RealboxHandlerTest, OnEmbeddedPermissionPromptChanged) {
 
   // Case: is_showing=false, non-zero size (does not add buffer, size is 0, 0)
   {
-    EXPECT_CALL(page_,
-                OnEmbeddedPermissionPromptChanged(false, gfx::Size(0, 0)));
+    EXPECT_CALL(page_, OnPermissionPromptChanged(false, gfx::Size(0, 0)));
     EXPECT_CALL(delegate,
                 OnEmbeddedPermissionDialogChanged(false, gfx::Size(0, 0)));
     handler_->OnPermissionPromptChanged(false, gfx::Size(100, 200));
@@ -228,8 +226,7 @@ TEST_F(RealboxHandlerTest, OnEmbeddedPermissionPromptChanged) {
 
   // Case: is_showing=false, zero size (does not add buffer, size is 0, 0)
   {
-    EXPECT_CALL(page_,
-                OnEmbeddedPermissionPromptChanged(false, gfx::Size(0, 0)));
+    EXPECT_CALL(page_, OnPermissionPromptChanged(false, gfx::Size(0, 0)));
     EXPECT_CALL(delegate,
                 OnEmbeddedPermissionDialogChanged(false, gfx::Size(0, 0)));
     handler_->OnPermissionPromptChanged(false, gfx::Size(0, 0));

@@ -950,8 +950,7 @@ suite('ComposeboxVoiceSearch', () => {
             composeboxElement['searchboxCallbackRouter_'];
         assertTrue(!!pageCallbackRouter);
         const pageRemote = pageCallbackRouter.$.bindNewPipeAndPassRemote();
-        pageRemote.onEmbeddedPermissionPromptChanged(
-            true, {width: 0, height: 0});
+        pageRemote.onPermissionPromptChanged(true, {width: 0, height: 0});
         await pageRemote.$.flushForTesting();
         await microtasksFinished();
 
@@ -988,8 +987,7 @@ suite('ComposeboxVoiceSearch', () => {
             'Voice search should remain active');
 
         // Simulate Mojo notification: prompt is closed
-        pageRemote.onEmbeddedPermissionPromptChanged(
-            false, {width: 0, height: 0});
+        pageRemote.onPermissionPromptChanged(false, {width: 0, height: 0});
         await pageRemote.$.flushForTesting();
         await microtasksFinished();
 

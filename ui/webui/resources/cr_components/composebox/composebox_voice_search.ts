@@ -295,8 +295,8 @@ export class ComposeboxVoiceSearchElement extends
     if (changedProperties.has('pageCallbackRouter') &&
         this.pageCallbackRouter && this.listenerIds_.length === 0) {
       this.listenerIds_.push(
-          this.pageCallbackRouter.onEmbeddedPermissionPromptChanged.addListener(
-              this.onEmbeddedVoicePermissionPromptChanged.bind(this)),
+          this.pageCallbackRouter.onPermissionPromptChanged.addListener(
+              this.onVoicePermissionPromptChanged.bind(this)),
       );
     }
   }
@@ -349,7 +349,7 @@ export class ComposeboxVoiceSearchElement extends
       }
 
       // Add a timeout before calling `stop()`. This gives a small delay for
-      // `onEmbeddedVoicePermissionPromptChanged` to run after any setup lag
+      // `onVoicePermissionPromptChanged` to run after any setup lag
       // (~15ms). This way, it is certain that this blur event is not due to
       // a permission prompt popping up.
       this.blurTimeoutId_ = WindowProxy.getInstance().setTimeout(() => {
@@ -393,8 +393,7 @@ export class ComposeboxVoiceSearchElement extends
     this.voiceModeEndCleanup_();
   }
 
-  private onEmbeddedVoicePermissionPromptChanged(
-      isOpened: boolean, promptSize: Size) {
+  private onVoicePermissionPromptChanged(isOpened: boolean, promptSize: Size) {
     // Track the state for the blur event handler to ignore if
     // permission prompt open.
     this.isPermissionPromptOpen_ = isOpened;
