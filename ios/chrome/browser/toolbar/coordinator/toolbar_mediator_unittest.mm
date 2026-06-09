@@ -560,14 +560,84 @@ TEST_P(ToolbarMediatorTest, TestTabGridMenu_IncognitoDisabled) {
   ASSERT_NE(nil, capturedMenu);
 
   // Verify the menu items.
-  // The menu should have "New Incognito Tab" (disabled) and "Close Current
-  // Tab".
-  ASSERT_EQ(2U, capturedMenu.children.count);
+  // The menu should have "Close Current Tab", "New Tab", and "New Incognito
+  // Tab" (disabled).
+  ASSERT_EQ(3U, capturedMenu.children.count);
 
   UIAction* openNewTabAction = (UIAction*)capturedMenu.children[0];
-  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB),
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB),
               openNewTabAction.title);
-  EXPECT_EQ(UIMenuElementAttributesDisabled, openNewTabAction.attributes);
+
+  UIAction* openNewIncognitoTabAction = (UIAction*)capturedMenu.children[1];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB),
+              openNewIncognitoTabAction.title);
+  EXPECT_EQ(UIMenuElementAttributesDisabled,
+            openNewIncognitoTabAction.attributes);
+
+  UIAction* closeTabAction = (UIAction*)capturedMenu.children[2];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB),
+              closeTabAction.title);
+
+  [local_mediator disconnect];
+}
+
+// Tests that the TabGrid button menu contains "Close Tab", "New Tab", and "New
+// Incognito Tab" actions, and that none are disabled when incognito is allowed.
+TEST_P(ToolbarMediatorTest, TestTabGridMenu_IncognitoEnabled) {
+  // Create a mediator.
+  BrowserActionFactory* action_factory =
+      [[BrowserActionFactory alloc] initWithBrowser:browser_.get()
+                                           scenario:kTestMenuScenario];
+  ToolbarMediator* local_mediator = [[ToolbarMediator alloc]
+                 initWithIncognito:NO
+                      webStateList:browser_->GetWebStateList()
+                     actionFactory:action_factory
+                       prefService:profile_->GetTestingPrefService()
+              fullscreenController:TestFullscreenController::FromBrowser(
+                                       browser_.get())
+                       topPosition:GetParam()
+      defaultBrowserBannerAppAgent:nil
+             authenticationService:nil
+                     geminiService:nil
+                geminiBrowserAgent:nil];
+
+  // We need an active web state for updateConsumerWithWebState to do anything.
+  browser_->GetWebStateList()->InsertWebState(
+      CreateWebState(), WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  id local_consumer = OCMProtocolMock(@protocol(ToolbarConsumer));
+
+  __block UIMenu* capturedMenu = nil;
+  OCMExpect([local_consumer setMenu:[OCMArg checkWithBlock:^BOOL(id obj) {
+                              capturedMenu = obj;
+                              return YES;
+                            }]
+                      forButtonType:ToolbarButtonTypeTabGrid]);
+
+  [local_mediator setConsumer:local_consumer];
+
+  EXPECT_OCMOCK_VERIFY(local_consumer);
+  ASSERT_NE(nil, capturedMenu);
+
+  // Verify the menu items.
+  // The menu should have "Close Current Tab", "New Tab", and "New Incognito
+  // Tab" (enabled).
+  ASSERT_EQ(3U, capturedMenu.children.count);
+
+  UIAction* openNewTabAction = (UIAction*)capturedMenu.children[0];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB),
+              openNewTabAction.title);
+  EXPECT_EQ(0U, openNewTabAction.attributes);
+
+  UIAction* openNewIncognitoTabAction = (UIAction*)capturedMenu.children[1];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB),
+              openNewIncognitoTabAction.title);
+  EXPECT_EQ(0U, openNewIncognitoTabAction.attributes);
+
+  UIAction* closeTabAction = (UIAction*)capturedMenu.children[2];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB),
+              closeTabAction.title);
+  EXPECT_EQ(UIMenuElementAttributesDestructive, closeTabAction.attributes);
 
   [local_mediator disconnect];
 }
