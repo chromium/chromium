@@ -12,7 +12,6 @@ import {DROP_POSITION_ATTR, DropPosition} from 'chrome://bookmarks-side-panel.to
 import type {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -108,7 +107,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
     delegate = app.$.bookmarksList;
 
     await bookmarksApi.whenCalled('getAllBookmarks');
-    await flushTasks();
+    await microtasksFinished();
   });
 
   test('DragStartCallsAPI', () => {

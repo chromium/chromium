@@ -14,9 +14,8 @@ import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/pag
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createTestBookmarks, getBookmarkWithId, initializeAppUi} from './power_bookmarks_app_test_util.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -82,7 +81,7 @@ suite('MigrateUiChangesUseBrowserEditDialog', () => {
         new MouseEvent('click'),
         [getBookmarkWithId(powerBookmarksApp, bookmarkId)!], false, false,
         false, 1);
-    await waitAfterNextRender(contextMenu);
+    await microtasksFinished();
 
     // Get the edit option in the menu.
     const menuItems = contextMenu.shadowRoot.querySelectorAll('.dropdown-item');
@@ -95,7 +94,7 @@ suite('MigrateUiChangesUseBrowserEditDialog', () => {
     // Click on edit and wait for the call to propagate.
     editItem.click();
     await editClicked;
-    await flushTasks();
+    await microtasksFinished();
 
     // The native edit dialog is opened.
     assertEquals(1, bookmarksApi.getCallCount('contextMenuEdit'));
@@ -117,7 +116,7 @@ suite('MigrateUiChangesUseBrowserEditDialog', () => {
     // Open the context menu.
     contextMenu.showAtPosition(
         new MouseEvent('click'), bookmarks, false, false, false, 1);
-    await waitAfterNextRender(contextMenu);
+    await microtasksFinished();
 
     // Get the move option in the menu.
     const menuItems = contextMenu.shadowRoot.querySelectorAll('.dropdown-item');
@@ -131,7 +130,7 @@ suite('MigrateUiChangesUseBrowserEditDialog', () => {
     // Click on move and wait for the call to propagate.
     moveItem.click();
     await editClicked;
-    await flushTasks();
+    await microtasksFinished();
 
     // The native move dialog is opened.
     assertEquals(1, bookmarksApi.getCallCount('contextMenuMove'));

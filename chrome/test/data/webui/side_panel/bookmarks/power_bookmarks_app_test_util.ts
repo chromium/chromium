@@ -9,8 +9,7 @@ import type {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-ch
 import type {PowerBookmarkRowItemElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row_item.js';
 import type {PowerBookmarksAppElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import type {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
@@ -140,7 +139,6 @@ export async function initializeAppUi(bookmarksApi: TestBookmarksApiProxy):
   document.body.appendChild(parentElement);
 
   await bookmarksApi.whenCalled('getAllBookmarks');
-  await waitAfterNextRender(element.$.bookmarksList);
-  flush();
+  await microtasksFinished();
   return element;
 }

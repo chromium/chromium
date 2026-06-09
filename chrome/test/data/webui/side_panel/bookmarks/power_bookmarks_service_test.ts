@@ -13,9 +13,9 @@ import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/pag
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserProxy as TestShoppingServiceApiProxy} from './commerce/test_shopping_service_api_proxy.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -399,7 +399,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     const changedBookmark = folders[0]!.children![0]!;
     bookmarksApi.callbackRouterRemote.onBookmarkNodeChanged(
         changedBookmark.id, 'New title', 'http://new/url');
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(delegate.getCallCount('onBookmarkChanged'), 1);
   });
@@ -416,7 +416,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
       dateLastUsed: null,
       unmodifiable: false,
     });
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(delegate.getCallCount('onBookmarkAdded'), 1);
   });
@@ -431,14 +431,14 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
         /*parentId=*/ folders[0]!.id,  // Moving to other bookmarks.
         /*index=*/ 0,
     );
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(delegate.getCallCount('onBookmarkMoved'), 1);
   });
 
   test('CallsOnBookmarkNodesRemoved', async () => {
     bookmarksApi.callbackRouterRemote.onBookmarkNodesRemoved(['3', '4']);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(delegate.getCallCount('onBookmarkRemoved'), 2);
   });
@@ -469,7 +469,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     ]);
 
     assertEquals(imageServiceHandler.getCallCount('getPageImageUrl'), 2);
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(imageServiceHandler.getCallCount('getPageImageUrl'), 3);
   });
 
@@ -483,7 +483,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
 
     bookmarksApi.callbackRouterRemote.onBookmarkParentFolderChildrenReordered(
         'SIDE_PANEL_OTHER_BOOKMARKS_ID', ['4', '5', '3']);
-    await flushTasks();
+    await microtasksFinished();
 
     assertDeepEquals(folder.children!, [b4, b5, b3]);
   });

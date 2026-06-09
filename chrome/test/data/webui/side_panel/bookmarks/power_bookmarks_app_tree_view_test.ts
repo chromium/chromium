@@ -13,11 +13,11 @@ import {PriceTrackingBrowserProxyImpl} from 'chrome://resources/cr_components/co
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -356,7 +356,7 @@ suite('TreeView', () => {
         TestPowerBookmarksListElement;
     bookmarksList.activeSortIndex = 4;
     bookmarksList.sortOrder = SortOrder.kReverseAlphabetical;
-    flush();
+
     await microtasksFinished();
 
     assertArrayEquals(
@@ -430,7 +430,7 @@ suite('TreeView', () => {
         'bookmark-count-recorded', powerBookmarksApp.$.bookmarksList);
     expandButton.click();
     await collapseMetricsLogged;
-    flush();
+
     await microtasksFinished();
 
     // Verify nested bookmarks are no longer in display list
@@ -469,7 +469,6 @@ suite('TreeView', () => {
     folderRow.dispatchEvent(ARROW_RIGHT_EVENT);
     await toggleEvent;
     await keyboardRebuilt;
-    await flushTasks();
     await microtasksFinished();
     assertTrue(
         folderRow.toggleExpand, 'Folder should be expanded after ArrowRight');
@@ -482,7 +481,6 @@ suite('TreeView', () => {
     folderRow.dispatchEvent(ARROW_LEFT_EVENT);
     await toggleEvent;
     await keyboardRebuilt;
-    await flushTasks();
     await microtasksFinished();
     assertFalse(
         folderRow.toggleExpand, 'Folder should be collapsed after ArrowLeft');
@@ -527,9 +525,7 @@ suite('TreeView', () => {
 
         // Right arrow on expanded folder should move focus.
         folderRow.dispatchEvent(ARROW_RIGHT_EVENT);
-        await flushTasks();
         await microtasksFinished();
-        await flushTasks();
 
         assertEquals(
             childRow,
@@ -546,7 +542,7 @@ suite('TreeView', () => {
 
     // This should not throw errors or change state.
     bookmarkRow.dispatchEvent(ARROW_RIGHT_EVENT);
-    await flushTasks();
+    await microtasksFinished();
 
     // No toggleExpand property to check, just make sure nothing broke.
     assertTrue(!!getPowerBookmarksRowItemElement(powerBookmarksApp, '3'));
@@ -579,7 +575,6 @@ suite('TreeView', () => {
 
     // Right arrow on expanded folder should move focus.
     folderRow.dispatchEvent(ARROW_RIGHT_EVENT);
-    await flushTasks();
     await microtasksFinished();
 
     assertEquals(
@@ -587,7 +582,6 @@ suite('TreeView', () => {
         'Focus should move to the first child');
 
     childRow.dispatchEvent(ARROW_LEFT_EVENT);
-    await flushTasks();
     await microtasksFinished();
 
     assertEquals(
@@ -664,7 +658,6 @@ suite('TreeView', () => {
     bookmarksApi.callbackRouterRemote.onBookmarkNodeMoved(
         /*oldParentId=*/ '5', /*oldIndex=*/ 2, /*newParentId=*/ '6',
         /*newIndex=*/ 0);
-    await flushTasks();
     await microtasksFinished();
 
     const movedRow22 = getPowerBookmarksRowElement(powerBookmarksApp, '22')!;

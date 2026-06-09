@@ -11,7 +11,7 @@ import type {MenuItem, PowerBookmarksContextMenuElement} from 'chrome://bookmark
 import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_service.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 import {TestPowerBookmarksDelegate} from './test_power_bookmarks_delegate.js';
@@ -117,7 +117,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
         document.createElement('power-bookmarks-context-menu');
     document.body.appendChild(powerBookmarksContextMenu);
 
-    await flushTasks();
+    await microtasksFinished();
   });
 
   test('ShowsMenuItemsForSingleSelectUrl', async () => {
@@ -125,7 +125,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     powerBookmarksContextMenu.showAtPosition(
         new MouseEvent('click'), selection, false, false, false, 1);
 
-    await waitAfterNextRender(powerBookmarksContextMenu);
+    await microtasksFinished();
 
     const menuItems =
         powerBookmarksContextMenu.shadowRoot.querySelectorAll('.dropdown-item');
@@ -157,7 +157,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     powerBookmarksContextMenu.showAtPosition(
         new MouseEvent('click'), selection, false, false, false, 1);
 
-    await waitAfterNextRender(powerBookmarksContextMenu);
+    await microtasksFinished();
 
     const menuItems =
         powerBookmarksContextMenu.shadowRoot.querySelectorAll('.dropdown-item');
@@ -205,7 +205,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     powerBookmarksContextMenu.showAtPosition(
         new MouseEvent('click'), selection, false, false, false, 1);
 
-    await waitAfterNextRender(powerBookmarksContextMenu);
+    await microtasksFinished();
 
     const menuItems =
         powerBookmarksContextMenu.shadowRoot.querySelectorAll('.dropdown-item');
@@ -256,7 +256,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     powerBookmarksContextMenu.showAtPosition(
         new MouseEvent('click'), [folderInBar], false, false, false, 0);
 
-    await waitAfterNextRender(powerBookmarksContextMenu);
+    await microtasksFinished();
 
     const menuItems = powerBookmarksContextMenu['getMenuItemsForBookmarks_']();
 
@@ -281,7 +281,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     powerBookmarksContextMenu.showAtPosition(
         new MouseEvent('click'), selection, false, false, false, 2);
 
-    await waitAfterNextRender(powerBookmarksContextMenu);
+    await microtasksFinished();
 
     const menuItems =
         powerBookmarksContextMenu.shadowRoot.querySelectorAll('.dropdown-item');
@@ -311,7 +311,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     powerBookmarksContextMenu.showAtPosition(
         new MouseEvent('click'), selection, true, true, false, 1);
 
-    await waitAfterNextRender(powerBookmarksContextMenu);
+    await microtasksFinished();
 
     const menuItems =
         powerBookmarksContextMenu.shadowRoot.querySelectorAll('.dropdown-item');
@@ -350,7 +350,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     powerBookmarksContextMenu.showAtPosition(
         new MouseEvent('click'), selection, false, false, false, 1);
 
-    await waitAfterNextRender(powerBookmarksContextMenu);
+    await microtasksFinished();
 
     const menuItems =
         powerBookmarksContextMenu.shadowRoot.querySelectorAll('.dropdown-item');
@@ -385,7 +385,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     powerBookmarksContextMenu.showAtPosition(
         new MouseEvent('click'), selection, false, false, false, 0);
 
-    await waitAfterNextRender(powerBookmarksContextMenu);
+    await microtasksFinished();
 
     const menuItems =
         powerBookmarksContextMenu.shadowRoot.querySelectorAll('.dropdown-item');
@@ -401,7 +401,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     powerBookmarksContextMenu.showAtPosition(
         new MouseEvent('click'), selection, false, false, false, 1);
 
-    await waitAfterNextRender(powerBookmarksContextMenu);
+    await microtasksFinished();
 
     assertTrue(powerBookmarksContextMenu.isOpen());
 
@@ -413,7 +413,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     powerBookmarksContextMenu.shadowRoot.querySelector('#menu')!.dispatchEvent(
         event);
 
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(!powerBookmarksContextMenu.isOpen());
   });
