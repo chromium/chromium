@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -39,7 +40,18 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNCompilerServiceImpl
       mojo::PendingRemote<mojom::WebNNModelLoader> model_loader,
       mojo::PendingReceiver<mojom::WebNNCompilerContext> receiver) override;
 
+  // Called when any compiler context in `compiler_contexts_` disconnects.
+  void OnCompilerContextDisconnected();
+
+  // Called when the idle timer fires with no active compiler contexts.
+  void OnIdleTimeout();
+
   mojo::UniqueReceiverSet<mojom::WebNNCompilerContext> compiler_contexts_;
+
+  // Started at construction and restarted each time the last compiler context
+  // disconnects. Cancelled when a new context is created. If it fires, the
+  // process shuts down via ResetWithReason().
+  base::OneShotTimer idle_timer_;
 
   mojo::Receiver<mojom::WebNNCompilerService> receiver_;
 };

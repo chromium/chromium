@@ -88,6 +88,7 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "services/webnn/buildflags.h"
+#include "services/webnn/public/cpp/compiler_disconnect_reason.h"
 #include "services/webnn/webnn_switches.h"
 #include "skia/buildflags.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -721,7 +722,7 @@ void GpuProcessHost::RequestWebNNCompilerContext(
     }
 
     webnn_compiler_remote_ = LaunchWebNNCompilerProcess();
-    webnn_compiler_remote_.set_disconnect_handler(
+    webnn_compiler_remote_.set_disconnect_with_reason_handler(
         base::BindOnce(&GpuProcessHost::OnWebNNCompilerDisconnected,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -757,14 +758,26 @@ void GpuProcessHost::RequestWebNNCompilerContext(
                           std::move(model_loader_receiver));
 }
 
-void GpuProcessHost::OnWebNNCompilerDisconnected() {
+void GpuProcessHost::OnWebNNCompilerDisconnected(
+    uint32_t reason,
+    const std::string& description) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   webnn_compiler_remote_.reset();
 
-  // TODO(crbug.com/516844138): Implement idle shutdown so the compiler process
-  // exits automatically when it isn't needed, rather than lingering for the
-  // lifetime of |webnn_compiler_remote_|.
-  // Any disconnect is therefore unexpected and treated as a crash.
+  // `reason` comes from a less-trusted child process. Verify it matches a
+  // known disconnect reason before acting on it; treat any unrecognized
+  // value as an unexpected crash.
+  switch (reason) {
+    case static_cast<uint32_t>(webnn::CompilerDisconnectReason::kIdleShutdown):
+      // The compiler process shut down gracefully after all compiler
+      // contexts disconnected and the idle timeout elapsed. Not a crash.
+      DVLOG(1) << "WebNN Compiler process idle shutdown.";
+      return;
+    default:
+      break;
+  }
+
+  // Any other disconnect is unexpected and treated as a crash.
   ++g_webnn_compiler_crash_count;
   base::UmaHistogramExactLinear("WebNN.CompilerProcess.CrashCount",
                                 g_webnn_compiler_crash_count, 4);

@@ -208,7 +208,8 @@ class GpuProcessHost final : public BrowserChildProcessHostDelegate,
           ep_package_info,
       RequestWebNNCompilerContextCallback callback) override;
 
-  void OnWebNNCompilerDisconnected();
+  void OnWebNNCompilerDisconnected(uint32_t reason,
+                                   const std::string& description);
 #endif
 
   bool LaunchGpuProcess();

@@ -142,6 +142,9 @@ specific_include_rules = {
   "browser_interface_binders\\.cc": [
     "+services/webnn/public/mojom/features.mojom-features.h",
   ],
+  "gpu_process_host\\.cc": [
+    "+services/webnn/public/cpp/compiler_disconnect_reason.h",
+  ],
   "browser_main_loop\\.cc": [
     # TODO(crbug.com/40672800): Remove.
     "+services/network/transitional_url_loader_factory_owner.h",

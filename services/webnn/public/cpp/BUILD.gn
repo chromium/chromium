@@ -12,6 +12,7 @@ buildflag_header("buildflags") {
 
 component("cpp") {
   sources = [
+    "compiler_disconnect_reason.h",
     "context_properties.cc",
     "context_properties.h",
     "data_type_limits.cc",
