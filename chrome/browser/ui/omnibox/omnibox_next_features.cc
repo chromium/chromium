@@ -40,9 +40,6 @@ BASE_FEATURE(kWebUIOmniboxAimPopup, DISABLED);
 // webpage.
 BASE_FEATURE(kWebUIOmniboxSimplification, DISABLED);
 
-// If enabled, the "Ask Google about this page" action will route to cobrowse.
-BASE_FEATURE(kWebUIOmniboxAskGAboutThisPage, DISABLED);
-
 }  // namespace internal
 
 constexpr base::FeatureParam<AddContextButtonVariant>::Option
@@ -100,6 +97,10 @@ BASE_FEATURE(kOmniboxAnimatedCaret, ENABLED);
 
 // If enabled, enables energy effect in the omnibox.
 BASE_FEATURE(kEnergyEffectInOmnibox, ENABLED);
+
+// If enabled, the "Ask Google about this page" action will route to cobrowse.
+BASE_FEATURE(kWebUIOmniboxAskGAboutThisPage, DISABLED);
+
 
 // If enabled, the Ai Mode button will be dynamically shown in the omnibox.
 BASE_FEATURE(kWebUIOmniboxDynamicAiModeButton, DISABLED);
@@ -372,9 +373,9 @@ const base::FeatureParam<bool> kWebUIOmniboxFullPopupV2UseBrowserView{
     &kWebUIOmniboxFullPopupV2, "Omnibox_UseBrowserView", false};
 
 const base::FeatureParam<bool> kAskGCoBrowse{
-    &internal::kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGCoBrowse", false};
+    &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGCoBrowse", false};
 const base::FeatureParam<bool> kAskGCoBrowseWithVisualSelection{
-    &internal::kWebUIOmniboxAskGAboutThisPage,
+    &kWebUIOmniboxAskGAboutThisPage,
     "Omnibox_AskGCoBrowseWithVisualSelection", false};
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}

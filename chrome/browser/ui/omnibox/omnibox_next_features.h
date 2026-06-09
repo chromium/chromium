@@ -17,17 +17,33 @@ class Profile;
 
 namespace omnibox {
 
+namespace internal {
 // The `internal` namespace contains implementation details for omnibox
 // features. It is exposed only for use by about_flags.cc and in unit tests.
 //
-// DO NOT USE THESE FEATURE FLAGS DIRECTLY FROM OTHER CODE.
-// Instead, use the helper functions defined below (e.g., `IsAimPopupEnabled`).
-namespace internal {
+// DO NOT USE THESE FEATURE FLAGS DIRECTLY.
+//
+// These flags are placed in `internal` to signify that they often require
+// specific initialization sequences
+// (e.g., in `chrome/browser/chrome_browser_interface_binders_webui_parts.h`)
+// or have lifecycle-sensitive dependencies that could lead to crashes if
+// checked improperly.
+//
+// USE THE APPROPRIATE HELPER:
+// - Use the feature-specific `...FeatureEnabled()` function when you only
+//   need to check the raw feature state (appropriate for lifecycle-sensitive code).
+// - Use the profile-based `...Enabled(profile)` function for standard UI
+//   logic (e.g., `IsAimPopupEnabled(profile)`), as it handles necessary
+//   eligibility and initialization checks.
+//
+// If you are adding a new feature that does not have these complex lifecycle
+// dependencies, you may define it in the main `omnibox` namespace.
 
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopup);
+// TODO(crbug.com/521521553): Remove this feature flag once the
+// feature flag is fully rolled out.
 BASE_DECLARE_FEATURE(kWebUIOmniboxSimplification);
-BASE_DECLARE_FEATURE(kWebUIOmniboxAskGAboutThisPage);
 
 }  // namespace internal
 
@@ -54,6 +70,7 @@ BASE_DECLARE_FEATURE(kWebUIOmniboxPopupSelectionControl);
 BASE_DECLARE_FEATURE(kOmniboxAnimatedCaret);
 // Enables energy effect in the omnibox.
 BASE_DECLARE_FEATURE(kEnergyEffectInOmnibox);
+BASE_DECLARE_FEATURE(kWebUIOmniboxAskGAboutThisPage);
 BASE_DECLARE_FEATURE(kWebUIOmniboxDynamicAiModeButton);
 
 extern const base::FeatureParam<bool> kWebUIOmniboxPopupDebugSxSParam;
