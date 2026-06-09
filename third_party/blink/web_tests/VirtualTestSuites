@@ -830,7 +830,7 @@
   {
     "prefix": "dialog-close-when-open-removed-disabled",
     "owners": [
-      "masonf@chromium.org"
+      "jarhar@chromium.org"
     ],
     "platforms": [
       "Linux"
@@ -841,7 +841,7 @@
     "args": [
       "--disable-blink-features=DialogCloseWhenOpenRemoved"
     ],
-    "expires": "Jun 1, 2026"
+    "expires": "Jun 1, 2027"
   },
   {
     "prefix": "direct-sockets",
