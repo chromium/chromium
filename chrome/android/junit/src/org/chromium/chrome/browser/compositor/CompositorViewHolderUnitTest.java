@@ -1421,8 +1421,10 @@ public class CompositorViewHolderUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testSetSideUiStateProviderSupplier() {
-        when(mSideUiStateProvider.getCurrentSideUiSpecs())
-                .thenReturn(SideUiSpecs.EMPTY_SIDE_UI_SPECS);
+        SideUiSpecs emptySideUiSpecs =
+                new SideUiSpecs(/* leftContainerWidth= */ 0, /* rightContainerWidth= */ 0);
+
+        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(emptySideUiSpecs);
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
 

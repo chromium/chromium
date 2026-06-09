@@ -10,6 +10,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsSideUiCoordinator.VIEW_WIDTH_DP;
+
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +32,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.ui.base.ViewUtils;
 
 /** Unit tests for {@link VerticalTabsSideUiCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -40,15 +43,16 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Mock private SideUiCoordinator mMockSideUiCoordinator;
 
     private VerticalTabsSideUiCoordinator mCoordinator;
+    private Activity mActivity;
 
     @Before
     public void setUp() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
-        View mockView = new View(activity);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        View mockView = new View(mActivity);
         when(mMockTabListCoordinator.getView()).thenReturn(mockView);
         mCoordinator =
                 new VerticalTabsSideUiCoordinator(
-                        activity, mMockSideUiCoordinator, mMockTabListCoordinator);
+                        mActivity, mMockSideUiCoordinator, mMockTabListCoordinator);
     }
 
     @After
@@ -82,9 +86,10 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testDetermineContainerWidth() {
-        assertEquals(0, mCoordinator.determineContainerWidth(200, 500, 800));
+        int viewWidth = ViewUtils.dpToPx(mActivity, VIEW_WIDTH_DP);
+        assertEquals(0, mCoordinator.determineContainerWidth(VIEW_WIDTH_DP, 500, 800));
         mCoordinator.setVisible(true);
-        assertEquals(200, mCoordinator.determineContainerWidth(200, 500, 800));
+        assertEquals(VIEW_WIDTH_DP, mCoordinator.determineContainerWidth(VIEW_WIDTH_DP, 500, 800));
     }
 
     @Test

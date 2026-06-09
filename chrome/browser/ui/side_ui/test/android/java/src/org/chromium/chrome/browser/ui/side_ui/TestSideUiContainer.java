@@ -34,14 +34,17 @@ public final class TestSideUiContainer implements SideUiContainer {
 
     private final SideUiCoordinator mSideUiCoordinator;
     private final View mSideUiContainerView;
+    private final @SideUiId int mSideUiId;
     private final @AnchorSide int mAnchorSide;
 
     public TestSideUiContainer(
             SideUiCoordinator sideUiCoordinator,
             View sideUiContainerView,
+            @SideUiId int sideUiId,
             @AnchorSide int anchorSide) {
         mSideUiCoordinator = sideUiCoordinator;
         mSideUiContainerView = sideUiContainerView;
+        mSideUiId = sideUiId;
         mAnchorSide = anchorSide;
     }
 
@@ -52,7 +55,7 @@ public final class TestSideUiContainer implements SideUiContainer {
 
     @Override
     public @SideUiId int getSideUiId() {
-        return SideUiId.SIDE_UI_FOR_TESTING;
+        return mSideUiId;
     }
 
     @Override
@@ -97,8 +100,7 @@ public final class TestSideUiContainer implements SideUiContainer {
     public void onWindowResized(boolean canShowSideUi) {
         @Px int requestedSideUiWidth = canShowSideUi ? TEST_SIDE_UI_WIDTH : 0;
         mSideUiCoordinator.requestUpdateContainer(
-                new SideUiContainerProperties(
-                        SideUiId.SIDE_UI_FOR_TESTING, mAnchorSide, requestedSideUiWidth),
+                new SideUiContainerProperties(mSideUiId, mAnchorSide, requestedSideUiWidth),
                 /* suppressAnimations= */ true);
     }
 }

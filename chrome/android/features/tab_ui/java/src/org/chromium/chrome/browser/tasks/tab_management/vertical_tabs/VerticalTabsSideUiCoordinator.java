@@ -26,13 +26,14 @@ import org.chromium.ui.base.ViewUtils;
  */
 @NullMarked
 public class VerticalTabsSideUiCoordinator implements SideUiContainer {
-    private static final int VIEW_WIDTH_DP = 206;
+    static final int VIEW_WIDTH_DP = 206;
 
     private final Activity mActivity;
     private final SideUiCoordinator mSideUiCoordinator;
     private final FrameLayout mRootView;
     private final @AnchorSide int mAnchorSide;
     private final VerticalTabListCoordinator mTabListCoordinator;
+    private final @Px int mViewWidth;
 
     // Whether the vertical tab is automatically hidden due to run-time conditions.
     private boolean mIsAutoHidden;
@@ -57,6 +58,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT));
         mRootView.addView(mTabListCoordinator.getView());
+        mViewWidth = ViewUtils.dpToPx(activity, VIEW_WIDTH_DP);
     }
 
     public void setVisible(boolean show) {
@@ -85,7 +87,11 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
     public int determineContainerWidth(int requestedWidth, int availableWidth, int windowWidth) {
         // TODO(crbug.com/509226293): Implement layout threshold negotiation to auto-hide rail.
         // Respond with the requested width only if currently on.
-        return mManualVisible ? requestedWidth : 0;
+        @Px int width = 0;
+        if (mManualVisible) {
+            width = availableWidth < mViewWidth ? 0 : mViewWidth;
+        }
+        return width;
     }
 
     @Override
