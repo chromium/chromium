@@ -1,3 +1,4 @@
+#!/usr/bin/env vpython3
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -74,7 +75,10 @@ class CreateIndexTest(fake_filesystem_unittest.TestCase):
     ])
     @mock.patch('create_index._perform_initial_setup')
     @mock.patch('create_index._retrieve_previous_run_info')
-    def test_main_success(self, mock_retrieve, mock_setup):
+    @mock.patch('create_index.local_git_steps.process_local_git_data')
+    def test_main_success(self, mock_process_local_git_data, mock_retrieve,
+                          mock_setup):
+        mock_process_local_git_data.return_value = []
         approximate_base = datetime.datetime.now(tz=datetime.timezone.utc)
 
         create_index.main()
@@ -98,6 +102,8 @@ class CreateIndexTest(fake_filesystem_unittest.TestCase):
         self.assertTrue(called_args.clobber)
         self.assertFalse(called_args.dryrun)
         self.assertIsNone(called_args.previous_run)
+
+        mock_process_local_git_data.assert_called_once_with(called_args)
 
 
 class CreateIndexRetrievePreviousRunInfoTest(fake_filesystem_unittest.TestCase
@@ -349,7 +355,7 @@ class CreateIndexRetrievePreviousRunInfoTest(fake_filesystem_unittest.TestCase
 
         self.assertIn(
             "INFO:root:Last run's manifest appears to be valid and relevant. "
-            "Proceeding with incremental index creation", log.output)
+            'Proceeding with incremental index creation', log.output)
 
         self.assertFalse(common_args.clobber)
         self.assertIsNotNone(common_args.previous_run)

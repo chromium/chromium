@@ -5,7 +5,6 @@
 """Script for creating indexes for the Review RAG service."""
 
 import argparse
-import dataclasses
 import datetime
 import json
 import logging
@@ -16,44 +15,14 @@ import posixpath
 import dateparser
 
 import cipd_helpers
+from common_types import CommonArgs, PreviousRunInfo
+import local_git_steps
 
 # Should be incremented every time the an index-visible change is made to the
 # script so that incompatible indexes are not reused.
 SCRIPT_VERSION = 1
 
 MANIFEST_NAME = 'manifest.json'
-
-
-@dataclasses.dataclass
-class PreviousRunInfo:
-    """Information extracted from the previous run's manifest."""
-    # The git revision that was used as HEAD in the previous run.
-    revision: str
-    # The time that the previous run was started at. Equivalent to the
-    # `window_base` value of that run.
-    start_time: datetime.datetime
-
-
-@dataclasses.dataclass
-class CommonArgs:
-    """Arguments that are expected to be passed around frequently."""
-    # The Git-on-Borg project hosting the repo that is being operated on.
-    project: str
-    # The git repo within `project` that is being operated on.
-    repo: str
-    # The window over which the index is being created.
-    window: datetime.timedelta
-    # The timestamp that `window` was calculated over.
-    window_base: datetime.datetime
-    # Whether we are running in dryrun mode.
-    dryrun: bool
-    # Information about the previous index creation run, if available.
-    previous_run: PreviousRunInfo | None
-
-    @property
-    def clobber(self) -> bool:
-        """Create a fresh index rather than building on a previous one."""
-        return self.previous_run is None
 
 
 def _calculate_time_window(
@@ -227,6 +196,8 @@ def main() -> None:
                              dryrun=args.dryrun,
                              previous_run=None)
     _retrieve_previous_run_info(common_args)
+
+    _cl_info = local_git_steps.process_local_git_data(common_args)
 
 
 if __name__ == '__main__':
