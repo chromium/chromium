@@ -318,9 +318,10 @@ void RuntimeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
 
   // Dispatch the onInstalled event with reason "chrome_update".
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&RuntimeEventRouter::DispatchOnInstalledEvent,
-                                static_cast<void*>(browser_context_),
-                                extension->id(), base::Version(), true));
+      FROM_HERE,
+      base::BindOnce(&RuntimeEventRouter::DispatchOnInstalledEvent,
+                     base::UnsafeDangling(static_cast<void*>(browser_context_)),
+                     extension->id(), base::Version(), true));
 }
 
 void RuntimeAPI::OnExtensionUninstalled(
@@ -520,15 +521,15 @@ void RuntimeEventRouter::DispatchOnStartupEvent(
 
 // static
 void RuntimeEventRouter::DispatchOnInstalledEvent(
-    void* context_id,
+    MayBeDangling<void> context_id,
     const ExtensionId& extension_id,
     const base::Version& old_version,
     bool chrome_updated) {
-  if (!ExtensionsBrowserClient::Get()->IsValidContext(context_id)) {
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(context_id.get())) {
     return;
   }
   content::BrowserContext* context =
-      reinterpret_cast<content::BrowserContext*>(context_id);
+      reinterpret_cast<content::BrowserContext*>(context_id.get());
   ExtensionSystem* system = ExtensionSystem::Get(context);
   if (!system) {
     return;
@@ -680,9 +681,10 @@ void RuntimeAPI::OnExtensionInstalledAndLoaded(
     const Extension* extension,
     const base::Version& previous_version) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&RuntimeEventRouter::DispatchOnInstalledEvent,
-                                static_cast<void*>(browser_context_),
-                                extension->id(), previous_version, false));
+      FROM_HERE,
+      base::BindOnce(&RuntimeEventRouter::DispatchOnInstalledEvent,
+                     base::UnsafeDangling(static_cast<void*>(browser_context_)),
+                     extension->id(), previous_version, false));
 }
 
 ExtensionFunction::ResponseAction RuntimeGetBackgroundPageFunction::Run() {
