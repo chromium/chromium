@@ -487,8 +487,10 @@ void FormController::RestoreControlStateIn(HTMLFormElement& form) {
   if (!document_->HasFinishedParsing())
     return;
   EventQueueScope scope;
-  const ListedElement::List& elements = form.ListedElements();
-  for (const auto& control : elements) {
+  // Make a copy of the list because the DOM could be modified during
+  // restoration of a <select> with a <selectedcontent> element.
+  ListedElement::List elements_copy(form.ListedElements());
+  for (const auto& control : elements_copy) {
     if (!control->ClassSupportsStateRestore())
       continue;
     if (OwnerFormForState(*control) != &form)
@@ -545,7 +547,11 @@ void FormController::RestoreAllControlsInDocumentOrder() {
     return;
   HeapHashSet<Member<HTMLFormElement>> finished_forms;
   EventQueueScope scope;
-  for (auto& control : document_state_->GetControlList()) {
+  // Make a copy of the list because the DOM could be modified during
+  // restoration of a <select> with a <selectedcontent> element.
+  DocumentState::ControlList control_list_copy(
+      document_state_->GetControlList());
+  for (auto& control : control_list_copy) {
     auto* owner = OwnerFormForState(*control);
     if (!owner)
       RestoreControlStateFor(*control);
