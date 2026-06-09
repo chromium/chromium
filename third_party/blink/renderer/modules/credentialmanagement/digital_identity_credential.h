@@ -14,6 +14,7 @@ namespace blink {
 class Credential;
 class CredentialCreationOptions;
 class CredentialRequestOptions;
+class ExecutionContext;
 
 // Returns whether `CredentialRequestOptions options` contains a credential of
 // digital-identity type.
@@ -46,6 +47,19 @@ MODULES_EXPORT void DiscoverDigitalIdentityCredentialFromExternalSource(
 MODULES_EXPORT void CreateDigitalIdentityCredentialInExternalSource(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     const CredentialCreationOptions& options);
+
+enum class DigitalCredentialExchangeType {
+  kPresentation,
+  kIssuance,
+  kAny,
+};
+
+// Returns true if the given protocol is supported by the Digital Credentials
+// API for the given call type. Also records a UseCounter for the protocol
+// usage.
+MODULES_EXPORT bool CheckSupportedProtocol(ExecutionContext* execution_context,
+                                           const String& protocol,
+                                           DigitalCredentialExchangeType type);
 
 }  // namespace blink
 

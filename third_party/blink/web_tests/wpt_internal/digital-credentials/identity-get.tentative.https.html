@@ -26,7 +26,7 @@ promise_test(async t => {
   let request = buildValidNavigatorCredentialsRequest();
   let credential = await requestIdentityWithActivation(test_driver, request);
   let expectedResponseData = { "token": "fake_test_token" };
-  assert_equals("openid4vp", credential.protocol);
+  assert_equals("openid4vp-v1-unsigned", credential.protocol);
   assert_equals(
     JSON.stringify(expectedResponseData),
     JSON.stringify(credential.data));

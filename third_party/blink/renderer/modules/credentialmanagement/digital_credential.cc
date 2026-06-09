@@ -6,6 +6,10 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/digital_identity_credential.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
@@ -35,7 +39,15 @@ void DigitalCredential::Trace(Visitor* visitor) const {
 }
 
 // static
-bool DigitalCredential::userAgentAllowsProtocol(const String& protocol) {
+bool DigitalCredential::userAgentAllowsProtocol(ScriptState* script_state,
+                                                const String& protocol) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (RuntimeEnabledFeatures::DigitalCredentialsProtocolFilterEnabled(
+          execution_context)) {
+    return CheckSupportedProtocol(execution_context, protocol,
+                                  DigitalCredentialExchangeType::kAny);
+  }
+
   // Since Chromium allows all protocols to reach the underlying platform, this
   // method only validates the protocol identifier, but doesn't do any further
   // checks. In other words, any protocol with a valid identifier is allowed.

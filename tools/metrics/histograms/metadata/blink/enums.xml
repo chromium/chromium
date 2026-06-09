@@ -6662,6 +6662,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="WebTransportDatagramDuplexStreamOutgoingHighWaterMark"/>
   <int value="5919" label="HistoryGoBackWouldSkipSameOriginAd"/>
   <int value="5920" label="CreateTextModuleScript"/>
+  <int value="5921" label="DigitalCredentialsProtocolOpenId4VciV1"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

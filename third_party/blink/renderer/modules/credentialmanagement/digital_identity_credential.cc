@@ -166,9 +166,17 @@ bool IsSerializable(ScriptState* script_state, ScriptObject data) {
          !try_catch.HasCaught();
 }
 
-void RecordProtocolUseCounters(ExecutionContext* execution_context,
-                               const String& protocol) {
-  static const auto* protocol_map = new HashMap<String, WebFeature>({
+}  // anonymous namespace
+
+bool CheckSupportedProtocol(ExecutionContext* execution_context,
+                            const String& protocol,
+                            DigitalCredentialExchangeType type) {
+  struct ProtocolEntry {
+    const char* protocol;
+    WebFeature feature;
+  };
+
+  static constexpr ProtocolEntry kPresentationProtocols[] = {
       {"openid4vp-v1-unsigned",
        WebFeature::kDigitalCredentialsProtocolOpenId4VpUnsigned},
       {"openid4vp-v1-signed",
@@ -176,19 +184,47 @@ void RecordProtocolUseCounters(ExecutionContext* execution_context,
       {"openid4vp-v1-multisigned",
        WebFeature::kDigitalCredentialsProtocolOpenId4VpMultisigned},
       {"org-iso-mdoc", WebFeature::kDigitalCredentialsProtocolOrgIsoMdoc},
+  };
+
+  static constexpr ProtocolEntry kIssuanceProtocols[] = {
+      // TODO(crbug.com/521181022): Ensure this aligns to the specification
       {"openid4vci", WebFeature::kDigitalCredentialsProtocolOpenId4Vci},
-  });
+      {"openid4vci-v1", WebFeature::kDigitalCredentialsProtocolOpenId4VciV1},
+  };
 
-  auto it = protocol_map->find(protocol);
-  if (it != protocol_map->end()) {
-    UseCounter::Count(execution_context, it->value);
-  } else {
-    UseCounter::Count(execution_context,
-                      WebFeature::kDigitalCredentialsProtocolUnknown);
+  bool is_supported = false;
+  WebFeature feature = WebFeature::kDigitalCredentialsProtocolUnknown;
+
+  if (type == DigitalCredentialExchangeType::kPresentation ||
+      type == DigitalCredentialExchangeType::kAny) {
+    for (const auto& entry : kPresentationProtocols) {
+      if (protocol == entry.protocol) {
+        is_supported = true;
+        feature = entry.feature;
+        break;
+      }
+    }
   }
-}
 
-}  // anonymous namespace
+  if (!is_supported && (type == DigitalCredentialExchangeType::kIssuance ||
+                        type == DigitalCredentialExchangeType::kAny)) {
+    for (const auto& entry : kIssuanceProtocols) {
+      if (protocol == entry.protocol) {
+        is_supported = true;
+        feature = entry.feature;
+        break;
+      }
+    }
+  }
+
+  UseCounter::Count(execution_context, feature);
+
+  if (!RuntimeEnabledFeatures::DigitalCredentialsProtocolFilterEnabled(
+          execution_context)) {
+    return true;
+  }
+  return is_supported;
+}
 
 bool IsDigitalIdentityCredentialType(const CredentialRequestOptions& options) {
   return options.hasDigital();
@@ -227,6 +263,11 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
   Vector<blink::mojom::blink::DigitalCredentialGetRequestPtr> requests;
   ScriptState* script_state = resolver->GetScriptState();
   for (const auto& request : options.digital()->requests()) {
+    if (!CheckSupportedProtocol(resolver->GetExecutionContext(),
+                                request->protocol(),
+                                DigitalCredentialExchangeType::kPresentation)) {
+      continue;
+    }
     if (!IsSerializable(script_state, request->data())) {
       resolver->RejectWithTypeError(
           "Digital identity API requires valid JSON in the request.");
@@ -236,8 +277,6 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
         digital_credential_request =
             blink::mojom::blink::DigitalCredentialGetRequest::New();
     digital_credential_request->protocol = request->protocol();
-    RecordProtocolUseCounters(resolver->GetExecutionContext(),
-                              request->protocol());
     std::unique_ptr<base::Value> digital_credential_request_data =
         converter->FromV8Value(request->data().V8Object(),
                                resolver->GetScriptState()->GetContext());
@@ -256,7 +295,8 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
 
   if (requests.empty()) {
     resolver->RejectWithTypeError(
-        "Digital identity API needs at least one well-formed request.");
+        "Digital Credentials API call with no well-formed allowed protocol "
+        "requests.");
     return;
   }
 
@@ -346,6 +386,11 @@ void CreateDigitalIdentityCredentialInExternalSource(
   Vector<blink::mojom::blink::DigitalCredentialCreateRequestPtr> requests;
   ScriptState* script_state = resolver->GetScriptState();
   for (const auto& request : options.digital()->requests()) {
+    if (!CheckSupportedProtocol(resolver->GetExecutionContext(),
+                                request->protocol(),
+                                DigitalCredentialExchangeType::kIssuance)) {
+      continue;
+    }
     if (!IsSerializable(script_state, request->data())) {
       resolver->RejectWithTypeError(
           "Digital identity API requires valid JSON in the request.");
@@ -355,8 +400,6 @@ void CreateDigitalIdentityCredentialInExternalSource(
         digital_credential_request =
             blink::mojom::blink::DigitalCredentialCreateRequest::New();
     digital_credential_request->protocol = request->protocol();
-    RecordProtocolUseCounters(resolver->GetExecutionContext(),
-                              request->protocol());
     std::unique_ptr<base::Value> digital_credential_request_data =
         converter->FromV8Value(request->data().V8Object(),
                                resolver->GetScriptState()->GetContext());
@@ -376,7 +419,8 @@ void CreateDigitalIdentityCredentialInExternalSource(
 
   if (requests.empty()) {
     resolver->RejectWithTypeError(
-        "Digital identity API needs at least one well-formed request.");
+        "Digital Credentials API call with no well-formed allowed protocol "
+        "requests.");
     return;
   }
 

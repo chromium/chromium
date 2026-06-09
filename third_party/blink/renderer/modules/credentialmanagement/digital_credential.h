@@ -12,6 +12,8 @@
 
 namespace blink {
 
+class ScriptState;
+
 class MODULES_EXPORT DigitalCredential final : public Credential {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -28,7 +30,8 @@ class MODULES_EXPORT DigitalCredential final : public Credential {
   ScriptObject toJSON(ScriptState* script_state) const;
   const String& protocol() const { return protocol_; }
   const ScriptObject& data() const { return data_; }
-  static bool userAgentAllowsProtocol(const String& protocol);
+  static bool userAgentAllowsProtocol(ScriptState* script_state,
+                                      const String& protocol);
 
  private:
   const String protocol_;

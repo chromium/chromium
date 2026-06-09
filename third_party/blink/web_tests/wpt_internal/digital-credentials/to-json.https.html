@@ -18,7 +18,7 @@ promise_test(async t => {
   let expectedResponseData = { "token": "fake_test_token" };
   assert_true('toJSON' in credential);
   const credential_json = credential.toJSON();
-  assert_equals("openid4vp", credential_json.protocol);
+  assert_equals("openid4vp-v1-unsigned", credential_json.protocol);
   assert_object_equals(
    expectedResponseData,
    credential.data);

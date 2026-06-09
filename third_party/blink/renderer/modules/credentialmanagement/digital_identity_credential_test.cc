@@ -100,7 +100,7 @@ CredentialCreationOptions* CreateCreateOptionsWithRequests(
 CredentialRequestOptions* CreateValidGetOptions(ScriptState* script_state) {
   v8::Local<v8::Context> context = script_state->GetContext();
   DigitalCredentialGetRequest* request = DigitalCredentialGetRequest::Create();
-  request->setProtocol("openid4vp");
+  request->setProtocol("openid4vp-v1-unsigned");
   v8::Local<v8::Object> request_data =
       v8::Object::New(script_state->GetIsolate());
   v8::Maybe<bool> maybe =

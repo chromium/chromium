@@ -3,7 +3,7 @@ export function buildValidNavigatorCredentialsRequest() {
   return {
       digital: {
       requests: [{
-          protocol: "openid4vp",
+          protocol: "openid4vp-v1-unsigned",
           data: {
             // Based on https://github.com/openid/OpenID4VP/issues/125
             client_id: "client.example.org",
