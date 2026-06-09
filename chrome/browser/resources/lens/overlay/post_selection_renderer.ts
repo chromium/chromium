@@ -1136,6 +1136,12 @@ export class PostSelectionRendererElement extends
   setSelectionOverlayRectForTesting(rect: DOMRect) {
     this.selectionOverlayRect = rect;
   }
+
+  private showPolylineCloseButton(
+      multiRegionSelectionEnabled: boolean,
+      activeRegionHasPolyline: boolean): boolean {
+    return multiRegionSelectionEnabled && activeRegionHasPolyline;
+  }
 }
 
 declare global {

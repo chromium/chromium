@@ -241,6 +241,22 @@
     pointer-events: auto;
   }
 
+  .close-button-polyline {
+    --cr-icon-button-icon-size: 22px;
+    --cr-icon-button-size: 28px;
+    --cr-icon-button-fill-color: white;
+    --cr-icon-image: url("icon_clear.svg");
+    background-color: #5f6368cc;
+    border-radius: 50%;
+    height: 28px;
+    position: absolute;
+    left: calc(var(--selection-left) + var(--selection-width) - 14px);
+    top: calc(var(--selection-top) - 14px);
+    width: 28px;
+    z-index: 10;
+    pointer-events: auto;
+  }
+
   #activeRegionShadow {
     display: none;
   }
@@ -317,6 +333,13 @@
     id="postSelection"
     data-id$="[[activeRegionId]]"
   ></div>
+  <template is="dom-if" if="[[showPolylineCloseButton(multiRegionSelectionEnabled, activeRegionHasPolyline)]]">
+    <cr-icon-button class="close-button-polyline"
+        on-click="onCloseActiveButtonClick"
+        on-pointerdown="onCloseButtonPointerdown"
+        title="$i18n{close}">
+    </cr-icon-button>
+  </template>
   <div id="selectionCorners" style="pointer-events: auto;">
     <template is="dom-if" if="[[multiRegionSelectionEnabled]]">
       <cr-icon-button class="close-button"
