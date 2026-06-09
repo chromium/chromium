@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/518815075">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/testdriver.js"></script>
+<script src="../resources/testdriver-actions.js"></script>
+<script src="../resources/testdriver-vendor.js"></script>
+
+<!-- This test passes if it doesn't crash. -->
+
+<iframe src="resources/remove-iframe-beforeprint-crash-child.html"></iframe>
+
+<script>
+async_test(t => {
+  window.finishTest = t.step_func_done(() => {});
+
+  window.addEventListener('beforeprint', t.step_func(() => {
+    let f = document.querySelector('iframe');
+    if (f) {
+      f.remove();
+    }
+  }), { once: true });
+}, "This is a crash test and it passes if it doesn't crash.");
+</script>
+

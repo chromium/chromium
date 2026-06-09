@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/518815075">
+
+<body style="margin:0">
+
+<div id="clicktarget">CLICK HERE</div>
+
+<form id="login" action="/login" method="post"
+      style="position:absolute;left:0;top:0;opacity:0.01;pointer-events:none">
+  <input type="text" id="username" name="username" autocomplete="username">
+  <input type="password" id="password" name="password" autocomplete="current-password">
+  <input type="submit" value="go">
+</form>
+
+<script>
+let armed = false;
+
+function trigger() {
+  if (!armed) return;
+  armed = false;
+  top.print();
+  top.finishTest();
+}
+
+username.addEventListener('input', trigger);
+username.addEventListener('change', trigger);
+password.addEventListener('input', trigger);
+clicktarget.addEventListener('mousedown', trigger);
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    armed = true;
+    new top.test_driver.Actions()
+        .pointerMove(0, 0, {origin: clicktarget})
+        .pointerDown()
+        .pointerUp()
+        .send();
+  }, 0);
+});
+</script>
+</body>

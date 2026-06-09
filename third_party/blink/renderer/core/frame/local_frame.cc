@@ -2927,7 +2927,9 @@ void LocalFrame::SetHadUserInteraction(bool had_user_interaction) {
   DomWindow()->closewatcher_stack()->SetHadUserInteraction(
       had_user_interaction);
 
-  GetFrameScheduler()->SetHadUserActivation(had_user_interaction);
+  if (auto* scheduler = GetFrameScheduler()) {
+    scheduler->SetHadUserActivation(had_user_interaction);
+  }
 }
 
 namespace {
