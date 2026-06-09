@@ -742,13 +742,17 @@ bool PasswordAutofillManager::ShowPopup(
         autofill::AutofillSuggestionTriggerSource::kPasswordManager,
         /*form_control_ax_id=*/0, autofill::PopupAnchorType::kField);
   }
-  autofill_client_->ShowAutofillSuggestions(last_popup_open_args_,
-                                            weak_ptr_factory_.GetWeakPtr());
+  last_session_id_ = autofill_client_->ShowAutofillSuggestions(
+      last_popup_open_args_, weak_ptr_factory_.GetWeakPtr());
   return true;
 }
 
 void PasswordAutofillManager::UpdatePopup(std::vector<Suggestion> suggestions) {
   if (!password_manager_driver_->CanShowAutofillUi()) {
+    return;
+  }
+  if (last_session_id_ !=
+      autofill_client_->GetSessionIdForCurrentAutofillSuggestions()) {
     return;
   }
   if (!ContainsOtherThanManagePasswords(suggestions)) {
