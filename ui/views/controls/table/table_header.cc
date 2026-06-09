@@ -157,7 +157,12 @@ void TableHeader::InstallFocusRing() {
 }
 
 void TableHeader::UpdateFocusState() {
-  views::FocusRing::Get(this)->Refresh();
+  views::FocusRing* focus_ring = views::FocusRing::Get(this);
+  focus_ring->Refresh();
+
+  // Schedule a paint to ensure the focus ring is repainted if the output of the
+  // highlight path generator changes.
+  focus_ring->SchedulePaint();
 }
 
 int TableHeader::GetCellVerticalPadding() const {
