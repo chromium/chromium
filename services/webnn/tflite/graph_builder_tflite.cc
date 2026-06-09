@@ -861,9 +861,11 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/maximum_minimum.h
        /*max_input=*/{kFloat16To32AndInt8To64AndUint8, SupportedRanks::UpTo(5)},
        /*min_input=*/{kFloat16To32AndInt8To64AndUint8, SupportedRanks::UpTo(5)},
-       // Limited to 4D when broadcasting is required:
+       // TFLite's native POW kernel is limited to rank 4 when broadcasting is
+       // required. SerializeElementWiseBinary handles rank-5 cases by reducing
+       // the rank before invoking the native kernel.
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/pow.cc
-       /*pow_input=*/{kFloat16To32AndInt32, SupportedRanks::UpTo(4)},
+       /*pow_input=*/{kFloat16To32AndInt32, SupportedRanks::UpTo(5)},
        // Comparisons are limited to 4D when broadcasting is required:
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/comparisons.cc
        /*equal_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(4)},
@@ -3526,62 +3528,55 @@ auto GraphBuilderTflite::SerializeBinaryOperation(
       builder_.CreateVector<TensorIndex>(op_outputs));
 }
 
-base::expected<void, std::string>
-GraphBuilderTflite::InsertLogicalBinaryOperations(
+base::expected<GraphBuilderTflite::OperatorOffset, std::string>
+GraphBuilderTflite::SerializeBinaryOperationWithRankReduction(
     ::tflite::BuiltinOperator code,
-    TensorIndex lhs_bool_tensor_index,
+    TensorIndex lhs_tensor_index,
     base::span<const int32_t> lhs_dims,
-    TensorIndex rhs_bool_tensor_index,
+    ::tflite::TensorType lhs_tensor_type,
+    TensorIndex rhs_tensor_index,
     base::span<const int32_t> rhs_dims,
-    TensorIndex output_bool_tensor_index,
-    base::span<const int32_t> output_dims) {
-  // TFLite's LOGICAL_AND/LOGICAL_OR kernels and the NOT_EQUAL kernel used to
-  // polyfill LogicalXor are all limited to 4D when broadcasting is required.
-  // Use `> 4` rather than `== 5` to reflect the kernel's broadcast rank limit
-  // directly and remain correct if the op support limit is ever raised
-  // beyond rank 5.
-  constexpr size_t kMaxLogicalBroadcastRank = 4;
-  if (lhs_dims.size() <= kMaxLogicalBroadcastRank &&
-      rhs_dims.size() <= kMaxLogicalBroadcastRank) {
+    ::tflite::TensorType rhs_tensor_type,
+    TensorIndex output_tensor_index,
+    base::span<const int32_t> output_dims,
+    ::tflite::TensorType output_tensor_type,
+    size_t max_broadcast_rank) {
+  // The broadcast output rank equals max(lhs_rank, rhs_rank), so checking the
+  // output rank alone covers both inputs.
+  if (output_dims.size() <= max_broadcast_rank) {
     // Fast path: shapes already within the kernel's broadcast rank limit.
-    operators_.emplace_back(SerializeBinaryOperation(
-        code, lhs_bool_tensor_index, rhs_bool_tensor_index,
-        output_bool_tensor_index));
-    return base::ok();
+    return SerializeBinaryOperation(code, lhs_tensor_index, rhs_tensor_index,
+                                    output_tensor_index);
   }
 
   // For higher-rank inputs, reduce the rank before invoking the native
   // kernel: first try to collapse adjacent axes whose broadcast pattern is
-  // consistent for both operands; if the collapsed rank still exceeds 4,
-  // fall back to explicitly broadcasting both operands to the output shape
-  // (which removes any need for the kernel to broadcast) and then reshaping
-  // to rank 1.
-  TensorIndex binary_lhs_tensor_index = lhs_bool_tensor_index;
-  TensorIndex binary_rhs_tensor_index = rhs_bool_tensor_index;
+  // consistent for both operands; if the collapsed rank still exceeds the
+  // kernel rank limit, explicitly broadcast both operands to the output shape
+  // and flatten to rank 1.
+  TensorIndex binary_lhs_tensor_index = lhs_tensor_index;
+  TensorIndex binary_rhs_tensor_index = rhs_tensor_index;
   std::vector<int32_t> binary_lhs_dims;
   std::vector<int32_t> binary_rhs_dims;
   std::vector<int32_t> binary_output_dims;
   std::tie(binary_lhs_dims, binary_rhs_dims, binary_output_dims) =
       CollapseBroadcastShapes(lhs_dims, rhs_dims);
-  if (binary_output_dims.size() > kMaxLogicalBroadcastRank) {
-    // Fallback: explicitly broadcast both operands to the output shape so
-    // the binary kernel does not need to broadcast, then flatten to rank 1
-    // (safe because both operands now share the output shape).
+  if (binary_output_dims.size() > max_broadcast_rank) {
     ASSIGN_OR_RETURN(const TensorIndex broadcast_lhs_tensor_index,
                      SerializeTemporaryTensorWithByteSizeCheck(
-                         output_dims, ::tflite::TensorType_BOOL));
+                         output_dims, lhs_tensor_type));
     ASSIGN_OR_RETURN(
         const OperatorOffset broadcast_lhs_op,
-        SerializeBroadcastToOperation(lhs_bool_tensor_index, output_dims,
+        SerializeBroadcastToOperation(lhs_tensor_index, output_dims,
                                       broadcast_lhs_tensor_index));
     operators_.emplace_back(broadcast_lhs_op);
 
     ASSIGN_OR_RETURN(const TensorIndex broadcast_rhs_tensor_index,
                      SerializeTemporaryTensorWithByteSizeCheck(
-                         output_dims, ::tflite::TensorType_BOOL));
+                         output_dims, rhs_tensor_type));
     ASSIGN_OR_RETURN(
         const OperatorOffset broadcast_rhs_op,
-        SerializeBroadcastToOperation(rhs_bool_tensor_index, output_dims,
+        SerializeBroadcastToOperation(rhs_tensor_index, output_dims,
                                       broadcast_rhs_tensor_index));
     operators_.emplace_back(broadcast_rhs_op);
 
@@ -3596,27 +3591,56 @@ GraphBuilderTflite::InsertLogicalBinaryOperations(
   }
 
   ASSIGN_OR_RETURN(const TensorIndex reshaped_lhs_tensor_index,
-                   SerializeTemporaryTensorWithByteSizeCheck(
-                       binary_lhs_dims, ::tflite::TensorType_BOOL));
+                   SerializeTemporaryTensorWithByteSizeCheck(binary_lhs_dims,
+                                                             lhs_tensor_type));
   operators_.emplace_back(SerializeReshapeOperation(
       binary_lhs_tensor_index, reshaped_lhs_tensor_index, binary_lhs_dims));
 
   ASSIGN_OR_RETURN(const TensorIndex reshaped_rhs_tensor_index,
-                   SerializeTemporaryTensorWithByteSizeCheck(
-                       binary_rhs_dims, ::tflite::TensorType_BOOL));
+                   SerializeTemporaryTensorWithByteSizeCheck(binary_rhs_dims,
+                                                             rhs_tensor_type));
   operators_.emplace_back(SerializeReshapeOperation(
       binary_rhs_tensor_index, reshaped_rhs_tensor_index, binary_rhs_dims));
 
+  if (binary_output_dims == output_dims) {
+    return SerializeBinaryOperation(code, reshaped_lhs_tensor_index,
+                                    reshaped_rhs_tensor_index,
+                                    output_tensor_index);
+  }
+
   ASSIGN_OR_RETURN(const TensorIndex binary_output_tensor_index,
                    SerializeTemporaryTensorWithByteSizeCheck(
-                       binary_output_dims, ::tflite::TensorType_BOOL));
+                       binary_output_dims, output_tensor_type));
   operators_.emplace_back(SerializeBinaryOperation(
       code, reshaped_lhs_tensor_index, reshaped_rhs_tensor_index,
       binary_output_tensor_index));
 
-  // Reshape the BOOL result back to the WebNN output shape.
-  operators_.emplace_back(SerializeReshapeOperation(
-      binary_output_tensor_index, output_bool_tensor_index, output_dims));
+  return SerializeReshapeOperation(binary_output_tensor_index,
+                                   output_tensor_index, output_dims);
+}
+
+base::expected<void, std::string>
+GraphBuilderTflite::InsertLogicalBinaryOperations(
+    ::tflite::BuiltinOperator code,
+    TensorIndex lhs_bool_tensor_index,
+    base::span<const int32_t> lhs_dims,
+    TensorIndex rhs_bool_tensor_index,
+    base::span<const int32_t> rhs_dims,
+    TensorIndex output_bool_tensor_index,
+    base::span<const int32_t> output_dims) {
+  // TFLite's LOGICAL_AND/LOGICAL_OR kernels and the NOT_EQUAL kernel used to
+  // polyfill LogicalXor are all limited to 4D when broadcasting is required.
+  constexpr size_t kMaxLogicalBroadcastRank = 4;
+  ASSIGN_OR_RETURN(const OperatorOffset final_binary_op,
+                   SerializeBinaryOperationWithRankReduction(
+                       code, lhs_bool_tensor_index, lhs_dims,
+                       /*lhs_tensor_type=*/::tflite::TensorType_BOOL,
+                       rhs_bool_tensor_index, rhs_dims,
+                       /*rhs_tensor_type=*/::tflite::TensorType_BOOL,
+                       output_bool_tensor_index, output_dims,
+                       /*output_tensor_type=*/::tflite::TensorType_BOOL,
+                       kMaxLogicalBroadcastRank));
+  operators_.emplace_back(final_binary_op);
   return base::ok();
 }
 
@@ -5059,17 +5083,37 @@ auto GraphBuilderTflite::SerializeElementWiseBinary(
                        /*operation_supports_float16=*/false, fuse_dequantize));
 
   TensorIndex output_tensor_index;
+  ::tflite::TensorType output_tensor_type;
   if (quantized_output) {
     output_tensor_index = quantized_output->index;
+    output_tensor_type = quantized_output->data_type;
   } else {
     ASSIGN_OR_RETURN(const TensorInfo output_tensor_info,
                      SerializeOutputTensorInfo(op.output_operand_id));
     output_tensor_index = output_tensor_info.index;
+    output_tensor_type = output_tensor_info.data_type;
   }
 
-  //  Return early for non-logical element-wise binary operations, because they
-  //  don't need to insert cast operation.
+  // Return early for non-logical element-wise binary operations, because they
+  // don't need to insert cast operation. POW has a rank-5 fallback path
+  // because TFLite's native kernel only supports broadcasting up to rank 4.
   if (!IsLogicalElementWiseBinary(op.kind)) {
+    if (op.kind == mojom::ElementWiseBinary::Kind::kPow) {
+      constexpr size_t kMaxPowBroadcastRank = 4;
+      ASSIGN_OR_RETURN(
+          const std::vector<int32_t> output_dims,
+          ToSignedDimensions(
+              GetOperand(op.output_operand_id).descriptor.shape()));
+      // Use the actual TFLite tensor types of the (possibly float16->float32
+      // cast) inputs and output rather than the WebNN-level data types, so
+      // any temporary tensors created during rank reduction match.
+      return SerializeBinaryOperationWithRankReduction(
+          code, lhs_tensor_info.index, lhs_tensor_info.dimensions,
+          lhs_tensor_info.data_type, rhs_tensor_info.index,
+          rhs_tensor_info.dimensions, rhs_tensor_info.data_type,
+          output_tensor_index, output_dims, output_tensor_type,
+          kMaxPowBroadcastRank);
+    }
     return SerializeBinaryOperation(code, lhs_tensor_info.index,
                                     rhs_tensor_info.index, output_tensor_index);
   }

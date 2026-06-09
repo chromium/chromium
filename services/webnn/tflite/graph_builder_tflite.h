@@ -325,6 +325,22 @@ class GraphBuilderTflite final {
                                           TensorIndex rhs_tensor_index,
                                           TensorIndex output_tensor_index);
 
+  // Serialize a binary op with optional rank reduction when kernel
+  // broadcasting is limited by `max_broadcast_rank`.
+  base::expected<OperatorOffset, std::string>
+  SerializeBinaryOperationWithRankReduction(
+      ::tflite::BuiltinOperator code,
+      TensorIndex lhs_tensor_index,
+      base::span<const int32_t> lhs_dims,
+      ::tflite::TensorType lhs_tensor_type,
+      TensorIndex rhs_tensor_index,
+      base::span<const int32_t> rhs_dims,
+      ::tflite::TensorType rhs_tensor_type,
+      TensorIndex output_tensor_index,
+      base::span<const int32_t> output_dims,
+      ::tflite::TensorType output_tensor_type,
+      size_t max_broadcast_rank);
+
   // Emit a BOOL-in / BOOL-out binary op for logicalAnd/Or/Xor, reducing rank
   // when an input exceeds the kernel's 4D broadcast limit.
   base::expected<void, std::string> InsertLogicalBinaryOperations(
