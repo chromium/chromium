@@ -98,7 +98,7 @@ if (_build_ios_webkit || _build_mac_webkit) {
         "src/Source/JavaScriptCore/dfg/DFGSpeculativeJIT.cpp",
         "src/Source/WebCore/rendering/RenderLayer.cpp",
         "src/Source/WebKit/Resources/SandboxProfiles/ios/com.apple.WebKit.WebContent.sb.in",
-        "src/Source/WebCore/rendering/style/RenderStyle.h",
+        "src/Source/WebCore/style/computed/StyleComputedStyle.h",
         "src/Source/WebKit/UIProcess/Network/NetworkProcessProxy.cpp",
         "src/Source/WebCore/dom/Document.h",
         "src/Source/WebKit/UIProcess/API/Cocoa/WKWebView.mm",
