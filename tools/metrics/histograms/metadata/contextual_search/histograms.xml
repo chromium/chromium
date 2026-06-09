@@ -199,7 +199,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.DuplicateTabTitlesShownCount.{ContextualSearchSource}"
-    units="count" expires_after="2026-10-04">
+    units="count" expires_after="2026-12-06">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -321,7 +321,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Inputs.TypeOnSubmission.{ContextualSearchSource}"
-    enum="ContextualSearchAimInputType" expires_after="2026-08-06">
+    enum="ContextualSearchAimInputType" expires_after="2026-12-06">
   <owner>khalidpeer@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>

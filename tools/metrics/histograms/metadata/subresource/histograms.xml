@@ -230,7 +230,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.AdsInterventionTriggered"
-    enum="AdsViolations" expires_after="2026-10-04">
+    enum="AdsViolations" expires_after="2026-12-06">
   <owner>yaoxia@google.com</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>

@@ -537,7 +537,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.AimEligibility.EligibilityRequestDebounced{RequestSource}"
-    enum="Boolean" expires_after="2026-10-04">
+    enum="Boolean" expires_after="2026-12-06">
   <owner>mahmadi@chromium.org</owner>
   <owner>avivkiss@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -553,7 +553,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.AimEligibility.EligibilityRequestOAuthFallback{RequestSource}"
-    enum="Boolean" expires_after="2026-10-04">
+    enum="Boolean" expires_after="2026-12-06">
   <owner>mahmadi@chromium.org</owner>
   <owner>avivkiss@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -584,7 +584,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.AimEligibility.EligibilityRequestOAuthTokenProvided{RequestSource}"
-    enum="Boolean" expires_after="2026-10-04">
+    enum="Boolean" expires_after="2026-12-06">
   <owner>mahmadi@chromium.org</owner>
   <owner>avivkiss@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -600,7 +600,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.AimEligibility.EligibilityRequestPrimaryAccountExists{RequestSource}"
-    enum="Boolean" expires_after="2026-10-04">
+    enum="Boolean" expires_after="2026-12-06">
   <owner>mahmadi@chromium.org</owner>
   <owner>manukh@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -618,7 +618,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.AimEligibility.EligibilityRequestPrimaryAccountInCookieJar{RequestSource}"
-    enum="Boolean" expires_after="2026-10-04">
+    enum="Boolean" expires_after="2026-12-06">
   <owner>mahmadi@chromium.org</owner>
   <owner>manukh@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -637,7 +637,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.AimEligibility.EligibilityRequestPrimaryAccountIndex{RequestSource}"
-    units="index" expires_after="2026-10-04">
+    units="index" expires_after="2026-12-06">
   <owner>mahmadi@chromium.org</owner>
   <owner>manukh@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -2167,7 +2167,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.JustDeletedText" enum="Boolean"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -2183,7 +2183,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.KeywordCount{KeywordType}" units="count"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>

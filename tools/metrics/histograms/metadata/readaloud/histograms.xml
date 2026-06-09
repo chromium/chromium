@@ -97,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.Eligibility.IneligiblityReason"
-    enum="ReadAloudIneligibilityReason" expires_after="2026-10-04">
+    enum="ReadAloudIneligibilityReason" expires_after="2026-12-06">
   <owner>andreaxg@google.com</owner>
   <owner>basiaz@google.com</owner>
   <owner>iwells@chromium.org</owner>
@@ -177,7 +177,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.HighlightingSupported" enum="BooleanSupported"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>andreaxg@google.com</owner>
   <owner>basiaz@google.com</owner>
   <owner>iwells@chromium.org</owner>

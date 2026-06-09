@@ -203,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.LocationProviderWinrt.ErrorStatus"
-    enum="WindowsDevicesGeolocationPositionStatus" expires_after="2026-10-04">
+    enum="WindowsDevicesGeolocationPositionStatus" expires_after="2026-12-06">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.LocationProviderWinrt.TimeToFirstPosition"
-    units="ms" expires_after="2026-10-04">
+    units="ms" expires_after="2026-12-06">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>

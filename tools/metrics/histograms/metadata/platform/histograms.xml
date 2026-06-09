@@ -1558,7 +1558,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Memory.Renderers{ProcessMemoryType}" units="MiB"
-    expires_after="2026-08-10">
+    expires_after="2026-12-06">
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -2035,7 +2035,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Odml.TotalRssMemoryKb" units="KB"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>hcyang@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>

@@ -348,7 +348,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </variants>
 
 <histogram name="PerformanceMonitor.AverageCPU10.Total{UsageScenario}"
-    units="1/100 %" expires_after="2026-08-30">
+    units="1/100 %" expires_after="2026-12-06">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -384,7 +384,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="PerformanceMonitor.AverageCPU10.{ProcessName}" units="1/100 %"
-    expires_after="2026-08-30">
+    expires_after="2026-12-06">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -1414,7 +1414,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram
     name="Power.ForegroundBatteryDrainPerScenario.30Seconds{Exclusive}{LoadingScenario}{InputScenario}"
-    units="uAh" expires_after="2026-10-04">
+    units="uAh" expires_after="2026-12-06">
   <owner>kraskevich@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
@@ -1588,7 +1588,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.KeyboardBacklightLevel" units="%"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The level of the keyboard backlight as a percentage. Sampled every 30
@@ -1836,7 +1836,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.SuspendResult" enum="SuspendResult"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1887,7 +1887,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.UserBrightnessAdjustmentsPerSessionOnBattery"
-    units="units" expires_after="2026-10-04">
+    units="units" expires_after="2026-12-06">
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>chrome-knowledge-eng@google.com</owner>

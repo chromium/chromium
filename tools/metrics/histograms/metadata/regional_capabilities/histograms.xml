@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(tools/metrics/histograms/metadata/puma/histograms.xml:PUMA.RegionalCapabilities.FunnelStage.Eligibility) -->
 
 <histogram name="RegionalCapabilities.FunnelStage.RegionalPresence"
-    enum="RegionalProgramAndLocationMatch" expires_after="2026-10-04">
+    enum="RegionalProgramAndLocationMatch" expires_after="2026-12-06">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>

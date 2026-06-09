@@ -399,7 +399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.History.EntryMatch"
-    enum="BackForwardCacheEntryMatchResult" expires_after="2026-10-04">
+    enum="BackForwardCacheEntryMatchResult" expires_after="2026-12-06">
   <owner>annasato@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -412,7 +412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.History.ForwardEntriesCount" units="entries"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>annasato@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -1162,7 +1162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.EarlyRenderFrameHostSwap.IsInOutermostMainFrame"
-    enum="BooleanMainFrame" expires_after="2026-10-04">
+    enum="BooleanMainFrame" expires_after="2026-12-06">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>
@@ -2444,7 +2444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.RenderFrameDelete" units="ms"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-security-architecture@google.com</owner>
   <summary>
@@ -2454,7 +2454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.RenderFrameHostConstructor" units="ms"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-security-architecture@google.com</owner>
   <summary>

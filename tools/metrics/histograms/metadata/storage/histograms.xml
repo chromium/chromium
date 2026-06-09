@@ -422,7 +422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.ClientKeepActiveRemotesCount" units="count"
-    expires_after="2026-10-05">
+    expires_after="2026-12-06">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -460,7 +460,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.Create{Mode}Transaction.NumTransactionsInDatabase"
-    units="transactions" expires_after="2026-10-04">
+    units="transactions" expires_after="2026-12-06">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -635,7 +635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.NumPendingConnections.OnCreateAbove10k"
-    units="connections" expires_after="2026-10-04">
+    units="connections" expires_after="2026-12-06">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -648,7 +648,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.NumPendingConnections.RequestQueueSize"
-    units="connections" expires_after="2026-10-04">
+    units="connections" expires_after="2026-12-06">
   <owner>etienneb@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -661,7 +661,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IndexedDB.NumTransactionsInIDBDatabaseOnTransactionCreated.10kTransactions"
-    units="transactions" expires_after="2026-10-04">
+    units="transactions" expires_after="2026-12-06">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -846,7 +846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.TransactionTimeout.{TransactionCount}CommitPending"
-    enum="Boolean" expires_after="2026-10-04">
+    enum="Boolean" expires_after="2026-12-06">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -858,7 +858,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.TransactionTimeout.{TransactionCount}IsAborted"
-    enum="IDBTransactionMode" expires_after="2026-10-04">
+    enum="IDBTransactionMode" expires_after="2026-12-06">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -883,7 +883,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.TransactionTimeout.{TransactionCount}Mode"
-    enum="IDBTransactionMode" expires_after="2026-10-04">
+    enum="IDBTransactionMode" expires_after="2026-12-06">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -896,7 +896,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IndexedDB.TransactionTimeout.{TransactionCount}NumTransactionsInConnection"
-    units="transactions" expires_after="2026-10-04">
+    units="transactions" expires_after="2026-12-06">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -910,7 +910,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IndexedDB.TransactionTimeout.{TransactionCount}NumTransactionsInDB"
-    units="transactions" expires_after="2026-10-04">
+    units="transactions" expires_after="2026-12-06">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -923,7 +923,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.TransactionTimeout.{TransactionCount}TaskRunQueued"
-    enum="Boolean" expires_after="2026-10-04">
+    enum="Boolean" expires_after="2026-12-06">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2445,7 +2445,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Storage.SharedStorage.PrivateAggregationConfig.HasMaxContributions"
-    enum="Boolean" expires_after="2026-09-27">
+    enum="Boolean" expires_after="2026-12-06">
   <owner>alexmt@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>

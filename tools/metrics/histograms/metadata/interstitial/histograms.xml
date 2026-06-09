@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.phishing.decision{RepeatVisit}.from_client_side_detection{SecurityInterstitialSBWithSourceSubtype}"
-    enum="SecurityInterstitialDecision" expires_after="2026-10-04">
+    enum="SecurityInterstitialDecision" expires_after="2026-12-06">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@Google.com</owner>
   <summary>
@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.phishing.show_delay{TimeRange}.from_client_side_detection{SecurityInterstitialSBWithSourceSubtype}"
-    enum="SecurityInterstitialDecision" expires_after="2026-10-04">
+    enum="SecurityInterstitialDecision" expires_after="2026-12-06">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@Google.com</owner>
   <summary>

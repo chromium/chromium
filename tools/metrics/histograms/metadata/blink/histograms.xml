@@ -4393,7 +4393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LinkHeader.LoadLinksFromHeaderMode"
-    enum="LoadLinksFromHeaderMode" expires_after="2026-10-04">
+    enum="LoadLinksFromHeaderMode" expires_after="2026-12-06">
   <owner>tnak@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

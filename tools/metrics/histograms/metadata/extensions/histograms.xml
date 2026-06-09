@@ -1161,7 +1161,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.IndexAndPersistRulesTime"
-    units="ms" expires_after="2026-10-05">
+    units="ms" expires_after="2026-12-06">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1482,7 +1482,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeveloperModeStatusEnabled" enum="Boolean"
-    expires_after="2026-09-13">
+    expires_after="2026-12-06">
   <owner>richche@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3571,7 +3571,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ManifestVersion3Count.{ManifestLocation}"
-    units="number of extensions" expires_after="2026-10-04">
+    units="number of extensions" expires_after="2026-12-06">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3739,7 +3739,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.MV2Deprecation.MV2ExtensionState.{ManifestLocation}"
-    enum="MV2ExtensionState" expires_after="2026-08-16">
+    enum="MV2ExtensionState" expires_after="2026-12-06">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -3807,7 +3807,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.NonWebstoreLocationWith{DeveloperModeState}{ExtensionState}3"
-    enum="ExtensionLocation" expires_after="2026-10-04">
+    enum="ExtensionLocation" expires_after="2026-12-06">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3921,7 +3921,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Printing.UsesSupportedMargins" enum="Boolean"
-    expires_after="2026-10-01">
+    expires_after="2026-12-06">
   <owner>nmuggli@google.com</owner>
   <owner>msisov@igalia.com</owner>
   <summary>

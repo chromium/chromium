@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="SimpleGeolocation.Provider.ClientId"
-    enum="SimpleGeolocationClientId" expires_after="2026-10-04">
+    enum="SimpleGeolocationClientId" expires_after="2026-12-06">
   <owner>alvinji@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

@@ -5353,7 +5353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.SecCHHeaderSize" units="bytes"
-    expires_after="2026-10-01">
+    expires_after="2026-12-06">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -5364,7 +5364,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.SecSpeculationTagsHeaderSize" units="bytes"
-    expires_after="2026-10-01">
+    expires_after="2026-12-06">
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

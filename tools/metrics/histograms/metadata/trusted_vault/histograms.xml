@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="TrustedVault.DownloadAuthenticationFactorsRegistrationState{SecurityDomainId}"
     enum="DownloadAuthenticationFactorsRegistrationStateResult"
-    expires_after="2026-10-05">
+    expires_after="2026-12-06">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <owner>thomasth@google.com</owner>

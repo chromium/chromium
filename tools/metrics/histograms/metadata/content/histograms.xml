@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Content.SharedWorker.Service.LastClientCheckTime" units="ms"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>annasato@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -446,7 +446,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.RegularProfile.DefaultJavascriptOptimizationBlockedByOs"
-    enum="Boolean" expires_after="2026-10-01">
+    enum="Boolean" expires_after="2026-12-06">
   <owner>jacastro@chromium.org</owner>
   <owner>src/chrome/browser/site_protection/OWNERS</owner>
   <summary>
@@ -459,7 +459,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.RegularProfile.DefaultJavaScriptOptimizationSetting"
-    enum="ContentSetting" expires_after="2026-10-01">
+    enum="ContentSetting" expires_after="2026-12-06">
   <owner>jacastro@chromium.org</owner>
   <owner>src/chrome/browser/site_protection/OWNERS</owner>
   <summary>

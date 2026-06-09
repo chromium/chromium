@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ByInvocationSource.{InvocationSource}.TimeToFirstInteraction"
-    units="ms" expires_after="2026-10-04">
+    units="ms" expires_after="2026-12-06">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>

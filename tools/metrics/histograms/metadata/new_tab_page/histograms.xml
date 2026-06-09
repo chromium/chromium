@@ -571,7 +571,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Customization.Theme.ChromeColor.TurnOnDailyRefresh"
-    enum="BooleanEnabled" expires_after="2026-10-04">
+    enum="BooleanEnabled" expires_after="2026-12-06">
   <owner>hanxi@chromium.org</owner>
   <owner>yyanting@google.com</owner>
   <owner>clank-start@google.com</owner>
@@ -879,7 +879,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Footer.Click" enum="FooterElement"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>Logged when the Footer was clicked.</summary>
@@ -893,7 +893,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Footer.CustomizeChromeOpened"
-    enum="FooterCustomizeChromeEntryPoint" expires_after="2026-10-04">
+    enum="FooterCustomizeChromeEntryPoint" expires_after="2026-12-06">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -2155,7 +2155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.MostVisited.NumberOfCustomTilesOnFirstNtp"
-    units="units" expires_after="2026-10-04">
+    units="units" expires_after="2026-12-06">
   <owner>fredmello@chromium.org</owner>
   <owner>huangs@chromium.org</owner>
   <owner>ginnyhuang@chromium.org</owner>

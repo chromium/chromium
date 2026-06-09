@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.AdaptiveToolbarButton.Shown"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2026-10-04">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2026-12-06">
   <owner>jinsukkiim@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>

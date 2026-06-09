@@ -126,7 +126,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.IsCanMakePaymentAllowedByPref.PaymentRequestConstruction.Once"
-    enum="Boolean" expires_after="2026-10-06">
+    enum="Boolean" expires_after="2026-12-06">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -163,7 +163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.IsCanMakePaymentAllowedByPref.Startup"
-    enum="Boolean" expires_after="2026-10-06">
+    enum="Boolean" expires_after="2026-12-06">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>

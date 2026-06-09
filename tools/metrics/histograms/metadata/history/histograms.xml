@@ -2222,7 +2222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.ScheduledJobDuration{PassagePriority}"
-    units="ms" expires_after="2026-09-30">
+    units="ms" expires_after="2026-12-06">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2234,7 +2234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.ScheduledJobStatus{PassagePriority}"
-    enum="ComputeEmbeddingsStatus" expires_after="2026-09-30">
+    enum="ComputeEmbeddingsStatus" expires_after="2026-12-06">
   <owner>mahmadi@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2246,7 +2246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.ScheduledPassageCount" units="passages"
-    expires_after="2026-09-30">
+    expires_after="2026-12-06">
   <owner>orinj@chromium.org</owner>
   <owner>src/components/history_embeddings/OWNERS</owner>
   <summary>
@@ -2614,7 +2614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MonthlyHostCount" units="hosts"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>
@@ -2626,7 +2626,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MonthlyURLCount" units="urls"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>
@@ -3020,7 +3020,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HistoryPage.NonActorContextMenuActions"
-    enum="VisitContextMenuAction" expires_after="2026-10-04">
+    enum="VisitContextMenuAction" expires_after="2026-12-06">
   <owner>zalmashni@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>

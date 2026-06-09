@@ -2094,7 +2094,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.CreateShortcuts.Mac.CopyShortcutResult"
-    enum="CopyShortcutResult" expires_after="2026-10-04">
+    enum="CopyShortcutResult" expires_after="2026-12-06">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2182,7 +2182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.FileHandler.Registration.Linux.Result"
-    enum="FileHandlerRegistrationLinuxResult" expires_after="2026-10-04">
+    enum="FileHandlerRegistrationLinuxResult" expires_after="2026-12-06">
   <owner>estade@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2193,7 +2193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.FileHandler.Registration.Win.Result"
-    enum="FileHandlerRegistrationWinResult" expires_after="2026-10-04">
+    enum="FileHandlerRegistrationWinResult" expires_after="2026-12-06">
   <owner>estade@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

@@ -1403,7 +1403,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.GetAudioClientTimedOut" enum="Boolean"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>henrika@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1497,7 +1497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.TimeToGetAudioClient" units="ms"
-    expires_after="2026-08-02">
+    expires_after="2026-12-06">
   <owner>henrika@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1592,7 +1592,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Decode.OpusCodecDelayMismatch" units="packets"
-    expires_after="2026-09-17">
+    expires_after="2026-12-06">
   <owner>jophba@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -1845,7 +1845,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Mac.NoiseSuppressionAvailable"
-    enum="BooleanSuccess" expires_after="2026-10-04">
+    enum="BooleanSuccess" expires_after="2026-12-06">
   <owner>brandstrom@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -3514,7 +3514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.DocumentPictureInPicture.RequestedSizeToScreenRatio"
-    units="%" expires_after="2026-10-04">
+    units="%" expires_after="2026-12-06">
   <owner>steimel@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -8188,7 +8188,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Mac.Device.ImplementationClassification"
-    enum="ImplementationClassification" expires_after="2026-10-04">
+    enum="ImplementationClassification" expires_after="2026-12-06">
   <owner>avi@chromium.org</owner>
   <owner>mark@chromium.org</owner>
   <summary>
@@ -8447,7 +8447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Win.ErrorEvent" enum="Hresult"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>toprice@chromium.org</owner>
   <owner>hta@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -8544,7 +8544,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.VideoEncode.MFVEA.KeyFrameRequestFullfilled.{VideoCodec}"
-    enum="Boolean" expires_after="2026-10-04">
+    enum="Boolean" expires_after="2026-12-06">
   <owner>eugene@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -8555,7 +8555,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoEncoder.D3D12VEA.EncodeStatus.{VideoCodec}"
-    enum="EncoderStatus" expires_after="2026-10-04">
+    enum="EncoderStatus" expires_after="2026-12-06">
   <owner>eugene@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -8567,7 +8567,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoEncoder.D3D12VEA.InitSuccessRate.{VideoCodec}"
-    enum="VEAInitSuccessRate" expires_after="2026-10-04">
+    enum="VEAInitSuccessRate" expires_after="2026-12-06">
   <owner>eugene@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -8592,7 +8592,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoEncoder.NDKVEA.InitStatus.{VideoCodec}"
-    enum="EncoderStatus" expires_after="2026-10-04">
+    enum="EncoderStatus" expires_after="2026-12-06">
   <owner>eugene@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -9670,7 +9670,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.PresentationRequest.AvailabilityUrlType"
-    enum="PresentationUrlType" expires_after="2026-10-04">
+    enum="PresentationUrlType" expires_after="2026-12-06">
   <owner>muyaoxu@google.com</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>

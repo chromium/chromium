@@ -2882,7 +2882,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Renderer.MappingsCount" units="count"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
@@ -3142,7 +3142,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.System.MemUsedMB" units="MB" expires_after="2026-09-06">
+<histogram name="Memory.System.MemUsedMB" units="MB" expires_after="2026-12-06">
   <owner>hidehiko@chromium.org</owner>
   <summary>
     System-wide estimate of memory used in ChromeOS, calculated as the
@@ -3401,7 +3401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Total.RendererPrivateMemoryFootprintExcludingWaived"
-    units="MB" expires_after="2026-10-04">
+    units="MB" expires_after="2026-12-06">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>

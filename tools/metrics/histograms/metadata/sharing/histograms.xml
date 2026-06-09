@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.LongScreenshots.MemoryLimitOnCapture" units="%"
-    expires_after="2026-10-01">
+    expires_after="2026-12-06">
   <owner>jhimawan@google.com</owner>
   <owner>src/components/paint_preview/OWNERS</owner>
   <summary>
@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.ScrollCapture.BitmapGeneratorStatus"
     enum="SharingScrollCaptureBitmapGenerationStatus"
-    expires_after="2026-10-01">
+    expires_after="2026-12-06">
   <owner>ckitagawa@chromium.org</owner>
   <owner>src/components/paint_preview/OWNERS</owner>
   <summary>
@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ScrollCapture.MemoryPressureOnSearch"
-    enum="MemoryPressureLevel" expires_after="2026-10-01">
+    enum="MemoryPressureLevel" expires_after="2026-12-06">
   <owner>jhimawan@google.com</owner>
   <owner>src/components/paint_preview/OWNERS</owner>
   <summary>
@@ -519,7 +519,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.ShareSheetLongScreenshots.BitmapGeneratorStatus"
     enum="SharingShareSheetLongScreenshotsBitmapGenerationStatus"
-    expires_after="2026-10-01">
+    expires_after="2026-12-06">
   <owner>jhimawan@google.com</owner>
   <owner>src/components/paint_preview/OWNERS</owner>
   <summary>

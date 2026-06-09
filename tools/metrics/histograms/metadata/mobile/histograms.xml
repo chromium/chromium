@@ -312,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Badge.Tapped.{MobileInfobarType}"
-    enum="MobileMessagesBadgeState" expires_after="2026-09-20">
+    enum="MobileMessagesBadgeState" expires_after="2026-12-06">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>

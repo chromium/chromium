@@ -357,7 +357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.OpenWithLauncherResult" enum="OpenWithLauncherResult"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>jessemckenna@google.com</owner>
   <owner>davidbienvenu@chromium.org</owner>
   <summary>

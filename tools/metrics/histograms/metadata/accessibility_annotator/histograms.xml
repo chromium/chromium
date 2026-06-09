@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing"
-    enum="ContentAnnotatorDependentInformationTypes" expires_after="2026-10-04">
+    enum="ContentAnnotatorDependentInformationTypes" expires_after="2026-12-06">
   <owner>qiaoli@google.com</owner>
   <owner>akvuong@google.com</owner>
   <owner>igoralsky@google.com</owner>
@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessibilityAnnotator.FullAnnotationReached" enum="Boolean"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>qiaoli@google.com</owner>
   <owner>akvuong@google.com</owner>
   <owner>igoralsky@google.com</owner>
@@ -73,7 +73,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessibilityAnnotator.LanguageCheck" enum="BooleanSuccess"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>qiaoli@google.com</owner>
   <owner>akvuong@google.com</owner>
   <owner>igoralsky@google.com</owner>
@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessibilityAnnotator.SensitivityCheck" enum="BooleanSuccess"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>qiaoli@google.com</owner>
   <owner>akvuong@google.com</owner>
   <owner>igoralsky@google.com</owner>
@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AccessibilityAnnotator.{ValueClassifierType}ClassifierDuration"
-    units="ms" expires_after="2026-10-04">
+    units="ms" expires_after="2026-12-06">
   <owner>qiaoli@google.com</owner>
   <owner>akvuong@google.com</owner>
   <owner>igoralsky@google.com</owner>
@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessibilityAnnotator.{ValueClassifierType}ClassifierResult"
-    enum="AccessibilityAnnotatorClassifierResult" expires_after="2026-10-04">
+    enum="AccessibilityAnnotatorClassifierResult" expires_after="2026-12-06">
   <owner>qiaoli@google.com</owner>
   <owner>akvuong@google.com</owner>
   <owner>igoralsky@google.com</owner>

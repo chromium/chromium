@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage.Count2" units="count"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>victortan@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
   <summary>
@@ -344,7 +344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage.FirstAcceptLanguage"
-    enum="LanguageName" expires_after="2026-10-04">
+    enum="LanguageName" expires_after="2026-12-06">
   <owner>victortan@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
   <summary>

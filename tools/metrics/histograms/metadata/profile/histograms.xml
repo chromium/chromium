@@ -1026,7 +1026,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.{ProfilePickerFlowType}.SignInError"
-    enum="SigninUIErrorType" expires_after="2026-10-04">
+    enum="SigninUIErrorType" expires_after="2026-12-06">
   <owner>anthie@google.com</owner>
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>

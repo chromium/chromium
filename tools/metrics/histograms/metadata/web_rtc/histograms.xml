@@ -173,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.Apm.RecommendedInputVolume.OnChangeToMatchTarget"
-    units="volume" expires_after="2026-10-04">
+    units="volume" expires_after="2026-12-06">
   <owner>silen@chromium.org</owner>
   <owner>peah@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.Apm.{InputVolumeType}.{Metric}Rate"
-    units="changes/minute" expires_after="2026-10-04">
+    units="changes/minute" expires_after="2026-12-06">
   <owner>silen@chromium.org</owner>
   <owner>peah@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1096,7 +1096,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.DesktopCapturerImpl"
-    enum="WebRtcDesktopCapturerImpl" expires_after="2026-09-15">
+    enum="WebRtcDesktopCapturerImpl" expires_after="2026-12-06">
   <owner>alcooper@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <owner>ilnik@chromium.org</owner>
@@ -1119,7 +1119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.WgcCapturerResult"
-    enum="WebRtcWgcCapturerResult" expires_after="2026-10-04">
+    enum="WebRtcWgcCapturerResult" expires_after="2026-12-06">
   <owner>alcooper@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
@@ -1130,7 +1130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.WgcCaptureSessionGetFrameResult"
-    enum="WebRtcWgcCaptureSessionGetFrameResult" expires_after="2026-10-04">
+    enum="WebRtcWgcCaptureSessionGetFrameResult" expires_after="2026-12-06">
   <owner>alcooper@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
@@ -1140,7 +1140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.WgcCaptureSessionStartResult"
-    enum="WebRtcWgcCaptureSessionStartResult" expires_after="2026-10-04">
+    enum="WebRtcWgcCaptureSessionStartResult" expires_after="2026-12-06">
   <owner>alcooper@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
@@ -1194,7 +1194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCaptureCounters" enum="DesktopCaptureCounters"
-    expires_after="2026-08-02">
+    expires_after="2026-12-06">
   <owner>toprice@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1327,7 +1327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.CandidateAddressType"
-    enum="IpAddressType" expires_after="2026-10-04">
+    enum="IpAddressType" expires_after="2026-12-06">
   <owner>hta@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
@@ -1570,7 +1570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.LocalNetworkAccess.RequestType"
-    enum="LocalNetworkAccessRequestType" expires_after="2026-10-01">
+    enum="LocalNetworkAccessRequestType" expires_after="2026-12-06">
   <owner>hta@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
@@ -1943,7 +1943,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.DesktopCapturerFullscreenDetector"
-    enum="Boolean" expires_after="2026-10-04">
+    enum="Boolean" expires_after="2026-12-06">
   <owner>kron@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>rtc-meet-in-chrome@google.com</owner>

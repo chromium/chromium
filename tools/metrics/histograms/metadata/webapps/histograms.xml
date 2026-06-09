@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.InstallableStatusCode" enum="InstallableStatusCode"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <summary>
@@ -2221,7 +2221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.NavigationCapturing.LaunchParamsConsumedTime"
-    units="ms" expires_after="2026-10-01">
+    units="ms" expires_after="2026-12-06">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -2235,7 +2235,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Webapp.NavigationCapturing.LaunchParamsConsumedTime.{DidNavigate}"
-    units="ms" expires_after="2026-10-01">
+    units="ms" expires_after="2026-12-06">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>

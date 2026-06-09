@@ -340,7 +340,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.AgeAtDeletion" units="ms" expires_after="2026-10-04">
+<histogram name="Tab.AgeAtDeletion" units="ms" expires_after="2026-12-06">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -596,7 +596,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.PinnedDuration" units="ms" expires_after="2026-10-01">
+<histogram name="Tab.PinnedDuration" units="ms" expires_after="2026-12-06">
   <owner>madhavpruthi@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
@@ -964,7 +964,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.SavedTabGroupOpenCount" units="groups"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2336,7 +2336,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Tabs.RecentlyClosed.EntriesRestoredInPage.{RecentlyClosedType}"
-    units="entries restored" expires_after="2026-10-04">
+    units="entries restored" expires_after="2026-12-06">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -2407,7 +2407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.RestoreTabStateException" enum="RestoreTabStateException"
-    expires_after="2026-09-27">
+    expires_after="2026-12-06">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -2556,7 +2556,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.Startup.TabCount.{TabType}" units="count"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>davidjm@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
@@ -3821,7 +3821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabStrip.Vertical.TimeToSwitch" units="ms"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>agale@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -3837,7 +3837,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabStrip.Vertical.{TabStripAnimation}.AnimationFPS"
-    units="fps" expires_after="2026-10-04">
+    units="fps" expires_after="2026-12-06">
   <owner>estalin@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>

@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DiskCleanupProgress"
-    enum="CryptohomeDiskCleanupProgress" expires_after="2026-10-01">
+    enum="CryptohomeDiskCleanupProgress" expires_after="2026-12-06">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>

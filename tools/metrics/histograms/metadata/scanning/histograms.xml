@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.DiscoverySession.NumScanners" units="scanners"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.DiscoverySession.Result"
-    enum="ScannerOperationResult" expires_after="2026-10-04">
+    enum="ScannerOperationResult" expires_after="2026-12-06">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>

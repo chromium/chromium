@@ -1595,7 +1595,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.GetReferringAppInfo.WithWebApk.Duration"
-    units="ms" expires_after="2026-10-04">
+    units="ms" expires_after="2026-12-06">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1606,7 +1606,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.GetReferringAppInfo.WithWebApk.FoundWebApk"
-    enum="BooleanFound" expires_after="2026-10-04">
+    enum="BooleanFound" expires_after="2026-12-06">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1671,7 +1671,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.GmsSafeBrowsingApi.JavaValidationResult{Protocol}"
-    enum="SafeBrowsingApiJavaValidationResult" expires_after="2026-10-04">
+    enum="SafeBrowsingApiJavaValidationResult" expires_after="2026-12-06">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1791,7 +1791,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.HPRT.BackoffEnabled.Network.Result.WhenEnteredBackoff"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-10-02">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-12-06">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1804,7 +1804,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.HPRT.BackoffEnabled.OperationOutcome.WhenEnteredBackoff"
-    enum="SafeBrowsingHPRTOperationOutcome" expires_after="2026-10-02">
+    enum="SafeBrowsingHPRTOperationOutcome" expires_after="2026-12-06">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2219,7 +2219,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.OperationOutcome.WhenEnteringBackoff"
-    enum="SafeBrowsingHPRTOperationOutcome" expires_after="2026-10-02">
+    enum="SafeBrowsingHPRTOperationOutcome" expires_after="2026-12-06">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2776,7 +2776,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.RT.AllowlistSizeTooSmall"
-    enum="BooleanUnavailable" expires_after="2026-10-04">
+    enum="BooleanUnavailable" expires_after="2026-12-06">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2792,7 +2792,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.RT.AllStoresAvailable" enum="BooleanAvailable"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3065,7 +3065,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Network.Result.{ReportType}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-10-04">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-12-06">
   <owner>zackhan@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3150,7 +3150,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Request.ReferrerChainLength{UserCategory}"
-    units="units" expires_after="2026-08-11">
+    units="units" expires_after="2026-12-06">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3531,7 +3531,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SafeBrowsing.TailoredSecurity.ShouldRetryOutcome"
     enum="SafeBrowsingTailoredSecurityShouldRetryOutcome"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3694,7 +3694,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.Triggers.SuspiciousSite.Event"
-    enum="SuspiciousSiteTriggerEvent" expires_after="2026-10-04">
+    enum="SuspiciousSiteTriggerEvent" expires_after="2026-12-06">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4461,7 +4461,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.{Protocol}.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-10-04">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-12-06">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 

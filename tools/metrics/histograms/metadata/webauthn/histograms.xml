@@ -531,7 +531,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="WebAuthentication.GPM.CachedOpportunisticallyRetrievedKeyEvent"
     enum="WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>ylahodiuk@google.com</owner>
   <owner>izuzic@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>

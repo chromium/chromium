@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientDownload.Android.GetReferringAppInfo.Result"
     enum="SafeBrowsingAndroidGetReferringAppInfoResult"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -732,7 +732,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.CSDPhishingCachedDataAvailable"
-    enum="BooleanAvailable" expires_after="2026-10-04">
+    enum="BooleanAvailable" expires_after="2026-12-06">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1144,7 +1144,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.OnDeviceModelFetchTime" units="ms"
-    expires_after="2026-10-04">
+    expires_after="2026-12-06">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
