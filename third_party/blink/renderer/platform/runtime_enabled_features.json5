@@ -5891,6 +5891,10 @@
       status: "stable",
     },
     {
+      name: "SvgStyleElementReflectTypeAndMedia",
+      status: "stable",
+    },
+    {
       name: "SvgSupportMediaFragments",
       status: "experimental",
     },
