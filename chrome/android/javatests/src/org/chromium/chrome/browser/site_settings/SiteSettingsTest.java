@@ -46,6 +46,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
@@ -83,7 +84,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -182,7 +182,6 @@ import java.util.concurrent.TimeoutException;
     ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER
 })
 // TODO(crbug.com/344672098): Failing when batched, batch this again.
-@DisableLeakChecks("crbug.com/512492109 (AdvancedProtectionStatusManagerAndroidBridge)")
 public class SiteSettingsTest {
     private static final int RENDER_TEST_REVISION = 6;
     @ClassRule public static PermissionTestRule mPermissionRule = new PermissionTestRule(true);
@@ -582,17 +581,22 @@ public class SiteSettingsTest {
                 });
     }
 
-    private enum ToggleButtonState {
-        EnabledUnchecked,
-        EnabledChecked,
-        Disabled
+    @IntDef({
+        ToggleButtonState.ENABLED_UNCHECKED,
+        ToggleButtonState.ENABLED_CHECKED,
+        ToggleButtonState.DISABLED
+    })
+    private @interface ToggleButtonState {
+        int ENABLED_UNCHECKED = 0;
+        int ENABLED_CHECKED = 1;
+        int DISABLED = 2;
     }
 
     /** Checks if the button representing the given state matches the managed expectation. */
     private void checkCookieToggleButtonState(
             final SettingsActivity settingsActivity,
             final @CookieControlsMode int state,
-            final ToggleButtonState toggleState) {
+            final @ToggleButtonState int toggleState) {
         waitForCookieToggleToBeBound(settingsActivity);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -600,8 +604,8 @@ public class SiteSettingsTest {
                             (SingleCategorySettings) settingsActivity.getMainFragment();
                     CookieSettingsPreference cookieToggle =
                             preferences.findPreference(SingleCategorySettings.COOKIE_TOGGLE);
-                    boolean enabled = toggleState != ToggleButtonState.Disabled;
-                    boolean checked = toggleState == ToggleButtonState.EnabledChecked;
+                    boolean enabled = toggleState != ToggleButtonState.DISABLED;
+                    boolean checked = toggleState == ToggleButtonState.ENABLED_CHECKED;
                     Assert.assertEquals(
                             state + " button should be " + (enabled ? "enabled" : "disabled"),
                             enabled,
@@ -986,11 +990,11 @@ public class SiteSettingsTest {
         checkCookieToggleButtonState(
                 settingsActivity,
                 CookieControlsMode.INCOGNITO_ONLY,
-                ToggleButtonState.EnabledChecked);
+                ToggleButtonState.ENABLED_CHECKED);
         checkCookieToggleButtonState(
                 settingsActivity,
                 CookieControlsMode.BLOCK_THIRD_PARTY,
-                ToggleButtonState.EnabledUnchecked);
+                ToggleButtonState.ENABLED_UNCHECKED);
         // TODO(crbug.com/40064993): fix this assertion.
         // onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
         onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
@@ -1016,11 +1020,11 @@ public class SiteSettingsTest {
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
         checkCookieToggleButtonState(
-                settingsActivity, CookieControlsMode.INCOGNITO_ONLY, ToggleButtonState.Disabled);
+                settingsActivity, CookieControlsMode.INCOGNITO_ONLY, ToggleButtonState.DISABLED);
         checkCookieToggleButtonState(
                 settingsActivity,
                 CookieControlsMode.BLOCK_THIRD_PARTY,
-                ToggleButtonState.EnabledChecked);
+                ToggleButtonState.ENABLED_CHECKED);
         onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
         onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
 
@@ -1054,9 +1058,9 @@ public class SiteSettingsTest {
         checkCookieToggleButtonState(
                 settingsActivity,
                 CookieControlsMode.INCOGNITO_ONLY,
-                ToggleButtonState.EnabledChecked);
+                ToggleButtonState.ENABLED_CHECKED);
         checkCookieToggleButtonState(
-                settingsActivity, CookieControlsMode.BLOCK_THIRD_PARTY, ToggleButtonState.Disabled);
+                settingsActivity, CookieControlsMode.BLOCK_THIRD_PARTY, ToggleButtonState.DISABLED);
         onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
         onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
@@ -1086,9 +1090,9 @@ public class SiteSettingsTest {
         checkCookieToggleButtonState(
                 settingsActivity,
                 CookieControlsMode.INCOGNITO_ONLY,
-                ToggleButtonState.EnabledChecked);
+                ToggleButtonState.ENABLED_CHECKED);
         checkCookieToggleButtonState(
-                settingsActivity, CookieControlsMode.BLOCK_THIRD_PARTY, ToggleButtonState.Disabled);
+                settingsActivity, CookieControlsMode.BLOCK_THIRD_PARTY, ToggleButtonState.DISABLED);
         onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(isDisplayed()));
         onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
@@ -1110,11 +1114,11 @@ public class SiteSettingsTest {
         checkCookieToggleButtonState(
                 settingsActivity,
                 CookieControlsMode.INCOGNITO_ONLY,
-                ToggleButtonState.EnabledChecked);
+                ToggleButtonState.ENABLED_CHECKED);
         checkCookieToggleButtonState(
                 settingsActivity,
                 CookieControlsMode.BLOCK_THIRD_PARTY,
-                ToggleButtonState.EnabledUnchecked);
+                ToggleButtonState.ENABLED_UNCHECKED);
         onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(not(isDisplayed())));
         onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();
@@ -1135,11 +1139,11 @@ public class SiteSettingsTest {
         checkCookieToggleButtonState(
                 settingsActivity,
                 CookieControlsMode.INCOGNITO_ONLY,
-                ToggleButtonState.EnabledChecked);
+                ToggleButtonState.ENABLED_CHECKED);
         checkCookieToggleButtonState(
                 settingsActivity,
                 CookieControlsMode.BLOCK_THIRD_PARTY,
-                ToggleButtonState.EnabledUnchecked);
+                ToggleButtonState.ENABLED_UNCHECKED);
         onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(not(isDisplayed())));
         onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
         settingsActivity.finish();

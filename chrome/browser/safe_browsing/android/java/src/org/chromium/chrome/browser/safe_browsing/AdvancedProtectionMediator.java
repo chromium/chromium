@@ -35,6 +35,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class AdvancedProtectionMediator implements OsAdditionalSecurityProvider.Observer {
     private final WindowAndroid mWindowAndroid;
     private final Class<? extends Fragment> mPrivacySettingsFragmentClass;
+    // Cache the provider reference at construction so destroy() unregisters from the same
+    // instance it registered on. OsAdditionalSecurityUtil#getProviderInstance() can return a
+    // different object across calls (e.g. after a test's ResettersForTesting nulls the static),
+    // which would otherwise orphan this observer and leak the owning Activity.
+    private final @Nullable OsAdditionalSecurityProvider mProvider;
     private boolean mShouldShowMessageOnStartup;
 
     public AdvancedProtectionMediator(
@@ -42,38 +47,36 @@ public class AdvancedProtectionMediator implements OsAdditionalSecurityProvider.
         mWindowAndroid = windowAndroid;
         mPrivacySettingsFragmentClass = privacySettingsFragmentClass;
 
-        var provider = OsAdditionalSecurityUtil.getProviderInstance();
-        if (provider != null) {
-            provider.addObserver(this);
+        mProvider = OsAdditionalSecurityUtil.getProviderInstance();
+        if (mProvider != null) {
+            mProvider.addObserver(this);
 
             boolean cachedAdvancedProtectionSetting =
                     ChromeSharedPreferences.getInstance()
                             .readBoolean(
                                     ChromePreferenceKeys.OS_ADVANCED_PROTECTION_SETTING,
                                     /* defaultValue= */ false);
-            boolean advancedProtectionSetting = provider.isAdvancedProtectionRequestedByOs();
+            boolean advancedProtectionSetting = mProvider.isAdvancedProtectionRequestedByOs();
             if (cachedAdvancedProtectionSetting != advancedProtectionSetting) {
-                updatePref(provider);
+                updatePref(mProvider);
                 mShouldShowMessageOnStartup = advancedProtectionSetting;
             }
         }
 
-        recordStartupHistograms(provider);
+        recordStartupHistograms(mProvider);
     }
 
     public void destroy() {
-        var provider = OsAdditionalSecurityUtil.getProviderInstance();
-        if (provider != null) {
-            provider.removeObserver(this);
+        if (mProvider != null) {
+            mProvider.removeObserver(this);
         }
     }
 
     public boolean showMessageOnStartupIfNeeded() {
-        var provider = OsAdditionalSecurityUtil.getProviderInstance();
-        if (provider == null) return false;
+        if (mProvider == null) return false;
 
-        if (mShouldShowMessageOnStartup && provider.isAdvancedProtectionRequestedByOs()) {
-            enqueueMessageAdvancedProtectionRequested(provider);
+        if (mShouldShowMessageOnStartup && mProvider.isAdvancedProtectionRequestedByOs()) {
+            enqueueMessageAdvancedProtectionRequested(mProvider);
             return true;
         }
         return false;
@@ -81,12 +84,11 @@ public class AdvancedProtectionMediator implements OsAdditionalSecurityProvider.
 
     @Override
     public void onAdvancedProtectionOsSettingChanged() {
-        var provider = OsAdditionalSecurityUtil.getProviderInstance();
-        if (provider == null) return;
+        if (mProvider == null) return;
 
-        updatePref(provider);
-        if (provider.isAdvancedProtectionRequestedByOs()) {
-            enqueueMessageAdvancedProtectionRequested(provider);
+        updatePref(mProvider);
+        if (mProvider.isAdvancedProtectionRequestedByOs()) {
+            enqueueMessageAdvancedProtectionRequested(mProvider);
         }
     }
 
