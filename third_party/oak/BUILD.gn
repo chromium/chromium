@@ -9,6 +9,7 @@ proto_sources = [
   "chromium/proto/attestation/endorsement.proto",
   "chromium/proto/attestation/eventlog.proto",
   "chromium/proto/attestation/evidence.proto",
+  "chromium/proto/attestation/tcb_version.proto",
   "chromium/proto/chromium_types/any.proto",
   "chromium/proto/chromium_types/timestamp.proto",
   "chromium/proto/crypto/certificate.proto",
@@ -40,4 +41,17 @@ proto_test_extras("oak_proto_test_extras") {
   proto_in_dir = "chromium"
   deps = [ ":oak_proto" ]
   extras_deps = [ ":oak_proto_extras" ]
+}
+
+proto_library("proto_attestation_reference_value_proto") {
+  sources = [ "chromium/proto/attestation/reference_value.proto" ]
+
+  deps = [
+    ":oak_proto",
+    "//third_party/protobuf:duration_proto",
+    "//third_party/protobuf:timestamp_proto",
+  ]
+
+  proto_in_dir = "chromium"
+  cc_generator_options = "lite"
 }

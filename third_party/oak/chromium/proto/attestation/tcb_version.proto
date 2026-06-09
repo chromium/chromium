@@ -1,0 +1,45 @@
+//
+// Copyright 2024 The Project Oak Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package oak.attestation.v1;
+
+option go_package = "proto/oak/attestation/v1";
+option java_multiple_files = true;
+option java_package = "com.google.oak.attestation.v1";
+
+// The versions of the components in the AMD SEV-SNP platform Trusted Compute
+// Base (TCB).
+message TcbVersion {
+  // The current security version number (SVN) of the secure processor (PSP)
+  // bootloader.
+  uint32 boot_loader = 1;
+
+  // The current SVN of the PSP operating system.
+  uint32 tee = 2;
+
+  // The current SVN of the SNP firmware.
+  uint32 snp = 3;
+
+  // The lowest current patch level of all the CPU cores.
+  uint32 microcode = 4;
+
+  // The current SVN of the Flexible Memory Controller (FMC) firmware. FMC is
+  // a component in the CPU that manages communication between the processor
+  // and memory. Field is used with AMD Turin CPUs, otherwise it must be zero
+  // or unpopulated.
+  uint32 fmc = 5;
+}
