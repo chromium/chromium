@@ -349,8 +349,6 @@ static_library("ui") {
     "//chrome/browser/ui/browser_window/internal",
     "//chrome/browser/ui/cookie_controls",
     "//chrome/browser/ui/digital_credentials",
-    "//chrome/browser/ui/extensions",
-    "//chrome/browser/ui/extensions:impl",
     "//chrome/browser/ui/file_system_access",
     "//chrome/browser/ui/file_system_access:impl",
     "//chrome/browser/ui/find_bar",
@@ -752,6 +750,18 @@ static_library("ui") {
     deps += [ "//chrome/browser/rlz" ]
   }
 
+  if (enable_extensions_core) {
+    deps += [
+      "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/extensions:impl",
+    ]
+    allow_circular_includes_from += [
+      # TODO(crbug.com/420905611): Remove this circular dependency when
+      # c/b/ui/browser_dialogs.h gets componentized.
+      "//chrome/browser/ui/extensions:impl",
+    ]
+  }
+
   if (!is_android) {
     deps += [
       "//chrome/browser/ui/views/relaunch_notification",
@@ -952,10 +962,6 @@ static_library("ui") {
     # - c/b/ui/chrome_pages.h and browser.h
     # - c/b/ui/webui/password_manager/password_manager_ui.h
     "//chrome/browser/ui/passwords:impl",
-
-    # TODO(crbug.com/420905611): Remove this circular dependency when
-    # c/b/ui/browser_dialogs.h gets componentized.
-    "//chrome/browser/ui/extensions:impl",
 
     # ssl:impl includes headers from //chrome/browser/ui that can't be
     # split out yet (e.g. browser.h, browser_navigator.h, tab_strip_model.h).

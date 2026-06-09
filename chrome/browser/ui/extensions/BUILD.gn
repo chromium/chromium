@@ -5,6 +5,8 @@
 import("//build/config/ui.gni")
 import("//extensions/buildflags/buildflags.gni")
 
+assert(enable_extensions_core)
+
 source_set("extension_enable_flow_delegate") {
   sources = [ "extension_enable_flow_delegate.h" ]
 }
@@ -15,54 +17,51 @@ source_set("extension_popup_types") {
 }
 
 source_set("extensions") {
-  sources = []
+  sources = [
+    "controlled_home_dialog_controller.h",
+    "controlled_home_dialog_controller_interface.h",
+    "extension_action_view_model.h",
+    "extension_dialog_utils.h",
+    "extension_install_ui.h",
+    "extension_installed_watcher.h",
+    "extension_post_install_dialog.h",
+    "extension_post_install_dialog_model.h",
+    "extensions_container.h",
+    "extensions_dialogs.h",
+    "extensions_menu_view_model.h",
+    "extensions_toolbar_view_model.h",
+    "icon_with_badge_image_source.h",
+    "reload_page_dialog_controller.h",
+    "settings_overridden_dialog.h",
+  ]
+
   public_deps = []
 
-  if (enable_extensions_core) {
-    sources += [
-      "controlled_home_dialog_controller.h",
-      "controlled_home_dialog_controller_interface.h",
-      "extension_action_view_model.h",
-      "extension_dialog_utils.h",
-      "extension_install_ui.h",
-      "extension_installed_watcher.h",
-      "extension_post_install_dialog.h",
-      "extension_post_install_dialog_model.h",
-      "extensions_container.h",
-      "extensions_dialogs.h",
-      "extensions_menu_view_model.h",
-      "extensions_toolbar_view_model.h",
-      "icon_with_badge_image_source.h",
-      "reload_page_dialog_controller.h",
-      "settings_overridden_dialog.h",
-    ]
-
-    if (is_android) {
-      sources += [ "extension_install_ui_android.h" ]
-      public_deps += [ "//components/messages/android" ]
-    }
-
-    if (is_win || is_mac || is_linux || is_chromeos) {
-      sources += [ "extension_install_ui_desktop.h" ]
-    }
-    public_deps += [
-      ":extension_popup_types",
-      "//base",
-      "//chrome/browser/download",
-      "//chrome/browser/tab_list",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/toolbar",
-      "//extensions/browser",
-      "//extensions/common",
-      "//skia",
-      "//ui/base:types",
-      "//ui/base/interaction",
-      "//ui/base/mojom:ui_base_types",
-      "//ui/base/unowned_user_data",
-      "//ui/gfx",
-      "//ui/gfx/geometry",
-    ]
+  if (is_android) {
+    sources += [ "extension_install_ui_android.h" ]
+    public_deps += [ "//components/messages/android" ]
   }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "extension_install_ui_desktop.h" ]
+  }
+  public_deps += [
+    ":extension_popup_types",
+    "//base",
+    "//chrome/browser/download",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/toolbar",
+    "//extensions/browser",
+    "//extensions/common",
+    "//skia",
+    "//ui/base:types",
+    "//ui/base/interaction",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/base/unowned_user_data",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
 
   if (enable_extensions) {
     sources += [
@@ -105,114 +104,109 @@ source_set("extensions") {
   }
 }
 
-if (enable_extensions_core) {
-  source_set("extension_post_install_dialog") {
-    sources = [
-      "extension_post_install_dialog.cc",
-      "extension_post_install_dialog.h",
-    ]
-    public_deps = [ ":extensions" ]
-    deps = [
-      "//base:i18n",
-      "//chrome/browser/extensions",
-      "//chrome/browser/profiles:profile",
-      "//chrome/common",
-      "//ui/base",
-      "//ui/strings",
-    ]
-    if (is_android) {
-      deps += [ "//components/prefs" ]
-    }
-    if (toolkit_views) {
-      deps += [ "//chrome/browser/ui/views/extensions:extension_post_install_dialog_view_utils" ]
-    }
+source_set("extension_post_install_dialog") {
+  sources = [
+    "extension_post_install_dialog.cc",
+    "extension_post_install_dialog.h",
+  ]
+  public_deps = [ ":extensions" ]
+  deps = [
+    "//base:i18n",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//ui/base",
+    "//ui/strings",
+  ]
+  if (is_android) {
+    deps += [ "//components/prefs" ]
   }
-}  # end of if (enable_extensions_core)
+  if (toolkit_views) {
+    deps += [ "//chrome/browser/ui/views/extensions:extension_post_install_dialog_view_utils" ]
+  }
+}
 
 source_set("impl") {
-  sources = []
-  deps = [ ":extensions" ]
-  if (enable_extensions_core) {
+  sources = [
+    "controlled_home_dialog.cc",
+    "controlled_home_dialog_controller.cc",
+    "download_danger_dialog.cc",
+    "download_open_dialog.cc",
+    "extension_action_view_model.cc",
+    "extension_install_ask_parent_dialog.cc",
+    "extension_install_blocked_dialog.cc",
+    "extension_install_friction_dialog.cc",
+    "extension_install_ui.cc",
+    "extension_installed_watcher.cc",
+    "extension_multiple_uninstall_dialog.cc",
+    "extension_post_install_dialog_model.cc",
+    "extension_uninstall_dialog_impl.cc",
+    "extensions_container.cc",
+    "extensions_menu_view_model.cc",
+    "extensions_toolbar_view_model.cc",
+    "icon_with_badge_image_source.cc",
+    "reload_page_dialog_controller.cc",
+    "settings_overridden_dialog.cc",
+    "upload_extension_to_account_dialog.cc",
+  ]
+  deps = [
+    ":extension_post_install_dialog",
+    ":extensions",
+    "//chrome/browser/extensions",
+    "//chrome/browser/image_fetcher",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/safe_browsing:advanced_protection",
+    "//chrome/browser/signin",
+    "//chrome/browser/supervised_user",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui:simple_message_box_headers",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/dialogs",
+    "//chrome/browser/ui/toolbar",
+    "//components/image_fetcher/core",
+    "//components/sessions",
+    "//components/tabs:public",
+    "//components/vector_icons",
+    "//extensions/common",
+  ]
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "extension_install_ui_desktop.cc" ]
+    deps += [
+      "//chrome/app:generated_resources",
+      "//chrome/browser/prefs",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common",
+      "//components/custom_handlers",
+      "//components/infobars/content",
+      "//content/public/browser",
+      "//extensions/browser/install",
+      "//extensions/common",
+      "//ui/base",
+    ]
+  }
+  if (is_android) {
     sources += [
-      "controlled_home_dialog.cc",
-      "controlled_home_dialog_controller.cc",
-      "download_danger_dialog.cc",
-      "download_open_dialog.cc",
-      "extension_action_view_model.cc",
-      "extension_install_ask_parent_dialog.cc",
-      "extension_install_blocked_dialog.cc",
-      "extension_install_friction_dialog.cc",
-      "extension_install_ui.cc",
-      "extension_installed_watcher.cc",
-      "extension_multiple_uninstall_dialog.cc",
-      "extension_post_install_dialog_model.cc",
-      "extension_uninstall_dialog_impl.cc",
-      "extensions_container.cc",
-      "extensions_menu_view_model.cc",
-      "extensions_toolbar_view_model.cc",
-      "icon_with_badge_image_source.cc",
-      "reload_page_dialog_controller.cc",
-      "settings_overridden_dialog.cc",
-      "upload_extension_to_account_dialog.cc",
+      "extension_dialog_utils_android.cc",
+      "extension_install_ui_android.cc",
     ]
     deps += [
-      ":extension_post_install_dialog",
-      "//chrome/browser/extensions",
-      "//chrome/browser/image_fetcher",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/profiles:profile_util",
-      "//chrome/browser/safe_browsing:advanced_protection",
-      "//chrome/browser/signin",
-      "//chrome/browser/supervised_user",
-      "//chrome/browser/tab_list",
-      "//chrome/browser/ui:simple_message_box_headers",
-      "//chrome/browser/ui:ui_features",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/color:color_headers",
-      "//chrome/browser/ui/dialogs",
-      "//chrome/browser/ui/toolbar",
-      "//components/image_fetcher/core",
-      "//components/sessions",
-      "//components/tabs:public",
-      "//components/vector_icons",
+      "//chrome/browser/ui/android/tab_model",
       "//extensions/common",
+      "//ui/android",
     ]
-
-    if (is_win || is_mac || is_linux || is_chromeos) {
-      sources += [ "extension_install_ui_desktop.cc" ]
-      deps += [
-        "//chrome/app:generated_resources",
-        "//chrome/browser/prefs",
-        "//chrome/browser/themes",
-        "//chrome/browser/ui/navigator",
-        "//chrome/browser/ui/tabs:tab_strip",
-        "//chrome/common",
-        "//components/custom_handlers",
-        "//components/infobars/content",
-        "//content/public/browser",
-        "//extensions/browser/install",
-        "//extensions/common",
-        "//ui/base",
-      ]
-    }
-    if (is_android) {
-      sources += [
-        "extension_dialog_utils_android.cc",
-        "extension_install_ui_android.cc",
-      ]
-      deps += [
-        "//chrome/browser/ui/android/tab_model",
-        "//extensions/common",
-        "//ui/android",
-      ]
-    }
-    if (toolkit_views) {
-      sources += [ "extension_dialog_utils_views.cc" ]
-      deps += [ "//chrome/browser/ui/views/frame:toolbar_button_provider" ]
-    }
-    if (is_win || is_mac) {
-      deps += [ "//chrome/browser/ui/views/extensions:settings_overridden_dialog_view_utils" ]
-    }
+  }
+  if (toolkit_views) {
+    sources += [ "extension_dialog_utils_views.cc" ]
+    deps += [ "//chrome/browser/ui/views/frame:toolbar_button_provider" ]
+  }
+  if (is_win || is_mac) {
+    deps += [ "//chrome/browser/ui/views/extensions:settings_overridden_dialog_view_utils" ]
   }
 
   if (enable_extensions) {
@@ -318,31 +312,24 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = []
-  deps = []
 
   # Tests for Win, Mac, Linux, Chrome OS and desktop Android.
-  # TODO(crbug.com/469417243): This file is incorrectly depended on by
-  # non-desktop-Android. Refactor other BUILD.gn files so we can
-  # assert(enable_extensions_core) in this file and eliminate if()s.
-  if (enable_extensions_core) {
-    sources += [
-      "extension_action_view_model_browsertest.cc",
-      "extensions_menu_view_model_browsertest.cc",
-      "extensions_toolbar_view_model_browsertest.cc",
-    ]
+  sources = [
+    "extension_action_view_model_browsertest.cc",
+    "extensions_menu_view_model_browsertest.cc",
+    "extensions_toolbar_view_model_browsertest.cc",
+  ]
 
-    deps += [
-      ":extensions",
-      "//base/test:test_support",
-      "//chrome/browser/extensions",
-      "//chrome/test:test_support",
-      "//content/test:test_support",
-      "//extensions:test_support",
-      "//net:test_support",
-      "//testing/gtest",
-    ]
-  }
+  deps = [
+    ":extensions",
+    "//base/test:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
 
   if (!is_android) {
     sources += [

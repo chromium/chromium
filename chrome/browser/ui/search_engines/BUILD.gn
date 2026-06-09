@@ -78,7 +78,6 @@ source_set("unit_tests") {
   deps = [
     ":search_engines",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/extensions",
     "//chrome/test:test_support",
     "//components/omnibox/common",
     "//components/sync_preferences:test_support",
@@ -91,6 +90,7 @@ source_set("unit_tests") {
           [ "default_search_extension_controlled_controller_unittest.cc" ]
       deps += [
         "//chrome/browser/search_engines",
+        "//chrome/browser/ui/extensions",
         "//chrome/browser/ui/tabs:test_support",
         "//components/tabs:test_support",
       ]

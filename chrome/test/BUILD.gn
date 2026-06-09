@@ -1900,7 +1900,6 @@ if (is_android) {
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",
-      "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/plus_addresses:browser_tests",
@@ -2175,6 +2174,7 @@ if (is_android) {
         "//chrome/browser/extensions",
         "//chrome/browser/extensions:browser_tests",
         "//chrome/browser/omnibox",
+        "//chrome/browser/ui/extensions",
         "//chrome/browser/ui/extensions:browser_tests",
         "//chrome/browser/ui/omnibox",
       ]
