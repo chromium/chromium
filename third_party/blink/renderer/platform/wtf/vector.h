@@ -1799,9 +1799,9 @@ Vector<T, InlineCapacity, Allocator>::Vector(
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
 Vector<T, InlineCapacity, Allocator>::Vector(base::span<const U> other)
-    : Base(other.size()) {
+    : Base(base::checked_cast<wtf_size_t>(other.size())) {
   ANNOTATE_NEW_BUFFER(data(), capacity(), other.size());
-  size_ = other.size();
+  size_ = base::checked_cast<wtf_size_t>(other.size());
   TypeOperations::UninitializedCopy(other, base::span(*this),
                                     VectorOperationOrigin::kConstruction);
 }
@@ -1810,7 +1810,7 @@ template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename Range, typename Proj>
   requires VectorCanAssignFromRange<T, InlineCapacity, Allocator, Range, Proj>
 Vector<T, InlineCapacity, Allocator>::Vector(Range&& other, Proj proj)
-    : Base(std::ranges::size(other)) {
+    : Base(base::checked_cast<wtf_size_t>(std::ranges::size(other))) {
   // Note that `size(other)` may become smaller if `other` is a hash table
   // with WeakMember keys and `Base(size(other))` above caused GC which
   // removed some entries from `other`, see crbug.com/40448463. This won't
@@ -1820,7 +1820,7 @@ Vector<T, InlineCapacity, Allocator>::Vector(Range&& other, Proj proj)
   TypeOperations::UninitializedTransform(
       std::ranges::begin(other), std::ranges::end(other), data(),
       VectorOperationOrigin::kConstruction, std::move(proj));
-  size_ = std::ranges::size(other);
+  size_ = base::checked_cast<wtf_size_t>(std::ranges::size(other));
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
