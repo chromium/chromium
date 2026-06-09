@@ -42,14 +42,19 @@ class MacPort(base.Port):
         'mac14-arm64',
         'mac15',
         'mac15-arm64',
+        'mac26',
+        'mac26-arm64',
     )
     port_name = 'mac'
 
     FALLBACK_PATHS = {}
 
-    FALLBACK_PATHS['mac15'] = ['mac']
+    FALLBACK_PATHS['mac26'] = ['mac']
+    FALLBACK_PATHS['mac26-arm64'] = ['mac-mac26-arm64'
+                                     ] + FALLBACK_PATHS['mac26']
+    FALLBACK_PATHS['mac15'] = ['mac-mac15'] + FALLBACK_PATHS['mac26']
     FALLBACK_PATHS['mac15-arm64'] = ['mac-mac15-arm64'
-                                     ] + FALLBACK_PATHS['mac15']
+                                     ] + FALLBACK_PATHS['mac26-arm64']
     FALLBACK_PATHS['mac14'] = ['mac-mac14'] + FALLBACK_PATHS['mac15']
     FALLBACK_PATHS['mac14-arm64'] = ['mac-mac14-arm64'
                                      ] + FALLBACK_PATHS['mac15-arm64']

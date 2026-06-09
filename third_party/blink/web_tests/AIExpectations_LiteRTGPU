@@ -1,5 +1,5 @@
 # tags: [ mac win linux ]
-# tags: [ mac15-arm64 mac15 mac14-arm64 mac14 ]
+# tags: [ mac26-arm64 mac26 mac15-arm64 mac15 mac14-arm64 mac14 ]
 # tags: [ x86_64 arm64 ]
 # tags: [ release debug ]
 # results: [ Timeout Crash Pass Failure Skip ]

@@ -155,9 +155,9 @@ class PlatformInfo:
     def _determine_mac_version(self, mac_version_string):
         major_release = int(mac_version_string.split('.')[0])
         minor_release = int(mac_version_string.split('.')[1])
-        assert 12 <= major_release, 'Unsupported mac OS version: %s' % mac_version_string
+        assert 13 <= major_release, 'Unsupported mac OS version: %s' % mac_version_string
         return 'mac{major_release}'.format(
-            major_release=min(15, major_release))
+            major_release=min(26, major_release))
 
     def _determine_win_version(self, win_version_tuple):
         if win_version_tuple[:2] == (10, 0):

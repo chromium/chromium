@@ -48,7 +48,7 @@ def fake_sys(platform_str='darwin', windows_version_tuple=None):
     return FakeSysModule()
 
 
-def fake_platform(mac_version_string='12.3.1',
+def fake_platform(mac_version_string='13.3.1',
                   release_string='bar',
                   win_version_string=None):
     class FakePlatformModule(object):
@@ -111,7 +111,7 @@ class TestPlatformInfo(unittest.TestCase):
         self.assertFalse(info.is_mac())
         self.assertFalse(info.is_win())
 
-        info = self.make_info(fake_sys('darwin'), fake_platform('12.3.1'))
+        info = self.make_info(fake_sys('darwin'), fake_platform('13.3.1'))
         self.assertEqual(info.os_name, 'mac')
         self.assertFalse(info.is_linux())
         self.assertTrue(info.is_mac())
@@ -188,7 +188,7 @@ class TestPlatformInfo(unittest.TestCase):
 
     def test_total_bytes_memory(self):
         info = self.make_info(fake_sys('darwin'),
-                              fake_platform('12.3.1'),
+                              fake_platform('13.3.1'),
                               executive=fake_executive('1234'))
         self.assertEqual(info.total_bytes_memory(), 1234)
 

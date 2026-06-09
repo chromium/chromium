@@ -180,7 +180,9 @@ group("expectations") {
       "platform/mac-mac13-arm64/",
       "platform/mac-mac14/",
       "platform/mac-mac14-arm64/",
+      "platform/mac-mac15/",
       "platform/mac-mac15-arm64/",
+      "platform/mac-mac26-arm64/",
     ]
   } else if (is_android) {
     # The dependent target usually only needs one of `android/` (Clank) or

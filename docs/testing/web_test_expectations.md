@@ -280,11 +280,7 @@ The syntax of a line is roughly:
   `Bug(username)`.
 * If no modifiers are specified, the test applies to all of the configurations
   applicable to that file.
-* If specified, modifiers can be one of `Fuchsia`, `Mac`, `Mac13`,
-  `Mac13-arm64`, `Mac14`, `Mac14-arm64`, `Mac15`, `Mac15-arm64`, `Linux`, `Win`,
-  `Win10.20h2`, `Win11`, `Win11-arm64`, `Android`, `Webview`, `iOS26-Simulator`,
-  and, optionally, `Release`, or `Debug`.
-  Check the `# tags: ...` comments [at the top of each
+* Check the `# tags: ...` comments [at the top of each
   file](/third_party/blink/web_tests/TestExpectations#1) to see which modifiers
   that file supports.
 * Some modifiers are meta keywords, e.g. `Win` represents `Win10.20h2` and `Win11`.
