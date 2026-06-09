@@ -4,6 +4,7 @@
 
 #import "ios/web_view/internal/sync/web_view_device_info_sync_service_factory.h"
 
+#import <optional>
 #import <utility>
 
 #import "base/feature_list.h"
@@ -102,6 +103,11 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   syncer::DeviceInfo::GlicExperimentalTriggeringState
   GetGlicExperimentalTriggeringState() const override {
     return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
+  }
+
+  // syncer::DeviceInfoSyncClient:
+  std::optional<int> GetGlicExperimentalTriggeringVersion() const override {
+    return std::nullopt;
   }
 
  private:

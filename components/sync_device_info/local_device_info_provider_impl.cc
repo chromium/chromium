@@ -44,6 +44,8 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
       sync_client_->GetSendTabToSelfReceivingEnabled());
   local_device_info_->set_glic_experimental_triggering_state(
       sync_client_->GetGlicExperimentalTriggeringState());
+  local_device_info_->set_glic_experimental_triggering_version(
+      sync_client_->GetGlicExperimentalTriggeringVersion());
   local_device_info_->set_send_tab_to_self_receiving_type(
       sync_client_->GetSendTabToSelfReceivingType());
   local_device_info_->set_sharing_info(sync_client_->GetLocalSharingInfo());
@@ -156,7 +158,8 @@ void LocalDeviceInfoProviderImpl::Initialize(
       auto_sign_out_last_signin_timestamp,
       sync_client_->GetDesktopToIOSPromoReceivingEnabled(),
       sync_client_->GetDesktopToIOSPromoReceivingTypes(),
-      sync_client_->GetGlicExperimentalTriggeringState());
+      sync_client_->GetGlicExperimentalTriggeringState(),
+      sync_client_->GetGlicExperimentalTriggeringVersion());
 
   full_hardware_class_ = full_hardware_class;
 

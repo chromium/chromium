@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/public/glic_enabling.h"
 
+#include <optional>
 #include <ranges>
 
 #include "base/byte_size.h"
@@ -116,6 +117,8 @@ constexpr char kDefaultEnabledLocales[] =
     ;
 
 namespace {
+
+constexpr int kExperimentalTriggeringVersion = 1;
 
 signin::Tribool CanUseGeminiInChrome(AccountCapabilities& capabilities) {
   return capabilities.can_use_gemini_in_chrome();
@@ -1126,6 +1129,14 @@ GlicEnabling::GetExperimentalTriggeringState() const {
     return syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady;
   }
   return syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn;
+}
+
+std::optional<int> GlicEnabling::GetExperimentalTriggeringVersion() const {
+  if (GetExperimentalTriggeringState() ==
+      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable) {
+    return std::nullopt;
+  }
+  return kExperimentalTriggeringVersion;
 }
 
 RequiredExperimentalOptIn GlicEnabling::GetRequiredExperimentalOptIn() const {

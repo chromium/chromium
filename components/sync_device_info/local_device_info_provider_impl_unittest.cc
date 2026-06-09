@@ -77,6 +77,10 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
               GetGlicExperimentalTriggeringState,
               (),
               (const override));
+  MOCK_METHOD(std::optional<int>,
+              GetGlicExperimentalTriggeringVersion,
+              (),
+              (const override));
 };
 
 class LocalDeviceInfoProviderImplTest : public testing::Test {
@@ -284,6 +288,25 @@ TEST_F(LocalDeviceInfoProviderImplTest, ExperimentalTriggeringState) {
       provider_->GetLocalDeviceInfo()->glic_experimental_triggering_state(),
       DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
 }
+TEST_F(LocalDeviceInfoProviderImplTest, ExperimentalTriggeringVersion) {
+  ON_CALL(device_info_sync_client_, GetGlicExperimentalTriggeringVersion())
+      .WillByDefault(Return(std::nullopt));
+
+  InitializeProvider();
+
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  EXPECT_EQ(
+      provider_->GetLocalDeviceInfo()->glic_experimental_triggering_version(),
+      std::nullopt);
+
+  ON_CALL(device_info_sync_client_, GetGlicExperimentalTriggeringVersion())
+      .WillByDefault(Return(std::optional<int>(42)));
+
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  EXPECT_EQ(
+      provider_->GetLocalDeviceInfo()->glic_experimental_triggering_version(),
+      std::optional<int>(42));
+}
 
 TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
   ON_CALL(device_info_sync_client_, GetLocalSharingInfo())
@@ -368,7 +391,9 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
       /*desktop_to_ios_promo_receiving_types=*/
       MobilePromoOnDesktopPromoTypeSet{},
       /*glic_experimental_triggering_state=*/
-      DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+      DeviceInfo::GlicExperimentalTriggeringState::kUnavailable,
+      /*glic_experimental_triggering_version=*/
+      std::nullopt);
 
   // |kFCMRegistrationToken|, |kInterestedDataTypes|,
   // and |paask_info| should be taken from |device_info_restored_from_store|

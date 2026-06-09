@@ -160,6 +160,11 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
   }
 
+  // syncer::DeviceInfoSyncClient:
+  std::optional<int> GetGlicExperimentalTriggeringVersion() const override {
+    return std::nullopt;
+  }
+
  private:
   const raw_ptr<PrefService> prefs_;
   const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;

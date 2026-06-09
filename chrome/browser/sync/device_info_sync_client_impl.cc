@@ -5,6 +5,7 @@
 #include "chrome/browser/sync/device_info_sync_client_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -117,6 +118,15 @@ DeviceInfoSyncClientImpl::GetGlicExperimentalTriggeringState() const {
     return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
   }
   return service->enabling().GetExperimentalTriggeringState();
+}
+
+std::optional<int>
+DeviceInfoSyncClientImpl::GetGlicExperimentalTriggeringVersion() const {
+  auto* service = glic::GlicKeyedService::Get(profile_);
+  if (!service) {
+    return std::nullopt;
+  }
+  return service->enabling().GetExperimentalTriggeringVersion();
 }
 
 }  // namespace browser_sync

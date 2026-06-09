@@ -55,8 +55,14 @@ class DeviceInfoSyncClient {
   virtual bool GetDesktopToIOSPromoReceivingEnabled() const = 0;
   virtual MobilePromoOnDesktopPromoTypeSet GetDesktopToIOSPromoReceivingTypes()
       const = 0;
+
+  // Returns the local Glic experimental triggering opt-in state.
   virtual DeviceInfo::GlicExperimentalTriggeringState
   GetGlicExperimentalTriggeringState() const = 0;
+
+  // Returns the local Glic experimental triggering protocol version supported
+  // by the current client, or std::nullopt if unavailable.
+  virtual std::optional<int> GetGlicExperimentalTriggeringVersion() const = 0;
 };
 
 }  // namespace syncer

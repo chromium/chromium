@@ -4,6 +4,8 @@
 
 #include "components/sync_device_info/fake_local_device_info_provider.h"
 
+#include <optional>
+
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "components/sync/base/data_type.h"
@@ -40,7 +42,9 @@ FakeLocalDeviceInfoProvider::FakeLocalDeviceInfoProvider()
                    /*desktop_to_ios_promo_receiving_types=*/
                    MobilePromoOnDesktopPromoTypeSet{},
                    /*glic_experimental_triggering_state=*/
-                   DeviceInfo::GlicExperimentalTriggeringState::kUnavailable) {}
+                   DeviceInfo::GlicExperimentalTriggeringState::kUnavailable,
+                   /*glic_experimental_triggering_version=*/
+                   std::nullopt) {}
 
 FakeLocalDeviceInfoProvider::~FakeLocalDeviceInfoProvider() = default;
 

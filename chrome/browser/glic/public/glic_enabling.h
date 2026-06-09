@@ -449,6 +449,10 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   syncer::DeviceInfo::GlicExperimentalTriggeringState
   GetExperimentalTriggeringState() const;
 
+  // Returns the version of the Glic experimental triggering protocol
+  // supported by the current client, or std::nullopt if unavailable.
+  std::optional<int> GetExperimentalTriggeringVersion() const;
+
   // Returns the required opt-in state for experimental triggering.
   RequiredExperimentalOptIn GetRequiredExperimentalOptIn() const;
 

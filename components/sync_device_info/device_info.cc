@@ -84,7 +84,8 @@ DeviceInfo::DeviceInfo(
     bool desktop_to_ios_promo_receiving_enabled,
     const MobilePromoOnDesktopPromoTypeSet&
         desktop_to_ios_promo_receiving_types,
-    GlicExperimentalTriggeringState glic_experimental_triggering_state)
+    GlicExperimentalTriggeringState glic_experimental_triggering_state,
+    std::optional<int> glic_experimental_triggering_version)
     : guid_(guid),
       client_name_(client_name),
       chrome_version_(chrome_version),
@@ -109,7 +110,9 @@ DeviceInfo::DeviceInfo(
           desktop_to_ios_promo_receiving_enabled),
       desktop_to_ios_promo_receiving_types_(
           desktop_to_ios_promo_receiving_types),
-      glic_experimental_triggering_state_(glic_experimental_triggering_state) {}
+      glic_experimental_triggering_state_(glic_experimental_triggering_state),
+      glic_experimental_triggering_version_(
+          glic_experimental_triggering_version) {}
 
 DeviceInfo::DeviceInfo(const DeviceInfo& other) = default;
 
@@ -198,6 +201,10 @@ DeviceInfo::glic_experimental_triggering_state() const {
   return glic_experimental_triggering_state_;
 }
 
+std::optional<int> DeviceInfo::glic_experimental_triggering_version() const {
+  return glic_experimental_triggering_version_;
+}
+
 const std::optional<DeviceInfo::SharingInfo>& DeviceInfo::sharing_info() const {
   return sharing_info_;
 }
@@ -250,6 +257,11 @@ void DeviceInfo::set_desktop_to_ios_promo_receiving_types(
 void DeviceInfo::set_glic_experimental_triggering_state(
     GlicExperimentalTriggeringState state) {
   glic_experimental_triggering_state_ = state;
+}
+
+void DeviceInfo::set_glic_experimental_triggering_version(
+    std::optional<int> version) {
+  glic_experimental_triggering_version_ = version;
 }
 
 void DeviceInfo::set_sharing_info(
