@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -451,21 +452,14 @@ void DocumentPipFrameView::UpdateOriginAndSecurity() {
 
   // Derive the security level and lock/security icon directly from the opener,
   // without a LocationBarModel.
-  security_state::SecurityLevel security_level = security_state::NONE;
-  std::unique_ptr<security_state::VisibleSecurityState> visible_security_state;
-  if (auto* helper =
-          SecurityStateTabHelper::FromWebContents(opener_web_contents)) {
-    security_level = helper->GetSecurityLevel();
-    visible_security_state = helper->GetVisibleSecurityState();
-  }
-  // GetSecurityVectorIcon() unconditionally dereferences the visible security
-  // state, so always pass a non-null instance. The helper may be absent when
-  // the opener WebContents has no SecurityStateTabHelper attached (e.g. in
-  // tests).
-  if (!visible_security_state) {
-    visible_security_state =
-        std::make_unique<security_state::VisibleSecurityState>();
-  }
+  auto* helper = SecurityStateTabHelper::FromWebContents(opener_web_contents);
+  // The opener always has a SecurityStateTabHelper attached (it is created by
+  // TabHelpers), so it is safe to read the security state directly.
+  CHECK(helper);
+  const security_state::SecurityLevel security_level =
+      helper->GetSecurityLevel();
+  const std::unique_ptr<security_state::VisibleSecurityState>
+      visible_security_state = helper->GetVisibleSecurityState();
   const ui::ColorId foreground_color_id =
       render_active_ ? kColorPipWindowForeground
                      : kColorPipWindowForegroundInactive;

@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_widget_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -17,6 +19,7 @@
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/non_client_view.h"
 
 namespace {
 
@@ -47,6 +50,13 @@ class DocumentPipHostTest : public ChromeViewsTestBase {
     opener_web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     ASSERT_TRUE(opener_web_contents_);
+
+    // In production the opener always has a SecurityStateTabHelper attached (by
+    // TabHelpers). DocumentPipFrameView reads it to render the origin chip's
+    // security icon and CHECK()s the invariant, so attach it here to satisfy
+    // that invariant and exercise the populated security-state path.
+    ChromeSecurityStateTabHelper::CreateForWebContents(
+        opener_web_contents_.get());
 
     // Host the opener WebContents inside a test top-level widget so that
     // `opener->GetTopLevelNativeWindow()` returns a real native window —
@@ -127,6 +137,21 @@ TEST_F(DocumentPipHostTest, WidgetIsCreated) {
   views::Widget* w = host->GetWidget();
   ASSERT_TRUE(w);
   EXPECT_FALSE(w->IsClosed());
+}
+
+// Regression test for crbug.com/519833771: opening the PiP window builds the
+// DocumentPipFrameView, which reads the opener's SecurityStateTabHelper to
+// render the origin chip security icon. With the helper attached (the
+// production invariant), this populated path must complete without crashing.
+TEST_F(DocumentPipHostTest, OpenPipWindow_PopulatesSecurityStateWithoutCrash) {
+  ASSERT_TRUE(SecurityStateTabHelper::FromWebContents(opener()));
+
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+
+  views::Widget* widget = host->GetWidget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->non_client_view()->frame_view());
 }
 
 // After CreatePipWidget(), the child WebContents is hosted in the
