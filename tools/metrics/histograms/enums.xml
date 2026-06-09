@@ -7796,6 +7796,7 @@ from previous Chrome versions.
   <int value="-2122006577" label="Sparky:enabled"/>
   <int value="-2121708425"
       label="AccessibilityOverscrollSettingFeature:enabled"/>
+  <int value="-2121135433" label="AndroidDesktopUASpoofAsChromeOS:disabled"/>
   <int value="-2120571448" label="TheoraVideoCodec:disabled"/>
   <int value="-2120124160" label="FirmwareUpdateJelly:disabled"/>
   <int value="-2120118296" label="ChromeManagementPageAndroid:enabled"/>
@@ -11667,6 +11668,7 @@ from previous Chrome versions.
   <int value="-881477103" label="PageInfoAboutThisSiteNonEn:enabled"/>
   <int value="-881447505" label="ash-disable-shelf-model-synchronization"/>
   <int value="-881054479" label="WebAssemblyStreaming:disabled"/>
+  <int value="-881037537" label="AndroidDesktopUASpoofAsChromeOS:enabled"/>
   <int value="-879055117" label="ClipboardContentSetting:enabled"/>
   <int value="-879031960" label="FetchKeepaliveTimeoutSetting:disabled"/>
   <int value="-879024703" label="pwa-update-dialog-for-name-and-icon:enabled"/>

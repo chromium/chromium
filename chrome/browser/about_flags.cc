@@ -11386,6 +11386,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidDesktopUAPlatformDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kAndroidDesktopUAPlatform)},
 
+    {"android-desktop-ua-spoof-as-chromeos",
+     flag_descriptions::kAndroidDesktopUASpoofAsChromeOSName,
+     flag_descriptions::kAndroidDesktopUASpoofAsChromeOSDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kAndroidDesktopUASpoofAsChromeOS)},
+
     {"android-desktop-webprefs-large-display",
      flag_descriptions::kAndroidDesktopWebPrefsLargeDisplaysName,
      flag_descriptions::kAndroidDesktopWebPrefsLargeDisplaysDescription,

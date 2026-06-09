@@ -5223,6 +5223,11 @@ inline constexpr char kAndroidDesktopUAPlatformDescription[] =
     "Enables the 'Android' platform client hint value for users on Desktop "
     "Android.";
 
+inline constexpr char kAndroidDesktopUASpoofAsChromeOSName[] =
+    "Spoof User-Agent as ChromeOS for Desktop Android";
+inline constexpr char kAndroidDesktopUASpoofAsChromeOSDescription[] =
+    "Enables spoofing the user agent as ChromeOS for Desktop Android users.";
+
 inline constexpr char kAndroidDesktopWebPrefsLargeDisplaysName[] =
     "Android Desktop WebPrefs for Large Displays";
 inline constexpr char kAndroidDesktopWebPrefsLargeDisplaysDescription[] =
