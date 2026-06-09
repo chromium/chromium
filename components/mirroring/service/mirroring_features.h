@@ -15,6 +15,11 @@ namespace features {
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 BASE_DECLARE_FEATURE(kCastEnableStreamingWithHiDPI);
 
+// Killswitch for two stage offer change.
+// crbug.com/510476629
+COMPONENT_EXPORT(MIRRORING_SERVICE)
+BASE_DECLARE_FEATURE(kCastStreamingOfferHardwareFirst);
+
 }  // namespace features
 }  // namespace mirroring
 

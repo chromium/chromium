@@ -2548,6 +2548,13 @@ inline constexpr char kCastStreamingHardwareVp9Description[] =
     "supported by the platform (regardless of recommendation). If disabled, "
     "hardware VP9 encoding will never be used.";
 
+inline constexpr char kCastStreamingOfferHardwareFirstName[] =
+    "Enables Cast Streaming to offer only hardware accelerated codecs first";
+inline constexpr char kCastStreamingOfferHardwareFirstDescription[] =
+    "When enabled, the Cast Streaming session negotiates only the hardware "
+    "accelerated codecs first, and only offers software encoding if the "
+    "receiver rejects the initial offer.";
+
 inline constexpr char kCastStreamingMediaVideoEncoderName[] =
     "Toggles using the media::VideoEncoder implementation for Cast Streaming";
 inline constexpr char kCastStreamingMediaVideoEncoderDescription[] =
