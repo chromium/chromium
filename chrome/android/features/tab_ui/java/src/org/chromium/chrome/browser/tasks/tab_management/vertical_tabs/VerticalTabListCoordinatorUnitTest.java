@@ -16,6 +16,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,8 +52,10 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -89,6 +92,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
+    @Mock private TabCreator mTabCreator;
     @Mock private Profile mProfile;
     @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock private TabGroupSyncService mTabGroupSyncService;
@@ -128,6 +132,7 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         when(mTabModel.iterator()).thenReturn(java.util.Collections.emptyIterator());
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
 
@@ -436,5 +441,31 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mVerticalTabsActionDelegate).openHubPane(PaneId.TAB_SWITCHER);
     }
 
-    // TODO(crbug.com/518001737): Add tests for footer's new tab button
+    @Test
+    @SmallTest
+    public void testNewTabButtonClick() {
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity, mTabModelSelector, mProfile, mVerticalTabsActionDelegate);
+        ImageButton newTabButton = mCoordinator.getView().findViewById(R.id.new_tab_button);
+        assertNotNull(newTabButton);
+        newTabButton.performClick();
+        verify(mTabModel).commitAllTabClosures();
+        verify(mTabCreator).launchNtp(TabLaunchType.FROM_CHROME_UI);
+    }
+
+    @Test
+    @SmallTest
+    public void testNewTabButtonClick_Incognito() {
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity, mTabModelSelector, mProfile, mVerticalTabsActionDelegate);
+        ImageButton newTabButton = mCoordinator.getView().findViewById(R.id.new_tab_button);
+        assertNotNull(newTabButton);
+        newTabButton.performClick();
+        verify(mTabModel, never()).commitAllTabClosures();
+        verify(mTabCreator).launchNtp(TabLaunchType.FROM_CHROME_UI);
+    }
 }
