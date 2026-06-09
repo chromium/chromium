@@ -38,6 +38,7 @@ source_set("unit_tests") {
     ":tracing",
     "//base/test:test_support",
     "//base/test:test_trace_processor",
+    "//components/variations",
     "//services/tracing/public/cpp",
     "//services/tracing/public/cpp/background_tracing",
     "//testing/gtest",
