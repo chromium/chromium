@@ -29,8 +29,8 @@ promise_test(async t => {
   await navigator.clipboard.writeText(sameText);
 
   await waitForUserActivation();
-  await promise_rejects_dom(t, 'DataError', readItem.getType('text/plain'),
-    'getType should throw DataError when clipboard was rewritten with ' +
+  await promise_rejects_dom(t, 'InvalidStateError', readItem.getType('text/plain'),
+    'getType should throw InvalidStateError when clipboard was rewritten with ' +
     'identical data');
 
 }, 'Rewriting same data still invalidates lazy read (new sequence number)');
@@ -61,8 +61,8 @@ promise_test(async t => {
   await navigator.clipboard.write([newItem]);
 
   await waitForUserActivation();
-  await promise_rejects_dom(t, 'DataError', readItem.getType('text/plain'),
-    'getType should throw DataError when the format has been removed');
+  await promise_rejects_dom(t, 'InvalidStateError', readItem.getType('text/plain'),
+    'getType should throw InvalidStateError when the format has been removed');
 
 }, 'Removing format from clipboard invalidates lazy read of that format');
 
@@ -89,8 +89,8 @@ promise_test(async t => {
 
   // Second getType() must throw despite prior success.
   await waitForUserActivation();
-  await promise_rejects_dom(t, 'DataError', readItem.getType('text/plain'),
-    'getType should throw DataError even if first call succeeded');
+  await promise_rejects_dom(t, 'InvalidStateError', readItem.getType('text/plain'),
+    'getType should throw InvalidStateError even if first call succeeded');
 
 }, 'Previously successful getType() still throws after clipboard change');
 </script>

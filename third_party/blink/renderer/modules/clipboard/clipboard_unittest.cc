@@ -85,10 +85,10 @@ class ClipboardItemGetType final
     ScriptPromise<Blob> result =
         clipboard_item->getType(script_state, expected_type_, exception_state);
 
-    // If getType() threw (e.g., DataError due to clipboard change detection),
-    // it returns an empty ScriptPromise. We must return a properly rejected
-    // promise instead, because ThenCallable's ToV8Traits will DCHECK on an
-    // empty promise.
+    // If getType() threw (e.g., InvalidStateError due to clipboard change
+    // detection), it returns an empty ScriptPromise. We must return a properly
+    // rejected promise instead, because ThenCallable's ToV8Traits will DCHECK
+    // on an empty promise.
     if (exception_state.HadException()) {
       return ScriptPromise<Blob>::RejectWithDOMException(
           script_state, MakeGarbageCollected<DOMException>(
@@ -816,7 +816,7 @@ TEST_F(ClipboardTest, ReadTextIsAsyncWhenClipboardReadIsSlow) {
 }
 
 // Verifies TOCTOU protection: clipboard change during format enumeration
-// causes getType() to reject with DataError.
+// causes getType() to reject with InvalidStateError.
 TEST_F(ClipboardTest, ClipboardChangeDuringReadRejectsGetType) {
   V8TestingScope scope;
   ExecutionContext* executionContext = GetFrame().DomWindow();

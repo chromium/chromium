@@ -167,7 +167,7 @@ void ClipboardItem::ResolveFormatData(const String& mime_type, Blob* blob) {
                             clipboard_changed);
   if (clipboard_changed) {
     representations_with_resolvers_.at(mime_type)->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kDataError,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
                                            "Clipboard data has changed"));
     return;
   }
@@ -175,7 +175,7 @@ void ClipboardItem::ResolveFormatData(const String& mime_type, Blob* blob) {
   base::UmaHistogramBoolean("Blink.Clipboard.LazyRead.NullBlobResolved", !blob);
   if (!blob) {
     representations_with_resolvers_.at(mime_type)->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kDataError,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
                                            "Failed to read clipboard data."));
     return;
   }
@@ -223,7 +223,7 @@ ScriptPromise<Blob> ClipboardItem::getType(ScriptState* script_state,
   base::UmaHistogramBoolean("Blink.Clipboard.LazyRead.GetTypeRejected",
                             clipboard_changed);
   if (clipboard_changed) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Clipboard data has changed");
     return ScriptPromise<Blob>();
   }

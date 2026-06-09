@@ -28,10 +28,10 @@ promise_test(async t => {
   // Change clipboard content
   await navigator.clipboard.writeText(changedText);
 
-  // getType() should throw DataError because the clipboard sequence changed.
-  await promise_rejects_dom(t, 'DataError', item.getType('text/plain'),
-    'getType should throw DataError when clipboard has changed');
+  // getType() should throw InvalidStateError because the clipboard sequence changed.
+  await promise_rejects_dom(t, 'InvalidStateError', item.getType('text/plain'),
+    'getType should throw InvalidStateError when clipboard has changed');
 
-}, 'Clipboard change detection should throw DataError');
+}, 'Clipboard change detection should throw InvalidStateError');
 </script>
 
