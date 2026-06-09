@@ -526,6 +526,7 @@
 - (void)willPushReauthenticationViewController {
   [self dismissActionSheetCoordinator];
   [self dismissTrustedVaultReauthenticationCoordinator];
+  [self dismissSigninCoordinator];
 }
 
 #pragma mark - WidgetPromoInstructionsCoordinatorDelegate
