@@ -288,4 +288,6 @@ const base::FeatureParam<bool> kMultiLineEnabled(&kNtpRealboxNext,
 
 BASE_FEATURE(kNtpRealboxCyclingPlaceholders, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNtpRealboxDynamicAiModeButton, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace ntp_realbox
