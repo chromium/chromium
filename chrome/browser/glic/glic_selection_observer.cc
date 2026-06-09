@@ -33,6 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -167,9 +168,12 @@ class GlicSelectionObserver::WidgetActionDelegate
   void OnCopy() override { observer_->OnCopy(); }
   void OnCopyLink() override { observer_->OnCopyLink(); }
   void OnPinToggled(bool is_pinned) override {
-    observer_->OnPinToggled(is_pinned);
+    observer_->OnWidgetPinToggled(is_pinned);
   }
+  // TODO(b/520398290): Remove dismiss related code.
   void OnDismiss() override { observer_->OnDismiss(); }
+  void OnHideForThisSite() override { observer_->OnHideForThisSite(); }
+  void OnSettings() override { observer_->OnSettings(); }
 
  private:
   raw_ptr<GlicSelectionObserver> observer_;
@@ -279,6 +283,7 @@ void GlicSelectionObserver::OnVisibilityChanged(
 }
 
 void GlicSelectionObserver::PrimaryPageChanged(content::Page& page) {
+  is_hidden_on_current_page_ = false;
   if (selection_widget_) {
     selection_widget_->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
   }
@@ -459,7 +464,7 @@ void GlicSelectionObserver::OnTextSelectionChanged(
 }
 
 void GlicSelectionObserver::DismissUI(bool keep_nudge) {
-  if (selection_widget_) {
+  if (selection_widget_ && !selection_widget_->IsClosed()) {
     selection_widget_->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
   }
   // Only dismiss the nudge if this is NOT a scroll event.
@@ -695,6 +700,11 @@ void GlicSelectionObserver::ShowSelectionAffordance(
 }
 
 bool GlicSelectionObserver::ShouldShowSelectionWidget() {
+  // TODO(b/519247911): Update this.
+  if (is_hidden_on_current_page_) {
+    return false;
+  }
+
   // Check the top cue only list.
   std::string top_cue_only_list_str =
       features::kGlicSelectionTopCueOnlyList.Get();
@@ -728,6 +738,24 @@ void GlicSelectionObserver::OnWidgetDismissed() {
   prefs->SetInteger(
       prefs::kGlicSelectionWidgetDismissCount,
       prefs->GetInteger(prefs::kGlicSelectionWidgetDismissCount) + 1);
+}
+
+void GlicSelectionObserver::OnHideForThisSite() {
+  is_hidden_on_current_page_ = true;
+  DismissUI(/*keep_nudge=*/false);
+}
+
+void GlicSelectionObserver::OnSettings() {
+  auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (tab_interface) {
+    BrowserWindowInterface* browser_window_interface =
+        tab_interface->GetBrowserWindowInterface();
+    if (browser_window_interface) {
+      chrome::ShowSettingsSubPage(browser_window_interface,
+                                  "content?search=site+settings");
+    }
+  }
 }
 
 void GlicSelectionObserver::OnWidgetPinToggled(bool is_pinned) {
@@ -869,10 +897,6 @@ void GlicSelectionObserver::OnCopyLink() {
   if (selected_frame) {
     CopyLinkToHighlight(selected_frame->GetWeakDocumentPtr());
   }
-}
-
-void GlicSelectionObserver::OnPinToggled(bool is_pinned) {
-  is_widget_pinned_ = is_pinned;
 }
 
 void GlicSelectionObserver::OnDismiss() {

@@ -28,10 +28,17 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
     virtual void OnCopy() = 0;
     virtual void OnCopyLink() = 0;
     virtual void OnPinToggled(bool is_pinned) = 0;
-    virtual void OnDismiss() = 0;
+    virtual void OnDismiss() = 0;  // TODO(b/520398290): Remove OnDismiss.
+    virtual void OnHideForThisSite() = 0;
+    virtual void OnSettings() = 0;
 
    protected:
     virtual ~ActionDelegate() = default;
+  };
+
+  enum class MenuCommand {
+    kHideForSite = 1,
+    kSettings = 2,
   };
 
   GlicSelectionWidgetDelegate(ActionDelegate& action_delegate,
@@ -54,6 +61,10 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
   void UpdateCopyLinkButton(bool enabled);
 
  private:
+  friend class GlicSelectionWidgetTest;
+
+  void TriggerMenuCommandForTesting(int command_id);
+
   const raw_ref<ActionDelegate> action_delegate_;
   gfx::Rect original_anchor_rect_;
   gfx::Rect window_bounds_;

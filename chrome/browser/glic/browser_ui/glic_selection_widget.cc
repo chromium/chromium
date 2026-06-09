@@ -5,13 +5,17 @@
 #include "chrome/browser/glic/browser_ui/glic_selection_widget.h"
 
 #include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -19,22 +23,37 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/menu/menu_config.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
+#include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/menu_scroll_view_container.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
+#include "ui/views/view_tracker.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace glic {
@@ -48,8 +67,139 @@ constexpr int kCornerRadius = 12;
 // The two pills are visually grouped together by having a smaller border radius
 // on the sides where they meet.
 constexpr int kCornerRadiusInner = 4;
+constexpr int kMenuVerticalMargin = 4;
 
-class GlicSelectionContentsView : public views::View {
+// Custom MenuModel for the selection widget's three-dot menu, providing custom
+// typography styling for the menu items.
+class GlicSelectionMenuModel : public ui::SimpleMenuModel {
+ public:
+  using ui::SimpleMenuModel::SimpleMenuModel;
+
+  const gfx::FontList* GetLabelFontListAt(size_t index) const override {
+    return &views::TypographyProvider::Get().GetFont(
+        views::style::CONTEXT_BUTTON, views::style::STYLE_BODY_5_MEDIUM);
+  }
+};
+
+// Adapter that binds the `GlicSelectionMenuModel` to menu views. It intercepts
+// the menu showing process to customize the border of the menu container and
+// adjust vertical padding on menu items.
+class GlicSelectionMenuModelAdapter : public views::MenuModelAdapter {
+ public:
+  GlicSelectionMenuModelAdapter(ui::MenuModel* menu_model,
+                                views::View* anchor_view,
+                                int visual_top_of_chip,
+                                const gfx::Rect& menu_button_bounds)
+      : views::MenuModelAdapter(menu_model),
+        anchor_view_(anchor_view),
+        visual_top_of_chip_(visual_top_of_chip),
+        menu_button_bounds_(menu_button_bounds) {}
+
+  void WillShowMenu(views::MenuItemView* menu) override {
+    views::MenuModelAdapter::WillShowMenu(menu);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GlicSelectionMenuModelAdapter::CustomizeMenuBorder,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::make_unique<views::ViewTracker>(menu)));
+  }
+
+  std::optional<SkColor> GetLabelColor(int command_id) const override {
+    if (anchor_view_ && anchor_view_->GetWidget()) {
+      if (auto* cp = anchor_view_->GetColorProvider()) {
+        return cp->GetColor(ui::kColorSysOnSurfaceVariant);
+      }
+    }
+    return views::MenuModelAdapter::GetLabelColor(command_id);
+  }
+
+ protected:
+  views::MenuItemView* AppendMenuItem(views::MenuItemView* menu,
+                                      ui::MenuModel* model,
+                                      size_t index) override {
+    views::MenuItemView* item =
+        views::MenuModelAdapter::AppendMenuItem(menu, model, index);
+    if (item) {
+      item->set_vertical_margin(kMenuVerticalMargin);
+    }
+    return item;
+  }
+
+ private:
+  void CustomizeMenuBorder(std::unique_ptr<views::ViewTracker> tracker) {
+    views::View* tracked_view = tracker->view();
+    if (!tracked_view) {
+      return;
+    }
+    views::MenuItemView* menu = static_cast<views::MenuItemView*>(tracked_view);
+    if (!menu || !menu->GetSubmenu()) {
+      return;
+    }
+    views::MenuScrollViewContainer* container =
+        menu->GetSubmenu()->GetScrollViewContainer();
+    if (!container || !container->GetWidget()) {
+      return;
+    }
+    // Calculate additional vertical insets added by MenuScrollViewContainer's
+    // rounded corners implementation so we can subtract them from the bubble
+    // border insets to make the menu more compact.
+    const views::MenuConfig& menu_config = views::MenuConfig::instance();
+    int border_radius =
+        menu_config.CornerRadiusForMenu(menu->GetMenuController());
+    int border_thickness = menu_config.use_outer_border ? 1 : 0;
+    gfx::Insets additional_insets =
+        gfx::Insets::VH(menu_config.rounded_menu_vertical_border_size.value_or(
+                            border_radius),
+                        menu_config.menu_horizontal_border_size) -
+        gfx::Insets(border_thickness);
+
+    constexpr int kVerticalPadding = 8;
+    int subtract_vertical =
+        std::max(0, additional_insets.top() - kVerticalPadding);
+    gfx::Insets custom_subtraction =
+        gfx::Insets::TLBR(subtract_vertical, 0, subtract_vertical, 0);
+
+    auto bubble_border = std::make_unique<views::BubbleBorder>(
+        views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
+    bubble_border->SetColor(ui::kColorSysSurface);
+    bubble_border->set_rounded_corners(gfx::RoundedCornersF(kCornerRadius));
+
+    gfx::Insets insets = bubble_border->GetInsets() - custom_subtraction;
+    bubble_border->set_insets(gfx::Insets::TLBR(
+        std::max(0, insets.top()), std::max(0, insets.left()),
+        std::max(0, insets.bottom()), std::max(0, insets.right())));
+
+    auto* raw_border = bubble_border.get();
+    container->SetBorder(std::move(bubble_border));
+    container->SetBackground(
+        std::make_unique<views::BubbleBackground>(raw_border));
+
+    views::Widget* menu_widget = container->GetWidget();
+    if (menu_widget) {
+      int widget_y = visual_top_of_chip_ - raw_border->GetInsets().top();
+      // Align the visual left of the menu with the visual left of the menu
+      // button.
+      int widget_x = menu_button_bounds_.x() - raw_border->GetInsets().left();
+      gfx::Size pref_size = container->GetPreferredSize();
+      gfx::Rect menu_rect(widget_x, widget_y, pref_size.width(),
+                          pref_size.height());
+      gfx::Rect monitor_area =
+          display::Screen::Get()
+              ->GetDisplayNearestPoint(menu_button_bounds_.origin())
+              .work_area();
+      menu_rect.AdjustToFit(monitor_area);
+      menu_widget->SetBounds(menu_rect);
+    }
+  }
+
+  const raw_ptr<views::View> anchor_view_;
+  const int visual_top_of_chip_;
+  const gfx::Rect menu_button_bounds_;
+  base::WeakPtrFactory<GlicSelectionMenuModelAdapter> weak_ptr_factory_{this};
+};
+
+class GlicSelectionContentsView : public views::View,
+                                  public ui::SimpleMenuModel::Delegate {
   METADATA_HEADER(GlicSelectionContentsView, views::View)
 
  public:
@@ -217,6 +367,7 @@ class GlicSelectionContentsView : public views::View {
     copy_link_btn_->SetEnabled(false);
 
     // Pill 2
+    // TODO(b/520398290): Will change dismiss_pill_ to control_pill_.
     dismiss_pill_ = AddChildView(std::make_unique<views::BoxLayoutView>());
     dismiss_pill_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
     dismiss_pill_->SetInsideBorderInsets(gfx::Insets::VH(4, 4));
@@ -249,29 +400,29 @@ class GlicSelectionContentsView : public views::View {
                                     kColorToolbarInkDropRipple);
       SetPinned(initial_pinned_state);
     } else {
-      auto dismiss_tooltip = l10n_util::GetStringUTF16(IDS_APP_CLOSE);
-      dismiss_btn_ =
+      auto menu_tooltip = l10n_util::GetStringUTF16(IDS_TOAST_MENU_BUTTON_NAME);
+      menu_btn_ =
           dismiss_pill_->AddChildView(views::ImageButton::CreateIconButton(
+              base::RepeatingClosure(), kMoreVertIcon, menu_tooltip));
+      menu_btn_->SetButtonController(
+          std::make_unique<views::MenuButtonController>(
+              menu_btn_,
               base::BindRepeating(
-                  &GlicSelectionWidgetDelegate::ActionDelegate::OnDismiss,
-                  base::Unretained(&widget_delegate_->action_delegate())),
-              features::IsRoundedIconsEnabled() ? vector_icons::kCloseIcon
-                                                : vector_icons::kCloseOldIcon,
-              dismiss_tooltip));
-      dismiss_btn_->SetTooltipText(dismiss_tooltip);
-      dismiss_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-      dismiss_btn_->SetBorder(views::CreateEmptyBorder(
+                  &GlicSelectionContentsView::OnMenuButtonClicked,
+                  base::Unretained(this)),
+              std::make_unique<views::Button::DefaultButtonControllerDelegate>(
+                  menu_btn_)));
+      menu_btn_->SetTooltipText(menu_tooltip);
+      menu_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+      menu_btn_->SetBorder(views::CreateEmptyBorder(
           views::LayoutProvider::Get()->GetInsetsMetric(
               views::INSETS_VECTOR_IMAGE_BUTTON)));
       views::SetImageFromVectorIconWithColor(
-          dismiss_btn_,
-          features::IsRoundedIconsEnabled() ? vector_icons::kCloseIcon
-                                            : vector_icons::kCloseOldIcon,
-          kIconSize,
+          menu_btn_, kMoreVertIcon, kIconSize,
           views::IconColors(ui::kColorSysOnSurfaceVariant,
                             ui::kColorLabelForegroundDisabled,
                             ui::kColorSysOnSurfaceVariant));
-      CreateToolbarInkdropCallbacks(dismiss_btn_, kColorToolbarInkDropHover,
+      CreateToolbarInkdropCallbacks(menu_btn_, kColorToolbarInkDropHover,
                                     kColorToolbarInkDropRipple);
     }
 
@@ -310,6 +461,35 @@ class GlicSelectionContentsView : public views::View {
     }
   }
 
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    if (GetWidget() && GetWidget()->widget_delegate()) {
+      // Force a background color update by temporarily clearing it, then
+      // restoring it, which bypasses the color variant equality check.
+      auto* bubble_delegate =
+          GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
+      bubble_delegate->SetBackgroundColor(ui::ColorVariant());
+      bubble_delegate->SetBackgroundColor(
+          ui::ColorVariant(SK_ColorTRANSPARENT));
+    }
+  }
+
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override {
+    if (command_id ==
+        static_cast<int>(
+            GlicSelectionWidgetDelegate::MenuCommand::kHideForSite)) {
+      widget_delegate_->action_delegate().OnHideForThisSite();
+    } else if (command_id ==
+               static_cast<int>(
+                   GlicSelectionWidgetDelegate::MenuCommand::kSettings)) {
+      widget_delegate_->action_delegate().OnSettings();
+    }
+  }
+
+  bool IsCommandIdEnabled(int command_id) const override { return true; }
+
+  // Non-virtual helper methods:
   void SetCopyLinkEnabled(bool enabled) {
     if (copy_link_btn_) {
       copy_link_btn_->SetEnabled(enabled);
@@ -336,26 +516,58 @@ class GlicSelectionContentsView : public views::View {
     }
   }
 
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    if (GetWidget() && GetWidget()->widget_delegate()) {
-      // Force a background color update by temporarily clearing it, then
-      // restoring it, which bypasses the color variant equality check.
-      auto* bubble_delegate =
-          GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
-      bubble_delegate->SetBackgroundColor(ui::ColorVariant());
-      bubble_delegate->SetBackgroundColor(
-          ui::ColorVariant(SK_ColorTRANSPARENT));
+  void OnMenuButtonClicked() {
+    if (menu_runner_ && menu_runner_->IsRunning()) {
+      return;
     }
+    menu_model_ = std::make_unique<GlicSelectionMenuModel>(this);
+    menu_model_->AddItemWithStringId(
+        static_cast<int>(
+            GlicSelectionWidgetDelegate::MenuCommand::kHideForSite),
+        IDS_GLIC_SELECTION_MENU_HIDE_FOR_SITE);
+
+    auto settings_label = gfx::LocateAndRemoveAcceleratorChar(
+        l10n_util::GetStringUTF16(IDS_SETTINGS), nullptr, nullptr);
+    menu_model_->AddItem(
+        static_cast<int>(GlicSelectionWidgetDelegate::MenuCommand::kSettings),
+        settings_label);
+
+    int visual_top_of_chip = dismiss_pill_->GetBoundsInScreen().y() +
+                             dismiss_pill_->GetInsets().top();
+    menu_adapter_ = std::make_unique<GlicSelectionMenuModelAdapter>(
+        menu_model_.get(), this, visual_top_of_chip,
+        menu_btn_->GetBoundsInScreen());
+    std::unique_ptr<views::MenuItemView> menu_item =
+        menu_adapter_->CreateMenu();
+
+    menu_runner_ = std::make_unique<views::MenuRunner>(
+        std::move(menu_item), views::MenuRunner::NO_FLAGS);
+
+    gfx::Rect anchor_rect = menu_btn_->GetBoundsInScreen();
+    // Offset by the top inset of the shadow in order to align the visual top
+    // of the menu with the visual top of the chip.
+    anchor_rect.set_y(GetBoundsInScreen().y() +
+                      dismiss_pill_->GetInsets().top());
+    anchor_rect.set_height(0);
+
+    menu_runner_->RunMenuAt(GetWidget(), nullptr, anchor_rect,
+                            views::MenuAnchorPosition::kTopLeft,
+                            ui::mojom::MenuSourceType::kNone);
   }
 
  private:
   const raw_ptr<GlicSelectionWidgetDelegate> widget_delegate_;
   raw_ptr<views::ImageButton> copy_link_btn_ = nullptr;
   raw_ptr<views::ImageButton> pin_btn_ = nullptr;
-  raw_ptr<views::ImageButton> dismiss_btn_ = nullptr;
+  raw_ptr<views::ImageButton> menu_btn_ = nullptr;
   raw_ptr<views::BoxLayoutView> ask_pill_ = nullptr;
   raw_ptr<views::BoxLayoutView> dismiss_pill_ = nullptr;
+
+  std::unique_ptr<GlicSelectionMenuModel> menu_model_;
+  // Destruction order matters: `menu_runner_` must be destroyed before
+  // `menu_adapter_` to avoid accessing a deleted delegate.
+  std::unique_ptr<GlicSelectionMenuModelAdapter> menu_adapter_;
+  std::unique_ptr<views::MenuRunner> menu_runner_;
 };
 
 BEGIN_METADATA(GlicSelectionContentsView)
@@ -461,6 +673,13 @@ void GlicSelectionWidgetDelegate::UpdateCopyLinkButton(bool enabled) {
   if (auto* contents_view =
           views::AsViewClass<GlicSelectionContentsView>(GetContentsView())) {
     contents_view->SetCopyLinkEnabled(enabled);
+  }
+}
+
+void GlicSelectionWidgetDelegate::TriggerMenuCommandForTesting(int command_id) {
+  if (auto* contents_view =
+          views::AsViewClass<GlicSelectionContentsView>(GetContentsView())) {
+    contents_view->ExecuteCommand(command_id, /*event_flags=*/0);
   }
 }
 

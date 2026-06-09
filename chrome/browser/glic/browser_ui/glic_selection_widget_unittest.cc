@@ -6,7 +6,9 @@
 
 #include "base/test/bind.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -19,6 +21,12 @@ class GlicSelectionWidgetTest : public ChromeViewsTestBase {
  public:
   GlicSelectionWidgetTest() = default;
   ~GlicSelectionWidgetTest() override = default;
+
+ protected:
+  void TriggerMenuCommand(GlicSelectionWidgetDelegate* delegate,
+                          int command_id) {
+    delegate->TriggerMenuCommandForTesting(command_id);
+  }
 };
 
 class TestWidgetActionDelegate
@@ -31,14 +39,17 @@ class TestWidgetActionDelegate
     pin_toggled_called = true;
     pin_toggled_val = is_pinned;
   }
-  void OnDismiss() override { dismiss_called = true; }
+  void OnDismiss() override {}
+  void OnHideForThisSite() override { hide_for_this_site_called = true; }
+  void OnSettings() override { settings_called = true; }
 
   bool ask_gemini_called = false;
   bool copy_called = false;
   bool copy_link_called = false;
   bool pin_toggled_called = false;
   bool pin_toggled_val = false;
-  bool dismiss_called = false;
+  bool hide_for_this_site_called = false;
+  bool settings_called = false;
 };
 
 TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
@@ -67,11 +78,12 @@ TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
 
   auto pill2_children = children[1]->children();
   ASSERT_EQ(pill2_children.size(), 1u);
-  auto* dismiss_btn = views::AsViewClass<views::ImageButton>(pill2_children[0]);
+  auto* menu_btn = views::AsViewClass<views::ImageButton>(pill2_children[0]);
 
   ASSERT_TRUE(ask_gemini_btn);
   ASSERT_TRUE(copy_btn);
   ASSERT_TRUE(copy_link_btn);
+  ASSERT_TRUE(menu_btn);
 
   // Verify the copy link button is initially disabled.
   EXPECT_FALSE(copy_link_btn->GetEnabled());
@@ -101,12 +113,24 @@ TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
                                   ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_TRUE(test_delegate->copy_link_called);
 
-  views::test::ButtonTestApi(dismiss_btn)
-      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                  gfx::Point(), ui::EventTimeForNow(),
-                                  ui::EF_LEFT_MOUSE_BUTTON,
-                                  ui::EF_LEFT_MOUSE_BUTTON));
-  EXPECT_TRUE(test_delegate->dismiss_called);
+  EXPECT_EQ(menu_btn->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_TOAST_MENU_BUTTON_NAME));
+
+  views::test::ButtonTestApi(menu_btn).NotifyClick(
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON));
+
+  // Test menu command execution.
+  TriggerMenuCommand(
+      widget_delegate.get(),
+      static_cast<int>(GlicSelectionWidgetDelegate::MenuCommand::kHideForSite));
+  EXPECT_TRUE(test_delegate->hide_for_this_site_called);
+
+  TriggerMenuCommand(
+      widget_delegate.get(),
+      static_cast<int>(GlicSelectionWidgetDelegate::MenuCommand::kSettings));
+  EXPECT_TRUE(test_delegate->settings_called);
 }
 
 }  // namespace glic
