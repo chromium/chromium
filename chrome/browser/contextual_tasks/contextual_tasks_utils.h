@@ -103,6 +103,9 @@ GURL GetContextualTasksFunctionalURL(content::WebContents* web_contents);
 // given WebContents if it is a Contextual Tasks page.
 GURL GetContextualTasksDisplayURL(content::WebContents* web_contents);
 
+// Returns the effective pin state for the contextual tasks button.
+bool GetEffectivePinState(Profile* profile);
+
 }  // namespace contextual_tasks
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UTILS_H_

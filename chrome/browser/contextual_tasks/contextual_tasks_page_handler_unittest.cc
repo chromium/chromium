@@ -15,6 +15,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/browser_process.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/actions/chrome_action_id.h"  // nogncheck
+#include "chrome/browser/ui/actions/chrome_actions.h"  // nogncheck
+#include "chrome/browser/ui/browser_actions.h"  // nogncheck
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"  // nogncheck
+#include "ui/actions/actions.h"  // nogncheck
+#endif
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -61,6 +68,10 @@ using testing::_;
 using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
+
+#if !BUILDFLAG(IS_ANDROID)
+using ::kActionSidePanelShowContextualTasks;
+#endif
 
 constexpr char kAiPageUrl[] = "https://google.com/search?udm=50";
 constexpr char kQueryUrl[] = "https://google.com/search?q=test";
@@ -116,12 +127,17 @@ class MockContextualTasksUiServiceForThreadLink
 class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(kContextualTasksContextLibrary);
-    ChromeRenderViewHostTestHarness::SetUp();
-
+    feature_list_.InitWithFeatures(
+        {kContextualTasksContextLibrary,
+         kEnableContextualTasksPinButtonInToolbar},
+        {});
+#if !BUILDFLAG(IS_ANDROID)
+    InitializeActionIdStringMapping();
+#endif
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
+    ChromeRenderViewHostTestHarness::SetUp();
 
     ContextualTasksServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindOnce([](content::BrowserContext* context) {
@@ -160,7 +176,6 @@ class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
         static_cast<MockContextualTasksUiServiceForThreadLink*>(
             ContextualTasksUiServiceFactory::GetForBrowserContext(profile()));
 
-    profile()->GetPrefs()->SetBoolean(prefs::kPinContextualTaskButton, false);
 
     page_handler_ = std::make_unique<ContextualTasksPageHandler>(
         mojo::PendingReceiver<mojom::PageHandler>(), contextual_tasks_ui_.get(),
@@ -176,8 +191,11 @@ class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
     mock_panel_controller_.reset();
     mock_contextual_tasks_service_ = nullptr;
     mock_contextual_tasks_ui_service_ = nullptr;
-    profile_manager_.reset();
+#if !BUILDFLAG(IS_ANDROID)
+    actions::ActionIdMap::ResetMapsForTesting();
+#endif
     ChromeRenderViewHostTestHarness::TearDown();
+    profile_manager_.reset();
   }
 
  protected:
@@ -580,65 +598,46 @@ TEST_F(ContextualTasksPageHandlerTest, ShowThreadHistory) {
   page_handler_->ShowThreadHistory();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContextualTasksPageHandlerTest, PinSidePanel) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
-
-  // Recreate page_handler_ to pick up the feature flag.
-  // Expect any sequence of false transitions caused by baseline sync.
-  EXPECT_CALL(page_, OnSidePanelPinStateChanged(false))
-      .Times(testing::AnyNumber());
-
-  page_handler_ = std::make_unique<ContextualTasksPageHandler>(
-      mojo::PendingReceiver<mojom::PageHandler>(), contextual_tasks_ui_.get(),
-      mock_contextual_tasks_ui_service_, mock_contextual_tasks_service_,
-      mock_panel_controller_.get());
-  page_handler_->set_skip_feedback_ui_for_testing(true);
-  // Set default to false for testing, as the default registered value is true.
-  profile()->GetPrefs()->SetBoolean(prefs::kPinContextualTaskButton, false);
+  auto* model = PinnedToolbarActionsModel::Get(profile());
+  ASSERT_TRUE(model);
 
   // Initial state should be unpinned.
-  EXPECT_FALSE(
-      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
+  EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
 
-  // We expect the page to be notified when the pref changes.
+  // We expect the page to be notified when the action is pinned.
   EXPECT_CALL(page_, OnSidePanelPinStateChanged(true)).Times(1);
 
   // Pin the side panel.
   page_handler_->PinSidePanel();
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton);
-  }));
-
-  // Verify state via pref.
-  EXPECT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
+  EXPECT_TRUE(model->Contains(kActionSidePanelShowContextualTasks));
 
   // Now unpin.
-  EXPECT_CALL(page_, OnSidePanelPinStateChanged(false)).Times(1);
+  EXPECT_CALL(page_, OnSidePanelPinStateChanged(false))
+      .Times(testing::AtLeast(1));
   page_handler_->UnpinSidePanel();
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return !profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton);
-  }));
+  EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
 }
 
 TEST_F(ContextualTasksPageHandlerTest, PinSidePanel_FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
+  feature_list_.Reset();
+  feature_list_.InitAndDisableFeature(
       contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
 
+  auto* model = PinnedToolbarActionsModel::Get(profile());
+  ASSERT_TRUE(model);
+
   // Initial state should be unpinned.
-  EXPECT_FALSE(
-      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
+  EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
 
   // Pin the side panel (should be a no-op when feature is disabled).
   page_handler_->PinSidePanel();
 
   // Should still be false.
-  EXPECT_FALSE(
-      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
+  EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
 }
+#endif
 
 TEST_F(ContextualTasksPageHandlerTest, MoveTaskUiToNewTab) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
@@ -1011,7 +1010,8 @@ TEST_F(ContextualTasksPageHandlerTest,
   run_loop.Run();
 }
 
-TEST_F(ContextualTasksPageHandlerTest, PrefChangeNotification) {
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksPageHandlerTest, OnReceivedPinStateChanged) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableContextualTasksPinButtonInToolbar);
 
@@ -1030,10 +1030,13 @@ TEST_F(ContextualTasksPageHandlerTest, PrefChangeNotification) {
   EXPECT_CALL(page_, OnSidePanelPinStateChanged(true))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
-  profile()->GetPrefs()->SetBoolean(prefs::kPinContextualTaskButton, true);
+  auto* model = PinnedToolbarActionsModel::Get(profile());
+  ASSERT_TRUE(model);
+  model->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
 
   run_loop.Run();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ContextualTasksPageHandlerTest,
        OnReceivedInjectInput_OverridesExisting) {

@@ -20,6 +20,10 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#endif
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -271,6 +275,18 @@ std::unique_ptr<ContextualTasksPanelHost> ContextualTasksPanelHost::Create(
 #else
   return std::make_unique<ContextualTasksPanelHostDesktop>(browser_window);
 #endif
+}
+
+bool GetEffectivePinState(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* model = PinnedToolbarActionsModel::Get(profile)) {
+    return model->Contains(kActionSidePanelShowContextualTasks);
+  }
+#endif
+  return false;
 }
 
 }  // namespace contextual_tasks
