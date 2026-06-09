@@ -65,7 +65,7 @@ id<GREYMatcher> TabGroupIndicatorViewMatcher() {
 id<GREYMatcher> TabGridButtonInNormalStyle(NSString* tabCountText) {
   if ([ChromeEarlGrey isChromeNextEnabled]) {
     return grey_allOf(grey_accessibilityID(kAppBarTabGridButtonIdentifier),
-                      ButtonWithAccessibilityLabelId(IDS_IOS_TOOLBAR_SHOW_TABS),
+                      ButtonWithAccessibilityLabelId(IDS_IOS_APP_BAR_ALL_TABS),
                       grey_accessibilityValue(tabCountText), nil);
   } else {
     return grey_allOf(ButtonWithAccessibilityLabelId(IDS_IOS_TOOLBAR_SHOW_TABS),

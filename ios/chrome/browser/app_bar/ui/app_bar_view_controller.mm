@@ -944,6 +944,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
       [UIButtonConfiguration plainButtonConfiguration];
   UIButton* button = [UIButton buttonWithConfiguration:configuration
                                          primaryAction:nil];
+  button.accessibilityTraits = UIAccessibilityTraitButton;
   configuration = button.configuration;
   configuration.imagePlacement = NSDirectionalRectEdgeTop;
   configuration.imagePadding = kButtonImagePadding;
@@ -1046,7 +1047,12 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
                                          replaceOffUpTransition]];
   _tabGridButton.accessibilityLabel = l10n_util::GetNSString(
       shouldShowTabGroupSymbol ? IDS_IOS_TOOLBAR_SHOW_TAB_GROUP
-                               : IDS_IOS_TOOLBAR_SHOW_TABS);
+                               : IDS_IOS_APP_BAR_ALL_TABS);
+  if (_isTabGridVisible) {
+    _tabGridButton.accessibilityTraits |= UIAccessibilityTraitSelected;
+  } else {
+    _tabGridButton.accessibilityTraits &= ~UIAccessibilityTraitSelected;
+  }
   if (shouldShowTabGroupSymbol) {
     [NSLayoutConstraint
         deactivateConstraints:_tabGridButtonNormalStateConstraints];
