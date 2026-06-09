@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -23,6 +24,8 @@
 #include "chrome/browser/enterprise/connectors/test/mock_realtime_reporting_client.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
+#include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -392,6 +395,7 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest, testDragAndDropDlpBlocked) {
 #endif
 IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest,
                        MAYBE_testWebToGlicDragMaterialization) {
+  base::HistogramTester histogram_tester;
   enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(
           &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
@@ -445,6 +449,19 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest,
   // 7. Gtest's main thread is now fully unblocked.
   // Resume TS and wait for the test to complete.
   ContinueJsTest();
+
+  EXPECT_OK(RunUntilEqual(
+      [&]() {
+        return histogram_tester.GetBucketCount(
+            "Glic.InvokeResult.WebDragDrop",
+            static_cast<int>(GlicInvokeResult::kSuccess));
+      },
+      1));
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ContentType",
+                                      GlicDragAndDropContentType::kImage, 1);
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult",
+                                      GlicDragAndDropValidationResult::kSuccess,
+                                      1);
 }
 
 // Linux does not natively support direct in-memory FileContents retrieval
@@ -458,6 +475,7 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest,
 #endif
 IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest,
                        MAYBE_testWebToGlicDragDlpBlocked) {
+  base::HistogramTester histogram_tester;
   enterprise_connectors::test::SetAnalysisConnector(
       browser()->profile()->GetPrefs(), enterprise_connectors::BULK_DATA_ENTRY,
       R"(
@@ -567,6 +585,18 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest,
   }));
 
   ContinueJsTest();
+
+  EXPECT_OK(RunUntilEqual(
+      [&]() {
+        return histogram_tester.GetBucketCount(
+            "Glic.InvokeResult.WebDragDrop",
+            static_cast<int>(
+                GlicInvokeError::kAdditionalContextFailedPastePolicy));
+      },
+      1));
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult",
+                                      GlicDragAndDropValidationResult::kSuccess,
+                                      1);
 }
 
 }  // namespace

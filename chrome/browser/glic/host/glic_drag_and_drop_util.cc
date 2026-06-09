@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -119,6 +121,8 @@ void TriggerDragDropInvoke(content::WebContents* target_web_contents,
     invoke_options.target.surface = source_tab->GetHandle();
   }
 
+  base::UmaHistogramEnumeration("Glic.DragAndDrop.ValidationResult",
+                                GlicDragAndDropValidationResult::kSuccess);
   service->Invoke(std::move(invoke_options));
 }
 
@@ -132,26 +136,45 @@ void OnReceivedTabContextForDrag(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!target_web_contents) {
+    base::UmaHistogramEnumeration(
+        "Glic.DragAndDrop.ValidationResult",
+        GlicDragAndDropValidationResult::kTargetWebContentsDestroyed);
     return;
   }
 
   content::RenderFrameHost* rfh = source_document.AsRenderFrameHostIfValid();
   if (!rfh) {
+    base::UmaHistogramEnumeration(
+        "Glic.DragAndDrop.ValidationResult",
+        GlicDragAndDropValidationResult::
+            kSourceFrameNavigatedBeforeContextFetched);
     return;
   }
 
   content::WebContents* source_wc =
       content::WebContents::FromRenderFrameHost(rfh);
   if (!source_wc) {
+    base::UmaHistogramEnumeration(
+        "Glic.DragAndDrop.ValidationResult",
+        GlicDragAndDropValidationResult::kSourceWebContentsDestroyed);
     return;
   }
 
   if (!result.has_value() || !result.value()->is_tab_context()) {
+    base::UmaHistogramEnumeration(
+        "Glic.DragAndDrop.ValidationResult",
+        GlicDragAndDropValidationResult::kContextFetchFailed);
     return;
   }
 
   tabs::TabInterface* source_tab =
       tabs::TabInterface::MaybeGetFromContents(source_wc);
+  if (!source_tab) {
+    base::UmaHistogramEnumeration(
+        "Glic.DragAndDrop.ValidationResult",
+        GlicDragAndDropValidationResult::kSourceTabClosed);
+    return;
+  }
 
   auto context = BuildDragDropAdditionalContext(
       drop_data, source_tab, std::move(result.value()->get_tab_context()));
@@ -189,6 +212,33 @@ content::DropData RestoreDragMetadata(const content::DropData& drop_data) {
   return augmented_drop_data;
 }
 
+// Returns the content type of the drag. Note that web drags of images or files
+// usually include fallback formats (like plain text or HTML markup of the tag).
+// We check in priority order (Image > File > URL > HTML > Text) to gauge the
+// primary/richest format the user intended to drop, instead of classifying
+// all drops as kMultipleTypes.
+GlicDragAndDropContentType GetDragAndDropContentType(
+    const content::DropData& drop_data) {
+  // `file_contents` is populated by Blink for in-memory image data dragged from
+  // web pages.
+  if (!drop_data.file_contents.empty()) {
+    return GlicDragAndDropContentType::kImage;
+  }
+  if (!drop_data.filenames.empty()) {
+    return GlicDragAndDropContentType::kFile;
+  }
+  if (!drop_data.url_infos.empty()) {
+    return GlicDragAndDropContentType::kUrl;
+  }
+  if (drop_data.html && !drop_data.html->empty()) {
+    return GlicDragAndDropContentType::kHtml;
+  }
+  if (drop_data.text && !drop_data.text->empty()) {
+    return GlicDragAndDropContentType::kText;
+  }
+  return GlicDragAndDropContentType::kUnknown;
+}
+
 }  // namespace
 
 bool IsGlicWebDrag(const content::DropData& drop_data) {
@@ -215,22 +265,29 @@ void StartDragAndDropInvoke(content::WebContents* target_web_contents,
                             const content::DropData& drop_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!base::FeatureList::IsEnabled(features::kGlicWebDragAndDropFileUpload)) {
+  if (!IsGlicWebDrag(drop_data)) {
     return;
   }
 
-  // custom_data is a std::unordered_map<std::u16string, std::u16string> in
-  // DropData.
-  std::unordered_map<std::u16string, std::u16string>::const_iterator it =
-      drop_data.custom_data.find(kGlicDragIdKey);
-  if (it == drop_data.custom_data.end()) {
+  // Record Content Type (intent/demand) immediately when the drop is
+  // recognized.
+  base::UmaHistogramEnumeration("Glic.DragAndDrop.ContentType",
+                                GetDragAndDropContentType(drop_data));
+
+  if (!base::FeatureList::IsEnabled(features::kGlicWebDragAndDropFileUpload)) {
+    base::UmaHistogramEnumeration(
+        "Glic.DragAndDrop.ValidationResult",
+        GlicDragAndDropValidationResult::kBlockedByFeatureFlag);
     return;
   }
 
   std::optional<base::UnguessableToken> raw_drag_id =
       base::UnguessableToken::DeserializeFromString(
-          base::UTF16ToUTF8(it->second));
+          base::UTF16ToUTF8(drop_data.custom_data.at(kGlicDragIdKey)));
   if (!raw_drag_id) {
+    base::UmaHistogramEnumeration(
+        "Glic.DragAndDrop.ValidationResult",
+        GlicDragAndDropValidationResult::kInvalidDragId);
     return;
   }
   content::WebContents::DragId drag_id(*raw_drag_id);
@@ -246,17 +303,26 @@ void StartDragAndDropInvoke(content::WebContents* target_web_contents,
   content::WebContents* source_wc =
       content::WebContents::FromDragId(profile, drag_id);
   if (!source_wc) {
+    base::UmaHistogramEnumeration(
+        "Glic.DragAndDrop.ValidationResult",
+        GlicDragAndDropValidationResult::kCrossProfileDragBlocked);
     return;
   }
 
   content::RenderFrameHost* rfh = source_wc->GetPrimaryMainFrame();
   if (!rfh) {
+    base::UmaHistogramEnumeration(
+        "Glic.DragAndDrop.ValidationResult",
+        GlicDragAndDropValidationResult::kSourceWebContentsDestroyed);
     return;
   }
 
   tabs::TabInterface* source_tab =
       tabs::TabInterface::MaybeGetFromContents(source_wc);
   if (!source_tab) {
+    base::UmaHistogramEnumeration(
+        "Glic.DragAndDrop.ValidationResult",
+        GlicDragAndDropValidationResult::kSourceTabClosed);
     return;
   }
 

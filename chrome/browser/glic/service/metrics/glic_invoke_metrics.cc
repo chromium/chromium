@@ -14,14 +14,6 @@ namespace {
 
 constexpr char kHistogramName[] = "Glic.InvokeResult";
 
-// This enum works around needing to add a kSuccess to GlicInvokeError solely
-// for metrics, which would add confusion. The `0` entry of GlicInvokeError is
-// unused so that these enums can be "overlaid".
-enum GlicInvokeResult {
-  kSuccess = 0,
-  kMaxValue = static_cast<int>(GlicInvokeError::kMaxValue)
-};
-
 }  // namespace
 
 void RecordInvokeSuccess(mojom::InvocationSource source) {

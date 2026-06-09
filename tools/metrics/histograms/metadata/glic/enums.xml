@@ -210,6 +210,35 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/host/glic_api_host.ts:DetailedWebClientState) -->
 
+<!-- LINT.IfChange(GlicDragAndDropContentType) -->
+
+<enum name="GlicDragAndDropContentType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Image"/>
+  <int value="2" label="Text"/>
+  <int value="3" label="HTML Markup"/>
+  <int value="4" label="URL / Link"/>
+  <int value="5" label="Generic File"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicDragAndDropContentType) -->
+
+<!-- LINT.IfChange(GlicDragAndDropValidationResult) -->
+
+<enum name="GlicDragAndDropValidationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Blocked by feature flag"/>
+  <int value="2" label="Invalid drag ID"/>
+  <int value="3" label="Cross-profile drag blocked"/>
+  <int value="4" label="Source WebContents destroyed"/>
+  <int value="5" label="Source Tab closed"/>
+  <int value="6" label="Target WebContents destroyed"/>
+  <int value="7" label="Source frame navigated before context fetched"/>
+  <int value="8" label="Context fetch failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicDragAndDropValidationResult) -->
+
 <!-- LINT.IfChange(GlicEntryPointStatus) -->
 
 <enum name="GlicEntryPointStatus">

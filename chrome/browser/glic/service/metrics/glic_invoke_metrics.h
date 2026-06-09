@@ -10,6 +10,15 @@
 
 namespace glic {
 
+// This enum works around needing to add a kSuccess to GlicInvokeError solely
+// for metrics, which would add confusion. The `0` entry of GlicInvokeError is
+// unused so that these enums can be "overlaid".
+enum class GlicInvokeResult {
+  kSuccess = 0,
+  kErrorMaxValue = static_cast<int>(GlicInvokeError::kMaxValue),
+  kMaxValue = kErrorMaxValue
+};
+
 void RecordInvokeSuccess(mojom::InvocationSource source);
 
 void RecordInvokeError(mojom::InvocationSource source, GlicInvokeError result);

@@ -540,6 +540,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.DragAndDrop.ContentType"
+    enum="GlicDragAndDropContentType" expires_after="2027-05-01">
+  <owner>birnie@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Logs the high level content type of dropped content when a web-to-Glic drop
+    action occurs on the Glic panel. Helps identify what kinds of content
+    formats users intend to drop.
+  </summary>
+</histogram>
+
+<histogram name="Glic.DragAndDrop.ValidationResult"
+    enum="GlicDragAndDropValidationResult" expires_after="2027-05-01">
+  <owner>birnie@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Tracks the validation and processing outcome of a web-to-Glic drop action,
+    occurring before Glic invocation is initiated. Includes success (successful
+    validation) and detailed parsing or environment validation errors. Note that
+    only the first detected validation error is recorded.
+  </summary>
+</histogram>
+
 <histogram name="Glic.EntryPoint.Click.{TabContext}"
     enum="GlicInvocationSource" expires_after="2027-05-30">
   <owner>haileywang@google.com</owner>
