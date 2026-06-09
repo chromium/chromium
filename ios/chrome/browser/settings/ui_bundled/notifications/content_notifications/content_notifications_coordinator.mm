@@ -61,6 +61,7 @@
   self.viewController = viewController;
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
+  self.viewController.presentationDelegate = self;
   id<SystemIdentity> identity = authService->GetPrimaryIdentity();
   PrefService* prefService = self.profile->GetPrefs();
   self.mediator = [[ContentNotificationsMediator alloc]

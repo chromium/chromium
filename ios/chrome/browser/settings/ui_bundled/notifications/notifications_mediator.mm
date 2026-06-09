@@ -264,6 +264,7 @@
   detailItem.iconImage = symbol;
   detailItem.iconTintColor = tint;
   detailItem.iconBackgroundColor = backgroundColor;
+  detailItem.selectionStyle = UITableViewCellSelectionStyleNone;
 
   return detailItem;
 }
@@ -299,6 +300,7 @@
   detailItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   detailItem.accessibilityTraits |= UIAccessibilityTraitButton;
   detailItem.accessibilityIdentifier = accessibilityIdentifier;
+  detailItem.selectionStyle = UITableViewCellSelectionStyleNone;
 
   return detailItem;
 }

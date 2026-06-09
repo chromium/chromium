@@ -1109,6 +1109,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsMenuBackButton:(NSString*)buttonTitle {
+  if (!buttonTitle.length) {
+    buttonTitle = @"Back";
+  }
+
   if (@available(iOS 26, *)) {
     return grey_allOf(
         grey_anyOf(grey_accessibilityLabel(buttonTitle),
