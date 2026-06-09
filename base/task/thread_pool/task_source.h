@@ -163,7 +163,8 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   // |traits| is metadata that applies to all Tasks in the TaskSource.
   TaskSource(const TaskTraits& traits,
              TaskSourceExecutionMode execution_mode,
-             ThreadType originating_thread_type);
+             ThreadType originating_thread_type,
+             bool inherit_by_default = false);
   TaskSource(const TaskSource&) = delete;
   TaskSource& operator=(const TaskSource&) = delete;
 
@@ -255,6 +256,7 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   std::atomic<ThreadType> thread_type_racy_;
 
   const ThreadType originating_thread_type_;
+  const bool inherit_by_default_;
 
   // Synchronizes access to all members.
   mutable CheckedLock lock_{UniversalPredecessor()};

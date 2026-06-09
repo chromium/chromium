@@ -23,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
+#include "base/task/task_features.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/pooled_parallel_task_runner.h"
 #include "base/task/thread_pool/pooled_sequenced_task_runner.h"
@@ -141,6 +142,9 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
                            WorkerThreadObserver* worker_thread_observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!started_);
+
+  inherit_task_importance_by_default_ =
+      FeatureList::IsEnabled(kInheritTaskImportanceByDefault);
 
   // The max number of concurrent BEST_EFFORT tasks is |kMaxBestEffortTasks|,
   // unless the max number of foreground threads is lower.
@@ -331,19 +335,21 @@ bool ThreadPoolImpl::PostDelayedTask(const Location& from_here,
   return PostTaskWithSequence(
       Task(from_here, std::move(task), TimeTicks::Now(), delay,
            MessagePump::GetLeewayIgnoringThreadOverride()),
-      MakeRefCounted<Sequence>(traits, nullptr,
-                               TaskSourceExecutionMode::kParallel,
-                               GetCurrentTaskImportance()));
+      MakeRefCounted<Sequence>(
+          traits, nullptr, TaskSourceExecutionMode::kParallel,
+          GetCurrentTaskImportance(), inherit_task_importance_by_default_));
 }
 
 scoped_refptr<TaskRunner> ThreadPoolImpl::CreateTaskRunner(
     const TaskTraits& traits) {
-  return MakeRefCounted<PooledParallelTaskRunner>(traits, this);
+  return MakeRefCounted<PooledParallelTaskRunner>(
+      traits, this, inherit_task_importance_by_default_);
 }
 
 scoped_refptr<SequencedTaskRunner> ThreadPoolImpl::CreateSequencedTaskRunner(
     const TaskTraits& traits) {
-  return MakeRefCounted<PooledSequencedTaskRunner>(traits, this);
+  return MakeRefCounted<PooledSequencedTaskRunner>(
+      traits, this, inherit_task_importance_by_default_);
 }
 
 scoped_refptr<SingleThreadTaskRunner>
@@ -365,7 +371,8 @@ scoped_refptr<SingleThreadTaskRunner> ThreadPoolImpl::CreateCOMSTATaskRunner(
 
 scoped_refptr<UpdateableSequencedTaskRunner>
 ThreadPoolImpl::CreateUpdateableSequencedTaskRunner(const TaskTraits& traits) {
-  return MakeRefCounted<PooledSequencedTaskRunner>(traits, this);
+  return MakeRefCounted<PooledSequencedTaskRunner>(
+      traits, this, inherit_task_importance_by_default_);
 }
 
 scoped_refptr<SequencedTaskRunner>
@@ -381,7 +388,8 @@ ThreadPoolImpl::CreateSequencedTaskRunnerForResource(
   }
 
   scoped_refptr<PooledSequencedTaskRunner> task_runner =
-      MakeRefCounted<PooledSequencedTaskRunner>(traits, this);
+      MakeRefCounted<PooledSequencedTaskRunner>(
+          traits, this, inherit_task_importance_by_default_);
   sequences_for_resources_[path] = task_runner;
   return task_runner;
 }

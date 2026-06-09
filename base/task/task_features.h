@@ -56,6 +56,10 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     TimeDelta,
     kThreadPoolForegroundBlockedWorkersPollParam);
 
+// Under this feature, ThreadPool inherits GetCurrentTaskImportance by default,
+// when TaskPriority isn't otherwise specified.
+BASE_EXPORT BASE_DECLARE_FEATURE(kInheritTaskImportanceByDefault);
+
 }  // namespace base
 
 #endif  // BASE_TASK_TASK_FEATURES_H_

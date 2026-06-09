@@ -21,6 +21,7 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/default_delayed_task_handle_delegate.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_features.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
 #include "base/task/thread_pool/priority_queue.h"
@@ -63,9 +64,10 @@ bool g_manager_is_alive = false;
 bool g_use_utility_thread_group = false;
 
 size_t GetEnvironmentIndexForTraits(const TaskTraits& traits,
-                                    ThreadType originating_thread_type) {
+                                    ThreadType originating_thread_type,
+                                    bool inherit_by_default) {
   const ThreadType effective_thread_type =
-      EffectiveThreadType(traits, originating_thread_type);
+      EffectiveThreadType(traits, originating_thread_type, inherit_by_default);
   const bool is_background =
       effective_thread_type == ThreadType::kBackground &&
       traits.thread_policy() == ThreadPolicy::PREFER_BACKGROUND &&
@@ -476,7 +478,8 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
   PooledSingleThreadTaskRunner(PooledSingleThreadTaskRunnerManager* const outer,
                                const TaskTraits& traits,
                                WorkerThread* worker,
-                               SingleThreadTaskRunnerThreadMode thread_mode)
+                               SingleThreadTaskRunnerThreadMode thread_mode,
+                               bool inherit_task_importance_by_default)
       : outer_(outer),
         worker_(worker),
         thread_mode_(thread_mode),
@@ -484,7 +487,8 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
             MakeRefCounted<Sequence>(traits,
                                      this,
                                      TaskSourceExecutionMode::kSingleThread,
-                                     GetCurrentTaskImportance())) {
+                                     GetCurrentTaskImportance(),
+                                     inherit_task_importance_by_default)) {
     DCHECK(outer_);
     DCHECK(worker_);
   }
@@ -648,6 +652,8 @@ void PooledSingleThreadTaskRunnerManager::Start(
   {
     CheckedAutoLock auto_lock(lock_);
     started_ = true;
+    inherit_task_importance_by_default_ =
+        FeatureList::IsEnabled(kInheritTaskImportanceByDefault);
     workers_to_start = workers_;
   }
 
@@ -728,8 +734,10 @@ PooledSingleThreadTaskRunnerManager::CreateTaskRunnerImpl(
   WorkerThread* worker_to_return = nullptr;
   bool new_worker = false;
   bool started;
+  bool inherit_task_importance_by_default = false;
   {
     CheckedAutoLock auto_lock(lock_);
+    inherit_task_importance_by_default = inherit_task_importance_by_default_;
     WorkerThread*& worker =
         thread_mode == SingleThreadTaskRunnerThreadMode::DEDICATED
             ? dedicated_worker
@@ -738,7 +746,8 @@ PooledSingleThreadTaskRunnerManager::CreateTaskRunnerImpl(
     if (!worker) {
       const auto& environment_params =
           kEnvironmentParams[GetEnvironmentIndexForTraits(
-              traits, originating_thread_type)];
+              traits, originating_thread_type,
+              inherit_task_importance_by_default)];
       std::string worker_name;
       if (thread_mode == SingleThreadTaskRunnerThreadMode::SHARED) {
         worker_name += "Shared";
@@ -757,7 +766,8 @@ PooledSingleThreadTaskRunnerManager::CreateTaskRunnerImpl(
   }
 
   return MakeRefCounted<PooledSingleThreadTaskRunner>(
-      this, traits, worker_to_return, thread_mode);
+      this, traits, worker_to_return, thread_mode,
+      inherit_task_importance_by_default);
 }
 
 void PooledSingleThreadTaskRunnerManager::JoinForTesting() {
@@ -839,7 +849,8 @@ PooledSingleThreadTaskRunnerManager::GetSharedWorkerThreadForTraits<
     WorkerThreadDelegate>(const TaskTraits& traits,
                           ThreadType originating_thread_type) {
   return shared_worker_threads_[GetEnvironmentIndexForTraits(
-      traits, originating_thread_type)][TraitsToContinueOnShutdown(traits)];
+      traits, originating_thread_type, inherit_task_importance_by_default_)]
+                               [TraitsToContinueOnShutdown(traits)];
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -849,7 +860,8 @@ PooledSingleThreadTaskRunnerManager::GetSharedWorkerThreadForTraits<
     WorkerThreadCOMDelegate>(const TaskTraits& traits,
                              ThreadType originating_thread_type) {
   return shared_com_worker_threads_[GetEnvironmentIndexForTraits(
-      traits, originating_thread_type)][TraitsToContinueOnShutdown(traits)];
+      traits, originating_thread_type, inherit_task_importance_by_default_)]
+                                   [TraitsToContinueOnShutdown(traits)];
 }
 #endif  // BUILDFLAG(IS_WIN)
 

@@ -63,4 +63,7 @@ BASE_FEATURE_PARAM(TimeDelta,
                    &kThreadPoolForegroundBlockingTimeouts,
                    "BlockedWorkersPoll",
                    Milliseconds(1200));
+
+BASE_FEATURE(kInheritTaskImportanceByDefault, FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace base

@@ -62,9 +62,13 @@ ThreadType TaskPriorityToThreadType(TaskPriority priority) {
 }
 
 ThreadType EffectiveThreadType(const TaskTraits& traits,
-                               ThreadType originating_thread_type) {
+                               ThreadType originating_thread_type,
+                               bool inherit_by_default) {
   if (traits.inherit_thread_type()) {
     return std::min(traits.max_thread_type(), originating_thread_type);
+  }
+  if (inherit_by_default && !traits.priority_set_explicitly()) {
+    return std::min(ThreadType::kDefault, originating_thread_type);
   }
   return TaskPriorityToThreadType(traits.priority());
 }

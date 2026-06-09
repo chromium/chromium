@@ -136,11 +136,13 @@ scoped_refptr<TaskRunner> CreatePooledTaskRunnerWithExecutionMode(
 
 scoped_refptr<TaskRunner> CreatePooledTaskRunner(
     const TaskTraits& traits,
-    MockPooledTaskRunnerDelegate* mock_pooled_task_runner_delegate);
+    MockPooledTaskRunnerDelegate* mock_pooled_task_runner_delegate,
+    bool inherit_task_importance_by_default = false);
 
 scoped_refptr<SequencedTaskRunner> CreatePooledSequencedTaskRunner(
     const TaskTraits& traits,
-    MockPooledTaskRunnerDelegate* mock_pooled_task_runner_delegate);
+    MockPooledTaskRunnerDelegate* mock_pooled_task_runner_delegate,
+    bool inherit_task_importance_by_default = false);
 
 RegisteredTaskSource QueueAndRunTaskSource(
     TaskTracker* task_tracker,

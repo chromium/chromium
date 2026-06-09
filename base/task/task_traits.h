@@ -408,7 +408,8 @@ ThreadType TaskPriorityToThreadType(TaskPriority priority);
 
 // Returns the ThreadType used for prioritization of `traits`.
 ThreadType EffectiveThreadType(const TaskTraits& traits,
-                               ThreadType originating_thread_type);
+                               ThreadType originating_thread_type,
+                               bool inherit_by_default);
 
 }  // namespace internal
 

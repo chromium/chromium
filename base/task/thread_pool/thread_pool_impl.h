@@ -206,6 +206,8 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   // Whether this TaskScheduler was started.
   bool started_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
+  bool inherit_task_importance_by_default_ = false;
+
   // Whether the --disable-best-effort-tasks switch is preventing execution of
   // BEST_EFFORT tasks until shutdown.
   const bool has_disable_best_effort_switch_;

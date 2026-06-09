@@ -451,7 +451,8 @@ TEST_F(ThreadGroupTest, UpdatePriorityBestEffortToUserBlocking) {
   for (size_t i = 0; i < kMaxTasks; ++i) {
     task_runners.push_back(MakeRefCounted<PooledSequencedTaskRunner>(
         TaskTraits(TaskPriority::BEST_EFFORT),
-        &mock_pooled_task_runner_delegate_));
+        &mock_pooled_task_runner_delegate_,
+        /*inherit_task_importance_by_default=*/false));
     task_runners.back()->PostTask(
         FROM_HERE, BindLambdaForTesting([&] {
           // Increment the number of tasks running.

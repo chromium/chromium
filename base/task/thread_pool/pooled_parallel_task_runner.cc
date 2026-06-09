@@ -11,9 +11,11 @@ namespace base::internal {
 
 PooledParallelTaskRunner::PooledParallelTaskRunner(
     const TaskTraits& traits,
-    PooledTaskRunnerDelegate* pooled_task_runner_delegate)
+    PooledTaskRunnerDelegate* pooled_task_runner_delegate,
+    bool inherit_task_importance_by_default)
     : traits_(traits),
-      pooled_task_runner_delegate_(pooled_task_runner_delegate) {}
+      pooled_task_runner_delegate_(pooled_task_runner_delegate),
+      inherit_task_importance_by_default_(inherit_task_importance_by_default) {}
 
 PooledParallelTaskRunner::~PooledParallelTaskRunner() = default;
 
@@ -28,7 +30,7 @@ bool PooledParallelTaskRunner::PostDelayedTask(const Location& from_here,
   // Post the task as part of a one-off single-task Sequence.
   scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(
       traits_, nullptr, TaskSourceExecutionMode::kParallel,
-      GetCurrentTaskImportance());
+      GetCurrentTaskImportance(), inherit_task_importance_by_default_);
 
   return pooled_task_runner_delegate_->PostTaskWithSequence(
       Task(from_here, std::move(closure), TimeTicks::Now(), delay),

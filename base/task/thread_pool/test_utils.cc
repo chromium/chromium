@@ -139,16 +139,20 @@ scoped_refptr<TaskRunner> CreatePooledTaskRunnerWithExecutionMode(
 
 scoped_refptr<TaskRunner> CreatePooledTaskRunner(
     const TaskTraits& traits,
-    MockPooledTaskRunnerDelegate* mock_pooled_task_runner_delegate) {
+    MockPooledTaskRunnerDelegate* mock_pooled_task_runner_delegate,
+    bool inherit_task_importance_by_default) {
   return MakeRefCounted<PooledParallelTaskRunner>(
-      traits, mock_pooled_task_runner_delegate);
+      traits, mock_pooled_task_runner_delegate,
+      inherit_task_importance_by_default);
 }
 
 scoped_refptr<SequencedTaskRunner> CreatePooledSequencedTaskRunner(
     const TaskTraits& traits,
-    MockPooledTaskRunnerDelegate* mock_pooled_task_runner_delegate) {
+    MockPooledTaskRunnerDelegate* mock_pooled_task_runner_delegate,
+    bool inherit_task_importance_by_default) {
   return MakeRefCounted<PooledSequencedTaskRunner>(
-      traits, mock_pooled_task_runner_delegate);
+      traits, mock_pooled_task_runner_delegate,
+      inherit_task_importance_by_default);
 }
 
 MockPooledTaskRunnerDelegate::MockPooledTaskRunnerDelegate(

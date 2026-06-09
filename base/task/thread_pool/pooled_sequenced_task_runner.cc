@@ -12,12 +12,14 @@ namespace base::internal {
 
 PooledSequencedTaskRunner::PooledSequencedTaskRunner(
     const TaskTraits& traits,
-    PooledTaskRunnerDelegate* pooled_task_runner_delegate)
+    PooledTaskRunnerDelegate* pooled_task_runner_delegate,
+    bool inherit_task_importance_by_default)
     : pooled_task_runner_delegate_(pooled_task_runner_delegate),
       sequence_(MakeRefCounted<Sequence>(traits,
                                          this,
                                          TaskSourceExecutionMode::kSequenced,
-                                         GetCurrentTaskImportance())) {}
+                                         GetCurrentTaskImportance(),
+                                         inherit_task_importance_by_default)) {}
 
 PooledSequencedTaskRunner::~PooledSequencedTaskRunner() = default;
 

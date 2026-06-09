@@ -161,6 +161,8 @@ class BASE_EXPORT PooledSingleThreadTaskRunnerManager final {
 
   // Set to true when Start() is called.
   bool started_ GUARDED_BY(lock_) = false;
+
+  bool inherit_task_importance_by_default_ GUARDED_BY(lock_) = false;
 };
 
 }  // namespace internal

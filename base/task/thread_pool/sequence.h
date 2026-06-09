@@ -88,7 +88,8 @@ class BASE_EXPORT Sequence : public TaskSource {
   Sequence(const TaskTraits& traits,
            SequencedTaskRunner* task_runner,
            TaskSourceExecutionMode execution_mode,
-           ThreadType originating_thread_type);
+           ThreadType originating_thread_type,
+           bool inherit_by_default = false);
   Sequence(const Sequence&) = delete;
   Sequence& operator=(const Sequence&) = delete;
 

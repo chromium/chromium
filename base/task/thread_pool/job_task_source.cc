@@ -27,6 +27,7 @@ namespace base::internal {
 namespace {
 
 bool g_job_priority_boosting = false;
+bool g_inherit_task_importance_by_default = false;
 
 BASE_FEATURE(kJobPriorityBoosting, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -93,6 +94,8 @@ bool JobTaskSource::JoinFlag::ShouldWorkerSignal() {
 // static
 void JobTaskSource::InitializeFeatures() {
   g_job_priority_boosting = FeatureList::IsEnabled(kJobPriorityBoosting);
+  g_inherit_task_importance_by_default =
+      FeatureList::IsEnabled(kInheritTaskImportanceByDefault);
 }
 
 JobTaskSource::JobTaskSource(const Location& from_here,
@@ -103,7 +106,8 @@ JobTaskSource::JobTaskSource(const Location& from_here,
                              PooledTaskRunnerDelegate* delegate)
     : TaskSource(traits,
                  TaskSourceExecutionMode::kJob,
-                 originating_thread_type),
+                 originating_thread_type,
+                 g_inherit_task_importance_by_default),
       max_concurrency_callback_(std::move(max_concurrency_callback)),
       worker_task_(std::move(worker_task)),
       primary_task_(base::BindRepeating(
