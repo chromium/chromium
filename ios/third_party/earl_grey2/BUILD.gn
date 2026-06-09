@@ -6,6 +6,36 @@ import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
+template("patch_file") {
+  assert(defined(invoker.patch_path),
+         "patch_path must be defined for $target_name")
+  assert(defined(invoker.source_file),
+         "source_file must be defined for $target_name")
+
+  action(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
+
+    script = "patch.py"
+    sources = [
+      invoker.patch_path,
+      invoker.source_file,
+    ]
+    outputs = [ "$target_gen_dir/" + invoker.source_file ]
+
+    args = rebase_path(sources, root_build_dir) +
+           rebase_path(outputs, root_build_dir)
+  }
+}
+
+patch_file("patch_GREYSwizzler_m") {
+  patch_path = "patches/GREYSwizzler.m.diff"
+  source_file = "src/CommonLib/GREYSwizzler.m"
+}
+
 config("config") {
   include_dirs = [
     "//ios/third_party/earl_grey2/src",
@@ -133,7 +163,6 @@ source_set("common_lib") {
     "src/CommonLib/GREYStopwatch.h",
     "src/CommonLib/GREYStopwatch.m",
     "src/CommonLib/GREYSwizzler.h",
-    "src/CommonLib/GREYSwizzler.m",
     "src/CommonLib/Interposer/GREYDispatchQueueInterposer.h",
     "src/CommonLib/Matcher/GREYBaseMatcher.h",
     "src/CommonLib/Matcher/GREYBaseMatcher.m",
@@ -149,6 +178,8 @@ source_set("common_lib") {
     "src/CommonLib/Provider/GREYProvider.h",
   ]
 
+  sources += get_target_outputs(":patch_GREYSwizzler_m")
+
   # Build in interposer only when using supported sanitizers. Sync with
   # src/CommonLib/GREYDefines.h.
   if (is_asan || is_tsan || is_ubsan || is_msan) {
@@ -156,6 +187,7 @@ source_set("common_lib") {
   }
 
   deps = [
+    ":patch_GREYSwizzler_m",
     "//ios/third_party/edo",
     "//ios/third_party/fishhook",
   ]
