@@ -14,7 +14,7 @@ These builders must pass before a CL may land that affects files outside of
 ### chrome
 * [chromeos-betty-chrome-gtest](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-chrome-gtest) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-betty-chrome-gtest""))
 
-    * Replaced with builder: [chromeos-betty-chrome-gtest-and-cqtast](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-chrome-gtest-and-cqtast) when CL owner is in group [google/chromeos-pa](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/chromeos-pa)
+    * Replaced with builder: [chromeos-betty-chrome-gtest-and-cqtast](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-chrome-gtest-and-cqtast) when CL owner is in group [google/chromeos-pa@google.com](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/chromeos-pa@google.com)
 
 * [chromeos-betty-compile-chrome](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-compile-chrome) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-betty-compile-chrome""))
 
