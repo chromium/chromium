@@ -13,9 +13,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "code_cache_host.cc": [
+  "persistent_code_cache_host.cc": [
+    "+base/task",
     "+components/persistent_cache",
-    "+net/base/url_util.h",
     "+url/gurl.h",
   ],
   "resource_request.cc": [

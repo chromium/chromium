@@ -39,7 +39,7 @@ class GeneratedCodeCacheContext;
 // CodeCacheHostImpl::Create on the basis of the
 // `UsePersistentCacheForCodeCache` feature. When enabled, inserts take place in
 // the browser process while fetches take place in renderers via
-// CodeCacheWithPersistentCacheHostImpl in blink.
+// `PersistentCodeCacheHost` in blink.
 //
 // When PersistentCache is not used, there are two independent caches:
 //
