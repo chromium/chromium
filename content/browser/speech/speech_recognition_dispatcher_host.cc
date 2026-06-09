@@ -19,6 +19,8 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/security_principal.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/speech_recognition_audio_forwarder_config.h"
 #include "content/public/browser/speech_recognition_manager_delegate.h"
 #include "content/public/browser/speech_recognition_session_config.h"
@@ -168,12 +170,13 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
   }
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
-  StoragePartition* storage_partition =
-      browser_context->GetStoragePartition(web_contents->GetSiteInstance());
+  content::RenderFrameHost* main_frame = rfh->GetMainFrame();
+  StoragePartition* storage_partition = main_frame->GetStoragePartition();
 
   bool is_valid_storage_context =
-      storage_partition == browser_context->GetDefaultStoragePartition() ||
-      !rfh->GetLastCommittedURL().SchemeIsHTTPOrHTTPS();
+      !main_frame->GetSiteInstance()->GetSecurityPrincipal().IsGuest() &&
+      (storage_partition == browser_context->GetDefaultStoragePartition() ||
+       !main_frame->GetLastCommittedURL().SchemeIsHTTPOrHTTPS());
   bool is_policy_enabled = rfh->IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kOnDeviceSpeechRecognition);
 

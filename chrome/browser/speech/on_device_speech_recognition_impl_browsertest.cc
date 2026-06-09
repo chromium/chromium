@@ -19,8 +19,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/soda/soda_installer.h"
 #include "content/public/browser/document_user_data.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
@@ -167,6 +169,47 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest, Available) {
                          OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kDownloadable));
+}
+
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
+                       BypassStoragePartitionGuestView) {
+  // Create a custom guest site instance, which uses a non-default storage
+  // partition.
+  scoped_refptr<content::SiteInstance> guest_site_instance =
+      content::SiteInstance::CreateForGuest(
+          browser()->profile(),
+          content::StoragePartitionConfig::Create(
+              browser()->profile(), "my_domain", "my_partition", false));
+
+  content::WebContents::CreateParams params(browser()->profile(),
+                                            guest_site_instance);
+  std::unique_ptr<content::WebContents> guest_contents =
+      content::WebContents::Create(params);
+
+  EXPECT_NE(guest_contents->GetPrimaryMainFrame()->GetStoragePartition(),
+            browser()->profile()->GetDefaultStoragePartition());
+
+  // Navigate to about:blank directly.
+  ASSERT_TRUE(
+      content::NavigateToURL(guest_contents.get(), GURL("about:blank")));
+
+  content::RenderFrameHost* main_frame = guest_contents->GetPrimaryMainFrame();
+  EXPECT_EQ(GURL("about:blank"), main_frame->GetLastCommittedURL());
+
+  auto* speech_impl =
+      OnDeviceSpeechRecognitionImpl::GetOrCreateForCurrentDocument(main_frame);
+  ASSERT_TRUE(speech_impl);
+
+  // The vulnerability allows this to be downloadable.
+  // A correct implementation would return kUnavailable.
+  // We expect it to be kUnavailable to make the test FAIL when the bug is NOT
+  // fixed.
+  speech_impl->Available(
+      {kEnglishLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
+      base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
+                         OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
+                     base::Unretained(this),
+                     media::mojom::AvailabilityStatus::kUnavailable));
 }
 
 IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest, Install) {

@@ -18,6 +18,8 @@
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
+#include "content/public/browser/site_instance.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -285,9 +287,16 @@ OnDeviceSpeechRecognitionImpl::OnDeviceSpeechRecognitionImpl(
 
 bool OnDeviceSpeechRecognitionImpl::
     CanRenderFrameHostUseOnDeviceSpeechRecognition() {
-  if (render_frame_host().GetStoragePartition() !=
-      render_frame_host().GetBrowserContext()->GetDefaultStoragePartition()) {
-    return !render_frame_host().GetLastCommittedURL().SchemeIsHTTPOrHTTPS();
+  content::RenderFrameHost* main_frame = render_frame_host().GetMainFrame();
+  if (main_frame->GetSiteInstance()->GetSecurityPrincipal().IsGuest()) {
+    return false;
+  }
+
+  // Allow trusted/special app contexts (like Chrome Extensions and Isolated Web
+  // Apps) that use non-HTTP/HTTPS schemes within custom StoragePartitions.
+  if (main_frame->GetStoragePartition() !=
+      main_frame->GetBrowserContext()->GetDefaultStoragePartition()) {
+    return !main_frame->GetLastCommittedURL().SchemeIsHTTPOrHTTPS();
   }
 
   return true;
