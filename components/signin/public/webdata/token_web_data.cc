@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected_macros.h"
 #include "components/signin/public/webdata/token_service_table.h"
@@ -65,6 +66,7 @@ class TokenWebDataBackend
   }
 
   std::unique_ptr<WDTypedResult> GetAllTokens(WebDatabase* db) {
+    SCOPED_UMA_HISTOGRAM_TIMER("Signin.TokenTable.GetAllTokensTime");
     TokenResult result;
     result.db_result = TokenServiceTable::FromWebDatabase(db)->GetAllTokens(
         &result.tokens, result.should_reencrypt);

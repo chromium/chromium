@@ -654,6 +654,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   ASSERT_TRUE(oauth2_service_delegate_->GetAccounts().empty());
   ResetObserverCounts();
 
+  base::HistogramTester histogram_tester;
+
   // Perform a load from an empty DB.
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_NOT_STARTED,
             oauth2_service_delegate_->load_credentials_state());
@@ -661,6 +663,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS,
             oauth2_service_delegate_->load_credentials_state());
   WaitForRefreshTokensLoaded();
+  histogram_tester.ExpectTotalCount("Signin.TokenTable.GetAllTokensTime", 1);
+  histogram_tester.ExpectTotalCount("Signin.RefreshTokensLoaded.Duration", 1);
   EXPECT_EQ(signin::LoadCredentialsState::
                 LOAD_CREDENTIALS_FINISHED_WITH_NO_TOKEN_FOR_PRIMARY_ACCOUNT,
             oauth2_service_delegate_->load_credentials_state());

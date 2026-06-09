@@ -3179,6 +3179,30 @@ Google accounts.-->
   </summary>
 </histogram>
 
+<histogram name="Signin.RefreshTokensLoaded.Duration" units="ms"
+    expires_after="2027-04-03">
+  <owner>ahijazi@chromium.org</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>bsazonov@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the total time elapsed from when the profile's credential loading
+    sequence starts (via LoadCredentialsInternal on the UI thread) to when all
+    refresh tokens are loaded into memory and ready for use.
+
+    Recorded exactly once per profile startup.
+
+    For Android, this measures the latency from the native delegate calling
+    LoadCredentialsInternal, through GMS Core account fetching and validation,
+    to when tokens are ready in memory. This includes the Java account manager
+    IPC roundtrip and native account seeding.
+
+    For Desktop, this measures the latency from the native delegate calling
+    LoadCredentialsInternal, through DB thread query overhead, local SQLite
+    token decryption, and key manager initialization on the UI thread.
+  </summary>
+</histogram>
+
 <histogram name="Signin.RefreshTokenUpdated.ToInvalidToken.Source"
     enum="SourceForRefreshTokenOperation" expires_after="never">
 <!-- expires-never:  This histogram reports the source for invalidating the
@@ -4195,6 +4219,26 @@ for as long as we store refresh tokens in an SQLite DB. -->
   <owner>msarda@chromium.org</owner>
   <summary>
     Counts how many times the SQL statements to get all tokens is valid.
+  </summary>
+</histogram>
+
+<histogram name="Signin.TokenTable.GetAllTokensTime" units="ms"
+    expires_after="2027-04-03">
+  <owner>ahijazi@chromium.org</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the raw time spent querying the WebDatabase's 'token_service' table
+    and decrypting the retrieved credentials on the database task runner.
+
+    Measures from the moment the database query is executing inside
+    TokenWebDataBackend::GetAllTokens, to the execution of SQLite query, up to
+    when the tokens are successfully decrypted via OSCrypt. Recorded exactly
+    once per profile startup.
+
+    Note: Unlike Signin.RefreshTokensLoaded.Duration, this metric excludes
+    thread hopping and in-memory delegate initialization overhead.
   </summary>
 </histogram>
 

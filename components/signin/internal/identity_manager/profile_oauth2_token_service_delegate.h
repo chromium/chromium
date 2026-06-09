@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -405,6 +406,9 @@ class ProfileOAuth2TokenServiceDelegate {
   // The state of the load credentials operation.
   signin::LoadCredentialsState load_credentials_state_ =
       signin::LoadCredentialsState::LOAD_CREDENTIALS_NOT_STARTED;
+
+  // The timer measuring the duration of the load credentials operation.
+  std::optional<base::ElapsedTimer> load_credentials_timer_;
 
   void StartBatchChanges();
   void EndBatchChanges();
