@@ -39,6 +39,7 @@ class SoundsManagerImpl : public SoundsManager {
                   bool loop) override;
   bool Play(SoundKey key) override;
   bool Stop(SoundKey key) override;
+  bool Pause(SoundKey key) override;
   base::TimeDelta GetDuration(SoundKey key) override;
 
  private:
@@ -87,6 +88,15 @@ bool SoundsManagerImpl::Stop(SoundKey key) {
   }
   handler->Stop();
   return true;
+}
+
+bool SoundsManagerImpl::Pause(SoundKey key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  AudioStreamHandler* handler = GetHandler(key);
+  if (!handler) {
+    return false;
+  }
+  return handler->Pause();
 }
 
 base::TimeDelta SoundsManagerImpl::GetDuration(SoundKey key) {

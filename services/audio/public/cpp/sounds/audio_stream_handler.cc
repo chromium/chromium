@@ -107,7 +107,11 @@ class AudioStreamHandler::AudioStreamContainer
         }
       }
 
-      audio_handler_->Reset();
+      if (paused_) {
+        paused_ = false;
+      } else {
+        audio_handler_->Reset();
+      }
     }
 
     started_ = true;
@@ -131,8 +135,28 @@ class AudioStreamHandler::AudioStreamContainer
     }
 
     started_ = false;
+    paused_ = false;
     stop_closure_.Cancel();
     device_.reset();
+  }
+
+  void Pause() {
+    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+    if (started_) {
+      // Do not hold the |state_lock_| while stopping the output stream.
+      if (g_observer_for_testing) {
+        g_observer_for_testing->OnPause();
+      } else {
+        device_->Pause();
+      }
+      paused_ = true;
+      started_ = false;
+      stop_closure_.Cancel();
+      // Release `OutputDevice` to avoid holding resources during an indefinite
+      // pause.
+      device_.reset();
+    }
   }
 
  private:
@@ -180,6 +204,7 @@ class AudioStreamHandler::AudioStreamContainer
   }
 
   bool started_ = false;
+  bool paused_ = false;
   const SoundsManager::StreamFactoryBinder stream_factory_binder_;
   std::unique_ptr<audio::OutputDevice> device_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -277,6 +302,16 @@ void AudioStreamHandler::Stop() {
   }
 
   stream_.AsyncCall(&AudioStreamContainer::Stop);
+}
+
+bool AudioStreamHandler::Pause() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsInitialized()) {
+    return false;
+  }
+
+  stream_.AsyncCall(&AudioStreamContainer::Pause);
+  return true;
 }
 
 base::TimeDelta AudioStreamHandler::duration() const {

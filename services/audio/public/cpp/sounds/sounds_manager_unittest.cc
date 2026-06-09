@@ -121,9 +121,38 @@ TEST_F(SoundsManagerTest, Stop) {
   AudioStreamHandler::SetObserverForTesting(nullptr);
 }
 
+TEST_F(SoundsManagerTest, Pause) {
+  base::RunLoop run_loop;
+  TestObserver observer(run_loop.QuitClosure());
+
+  AudioStreamHandler::SetObserverForTesting(&observer);
+
+  EXPECT_CALL(mock_resource_delegate(),
+              GetRawDataResource(kTestResourceId, _, _))
+      .WillOnce(DoAll(SetArgPointee<2>(std::string_view(
+                          kTestAudioData, std::size(kTestAudioData))),
+                      Return(true)));
+
+  ASSERT_TRUE(sounds_manager().Initialize(
+      kTestAudioKey, kTestResourceId, media::AudioCodec::kPCM, /*loop=*/false));
+
+  ASSERT_EQ(0, observer.num_play_requests());
+  ASSERT_EQ(0, observer.num_pause_requests());
+
+  ASSERT_TRUE(sounds_manager().Play(kTestAudioKey));
+  ASSERT_TRUE(sounds_manager().Pause(kTestAudioKey));
+  run_loop.Run();
+
+  ASSERT_EQ(1, observer.num_play_requests());
+  ASSERT_EQ(1, observer.num_pause_requests());
+
+  AudioStreamHandler::SetObserverForTesting(nullptr);
+}
+
 TEST_F(SoundsManagerTest, Uninitialized) {
   ASSERT_FALSE(sounds_manager().Play(kTestAudioKey));
   ASSERT_FALSE(sounds_manager().Stop(kTestAudioKey));
+  ASSERT_FALSE(sounds_manager().Pause(kTestAudioKey));
 }
 
 }  // namespace

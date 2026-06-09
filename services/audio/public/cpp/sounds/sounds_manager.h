@@ -55,6 +55,10 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) SoundsManager {
   // was not properly initialized.
   virtual bool Stop(SoundKey key) = 0;
 
+  // Pauses playing sound identified by |key|, returns false if SoundsManager
+  // was not properly initialized.
+  virtual bool Pause(SoundKey key) = 0;
+
   // Returns duration of the sound identified by |key|. If SoundsManager
   // was not properly initialized or |key| was not registered, this
   // method returns an empty value.

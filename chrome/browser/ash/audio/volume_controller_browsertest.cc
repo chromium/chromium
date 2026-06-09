@@ -49,6 +49,8 @@ class SoundsManagerTestImpl : public audio::SoundsManager {
 
   bool Stop(SoundKey key) override { return true; }
 
+  bool Pause(SoundKey key) override { return true; }
+
   base::TimeDelta GetDuration(SoundKey /* key */) override {
     return base::TimeDelta();
   }

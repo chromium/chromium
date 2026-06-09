@@ -65,8 +65,7 @@ struct TestParams {
 
 std::vector<TestParams> GetTestParams() {
   return {
-      {.data_factory = base::BindRepeating(
-           []() { return std::string(kTestAudioData, kTestAudioDataSize); }),
+      {.data_factory = base::BindRepeating(&ReadTestMediaFile, "bear_pcm.wav"),
        .codec = media::AudioCodec::kPCM,
        .test_suffix = "Wav"},
       {.data_factory = base::BindRepeating(&ReadTestMediaFile, "bear.flac"),
@@ -208,6 +207,69 @@ TEST_P(AudioStreamHandlerTestWithParams, PlayWithLoop) {
   // is called only once.
   EXPECT_EQ(observer.num_play_requests(), 1);
   EXPECT_EQ(observer.num_stop_requests(), 1);
+}
+
+TEST_P(AudioStreamHandlerTestWithParams, PauseAndResume) {
+  // Calculate the total (baseline) number of frames for a given audio source.
+  int baseline_frames = 0;
+  {
+    std::unique_ptr<AudioStreamHandler> handler = CreateHandler();
+    base::RunLoop run_loop;
+    TestObserver observer(run_loop.QuitClosure());
+    AudioStreamHandler::SetObserverForTesting(&observer);
+    ASSERT_TRUE(handler->Play());
+    run_loop.Run();
+    baseline_frames = observer.total_frames_rendered();
+    AudioStreamHandler::SetObserverForTesting(nullptr);
+  }
+
+  std::unique_ptr<AudioStreamHandler> handler = CreateHandler();
+  ASSERT_NE(handler, nullptr);
+
+  base::RunLoop run_loop;
+  bool pause_requested = false;
+  TestObserver observer(
+      run_loop.QuitClosure(),
+      /*render=*/base::BindLambdaForTesting([&]() {
+        if (pause_requested) {
+          return;
+        }
+        // Request `Pause` on the first `Render` request.
+        pause_requested = true;
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(base::IgnoreResult(&AudioStreamHandler::Pause),
+                           base::Unretained(handler.get())));
+      }));
+  AudioStreamHandler::SetObserverForTesting(&observer);
+
+  ASSERT_TRUE(handler->IsInitialized());
+  ASSERT_TRUE(handler->Play());
+
+  run_loop.Run();
+
+  EXPECT_EQ(observer.num_pause_requests(), 1);
+  EXPECT_EQ(observer.num_stop_requests(), 0);
+
+  const int frames_before_pause = observer.total_frames_rendered();
+
+  // Resume play.
+  base::RunLoop resume_run_loop;
+  observer.set_quit_closure(resume_run_loop.QuitClosure());
+
+  ASSERT_TRUE(handler->Play());
+  resume_run_loop.Run();
+
+  EXPECT_EQ(observer.num_stop_requests(), 1);
+
+  const int total_frames = observer.total_frames_rendered();
+  EXPECT_GT(total_frames, 0);
+
+  EXPECT_GT(frames_before_pause, 0);
+  EXPECT_GT(total_frames, frames_before_pause);
+  EXPECT_EQ(total_frames, baseline_frames);
+
+  AudioStreamHandler::SetObserverForTesting(nullptr);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

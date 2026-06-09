@@ -45,18 +45,27 @@ class TestObserver : public AudioStreamHandler::TestObserver {
                   media::AudioParameters params) override;
   void OnPlay() override;
   void OnStop() override;
+  void OnPause() override;
   void Render();
 
   int num_play_requests() const { return num_play_requests_; }
   int num_stop_requests() const { return num_stop_requests_; }
+  int num_pause_requests() const { return num_pause_requests_; }
+  int total_frames_rendered() const { return total_frames_rendered_; }
+
+  void set_quit_closure(base::RepeatingClosure quit) {
+    quit_ = std::move(quit);
+  }
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::RepeatingClosure quit_;
   base::RepeatingClosure render_;
 
-  int num_play_requests_;
-  int num_stop_requests_;
+  int num_play_requests_ = 0;
+  int num_stop_requests_ = 0;
+  int num_pause_requests_ = 0;
+  int total_frames_rendered_ = 0;
   // Whether the audio stream is playing. This can be set and read from
   // different threads.
   std::atomic<bool> is_playing_;

@@ -39,6 +39,9 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) AudioStreamHandler {
 
     // Called when AudioOutputStreamProxy::Stop() was successfully called.
     virtual void OnStop() = 0;
+
+    // Called when AudioOutputStreamProxy::Pause() was successfully called.
+    virtual void OnPause() = 0;
   };
 
   // `resource_id` for the corresponding audio (WAV or FLAC) data which will be
@@ -66,6 +69,9 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) AudioStreamHandler {
 
   // Stops current playback.
   void Stop();
+
+  // Pauses current playback. Returns true iff playback was successfully paused.
+  bool Pause();
 
   // Get the duration of the WAV data passed in.
   base::TimeDelta duration() const;

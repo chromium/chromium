@@ -16,9 +16,7 @@ TestObserver::TestObserver(base::RepeatingClosure quit,
                            base::RepeatingClosure render)
     : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       quit_(std::move(quit)),
-      render_(std::move(render)),
-      num_play_requests_(0),
-      num_stop_requests_(0) {}
+      render_(std::move(render)) {}
 
 TestObserver::~TestObserver() = default;
 
@@ -41,8 +39,10 @@ void TestObserver::Render() {
     return;
   }
   render_.Run();
-  if (callback_->Render(base::Seconds(0), base::TimeTicks::Now(), {},
-                        bus_.get())) {
+  int frames = callback_->Render(base::Seconds(0), base::TimeTicks::Now(), {},
+                                 bus_.get());
+  total_frames_rendered_ += frames;
+  if (frames > 0) {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&TestObserver::Render, weak_factory_.GetWeakPtr()));
@@ -51,6 +51,12 @@ void TestObserver::Render() {
 
 void TestObserver::OnStop() {
   ++num_stop_requests_;
+  is_playing_.store(false);
+  task_runner_->PostTask(FROM_HERE, quit_);
+}
+
+void TestObserver::OnPause() {
+  ++num_pause_requests_;
   is_playing_.store(false);
   task_runner_->PostTask(FROM_HERE, quit_);
 }
