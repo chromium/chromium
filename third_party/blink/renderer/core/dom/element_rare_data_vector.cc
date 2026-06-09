@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -561,6 +562,18 @@ std::optional<LayoutUnit> ElementRareDataVector::LastRememberedBlockSize()
 std::optional<LayoutUnit> ElementRareDataVector::LastRememberedInlineSize()
     const {
   return GetOptionalField<LayoutUnit>(FieldId::kLastRememberedInlineSize);
+}
+
+gfx::Rect ElementRareDataVector::LastSentUnboundedBounds() const {
+  if (auto* value =
+          GetWrappedField<gfx::Rect>(FieldId::kLastSentUnboundedBounds)) {
+    return *value;
+  }
+  return gfx::Rect();
+}
+ElementRareDataVector* ElementRareDataVector::SetLastSentUnboundedBounds(
+    const gfx::Rect& bounds) {
+  return SetWrappedField<gfx::Rect>(FieldId::kLastSentUnboundedBounds, bounds);
 }
 
 PopoverData* ElementRareDataVector::GetPopoverData() const {

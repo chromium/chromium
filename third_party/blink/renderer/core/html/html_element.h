@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -406,6 +407,8 @@ class CORE_EXPORT HTMLElement : public Element {
   ScriptPromise<IDLUndefined> showUnboundedElement(ScriptState*);
   bool IsUnboundedElementActive() const;
   void SetUnboundedElementActive(bool active);
+  gfx::Rect LastSentUnboundedBounds() const;
+  void SetLastSentUnboundedBounds(const gfx::Rect& bounds);
 
  protected:
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;

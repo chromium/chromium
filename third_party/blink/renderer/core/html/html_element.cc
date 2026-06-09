@@ -149,6 +149,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -1596,6 +1597,7 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
   if (auto* layout_object = GetLayoutObject()) {
     bounds = layout_object->AbsoluteBoundingBoxRect();
   }
+  SetLastSentUnboundedBounds(bounds);
 
   if (bounds.IsEmpty()) {
     // TODO(crbug.com/508672616): This is likely weird for now as an element
@@ -1604,6 +1606,17 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,
         "Unbounded elements must have non-empty bounds."));
+    return promise;
+  }
+
+  // TODO(crbug.com/508672616): the unbounded element API does not work when
+  // the TreesInViz feature is enabled. There are various CHECKs that enforce
+  // this. So we need to reject here.
+  if (base::FeatureList::IsEnabled(::features::kTreesInViz)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "The unbounded element API doesn't support the TreesInViz feature. "
+        "Please disable it with `--disable-features=TreesInViz`."));
     return promise;
   }
 
@@ -1654,6 +1667,17 @@ void HTMLElement::SetUnboundedElementActive(bool active) {
     layout_object->AddSubtreePaintPropertyUpdateReason(
         SubtreePaintPropertyUpdateReason::kContainerChainMayChange);
   }
+}
+
+gfx::Rect HTMLElement::LastSentUnboundedBounds() const {
+  if (const ElementRareDataVector* data = RareData()) {
+    return data->LastSentUnboundedBounds();
+  }
+  return gfx::Rect();
+}
+
+void HTMLElement::SetLastSentUnboundedBounds(const gfx::Rect& bounds) {
+  data_ = EnsureRareData().SetLastSentUnboundedBounds(bounds);
 }
 
 bool HTMLElement::togglePopover(ExceptionState& exception_state) {

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/pagination_state.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -643,6 +644,17 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
       html_element && html_element->IsUnboundedElementActive()) {
     DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
     context.inside_active_unbounded = true;
+    gfx::Rect current_bounds = object.AbsoluteBoundingBoxRect();
+    if (current_bounds != html_element->LastSentUnboundedBounds()) {
+      const_cast<HTMLElement*>(html_element)
+          ->SetLastSentUnboundedBounds(current_bounds);
+      if (auto* frame = object.GetFrame()) {
+        if (auto* widget = static_cast<WebFrameWidgetImpl*>(
+                frame->GetWidgetForLocalRoot())) {
+          widget->UpdateUnboundedElementBounds(current_bounds);
+        }
+      }
+    }
   }
   object.GetMutableForPainting().UpdateIsActiveUnboundedElementOrDescendant(
       context.inside_active_unbounded);

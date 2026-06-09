@@ -24,6 +24,10 @@ namespace viz {
 enum class TrackedElementFeature;
 }  // namespace viz
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace blink {
 
 class CSSStyleDeclaration;
@@ -349,6 +353,10 @@ class CORE_EXPORT ElementRareDataVector final
   std::optional<LayoutUnit> LastRememberedBlockSize() const;
   std::optional<LayoutUnit> LastRememberedInlineSize() const;
 
+  gfx::Rect LastSentUnboundedBounds() const;
+  [[nodiscard]] ElementRareDataVector* SetLastSentUnboundedBounds(
+      const gfx::Rect& bounds);
+
   PopoverData* GetPopoverData() const;
   std::pair<std::reference_wrapper<PopoverData>, ElementRareDataVector*>
   EnsurePopoverData();
@@ -629,7 +637,8 @@ class CORE_EXPORT ElementRareDataVector final
     kFocusgroupData = 48,
     kDOMNodeId = 49,
     kFocusgroupTokenList = 50,
-    kNumFields = 51,
+    kLastSentUnboundedBounds = 51,
+    kNumFields = 52,
   };
 
   inline const Member<ElementRareDataField>* ArrayBase() const {

@@ -5,6 +5,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/unbounded_surface_window.h"
@@ -35,7 +36,7 @@ class UnboundedElementBrowserTest : public ContentBrowserTest {
     feature_list_.InitWithFeatures(
         {blink::features::kUnboundedElement,
          blink::features::kUnboundedElementOnTheOpenWeb},
-        {});
+        {::features::kTreesInViz});
     ContentBrowserTest::SetUp();
 #endif
   }
@@ -521,6 +522,55 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, DISABLED_IframeInputEventRou
   // matching the simulation.
   EXPECT_EQ(130, EvalJs(iframe, "window.__mouse_x"));
   EXPECT_EQ(130, EvalJs(iframe, "window.__mouse_y"));
+}
+
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, DynamicBoundsSync) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.innerHTML =
+        '<div id="child" style="width:100px; height:100px; ' +
+        'position:absolute; top:0; left:0;" unbounded></div>';
+    const div = document.getElementById('child');
+    div.showUnboundedElement();
+  )";
+
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window =
+      primary_main_frame_host()->GetUnboundedSurfaceWindowForTesting();
+  ASSERT_TRUE(window);
+
+  // Verify initial bounds
+  {
+    gfx::Rect bounds = window->GetBoundsForTesting();
+    EXPECT_EQ(100, bounds.width());
+    EXPECT_EQ(100, bounds.height());
+  }
+
+  // Update style properties to trigger bounds update
+  std::string update_script = R"(
+    const div = document.getElementById('child');
+    div.style.width = '150px';
+    div.style.height = '200px';
+    div.style.left = '50px';
+    div.style.top = '50px';
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), update_script));
+
+  // Allow layout and pre-paint to propagate the new bounds to the browser
+  std::ignore = EvalJs(primary_main_frame_host(),
+                       "new Promise(r => requestAnimationFrame(() => "
+                       "requestAnimationFrame(r)))");
+
+  // Verify updated bounds
+  {
+    gfx::Rect bounds = window->GetBoundsForTesting();
+    EXPECT_EQ(150, bounds.width());
+    EXPECT_EQ(200, bounds.height());
+  }
 }
 
 }  // namespace content
