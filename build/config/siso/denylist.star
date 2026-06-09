@@ -80,7 +80,6 @@ def __step_config(ctx, step_config):
         "third_party/lottie/minify_lottie.py",
         "third_party/perfetto/src/trace_processor/plugins/wattson/gen_wattson_curves.py",
         "third_party/perfetto/tools/gen_amalgamated_sql.py",
-        "third_party/pffft/generate_seed_corpus.py",
         "third_party/rust/cxx/chromium_integration/run_cxxbridge.py",
         "third_party/spirv-tools/src/utils/update_build_version.py",
         "third_party/swiftshader/third_party/SPIRV-Tools/utils/update_build_version.py",
