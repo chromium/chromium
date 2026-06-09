@@ -95,6 +95,11 @@ struct AnchoredMessageExpandableItem {
 struct AnchoredMessageExpandableContent {
   std::optional<std::u16string> heading;
   std::vector<AnchoredMessageExpandableItem> items;
+  // If set, overrides the default tooltip on the expand button.
+  std::optional<std::u16string> expand_button_tooltip;
+  // If set, overrides the default tooltip on the expand button when the drawer
+  // is expanded.
+  std::optional<std::u16string> collapse_button_tooltip;
 
   bool operator==(const AnchoredMessageExpandableContent&) const = default;
 };

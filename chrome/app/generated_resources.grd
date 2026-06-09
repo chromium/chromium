@@ -13199,6 +13199,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_DATA_SHARING_PAGE_ACTION_CHANGED_TAB" desc="A description of a member changing a tab for the data sharing page action.">
           Changed this tab
         </message>
+        <message name="IDS_ANCHORED_MESSAGE_EXPAND_BUTTON_TOOLTIP" desc="Tooltip for the anchored message expand button.">
+          Show details
+        </message>
+        <message name="IDS_ANCHORED_MESSAGE_COLLAPSE_BUTTON_TOOLTIP" desc="Tooltip for the anchored message collapse button.">
+          Hide details
+        </message>
       <!-- /Page Action -->
 
       <!-- User Education -->
