@@ -194,7 +194,7 @@ import java.util.function.Consumer;
 
                         @Override
                         public void onConfigurationChanged(Configuration newConfig) {
-                            updateFromConfiguration();
+                            ThreadUtils.runOnUiThread(() -> updateFromConfiguration());
                         }
                     };
             mWindowContext.registerComponentCallbacks(mComponentCallbacks);
