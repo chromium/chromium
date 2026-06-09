@@ -178,7 +178,6 @@ void MojoBlobReader::StartReading() {
               DCHECK_LE(result, 0);
               if (result == net::OK) {
                 reader->total_written_bytes_ += num_bytes;
-                reader->delegate_->DidRead(num_bytes);
               }
               reader->NotifyCompletedAndDeleteIfNeeded(result);
             },
@@ -261,8 +260,6 @@ void MojoBlobReader::DidRead(bool completed_synchronously, int num_bytes) {
     NotifyCompletedAndDeleteIfNeeded(num_bytes);
     return;
   }
-  if (num_bytes > 0)
-    delegate_->DidRead(num_bytes);
   TRACE_EVENT_END("Blob", /*"BlobReader::ReadMore"*/ GetTracingTrack(this),
                   "result", "success", "num_bytes", num_bytes);
   response_body_stream_ = pending_write_->Complete(num_bytes);

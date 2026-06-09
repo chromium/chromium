@@ -55,10 +55,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MojoBlobReader {
     // data associated with the blob being read, if any.
     virtual void DidReadSideData(std::optional<mojo_base::BigBuffer> data) {}
 
-    // Called whenever some amount of data is read from the blob and about to be
-    // written to the data pipe.
-    virtual void DidRead(int num_bytes) {}
-
     // Called when reading the blob has finished. If an error occurs this could
     // be the only method that gets called, but either way this method is always
     // the last to be called, shortly before the delegate is deleted.
