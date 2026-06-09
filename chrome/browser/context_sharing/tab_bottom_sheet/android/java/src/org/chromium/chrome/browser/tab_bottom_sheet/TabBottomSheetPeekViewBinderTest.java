@@ -10,8 +10,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.view.View.OnClickListener;
 
 import org.junit.Before;
@@ -84,14 +82,15 @@ public class TabBottomSheetPeekViewBinderTest {
     @Test
     public void testTitleTextAppearance() {
         int styleRes = 456;
-        mModel.set(TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE, styleRes);
+        mModel.set(TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE_ID, styleRes);
         verify(mView).setTitleTextAppearance(styleRes);
     }
 
     @Test
     public void testDescriptionText() {
-        mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_TEXT, TEST_STRING);
-        verify(mView).setDescriptionText(TEST_STRING);
+        int descRes = 123;
+        mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID, descRes);
+        verify(mView).setDescriptionText(descRes);
     }
 
     @Test
@@ -103,8 +102,9 @@ public class TabBottomSheetPeekViewBinderTest {
 
     @Test
     public void testActionButtonText() {
-        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_TEXT, TEST_STRING);
-        verify(mView).setActionButtonText(TEST_STRING);
+        int textRes = 123;
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_TEXT_ID, textRes);
+        verify(mView).setActionButtonText(textRes);
     }
 
     @Test
@@ -117,35 +117,36 @@ public class TabBottomSheetPeekViewBinderTest {
     @Test
     public void testActionButtonIcon() {
         int iconRes = 789;
-        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON, iconRes);
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_ID, iconRes);
         verify(mView).setActionButtonIcon(iconRes);
     }
 
     @Test
     public void testActionButtonBackgroundTint() {
-        ColorStateList colors = ColorStateList.valueOf(Color.RED);
-        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_BACKGROUND_TINT, colors);
-        verify(mView).setActionButtonBackgroundTint(colors);
+        int colorRes = 111;
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_BACKGROUND_TINT_ID, colorRes);
+        verify(mView).setActionButtonBackgroundTint(colorRes);
     }
 
     @Test
     public void testActionButtonIconTint() {
-        ColorStateList colors = ColorStateList.valueOf(Color.RED);
-        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_TINT, colors);
-        verify(mView).setActionButtonIconTint(colors);
+        int colorRes = 222;
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_TINT_ID, colorRes);
+        verify(mView).setActionButtonIconTint(colorRes);
     }
 
     @Test
     public void testActionButtonHorizontalPadding() {
-        int padding = 24;
-        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING, padding);
-        verify(mView).setActionButtonHorizontalPadding(padding);
+        int paddingRes = 333;
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING_ID, paddingRes);
+        verify(mView).setActionButtonHorizontalPadding(paddingRes);
     }
 
     @Test
     public void testActionButtonContentDescription() {
-        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION, TEST_STRING);
-        verify(mView).setActionButtonContentDescription(TEST_STRING);
+        int descRes = 123;
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION_ID, descRes);
+        verify(mView).setActionButtonContentDescription(descRes);
     }
 
     @Test

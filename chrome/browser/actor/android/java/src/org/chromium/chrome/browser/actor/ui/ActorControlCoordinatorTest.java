@@ -92,7 +92,6 @@ public class ActorControlCoordinatorTest {
 
         mCoordinator =
                 new ActorControlCoordinator(
-                        mActivity,
                         mTabBottomSheetManager,
                         mProfileSupplier,
                         mTabSupplier,
@@ -136,33 +135,34 @@ public class ActorControlCoordinatorTest {
     private void assertModelPropertiesMatchState(PeekViewUiState state) {
         assertEquals(
                 state.getTitleTextAppearanceResId(),
-                mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE));
+                mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE_ID));
         assertEquals(
-                state.getDescription(mActivity),
-                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT));
+                state.descriptionResId,
+                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID));
         assertEquals(
                 state.getDescriptionVisibility(),
                 mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_VISIBILITY));
         assertEquals(
-                state.getButtonText(mActivity),
-                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_TEXT));
+                state.buttonTextResId,
+                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_TEXT_ID));
         assertEquals(
                 state.getButtonVisibility(),
                 mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_VISIBILITY));
         assertEquals(
-                state.buttonIconResId, mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON));
+                state.buttonIconResId,
+                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_ID));
         assertEquals(
-                state.getButtonBackgroundTint(mActivity),
-                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_BACKGROUND_TINT));
+                state.buttonBackgroundResId,
+                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_BACKGROUND_TINT_ID));
         assertEquals(
-                state.getIconTint(mActivity),
-                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_TINT));
+                state.iconTintResId,
+                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_TINT_ID));
         assertEquals(
-                state.getButtonHorizontalPadding(mActivity),
-                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING));
+                state.buttonHorizontalPaddingResId,
+                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING_ID));
         assertEquals(
-                state.getButtonContentDescription(mActivity),
-                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION));
+                state.buttonContentDescriptionResId,
+                mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION_ID));
     }
 
     private void performActorControlClick() {
@@ -194,9 +194,6 @@ public class ActorControlCoordinatorTest {
         mMediator.setContent(TASK_TITLE, PeekViewUiState.ACTING);
         assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
         assertModelPropertiesMatchState(PeekViewUiState.ACTING);
-        assertEquals(
-                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT),
-                PeekViewUiState.ACTING.getDescription(mActivity));
     }
 
     @Test
@@ -208,9 +205,6 @@ public class ActorControlCoordinatorTest {
         mMediator.setContent(TASK_TITLE, PeekViewUiState.PAUSED);
         assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
         assertModelPropertiesMatchState(PeekViewUiState.PAUSED);
-        assertEquals(
-                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT),
-                PeekViewUiState.PAUSED.getDescription(mActivity));
     }
 
     @Test
@@ -222,9 +216,6 @@ public class ActorControlCoordinatorTest {
         mMediator.setContent(TASK_TITLE, PeekViewUiState.WAITING);
         assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
         assertModelPropertiesMatchState(PeekViewUiState.WAITING);
-        assertEquals(
-                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT),
-                PeekViewUiState.WAITING.getDescription(mActivity));
     }
 
     @Test
@@ -236,9 +227,6 @@ public class ActorControlCoordinatorTest {
         mMediator.setContent(TASK_TITLE, PeekViewUiState.DEFAULT);
         assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
         assertModelPropertiesMatchState(PeekViewUiState.DEFAULT);
-        assertEquals(
-                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT),
-                PeekViewUiState.DEFAULT.getDescription(mActivity));
     }
 
     @Test

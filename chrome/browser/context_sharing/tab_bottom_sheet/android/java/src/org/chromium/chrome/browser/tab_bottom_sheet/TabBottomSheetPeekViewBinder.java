@@ -23,33 +23,35 @@ class TabBottomSheetPeekViewBinder {
             PropertyModel model, TabBottomSheetPeekView view, PropertyKey propertyKey) {
         if (TabBottomSheetPeekProperties.TITLE_TEXT == propertyKey) {
             view.setTitle(model.get(TabBottomSheetPeekProperties.TITLE_TEXT));
-        } else if (TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE == propertyKey) {
+        } else if (TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE_ID == propertyKey) {
             view.setTitleTextAppearance(
-                    model.get(TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE));
-        } else if (TabBottomSheetPeekProperties.DESCRIPTION_TEXT == propertyKey) {
-            view.setDescriptionText(model.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT));
+                    model.get(TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE_ID));
+        } else if (TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID == propertyKey) {
+            view.setDescriptionText(model.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID));
         } else if (TabBottomSheetPeekProperties.DESCRIPTION_VISIBILITY == propertyKey) {
             view.setDescriptionVisibility(
                     model.get(TabBottomSheetPeekProperties.DESCRIPTION_VISIBILITY));
-        } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_TEXT == propertyKey) {
-            view.setActionButtonText(model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_TEXT));
+        } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_TEXT_ID == propertyKey) {
+            view.setActionButtonText(model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_TEXT_ID));
         } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_VISIBILITY == propertyKey) {
             view.setActionButtonVisibility(
                     model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_VISIBILITY));
-        } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_ICON == propertyKey) {
-            view.setActionButtonIcon(model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON));
-        } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_BACKGROUND_TINT == propertyKey) {
+        } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_ID == propertyKey) {
+            view.setActionButtonIcon(model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_ID));
+        } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_BACKGROUND_TINT_ID == propertyKey) {
             view.setActionButtonBackgroundTint(
-                    model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_BACKGROUND_TINT));
-        } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_TINT == propertyKey) {
+                    model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_BACKGROUND_TINT_ID));
+        } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_TINT_ID == propertyKey) {
             view.setActionButtonIconTint(
-                    model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_TINT));
-        } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING == propertyKey) {
+                    model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_TINT_ID));
+        } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING_ID
+                == propertyKey) {
             view.setActionButtonHorizontalPadding(
-                    model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING));
-        } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
+                    model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING_ID));
+        } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION_ID
+                == propertyKey) {
             view.setActionButtonContentDescription(
-                    model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION));
+                    model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION_ID));
         } else if (TabBottomSheetPeekProperties.ON_ACTION_BUTTON_CLICKED == propertyKey) {
             view.setActionButtonClickListener(
                     v -> model.get(TabBottomSheetPeekProperties.ON_ACTION_BUTTON_CLICKED).run());

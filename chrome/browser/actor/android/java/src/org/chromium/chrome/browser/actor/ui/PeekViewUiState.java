@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.actor.ui;
 
-import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.view.View;
 
@@ -15,10 +13,8 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
-import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -87,62 +83,6 @@ public class PeekViewUiState {
         this.buttonContentDescriptionResId = buttonContentDescriptionResId;
     }
 
-    /**
-     * Returns the background color tint list for the actor control button.
-     *
-     * @param context The {@link Context} to use for retrieving resources.
-     * @return The background color tint list for the actor control button.
-     */
-    public @Nullable ColorStateList getButtonBackgroundTint(Context context) {
-        if (buttonBackgroundResId == Resources.ID_NULL) {
-            return null;
-        }
-        return ColorStateList.valueOf(ContextCompat.getColor(context, buttonBackgroundResId));
-    }
-
-    /**
-     * Returns the horizontal padding for the actor control button.
-     *
-     * @param context The {@link Context} to use for retrieving resources.
-     * @return The horizontal padding for the actor control button in pixels.
-     */
-    public int getButtonHorizontalPadding(Context context) {
-        return (buttonHorizontalPaddingResId != Resources.ID_NULL)
-                ? context.getResources().getDimensionPixelSize(buttonHorizontalPaddingResId)
-                : 0;
-    }
-
-    /**
-     * Returns the description for the current state of the actor task.
-     *
-     * @param context The {@link Context} to use for retrieving resources.
-     * @return The description for the current state of the actor task.
-     */
-    public String getDescription(Context context) {
-        return (descriptionResId != Resources.ID_NULL) ? context.getString(descriptionResId) : "";
-    }
-
-    /**
-     * Returns the text displayed on the actor control button.
-     *
-     * @param context The {@link Context} to use for retrieving resources.
-     * @return The text displayed on the actor control button.
-     */
-    public @Nullable String getButtonText(Context context) {
-        return (buttonTextResId != Resources.ID_NULL) ? context.getString(buttonTextResId) : null;
-    }
-
-    /**
-     * Returns the accessibility content description for the actor control button.
-     *
-     * @param context The {@link Context} to use for retrieving resources.
-     * @return The accessibility content description for the actor control button.
-     */
-    public @Nullable String getButtonContentDescription(Context context) {
-        return (buttonContentDescriptionResId != Resources.ID_NULL)
-                ? context.getString(buttonContentDescriptionResId)
-                : null;
-    }
 
     /**
      * Returns the visibility of the actor control button.
@@ -169,18 +109,6 @@ public class PeekViewUiState {
      */
     public @StyleRes int getTitleTextAppearanceResId() {
         return titleTextAppearanceResId;
-    }
-
-    /**
-     * Returns the icon tint for the actor control button.
-     *
-     * @param context The {@link Context} to use for retrieving resources.
-     * @return The icon tint for the actor control button.
-     */
-    public @Nullable ColorStateList getIconTint(Context context) {
-        return (iconTintResId != Resources.ID_NULL)
-                ? context.getColorStateList(iconTintResId)
-                : null;
     }
 
     @Override

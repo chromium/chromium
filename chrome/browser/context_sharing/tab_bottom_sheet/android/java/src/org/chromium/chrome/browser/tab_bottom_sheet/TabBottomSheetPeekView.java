@@ -6,14 +6,21 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
+import androidx.annotation.StyleRes;
+import androidx.core.content.ContextCompat;
+
 import com.google.android.material.button.MaterialButton;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -53,17 +60,21 @@ class TabBottomSheetPeekView extends RelativeLayout {
      *
      * @param resId The text appearance resource ID.
      */
-    public void setTitleTextAppearance(int resId) {
+    public void setTitleTextAppearance(@StyleRes int resId) {
         mTitleView.setTextAppearance(getContext(), resId);
     }
 
     /**
      * Sets the description text for the current step.
      *
-     * @param text The string describing the active step.
+     * @param textResId The string resource ID describing the active step.
      */
-    public void setDescriptionText(String text) {
-        mDescriptionView.setText(text);
+    public void setDescriptionText(@StringRes int textResId) {
+        if (textResId == Resources.ID_NULL) {
+            mDescriptionView.setText(null);
+        } else {
+            mDescriptionView.setText(textResId);
+        }
     }
 
     /**
@@ -78,10 +89,14 @@ class TabBottomSheetPeekView extends RelativeLayout {
     /**
      * Sets the action button text.
      *
-     * @param text The action button label.
+     * @param textResId The action button label resource ID.
      */
-    public void setActionButtonText(@Nullable String text) {
-        mActionButton.setText(text);
+    public void setActionButtonText(@StringRes int textResId) {
+        if (textResId == Resources.ID_NULL) {
+            mActionButton.setText(null);
+        } else {
+            mActionButton.setText(textResId);
+        }
     }
 
     /**
@@ -98,44 +113,61 @@ class TabBottomSheetPeekView extends RelativeLayout {
      *
      * @param resId The icon drawable resource ID.
      */
-    public void setActionButtonIcon(int resId) {
+    public void setActionButtonIcon(@DrawableRes int resId) {
         mActionButton.setIconResource(resId);
     }
 
     /**
      * Sets the action button background tint list.
      *
-     * @param tint The ColorStateList tint list.
+     * @param tintResId The background tint color resource ID.
      */
-    public void setActionButtonBackgroundTint(@Nullable ColorStateList tint) {
-        mActionButton.setBackgroundTintList(tint);
+    public void setActionButtonBackgroundTint(@ColorRes int tintResId) {
+        if (tintResId == Resources.ID_NULL) {
+            mActionButton.setBackgroundTintList(null);
+        } else {
+            mActionButton.setBackgroundTintList(
+                    ColorStateList.valueOf(ContextCompat.getColor(getContext(), tintResId)));
+        }
     }
 
     /**
      * Sets the action button icon tint list.
      *
-     * @param tint The ColorStateList tint list.
+     * @param tintResId The icon tint color resource ID.
      */
-    public void setActionButtonIconTint(@Nullable ColorStateList tint) {
-        mActionButton.setIconTint(tint);
+    public void setActionButtonIconTint(@ColorRes int tintResId) {
+        if (tintResId == Resources.ID_NULL) {
+            mActionButton.setIconTint(null);
+        } else {
+            mActionButton.setIconTint(ContextCompat.getColorStateList(getContext(), tintResId));
+        }
     }
 
     /**
      * Sets the action button horizontal padding.
      *
-     * @param padding The horizontal padding value in pixels.
+     * @param paddingResId The horizontal padding dimension resource ID.
      */
-    public void setActionButtonHorizontalPadding(int padding) {
+    public void setActionButtonHorizontalPadding(@DimenRes int paddingResId) {
+        int padding =
+                paddingResId == Resources.ID_NULL
+                        ? 0
+                        : getContext().getResources().getDimensionPixelSize(paddingResId);
         mActionButton.setPaddingRelative(padding, 0, padding, 0);
     }
 
     /**
      * Sets the action button content description.
      *
-     * @param contentDescription The content description for accessibility.
+     * @param textResId The content description resource ID.
      */
-    public void setActionButtonContentDescription(@Nullable String contentDescription) {
-        mActionButton.setContentDescription(contentDescription);
+    public void setActionButtonContentDescription(@StringRes int textResId) {
+        if (textResId == Resources.ID_NULL) {
+            mActionButton.setContentDescription(null);
+        } else {
+            mActionButton.setContentDescription(getContext().getString(textResId));
+        }
     }
 
     /**

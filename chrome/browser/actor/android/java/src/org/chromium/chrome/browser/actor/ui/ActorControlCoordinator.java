@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.actor.ui;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import org.chromium.base.Callback;
@@ -44,7 +43,6 @@ public class ActorControlCoordinator
     private static final String TAG = "ActorControlCoordin";
 
     private final ActorControlMediator mMediator;
-    private final Context mContext;
     private final PropertyModel mModel;
     private final Callback<Profile> mProfileObserver;
     private final TabBottomSheetManager mTabBottomSheetManager;
@@ -73,7 +71,6 @@ public class ActorControlCoordinator
     /**
      * Constructs a new {@link ActorControlCoordinator}.
      *
-     * @param context The {@link Context} used to inflate the layout.
      * @param tabBottomSheetManager The {@link TabBottomSheetManager} for the tab bottom sheet.
      * @param profileSupplier The {@link ObservableSupplier<Profile>} for the profile.
      * @param tabSupplier The {@link NullableObservableSupplier<Tab>} for the tab. This supplies the
@@ -83,12 +80,10 @@ public class ActorControlCoordinator
      */
     // TODO(crbug.com/491895203): Add render test for peek view.
     public ActorControlCoordinator(
-            Context context,
             TabBottomSheetManager tabBottomSheetManager,
             MonotonicObservableSupplier<Profile> profileSupplier,
             NullableObservableSupplier<Tab> tabSupplier,
             TabSelectionDelegate tabSelectionDelegate) {
-        mContext = context;
         mTabBottomSheetManager = tabBottomSheetManager;
         mProfileSupplier = profileSupplier;
         mTabSelectionDelegate = tabSelectionDelegate;
@@ -105,7 +100,7 @@ public class ActorControlCoordinator
                                 this::onPeekViewClicked)
                         .build();
 
-        mMediator = new ActorControlMediator(mContext, mModel);
+        mMediator = new ActorControlMediator(mModel);
 
         mProfileObserver = this::onProfileAdded;
         mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
