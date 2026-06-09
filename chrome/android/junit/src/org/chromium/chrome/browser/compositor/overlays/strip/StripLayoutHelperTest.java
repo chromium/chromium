@@ -207,7 +207,7 @@ public class StripLayoutHelperTest {
     @Mock private LayoutRenderHost mRenderHost;
     @Mock private CompositorButton mModelSelectorBtn;
     @Mock private TabUngrouper mTabUngrouper;
-    @Mock private View mToolbarContainerView;
+    @Mock private View mControlContainer;
     @Mock private StripTabHoverCardView mTabHoverCardView;
     @Mock private Profile mProfile;
     @Mock private StripLayoutViewOnClickHandler mClickHandler;
@@ -2296,7 +2296,7 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getInReorderModeForTesting());
         verify(mTabStripDragHandler)
                 .startTabDragAction(
-                        mToolbarContainerView,
+                        mControlContainer,
                         mModel.getTabAt(1),
                         DRAG_START_POINT,
                         tabs[1].getDrawX(),
@@ -2433,7 +2433,7 @@ public class StripLayoutHelperTest {
         // Long press on tab
         onLongPress_OnTab(tabs);
         // Verify we performed haptic feedback for a long-press.
-        verify(mToolbarContainerView, times(1))
+        verify(mControlContainer, times(1))
                 .performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
         ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
                 ArgumentCaptor.forClass(RectProvider.class);
@@ -2490,6 +2490,47 @@ public class StripLayoutHelperTest {
                 actualRect);
 
         displayMetrics.density = densityBeforeTest; // Clean up.
+    }
+
+    @Test
+    @Feature("Tab Context Menu")
+    public void testOnLongPress_OnTab_UsesControlContainerLocation() {
+        // Setup
+        var tabs = initializeTest_ForTab();
+        setupForIndividualTabContextMenu();
+
+        // Stub mControlContainer getLocationInWindow to return a specific location.
+        int hostX = 100;
+        int hostY = 200;
+        doAnswer(
+                        invocation -> {
+                            int[] coords = invocation.getArgument(0);
+                            coords[0] = hostX;
+                            coords[1] = hostY;
+                            return null;
+                        })
+                .when(mControlContainer)
+                .getLocationInWindow(any());
+
+        // Long press on tab.
+        onLongPress_OnTab(tabs);
+
+        ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
+                ArgumentCaptor.forClass(RectProvider.class);
+        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), any());
+
+        // Verify anchorView coordinates are offset by controlContainer's location.
+        StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
+        assertThat(view, instanceOf(StripLayoutTab.class));
+        Rect expectedRect = new Rect();
+        view.getAnchorRect(expectedRect);
+        expectedRect.offset(hostX, hostY);
+
+        Rect actualRect = rectProviderArgumentCaptor.getValue().getRect();
+        assertEquals(
+                "Anchor view for menu should be offset by controlContainer's location",
+                expectedRect,
+                actualRect);
     }
 
     @Test
@@ -2595,7 +2636,7 @@ public class StripLayoutHelperTest {
         // Long press on group title.
         mStripLayoutHelper.onLongPress(10f, 0f);
         // Verify we performed haptic feedback for a long-press.
-        verify(mToolbarContainerView, times(1))
+        verify(mControlContainer, times(1))
                 .performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
         ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
                 ArgumentCaptor.forClass(RectProvider.class);
@@ -2808,7 +2849,7 @@ public class StripLayoutHelperTest {
         // Extra setup for DragDrop
         setTabStripDragHandlerMock();
         Activity activity = spy(mActivity);
-        when(mToolbarContainerView.getContext()).thenReturn(activity);
+        when(mControlContainer.getContext()).thenReturn(activity);
 
         onLongPress_OffTab();
         // verify tab drag not invoked.
@@ -4744,7 +4785,7 @@ public class StripLayoutHelperTest {
                         incognito,
                         mModelSelectorBtn,
                         mTabStripDragHandler,
-                        mToolbarContainerView,
+                        mControlContainer,
                         mWindowAndroid,
                         mActionConfirmationManager,
                         mDataSharingTabManager,

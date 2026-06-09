@@ -380,7 +380,7 @@ public class StripLayoutHelper
                         setAccessibilityDescription(stripTab, getTabById(stripTab.getTabId()));
                         if (stripTab.isKeyboardFocused()) {
                             ViewCompat.setAccessibilityPaneTitle(
-                                    mToolbarContainerView, stripTab.getAccessibilityDescription());
+                                    mControlContainer, stripTab.getAccessibilityDescription());
                         }
                     }
                     mUpdateHost.requestUpdate();
@@ -641,7 +641,7 @@ public class StripLayoutHelper
     private float mDelayedReorderInitialX;
 
     // Tab Drag and Drop state to hold clicked tab being dragged.
-    private final View mToolbarContainerView;
+    private final View mControlContainer;
     private final @Nullable TabStripDragHandler mTabStripDragHandler;
 
     // Tab hover state.
@@ -720,7 +720,7 @@ public class StripLayoutHelper
      *     incognito models.
      * @param tabStripDragHandler The {@link TabStripDragHandler} instance to initiate drag and
      *     drop.
-     * @param toolbarContainerView The {@link View} passed to {@link TabStripDragHandler} for drag
+     * @param controlContainerView The {@link View} passed to {@link TabStripDragHandler} for drag
      *     and drop.
      * @param windowAndroid The {@link WindowAndroid} instance to access Activity.
      * @param actionConfirmationManager The {@link ActionConfirmationManager} for group actions.
@@ -748,7 +748,7 @@ public class StripLayoutHelper
             boolean incognito,
             @Nullable CompositorButton modelSelectorButton,
             @Nullable TabStripDragHandler tabStripDragHandler,
-            View toolbarContainerView,
+            View controlContainerView,
             WindowAndroid windowAndroid,
             ActionConfirmationManager actionConfirmationManager,
             DataSharingTabManager dataSharingTabManager,
@@ -764,7 +764,7 @@ public class StripLayoutHelper
         mGroupTitleOverlapWidth = FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
         mNewTabButtonWidth = BUTTON_BACKGROUND_SIZE_DP;
         mModelSelectorButton = modelSelectorButton;
-        mToolbarContainerView = toolbarContainerView;
+        mControlContainer = controlContainerView;
         mTabStripDragHandler = tabStripDragHandler;
         mWindowAndroid = windowAndroid;
         mLastHoverCardExitTime = INVALID_TIME;
@@ -804,7 +804,7 @@ public class StripLayoutHelper
                         null,
                         BUTTON_BACKGROUND_SIZE_DP,
                         BUTTON_BACKGROUND_SIZE_DP,
-                        mToolbarContainerView::setTooltipText,
+                        mControlContainer::setTooltipText,
                         /* clickHandler= */ this,
                         /* keyboardFocusHandler= */ this,
                         R.drawable.ic_new_tab_button,
@@ -1347,7 +1347,7 @@ public class StripLayoutHelper
                 mCachedTabWidthSupplier,
                 mPinnedTabsBoundarySupplier,
                 mGroupIdToHideSupplier,
-                mToolbarContainerView);
+                mControlContainer);
 
         if (profile != null && !profile.isOffTheRecord()) {
             mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
@@ -1644,7 +1644,7 @@ public class StripLayoutHelper
         }
 
         mTabStripIphController.showIphOnTabStrip(
-                groupTitle, tab, mToolbarContainerView, iphType, mHeight, enableSnoozeMode);
+                groupTitle, tab, mControlContainer, iphType, mHeight, enableSnoozeMode);
         return true;
     }
 
@@ -2427,7 +2427,7 @@ public class StripLayoutHelper
                                         toLeft);
                             });
         }
-        StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
+        StripLayoutUtils.performHapticFeedback(mControlContainer);
 
         if (shouldWaitForUpdate) {
             // We do this after a requestUpdate so that the view will have the correct position for
@@ -2511,7 +2511,7 @@ public class StripLayoutHelper
         RectProvider anchorRectProvider = new RectProvider();
         anchorTab.getAnchorRect(anchorRectProvider.getRect());
         getAdjustedAnchorRect(anchorRectProvider);
-        StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
+        StripLayoutUtils.performHapticFeedback(mControlContainer);
         mTabContextMenuCoordinator.showMenu(
                 anchorRectProvider, new AnchorInfo(anchorTab.getTabId(), tabIds));
     }
@@ -2665,7 +2665,7 @@ public class StripLayoutHelper
 
     private void getAdjustedAnchorRect(RectProvider anchorRectProvider) {
         StripLayoutUtils.getAdjustedAnchorRect(
-                mContext, mToolbarContainerView, mIncognito, mTopPadding, anchorRectProvider);
+                mContext, mControlContainer, mIncognito, mTopPadding, anchorRectProvider);
     }
 
     private void startReorderMode(
@@ -3478,7 +3478,7 @@ public class StripLayoutHelper
                             tabGroupId,
                             ActionType.CLOSE,
                             mGroupIdToHideSupplier,
-                            mToolbarContainerView,
+                            mControlContainer,
                             /* beforeSyncDialogRunnable= */ null,
                             /* onSuccess= */ null);
         }

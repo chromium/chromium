@@ -70,7 +70,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     private final @Nullable XrSceneCoreSessionManager mXrSceneCoreSessionManager;
 
     /**
-     * Creates an instance of a LayoutManagerChromePhone.
+     * Creates an instance of a LayoutManagerChromeTablet.
      *
      * @param host A LayoutManagerHost instance.
      * @param contentContainer A ViewGroup for Android views to be bound to.
@@ -85,7 +85,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      *     drag and drop.
      * @param dragAndDropDelegate DragAndDropDelegate passed to StripLayoutHelperManager to initiate
      *     tab drag and drop.
-     * @param toolbarContainerView View passed to StripLayoutHelper to support tab drag and drop.
+     * @param controlContainerView View passed to StripLayoutHelper to support tab drag and drop.
      * @param tabHoverCardViewStub The ViewStub representing the strip tab hover card.
      * @param windowAndroid The @{@link WindowAndroid} instance to access Activity.
      * @param toolbarManager The ToolbarManager instance.
@@ -115,7 +115,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             HubLayoutDependencyHolder hubLayoutDependencyHolder,
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragAndDropDelegate,
-            View toolbarContainerView,
+            View controlContainerView,
             ViewStub tabHoverCardViewStub,
             WindowAndroid windowAndroid,
             ToolbarManager toolbarManager,
@@ -156,7 +156,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         lifecycleDispatcher,
                         multiInstanceManager,
                         dragAndDropDelegate,
-                        toolbarContainerView,
+                        controlContainerView,
                         tabHoverCardViewStub,
                         tabContentManagerSupplier,
                         browserControlsStateProvider,

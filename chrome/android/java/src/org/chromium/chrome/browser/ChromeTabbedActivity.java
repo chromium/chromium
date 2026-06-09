@@ -1141,7 +1141,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     assertNonNull(getCompositorViewHolderSupplier().get());
 
             ViewStub tabHoverCardViewStub = findViewById(R.id.tab_hover_card_holder_stub);
-            View toolbarContainerView = findViewById(R.id.toolbar_container);
+            View controlContainerView =
+                    findViewById(
+                            ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_SNAPSHOT_REFACTOR)
+                                    ? R.id.control_container
+                                    : R.id.toolbar_container);
             mDragDropDelegate = new DragAndDropDelegateImpl();
             mDragDropDelegate.setDragAndDropBrowserDelegate(
                     new ChromeDragAndDropBrowserDelegate(() -> this));
@@ -1173,7 +1177,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             createHubLayoutDependencyHolder(),
                             mMultiInstanceManager,
                             mDragDropDelegate,
-                            toolbarContainerView,
+                            controlContainerView,
                             tabHoverCardViewStub,
                             getWindowAndroid(),
                             getToolbarManager(),

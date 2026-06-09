@@ -246,7 +246,7 @@ public class StripLayoutHelperManager
     private final WindowAndroid mWindowAndroid;
     private TabStripEventHandler mTabStripEventHandler;
     private final TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
-    private final View mToolbarControlContainer;
+    private final View mControlContainer;
     private final ViewStub mTabHoverCardViewStub;
     private float mLastVisibleViewportOffsetY;
     private float mSceneLayerYOffset;
@@ -476,7 +476,7 @@ public class StripLayoutHelperManager
      *     windows.
      * @param dragDropDelegate DragAndDropDelegate passed to {@link TabStripDragHandler} to initiate
      *     tab drag and drop.
-     * @param toolbarContainerView View passed to {@link TabStripDragHandler} for drag and drop.
+     * @param controlContainerView View passed to {@link TabStripDragHandler} for drag and drop.
      * @param tabHoverCardViewStub The ViewStub representing the strip tab hover card.
      * @param tabContentManagerSupplier Supplier of the TabContentManager instance.
      * @param browserControlsStateProvider BrowserControlsStateProvider for drag drop.
@@ -508,7 +508,7 @@ public class StripLayoutHelperManager
             ActivityLifecycleDispatcher lifecycleDispatcher,
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragDropDelegate,
-            View toolbarContainerView,
+            View controlContainerView,
             ViewStub tabHoverCardViewStub,
             MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -549,7 +549,7 @@ public class StripLayoutHelperManager
         mLifecycleDispatcher.register(this);
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mDefaultTitle = context.getString(R.string.tab_loading_default_title);
-        mToolbarControlContainer = toolbarContainerView;
+        mControlContainer = controlContainerView;
         mEventFilter =
                 new AreaMotionEventFilter(context, mTabStripEventHandler, null, false, false) {
                     @Override
@@ -604,7 +604,7 @@ public class StripLayoutHelperManager
                         mWindowAndroid,
                         glicClickHandler,
                         mDensity,
-                        toolbarContainerView,
+                        controlContainerView,
                         glicKeyboardFocusHandler,
                         isAppInDesktopWindow(),
                         mIsTopResumedActivity,
@@ -680,7 +680,7 @@ public class StripLayoutHelperManager
                         /* incognito= */ false,
                         mModelSelectorButton,
                         mTabStripDragHandler,
-                        toolbarContainerView,
+                        controlContainerView,
                         windowAndroid,
                         actionConfirmationManager,
                         dataSharingTabManager,
@@ -705,7 +705,7 @@ public class StripLayoutHelperManager
                         /* incognito= */ true,
                         mModelSelectorButton,
                         mTabStripDragHandler,
-                        toolbarContainerView,
+                        controlContainerView,
                         windowAndroid,
                         actionConfirmationManager,
                         dataSharingTabManager,
@@ -793,7 +793,7 @@ public class StripLayoutHelperManager
                         MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP,
                         MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP,
                         (tooltipText) -> {
-                            mToolbarControlContainer.setTooltipText(tooltipText);
+                            mControlContainer.setTooltipText(tooltipText);
                         },
                         selectorClickHandler,
                         keyboardFocusHandler,
@@ -1307,7 +1307,7 @@ public class StripLayoutHelperManager
         if ((getStripVisibilityStateSupplier().get() & StripVisibilityState.HIDDEN_BY_FADE) != 0) {
             // Reset the system gesture exclusion rects to allow system gestures on the tab strip
             // area.
-            mToolbarControlContainer.setSystemGestureExclusionRects(List.of(new Rect(0, 0, 0, 0)));
+            mControlContainer.setSystemGestureExclusionRects(List.of(new Rect(0, 0, 0, 0)));
             return;
         }
 
@@ -1367,7 +1367,7 @@ public class StripLayoutHelperManager
                             (int) Math.ceil(Math.min(msbTouchRect.bottom, mHeight) * mDensity));
             rects.add(msbRect);
         }
-        mToolbarControlContainer.setSystemGestureExclusionRects(rects);
+        mControlContainer.setSystemGestureExclusionRects(rects);
     }
 
     /**

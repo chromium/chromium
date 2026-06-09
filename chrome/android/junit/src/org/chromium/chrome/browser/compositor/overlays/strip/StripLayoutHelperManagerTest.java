@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -152,7 +153,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
-    @Mock private View mToolbarContainerView;
+    @Mock private View mControlContainer;
     @Mock private DragAndDropDelegate mDragDropDelegate;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabCreatorManager mTabCreatorManager;
@@ -228,7 +229,7 @@ public class StripLayoutHelperManagerTest {
         mTabContentManagerSupplier.set(mTabContentManager);
         mTabModelSupplier.set(mStandardTabModel);
 
-        when(mToolbarContainerView.getContext()).thenReturn(mActivity);
+        when(mControlContainer.getContext()).thenReturn(mActivity);
         when(mToolbarManager.getStatusBarColorController()).thenReturn(mStatusBarColorController);
         when(mDesktopWindowStateManager.isInUnfocusedDesktopWindow()).thenReturn(false);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
@@ -278,7 +279,7 @@ public class StripLayoutHelperManagerTest {
                         mLifecycleDispatcher,
                         mMultiInstanceManager,
                         mDragDropDelegate,
-                        mToolbarContainerView,
+                        mControlContainer,
                         mTabHoverCardViewStub,
                         mTabContentManagerSupplier,
                         mBrowserControlStateProvider,
@@ -1004,7 +1005,7 @@ public class StripLayoutHelperManagerTest {
 
         mStripLayoutHelperManager.updateOverlay(0, 0);
 
-        verify(mToolbarContainerView)
+        verify(mControlContainer, atLeastOnce())
                 .setSystemGestureExclusionRects(mSystemExclusionRectCaptor.capture());
 
         if (showStrip) {
@@ -1073,7 +1074,7 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onHeightTransitionFinished(true);
         mStripLayoutHelperManager.updateOverlay(0, 0);
 
-        verify(mToolbarContainerView)
+        verify(mControlContainer, atLeastOnce())
                 .setSystemGestureExclusionRects(mSystemExclusionRectCaptor.capture());
         assertEquals(
                 "Number of exclusion rects is wrong.",
@@ -1119,7 +1120,7 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onHeightTransitionFinished(true);
         mStripLayoutHelperManager.updateOverlay(0, 0);
 
-        verify(mToolbarContainerView)
+        verify(mControlContainer, atLeastOnce())
                 .setSystemGestureExclusionRects(mSystemExclusionRectCaptor.capture());
         assertEquals(
                 "Number of exclusion rects is wrong.",
