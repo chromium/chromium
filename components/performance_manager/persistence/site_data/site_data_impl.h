@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -118,7 +119,7 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
   void NotifyLoadTimePerformanceMeasurement(
       base::TimeDelta load_duration,
       base::TimeDelta cpu_usage_estimate,
-      base::ByteCount private_footprint_estimate);
+      base::ByteSize private_footprint_estimate);
 
   base::TimeDelta last_loaded_time_for_testing() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
 
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/bind.h"
@@ -376,9 +377,9 @@ TEST_F(SiteDataImplTest, OnInitCallbackMergePreviousObservations) {
 
   // Add a couple of performance samples.
   local_site_data->NotifyLoadTimePerformanceMeasurement(
-      base::Microseconds(100), base::Microseconds(1000), base::KiB(2000));
+      base::Microseconds(100), base::Microseconds(1000), base::KiBU(2000));
   local_site_data->NotifyLoadTimePerformanceMeasurement(
-      base::Microseconds(200), base::Microseconds(500), base::KiB(1000));
+      base::Microseconds(200), base::Microseconds(500), base::KiBU(1000));
 
   // Make sure the local performance samples are averaged as expected.
   EXPECT_EQ(2U, local_site_data->load_duration().num_datums());

@@ -8,13 +8,14 @@
 #include <limits>
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -65,7 +66,7 @@ bool ShouldAttemptDbRepair(const leveldb::Status& status) {
 
 struct DatabaseSizeResult {
   std::optional<int64_t> num_rows;
-  std::optional<base::ByteCount> on_disk_size;
+  std::optional<base::ByteSize> on_disk_size;
 };
 
 std::string SerializeOriginIntoDatabaseKey(const url::Origin& origin) {
@@ -327,7 +328,8 @@ DatabaseSizeResult LevelDBSiteDataStore::AsyncHelper::GetDatabaseSize() {
   // report.
   db_.reset();
 #endif
-  ret.on_disk_size = base::ByteCount(base::ComputeDirectorySize(db_path_));
+  ret.on_disk_size = base::ByteSize(
+      base::checked_cast<uint64_t>(base::ComputeDirectorySize(db_path_)));
 #if BUILDFLAG(IS_WIN)
   OpenOrCreateDatabase();
   if (!db_) {

@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <optional>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"

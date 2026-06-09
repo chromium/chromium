@@ -6,7 +6,7 @@
 
 #include <limits>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -211,7 +211,7 @@ TEST_F(LevelDBSiteDataStoreTest, GetDatabaseSize) {
 
   auto size_callback = base::BindLambdaForTesting(
       [&](std::optional<int64_t> num_rows,
-          std::optional<base::ByteCount> on_disk_size) {
+          std::optional<base::ByteSize> on_disk_size) {
         EXPECT_TRUE(num_rows);
         // The DB contains an extra row for metadata.
         int64_t expected_rows = site_origins.size() + 1;

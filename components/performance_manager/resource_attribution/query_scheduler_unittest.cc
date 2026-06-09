@@ -8,7 +8,7 @@
 #include <set>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/location.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"

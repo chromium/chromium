@@ -59,7 +59,7 @@ void SiteDataWriter::NotifyUsesAudioInBackground() {
 void SiteDataWriter::NotifyLoadTimePerformanceMeasurement(
     base::TimeDelta load_duration,
     base::TimeDelta cpu_usage_estimate,
-    base::ByteCount private_footprint_estimate) {
+    base::ByteSize private_footprint_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   impl_->NotifyLoadTimePerformanceMeasurement(load_duration, cpu_usage_estimate,
                                               private_footprint_estimate);

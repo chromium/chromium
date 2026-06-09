@@ -142,7 +142,7 @@ void SiteDataImpl::NotifyUsesAudioInBackground() {
 void SiteDataImpl::NotifyLoadTimePerformanceMeasurement(
     base::TimeDelta load_duration,
     base::TimeDelta cpu_usage_estimate,
-    base::ByteCount private_footprint_estimate) {
+    base::ByteSize private_footprint_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_dirty_ = true;
 

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"

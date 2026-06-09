@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/byte_size.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -59,7 +60,7 @@ class LenientMockDataWriter : public SiteDataWriter {
   MOCK_METHOD(void, NotifyUsesAudioInBackground, (), (override));
   MOCK_METHOD(void,
               NotifyLoadTimePerformanceMeasurement,
-              (base::TimeDelta, base::TimeDelta, base::ByteCount),
+              (base::TimeDelta, base::TimeDelta, base::ByteSize),
               (override));
 
   // Used to record the destruction of this object.

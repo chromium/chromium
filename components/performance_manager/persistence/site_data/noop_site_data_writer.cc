@@ -4,7 +4,7 @@
 
 #include "components/performance_manager/persistence/site_data/noop_site_data_writer.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/no_destructor.h"
 
 namespace performance_manager {
@@ -28,7 +28,7 @@ void NoopSiteDataWriter::NotifyUsesAudioInBackground() {}
 void NoopSiteDataWriter::NotifyLoadTimePerformanceMeasurement(
     base::TimeDelta load_duration,
     base::TimeDelta cpu_usage_estimate,
-    base::ByteCount private_footprint_estimate) {}
+    base::ByteSize private_footprint_estimate) {}
 
 const url::Origin& NoopSiteDataWriter::Origin() const {
   static const base::NoDestructor<url::Origin> dummy_origin;

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_NOOP_SITE_DATA_WRITER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_NOOP_SITE_DATA_WRITER_H_
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "components/performance_manager/persistence/site_data/site_data_writer.h"
 #include "url/origin.h"
 
@@ -30,7 +30,7 @@ class NoopSiteDataWriter : public SiteDataWriter {
   void NotifyLoadTimePerformanceMeasurement(
       base::TimeDelta load_duration,
       base::TimeDelta cpu_usage_estimate,
-      base::ByteCount private_footprint_estimate) override;
+      base::ByteSize private_footprint_estimate) override;
   const url::Origin& Origin() const override;
 
  private:

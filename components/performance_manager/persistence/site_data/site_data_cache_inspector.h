@@ -10,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "components/performance_manager/persistence/site_data/site_data.pb.h"
 #include "url/origin.h"
@@ -35,10 +36,10 @@ class SiteDataCacheInspector {
   // determined that the data can't be retrieved.
   // On callback |num_rows| is the number of rows in the database, or -1 if
   // the number can't be determined. |on_disk_size| is the on-disk size of
-  // the database, or -1 if the on-disk size can't be determined.
+  // the database, or nullopt if the on-disk size can't be determined.
   using DataStoreSizeCallback =
       base::OnceCallback<void(std::optional<int64_t> num_rows,
-                              std::optional<base::ByteCount> on_disk_size)>;
+                              std::optional<base::ByteSize> on_disk_size)>;
   virtual void GetDataStoreSize(DataStoreSizeCallback on_have_data) = 0;
 
   // Retrieves the in-memory data for a given origin.
