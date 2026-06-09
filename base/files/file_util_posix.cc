@@ -850,7 +850,9 @@ FilePath GetHomeDir() {
 }
 #endif  // !BUILDFLAG(IS_APPLE)
 
-File CreateAndOpenTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
+File CreateAndOpenTemporaryFileInDir(const FilePath& dir,
+                                     FilePath* temp_file,
+                                     uint32_t /*additional_flags*/) {
   // For call to close() inside ScopedFD.
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   ScopedFD fd = CreateAndOpenFdForTemporaryFileInDir(dir, temp_file);
