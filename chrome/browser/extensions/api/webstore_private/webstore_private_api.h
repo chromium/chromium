@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/api/webstore_private.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -183,9 +182,6 @@ class WebstorePrivateBeginInstallWithManifest3Function
   scoped_refptr<Extension> dummy_extension_;
 
   std::u16string blocked_by_policy_error_message_;
-
-  SupervisedUserExtensionsMetricsRecorder
-      supervised_user_extensions_metrics_recorder_;
 
   std::unique_ptr<ExtensionInstallPrompt> install_prompt_;
 

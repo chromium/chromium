@@ -17,7 +17,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "chrome/browser/ui/extensions/extension_install_ui.h"
@@ -82,19 +81,6 @@ class ExtensionInstallPrompt : public extensions::ExtensionInstallPromptClient {
 
   // The last prompt type to display; only used for testing.
   static PromptType g_last_prompt_type_for_tests;
-
-  // Interface for observing events on the prompt.
-  class Observer : public base::CheckedObserver {
-   public:
-    // Called right before the dialog is about to show.
-    virtual void OnDialogOpened() = 0;
-
-    // Called when the user clicks accept on the dialog.
-    virtual void OnDialogAccepted() = 0;
-
-    // Called when the user clicks cancel on the dialog, presses 'x' or escape.
-    virtual void OnDialogCanceled() = 0;
-  };
 
   // Extra information needed to display an installation or uninstallation
   // prompt. Gets populated with raw data and exposes getters for formatted

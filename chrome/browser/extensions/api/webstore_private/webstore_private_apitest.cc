@@ -65,6 +65,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -767,7 +768,21 @@ class TestSupervisedUserExtensionsDelegateAndroid
   void RemoveExtensionApproval(
       const extensions::Extension& extension) override {}
   void RecordExtensionEnablementUmaMetrics(bool enabled) const override {}
-
+  bool CanSkipExtensionParentApprovals() override { return false; }
+  void RecordAskParentDialogUmaMetrics(AskParentDialogState state) override {
+    metrics_recorder_.RecordAskParentDialogUmaMetrics(
+        static_cast<
+            SupervisedUserExtensionsMetricsRecorder::AskParentDialogState>(
+            state));
+  }
+  void RecordEnablementUmaMetrics(EnablementState state) override {
+    metrics_recorder_.RecordEnablementUmaMetrics(
+        static_cast<SupervisedUserExtensionsMetricsRecorder::EnablementState>(
+            state));
+  }
+  ExtensionInstallPromptClient::Observer* GetInstallPromptObserver() override {
+    return &metrics_recorder_;
+  }
   // The sequence of dialog action to take. A total of 3 dialogs can be shown in
   // the supervised user extension installation flow:
   // 1. The Ask Parent dialog
@@ -797,6 +812,7 @@ class TestSupervisedUserExtensionsDelegateAndroid
  private:
   std::optional<DialogActions> dialog_actions_;
   std::unique_ptr<ScopedTestDialogAutoConfirm> scoped_auto_confirm_;
+  SupervisedUserExtensionsMetricsRecorder metrics_recorder_;
 };
 
 // Test fixture for installation flows for child accounts on Android.

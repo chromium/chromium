@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_manager.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -65,6 +66,10 @@ class SupervisedUserExtensionsDelegateImpl
   void RemoveExtensionApproval(const extensions::Extension& extension) override;
   void RecordExtensionEnablementUmaMetrics(bool enabled) const override;
   bool CanSkipExtensionParentApprovals() override;
+  void RecordAskParentDialogUmaMetrics(AskParentDialogState state) override;
+  void RecordEnablementUmaMetrics(EnablementState state) override;
+  extensions::ExtensionInstallPromptClient::Observer* GetInstallPromptObserver()
+      override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Inject test instance for testing.
@@ -127,6 +132,7 @@ class SupervisedUserExtensionsDelegateImpl
       extension_approvals_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   SupervisedUserExtensionsManager extensions_manager_;
+  SupervisedUserExtensionsMetricsRecorder metrics_recorder_;
 };
 
 }  // namespace extensions

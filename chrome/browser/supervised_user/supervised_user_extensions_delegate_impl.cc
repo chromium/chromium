@@ -12,7 +12,6 @@
 #include "chrome/browser/supervised_user/extension_icon_loader.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_manager.h"
-#include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
@@ -47,6 +46,42 @@ void OnParentPermissionDialogComplete(
       std::move(delegate_done_callback)
           .Run(extensions::SupervisedExtensionApprovalResult::kFailed);
       break;
+  }
+}
+
+// Converts delegate enum to metrics recorder enum for AskParentDialogState.
+SupervisedUserExtensionsMetricsRecorder::AskParentDialogState
+ConvertAskParentDialogState(
+    extensions::SupervisedUserExtensionsDelegate::AskParentDialogState state) {
+  using DelegateState =
+      extensions::SupervisedUserExtensionsDelegate::AskParentDialogState;
+  using MetricsState =
+      SupervisedUserExtensionsMetricsRecorder::AskParentDialogState;
+
+  switch (state) {
+    case DelegateState::kOpened:
+      return MetricsState::kOpened;
+    case DelegateState::kCanceled:
+      return MetricsState::kCanceled;
+    case DelegateState::kApproved:
+      return MetricsState::kApproved;
+  }
+}
+
+// Converts delegate enum to metrics recorder enum for EnablementState.
+SupervisedUserExtensionsMetricsRecorder::EnablementState ConvertEnablementState(
+    extensions::SupervisedUserExtensionsDelegate::EnablementState state) {
+  using DelegateState =
+      extensions::SupervisedUserExtensionsDelegate::EnablementState;
+  using MetricsState = SupervisedUserExtensionsMetricsRecorder::EnablementState;
+
+  switch (state) {
+    case DelegateState::kEnabled:
+      return MetricsState::kEnabled;
+    case DelegateState::kDisabled:
+      return MetricsState::kDisabled;
+    case DelegateState::kFailedToEnable:
+      return MetricsState::kFailedToEnable;
   }
 }
 
@@ -138,6 +173,22 @@ bool SupervisedUserExtensionsDelegateImpl::CanSkipExtensionParentApprovals() {
       Profile::FromBrowserContext(context_));
 }
 
+void SupervisedUserExtensionsDelegateImpl::RecordAskParentDialogUmaMetrics(
+    AskParentDialogState state) {
+  metrics_recorder_.RecordAskParentDialogUmaMetrics(
+      ConvertAskParentDialogState(state));
+}
+
+void SupervisedUserExtensionsDelegateImpl::RecordEnablementUmaMetrics(
+    EnablementState state) {
+  metrics_recorder_.RecordEnablementUmaMetrics(ConvertEnablementState(state));
+}
+
+extensions::ExtensionInstallPromptClient::Observer*
+SupervisedUserExtensionsDelegateImpl::GetInstallPromptObserver() {
+  return &metrics_recorder_;
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 void SupervisedUserExtensionsDelegateImpl::
     SetParentAccessExtensionApprovalsManagerForTesting(
@@ -169,7 +220,7 @@ void SupervisedUserExtensionsDelegateImpl::
         ExtensionInstalledBlockedByParentDialogAction blocked_action) {
   auto block_dialog_callback = base::BindOnce(
       std::move(done_callback_), SupervisedExtensionApprovalResult::kBlocked);
-  SupervisedUserExtensionsMetricsRecorder::RecordEnablementUmaMetrics(
+  metrics_recorder_.RecordEnablementUmaMetrics(
       SupervisedUserExtensionsMetricsRecorder::EnablementState::
           kFailedToEnable);
   if (ScopedTestDialogAutoConfirm::GetAutoConfirmValue() !=

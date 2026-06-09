@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_SUPERVISED_USER_EXTENSIONS_DELEGATE_H_
 
 #include "base/functional/callback.h"
+#include "extensions/browser/extension_install_prompt_client.h"
 #include "extensions/browser/supervised_extension_approval_result.h"
 #include "extensions/common/extension.h"
 
@@ -25,6 +26,23 @@ class SupervisedUserExtensionsDelegate {
  public:
   using ExtensionApprovalDoneCallback =
       base::OnceCallback<void(SupervisedExtensionApprovalResult)>;
+
+  // Sync with AskParentDialogState in
+  // supervised_user_extensions_metrics_recorder.h
+  enum class AskParentDialogState {
+    kOpened = 0,
+    kCanceled = 1,
+    kApproved = 2,
+    kMaxValue = kApproved
+  };
+
+  // Sync with EnablementState in supervised_user_extensions_metrics_recorder.h
+  enum class EnablementState {
+    kEnabled = 0,
+    kDisabled = 1,
+    kFailedToEnable = 2,
+    kMaxValue = kFailedToEnable
+  };
 
   SupervisedUserExtensionsDelegate() = default;
   virtual ~SupervisedUserExtensionsDelegate() = default;
@@ -85,6 +103,17 @@ class SupervisedUserExtensionsDelegate {
   // approval.
   // Returns false if the user is not supervised.
   virtual bool CanSkipExtensionParentApprovals();
+
+  // Record UMA metrics related to the Ask Parent Dialog.
+  virtual void RecordAskParentDialogUmaMetrics(AskParentDialogState state);
+
+  // Records when the supervised user enables or disables an approved extension.
+  virtual void RecordEnablementUmaMetrics(EnablementState state);
+
+  // Returns an observer for the extension install prompt, which records
+  // metrics when dialogs are opened, accepted, or canceled.
+  virtual class ExtensionInstallPromptClient::Observer*
+  GetInstallPromptObserver();
 };
 
 }  // namespace extensions

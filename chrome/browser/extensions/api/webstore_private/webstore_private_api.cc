@@ -648,10 +648,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallStatusCheckDone(
     } else if (supervised_user_extensions_delegate->IsChild() &&
                !supervised_user_extensions_delegate
                     ->CanSkipExtensionParentApprovals()) {
-      supervised_user_extensions_metrics_recorder_
-          .RecordAskParentDialogUmaMetrics(
-              SupervisedUserExtensionsMetricsRecorder::AskParentDialogState::
-                  kOpened);
+      supervised_user_extensions_delegate->RecordAskParentDialogUmaMetrics(
+          SupervisedUserExtensionsDelegate::AskParentDialogState::kOpened);
 
       // This install requires parent permission, so show the Ask Parent dialog.
       ShowExtensionInstallAskParentDialog(
@@ -711,8 +709,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::RequestExtensionApproval(
                          OnExtensionApprovalDone,
                      this);
 #else
-  supervised_user_extensions_metrics_recorder_.RecordAskParentDialogUmaMetrics(
-      SupervisedUserExtensionsMetricsRecorder::AskParentDialogState::kApproved);
+  supervised_user_extensions_delegate->RecordAskParentDialogUmaMetrics(
+      SupervisedUserExtensionsDelegate::AskParentDialogState::kApproved);
 
   auto extension_approval_callback =
       base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
@@ -768,9 +766,16 @@ void WebstorePrivateBeginInstallWithManifest3Function::
                          OnExtensionApprovalDone,
                      this));
 
+  SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
+      ManagementAPI::GetFactoryInstance()
+          ->Get(Profile::FromBrowserContext(browser_context_))
+          ->GetSupervisedUserExtensionsDelegate();
+  CHECK(supervised_user_extensions_delegate);
+
   auto prompt = std::make_unique<ExtensionInstallPrompt::Prompt>(
       ExtensionInstallPrompt::EXTENSION_PARENT_APPROVAL_PROMPT);
-  prompt->AddObserver(&supervised_user_extensions_metrics_recorder_);
+  prompt->AddObserver(
+      supervised_user_extensions_delegate->GetInstallPromptObserver());
 
   install_prompt_ = std::make_unique<ExtensionInstallPrompt>(web_contents);
   install_prompt_->ShowDialog(
@@ -790,9 +795,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnExtensionApprovalDone(
   if (result != SupervisedExtensionApprovalResult::kApproved &&
       supervised_user_extensions_delegate->IsChild() &&
       !supervised_user_extensions_delegate->CanSkipExtensionParentApprovals()) {
-    supervised_user_extensions_metrics_recorder_.RecordEnablementUmaMetrics(
-        SupervisedUserExtensionsMetricsRecorder::EnablementState::
-            kFailedToEnable);
+    supervised_user_extensions_delegate->RecordEnablementUmaMetrics(
+        SupervisedUserExtensionsDelegate::EnablementState::kFailedToEnable);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1007,8 +1011,12 @@ void WebstorePrivateBeginInstallWithManifest3Function::
         WebstoreInstaller::FailureReason::FAILURE_REASON_CANCELLED);
   }
 
-  supervised_user_extensions_metrics_recorder_.RecordAskParentDialogUmaMetrics(
-      SupervisedUserExtensionsMetricsRecorder::AskParentDialogState::kCanceled);
+  auto* supervised_user_extensions_delegate =
+      ManagementAPI::GetFactoryInstance()
+          ->Get(browser_context())
+          ->GetSupervisedUserExtensionsDelegate();
+  supervised_user_extensions_delegate->RecordAskParentDialogUmaMetrics(
+      SupervisedUserExtensionsDelegate::AskParentDialogState::kCanceled);
 
   Respond(BuildResponse(api::webstore_private::Result::kUserCancelled,
                         kWebstoreUserCancelledError));
@@ -1163,7 +1171,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
     // approval"-mode and use the Extension install dialog (that is used by
     // non-supervised users).
     if (supervised_user_extensions_delegate->IsChild()) {
-      prompt->AddObserver(&supervised_user_extensions_metrics_recorder_);
+      prompt->AddObserver(
+          supervised_user_extensions_delegate->GetInstallPromptObserver());
     }
     if (requires_parent_permission) {
       // Bypass the install prompt dialog if V2 is enabled. The

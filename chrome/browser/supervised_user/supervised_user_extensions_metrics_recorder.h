@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_EXTENSIONS_METRICS_RECORDER_H_
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_EXTENSIONS_METRICS_RECORDER_H_
 
-#include "chrome/browser/extensions/extension_install_prompt.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 
 // Records UMA metrics for supervised users using extensions.
 class SupervisedUserExtensionsMetricsRecorder
-    : public ExtensionInstallPrompt::Observer {
+    : public extensions::ExtensionInstallPromptClient::Observer {
  public:
   // These enum values represent the state that the child user has attained
   // while trying to install an extension.
