@@ -426,7 +426,8 @@ interface PageHandler {
               bool alt_key,
               bool ctrl_key,
               bool meta_key,
-              bool shift_key);
+              bool shift_key,
+              bool is_voice_search);
 
   // Opens the Lens search UI.
   OpenLensSearch();

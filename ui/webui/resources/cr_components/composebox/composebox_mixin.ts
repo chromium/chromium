@@ -1646,7 +1646,7 @@ export const ComposeboxEmbedderMixin =
           } else {
             this.getSearchboxHandler().submitQuery(
                 this.input.trim(), mouseButton, altKey, ctrlKey, metaKey,
-                shiftKey);
+                shiftKey, /*isVoiceSearch=*/ false);
           }
 
           this.submitCleanup();
@@ -2193,7 +2193,8 @@ export const ComposeboxEmbedderMixin =
           recordBoolean(metricName, true);
           this.getSearchboxHandler().submitQuery(
               e.detail, /*mouse_button=*/ 0, /*alt_key=*/ false,
-              /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
+              /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false,
+              /*is_voice_search=*/ true);
           this.submitCleanup();
         }
 

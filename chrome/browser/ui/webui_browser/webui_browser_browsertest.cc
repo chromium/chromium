@@ -460,7 +460,8 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, RealboxSubmitQueryDoesNotCrash) {
             window->browser());
 
   // Call SubmitQuery to trigger the navigation code path.
-  realbox_handler->SubmitQuery("test", 0, false, false, false, false);
+  realbox_handler->SubmitQuery("test", 0, false, false, false, false,
+                               /*is_voice_search=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, SetContentsSizeResizesWindow) {

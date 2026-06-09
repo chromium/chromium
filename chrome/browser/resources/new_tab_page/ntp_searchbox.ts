@@ -622,7 +622,8 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       this.pageHandler().notifySessionStarted();
       this.pageHandler().submitQuery(
           queryText, e.detail.button, false, /* altKey */
-          e.detail.ctrlKey, e.detail.metaKey, e.detail.shiftKey);
+          e.detail.ctrlKey, e.detail.metaKey, e.detail.shiftKey,
+          /* isVoiceSearch */ false);
     } else {
       this.openComposebox_();
     }

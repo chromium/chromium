@@ -167,7 +167,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                    bool alt_key,
                    bool ctrl_key,
                    bool meta_key,
-                   bool shift_key) override {}
+                   bool shift_key,
+                   bool is_voice_search) override {}
   void OpenLensSearch() override {}
   void SetActiveToolMode(omnibox::ToolMode tool) override {}
   void RecordToolSelectionAction(omnibox::ToolMode tool) override {}

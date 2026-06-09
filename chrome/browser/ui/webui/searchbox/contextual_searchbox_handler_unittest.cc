@@ -309,7 +309,8 @@ class ContextualSearchboxHandlerTest
 
   void SubmitQueryAndWaitForNavigation() {
     content::TestNavigationObserver navigation_observer(web_contents());
-    handler().SubmitQuery(kQueryText, 1, false, false, false, false);
+    handler().SubmitQuery(kQueryText, 1, false, false, false, false,
+                          /*is_voice_search=*/false);
     auto navigation = content::NavigationSimulator::CreateFromPending(
         web_contents()->GetController());
     ASSERT_TRUE(navigation);
@@ -984,6 +985,19 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
                                    SessionState::kNavigationOccurred));
 }
 
+TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_VoiceSearch) {
+  bool was_voice_search = false;
+  EXPECT_CALL(query_controller(), CreateSearchUrl)
+      .WillOnce(
+          [&](auto&& request_info, base::OnceCallback<void(GURL)> callback) {
+            was_voice_search = request_info->is_voice_search;
+          });
+
+  handler().SubmitQuery(kQueryText, 1, false, false, false, false,
+                        /*is_voice_search=*/true);
+  EXPECT_TRUE(was_voice_search);
+}
+
 TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {
   // Arrange
 
@@ -1179,7 +1193,8 @@ class SmartTabSharingTest : public ContextualSearchboxHandlerTestHarness {
 
   void SubmitQueryAndWaitForNavigation() {
     content::TestNavigationObserver navigation_observer(web_contents());
-    handler().SubmitQuery(kQueryText, 1, false, false, false, false);
+    handler().SubmitQuery(kQueryText, 1, false, false, false, false,
+                          /*is_voice_search=*/false);
     auto navigation = content::NavigationSimulator::CreateFromPending(
         web_contents()->GetController());
     ASSERT_TRUE(navigation);
@@ -1984,7 +1999,7 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_NoContextualTasksService) {
 
   content::TestNavigationObserver navigation_observer(web_contents());
   handler_without_service->SubmitQuery(kQueryText, 1, false, false, false,
-                                       false);
+                                       false, /*is_voice_search=*/false);
   auto navigation = content::NavigationSimulator::CreateFromPending(
       web_contents()->GetController());
   ASSERT_TRUE(navigation);

@@ -67,7 +67,7 @@ class OmniboxPopupComposeboxClient : public ContextualOmniboxClient {
         query_text, disposition,
         PageClassificationToAimEntryPoint(
             GetPageClassification(/*is_prefetch=*/false)),
-        additional_params);
+        additional_params, /*is_voice_search=*/false);
   }
 
  private:
