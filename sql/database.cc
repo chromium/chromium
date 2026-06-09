@@ -2716,6 +2716,13 @@ std::string Database::GetDiagnosticInfo(int sqlite_error_code,
   return result;
 }
 
+bool Database::ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
+                                 const std::string& dump_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return memory_dump_provider_ &&
+         memory_dump_provider_->ReportMemoryUsage(pmd, dump_name);
+}
+
 bool Database::FullIntegrityCheck(std::vector<std::string>* messages) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   messages->clear();

@@ -219,7 +219,7 @@ bool TransactionalLevelDBDatabase::OnMemoryDump(
     return true;
 
   auto* db_dump = pmd->CreateAllocatorDump(
-      base::StringPrintf("site_storage/index_db/db_0x%" PRIXPTR,
+      base::StringPrintf("site_storage/indexed_db/database_engine_0x%" PRIXPTR,
                          reinterpret_cast<uintptr_t>(db())));
   db_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                      base::trace_event::MemoryAllocatorDump::kUnitsBytes,
@@ -231,7 +231,7 @@ bool TransactionalLevelDBDatabase::OnMemoryDump(
     // an edge to the existing env.
     auto* env_tracker_dump = DBTracker::GetOrCreateAllocatorDump(pmd, env());
     auto* env_dump = pmd->CreateAllocatorDump(
-        base::StringPrintf("site_storage/index_db/memenv_0x%" PRIXPTR,
+        base::StringPrintf("site_storage/indexed_db/memenv_0x%" PRIXPTR,
                            reinterpret_cast<uintptr_t>(env())));
     env_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                         base::trace_event::MemoryAllocatorDump::kUnitsBytes,

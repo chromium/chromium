@@ -12,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
@@ -21,7 +22,10 @@
 
 namespace base {
 class WaitableEvent;
-}
+namespace trace_event {
+class ProcessMemoryDump;
+}  // namespace trace_event
+}  // namespace base
 
 namespace content::indexed_db {
 
@@ -299,6 +303,10 @@ class BackingStore {
   CreateOrOpenDatabase(const std::u16string& name) = 0;
 
   virtual uintptr_t GetIdentifierForMemoryDump() = 0;
+
+  //  Adds a memory dump for `this` under `dump_name`.
+  virtual void ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
+                                 const std::string& dump_name) = 0;
 
   // Writes backing store files to disk in their long-term format, e.g. converts
   // a log to actual DB files.

@@ -4,7 +4,10 @@
 
 #include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
 
+#include <inttypes.h>
+
 #include <atomic>
+#include <limits>
 #include <memory>
 #include <vector>
 
@@ -18,9 +21,14 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "base/numerics/checked_math.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/memory_allocator_dump.h"
+#include "base/trace_event/memory_dump_request_args.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "base/types/expected_macros.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
@@ -242,8 +250,19 @@ BackingStoreImpl::CreateOrOpenDatabase(const std::u16string& name) {
 }
 
 uintptr_t BackingStoreImpl::GetIdentifierForMemoryDump() {
-  NOTIMPLEMENTED();
-  return 0;
+  return reinterpret_cast<uintptr_t>(this);
+}
+
+void BackingStoreImpl::ReportMemoryUsage(
+    base::trace_event::ProcessMemoryDump* pmd,
+    const std::string& dump_name) {
+  // Create the bucket-level dump as an organizational container.
+  pmd->CreateAllocatorDump(dump_name);
+  for (const auto& [name, connection] : open_connections_) {
+    connection->ReportMemoryUsage(
+        pmd, base::StringPrintf("%s/sqlite_db_0x%" PRIXPTR, dump_name.c_str(),
+                                reinterpret_cast<uintptr_t>(connection.get())));
+  }
 }
 
 void BackingStoreImpl::FlushForTesting() {

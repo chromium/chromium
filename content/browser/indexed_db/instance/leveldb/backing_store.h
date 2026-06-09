@@ -469,6 +469,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore {
   StatusOr<std::unique_ptr<indexed_db::BackingStore::Database>>
   CreateOrOpenDatabase(const std::u16string& name) override;
   uintptr_t GetIdentifierForMemoryDump() override;
+  void ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
+                         const std::string& dump_name) override;
   void FlushForTesting() override;
   StatusOr<bool> DatabaseExists(std::u16string_view database_name) override;
   StatusOr<std::vector<blink::mojom::IDBNameAndVersionPtr>>

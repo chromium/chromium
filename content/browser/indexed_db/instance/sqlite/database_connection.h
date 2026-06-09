@@ -44,6 +44,10 @@ class Statement;
 class Transaction;
 }  // namespace sql
 
+namespace base::trace_event {
+class ProcessMemoryDump;
+}
+
 namespace content::indexed_db {
 struct IndexedDBValue;
 
@@ -114,6 +118,12 @@ class CONTENT_EXPORT DatabaseConnection {
   // Get the size of the database, calculated as the number of pages in use
   // (i.e., excluding free pages) multiplied by the page size.
   uint64_t GetSize() const;
+
+  // Creates a memory dump for this connection at `dump_name`, suballocated to
+  // the canonical `sqlite/IndexedDB_connection/0x?` dump owned by the
+  // underlying `sql::Database`.
+  void ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
+                         const std::string& dump_name) const;
 
   // Called when `BucketContext` is not currently serving requests. `long_idle`
   // is true if the `BucketContext` has been idle for a relatively long time,

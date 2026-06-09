@@ -1105,6 +1105,7 @@ bool BucketContext::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
     return true;
   }
 
+  uintptr_t identifier = backing_store()->GetIdentifierForMemoryDump();
   base::CheckedNumeric<uint64_t> total_memory_in_flight = 0;
   for (const auto& [name, database] : databases_) {
     for (Connection* connection : database->connections()) {
@@ -1113,12 +1114,18 @@ bool BucketContext::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
       }
     }
   }
-  auto* db_dump = pmd->CreateAllocatorDump(
-      base::StringPrintf("site_storage/index_db/in_flight_0x%" PRIXPTR,
-                         backing_store()->GetIdentifierForMemoryDump()));
-  db_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                     base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                     total_memory_in_flight.ValueOrDefault(0));
+  auto* in_flight_dump = pmd->CreateAllocatorDump(base::StringPrintf(
+      "site_storage/indexed_db/in_flight_0x%" PRIXPTR, identifier));
+  in_flight_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                            base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                            total_memory_in_flight.ValueOrDefault(0));
+
+  // TODO(crbug.com/520300216): Add per-bucket origin attribution.
+  backing_store()->ReportMemoryUsage(
+      pmd,
+      base::StringPrintf("site_storage/indexed_db/database_engine_0x%" PRIXPTR,
+                         identifier));
+
   return true;
 }
 

@@ -29,6 +29,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
@@ -1427,6 +1428,14 @@ uint64_t DatabaseConnection::GetSize() const {
     LogEvent(SpecificEvent::kPragmaPageCountFailed);
   }
   return used_size.InBytes();
+}
+
+void DatabaseConnection::ReportMemoryUsage(
+    base::trace_event::ProcessMemoryDump* pmd,
+    const std::string& dump_name) const {
+  if (!db_ || !db_->ReportMemoryUsage(pmd, dump_name)) {
+    return;
+  }
 }
 
 std::unique_ptr<BackingStoreDatabaseImpl>

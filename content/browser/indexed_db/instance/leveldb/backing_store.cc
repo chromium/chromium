@@ -3078,6 +3078,12 @@ uintptr_t BackingStore::GetIdentifierForMemoryDump() {
   return reinterpret_cast<uintptr_t>(db()->db());
 }
 
+void BackingStore::ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
+                                     const std::string& dump_name) {
+  // Intentionally empty. The LevelDB backend reports its memory usage via
+  // TransactionalLevelDBDatabase::OnMemoryDump.
+}
+
 StatusOr<std::vector<blink::mojom::IDBNameAndVersionPtr>>
 BackingStore::GetDatabaseNamesAndVersions() {
   // TODO(dmurph): Get rid of on-demand metadata loading, and store metadata

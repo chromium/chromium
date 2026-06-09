@@ -52,6 +52,10 @@ struct sqlite3;
 struct sqlite3_file;
 struct sqlite3_stmt;
 
+namespace base::trace_event {
+class ProcessMemoryDump;
+}  // namespace base::trace_event
+
 namespace perfetto {
 class NamedTrack;
 }
@@ -555,6 +559,10 @@ class COMPONENT_EXPORT(SQL) Database {
   std::string GetDiagnosticInfo(int extended_error,
                                 Statement* statement,
                                 DatabaseDiagnostics* diagnostics = nullptr);
+
+  // Reports the memory usage into the provided memory dump with the given name.
+  bool ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
+                         const std::string& dump_name);
 
   // Initialization ------------------------------------------------------------
 
