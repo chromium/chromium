@@ -9,6 +9,7 @@ include_rules = [
   "+components/services/storage",
   "+components/webauthn",
   "+components/credential_management",
+  "+components/page_load_metrics/browser",
   "+components/strike_database",
   "+crypto/random.h",
   "+gpu/config/gpu_info.h",
@@ -19,6 +20,7 @@ include_rules = [
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom/permissions_policy",
   "+third_party/blink/public/mojom/webid",
+  "+third_party/blink/public/mojom/use_counter/metrics",
 ]
 
 specific_include_rules = {
