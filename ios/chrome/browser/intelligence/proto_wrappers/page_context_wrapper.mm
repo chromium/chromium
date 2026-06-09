@@ -663,6 +663,13 @@ result.links = linksArray;
   _rootAPCNode->set_version(
       optimization_guide::proto::AnnotatedPageContentVersion::
           ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  if (_config->use_rich_extraction_with_actionable()) {
+    _rootAPCNode->set_mode(optimization_guide::proto::AnnotatedPageContentMode::
+                               ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS);
+  } else {
+    _rootAPCNode->set_mode(optimization_guide::proto::AnnotatedPageContentMode::
+                               ANNOTATED_PAGE_CONTENT_MODE_DEFAULT);
+  }
   _rootAPCNode->mutable_root_node()
       ->mutable_content_attributes()
       ->set_attribute_type(optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);

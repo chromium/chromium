@@ -7168,6 +7168,68 @@ TEST_P(PageContextWrapperTest,
       password_input.content_attributes().geometry().has_outer_bounding_box());
 }
 
+// Tests that the version and mode fields are correctly populated in the
+// AnnotatedPageContent proto based on the configured extraction mode.
+TEST_P(PageContextWrapperTest, PopulatePageContext_ApcVersionAndMode) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage("Title", RawHtml("<div><p>Text</p></div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  auto verify_version_and_mode =
+      [&](bool use_rich, bool use_actionable,
+          optimization_guide::proto::AnnotatedPageContentVersion
+              expected_version,
+          optimization_guide::proto::AnnotatedPageContentMode expected_mode) {
+        PageContextWrapperConfig config =
+            PageContextWrapperConfigBuilder()
+                .SetUseRichExtraction(use_rich)
+                .SetUseRichExtractionWithActionable(use_actionable)
+                .Build();
+
+        PageContextWrapperCallbackResponse response =
+            RunPageContextWrapperWithConfig(
+                web_state(), config, ^(PageContextWrapper* wrapper) {
+                  wrapper.shouldGetAnnotatedPageContent = YES;
+                });
+
+        ASSERT_TRUE(response.has_value());
+        const auto& page_context = *response.value();
+        const auto& actual_apc = page_context.annotated_page_content();
+
+        EXPECT_EQ(actual_apc.version(), expected_version)
+            << "Failed for use_rich: " << use_rich
+            << ", use_actionable: " << use_actionable;
+        EXPECT_EQ(actual_apc.mode(), expected_mode)
+            << "Failed for use_rich: " << use_rich
+            << ", use_actionable: " << use_actionable;
+      };
+
+  // Rich Extraction and Actionable Mode Enabled
+  verify_version_and_mode(
+      /*use_rich=*/true, /*use_actionable=*/true,
+      optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0,
+      optimization_guide::proto::
+          ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS);
+
+  // Rich Extraction Enabled, Actionable Mode Disabled
+  verify_version_and_mode(
+      /*use_rich=*/true, /*use_actionable=*/false,
+      optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0,
+      optimization_guide::proto::ANNOTATED_PAGE_CONTENT_MODE_DEFAULT);
+
+  // Rich Extraction Disabled
+  verify_version_and_mode(
+      /*use_rich=*/false, /*use_actionable=*/false,
+      optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0,
+      optimization_guide::proto::ANNOTATED_PAGE_CONTENT_MODE_DEFAULT);
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          PageContextWrapperTest,
                          testing::Bool(),
