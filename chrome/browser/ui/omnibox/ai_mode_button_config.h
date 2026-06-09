@@ -49,6 +49,9 @@ struct AiModeButtonConfig {
 //   config are updated when the config changes.
 const AiModeButtonConfig& GetCurrentAiModeButtonConfig();
 
+// Sets the current config for testing. Pass nullptr to reset.
+void SetCurrentAiModeButtonConfigForTesting(const AiModeButtonConfig* config);
+
 }  // namespace ai_mode_button_config
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_AI_MODE_BUTTON_CONFIG_H_

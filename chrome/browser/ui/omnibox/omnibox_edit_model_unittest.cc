@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/ui/omnibox/ai_mode_button_config.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -2168,6 +2169,29 @@ TEST_F(OmniboxEditModelPopupTest, OpenFeaturedSearchMatch) {
   EXPECT_TRUE(model()->is_keyword_selected());
   EXPECT_EQ(u"@bookmarks", model()->keyword());
   EXPECT_FALSE(model()->is_keyword_hint());
+}
+
+TEST_F(OmniboxEditModelTest, NavigateToThirdPartyAiMode) {
+  // 1. Setup testing config.
+  ai_mode_button_config::AiModeButtonConfig test_config;
+  test_config.id = SearchEngineType::SEARCH_ENGINE_YAHOO;
+  test_config.navigation_url = "https://url.com/search?p={searchTerms}";
+  test_config.navigation_url_empty = "https://url-empty.com";
+  ai_mode_button_config::SetCurrentAiModeButtonConfigForTesting(&test_config);
+
+  // Test with query.
+  EXPECT_CALL(*client(), OpenUrl(GURL("https://url.com/search?p=query"),
+                                 WindowOpenDisposition::CURRENT_TAB))
+      .Times(1);
+  model()->NavigateToThirdPartyAiMode(u"query");
+
+  // Test without query.
+  EXPECT_CALL(*client(), OpenUrl(GURL("https://url-empty.com"),
+                                 WindowOpenDisposition::CURRENT_TAB))
+      .Times(1);
+  model()->NavigateToThirdPartyAiMode(u"");
+
+  ai_mode_button_config::SetCurrentAiModeButtonConfigForTesting(nullptr);
 }
 
 class OmniboxEditModelContextualSearchTest

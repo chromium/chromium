@@ -71,6 +71,8 @@ class TestOmniboxEditModel : public OmniboxEditModel {
   const std::u16string& text() const { return text_; }
   bool is_temporary_text() const { return is_temporary_text_; }
 
+  using OmniboxEditModel::NavigateToThirdPartyAiMode;
+
  protected:
   PrefService* GetPrefService() override;
   const PrefService* GetPrefService() const override;

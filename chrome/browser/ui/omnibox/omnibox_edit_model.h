@@ -779,7 +779,7 @@ class OmniboxEditModel {
 
   // TODO(hujasonx): Add comment.
   // Helper for `OpenAiMode()`...
-  void NavigateToAiModeWithContextualizer(std::u16string query_text);
+  void NavigateToAiModeWithContextualizer(const std::u16string& query_text);
 
   // TODO(hujasonx): Add comment and possibly rename.
   // Helper for `OpenAiMode()`...
@@ -798,9 +798,13 @@ class OmniboxEditModel {
       WindowOpenDisposition disposition,
       GURL url);
 
-  // Helper for `OpenAiMode()` to navigate to the DSE's AI mode page without
+  // Helper for `OpenAiMode()` to navigate to Google's AI mode page without
   // including context.
-  void NavigateToAiModeWithoutContextualizer(std::u16string query_text);
+  void NavigateToAiModeWithoutContextualizer(const std::u16string& query_text);
+
+  // Helper for `OpenAiMode()` to navigate to 3rd party DSE's AI mode page
+  // without including context.
+  void NavigateToThirdPartyAiMode(const std::u16string& query_text);
 
   // Owns this.
   const raw_ptr<OmniboxController> controller_;

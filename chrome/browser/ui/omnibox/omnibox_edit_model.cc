@@ -814,6 +814,12 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
     RecordAiModeButtonClick();
   }
 
+  const auto& config = ai_mode_button_config::GetCurrentAiModeButtonConfig();
+  if (config.id != SearchEngineType::SEARCH_ENGINE_GOOGLE) {
+    NavigateToThirdPartyAiMode(query_text);
+    return;
+  }
+
   if (ShouldOpenAimPopup(via_context_menu, current_match.type)) {
     controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kAim);
     return;
@@ -3387,7 +3393,7 @@ OmniboxEditModel::GetOrCreateContextualSearchSessionHandle(Profile* profile) {
 }
 
 void OmniboxEditModel::NavigateToAiModeWithContextualizer(
-    std::u16string query_text) {
+    const std::u16string& query_text) {
   if (session_handle_) {
     session_handle_.reset();
   }
@@ -3524,7 +3530,7 @@ void OmniboxEditModel::
 }
 
 void OmniboxEditModel::NavigateToAiModeWithoutContextualizer(
-    std::u16string query_text) {
+    const std::u16string& query_text) {
   GURL ai_mode_url =
       GetUrlForAim(controller_->client()->GetTemplateURLService(),
                    omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
@@ -3532,4 +3538,20 @@ void OmniboxEditModel::NavigateToAiModeWithoutContextualizer(
                    lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
                    /*additional_params=*/{});
   controller_->client()->OpenUrl(ai_mode_url);
+}
+
+void OmniboxEditModel::NavigateToThirdPartyAiMode(
+    const std::u16string& query_text) {
+  const auto& config = ai_mode_button_config::GetCurrentAiModeButtonConfig();
+  std::string url =
+      query_text.empty() ? config.navigation_url_empty : config.navigation_url;
+  TemplateURLData turl_data;
+  turl_data.SetURL(url);
+  TemplateURL turl(turl_data);
+  TemplateURLService* service = controller_->client()->GetTemplateURLService();
+  GURL ai_mode_url =
+      turl.GenerateSearchURL(service->search_terms_data(), query_text);
+  if (ai_mode_url.is_valid()) {
+    controller_->client()->OpenUrl(ai_mode_url);
+  }
 }

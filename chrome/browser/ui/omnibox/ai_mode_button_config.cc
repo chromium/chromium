@@ -13,7 +13,14 @@
 
 namespace ai_mode_button_config {
 
+namespace {
+const AiModeButtonConfig* g_test_config = nullptr;
+}  // namespace
+
 const AiModeButtonConfig& GetCurrentAiModeButtonConfig() {
+  if (g_test_config) {
+    return *g_test_config;
+  }
   static const base::NoDestructor<AiModeButtonConfig>
       kDefaultAiModeButtonConfig{
           {SearchEngineType::SEARCH_ENGINE_GOOGLE,
@@ -30,6 +37,10 @@ const AiModeButtonConfig& GetCurrentAiModeButtonConfig() {
 #endif
            l10n_util::GetStringUTF16(IDS_ACC_AI_MODE_PLACEHOLDER_TEXT)}};
   return *kDefaultAiModeButtonConfig;
+}
+
+void SetCurrentAiModeButtonConfigForTesting(const AiModeButtonConfig* config) {
+  g_test_config = config;
 }
 
 }  // namespace ai_mode_button_config
