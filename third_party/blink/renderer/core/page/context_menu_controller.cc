@@ -116,6 +116,14 @@ void SetAutofillData(Node* node, ContextMenuData& data) {
     } else {
       data.form_renderer_id = 0;
     }
+    // If a field has been a password field then it should be treated as a
+    // password field for the purposes of autofill. (If needed in the future,
+    // this state could be added to ContextMenuData as a separate boolean, but
+    // for now this will do.)
+    if (auto* input_element = DynamicTo<HTMLInputElement>(node);
+        input_element && input_element->HasBeenPasswordField()) {
+      data.form_control_type = mojom::blink::FormControlType::kInputPassword;
+    }
   }
   if (auto* html_element =
           node ? DynamicTo<HTMLElement>(RootEditableElement(*node)) : nullptr) {
