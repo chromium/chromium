@@ -8,8 +8,13 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.view.KeyEvent;
+import android.view.View;
+
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.LargeTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,6 +36,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -60,6 +67,7 @@ public class SiteSearchTest {
         mActivityTestRule.startOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
         mOmniboxUtils = new OmniboxTestUtils(mActivity);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
 
         // Ensure TemplateUrlService is loaded.
         ThreadUtils.runOnUiThreadBlocking(
@@ -118,5 +126,47 @@ public class SiteSearchTest {
 
         // Verify that the Site Search Action chip/label "Search Test" appears in the suggestion row
         ViewUtils.onViewWaiting(withText("Search TestName")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    public void testSiteSearchTriggeredByTab() {
+        addSearchEngine("TestName", "test", "https://www.test.com/search?q={searchTerms}");
+
+        // Open Chrome -> select omnibox -> type "test"
+        mOmniboxUtils.requestFocus();
+        mOmniboxUtils.typeText("test", false);
+        mOmniboxUtils.checkSuggestionsShown();
+
+        // First row should be selected when typing
+        checkIsFirstSuggestionRowSelected();
+
+        // Wait for the Site Search Action chip to be bound and displayed in the horizontal carousel
+        ViewUtils.onViewWaiting(withText("Search TestName")).check(matches(isDisplayed()));
+
+        // Press <tab>
+        mOmniboxUtils.sendKey(KeyEvent.KEYCODE_TAB);
+
+        checkIsActionChipSelected("Search TestName");
+
+        // Check omnibox becomes "" since the site search is triggered
+        mOmniboxUtils.checkText(Matchers.equalTo(""), null);
+    }
+
+    private void checkIsFirstSuggestionRowSelected() {
+        OmniboxTestUtils.SuggestionInfo<View> firstSuggestion =
+                mOmniboxUtils.findSuggestion(info -> true);
+        CriteriaHelper.pollUiThread(() -> firstSuggestion.view.isSelected());
+    }
+
+    private void checkIsActionChipSelected(String chipText) {
+        // Since action chips are dynamically created, we locate it by asserting the view
+        // is a ChipView containing specific text, and then verify it has been selected.
+        ViewUtils.onViewWaiting(
+                        Matchers.allOf(
+                                ViewMatchers.isAssignableFrom(ChipView.class),
+                                ViewMatchers.hasDescendant(withText(chipText)),
+                                ViewMatchers.isSelected()))
+                .check(matches(isDisplayed()));
     }
 }
