@@ -36,6 +36,7 @@
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace password_manager {
 
@@ -76,8 +77,8 @@ void PasswordStore::Init() {
   DCHECK(main_task_runner_);
 
   DCHECK(backend_);
-  TRACE_EVENT_BEGIN("passwords", "PasswordStore::InitOnBackgroundSequence",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_INSTANT("passwords", "PasswordStore::InitOnBackgroundSequence",
+                      perfetto::Flow::FromPointer(this));
   backend_->InitBackend(
       base::BindRepeating(&PasswordStore::NotifyLoginsChangedOnMainSequence,
                           this, LoginsChangedTrigger::ExternalUpdate),
@@ -462,9 +463,8 @@ void PasswordStore::OnInitCompleted(bool success) {
     std::move(post_init_callback_).Run();
   }
 
-  TRACE_EVENT_END("passwords",
-                  /* PasswordStore::InitOnBackgroundSequence */ perfetto::
-                      Track::FromPointer(this));
+  TRACE_EVENT_INSTANT("passwords", "PasswordStore::OnInitCompleted",
+                      perfetto::TerminatingFlow::FromPointer(this));
 }
 
 void PasswordStore::NotifyLoginsChangedOnMainSequence(
@@ -500,8 +500,8 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
   base::UmaHistogramEnumeration(
       "PasswordManager.PasswordStore.OnLoginsRetained", logins_changed_trigger);
   if (!changes.has_value()) {
-    TRACE_EVENT_BEGIN("passwords", "LoginsRetrievedForOnLoginsRetained",
-                      perfetto::Track::FromPointer(this));
+    TRACE_EVENT_INSTANT("passwords", "LoginsRetrievedForOnLoginsRetained",
+                        perfetto::Flow::FromPointer(this));
     // If the changes aren't provided, the store propagates the latest logins.
     backend_->GetAllLoginsAsync(base::BindOnce(
         &PasswordStore::NotifyLoginsRetainedOnMainSequence, this));
@@ -544,10 +544,9 @@ void PasswordStore::NotifyLoginsRetainedOnMainSequence(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  TRACE_EVENT_END(
-      "passwords",
-      /* LoginsRetrievedForOnLoginsRetained */ perfetto::Track::FromPointer(
-          this));
+  TRACE_EVENT_INSTANT("passwords",
+                      "PasswordStore::NotifyLoginsRetainedOnMainSequence",
+                      perfetto::TerminatingFlow::FromPointer(this));
 #endif
 }
 
