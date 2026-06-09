@@ -581,6 +581,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.InitializeFeatureListTime" units="ms"
+    expires_after="2026-12-01">
+  <owner>martinkong@google.com</owner>
+  <owner>agrieve@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time spent in InitializeFeatureList.initializeFeatureList() during
+    process startup. This measures how long the C++ FeatureList creation takes
+    during early startup.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.IsLastBackgroundTimeLogged" enum="Boolean"
     expires_after="2027-05-17">
   <owner>hanxi@chromium.org</owner>
