@@ -183,7 +183,8 @@ void SecurePaymentConfirmationAppFactory::Create(
       // than 2 logos are provided.
       if (spc_request->payment_entities_logos.size() > 2) {
         spc_request->payment_entities_logos.erase(
-            spc_request->payment_entities_logos.begin() + 2);
+            spc_request->payment_entities_logos.begin() + 2,
+            spc_request->payment_entities_logos.end());
       }
 
       // Record if the user will be offered an opt-out experience. Technically
