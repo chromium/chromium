@@ -5,6 +5,8 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <tuple>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -87,23 +89,33 @@ int GetConsumeCacheCount(const base::HistogramTester& histogram_tester) {
 
 namespace content {
 
-class InlineScriptCodeCacheBrowserTest : public ContentBrowserTest {
+class InlineScriptCodeCacheBrowserTestBase : public ContentBrowserTest {
  public:
-  InlineScriptCodeCacheBrowserTest()
-      : InlineScriptCodeCacheBrowserTest(base::FieldTrialParams()) {}
+  InlineScriptCodeCacheBrowserTestBase() = default;
 
  protected:
-  explicit InlineScriptCodeCacheBrowserTest(
-      const base::FieldTrialParams& extra_params) {
+  void InitFeatures(bool use_persistent_cache,
+                    const base::FieldTrialParams& extra_params) {
     base::FieldTrialParams params = extra_params;
     base::FieldTrialParams default_params = {{"timeout", "1s"}};
     params.merge(default_params);
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{net::features::kSplitCacheByNetworkIsolationKey, {}},
-         {net::features::kSplitCodeCacheByNetworkIsolationKey, {}},
-         {blink::features::kUsePersistentCacheForCodeCache, {}},
-         {blink::features::kInlineScriptCache, params}},
-        {{}});
+
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {net::features::kSplitCacheByNetworkIsolationKey, {}},
+        {net::features::kSplitCodeCacheByNetworkIsolationKey, {}},
+        {blink::features::kInlineScriptCache, params}};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (use_persistent_cache) {
+      enabled_features.push_back(
+          {blink::features::kUsePersistentCacheForCodeCache, {}});
+    } else {
+      disabled_features.push_back(
+          blink::features::kUsePersistentCacheForCodeCache);
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
  public:
@@ -113,9 +125,9 @@ class InlineScriptCodeCacheBrowserTest : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->RegisterRequestHandler(
-        base::BindRepeating(&InlineScriptCodeCacheBrowserTest::RequestHandler,
-                            base::Unretained(this)));
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &InlineScriptCodeCacheBrowserTestBase::RequestHandler,
+        base::Unretained(this)));
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -261,18 +273,33 @@ class InlineScriptCodeCacheBrowserTest : public ContentBrowserTest {
   uint32_t served_count_ = 0;
 };
 
-class InlineScriptCacheHintBrowserTest
-    : public InlineScriptCodeCacheBrowserTest,
+class InlineScriptCodeCacheBrowserTest
+    : public InlineScriptCodeCacheBrowserTestBase,
       public testing::WithParamInterface<bool> {
  public:
-  InlineScriptCacheHintBrowserTest()
-      : InlineScriptCodeCacheBrowserTest(
-            {{"enable_for_default_hint", GetParam() ? "true" : "false"}}) {}
+  InlineScriptCodeCacheBrowserTest() { InitFeatures(GetParam(), {}); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         InlineScriptCodeCacheBrowserTest,
+                         testing::Bool());
+
+class InlineScriptCacheHintBrowserTest
+    : public InlineScriptCodeCacheBrowserTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  InlineScriptCacheHintBrowserTest() {
+    bool use_persistent_cache = std::get<0>(GetParam());
+    bool enable_for_default_hint = std::get<1>(GetParam());
+    InitFeatures(use_persistent_cache,
+                 {{"enable_for_default_hint",
+                   enable_for_default_hint ? "true" : "false"}});
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          InlineScriptCacheHintBrowserTest,
-                         testing::Bool());
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 // TODO(crbug.com/498265776): Test is expected to time out on some slow
 // builders.
@@ -292,7 +319,7 @@ IN_PROC_BROWSER_TEST_P(InlineScriptCacheHintBrowserTest,
     base::HistogramTester histogram_tester;
     ASSERT_TRUE(NavigateToURL(shell(), url));
     FetchHistogramsFromChildProcesses();
-    if (GetParam()) {
+    if (std::get<1>(GetParam())) {
       histogram_tester.ExpectBucketCount(
           "V8.CompileScript.CacheBehaviour",
           CacheBehaviourNameToInt("kNoCacheBecauseInlineScriptCacheTooCold"),
@@ -317,7 +344,7 @@ IN_PROC_BROWSER_TEST_P(InlineScriptCacheHintBrowserTest,
       PurgeResourceCacheFromTheMainFrame();
       ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
     }
-    if (GetParam()) {
+    if (std::get<1>(GetParam())) {
       EXPECT_TRUE(produced) << "Failed to produce cache";
     } else {
       EXPECT_FALSE(produced) << "Cache should not be produced";
@@ -395,7 +422,7 @@ IN_PROC_BROWSER_TEST_P(InlineScriptCacheHintBrowserTest, MAYBE_NeverCacheHint) {
 
 // TODO(crbug.com/498265776): Test is failing on ChromeOS and Linux MSan.
 // TODO(crbug.com/499507137): Disabled everywhere due to flakiness.
-IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
+IN_PROC_BROWSER_TEST_P(InlineScriptCodeCacheBrowserTest,
                        DISABLED_CacheProducedOnSecondAttempt) {
   GURL url =
       embedded_test_server()->GetURL("example.com", "/inline-script.html");
@@ -455,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
 
 // TODO(crbug.com/498265776): Test is failing on ChromeOS and Linux MSan.
 // TODO(crbug.com/499208353): Disabled everywhere for flakiness.
-IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
+IN_PROC_BROWSER_TEST_P(InlineScriptCodeCacheBrowserTest,
                        DISABLED_CacheSharedOnDifferentPage) {
   GURL url_1 =
       embedded_test_server()->GetURL("example.com", "/inline-script.html");
@@ -521,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
 #else
 #define MAYBE_NotProducedForShortScript NotProducedForShortScript
 #endif
-IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
+IN_PROC_BROWSER_TEST_P(InlineScriptCodeCacheBrowserTest,
                        MAYBE_NotProducedForShortScript) {
   // Even after multiple page loads, the code cache should not be produced for
   // short scripts.
@@ -544,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
 
 // TODO(crbug.com/498265776): Test is failing on ChromeOS and Linux MSan.
 // TODO(crbug.com/499371224): Disabled everywhere for flakiness.
-IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
+IN_PROC_BROWSER_TEST_P(InlineScriptCodeCacheBrowserTest,
                        DISABLED_IsolatedByNik) {
   GURL top_domain_a =
       embedded_test_server()->GetURL("a.example", "/empty.html");
@@ -623,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
 #define MAYBE_ProducedCacheHitsOnAnotherProcess \
   ProducedCacheHitsOnAnotherProcess
 #endif
-IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
+IN_PROC_BROWSER_TEST_P(InlineScriptCodeCacheBrowserTest,
                        MAYBE_ProducedCacheHitsOnAnotherProcess) {
   GURL url = embedded_test_server()->GetURL("a.example", "/inline-script.html");
 

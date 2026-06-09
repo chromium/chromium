@@ -2800,9 +2800,8 @@ bool IsMemoryPurgeOnBackgroundingEnabled() {
 }
 
 bool IsInlineScriptCacheEnabled() {
-  // Inline script cache is built on top of PersistentCodeCache.
-  return base::FeatureList::IsEnabled(kInlineScriptCache) &&
-         IsPersistentCacheForCodeCacheEnabled();
+  return net::HttpCache::IsSplitCacheEnabled() &&
+         base::FeatureList::IsEnabled(kInlineScriptCache);
 }
 
 bool IsParkableStringsToDiskEnabled() {
