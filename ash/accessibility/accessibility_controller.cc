@@ -2583,8 +2583,10 @@ void AccessibilityController::CopySigninPrefsIfNeeded(
   // Ensure a fresh state on the associator.
   CHECK(!prefs_custom_associator_);
   prefs_custom_associator_ =
-      Shell::Get()->accessibility_delegate()->CreatePrefsCustomAssociator(
-          current_pref_service);
+      !IsCurrentSessionGuest()
+          ? Shell::Get()->accessibility_delegate()->CreatePrefsCustomAssociator(
+                current_pref_service)
+          : nullptr;
 
   PrefService* signin_prefs =
       Shell::Get()->session_controller()->GetSigninScreenPrefService();
