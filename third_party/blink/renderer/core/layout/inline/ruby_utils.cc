@@ -303,13 +303,24 @@ AnnotationOverhang GetOverhang(
     return overhang;
   }
 
-  // Handle 'ruby-overhang: spaces'
+  // Handle 'ruby-overhang: spaces' from here.
+
+  if (ruby_index == 0) {
+    // Handle an edge case for crbug.com/520181855
+    if (!ruby_base_inset.has_value()) {
+      return overhang;
+    }
+    overhang.end = (ruby_align == ERubyAlign::kStart)
+                       ? std::min(space, half_width_of_annotation_font)
+                       : ruby_base_inset.value();
+    return overhang;
+  }
+
   const InlineItemResults& items = line_info.Results();
   // Find a previous item other than kOpenTag/kCloseTag.
   // Searching items in the logical order doesn't work well with bidi
   // reordering. However, it's difficult to compute overhang after bidi
   // reordering because it affects line breaking.
-  DCHECK_LT(0u, ruby_index) << "kOpenTag should be before this ruby.";
   wtf_size_t previous_index = ruby_index - 1;
   while ((items[previous_index].item->Type() == InlineItem::kOpenTag ||
           items[previous_index].item->Type() == InlineItem::kCloseTag) &&
