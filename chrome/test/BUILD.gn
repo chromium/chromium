@@ -6413,6 +6413,7 @@ test("unit_tests") {
     "//chrome/browser/content_index:unit_tests",
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/context_hub:unit_tests",
     "//chrome/browser/contextual_tasks:unit_tests",
     "//chrome/browser/crash_upload_list:unit_tests",
     "//chrome/browser/custom_handlers",
