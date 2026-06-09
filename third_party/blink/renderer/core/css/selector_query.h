@@ -236,6 +236,15 @@ class CORE_EXPORT SelectorQuery : public GarbageCollected<SelectorQuery> {
     // the match).
     bool is_subject = false;
 
+    // If true, we can never escape from this state; it is the subject
+    // and it isn't matched against any siblings (so it cannot go backwards
+    // even on a mismatch). In this case, we follow a more traditional
+    // recursion-free traversal of the remaining subtree, since this works
+    // somewhat faster in extreme cases. (For more typical real-world cases,
+    // it's better in some cases and worse in others; following parent pointers
+    // has a cost, too.)
+    bool simple_traversal_from_here = false;
+
     // If this is false, we never allow progressing into this compound (state);
     // we can start there, but going back to it (or just into it) will
     // immediately stop traversal. This is used when we anchor the search on an
@@ -330,6 +339,20 @@ class CORE_EXPORT SelectorQuery : public GarbageCollected<SelectorQuery> {
                      bool is_html_doc,
                      SelectorChecker& checker,
                      typename SelectorQueryTrait::OutputType& output) const;
+
+  // Search a subtree, but limited to a single compound (no state changes)
+  // and using parent pointers instead of recursing. See
+  // simple_traversal_from_here.
+  template <typename SelectorQueryTrait>
+  ALWAYS_INLINE bool ExecuteSearchSingleCompound(
+      ContainerNode& root_node,
+      Element& first_node,
+      const ContainerNode& scope,
+      const Compound* compound,
+      bool need_full_check,
+      bool is_html_doc,
+      SelectorChecker& checker,
+      typename SelectorQueryTrait::OutputType& output) const;
 
   ALWAYS_INLINE static bool MatchCompound(const Element& element,
                                           const Compound& compound,

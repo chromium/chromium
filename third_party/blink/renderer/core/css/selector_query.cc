@@ -499,9 +499,80 @@ void SelectorQuery::Execute(
   for (const Compound& compound : compounds_) {
     compound.valid_for_progress = true;
   }
-  ExecuteSearch<SelectorQueryTrait>(
-      root_node, root_node, &compounds_[start_compound_idx],
-      kUnknownSiblingIndex, need_full_check, is_html_doc, checker, output);
+  const Compound* start_compound = &compounds_[start_compound_idx];
+  if (start_compound->simple_traversal_from_here) {
+    Element* first_child = ElementTraversal::FirstChild(root_node);
+    if (first_child) {
+      ExecuteSearchSingleCompound<SelectorQueryTrait>(
+          root_node, *first_child, root_node, start_compound, need_full_check,
+          is_html_doc, checker, output);
+    }
+  } else {
+    ExecuteSearch<SelectorQueryTrait>(root_node, root_node, start_compound,
+                                      kUnknownSiblingIndex, need_full_check,
+                                      is_html_doc, checker, output);
+  }
+}
+
+template <typename SelectorQueryTrait>
+bool SelectorQuery::ExecuteSearchSingleCompound(
+    ContainerNode& root_node,
+    Element& first_interesting_child,
+    const ContainerNode& scope,
+    const Compound* compound,
+    bool need_full_check,
+    bool is_html_doc,
+    SelectorChecker& checker,
+    typename SelectorQueryTrait::OutputType& output) const {
+  DCHECK(compound->simple_traversal_from_here);
+  const Element::TinyBloomFilter selector_filter = compound->selector_filter;
+
+  if (IsA<Element>(root_node) &&
+      !To<Element>(root_node).CouldMatchFilter(selector_filter)) {
+    // Neither this nor any of its children could match this query,
+    // so we can exit early.
+    QUERY_STATS_INCREMENT(skipped_subtree);
+    return false;
+  }
+
+  for (Element* element = &first_interesting_child; element;) {
+    if (!element->CouldMatchFilter(selector_filter)) {
+      QUERY_STATS_INCREMENT(skipped_subtree);
+    } else {
+      QUERY_STATS_INCREMENT(elements_seen);
+      if (MatchCompound(*element, *compound, kUnknownSiblingIndex,
+                        is_html_doc) &&
+          (!need_full_check ||
+           SelectorMatches(OnlySelector(), *element, scope, checker))) {
+        SelectorQueryTrait::AppendElement(output, *element);
+        if (SelectorQueryTrait::kShouldOnlyMatchFirstElement) {
+          return true;
+        }
+      }
+      Element* child = ElementTraversal::FirstChild(*element);
+      if (child) {
+        element = child;
+        continue;
+      }
+    }
+    Element* sibling = ElementTraversal::NextSibling(*element);
+    if (sibling) {
+      element = sibling;
+    } else {
+      for (Node& parent : NodeTraversal::AncestorsOf(*element)) {
+        if (parent == &root_node) {
+          return false;
+        }
+        sibling = ElementTraversal::NextSibling(parent);
+        if (sibling) {
+          element = sibling;
+          break;
+        }
+      }
+    }
+  }
+
+  return false;
 }
 
 template <typename SelectorQueryTrait, bool is_top_level>
@@ -606,13 +677,20 @@ bool SelectorQuery::ExecuteSearch(
       ++next_sibling_idx;
     }
 
+    if (first_child && compound_for_children->simple_traversal_from_here) {
+      if (ExecuteSearchSingleCompound<SelectorQueryTrait>(
+              *node, *first_child, scope, compound_for_children,
+              need_full_check, is_html_doc, checker, output)) {
+        return true;
+      }
+      first_child = nullptr;
+    }
+
     // Navigate to the first child if we can, the next sibling if not,
     // and back to earlier-unvisited sublings if we have neither.
     // (This is similar to ElementTraversal::Next(), except that we skip
     // uninteresting elements and reset our compound data/sibling index
-    // on backtracking. We could go down to a typical traversal once
-    // we're at the subject, but it doesn't seem to be worth the additional
-    // complexity; following parent pointers to get back has a cost, too.)
+    // on backtracking.)
     if (next_sibling) {
       if (first_child) {
         // We can go both down and right, and we want to follow
@@ -826,6 +904,15 @@ void SelectorQuery::BuildCompounds(const CSSSelector* first_selector) {
 
   Compound& subject_compound = compounds_[compounds_.size() - 1];
   subject_compound.is_subject = true;
+
+  // If we get to the subject and cannot ever go backwards from there
+  // (i.e., it is not related to a sibling combinator), and we don't
+  // care about the index in the DOM, we can do with a simpler,
+  // more direct search without any recursion.
+  subject_compound.simple_traversal_from_here =
+      (subject_compound.next_compound_for_children_on_mismatch ==
+       &subject_compound) &&
+      !subject_compound.nth_child;
 }
 
 // Fill in attribute data that we can only fill in when we know the document.
