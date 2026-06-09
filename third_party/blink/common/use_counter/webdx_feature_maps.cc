@@ -45,6 +45,7 @@ GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kContainerStyleQueries},
           {WebFeature::kCSSAtRuleCounterStyle, WebDXFeature::kCounterStyle},
           {WebFeature::kCreateCSSModuleScript, WebDXFeature::kCssModules},
+          {WebFeature::kCreateTextModuleScript, WebDXFeature::kTextModules},
           {WebFeature::kStreamingDeclarativeShadowDOM,
            WebDXFeature::kDeclarativeShadowDom},
           {WebFeature::kShowPickerSelect, WebDXFeature::kShowPickerSelect},

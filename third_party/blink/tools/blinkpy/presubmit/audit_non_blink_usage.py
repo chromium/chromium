@@ -1561,6 +1561,7 @@ _CONFIG = [
         ],
         'allowed': [
             'network::HttpRequestHeadersUpdateParams',
+            'network::mojom::RequestDestination',
         ],
     },
     {

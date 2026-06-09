@@ -6661,6 +6661,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5918"
       label="WebTransportDatagramDuplexStreamOutgoingHighWaterMark"/>
   <int value="5919" label="HistoryGoBackWouldSkipSameOriginAd"/>
+  <int value="5920" label="CreateTextModuleScript"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -9148,6 +9149,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="437" label="GapDecorations"/>
   <int value="438" label="FlexWrapBalance"/>
   <int value="439" label="TextFit"/>
+  <int value="440" label="TextModules"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
