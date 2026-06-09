@@ -760,8 +760,8 @@ suite('ContextualActionMenu', () => {
     assertTrue(dialog.scrollHeight > dialog.offsetHeight);
   });
 
-  // TODO(crbug.com/512920161): Reenable this test on Linux and Mac
-  // <if expr="not is_linux and not is_macosx">
+  // TODO(crbug.com/512920161): Reenable this test on Linux and Mac and Windows
+  // <if expr="not is_linux and not is_macosx and not is_win">
   test('Share tabs flyout keyboard navigation', async () => {
     loadTimeData.overrideValues({
       contextManagementInComposeboxEnabled: true,
