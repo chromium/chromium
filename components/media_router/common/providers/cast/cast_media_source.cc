@@ -384,11 +384,24 @@ bool IsAutoJoinAllowed(AutoJoinPolicy policy,
 bool IsSiteInitiatedMirroringSource(const MediaSource::Id& source_id) {
   // A Cast SDK enabled website (e.g. Google Slides) may use the mirroring app
   // ID rather than the tab mirroring URN.
-  return base::StartsWith(
-      source_id,
-      base::StrCat(
-          {"cast:", openscreen::cast::GetCastStreamingAudioVideoAppId()}),
-      base::CompareCase::SENSITIVE);
+  //
+  // This predicate gates kPresentationApiAllowlist (see
+  // CastMediaRouteProvider::GetOrigins()), so it must match exactly the set of
+  // page-supplied Presentation URLs that CastActivityManager will route to a
+  // MirroringActivity (i.e. for which ContainsStreamingApp() is true).  That
+  // means it must accept *any* Cast Presentation URL form (cast: scheme or the
+  // legacy https://google.com/cast#__castAppId__= form) carrying *any* Cast
+  // Streaming app id (0F5096E8 or 85CDB22F), not just the literal
+  // "cast:0F5096E8" prefix.
+  MediaSource source(source_id);
+  if (!source.IsCastPresentationUrl()) {
+    // Browser-initiated tab/desktop mirroring URNs and remote-playback sources
+    // are not page-supplied cast: Presentation URLs.
+    return false;
+  }
+  std::unique_ptr<CastMediaSource> cast_source =
+      CastMediaSource::FromMediaSource(source);
+  return cast_source && cast_source->ContainsStreamingApp();
 }
 
 CastAppInfo::CastAppInfo(const std::string& app_id,

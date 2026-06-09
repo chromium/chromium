@@ -10,6 +10,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using blink::mojom::PresentationConnectionResult;
 using blink::mojom::PresentationInfo;
@@ -45,6 +46,10 @@ void LocalPresentationManager::RegisterLocalPresentationController(
     const MediaRoute& route) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* presentation = GetOrCreateLocalPresentation(presentation_info);
+  if (url::Origin::Create(presentation->presentation_info_.url) !=
+      url::Origin::Create(presentation_info.url)) {
+    return;
+  }
   presentation->RegisterController(
       render_frame_host_id, std::move(controller_connection_remote),
       std::move(receiver_connection_receiver), route);
@@ -72,6 +77,10 @@ void LocalPresentationManager::OnLocalPresentationReceiverCreated(
     content::WebContents* receiver_web_contents) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* presentation = GetOrCreateLocalPresentation(presentation_info);
+  if (url::Origin::Create(presentation->presentation_info_.url) !=
+      url::Origin::Create(presentation_info.url)) {
+    return;
+  }
   presentation->RegisterReceiver(receiver_callback, receiver_web_contents);
 }
 
@@ -140,7 +149,9 @@ void LocalPresentationManager::LocalPresentation::UnregisterController(
 void LocalPresentationManager::LocalPresentation::RegisterReceiver(
     const content::ReceiverConnectionAvailableCallback& receiver_callback,
     content::WebContents* receiver_web_contents) {
-  DCHECK(receiver_callback_.is_null());
+  if (!receiver_callback_.is_null()) {
+    return;
+  }
   DCHECK(receiver_web_contents);
   for (auto& controller : pending_controllers_) {
     receiver_callback.Run(PresentationConnectionResult::New(

@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Target page</title>
+<script>
+  // This page is cross-origin from the start_url. Because the receiver
+  // WebContents has web_prefs.presentation_receiver=true (set on the
+  // WebContents and preserved across navigation) and
+  // ReceiverPresentationServiceDelegateImpl is a WebContentsUserData keyed by
+  // the original presentation_id, the eagerly-created PresentationReceiver
+  // for THIS document calls SetReceiver on the browser, and
+  // LocalPresentation::RegisterReceiver overwrites receiver_callback_ to
+  // point at this origin's renderer. Any controller connection registered for
+  // the presentation is then delivered here.
+  if (location.search !== '?warmup' && self === top) {
+    const recv = navigator.presentation.receiver;
+    if (recv) {
+      recv.connectionList.then(list => {
+        const grab = c => {
+          c.onconnect = () => c.send('CAPTURED-BY:' + location.origin);
+          if (c.state === 'connected') {
+            c.send('CAPTURED-BY:' + location.origin);
+          }
+        };
+        list.connections.forEach(grab);
+        list.onconnectionavailable = e => grab(e.connection);
+      });
+    }
+  }
+</script>
+</head>
+<body>target</body>
+</html>

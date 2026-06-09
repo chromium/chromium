@@ -87,6 +87,8 @@ class PresentationReceiverWindowController final
   // PresentationReceiverWindowDelegate overrides.
   void WindowClosed() final;
 
+  void StopAndTerminate();
+
   // content::WebContentsObserver overrides.
   void DidStartNavigation(content::NavigationHandle* handle) final;
   void TitleWasSet(content::NavigationEntry* entry) final;
@@ -126,6 +128,9 @@ class PresentationReceiverWindowController final
   TitleChangeCallback title_change_callback_;
 
   media_router::PresentationNavigationPolicy navigation_policy_;
+
+  base::WeakPtrFactory<PresentationReceiverWindowController> weak_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_MEDIA_ROUTER_PRESENTATION_RECEIVER_WINDOW_CONTROLLER_H_

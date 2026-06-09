@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/ui/media_router/presentation_receiver_window.h"
@@ -144,8 +145,18 @@ void PresentationReceiverWindowController::OnProfileWillBeDestroyed(
 void PresentationReceiverWindowController::DidStartNavigation(
     content::NavigationHandle* handle) {
   if (!navigation_policy_.AllowNavigation(handle)) {
-    Terminate();
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PresentationReceiverWindowController::StopAndTerminate,
+                       weak_factory_.GetWeakPtr()));
   }
+}
+
+void PresentationReceiverWindowController::StopAndTerminate() {
+  if (web_contents_) {
+    web_contents_->Stop();
+  }
+  Terminate();
 }
 
 void PresentationReceiverWindowController::TitleWasSet(

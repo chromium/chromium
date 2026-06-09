@@ -34,6 +34,7 @@
 using ::testing::_;
 using testing::Mock;
 using ::testing::NiceMock;
+using ::testing::SaveArg;
 using testing::WithArg;
 
 namespace media_router {
@@ -153,6 +154,26 @@ class CastMediaRouteProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  // POC helper: invokes the private OnSinkQueryUpdated()
+  // (CastMediaRouteProvider friends this fixture class) and returns the
+  // |origins| that were forwarded to MediaRouter::OnSinksReceived -- i.e. the
+  // result of GetOrigins().
+  std::vector<url::Origin> GetOnSinksReceivedOrigins(
+      const MediaSource::Id& source_id,
+      const std::vector<MediaSinkInternal>& sinks) {
+    std::vector<url::Origin> captured_origins;
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_router_, OnSinksReceived(mojom::MediaRouteProviderId::CAST,
+                                              source_id, sinks, _))
+        .WillOnce(
+            testing::DoAll(SaveArg<3>(&captured_origins),
+                           base::test::RunOnceClosure(run_loop.QuitClosure())));
+    provider_->OnSinkQueryUpdated(source_id, sinks);
+    run_loop.Run();
+    Mock::VerifyAndClearExpectations(&mock_router_);
+    return captured_origins;
+  }
+
   void UpdateSinkQueryAndExpectSinkReceived(
       const std::vector<MediaSinkInternal>& expected_received_sinks,
       const MediaSource::Id& source_id,
@@ -199,6 +220,43 @@ TEST_F(CastMediaRouteProviderTest, StartObservingMediaSinks) {
 
   provider_->StopObservingMediaSinks(kCastSource);
   EXPECT_TRUE(app_discovery_service_.callbacks().empty());
+}
+
+TEST_F(CastMediaRouteProviderTest, PresentationApiMirroringOriginAllowlist) {
+  struct Case {
+    const char* name;
+    const char* source_id;
+  } const cases[] = {
+      {"video", "cast:0F5096E8?clientId=1"},
+      {"audio-only", "cast:85CDB22F?clientId=1"},
+      {"legacy-url",
+       "https://google.com/cast#__castAppId__=0F5096E8/__castClientId__=1"},
+  };
+
+  const MediaSinkInternal sink = CreateCastSink(1);
+  const std::vector<MediaSinkInternal> sinks = {sink};
+
+  for (const auto& c : cases) {
+    // The IsCastPresentationUrl + ContainsStreamingApp combination is exactly
+    // what GetMirroringType() uses to select MirroringType::kTab.
+    EXPECT_TRUE(MediaSource(c.source_id).IsCastPresentationUrl());
+
+    // All three sources are routed as tab-mirroring by CastActivityManager
+    // (DoLaunchSession -> ContainsStreamingApp() -> AddMirroringActivity).
+    auto cast_source = CastMediaSource::FromMediaSourceId(c.source_id);
+    ASSERT_TRUE(cast_source);
+    EXPECT_TRUE(cast_source->ContainsStreamingApp())
+        << c.source_id << " is treated as a Cast Streaming (mirroring) app";
+
+    // OnSinkQueryUpdated computes GetOrigins(source_id) and forwards it to
+    // MediaRouter::OnSinksReceived.
+    std::vector<url::Origin> captured_origins =
+        GetOnSinksReceivedOrigins(c.source_id, sinks);
+
+    // kPresentationApiAllowlist is applied, restricting these sources to
+    // trusted origins.
+    EXPECT_EQ(captured_origins.size(), 3u);
+  }
 }
 
 TEST_F(CastMediaRouteProviderTest, CreateRouteFailsInvalidSink) {

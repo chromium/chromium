@@ -462,8 +462,8 @@ void PresentationConnection::send(
     return;
   }
 
-  messages_.push_back(
-      MakeGarbageCollected<Message>(array_buffer_view->buffer()));
+  messages_.push_back(MakeGarbageCollected<Message>(
+      DOMArrayBuffer::Create(array_buffer_view->ByteSpan())));
   HandleMessageQueue();
 }
 
