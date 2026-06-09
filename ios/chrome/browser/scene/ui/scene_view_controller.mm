@@ -7,6 +7,10 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/location.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "base/trace_event/trace_event.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
@@ -741,11 +745,11 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
   [self.appBarHandler hideIPHBackground];
   if (reason == IPHDismissalReasonType::kTappedNext && geminiEligible) {
     __weak __typeof(self) weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                 (int64_t)(kIPHTransitionDelay * NSEC_PER_SEC)),
-                   dispatch_get_main_queue(), ^{
-                     [weakSelf showSecondIAPromo];
-                   });
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf showSecondIAPromo];
+        }),
+        base::Seconds(kIPHTransitionDelay));
   } else {
     [self.mutator newIAPromoIPHDismissed];
   }
