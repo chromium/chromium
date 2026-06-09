@@ -48,8 +48,6 @@ class MODULES_EXPORT ImageLayerBridge
 
   void SetUV(const gfx::PointF& left_top, const gfx::PointF& right_bottom);
 
-  bool IsAccelerated() { return image_ && image_->IsTextureBacked(); }
-
   void Trace(Visitor* visitor) const {}
 
  private:
