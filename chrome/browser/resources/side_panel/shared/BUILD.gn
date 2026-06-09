@@ -28,17 +28,14 @@ build_webui("build") {
     "sp_heading.css",
     "sp_list_item_badge.css",
     "sp_shared_style.css",
-    "sp_shared_style_lit.css",
     "sp_shared_vars.css",
   ]
 
   icons_html_files = [ "sp_icons.html" ]
 
   ts_composite = true
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit.json"
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

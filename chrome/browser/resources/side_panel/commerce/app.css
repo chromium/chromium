@@ -7,8 +7,8 @@
  * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=//resources/cr_elements/cr_icons_lit.css.js
  * #import=//resources/cr_elements/cr_shared_vars.css.js
- * #import=//shopping-insights-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
- * #include=cr-hidden-style-lit cr-icons-lit sp-shared-style-lit
+ * #import=//shopping-insights-side-panel.top-chrome/shared/sp_shared_style.css.js
+ * #include=cr-hidden-style-lit cr-icons-lit sp-shared-style
  * #css_wrapper_metadata_end */
 
 .section {

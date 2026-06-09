@@ -6,10 +6,10 @@
  * #type=style-lit
  * #import=../demo.css.js
  * #import=//resources/cr_elements/md_select_lit.css.js
- * #import=//webui-gallery/shared/sp_shared_style_lit.css.js
+ * #import=//webui-gallery/shared/sp_shared_style.css.js
  * #import=//webui-gallery/shared/sp_shared_vars.css.js
  * #scheme=relative
- * #include=md-select-lit sp-shared-style-lit demo
+ * #include=md-select-lit sp-shared-style demo
  * #css_wrapper_metadata_end */
 
 #urlCountSlider {

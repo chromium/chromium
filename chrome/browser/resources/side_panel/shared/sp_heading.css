@@ -6,9 +6,9 @@
  * #type=style-lit
  * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=//resources/cr_elements/cr_shared_vars.css.js
- * #import=./sp_shared_style_lit.css.js
+ * #import=./sp_shared_style.css.js
  * #scheme=relative
- * #include=cr-hidden-style-lit sp-shared-style-lit
+ * #include=cr-hidden-style-lit sp-shared-style
  * #css_wrapper_metadata_end */
 
 :host {

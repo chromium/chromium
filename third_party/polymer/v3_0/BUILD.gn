@@ -125,7 +125,6 @@ ts_library("library") {
     "//chrome/browser/resources/settings:build_ts",
     "//chrome/browser/resources/settings_shared:build_ts",
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",
-    "//chrome/browser/resources/side_panel/shared:build_ts",
     "//chrome/test/data/webui:build_ts",
     "//chrome/test/data/webui/cr_components/help_bubble:build_ts",
     "//chrome/test/data/webui/cr_elements:build_ts",

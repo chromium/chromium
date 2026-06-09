@@ -4,12 +4,12 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
- * #import=chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #import=chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js
  * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
- * #include=cr-hidden-style-lit cr-icons-lit sp-shared-style-lit
+ * #include=cr-hidden-style-lit cr-icons-lit sp-shared-style
  * #css_wrapper_metadata_end */
 
 sp-heading {

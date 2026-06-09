@@ -4,10 +4,10 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
- * #import=//read-anything-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #import=//read-anything-side-panel.top-chrome/shared/sp_shared_style.css.js
  * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=//resources/cr_elements/cr_shared_vars.css.js
- * #include=sp-shared-style-lit cr-hidden-style-lit
+ * #include=sp-shared-style cr-hidden-style-lit
  * #scheme=relative
  * #css_wrapper_metadata_end */
 :host {
