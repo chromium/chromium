@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DEFAULT_TEXTBOX_WIDTH, TextBoxState, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {DEFAULT_TEXTBOX_WIDTH, TextBoxState, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {TextAnnotation} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertPositionAndSize, dragHandle, getTestAnnotation, initializeBox, setupTextBoxTest, verifyFinishTextAnnotationMessage} from './ink2_text_box_test_utils.js';
 import {assertDeepEquals} from './test_util.js';
+
+const DEFAULT_HEIGHT = 24;
+const FONT_SIZE = 12;
+const CLICK_OFFSET = FONT_SIZE / 2;
 
 chrome.test.runTests([
   async function testCommit() {
@@ -280,10 +284,7 @@ chrome.test.runTests([
     const OFFSET_Y = 15;
     const WIDTH_OFFSET = 24;
     const HEIGHT_OFFSET = 20;
-    const DEFAULT_HEIGHT = 24;
-    const FONT_SIZE = 12;
 
-    const CLICK_OFFSET = FONT_SIZE / 2;  // 6px
     const pageRect = viewport.getPageScreenRect(0);
 
     // (1) Create Box A at 95, 60 in screen coordinates (40, 57 in page
@@ -390,6 +391,83 @@ chrome.test.runTests([
     expectedAnnotationB.text = 'Annotation B';
     expectedAnnotationB.id = 1;
     verifyFinishTextAnnotationMessage(mockPlugin, expectedAnnotationB, true);
+
+    chrome.test.succeed();
+  },
+
+  // Tests that when an existing annotation is re-styled, the new styles are
+  // correctly committed when a new annotation is activated.
+  // Regression test for crbug.com/519251247
+  async function testCommitStyleUpdates() {
+    const {manager, mockPlugin, textbox, viewport} = await setupTextBoxTest();
+    const pageRect = viewport.getPageScreenRect(0);
+
+    // (1) Initialize a text annotation. Click at screen coordinates 100, 66
+    // which locates the annotation at 100, 60 due to the click offset.
+    const clickXA = 100;
+    const clickYA = 66;
+    const createdA =
+        await manager.initializeTextAnnotation({x: clickXA, y: clickYA});
+    chrome.test.assertTrue(createdA, 'Failed to initialize Box A');
+    await microtasksFinished();
+    chrome.test.assertTrue(isVisible(textbox));
+
+    // (2) Add some text.
+    textbox.$.textbox.value = 'Hello';
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+
+    // (3) Commit the annotation and validate.
+    const expectedAnnotation = getTestAnnotation({
+      locationX: clickXA - pageRect.x,
+      locationY: clickYA - CLICK_OFFSET - pageRect.y,
+      width: DEFAULT_TEXTBOX_WIDTH,
+      height: DEFAULT_HEIGHT,
+    });
+    expectedAnnotation.text = 'Hello';
+    expectedAnnotation.id = 0;
+
+    await textbox.commitTextAnnotation();
+    await microtasksFinished();
+    chrome.test.assertFalse(isVisible(textbox));
+    verifyFinishTextAnnotationMessage(mockPlugin, expectedAnnotation, true);
+    mockPlugin.clearMessages();
+
+    // (4) Re-activate this annotation.
+    // Center X = 100 + DEFAULT_TEXTBOX_WIDTH / 2 = 211.
+    // Center Y = 60 + DEFAULT_HEIGHT / 2 = 72.
+    const clickXReactivate = clickXA + DEFAULT_TEXTBOX_WIDTH / 2;
+    const clickYReactivate = (clickYA - CLICK_OFFSET) + DEFAULT_HEIGHT / 2;
+    const clicked = await manager.initializeTextAnnotation(
+        {x: clickXReactivate, y: clickYReactivate});
+    chrome.test.assertTrue(clicked, 'Failed to click existing annotation');
+    await microtasksFinished();
+    chrome.test.assertTrue(isVisible(textbox));
+    chrome.test.assertEq('Hello', textbox.$.textbox.value);
+
+    // (5) Modify the font color and style to red + bold.
+    manager.setTextColor({r: 255, g: 0, b: 0});
+    manager.setTextStyles({
+      [TextStyle.BOLD]: true,
+      [TextStyle.ITALIC]: false,
+    });
+    await microtasksFinished();
+
+    // (6) Initialize a new annotation elsewhere.
+    // Click at 200, 206 screen -> top-left at 200, 200 screen after offset.
+    const createdB = await manager.initializeTextAnnotation({x: 200, y: 206});
+    chrome.test.assertTrue(createdB, 'Failed to initialize Box B');
+    await microtasksFinished();
+
+    // (7) Validate that the commit message triggered by the new initialization
+    // contains the correct styling.
+    const expectedAnnotationEdited = structuredClone(expectedAnnotation);
+    expectedAnnotationEdited.textAttributes.color = {r: 255, g: 0, b: 0};
+    expectedAnnotationEdited.textAttributes.styles[TextStyle.BOLD] = true;
+    expectedAnnotationEdited.textAttributes.styles[TextStyle.ITALIC] = false;
+
+    verifyFinishTextAnnotationMessage(
+        mockPlugin, expectedAnnotationEdited, true);
 
     chrome.test.succeed();
   },
