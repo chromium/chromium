@@ -48,9 +48,10 @@ def _CheckFirebaseCLI():
 def _FirebaseInitProjectDir(project_dir):
   """Create a firebase.json file that is needed for deployment."""
   static_dir = project_dir / 'public'
-  project_dir.joinpath('firebase.json').write_text("""\
-{
-  "hosting": {
+  project_dir.joinpath('firebase.json').write_text(f"""\
+{{
+  "hosting": {{
+    "site": "{_FIREBASE_PROJECT}",
     "public": "public",
     "ignore": [
       "firebase.json",
@@ -68,8 +69,8 @@ def _FirebaseInitProjectDir(project_dir):
         ]
       }
     ]
-  }
-}
+  }}
+}}
 """)
   return static_dir
 
