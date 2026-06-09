@@ -13,5 +13,15 @@ specific_include_rules = {
     "offscreen_canvas_rendering_api_ukm_metrics_test.cc": [
         "+components/ukm/test_ukm_recorder.h",
         "+services/metrics/public/cpp/ukm_builders.h",
-    ]
+    ],
+    "image_layer_bridge\\.(cc|h)": [
+        "+cc/layers/texture_layer.h",
+        "+cc/layers/texture_layer_client.h",
+        "+components/viz/common/resources/shared_image_format.h",
+        "+components/viz/common/resources/shared_image_format_utils.h",
+        "+components/viz/common/resources/transferable_resource.h",
+        "+gpu/command_buffer/client/gles2_interface.h",
+        "+gpu/command_buffer/client/shared_image_interface.h",
+        "+gpu/command_buffer/common/shared_image_usage.h",
+    ],
 }

@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/graphics/gpu/image_layer_bridge.h"
+#include "third_party/blink/renderer/modules/canvas/imagebitmap/image_layer_bridge.h"
 
-#include "base/memory/read_only_shared_memory_region.h"
 #include "cc/layers/texture_layer.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -90,18 +89,21 @@ ImageLayerBridge::ImageLayerBridge(OpacityMode opacity_mode)
 }
 
 ImageLayerBridge::~ImageLayerBridge() {
-  if (!disposed_)
+  if (!disposed_) {
     Dispose();
+  }
 }
 
 void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
-  if (disposed_)
+  if (disposed_) {
     return;
+  }
   // There could be the case that the current PaintImage is null, meaning
   // that something went wrong during the creation of the image and we should
   // not try and setImage with it
-  if (image && !image->PaintImageForCurrentFrame())
+  if (image && !image->PaintImageForCurrentFrame()) {
     return;
+  }
 
   image_ = std::move(image);
   if (image_) {
@@ -120,8 +122,9 @@ void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
 
 void ImageLayerBridge::SetUV(const gfx::PointF& left_top,
                              const gfx::PointF& right_bottom) {
-  if (disposed_)
+  if (disposed_) {
     return;
+  }
 
   layer_->SetUV(left_top, right_bottom);
 }
@@ -138,14 +141,17 @@ void ImageLayerBridge::Dispose() {
 bool ImageLayerBridge::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
-  if (disposed_)
+  if (disposed_) {
     return false;
+  }
 
-  if (!image_)
+  if (!image_) {
     return false;
+  }
 
-  if (has_presented_since_last_set_image_)
+  if (has_presented_since_last_set_image_) {
     return false;
+  }
 
   has_presented_since_last_set_image_ = true;
 
@@ -154,8 +160,9 @@ bool ImageLayerBridge::PrepareTransferableResource(
   if (gpu_compositing) {
     scoped_refptr<StaticBitmapImage> image_for_compositor =
         MakeAccelerated(image_, SharedGpuContext::ContextProviderWrapper());
-    if (!image_for_compositor || !image_for_compositor->ContextProvider())
+    if (!image_for_compositor || !image_for_compositor->ContextProvider()) {
       return false;
+    }
 
     auto shared_image = image_for_compositor->GetSharedImage();
 
@@ -189,8 +196,9 @@ bool ImageLayerBridge::PrepareTransferableResource(
 
     sk_sp<SkImage> sk_image =
         image_->PaintImageForCurrentFrame().GetSwSkImage();
-    if (!sk_image)
+    if (!sk_image) {
       return false;
+    }
 
     const gfx::Size size(image_->width(), image_->height());
 
