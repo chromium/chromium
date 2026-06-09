@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/strings/utf_ostream_operators.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -77,26 +78,33 @@ class BookmarkLocalDataBatchUploaderTest : public ::testing::Test {
 };
 
 TEST_F(BookmarkLocalDataBatchUploaderTest, LocalDescriptionEmptyIfNullModel) {
+  base::HistogramTester histogram_tester;
   BookmarkLocalDataBatchUploader uploader(nullptr, pref_service());
   base::test::TestFuture<syncer::LocalDataDescription> description;
 
   uploader.GetLocalDataDescription(description.GetCallback());
 
   EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
+  histogram_tester.ExpectTotalCount(
+      "Sync.BatchUpload.BookmarksDisabledDueToLimitExceeded", 0);
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest,
        LocalDescriptionEmptyIfModelNotLoaded) {
+  base::HistogramTester histogram_tester;
   BookmarkLocalDataBatchUploader uploader(bookmark_model(), pref_service());
   base::test::TestFuture<syncer::LocalDataDescription> description;
 
   uploader.GetLocalDataDescription(description.GetCallback());
 
   EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
+  histogram_tester.ExpectTotalCount(
+      "Sync.BatchUpload.BookmarksDisabledDueToLimitExceeded", 0);
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest,
        LocalDescriptionEmptyIfTransportModeOff) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       switches::kSyncEnableBookmarksInTransportMode);
@@ -107,10 +115,13 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
   uploader.GetLocalDataDescription(description.GetCallback());
 
   EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
+  histogram_tester.ExpectTotalCount(
+      "Sync.BatchUpload.BookmarksDisabledDueToLimitExceeded", 0);
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest,
        LocalDescriptionEmptyIfNoAccountFolders) {
+  base::HistogramTester histogram_tester;
   bookmark_model()->LoadEmptyForTest();
   ASSERT_FALSE(bookmark_model()->account_bookmark_bar_node());
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
@@ -121,10 +132,13 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
   uploader.GetLocalDataDescription(description.GetCallback());
 
   EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
+  histogram_tester.ExpectTotalCount(
+      "Sync.BatchUpload.BookmarksDisabledDueToLimitExceeded", 0);
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest,
        LocalDescriptionEmptyIfEditBookmarksDislabed) {
+  base::HistogramTester histogram_tester;
   pref_service()->SetBoolean(bookmarks::prefs::kEditBookmarksEnabled, false);
   bookmark_model()->LoadEmptyForTest();
   bookmark_model()->CreateAccountPermanentFolders();
@@ -136,6 +150,8 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
   uploader.GetLocalDataDescription(description.GetCallback());
 
   EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
+  histogram_tester.ExpectTotalCount(
+      "Sync.BatchUpload.BookmarksDisabledDueToLimitExceeded", 0);
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest, LocalDescriptionOnlyHasLocalData) {
@@ -438,6 +454,7 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
 
 TEST_F(BookmarkLocalDataBatchUploaderTest,
        LocalDescriptionEmptyIfLocalCountExceedsLimit) {
+  base::HistogramTester histogram_tester;
   bookmark_model()->LoadEmptyForTest();
   bookmark_model()->CreateAccountPermanentFolders();
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
@@ -454,6 +471,10 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
   uploader.GetLocalDataDescription(description.GetCallback());
 
   EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BatchUpload.BookmarksDisabledDueToLimitExceeded", /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest,
@@ -479,6 +500,7 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
 
 TEST_F(BookmarkLocalDataBatchUploaderTest,
        LocalDescriptionNotEmptyIfWithinLimits) {
+  base::HistogramTester histogram_tester;
   bookmark_model()->LoadEmptyForTest();
   bookmark_model()->CreateAccountPermanentFolders();
   const bookmarks::BookmarkNode* local_node = bookmark_model()->AddURL(
@@ -503,9 +525,14 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
                                           GURL("http://local.com/")),
                                       "Local", IsEmpty())),
                                   1u, ElementsAre("local.com"), 1u));
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BatchUpload.BookmarksDisabledDueToLimitExceeded", /*sample=*/false,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest, CombinedCountExactLimitBoundary) {
+  base::HistogramTester histogram_tester;
   bookmark_model()->LoadEmptyForTest();
   bookmark_model()->CreateAccountPermanentFolders();
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
@@ -532,6 +559,16 @@ TEST_F(BookmarkLocalDataBatchUploaderTest, CombinedCountExactLimitBoundary) {
     uploader.GetLocalDataDescription(description.GetCallback());
     EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
   }
+
+  histogram_tester.ExpectBucketCount(
+      "Sync.BatchUpload.BookmarksDisabledDueToLimitExceeded", /*sample=*/false,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Sync.BatchUpload.BookmarksDisabledDueToLimitExceeded", /*sample=*/true,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Sync.BatchUpload.BookmarksDisabledDueToLimitExceeded",
+      /*expected_count=*/2);
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest,
@@ -559,6 +596,41 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
   uploader.GetLocalDataDescription(description.GetCallback());
 
   EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
+}
+
+TEST_F(BookmarkLocalDataBatchUploaderTest, DoesNotLogMetricIfNoLocalData) {
+  base::HistogramTester histogram_tester;
+  bookmark_model()->LoadEmptyForTest();
+  bookmark_model()->CreateAccountPermanentFolders();
+
+  BookmarkLocalDataBatchUploader uploader(bookmark_model(), pref_service());
+  uploader.SetMaxBookmarksLimitForTesting(4);
+
+  base::test::TestFuture<syncer::LocalDataDescription> description;
+  uploader.GetLocalDataDescription(description.GetCallback());
+  ASSERT_THAT(description.Get(), IsEmptyLocalDataDescription());
+
+  histogram_tester.ExpectTotalCount(
+      "Sync.BatchUpload.BookmarksDisabledDueToLimitExceeded",
+      /*expected_count=*/0);
+}
+
+TEST_F(BookmarkLocalDataBatchUploaderTest,
+       DoesNotLogMetricIfNoLocalDataAndWithinLimits) {
+  base::HistogramTester histogram_tester;
+  bookmark_model()->LoadEmptyForTest();
+  bookmark_model()->CreateAccountPermanentFolders();
+
+  BookmarkLocalDataBatchUploader uploader(bookmark_model(), pref_service());
+  uploader.SetMaxBookmarksLimitForTesting(100);
+
+  base::test::TestFuture<syncer::LocalDataDescription> description;
+  uploader.GetLocalDataDescription(description.GetCallback());
+  ASSERT_THAT(description.Get(), IsEmptyLocalDataDescription());
+
+  histogram_tester.ExpectTotalCount(
+      "Sync.BatchUpload.BookmarksDisabledDueToLimitExceeded",
+      /*expected_count=*/0);
 }
 
 }  // namespace

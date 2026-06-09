@@ -13,6 +13,8 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -28,6 +30,26 @@
 
 namespace sync_bookmarks {
 
+namespace {
+
+// Returns true if there is any local (syncable) bookmark data available under
+// the main local permanent folders.
+bool HasLocalDataToUpload(const bookmarks::BookmarkModel* model) {
+  CHECK(model->bookmark_bar_node());
+  CHECK(model->other_node());
+  CHECK(model->mobile_node());
+  return !model->bookmark_bar_node()->children().empty() ||
+         !model->other_node()->children().empty() ||
+         !model->mobile_node()->children().empty();
+}
+
+void RecordBookmarksDisabledDueToLimitExceeded(bool limit_exceeded) {
+  base::UmaHistogramBoolean(
+      "Sync.BatchUpload.BookmarksDisabledDueToLimitExceeded", limit_exceeded);
+}
+
+}  // namespace
+
 BookmarkLocalDataBatchUploader::BookmarkLocalDataBatchUploader(
     bookmarks::BookmarkModel* bookmark_model,
     PrefService* pref_service)
@@ -42,9 +64,23 @@ void BookmarkLocalDataBatchUploader::SetMaxBookmarksLimitForTesting(
 
 void BookmarkLocalDataBatchUploader::GetLocalDataDescription(
     base::OnceCallback<void(syncer::LocalDataDescription)> callback) {
-  if (!CanUpload()) {
-    std::move(callback).Run(syncer::LocalDataDescription());
-    return;
+  switch (DetermineAbilityToUpload()) {
+    case CanUploadResult::kNotAllowed:
+      // No upload is possible, and the metric is not logged (either because
+      // prerequisites are missing, or there is no local data to upload).
+      std::move(callback).Run(syncer::LocalDataDescription());
+      return;
+    case CanUploadResult::kLimitExceeded:
+      // Local data exists but upload is disabled due to the limit. Log this
+      // event.
+      RecordBookmarksDisabledDueToLimitExceeded(true);
+      std::move(callback).Run(syncer::LocalDataDescription());
+      return;
+    case CanUploadResult::kAllowed:
+      // Upload is possible. Log that limit is not exceeded and proceed to
+      // build the description.
+      RecordBookmarksDisabledDueToLimitExceeded(false);
+      break;
   }
 
   // TODO(crbug.com/380818406): migrate away from
@@ -105,11 +141,16 @@ void BookmarkLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
       .MoveAndMergeSpecificSubtrees(std::move(ids));
 }
 
-bool BookmarkLocalDataBatchUploader::CanUpload() const {
+BookmarkLocalDataBatchUploader::CanUploadResult
+BookmarkLocalDataBatchUploader::DetermineAbilityToUpload() const {
   if (!bookmark_model_ || !bookmark_model_->loaded() ||
       !bookmark_model_->account_bookmark_bar_node() ||
       !pref_service_->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled)) {
-    return false;
+    return CanUploadResult::kNotAllowed;
+  }
+
+  if (!HasLocalDataToUpload(bookmark_model_)) {
+    return CanUploadResult::kNotAllowed;
   }
 
   // Note: This is a conservative check as it includes permanent folders,
@@ -117,10 +158,21 @@ bool BookmarkLocalDataBatchUploader::CanUpload() const {
   // deduplication during the merge.
   if (bookmark_model_->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes() >
       max_bookmarks_limit_) {
-    return false;
+    return CanUploadResult::kLimitExceeded;
   }
 
-  return true;
+  return CanUploadResult::kAllowed;
+}
+
+bool BookmarkLocalDataBatchUploader::CanUpload() const {
+  switch (DetermineAbilityToUpload()) {
+    case CanUploadResult::kAllowed:
+      return true;
+    case CanUploadResult::kNotAllowed:
+    case CanUploadResult::kLimitExceeded:
+      return false;
+  }
+  NOTREACHED();
 }
 
 std::vector<GURL> BookmarkLocalDataBatchUploader::GetBookmarkedUrlsInSubtree(

@@ -247,6 +247,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.BatchUpload.BookmarksDisabledDueToLimitExceeded"
+    enum="Boolean" expires_after="2026-09-15">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records whether Bookmarks batch upload is disabled due to the bookmark limit
+    being exceeded. Recorded when the batch upload local data description for
+    bookmarks is requested, provided there are local bookmarks available to
+    upload.
+
+    Note: This metric is recorded in GetLocalDataDescription to avoid double
+    logging during the migration process itself, but this means its trigger
+    depends on how often GetLocalDataDescription is called by external UI code.
+  </summary>
+</histogram>
+
 <histogram name="Sync.BatchUpload.DataTypeAvailable" enum="SyncDataTypes"
     expires_after="2026-10-25">
   <owner>rsult@google.com</owner>
