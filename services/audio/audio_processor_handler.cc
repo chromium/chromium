@@ -28,7 +28,8 @@ AudioProcessorHandler::AudioProcessorHandler(
     media::AecdumpRecordingManager* aecdump_recording_manager,
     raw_ptr<MlModelManager> ml_model_manager)
     : residual_echo_estimation_model_handle_(
-          ml_model_manager ? ml_model_manager->GetResidualEchoEstimationModel()
+          ml_model_manager ? ml_model_manager->GetModel(
+                                 mojom::MlModelType::kResidualEchoEstimation)
                            : nullptr),
       audio_processor_(media::AudioProcessor::Create(
           // Unretained is safe because this class owns audio_processor_, so it

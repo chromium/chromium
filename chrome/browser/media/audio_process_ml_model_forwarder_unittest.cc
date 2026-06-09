@@ -35,10 +35,13 @@ class MockMlModelManager : public audio::mojom::MlModelManager {
   MockMlModelManager() = default;
   ~MockMlModelManager() override = default;
   MOCK_METHOD(void,
-              SetResidualEchoEstimationModel,
-              (base::File model_file),
+              SetModel,
+              (audio::mojom::MlModelType model_type, base::File model_file),
               (override));
-  MOCK_METHOD(void, StopServingResidualEchoEstimationModel, (), (override));
+  MOCK_METHOD(void,
+              StopServingModel,
+              (audio::mojom::MlModelType model_type),
+              (override));
 
   void BindReceiver(
       mojo::PendingReceiver<audio::mojom::MlModelManager> pending_receiver) {
@@ -230,9 +233,13 @@ TEST_F(AudioProcessMlModelForwarderTest, ForwardUpdates) {
   testing::InSequence s;
 
   // Forward a model file.
-  EXPECT_CALL(ml_model_manager_, SetResidualEchoEstimationModel(testing::_))
+  EXPECT_CALL(
+      ml_model_manager_,
+      SetModel(audio::mojom::MlModelType::kResidualEchoEstimation, testing::_))
       .Times(1)
-      .WillOnce([](base::File file) { ASSERT_TRUE(file.IsValid()); });
+      .WillOnce([](audio::mojom::MlModelType, base::File file) {
+        ASSERT_TRUE(file.IsValid());
+      });
   model_provider_.UpdateModelImmediatelyForTesting(
       optimization_guide::proto::
           OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR,
@@ -241,7 +248,9 @@ TEST_F(AudioProcessMlModelForwarderTest, ForwardUpdates) {
       [&]() { return !forwarder_->HasPendingTasksForTesting(); }));
 
   // Forward "stop serving" signal.
-  EXPECT_CALL(ml_model_manager_, StopServingResidualEchoEstimationModel())
+  EXPECT_CALL(
+      ml_model_manager_,
+      StopServingModel(audio::mojom::MlModelType::kResidualEchoEstimation))
       .Times(1);
   model_provider_.RemoveModel(
       optimization_guide::proto::
@@ -250,9 +259,13 @@ TEST_F(AudioProcessMlModelForwarderTest, ForwardUpdates) {
       [&]() { return !forwarder_->HasModelForTesting(); }));
 
   // Forward another model file.
-  EXPECT_CALL(ml_model_manager_, SetResidualEchoEstimationModel(testing::_))
+  EXPECT_CALL(
+      ml_model_manager_,
+      SetModel(audio::mojom::MlModelType::kResidualEchoEstimation, testing::_))
       .Times(1)
-      .WillOnce([](base::File file) { ASSERT_TRUE(file.IsValid()); });
+      .WillOnce([](audio::mojom::MlModelType, base::File file) {
+        ASSERT_TRUE(file.IsValid());
+      });
   model_provider_.UpdateModelImmediatelyForTesting(
       optimization_guide::proto::
           OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR,
@@ -268,9 +281,13 @@ TEST_F(AudioProcessMlModelForwarderTest,
   forwarder_->OnAudioCaptureStarted();
 
   // Forward the model to the first audio process instance.
-  EXPECT_CALL(ml_model_manager_, SetResidualEchoEstimationModel(testing::_))
+  EXPECT_CALL(
+      ml_model_manager_,
+      SetModel(audio::mojom::MlModelType::kResidualEchoEstimation, testing::_))
       .Times(1)
-      .WillOnce([](base::File file) { ASSERT_TRUE(file.IsValid()); });
+      .WillOnce([](audio::mojom::MlModelType, base::File file) {
+        ASSERT_TRUE(file.IsValid());
+      });
   model_provider_.UpdateModelImmediatelyForTesting(
       optimization_guide::proto::
           OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR,
@@ -283,9 +300,13 @@ TEST_F(AudioProcessMlModelForwarderTest,
   MockMlModelManager ml_model_manager_2;
   mojo::Remote<audio::mojom::MlModelManager> remote_ml_model_manager_2 =
       CreateNewMlModelManager(&ml_model_manager_2);
-  EXPECT_CALL(ml_model_manager_2, SetResidualEchoEstimationModel(testing::_))
+  EXPECT_CALL(
+      ml_model_manager_2,
+      SetModel(audio::mojom::MlModelType::kResidualEchoEstimation, testing::_))
       .Times(1)
-      .WillOnce([](base::File file) { ASSERT_TRUE(file.IsValid()); });
+      .WillOnce([](audio::mojom::MlModelType, base::File file) {
+        ASSERT_TRUE(file.IsValid());
+      });
 
   forwarder_->OnAudioProcessLaunched(std::move(remote_ml_model_manager_2));
   EXPECT_TRUE(base::test::RunUntil(
@@ -304,10 +325,8 @@ TEST_F(AudioProcessMlModelForwarderTest,
       [&]() { return !forwarder_->HasBoundAudioProcessRemoteForTesting(); }));
 
   // Nothing should happen when the receiver has been disconnected.
-  EXPECT_CALL(ml_model_manager_, SetResidualEchoEstimationModel(testing::_))
-      .Times(0);
-  EXPECT_CALL(ml_model_manager_, StopServingResidualEchoEstimationModel())
-      .Times(0);
+  EXPECT_CALL(ml_model_manager_, SetModel(testing::_, testing::_)).Times(0);
+  EXPECT_CALL(ml_model_manager_, StopServingModel(testing::_)).Times(0);
 
   // Send a model update with a new model.
   model_provider_.UpdateModelImmediatelyForTesting(
@@ -338,10 +357,8 @@ TEST_F(AudioProcessMlModelForwarderTest,
       [&]() { return !forwarder_->HasBoundAudioProcessRemoteForTesting(); }));
 
   // Nothing should happen when the receiver has been disconnected.
-  EXPECT_CALL(ml_model_manager_, SetResidualEchoEstimationModel(testing::_))
-      .Times(0);
-  EXPECT_CALL(ml_model_manager_, StopServingResidualEchoEstimationModel())
-      .Times(0);
+  EXPECT_CALL(ml_model_manager_, SetModel(testing::_, testing::_)).Times(0);
+  EXPECT_CALL(ml_model_manager_, StopServingModel(testing::_)).Times(0);
 
   // Send a model update to stop serving models.
   model_provider_.RemoveModel(

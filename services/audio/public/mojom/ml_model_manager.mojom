@@ -7,15 +7,20 @@ module audio.mojom;
 import "mojo/public/mojom/base/file.mojom";
 import "sandbox/policy/mojom/context.mojom";
 
+enum MlModelType {
+  kResidualEchoEstimation,
+  kVoiceIsolationDenoiser,
+};
+
 // This interface is exposed by the audio service to allow trusted clients
 // (like the browser process) to provide ML models for audio processing.
 [RequireContext=sandbox.mojom.Context.kBrowser]
 interface MlModelManager {
-  // Sets a model to use for residual echo estimation.
-  SetResidualEchoEstimationModel(mojo_base.mojom.ReadOnlyFile tflite_file);
+  // Sets a model to use for the specified ML model type.
+  SetModel(MlModelType model_type, mojo_base.mojom.ReadOnlyFile tflite_file);
 
-  // Stop using any previously set model for residual echo estimation. The model
-  // may continue to be used for the current session, but must be removed from
-  // any persistent state.
-  StopServingResidualEchoEstimationModel();
+  // Stop using any previously set model for the specified ML model type. The
+  // model may continue to be used for the current session, but must be removed
+  // from any persistent state.
+  StopServingModel(MlModelType model_type);
 };

@@ -49,8 +49,11 @@ const char* kDefaultDeviceId = "default";
 
 class MockMlModelManager : public MlModelManager {
  public:
-  std::unique_ptr<MlModelHandle> GetResidualEchoEstimationModel() override {
-    model_requested_ = true;
+  std::unique_ptr<MlModelHandle> GetModel(
+      mojom::MlModelType model_type) override {
+    if (model_type == mojom::MlModelType::kResidualEchoEstimation) {
+      model_requested_ = true;
+    }
     return nullptr;
   }
   bool model_requested() { return model_requested_; }

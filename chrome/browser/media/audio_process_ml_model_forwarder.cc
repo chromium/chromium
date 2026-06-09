@@ -222,7 +222,8 @@ void AudioProcessMlModelForwarder::OnModelUpdated(
                                        : base::FilePath();
   if (model_path_.empty() && audio_process_model_manager_) {
     CancelModelLoadingTasks();
-    audio_process_model_manager_->StopServingResidualEchoEstimationModel();
+    audio_process_model_manager_->StopServingModel(
+        audio::mojom::MlModelType::kResidualEchoEstimation);
     return;
   }
   MaybeSendModelToAudioProcess();
@@ -281,6 +282,6 @@ void AudioProcessMlModelForwarder::OnModelFileOpened(WrappedFilePtr file) {
     // No file or nowhere to send it.
     return;
   }
-  audio_process_model_manager_->SetResidualEchoEstimationModel(
-      std::move(*file));
+  audio_process_model_manager_->SetModel(
+      audio::mojom::MlModelType::kResidualEchoEstimation, std::move(*file));
 }

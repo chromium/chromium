@@ -49,13 +49,10 @@ base::File CreateInvalidTfLiteFile(base::ScopedTempDir& temp_dir,
   return base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 }
 
-// All tests here follow the same format:
-// - A sequence of API calls:
-//   - Set (SetResidualEchoEstimationModel)
-//   - Get (GetResidualEchoEstimationModel)
-//   - Stop (StopServingResidualEchoEstimationModel)
-// - An expected result from the last Get call.
-class MlModelManagerImplTest : public ::testing::Test {
+// Value-parameterized test suite to test MlModelManagerImpl with both
+// neural residual echo estimation and voice isolation denoiser models.
+class MlModelManagerImplTest
+    : public ::testing::TestWithParam<mojom::MlModelType> {
  public:
   MlModelManagerImplTest() = default;
 
@@ -74,161 +71,169 @@ class MlModelManagerImplTest : public ::testing::Test {
         [&]() { return !ml_model_manager_->HasPendingTasksForTesting(); });
   }
 
+  mojom::MlModelType model_type() const { return GetParam(); }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MlModelManagerImpl> ml_model_manager_;
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(MlModelManagerImplTest, SetGetReturnsModel) {
+TEST_P(MlModelManagerImplTest, SetGetReturnsModel) {
   base::File model_file = CreateTfLiteFile(temp_dir_, "model.tflite");
   ASSERT_TRUE(model_file.IsValid());
 
-  ml_model_manager_->SetResidualEchoEstimationModel(std::move(model_file));
+  ml_model_manager_->SetModel(model_type(), std::move(model_file));
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   // Happy base case: Setting a model returns that model.
   std::unique_ptr<MlModelHandle> model_handle =
-      ml_model_manager_->GetResidualEchoEstimationModel();
+      ml_model_manager_->GetModel(model_type());
   const tflite::FlatBufferModel* model = model_handle->Get();
   EXPECT_NE(model, nullptr);
   EXPECT_EQ(model->GetModel()->description()->str(), "model.tflite");
 }
 
-TEST_F(MlModelManagerImplTest, SetGetGetReturnsSameModel) {
+TEST_P(MlModelManagerImplTest, SetGetGetReturnsSameModel) {
   base::File model_file = CreateTfLiteFile(temp_dir_, "model.tflite");
   ASSERT_TRUE(model_file.IsValid());
-  ml_model_manager_->SetResidualEchoEstimationModel(std::move(model_file));
+  ml_model_manager_->SetModel(model_type(), std::move(model_file));
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   std::unique_ptr<MlModelHandle> model_handle1 =
-      ml_model_manager_->GetResidualEchoEstimationModel();
+      ml_model_manager_->GetModel(model_type());
 
   // Calling Get again returns the same model.
   std::unique_ptr<MlModelHandle> model_handle2 =
-      ml_model_manager_->GetResidualEchoEstimationModel();
+      ml_model_manager_->GetModel(model_type());
   const tflite::FlatBufferModel* model = model_handle2->Get();
   EXPECT_NE(model, nullptr);
   EXPECT_EQ(model->GetModel()->description()->str(), "model.tflite");
 }
 
-TEST_F(MlModelManagerImplTest, SetSetGetReturnsSecondModel) {
+TEST_P(MlModelManagerImplTest, SetSetGetReturnsSecondModel) {
   base::File model_file1 = CreateTfLiteFile(temp_dir_, "model1.tflite");
   ASSERT_TRUE(model_file1.IsValid());
   base::File model_file2 = CreateTfLiteFile(temp_dir_, "model2.tflite");
   ASSERT_TRUE(model_file2.IsValid());
 
-  ml_model_manager_->SetResidualEchoEstimationModel(std::move(model_file1));
-  ml_model_manager_->SetResidualEchoEstimationModel(std::move(model_file2));
+  ml_model_manager_->SetModel(model_type(), std::move(model_file1));
+  ml_model_manager_->SetModel(model_type(), std::move(model_file2));
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   // The second model replaces the first model.
   std::unique_ptr<MlModelHandle> model_handle =
-      ml_model_manager_->GetResidualEchoEstimationModel();
+      ml_model_manager_->GetModel(model_type());
   const tflite::FlatBufferModel* model = model_handle->Get();
   EXPECT_NE(model, nullptr);
   EXPECT_EQ(model->GetModel()->description()->str(), "model2.tflite");
 }
 
-TEST_F(MlModelManagerImplTest, SetGetSetGetReturnsSecondModel) {
+TEST_P(MlModelManagerImplTest, SetGetSetGetReturnsSecondModel) {
   base::File model_file1 = CreateTfLiteFile(temp_dir_, "model1.tflite");
   ASSERT_TRUE(model_file1.IsValid());
   base::File model_file2 = CreateTfLiteFile(temp_dir_, "model2.tflite");
   ASSERT_TRUE(model_file2.IsValid());
 
-  ml_model_manager_->SetResidualEchoEstimationModel(std::move(model_file1));
+  ml_model_manager_->SetModel(model_type(), std::move(model_file1));
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   std::unique_ptr<MlModelHandle> model_handle1 =
-      ml_model_manager_->GetResidualEchoEstimationModel();
+      ml_model_manager_->GetModel(model_type());
   const tflite::FlatBufferModel* model1 = model_handle1->Get();
   EXPECT_NE(model1, nullptr);
   EXPECT_EQ(model1->GetModel()->description()->str(), "model1.tflite");
 
-  ml_model_manager_->SetResidualEchoEstimationModel(std::move(model_file2));
+  ml_model_manager_->SetModel(model_type(), std::move(model_file2));
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   // The second model is served to new clients.
   std::unique_ptr<MlModelHandle> model_handle2 =
-      ml_model_manager_->GetResidualEchoEstimationModel();
+      ml_model_manager_->GetModel(model_type());
   const tflite::FlatBufferModel* model2 = model_handle2->Get();
   EXPECT_NE(model2, nullptr);
   EXPECT_EQ(model2->GetModel()->description()->str(), "model2.tflite");
 }
 
-TEST_F(MlModelManagerImplTest, StopSetGetReturnsModel) {
-  ml_model_manager_->StopServingResidualEchoEstimationModel();
+TEST_P(MlModelManagerImplTest, StopSetGetReturnsModel) {
+  ml_model_manager_->StopServingModel(model_type());
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
-  EXPECT_EQ(ml_model_manager_->GetResidualEchoEstimationModel(), nullptr);
+  EXPECT_EQ(ml_model_manager_->GetModel(model_type()), nullptr);
 
   base::File model_file = CreateTfLiteFile(temp_dir_, "model.tflite");
   ASSERT_TRUE(model_file.IsValid());
 
-  ml_model_manager_->SetResidualEchoEstimationModel(std::move(model_file));
+  ml_model_manager_->SetModel(model_type(), std::move(model_file));
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   // Model is loaded, since stop was called before a model was served.
   std::unique_ptr<MlModelHandle> model_handle =
-      ml_model_manager_->GetResidualEchoEstimationModel();
+      ml_model_manager_->GetModel(model_type());
   const tflite::FlatBufferModel* model = model_handle->Get();
   EXPECT_NE(model, nullptr);
   EXPECT_EQ(model->GetModel()->description()->str(), "model.tflite");
 }
 
-TEST_F(MlModelManagerImplTest, SetGetStopGetReturnsNull) {
+TEST_P(MlModelManagerImplTest, SetGetStopGetReturnsNull) {
   base::File model_file = CreateTfLiteFile(temp_dir_, "model.tflite");
   ASSERT_TRUE(model_file.IsValid());
 
-  ml_model_manager_->SetResidualEchoEstimationModel(std::move(model_file));
+  ml_model_manager_->SetModel(model_type(), std::move(model_file));
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   std::unique_ptr<MlModelHandle> model_handle =
-      ml_model_manager_->GetResidualEchoEstimationModel();
+      ml_model_manager_->GetModel(model_type());
   const tflite::FlatBufferModel* model = model_handle->Get();
   EXPECT_NE(model->GetModel(), nullptr);
 
-  ml_model_manager_->StopServingResidualEchoEstimationModel();
+  ml_model_manager_->StopServingModel(model_type());
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   // No models served after Stop.
-  EXPECT_EQ(ml_model_manager_->GetResidualEchoEstimationModel(), nullptr);
+  EXPECT_EQ(ml_model_manager_->GetModel(model_type()), nullptr);
 
   // The old pointer should still be served. We cannot directly check this, but
   // the test should at least not crash when we use the pointer here.
   EXPECT_EQ(model->GetModel()->description()->str(), "model.tflite");
 }
 
-TEST_F(MlModelManagerImplTest, SetGetStopSetGetReturnsSecondModel) {
+TEST_P(MlModelManagerImplTest, SetGetStopSetGetReturnsSecondModel) {
   base::File model_file1 = CreateTfLiteFile(temp_dir_, "model1.tflite");
   ASSERT_TRUE(model_file1.IsValid());
   base::File model_file2 = CreateTfLiteFile(temp_dir_, "model2.tflite");
   ASSERT_TRUE(model_file2.IsValid());
 
-  ml_model_manager_->SetResidualEchoEstimationModel(std::move(model_file1));
+  ml_model_manager_->SetModel(model_type(), std::move(model_file1));
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
-  EXPECT_NE(ml_model_manager_->GetResidualEchoEstimationModel(), nullptr);
+  EXPECT_NE(ml_model_manager_->GetModel(model_type()), nullptr);
 
-  ml_model_manager_->StopServingResidualEchoEstimationModel();
-  ml_model_manager_->SetResidualEchoEstimationModel(std::move(model_file2));
+  ml_model_manager_->StopServingModel(model_type());
+  ml_model_manager_->SetModel(model_type(), std::move(model_file2));
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   // The second model, set after the stop signal, is served.
   std::unique_ptr<MlModelHandle> model_handle =
-      ml_model_manager_->GetResidualEchoEstimationModel();
+      ml_model_manager_->GetModel(model_type());
   const tflite::FlatBufferModel* model = model_handle->Get();
   EXPECT_NE(model, nullptr);
   EXPECT_EQ(model->GetModel()->description()->str(), "model2.tflite");
 }
 
-TEST_F(MlModelManagerImplTest, SetGetWithInvalidModelReturnsNull) {
+TEST_P(MlModelManagerImplTest, SetGetWithInvalidModelReturnsNull) {
   base::File model_file = CreateInvalidTfLiteFile(temp_dir_, "invalid.tflite");
   ASSERT_TRUE(model_file.IsValid());
 
-  ml_model_manager_->SetResidualEchoEstimationModel(std::move(model_file));
+  ml_model_manager_->SetModel(model_type(), std::move(model_file));
   ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
 
   // An invalid model is not served.
-  EXPECT_EQ(ml_model_manager_->GetResidualEchoEstimationModel(), nullptr);
+  EXPECT_EQ(ml_model_manager_->GetModel(model_type()), nullptr);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MlModelManagerImplTest,
+    ::testing::Values(mojom::MlModelType::kResidualEchoEstimation,
+                      mojom::MlModelType::kVoiceIsolationDenoiser));
 
 }  // namespace
 }  // namespace audio
