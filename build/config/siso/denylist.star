@@ -43,7 +43,6 @@ def __step_config(ctx, step_config):
         # Requires dynamic globbing of hundreds of policy definition YAML files
         # under components/policy/resources/templates/ directory.
         "components/policy/resources/policy_templates.py",
-        "components/vector_icons/aggregate_vector_icons.py",
         "components/zucchini/fuzzers/generate_fuzzer_data.py",
         "mojo/public/tools/bindings/minify_with_terser.py",
         "remoting/tools/build/remoting_copy_locales.py",
