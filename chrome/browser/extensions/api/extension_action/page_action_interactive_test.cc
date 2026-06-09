@@ -25,7 +25,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveTest, ShowPageActionPopup) {
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
-  ASSERT_TRUE(browser()->window()->IsActive());
+  ASSERT_TRUE(browser()->GetWindow()->IsActive());
 
   ResultCatcher catcher;
   ExtensionActionTestHelper::Create(browser())->Press(extension->id());

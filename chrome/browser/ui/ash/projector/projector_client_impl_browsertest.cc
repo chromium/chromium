@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, MinimizeProjectorApp) {
 
   client()->MinimizeProjectorApp();
   // Verify that Projector App is minimized.
-  EXPECT_TRUE(app_browser->window()->IsMinimized());
+  EXPECT_TRUE(app_browser->GetWindow()->IsMinimized());
 }
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, CloseProjectorApp) {

@@ -5656,7 +5656,7 @@ void BrowserView::UpdateAcceleratorMetrics(const ui::Accelerator& accelerator,
   }
 
   if (command_id == IDC_FULLSCREEN) {
-    if (browser_->window()->IsFullscreen()) {
+    if (browser_->GetWindow()->IsFullscreen()) {
       base::RecordAction(base::UserMetricsAction("ExitFullscreen_Accelerator"));
     } else {
       base::RecordAction(

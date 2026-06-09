@@ -184,7 +184,7 @@ ProfileMenuView::~ProfileMenuView() = default;
 void ProfileMenuView::OnClose() {
   bool is_browser_window_active =
       skip_window_active_check_for_testing_ ||
-      (browser().window() && browser().window()->IsActive());
+      (browser().GetWindow() && browser().GetWindow()->IsActive());
   if (!actionable_item_clicked() && is_browser_window_active) {
     // Launch a HaTS survey only if the user dismissed the menu without
     // selecting an item (e.g., by clicking outside or pressing ESC), and the

@@ -334,11 +334,11 @@ IN_PROC_BROWSER_TEST_P(KioskSettingsTest, CanRefocusSettings) {
   Browser& settings = CHECK_DEREF(session.GetSettingsBrowserForTesting());
 
   // The settings browser is focused.
-  EXPECT_TRUE(settings.window()->IsActive());
+  EXPECT_TRUE(settings.GetWindow()->IsActive());
 
   // Simulate a focus switch.
   settings.GetWindow()->Deactivate();
-  EXPECT_FALSE(settings.window()->IsActive());
+  EXPECT_FALSE(settings.GetWindow()->IsActive());
 
   // Verify focus can switch to another settings page.
   {
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_P(KioskSettingsTest, CanRefocusSettings) {
     EXPECT_EQ(web_contents.GetLastCommittedURL(), other_settings_page);
 
     // The settings browser should be focused again.
-    EXPECT_TRUE(settings.window()->IsActive());
+    EXPECT_TRUE(settings.GetWindow()->IsActive());
   }
 }
 

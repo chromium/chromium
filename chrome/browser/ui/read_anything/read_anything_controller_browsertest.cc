@@ -2098,7 +2098,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Put the browser in fullscreen mode
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
-  ASSERT_TRUE(browser()->window()->IsFullscreen());
+  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
 
   // Create an event that holds down the escape button
   input::NativeWebKeyboardEvent escape_event(
@@ -2114,7 +2114,7 @@ IN_PROC_BROWSER_TEST_F(
   waiter.Wait();
 
   // Verify the browser has exited fullscreen.
-  ASSERT_FALSE(browser()->window()->IsFullscreen());
+  ASSERT_FALSE(browser()->GetWindow()->IsFullscreen());
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,

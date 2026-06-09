@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_P(HeadlessModeBrowserTestWithStartWindowMode,
                        BrowserDesktopWindowHidden) {
   // On Windows, the Native Headless Chrome browser window exists and is
   // visible, while the underlying platform window is hidden.
-  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_TRUE(browser()->GetWindow()->IsVisible());
 
   DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
       static_cast<DesktopWindowTreeHostWinWrapper*>(
@@ -133,20 +133,20 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
 
   // Verify initial state.
-  ASSERT_FALSE(browser()->window()->IsFullscreen());
-  EXPECT_TRUE(browser()->window()->IsVisible());
+  ASSERT_FALSE(browser()->GetWindow()->IsFullscreen());
+  EXPECT_TRUE(browser()->GetWindow()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 
   // Verify fullscreen state.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
-  ASSERT_TRUE(browser()->window()->IsFullscreen());
-  EXPECT_TRUE(browser()->window()->IsVisible());
+  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
+  EXPECT_TRUE(browser()->GetWindow()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 
   // Verify back to normal state.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
-  ASSERT_FALSE(browser()->window()->IsFullscreen());
-  EXPECT_TRUE(browser()->window()->IsVisible());
+  ASSERT_FALSE(browser()->GetWindow()->IsFullscreen());
+  EXPECT_TRUE(browser()->GetWindow()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 }
 
@@ -158,20 +158,20 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
 
   // Verify initial state.
-  ASSERT_FALSE(browser()->window()->IsMinimized());
-  EXPECT_TRUE(browser()->window()->IsVisible());
+  ASSERT_FALSE(browser()->GetWindow()->IsMinimized());
+  EXPECT_TRUE(browser()->GetWindow()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 
   // Verify minimized state.
   browser()->window()->Minimize();
-  ASSERT_TRUE(browser()->window()->IsMinimized());
-  EXPECT_TRUE(browser()->window()->IsVisible());
+  ASSERT_TRUE(browser()->GetWindow()->IsMinimized());
+  EXPECT_TRUE(browser()->GetWindow()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 
   // Verify restored state.
   browser()->window()->Restore();
-  ASSERT_FALSE(browser()->window()->IsMinimized());
-  EXPECT_TRUE(browser()->window()->IsVisible());
+  ASSERT_FALSE(browser()->GetWindow()->IsMinimized());
+  EXPECT_TRUE(browser()->GetWindow()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 }
 
@@ -183,20 +183,20 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
 
   // Verify initial state.
-  ASSERT_FALSE(browser()->window()->IsMaximized());
-  EXPECT_TRUE(browser()->window()->IsVisible());
+  ASSERT_FALSE(browser()->GetWindow()->IsMaximized());
+  EXPECT_TRUE(browser()->GetWindow()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 
   // Verify maximized state.
   browser()->window()->Maximize();
-  ASSERT_TRUE(browser()->window()->IsMaximized());
-  EXPECT_TRUE(browser()->window()->IsVisible());
+  ASSERT_TRUE(browser()->GetWindow()->IsMaximized());
+  EXPECT_TRUE(browser()->GetWindow()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 
   // Verify restored state.
   browser()->window()->Restore();
-  ASSERT_FALSE(browser()->window()->IsMaximized());
-  EXPECT_TRUE(browser()->window()->IsVisible());
+  ASSERT_FALSE(browser()->GetWindow()->IsMaximized());
+  EXPECT_TRUE(browser()->GetWindow()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 }
 

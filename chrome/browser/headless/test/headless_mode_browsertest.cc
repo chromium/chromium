@@ -144,7 +144,7 @@ namespace {
 // Miscellaneous tests -------------------------------------------------------
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, BrowserWindowIsActive) {
-  EXPECT_TRUE(browser()->window()->IsActive());
+  EXPECT_TRUE(browser()->GetWindow()->IsActive());
 }
 
 // Infobar tests -------------------------------------------------------------

@@ -444,13 +444,13 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, BackgroundBrowserDontStealFocus) {
   // platforms, that may be asynchronous. Ensure the activation is properly
   // reflected in the browser process by activating again.
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(background_browser));
-  EXPECT_TRUE(background_browser->window()->IsActive());
+  EXPECT_TRUE(background_browser->GetWindow()->IsActive());
 
   // Activate the first browser (again). Note BringBrowserWindowToFront() does
   // Show() and Focus(), but not Activate(), which is needed for Desktop Linux.
   browser()->GetWindow()->Activate();
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
-  EXPECT_TRUE(browser()->window()->IsActive());
+  EXPECT_TRUE(browser()->GetWindow()->IsActive());
   ASSERT_TRUE(content::ExecJs(
       background_browser->tab_strip_model()->GetActiveWebContents(),
       "stealFocus();"));
@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, BackgroundBrowserDontStealFocus) {
   content::RunAllTasksUntilIdle();
 
   // Make sure the first browser is still active.
-  EXPECT_TRUE(browser()->window()->IsActive());
+  EXPECT_TRUE(browser()->GetWindow()->IsActive());
 }
 
 // Page cannot steal focus when focus is on location bar.

@@ -59,7 +59,7 @@ class DevToolsManagerDelegateTest : public InProcessBrowserTest {
                             base::Unretained(browser()->window())),
         maximized, base::Seconds(1))
         .Wait();
-    EXPECT_EQ(maximized, browser()->window()->IsMaximized());
+    EXPECT_EQ(maximized, browser()->GetWindow()->IsMaximized());
   }
 
   void CheckIsMinimized(bool minimized) {
@@ -68,7 +68,7 @@ class DevToolsManagerDelegateTest : public InProcessBrowserTest {
                             base::Unretained(browser()->window())),
         minimized, base::Seconds(1))
         .Wait();
-    EXPECT_EQ(minimized, browser()->window()->IsMinimized());
+    EXPECT_EQ(minimized, browser()->GetWindow()->IsMinimized());
   }
 
   void CheckIsFullscreen(bool fullscreen) {
@@ -77,7 +77,7 @@ class DevToolsManagerDelegateTest : public InProcessBrowserTest {
                             base::Unretained(browser()->window())),
         fullscreen, base::Seconds(1))
         .Wait();
-    EXPECT_EQ(fullscreen, browser()->window()->IsFullscreen());
+    EXPECT_EQ(fullscreen, browser()->GetWindow()->IsFullscreen());
   }
 
   bool IsWindowBoundsEqual(gfx::Rect expected) {
@@ -254,6 +254,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsPWAFocusTest,
   // not the main browser window.
   ui_test_utils::WaitUntilBrowserBecomeActive(pwa_browser);
   EXPECT_TRUE(pwa_browser->GetWindow()->IsActive());
-  EXPECT_FALSE(browser()->window()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
 }
 #endif  // BUILDFLAG(IS_MAC)

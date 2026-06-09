@@ -845,7 +845,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, OpenPopupOnPopup) {
   waiter.WaitForActivation();
   EXPECT_TRUE(popup_browser->GetWindow()->IsActive());
 #endif
-  EXPECT_FALSE(browser()->window()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
   EXPECT_FALSE(
       popup_browser->GetBrowserForMigrationOnly()->SupportsWindowFeature(
           Browser::WindowFeature::kFeatureToolbar));

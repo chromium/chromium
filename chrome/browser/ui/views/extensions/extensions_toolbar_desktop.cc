@@ -801,7 +801,7 @@ void ExtensionsToolbarDesktop::CloseExtensionsMenuIfOpen() {
 
 bool ExtensionsToolbarDesktop::CanShowToolbarActionPopupForAPICall(
     const ToolbarActionsModel::ActionId& action_id) {
-  return !popped_out_action_ && browser_->window()->IsActive();
+  return !popped_out_action_ && browser_->GetWindow()->IsActive();
 }
 
 void ExtensionsToolbarDesktop::ToggleExtensionsMenu() {

@@ -648,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayFullscreen) {
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
       browser()->GetWindow()->GetNativeWindow()));
 
-  ASSERT_TRUE(browser()->window()->IsActive());
+  ASSERT_TRUE(browser()->GetWindow()->IsActive());
 
   // Creates a simple notification.
   std::string result = CreateSimpleNotification(browser(), true);
@@ -683,13 +683,13 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayMultiFullscreen) {
   // Set the other browser fullscreen
   ui_test_utils::ToggleFullscreenModeAndWait(other_browser);
 
-  ASSERT_TRUE(browser()->window()->IsFullscreen());
-  ASSERT_TRUE(other_browser->window()->IsFullscreen());
+  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
+  ASSERT_TRUE(other_browser->GetWindow()->IsFullscreen());
 
   ui_test_utils::BrowserActivationWaiter waiter(other_browser);
   waiter.WaitForActivation();
-  ASSERT_FALSE(browser()->window()->IsActive());
-  ASSERT_TRUE(other_browser->window()->IsActive());
+  ASSERT_FALSE(browser()->GetWindow()->IsActive());
+  ASSERT_TRUE(other_browser->GetWindow()->IsActive());
 
   ASSERT_EQ(1, GetNotificationCount());
   message_center::NotificationList::Notifications notifications =

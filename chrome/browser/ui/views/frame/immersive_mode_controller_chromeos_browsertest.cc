@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 
   // Verify that after minimizing, immersive mode is disabled.
   browser()->window()->Minimize();
-  EXPECT_TRUE(browser()->window()->IsMinimized());
+  EXPECT_TRUE(browser()->GetWindow()->IsMinimized());
   EXPECT_FALSE(controller()->IsEnabled());
 
   // Verify that after showing the browser, immersive mode is reenabled.

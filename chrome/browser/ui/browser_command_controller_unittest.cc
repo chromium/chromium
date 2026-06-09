@@ -434,7 +434,7 @@ TEST_F(BrowserCommandControllerFullscreenTest,
 
   // Simulate going fullscreen.
   chrome::ToggleFullscreenMode(browser());
-  ASSERT_TRUE(browser()->window()->IsFullscreen());
+  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
   browser()->command_controller()->FullscreenStateChanged();
 
   // By default, in fullscreen mode, the toolbar should be hidden; and all
@@ -471,7 +471,7 @@ TEST_F(BrowserCommandControllerFullscreenTest,
 
   // Exit fullscreen.
   chrome::ToggleFullscreenMode(browser());
-  ASSERT_FALSE(browser()->window()->IsFullscreen());
+  ASSERT_FALSE(browser()->GetWindow()->IsFullscreen());
   browser()->command_controller()->FullscreenStateChanged();
 
   for (auto& command : commands) {

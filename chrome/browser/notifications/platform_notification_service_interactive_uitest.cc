@@ -940,7 +940,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
       browser()->GetWindow()->GetNativeWindow()));
 
   ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
-  ASSERT_TRUE(browser()->window()->IsActive())
+  ASSERT_TRUE(browser()->GetWindow()->IsActive())
       << "Browser is active after going fullscreen";
 
   EXPECT_EQ("ok", RunScript("DisplayPersistentNotification('display_normal')"));
@@ -979,8 +979,8 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
                   ->IsFullscreen());
 
   ui_test_utils::BrowserActivationWaiter(other_browser).WaitForActivation();
-  ASSERT_FALSE(browser()->window()->IsActive());
-  ASSERT_TRUE(other_browser->window()->IsActive());
+  ASSERT_FALSE(browser()->GetWindow()->IsActive());
+  ASSERT_TRUE(other_browser->GetWindow()->IsActive());
 
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications(true /* is_persistent */);

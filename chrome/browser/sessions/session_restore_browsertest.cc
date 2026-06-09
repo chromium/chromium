@@ -667,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MaximizedApps) {
   Browser* app_browser = CreateBrowserForApp(app_name, browser()->profile());
   app_browser->window()->Maximize();
   app_browser->GetWindow()->Show();
-  EXPECT_TRUE(app_browser->window()->IsMaximized());
+  EXPECT_TRUE(app_browser->GetWindow()->IsMaximized());
   EXPECT_TRUE(app_browser->is_type_app());
 
   // Close the normal browser. After this we only have the app_browser window.
@@ -678,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MaximizedApps) {
   Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
 
   ASSERT_TRUE(new_browser);
-  EXPECT_TRUE(app_browser->window()->IsMaximized());
+  EXPECT_TRUE(app_browser->GetWindow()->IsMaximized());
   EXPECT_TRUE(app_browser->is_type_app());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

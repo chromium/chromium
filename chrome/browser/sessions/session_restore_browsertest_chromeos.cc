@@ -388,12 +388,12 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreMaximized) {
       CreateBrowserWithParams(CreateParamsForAppPopup(test_app_name2, true));
   app_popup_browser2->window()->Maximize();
 
-  EXPECT_FALSE(browser()->window()->IsMaximized());
-  EXPECT_TRUE(browser2->window()->IsMaximized());
-  EXPECT_FALSE(app_browser1->window()->IsMaximized());
-  EXPECT_TRUE(app_browser2->window()->IsMaximized());
-  EXPECT_FALSE(app_popup_browser1->window()->IsMaximized());
-  EXPECT_TRUE(app_popup_browser2->window()->IsMaximized());
+  EXPECT_FALSE(browser()->GetWindow()->IsMaximized());
+  EXPECT_TRUE(browser2->GetWindow()->IsMaximized());
+  EXPECT_FALSE(app_browser1->GetWindow()->IsMaximized());
+  EXPECT_TRUE(app_browser2->GetWindow()->IsMaximized());
+  EXPECT_FALSE(app_popup_browser1->GetWindow()->IsMaximized());
+  EXPECT_TRUE(app_popup_browser2->GetWindow()->IsMaximized());
 
   TurnOnSessionRestore();
 }
@@ -436,8 +436,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreMinimized) {
       CreateBrowserWithParams(Browser::CreateParams(profile(), true));
   browser2->window()->Minimize();
 
-  EXPECT_TRUE(browser()->window()->IsMinimized());
-  EXPECT_TRUE(browser2->window()->IsMinimized());
+  EXPECT_TRUE(browser()->GetWindow()->IsMinimized());
+  EXPECT_TRUE(browser2->GetWindow()->IsMinimized());
 
   TurnOnSessionRestore();
 }

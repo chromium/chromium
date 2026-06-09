@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, SwitchWindowsDisallowed) {
-  EXPECT_TRUE(browser()->window()->IsActive());
+  EXPECT_TRUE(browser()->GetWindow()->IsActive());
 
   // Enable another feature to allow opening two popup browsers to make sure
   // that switching between windows is still not available if the
@@ -360,20 +360,20 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, SwitchWindowsDisallowed) {
   Browser& new_browser = OpenForAppPopupBrowser();
 
   // When new window is opened, it becomes active.
-  EXPECT_TRUE(new_browser.window()->IsActive());
-  EXPECT_FALSE(browser()->window()->IsActive());
+  EXPECT_TRUE(new_browser.GetWindow()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
 
   EmulateSwitchWindowsForwardShortcutPressed();
 
   // Active window remains the same.
-  EXPECT_TRUE(new_browser.window()->IsActive());
-  EXPECT_FALSE(browser()->window()->IsActive());
+  EXPECT_TRUE(new_browser.GetWindow()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
 
   EmulateSwitchWindowsBackwardShortcutPressed();
 
   // Active window remains the same.
-  EXPECT_TRUE(new_browser.window()->IsActive());
-  EXPECT_FALSE(browser()->window()->IsActive());
+  EXPECT_TRUE(new_browser.GetWindow()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
 }
 
 IN_PROC_BROWSER_TEST_F(

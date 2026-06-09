@@ -155,10 +155,10 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                                         /*expect_popup_to_be_shown=*/true));
 
   // Enter fullscreen, which should cause the popup to hide.
-  ASSERT_FALSE(browser()->window()->IsFullscreen());
+  ASSERT_FALSE(browser()->GetWindow()->IsFullscreen());
   content::WebContentsDelegate* wcd = browser();
   wcd->EnterFullscreenModeForTab(main_rfh(), {});
-  ASSERT_TRUE(browser()->window()->IsFullscreen());
+  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
 
   autofill_external_delegate().WaitForPopupHidden();
   EXPECT_TRUE(autofill_external_delegate().popup_hidden());
@@ -175,9 +175,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                                         /*expect_popup_to_be_shown=*/true));
 
   // Exit fullscreen, which should cause the popup to hide.
-  ASSERT_TRUE(browser()->window()->IsFullscreen());
+  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
   wcd->ExitFullscreenModeForTab(web_contents());
-  ASSERT_FALSE(browser()->window()->IsFullscreen());
+  ASSERT_FALSE(browser()->GetWindow()->IsFullscreen());
 
   autofill_external_delegate().WaitForPopupHidden();
   EXPECT_TRUE(autofill_external_delegate().popup_hidden());

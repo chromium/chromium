@@ -252,8 +252,8 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       break;
     case IDC_FULLSCREEN: {
       result->new_title.emplace(l10n_util::GetStringUTF16(
-          browser->window()->IsFullscreen() ? IDS_EXIT_FULLSCREEN_MAC
-                                            : IDS_ENTER_FULLSCREEN_MAC));
+          browser->GetWindow()->IsFullscreen() ? IDS_EXIT_FULLSCREEN_MAC
+                                               : IDS_ENTER_FULLSCREEN_MAC));
       break;
     }
     case IDC_SHOW_AS_TAB: {

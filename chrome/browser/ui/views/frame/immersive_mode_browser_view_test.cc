@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   browser()->tab_strip_model()->GetActiveWebContents()->Focus();
 
   EnterImmersiveFullscreenMode(browser());
-  EXPECT_FALSE(browser()->window()->IsMaximized());
+  EXPECT_FALSE(browser()->GetWindow()->IsMaximized());
   EXPECT_FALSE(immersive_mode_controller->IsRevealed());
 
   std::unique_ptr<ImmersiveRevealedLock> revealed_lock =
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   event_generator.ClickLeftButton();
   ImmersiveModeTester(browser()).WaitForFullscreenToExit();
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
-  EXPECT_FALSE(browser()->window()->IsFullscreen());
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
 }
 
 IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
@@ -238,8 +238,8 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
       .SetupForTest();
 
   EnterImmersiveFullscreenMode(app_browser);
-  EXPECT_TRUE(app_browser->window()->IsFullscreen());
-  EXPECT_FALSE(app_browser->window()->IsMaximized());
+  EXPECT_TRUE(app_browser->GetWindow()->IsFullscreen());
+  EXPECT_FALSE(app_browser->GetWindow()->IsMaximized());
   EXPECT_FALSE(app_view->GetTabStripVisible());
   EXPECT_FALSE(immersive_mode_controller->IsRevealed());
 
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   event_generator.ClickLeftButton();
   ImmersiveModeTester(app_browser).WaitForFullscreenToExit();
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
-  EXPECT_FALSE(app_browser->window()->IsFullscreen());
+  EXPECT_FALSE(app_browser->GetWindow()->IsFullscreen());
 }
 
 // Regression test for crbug.com/40555351.  Make sure that going from regular
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
 
   EXPECT_TRUE(browser_view->GetSupportsTabStrip());
 
-  EXPECT_FALSE(browser()->window()->IsFullscreen());
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
   EXPECT_FALSE(immersive_mode_controller->IsRevealed());
 
@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewVerticalTabsTest,
 
     EXPECT_TRUE(browser_view->GetSupportsTabStrip());
 
-    EXPECT_FALSE(test_browser->window()->IsFullscreen());
+    EXPECT_FALSE(test_browser->GetWindow()->IsFullscreen());
     EXPECT_FALSE(immersive_mode_controller->IsEnabled());
     EXPECT_FALSE(immersive_mode_controller->IsRevealed());
 

@@ -883,7 +883,7 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
 
   void UpdateFullScreenButton() {
     const bool is_fullscreen = menu()->browser_->window() &&
-                               menu()->browser_->window()->IsFullscreen();
+                               menu()->browser_->GetWindow()->IsFullscreen();
     const bool can_fullscreen = menu()
                                     ->browser_->browser_window_features()
                                     ->exclusive_access_manager()

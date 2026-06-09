@@ -1674,14 +1674,14 @@ TEST_F(MultiUserWindowManagerBrowserAdaptorTest, GetActiveBrowser) {
   // Manually set last active browser in BrowserList for testing.
   ui_test_utils::DeprecatedFakeActivateBrowser(browser.get());
   EXPECT_EQ(browser.get(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
-  EXPECT_TRUE(browser->window()->IsActive());
+  EXPECT_TRUE(browser->GetWindow()->IsActive());
   EXPECT_EQ(browser.get(),
             GlobalBrowserCollection::GetInstance()->GetActiveBrowser());
 
   // Switch to another user's desktop with no active window.
   SwitchActiveUser(kAccountIdB);
   EXPECT_EQ(browser.get(), GetLastActiveBrowserWindowInterfaceWithAnyProfile());
-  EXPECT_FALSE(browser->window()->IsActive());
+  EXPECT_FALSE(browser->GetWindow()->IsActive());
   EXPECT_EQ(nullptr,
             GlobalBrowserCollection::GetInstance()->GetActiveBrowser());
 }

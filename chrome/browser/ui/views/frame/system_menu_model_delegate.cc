@@ -99,7 +99,7 @@ bool SystemMenuModelDelegate::IsCommandIdEnabled(int command_id) const {
 
 bool SystemMenuModelDelegate::IsCommandIdVisible(int command_id) const {
 #if BUILDFLAG(IS_LINUX)
-  bool is_maximized = browser_->window()->IsMaximized();
+  bool is_maximized = browser_->GetWindow()->IsMaximized();
   switch (command_id) {
     case IDC_MAXIMIZE_WINDOW:
       return !is_maximized;

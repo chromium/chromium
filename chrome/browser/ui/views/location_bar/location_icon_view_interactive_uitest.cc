@@ -49,7 +49,7 @@ class LocationIconViewTest : public InProcessBrowserTest {
 
 #if BUILDFLAG(IS_MAC)
   void EnterFullscreenMode() {
-    bool initial_fullscreen = browser()->window()->IsFullscreen();
+    bool initial_fullscreen = browser()->GetWindow()->IsFullscreen();
     EXPECT_FALSE(initial_fullscreen);
 
     auto* fullscreen_controller =
@@ -58,7 +58,7 @@ class LocationIconViewTest : public InProcessBrowserTest {
 
     // Wait for fullscreen transition.
     ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
-      return browser()->window()->IsFullscreen();
+      return browser()->GetWindow()->IsFullscreen();
     })) << "Failed to enter fullscreen mode";
   }
 
@@ -76,7 +76,7 @@ class LocationIconViewTest : public InProcessBrowserTest {
   }
 
   void ExitFullscreenMode() {
-    bool initial_fullscreen = browser()->window()->IsFullscreen();
+    bool initial_fullscreen = browser()->GetWindow()->IsFullscreen();
     EXPECT_TRUE(initial_fullscreen);
 
     auto* fullscreen_controller =
@@ -85,7 +85,7 @@ class LocationIconViewTest : public InProcessBrowserTest {
 
     // Wait for fullscreen exit.
     ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
-      return !browser()->window()->IsFullscreen();
+      return !browser()->GetWindow()->IsFullscreen();
     })) << "Failed to exit fullscreen mode";
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(LocationIconViewTest,
   ExitFullscreenMode();
 
   // Expect no crash and fullscreen to be exited.
-  EXPECT_FALSE(browser()->window()->IsFullscreen());
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
 }
 #endif  // BUILDFLAG(IS_MAC)
 

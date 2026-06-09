@@ -215,7 +215,7 @@ WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
   }
   raw_web_contents->Resize(gfx::Rect(size));
 
-  const bool initially_hidden = !select || browser->window()->IsMinimized();
+  const bool initially_hidden = !select || browser->GetWindow()->IsMinimized();
   if (initially_hidden) {
     raw_web_contents->WasHidden();
   } else {
@@ -280,7 +280,7 @@ WebContents* AddRestoredTab(
     const std::map<std::string, std::string>& extra_data,
     bool from_session_restore,
     std::optional<bool> is_active_browser) {
-  const bool initially_hidden = !select || browser->window()->IsMinimized();
+  const bool initially_hidden = !select || browser->GetWindow()->IsMinimized();
   std::unique_ptr<WebContents> web_contents = CreateRestoredTab(
       browser, navigations, selected_navigation, extension_app_id,
       last_active_time_ticks, last_active_time, session_storage_namespace,

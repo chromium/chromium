@@ -170,7 +170,7 @@ class StartupPageTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(StartupPageTest, StartupPageFocus) {
   // Browser window should be active.
-  EXPECT_TRUE(browser()->window()->IsActive());
+  EXPECT_TRUE(browser()->GetWindow()->IsActive());
 
   // Focus should land in the content area.
   content::WebContents* contents =

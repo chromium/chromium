@@ -223,7 +223,7 @@ void PermissionPromptBubbleBaseView::CreateWidget() {
 void PermissionPromptBubbleBaseView::ShowWidget() {
   // If a browser window (or popup) other than the bubble parent has focus,
   // don't take focus.
-  if (browser()->window()->IsActive()) {
+  if (browser()->GetWindow()->IsActive()) {
     GetWidget()->Show();
   } else {
     GetWidget()->ShowInactive();

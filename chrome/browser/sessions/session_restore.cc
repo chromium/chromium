@@ -1369,7 +1369,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
     // the window, and then asynchronously deleting it.
     return browser_ && browser_->is_type_normal() &&
            !browser_->profile()->IsOffTheRecord() &&
-           browser_->window()->IsVisible();
+           browser_->GetWindow()->IsVisible();
   }
 
   // The profile to create the sessions for.

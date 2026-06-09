@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(ForceMaximizeOnFirstRunTest, TwoRuns) {
 
   const Browser* const browser = OpenNewBrowserWindow();
   ASSERT_TRUE(browser);
-  EXPECT_FALSE(browser->window()->IsMaximized());
+  EXPECT_FALSE(browser->GetWindow()->IsMaximized());
 }
 
 class ForceMaximizePolicyFalseTest : public ForceMaximizeOnFirstRunTest {

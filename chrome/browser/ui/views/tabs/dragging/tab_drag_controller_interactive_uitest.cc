@@ -2070,8 +2070,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(GetIsDragged(browser2));
 
   // Both windows should not be maximized
-  EXPECT_FALSE(browser()->window()->IsMaximized());
-  EXPECT_FALSE(browser2->window()->IsMaximized());
+  EXPECT_FALSE(browser()->GetWindow()->IsMaximized());
+  EXPECT_FALSE(browser2->GetWindow()->IsMaximized());
 
   // The tab strip should no longer have capture because the drag was ended and
   // mouse/touch was released.
@@ -3002,7 +3002,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
     auto waiter = ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser());
     browser()->window()->Maximize();
     ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return browser()->window()->IsMaximized(); }));
+        [&]() { return browser()->GetWindow()->IsMaximized(); }));
     waiter.Wait();
   }
 
@@ -3310,7 +3310,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
             dragged_tab.Get()->GetBrowserWindowInterface()->GetTabStripModel());
 
   // Remaining browser window should not be maximized
-  EXPECT_FALSE(browser()->window()->IsMaximized());
+  EXPECT_FALSE(browser()->GetWindow()->IsMaximized());
 
   // The tab strip should no longer have capture because the drag was ended and
   // mouse/touch was released.
@@ -3535,7 +3535,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, MAYBE_DragAll) {
   EXPECT_FALSE(GetIsDragged(browser()));
 
   // Remaining browser window should not be maximized
-  EXPECT_FALSE(browser()->window()->IsMaximized());
+  EXPECT_FALSE(browser()->GetWindow()->IsMaximized());
 
   const gfx::Rect final_bounds = browser()->window()->GetBounds();
 
@@ -3560,7 +3560,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragSingleTabInFullscreenDoesNotMoveWindow) {
   // Enter fullscreen and wait for the transition to complete.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
-  ASSERT_TRUE(browser()->window()->IsFullscreen());
+  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
@@ -3586,7 +3586,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // The window should still be in fullscreen.
-  EXPECT_TRUE(browser()->window()->IsFullscreen());
+  EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
 
   // The window bounds should not have changed.
   EXPECT_EQ(initial_bounds, browser()->window()->GetBounds());
@@ -3626,7 +3626,7 @@ IN_PROC_BROWSER_TEST_P(VerticalTabsFullscreenDragTest,
 
   // Enter fullscreen and wait for the transition to complete.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
-  ASSERT_TRUE(browser()->window()->IsFullscreen());
+  ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
 
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
@@ -3664,7 +3664,7 @@ IN_PROC_BROWSER_TEST_P(VerticalTabsFullscreenDragTest,
       base::test::RunUntil([&]() { return !TabDragController::IsActive(); }));
 
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
-  EXPECT_FALSE(browser()->window()->IsFullscreen());
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
 
@@ -3838,7 +3838,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(GetIsDragged(browser2));
 
   // Remaining browser window should not be maximized
-  EXPECT_FALSE(browser2->window()->IsMaximized());
+  EXPECT_FALSE(browser2->GetWindow()->IsMaximized());
 }
 
 // Based on DragAllToSeparateWindow, which is flaky.
@@ -4918,7 +4918,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(GetIsDragged(browser2));
 
   // Remaining browser window should not be maximized
-  EXPECT_FALSE(browser2->window()->IsMaximized());
+  EXPECT_FALSE(browser2->GetWindow()->IsMaximized());
 }
 
 #if BUILDFLAG(IS_MAC) /* && defined(ARCH_CPU_ARM64) */
@@ -4975,7 +4975,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(GetIsDragged(target_browser));
 
   // Remaining browser window should not be maximized
-  EXPECT_FALSE(target_browser->window()->IsMaximized());
+  EXPECT_FALSE(target_browser->GetWindow()->IsMaximized());
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
@@ -5096,7 +5096,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(GetIsDragged(browser2));
 
   // Remaining browser window should not be maximized
-  EXPECT_FALSE(browser2->window()->IsMaximized());
+  EXPECT_FALSE(browser2->GetWindow()->IsMaximized());
 }
 
 #if !BUILDFLAG(IS_MAC)
@@ -5306,7 +5306,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
     browser()->window()->Maximize();
     waiter.Wait();
   }
-  ASSERT_TRUE(browser()->window()->IsMaximized());
+  ASSERT_TRUE(browser()->GetWindow()->IsMaximized());
   AddTabsAndResetBrowser(browser(), 1);
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -5822,8 +5822,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   EXPECT_EQ("1", IDString(browser()->tab_strip_model()));
 
   // Both windows should not be maximized
-  EXPECT_FALSE(browser()->window()->IsMaximized());
-  EXPECT_FALSE(browser2->window()->IsMaximized());
+  EXPECT_FALSE(browser()->GetWindow()->IsMaximized());
+  EXPECT_FALSE(browser2->GetWindow()->IsMaximized());
 }
 
 // Disabling test failing on ChromeOS. crbug.com/40647142
@@ -5965,8 +5965,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   EXPECT_EQ("1", IDString(browser()->tab_strip_model()));
 
   // Both windows should not be maximized
-  EXPECT_FALSE(browser()->window()->IsMaximized());
-  EXPECT_FALSE(browser2->window()->IsMaximized());
+  EXPECT_FALSE(browser()->GetWindow()->IsMaximized());
+  EXPECT_FALSE(browser2->GetWindow()->IsMaximized());
 }
 
 // Drags from a maximized browser to another non-maximized browser on a second
@@ -6036,8 +6036,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   EXPECT_EQ("1", IDString(browser()->tab_strip_model()));
 
   // Source browser should still be maximized, target should not
-  EXPECT_TRUE(browser()->window()->IsMaximized());
-  EXPECT_FALSE(browser2->window()->IsMaximized());
+  EXPECT_TRUE(browser()->GetWindow()->IsMaximized());
+  EXPECT_FALSE(browser2->GetWindow()->IsMaximized());
 }
 
 // Drags from a restored browser to an immersive fullscreen browser on a
@@ -6542,8 +6542,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
 
   ASSERT_FALSE(IsDragSessionActive(tab_strip));
   ASSERT_FALSE(TabDragController::IsActive());
-  EXPECT_TRUE(browser()->window()->IsMinimized());
-  EXPECT_FALSE(browser()->window()->IsVisible());
+  EXPECT_TRUE(browser()->GetWindow()->IsMinimized());
+  EXPECT_FALSE(browser()->GetWindow()->IsVisible());
 }
 
 // TODO(http://crbug.com/343503164) This test seems to be attempting to induce a

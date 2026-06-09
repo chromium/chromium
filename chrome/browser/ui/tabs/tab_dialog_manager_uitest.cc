@@ -197,11 +197,11 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerDesktopWidgetUiTest,
       // Check that the browser window is active and the dialog is not.
       WaitForState(views::test::kCurrentWidgetFocus, std::ref(browser_widget)));
 
-  EXPECT_TRUE(browser()->window()->IsActive());
+  EXPECT_TRUE(browser()->GetWindow()->IsActive());
   EXPECT_FALSE(widget->IsActive());
   // Ensures that the tab modal is not asynchronously activated.
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(browser()->window()->IsActive());
+  EXPECT_TRUE(browser()->GetWindow()->IsActive());
   EXPECT_FALSE(widget->IsActive());
 }
 #endif  // BUILDFLAG(!IS_CHROMEOS)
@@ -226,9 +226,9 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerUiTest, DoesNotActivateInactiveWindow) {
           [&]() {
             return BrowserView::GetBrowserViewForBrowser(browser2)->GetWidget();
           }),
-      Check([&]() { return browser2->window()->IsActive(); },
+      Check([&]() { return browser2->GetWindow()->IsActive(); },
             "browser2 active"),
-      Check([&]() { return !browser()->window()->IsActive(); },
+      Check([&]() { return !browser()->GetWindow()->IsActive(); },
             "browser inactive"),
 
       // 2. Open a dialog in the first (inactive) browser window.
@@ -237,8 +237,8 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerUiTest, DoesNotActivateInactiveWindow) {
       WaitForShow(kDialogViewId));
 
   // 3. Ensure the first browser window is still inactive.
-  EXPECT_FALSE(browser()->window()->IsActive());
-  EXPECT_TRUE(browser2->window()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
 }
 
 }  // namespace tabs

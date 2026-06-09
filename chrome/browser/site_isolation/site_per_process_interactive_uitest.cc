@@ -1200,7 +1200,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   }
 
   // Verify that the browser has entered fullscreen for the current tab.
-  EXPECT_TRUE(browser()->window()->IsFullscreen());
+  EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
   EXPECT_TRUE(web_contents->IsFullscreen());
 
   // Verify that the <div> has fullscreen style (:-webkit-full-screen) in the
@@ -1232,7 +1232,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
     waiter.Wait();
   }
 
-  EXPECT_FALSE(browser()->window()->IsFullscreen());
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
 
   // Verify that the fullscreen styles were removed from the <div> and its
   // container <iframe>.
@@ -1296,7 +1296,7 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
   }
 
   // Verify that the browser has entered fullscreen for the current tab.
-  EXPECT_TRUE(browser()->window()->IsFullscreen());
+  EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
   EXPECT_TRUE(web_contents->IsFullscreen());
 
   // Verify that the <div> has fullscreen style in the bottom frame, and that
@@ -1333,7 +1333,7 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
     waiter.Wait();
   }
 
-  EXPECT_FALSE(browser()->window()->IsFullscreen());
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
 
   // Verify that the fullscreen styles were removed from the <div> and its
   // container <iframe>'s.
@@ -1454,7 +1454,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   }
 
   // Verify that the browser has entered fullscreen for the current tab.
-  EXPECT_TRUE(browser()->window()->IsFullscreen());
+  EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
   EXPECT_TRUE(web_contents->IsFullscreen());
 
   // Check document.webkitFullscreenElement.  It should point to corresponding
@@ -1492,7 +1492,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
     waiter.Wait();
   }
 
-  EXPECT_FALSE(browser()->window()->IsFullscreen());
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
 
   // Check that document.webkitFullscreenElement has been cleared in all
   // frames.

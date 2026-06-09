@@ -129,8 +129,8 @@ IN_PROC_BROWSER_TEST_P(KioskTest, CanOpenA11ySettings) {
   Browser* settings = OpenA11ySettings(
       CHECK_DEREF(user_manager::UserManager::Get()->GetActiveUser()));
   ASSERT_NE(settings, nullptr);
-  EXPECT_TRUE(settings->window()->IsActive());
-  EXPECT_TRUE(settings->window()->IsVisible());
+  EXPECT_TRUE(settings->GetWindow()->IsActive());
+  EXPECT_TRUE(settings->GetWindow()->IsVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(KioskTest, ExitsIfOnlySettingsWindowRemainsOpen) {

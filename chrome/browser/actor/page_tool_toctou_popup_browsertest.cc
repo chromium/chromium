@@ -101,7 +101,7 @@ class PageToolToctouPopupBypassTest : public ActorToolsTest {
     if (tab->GetBrowserWindowInterface()) {
       browser = tab->GetBrowserWindowInterface()->GetBrowserForMigrationOnly();
     }
-    if (browser && !browser->window()->IsFullscreen()) {
+    if (browser && !browser->GetWindow()->IsFullscreen()) {
       ui_test_utils::ToggleFullscreenModeAndWait(browser);
     }
 #endif

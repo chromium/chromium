@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, MultipleBrowsers) {
   ASSERT_TRUE(browser2);
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_NE(browser1->GetWindow(), browser2->window());
-  EXPECT_TRUE(browser2->window()->IsActive());
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
 
   const Extension* app = LoadAndLaunchPlatformApp("launch", "Launched");
   ui::BaseWindow* const app_window =
@@ -840,12 +840,12 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, MultipleBrowsers) {
   EXPECT_EQ(ash::STATUS_RUNNING, item.status);
 
   EXPECT_TRUE(app_window->IsActive());
-  EXPECT_FALSE(browser2->window()->IsActive());
+  EXPECT_FALSE(browser2->GetWindow()->IsActive());
 
   SelectItem(ash::ShelfID(app_constants::kChromeAppId));
 
   EXPECT_FALSE(app_window->IsActive());
-  EXPECT_TRUE(browser2->window()->IsActive());
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
 }
 
 IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest,
@@ -1375,11 +1375,11 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchMaximized) {
 
   // Activate the first browser window.
   browser()->GetWindow()->Activate();
-  EXPECT_FALSE(browser2->window()->IsActive());
+  EXPECT_FALSE(browser2->GetWindow()->IsActive());
 
   // Selecting the shortcut activates the second window.
   SelectItem(shortcut_id);
-  EXPECT_TRUE(browser2->window()->IsActive());
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
 }
 
 // Launching the same app multiple times should launch a copy for each call.
@@ -2038,13 +2038,13 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
 
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_NE(browser1->GetWindow(), browser2->window());
-  EXPECT_TRUE(browser2->window()->IsActive());
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
 
   // Activate multiple times the switcher to see that the windows get activated.
   SelectItem(browser_id, ui::EventType::kKeyReleased);
   EXPECT_TRUE(browser1->GetWindow()->IsActive());
   SelectItem(browser_id, ui::EventType::kKeyReleased);
-  EXPECT_TRUE(browser2->window()->IsActive());
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
 
   // Create a third browser - make sure that we do not toggle simply between
   // two windows.
@@ -2053,14 +2053,14 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   EXPECT_EQ(3u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_NE(browser1->GetWindow(), browser3->GetWindow());
   EXPECT_NE(browser2->window(), browser3->window());
-  EXPECT_TRUE(browser3->window()->IsActive());
+  EXPECT_TRUE(browser3->GetWindow()->IsActive());
 
   SelectItem(browser_id, ui::EventType::kKeyReleased);
   EXPECT_TRUE(browser1->GetWindow()->IsActive());
   SelectItem(browser_id, ui::EventType::kKeyReleased);
-  EXPECT_TRUE(browser2->window()->IsActive());
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
   SelectItem(browser_id, ui::EventType::kKeyReleased);
-  EXPECT_TRUE(browser3->window()->IsActive());
+  EXPECT_TRUE(browser3->GetWindow()->IsActive());
   SelectItem(browser_id, ui::EventType::kKeyReleased);
   EXPECT_TRUE(browser1->GetWindow()->IsActive());
 
@@ -2069,7 +2069,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
                          apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                                              false /* prefer_containner */));
   EXPECT_FALSE(browser1->GetWindow()->IsActive());
-  EXPECT_FALSE(browser2->window()->IsActive());
+  EXPECT_FALSE(browser2->GetWindow()->IsActive());
 
   // After activation our browser should be active again.
   SelectItem(browser_id, ui::EventType::kKeyReleased);
@@ -2104,7 +2104,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ActivateAfterSessionRestore) {
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser(),
             browser());
-  EXPECT_TRUE(browser()->window()->IsActive());
+  EXPECT_TRUE(browser()->GetWindow()->IsActive());
 
   // Now request to either activate an existing app or create a new one.
   SelectItem(shortcut_id);
@@ -2116,7 +2116,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ActivateAfterSessionRestore) {
   EXPECT_EQ(tab_count2, tab_strip2->count());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser(),
             browser2);
-  EXPECT_TRUE(browser2->window()->IsActive());
+  EXPECT_TRUE(browser2->GetWindow()->IsActive());
 }
 
 // TODO(crbug.com/40537353, crbug.com/40565961): add back

@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(PreferenceServiceTest, Test) {
               Optional(bounds.x() + bounds.width()));
 
   // Find if launched window is maximized.
-  bool is_window_maximized = browser()->window()->IsMaximized();
+  bool is_window_maximized = browser()->GetWindow()->IsMaximized();
   EXPECT_THAT(
       root_dict.FindBoolByDottedPath(kBrowserWindowPlacement + ".maximized"),
       Optional(is_window_maximized));

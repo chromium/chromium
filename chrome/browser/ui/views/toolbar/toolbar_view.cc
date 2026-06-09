@@ -1660,8 +1660,8 @@ void ToolbarView::LayoutCommon() {
   // Extend buttons to the window edge if we're either in a maximized or
   // fullscreen window. This makes the buttons easier to hit, see Fitts' law.
   const bool extend_buttons_to_edge =
-      browser_->window() &&
-      (browser_->window()->IsMaximized() || browser_->window()->IsFullscreen());
+      browser_->window() && (browser_->GetWindow()->IsMaximized() ||
+                             browser_->GetWindow()->IsFullscreen());
   const int margin = extend_buttons_to_edge ? interior_margin.left() : 0;
   if (features::IsWebUIBackForwardButtonEnabled()) {
     toolbar_webview_->SetBackButtonLeadingMargin(margin);

@@ -1264,7 +1264,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
   ASSERT_TRUE(new_controller);
   EXPECT_TRUE(error.empty());
   ui_test_utils::WaitForBrowserSetLastActive(new_controller->GetBrowser());
-  EXPECT_TRUE(new_controller->GetBrowser()->window()->IsFullscreen());
+  EXPECT_TRUE(new_controller->GetBrowser()->GetWindow()->IsFullscreen());
 
   // Let the message loop run so that |fake_fullscreen| finishes transition.
   content::RunAllPendingInMessageLoop();

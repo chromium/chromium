@@ -376,8 +376,8 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, MultiBrowser) {
 
   Browser* browser2 = CreateBrowser(browser()->profile());
   browser2->GetWindow()->Activate();
-  ASSERT_TRUE(browser2->window()->IsActive());
-  ASSERT_FALSE(browser()->window()->IsActive());
+  ASSERT_TRUE(browser2->GetWindow()->IsActive());
+  ASSERT_FALSE(browser()->GetWindow()->IsActive());
   AddTabs(browser2, 1);
 
   Scrub(browser2, 0, EACH_TAB);
@@ -586,8 +586,8 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, DisabledIfWindowCycleListOpen) {
   // Create a second browser, but don't make it active.
   Browser* browser2 = CreateBrowser(browser()->profile());
   browser()->GetWindow()->Activate();
-  ASSERT_FALSE(browser2->window()->IsActive());
-  ASSERT_TRUE(browser()->window()->IsActive());
+  ASSERT_FALSE(browser2->GetWindow()->IsActive());
+  ASSERT_TRUE(browser()->GetWindow()->IsActive());
 
   // Open window cycle list. It should be open now so tab scrubber should be
   // disabled.

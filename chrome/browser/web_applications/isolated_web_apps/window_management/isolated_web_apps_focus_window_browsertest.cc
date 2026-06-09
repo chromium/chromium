@@ -53,7 +53,7 @@ bool IsMainFrameFocused(Browser* browser) {
 }
 
 bool IsWindowActive(Browser* browser) {
-  return browser->window()->IsActive();
+  return browser->GetWindow()->IsActive();
 }
 
 // Struct to make test parameterization clearer than std::tuple.

@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopup) {
   EXPECT_NE(browser(), params.browser);
 #if 0
   // TODO(stevenjb): Enable this test. See: crbug.com/41360906
-  EXPECT_TRUE(browser->window()->IsActive());
+  EXPECT_TRUE(browser->GetWindow()->IsActive());
 #endif
   EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()->is_type_popup());
   EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()
@@ -672,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupUnfocused) {
                   ->IsToolbarVisible());
 #if 0
 // TODO(stevenjb): Enable this test. See: crbug.com/41360906
-  EXPECT_FALSE(p.browser->window()->IsActive());
+  EXPECT_FALSE(p.browser->GetWindow()->IsActive());
 #endif
 }
 

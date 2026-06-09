@@ -48,13 +48,13 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
   // Browsers are not listed in the menu if their windows have not been shown.
   Browser* browser1 =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
-  EXPECT_FALSE(browser1->window()->IsVisible());
+  EXPECT_FALSE(browser1->GetWindow()->IsVisible());
   EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(1U, GetAppMenuItems(controller, ui::EF_NONE).size());
 
   // Browsers shown with no active tab appear as "New Tab" without crashing.
   browser1->GetWindow()->Show();
-  EXPECT_TRUE(browser1->window()->IsVisible());
+  EXPECT_TRUE(browser1->GetWindow()->IsVisible());
   EXPECT_FALSE(browser1->tab_strip_model()->GetActiveWebContents());
   EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
   items = GetAppMenuItems(controller, ui::EF_NONE);

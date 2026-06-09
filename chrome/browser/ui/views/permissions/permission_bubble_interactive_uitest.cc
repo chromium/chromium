@@ -91,7 +91,7 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
                                     ->GetPrimaryMainFrame(),
                                 permissions::RequestType::kGeolocation);
 
-    EXPECT_TRUE(browser()->window()->IsActive());
+    EXPECT_TRUE(browser()->GetWindow()->IsActive());
 
     // The permission prompt is shown asynchronously.
     base::RunLoop().RunUntilIdle();
@@ -174,7 +174,7 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
 // window.
 IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest,
                        MAYBE_CmdWClosesWindow) {
-  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_TRUE(browser()->GetWindow()->IsVisible());
 
   // On Windows, the WM_NCDESTROY message triggering Widget destruction may not
   // have been processed by the time `SendAcceleratorSync` returns (only waits

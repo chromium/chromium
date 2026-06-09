@@ -120,15 +120,15 @@ bool BrowserDelegateImpl::IsClosing() const {
 }
 
 bool BrowserDelegateImpl::IsActive() const {
-  return browser_->window()->IsActive();
+  return browser_->GetWindow()->IsActive();
 }
 
 bool BrowserDelegateImpl::IsMinimized() const {
-  return browser_->window()->IsMinimized();
+  return browser_->GetWindow()->IsMinimized();
 }
 
 bool BrowserDelegateImpl::IsVisible() const {
-  return browser_->window()->IsVisible();
+  return browser_->GetWindow()->IsVisible();
 }
 
 void BrowserDelegateImpl::Show() {

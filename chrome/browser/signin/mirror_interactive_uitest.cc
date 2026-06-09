@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, BackgroundResponseIgnored) {
   // Minimize the browser window to disactivate it.
   browser()->window()->Minimize();
   ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser()));
-  EXPECT_FALSE(browser()->window()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
 
   size_t browser_count = GlobalBrowserCollection::GetInstance()->GetSize();
   GURL url = GetUrlWithManageAccountsHeader({{"action", "INCOGNITO"}});

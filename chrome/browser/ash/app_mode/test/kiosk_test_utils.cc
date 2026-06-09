@@ -98,7 +98,7 @@ class SessionInitializedWaiter : public KioskAppManagerObserver {
 class TestBrowserHiddenWaiter : public views::WidgetObserver {
  public:
   explicit TestBrowserHiddenWaiter(Browser* browser) {
-    EXPECT_TRUE(browser->window()->IsVisible());
+    EXPECT_TRUE(browser->GetWindow()->IsVisible());
     widget_observation_.Observe(browser->GetBrowserView().GetWidget());
   }
 

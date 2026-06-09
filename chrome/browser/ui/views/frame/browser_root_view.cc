@@ -608,7 +608,7 @@ void BrowserRootView::NavigateToDroppedUrls(
   TabStripModel* const model = browser->tab_strip_model();
 
   // If the browser window is not visible, it's about to be destroyed.
-  if (!browser->window()->IsVisible() || model->empty()) {
+  if (!browser->GetWindow()->IsVisible() || model->empty()) {
     return;
   }
 

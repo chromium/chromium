@@ -690,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
   ASSERT_TRUE(search_controller->FindSearchResult(app_result_id));
 
   // Expect that the browser window is not minimized.
-  ASSERT_FALSE(browser()->window()->IsMinimized());
+  ASSERT_FALSE(browser()->GetWindow()->IsMinimized());
 
   // Open the app result.
   base::HistogramTester histogram_tester;

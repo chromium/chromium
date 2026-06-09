@@ -1266,8 +1266,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, BrowserWindowRestorationTest) {
 
   EXPECT_EQ(browser_bounds_1, window_1->bounds());
   EXPECT_EQ(browser_bounds_2, window_2->bounds());
-  ASSERT_TRUE(browser_2->window()->IsMinimized());
-  ASSERT_TRUE(browser_3->window()->IsMaximized());
+  ASSERT_TRUE(browser_2->GetWindow()->IsMinimized());
+  ASSERT_TRUE(browser_3->GetWindow()->IsMaximized());
 
   // Capture the active desk, which contains the two browser windows.
   std::unique_ptr<ash::DeskTemplate> desk_template =
@@ -1984,8 +1984,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBrowserWindowRestorationTest) {
 
   EXPECT_EQ(browser_bounds_1, window_1->bounds());
   EXPECT_EQ(browser_bounds_2, window_2->bounds());
-  ASSERT_TRUE(browser_2->window()->IsMinimized());
-  ASSERT_TRUE(browser_3->window()->IsMaximized());
+  ASSERT_TRUE(browser_2->GetWindow()->IsMinimized());
+  ASSERT_TRUE(browser_3->GetWindow()->IsMaximized());
 
   // Capture the active desk, which contains the three browser windows.
   ash::ToggleOverview();

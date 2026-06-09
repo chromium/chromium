@@ -1064,7 +1064,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
         // again.
         Browser* focused_window = CreateBrowser(browser()->profile());
         ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(focused_window));
-        ASSERT_FALSE(browser()->window()->IsActive());
+        ASSERT_FALSE(browser()->GetWindow()->IsActive());
 
         ui_test_utils::BrowserActivationWaiter waiter(browser());
         browser()->GetWindow()->Activate();

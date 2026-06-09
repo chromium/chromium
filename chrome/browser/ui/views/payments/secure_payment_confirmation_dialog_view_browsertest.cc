@@ -80,7 +80,7 @@ class SecurePaymentConfirmationDialogViewTest
     // active here and could check that |IsBrowserWindowActivate()| returned
     // true, but on wayland, windows cannot be activated as they are on other
     // platforms.
-    EXPECT_EQ(browser()->window()->IsActive(),
+    EXPECT_EQ(browser()->GetWindow()->IsActive(),
               test_delegate_->IsBrowserWindowActive());
 
     test_delegate_->ShowDialog(nullptr);

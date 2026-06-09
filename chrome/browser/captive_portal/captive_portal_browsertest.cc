@@ -3362,12 +3362,12 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, MAYBE_SecureDnsCaptivePortal) {
   // open.
   Browser* second_user_browser = CreateBrowser(browser()->profile());
   // Check that new window is visible.
-  EXPECT_TRUE(second_user_browser->window()->IsVisible());
+  EXPECT_TRUE(second_user_browser->GetWindow()->IsVisible());
   SlowLoadBehindCaptivePortal(second_user_browser,
                               false /* expect_open_login_tab */,
                               false /* expect_new_login_browser */);
   // Check that the existing captive portal popup is visible.
-  EXPECT_TRUE(login_browser->window()->IsVisible());
+  EXPECT_TRUE(login_browser->GetWindow()->IsVisible());
 
   // Login to the captive portal.
   Login(login_browser, 2 /* num_loading_tabs */, 0 /* num_timed_out_tabs */,

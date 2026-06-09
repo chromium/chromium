@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorLocationMetricsUiTest,
   RunTestSequence(OpenGlicFloatingWindow());
   browser()->window()->Minimize();
   ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser()));
-  EXPECT_FALSE(browser()->window()->IsActive());
+  EXPECT_FALSE(browser()->GetWindow()->IsActive());
   RunTestSequence(CloseGlicWindow());
   tester.ExpectBucketCount("Glic.PositionOnChrome.OnClose",
                            ChromeRelativePosition::kNoVisibleChromeBrowser, 1);
