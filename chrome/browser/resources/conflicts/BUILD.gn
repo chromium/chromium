@@ -14,10 +14,13 @@ build_webui("build") {
     "warning.svg",
   ]
 
-  ts_files = [ "about_conflicts.ts" ]
+  ts_files = [
+    "about_conflicts.ts",
+    "about_conflicts.html.ts",
+  ]
 
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 

@@ -135,10 +135,6 @@ ts_library("library") {
     "//ui/webui/resources/cr_elements:build_ts",
   ]
 
-  if (is_win) {
-    visibility += [ "//chrome/browser/resources/conflicts:build_ts" ]
-  }
-
   if (is_chromeos) {
     visibility += [
       "//ash/webui/*",

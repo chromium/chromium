@@ -40,6 +40,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/color_pipeline_internals:build_ts",
     "//chrome/browser/resources/components:build_ts",
     "//chrome/browser/resources/compose:build_ts",
+    "//chrome/browser/resources/conflicts:build_ts",
     "//chrome/browser/resources/content_annotator_internals:build_ts",
     "//chrome/browser/resources/context_hub:build_ts",
     "//chrome/browser/resources/contextual_tasks:build_ts",

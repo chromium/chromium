@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assert} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
+import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-interface ModuleData {
+import {getHtml} from './about_conflicts.html.js';
+
+export interface ModuleData {
   code_id: string;
   description: string;
   digital_signer: string;
@@ -19,25 +19,10 @@ interface ModuleData {
   version: string;
 }
 
-interface ModuleListData {
+export interface ModuleListData {
   moduleCount: number;
   moduleList: ModuleData[];
   hasModules: boolean;
-}
-
-type DomBindElement = HTMLElement&{data: ModuleListData};
-
-/**
- * Takes the |moduleListData| input argument which represents data about
- * the currently available modules and populates the HTML template
- * with that data. It expects an object structure like the above.
- */
-function renderTemplate(moduleListData: ModuleListData) {
-  const bind = document.body.querySelector<DomBindElement>('dom-bind');
-  assert(bind);
-
-  moduleListData.hasModules = moduleListData.moduleList.length > 0;
-  bind.data = moduleListData;
 }
 
 /**
@@ -61,7 +46,9 @@ function filterModuleListData() {
  * current state of installed modules.
  */
 function returnModuleList(moduleListData: ModuleListData) {
-  renderTemplate(moduleListData);
+  const container = getRequiredElement('modules-container');
+  render(getHtml(moduleListData), container);
+
   if (window.location.hash.length > 1) {
     filterModuleListData();
   }
