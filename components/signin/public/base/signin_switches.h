@@ -379,7 +379,6 @@ extern const base::FeatureParam<base::TimeDelta>
     kPolicyDisclaimerRegistrationRetryDelay;
 #endif
 
-
 // Feature flag to fetch AccountInfo (UserInfo & Capabilities) on restart.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kFetchAccountInfoOnRestart);
