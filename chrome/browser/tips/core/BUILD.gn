@@ -1,0 +1,38 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("core") {
+  sources = [
+    "tips_prefs.cc",
+    "tips_prefs.h",
+    "tips_service.cc",
+    "tips_service.h",
+    "tips_utils.cc",
+    "tips_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/notifications/scheduler/public",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tips_utils_unittest.cc" ]
+  deps = [
+    ":core",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/notifications/scheduler/public",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

@@ -109,6 +109,7 @@ source_set("impl") {
     "//chrome/browser/subscription_eligibility",
     "//chrome/browser/sync",
     "//chrome/browser/task_manager",
+    "//chrome/browser/tips/core",
     "//chrome/browser/tracing",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/prefs",

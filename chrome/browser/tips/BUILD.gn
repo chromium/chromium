@@ -1,0 +1,17 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("tips") {
+  sources = [
+    "tips_service_factory.cc",
+    "tips_service_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/tips/core",
+    "//components/keyed_service/core",
+  ]
+}

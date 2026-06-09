@@ -11,7 +11,7 @@
 #include "chrome/browser/notifications/scheduler/internal/stats.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
 #include "chrome/browser/notifications/scheduler/public/tips_agent.h"
-#include "chrome/browser/notifications/scheduler/public/tips_utils.h"
+#include "chrome/browser/tips/core/tips_utils.h"
 
 namespace notifications {
 

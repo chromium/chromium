@@ -729,6 +729,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/supervised_user",
     "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/tips",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/autofill",

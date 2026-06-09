@@ -9,7 +9,7 @@
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_client.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
 #include "chrome/browser/notifications/scheduler/public/tips_agent.h"
-#include "chrome/browser/notifications/scheduler/public/tips_prefs.h"
+#include "chrome/browser/tips/core/tips_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"

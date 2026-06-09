@@ -37,6 +37,7 @@ source_set("impl") {
     "//chrome/browser/notifications/scheduler/public",
     "//chrome/browser/profiles",
     "//chrome/browser/resources/notifications_internals:resources_grit",
+    "//chrome/browser/tips/core",
     "//content/public/browser",
     "//ui/webui",
   ]

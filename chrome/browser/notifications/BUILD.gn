@@ -242,6 +242,7 @@ source_set("impl") {
       "//chrome/browser/notifications/chime/android",
       "//chrome/browser/notifications/scheduler/public",
       "//chrome/browser/segmentation_platform",
+      "//chrome/browser/tips/core",
       "//chrome/browser/webapps/installable:android",
       "//components/browser_ui/notifications/android",
     ]
