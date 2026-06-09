@@ -46,6 +46,10 @@ namespace ui {
 class RecyclableCompositorMac;
 }  // namespace ui
 
+namespace views::test {
+class BridgedNativeWidgetTestApi;
+}  // namespace views::test
+
 namespace views {
 
 class ImmersiveModeRevealClient;
@@ -292,6 +296,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
  private:
   friend class TextInputHost;
+  friend class views::test::BridgedNativeWidgetTestApi;
 
   void UpdateCompositorProperties();
   void DestroyCompositor();

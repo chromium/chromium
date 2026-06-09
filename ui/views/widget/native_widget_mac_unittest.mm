@@ -44,6 +44,7 @@
 #import "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/cocoa/native_widget_mac_event_monitor.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -147,6 +148,17 @@ class BridgedNativeWidgetTestApi {
   remote_cocoa::NativeWidgetNSWindowBridge* bridge() { return &*bridge_; }
   void set_wants_to_be_visible(bool visible) {
     bridge_->wants_to_be_visible_ = visible;
+  }
+
+  static std::unique_ptr<remote_cocoa::NativeWidgetNSWindowBridge>
+  TakeInProcessBridge(NativeWidgetMacNSWindowHost* host) {
+    return std::move(host->in_process_ns_window_bridge_);
+  }
+
+  static void RestoreInProcessBridge(
+      NativeWidgetMacNSWindowHost* host,
+      std::unique_ptr<remote_cocoa::NativeWidgetNSWindowBridge> bridge) {
+    host->in_process_ns_window_bridge_ = std::move(bridge);
   }
 
  private:
@@ -2771,6 +2783,46 @@ TEST_F(NativeWidgetMacTest, CenterWindowClampsToScreen) {
       << " should be within screen bounds " << screen_bounds.ToString();
 
   parent->CloseNow();
+}
+
+namespace {
+
+class NoopEventMonitorClient : public NativeWidgetMacEventMonitor::Client {
+ public:
+  void NativeWidgetMacEventMonitorOnEvent(ui::Event*, bool, bool*) override {}
+};
+
+}  // namespace
+
+// Destroying an event monitor while the host's bridge is gone but the host is
+// still alive must not dereference the null mojo interface. This reproduces the
+// teardown window in ~NativeWidgetMacNSWindowHost where the bridge has been
+// cleared but weak_factory_ is still valid.
+TEST_F(NativeWidgetMacTest, RemoveEventMonitorAfterBridgeGone) {
+  Widget* widget = CreateTopLevelPlatformWidget();
+  widget->Show();
+  NativeWidgetMacNSWindowHost* host =
+      NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+          widget->GetNativeWindow());
+  ASSERT_TRUE(host);
+  ASSERT_TRUE(host->GetNSWindowMojo());
+
+  NoopEventMonitorClient client;
+  std::unique_ptr<NativeWidgetMacEventMonitor> monitor =
+      host->AddEventMonitor(&client);
+  ASSERT_TRUE(monitor);
+
+  auto bridge = BridgedNativeWidgetTestApi::TakeInProcessBridge(host);
+  ASSERT_FALSE(host->GetNSWindowMojo());
+
+  // Without the fix, this dereferences the null mojo interface in the monitor's
+  // remove closure.
+  monitor.reset();
+
+  // Restore the bridge so the host tears down normally.
+  BridgedNativeWidgetTestApi::RestoreInProcessBridge(host, std::move(bridge));
+  ASSERT_TRUE(host->GetNSWindowMojo());
+  widget->CloseNow();
 }
 
 }  // namespace views::test

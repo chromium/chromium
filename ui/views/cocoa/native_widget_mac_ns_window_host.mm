@@ -982,10 +982,13 @@ NativeWidgetMacNSWindowHost::AddEventMonitor(
     CHECK(found != weak_this->event_monitors_.end());
     weak_this->event_monitors_.erase(found);
 
-    // If this was the last monitor to be removed, disable the local
-    // event monitor.
+    // Disable the local event monitor when the last one is removed. The bridge
+    // may already be gone if this runs during host teardown, where the
+    // monitor's owner outlives the bridge.
     if (weak_this->event_monitors_.empty()) {
-      weak_this->GetNSWindowMojo()->SetLocalEventMonitorEnabled(false);
+      if (auto* mojo = weak_this->GetNSWindowMojo()) {
+        mojo->SetLocalEventMonitorEnabled(false);
+      }
     }
   };
   monitor->remove_closure_runner_.ReplaceClosure(
