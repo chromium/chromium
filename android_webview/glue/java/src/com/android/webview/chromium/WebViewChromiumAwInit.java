@@ -732,12 +732,23 @@ public class WebViewChromiumAwInit {
                     }
 
                     AwCrashyClassUtils.maybeCrashIfEnabled();
+                    // This must happen before `mStartupFinished.countDown()`. Otherwise, a method
+                    // called on the background thread that calls into the run queue would crash if
+                    // the run queue is not notified that Chromium has started. See b/520483584.
+                    // This must also happen before we set `mInitState` to `INIT_FINISHED`,
+                    // otherwise it's possible for the method call on the background thread to
+                    // happen at the same time that the UI thread is setting the state to
+                    // INIT_FINISHED, so the background thread may see that init is done, not block
+                    // on the latch and then call into `runOnUiThreadBlocking` before the run queue
+                    // has been notified, which would still crash.
+                    mFactory.getRunQueue().notifyChromiumStarted();
                     // Must happen right after Chromium initialization is complete.
                     mInitState.set(INIT_FINISHED);
                     mStartupFinished.countDown();
                     // This runs all the pending tasks queued for after Chromium init is
-                    // finished, so should run after `mInitState` is `INIT_FINISHED`.
-                    mFactory.getRunQueue().notifyChromiumStarted();
+                    // finished, so should run after `mInitState` is `INIT_FINISHED` and after
+                    // notifying the run queue.
+                    mFactory.getRunQueue().drainQueue();
                     if (mRunStartupTasksAsync) {
                         // Re-enables the taskrunners
                         PostTask.disablePreNativeUiTasks(false);
@@ -818,6 +829,7 @@ public class WebViewChromiumAwInit {
         mWebViewStartUpDiagnostics.setMaxTimePerTaskUiThreadChromiumInitMillis(
                 longestUiBlockingTaskTimeMs);
         mWebViewStartUpCallbackRunQueue.notifyChromiumStarted();
+        mWebViewStartUpCallbackRunQueue.drainQueue();
 
         // Record histograms
         String startupModeString =

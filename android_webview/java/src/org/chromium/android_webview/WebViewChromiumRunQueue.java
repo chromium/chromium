@@ -39,11 +39,16 @@ public class WebViewChromiumRunQueue {
     }
 
     /**
-     * Mark that Chromium has started and drain the queue, i.e. perform all the tasks in the queue.
+     * Mark that Chromium has started. This does not drain the queue, which must be done separately.
      */
     public void notifyChromiumStarted() {
         mChromiumStarted = true;
-        drainQueue();
+    }
+
+    /** Drain the queue, i.e. perform all the tasks in the queue. */
+    public void drainQueue() {
+        ThreadUtils.checkUiThread();
+        drainQueueInternal();
     }
 
     public <T> T runBlockingFuture(FutureTask<T> task) {
@@ -76,7 +81,7 @@ public class WebViewChromiumRunQueue {
         return runBlockingFuture(new FutureTask<T>(c));
     }
 
-    private void drainQueue() {
+    private void drainQueueInternal() {
         Runnable task = mQueue.poll();
         while (task != null) {
             task.run();
