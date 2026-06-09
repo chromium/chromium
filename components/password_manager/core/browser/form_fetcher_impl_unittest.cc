@@ -846,6 +846,37 @@ TEST_P(FormFetcherImplTest, DoNotTryToMigrateHTTPPasswordsOnNonHTMLForms) {
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
 }
 
+// Test that ensures HTTP passwords are not migrated on a backend error.
+TEST_P(FormFetcherImplTest, DoNotTryToMigrateHTTPPasswordsIfBackendError) {
+  GURL::Replacements https_rep;
+  https_rep.SetSchemeStr(url::kHttpsScheme);
+  const GURL https_url = form_digest_.url.ReplaceComponents(https_rep);
+  form_digest_ = PasswordFormDigest(PasswordForm::Scheme::kHtml,
+                                    https_url.DeprecatedGetOriginAsURL().spec(),
+                                    https_url);
+
+  // A new form fetcher is created to be able to set the form digest and
+  // migration flag.
+  form_fetcher_ = std::make_unique<FormFetcherImpl>(
+      form_digest_, &client_, true /* should_migrate_http_passwords */);
+  form_fetcher_->AddConsumer(&consumer_);
+
+  Fetch();
+  EXPECT_CALL(*profile_mock_store_, GetLogins(_, _)).Times(0);
+  EXPECT_CALL(*profile_mock_store_, AddLogin).Times(0);
+  EXPECT_CALL(consumer_, OnFetchCompleted);
+
+  DeliverPasswordStoreResults(
+      /*profile_store_results=*/PasswordStoreBackendError(
+          PasswordStoreBackendErrorType::kAuthErrorResolvable),
+      /*account_store_results=*/PasswordStoreBackendError(
+          PasswordStoreBackendErrorType::kAuthErrorResolvable));
+
+  EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(), IsEmpty());
+  EXPECT_THAT(form_fetcher_->GetFederatedMatches(), IsEmpty());
+  EXPECT_FALSE(form_fetcher_->IsBlocklisted());
+}
+
 // Test that ensures HTTP passwords are only migrated on HTTPS sites when no
 // HTTPS credentials are available.
 TEST_P(FormFetcherImplTest, TryToMigrateHTTPPasswordsOnHTTPSSites) {

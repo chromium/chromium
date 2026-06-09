@@ -377,6 +377,9 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
     }
   }
 
+  bool has_backend_error =
+      std::holds_alternative<PasswordStoreBackendError>(results_or_error);
+
   std::vector<StoredCredential> results =
       GetLoginsOrEmptyListOnFailure(std::move(results_or_error));
   if (filter_grouped_credentials_) {
@@ -407,7 +410,7 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
   DCHECK_EQ(State::WAITING, state_);
   DCHECK_GT(wait_counter_, 0);
 
-  if (should_migrate_http_passwords_ && results.empty() &&
+  if (should_migrate_http_passwords_ && results.empty() && !has_backend_error &&
       form_digest_.url.SchemeIs(url::kHttpsScheme)) {
     http_migrators_[store] = std::make_unique<HttpPasswordStoreMigrator>(
         url::Origin::Create(form_digest_.url), store,

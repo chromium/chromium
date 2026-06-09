@@ -96,12 +96,9 @@ void HttpPasswordStoreMigrator::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
     LoginsResultOrError results_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
-    got_password_store_results_ = true;
-    return;
+if (auto* logins = std::get_if<LoginsResult>(&results_or_error)) {
+    results_ = ToPasswordForms(std::move(*logins));
   }
-  results_ =
-      ToPasswordForms(std::get<LoginsResult>(std::move(results_or_error)));
   got_password_store_results_ = true;
 
   if (got_hsts_query_result_) {

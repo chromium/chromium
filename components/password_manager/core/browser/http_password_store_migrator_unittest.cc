@@ -128,6 +128,7 @@ class HttpPasswordStoreMigratorTest : public testing::Test {
   void TestEmptyStore(bool is_hsts);
   void TestFullStore(bool is_hsts);
   void TestMigratorDeletionByConsumer(bool is_hsts);
+  void TestMigratorReceivesBackendError(bool is_hsts);
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -239,6 +240,33 @@ void HttpPasswordStoreMigratorTest::TestMigratorDeletionByConsumer(
                                                  LoginsResultOrError());
 }
 
+void HttpPasswordStoreMigratorTest::TestMigratorReceivesBackendError(
+    bool is_hsts) {
+  PasswordFormDigest form_digest(CreateTestForm());
+  form_digest.url = form_digest.url.DeprecatedGetOriginAsURL();
+  EXPECT_CALL(store(), GetLogins(form_digest, _));
+  EXPECT_CALL(mock_network_context(), IsHSTSActiveForHost(kTestHost, _, _))
+      .Times(1)
+      .WillOnce(testing::WithArg<2>(
+          [is_hsts](auto cb) { std::move(cb).Run(is_hsts); }));
+
+  EXPECT_CALL(store(), GetSmartBubbleStatsStore)
+      .WillRepeatedly(Return(&smart_bubble_stats_store()));
+
+  EXPECT_CALL(smart_bubble_stats_store(),
+              RemoveSiteStats(GURL(kTestHttpURL).DeprecatedGetOriginAsURL()))
+      .Times(is_hsts);
+
+  HttpPasswordStoreMigrator migrator(url::Origin::Create(GURL(kTestHttpsURL)),
+                                     &store(), &mock_network_context(),
+                                     &consumer());
+
+  EXPECT_CALL(consumer(), ProcessMigratedForms(IsEmpty()));
+  PasswordStoreBackendError error_results = PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kAuthErrorResolvable);
+  migrator.OnGetPasswordStoreResultsOrErrorFrom(nullptr, error_results);
+}
+
 TEST_F(HttpPasswordStoreMigratorTest, EmptyStoreWithHSTS) {
   TestEmptyStore(true);
 }
@@ -261,6 +289,14 @@ TEST_F(HttpPasswordStoreMigratorTest, MigratorDeletionByConsumerWithHSTS) {
 
 TEST_F(HttpPasswordStoreMigratorTest, MigratorDeletionByConsumerWithoutHSTS) {
   TestMigratorDeletionByConsumer(false);
+}
+
+TEST_F(HttpPasswordStoreMigratorTest, MigratorReceivesBackendErrorWithHSTS) {
+  TestMigratorReceivesBackendError(true);
+}
+
+TEST_F(HttpPasswordStoreMigratorTest, MigratorReceivesBackendErrorWithoutHSTS) {
+  TestMigratorReceivesBackendError(false);
 }
 
 TEST(HttpPasswordStoreMigrator, MigrateHttpFormToHttpsTestSignonRealm) {
