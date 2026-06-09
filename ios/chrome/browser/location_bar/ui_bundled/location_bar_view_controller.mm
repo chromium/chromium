@@ -36,6 +36,8 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mutator.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_placeholder_type.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
+#import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
+#import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_offset_provider.h"
@@ -437,9 +439,10 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   [self updateTrailingButtonState];
   [self switchToEditing:NO];
 
-  [self registerForTraitChanges:
-            @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
-                     withAction:@selector(updateTrailingButtonState)];
+  [self
+      registerForTraitChanges:
+          @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
+                   withAction:@selector(updateTrailingButtonState)];
 
   [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
                      withAction:@selector(sizeClassDidChange)];
@@ -992,6 +995,17 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
     [menuElements addObjectsFromArray:suggestedActions];
   }
 
+  if ([self.delegate locationBarCanSendTabToSelf]) {
+    ActionFactory* actionFactory = [[ActionFactory alloc]
+        initWithScenario:kMenuScenarioHistogramToolbarMenu];
+    UIAction* sendTabAction = [actionFactory actionToSendTabToSelfWithBlock:^{
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf.delegate locationBarSendTabToSelfTapped];
+      });
+    }];
+    [menuElements addObject:sendTabAction];
+  }
+
   std::optional<std::set<ClipboardContentType>> clipboard_content_types =
       ClipboardRecentContent::GetInstance()->GetCachedClipboardContentTypes();
 
@@ -1170,6 +1184,16 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   [self.geminiHandler
       hideFloatyIfInvokedAnimated:YES
                        fromSource:gemini::FloatyUpdateSource::ContextMenu];
+}
+
+- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
+       willEndForConfiguration:(UIContextMenuConfiguration*)configuration
+                      animator:(id<UIContextMenuInteractionAnimating>)animator {
+  self.activeContextMenuAnimator = animator;
+  __weak LocationBarViewController* weakSelf = self;
+  [animator addCompletion:^{
+    weakSelf.activeContextMenuAnimator = nil;
+  }];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {

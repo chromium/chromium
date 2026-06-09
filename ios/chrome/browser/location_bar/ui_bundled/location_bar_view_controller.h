@@ -81,6 +81,13 @@ class Tracker;
 // Notifies the delegate about a tap on the Hide Toolbar context menu action.
 - (void)locationBarHideToolbarTapped;
 
+// Returns whether the location bar can send the current tab to other devices.
+- (BOOL)locationBarCanSendTabToSelf;
+
+// Notifies the delegate that the "Send to Your Devices" context menu item was
+// tapped.
+- (void)locationBarSendTabToSelfTapped;
+
 @end
 
 // The view controller displaying the location bar. Manages the two states of
@@ -109,6 +116,10 @@ class Tracker;
 
 // Delegate for this location bar view controller.
 @property(nonatomic, weak) id<LocationBarViewControllerDelegate> delegate;
+
+// The active context menu interaction animator, if any.
+@property(nonatomic, strong) id<UIContextMenuInteractionAnimating>
+    activeContextMenuAnimator;
 
 // Mutator for this location bar view controller.
 @property(nonatomic, weak) id<LocationBarMutator> mutator;

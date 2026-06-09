@@ -13,6 +13,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/omnibox/browser/test_location_bar_model.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
@@ -88,6 +89,7 @@ using variations::VariationsIdsProvider;
 @interface LocationBarCoordinator (Testing)
 - (BOOL)shouldShowAIHubNewFeatureBadge;
 - (void)locationBarDidTapAIHubNewBadge;
+- (web::WebState*)webState;
 @end
 
 namespace {
@@ -202,16 +204,15 @@ class LocationBarCoordinatorTest : public PlatformTest {
     [dispatcher startDispatchingToTarget:mock_bwg_handler
                              forProtocol:@protocol(BWGCommands)];
 
-    id mock_browser_coordinator_handler =
+    mock_browser_coordinator_handler_ =
         OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
-    [dispatcher startDispatchingToTarget:mock_browser_coordinator_handler
+    [dispatcher startDispatchingToTarget:mock_browser_coordinator_handler_
                              forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     delegate_ = [[TestOmniboxFocusDelegate alloc] init];
 
-    coordinator_ = [[LocationBarCoordinator alloc]
-
-        initWithBrowser:browser_.get()];
+    coordinator_ =
+        [[LocationBarCoordinator alloc] initWithBrowser:browser_.get()];
     coordinator_.delegate = delegate_;
   }
 
@@ -231,6 +232,7 @@ class LocationBarCoordinatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   TestOmniboxFocusDelegate* delegate_;
   SceneState* scene_state_;
+  id mock_browser_coordinator_handler_;
 };
 
 TEST_F(LocationBarCoordinatorTest, Stops) {
@@ -382,6 +384,73 @@ TEST_F(LocationBarCoordinatorTest, MultipleTriggersAIHubNewBadge) {
   [coordinator_ locationBarDidTapAIHubNewBadge];
 
   [coordinator_ stop];
+}
+
+// Test that locationBarCanSendTabToSelf returns NO when the feature flag is
+// disabled.
+TEST_F(LocationBarCoordinatorTest, CanSendTabToSelfDisabledByFeatureFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      send_tab_to_self::kSendTabToSelfExtraEntryPoints);
+
+  [coordinator_ start];
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetCurrentURL(GURL("http://test/"));
+
+  id partial_mock_coordinator = OCMPartialMock(coordinator_);
+  OCMStub([partial_mock_coordinator webState]).andReturn(fake_web_state.get());
+
+  EXPECT_FALSE([partial_mock_coordinator locationBarCanSendTabToSelf]);
+}
+
+// Test that locationBarCanSendTabToSelf returns NO when the feature flag is
+// enabled but there is no active web state or SendTabToSelfSyncService does not
+// offer it.
+TEST_F(LocationBarCoordinatorTest, CanSendTabToSelfNoService) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      send_tab_to_self::kSendTabToSelfExtraEntryPoints);
+
+  [coordinator_ start];
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetCurrentURL(GURL("chrome://newtab/"));
+
+  id partial_mock_coordinator = OCMPartialMock(coordinator_);
+  OCMStub([partial_mock_coordinator webState]).andReturn(fake_web_state.get());
+
+  // No SendTabToSelfSyncService is registered by default in TestProfileIOS, so
+  // it should return NO.
+  EXPECT_FALSE([partial_mock_coordinator locationBarCanSendTabToSelf]);
+}
+
+// Test that locationBarSendTabToSelfTapped triggers the browser coordinator
+// command to show the UI.
+TEST_F(LocationBarCoordinatorTest, SendTabToSelfTapped) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      send_tab_to_self::kSendTabToSelfExtraEntryPoints);
+
+  [coordinator_ start];
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetCurrentURL(GURL("http://test/"));
+  fake_web_state->SetTitle(u"Test Title");
+
+  id partial_mock_coordinator = OCMPartialMock(coordinator_);
+  OCMStub([partial_mock_coordinator webState]).andReturn(fake_web_state.get());
+
+  // Note: `ignoringNonObjectArgs` because OCMock cannot handle C++ references.
+  [[[mock_browser_coordinator_handler_ expect] ignoringNonObjectArgs]
+      showSendTabToSelfUI:GURL()
+                    title:@"Test Title"];
+
+  [partial_mock_coordinator locationBarSendTabToSelfTapped];
+
+  // `self` is needed by OCMVerifyAll macro in C++ tests.
+  id self = nil;
+  OCMVerifyAll(mock_browser_coordinator_handler_);
 }
 
 }  // namespace

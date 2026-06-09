@@ -581,4 +581,51 @@ ElementSelector* UsernameElement() {
                       grey_accessibilityID(kSendTabToSelfModalCancelButtonId)];
 }
 
+// Tests that long-pressing the defocused location view shows "Send to Your
+// Devices" and tapping it displays the device picker modal.
+- (void)testLongPressOmniboxToShowSendToYourDevices {
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+  // Disable EarlGrey's synchronization during sign-in because the concurrent
+  // sync/sign-in initialization triggers micro-animations and layouts on the
+  // Location Bar steady view, which makes EarlGrey's synchronization hang
+  // indefinitely on heavily-loaded bots when trying to subsequently interact
+  // with the defocused location view.
+  {
+    ScopedSynchronizationDisabler disabler;
+    [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  }
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(
+                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
+
+  // Long press the DefocusedLocationView.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_longPress()];
+
+  // Verify the "Send to Your Devices" menu item shows up.
+  id<GREYMatcher> sendToDevicesMenuItem =
+      chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+          IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
+  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the context menu item.
+  [[EarlGrey selectElementWithMatcher:sendToDevicesMenuItem]
+      performAction:grey_tap()];
+
+  // Verify that the device picker shows up.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       kTargetDeviceName)];
+
+  // Clean up.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSendTabToSelfModalCancelButtonId)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kSendTabToSelfModalCancelButtonId)];
+}
+
 @end
