@@ -1362,16 +1362,19 @@ void ContextualSearchboxHandler::SetSmartComposeStats(
   }
 }
 
-void ContextualSearchboxHandler::ShouldShowDriveDisclaimer(
-    ShouldShowDriveDisclaimerCallback callback) {
+void ContextualSearchboxHandler::GetDriveDisclaimerStatus(
+    GetDriveDisclaimerStatusCallback callback) {
   if (!base::FeatureList::IsEnabled(
           omnibox::kComposeboxDriveContextMenuOption)) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        searchbox::mojom::DriveDisclaimerStatus::kRestricted);
     return;
   }
   bool accepted = profile_->GetPrefs()->GetBoolean(
       contextual_search::kDriveDisclaimerAccepted);
-  std::move(callback).Run(!accepted);
+  std::move(callback).Run(
+      accepted ? searchbox::mojom::DriveDisclaimerStatus::kAccepted
+               : searchbox::mojom::DriveDisclaimerStatus::kNotAccepted);
 }
 
 void ContextualSearchboxHandler::OnDriveDisclaimerAccepted() {

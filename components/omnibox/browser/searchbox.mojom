@@ -263,6 +263,13 @@ enum DriveUploadError {
   kMaxFilesExceeded,
 };
 
+// The Google Drive picker disclaimer/consent status.
+enum DriveDisclaimerStatus {
+  kNotAccepted = 0,
+  kAccepted = 1,
+  kRestricted = 2,
+};
+
 // Information about a successfully processed Drive file.
 struct DriveFile {
   // The UnguessableToken acts as a secure, cross-process identifier. The WebUI
@@ -453,8 +460,8 @@ interface PageHandler {
   // Called when a user interacts with a model selection button explicitly.
   RecordModelSelectionAction(composebox_query.mojom.ModelMode model);
 
-  // Queries whether the AIM x Drive disclaimer should be shown.
-  ShouldShowDriveDisclaimer() => (bool should_show);
+  // Gets the Google Drive disclaimer and consent status.
+  GetDriveDisclaimerStatus() => (DriveDisclaimerStatus status);
 
   // Informs the browser that the user accepted the AIM x Drive disclaimer.
   OnDriveDisclaimerAccepted();

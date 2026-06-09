@@ -4,6 +4,7 @@
 
 import type {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {OmniboxPopupSelection, PageHandlerInterface, PageRemote, PlaceholderConfig, SelectedFileInfo, SmartComposeStats} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
@@ -58,6 +59,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'openPopupSelection',
       'getPageClassification',
       'setSmartComposeStats',
+      'getDriveDisclaimerStatus',
     ]);
   }
 
@@ -245,8 +247,9 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
         'openPopupSelection', {resultSequenceId, selection, disposition});
   }
 
-  shouldShowDriveDisclaimer() {
-    return Promise.resolve({shouldShow: false});
+  getDriveDisclaimerStatus() {
+    this.methodCalled('getDriveDisclaimerStatus');
+    return Promise.resolve({status: DriveDisclaimerStatus.kRestricted});
   }
 
   onDriveDisclaimerAccepted() {}
