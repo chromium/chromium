@@ -1954,7 +1954,7 @@ chromium-metrics-reviews@google.com.
   <summary>Whether the given launch url is in the web app's scope.</summary>
 </histogram>
 
-<histogram name="WebApp.ManifestIcon.ForOpaqueOrigin" enum="Boolean"
+<histogram name="WebApp.Manifest.ForOpaqueOrigin" enum="Boolean"
     expires_after="2027-05-11">
   <owner>japhet@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
