@@ -2637,14 +2637,27 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
 
   CHECK_EQ(context_properties_.input_operand_layout, InputOperandLayout::kNchw);
   uint32_t input_height = input_shape[2];
+  uint32_t input_width = input_shape[3];
   uint32_t output_height = output_shape[2];
+  uint32_t output_width = output_shape[3];
   const auto float_output_height = CalculateConv2dOutputSize(
       input_height, pool2d.window_dimensions->height,
       pool2d.padding->beginning->height, pool2d.padding->ending->height,
       pool2d.strides->height, pool2d.dilations->height, pool2d.label);
   CHECK(float_output_height.has_value());
+  const auto float_output_width = CalculateConv2dOutputSize(
+      input_width, pool2d.window_dimensions->width,
+      pool2d.padding->beginning->width, pool2d.padding->ending->width,
+      pool2d.strides->width, pool2d.dilations->width, pool2d.label);
+  CHECK(float_output_width.has_value());
 
-  int64_t ceil_mode = float_output_height.value() < output_height ? 1 : 0;
+  // ONNX Pool has a single global ceil_mode attribute that applies to both
+  // spatial dimensions. Set ceil_mode=1 when either dimension needs ceiling
+  // rounding to match the WebNN output shape.
+  int64_t ceil_mode = (float_output_height.value() < output_height ||
+                       float_output_width.value() < output_width)
+                          ? 1
+                          : 0;
   attributes.push_back(model_editor_.CreateAttribute(kAttrCeilMode, ceil_mode));
 
   const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;

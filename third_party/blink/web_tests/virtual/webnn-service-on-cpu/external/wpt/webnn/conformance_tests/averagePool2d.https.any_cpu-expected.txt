@@ -13,6 +13,8 @@ This is a testharness.js-based test.
   assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by ULP distance: expected a number less than or equal to 11n but got 4736288n
 [FAIL] [required] averagePool2d float32 4D tensor options.layout=nhwc and options.outputShapeRounding=ceil
   assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by ULP distance: expected a number less than or equal to 11n but got 4736288n
+[FAIL] [required] averagePool2d float32 4D tensor options.outputShapeRounding=ceil with asymmetric window
+  assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 5 should be close enough to expected 10 by ULP distance: expected a number less than or equal to 8n but got 8388608n
 [FAIL] [required] averagePool2d float32 4D tensor options.outputSizes ignores options.outputShapeRounding=floor
   assert_less_than_equal: assert_array_approx_equals_ulp: test averagePool2d float32 actual 36.13502502441406 should be close enough to expected 54.20252990722656 by ULP distance: expected a number less than or equal to 11n but got 4736288n
 [FAIL] [required] averagePool2d float32 4D tensor options.outputSizes ignores options.outputShapeRounding=ceil
