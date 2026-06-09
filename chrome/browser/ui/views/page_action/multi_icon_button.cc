@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/i18n/number_formatting.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -74,13 +75,12 @@ class ClippingImageView : public views::ImageView {
 
     // Clip out any other regions that should occlude this image. In its initial
     // use-case, that means the border around the icon stacked directly on top
-    // of this one.
+    // of this one. Ensure that it supports RTL layout.
     if (clipper_view_) {
-      gfx::Rect clipper_bounds = clipper_view_->bounds();
-      gfx::Point relative_origin = clipper_bounds.origin();
-      views::View::ConvertPointToTarget(clipper_view_->parent(), this,
-                                        &relative_origin);
-      clipper_bounds.set_origin(relative_origin);
+      gfx::Rect clipper_bounds = clipper_view_->GetMirroredBounds();
+      gfx::Rect self_bounds = GetMirroredBounds();
+      gfx::Vector2d offset = clipper_bounds.origin() - self_bounds.origin();
+      clipper_bounds.set_origin(gfx::Point() + offset);
 
       // Account for the other icon's border.
       clipper_bounds.Inset(-kBorder);
@@ -203,10 +203,16 @@ void MultiIconButton::Update(
   }
 
   if (icons.size() > kAnchoredMessageMaxExpandButtonIcons) {
+    const std::u16string count =
+        base::FormatNumber(icons.size() - kAnchoredMessageMaxExpandButtonIcons);
+    // Because this is a pure numeric string paired with a literal symbol, we
+    // can reverse the order programmatically for RTL without requiring a
+    // localized placeholder template.
+    const std::u16string label_text = base::i18n::IsRTL()
+                                          ? base::StrCat({count, u"+"})
+                                          : base::StrCat({u"+", count});
     auto* plus_more_label =
-        container->AddChildView(std::make_unique<views::Label>(base::StrCat(
-            {u"+", base::FormatNumber(icons.size() -
-                                      kAnchoredMessageMaxExpandButtonIcons)})));
+        container->AddChildView(std::make_unique<views::Label>(label_text));
     plus_more_label->SetTextStyle(views::style::STYLE_BODY_5);
     plus_more_label->SetProperty(views::kMarginsKey,
                                  gfx::Insets::TLBR(0, 8, 0, 0));
