@@ -103,13 +103,6 @@ class AssistantAIMUIStateProvider
                                          AssistantContainerCommands);
 
   web::WebState::CreateParams params(self.browser->GetProfile());
-  CobrowseContext* context = agent ? agent->GetCobrowseContext() : nil;
-  if (!context) {
-    context = [CobrowseContext defaultContext];
-    if (agent) {
-      agent->SetCobrowseContext(context);
-    }
-  }
   contextual_tasks::ContextualTasksService* contextualTasksService = nullptr;
   if (IsCobrowseAimHistoryEnabled()) {
     contextualTasksService = IOSContextualTasksServiceFactory::GetForProfile(
@@ -121,7 +114,7 @@ class AssistantAIMUIStateProvider
 
   _mediator = [[AssistantAIMMediator alloc]
             initWithWebState:std::move(webState)
-                     context:context
+        cobrowseBrowserAgent:agent
             containerHandler:_containerHandler
       contextualTasksService:contextualTasksService
                    URLLoader:UrlLoadingBrowserAgent::FromBrowser(self.browser)];
@@ -329,6 +322,10 @@ class AssistantAIMUIStateProvider
 #pragma mark - AssistantAIMMediatorDelegate
 
 - (void)assistantAIMMediatorDidLoadQuery:(AssistantAIMMediator*)mediator {
+  [self dismissKeyboard];
+}
+
+- (void)assistantAIMMediatorDidStartNewThread:(AssistantAIMMediator*)mediator {
   [self dismissKeyboard];
 }
 

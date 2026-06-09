@@ -11,16 +11,21 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/cobrowse/model/aim_cobrowse_java_script_feature.h"
 #import "ios/chrome/browser/cobrowse/model/assistant_aim_tab_helper.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -40,8 +45,8 @@ class AssistantAIMMediatorTest : public PlatformTest {
  protected:
   AssistantAIMMediatorTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
-    scoped_feature_list_.InitAndEnableFeature(
-        contextual_tasks::kContextualTasks);
+    scoped_feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasks, kAimCobrowse}, {});
     TestProfileIOS::Builder builder;
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
@@ -54,6 +59,8 @@ class AssistantAIMMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     auto fake_web_state = std::make_unique<web::FakeWebState>();
+    fake_web_state->SetNavigationManager(
+        std::make_unique<web::FakeNavigationManager>());
     fake_web_state_ = fake_web_state.get();
     fake_web_state->SetBrowserState(profile_.get());
     auto manager = std::make_unique<web::FakeWebFramesManager>();
@@ -67,9 +74,13 @@ class AssistantAIMMediatorTest : public PlatformTest {
         OCMProtocolMock(@protocol(AssistantContainerCommands));
     mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
 
+    CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+    CobrowseBrowserAgent* agent =
+        CobrowseBrowserAgent::FromBrowser(browser_.get());
+
     mediator_ =
         [[AssistantAIMMediator alloc] initWithWebState:std::move(fake_web_state)
-                                               context:nullptr
+                                  cobrowseBrowserAgent:agent
                                       containerHandler:mock_container_handler_
                                 contextualTasksService:nullptr
                                              URLLoader:url_loader_];
@@ -544,4 +555,49 @@ TEST_F(AssistantAIMMediatorTest, OpensWebStateInNewTabViaDelegate) {
   EXPECT_EQ(result, nullptr);
   [mock_scene_handler_ verify];
   [mock_container_handler_ verify];
+}
+
+// Tests that the navigation policy decider allows the zero-state URL.
+TEST_F(AssistantAIMMediatorTest, AllowsGoogleAIMZeroStateURL) {
+  id<CRWWebStatePolicyDecider> policy_decider =
+      static_cast<id<CRWWebStatePolicyDecider>>(mediator_);
+
+  GURL zero_state_url("https://www.google.com/"
+                      "search?udm=50&gsc=2&sourceid=chrome-mobile&gsas=4");
+  __block web::WebStatePolicyDecider::PolicyDecision allowed_decision =
+      web::WebStatePolicyDecider::PolicyDecision::Cancel();
+  [policy_decider
+      shouldAllowRequest:[NSURLRequest
+                             requestWithURL:net::NSURLWithGURL(zero_state_url)]
+             requestInfo:web::WebStatePolicyDecider::RequestInfo(
+                             ui::PageTransition::PAGE_TRANSITION_LINK,
+                             /*target_frame_is_main=*/true,
+                             /*target_frame_is_cross_origin=*/false,
+                             /*target_window_is_cross_origin=*/false,
+                             /*is_user_initiated=*/true,
+                             /*user_tapped_recently=*/true)
+         decisionHandler:^(
+             web::WebStatePolicyDecider::PolicyDecision decision) {
+           allowed_decision = decision;
+         }];
+  EXPECT_TRUE(allowed_decision.ShouldAllowNavigation());
+}
+
+// Tests that didTapStartNewThread loads the zero-state URL and notifies the
+// delegate.
+TEST_F(AssistantAIMMediatorTest, StartsNewThreadLoadsZeroState) {
+  [[mock_delegate_ expect] assistantAIMMediatorDidStartNewThread:mediator_];
+
+  [mediator_ didTapStartNewThread];
+
+  [mock_delegate_ verify];
+
+  // Verify that the default search URL was loaded.
+  web::FakeNavigationManager* navigation_manager =
+      static_cast<web::FakeNavigationManager*>(
+          fake_web_state_->GetNavigationManager());
+  ASSERT_TRUE(navigation_manager->LoadURLWithParamsWasCalled());
+  EXPECT_EQ(navigation_manager->GetLastLoadURLWithParams()->url,
+            GURL("https://www.google.com/"
+                 "search?udm=50&gsc=2&sourceid=chrome-mobile&gsas=4"));
 }

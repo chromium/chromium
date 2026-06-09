@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/cobrowse/debugger/aim_srp_message_logger.h"
 #import "ios/chrome/browser/cobrowse/model/aim_cobrowse_java_script_feature.h"
 #import "ios/chrome/browser/cobrowse/model/assistant_aim_tab_helper.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_item.h"
@@ -59,6 +60,7 @@
   id<AssistantContainerCommands> _containerHandler;
   raw_ptr<contextual_tasks::ContextualTasksService> _contextualTasksService;
   raw_ptr<UrlLoadingBrowserAgent> _urlLoader;
+  raw_ptr<CobrowseBrowserAgent> _cobrowseBrowserAgent;
   // Bridge to observe WebFramesManager and detect when the main frame becomes
   // available.
   std::unique_ptr<web::WebFramesManagerObserverBridge>
@@ -75,7 +77,7 @@
 @synthesize consumer = _consumer;
 
 - (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState
-                         context:(CobrowseContext*)context
+            cobrowseBrowserAgent:(CobrowseBrowserAgent*)cobrowseBrowserAgent
                 containerHandler:
                     (id<AssistantContainerCommands>)containerHandler
           contextualTasksService:
@@ -94,7 +96,16 @@
     _webStateDelegateBridge =
         std::make_unique<web::WebStateDelegateBridge>(self);
     _webState->SetDelegate(_webStateDelegateBridge.get());
-    _context = context;
+    _cobrowseBrowserAgent = cobrowseBrowserAgent;
+    if (_cobrowseBrowserAgent) {
+      _context = _cobrowseBrowserAgent->GetCobrowseContext();
+    }
+    if (!_context) {
+      _context = [CobrowseContext defaultContext];
+      if (_cobrowseBrowserAgent) {
+        _cobrowseBrowserAgent->SetCobrowseContext(_context);
+      }
+    }
     _containerHandler = containerHandler;
     _contextualTasksService = contextualTasksService;
     _urlLoader = URLLoader;
@@ -145,6 +156,8 @@
   }
   _webState.reset();
   _urlLoader = nullptr;
+  _context = nil;
+  _cobrowseBrowserAgent = nullptr;
   _capabilities = std::nullopt;
   _logger = nil;
 }
@@ -324,6 +337,15 @@
 
 - (void)didSelectHistoryTaskWithId:(NSString*)taskId {
   [self loadHistoryThreadWithTaskId:taskId];
+}
+
+- (void)didTapStartNewThread {
+  _context = [CobrowseContext defaultContext];
+  if (_cobrowseBrowserAgent) {
+    _cobrowseBrowserAgent->SetCobrowseContext(_context);
+  }
+  [self loadAIMURL];
+  [self.delegate assistantAIMMediatorDidStartNewThread:self];
 }
 
 #pragma mark - CRWWebFramesManagerObserver

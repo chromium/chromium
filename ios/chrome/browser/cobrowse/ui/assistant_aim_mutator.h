@@ -16,6 +16,9 @@
 // Called when the user selects a specific history task.
 - (void)didSelectHistoryTaskWithId:(NSString*)taskId;
 
+// Called when the user taps the start new thread button.
+- (void)didTapStartNewThread;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COBROWSE_UI_ASSISTANT_AIM_MUTATOR_H_

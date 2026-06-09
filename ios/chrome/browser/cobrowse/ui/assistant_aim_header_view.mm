@@ -219,9 +219,11 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
       kSquareAndPencilSymbol, kHeaderActionSymbolPointSize);
   config.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
 
-  // TODO(crbug.com/493128413): Implement action.
   UIButton* button = [UIButton buttonWithConfiguration:config
                                          primaryAction:nil];
+  [button addTarget:self
+                action:@selector(didTapStartNewThread)
+      forControlEvents:UIControlEventTouchUpInside];
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
   [NSLayoutConstraint activateConstraints:@[
@@ -361,6 +363,10 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
 
 - (void)didTapBackButton {
   [self.delegate assistantAIMHeaderViewDidTapBack:self];
+}
+
+- (void)didTapStartNewThread {
+  [self.actionHandler didTapStartNewThread];
 }
 
 @end

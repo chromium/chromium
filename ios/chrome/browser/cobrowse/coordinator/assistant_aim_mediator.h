@@ -25,6 +25,7 @@ namespace contextual_tasks {
 class ContextualTasksService;
 }
 class UrlLoadingBrowserAgent;
+class CobrowseBrowserAgent;
 namespace web {
 class WebState;
 }
@@ -36,6 +37,9 @@ class WebState;
 
 // Called after a query is loaded.
 - (void)assistantAIMMediatorDidLoadQuery:(AssistantAIMMediator*)mediator;
+
+// Called when the mediator starts a new thread.
+- (void)assistantAIMMediatorDidStartNewThread:(AssistantAIMMediator*)mediator;
 
 @end
 
@@ -52,11 +56,11 @@ class WebState;
 // The delegate of the mediator.
 @property(nonatomic, weak) id<AssistantAIMMediatorDelegate> delegate;
 
-// Initializes the mediator with a web state and a cobrowse context that defines
-// the AI mode assistant state, a container handler, the contextual tasks
-// service, and the URL loader.
+// Initializes the mediator with a web state and a cobrowse browser agent that
+// defines the AI mode assistant state, a container handler, the contextual
+// tasks service, and the URL loader.
 - (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState
-                         context:(CobrowseContext*)context
+            cobrowseBrowserAgent:(CobrowseBrowserAgent*)cobrowseBrowserAgent
                 containerHandler:
                     (id<AssistantContainerCommands>)containerHandler
           contextualTasksService:
