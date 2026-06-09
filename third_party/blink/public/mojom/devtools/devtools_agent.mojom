@@ -184,13 +184,6 @@ interface DevToolsSession {
   // Disables all breakpoints and terminates script currently executing.
   UnpauseAndTerminate();
 
-  // Adds a script to be evaluated on new documents. It is up to the caller to
-  // ensure no attempt is made to add a script that already exists. See also
-  // `BrowserOriginatingSessionState` below.
-  AddScriptToEvaluateOnNewDocument(string identifier, ScriptToEvaluateOnNewDocument script, bool run_immediately) => ();
-
-  // Removes a script to be evaluated on new documents.
-  RemoveScriptToEvaluateOnNewDocument(string identifier);
 };
 
 // A peer of DevToolsSession representing a remote debugging client

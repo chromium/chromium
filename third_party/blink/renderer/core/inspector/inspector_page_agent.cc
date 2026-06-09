@@ -647,6 +647,63 @@ protocol::Response InspectorPageAgent::stopLoading() {
   return protocol::Response::Success();
 }
 
+protocol::Response InspectorPageAgent::addScriptToEvaluateOnLoad(
+    const String& source,
+    const String& browser_generated_identifier,
+    String* out_identifier) {
+  auto script = mojom::blink::ScriptToEvaluateOnNewDocument::New();
+  script->source = source;
+  script->world_name = "";
+  script->include_command_line_api = false;
+
+  injected_script_manager_->AddScriptToEvaluateOnNewDocument(
+      browser_generated_identifier, std::move(script), false);
+  *out_identifier = browser_generated_identifier;
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorPageAgent::removeScriptToEvaluateOnLoad(
+    const String& identifier) {
+  if (!injected_script_manager_->RemoveScriptToEvaluateOnNewDocument(
+          identifier)) {
+    return protocol::Response::ServerError("Script not found");
+  }
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorPageAgent::addScriptToEvaluateOnNewDocument(
+    const String& source,
+    std::optional<String> worldName,
+    std::optional<bool> includeCommandLineAPI,
+    std::optional<bool> runImmediately,
+    const String& browser_generated_identifier,
+    String* out_identifier) {
+  auto script = mojom::blink::ScriptToEvaluateOnNewDocument::New();
+  script->source = source;
+  script->world_name = worldName.value_or("");
+  script->include_command_line_api = includeCommandLineAPI.value_or(false);
+
+  // client_->IsPausedForNewWindow(): When opening a new popup,
+  // Page.addScriptToEvaluateOnNewDocument could be called after
+  // Runtime.enable that forces main context creation. In this case, we would
+  // not normally evaluate the script, but we should.
+  bool run_immediately = runImmediately.value_or(false) ||
+                         (client_ && client_->IsPausedForNewWindow());
+  injected_script_manager_->AddScriptToEvaluateOnNewDocument(
+      browser_generated_identifier, std::move(script), run_immediately);
+  *out_identifier = browser_generated_identifier;
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorPageAgent::removeScriptToEvaluateOnNewDocument(
+    const String& identifier) {
+  if (!injected_script_manager_->RemoveScriptToEvaluateOnNewDocument(
+          identifier)) {
+    return protocol::Response::ServerError("Script not found");
+  }
+  return protocol::Response::Success();
+}
+
 static void CachedResourcesForDocument(Document* document,
                                        HeapVector<Member<Resource>>& result,
                                        bool skip_xhrs) {

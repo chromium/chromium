@@ -703,25 +703,7 @@ void DevToolsSession::RemoveObserver(ChildObserver* obs) {
   child_observers_.RemoveObserver(obs);
 }
 
-void DevToolsSession::AddScriptToEvaluateOnNewDocument(
-    const std::string& identifier,
-    blink::mojom::ScriptToEvaluateOnNewDocumentPtr script,
-    bool run_immediately,
-    base::OnceClosure callback) {
-  if (session_.is_bound()) {
-    session_->AddScriptToEvaluateOnNewDocument(
-        identifier, std::move(script), run_immediately, std::move(callback));
-  } else {
-    std::move(callback).Run();
-  }
-}
 
-void DevToolsSession::RemoveScriptToEvaluateOnNewDocument(
-    const std::string& identifier) {
-  if (session_.is_bound()) {
-    session_->RemoveScriptToEvaluateOnNewDocument(identifier);
-  }
-}
 
 void DevToolsSession::PrepareForReload(std::string script_to_evaluate_on_load) {
   script_to_evaluate_on_load_ = std::move(script_to_evaluate_on_load);

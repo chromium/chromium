@@ -147,13 +147,6 @@ class DevToolsSession : public protocol::FrontendChannel,
     return session_state_cookie_->browser_originating_session_state.get();
   }
 
-  void AddScriptToEvaluateOnNewDocument(
-      const std::string& identifier,
-      blink::mojom::ScriptToEvaluateOnNewDocumentPtr script,
-      bool run_immediately,
-      base::OnceClosure callback);
-  void RemoveScriptToEvaluateOnNewDocument(const std::string& identifier);
-
   base::RepeatingCallback<void(std::string)> MakePrepareForReloadCallback() {
     return base::BindRepeating(&DevToolsSession::PrepareForReload,
                                base::Unretained(this));

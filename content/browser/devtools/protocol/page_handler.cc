@@ -758,9 +758,7 @@ Response PageHandler::AddScriptToEvaluateOnNewDocumentInternal(
     const std::string& source,
     std::optional<std::string> world_name,
     std::optional<bool> include_command_line_api,
-    std::optional<bool> run_immediately,
-    std::string* identifier,
-    base::OnceClosure callback) {
+    std::string* identifier) {
   blink::mojom::BrowserOriginatingSessionState* state =
       session()->browser_agent_state();
 
@@ -783,10 +781,6 @@ Response PageHandler::AddScriptToEvaluateOnNewDocumentInternal(
   script->include_command_line_api = include_command_line_api.value_or(false);
   state->scripts_to_evaluate_on_new_document[*identifier] = script.Clone();
 
-  session()->AddScriptToEvaluateOnNewDocument(*identifier, std::move(script),
-                                              run_immediately.value_or(false),
-                                              std::move(callback));
-
   return Response::Success();
 }
 
@@ -801,41 +795,31 @@ Response PageHandler::RemoveScriptToEvaluateOnNewDocument(
   }
   state->scripts_to_evaluate_on_new_document.erase(it);
 
-  session()->RemoveScriptToEvaluateOnNewDocument(identifier);
-
-  return Response::Success();
+  return Response::FallThrough();
 }
 
-void PageHandler::AddScriptToEvaluateOnNewDocument(
+Response PageHandler::AddScriptToEvaluateOnNewDocument(
     const std::string& source,
     std::optional<std::string> world_name,
     std::optional<bool> include_command_line_api,
     std::optional<bool> run_immediately,
-    std::unique_ptr<AddScriptToEvaluateOnNewDocumentCallback> callback) {
-  auto identifier = std::make_unique<std::string>();
-  auto* identifier_ptr = identifier.get();
-
-  AddScriptToEvaluateOnNewDocumentInternal(
-      source, world_name, include_command_line_api, run_immediately,
-      identifier_ptr,
-      base::BindOnce(
-          [](std::unique_ptr<AddScriptToEvaluateOnNewDocumentCallback> cb,
-             std::unique_ptr<std::string> id) { cb->sendSuccess(*id); },
-          std::move(callback), std::move(identifier)));
+    std::string* identifier) {
+  Response response = AddScriptToEvaluateOnNewDocumentInternal(
+      source, world_name, include_command_line_api, identifier);
+  if (response.IsError()) {
+    return response;
+  }
+  return Response::FallThrough(*identifier);
 }
 
-void PageHandler::AddScriptToEvaluateOnLoad(
-    const std::string& source,
-    std::unique_ptr<AddScriptToEvaluateOnLoadCallback> callback) {
-  auto identifier = std::make_unique<std::string>();
-  auto* identifier_ptr = identifier.get();
-
-  AddScriptToEvaluateOnNewDocumentInternal(
-      source, std::nullopt, std::nullopt, std::nullopt, identifier_ptr,
-      base::BindOnce(
-          [](std::unique_ptr<AddScriptToEvaluateOnLoadCallback> cb,
-             std::unique_ptr<std::string> id) { cb->sendSuccess(*id); },
-          std::move(callback), std::move(identifier)));
+Response PageHandler::AddScriptToEvaluateOnLoad(const std::string& source,
+                                                std::string* identifier) {
+  Response response = AddScriptToEvaluateOnNewDocumentInternal(
+      source, std::nullopt, std::nullopt, identifier);
+  if (response.IsError()) {
+    return response;
+  }
+  return Response::FallThrough(*identifier);
 }
 
 Response PageHandler::RemoveScriptToEvaluateOnLoad(
