@@ -82,6 +82,11 @@
       { start: "2021-11-29", domain: "kzar.co.uk" },
     ]
   },
+  "lloydhuang@chromium.org": {
+    affiliations: [
+      { start: "2022-07-05", domain: "tencent.com" },
+    ]
+  },
   "lpardosixtos@chromium.org": {
     affiliations: [
       { start: "2025-04-11", domain: "microsoft.com" },
