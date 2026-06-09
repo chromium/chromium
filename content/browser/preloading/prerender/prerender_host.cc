@@ -1732,7 +1732,6 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
         // Prefetch is not available for HTTP, but prerender is available
         // for HTTPS/HTTP.
       case PreloadingEligibility::kSchemeIsNotHttps:
-      case PreloadingEligibility::kBlockedByConnectionAllowlist:
         return true;
       case PreloadingEligibility::kEligible:
       case PreloadingEligibility::kUnspecified:
@@ -1765,6 +1764,7 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
       case PreloadingEligibility::kPreloadingEligibilityContentEnd:
       case PreloadingEligibility::kPreloadingEligibilityContentStart2:
       case PreloadingEligibility::kPreloadingEligibilityContentEnd2:
+      case PreloadingEligibility::kBlockedByConnectionAllowlist:
         return false;
     }
   };

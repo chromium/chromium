@@ -13,8 +13,11 @@
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -25,6 +28,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_monitor.h"
@@ -57,6 +61,11 @@ constexpr char kCrossOriginAllowlistedPage[] =
     "/response_and_cross_origin.html";
 }
 
+bool IsPrerender2FallbackPrefetchSpecRulesEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kPrerender2FallbackPrefetchSpecRules);
+}
+
 struct ResponseEntry {
   std::string content;
   absl::flat_hash_map<std::string, std::string> headers;
@@ -76,7 +85,10 @@ class ConnectionAllowlistContentBrowserClient
 // the link header response.
 class ConnectionAllowlistTest : public ContentBrowserTest {
  public:
-  ConnectionAllowlistTest() {
+  ConnectionAllowlistTest()
+      : prerender_helper_(
+            base::BindRepeating(&ConnectionAllowlistTest::GetWebContents,
+                                base::Unretained(this))) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{network::features::kConnectionAllowlists,
                               blink::features::
@@ -87,6 +99,9 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
+
+    prerender_helper_.RegisterServerRequestMonitor(
+        embedded_https_test_server());
 
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_https_test_server().SetSSLConfig(
@@ -105,6 +120,10 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
                         ResponseEntry&& entry) {
     response_map_[relative_url] = std::move(entry);
   }
+
+  WebContents* GetWebContents() { return shell()->web_contents(); }
+
+  test::PrerenderTestHelper& prerender_helper() { return prerender_helper_; }
 
   bool WaitForSpeculationRulesPrefetch(const GURL& url,
                                        PrefetchContainer::LoadState load_state,
@@ -153,6 +172,7 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
     return nullptr;
   }
 
+  test::PrerenderTestHelper prerender_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
   absl::flat_hash_map<std::string, ResponseEntry> response_map_;
   std::unique_ptr<ConnectionAllowlistContentBrowserClient>
@@ -2620,6 +2640,308 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(nav_observer.last_navigation_succeeded());
   EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
             nav_observer.last_net_error_code());
+}
+
+// Observe the error code of prerendering navigation requests. This class is
+// required because:
+// - `TestNavigationObserver` ignores prerender requests on purpose.
+// - `URLLoaderMonitor` fails to monitor prerender requests initiated by the
+// URLLoaderFactory obtained by `GetURLLoaderFactoryForBrowserProcess()`.
+// `URLLoaderMonitor` needs to be constructed before the URLLoaderFactory is
+// created, which is difficult because this URLLoaderFactory is created during
+// browser startup.
+
+class PrerenderRequestObserver : public WebContentsObserver {
+ public:
+  PrerenderRequestObserver(WebContents* web_contents, const GURL& url)
+      : WebContentsObserver(web_contents), url_(url) {}
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+    if (navigation_handle->GetURL() == url_) {
+      future_.SetValue(navigation_handle->GetNetErrorCode());
+    }
+  }
+
+  net::Error TakeErrorCode() { return future_.Take(); }
+
+ private:
+  GURL url_;
+  base::test::TestFuture<net::Error> future_;
+};
+
+// Note SpeculationRules API currently does not support cross-site prerender.
+// Only same-site prerender is tested. See crbug.com/1176054.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, SpeculationRulesPrerender) {
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_https_test_server().GetURL("a.test", "/allow.js");
+  GURL denied_url = embedded_https_test_server().GetURL("a.test", "/deny.js");
+
+  RegisterResponse("/allow.js", ResponseEntry("console.log('allow');"));
+  RegisterResponse("/deny.js", ResponseEntry("console.log('deny');"));
+  RegisterResponse(kSameOriginAllowlistedPage,
+                   ResponseEntry(absl::StrFormat(R"(
+        <html>
+          <head>
+            <script type="speculationrules">
+            {
+              "prerender": [
+                {
+                  "source": "list",
+                  "urls": ["%s", "%s"],
+                  "eagerness": "immediate"
+                }
+              ]
+            }
+            </script>
+          </head>
+          <body>Hello</body>
+        </html>
+      )",
+                                                 allowed_url.spec().c_str(),
+                                                 denied_url.spec().c_str()),
+                                 {{"Connection-Allowlist",
+                                   R"(("*://a.test:*/allow.js"))"}}));
+
+  PrerenderRequestObserver allowed_observer(GetWebContents(), allowed_url);
+  PrerenderRequestObserver denied_observer(GetWebContents(), denied_url);
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // The prefetch to allowed URL ahead of the prerender succeeds. It is then
+  // used by the prerendering navigation request.
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+        allowed_url, PrefetchContainer::LoadState::kCompleted,
+        PrefetchStatus::kPrefetchResponseUsed));
+  }
+
+  // Verify allowed URL succeeds.
+  EXPECT_EQ(allowed_observer.TakeErrorCode(), net::OK);
+  prerender_helper().WaitForPrerenderLoadCompletion(allowed_url);
+  EXPECT_TRUE(prerender_helper().GetHostForUrl(allowed_url));
+  EXPECT_EQ(prerender_helper().GetRequestCount(allowed_url), 1);
+
+  // The prefetch to denied URL ahead of the prerender is blocked.
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+        denied_url, PrefetchContainer::LoadState::kFailedIneligible,
+        PrefetchStatus::kPrefetchIneligibleBlockedByConnectionAllowlist));
+  }
+
+  // Verify denied URL fails.
+  EXPECT_EQ(denied_observer.TakeErrorCode(), net::ERR_NETWORK_ACCESS_REVOKED);
+  EXPECT_FALSE(prerender_helper().GetHostForUrl(denied_url));
+  EXPECT_EQ(prerender_helper().GetRequestCount(denied_url), 0);
+}
+
+// Note SpeculationRules API currently does not support cross-site prerender.
+// Only same-site prerender is tested. See crbug.com/1176054.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       SpeculationRulesHeaderPrerender) {
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_https_test_server().GetURL("a.test", "/allow.js");
+  GURL denied_url = embedded_https_test_server().GetURL("a.test", "/deny.js");
+
+  RegisterResponse("/allow.js", ResponseEntry("console.log('allow');"));
+  RegisterResponse("/deny.js", ResponseEntry("console.log('deny');"));
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry("<html><body>Hello</body></html>",
+                    {{"Connection-Allowlist",
+                      R"(("*://a.test:*/rules.json" "*://a.test:*/allow.js"))"},
+                     {"Speculation-Rules", R"("/rules.json")"}}));
+
+  RegisterResponse(
+      "/rules.json",
+      ResponseEntry(absl::StrFormat(R"(
+        {
+          "prerender": [
+            {
+              "source": "list",
+              "urls": ["%s", "%s"],
+              "eagerness": "immediate"
+            }
+          ]
+        }
+      )",
+                                    allowed_url.spec().c_str(),
+                                    denied_url.spec().c_str()),
+                    {{"Content-Type", "application/speculationrules+json"}}));
+
+  PrerenderRequestObserver allowed_observer(GetWebContents(), allowed_url);
+  PrerenderRequestObserver denied_observer(GetWebContents(), denied_url);
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // The prefetch to allowed URL ahead of the prerender succeeds. It is then
+  // used by the prerendering navigation request.
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+        allowed_url, PrefetchContainer::LoadState::kCompleted,
+        PrefetchStatus::kPrefetchResponseUsed));
+  }
+
+  // Verify allowed URL succeeds.
+  EXPECT_EQ(allowed_observer.TakeErrorCode(), net::OK);
+  prerender_helper().WaitForPrerenderLoadCompletion(allowed_url);
+  EXPECT_TRUE(prerender_helper().GetHostForUrl(allowed_url));
+  EXPECT_EQ(prerender_helper().GetRequestCount(allowed_url), 1);
+
+  // The prefetch to denied URL ahead of the prerender is blocked.
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+        denied_url, PrefetchContainer::LoadState::kFailedIneligible,
+        PrefetchStatus::kPrefetchIneligibleBlockedByConnectionAllowlist));
+  }
+
+  // Verify denied URL fails.
+  EXPECT_EQ(denied_observer.TakeErrorCode(), net::ERR_NETWORK_ACCESS_REVOKED);
+  EXPECT_FALSE(prerender_helper().GetHostForUrl(denied_url));
+  EXPECT_EQ(prerender_helper().GetRequestCount(denied_url), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       SpeculationRulesPrerenderRedirectAllowed) {
+  net::test_server::ControllableHttpResponse controllable_response(
+      &embedded_https_test_server(), "/redirect.js");
+
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL redirect_url =
+      embedded_https_test_server().GetURL("a.test", "/redirect.js");
+  GURL target_url =
+      embedded_https_test_server().GetURL("a.test", "/redirect-target.js");
+
+  RegisterResponse("/redirect-target.js",
+                   ResponseEntry("console.log('Redirect is allowed');"));
+  RegisterResponse(kSameOriginAllowlistedPage,
+                   ResponseEntry(absl::StrFormat(R"(
+        <html>
+          <head>
+            <script type="speculationrules">
+            {
+              "prerender": [
+                {
+                  "source": "list",
+                  "urls": ["%s"],
+                  "eagerness": "immediate"
+                }
+              ]
+            }
+            </script>
+          </head>
+          <body>Hello</body>
+        </html>
+      )",
+                                                 redirect_url.spec().c_str()),
+                                 {{"Connection-Allowlist",
+                                   "(response-origin);redirects=allow"}}));
+
+  PrerenderRequestObserver observer(shell()->web_contents(), target_url);
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  controllable_response.WaitForRequest();
+  controllable_response.Send(
+      "HTTP/1.1 302 Found\r\n"
+      "Location: " +
+      target_url.spec() + "\r\n\r\n");
+  controllable_response.Done();
+
+  // The prefetch ahead of the prerender succeeds. It is then used by the
+  // prerendering navigation request.
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+        redirect_url, PrefetchContainer::LoadState::kCompleted,
+        PrefetchStatus::kPrefetchResponseUsed));
+  }
+
+  // Verify that the prerender redirect is allowed.
+  EXPECT_EQ(observer.TakeErrorCode(), net::OK);
+  prerender_helper().WaitForPrerenderLoadCompletion(redirect_url);
+  EXPECT_TRUE(prerender_helper().GetHostForUrl(redirect_url));
+  EXPECT_EQ(prerender_helper().GetRequestCount(redirect_url), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       SpeculationRulesPrerenderRedirectBlocked) {
+  net::test_server::ControllableHttpResponse controllable_response(
+      &embedded_https_test_server(), "/redirect.js");
+
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL redirect_url =
+      embedded_https_test_server().GetURL("a.test", "/redirect.js");
+  GURL target_url =
+      embedded_https_test_server().GetURL("a.test", "/redirect-target.js");
+
+  RegisterResponse("/redirect-target.js",
+                   ResponseEntry("console.log('Redirect is blocked');"));
+  RegisterResponse(kSameOriginAllowlistedPage,
+                   ResponseEntry(absl::StrFormat(R"(
+        <html>
+          <head>
+            <script type="speculationrules">
+            {
+              "prerender": [
+                {
+                  "source": "list",
+                  "urls": ["%s"],
+                  "eagerness": "immediate"
+                }
+              ]
+            }
+            </script>
+          </head>
+          <body>Hello</body>
+        </html>
+      )",
+                                                 redirect_url.spec().c_str()),
+                                 {{"Connection-Allowlist",
+                                   "(response-origin);redirects=block"}}));
+
+  PrerenderRequestObserver observer(shell()->web_contents(), redirect_url);
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  controllable_response.WaitForRequest();
+  controllable_response.Send(
+      "HTTP/1.1 302 Found\r\n"
+      "Location: " +
+      target_url.spec() + "\r\n\r\n");
+  controllable_response.Done();
+
+  // The prefetch ahead of the prerender is blocked by connection allowlist
+  // because redirect is not allowed.
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+        redirect_url, PrefetchContainer::LoadState::kFailedDeterminedHead,
+        PrefetchStatus::kPrefetchFailedIneligibleRedirect));
+  }
+
+  // If feature `Prerender2FallbackPrefetchSpecRules` is enabled, the prefetch
+  // request fails because the redirect is blocked by connection allowlist. The
+  // prerender request is aborted without being sent.
+  // Otherwise, there is no prefetch ahead of the prerender, the prerender
+  // request redirect is blocked with error code `UNSAFE_REDIRECT`.
+  EXPECT_EQ(observer.TakeErrorCode(),
+            IsPrerender2FallbackPrefetchSpecRulesEnabled()
+                ? net::ERR_ABORTED
+                : net::ERR_UNSAFE_REDIRECT);
+  EXPECT_FALSE(prerender_helper().GetHostForUrl(redirect_url));
 }
 
 }  // namespace content
