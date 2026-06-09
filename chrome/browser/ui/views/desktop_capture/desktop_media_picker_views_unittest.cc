@@ -43,6 +43,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
@@ -404,6 +405,24 @@ TEST_P(DesktopMediaPickerViewsTest, OkButtonEnabledDuringAcceptSpecific) {
 
   GetPickerDialogView()->AcceptSpecificSource(fake_id);
   EXPECT_EQ(fake_id, WaitForPickerResult());
+}
+
+TEST_P(DesktopMediaPickerViewsTest, AccessibleBubbleFrameViewTitle) {
+  // TODO(420734141): Make DesktopMediaPickerDialogView always have a
+  // BubbleFrameView.
+  views::BubbleFrameView* bubble_frame_view =
+      GetPickerDialogView()->GetBubbleFrameView();
+  if (bubble_frame_view) {
+    ui::AXNodeData ax_node;
+    bubble_frame_view->title()->GetViewAccessibility().GetAccessibleNodeData(
+        &ax_node);
+    EXPECT_EQ(ax_node.role, ax::mojom::Role::kHeading);
+    EXPECT_EQ(ax_node.GetStringAttribute(ax::mojom::StringAttribute::kName),
+              "Choose what to share");
+    EXPECT_EQ(
+        ax_node.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel),
+        1);
+  }
 }
 
 #if BUILDFLAG(IS_MAC)

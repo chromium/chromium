@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/title_origin_label.h"
 
+#include "ui/views/accessibility/view_accessibility.h"
+
 std::unique_ptr<views::Label> CreateTitleOriginLabel(
     const std::u16string& text,
     const std::vector<std::pair<size_t, size_t>> bolded_ranges) {
@@ -21,6 +23,9 @@ std::unique_ptr<views::Label> CreateTitleOriginLabel(
   label->SetMultiLine(true);
   label->SetAllowCharacterBreak(true);
   label->SetTextStyle(views::style::STYLE_HEADLINE_4);
+
+  label->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
+  label->GetViewAccessibility().SetHierarchicalLevel(1);
 
   for (auto bolded_range : bolded_ranges) {
     label->SetTextStyleRange(
