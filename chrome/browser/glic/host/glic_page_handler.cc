@@ -179,20 +179,6 @@ namespace glic {
 
 namespace {
 
-#if BUILDFLAG(IS_MAC)
-constexpr mojom::Platform kPlatform = mojom::Platform::kMacOS;
-#elif BUILDFLAG(IS_WIN)
-constexpr mojom::Platform kPlatform = mojom::Platform::kWindows;
-#elif BUILDFLAG(IS_LINUX)
-constexpr mojom::Platform kPlatform = mojom::Platform::kLinux;
-#elif BUILDFLAG(IS_CHROMEOS)
-constexpr mojom::Platform kPlatform = mojom::Platform::kChromeOS;
-#elif BUILDFLAG(IS_ANDROID)
-constexpr mojom::Platform kPlatform = mojom::Platform::kAndroid;
-#else
-constexpr mojom::Platform kPlatform = mojom::Platform::kUnknown;
-#endif
-
 mojom::GetContextResultPtr LogErrorAndUnwrapResult(
     base::OnceCallback<void(GlicGetContextFromTabError)> error_logger,
     GlicGetContextResult result) {
@@ -591,7 +577,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     auto state = glic::mojom::WebClientInitialState::New();
     state->chrome_version = version_info::GetVersion();
-    state->platform = kPlatform;
+    state->platform = GetGlicPlatform();
     state->form_factor = GetGlicFormFactor(ui::GetDeviceFormFactor());
     state->microphone_permission_enabled =
         pref_service_->GetBoolean(prefs::kGlicMicrophoneEnabled);

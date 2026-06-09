@@ -69,6 +69,9 @@ void CreateGlicWebUiData(content::WebContents* webui_contents);
 
 // Returns Glic form factor mapping for the given device form factor.
 mojom::FormFactor GetGlicFormFactor(ui::DeviceFormFactor form_factor);
+
+// Returns the Glic Platform.
+mojom::Platform GetGlicPlatform();
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_HOST_GUEST_UTIL_H_

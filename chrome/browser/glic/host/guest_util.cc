@@ -372,4 +372,20 @@ mojom::FormFactor GetGlicFormFactor(ui::DeviceFormFactor form_factor) {
   }
 }
 
+mojom::Platform GetGlicPlatform() {
+#if BUILDFLAG(IS_MAC)
+  return mojom::Platform::kMacOS;
+#elif BUILDFLAG(IS_WIN)
+  return mojom::Platform::kWindows;
+#elif BUILDFLAG(IS_LINUX)
+  return mojom::Platform::kLinux;
+#elif BUILDFLAG(IS_CHROMEOS)
+  return mojom::Platform::kChromeOS;
+#elif BUILDFLAG(IS_ANDROID)
+  return mojom::Platform::kAndroid;
+#else
+  return mojom::Platform::kUnknown;
+#endif
+}
+
 }  // namespace glic

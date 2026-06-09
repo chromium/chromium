@@ -98,6 +98,26 @@ export function getHtml(this: GlicInternalsAppElement) {
         </tr>
       </table>` :
       html`<h3 id="loadingMsg">Loading...</h3>`}
+    <h2>Glic UI / Client Debug Information</h2>
+    <div style="margin-bottom: 12px; font-weight: bold; color: var(--google-red-700, #c5221f);">
+      ⚠️ Note: These settings are not dynamically observed. Please refresh the page to get the latest settings.
+    </div>
+    ${this.data_?.debugInfo ? html`
+      <table>
+        <tr>
+          <th>Setting / Flag</th>
+          <th>Value</th>
+        </tr>
+        ${this.getDebugSettingsData_().map(item => html`
+          <tr>
+            <td>${item.label}</td>
+            <td class="status-${item.value}">
+              ${typeof item.value === 'boolean' ? (item.value ? '✅' : '🚫') : item.value}
+            </td>
+          </tr>
+        `)}
+      </table>` :
+      html`<h3 id="loadingMsg">Loading...</h3>`}
       </div>
 
       <!-- ================= DEBUG CONTROLS TAB ================= -->

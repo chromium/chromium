@@ -15,6 +15,22 @@ struct InternalsDataPayload {
   ConfigInfo config;
   bool show_error_allowed;
   bool experimental_triggering_enabled;
+  InternalsDebugInfo debug_info;
+};
+
+struct InternalsDebugInfo {
+  // Feature flags
+  bool glic_feature_enabled;
+  bool glic_actor_feature_enabled;
+  bool glic_rollout_feature_enabled;
+
+  // Platform and form factor
+  Platform platform;
+  FormFactor form_factor;
+
+  // Browser and user settings
+  map<string, bool> boolean_settings;
+  string hotkey;
 };
 
 // Configuration options for invoking Glic from the internals page.

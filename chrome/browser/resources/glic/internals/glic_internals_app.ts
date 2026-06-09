@@ -7,7 +7,7 @@ import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ActuationEligibility, ActuationTarget, FreOverride, InvocationSource} from '../glic.mojom-webui.js';
+import {ActuationEligibility, ActuationTarget, FormFactor, FreOverride, InvocationSource, Platform} from '../glic.mojom-webui.js';
 import {FeatureMode} from '../glic_enums.mojom-webui.js';
 import {InternalsPageHandlerFactory, InternalsPageHandlerRemote} from '../glic_internals.mojom-webui.js';
 import type {InternalsDataPayload, TriggerInvokeFromInternalsOptions} from '../glic_internals.mojom-webui.js';
@@ -418,6 +418,82 @@ export class GlicInternalsAppElement extends CrLitElement {
           this.invokeLogs_ = [...this.invokeLogs_, logEntry];
           console.info(logEntry);
         });
+  }
+
+  protected getPlatformString_(platform: Platform): string {
+    switch (platform) {
+      case Platform.kMacOS:
+        return 'macOS';
+      case Platform.kWindows:
+        return 'Windows';
+      case Platform.kLinux:
+        return 'Linux';
+      case Platform.kChromeOS:
+        return 'ChromeOS';
+      case Platform.kAndroid:
+        return 'Android';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  protected getFormFactorString_(formFactor: FormFactor): string {
+    switch (formFactor) {
+      case FormFactor.kDesktop:
+        return 'Desktop';
+      case FormFactor.kPhone:
+        return 'Phone';
+      case FormFactor.kTablet:
+        return 'Tablet';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  protected getDebugSettingsData_():
+      Array<{label: string, value: string|boolean}> {
+    if (!this.data_ || !this.data_.debugInfo) {
+      return [];
+    }
+
+    const debugInfo = this.data_.debugInfo;
+    const settings: Array<{label: string, value: string | boolean}> = [
+      {
+        label: 'Glic Feature Flag',
+        value: debugInfo.glicFeatureEnabled,
+      },
+      {
+        label: 'GlicActor Feature Flag',
+        value: debugInfo.glicActorFeatureEnabled,
+      },
+      {
+        label: 'GlicRollout Feature Flag',
+        value: debugInfo.glicRolloutFeatureEnabled,
+      },
+      {
+        label: 'Platform',
+        value: this.getPlatformString_(debugInfo.platform),
+      },
+      {
+        label: 'Form Factor',
+        value: this.getFormFactorString_(debugInfo.formFactor),
+      },
+      {
+        label: 'OS Hotkey',
+        value: debugInfo.hotkey || 'None',
+      },
+    ];
+
+    if (debugInfo.booleanSettings) {
+      for (const [key, val] of Object.entries(debugInfo.booleanSettings)) {
+        settings.push({
+          label: key,
+          value: val,
+        });
+      }
+    }
+
+    return settings;
   }
 
   protected onSelectedTabIndexSelectedChanged_(
