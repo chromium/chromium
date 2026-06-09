@@ -69,7 +69,7 @@
                               IncognitoStateObserver,
                               PrefObserverDelegate,
                               SearchEngineObserving,
-                              TabGridStateObserver,
+                              TabGridStateObserving,
                               ToolbarButtonMenuFactoryDelegate,
                               WebStateListObserving>
 
@@ -413,7 +413,7 @@
   [self didUpdateAuthenticationRequirementForState:incognitoState];
 }
 
-#pragma mark - TabGridStateObserver
+#pragma mark - TabGridStateObserving
 
 - (void)willEnterTabGrid {
   _currentPage = _tabGridState.currentPage;
