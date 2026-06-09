@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_P(DesktopBnplUiDelegateBrowserTest,
                        ShowAndVerifyUi_ThenCloseWindow) {
   ShowAndVerifyUi();
   // Close the browser window.
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   // Wait until the browser window is closed.
   base::RunLoop().RunUntilIdle();
 }

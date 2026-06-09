@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, CloseWindow) {
   ScopedProfileKeepAlive profile_keep_alive(
       profile, ProfileKeepAliveOrigin::kBrowserWindow);
   ui_test_utils::BrowserDestroyedObserver observer(browser());
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   observer.Wait();
 
   std::string result =

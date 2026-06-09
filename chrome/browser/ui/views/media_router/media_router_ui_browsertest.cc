@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
   EXPECT_FALSE(ToolbarIconExists());
   action_controller()->OnRoutesUpdated(routes_);
   EXPECT_TRUE(ToolbarIconExists());
-  browser2->window()->Close();
+  browser2->GetWindow()->Close();
   EXPECT_TRUE(ToolbarIconExists());
 }
 

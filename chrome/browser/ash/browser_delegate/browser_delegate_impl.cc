@@ -148,7 +148,7 @@ void BrowserDelegateImpl::Minimize() {
 }
 
 void BrowserDelegateImpl::Close() {
-  browser_->window()->Close();
+  browser_->GetWindow()->Close();
 }
 
 void BrowserDelegateImpl::AddTab(const GURL& url,

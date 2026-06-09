@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(AutofillErrorDialogViewNativeViewsBrowserTest,
 
   ShowUi("temporary");
   VerifyUi();
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.ErrorDialogShown"),

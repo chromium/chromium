@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageUiTest, DestroyBrowserBeforeComplete) {
   RunTestSequence(
       ShowPromo(GURL(kPageWithoutAnchorURL), std::nullopt,
                 kShortTimeoutForTesting),
-      WaitForBubble(false), Do([this] { browser()->window()->Close(); }),
+      WaitForBubble(false), Do([this] { browser()->GetWindow()->Close(); }),
       WaitForHide(kBrowserViewElementId), CheckHandleIsValid(false));
 }
 
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageUiTest,
                        DestroyBrowserWhileBubbleVisible) {
   RunTestSequence(
       ShowPromo(GURL(chrome::kChromeUIUserEducationInternalsURL)),
-      WaitForBubble(true), Do([this] { browser()->window()->Close(); }),
+      WaitForBubble(true), Do([this] { browser()->GetWindow()->Close(); }),
       WaitForHide(kBrowserViewElementId), CheckHandleIsValid(false));
 }
 

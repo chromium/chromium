@@ -1899,7 +1899,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
     content::TitleWatcher title_watcher(web_contents, u"1.0.0");
     EXPECT_EQ(title_watcher.WaitAndGetTitle(), u"1.0.0");
     ui_test_utils::BrowserDestroyedObserver observer(app_browser);
-    app_browser->window()->Close();
+    app_browser->GetWindow()->Close();
     observer.Wait();
   }
 
@@ -1920,7 +1920,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                 HasSubstr("This application is missing or damaged"));
 
     ui_test_utils::BrowserDestroyedObserver observer(app_browser);
-    app_browser->window()->Close();
+    app_browser->GetWindow()->Close();
     observer.Wait();
   }
 
@@ -2010,7 +2010,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   // Close the browser.
   ui_test_utils::BrowserDestroyedObserver observer(app_browser);
-  app_browser->window()->Close();
+  app_browser->GetWindow()->Close();
   observer.Wait();
 
   // Now an attempt to open the app should display the "missing or damaged"
@@ -2133,7 +2133,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
     content::TitleWatcher title_watcher(web_contents, u"1.0.0");
     EXPECT_EQ(title_watcher.WaitAndGetTitle(), u"1.0.0");
     ui_test_utils::BrowserDestroyedObserver observer(app_browser);
-    app_browser->window()->Close();
+    app_browser->GetWindow()->Close();
     observer.Wait();
   }
 

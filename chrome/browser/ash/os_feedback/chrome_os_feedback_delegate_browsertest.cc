@@ -1017,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   const gfx::Rect default_bounds(feedback_window->GetBoundsInScreen());
   feedback_window->SetBounds(gfx::Rect(600, 600));
   ASSERT_NE(default_bounds, feedback_window->GetBoundsInScreen());
-  feedback_browser->window()->Close();
+  feedback_browser->GetWindow()->Close();
 
   // Launch the app again. Test that it resets to default bounds.
   feedback_browser = LaunchFeedbackAppAndGetBrowser();

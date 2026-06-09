@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionServiceBrowserTest,
   ASSERT_TRUE(new_browser);
 
   // Close the browser window to trigger profile shutdown
-  new_browser->window()->Close();
+  new_browser->GetWindow()->Close();
 
   // Wait for profile to shut down.
   profile_shutdown_waiter.Wait();

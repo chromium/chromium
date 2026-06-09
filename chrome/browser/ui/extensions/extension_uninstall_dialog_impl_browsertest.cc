@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
       extensions::ExtensionUninstallDialog::Create(
           browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
           &delegate));
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   content::RunAllPendingInMessageLoop();
 
   dialog->ConfirmUninstall(extension.get(),
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
   content::RunAllPendingInMessageLoop();
 
   // Kill parent window.
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   run_loop.Run();
   EXPECT_TRUE(delegate.canceled());
 }

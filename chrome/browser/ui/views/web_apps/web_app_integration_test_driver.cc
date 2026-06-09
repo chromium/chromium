@@ -1268,7 +1268,7 @@ void WebAppIntegrationTestDriver::ClosePwa() {
 
   ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(
       app_browser());
-  app_browser()->window()->Close();
+  app_browser()->GetWindow()->Close();
   browser_destroyed_observer.Wait();
   app_browser_ = nullptr;
 

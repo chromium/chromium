@@ -52,7 +52,7 @@ class ScreenshotIntegrationTest : public MixinBasedInProcessBrowserTest,
   // MixinBasedInProcessBrowserTest:
   void TearDownOnMainThread() override {
     // Clean up even if the test was skipped.
-    browser()->window()->Close();
+    browser()->GetWindow()->Close();
   }
 
  protected:

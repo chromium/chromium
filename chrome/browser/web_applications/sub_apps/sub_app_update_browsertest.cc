@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
       provider().registrar_unsafe().GetAppShortcutsMenuItemInfos(sub_app_id),
       testing::IsEmpty());
 
-  iwa_browser->window()->Close();
+  iwa_browser->GetWindow()->Close();
 
   UpdateIwaToV2AndWait(bundle_id, "Sub App", R"([{
         "name": "Shortcut",
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
       provider().registrar_unsafe().GetAppShortcutsMenuItemInfos(sub_app_id),
       testing::IsEmpty());
 
-  iwa_browser->window()->Close();
+  iwa_browser->GetWindow()->Close();
 
   // Use different name of sub app to check that the update
   // for title/icon is still applied automatically without user action.
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest, SubAppScopeOverlap) {
   EXPECT_EQ(provider().registrar_unsafe().GetAppScope(sub_app_2_id),
             iwa_url_info.origin().GetURL().Resolve("/sub2/"));
 
-  iwa_browser->window()->Close();
+  iwa_browser->GetWindow()->Close();
 
   // Update parent IWA that includes the sub apps.
   ManifestBuilder parent_manifest_v2 =
@@ -618,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest, SubAppParentInScope) {
   EXPECT_EQ(provider().registrar_unsafe().GetAppScope(sub_app_1_id),
             iwa_url_info.origin().GetURL().Resolve("/sub1/"));
 
-  iwa_browser->window()->Close();
+  iwa_browser->GetWindow()->Close();
 
   // Update parent IWA that includes the sub app.
   ManifestBuilder parent_manifest_v2 =

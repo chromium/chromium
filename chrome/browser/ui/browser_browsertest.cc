@@ -1109,7 +1109,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NotifiesBrowserDidClose) {
   EXPECT_CALL(browser_did_close_callback, Run).Times(0);
   base::CallbackListSubscription subscription =
       browser()->RegisterBrowserDidClose(browser_did_close_callback.Get());
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   EXPECT_FALSE(browser()->IsDeleteScheduled());
   testing::Mock::VerifyAndClearExpectations(&browser_did_close_callback);
 
@@ -1117,7 +1117,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NotifiesBrowserDidClose) {
   // notification is propagated.
   EXPECT_CALL(browser_did_close_callback, Run).Times(1);
   UnloadController::From(browser())->set_force_skip_warning_user_on_close(true);
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   EXPECT_TRUE(browser()->IsDeleteScheduled());
 }
 
@@ -2826,7 +2826,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
 
     // EXPECT_GE as Mac will have a larger height with the additional title bar.
     EXPECT_GE(bounds.height(), 122 + minimum_popup_padding);
-    browser->window()->Close();
+    browser->GetWindow()->Close();
   }
 
   {
@@ -2845,7 +2845,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
 
     // EXPECT_GE as Mac will have a larger height with the additional title bar.
     EXPECT_GE(bounds.height(), 122);
-    browser->window()->Close();
+    browser->GetWindow()->Close();
   }
 
   {
@@ -2861,7 +2861,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
     // See https://crbug.com/41227805.
     EXPECT_GE(bounds.width(), 100);
     EXPECT_EQ(122, bounds.height());
-    browser->window()->Close();
+    browser->GetWindow()->Close();
   }
 
   {
@@ -2877,7 +2877,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
     // See https://crbug.com/41227805.
     EXPECT_GE(bounds.width(), 100);
     EXPECT_EQ(122, bounds.height());
-    browser->window()->Close();
+    browser->GetWindow()->Close();
   }
 
   {
@@ -2895,7 +2895,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
 
     // EXPECT_GE as Mac will have a larger height with the additional title bar.
     EXPECT_GE(bounds.height(), 122);
-    browser->window()->Close();
+    browser->GetWindow()->Close();
   }
 }
 

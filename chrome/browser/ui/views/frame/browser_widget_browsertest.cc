@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWidgetTest, WebAppsHasBoundsOnOpen) {
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   ASSERT_TRUE(app_browser->is_type_app());
-  app_browser->window()->Close();
+  app_browser->GetWindow()->Close();
 }
 
 class MockThemeObserver : public views::WidgetObserver {

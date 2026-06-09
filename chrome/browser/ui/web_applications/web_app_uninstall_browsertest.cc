@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest,
     Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
     ASSERT_TRUE(app_browser->is_type_app());
     ASSERT_FALSE(app_browser->is_type_normal());
-    app_browser->window()->Close();
+    app_browser->GetWindow()->Close();
   }
 
   UninstallWebApp(app_id);

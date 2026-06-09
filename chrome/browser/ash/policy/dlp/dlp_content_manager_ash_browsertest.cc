@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   run_loop.Run();
 
   capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
-  browser2->window()->Close();
+  browser2->GetWindow()->Close();
   histogram_tester_.ExpectUniqueSample(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kVideoCaptureInterruptedUMA,
@@ -630,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, VideoCaptureReported) {
   run_loop.RunUntilIdle();
   capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
 
-  browser2->window()->Close();
+  browser2->GetWindow()->Close();
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kVideoCaptureInterruptedUMA,
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   run_loop.Run();
 
   capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
-  browser2->window()->Close();
+  browser2->GetWindow()->Close();
   histogram_tester_.ExpectUniqueSample(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kVideoCaptureInterruptedUMA,
@@ -745,7 +745,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   // dismissed.
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
 
-  browser2->window()->Close();
+  browser2->GetWindow()->Close();
   histogram_tester_.ExpectTotalCount(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kVideoCaptureInterruptedUMA,
@@ -819,7 +819,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       true, 1);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
 
-  browser2->window()->Close();
+  browser2->GetWindow()->Close();
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kVideoCaptureInterruptedUMA,
@@ -891,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       false, 1);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
 
-  browser2->window()->Close();
+  browser2->GetWindow()->Close();
   histogram_tester_.ExpectBucketCount(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kVideoCaptureInterruptedUMA,
@@ -1839,7 +1839,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   browser1->tab_strip_model()->ActivateTabAt(0);
 
   // Cleanup and check reporting.
-  browser2->window()->Close();
+  browser2->GetWindow()->Close();
   histogram_tester_.ExpectUniqueSample(
       data_controls::GetDlpHistogramPrefix() +
           data_controls::dlp::kScreenSharePausedOrResumedUMA,

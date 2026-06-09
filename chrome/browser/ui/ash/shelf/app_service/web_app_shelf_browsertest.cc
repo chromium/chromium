@@ -54,7 +54,7 @@ class WebAppShelfBrowserTest : public InProcessBrowserTest {
         WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromOmnibox));
     Browser* app_browser = browser_created_observer.Wait();
     ash::ShelfModel::Get()->PinExistingItemWithID(app_id);
-    app_browser->window()->Close();
+    app_browser->GetWindow()->Close();
   }
 
   Profile* profile() { return browser()->profile(); }
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(WebAppShelfBrowserTest, SwitchingBetweenApps) {
   EXPECT_EQ(button_c->state(), ash::ShelfAppButton::STATE_RUNNING);
   EXPECT_EQ(button_chrome->state(), ash::ShelfAppButton::STATE_ACTIVE);
 
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   EXPECT_EQ(button_a->state(), ash::ShelfAppButton::STATE_NORMAL);
   EXPECT_EQ(button_b->state(), ash::ShelfAppButton::STATE_NORMAL);
   EXPECT_EQ(button_c->state(), ash::ShelfAppButton::STATE_ACTIVE);

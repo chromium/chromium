@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, Error) {
 
   // Close the browser so the native messaging host error reporting is the only
   // keep-alive.
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
 
   ASSERT_NO_FATAL_FAILURE(TestKeepAliveStateObserver().WaitForNoKeepAlive());
 
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, InvalidConnectId) {
 
   // Close the browser so the native messaging host error reporting is the only
   // keep-alive.
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
 
   ASSERT_NO_FATAL_FAILURE(TestKeepAliveStateObserver().WaitForNoKeepAlive());
 
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, TooLongConnectId) {
 
   // Close the browser so the native messaging host error reporting is the only
   // keep-alive.
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
 
   ASSERT_NO_FATAL_FAILURE(TestKeepAliveStateObserver().WaitForNoKeepAlive());
 
@@ -370,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, InvalidExtensionId) {
 
   // Close the browser so the native messaging host error reporting is the only
   // keep-alive.
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
 
   ASSERT_NO_FATAL_FAILURE(TestKeepAliveStateObserver().WaitForNoKeepAlive());
 

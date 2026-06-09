@@ -2165,7 +2165,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
             EXPECT_FALSE(navigation_handle->HasCommitted());
             was_navigation_canceled = true;
           }));
-  incognito->window()->Close();
+  incognito->GetWindow()->Close();
   profile_destruction_waiter.Wait();
 
   // Make sure the navigation was canceled during profile destruction.

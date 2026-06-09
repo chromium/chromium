@@ -9266,7 +9266,7 @@ IN_PROC_BROWSER_TEST_F(WebRequestProxyingWebTransportCrashTest,
   // Asynchronous teardown.
   // Initiate profile shutdown asynchronously to ensure the message loop remains
   // unblocked and capable of processing the incoming Mojo network errors.
-  incognito_browser->window()->Close();
+  incognito_browser->GetWindow()->Close();
 
   // Force the message loop collision.
   // Pump the loop to race the network errors against the profile shutdown

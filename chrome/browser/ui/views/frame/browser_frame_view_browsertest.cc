@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, IncognitoIsCorrectColor) {
   // Ensure that the frame color is very dark in Incognito.
   EXPECT_LT(frame_color_hsl.l, 0.2);
 
-  incognito_browser->window()->Close();
+  incognito_browser->GetWindow()->Close();
 }
 
 // Checks that the title bar for hosted app windows is hidden when in fullscreen

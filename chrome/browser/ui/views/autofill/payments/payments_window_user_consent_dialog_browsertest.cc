@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogBrowserTest,
           PaymentsWindowUserConsentDialogView::kTopViewId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Do([this]() { browser()->window()->Close(); })));
+      InSameContext(Do([this]() { browser()->GetWindow()->Close(); })));
 }
 
 // Ensures the UI can be shown, and verifies that closing the browser while the
@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
       InSameContext(
-          Do([this]() { browser()->window()->Close(); }), Check([this]() {
+          Do([this]() { browser()->GetWindow()->Close(); }), Check([this]() {
             return histogram_tester_.GetBucketCount(
                        /*name=*/
                        kPaymentsWindowUserConsentDialogResultVcn3dsHistogramName, /*sample=*/

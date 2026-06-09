@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeInternalPages) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeHostedApps) {
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
 
   // Open a new app window.
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(

@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
 
   RunTestSequence(InAnyContext(
       MaybeShowPromo(kCustomActionTestFeature),
-      Do([this]() { browser()->window()->Close(); }),
+      Do([this]() { browser()->GetWindow()->Close(); }),
       WaitForHide(kBrowserViewElementId).SetTransitionOnlyOnEvent(true),
       EnsurePresent(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),

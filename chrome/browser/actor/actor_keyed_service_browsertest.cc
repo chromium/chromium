@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   ASSERT_TRUE(result);
   EXPECT_EQ(result->code, mojom::ActionResultCode::kTaskWentAway);
 
-  browser2->window()->Close();
+  browser2->GetWindow()->Close();
 }
 
 IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
 
   EXPECT_FALSE(task->GetLastActedTabs().contains(tab2->GetHandle()));
 
-  browser2->window()->Close();
+  browser2->GetWindow()->Close();
 }
 #endif
 }  // namespace

@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberTest, CloseBrowser) {
 
   SendScrubEvent(browser(), 0);
   EXPECT_TRUE(TabScrubber::GetInstance()->IsActivationPending());
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   EXPECT_FALSE(TabScrubber::GetInstance()->IsActivationPending());
 }
 

@@ -1427,7 +1427,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewRaceTest,
   // 4. Initiate browser closure.
   // This synchronously calls Browser::OnWindowClosing() which nulls the
   // BrowserWindowInterface reference and posts SynchronouslyDestroyBrowser.
-  new_browser->window()->Close();
+  new_browser->GetWindow()->Close();
 
   // 5. Queue BindInterface manually.
   // This mimics the Mojo request from the renderer arriving after the BWI is
@@ -1869,7 +1869,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
 
   // Close the window. This should trigger the beforeunload dialog and set the
   // browser into the "attempting to close" state.
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
 
   // Verify the browser is attempting to close.
   EXPECT_TRUE(browser()->capabilities()->IsAttemptingToCloseBrowser());

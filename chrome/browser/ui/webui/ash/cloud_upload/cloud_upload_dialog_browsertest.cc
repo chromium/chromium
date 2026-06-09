@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
   content::WebContentsDestroyedWatcher watcher(web_contents);
   Browser* files_app_browser =
       FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER);
-  files_app_browser->window()->Close();
+  files_app_browser->GetWindow()->Close();
   watcher.Wait();
 
   // Expect a kCancelledAtSetup TaskResult.

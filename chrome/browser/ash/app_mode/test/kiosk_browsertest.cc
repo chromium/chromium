@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_P(KioskTest, DoesNotExitWhenSettingsWindowCloses) {
       CHECK_DEREF(user_manager::UserManager::Get()->GetActiveUser())));
   EXPECT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(), &settings);
 
-  settings.window()->Close();
+  settings.GetWindow()->Close();
   ui_test_utils::BrowserDestroyedObserver settings_observer(&settings);
   settings_observer.Wait();
   auto& session = CHECK_DEREF(KioskController::Get().GetKioskSystemSession());

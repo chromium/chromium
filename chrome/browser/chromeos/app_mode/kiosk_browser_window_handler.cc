@@ -318,7 +318,7 @@ void KioskBrowserWindowHandler::OnCompleteBrowserAdded(Browser* browser) {
   }
 
   // Hide the window until it is triaged.
-  browser->window()->Hide();
+  browser->GetWindow()->Hide();
 
   // At this point the URL being opened might still be unknown.
   // This URL is required for our triaging, so we'll wait for it.

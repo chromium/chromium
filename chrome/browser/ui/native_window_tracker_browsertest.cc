@@ -23,7 +23,7 @@ IN_PROC_BROWSER_TEST_F(NativeWindowTrackerTest, Basic) {
           browser()->GetWindow()->GetNativeWindow());
   EXPECT_FALSE(tracker->WasNativeWindowDestroyed());
 
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   content::RunAllPendingInMessageLoop();
   EXPECT_TRUE(tracker->WasNativeWindowDestroyed());
 }

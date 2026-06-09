@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(WebauthnDialogBrowserTest,
                        OfferDialog_CanCloseBrowserWhileDialogShowing) {
   ShowUi(kOfferDialogName);
   VerifyUi();
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(WebauthnDialogBrowserTest,
                        VerifyPendingDialog_CanCloseBrowserWhileDialogShowing) {
   ShowUi(kVerifyDialogName);
   VerifyUi();
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   base::RunLoop().RunUntilIdle();
 }
 

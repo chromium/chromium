@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
 
   // Make sure closing a browser will invoke the exit callback.
   EXPECT_CALL(exit_callback, Run).Times(1);
-  browser2->window()->Close();
+  browser2->GetWindow()->Close();
 }
 
 IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
 
   // Closing the browser should not crash and should invoke the exit callback.
   EXPECT_CALL(exit_callback, Run).Times(1);
-  browser2->window()->Close();
+  browser2->GetWindow()->Close();
 }
 
 IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,

@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(OcclusionVisibilityInteractiveUITest,
 
   {
     VisibilityWaiter waiter(web_contents, content::Visibility::VISIBLE);
-    browser2->window()->Close();
+    browser2->GetWindow()->Close();
     waiter.Wait();
   }
 }

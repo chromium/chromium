@@ -114,7 +114,7 @@ void OnTaskSystemWebAppManagerImpl::CloseSystemWebAppWindow(
   if (browser) {
     // Skips the tab unload process so that browser closes immediately.
     UnloadController::From(browser)->set_force_skip_warning_user_on_close(true);
-    browser->window()->Close();
+    browser->GetWindow()->Close();
   }
 }
 

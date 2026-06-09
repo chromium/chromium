@@ -434,7 +434,7 @@ void BrowserTabStripModelDelegate::OnRemovingAllTabsFromGroups(
 // BrowserTabStripModelDelegate, private:
 
 void BrowserTabStripModelDelegate::CloseFrame() {
-  browser_->window()->Close();
+  browser_->GetWindow()->Close();
 }
 
 bool BrowserTabStripModelDelegate::BrowserSupportsHistoricalEntries() {

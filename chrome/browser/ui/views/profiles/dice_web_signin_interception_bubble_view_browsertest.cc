@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
 
   // Close the browser without closing the bubble.
   ProfileDestructionWaiter profile_destruction_waiter(new_profile);
-  new_browser->window()->Close();
+  new_browser->GetWindow()->Close();
 
   // The profile is not destroyed, because the bubble is retaining it.
   EXPECT_TRUE(g_browser_process->profile_manager()->HasKeepAliveForTesting(

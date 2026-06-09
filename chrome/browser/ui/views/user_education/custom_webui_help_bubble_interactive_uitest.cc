@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest, ShowPromoAndCloseBrowser) {
       MaybeShowPromo(kCustomWebUIHelpBubbleTestFeature,
                      CustomHelpBubbleShown{
                          CustomWebUIHelpBubble::kHelpBubbleIdForTesting}),
-      Do([this] { browser()->window()->Close(); }),
+      Do([this] { browser()->GetWindow()->Close(); }),
       WaitForHide(kBrowserViewElementId),
       WaitForHide(CustomWebUIHelpBubble::kHelpBubbleIdForTesting));
 }

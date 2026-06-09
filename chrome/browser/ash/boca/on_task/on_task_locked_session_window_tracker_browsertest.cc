@@ -905,7 +905,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
       LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
           profile());
   EXPECT_FALSE(window_tracker->CanOpenNewPopup());
-  popup_browser->window()->Close();
+  popup_browser->GetWindow()->Close();
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(window_tracker->CanOpenNewPopup());
 }
@@ -941,7 +941,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   EXPECT_CALL(window_observer, OnWindowTrackerCleanedup).Times(1);
 
   // Close the app and verify the window tracker stops tracking it.
-  boca_app_browser->window()->Close();
+  boca_app_browser->GetWindow()->Close();
   content::RunAllTasksUntilIdle();
 
   auto* const window_tracker =

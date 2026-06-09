@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
       EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
                        ->ShouldShowCustomTabBar());
       ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
-      app_browser->window()->Close();
+      app_browser->GetWindow()->Close();
       destroyed_observer.Wait();
 
       // Check the initiating page is intact.
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
                    ->ShouldShowCustomTabBar());
   ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
-  app_browser->window()->Close();
+  app_browser->GetWindow()->Close();
   destroyed_observer.Wait();
 
   // Check the initiating browser window is intact.
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
                    ->ShouldShowCustomTabBar());
   ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
-  app_browser->window()->Close();
+  app_browser->GetWindow()->Close();
   destroyed_observer.Wait();
 
   // Check the initiating browser window is intact.
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, WindowOpen) {
       EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
                        ->ShouldShowCustomTabBar());
       ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
-      app_browser->window()->Close();
+      app_browser->GetWindow()->Close();
       destroyed_observer.Wait();
 
       // Check the initiating browser window is intact.
@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
       EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
                        ->ShouldShowCustomTabBar());
       ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
-      app_browser->window()->Close();
+      app_browser->GetWindow()->Close();
       destroyed_observer.Wait();
 
       // Check the initiating browser window is intact.
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 
   Browser* incognito_browser = CreateIncognitoBrowser();
   ui_test_utils::BrowserDestroyedObserver destroyed_observer(browser());
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   destroyed_observer.Wait();
 
   content::TestNavigationObserver observer(start_url);

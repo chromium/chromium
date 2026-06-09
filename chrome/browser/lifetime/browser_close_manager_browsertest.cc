@@ -1071,7 +1071,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   Browser* otr_browser = CreateBrowser(otr_profile);
   {
     ui_test_utils::BrowserDestroyedObserver observer(browser());
-    browser()->window()->Close();
+    browser()->GetWindow()->Close();
     observer.Wait();
   }
   ASSERT_NO_FATAL_FAILURE(CreateStalledDownload(otr_browser));
@@ -1119,7 +1119,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 
   {
     ui_test_utils::BrowserDestroyedObserver observer(otr_browser);
-    otr_browser->window()->Close();
+    otr_browser->GetWindow()->Close();
     observer.Wait();
   }
 
@@ -1168,7 +1168,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   ASSERT_NO_FATAL_FAILURE(CreateStalledDownload(browser()));
   {
     ui_test_utils::BrowserDestroyedObserver observer(browser());
-    browser()->window()->Close();
+    browser()->GetWindow()->Close();
     observer.Wait();
   }
 
@@ -1301,7 +1301,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerWithBackgroundModeBrowserTest,
                        DISABLED_CloseSingleBrowserWithBackgroundMode) {
   EXPECT_FALSE(IsBackgroundModeSuspended());
   ui_test_utils::BrowserDestroyedObserver observer(browser());
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   observer.Wait();
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
   EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
@@ -1319,7 +1319,7 @@ IN_PROC_BROWSER_TEST_F(
   ScopedProfileKeepAlive tmp_profile_keep_alive(
       browser()->profile(), ProfileKeepAliveOrigin::kBrowserWindow);
   ui_test_utils::BrowserDestroyedObserver observer(browser());
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   observer.Wait();
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
   EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());

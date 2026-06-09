@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_P(
       test::GetCardUnmaskChallengeOptions(GetChallengeOptionTypes()));
   ShowUi("");
   VerifyUi();
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_P(
   // Put the dialog in pending state.
   GetDialog()->Accept();
   // Close the browser while in pending state.
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUnmaskAuthenticationSelectionDialog.Result",

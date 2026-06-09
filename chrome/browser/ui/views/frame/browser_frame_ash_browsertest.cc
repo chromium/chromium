@@ -39,7 +39,7 @@ class BrowserTestParam : public InProcessBrowserTest,
 IN_PROC_BROWSER_TEST_P(BrowserTestParam,
                        TabbedOrAppBrowserWindowAutoManagementTest) {
   // Default |browser()| is not used by this test.
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
 
   // Open a new browser window (app or tabbed depending on a parameter).
   bool is_test_app = CreateV1App();
@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestParam,
   // Close the browser and re-create the browser window with the same app name.
   // Don't provide initial bounds. The bounds should have been saved, but for
   // tabbed windows, the position should be auto-managed.
-  browser->window()->Close();
+  browser->GetWindow()->Close();
   params.initial_bounds = gfx::Rect();
   browser = Browser::Create(params);
   browser->GetWindow()->Show();
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameAshTest, SnappedWindowSaveBounds) {
   const gfx::Size snapped_size = window->GetBoundsInScreen().size();
 
   ui_test_utils::BrowserDestroyedObserver observer(browser);
-  browser->window()->Close();
+  browser->GetWindow()->Close();
   observer.Wait();
 
   // Recreate the browser window. Test that the bounds are the same as the

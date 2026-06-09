@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_P(CardUnmaskOtpInputDialogBrowserTest,
                        CanCloseBrowserWhileDialogShowing) {
   ShowUi("");
   VerifyUi();
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   base::RunLoop().RunUntilIdle();
 }
 

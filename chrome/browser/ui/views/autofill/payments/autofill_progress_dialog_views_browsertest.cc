@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_P(AutofillProgressDialogViewsBrowserTest,
   base::HistogramTester histogram_tester;
   ShowUi(GetDialogTypeStringForLogging());
   VerifyUi();
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
       base::StrCat({"Autofill.ProgressDialog.", GetDialogTypeStringForLogging(),

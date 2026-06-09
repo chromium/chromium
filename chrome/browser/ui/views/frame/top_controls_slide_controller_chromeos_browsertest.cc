@@ -576,7 +576,7 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
 namespace {
 
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisabledForHostedApps) {
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
 
   // Open a new app window.
   Browser::CreateParams params = Browser::CreateParams::CreateForApp(

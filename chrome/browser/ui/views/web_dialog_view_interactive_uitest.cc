@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseParentWindow) {
   // Close the parent window. Tear down may happen asynchronously.
   EXPECT_FALSE(web_dialog_delegate_destroyed_);
   EXPECT_FALSE(was_view_deleted());
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(web_dialog_delegate_destroyed_);
   EXPECT_TRUE(was_view_deleted());

@@ -38,7 +38,7 @@ class WebHandwritingIntegrationTest : public MixinBasedInProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     // Close the browser otherwise the test may hang on shutdown.
-    browser()->window()->Close();
+    browser()->GetWindow()->Close();
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 

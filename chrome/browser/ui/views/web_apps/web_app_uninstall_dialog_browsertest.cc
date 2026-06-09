@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   EXPECT_NE(uninstall_widget, nullptr);
 
   // Kill parent window.
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   EXPECT_TRUE(test_future.Wait());
   EXPECT_EQ(test_future.Get<webapps::UninstallResultCode>(),
             webapps::UninstallResultCode::kCancelled);

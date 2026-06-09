@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest,
 
   ExtensionInstallPrompt prompt(profile(),
                                 browser()->GetWindow()->GetNativeWindow());
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
   content::RunAllPendingInMessageLoop();
 
   base::RunLoop run_loop;

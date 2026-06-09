@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTestWithWebApps,
   ui_test_utils::FullscreenWaiter(app, {.tab_fullscreen = true}).Wait();
 
   ui_test_utils::BrowserDestroyedObserver observer(app);
-  app->window()->Close();
+  app->GetWindow()->Close();
   observer.Wait();
 }
 

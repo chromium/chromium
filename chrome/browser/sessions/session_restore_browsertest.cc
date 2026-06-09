@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
       TabRestoreServiceFactory::GetForProfile(browser()->profile());
   service->ClearEntries();
 
-  browser()->window()->Close();
+  browser()->GetWindow()->Close();
 
   // Expect a window with three tabs.
   ASSERT_EQ(1U, service->entries().size());
