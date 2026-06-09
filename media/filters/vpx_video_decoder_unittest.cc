@@ -176,6 +176,28 @@ class VpxVideoDecoderTest : public testing::Test {
     output_frames_.push_back(std::move(frame));
   }
 
+  // Extracts the compressed video data from the AVPacket and also checks for
+  // side data containing an alpha channel. If found, it copies the alpha data
+  // into the DecoderBuffer's side data. This is necessary because FFmpeg
+  // demuxes alpha channel data as side data associated with the video packet.
+  static scoped_refptr<DecoderBuffer> CreateBufferWithAlphaFromPacket(
+      const AVPacket* packet) {
+    auto buffer = DecoderBuffer::CopyFrom(AVPacketData(*packet));
+    size_t side_data_size = 0;
+    uint8_t* side_data_ptr = av_packet_get_side_data(
+        packet, AV_PKT_DATA_MATROSKA_BLOCKADDITIONAL, &side_data_size);
+    if (side_data_size > 8) {
+      // SAFETY: The best we can do here is trust the size reported by ffmpeg.
+      auto side_data =
+          UNSAFE_BUFFERS(base::span(side_data_ptr, side_data_size));
+      if (base::U64FromBigEndian(side_data.first<8u>()) == 1) {
+        buffer->WritableSideData().alpha_data =
+            base::HeapArray<uint8_t>::CopiedFrom(side_data.subspan(8u));
+      }
+    }
+    return buffer;
+  }
+
   MOCK_METHOD1(DecodeDone, void(DecoderStatus));
 
   base::test::TaskEnvironment task_env_;
@@ -293,6 +315,68 @@ TEST_F(VpxVideoDecoderTest, SimpleFrameReuse) {
   EXPECT_EQ(old_y_data, output_frames_.back()->data(VideoFrame::Plane::kY));
 }
 
+TEST_F(VpxVideoDecoderTest, SimpleAlphaFrameReuse) {
+  VideoDecoderConfig config = TestVideoConfig::Normal(VideoCodec::kVP9);
+  config.Initialize(
+      config.codec(), config.profile(),
+      VideoDecoderConfig::AlphaMode::kHasAlpha, config.color_space_info(),
+      config.video_transformation(), config.coded_size(), config.visible_rect(),
+      config.natural_size(), config.extra_data(), config.encryption_scheme());
+  InitializeWithConfig(config);
+  scoped_refptr<DecoderBuffer> alpha_frame = ReadTestDataFile("bear-vp9a.webm");
+
+  // Read frames from the webm file.
+  InMemoryUrlProtocol protocol(*alpha_frame, false);
+  FFmpegGlue glue(&protocol);
+  ASSERT_TRUE(glue.OpenContext());
+
+  auto packet = ScopedAVPacket::Allocate();
+
+  // Decode first frame
+  ASSERT_GE(av_read_frame(glue.format_context(), packet.get()), 0);
+  auto buffer = CreateBufferWithAlphaFromPacket(packet.get());
+  Decode(buffer);
+  av_packet_unref(packet.get());
+
+  ASSERT_EQ(1u, output_frames_.size());
+  scoped_refptr<VideoFrame> frame = std::move(output_frames_.front());
+  EXPECT_EQ(PIXEL_FORMAT_I420A, frame->format());
+  const uint8_t* old_y_data = frame->data(VideoFrame::Plane::kY);
+  const uint8_t* old_a_data = frame->data(VideoFrame::Plane::kA);
+  output_frames_.pop_back();
+
+  // Clear frame reference to return the frame to the pool.
+  frame = nullptr;
+
+  // Decode second frame.
+  Decode(buffer);
+  const uint8_t* mid_y_data =
+      output_frames_.front()->data(VideoFrame::Plane::kY);
+  const uint8_t* mid_a_data =
+      output_frames_.front()->data(VideoFrame::Plane::kA);
+  output_frames_.clear();
+
+  // Issuing another decode should reuse buffers from the pool.
+  Decode(buffer);
+
+  ASSERT_EQ(1u, output_frames_.size());
+  const uint8_t* new_y_data =
+      output_frames_.back()->data(VideoFrame::Plane::kY);
+  const uint8_t* new_a_data =
+      output_frames_.back()->data(VideoFrame::Plane::kA);
+
+  // The pool is shared, so buffers might be reused in a different order (e.g. Y
+  // might get the buffer previously used for A). Because libvpx allocates the
+  // new frame before releasing the old reference frame, we need to check across
+  // all previously allocated buffers.
+  bool reused_y = new_y_data == old_y_data || new_y_data == old_a_data ||
+                  new_y_data == mid_y_data || new_y_data == mid_a_data;
+  bool reused_a = new_a_data == old_y_data || new_a_data == old_a_data ||
+                  new_a_data == mid_y_data || new_a_data == mid_a_data;
+  EXPECT_TRUE(reused_y);
+  EXPECT_TRUE(reused_a);
+}
+
 TEST_F(VpxVideoDecoderTest, SimpleFormatChange) {
   scoped_refptr<DecoderBuffer> large_frame =
       ReadTestDataFile("vp9-I-frame-1280x720");
@@ -312,9 +396,41 @@ TEST_F(VpxVideoDecoderTest, FrameValidAfterPoolDestruction) {
 
   // Write to the Y plane. The memory tools should detect a
   // use-after-free if the storage was actually removed by pool destruction.
-  memset(output_frames_.front()->writable_data(VideoFrame::Plane::kY), 0xff,
-         output_frames_.front()->rows(VideoFrame::Plane::kY) *
-             output_frames_.front()->stride(VideoFrame::Plane::kY));
+  std::ranges::fill(
+      output_frames_.front()->writable_span(VideoFrame::Plane::kY), 0xff);
+}
+
+TEST_F(VpxVideoDecoderTest, AlphaFrameValidAfterPoolDestruction) {
+  VideoDecoderConfig config = TestVideoConfig::Normal(VideoCodec::kVP9);
+  config.Initialize(
+      config.codec(), config.profile(),
+      VideoDecoderConfig::AlphaMode::kHasAlpha, config.color_space_info(),
+      config.video_transformation(), config.coded_size(), config.visible_rect(),
+      config.natural_size(), config.extra_data(), config.encryption_scheme());
+  InitializeWithConfig(config);
+  scoped_refptr<DecoderBuffer> alpha_frame = ReadTestDataFile("bear-vp9a.webm");
+
+  InMemoryUrlProtocol protocol(*alpha_frame, false);
+  FFmpegGlue glue(&protocol);
+  ASSERT_TRUE(glue.OpenContext());
+
+  auto packet = ScopedAVPacket::Allocate();
+  ASSERT_GE(av_read_frame(glue.format_context(), packet.get()), 0);
+  auto buffer = CreateBufferWithAlphaFromPacket(packet.get());
+  Decode(std::move(buffer));
+  av_packet_unref(packet.get());
+
+  ASSERT_EQ(1u, output_frames_.size());
+  EXPECT_EQ(PIXEL_FORMAT_I420A, output_frames_.front()->format());
+
+  Destroy();
+
+  // Write to the Y and A planes. The memory tools should detect a
+  // use-after-free if the storage was actually removed by pool destruction.
+  std::ranges::fill(
+      output_frames_.front()->writable_span(VideoFrame::Plane::kY), 0xff);
+  std::ranges::fill(
+      output_frames_.front()->writable_span(VideoFrame::Plane::kA), 0xff);
 }
 
 // The test stream uses profile 2, which needs high bit depth support in libvpx.
@@ -362,8 +478,7 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
   Destroy();
 
   // ASAN will be very unhappy with this line if the above is incorrect.
-  memset(last_frame->writable_data(VideoFrame::Plane::kY), 0,
-         last_frame->row_bytes(VideoFrame::Plane::kY));
+  std::ranges::fill(last_frame->writable_span(VideoFrame::Plane::kY), 0);
 }
 #endif  // !defined(LIBVPX_NO_HIGH_BIT_DEPTH) && !defined(ARCH_CPU_ARM_FAMILY)
 

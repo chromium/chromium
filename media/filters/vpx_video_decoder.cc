@@ -269,7 +269,21 @@ bool VpxVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config) {
 
   DCHECK(!vpx_codec_alpha_);
   vpx_codec_alpha_ = InitializeVpxContext(config);
-  return !!vpx_codec_alpha_;
+  if (!vpx_codec_alpha_) {
+    return false;
+  }
+
+  if (config.codec() == VideoCodec::kVP9) {
+    if (vpx_codec_set_frame_buffer_functions(
+            vpx_codec_alpha_.get(), &GetVP9FrameBuffer, &ReleaseVP9FrameBuffer,
+            memory_pool_.get())) {
+      DLOG(ERROR) << "Failed to configure external buffers for alpha. "
+                  << vpx_codec_error(vpx_codec_alpha_.get());
+      return false;
+    }
+  }
+
+  return true;
 }
 
 void VpxVideoDecoder::CloseDecoder() {
@@ -579,20 +593,13 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
   if (memory_pool_) {
     DCHECK_EQ(VideoCodec::kVP9, config_.codec());
     if (vpx_image_alpha) {
+      CHECK_GT(vpx_image_alpha->stride[VPX_PLANE_Y], 0);
       size_t alpha_plane_size =
           vpx_image_alpha->stride[VPX_PLANE_Y] * vpx_image_alpha->d_h;
-      auto alpha_plane = memory_pool_->AllocateAlphaPlaneForFrameBuffer(
-          alpha_plane_size, vpx_image->fb_priv);
-      if (alpha_plane.empty()) {
-        error_status_ = DecoderStatus::Codes::kOutOfMemory;
-        // In case of OOM, abort copy.
-        return false;
-      }
-      libyuv::CopyPlane(vpx_image_alpha->planes[VPX_PLANE_Y],
-                        vpx_image_alpha->stride[VPX_PLANE_Y],
-                        alpha_plane.data(),
-                        vpx_image_alpha->stride[VPX_PLANE_Y],
-                        vpx_image_alpha->d_w, vpx_image_alpha->d_h);
+      // SAFETY: libvpx guarantees that the Y plane has at least `stride * d_h`
+      // bytes available.
+      auto alpha_plane = UNSAFE_BUFFERS(base::span<uint8_t>(
+          vpx_image_alpha->planes[VPX_PLANE_Y], alpha_plane_size));
       *video_frame = VideoFrame::WrapExternalYuvaData(
           codec_format, coded_size, gfx::Rect(visible_size), natural_size,
           vpx_image->stride[VPX_PLANE_Y], vpx_image->stride[VPX_PLANE_U],
@@ -608,8 +615,14 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
     if (!(*video_frame))
       return false;
 
-    video_frame->get()->AddDestructionObserver(
-        memory_pool_->CreateFrameCallback(vpx_image->fb_priv));
+    (*video_frame)
+        ->AddDestructionObserver(
+            memory_pool_->CreateFrameCallback(vpx_image->fb_priv));
+    if (vpx_image_alpha) {
+      (*video_frame)
+          ->AddDestructionObserver(
+              memory_pool_->CreateFrameCallback(vpx_image_alpha->fb_priv));
+    }
     return true;
   }
 

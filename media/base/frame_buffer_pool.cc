@@ -55,7 +55,6 @@ struct FrameBufferPool::FrameBuffer {
   // Not using std::vector<uint8_t> as resize() calls take a really long time
   // for large buffers.
   BytesArray data;
-  BytesArray alpha_data;
   bool held_by_library = false;
   // Needs to be a counter since a frame buffer might be used multiple times.
   int held_by_frame = 0;
@@ -147,31 +146,6 @@ void FrameBufferPool::ReleaseFrameBuffer(void* fb_priv) {
   }
 }
 
-base::span<uint8_t> FrameBufferPool::AllocateAlphaPlaneForFrameBuffer(
-    size_t min_size,
-    void* fb_priv) {
-  base::AutoLock lock(lock_);
-  DCHECK(fb_priv);
-
-  auto* frame_buffer = static_cast<FrameBuffer*>(fb_priv);
-  DCHECK(IsUsedLocked(frame_buffer));
-  if (frame_buffer->alpha_data.size() < min_size) {
-    // Free the existing |alpha_data| first so that the memory can be reused,
-    // if possible. Note that the new array is purposely not initialized.
-    frame_buffer->alpha_data = {};
-    uint8_t* data = nullptr;
-    if (force_allocation_error_ ||
-        !base::UncheckedMalloc(min_size, reinterpret_cast<void**>(&data)) ||
-        !data) {
-      return {};
-    }
-    // SAFETY: We have just allocated `min_size` of memory for `data`.
-    frame_buffer->alpha_data =
-        UNSAFE_BUFFERS(BytesArray::FromOwningPointer(data, min_size));
-  }
-  return frame_buffer->alpha_data;
-}
-
 base::OnceClosure FrameBufferPool::CreateFrameCallback(void* fb_priv) {
   base::AutoLock lock(lock_);
 
@@ -209,10 +183,9 @@ bool FrameBufferPool::OnMemoryDump(
   size_t bytes_reserved = 0;
   for (const auto& frame_buffer : frame_buffers_) {
     if (IsUsedLocked(frame_buffer.get())) {
-      bytes_used += frame_buffer->data.size() + frame_buffer->alpha_data.size();
+      bytes_used += frame_buffer->data.size();
     }
-    bytes_reserved +=
-        frame_buffer->data.size() + frame_buffer->alpha_data.size();
+    bytes_reserved += frame_buffer->data.size();
   }
 
   memory_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,

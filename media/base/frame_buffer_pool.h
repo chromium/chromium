@@ -48,11 +48,6 @@ class MEDIA_EXPORT FrameBufferPool
   // Called when a frame buffer allocation is no longer needed.
   void ReleaseFrameBuffer(void* fb_priv);
 
-  // Allocates (or reuses) room for an alpha plane on a given frame buffer.
-  // |fb_priv| must be a value previously returned by GetFrameBuffer().
-  base::span<uint8_t> AllocateAlphaPlaneForFrameBuffer(size_t min_size,
-                                                       void* fb_priv);
-
   // Generates a "no_longer_needed" closure that holds a reference to this pool;
   // |fb_priv| must be a value previously returned by GetFrameBuffer(). The
   // callback may be called on any thread.
