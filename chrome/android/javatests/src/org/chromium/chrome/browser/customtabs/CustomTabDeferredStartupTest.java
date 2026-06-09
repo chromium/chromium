@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.customtabs;
 import android.app.Activity;
 import android.os.Looper;
 
-import androidx.annotation.NonNull;
 import androidx.test.filters.LargeTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,7 +24,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
@@ -51,10 +50,6 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableLeakChecks({
-    "crbug.com/512491968 (ApplicationStatus)",
-    "crbug.com/512492507 (ApplicationStatus)"
-})
 public class CustomTabDeferredStartupTest {
     static class PageLoadFinishedTabObserver extends EmptyTabObserver {
         private boolean mIsPageLoadFinished;
@@ -77,7 +72,7 @@ public class CustomTabDeferredStartupTest {
         }
 
         @Override
-        public void onInitialTabCreated(@NonNull Tab tab, @TabCreationMode int mode) {
+        public void onInitialTabCreated(Tab tab, @TabCreationMode int mode) {
             tab.addObserver(mObserver);
         }
     }
@@ -160,9 +155,25 @@ public class CustomTabDeferredStartupTest {
 
     @Rule public final ChromeActivityTestRule<?> mActivityTestRule;
 
+    private NewTabObserver mNewTabObserver;
+
     public CustomTabDeferredStartupTest(@ActivityType int activityType) {
         mActivityType = activityType;
         mActivityTestRule = CustomTabActivityTypeTestUtils.createActivityTestRule(activityType);
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mNewTabObserver != null) {
+                        // ApplicationStatus#sGeneralActivityStateListeners is process-wide and
+                        // would otherwise pin the test's NewTabObserver (and its mActivity
+                        // reference to the destroyed Activity) beyond this test.
+                        ApplicationStatus.unregisterActivityStateListener(mNewTabObserver);
+                        mNewTabObserver = null;
+                    }
+                });
     }
 
     @Test
@@ -173,9 +184,9 @@ public class CustomTabDeferredStartupTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PageLoadFinishedTabObserver tabObserver = new PageLoadFinishedTabObserver();
-                    NewTabObserver newTabObserver = new NewTabObserver(tabObserver);
-                    TabModelSelectorBase.setObserverForTests(newTabObserver);
-                    ApplicationStatus.registerStateListenerForAllActivities(newTabObserver);
+                    mNewTabObserver = new NewTabObserver(tabObserver);
+                    TabModelSelectorBase.setObserverForTests(mNewTabObserver);
+                    ApplicationStatus.registerStateListenerForAllActivities(mNewTabObserver);
                     PageIsLoadedDeferredStartupHandler handler =
                             new PageIsLoadedDeferredStartupHandler(
                                     tabObserver, helper, mActivityTestRule);
