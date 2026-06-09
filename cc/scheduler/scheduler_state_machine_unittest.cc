@@ -3670,13 +3670,15 @@ TEST(SchedulerStateMachineTest, ThrottleDueToConsecutiveNoDamageFrames) {
   StateMachine state(default_scheduler_settings);
   SET_UP_STATE(state);
 
+  state.FrameIntervalUpdated(base::Hertz(60));
+
   // Initially, there's no throttling.
   EXPECT_EQ(base::TimeDelta(), state.MainFrameThrottledInterval());
   EXPECT_FALSE(state.ShouldThrottleSendBeginMainFrame());
 
-  // Simulating 60 consecutive no-update frames.
-  // The threshold for 32ms throttling is 60 consecutive no-update frames.
-  for (int i = 0; i < 60; i++) {
+  // Simulating 90 consecutive no-update frames.
+  // The threshold for throttling is 90 consecutive no-update frames.
+  for (int i = 0; i < 90; i++) {
     state.IssueNextBeginImplFrame();
     state.SetNeedsBeginMainFrame(false);
     EXPECT_ACTION_UPDATE_STATE(
@@ -3690,14 +3692,16 @@ TEST(SchedulerStateMachineTest, ThrottleDueToConsecutiveNoDamageFrames) {
   EXPECT_TRUE(state.ShouldThrottleSendBeginMainFrame());
   EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
 
-  // Advance time by 16ms (less than 32ms). It should still throttle.
+  // Advance time by 16ms (less than throttled interval). It should still
+  // throttle.
   state.AdvanceTimeBy(base::Milliseconds(16));
   state.IssueNextBeginImplFrame();
   EXPECT_TRUE(state.ShouldThrottleSendBeginMainFrame());
   EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
 
   // Advance time by another 16ms (total 32ms since last sent BMF).
-  // It should no longer throttle.
+  // It should no longer throttle as it is larger than throttled interval
+  // (approx 30ms).
   state.AdvanceTimeBy(base::Milliseconds(16));
   state.IssueNextBeginImplFrame();
   EXPECT_FALSE(state.ShouldThrottleSendBeginMainFrame());

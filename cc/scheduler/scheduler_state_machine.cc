@@ -30,7 +30,9 @@ namespace cc {
 
 namespace {
 // Surfaces and CompositorTimingHistory don't support more than 1 pending swap.
-const int kMaxPendingSubmitFrames = 1;
+constexpr int kMaxPendingSubmitFrames = 1;
+
+constexpr float kFrameThrottlingSlackFactor = 0.9;
 
 bool IsEligibleToThrottleMainFrameRate() {
 #if BUILDFLAG(IS_ANDROID)
@@ -62,6 +64,11 @@ bool ShouldThrottleMainFrameRate(const SchedulerSettings& settings) {
 
   return base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz);
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+base::TimeDelta ThrottledFrameRateWithSlack(base::TimeDelta frame_interval,
+                                            int factor) {
+  return kFrameThrottlingSlackFactor * frame_interval * factor;
 }
 
 perfetto::NamedTrack GetTracingTrack(
@@ -1460,9 +1467,8 @@ void SchedulerStateMachine::FrameIntervalUpdated(
   //
   // Apply some slack, so that if for some reason the interval is a bit larger
   // than 8.33333333333333ms, then we catch it still.
-  constexpr float kSlackFactor = .9;
   bool fast_vsync_interval =
-      frame_interval < base::Hertz(120) * (1 / kSlackFactor);
+      frame_interval < base::Hertz(120) * (1 / kFrameThrottlingSlackFactor);
   if (fast_vsync_interval && IsEligibleToThrottleMainFrameRate()) {
     features::SetIsEligibleForThrottleMainFrameTo60Hz(true);
   }
@@ -1473,7 +1479,8 @@ void SchedulerStateMachine::FrameIntervalUpdated(
     // Use interval / 2 rather than an actual interval as refresh rates are
     // not necessarily 120: it could be something really close, or it could be
     // 144Hz for instance.
-    main_frame_throttled_interval_ = kSlackFactor * frame_interval * 2;
+    main_frame_throttled_interval_ =
+        ThrottledFrameRateWithSlack(frame_interval, 2);
     TRACE_EVENT("cc", "ThrottleMainFrame", "interval",
                 main_frame_throttled_interval_);
   } else {
@@ -1789,14 +1796,10 @@ void SchedulerStateMachine::UpdateConsecutiveNoDamageThrottlingInterval() {
   // Maybe make this a Finch parameter?
   const int count = consecutive_no_damage_main_frames_;
   base::TimeDelta interval;
-  if (count >= 105) {
-    interval = base::Seconds(1);
-  } else if (count >= 100) {
-    interval = base::Milliseconds(500);
+  if (count >= 180) {
+    interval = ThrottledFrameRateWithSlack(unthrottled_frame_interval_, 4);
   } else if (count >= 90) {
-    interval = base::Milliseconds(100);
-  } else if (count >= 60) {
-    interval = base::Milliseconds(32);
+    interval = ThrottledFrameRateWithSlack(unthrottled_frame_interval_, 2);
   } else {
     interval = base::TimeDelta();
   }
