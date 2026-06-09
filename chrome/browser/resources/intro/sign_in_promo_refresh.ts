@@ -205,8 +205,16 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
   }
 
   protected getAnimationUrl_(position: 'left'|'right'|'bottom'): string {
-    return `chrome://intro/animations/signin_benefits_${
-        this.isDarkMode_ ? 'dark' : 'light'}_${position}.json`;
+    // If animations are disabled entirely (e.g. via revamp disabled or
+    // testing), we load static JSON files for the light theme that start from
+    // frame 180 (resting state) instead of frame 0. We don't need separate
+    // files for the dark theme because the dark JSON files starting from frame
+    // 0 are acceptable from UX point of view.
+    const staticSuffix =
+        !this.isDarkMode_ && this.shouldDisableAnimations_ ? '_static' : '';
+    const theme = this.isDarkMode_ ? 'dark' : 'light';
+    return `chrome://intro/animations/signin_benefits_${theme}_${position}${
+        staticSuffix}.json`;
   }
 
   private toggleAnimations_(active: boolean) {

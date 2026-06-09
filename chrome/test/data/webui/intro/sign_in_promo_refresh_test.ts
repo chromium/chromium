@@ -270,6 +270,44 @@ suite('SignInPromoRefreshTest', function() {
     assertTrue(bottomAnimation.animationUrl.includes('dark'));
   });
 
+  test(
+      'change animation file depending on the theme with revamp disabled',
+      async function() {
+        loadTimeData.overrideValues({
+          isDeviceManaged: false,
+          signInPromoVariation: Variation.DEFAULT,
+          isFirstRunDesktopRevampEnabled: false,
+        });
+
+        testBrowserProxy.setMatchMediaMatches(false);
+
+        signInPromoElement = document.createElement('sign-in-promo-refresh');
+        document.body.appendChild(signInPromoElement);
+        await microtasksFinished();
+
+        const leftAnimation = signInPromoElement.$.leftAnimation;
+        const rightAnimation = signInPromoElement.$.rightAnimation;
+        const bottomAnimation = signInPromoElement.$.bottomAnimation;
+
+        assertTrue(!!leftAnimation);
+        assertTrue(leftAnimation.animationUrl.includes('light_left_static'));
+        assertTrue(!!rightAnimation);
+        assertTrue(rightAnimation.animationUrl.includes('light_right_static'));
+        assertTrue(!!bottomAnimation);
+        assertTrue(
+            bottomAnimation.animationUrl.includes('light_bottom_static'));
+
+        testBrowserProxy.setMatchMediaMatches(true);
+        await microtasksFinished();
+
+        assertTrue(leftAnimation.animationUrl.includes('dark_left'));
+        assertFalse(leftAnimation.animationUrl.includes('static'));
+        assertTrue(rightAnimation.animationUrl.includes('dark_right'));
+        assertFalse(rightAnimation.animationUrl.includes('static'));
+        assertTrue(bottomAnimation.animationUrl.includes('dark_bottom'));
+        assertFalse(bottomAnimation.animationUrl.includes('static'));
+      });
+
   test('toggles animations', async function() {
     loadTimeData.overrideValues({
       isDeviceManaged: false,
