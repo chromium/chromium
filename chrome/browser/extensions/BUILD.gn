@@ -707,8 +707,8 @@ source_set("extensions") {
   if (!is_chromeos) {
     sources += [
       "chrome_kiosk_delegate_non_chromeos.cc",
-      "preinstalled_apps.cc",
-      "preinstalled_apps.h",
+      "preinstalled_extensions.cc",
+      "preinstalled_extensions.h",
     ]
     if (!is_android) {
       deps += [ "//chrome/browser/download/bubble" ]
@@ -2007,7 +2007,7 @@ source_set("unit_tests") {
   ]
 
   if (!is_chromeos) {
-    sources += [ "preinstalled_apps_unittest.cc" ]
+    sources += [ "preinstalled_extensions_unittest.cc" ]
   }
 
   if (enable_extensions) {

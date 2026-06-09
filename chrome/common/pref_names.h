@@ -33,12 +33,14 @@ namespace prefs {
 // *************** PROFILE PREFS ***************
 // These are attached to the user profile
 
-// A string property indicating whether default apps should be installed
-// in this profile.  Use the value "install" to enable defaults apps, or
+// A string property indicating whether default extensions should be installed
+// in this profile.  Use the value "install" to enable default extensions, or
 // "noinstall" to disable them.  This property is usually set in the
 // master_preferences and copied into the profile preferences on first run.
-// Defaults apps are installed only when creating a new profile.
-inline constexpr char kPreinstalledApps[] = "default_apps";
+// Default extensions are installed only when creating a new profile.
+// The pref name is "default_apps" for backwards compatibility. This pref used
+// to control both apps and extensions, and before that just apps.
+inline constexpr char kPreinstalledExtensions[] = "default_apps";
 
 // Disable SafeBrowsing checks for files coming from trusted URLs when false.
 inline constexpr char kSafeBrowsingForTrustedSourcesEnabled[] =
@@ -427,13 +429,16 @@ inline constexpr char kNetworkEasterEggHighScore[] =
 inline constexpr char kNetworkPredictionOptions[] =
     "net.network_prediction_options";
 
-// An integer representing the state of the default apps installation process.
-// This value is persisted in the profile's user preferences because the process
-// is async, and the user may have stopped chrome in the middle.  The next time
-// the profile is opened, the process will continue from where it left off.
+// An integer representing the state of the default extensions installation
+// process. This value is persisted in the profile's user preferences because
+// the process is async, and the user may have stopped chrome in the middle.
+// The next time the profile is opened, the process will continue from where it
+// left off.
 //
-// See possible values in external_provider_impl.cc.
-inline constexpr char kPreinstalledAppsInstallState[] =
+// See possible values in external_provider_impl.cc. The pref name refers to
+// "apps" for historical reasons. It used to control apps and extensions, and
+// before that just apps.
+inline constexpr char kPreinstalledExtensionsInstallState[] =
     "default_apps_install_state";
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

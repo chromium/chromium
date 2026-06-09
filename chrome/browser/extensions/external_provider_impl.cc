@@ -79,7 +79,7 @@
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #else
-#include "chrome/browser/extensions/preinstalled_apps.h"
+#include "chrome/browser/extensions/preinstalled_extensions.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #endif
 
@@ -885,9 +885,9 @@ void ExternalProviderImpl::CreateExternalProviders(
   // Chrome Web Store requests will include `installedby=internal` and allow
   // certain extension downloads (e.g. Docs Offline). Unused on Chrome OS, which
   // has its own mechanism for preinstalls.
-  provider_list->push_back(std::make_unique<preinstalled_apps::Provider>(
-      profile, service,
-      ManifestLocation::kInternal, ManifestLocation::kInternal,
+  provider_list->push_back(std::make_unique<preinstalled_extensions::Provider>(
+      profile, service, ManifestLocation::kInternal,
+      ManifestLocation::kInternal,
       Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT));
 #endif
 

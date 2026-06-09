@@ -384,7 +384,7 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                std::string(), caption_registration_flags);
   registry->RegisterDictionaryPref(prefs::kPartitionDefaultZoomLevel);
   registry->RegisterDictionaryPref(prefs::kPartitionPerHostZoomLevels);
-  registry->RegisterStringPref(prefs::kPreinstalledApps, "install");
+  registry->RegisterStringPref(prefs::kPreinstalledExtensions, "install");
   registry->RegisterIntegerPref(prefs::kProfileIconVersion, 0);
   registry->RegisterBooleanPref(prefs::kProfileIconWin11Format, false);
   registry->RegisterBooleanPref(prefs::kAllowDinosaurEasterEgg, true);

@@ -55,7 +55,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/user_manager/scoped_user_manager.h"
 #else
-#include "chrome/browser/extensions/preinstalled_apps.h"
+#include "chrome/browser/extensions/preinstalled_extensions.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -126,10 +126,10 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     extension_updater()->SetExtensionCacheForTesting(
         test_extension_cache_.get());
 
-    // For tests using autoupdate, skip preinstalled app install, which can
-    // cause updates to never finish install. Otherwise preinstall the
-    // apps/extensions, which allows testing of the preinstalled app provider.
-    profile()->GetPrefs()->SetString(prefs::kPreinstalledApps,
+    // For tests using autoupdate, skip preinstalled extension install, which
+    // can cause updates to never finish install. Otherwise preinstall the
+    // extensions, which allows testing of the preinstalled extension provider.
+    profile()->GetPrefs()->SetString(prefs::kPreinstalledExtensions,
                                      autoupdate_enabled ? "" : "install");
   }
 
@@ -347,9 +347,9 @@ TEST_F(ExternalProviderImplTest, DocsOfflineExtensionIsNotReinstalled) {
 
   // Simulate external extensions being installed on a previous Chrome run.
   profile()->GetPrefs()->SetInteger(
-      prefs::kPreinstalledAppsInstallState,
-      static_cast<int>(
-          preinstalled_apps::InstallState::kAlreadyInstalledPreinstalledApps));
+      prefs::kPreinstalledExtensionsInstallState,
+      static_cast<int>(preinstalled_extensions::InstallState::
+                           kAlreadyInstalledPreinstalledExtensions));
   AddExternalProviders();
 
   AwaitCheckForExternalUpdates();

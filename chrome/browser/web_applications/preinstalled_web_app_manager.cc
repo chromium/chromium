@@ -962,8 +962,10 @@ void PreinstalledWebAppManager::PostProcessConfigs(
 
   // TODO(crbug.com/40747215): Move this constant into some shared constants.h
   // file.
+  // This is named "apps" for historical reasons.
   bool preinstalled_apps_enabled_in_prefs =
-      profile_->GetPrefs()->GetString(prefs::kPreinstalledApps) == "install";
+      profile_->GetPrefs()->GetString(prefs::kPreinstalledExtensions) ==
+      "install";
   bool is_new_user = IsNewUser();
   std::string user_type = apps::DetermineUserType(profile_);
   size_t disabled_count = 0;

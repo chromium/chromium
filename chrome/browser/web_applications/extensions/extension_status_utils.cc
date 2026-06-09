@@ -10,7 +10,7 @@
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/preinstalled_apps.h"
+#include "chrome/browser/extensions/preinstalled_extensions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -122,9 +122,10 @@ void OnExtensionSystemReady(content::BrowserContext* context,
   ExtensionSystem::Get(context)->ready().Post(FROM_HERE, std::move(callback));
 }
 
+// This is named "apps" for historical reasons.
 bool DidPreinstalledAppsPerformNewInstallation(Profile* profile) {
 #if !BUILDFLAG(IS_CHROMEOS)
-  return preinstalled_apps::Provider::DidPerformNewInstallationForProfile(
+  return preinstalled_extensions::Provider::DidPerformNewInstallationForProfile(
       profile);
 #else
   return false;

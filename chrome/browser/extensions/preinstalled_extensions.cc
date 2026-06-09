@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/preinstalled_apps.h"
+#include "chrome/browser/extensions/preinstalled_extensions.h"
 
 #include <stddef.h>
 
@@ -90,10 +90,11 @@ class NullLoader : public extensions::ExternalLoader {
 
 }  // namespace
 
-namespace preinstalled_apps {
+namespace preinstalled_extensions {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterIntegerPref(prefs::kPreinstalledAppsInstallState, kUnknown);
+  registry->RegisterIntegerPref(prefs::kPreinstalledExtensionsInstallState,
+                                kUnknown);
 }
 
 // static
@@ -102,22 +103,23 @@ bool Provider::DidPerformNewInstallationForProfile(Profile* profile) {
 }
 
 void Provider::InitProfileState() {
-  // We decide to install or not install pre-installed apps based on the
+  // We decide to install or not install pre-installed extensions based on the
   // following criteria, from highest priority to lowest priority:
   //
-  // - If the locale is not compatible with the pre-installed apps, don't
-  // install them.
-  // - The kPreinstalledApps preferences value in the profile.  This value is
-  //   usually set in the master_preferences file.
+  // - If the locale is not compatible with the pre-installed extensions, don't
+  //   install them.
+  // - The kPreinstalledExtensions preferences value in the profile.  This
+  //   value is usually set in the master_preferences file.
   // - If they have already been installed, don't reinstall them.
 
-  preinstalled_apps_enabled_ =
-      IsLocaleSupported() &&
-      profile_->GetPrefs()->GetString(prefs::kPreinstalledApps) == "install";
+  preinstalled_extensions_enabled_ =
+      IsLocaleSupported() && profile_->GetPrefs()->GetString(
+                                 prefs::kPreinstalledExtensions) == "install";
   DCHECK(!perform_new_installation_);
 
-  InstallState state = static_cast<InstallState>(
-      profile_->GetPrefs()->GetInteger(prefs::kPreinstalledAppsInstallState));
+  InstallState state =
+      static_cast<InstallState>(profile_->GetPrefs()->GetInteger(
+          prefs::kPreinstalledExtensionsInstallState));
 
   std::optional<InstallState> new_install_state;
 
@@ -127,11 +129,11 @@ void Provider::InitProfileState() {
       // chrome download.
       bool is_new_profile = profile_->WasCreatedByVersionOrLater(
           std::string(version_info::GetVersionNumber()));
-      if (is_new_profile && preinstalled_apps_enabled_) {
-        new_install_state = kAlreadyInstalledPreinstalledApps;
+      if (is_new_profile && preinstalled_extensions_enabled_) {
+        new_install_state = kAlreadyInstalledPreinstalledExtensions;
         perform_new_installation_ = true;
       } else {
-        new_install_state = kNeverInstallPreinstalledApps;
+        new_install_state = kNeverInstallPreinstalledExtensions;
       }
       break;
     }
@@ -143,11 +145,11 @@ void Provider::InitProfileState() {
     // TODO(grv) : remove after Q1-2013.
     case kProvideLegacyPreinstalledApps:
       is_migration_ = true;
-      new_install_state = kAlreadyInstalledPreinstalledApps;
+      new_install_state = kAlreadyInstalledPreinstalledExtensions;
       break;
 
-    case kAlreadyInstalledPreinstalledApps:
-    case kNeverInstallPreinstalledApps:
+    case kAlreadyInstalledPreinstalledExtensions:
+    case kNeverInstallPreinstalledExtensions:
       break;
 
     default:
@@ -155,11 +157,12 @@ void Provider::InitProfileState() {
   }
 
   if (new_install_state) {
-    profile_->GetPrefs()->SetInteger(prefs::kPreinstalledAppsInstallState,
+    profile_->GetPrefs()->SetInteger(prefs::kPreinstalledExtensionsInstallState,
                                      *new_install_state);
   }
-  if (perform_new_installation_)
+  if (perform_new_installation_) {
     GetPerformNewInstallationProfiles().insert(profile_);
+  }
 }
 
 Provider::Provider(Profile* profile,
@@ -183,7 +186,7 @@ Provider::Provider(Profile* profile,
 }
 
 void Provider::VisitRegisteredExtension() {
-  if (!preinstalled_apps_enabled_) {
+  if (!preinstalled_extensions_enabled_) {
     // If pre-installed apps aren't enabled for the profile, we short-circuit
     // the flow to add them and immediately set empty prefs.
     ExternalProviderImpl::SetPrefs(base::DictValue());
@@ -194,7 +197,7 @@ void Provider::VisitRegisteredExtension() {
 }
 
 void Provider::SetPrefs(base::DictValue prefs) {
-  DCHECK(preinstalled_apps_enabled_);
+  DCHECK(preinstalled_extensions_enabled_);
 
   // Load a hard-coded list of external extensions. These are not component
   // extensions; they are installed from the webstore and don't get access to
@@ -215,11 +218,13 @@ void Provider::SetPrefs(base::DictValue prefs) {
     // don't randomly install them out of the blue. Two-pass to keep iterators
     // nice and happy.
     for (auto entry : prefs) {
-      if (!IsOldPreinstalledApp(entry.first))
+      if (!IsOldPreinstalledApp(entry.first)) {
         keys_to_erase.insert(entry.first);
+      }
     }
-    for (const auto& key : keys_to_erase)
+    for (const auto& key : keys_to_erase) {
       prefs.Remove(key);
+    }
   }
 
   // Next, the more fun case. It's possible that these apps were uninstalled
@@ -229,12 +234,14 @@ void Provider::SetPrefs(base::DictValue prefs) {
   if (!perform_new_installation_) {
     auto should_re_add_app = [profile = profile_](const std::string& id,
                                                   const base::Value& pref) {
-      if (!pref.is_dict())
+      if (!pref.is_dict()) {
         return false;  // Invalid entry; it'll be ignored later.
+      }
       const std::string* web_app_flag =
           pref.GetDict().FindString(kWebAppMigrationFlag);
-      if (!web_app_flag)
+      if (!web_app_flag) {
         return false;  // Isn't migrating.
+      }
       if (web_app::IsPreinstalledAppInstallFeatureEnabled(*web_app_flag)) {
         // The feature is still enabled; it's responsible for the behavior.
         return false;
@@ -276,4 +283,4 @@ void Provider::AddExtension(const std::string& extension_id,
                         extension_urls::GetWebstoreUpdateUrl().spec());
 }
 
-}  // namespace preinstalled_apps
+}  // namespace preinstalled_extensions

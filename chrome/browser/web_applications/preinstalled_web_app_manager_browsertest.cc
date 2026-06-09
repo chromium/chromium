@@ -650,7 +650,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   base::AutoReset<bool> bypass_offline_manifest_requirement =
       PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
-  profile()->GetPrefs()->SetString(prefs::kPreinstalledApps, "install");
+  // This uses an "extensions" pref for historical reasons.
+  profile()->GetPrefs()->SetString(prefs::kPreinstalledExtensions, "install");
 
   constexpr char kAppConfigTemplate[] =
       R"({
@@ -669,7 +670,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   base::AutoReset<bool> bypass_offline_manifest_requirement =
       PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
-  profile()->GetPrefs()->SetString(prefs::kPreinstalledApps, "noinstall");
+  // This uses an "extensions" pref for historical reasons.
+  profile()->GetPrefs()->SetString(prefs::kPreinstalledExtensions, "noinstall");
 
   constexpr char kAppConfigTemplate[] =
       R"({

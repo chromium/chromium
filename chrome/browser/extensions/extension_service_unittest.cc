@@ -67,7 +67,7 @@
 #include "chrome/browser/extensions/installed_loader.h"
 #include "chrome/browser/extensions/pack_extension_job.h"
 #include "chrome/browser/extensions/plugin_manager.h"
-#include "chrome/browser/extensions/preinstalled_apps.h"
+#include "chrome/browser/extensions/preinstalled_extensions.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -5001,16 +5001,17 @@ TEST_F(ExtensionServiceTest, ExternalExtensionBecomesEnabledIfForceInstalled) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-// This tests if pre-installed apps are installed correctly.
-TEST_F(ExtensionServiceTest, PreinstalledAppsInstall) {
+// This tests if pre-installed extensions are installed correctly.
+TEST_F(ExtensionServiceTest, PreinstalledExtensionsInstall) {
   InitializeEmptyExtensionService();
 
   {
     // Initializing the ExtensionService will have set the pre-installed app
     // state; reset it for the sake of testing.
-    profile()->GetPrefs()->SetInteger(prefs::kPreinstalledAppsInstallState,
-                                      preinstalled_apps::kUnknown);
-    auto provider = std::make_unique<preinstalled_apps::Provider>(
+    profile()->GetPrefs()->SetInteger(
+        prefs::kPreinstalledExtensionsInstallState,
+        preinstalled_extensions::kUnknown);
+    auto provider = std::make_unique<preinstalled_extensions::Provider>(
         profile(), external_provider_manager(), ManifestLocation::kInternal,
         ManifestLocation::kInternal,
         Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT);
