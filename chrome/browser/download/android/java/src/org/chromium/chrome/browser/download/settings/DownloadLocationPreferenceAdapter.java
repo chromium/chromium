@@ -94,9 +94,10 @@ public class DownloadLocationPreferenceAdapter extends DownloadDirectoryAdapter
         if (option == null) return;
 
         // Update the native pref, which persists the download directory selected by the user.
-        mDelegate
-                .getDownloadLocationHelper()
-                .setDownloadAndSaveFileDefaultDirectory(option.location);
+        DownloadLocationHelper helper = mDelegate.getDownloadLocationHelper();
+        if (helper != null) {
+            helper.setDownloadAndSaveFileDefaultDirectory(option.location);
+        }
 
         mSelectedPosition = selectedId;
 

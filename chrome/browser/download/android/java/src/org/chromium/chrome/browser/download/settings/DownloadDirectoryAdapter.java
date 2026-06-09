@@ -41,7 +41,7 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
         void onDirectorySelectionChanged();
 
         /** Get the helper to access and update the default download directory. */
-        DownloadLocationHelper getDownloadLocationHelper();
+        @Nullable DownloadLocationHelper getDownloadLocationHelper();
     }
 
     /** Allows accessing and updating the default download directory information. */
@@ -176,8 +176,10 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
 
         int selectedId = NO_SELECTED_ITEM_ID;
 
-        String defaultLocation =
-                mDelegate.getDownloadLocationHelper().getDownloadDefaultDirectory();
+        DownloadLocationHelper helper = mDelegate.getDownloadLocationHelper();
+        if (helper == null) return;
+
+        String defaultLocation = helper.getDownloadDefaultDirectory();
         for (int i = 0; i < getCount(); i++) {
             DirectoryOption option = (DirectoryOption) getItem(i);
             if (option == null) continue;
@@ -201,9 +203,10 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
             DirectoryOption option = (DirectoryOption) getItem(i);
             if (option == null) continue;
             if (option.availableSpace > 0) {
-                mDelegate
-                        .getDownloadLocationHelper()
-                        .setDownloadAndSaveFileDefaultDirectory(option.location);
+                DownloadLocationHelper helper = mDelegate.getDownloadLocationHelper();
+                if (helper != null) {
+                    helper.setDownloadAndSaveFileDefaultDirectory(option.location);
+                }
                 mSelectedPosition = i;
                 return i;
             }
@@ -222,13 +225,13 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
     public int useSuggestedItemId(long totalBytes) {
         double maxSpaceLeft = 0;
         int suggestedId = NO_SELECTED_ITEM_ID;
-        String defaultLocation =
-                mDelegate.getDownloadLocationHelper().getDownloadDefaultDirectory();
+        DownloadLocationHelper helper = mDelegate.getDownloadLocationHelper();
+        String defaultLocation = helper != null ? helper.getDownloadDefaultDirectory() : null;
 
         for (int i = 0; i < getCount(); i++) {
             DirectoryOption option = (DirectoryOption) getItem(i);
             if (option == null) continue;
-            if (defaultLocation.equals(option.location)) continue;
+            if (defaultLocation != null && defaultLocation.equals(option.location)) continue;
 
             double spaceLeft = (double) (option.availableSpace - totalBytes) / option.totalSpace;
             // If a larger storage is found, mark it as the suggested option.

@@ -444,7 +444,7 @@ public class DownloadLocationDialogCoordinator
     public void onDirectorySelectionChanged() {}
 
     @Override
-    public DownloadLocationHelper getDownloadLocationHelper() {
-        return assumeNonNull(mDownloadLocationHelper);
+    public @Nullable DownloadLocationHelper getDownloadLocationHelper() {
+        return mDownloadLocationHelper;
     }
 }
