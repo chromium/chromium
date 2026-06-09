@@ -158,6 +158,11 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
                            std::unique_ptr<SimpleMenuModel> group_model,
                            const sessions::tab_restore::Group& group);
 
+  // Adds a submenu item representation of a split view to |parent_model|.
+  void AddSplitItemToModel(SimpleMenuModel* parent_model,
+                           std::unique_ptr<SimpleMenuModel> split_model,
+                           const sessions::tab_restore::Split& split);
+
   // Adds a submenu item representation of a |tab| to |model|.
   void AddTabItemToModel(const sessions::tab_restore::Tab* tab,
                          ui::SimpleMenuModel* model,

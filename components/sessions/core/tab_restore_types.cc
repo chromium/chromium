@@ -30,6 +30,24 @@ size_t Tab::EstimateMemoryUsage() const {
          user_agent_override.EstimateMemoryUsage();
 }
 
+Split::Split() : Entry(SPLIT) {}
+Split::~Split() = default;
+
+size_t Split::EstimateMemoryUsage() const {
+  using base::trace_event::EstimateMemoryUsage;
+  return EstimateMemoryUsage(tabs);
+}
+
+// static
+std::unique_ptr<Split> Split::FromTab(const Tab& tab) {
+  auto split = std::make_unique<Split>();
+  CHECK(tab.split_id.has_value());
+  split->split_id = tab.split_id.value();
+  split->visual_data = tab.split_visual_data.value();
+  split->timestamp = tab.timestamp;
+  return split;
+}
+
 Window::Window() : Entry(WINDOW) {}
 Window::~Window() = default;
 
@@ -45,14 +63,6 @@ size_t Group::EstimateMemoryUsage() const {
   using base::trace_event::EstimateMemoryUsage;
   return EstimateMemoryUsage(tabs) + EstimateMemoryUsage(visual_data.title()) +
          EstimateMemoryUsage(split_tabs);
-}
-
-Split::Split() : Entry(SPLIT) {}
-Split::~Split() = default;
-
-size_t Split::EstimateMemoryUsage() const {
-  using base::trace_event::EstimateMemoryUsage;
-  return EstimateMemoryUsage(tabs);
 }
 
 // static

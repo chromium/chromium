@@ -717,36 +717,61 @@ RecentTabsSubMenuModel::CreateWindowSubMenuModel(
   local_window_items_.emplace(restore_all_command_id, window.id);
   window_model->AddSeparator(ui::NORMAL_SEPARATOR);
 
-  base::flat_set<tab_groups::TabGroupId> seen_groups;
-  std::unique_ptr<ui::SimpleMenuModel> current_group_model;
-  sessions::tab_restore::Group* current_group;
-  for (const auto& tab : window.tabs) {
-    if (tab->group.has_value() && !seen_groups.contains(tab->group.value())) {
-      if (current_group_model) {
-        // Add the current group before we start working on the next one.
-        AddGroupItemToModel(window_model.get(), std::move(current_group_model),
-                            *current_group);
+  using TabIterator =
+      std::vector<std::unique_ptr<sessions::tab_restore::Tab>>::const_iterator;
+
+  // Helper to build and add a Split Submenu.
+  auto build_and_add_split = [&](ui::SimpleMenuModel* parent, TabIterator& it,
+                                 TabIterator end) {
+    const split_tabs::SplitTabId split_id = (*it)->split_id.value();
+    auto split_run_end = std::find_if(it, end, [&](const auto& t) {
+      return !t->split_id.has_value() || t->split_id.value() != split_id;
+    });
+    CHECK(window.split_tabs.contains(split_id));
+    const sessions::tab_restore::Split& split = *window.split_tabs.at(split_id);
+    auto split_model = CreateSplitSubMenuModel(split);
+    while (it != split_run_end) {
+      AddTabItemToModel(it->get(), split_model.get(),
+                        GetAndIncrementNextMenuID());
+      ++it;
+    }
+    AddSplitItemToModel(parent, std::move(split_model), split);
+  };
+
+  // Helper to build and add a Group Submenu (which may contain Splits).
+  auto build_and_add_group = [&](ui::SimpleMenuModel* parent, TabIterator& it,
+                                 TabIterator end) {
+    const tab_groups::TabGroupId group_id = (*it)->group.value();
+    auto group_run_end = std::find_if(it, end, [&](const auto& t) {
+      return !t->group.has_value() || t->group.value() != group_id;
+    });
+    CHECK(window.tab_groups.contains(group_id));
+    const sessions::tab_restore::Group& group = *window.tab_groups.at(group_id);
+    auto group_model = CreateGroupSubMenuModel(group);
+    while (it != group_run_end) {
+      if ((*it)->split_id.has_value()) {
+        build_and_add_split(group_model.get(), it, group_run_end);
+      } else {
+        AddTabItemToModel(it->get(), group_model.get(),
+                          GetAndIncrementNextMenuID());
+        ++it;
       }
-
-      CHECK(window.tab_groups.contains(tab->group.value()));
-      seen_groups.emplace(tab->group.value());
-      current_group = window.tab_groups.at(tab->group.value()).get();
-      current_group_model = CreateGroupSubMenuModel(*current_group);
     }
+    AddGroupItemToModel(parent, std::move(group_model), group);
+  };
 
-    const int tab_command_id = GetAndIncrementNextMenuID();
-    if (!tab->group.has_value()) {
-      // Add the tab item to the window.
-      AddTabItemToModel(tab.get(), window_model.get(), tab_command_id);
+  auto it = window.tabs.begin();
+  const auto end = window.tabs.end();
+  while (it != end) {
+    if ((*it)->group.has_value()) {
+      build_and_add_group(window_model.get(), it, end);
+    } else if ((*it)->split_id.has_value()) {
+      build_and_add_split(window_model.get(), it, end);
     } else {
-      // Add the tab item to the current group.
-      AddTabItemToModel(tab.get(), current_group_model.get(), tab_command_id);
+      AddTabItemToModel(it->get(), window_model.get(),
+                        GetAndIncrementNextMenuID());
+      ++it;
     }
-  }
-
-  if (current_group_model) {
-    AddGroupItemToModel(window_model.get(), std::move(current_group_model),
-                        *current_group);
   }
 
   return window_model;
@@ -817,6 +842,29 @@ void RecentTabsSubMenuModel::AddGroupItemToModel(
   local_sub_menu_items_.emplace(
       sub_menu_command_id,
       SubMenuItem(sub_menu_command_id, std::move(group_model)));
+}
+
+void RecentTabsSubMenuModel::AddSplitItemToModel(
+    SimpleMenuModel* parent_model,
+    std::unique_ptr<SimpleMenuModel> split_model,
+    const sessions::tab_restore::Split& split) {
+  const int sub_menu_command_id = GetAndIncrementNextMenuID();
+  const std::u16string sub_menu_label =
+      l10n_util::GetStringUTF16(IDS_RECENTLY_CLOSED_SPLIT);
+
+  const gfx::VectorIcon* icon = nullptr;
+  if (split.visual_data.split_layout() ==
+      split_tabs::SplitTabLayout::kStacked) {
+    icon = &kSplitSceneHorizontalCustomIcon;
+  } else {
+    icon = &(features::IsRoundedIconsEnabled() ? kSplitSceneIcon
+                                               : kSplitSceneOldIcon);
+  }
+  parent_model->AddSubMenuWithIcon(sub_menu_command_id, sub_menu_label,
+                                   split_model.get(), CreateFavicon(*icon));
+  local_sub_menu_items_.emplace(
+      sub_menu_command_id,
+      SubMenuItem(sub_menu_command_id, std::move(split_model)));
 }
 
 void RecentTabsSubMenuModel::AddTabItemToModel(

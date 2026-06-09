@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -483,6 +484,213 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
   };
 
   VerifyModel(model.GetSubmenuModelAt(4), kSplitData);
+}
+
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
+                       RecentlyClosedWindowWithSplit) {
+  Init();
+  DisableSync();
+
+  Browser* new_browser = AddBrowser(browser(), {GURL("about:blank?0")});
+  ui_test_utils::NavigateToURLWithDisposition(
+      new_browser, GURL("about:blank?1"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  new_browser->tab_strip_model()->ActivateTabAt(0);
+  new_browser->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  chrome::CloseWindow(new_browser);
+
+  RecentTabsSubMenuModel model(nullptr, browser());
+
+  std::vector<ModelData> kData = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_COMMAND, true},    // History Cluster
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // Recently closed
+      {ui::MenuModel::TYPE_SUBMENU, true},    // <window>
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // Your devices
+      {ui::MenuModel::TYPE_COMMAND, true}     // recent tabs login
+  };
+
+  VerifyModel(model, kData);
+
+  constexpr ModelData kWindowSubmenuData[] = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // Restore window
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_SUBMENU, true},    // <split view>
+  };
+  const ui::MenuModel* const window_submenu = model.GetSubmenuModelAt(4);
+  ASSERT_NO_FATAL_FAILURE(VerifyModel(window_submenu, kWindowSubmenuData));
+
+  constexpr ModelData kSplitSubmenuData[] = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // Restore split view
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://wnd/split0>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://wnd/split1>
+  };
+  VerifyModel(window_submenu->GetSubmenuModelAt(2), kSplitSubmenuData);
+}
+
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
+                       RecentlyClosedWindowWithGroupsAndSplits) {
+  Init();
+  DisableSync();
+
+  Browser* new_browser = AddBrowser(browser(), {GURL("about:blank?0")});
+  for (int i = 1; i <= 7; ++i) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        new_browser, GURL("about:blank?" + base::NumberToString(i)),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+
+  // Put them into groups and splits.
+  // Tab 0: Group 1
+  // Tab 1: Group 1
+  // Tab 2: Split 1
+  // Tab 3: Split 1
+  // Tab 4: Group 2
+  // Tab 5: Group 2
+  // Tab 6: Split 2
+  // Tab 7: Split 2
+  new_browser->tab_strip_model()->AddToNewGroup({0, 1});
+
+  new_browser->tab_strip_model()->ActivateTabAt(2);
+  new_browser->tab_strip_model()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  new_browser->tab_strip_model()->AddToNewGroup({4, 5});
+
+  new_browser->tab_strip_model()->ActivateTabAt(6);
+  new_browser->tab_strip_model()->AddToNewSplit(
+      {7}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  chrome::CloseWindow(new_browser);
+
+  RecentTabsSubMenuModel model(nullptr, browser());
+
+  std::vector<ModelData> kData = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_COMMAND, true},    // History Cluster
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // Recently closed
+      {ui::MenuModel::TYPE_SUBMENU, true},    // <window>
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // Your devices
+      {ui::MenuModel::TYPE_COMMAND, true}     // recent tabs login
+  };
+
+  VerifyModel(model, kData);
+
+  constexpr ModelData kWindowSubmenuData[] = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // Restore window
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_SUBMENU, true},    // Group 1
+      {ui::MenuModel::TYPE_SUBMENU, true},    // Split 1
+      {ui::MenuModel::TYPE_SUBMENU, true},    // Group 2
+      {ui::MenuModel::TYPE_SUBMENU, true},    // Split 2
+  };
+  const ui::MenuModel* const window_submenu = model.GetSubmenuModelAt(4);
+  ASSERT_NO_FATAL_FAILURE(VerifyModel(window_submenu, kWindowSubmenuData));
+
+  // Verify Group 1 contents (index 2)
+  constexpr ModelData kGroup1Data[] = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // Restore Group 1
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, true},    // Tab 0
+      {ui::MenuModel::TYPE_COMMAND, true},    // Tab 1
+  };
+  VerifyModel(window_submenu->GetSubmenuModelAt(2), kGroup1Data);
+
+  // Verify Split 1 contents (index 3)
+  constexpr ModelData kSplit1Data[] = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // Restore Split 1
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, true},    // Tab 2
+      {ui::MenuModel::TYPE_COMMAND, true},    // Tab 3
+  };
+  VerifyModel(window_submenu->GetSubmenuModelAt(3), kSplit1Data);
+
+  // Verify Group 2 contents (index 4)
+  constexpr ModelData kGroup2Data[] = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // Restore Group 2
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, true},    // Tab 4
+      {ui::MenuModel::TYPE_COMMAND, true},    // Tab 5
+  };
+  VerifyModel(window_submenu->GetSubmenuModelAt(4), kGroup2Data);
+
+  // Verify Split 2 contents (index 5)
+  constexpr ModelData kSplit2Data[] = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // Restore Split 2
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, true},    // Tab 6
+      {ui::MenuModel::TYPE_COMMAND, true},    // Tab 7
+  };
+  VerifyModel(window_submenu->GetSubmenuModelAt(5), kSplit2Data);
+}
+
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
+                       RecentlyClosedWindowWithSplitAndRegularTabs) {
+  Init();
+  DisableSync();
+
+  Browser* new_browser = AddBrowser(browser(), {GURL("about:blank?0")});
+  for (int i = 1; i <= 3; ++i) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        new_browser, GURL("about:blank?" + base::NumberToString(i)),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+
+  // Put Tab 1 and Tab 2 into a split. Tab 0 and Tab 3 remain regular tabs.
+  new_browser->tab_strip_model()->ActivateTabAt(1);
+  new_browser->tab_strip_model()->AddToNewSplit(
+      {2}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  chrome::CloseWindow(new_browser);
+
+  RecentTabsSubMenuModel model(nullptr, browser());
+
+  std::vector<ModelData> kData = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_COMMAND, true},    // History Cluster
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // Recently closed
+      {ui::MenuModel::TYPE_SUBMENU, true},    // <window>
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // Your devices
+      {ui::MenuModel::TYPE_COMMAND, true}     // recent tabs login
+  };
+
+  VerifyModel(model, kData);
+
+  constexpr ModelData kWindowSubmenuData[] = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // Restore window
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, true},    // Tab 0
+      {ui::MenuModel::TYPE_SUBMENU, true},    // Split 1
+      {ui::MenuModel::TYPE_COMMAND, true},    // Tab 3
+  };
+  const ui::MenuModel* const window_submenu = model.GetSubmenuModelAt(4);
+  ASSERT_NO_FATAL_FAILURE(VerifyModel(window_submenu, kWindowSubmenuData));
+
+  // Verify Split 1 contents (index 3)
+  constexpr ModelData kSplitSubmenuData[] = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // Restore split view
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, true},    // Tab 1
+      {ui::MenuModel::TYPE_COMMAND, true},    // Tab 2
+  };
+  VerifyModel(window_submenu->GetSubmenuModelAt(3), kSplitSubmenuData);
 }
 
 IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
