@@ -56,6 +56,17 @@ def _FirebaseInitProjectDir(project_dir):
       "firebase.json",
       "**/README*",
       "**/.*"
+    ],
+    "headers": [
+      {
+        "source": "/sw.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      }
     ]
   }
 }
