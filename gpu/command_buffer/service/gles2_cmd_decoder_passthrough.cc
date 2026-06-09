@@ -1558,10 +1558,15 @@ void GLES2DecoderPassthroughImpl::MarkContextLost(
     return;
   }
 
-  // SECURITY: crbug.com/500187083. Unconditionally clear the debug callback if
-  // current context IsCurrent before it gets lost to prevent UAF.
+  // SECURITY: crbug.com/500187083 and crbug.com/517018374.
+  // Unconditionally clear per-context callbacks that hold a raw
+  // `this` pointer if the context IsCurrent before it gets lost, to
+  // prevent UAF when Destroy(have_context=false) skips them.
   if (context_ && context_->IsCurrent(nullptr) && api()) {
     api()->glDebugMessageCallbackKHRFn(nullptr, nullptr);
+    if (feature_info_ && feature_info_->feature_flags().angle_blob_cache) {
+      api()->glBlobCacheCallbacksANGLEFn(nullptr, nullptr, nullptr);
+    }
   }
 
   // Don't make GL calls in here, the context might not be current.
