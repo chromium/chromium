@@ -104,7 +104,7 @@ export class ExtensionsSidebarElement extends ExtensionsSidebarElementBase {
   protected onLinkClick_(e: Event) {
     e.preventDefault();
     navigation.navigateTo(
-        {page: ((e.target as HTMLElement).dataset['path'] as Page)});
+        {page: ((e.currentTarget as HTMLElement).dataset['path'] as Page)});
     this.fire('close-drawer');
   }
 

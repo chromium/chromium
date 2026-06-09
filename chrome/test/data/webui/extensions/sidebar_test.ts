@@ -63,21 +63,21 @@ suite('ExtensionSidebarTest', function() {
           currentPage = newPage;
         });
 
-        sidebar.$.sectionsShortcuts.click();
+        sidebar.$.sectionsShortcuts.querySelector('cr-icon')!.click();
         await microtasksFinished();
         assertDeepEquals(currentPage, {page: Page.SHORTCUTS});
 
-        sidebar.$.sectionsExtensions.click();
+        sidebar.$.sectionsExtensions.querySelector('cr-icon')!.click();
         await microtasksFinished();
         assertDeepEquals(currentPage, {page: Page.LIST});
 
-        sidebar.$.sectionsSitePermissions.click();
+        sidebar.$.sectionsSitePermissions.querySelector('cr-icon')!.click();
         await microtasksFinished();
         assertDeepEquals(currentPage, {page: Page.SITE_PERMISSIONS});
 
         // Clicking on the link for the current page should close the dialog.
         const drawerClosed = eventToPromise('close-drawer', sidebar);
-        sidebar.$.sectionsExtensions.click();
+        sidebar.$.sectionsExtensions.querySelector('cr-icon')!.click();
         await drawerClosed;
       });
 
