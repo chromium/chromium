@@ -39,6 +39,8 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kContentsSeparatorLeadingEdgeElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kContentsSeparatorTopCornerElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kContentsSeparatorTopEdgeElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kContentsSeparatorTrailingEdgeElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(
+    kContextualTasksEphemeralToolbarButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kContextualTasksPageActionElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kContextualTasksSidePanelWebViewElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kCookieControlsIconElementId);
@@ -113,6 +115,8 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kPinnedToolbarActionsContainerElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPinnedToolbarActionSendTabToSelfElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(
     kPinnedToolbarActionShowSidePanelBookmarksElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(
+    kPinnedToolbarActionShowSidePanelContextualTasksElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(
     kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPlusAddressCreateSuggestionElementId);

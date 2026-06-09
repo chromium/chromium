@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -268,10 +267,10 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
           /*is_section_end=*/true),
       ToolbarController::ResponsiveElementInfo(
           ToolbarController::ElementIdInfo{
-              ContextualTasksButton::kContextualTasksToolbarButton,
+              kPinnedToolbarActionShowSidePanelContextualTasksElementId,
               IDS_OVERFLOW_MENU_ITEM_TEXT_CONTEXTUAL_TASKS,
               &kDockToRightSparkCustomIcon,
-              ContextualTasksButton::kContextualTasksToolbarButton},
+              kPinnedToolbarActionShowSidePanelContextualTasksElementId},
           /*is_section_end=*/false),
   };
 
@@ -356,7 +355,7 @@ ToolbarController::GetDefaultOverflowOrder() {
       // them on overflow.
       kWebUIToolbarElementIdentifier, kToolbarForwardButtonElementId,
       kToolbarAvatarButtonElementId, kToolbarSplitTabsToolbarButtonElementId,
-      ContextualTasksButton::kContextualTasksToolbarButton};
+      kPinnedToolbarActionShowSidePanelContextualTasksElementId};
   if (base::FeatureList::IsEnabled(features::kToolbarGlicButtonResizing)) {
     const auto it =
         std::find(order.begin(), order.end(), kToolbarAvatarButtonElementId);
@@ -380,7 +379,9 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
            {kToolbarMediaButtonElementId, "MediaButton"},
            {kToolbarSidePanelButtonElementId, "SidePanelButton"},
            {kToolbarSplitTabsToolbarButtonElementId, "SplitTabs"},
-           {ContextualTasksButton::kContextualTasksToolbarButton,
+           {kPinnedToolbarActionShowSidePanelContextualTasksElementId,
+            "PinnedContextualTasksSidePanelButton"},
+           {kActionSidePanelShowContextualTasks,
             "PinnedContextualTasksSidePanelButton"},
            {kActionClearBrowsingData, "PinnedClearBrowsingDataButton"},
            {kActionCopyUrl, "PinnedCopyLinkButton"},
