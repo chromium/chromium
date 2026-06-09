@@ -104,11 +104,56 @@ namespace omnibox {
 
 DEFINE_USER_DATA(AiModePageActionController);
 
+AiModePageActionController::AiModePageActionController(
+    BrowserWindowInterface& bwi,
+    Profile& profile,
+    LocationBarView& location_bar_view)
+    : bwi_(bwi),
+      profile_(profile),
+      location_bar_view_(location_bar_view),
+      scoped_data_(bwi.GetUnownedUserDataHost(), *this) {
+  CHECK(IsPageActionMigrated(PageActionIconType::kAiMode));
+
+  if (auto* omnibox_controller = location_bar_view.GetOmniboxController()) {
+    observation_.Observe(omnibox_controller->edit_model());
+  }
+}
+
+AiModePageActionController::~AiModePageActionController() = default;
+
+void AiModePageActionController::OnContentsChanged() {
+  UpdatePageAction();
+}
+
+void AiModePageActionController::UpdatePageAction() {
+  page_actions::PageActionController* page_action_controller =
+      GetPageActionController(*bwi_);
+  if (!page_action_controller) {
+    return;
+  }
+
+  const bool is_visible =
+      ShouldShowPageAction(base::to_address(profile_), *location_bar_view_);
+
+  if (is_visible) {
+    NotifyOmniboxTriggeredFeatureService(
+        *location_bar_view_->GetOmniboxController());
+  }
+  SetPageActionVisibility(
+      *page_action_controller,
+      location_bar_view_->GetOmniboxController()->client(),
+      base::BindOnce(&AiModePageActionController::OnFaviconFetched,
+                     weak_factory_.GetWeakPtr()),
+      is_visible);
+}
+
+// static
 AiModePageActionController* AiModePageActionController::From(
     BrowserWindowInterface* bwi) {
   return bwi ? Get(bwi->GetUnownedUserDataHost()) : nullptr;
 }
 
+// static
 void AiModePageActionController::OpenAiMode(
     OmniboxController& omnibox_controller,
     bool via_keyboard) {
@@ -116,6 +161,7 @@ void AiModePageActionController::OpenAiMode(
                                               /*via_context_menu=*/false);
 }
 
+// static
 void AiModePageActionController::NotifyOmniboxTriggeredFeatureService(
     const OmniboxController& omnibox_controller) {
   const auto* client = omnibox_controller.autocomplete_controller()
@@ -126,6 +172,7 @@ void AiModePageActionController::NotifyOmniboxTriggeredFeatureService(
           OmniboxEventProto_Feature_AIM_PAGE_ACTION_OMNIBOX_ENTRYPOINT);
 }
 
+// static
 bool AiModePageActionController::ShouldShowPageAction(
     Profile* profile,
     LocationBarView& location_bar_view) {
@@ -209,49 +256,6 @@ bool AiModePageActionController::ShouldShowPageAction(
   }
 
   return has_focus;
-}
-
-AiModePageActionController::AiModePageActionController(
-    BrowserWindowInterface& bwi,
-    Profile& profile,
-    LocationBarView& location_bar_view)
-    : bwi_(bwi),
-      profile_(profile),
-      location_bar_view_(location_bar_view),
-      scoped_data_(bwi.GetUnownedUserDataHost(), *this) {
-  CHECK(IsPageActionMigrated(PageActionIconType::kAiMode));
-
-  if (auto* omnibox_controller = location_bar_view.GetOmniboxController()) {
-    observation_.Observe(omnibox_controller->edit_model());
-  }
-}
-
-AiModePageActionController::~AiModePageActionController() = default;
-
-void AiModePageActionController::OnContentsChanged() {
-  UpdatePageAction();
-}
-
-void AiModePageActionController::UpdatePageAction() {
-  page_actions::PageActionController* page_action_controller =
-      GetPageActionController(*bwi_);
-  if (!page_action_controller) {
-    return;
-  }
-
-  const bool is_visible =
-      ShouldShowPageAction(base::to_address(profile_), *location_bar_view_);
-
-  if (is_visible) {
-    NotifyOmniboxTriggeredFeatureService(
-        *location_bar_view_->GetOmniboxController());
-  }
-  SetPageActionVisibility(
-      *page_action_controller,
-      location_bar_view_->GetOmniboxController()->client(),
-      base::BindOnce(&AiModePageActionController::OnFaviconFetched,
-                     weak_factory_.GetWeakPtr()),
-      is_visible);
 }
 
 void AiModePageActionController::OnFaviconFetched(const gfx::Image& favicon) {
