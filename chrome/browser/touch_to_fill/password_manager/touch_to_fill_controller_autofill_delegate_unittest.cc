@@ -87,7 +87,10 @@ class MockPasswordManagerClient
               GetWebAuthnCredentialsDelegateForDriver,
               (password_manager::PasswordManagerDriver*),
               (override));
-  MOCK_METHOD(void, MarkSharedCredentialsAsNotified, (const GURL&), (override));
+  MOCK_METHOD(void,
+              MarkSharedCredentialsAsNotified,
+              (const url::Origin&),
+              (override));
   MOCK_METHOD(bool,
               IsReauthBeforeFillingRequired,
               (device_reauth::DeviceAuthenticator*),
@@ -145,6 +148,8 @@ class TouchToFillControllerAutofillTest
     // cache the raw pointer here to interact with the mock after passing.
     weak_filler_ = filler.get();
     ON_CALL(*filler, GetFrameUrl()).WillByDefault(Return(GURL(kExampleCom)));
+    ON_CALL(*filler, GetFrameOrigin())
+        .WillByDefault(Return(url::Origin::Create(GURL(kExampleCom))));
     return filler;
   }
 
@@ -486,6 +491,8 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Insecure_Origin) {
   auto filler_to_pass = CreateMockFiller();
   EXPECT_CALL(*last_mock_filler(), GetFrameUrl())
       .WillOnce(Return(GURL("http://example.com")));
+  EXPECT_CALL(*last_mock_filler(), GetFrameOrigin())
+      .WillOnce(Return(url::Origin::Create(GURL("http://example.com"))));
 
   Credential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
@@ -615,7 +622,8 @@ TEST_F(TouchToFillControllerAutofillTest, Dismiss) {
            TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
        /*cred_man_delegate=*/nullptr);
 
-  EXPECT_CALL(client(), MarkSharedCredentialsAsNotified(GURL(kExampleCom)));
+  EXPECT_CALL(client(), MarkSharedCredentialsAsNotified(
+                            url::Origin::Create(GURL(kExampleCom))));
   touch_to_fill_controller().OnDismiss();
 
   auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
@@ -644,7 +652,8 @@ TEST_F(TouchToFillControllerAutofillTest, ManagePasswordsSelected) {
            TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
        /*cred_man_delegate=*/nullptr);
 
-  EXPECT_CALL(client(), MarkSharedCredentialsAsNotified(GURL(kExampleCom)));
+  EXPECT_CALL(client(), MarkSharedCredentialsAsNotified(
+                            url::Origin::Create(GURL(kExampleCom))));
   EXPECT_CALL(client(),
               NavigateToManagePasswordsPage(
                   password_manager::ManagePasswordsReferrer::kTouchToFill));

@@ -192,7 +192,8 @@ PasswordManagerClient::GetWebAuthnCredManDelegateForDriver(
   return nullptr;
 }
 
-void PasswordManagerClient::MarkSharedCredentialsAsNotified(const GURL& url) {}
+void PasswordManagerClient::MarkSharedCredentialsAsNotified(
+    const url::Origin& origin) {}
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

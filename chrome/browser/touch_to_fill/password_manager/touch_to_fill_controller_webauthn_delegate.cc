@@ -18,6 +18,7 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using Credential = TouchToFillView::Credential;
 
@@ -82,6 +83,14 @@ void TouchToFillControllerWebAuthnDelegate::OnCredManDismissed(
 
 GURL TouchToFillControllerWebAuthnDelegate::GetFrameUrl() {
   return credential_receiver_->web_contents()->GetLastCommittedURL();
+}
+
+url::Origin TouchToFillControllerWebAuthnDelegate::GetFrameOrigin() {
+  return credential_receiver_->web_contents()
+             ? credential_receiver_->web_contents()
+                   ->GetPrimaryMainFrame()
+                   ->GetLastCommittedOrigin()
+             : url::Origin();
 }
 
 bool TouchToFillControllerWebAuthnDelegate::ShouldShowTouchToFill() {
