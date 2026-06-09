@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/ios26-beta-simulator/gn-args.json"
+        "infra/config/generated/builders/ci/ios27-beta-simulator/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "ios26-beta-simulator",
+              "builder": "ios27-beta-simulator",
               "project": "chromium"
             },
             "builder_spec": {
@@ -35,11 +35,17 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "ios26-beta-simulator",
+          "builder": "ios27-beta-simulator",
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/try/ios26-beta-simulator/targets"
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "ios27-beta-simulator",
+          "group": "tryserver.chromium.mac"
+        }
+      ],
+      "targets_spec_directory": "infra/config/generated/builders/ci/ios27-beta-simulator/targets"
     }
   },
   "$build/siso": {
@@ -49,9 +55,9 @@
     "enable_cloud_monitoring": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "keep_going": 3,
     "profile_mode": "cloud",
-    "project": "rbe-chromium-untrusted"
+    "project": "rbe-chromium-trusted",
+    "remote_jobs": 250
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -60,7 +66,7 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "tryserver.chromium.mac",
-  "recipe": "chromium_trybot",
+  "builder_group": "chromium.fyi",
+  "recipe": "chromium",
   "xcode_build_version": "17f42"
 }

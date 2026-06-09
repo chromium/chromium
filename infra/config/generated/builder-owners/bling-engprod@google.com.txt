@@ -2,7 +2,7 @@ ci/Mac Builder
 ci/Mac Builder (dbg)
 ci/Mac13 Tests
 ci/ios-vm
-ci/ios26-sdk-device
+ci/ios27-sdk-device
 ci/mac-archive-rel
 ci/mac-arm64-archive-rel
 ci/mac-arm64-dbg

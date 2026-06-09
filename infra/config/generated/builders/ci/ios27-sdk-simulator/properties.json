@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/ios26-beta-simulator/gn-args.json"
+        "infra/config/generated/builders/ci/ios27-sdk-simulator/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "ios26-beta-simulator",
+              "builder": "ios27-sdk-simulator",
               "project": "chromium"
             },
             "builder_spec": {
@@ -35,17 +35,17 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "ios26-beta-simulator",
+          "builder": "ios27-sdk-simulator",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "ios26-beta-simulator",
+          "builder": "ios27-sdk-simulator",
           "group": "tryserver.chromium.mac"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/ios26-beta-simulator/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/ios27-sdk-simulator/targets"
     }
   },
   "$build/siso": {
@@ -68,5 +68,5 @@
   },
   "builder_group": "chromium.fyi",
   "recipe": "chromium",
-  "xcode_build_version": "17f42"
+  "xcode_build_version": "27a5194q"
 }

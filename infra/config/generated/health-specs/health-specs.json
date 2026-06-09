@@ -9531,7 +9531,7 @@
           }
         ]
       },
-      "ios26-beta-simulator": {
+      "ios27-beta-simulator": {
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -9551,7 +9551,7 @@
           }
         ]
       },
-      "ios26-sdk-device": {
+      "ios27-sdk-device": {
         "contact_team_email": "bling-engprod@google.com",
         "problem_specs": [
           {
@@ -9572,7 +9572,7 @@
           }
         ]
       },
-      "ios26-sdk-simulator": {
+      "ios27-sdk-simulator": {
         "problem_specs": [
           {
             "name": "Unhealthy",

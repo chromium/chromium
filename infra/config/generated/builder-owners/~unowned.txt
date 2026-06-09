@@ -39,8 +39,8 @@ ci/ios-simulator-full-configs
 ci/ios-simulator-noncq
 ci/ios18-beta-simulator
 ci/ios18-sdk-simulator
-ci/ios26-beta-simulator
-ci/ios26-sdk-simulator
+ci/ios27-beta-simulator
+ci/ios27-sdk-simulator
 ci/linux-annotator-rel
 ci/linux-blink-heap-verification
 ci/linux-blink-web-tests-force-accessibility-rel
@@ -157,8 +157,8 @@ try/ios-simulator-full-configs
 try/ios-simulator-noncq
 try/ios18-beta-simulator
 try/ios18-sdk-simulator
-try/ios26-beta-simulator
-try/ios26-sdk-simulator
+try/ios27-beta-simulator
+try/ios27-sdk-simulator
 try/leak_detection_linux
 try/linux-annotator-rel
 try/linux-asan-dbg
