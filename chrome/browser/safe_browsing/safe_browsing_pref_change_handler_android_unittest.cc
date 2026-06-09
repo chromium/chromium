@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -35,6 +36,17 @@ class MockTailoredSecurityService : public TailoredSecurityService {
               GetURLLoaderFactory,
               (),
               (override));
+};
+
+class FailOnGetTabCountTabModel : public OwningTestTabModel {
+ public:
+  using OwningTestTabModel::OwningTestTabModel;
+
+  int GetTabCount() const override {
+    ADD_FAILURE()
+        << "GetTabCount() should not be called when WebContents is available.";
+    return OwningTestTabModel::GetTabCount();
+  }
 };
 
 class SafeBrowsingPrefChangeHandlerAndroidTest : public testing::Test {
@@ -134,24 +146,35 @@ TEST_F(SafeBrowsingPrefChangeHandlerAndroidTest, RegisterObserver) {
 }
 
 TEST_F(SafeBrowsingPrefChangeHandlerAndroidTest, DidAddTab) {
+  messages::MockMessageDispatcherBridge mock_message_bridge;
+  messages::MessageDispatcherBridge::SetInstanceForTesting(
+      &mock_message_bridge);
+
+  EXPECT_CALL(mock_message_bridge,
+              EnqueueWindowScopedMessage(testing::_, testing::_, testing::_))
+      .WillOnce(testing::Return(true));
+
   // Create a test tab model and web contents.
-  TestTabModel tab_model(profile());
-  TabModelList::AddTabModel(&tab_model);
+  FailOnGetTabCountTabModel tab_model(profile());
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-  // Use the TestTabModel to create and manage the TabAndroid.
-  tab_model.SetWebContentsList({web_contents.get()});
-  TabAndroid* tab = tab_model.GetTabAt(0);
+  // Use the FailOnGetTabCountTabModel to manage the TabAndroid.
+  TabAndroid* tab = tab_model.AddTabFromWebContents(std::move(web_contents), 0,
+                                                    /*select=*/true);
 
   pref_change_handler_->AddTabModelObserver();
   pref_change_handler_->AddTabModelListObserver();
   // Simulate adding a tab.
   pref_change_handler_->DidAddTab(tab, TabModel::TabLaunchType::FROM_LINK);
 
+  // Verify that the message was created.
+  EXPECT_NE(pref_change_handler_->message_, nullptr);
+
   // After adding a tab and calling DidAddTab, the observers should be removed.
   EXPECT_FALSE(pref_change_handler_->IsObservingTabModelForTesting());
   EXPECT_FALSE(pref_change_handler_->IsObservingTabModelListForTesting());
-  TabModelList::RemoveTabModel(&tab_model);
+
+  messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
 }
 
 TEST_F(SafeBrowsingPrefChangeHandlerAndroidTest, OnTabModelAddedAndRemoved) {

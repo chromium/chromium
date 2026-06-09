@@ -70,7 +70,7 @@ class MockSafeBrowsingPrefChangeHandler
       : SafeBrowsingPrefChangeHandler(profile) {}
   MOCK_METHOD(void,
               MaybeShowEnhancedProtectionSettingChangeNotification,
-              (),
+              (content::WebContents*),
               (override));
 };
 
@@ -568,7 +568,7 @@ TEST_F(SafeBrowsingServiceTest, EnhancedProtectionPrefChange_SingleProfile) {
 
   // 3. Set the expectation: The mock should be called once.
   EXPECT_CALL(*mock_handler1,
-              MaybeShowEnhancedProtectionSettingChangeNotification());
+              MaybeShowEnhancedProtectionSettingChangeNotification(testing::_));
 
   // 4. Add the mock handler to the map.
   sb_service_->pref_change_handlers_map_[profile1] = std::move(mock_handler1);
@@ -609,9 +609,9 @@ TEST_F(SafeBrowsingServiceTest,
 
   // 3. Set expectations: Each mock should be called once.
   EXPECT_CALL(*mock_handler1.get(),
-              MaybeShowEnhancedProtectionSettingChangeNotification());
+              MaybeShowEnhancedProtectionSettingChangeNotification(testing::_));
   EXPECT_CALL(*mock_handler2.get(),
-              MaybeShowEnhancedProtectionSettingChangeNotification());
+              MaybeShowEnhancedProtectionSettingChangeNotification(testing::_));
 
   // 4. Add the mock handlers to the map, associating them with their profiles.
   sb_service_->pref_change_handlers_map_[profile1] = std::move(mock_handler1);
