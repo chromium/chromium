@@ -11,7 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
-#include "components/user_education/common/product_messaging_controller.h"
+#include "components/user_education/product_messaging/product_messaging_controller.h"
 #include "components/user_education/test/test_product_messaging_controller.h"
 #include "components/user_education/test/test_user_education_storage_service.h"
 #include "components/user_education/test/user_education_session_mocks.h"

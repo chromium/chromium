@@ -21,9 +21,9 @@
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo/impl/precondition_list_provider.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
-#include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_education/common/user_education_storage_service.h"
+#include "components/user_education/product_messaging/product_messaging_controller.h"
 
 // Declaring these in the global namespace for testing purposes.
 class BrowserFeaturePromoControllerTestBase;

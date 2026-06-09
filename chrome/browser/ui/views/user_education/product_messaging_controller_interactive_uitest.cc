@@ -15,7 +15,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
-#include "components/user_education/common/product_messaging_controller.h"
+#include "components/user_education/product_messaging/product_messaging_controller.h"
 #include "content/public/test/browser_test.h"
 
 namespace {

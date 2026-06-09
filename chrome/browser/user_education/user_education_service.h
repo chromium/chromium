@@ -22,11 +22,11 @@
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
-#include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/session/user_education_session_manager.h"
 #include "components/user_education/common/tutorial/tutorial.h"
 #include "components/user_education/common/tutorial/tutorial_registry.h"
 #include "components/user_education/common/user_education_storage_service.h"
+#include "components/user_education/product_messaging/product_messaging_controller.h"
 #include "content/public/browser/browser_context.h"
 
 // Kill switch for recent session tracking. Enabled by default.

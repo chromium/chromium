@@ -15,7 +15,7 @@
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/user_education/common/product_messaging_controller.h"
+#include "components/user_education/product_messaging/product_messaging_controller.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/tailored_security/consented_message_android.h"

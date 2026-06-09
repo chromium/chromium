@@ -66,19 +66,10 @@ source_set("common") {
     "new_badge/new_badge_specification.h",
     "ntp_promo/ntp_promo_controller.cc",
     "ntp_promo/ntp_promo_controller.h",
-    "ntp_promo/ntp_promo_identifier.h",
     "ntp_promo/ntp_promo_registry.cc",
     "ntp_promo/ntp_promo_registry.h",
     "ntp_promo/ntp_promo_specification.cc",
     "ntp_promo/ntp_promo_specification.h",
-    "product_messaging_controller.cc",
-    "product_messaging_controller.h",
-    "session/user_education_idle_observer.cc",
-    "session/user_education_idle_observer.h",
-    "session/user_education_idle_policy.cc",
-    "session/user_education_idle_policy.h",
-    "session/user_education_session_manager.cc",
-    "session/user_education_session_manager.h",
     "tutorial/tutorial.cc",
     "tutorial/tutorial.h",
     "tutorial/tutorial_description.cc",
@@ -91,23 +82,24 @@ source_set("common") {
     "user_education_class_properties.cc",
     "user_education_class_properties.h",
     "user_education_context.h",
-    "user_education_data.cc",
-    "user_education_data.h",
-    "user_education_features.cc",
-    "user_education_features.h",
     "user_education_metadata.cc",
     "user_education_metadata.h",
-    "user_education_storage_service.cc",
-    "user_education_storage_service.h",
   ]
 
-  public_deps = [ "//ui/base/interaction" ]
+  public_deps = [
+    ":features",
+    ":ntp_promo_identifier",
+    ":session",
+    ":storage",
+    "//ui/base/interaction",
+  ]
 
   deps = [
     ":events",
     "//base",
     "//components/feature_engagement/public",
     "//components/strings",
+    "//components/user_education/product_messaging",
     "//components/variations",
     "//components/vector_icons",
     "//skia",
@@ -115,6 +107,49 @@ source_set("common") {
     "//ui/accessibility",
     "//ui/menus",
   ]
+}
+
+source_set("features") {
+  sources = [
+    "user_education_features.cc",
+    "user_education_features.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("ntp_promo_identifier") {
+  sources = [ "ntp_promo/ntp_promo_identifier.h" ]
+}
+
+source_set("session") {
+  sources = [
+    "session/user_education_idle_observer.cc",
+    "session/user_education_idle_observer.h",
+    "session/user_education_idle_policy.cc",
+    "session/user_education_idle_policy.h",
+    "session/user_education_session_manager.cc",
+    "session/user_education_session_manager.h",
+  ]
+
+  deps = [
+    ":features",
+    ":storage",
+    "//base",
+  ]
+}
+
+source_set("storage") {
+  sources = [
+    "user_education_data.cc",
+    "user_education_data.h",
+    "user_education_storage_service.cc",
+    "user_education_storage_service.h",
+  ]
+
+  public_deps = [ ":ntp_promo_identifier" ]
+
+  deps = [ "//base" ]
 }
 
 component("events") {
@@ -153,7 +188,6 @@ source_set("unit_tests") {
     "new_badge/new_badge_controller_unittest.cc",
     "ntp_promo/ntp_promo_controller_unittest.cc",
     "ntp_promo/ntp_promo_registry_unittest.cc",
-    "product_messaging_controller_unittest.cc",
     "session/user_education_session_manager_unittest.cc",
     "tutorial/tutorial_unittest.cc",
     "user_education_storage_service_unittest.cc",
@@ -162,11 +196,14 @@ source_set("unit_tests") {
   deps = [
     ":common",
     ":events",
+    ":session",
+    ":storage",
     "//base",
     "//base/test:test_support",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
     "//components/strings",
+    "//components/user_education/product_messaging",
     "//components/user_education/test",
     "//components/variations",
     "//skia",

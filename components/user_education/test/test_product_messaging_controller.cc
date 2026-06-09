@@ -4,7 +4,7 @@
 
 #include "components/user_education/test/test_product_messaging_controller.h"
 
-#include "components/user_education/common/product_messaging_controller.h"
+#include "components/user_education/product_messaging/product_messaging_controller.h"
 
 namespace user_education::test {
 

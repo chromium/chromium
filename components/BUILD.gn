@@ -389,6 +389,7 @@ test("components_unittests") {
     "//components/url_pattern:unit_tests",
     "//components/url_pattern_index:unit_tests",
     "//components/user_data_importer/utility:unit_tests",
+    "//components/user_education/product_messaging:unit_tests",
     "//components/user_prefs:unit_tests",
     "//components/variations:unit_tests",
     "//components/variations/field_trial_config:unit_tests",

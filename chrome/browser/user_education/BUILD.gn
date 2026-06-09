@@ -91,6 +91,7 @@ if (is_android) {
       "//chrome/browser/profiles",
       "//components/feature_engagement/public",
       "//components/user_education/common",
+      "//components/user_education/product_messaging",
     ]
 
     deps = [

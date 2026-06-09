@@ -37,6 +37,7 @@ source_set("test") {
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
     "//components/user_education/common",
+    "//components/user_education/product_messaging",
     "//skia",
     "//testing/gmock",
     "//third_party/abseil-cpp:absl",
