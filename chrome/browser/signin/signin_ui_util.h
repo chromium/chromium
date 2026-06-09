@@ -60,12 +60,6 @@ void ShowReauthForAccount(Profile* profile,
                           const std::string& email,
                           signin_metrics::AccessPoint access_point);
 
-// Delegates to an existing sign-in tab if one exists. If not, a new sign-in tab
-// is created.
-void ShowExtensionSigninPrompt(Profile* profile,
-                               bool enable_sync,
-                               const std::string& email_hint);
-
 // This function is used to sign in a given account:
 // * This function does nothing if the user is already signed in to Chrome.
 // * If |account| is empty, then it presents the Chrome sign-in page.

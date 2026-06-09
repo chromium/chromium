@@ -32,6 +32,7 @@ source_set("signin") {
     "signin_policy_service_factory.h",
     "signin_profile_attributes_updater.h",
     "signin_profile_attributes_updater_factory.h",
+    "signin_ui_util_extensions.h",
     "signin_util.h",
   ]
   public_deps = [
@@ -201,6 +202,7 @@ source_set("impl") {
     "signin_policy_service_factory.cc",
     "signin_profile_attributes_updater.cc",
     "signin_profile_attributes_updater_factory.cc",
+    "signin_ui_util_extensions.cc",
     "signin_util.cc",
   ]
   public_deps = [

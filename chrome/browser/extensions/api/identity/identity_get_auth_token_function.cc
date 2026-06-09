@@ -24,7 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/signin/signin_ui_util_extensions.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/extensions/api/identity.h"
 #include "components/prefs/pref_service.h"
@@ -928,8 +928,7 @@ void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
                                ? GetSigninPrimaryAccount(GetProfile()).email
                                : account.email;
 
-  signin_ui_util::ShowExtensionSigninPrompt(GetProfile(),
-                                            IsPrimaryAccountOnly(), email_hint);
+  ShowExtensionSigninPrompt(GetProfile(), IsPrimaryAccountOnly(), email_hint);
 #else
   NOTREACHED();
 #endif

@@ -215,44 +215,6 @@ void ShowReauthForAccount(Profile* profile,
 #endif
 }
 
-void ShowExtensionSigninPrompt(Profile* profile,
-                               bool enable_sync,
-                               const std::string& email_hint) {
-#if BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED();
-#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // There is no sign-in flow for guest or system profile.
-  if (profile->IsGuestSession() || profile->IsSystemProfile()) {
-    return;
-  }
-  // Locked profile should be unlocked with UserManager only.
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath());
-  if (entry && entry->IsSigninRequired()) {
-    return;
-  }
-
-  // This may be called in incognito. Redirect to the original profile.
-  profile = profile->GetOriginalProfile();
-
-  if (email_hint.empty()) {
-    // Add a new account.
-    GetSigninUiDelegate()->ShowSigninUI(
-        profile, enable_sync, signin_metrics::AccessPoint::kExtensions,
-        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
-    return;
-  }
-
-  // Re-authenticate an existing account.
-  GetSigninUiDelegate()->ShowReauthUI(
-      profile, email_hint, enable_sync,
-      signin_metrics::AccessPoint::kExtensions,
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
 void SignInFromSingleAccountPromo(Profile* profile,
                                   const CoreAccountInfo& account,
                                   signin_metrics::AccessPoint access_point) {

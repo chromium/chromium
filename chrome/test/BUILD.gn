@@ -4395,6 +4395,7 @@ if (!is_android) {
         "../browser/signin/dice_mtls_browsertest.cc",
         "../browser/signin/dice_web_signin_interceptor_browsertest.cc",
         "../browser/signin/signin_ui_util_browsertest.cc",
+        "../browser/signin/signin_ui_util_extensions_browsertest.cc",
       ]
       if (is_win) {
         sources += [ "../browser/signin/signin_util_win_browsertest.cc" ]
