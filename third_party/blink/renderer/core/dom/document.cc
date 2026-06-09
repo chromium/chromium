@@ -7378,8 +7378,6 @@ bool Document::IsValidElementLocalName(const StringView& local_name) {
 
 enum QualifiedNameStatus {
   kQNValid,
-  kQNMultipleColons,
-  kQNInvalidStartChar,
   kQNInvalidChar,
   kQNEmptyPrefix,
   kQNEmptyLocalName
@@ -7397,14 +7395,20 @@ struct ParseQualifiedNameResult {
 
 namespace {
 // https://github.com/whatwg/dom/pull/1079
+// https://github.com/whatwg/dom/pull/1455
 template <typename CharType>
 ParseQualifiedNameResult ParseQualifiedNameInternal(
     base::span<const CharType> characters,
     AtomicString& out_prefix,
     AtomicString& out_local_name,
     Document::QualifiedNameParsingMode parsing_mode) {
-  // Do a first pass to look for the colon. Otherwise, we don't know which
-  // parsing rules to apply to the text we are iterating.
+  // When SplitQualifiedNameOnFirstColon is enabled, the first colon splits the
+  // qualified name into a prefix and a local name; any later colons are part of
+  // the local name, per the DOM "validate and extract" algorithm.
+  // If the runtime flag is disabled and a second colon exists, the local name
+  // is instead the substring between the first two colons.
+  const bool split_on_first_colon =
+      RuntimeEnabledFeatures::SplitQualifiedNameOnFirstColonEnabled();
   std::optional<size_t> colon_index;
   std::optional<size_t> second_colon_index;
   for (size_t i = 0; i < characters.size(); i++) {
@@ -7412,8 +7416,10 @@ ParseQualifiedNameResult ParseQualifiedNameInternal(
       if (colon_index) {
         second_colon_index = i;
         break;
-      } else {
-        colon_index = i;
+      }
+      colon_index = i;
+      if (split_on_first_colon) {
+        break;
       }
     }
   }
@@ -7484,13 +7490,7 @@ bool Document::ParseQualifiedName(const AtomicString& qualified_name,
   message.Append(qualified_name);
   message.Append("') ");
 
-  if (return_value.status == kQNMultipleColons) {
-    message.Append("contains multiple colons.");
-  } else if (return_value.status == kQNInvalidStartChar) {
-    message.Append("contains the invalid name-start character '");
-    message.Append(return_value.character);
-    message.Append("'.");
-  } else if (return_value.status == kQNInvalidChar) {
+  if (return_value.status == kQNInvalidChar) {
     message.Append("contains the invalid character '");
     message.Append(return_value.character);
     message.Append("'.");

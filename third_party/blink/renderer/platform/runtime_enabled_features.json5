@@ -5701,6 +5701,13 @@
       public: true,
     },
     {
+      // Splits a qualified name on its first colon, per the DOM "validate and
+      // extract" algorithm, so any later colons are part of the local name.
+      // See https://crbug.com/490251709
+      name: "SplitQualifiedNameOnFirstColon",
+      status: "experimental",
+    },
+    {
       name: "SplitTextNotCleanupDummySpans",
       status: "stable",
     },

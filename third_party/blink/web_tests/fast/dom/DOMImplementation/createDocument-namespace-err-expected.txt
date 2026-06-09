@@ -29,8 +29,8 @@ PASS createDocument("http://example.com/", "div:", null); threw INVALID_CHARACTE
 PASS createDocument(null, "d:iv", null); threw NAMESPACE_ERR
 PASS createDocument(null, "a:b:c", null); threw NAMESPACE_ERR
 PASS createDocument("http://example.com/", "a:b:c", null)
-PASS createDocument(null, "a::c", null); threw INVALID_CHARACTER_ERR
-PASS createDocument("http://example.com/", "a::c", null); threw INVALID_CHARACTER_ERR
+PASS createDocument(null, "a::c", null); threw NAMESPACE_ERR
+PASS createDocument("http://example.com/", "a::c", null)
 PASS createDocument("http://example.com/", "a:0", null); valid XML name, not a valid QName; threw INVALID_CHARACTER_ERR
 PASS createDocument("http://example.com/", "0:a", null)
 PASS createDocument("http://example.com/", "a:_", null)
