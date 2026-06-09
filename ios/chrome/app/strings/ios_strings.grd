@@ -7222,6 +7222,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SETTINGS_PASSWORD_WAS_NOT_COPIED_MESSAGE" desc="Message informing the user that the password was not copied because the authentication failed. This is shown alone in an infobar at the bottom of the screen after the user tries to reauthenticate with Touch ID or PIN to copy the password and fails. [Length: one line]">
         Can't verify your identity. Password not copied.
       </message>
+      <message name="IDS_IOS_SETTINGS_PAY_OVER_TIME" desc="Title of the settings entry and subpage to view and configure Buy Now Pay Later payment providers. [iOS only]">
+        Pay Over Time
+      </message>
+      <message name="IDS_IOS_SETTINGS_PAY_OVER_TIME_SUBTITLE" desc="Subtitle of the switch toggle on the Pay Over Time settings page, which allows displaying BNPL choices during checkout. [iOS only]">
+        Show pay over time options at checkout
+      </message>
       <message name="IDS_IOS_SETTINGS_PRIVACY_TITLE" desc="Title for the Privacy and Security preferences.">
         Privacy and security
       </message>
