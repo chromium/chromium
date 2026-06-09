@@ -204,6 +204,9 @@ bool IsStateless() {
   // The scheduler for optional updates.
   std::optional<KeyboardAccessoryOptionalUpdateScheduler>
       _optionalUpdateScheduler;
+
+  // Whether the mediator has been disconnected.
+  BOOL _isDisconnected;
 }
 
 - (instancetype)
@@ -331,6 +334,7 @@ bool IsStateless() {
 }
 
 - (void)disconnect {
+  _isDisconnected = YES;
   _optionalUpdateScheduler->CancelOptionalUpdate();
   _formActivityObserverBridge.reset();
   _autofillBottomSheetObserverBridge.reset();
@@ -859,6 +863,9 @@ bool IsStateless() {
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
                     atIndex:(NSInteger)index
                  completion:(ProceduralBlock)completion {
+  if (_isDisconnected) {
+    return;
+  }
   if (IsStateless()) {
     // When using the stateless FormSuggestionsController, ensure the params
     // attached to the suggestion are the same as the ones held by this mediator
@@ -916,6 +923,9 @@ bool IsStateless() {
                     atIndex:(NSInteger)index
                      params:(const autofill::FormActivityParams&)params
                  completion:(ProceduralBlock)completion {
+  if (_isDisconnected) {
+    return;
+  }
   CHECK_EQ(_lastSeenParams, params);
   [self didSelectSuggestion:formSuggestion atIndex:index completion:completion];
 }

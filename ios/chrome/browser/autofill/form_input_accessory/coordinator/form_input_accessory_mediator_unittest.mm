@@ -627,6 +627,46 @@ TEST_F(FormInputAccessoryMediatorTest, DidSelectSuggestion_NoReauth) {
   EXPECT_OCMOCK_VERIFY(formInputSuggestionProviderMock);
 }
 
+// Tests that selecting a suggestion after disconnect does not trigger anything
+// and does not forward to the provider.
+TEST_F(FormInputAccessoryMediatorTest, DidSelectSuggestion_AfterDisconnect) {
+  id formInputSuggestionProviderMock =
+      OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
+  [mediator_ injectCurrentProvider:formInputSuggestionProviderMock];
+
+  FormActivityParams params = CreateFormActivityParams(/*field_type=*/"text");
+  TestFormSuggestionProvider* testSuggestionProvider =
+      [[TestFormSuggestionProvider alloc] init];
+  [testSuggestionProvider
+      setType:SuggestionProviderType::SuggestionProviderTypeAutofill];
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@"value"
+       displayDescription:@"display-description"
+                     icon:nil
+                     type:autofill::SuggestionType::kCreditCardEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:NO];
+  suggestion = [FormSuggestion copy:suggestion
+                       andSetParams:params
+                           provider:testSuggestionProvider];
+
+  const NSInteger suggestionIndex = 0;
+
+  // Disconnect the mediator first.
+  [mediator_ disconnect];
+
+  // We reject any calls to didSelectSuggestion on the provider.
+  [[formInputSuggestionProviderMock reject] didSelectSuggestion:[OCMArg any]
+                                                        atIndex:suggestionIndex
+                                                     completion:[OCMArg any]];
+
+  [mediator_ didSelectSuggestion:suggestion
+                         atIndex:suggestionIndex
+                      completion:nil];
+
+  EXPECT_OCMOCK_VERIFY(formInputSuggestionProviderMock);
+}
+
 // Tests that suggestion refreshes triggered by `keyboardWillShow` are not
 // throttled when none of the feature flags are enabled.
 // The relationship of the two feature flags used in this test and a few other
