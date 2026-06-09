@@ -1860,7 +1860,7 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "ios18-beta-simulator",
+    name = "ios26-beta-simulator",
     schedule = "0 0,4,8,12,16,20 * * *",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(
@@ -1887,11 +1887,11 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
-    # ios18-beta-sim compiles with xcode version n-1, but
+    # ios26-beta-sim compiles with xcode version n-1, but
     # runs testers with xcode n during an xcode roll.
     targets = targets.bundle(
         targets = [
-            "ios18_beta_simulator_tests",
+            "ios26_beta_simulator_tests",
         ],
         additional_compile_targets = [
             "all",
@@ -1913,8 +1913,8 @@ fyi_ios_builder(
     os = os.MAC_BETA,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "iOS|iOS18",
-        short_name = "ios18",
+        category = "iOS|iOS26",
+        short_name = "ios26",
     ),
 )
 
@@ -1976,7 +1976,7 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "ios18-sdk-simulator",
+    name = "ios26-sdk-simulator",
     schedule = "0 2,6,10,14,18,22 * * *",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(
@@ -2003,11 +2003,11 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
-    # ios18-sdk-sim compiles with xcode version n, and runs
+    # ios26-sdk-sim compiles with xcode version n, and runs
     # testers with xcode n during an xcode roll.
     targets = targets.bundle(
         targets = [
-            "ios18_sdk_simulator_tests",
+            "ios26_sdk_simulator_tests",
         ],
         additional_compile_targets = [
             "all",
@@ -2026,8 +2026,8 @@ fyi_ios_builder(
     os = os.MAC_BETA,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "iOS|iOS18",
-        short_name = "sdk18",
+        category = "iOS|iOS26",
+        short_name = "sdk26",
     ),
     xcode = xcode.xcode_beta,
 )

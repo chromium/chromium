@@ -4815,7 +4815,7 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "ios18_beta_simulator_tests",
+    name = "ios26_beta_simulator_tests",
     targets = [
         targets.bundle(
             targets = "ios_common_tests",
@@ -4870,7 +4870,7 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "ios18_sdk_simulator_tests",
+    name = "ios26_sdk_simulator_tests",
     targets = [
         targets.bundle(
             targets = "ios_common_tests",

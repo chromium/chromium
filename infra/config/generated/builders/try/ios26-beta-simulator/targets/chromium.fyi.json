@@ -1,5 +1,5 @@
 {
-  "ios18-beta-simulator": {
+  "ios26-beta-simulator": {
     "additional_compile_targets": [
       "all"
     ],

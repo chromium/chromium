@@ -1,5 +1,5 @@
 {
-  "ios18-sdk-simulator": {
+  "ios26-sdk-simulator": {
     "additional_compile_targets": [
       "all"
     ],
