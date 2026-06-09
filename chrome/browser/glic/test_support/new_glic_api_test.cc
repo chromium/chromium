@@ -103,6 +103,38 @@ base::expected<Command, std::string> DeserializeCommand(
     ASSIGN_OR_RETURN(tabs::TabHandle tab_handle, ParseOptionalTabId(dict));
     return NavigateTabCommand{tab_handle, *url};
   }
+  if (*command_field == "parse-actions-result") {
+    auto* actions_result = dict.FindString("actionsResult");
+    if (!actions_result) {
+      return base::unexpected("Missing actionsResult");
+    }
+    return ParseActionsResultCommand{*actions_result};
+  }
+  if (*command_field == "make-wait-action") {
+    ASSIGN_OR_RETURN(tabs::TabHandle tab_handle, ParseOptionalTabId(dict));
+    auto task_id = dict.FindInt("taskId");
+    if (!task_id) {
+      return base::unexpected("Missing taskId");
+    }
+    std::optional<base::TimeDelta> duration;
+    auto duration_ms = dict.FindInt("durationMs");
+    if (duration_ms) {
+      duration = base::Milliseconds(*duration_ms);
+    }
+    return MakeWaitActionCommand{duration, tab_handle, *task_id};
+  }
+  if (*command_field == "make-navigate-action") {
+    ASSIGN_OR_RETURN(tabs::TabHandle tab_handle, ParseOptionalTabId(dict));
+    auto* url = dict.FindString("url");
+    if (!url) {
+      return base::unexpected("Missing url");
+    }
+    auto task_id = dict.FindInt("taskId");
+    if (!task_id) {
+      return base::unexpected("Missing taskId");
+    }
+    return MakeNavigateActionCommand{tab_handle, *url, *task_id};
+  }
   return base::unexpected(base::StrCat({"Unknown command: ", *command_field}));
 }
 

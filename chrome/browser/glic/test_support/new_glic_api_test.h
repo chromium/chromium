@@ -5,13 +5,16 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_NEW_GLIC_API_TEST_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_NEW_GLIC_API_TEST_H_
 
+#include <sstream>
 #include <variant>
 
+#include "base/base64.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_timeouts.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -43,8 +46,28 @@ struct NavigateTabCommand {
   std::string url;
 };
 
-using Command =
-    std::variant<CloseTabCommand, ExecJsCommand, NavigateTabCommand>;
+struct ParseActionsResultCommand {
+  std::string actions_result_base64;
+};
+
+struct MakeWaitActionCommand {
+  std::optional<base::TimeDelta> duration;
+  tabs::TabHandle tab_handle;
+  int task_id;
+};
+
+struct MakeNavigateActionCommand {
+  tabs::TabHandle tab_handle;
+  std::string url;
+  int task_id;
+};
+
+using Command = std::variant<CloseTabCommand,
+                             ExecJsCommand,
+                             NavigateTabCommand,
+                             ParseActionsResultCommand,
+                             MakeWaitActionCommand,
+                             MakeNavigateActionCommand>;
 
 base::expected<Command, std::string> DeserializeCommand(
     const base::DictValue& dict);
@@ -393,6 +416,15 @@ class GlicApiBrowserTestMixin : public T {
                        },
                        [this](const internal::NavigateTabCommand& cmd) {
                          return CommandNavigateTab(cmd);
+                       },
+                       [this](const internal::ParseActionsResultCommand& cmd) {
+                         return CommandParseActionsResult(cmd);
+                       },
+                       [this](const internal::MakeWaitActionCommand& cmd) {
+                         return CommandMakeWaitAction(cmd);
+                       },
+                       [this](const internal::MakeNavigateActionCommand& cmd) {
+                         return CommandMakeNavigateAction(cmd);
                        }},
         command);
   }
@@ -422,6 +454,52 @@ class GlicApiBrowserTestMixin : public T {
     bool ok =
         content::NavigateToURL(handle.Get()->GetContents(), GURL(command.url));
     return base::ok(base::Value(ok));
+  }
+
+  base::expected<base::Value, std::string> CommandParseActionsResult(
+      const internal::ParseActionsResultCommand& command) {
+    auto result =
+        ::actor::ParseBase64Proto<optimization_guide::proto::ActionsResult>(
+            command.actions_result_base64);
+    if (!result.has_value()) {
+      return base::unexpected(result.error());
+    }
+    std::ostringstream oss;
+    oss << static_cast<::actor::mojom::ActionResultCode>(
+        result->action_result());
+    return base::ok(base::Value(oss.str()));
+  }
+
+  base::expected<base::Value, std::string> CommandMakeWaitAction(
+      const internal::MakeWaitActionCommand& command) {
+    auto handle = command.tab_handle;
+    if (handle == tabs::TabHandle::Null()) {
+      if (!T::GetTabListInterface()->GetActiveTab()) {
+        return base::unexpected("MakeWaitAction(): No active tab found");
+      }
+      handle = T::GetTabListInterface()->GetActiveTab()->GetHandle();
+    }
+    optimization_guide::proto::Actions actions = ::actor::MakeWait(
+        command.duration, handle, ::actor::TaskId(command.task_id));
+    std::string serialized;
+    CHECK(actions.SerializeToString(&serialized));
+    return base::ok(base::Value(base::Base64Encode(serialized)));
+  }
+
+  base::expected<base::Value, std::string> CommandMakeNavigateAction(
+      const internal::MakeNavigateActionCommand& command) {
+    auto handle = command.tab_handle;
+    if (handle == tabs::TabHandle::Null()) {
+      if (!T::GetTabListInterface()->GetActiveTab()) {
+        return base::unexpected("MakeNavigateAction(): No active tab found");
+      }
+      handle = T::GetTabListInterface()->GetActiveTab()->GetHandle();
+    }
+    optimization_guide::proto::Actions actions = ::actor::MakeNavigate(
+        handle, command.url, ::actor::TaskId(command.task_id));
+    std::string serialized;
+    CHECK(actions.SerializeToString(&serialized));
+    return base::ok(base::Value(base::Base64Encode(serialized)));
   }
 
   base::test::ScopedFeatureList features_;

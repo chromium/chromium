@@ -41,6 +41,8 @@ class AsyncActionWaiter {
   std::string request_id_;
 };
 
+// Deprecated. Use the new version in new_glic_actor_functional_browsertest.h
+// instead.
 class GlicActorFunctionalBrowserTestBase
     : public glic::test::GlicFunctionalBrowserTestBase {
  public:

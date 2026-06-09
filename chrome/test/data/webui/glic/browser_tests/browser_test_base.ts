@@ -14,6 +14,7 @@ import {TaskQueue} from '/glic/task_queue.js';
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
 
 let maxTimeoutEndTime = performance.now() + 10000;
+export const longWaitTimeMs = 120000;
 
 export interface TestInitData {
   embeddedTestServerUrl: string;
@@ -227,6 +228,16 @@ export type BrowserCommand = {
 }|{
   command: 'navigate-tab',
   tabId?: string, url: string,
+}|{
+  command: 'parse-actions-result',
+  actionsResult: string,
+}|{
+  command: 'make-wait-action',
+  tabId?: string,
+  durationMs?: number, taskId: number,
+}|{
+  command: 'make-navigate-action',
+  tabId?: string, url: string, taskId: number,
 };
 
 export class BrowserControl {
@@ -249,6 +260,29 @@ export class BrowserControl {
   async navigateActiveTab(url: string): Promise<boolean> {
     return this.testStepper.doCommand({command: 'navigate-tab', url}) as
         Promise<boolean>;
+  }
+
+  async parseActionsResult(resultBuffer: ArrayBuffer): Promise<string> {
+    const base64 = (new Uint8Array(resultBuffer)).toBase64();
+    return this.testStepper.doCommand(
+               {command: 'parse-actions-result', actionsResult: base64}) as
+        Promise<string>;
+  }
+
+  async makeWaitAction(taskId: number, durationMs?: number, tabId?: string):
+      Promise<ArrayBuffer> {
+    const base64 =
+        await this.testStepper.doCommand(
+            {command: 'make-wait-action', taskId, durationMs, tabId}) as string;
+    return Uint8Array.fromBase64(base64).buffer as ArrayBuffer;
+  }
+
+  async makeNavigateAction(taskId: number, url: string, tabId?: string):
+      Promise<ArrayBuffer> {
+    const base64 =
+        await this.testStepper.doCommand(
+            {command: 'make-navigate-action', taskId, url, tabId}) as string;
+    return Uint8Array.fromBase64(base64).buffer as ArrayBuffer;
   }
 }
 
@@ -323,9 +357,12 @@ export class ApiTestFixtureBase {
     return this.testStepCount;
   }
 
+  getUrl(path: string): string {
+    return new URL(path, this.initData!.embeddedTestServerUrl).href;
+  }
+
   getTestUrl(path: string): string {
-    return new URL('/test_data/' + path, this.initData!.embeddedTestServerUrl)
-        .href;
+    return this.getUrl('/test_data/' + path);
   }
 
   async testAllTestsAreRegistered() {

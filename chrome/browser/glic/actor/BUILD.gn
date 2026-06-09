@@ -42,25 +42,29 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
+  sources = [
+    "glic_actor_task_lifecycle_browsertest.cc",
+    "new_glic_actor_functional_browsertest.h",
+  ]
+
+  deps = [
+    ":actor",
+    ":test_support",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor:test_support",
+    "//chrome/browser/glic/test_support",
+    "//chrome/common:actor_webui_mojom",
+    "//chrome/test:test_support",
+  ]
+
   if (!is_android) {
-    sources = [
+    sources += [
       "glic_actor_action_execution_browsertest.cc",
       "glic_actor_context_fetch_browsertest.cc",
       "glic_actor_functional_browsertest.cc",
       "glic_actor_functional_browsertest.h",
       "glic_actor_metrics_functional_browsertest.cc",
       "glic_actor_tab_functional_browsertest.cc",
-      "glic_actor_task_lifecycle_browsertest.cc",
-    ]
-
-    deps = [
-      ":actor",
-      ":test_support",
-      "//chrome/browser/actor",
-      "//chrome/browser/actor:test_support",
-      "//chrome/browser/glic/test_support",
-      "//chrome/common:actor_webui_mojom",
-      "//chrome/test:test_support",
     ]
   }
 }
