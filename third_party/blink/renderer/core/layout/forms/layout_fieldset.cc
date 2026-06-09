@@ -150,6 +150,29 @@ void LayoutFieldset::UpdateAnonymousChildStyle(
   child_style_builder.SetRowRuleWidth(
       GapDataList<int>(StyleRef().RowRuleWidth()));
 
+  child_style_builder.SetColumnRuleBreak(StyleRef().ColumnRuleBreak());
+  child_style_builder.SetRowRuleBreak(StyleRef().RowRuleBreak());
+  child_style_builder.SetRuleOverlap(StyleRef().RuleOverlap());
+  child_style_builder.SetColumnRuleVisibilityItems(
+      StyleRef().ColumnRuleVisibilityItems());
+  child_style_builder.SetRowRuleVisibilityItems(
+      StyleRef().RowRuleVisibilityItems());
+  child_style_builder.SetColumnRuleInsetCapStart(
+      StyleRef().ColumnRuleInsetCapStart());
+  child_style_builder.SetColumnRuleInsetCapEnd(
+      StyleRef().ColumnRuleInsetCapEnd());
+  child_style_builder.SetColumnRuleInsetJunctionStart(
+      StyleRef().ColumnRuleInsetJunctionStart());
+  child_style_builder.SetColumnRuleInsetJunctionEnd(
+      StyleRef().ColumnRuleInsetJunctionEnd());
+  child_style_builder.SetRowRuleInsetCapStart(
+      StyleRef().RowRuleInsetCapStart());
+  child_style_builder.SetRowRuleInsetCapEnd(StyleRef().RowRuleInsetCapEnd());
+  child_style_builder.SetRowRuleInsetJunctionStart(
+      StyleRef().RowRuleInsetJunctionStart());
+  child_style_builder.SetRowRuleInsetJunctionEnd(
+      StyleRef().RowRuleInsetJunctionEnd());
+
   child_style_builder.SetFlexDirection(StyleRef().FlexDirection());
   child_style_builder.SetFlexWrap(StyleRef().FlexWrap());
 

@@ -2792,11 +2792,6 @@ crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-bas
 crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-vertical-rl-003.html?class=text-bottom [ Failure ]
 crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-vertical-rl-003.html?class=text-top [ Failure ]
 
-crbug.com/515776380 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-content-box-rule-break.html [ Failure ]
-crbug.com/515776380 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-content-box-rule-inset.html [ Failure ]
-crbug.com/515776380 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-content-box-rule-overlap.html [ Failure ]
-crbug.com/515776380 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-content-box-rule-visibility-items.html [ Failure ]
-
 crbug.com/515679398 external/wpt/mathml/relations/html5-tree/href-click-001.html [ Failure ]
 crbug.com/515679398 external/wpt/mathml/relations/html5-tree/href-click-002.html [ Failure ]
 crbug.com/515679398 external/wpt/mathml/relations/html5-tree/link-color-001.html [ Failure ]
