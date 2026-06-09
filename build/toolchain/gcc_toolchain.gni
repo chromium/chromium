@@ -408,8 +408,12 @@ template("single_gcc_toolchain") {
         command = "cmd /s /c \"\"$python_path\" $tool_wrapper_path delete-file {{output}} && $command\""
       } else {
         command = "rm -f {{output}} && $command"
-        inputs =
-            [ get_path_info(rebase_path(ar, ".", root_out_dir), "abspath") ]
+
+        # Add ar to inputs if it's not from $PATH.
+        if (get_path_info(ar, "file") != ar) {
+          inputs =
+              [ get_path_info(rebase_path(ar, ".", root_out_dir), "abspath") ]
+        }
       }
 
       # Almost all targets build with //build/config/compiler:thin_archive which
