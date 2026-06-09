@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {ObservableSetByTabIdDelegate, PostMessageRemote, RequestMessage, WebClientHost} from 'chrome://glic/glic.js';
-import {IdGenerator, ObservableSetByTabId, PostMessageRouterImpl} from 'chrome://glic/glic.js';
+import {IdGenerator, ObservableSetByTabId, PostMessageRouterImpl, WebClientHostDef} from 'chrome://glic/glic.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 class StubSender {
@@ -53,7 +53,7 @@ suite('ObservableSetByTabId', () => {
     const stubSender = new StubSender();
     const router = new PostMessageRouterImpl(
         'origin', 'senderId', stubSender, 'logPrefix', false);
-    const sender = router.newPipeWithRemote<WebClientHost>().remote;
+    const sender = router.newPipeWithRemote(WebClientHostDef).remote;
     const delegate = new TestDelegate();
     const idGenerator = new IdGenerator();
     const obs = new ObservableSetByTabId<string>(delegate, sender, idGenerator);

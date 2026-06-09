@@ -28,15 +28,10 @@ In the request types list from
 reserve the previously used identifier:
 
 ```javascript
-export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
-    (() => {
-      const result = {
-        ...
-        OnTurnCompleted: 43,
-        // Do not reuse deleted request ID: 44,
-        ScrollTo: 45,
-        ...
-      };
-      return {...result, MAX_VALUE: Math.max(...Object.values(result))};
-    })();
+export const RECORDED_REQUEST_IDS = {
+  WebClientCreated: 1,
+  ...
+  // Do not reuse deleted request ID: 19,
+  ...
+};
 ```

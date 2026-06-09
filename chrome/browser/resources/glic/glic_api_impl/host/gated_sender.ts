@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {ObservableValue} from '../../observable.js';
-import type {PostMessageRemote, RequestPayload, ResponsePayload} from '../transport/post_message_transport.js';
+import type {InterfaceDef, InterfaceDefMethods, PostMessageRemote, RequestPayload, ResponsePayload} from '../transport/post_message_transport.js';
 
 interface QueuedMessage {
   order: number;
@@ -11,24 +11,25 @@ interface QueuedMessage {
   payload: unknown;
   transfer: Transferable[];
 }
-type IfHasNoResponseType<MapType, T extends keyof MapType> =
-    ResponsePayload<MapType, T> extends void ? T : never;
-type IfUngated<MapType, T extends keyof MapType> =
-    MapType[T] extends {backgroundAllowed: true} ? T : never;
+type IfHasNoResponseType<I extends InterfaceDef,
+                                   T extends keyof InterfaceDefMethods<I>> =
+    ResponsePayload<InterfaceDefMethods<I>, T> extends void ? T : never;
+type IfUngated<I extends InterfaceDef, T extends keyof InterfaceDefMethods<I>> =
+    InterfaceDefMethods<I>[T] extends {backgroundAllowed: true} ? T : never;
 
-type UngatedRequests<MapType> =
-keyof{[K in keyof MapType as IfUngated<MapType, K>]: void};
-type RequestsWithNoResponse<MapType> =
-keyof{[K in keyof MapType as IfHasNoResponseType<MapType, K>]: void};
+type UngatedRequests<I extends InterfaceDef> =
+keyof{[K in keyof InterfaceDefMethods<I>as IfUngated<I, K>]: void};
+type RequestsWithNoResponse<I extends InterfaceDef> =
+keyof{[K in keyof InterfaceDefMethods<I>as IfHasNoResponseType<I, K>]: void};
 
 // Sends messages to the client, subject to the `backgroundAllowed` property.
 // Supports queueing of messages not `backgroundAllowed`.
-export class GatedSender<MapType> {
+export class GatedSender<I extends InterfaceDef> {
   private sequenceNumber = 0;
   private messageQueue: QueuedMessage[] = [];
   private keyedMessages = new Map<string, QueuedMessage>();
   constructor(
-      private sender: PostMessageRemote<MapType>,
+      private sender: PostMessageRemote<I>,
       private shouldGate: ObservableValue<boolean>) {
     this.shouldGate.subscribe(this.setGating.bind(this));
   }
@@ -38,7 +39,7 @@ export class GatedSender<MapType> {
   }
 
   // This is an escape hatch which should be used sparingly.
-  getRawSender(): PostMessageRemote<MapType> {
+  getRawSender(): PostMessageRemote<I> {
     return this.sender;
   }
 
@@ -55,16 +56,16 @@ export class GatedSender<MapType> {
     messages.sort((a, b) => a.order - b.order);
     messages.forEach((message) => {
       this.sender.requestNoResponse(
-          message.requestType as keyof MapType, message.payload as never,
-          message.transfer);
+          message.requestType as keyof InterfaceDefMethods<I>,
+          message.payload as never, message.transfer);
     });
   }
 
   // Sends a request whenever glic is active.
   // Queues the request for later if glic is backgrounded.
-  sendWhenActive<T extends keyof MapType>(
-      requestType: IfHasNoResponseType<MapType, T>,
-      request: RequestPayload<MapType, T>,
+  sendWhenActive<T extends keyof InterfaceDefMethods<I>>(
+      requestType: IfHasNoResponseType<I, T>,
+      request: RequestPayload<InterfaceDefMethods<I>, T>,
       transfer: Transferable[] = []): void {
     if (!this.isGating()) {
       this.sender.requestNoResponse(requestType, request, transfer);
@@ -79,8 +80,9 @@ export class GatedSender<MapType> {
   }
 
   // Sends a request only if glic is active, otherwise it is dropped.
-  sendIfActiveOrDrop<T extends RequestsWithNoResponse<MapType>&keyof MapType>(
-      requestType: T, request: RequestPayload<MapType, T>,
+  sendIfActiveOrDrop<T extends RequestsWithNoResponse<I>&
+                     keyof InterfaceDefMethods<I>>(
+      requestType: T, request: RequestPayload<InterfaceDefMethods<I>, T>,
       transfer: Transferable[] = []): void {
     if (!this.isGating()) {
       this.sender.requestNoResponse(requestType, request, transfer);
@@ -91,10 +93,10 @@ export class GatedSender<MapType> {
   // later. If more than one request has the same key
   // `${requestType},${additionalKey}`, only the last request is saved in the
   // queue.
-  sendLatestWhenActive<T extends keyof MapType>(
-      requestType: IfHasNoResponseType<MapType, T>,
-      request: RequestPayload<MapType, T>, transfer: Transferable[] = [],
-      additionalKey?: string): void {
+  sendLatestWhenActive<T extends keyof InterfaceDefMethods<I>>(
+      requestType: IfHasNoResponseType<I, T>,
+      request: RequestPayload<InterfaceDefMethods<I>, T>,
+      transfer: Transferable[] = [], additionalKey?: string): void {
     if (!this.isGating()) {
       this.sender.requestNoResponse(requestType, request, transfer);
     } else {
@@ -113,17 +115,19 @@ export class GatedSender<MapType> {
 
   // Sends a request without waiting for a response. Allowed only for
   // backgroundAllowed request types.
-  requestNoResponse<T extends keyof MapType>(
-      requestType: IfUngated<MapType, T>, request: RequestPayload<MapType, T>,
+  requestNoResponse<T extends keyof InterfaceDefMethods<I>>(
+      requestType: IfUngated<I, T>,
+      request: RequestPayload<InterfaceDefMethods<I>, T>,
       transfer: Transferable[] = []): void {
     this.sender.requestNoResponse(requestType, request, transfer);
   }
 
   // Sends a request and waits for a response. Allowed only for
   // backgroundAllowed request types.
-  requestWithResponse<T extends UngatedRequests<MapType>>(
-      requestType: T, request: RequestPayload<MapType, T>,
-      transfer: Transferable[] = []): Promise<ResponsePayload<MapType, T>> {
+  requestWithResponse<T extends UngatedRequests<I>>(
+      requestType: T, request: RequestPayload<InterfaceDefMethods<I>, T>,
+      transfer: Transferable[] = []):
+      Promise<ResponsePayload<InterfaceDefMethods<I>, T>> {
     return this.sender.requestWithResponse(requestType, request, transfer);
   }
 }

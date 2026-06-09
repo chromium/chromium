@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import type {WebClientInitialState} from '../glic.mojom-webui.js';
-import type {AdditionalContext, AdditionalContextPart, GeminiEnterpriseSettings, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateSkillRequest, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, GetPinCandidatesOptions, HostCapability, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, ScrollToParams, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UpdateSkillRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateSkillRequest, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, HostCapability, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, ScrollToParams, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UpdateSkillRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
 import type {ActorClient, ActorHost} from './actor/actor_types.js';
-import type {CheckStructuredClonable, ReplaceProperties, ValidateRequestMap} from './transport/messaging.js';
-import {assertNever} from './transport/messaging.js';
+import type {InterfaceDef, InterfaceDefMethods, ReplaceProperties} from './transport/messaging.js';
+import {defInterface, defMessage} from './transport/messaging.js';
 import type {ErrorCodec, PendingReceiver, PendingRemote, TransferableException} from './transport/post_message_transport.js';
 
 export type {
@@ -24,744 +24,923 @@ messages by concatenating the interface name with the method name. This helps
 readability, and ensures that each name is unique.
 */
 
-export declare interface WebClientHost {
-  // This message is sent just before calling initialize() on the web client.
-  // It is not part of the GlicBrowserHost public API.
-  glicBrowserWebClientCreated: {
-    request: {
-      clientCapabilities: ClientCapabilities[],
+export const WebClientHostDef = defInterface({
+  name: 'WebClientHost',
+  methods: [
+    {
+      name: 'webClientCreated',
+      request: defMessage<{
+        clientCapabilities: ClientCapabilities[],
+      }>(),
+      response: defMessage<{
+        initialState: WebClientInitialStatePrivate,
+        actorRemote?: PendingRemote<ActorHost>,
+        actorReceiver?: PendingReceiver<ActorClient>,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {name: 'WebClientCreated', id: 1},
     },
-    response: {
-      initialState: WebClientInitialStatePrivate,
-      actorRemote?: PendingRemote<ActorHost>,
-      actorReceiver?: PendingReceiver<ActorClient>,
+    {
+      name: 'webClientInitialized',
+      request: defMessage<{
+        success: boolean,
+        // Exception present if initialize() returns a rejected promise
+        // (success is false).
+        exception?: GlicException,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 2},
     },
-    backgroundAllowed: true,
-  };
-  // This message is sent after the client returns from initialize(). It is not
-  // part of the GlicBrowserHost public API.
-  glicBrowserWebClientInitialized: {
-    request: {
-      success: boolean,
-      // Exception present if initialize() returns a rejected promise (success
-      // is false).
-      exception?: GlicException,
+    {
+      name: 'onExperimentalTriggeringUpdate',
+      request: defMessage<{
+        observationId: number,
+        update?: ExperimentalTriggeringUpdate,
+              observation: SubscriberObservationType,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 98},
     },
-    backgroundAllowed: true,
-  };
+    {
+      name: 'createTab',
+      request: defMessage<{
+        url: string,
+        options: {openInBackground?: boolean, windowId?: string},
+      }>(),
+      response: defMessage<{
+        // Undefined on failure.
+        tabData?: TabDataPrivate,
+      }>(),
+      backgroundAllowed: false,
+      histogram: {id: 3},
+    },
+    {
+      name: 'openGlicSettingsPage',
+      request: defMessage<{options?: OpenSettingsOptions}>(),
+      backgroundAllowed: true,
+      histogram: {id: 4},
+    },
+    {
+      name: 'openPasswordManagerSettingsPage',
+      backgroundAllowed: true,
+      histogram: {id: 78},
+    },
+    {
+      name: 'closePanel',
+      backgroundAllowed: true,
+      histogram: {id: 5},
+    },
+    {
+      name: 'closePanelAndShutdown',
+      backgroundAllowed: true,
+      histogram: {id: 6},
+    },
+    {
+      name: 'showProfilePicker',
+      histogram: {id: 7},
+    },
+    {
+      name: 'getModelQualityClientId',
+      response: defMessage<{
+        modelQualityClientId: string,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 8},
+    },
+    {
+      name: 'switchConversation',
+      request: defMessage<{
+        info?: ConversationInfo,
+      }>(),
+      response: defMessage<{}>(),
+      backgroundAllowed: true,
+      histogram: {id: 64},
+    },
+    {
+      name: 'registerConversation',
+      request: defMessage<{
+        info: ConversationInfo,
+      }>(),
+      response: defMessage<{}>(),
+      backgroundAllowed: true,
+      histogram: {id: 65},
+    },
+    {
+      name: 'getContextFromFocusedTab',
+      request: defMessage<{
+        options: TabContextOptions,
+      }>(),
+      response: defMessage<{
+        tabContextResult: TabContextResultPrivate,
+      }>(),
+      backgroundAllowed: false,
+      histogram: {id: 9},
+    },
+    {
+      name: 'getContextFromTab',
+      request: defMessage<{
+        tabId: string,
+        options: TabContextOptions,
+      }>(),
+      response: defMessage<{
+        tabContextResult: TabContextResultPrivate,
+      }>(),
+      backgroundAllowed: false,
+      histogram: {id: 10},
+    },
+    {
+      name: 'setMaximumNumberOfPinnedTabs',
+      request: defMessage<{
+        requestedMax: number,
+      }>(),
+      response: defMessage<{
+        effectiveMax: number,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 12},
+    },
+    {
+      name: 'activateTab',
+      request: defMessage<{
+        tabId: string,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 76},
+    },
+    {
+      name: 'captureScreenshot',
+      response: defMessage<{
+        screenshot: Screenshot,
+      }>(),
+      backgroundAllowed: false,
+      histogram: {id: 16},
+    },
+    {
+      name: 'resizeWindow',
+      request: defMessage<{
+        size: {
+          width: number,
+          height: number,
+        },
+        options?: {
+          durationMs?: number,
+        },
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 17},
+    },
+    {
+      name: 'enableDragResize',
+      request: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 18},
+    },
+    {
+      name: 'setMinimumWidgetSize',
+      request: defMessage<{
+        size: {
+          width: number,
+          height: number,
+        },
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 20},
+    },
+    {
+      name: 'setMicrophonePermissionState',
+      request: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 21},
+    },
+    {
+      name: 'setLocationPermissionState',
+      request: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 22},
+    },
+    {
+      name: 'setTabContextPermissionState',
+      request: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 23},
+    },
+    {
+      name: 'setClosedCaptioningSetting',
+      request: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 56},
+    },
+    {
+      name: 'setContextAccessIndicator',
+      request: defMessage<{
+        show: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 24},
+    },
+    {
+      name: 'setActuationOnWebSetting',
+      request: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 69},
+    },
+    {
+      name: 'getUserProfileInfo',
+      response: defMessage<{
+        profileInfo?: UserProfileInfoPrivate,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 25},
+    },
+    {
+      name: 'refreshSignInCookies',
+      response: defMessage<{
+        success: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 26},
+    },
+    {
+      name: 'attachPanel',
+      backgroundAllowed: true,
+      histogram: {id: 27},
+    },
+    {
+      name: 'detachPanel',
+      backgroundAllowed: true,
+      histogram: {id: 28},
+    },
+    {
+      name: 'setAudioDucking',
+      request: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 29},
+    },
+    {
+      name: 'onUserInputSubmitted',
+      request: defMessage<{
+        mode: number,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 38},
+    },
+    {
+      name: 'onReaction',
+      request: defMessage<{
+        reactionType: MetricUserInputReactionType,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 66},
+    },
+    {
+      name: 'onOptinImpression',
+      backgroundAllowed: true,
+      histogram: {id: 99},
+    },
+    {
+      name: 'onContextUploadStarted',
+      backgroundAllowed: true,
+      histogram: {id: 68},
+    },
+    {
+      name: 'onContextUploadCompleted',
+      backgroundAllowed: true,
+      histogram: {id: 67},
+    },
+    {
+      name: 'onResponseStarted',
+      backgroundAllowed: true,
+      histogram: {id: 40},
+    },
+    {
+      name: 'onResponseStopped',
+      request: defMessage<{details?: OnResponseStoppedDetails}>(),
+      backgroundAllowed: true,
+      histogram: {id: 41},
+    },
+    {
+      name: 'onSessionTerminated',
+      backgroundAllowed: true,
+      histogram: {id: 42},
+    },
+    {
+      name: 'onTurnCompleted',
+      request: defMessage<{
+        model: number,
+        duration: number,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 43},
+    },
+    {
+      name: 'onResponseRated',
+      request: defMessage<{
+        positive: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 39},
+    },
+    {
+      name: 'onClosedCaptionsShown',
+      backgroundAllowed: true,
+      histogram: {id: 59},
+    },
+    {
+      name: 'onActionSubmitted',
+      request: defMessage<{
+        isRetry?: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 93},
+    },
+    {
+      name: 'scrollTo',
+      request: defMessage<{
+        params: ScrollToParams,
+      }>(),
+      backgroundAllowed: false,
+      histogram: {id: 45},
+    },
+    {
+      name: 'dropScrollToHighlight',
+      backgroundAllowed: true,
+      histogram: {id: 57},
+    },
+    {
+      name: 'setSyntheticExperimentState',
+      request: defMessage<{
+        trialName: string,
+        groupName: string,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 46},
+    },
+    {
+      name: 'openOsPermissionSettingsMenu',
+      request: defMessage<{permission: string}>(),
+      histogram: {id: 47},
+    },
+    {
+      name: 'getOsMicrophonePermissionStatus',
+      response: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 48},
+    },
+    {
+      name: 'pinTabs',
+      request: defMessage<{
+        tabIds: string[],
+        options?: PinTabsOptions,
+      }>(),
+      response: defMessage<{
+        pinnedAll: boolean,
+      }>(),
+      backgroundAllowed: false,
+      histogram: {id: 49},
+    },
+    {
+      name: 'unpinTabs',
+      request: defMessage<{
+        tabIds: string[],
+        options?: UnpinTabsOptions,
+      }>(),
+      response: defMessage<{
+        unpinnedAll: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 50},
+    },
+    {
+      name: 'unpinAllTabs',
+      request: defMessage<{
+        options?: UnpinTabsOptions,
+      }>(),
+      backgroundAllowed: false,
+      histogram: {id: 51},
+    },
+    {
+      name: 'createSkill',
+      request: defMessage<{
+        request: CreateSkillRequest,
+      }>(),
+      response: defMessage<{
+        modalOpened: boolean,
+      }>(),
+      histogram: {id: 82},
+    },
+    {
+      name: 'updateSkill',
+      request: defMessage<{
+        request: UpdateSkillRequest,
+      }>(),
+      response: defMessage<{
+        modalOpened: boolean,
+      }>(),
+      histogram: {id: 83},
+    },
+    {
+      name: 'showManageSkillsUi',
+      backgroundAllowed: true,
+      histogram: {id: 86},
+    },
+    {
+      name: 'showBrowseSkillsUi',
+      backgroundAllowed: true,
+      histogram: {id: 95},
+    },
+    {
+      name: 'getSkill',
+      request: defMessage<{
+        id: string,
+      }>(),
+      response: defMessage<{
+        skill?: Skill,
+      }>(),
+      histogram: {id: 84},
+    },
+    {
+      name: 'recordSkillsWebClientEvent',
+      request: defMessage<{
+        event: SkillsWebClientEvent,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 91},
+    },
+    {
+      name: 'subscribeToPinCandidates',
+      request: defMessage<{
+        options: GetPinCandidatesOptions,
+        observationId: number,
+      }>(),
+      backgroundAllowed: false,
+      histogram: {id: 52},
+    },
+    {
+      name: 'unsubscribeFromPinCandidates',
+      request: defMessage<{
+        observationId: number,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 53},
+    },
+    {
+      name: 'subscribeToCaptureRegion',
+      request: defMessage<{
+        observationId: number,
+        params?: CaptureRegionParams,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 71},
+    },
+    {
+      name: 'unsubscribeFromCaptureRegion',
+      request: defMessage<{
+        observationId: number,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 72},
+    },
+    {
+      name: 'deleteCapturedRegion',
+      request: defMessage<{
+        tabId: string,
+        regionId: string,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 92},
+    },
+    {
+      name: 'getZeroStateSuggestionsForFocusedTab',
+      request: defMessage<{
+        isFirstRun?: boolean,
+      }>(),
+      response: defMessage<{
+        suggestions?: ZeroStateSuggestions,
+      }>(),
+      backgroundAllowed: false,
+      histogram: {id: 54},
+    },
+    {
+      name: 'maybeRefreshUserStatus',
+      backgroundAllowed: true,
+      histogram: {id: 58},
+    },
+    {
+      name: 'getZeroStateSuggestionsAndSubscribe',
+      request: defMessage<{
+        hasActiveSubscription: boolean,
+        options: ZeroStateSuggestionsOptions,
+      }>(),
+      response: defMessage<{
+        suggestions?: ZeroStateSuggestionsV2,
+      }>(),
+      histogram: {id: 55},
+    },
+    {
+      name: 'subscribeToPageMetadata',
+      request: defMessage<{
+        tabId: string,
+        names: string[],
+      }>(),
+      response: defMessage<{
+        success: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 63},
+    },
+    {
+      name: 'onModeChange',
+      request: defMessage<{
+        newMode: WebClientMode,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 70},
+    },
+    {
+      name: 'setOnboardingCompleted',
+      backgroundAllowed: true,
+      histogram: {id: 80},
+    },
+    {
+      name: 'subscribeToTabData',
+      request: defMessage<{
+        tabId: string,
+        observationId: number,
+        cancel: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 81},
+    },
+    {
+      name: 'subscribeToTabFavicon',
+      request: defMessage<{
+        tabId: string,
+        observationId: number,
+        cancel: boolean,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 94},
+    },
+    {
+      name: 'onMicrophoneStatusChange',
+      request: defMessage<{
+        status: MicrophoneStatus,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 90},
+    },
+    {
+      name: 'recordHistogram',
+      request: defMessage<{
+        name: string,
+        sparseValue: number,
+        // Add other histogram types as needed.
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'setErrorDialogState',
+      request: defMessage<{
+        shownDialogType?: ClientErrorDialogType,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'reportClientTransientError',
+      request: defMessage<{
+        abslStatus: number,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'processCounterAbuseVerdict',
+      request: defMessage<{
+        tabId: string,
+        verdict: CounterAbuseVerdict,
+      }>(),
+      backgroundAllowed: true,
+      histogram: {id: 100},
+    },
+    {
+      name: 'subscribeToZoomLevel',
+      backgroundAllowed: true,
+      histogram: {id: 96},
+    },
+    {
+      name: 'unsubscribeFromZoomLevel',
+      backgroundAllowed: true,
+      histogram: {id: 97},
+    },
+  ],
+});
 
-  glicBrowserOnExperimentalTriggeringUpdate: {
-    request: {
-      observationId: number,
-      update?: ExperimentalTriggeringUpdate,
-            observation: SubscriberObservationType,
-    },
-    backgroundAllowed: true,
-  };
 
-  // The messages that fulfil the GlicBrowserHost public API follow below.
-
-  glicBrowserCreateTab: {
-    request: {
-      url: string,
-      options: {openInBackground?: boolean, windowId?: string},
-    },
-    response: {
-      // Undefined on failure.
-      tabData?: TabDataPrivate,
-    },
-    backgroundAllowed: false,
-  };
-  glicBrowserOpenGlicSettingsPage: {
-    request: {options?: OpenSettingsOptions},
-    backgroundAllowed: true,
-  };
-  glicBrowserOpenPasswordManagerSettingsPage: {
-    backgroundAllowed: true,
-  };
-  glicBrowserClosePanel: {
-    backgroundAllowed: true,
-  };
-  glicBrowserClosePanelAndShutdown: {
-    backgroundAllowed: true,
-  };
-  glicBrowserShowProfilePicker: {};
-  glicBrowserGetModelQualityClientId: {
-    response: {
-      modelQualityClientId: string,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserSwitchConversation: {
-    request: {
-      info?: ConversationInfo,
-    },
-    response: {},
-    backgroundAllowed: true,
-  };
-  glicBrowserRegisterConversation: {
-    request: {
-      info: ConversationInfo,
-    },
-    response: {},
-    backgroundAllowed: true,
-  };
-  glicBrowserGetContextFromFocusedTab: {
-    request: {
-      options: TabContextOptions,
-    },
-    response: {
-      tabContextResult: TabContextResultPrivate,
-    },
-    backgroundAllowed: false,
-  };
-  glicBrowserGetContextFromTab: {
-    backgroundAllowed: false,
-    request: {
-      tabId: string,
-      options: TabContextOptions,
-    },
-    response: {
-      tabContextResult: TabContextResultPrivate,
-    },
-  };
-  glicBrowserSetMaximumNumberOfPinnedTabs: {
-    request: {
-      requestedMax: number,
-    },
-    response: {
-      effectiveMax: number,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserActivateTab: {
-    request: {
-      tabId: string,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserCaptureScreenshot: {
-    response: {
-      screenshot: Screenshot,
-    },
-    backgroundAllowed: false,
-  };
-  glicBrowserResizeWindow: {
-    request: {
-      size: {
-        width: number,
-        height: number,
-      },
-      options?: {
-        durationMs?: number,
-      },
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserEnableDragResize: {
-    request: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserSetMinimumWidgetSize: {
-    request: {
-      size: {
-        width: number,
-        height: number,
-      },
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserSetMicrophonePermissionState: {
-    request: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserSetLocationPermissionState: {
-    request: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserSetTabContextPermissionState: {
-    request: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserSetClosedCaptioningSetting: {
-    request: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserSetContextAccessIndicator: {
-    request: {
-      show: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserSetActuationOnWebSetting: {
-    request: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserGetUserProfileInfo: {
-    response: {
-      profileInfo?: UserProfileInfoPrivate,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserRefreshSignInCookies: {
-    response: {
-      success: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserAttachPanel: {
-    backgroundAllowed: true,
-  };
-  glicBrowserDetachPanel: {
-    backgroundAllowed: true,
-  };
-  glicBrowserSetAudioDucking: {
-    request: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserOnUserInputSubmitted: {
-    request: {
-      mode: number,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserOnReaction: {
-    backgroundAllowed: true,
-    request: {
-      reactionType: MetricUserInputReactionType,
-    },
-  };
-  glicBrowserOnOptinImpression: {
-    backgroundAllowed: true,
-  };
-  glicBrowserOnContextUploadStarted: {
-    backgroundAllowed: true,
-  };
-  glicBrowserOnContextUploadCompleted: {
-    backgroundAllowed: true,
-  };
-  glicBrowserOnResponseStarted: {
-    backgroundAllowed: true,
-  };
-  glicBrowserOnResponseStopped: {
-    request: {details?: OnResponseStoppedDetails},
-    backgroundAllowed: true,
-  };
-  glicBrowserOnSessionTerminated: {
-    backgroundAllowed: true,
-  };
-  glicBrowserOnTurnCompleted: {
-    request: {
-      model: number,
-      duration: number,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserOnResponseRated: {
-    request: {
-      positive: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserOnClosedCaptionsShown: {
-    backgroundAllowed: true,
-  };
-  glicBrowserOnActionSubmitted: {
-    request: {
-      isRetry?: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserScrollTo: {
-    request: {
-      params: ScrollToParams,
-    },
-    backgroundAllowed: false,
-  };
-  glicBrowserDropScrollToHighlight: {
-    backgroundAllowed: true,
-  };
-  glicBrowserSetSyntheticExperimentState: {
-    request: {
-      trialName: string,
-      groupName: string,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserOpenOsPermissionSettingsMenu: {request: {permission: string}};
-  glicBrowserGetOsMicrophonePermissionStatus: {
-    response: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserPinTabs: {
-    backgroundAllowed: false,
-    request: {
-      tabIds: string[],
-      options?: PinTabsOptions,
-    },
-    response: {
-      pinnedAll: boolean,
-    },
-  };
-  glicBrowserUnpinTabs: {
-    backgroundAllowed: true,
-    request: {
-      tabIds: string[],
-      options?: UnpinTabsOptions,
-    },
-    response: {
-      unpinnedAll: boolean,
-    },
-  };
-  glicBrowserUnpinAllTabs: {
-    backgroundAllowed: false,
-    request: {
-      options?: UnpinTabsOptions,
-    },
-  };
-  glicBrowserCreateSkill: {
-    request: {
-      request: CreateSkillRequest,
-    },
-    response: {
-      modalOpened: boolean,
-    },
-  };
-  glicBrowserUpdateSkill: {
-    request: {
-      request: UpdateSkillRequest,
-    },
-    response: {
-      modalOpened: boolean,
-    },
-  };
-  glicBrowserShowManageSkillsUi: {
-    backgroundAllowed: true,
-  };
-  glicBrowserShowBrowseSkillsUi: {
-    backgroundAllowed: true,
-  };
-  glicBrowserGetSkill: {
-    request: {
-      id: string,
-    },
-    response: {
-      skill?: Skill,
-    },
-  };
-  glicBrowserRecordSkillsWebClientEvent: {
-    request: {
-      event: SkillsWebClientEvent,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserSubscribeToPinCandidates: {
-    backgroundAllowed: false,
-    request: {
-      options: GetPinCandidatesOptions,
-      observationId: number,
-    },
-  };
-  glicBrowserUnsubscribeFromPinCandidates: {
-    request: {
-      observationId: number,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserSubscribeToCaptureRegion: {
-    request: {
-      observationId: number,
-      params?: CaptureRegionParams,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserUnsubscribeFromCaptureRegion: {
-    request: {
-      observationId: number,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserDeleteCapturedRegion: {
-    request: {
-      tabId: string,
-      regionId: string,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserGetZeroStateSuggestionsForFocusedTab: {
-    request: {
-      isFirstRun?: boolean,
-    },
-    response: {
-      suggestions?: ZeroStateSuggestions,
-    },
-    backgroundAllowed: false,
-  };
-  glicBrowserMaybeRefreshUserStatus: {
-    backgroundAllowed: true,
-  };
-  glicBrowserGetZeroStateSuggestionsAndSubscribe: {
-    request: {
-      hasActiveSubscription: boolean,
-      options: ZeroStateSuggestionsOptions,
-    },
-    response: {
-      suggestions?: ZeroStateSuggestionsV2,
-    },
-  };
-  glicBrowserSubscribeToPageMetadata: {
-    request: {
-      tabId: string,
-      names: string[],
-    },
-    response: {
-      success: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserOnModeChange: {
-    request: {
-      newMode: WebClientMode,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserSetOnboardingCompleted: {
-    backgroundAllowed: true,
-  };
-  glicBrowserSubscribeToTabData: {
-    request: {
-      tabId: string,
-      observationId: number,
-      cancel: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserSubscribeToTabFavicon: {
-    request: {
-      tabId: string,
-      observationId: number,
-      cancel: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserOnMicrophoneStatusChange: {
-    request: {
-      status: MicrophoneStatus,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserRecordHistogram: {
-    request: {
-      name: string,
-      sparseValue: number,
-      // Add other histogram types as needed.
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserSetErrorDialogState: {
-    request: {
-      shownDialogType?: ClientErrorDialogType,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserReportClientTransientError: {
-    request: {
-      abslStatus: number,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserProcessCounterAbuseVerdict: {
-    request: {
-      tabId: string,
-      verdict: CounterAbuseVerdict,
-    },
-    backgroundAllowed: true,
-  };
-  glicBrowserSubscribeToZoomLevel: {
-    backgroundAllowed: true,
-  };
-  glicBrowserUnsubscribeFromZoomLevel: {
-    backgroundAllowed: true,
-  };
-}
-export type CheckWebClientHost = ValidateRequestMap<WebClientHost>;
+export type WebClientHost = typeof WebClientHostDef;
 
 // Types of requests to the GlicWebClient.
-export declare interface WebClient {
-  glicWebClientNotifyPanelWillOpen: {
-    request: {
-      panelOpeningData: PanelOpeningData,
-    },
-    response: {
-      openPanelInfo?: OpenPanelInfo,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyPanelWasClosed: {
-    backgroundAllowed: true,
-  };
-  glicWebClientStopMicrophone: {
-    backgroundAllowed: true,
-  };
-  glicWebClientPanelStateChanged: {
-    request: {
-      panelState: PanelState,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientCanAttachStateChanged: {
-    request: {
-      canAttach: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyGeminiEnterpriseSettingsChanged: {
-    request: {
-      settings: GeminiEnterpriseSettings | undefined,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyMicrophonePermissionStateChanged: {
-    request: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyLocationPermissionStateChanged: {
-    request: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyTabContextPermissionStateChanged: {
-    request: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyDefaultTabContextPermissionStateChanged: {
-    request: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyOsLocationPermissionStateChanged: {
-    request: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyClosedCaptioningSettingChanged: {
-    request: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyActuationOnWebSettingChanged: {
-    request: {
-      enabled: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyFocusedTabChanged: {
-    request: {
-      focusedTabDataPrivate: FocusedTabDataPrivate,
-    },
-  };
-  glicWebClientNotifyPanelActiveChanged: {
-    request: {
-      panelActive: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientCheckResponsive: {
-    response: {
-      clientSendMessageQueueLength: number,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyManualResizeChanged: {
-    request: {
-      resizing: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientBrowserIsOpenChanged: {
-    request: {
-      browserIsOpen: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyOsHotkeyStateChanged: {
-    request: {
-      hotkey: string,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyPinnedTabsChanged: {
-    request: {
-      tabData: TabDataPrivate[],
-    },
-  };
-  glicWebClientNotifyPinnedTabDataChanged: {
-    request: {
-      tabData: TabDataPrivate,
-    },
-  };
-  glicWebClientNotifySkillPreviewsChanged: {
-    request: {
-      skillPreviews: SkillPreview[],
-    },
-  };
-  glicWebClientNotifySkillPreviewChanged: {
-    request: {
-      skillPreview: SkillPreview,
-    },
-  };
-  glicWebClientNotifyContextualSkillPreviewsChanged: {
-    request: {
-      contextualSkillPreviews: SkillPreview[],
-    },
-  };
-  glicWebClientNotifySkillDeleted: {
-    request: {
-      skillId: string,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientPinCandidatesChanged: {
-    request: {
-      candidates: PinCandidatePrivate[],
-      observationId: number,
-    },
-  };
-  glicWebClientZeroStateSuggestionsChanged: {
-    request: {
-      suggestions: ZeroStateSuggestionsV2,
-      options: ZeroStateSuggestionsOptions,
-    },
-  };
-  glicWebClientPageMetadataChanged: {
-    request: {
-      tabId: string,
-      pageMetadata: PageMetadata|null,
-    },
-  };
-  glicWebClientNotifyAdditionalContext: {
-    request: {
-      context: AdditionalContextPrivate,
-    },
-  };
-  glicWebClientCaptureRegionUpdate: {
-    request: {
-      result?: CaptureRegionResult,
-      reason?: CaptureRegionErrorReason, observationId: number,
-    },
-  };
-  glicWebClientNotifyActOnWebCapabilityChanged: {
-    request: {
-      canActOnWeb: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientOnboardingCompletedChanged: {
-    request: {
-      completed: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyActorTaskListRowClicked: {
-    request: {
-      taskId: number,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientTabDataChanged: {
-    request: {
-      // If not present, the tab no longer exists and no more updates will be
-      // received.
-      tabData?: TabDataPrivate, observationId: number,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientTabFaviconChanged: {
-    request: {
-      observationId: number,
-      // If true, the tab was removed and no more updates will be received.
-      tabRemoved?: boolean,
-      favicon?: RgbaImage,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientInvoke: {
-    request: {
-      options: InvokeOptionsPrivate,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientGetExperimentalTriggeringUpdates: {
-    request: {
-      observationId: number,
-    },
-    response: {
-      success: boolean,
-    },
-    backgroundAllowed: true,
-  };
-  glicWebClientNotifyZoomLevelChanged: {
-    request: {
-      zoomFactor: number,
-    },
-    backgroundAllowed: true,
-  };
-}
-export type CheckWebClient = ValidateRequestMap<WebClient>;
-
-export type WebClientRequestTypes = WebClient&ActorClient;
-
-export type HostRequestTypes = WebClientHost&ActorHost;
-
-export type ValidateAllMessages =
-    ValidateRequestMap<HostRequestTypes&WebClientRequestTypes>;
-
-// Each host request needs to be added to either UnreportedRequests or
-// RECORDED_REQUEST_IDS. Requests in UnreportedRequests will not record
-// histograms.
-interface UnreportedRequests {
-  RecordHistogram: null;
-  SetErrorDialogState: null;
-  ReportClientTransientError: null;
-}
-
-type RemoveStringPrefix<S extends string, Prefix extends string> =
-    S extends `${Prefix}${infer Rest}` ? Rest : 'prefixNotFound!';
-
-type HostRequestEnumNamesType = Omit<
+export const WebClientDef = defInterface({
+  name: 'WebClient',
+  methods: [
     {
-      [K in keyof HostRequestTypes as RemoveStringPrefix<K, 'glicBrowser'>]:
-          number;
+      name: 'glicWebClientNotifyPanelWillOpen',
+      request: defMessage<{
+        panelOpeningData: PanelOpeningData,
+      }>(),
+      response: defMessage<{
+        openPanelInfo?: OpenPanelInfo,
+      }>(),
+      backgroundAllowed: true,
     },
-    keyof UnreportedRequests>;
+    {
+      name: 'glicWebClientNotifyPanelWasClosed',
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientStopMicrophone',
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientPanelStateChanged',
+      request: defMessage<{
+        panelState: PanelState,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientCanAttachStateChanged',
+      request: defMessage<{
+        canAttach: boolean,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientNotifyGeminiEnterpriseSettingsChanged',
+      request: defMessage<{
+        settings: GeminiEnterpriseSettings | undefined,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientNotifyMicrophonePermissionStateChanged',
+      request: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientNotifyLocationPermissionStateChanged',
+      request: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientNotifyTabContextPermissionStateChanged',
+      request: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientNotifyDefaultTabContextPermissionStateChanged',
+      request: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientNotifyOsLocationPermissionStateChanged',
+      request: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientNotifyClosedCaptioningSettingChanged',
+      request: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientNotifyActuationOnWebSettingChanged',
+      request: defMessage<{
+        enabled: boolean,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientNotifyFocusedTabChanged',
+      request: defMessage<{
+        focusedTabDataPrivate: FocusedTabDataPrivate,
+      }>(),
+    },
+    {
+      name: 'glicWebClientNotifyPanelActiveChanged',
+      request: defMessage<{
+        panelActive: boolean,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientCheckResponsive',
+      response: defMessage<{
+        clientSendMessageQueueLength: number,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientNotifyManualResizeChanged',
+      request: defMessage<{
+        resizing: boolean,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientBrowserIsOpenChanged',
+      request: defMessage<{
+        browserIsOpen: boolean,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientNotifyOsHotkeyStateChanged',
+      request: defMessage<{
+        hotkey: string,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientNotifyPinnedTabsChanged',
+      request: defMessage<{
+        tabData: TabDataPrivate[],
+      }>(),
+    },
+    {
+      name: 'glicWebClientNotifyPinnedTabDataChanged',
+      request: defMessage<{
+        tabData: TabDataPrivate,
+      }>(),
+    },
+    {
+      name: 'glicWebClientNotifySkillPreviewsChanged',
+      request: defMessage<{
+        skillPreviews: SkillPreview[],
+      }>(),
+    },
+    {
+      name: 'glicWebClientNotifySkillPreviewChanged',
+      request: defMessage<{
+        skillPreview: SkillPreview,
+      }>(),
+    },
+    {
+      name: 'glicWebClientNotifyContextualSkillPreviewsChanged',
+      request: defMessage<{
+        contextualSkillPreviews: SkillPreview[],
+      }>(),
+    },
+    {
+      name: 'glicWebClientNotifySkillDeleted',
+      request: defMessage<{
+        skillId: string,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientPinCandidatesChanged',
+      request: defMessage<{
+        candidates: PinCandidatePrivate[],
+        observationId: number,
+      }>(),
+    },
+    {
+      name: 'glicWebClientZeroStateSuggestionsChanged',
+      request: defMessage<{
+        suggestions: ZeroStateSuggestionsV2,
+        options: ZeroStateSuggestionsOptions,
+      }>(),
+    },
+    {
+      name: 'glicWebClientPageMetadataChanged',
+      request: defMessage<{
+        tabId: string,
+        pageMetadata: PageMetadata | null,
+      }>(),
+    },
+    {
+      name: 'glicWebClientNotifyAdditionalContext',
+      request: defMessage<{
+        context: AdditionalContextPrivate,
+      }>(),
+    },
+    {
+      name: 'glicWebClientCaptureRegionUpdate',
+      request: defMessage<{
+        result?: CaptureRegionResult,
+        reason?: CaptureRegionErrorReason, observationId: number,
+      }>(),
+    },
+    {
+      name: 'glicWebClientNotifyActOnWebCapabilityChanged',
+      request: defMessage<{
+        canActOnWeb: boolean,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientOnboardingCompletedChanged',
+      request: defMessage<{
+        completed: boolean,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientNotifyActorTaskListRowClicked',
+      request: defMessage<{
+        taskId: number,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientTabDataChanged',
+      request: defMessage<{
+        tabData?: TabDataPrivate, observationId: number,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientTabFaviconChanged',
+      request: defMessage<{
+        observationId: number,
+        tabRemoved?: boolean,
+        favicon?: RgbaImage,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientInvoke',
+      request: defMessage<{
+        options: InvokeOptionsPrivate,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientGetExperimentalTriggeringUpdates',
+      request: defMessage<{
+        observationId: number,
+      }>(),
+      response: defMessage<{
+        success: boolean,
+      }>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'glicWebClientNotifyZoomLevelChanged',
+      request: defMessage<{
+        zoomFactor: number,
+      }>(),
+      backgroundAllowed: true,
+    },
+  ],
+});
+
+export type WebClient = typeof WebClientDef;
+
+export type WebClientRequestTypes =
+    InterfaceDefMethods<WebClient>&InterfaceDefMethods<ActorClient>;
+
+export type HostRequestTypes =
+    InterfaceDefMethods<WebClientHost>&InterfaceDefMethods<ActorHost>;
+
+type InterfaceHistogramIds<I extends InterfaceDef> = {
+  [M in I['methods'][number] as M['histogram'] extends {id: number} ?
+       (M['histogram'] extends {name: infer Name extends string} ?
+            Name :
+            Capitalize<M['name']&string>) :
+       never]: M['histogram'] extends {id: infer Id} ? Id : never;
+};
 
 // LINT.IfChange(ApiRequestType)
 // New values here must be added to histograms.xml and to enums.xml.
-const RECORDED_REQUEST_IDS = {
+// Note: Not for accessing in code, so it can be stripped from compiled js.
+export const RECORDED_REQUEST_IDS = {
   WebClientCreated: 1,
   WebClientInitialized: 2,
   CreateTab: 3,
@@ -861,16 +1040,12 @@ const RECORDED_REQUEST_IDS = {
   OnExperimentalTriggeringUpdate: 98,
   OnOptinImpression: 99,
   ProcessCounterAbuseVerdict: 100,
-} as const satisfies HostRequestEnumNamesType;
+} as const satisfies InterfaceHistogramIds<WebClientHost>&
+    InterfaceHistogramIds<ActorHost>;
 // LINT.ThenChange(
-//  //tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType,
-//  //tools/metrics/histograms/metadata/glic/enums.xml:GlicHostApiRequestType)
-
-export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&
-    {MAX_VALUE: number} = {
-      ...RECORDED_REQUEST_IDS,
-      MAX_VALUE: Math.max(...Object.values(RECORDED_REQUEST_IDS)),
-    };
+// //tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType,
+// //tools/metrics/histograms/metadata/glic/enums.xml:GlicHostApiRequestType)
+export const MAX_REQUEST_ID = Math.max(...Object.values(RECORDED_REQUEST_IDS));
 
 // Provides metrics histogram information for a host request type.
 export interface HostRequestHistogramInfo {
@@ -880,30 +1055,17 @@ export interface HostRequestHistogramInfo {
   id: number;
 }
 
-export function getHostRequestHistogramInfo(requestType: string):
-    HostRequestHistogramInfo|undefined {
-  if (!requestType.startsWith('glicBrowser')) {
+export function getHostRequestHistogramInfo(
+    requestType: string,
+    interfaceDef: InterfaceDef|undefined): HostRequestHistogramInfo|undefined {
+  if (!interfaceDef) {
     return undefined;
   }
-  const requestName = requestType.substring(11);
-  const id: number|undefined =
-      (HOST_REQUEST_TYPES as unknown as Record<string, number>)[requestName];
-  if (id === undefined) {
-    return undefined;
-  }
-  return {name: requestName, id: id};
+  const method = interfaceDef.methodMap?.get(requestType);
+  // interfaceDef() ensures histogram satisfies HostRequestHistogramInfo, or is
+  // unset.
+  return method?.histogram as HostRequestHistogramInfo | undefined;
 }
-
-export type AllRequestTypes = {
-  [K in keyof(HostRequestTypes&WebClientRequestTypes)]:
-      (HostRequestTypes&WebClientRequestTypes)[K]
-};
-
-assertNever<CheckStructuredClonable<HostRequestTypes>>();
-assertNever<CheckStructuredClonable<WebClientRequestTypes>>();
-// Message names should be unique.
-assertNever<keyof WebClient&keyof ActorClient>();
-assertNever<keyof WebClientHost&keyof ActorHost>();
 
 //
 // Types used in messages that are not exposed directly to the API.

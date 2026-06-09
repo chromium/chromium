@@ -196,42 +196,39 @@ export class GlicBrowserHostJournalImpl implements GlicBrowserHostJournal {
       asyncEventId: number, taskId: number, event: string,
       details: string): void {
     this.sender.requestNoResponse(
-        'glicBrowserLogBeginAsyncEvent',
-        {asyncEventId, taskId, event, details});
+        'logBeginAsyncEvent', {asyncEventId, taskId, event, details});
   }
 
   clear(): void {
-    this.sender.requestNoResponse('glicBrowserJournalClear', undefined);
+    this.sender.requestNoResponse('journalClear', undefined);
   }
 
   endAsyncEvent(asyncEventId: number, details: string): void {
-    this.sender.requestNoResponse(
-        'glicBrowserLogEndAsyncEvent', {asyncEventId, details});
+    this.sender.requestNoResponse('logEndAsyncEvent', {asyncEventId, details});
   }
 
   instantEvent(taskId: number, event: string, details: string): void {
-    this.sender.requestNoResponse(
-        'glicBrowserLogInstantEvent', {taskId, event, details});
+    this.sender.requestNoResponse('logInstantEvent', {taskId, event, details});
   }
 
   async snapshot(clear: boolean): Promise<Journal> {
-    const snapshotResult = await this.sender.requestWithResponse(
-        'glicBrowserJournalSnapshot', {clear});
+    const snapshotResult =
+        await this.sender.requestWithResponse('journalSnapshot', {clear});
     return snapshotResult.journal;
   }
 
   start(maxBytes: number, captureScreenshots: boolean): void {
     this.sender.requestNoResponse(
-        'glicBrowserJournalStart', {maxBytes, captureScreenshots});
+        'journalStart', {maxBytes, captureScreenshots});
   }
 
   stop(): void {
-    this.sender.requestNoResponse('glicBrowserJournalStop', undefined);
+    this.sender.requestNoResponse('journalStop', undefined);
   }
 
   recordFeedback(positive: boolean, reason: string) {
     this.sender.requestNoResponse(
-        'glicBrowserJournalRecordFeedback',
+        'journalRecordFeedback',
         {positive, reason},
     );
   }

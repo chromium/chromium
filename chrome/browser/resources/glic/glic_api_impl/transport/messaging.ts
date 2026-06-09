@@ -11,10 +11,20 @@ export class ResponseExtras {
   }
 }
 
+export interface HistogramInfo {
+  // The unique name of the method used in histogram variations.
+  // The method name is used, with an uppercase first letter, if this is not
+  // provided.
+  name?: string;
+  // The ID of the histogram in histograms.xml.
+  id: number;
+}
+
 /**
  * Defines a request and optionally a corresponding response messages.
  */
 export interface RequestDef {
+  name: string;
   // The type of payload sent. Defaults to 'undefined', which means the request
   // has no request payload.
   request?: unknown;
@@ -31,6 +41,46 @@ export interface RequestDef {
    * For Client requests, it affects usage of `GatedSender`.
    */
   backgroundAllowed?: boolean;
+  // Provides information about the histogram to use for this method.
+  // Undefined if no histogram should be recorded.
+  histogram?: HistogramInfo;
+}
+
+export interface InterfaceDef {
+  name: string;
+  methods: readonly RequestDef[];
+  methodMap?: Map<string, RequestDef>;
+}
+
+export type InterfaceDefMethods<I extends InterfaceDef> = {
+  [M in I['methods'][number] as M['name']]: M;
+};
+
+// Defines a message type. Ensures the message is structured cloneable.
+// Currently returns undefined, as no information about the message is retained
+// at runtime.
+export function defMessage<
+    T extends(CheckStructuredClonable<T> extends never ? unknown : never)>():
+    T {
+  return undefined as unknown as T;
+}
+
+export function defInterface<const T extends InterfaceDef>(def: T): T {
+  const tidyRequest = (m: RequestDef) => {
+    const id = m.histogram?.id;
+    if (id === undefined) {
+      return m;
+    }
+    let name = m.histogram!.name;
+    if (name === undefined) {
+      name = m.name.charAt(0).toUpperCase() + m.name.slice(1);
+    }
+    return {...m, histogram: {name, id}};
+  };
+  return {
+    ...def,
+    methodMap: new Map(def.methods.map(m => [m.name, tidyRequest(m)])),
+  } as T;
 }
 
 // Validates each key is a RequestDef.
@@ -74,11 +124,11 @@ export type ResponsePayload<M, T extends keyof M> =
 
 type Promisify<T> = T extends void ? void : Promise<T>;
 
-export type MessageHandlerInterface<MapType> = {
-  [Property in keyof MapType]: (
-      payload: RequestPayload<MapType, Property>,
+export type MessageHandlerInterface<I extends InterfaceDef> = {
+  [Property in keyof InterfaceDefMethods<I>]: (
+      payload: RequestPayload<InterfaceDefMethods<I>, Property>,
       extras: ResponseExtras,
-      ) => Promisify<ResponsePayload<MapType, Property>>;
+      ) => Promisify<ResponsePayload<InterfaceDefMethods<I>, Property>>;
 };
 
 /* eslint-disable-next-line @typescript-eslint/naming-convention */

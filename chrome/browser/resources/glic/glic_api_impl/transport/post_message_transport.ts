@@ -4,7 +4,15 @@
 
 import {assert} from '//resources/js/assert.js';
 
+import type {InterfaceDef, InterfaceDefMethods, RequestPayload, ResponsePayload} from './messaging.js';
 import {ResponseExtras} from './messaging.js';
+
+export type {
+  InterfaceDef,
+  InterfaceDefMethods,
+  RequestPayload,
+  ResponsePayload,
+};
 
 // This file contains helpers to send and receive messages over postMessage.
 
@@ -16,14 +24,15 @@ export interface PostMessageReceiver {
   // handler needs to change after creating the receiver with
   // `PostMessageRouter.newReceiver`. Triggers pending messages to be
   // dispatched to the handler in a posted task.
-  setMessageHandler<MapType>(handler: PostMessageHandler<MapType>): void;
+  setMessageHandler<I extends InterfaceDef>(
+      handler: PostMessageHandler<I>, interfaceDef?: I): void;
   // Add a callback to be called when the pipe is closed. Calls `f` immediately
   // if the pipe is already closed.
   addCloseHandler(f: () => void): void;
 }
 
 // The sending end of a pipe.
-export interface PostMessageRemote<MapType = Record<string, unknown>> {
+export interface PostMessageRemote<I extends InterfaceDef> {
   // Close the pipe. Should be called when no longer needed.
   close(): void;
   // Add a callback to be called when the pipe is closed. Calls `f` immediately
@@ -33,14 +42,15 @@ export interface PostMessageRemote<MapType = Record<string, unknown>> {
   // If the pipe is closed before a response is received, the promise rejects.
   // If the message is sent before the pipe is bound to a receiver, the
   // message will queued until a receiver is bound.
-  requestWithResponse<T extends keyof MapType>(
-      requestType: T, request: RequestPayload<MapType, T>,
-      transfer?: Transferable[]): Promise<ResponsePayload<MapType, T>>;
+  requestWithResponse<T extends keyof InterfaceDefMethods<I>>(
+      requestType: T, request: RequestPayload<InterfaceDefMethods<I>, T>,
+      transfer?: Transferable[]):
+      Promise<ResponsePayload<InterfaceDefMethods<I>, T>>;
   // Send a request, does not wait for a response.
   // If the message is sent before the pipe is bound to a receiver, the
   // message will queued until a receiver is bound.
-  requestNoResponse<T extends keyof MapType>(
-      requestType: T, request: RequestPayload<MapType, T>,
+  requestNoResponse<T extends keyof InterfaceDefMethods<I>>(
+      requestType: T, request: RequestPayload<InterfaceDefMethods<I>, T>,
       transfer?: Transferable[]): void;
   // The raw sender for this pipe.
   rawSender(): PostMessageRequestSender;
@@ -63,12 +73,14 @@ declare const brand: unique symbol;
 // Identifies the receiving end of a pipe which has not yet been bound.
 // Can be sent over postMessage.
 // Can be used to create a PostMessageReceiver.
-export type PendingReceiver<MapType> = number&{[brand]: {receiver: MapType}};
+export type PendingReceiver<I extends InterfaceDef> =
+    number&{[brand]: {receiver: I}};
 
 // Identifies the sending end of a pipe which has not yet been bound.
 // Can be sent over postMessage.
 // Can be used to create a PostMessageRemote.
-export type PendingRemote<MapType> = number&{[brand]: {remote: MapType}};
+export type PendingRemote<I extends InterfaceDef> =
+    number&{[brand]: {remote: I}};
 
 // Define the root pipe. It's just the number 0, but we use a branded type to
 // give it a distinct type.
@@ -80,26 +92,28 @@ const ROOT_PIPE = 0 as RootPipe;
 // `postMessage`.
 export interface PostMessageRouter {
   // Creates a new pipe bound to a pending receiver and a remote.
-  newPipeWithRemote<RemoteMap>(): {
-    receiver: PendingReceiver<RemoteMap>,
-    remote: PostMessageRemote<RemoteMap>,
+  newPipeWithRemote<RemoteInterface extends InterfaceDef>(
+      remoteInterfaceDef: RemoteInterface): {
+    receiver: PendingReceiver<RemoteInterface>,
+    remote: PostMessageRemote<RemoteInterface>,
   };
 
   // Creates a new pipe bound to a receiver and a pending remote.
-  newPipeWithReceiver<RemoteMap>(receiverHandler:
-                                     PostMessageHandler<RemoteMap>): {
+  newPipeWithReceiver<ReceiverInterface extends InterfaceDef>(
+      receiverHandler: PostMessageHandler<ReceiverInterface>,
+      interfaceDef: ReceiverInterface): {
     receiver: PostMessageReceiver,
-    remote: PendingRemote<RemoteMap>,
+    remote: PendingRemote<ReceiverInterface>,
   };
 
   // Create a PostMessageRemote from a PendingRemote.
-  newRemote<MapType>(remote: PendingRemote<MapType>|
-                     RootPipe): PostMessageRemote<MapType>;
+  newRemote<I extends InterfaceDef>(remote: PendingRemote<I>|
+                                    RootPipe): PostMessageRemote<I>;
 
   // Create a PostMessageReceiver from a PendingReceiver.
-  newReceiver<MapType>(
-      receiver: PendingReceiver<MapType>,
-      handler?: PostMessageHandler<MapType>): PostMessageReceiver;
+  newReceiver<I extends InterfaceDef>(
+      receiver: PendingReceiver<I>, handler: PostMessageHandler<I>,
+      interfaceDef: I): PostMessageReceiver;
 
   // Destroy all pipes created by this router.
   destroy(): void;
@@ -226,9 +240,10 @@ export class Queue<T> {
 interface PipeInterface {
   readonly open: boolean;
   readonly messageHandler: unknown;
+  interfaceDef?: InterfaceDef;
   addCloseHandler(f: () => void): void;
   close(): void;
-  setMessageHandler(handler: unknown): void;
+  setMessageHandler(handler: unknown, interfaceDef?: InterfaceDef): void;
   pending(): boolean;
   pushPendingMessage(
       pmReceiver: PostMessageRequestReceiver,
@@ -238,12 +253,13 @@ interface PipeInterface {
 
 class ClosedPipe implements PipeInterface {
   open = false;
-  messageHandler = undefined;
+  readonly messageHandler = undefined;
+  interfaceDef = undefined;
   addCloseHandler(f: () => void): void {
     f();
   }
   close(): void {}
-  setMessageHandler(_handler: unknown): void {}
+  setMessageHandler(_handler: unknown, _interfaceDef?: InterfaceDef): void {}
   getHandlerFunction(_type: string): HandlerFunction|undefined {
     return undefined;
   }
@@ -263,6 +279,7 @@ class Pipe implements PipeInterface {
   open = true;
   // The message handler for this pipe, if the pipe is bound as a receiver.
   messageHandler: unknown;
+  interfaceDef?: InterfaceDef;
   private pendingMessages: Array<[PostMessageRequestReceiver, RequestMessage]> =
       [];
   constructor(
@@ -293,8 +310,10 @@ class Pipe implements PipeInterface {
     }
   }
 
-  setMessageHandler(handler: unknown): void {
+  setMessageHandler<I extends InterfaceDef>(handler: unknown, interfaceDef: I):
+      void {
     this.messageHandler = handler;
+    this.interfaceDef = interfaceDef;
     if (this.messageHandler && this.pendingMessages.length) {
       const messages = this.pendingMessages;
       this.pendingMessages = [];
@@ -428,57 +447,61 @@ export class PostMessageRouterImpl extends MessageLogger implements
     this.messageSender.postMessage(response, this.remoteOrigin, transfer);
   }
 
-  newPipe<RemoteMap>(): {
-    receiver: PendingReceiver<RemoteMap>,
-    remote: PendingRemote<RemoteMap>,
+  newPipe<I extends InterfaceDef>(): {
+    receiver: PendingReceiver<I>,
+    remote: PendingRemote<I>,
   } {
     const id = this.nextPipeId;
     this.nextPipeId += 2;
     return {
-      receiver: id as PendingReceiver<RemoteMap>,
-      remote: id as PendingRemote<RemoteMap>,
+      receiver: id as unknown as PendingReceiver<I>,
+      remote: id as unknown as PendingRemote<I>,
     };
   }
 
-  newPipeWithReceiver<MapType>(receiverHandler: PostMessageHandler<MapType>): {
+  newPipeWithReceiver<ReceiverInterface extends InterfaceDef>(
+      receiverHandler: PostMessageHandler<ReceiverInterface>,
+      interfaceDef: ReceiverInterface): {
     receiver: PostMessageReceiver,
-    remote: PendingRemote<MapType>,
+    remote: PendingRemote<ReceiverInterface>,
   } {
-    const {receiver, remote} = this.newPipe<MapType>();
+    const {receiver, remote} = this.newPipe<ReceiverInterface>();
     return {
-      receiver: this.newReceiver(receiver, receiverHandler),
+      receiver: this.newReceiver(receiver, receiverHandler, interfaceDef),
       remote,
     };
   }
 
-  newPipeWithRemote<MapType>(): {
-    receiver: PendingReceiver<MapType>,
-    remote: PostMessageRemote<MapType>,
+  newPipeWithRemote<RemoteInterface extends InterfaceDef>(
+      _remoteInterfaceDef: RemoteInterface): {
+    receiver: PendingReceiver<RemoteInterface>,
+    remote: PostMessageRemote<RemoteInterface>,
   } {
-    const {receiver, remote} = this.newPipe<MapType>();
+    const {receiver, remote} = this.newPipe<RemoteInterface>();
     return {
       receiver,
-      remote: this.newRemote(remote),
+      remote: this.newRemote<RemoteInterface>(remote),
     };
   }
 
-  newReceiver<MapType>(
-      receiver: PendingReceiver<MapType>|RootPipe,
-      handler?: PostMessageHandler<MapType>): PostMessageReceiver {
-    const pipe = this.getOrMakePipe(receiver);
+  newReceiver<I extends InterfaceDef>(
+      receiver: PendingReceiver<I>|RootPipe, handler: PostMessageHandler<I>,
+      interfaceDef: I): PostMessageReceiver {
+    const pipe = this.getOrMakePipe(receiver as number);
     if (pipe.open && handler) {
-      pipe.setMessageHandler(handler);
+      pipe.setMessageHandler(handler, interfaceDef);
     }
-    return new PostMessageReceiverImpl(pipe, receiver, handler, this);
+    return new PostMessageReceiverImpl(pipe, receiver as number, handler, this);
   }
 
-  newRemote<MapType>(remote: PendingRemote<MapType>|
-                     RootPipe): PostMessageRemote<MapType> {
-    this.getOrMakePipe(remote);
-    return new PostMessageRemoteImpl<MapType>(remote, this.sender!, this);
+  newRemote<I extends InterfaceDef>(remote: PendingRemote<I>|
+                                    RootPipe): PostMessageRemote<I> {
+    this.getOrMakePipe(remote as number);
+    return new PostMessageRemoteImpl<I>(remote, this.sender!, this);
   }
 
-  closePipe(pipe: PendingReceiver<unknown>|PendingRemote<unknown>|number) {
+  closePipe(
+      pipe: PendingReceiver<InterfaceDef>|PendingRemote<InterfaceDef>|number) {
     this.closedPipes.add(pipe);
     const existing = this.pipes.get(pipe);
     if (!existing) {
@@ -511,54 +534,50 @@ export class PostMessageRouterImpl extends MessageLogger implements
   }
 }
 
-// Given a MapType, get the type of a request payload for a given method name.
-export type RequestPayload<M, T extends keyof M> =
-    M[T] extends {request: infer R} ? R : undefined;
-// Given a MapType, get the type of a response payload for a given method name.
-export type ResponsePayload<M, T extends keyof M> =
-    M[T] extends {response: infer R} ? R : void;
 
-export type PostMessageHandler<MapType> = {
-  [Property in keyof MapType]: (
-      payload: RequestPayload<MapType, Property>,
+
+export type PostMessageHandler<I extends InterfaceDef> = {
+  [Property in keyof InterfaceDefMethods<I>]: (
+      payload: RequestPayload<InterfaceDefMethods<I>, Property>,
       extras: ResponseExtras,
-      ) => Promise<ResponsePayload<MapType, Property>>|
-  ResponsePayload<MapType, Property>;
+      ) => Promise<ResponsePayload<InterfaceDefMethods<I>, Property>>|
+  ResponsePayload<InterfaceDefMethods<I>, Property>;
 }&{
   // Handlers may also implement a function with this key, and it will be called
   // when the pipe is closed.
   [ON_PIPE_CLOSED]?: () => void,
 };
 
-export class PostMessageRemoteImpl<MapType = Record<string, unknown>> implements
-    PostMessageRemote<MapType> {
+export class PostMessageRemoteImpl<I extends InterfaceDef> implements
+    PostMessageRemote<I> {
   constructor(
-      public readonly pipeId: PendingRemote<MapType>|RootPipe,
+      public readonly pipeId: PendingRemote<I>|RootPipe,
       public sender: PostMessageRequestSender,
       private router: PostMessageRouterImpl) {}
 
   addCloseHandler(f: () => void) {
-    const pipe = this.router.pipes.get(this.pipeId);
+    const pipe = this.router.pipes.get(this.pipeId as number);
     pipe?.addCloseHandler(f);
   }
 
   close() {
-    this.router.closePipe(this.pipeId);
+    this.router.closePipe(this.pipeId as number);
   }
 
-  requestWithResponse<T extends keyof MapType>(
-      requestType: T, request: RequestPayload<MapType, T>,
-      transfer: Transferable[] = []): Promise<ResponsePayload<MapType, T>> {
+  requestWithResponse<T extends keyof InterfaceDefMethods<I>>(
+      requestType: T, request: RequestPayload<InterfaceDefMethods<I>, T>,
+      transfer: Transferable[] = []):
+      Promise<ResponsePayload<InterfaceDefMethods<I>, T>> {
     return this.sender.requestWithResponse(
-               this.pipeId, requestType as string, request, transfer) as
-        Promise<ResponsePayload<MapType, T>>;
+               this.pipeId as number, requestType as string, request,
+               transfer) as Promise<ResponsePayload<InterfaceDefMethods<I>, T>>;
   }
 
-  requestNoResponse<T extends keyof MapType>(
-      requestType: T, request: RequestPayload<MapType, T>,
+  requestNoResponse<T extends keyof InterfaceDefMethods<I>>(
+      requestType: T, request: RequestPayload<InterfaceDefMethods<I>, T>,
       transfer: Transferable[] = []): void {
     this.sender.requestNoResponse(
-        this.pipeId, requestType as string, request, transfer);
+        this.pipeId as number, requestType as string, request, transfer);
   }
 
   rawSender(): PostMessageRequestSender {
@@ -573,7 +592,7 @@ export class PostMessageRemoteImpl<MapType = Record<string, unknown>> implements
 export class PostMessageReceiverImpl implements PostMessageReceiver {
   constructor(
       public readonly pipe: PipeInterface, public readonly pipeId: number,
-      public handler: PostMessageHandler<unknown>|undefined,
+      public handler: PostMessageHandler<InterfaceDef>|undefined,
       private router: PostMessageRouterImpl) {
     this.pipe.addCloseHandler(() => {
       this.handler?.[ON_PIPE_CLOSED]?.();
@@ -584,8 +603,9 @@ export class PostMessageReceiverImpl implements PostMessageReceiver {
     this.router.closePipe(this.pipeId);
   }
 
-  setMessageHandler<MapType>(handler: PostMessageHandler<MapType>): void {
-    this.pipe.setMessageHandler(handler);
+  setMessageHandler<I extends InterfaceDef>(
+      handler: PostMessageHandler<I>, interfaceDef: I): void {
+    this.pipe.setMessageHandler(handler, interfaceDef);
   }
 
   addCloseHandler(f: () => void) {
@@ -737,28 +757,30 @@ export interface PostMessageLifecycleObserver {
    * not trigger this. Messages sent to pending pipes trigger this only after
    * the receiver is created.
    */
-  onRequestReceived(type: string): void;
+  onRequestReceived(type: string, interfaceDef: InterfaceDef|undefined): void;
   /** Called when a request handler throws an exception. */
-  onRequestHandlerException(type: string): void;
+  onRequestHandlerException(type: string, interfaceDef: InterfaceDef|undefined):
+      void;
   /**
    * Called when a request response is sent (will not be called if
    * `onRequestHandlerException()` is called.).
    */
-  onRequestCompleted(type: string): void;
+  onRequestCompleted(type: string, interfaceDef: InterfaceDef|undefined): void;
 }
 
 type HandlerFunction = (payload: unknown, extras: ResponseExtras) =>
     Promise<unknown>;
 
 type HandlerWrapper =
-    (type: string, payload: unknown, extras: ResponseExtras,
-     handler: HandlerFunction) => Promise<unknown>;
+    (type: string, interfaceDef: InterfaceDef|undefined, payload: unknown,
+     extras: ResponseExtras, handler: HandlerFunction) => Promise<unknown>;
 
 // Receives requests over postMessage and forward them to a
 // `PostMessageLifecycleObserver`.
 export class PostMessageRequestReceiver {
-  private handlerWrapper: HandlerWrapper = (_type, payload, extras, handler) =>
-      handler(payload, extras);
+  private handlerWrapper: HandlerWrapper =
+      (_type, _interfaceName, payload, extras, handler) =>
+          handler(payload, extras);
   constructor(
       private router: PostMessageRouterImpl,
       public requestObserver: PostMessageLifecycleObserver) {
@@ -796,8 +818,7 @@ export class PostMessageRequestReceiver {
       }
       return;
     }
-
-    this.requestObserver.onRequestReceived(type);
+    this.requestObserver.onRequestReceived(type, pipe.interfaceDef);
 
     const handleFn = pipe.getHandlerFunction(type);
     if (!handleFn) {
@@ -809,10 +830,10 @@ export class PostMessageRequestReceiver {
     let exception: TransferableException|undefined;
     const extras = new ResponseExtras();
     try {
-      response =
-          await this.handlerWrapper(type, requestPayload, extras, handleFn);
+      response = await this.handlerWrapper(
+          type, pipe.interfaceDef, requestPayload, extras, handleFn);
     } catch (error) {
-      this.requestObserver.onRequestHandlerException(type);
+      this.requestObserver.onRequestHandlerException(type, pipe.interfaceDef);
       console.warn('Unexpected error', error);
       if (error instanceof Error) {
         exception = this.router.errorCodec.serialize(error);
@@ -823,7 +844,7 @@ export class PostMessageRequestReceiver {
     }
 
     if (!exception) {
-      this.requestObserver.onRequestCompleted(type);
+      this.requestObserver.onRequestCompleted(type, pipe.interfaceDef);
     }
 
     // If the message contains no `requestId`, a response is not requested.
@@ -837,23 +858,27 @@ export class PostMessageRequestReceiver {
 }
 
 export function createBidirectionalPostMessageTransport<
-    RemoteMap = Record<string, unknown>, ReceiverMap = Record<string, unknown>>(
+    RemoteInterface extends InterfaceDef,
+                            ReceiverInterface extends InterfaceDef>(
     remoteOrigin: string,
     postMessageSender: PostMessageSender,
     lifecycleObserver: PostMessageLifecycleObserver,
-    rootMessageHandler: PostMessageHandler<ReceiverMap>,
+    rootMessageHandler: PostMessageHandler<ReceiverInterface>,
     logPrefix: string,
     isHost: boolean,
-    errorCodec?: ErrorCodec,
+    errorCodec: ErrorCodec,
+    interfaceDef: ReceiverInterface,
+    _remoteInterfaceDef: RemoteInterface,
 ) {
   const senderId = newSenderId();
   const router = new PostMessageRouterImpl(
       remoteOrigin, senderId, postMessageSender, logPrefix, isHost, errorCodec);
   const sender = new PostMessageRequestSender(router);
   const receiver = new PostMessageRequestReceiver(router, lifecycleObserver);
-  const rootReceiver = router.newReceiver(ROOT_PIPE, rootMessageHandler);
+  const rootReceiver =
+      router.newReceiver(ROOT_PIPE, rootMessageHandler, interfaceDef);
   const rootRemote =
-      new PostMessageRemoteImpl<RemoteMap>(ROOT_PIPE, sender, router);
+      new PostMessageRemoteImpl<RemoteInterface>(ROOT_PIPE, sender, router);
   return {router, sender, receiver, rootRemote, rootReceiver};
 }
 

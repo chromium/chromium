@@ -56,7 +56,7 @@ export class HostMessageHandler implements
     }
   }
 
-  async glicBrowserWebClientCreated(
+  async webClientCreated(
       request: {clientCapabilities: ClientCapabilities[]},
       extras: ResponseExtras): Promise<{
     initialState: WebClientInitialStatePrivate,
@@ -127,8 +127,7 @@ export class HostMessageHandler implements
     };
   }
 
-  glicBrowserWebClientInitialized(
-      request: {success: boolean, exception?: GlicException}) {
+  webClientInitialized(request: {success: boolean, exception?: GlicException}) {
     // The webview may have been re-shown by webui, having previously been
     // opened by the browser. In that case, show the guest frame again.
 
@@ -145,7 +144,7 @@ export class HostMessageHandler implements
     }
   }
 
-  glicBrowserOnExperimentalTriggeringUpdate(payload: {
+  onExperimentalTriggeringUpdate(payload: {
     observationId: number,
     update?: ExperimentalTriggeringUpdate,
           observation: SubscriberObservationType,
@@ -169,7 +168,7 @@ export class HostMessageHandler implements
     }
   }
 
-  async glicBrowserCreateTab(request: {
+  async createTab(request: {
     url: string,
     options: {openInBackground?: boolean, windowId?: string},
   }) {
@@ -193,8 +192,7 @@ export class HostMessageHandler implements
     return {};
   }
 
-  glicBrowserOpenGlicSettingsPage(request: {options?: OpenSettingsOptions}):
-      void {
+  openGlicSettingsPage(request: {options?: OpenSettingsOptions}): void {
     const optionsMojo: OpenSettingsOptionsMojo = {
       highlightField: SettingsPageFieldMojo.kNone,
     };
@@ -205,15 +203,15 @@ export class HostMessageHandler implements
     this.handler.openGlicSettingsPage(optionsMojo);
   }
 
-  glicBrowserOpenPasswordManagerSettingsPage(): void {
+  openPasswordManagerSettingsPage(): void {
     this.handler.openPasswordManagerSettingsPage();
   }
 
-  glicBrowserReportClientTransientError(request: {abslStatus: number}): void {
+  reportClientTransientError(request: {abslStatus: number}): void {
     this.handler.reportClientTransientError(request.abslStatus);
   }
 
-  glicBrowserProcessCounterAbuseVerdict(request: {
+  processCounterAbuseVerdict(request: {
     tabId: string,
     verdict: CounterAbuseVerdict,
   }): void {
@@ -222,33 +220,31 @@ export class HostMessageHandler implements
         idFromClient(request.tabId), mojoVerdict);
   }
 
-  glicBrowserClosePanel(): void {
+  closePanel(): void {
     return this.handler.closePanel();
   }
 
-  glicBrowserClosePanelAndShutdown(): void {
+  closePanelAndShutdown(): void {
     this.handler.closePanelAndShutdown();
   }
 
-  glicBrowserAttachPanel(): void {
+  attachPanel(): void {
     this.handler.attachPanel();
   }
 
-  glicBrowserDetachPanel(): void {
+  detachPanel(): void {
     this.handler.detachPanel();
   }
 
-  glicBrowserShowProfilePicker(): void {
+  showProfilePicker(): void {
     this.handler.showProfilePicker();
   }
 
-  glicBrowserGetModelQualityClientId():
-      Promise<{modelQualityClientId: string}> {
+  getModelQualityClientId(): Promise<{modelQualityClientId: string}> {
     return this.handler.getModelQualityClientId();
   }
 
-  async glicBrowserSwitchConversation(request: {info?: ConversationInfo}):
-      Promise<{}> {
+  async switchConversation(request: {info?: ConversationInfo}): Promise<{}> {
     const {errorReason} = await this.handler.switchConversation(
         conversationInfoFromClient(request.info ?? {
           conversationId: '',
@@ -262,8 +258,7 @@ export class HostMessageHandler implements
     return {};
   }
 
-  async glicBrowserRegisterConversation(request: {info: ConversationInfo}):
-      Promise<{}> {
+  async registerConversation(request: {info: ConversationInfo}): Promise<{}> {
     const {errorReason} = await this.handler.registerConversation(
         conversationInfoFromClient(request.info));
     if (errorReason !== null) {
@@ -273,7 +268,7 @@ export class HostMessageHandler implements
     return {};
   }
 
-  async glicBrowserGetContextFromFocusedTab(
+  async getContextFromFocusedTab(
       request: {options: TabContextOptions}, extras: ResponseExtras):
       Promise<{tabContextResult: TabContextResultPrivate}> {
     const {result: {errorReason, tabContext}} =
@@ -289,7 +284,7 @@ export class HostMessageHandler implements
     };
   }
 
-  async glicBrowserGetContextFromTab(
+  async getContextFromTab(
       request: {tabId: string, options: TabContextOptions},
       extras: ResponseExtras):
       Promise<{tabContextResult: TabContextResultPrivate}> {
@@ -307,7 +302,7 @@ export class HostMessageHandler implements
     };
   }
 
-  async glicBrowserSetMaximumNumberOfPinnedTabs(request: {
+  async setMaximumNumberOfPinnedTabs(request: {
     requestedMax: number,
   }): Promise<{effectiveMax: number}> {
     const requestedMax = request.requestedMax >= 0 ? request.requestedMax : 0;
@@ -316,7 +311,7 @@ export class HostMessageHandler implements
     return {effectiveMax};
   }
 
-  async glicBrowserCreateSkill(request: {
+  async createSkill(request: {
     request: CreateSkillRequest,
   }): Promise<{modalOpened: boolean}> {
     const mojoRequest = {
@@ -331,21 +326,21 @@ export class HostMessageHandler implements
     return await this.handler.createSkill(mojoRequest);
   }
 
-  async glicBrowserUpdateSkill(request: {
+  async updateSkill(request: {
     request: UpdateSkillRequest,
   }): Promise<{modalOpened: boolean}> {
     return await this.handler.updateSkill(request.request);
   }
 
-  glicBrowserShowManageSkillsUi(_request: void): void {
+  showManageSkillsUi(_request: void): void {
     this.handler.showManageSkillsUi();
   }
 
-  glicBrowserShowBrowseSkillsUi(_request: void): void {
+  showBrowseSkillsUi(_request: void): void {
     this.handler.showBrowseSkillsUi();
   }
 
-  async glicBrowserGetSkill(request: {
+  async getSkill(request: {
     id: string,
   }): Promise<{skill?: Skill}> {
     const {skill: mojoSkill} = await this.handler.getSkill(request.id);
@@ -364,17 +359,17 @@ export class HostMessageHandler implements
     };
   }
 
-  glicBrowserRecordSkillsWebClientEvent(request: {
+  recordSkillsWebClientEvent(request: {
     event: SkillsWebClientEvent,
   }): void {
     this.handler.recordSkillsWebClientEvent(enumFromClient(request.event));
   }
 
-  glicBrowserActivateTab(request: {tabId: string}): void {
+  activateTab(request: {tabId: string}): void {
     this.handler.activateTab(idFromClient(request.tabId));
   }
 
-  async glicBrowserResizeWindow(request: {
+  async resizeWindow(request: {
     size: {width: number, height: number},
     options?: {durationMs?: number},
   }) {
@@ -382,11 +377,11 @@ export class HostMessageHandler implements
         request.size, timeDeltaFromClient(request.options?.durationMs));
   }
 
-  glicBrowserEnableDragResize(request: {enabled: boolean}) {
+  enableDragResize(request: {enabled: boolean}) {
     return this.embedder.enableDragResize(request.enabled);
   }
 
-  glicBrowserSubscribeToCaptureRegion(request: {
+  subscribeToCaptureRegion(request: {
     observationId: number,
     params?: CaptureRegionParams,
   }): void {
@@ -395,8 +390,7 @@ export class HostMessageHandler implements
         this.sender, this.handler, request.observationId, request.params);
   }
 
-  glicBrowserUnsubscribeFromCaptureRegion(request: {observationId: number}):
-      void {
+  unsubscribeFromCaptureRegion(request: {observationId: number}): void {
     if (!this.host.captureRegionObserver) {
       return;
     }
@@ -407,20 +401,20 @@ export class HostMessageHandler implements
     }
   }
 
-  glicBrowserSubscribeToZoomLevel(): void {
+  subscribeToZoomLevel(): void {
     this.host.subscribeToZoomLevel();
   }
 
-  glicBrowserUnsubscribeFromZoomLevel(): void {
+  unsubscribeFromZoomLevel(): void {
     this.host.unsubscribeFromZoomLevel();
   }
 
-  glicBrowserDeleteCapturedRegion(request: {tabId: string, regionId: string}) {
+  deleteCapturedRegion(request: {tabId: string, regionId: string}) {
     this.handler.deleteCapturedRegion(
         idFromClient(request.tabId), request.regionId);
   }
 
-  async glicBrowserCaptureScreenshot(_request: void, extras: ResponseExtras):
+  async captureScreenshot(_request: void, extras: ResponseExtras):
       Promise<{screenshot: Screenshot}> {
     const {
       result: {screenshot, errorReason},
@@ -444,33 +438,33 @@ export class HostMessageHandler implements
     };
   }
 
-  glicBrowserSetMinimumWidgetSize(request: {
+  setMinimumWidgetSize(request: {
     size: {width: number, height: number},
   }) {
     return this.handler.setMinimumPanelSize(request.size);
   }
 
-  glicBrowserSetMicrophonePermissionState(request: {enabled: boolean}) {
+  setMicrophonePermissionState(request: {enabled: boolean}) {
     return this.handler.setMicrophonePermissionState(request.enabled);
   }
 
-  glicBrowserSetLocationPermissionState(request: {enabled: boolean}) {
+  setLocationPermissionState(request: {enabled: boolean}) {
     return this.handler.setLocationPermissionState(request.enabled);
   }
 
-  glicBrowserSetTabContextPermissionState(request: {enabled: boolean}) {
+  setTabContextPermissionState(request: {enabled: boolean}) {
     return this.handler.setTabContextPermissionState(request.enabled);
   }
 
-  glicBrowserSetClosedCaptioningSetting(request: {enabled: boolean}) {
+  setClosedCaptioningSetting(request: {enabled: boolean}) {
     return this.handler.setClosedCaptioningSetting(request.enabled);
   }
 
-  glicBrowserSetActuationOnWebSetting(request: {enabled: boolean}) {
+  setActuationOnWebSetting(request: {enabled: boolean}) {
     return this.handler.setActuationOnWebSetting(request.enabled);
   }
 
-  async glicBrowserGetUserProfileInfo(_request: void, extras: ResponseExtras) {
+  async getUserProfileInfo(_request: void, extras: ResponseExtras) {
     const {profileInfo: mojoProfileInfo} =
         await this.handler.getUserProfileInfo();
     if (!mojoProfileInfo) {
@@ -488,48 +482,47 @@ export class HostMessageHandler implements
     return {profileInfo: replaceProperties(mojoProfileInfo, {avatarIcon})};
   }
 
-  glicBrowserRefreshSignInCookies(): Promise<{success: boolean}> {
+  refreshSignInCookies(): Promise<{success: boolean}> {
     return this.handler.syncCookies();
   }
 
-  glicBrowserSetContextAccessIndicator(request: {show: boolean}): void {
+  setContextAccessIndicator(request: {show: boolean}): void {
     this.handler.setContextAccessIndicator(request.show);
   }
 
-  glicBrowserSetAudioDucking(request: {enabled: boolean}): void {
+  setAudioDucking(request: {enabled: boolean}): void {
     this.handler.setAudioDucking(request.enabled);
   }
 
-  glicBrowserOnOptinImpression(): void {
+  onOptinImpression(): void {
     this.handler.onOptinImpression();
   }
 
-  glicBrowserOnUserInputSubmitted(request: {mode: number}): void {
+  onUserInputSubmitted(request: {mode: number}): void {
     this.handler.onUserInputSubmitted(request.mode);
   }
 
-  glicBrowserOnContextUploadStarted(): void {
+  onContextUploadStarted(): void {
     this.handler.onContextUploadStarted();
   }
 
-  glicBrowserOnContextUploadCompleted(): void {
+  onContextUploadCompleted(): void {
     this.handler.onContextUploadCompleted();
   }
 
-  glicBrowserOnReaction(request: {reactionType: number}): void {
+  onReaction(request: {reactionType: number}): void {
     this.handler.onReaction(request.reactionType);
   }
 
-  glicBrowserOnActionSubmitted(request: {isRetry?: boolean}): void {
+  onActionSubmitted(request: {isRetry?: boolean}): void {
     this.handler.onActionSubmitted(request.isRetry ?? false);
   }
 
-  glicBrowserOnResponseStarted(): void {
+  onResponseStarted(): void {
     this.handler.onResponseStarted();
   }
 
-  glicBrowserOnResponseStopped(request: {details?: OnResponseStoppedDetails}):
-      void {
+  onResponseStopped(request: {details?: OnResponseStoppedDetails}): void {
     const cause = request.details?.cause;
 
     let causeMojo = ResponseStopCauseMojo.kUnknown;
@@ -548,29 +541,28 @@ export class HostMessageHandler implements
     this.handler.onResponseStopped({cause: causeMojo});
   }
 
-  glicBrowserOnSessionTerminated(): void {
+  onSessionTerminated(): void {
     this.handler.onSessionTerminated();
   }
 
-  glicBrowserOnTurnCompleted(request: {model: number, duration: number}): void {
+  onTurnCompleted(request: {model: number, duration: number}): void {
     this.handler.onTurnCompleted(
         request.model, timeDeltaFromClient(request.duration));
   }
 
-  glicBrowserRecordHistogram(request: {name: string, sparseValue: number}):
-      void {
+  recordHistogram(request: {name: string, sparseValue: number}): void {
     chrome.histograms.recordSparseValue(request.name, request.sparseValue);
   }
 
-  glicBrowserOnResponseRated(request: {positive: boolean}): void {
+  onResponseRated(request: {positive: boolean}): void {
     this.handler.onResponseRated(request.positive);
   }
 
-  glicBrowserOnClosedCaptionsShown(): void {
+  onClosedCaptionsShown(): void {
     this.handler.onClosedCaptionsShown();
   }
 
-  async glicBrowserScrollTo(request: {params: ScrollToParams}): Promise<void> {
+  async scrollTo(request: {params: ScrollToParams}): Promise<void> {
     const {params} = request;
 
     function getMojoSelector(): ScrollToSelectorMojo {
@@ -635,7 +627,7 @@ export class HostMessageHandler implements
     return;
   }
 
-  glicBrowserSetSyntheticExperimentState(request: {
+  setSyntheticExperimentState(request: {
     trialName: string,
     groupName: string,
   }) {
@@ -643,7 +635,7 @@ export class HostMessageHandler implements
         request.trialName, request.groupName);
   }
 
-  glicBrowserOpenOsPermissionSettingsMenu(request: {permission: string}) {
+  openOsPermissionSettingsMenu(request: {permission: string}) {
     // Warning: calling openOsPermissionSettingsMenu with unsupported content
     // setting type will terminate the render process (bad mojo message).
     // Update GlicWebClientHandler:OpenOsPermissionSettingsMenu with any new
@@ -660,29 +652,29 @@ export class HostMessageHandler implements
     }
   }
 
-  glicBrowserGetOsMicrophonePermissionStatus(): Promise<{enabled: boolean}> {
+  getOsMicrophonePermissionStatus(): Promise<{enabled: boolean}> {
     return this.handler.getOsMicrophonePermissionStatus();
   }
 
-  glicBrowserPinTabs(request: {tabIds: string[], options?: PinTabsOptions}):
+  pinTabs(request: {tabIds: string[], options?: PinTabsOptions}):
       Promise<{pinnedAll: boolean}> {
     return this.handler.pinTabs(
         request.tabIds.map((x) => idFromClient(x)),
         pinTabsOptionsToMojo(request.options));
   }
 
-  glicBrowserUnpinTabs(request: {tabIds: string[], options?: UnpinTabsOptions}):
+  unpinTabs(request: {tabIds: string[], options?: UnpinTabsOptions}):
       Promise<{unpinnedAll: boolean}> {
     return this.handler.unpinTabs(
         request.tabIds.map((x) => idFromClient(x)),
         unpinTabsOptionsToMojo(request.options));
   }
 
-  glicBrowserUnpinAllTabs(request: {options?: UnpinTabsOptions}): void {
+  unpinAllTabs(request: {options?: UnpinTabsOptions}): void {
     this.handler.unpinAllTabs(unpinTabsOptionsToMojo(request.options));
   }
 
-  glicBrowserSubscribeToPinCandidates(request: {
+  subscribeToPinCandidates(request: {
     options: GetPinCandidatesOptions,
     observationId: number,
   }): void {
@@ -691,8 +683,7 @@ export class HostMessageHandler implements
         this.sender, this.handler, request.options, request.observationId);
   }
 
-  glicBrowserUnsubscribeFromPinCandidates(request: {observationId: number}):
-      void {
+  unsubscribeFromPinCandidates(request: {observationId: number}): void {
     if (!this.host.pinCandidatesObserver) {
       return;
     }
@@ -703,7 +694,7 @@ export class HostMessageHandler implements
     }
   }
 
-  async glicBrowserGetZeroStateSuggestionsForFocusedTab(request: {
+  async getZeroStateSuggestionsForFocusedTab(request: {
     isFirstRun?: boolean,
   }): Promise<{suggestions?: ZeroStateSuggestions}> {
     const zeroStateResult =
@@ -723,7 +714,7 @@ export class HostMessageHandler implements
     }
   }
 
-  async glicBrowserGetZeroStateSuggestionsAndSubscribe(request: {
+  async getZeroStateSuggestionsAndSubscribe(request: {
     hasActiveSubscription: boolean,
     options: ZeroStateSuggestionsOptions,
   }): Promise<{suggestions?: ZeroStateSuggestionsV2}> {
@@ -740,15 +731,15 @@ export class HostMessageHandler implements
       return {suggestions: zeroStateSuggestionsToClient(zeroStateData)};
     }
   }
-  glicBrowserDropScrollToHighlight(): void {
+  dropScrollToHighlight(): void {
     this.handler.dropScrollToHighlight();
   }
 
-  glicBrowserMaybeRefreshUserStatus(): void {
+  maybeRefreshUserStatus(): void {
     this.handler.maybeRefreshUserStatus();
   }
 
-  glicBrowserSubscribeToPageMetadata(request: {
+  subscribeToPageMetadata(request: {
     tabId: string,
     names: string[],
   }): Promise<{success: boolean}> {
@@ -756,21 +747,20 @@ export class HostMessageHandler implements
         idFromClient(request.tabId), request.names);
   }
 
-  glicBrowserOnModeChange(request: {newMode: WebClientMode}): void {
+  onModeChange(request: {newMode: WebClientMode}): void {
     this.handler.onModeChange(webClientModeToMojo(request.newMode));
   }
 
-  glicBrowserOnMicrophoneStatusChange(request: {status: MicrophoneStatus}):
-      void {
+  onMicrophoneStatusChange(request: {status: MicrophoneStatus}): void {
     this.handler.onMicrophoneStatusChange(
         microphoneStatusToMojo(request.status));
   }
 
-  glicBrowserSetOnboardingCompleted(): void {
+  setOnboardingCompleted(): void {
     this.handler.setOnboardingCompleted();
   }
 
-  glicBrowserSubscribeToTabData(
+  subscribeToTabData(
       payload: {tabId: string, observationId: number, cancel: boolean}): void {
     if (payload.cancel) {
       this.host.tabDataHandlerSet.remove(payload.observationId);
@@ -780,7 +770,7 @@ export class HostMessageHandler implements
     }
   }
 
-  glicBrowserSubscribeToTabFavicon(
+  subscribeToTabFavicon(
       payload: {tabId: string, observationId: number, cancel: boolean}): void {
     if (payload.cancel) {
       this.host.tabFaviconHandlerSet.remove(payload.observationId);
@@ -790,7 +780,7 @@ export class HostMessageHandler implements
     }
   }
 
-  glicBrowserSetErrorDialogState(request: {
+  setErrorDialogState(request: {
     shownDialogType?: ClientErrorDialogType,
   }): void {
     if (request.shownDialogType !== undefined) {

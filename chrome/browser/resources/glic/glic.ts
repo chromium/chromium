@@ -14,7 +14,10 @@ export {IdGenerator, ObservableSetByTabId} from './glic_api_impl/client/glic_api
 export {GatedSender} from './glic_api_impl/host/gated_sender.js';
 export type {ApiHostEmbedder} from './glic_api_impl/host/glic_api_host.js';
 export type {WebClientHost} from './glic_api_impl/request_types.js';
-export type {PendingReceiver, PendingRemote, PostMessageHandler, PostMessageLifecycleObserver, PostMessageReceiver, PostMessageRemote, PostMessageSender, RequestMessage} from './glic_api_impl/transport/post_message_transport.js';
+export {WebClientDef, WebClientHostDef} from './glic_api_impl/request_types.js';
+export type {InterfaceDef, InterfaceDefMethods} from './glic_api_impl/transport/messaging.js';
+export {defInterface, defMessage} from './glic_api_impl/transport/messaging.js';
+export type {ErrorCodec, PendingReceiver, PendingRemote, PostMessageHandler, PostMessageLifecycleObserver, PostMessageReceiver, PostMessageRemote, PostMessageSender, RequestMessage, TransferableException} from './glic_api_impl/transport/post_message_transport.js';
 export {createBidirectionalPostMessageTransport, InverseSet, ON_PIPE_CLOSED, PostMessageReceiverImpl, PostMessageRemoteImpl, PostMessageRequestReceiver, PostMessageRequestSender, PostMessageRouterImpl, Queue} from './glic_api_impl/transport/post_message_transport.js';
 export {ObservableValue, Subject} from './observable.js';
 export type {PageType, WebviewDelegate} from './webview.js';

@@ -3,11 +3,20 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
-import {createBidirectionalPostMessageTransport, InverseSet, ON_PIPE_CLOSED} from 'chrome://glic/glic.js';
-import type {PendingReceiver, PendingRemote, PostMessageHandler, PostMessageLifecycleObserver, PostMessageRouterImpl, PostMessageSender} from 'chrome://glic/glic.js';
+import {createBidirectionalPostMessageTransport, defInterface, defMessage, InverseSet, ON_PIPE_CLOSED} from 'chrome://glic/glic.js';
+import type {ErrorCodec, InterfaceDef, PendingReceiver, PendingRemote, PostMessageHandler, PostMessageLifecycleObserver, PostMessageRouterImpl, PostMessageSender, TransferableException} from 'chrome://glic/glic.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {assertRejects, sleep, waitUntilEqual} from './test_helpers.js';
+
+const TEST_ERROR_CODEC: ErrorCodec = {
+  serialize(e: Error): TransferableException {
+    return {exception: e};
+  },
+  deserialize(raw: TransferableException): Error {
+    return raw.exception;
+  },
+};
 
 class FakePostMessageSender implements PostMessageSender {
   router?: PostMessageRouterImpl;
@@ -28,58 +37,74 @@ class FakePostMessageSender implements PostMessageSender {
   }
 }
 
-interface CandyApi {
-  lick: {
-    request: {times: number},
-    response: {result: string},
-  };
-}
+const CandyApiDef = defInterface({
+  name: 'CandyApi',
+  methods: [
+    {
+      name: 'lick',
+      request: defMessage<{times: number}>(),
+      response: defMessage<{result: string}>(),
+    },
+  ],
+});
+type CandyApi = typeof CandyApiDef;
 
-interface TestClientApi {
-  ping: {
-    request: {msg: string},
-    response: {reply: string},
-  };
-  throwError: {
-    request: {msg: string},
-    response: void,
-  };
-  // Makes a new candy, returns a remote to use it.
-  newCandy: {
-    request: {name: string},
-    response: {remote: PendingRemote<CandyApi>},
-  };
-  // Makes a new candy from a pending receiver.
-  newPendingCandy: {
-    request: {name: string, receiver: PendingReceiver<CandyApi>},
-    response: void,
-  };
-  // Takes a remote to a candy and licks it once.
-  lickTheCandy: {
-    request: {remote: PendingRemote<CandyApi>},
-  };
-}
+const TestClientApiDef = defInterface({
+  name: 'TestClientApi',
+  methods: [
+    {
+      name: 'ping',
+      request: defMessage<{msg: string}>(),
+      response: defMessage<{reply: string}>(),
+    },
+    {
+      name: 'throwError',
+      request: defMessage<{msg: string}>(),
+    },
+    {
+      name: 'newCandy',
+      request: defMessage<{name: string}>(),
+      response: defMessage<{remote: PendingRemote<CandyApi>}>(),
+    },
+    {
+      name: 'newPendingCandy',
+      request:
+          defMessage<{name: string, receiver: PendingReceiver<CandyApi>}>(),
+    },
+    {
+      name: 'lickTheCandy',
+      request: defMessage<{remote: PendingRemote<CandyApi>}>(),
+    },
+  ],
+});
+type TestClientApi = typeof TestClientApiDef;
 
-interface TestHostApi {
-  notify: {
-    request: {info: string},
-    response: void,
-  };
-}
+const TestHostApiDef = defInterface({
+  name: 'TestHostApi',
+  methods: [
+    {
+      name: 'notify',
+      request: defMessage<{info: string}>(),
+    },
+  ],
+});
+type TestHostApi = typeof TestHostApiDef;
 
 class TrackingLifecycleObserver implements PostMessageLifecycleObserver {
   calls: Array<{event: 'received' | 'exception' | 'completed', type: string}> =
       [];
 
-  onRequestReceived(type: string): void {
+  onRequestReceived(type: string, _interfaceDef: InterfaceDef|undefined): void {
     this.calls.push({event: 'received', type});
   }
 
-  onRequestHandlerException(type: string): void {
+  onRequestHandlerException(
+      type: string, _interfaceDef: InterfaceDef|undefined): void {
     this.calls.push({event: 'exception', type});
   }
 
-  onRequestCompleted(type: string): void {
+  onRequestCompleted(type: string, _interfaceDef: InterfaceDef|undefined):
+      void {
     this.calls.push({event: 'completed', type});
   }
 }
@@ -115,7 +140,7 @@ class ClientHandler implements PostMessageHandler<TestClientApi> {
   newCandy(payload: {name: string}): {remote: PendingRemote<CandyApi>} {
     assert(this.router);
     const handler = new CandyHandler(payload.name);
-    const {remote} = this.router.newPipeWithReceiver<CandyApi>(handler);
+    const {remote} = this.router.newPipeWithReceiver(handler, CandyApiDef);
     this.candies.push(handler);
     return {remote};
   }
@@ -124,12 +149,12 @@ class ClientHandler implements PostMessageHandler<TestClientApi> {
     assert(this.router);
     const handler = new CandyHandler(payload.name);
     this.candies.push(handler);
-    this.router.newReceiver<CandyApi>(payload.receiver, handler);
+    this.router.newReceiver(payload.receiver, handler, CandyApiDef);
   }
   async lickTheCandy(payload: {remote: PendingRemote<CandyApi>}):
       Promise<void> {
     assert(this.router);
-    const remote = this.router.newRemote<CandyApi>(payload.remote);
+    const remote = this.router.newRemote(payload.remote);
     await remote.requestWithResponse('lick', {times: 1});
   }
 }
@@ -168,15 +193,13 @@ suite('PostMessageTransportTest', () => {
     const hostObserver = new TrackingLifecycleObserver();
     const clientObserver = new TrackingLifecycleObserver();
 
-    const host =
-        createBidirectionalPostMessageTransport<TestClientApi, TestHostApi>(
-            'client-origin', hostTarget, hostObserver, hostHandler, 'host',
-            true);
+    const host = createBidirectionalPostMessageTransport(
+        'client-origin', hostTarget, hostObserver, hostHandler, 'host', true,
+        TEST_ERROR_CODEC, TestHostApiDef, TestClientApiDef);
 
-    const client =
-        createBidirectionalPostMessageTransport<TestHostApi, TestClientApi>(
-            'host-origin', clientTarget, clientObserver, clientHandler,
-            'client', false);
+    const client = createBidirectionalPostMessageTransport(
+        'host-origin', clientTarget, clientObserver, clientHandler, 'client',
+        false, TEST_ERROR_CODEC, TestClientApiDef, TestHostApiDef);
 
     hostTarget.router = client.router;
     clientTarget.router = host.router;
@@ -212,7 +235,7 @@ suite('PostMessageTransportTest', () => {
     const {host} = connect();
     // Create a new pipe and send a message. It should not be received by
     // the remote bound to the original pipe.
-    const {remote} = host.router.newPipeWithRemote<TestClientApi>();
+    const {remote} = host.router.newPipeWithRemote(TestClientApiDef);
     remote.requestWithResponse('ping', {msg: 'wrong pipe'});
     const result =
         await host.rootRemote.requestWithResponse('ping', {msg: 'hello'});
@@ -225,7 +248,7 @@ suite('PostMessageTransportTest', () => {
     const {host} = connect();
     // Create a new pipe and send a message. It should not be received by
     // the remote bound to the original pipe.
-    const {remote, receiver} = host.router.newPipeWithRemote<CandyApi>();
+    const {remote, receiver} = host.router.newPipeWithRemote(CandyApiDef);
     host.rootRemote.requestNoResponse(
         'newPendingCandy', {name: 'chocolate', receiver});
     const result = await remote.requestWithResponse('lick', {times: 1});
@@ -244,7 +267,7 @@ suite('PostMessageTransportTest', () => {
   test('Using a pending remote in request', async () => {
     const {host} = connect();
     const candyHandler = new CandyHandler('jawbreaker');
-    const {remote} = host.router.newPipeWithReceiver<CandyApi>(candyHandler);
+    const {remote} = host.router.newPipeWithReceiver(candyHandler, CandyApiDef);
     await host.rootRemote.requestWithResponse('lickTheCandy', {remote});
     assertEquals(1, candyHandler.lickCount);
   });
@@ -254,9 +277,9 @@ suite('PostMessageTransportTest', () => {
     const candyHandler1 = new CandyHandler('sucker');
     const candyHandler2 = new CandyHandler('jellybean');
     const {remote: remote1, receiver: receiver1} =
-        host.router.newPipeWithReceiver<CandyApi>(candyHandler1);
+        host.router.newPipeWithReceiver(candyHandler1, CandyApiDef);
     const {remote: remote2} =
-        host.router.newPipeWithReceiver<CandyApi>(candyHandler2);
+        host.router.newPipeWithReceiver(candyHandler2, CandyApiDef);
     await host.rootRemote.requestWithResponse(
         'lickTheCandy', {remote: remote1});
     assertEquals(1, candyHandler1.lickCount);
@@ -277,7 +300,7 @@ suite('PostMessageTransportTest', () => {
         host.rootRemote.requestWithResponse('lickTheCandy', {remote});
     await sleep(1);
     // The client will have tried to send on the pipe, but it wasn't bound yet.
-    host.router.newReceiver<CandyApi>(pendingReceiver, candyHandler);
+    host.router.newReceiver(pendingReceiver, candyHandler, CandyApiDef);
     assertEquals(0, candyHandler.lickCount);
     await lickPromise;
     assertEquals(1, candyHandler.lickCount);
@@ -289,7 +312,9 @@ suite('PostMessageTransportTest', () => {
     const lickPromise =
         host.rootRemote.requestWithResponse('lickTheCandy', {remote});
     await sleep(1);
-    const receiver = host.router.newReceiver<CandyApi>(pendingReceiver);
+    const candyHandler = new CandyHandler();
+    const receiver =
+        host.router.newReceiver(pendingReceiver, candyHandler, CandyApiDef);
     receiver.close();
     await assertRejects(lickPromise, {withErrorMessage: 'Pipe closed'});
   });
@@ -298,7 +323,7 @@ suite('PostMessageTransportTest', () => {
     const {host} = connect();
     const candyHandler = new CandyHandler('gum');
     const {receiver, remote} =
-        host.router.newPipeWithReceiver<CandyApi>(candyHandler);
+        host.router.newPipeWithReceiver(candyHandler, CandyApiDef);
     receiver.close();
     assertTrue(candyHandler.isClosed);
     await assertRejects(
@@ -308,7 +333,7 @@ suite('PostMessageTransportTest', () => {
 
   test('Closing a bound remote', async () => {
     const {host} = connect();
-    const {receiver, remote} = host.router.newPipeWithRemote<CandyApi>();
+    const {receiver, remote} = host.router.newPipeWithRemote(CandyApiDef);
     await host.rootRemote.requestWithResponse(
         'newPendingCandy', {name: 'mint', receiver});
     remote.close();
@@ -324,7 +349,7 @@ suite('PostMessageTransportTest', () => {
 
   test('Binding to a closed remote', async () => {
     const {host} = connect();
-    const {receiver, remote} = host.router.newPipeWithRemote<CandyApi>();
+    const {receiver, remote} = host.router.newPipeWithRemote(CandyApiDef);
     remote.close();
     // Send the pending receiver, when the client tries to use it, it will be
     // closed.

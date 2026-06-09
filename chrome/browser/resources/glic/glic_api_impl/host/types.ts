@@ -49,26 +49,26 @@ type HostBackgroundResponseMap = {
 // How to respond to each requests received in the background. One entry for
 // each request type that does not specify `backgroundAllowed`.
 export const BACKGROUND_RESPONSES: HostBackgroundResponseMap = {
-  glicBrowserCreateTab: {returns: {}},
-  glicBrowserShowProfilePicker: {throws: true},
-  glicBrowserGetContextFromFocusedTab: {throws: true},
-  glicBrowserGetContextFromTab: {throws: true},
-  glicBrowserCaptureScreenshot: {throws: true},
-  glicBrowserScrollTo: {
+  createTab: {returns: {}},
+  showProfilePicker: {throws: true},
+  getContextFromFocusedTab: {throws: true},
+  getContextFromTab: {throws: true},
+  captureScreenshot: {throws: true},
+  scrollTo: {
     does: () => {
       throw new ErrorWithReasonImpl(
           'scrollTo', ScrollToErrorReason.NOT_SUPPORTED);
     },
   },
-  glicBrowserOpenOsPermissionSettingsMenu: {throws: true},
-  glicBrowserPinTabs: {returns: {pinnedAll: false}},
-  glicBrowserUnpinAllTabs: {returns: undefined},
-  glicBrowserCreateSkill: {returns: {modalOpened: false}},
-  glicBrowserUpdateSkill: {returns: {modalOpened: false}},
-  glicBrowserGetSkill: {returns: {}},
-  glicBrowserSubscribeToPinCandidates: {returns: undefined},
-  glicBrowserGetZeroStateSuggestionsForFocusedTab: {returns: {}},
-  glicBrowserGetZeroStateSuggestionsAndSubscribe: {returns: {}},
+  openOsPermissionSettingsMenu: {throws: true},
+  pinTabs: {returns: {pinnedAll: false}},
+  unpinAllTabs: {returns: undefined},
+  createSkill: {returns: {modalOpened: false}},
+  updateSkill: {returns: {modalOpened: false}},
+  getSkill: {returns: {}},
+  subscribeToPinCandidates: {returns: undefined},
+  getZeroStateSuggestionsForFocusedTab: {returns: {}},
+  getZeroStateSuggestionsAndSubscribe: {returns: {}},
 };
 
 export enum PanelOpenState {

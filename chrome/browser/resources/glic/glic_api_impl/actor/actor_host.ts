@@ -25,7 +25,7 @@ export class ActorHostMessageHandler implements
     MessageHandlerInterface<ActorHost> {
   constructor(private actorHandler: ActorHandlerInterface) {}
 
-  async glicBrowserGetContextForActorFromTab(
+  async getContextForActorFromTab(
       request: {tabId: string, options: TabContextOptions},
       extras: ResponseExtras):
       Promise<{tabContextResult: TabContextResultPrivate}> {
@@ -43,7 +43,7 @@ export class ActorHostMessageHandler implements
     };
   }
 
-  async glicBrowserCreateTask(request: {taskOptions?: TaskOptions}):
+  async createTask(request: {taskOptions?: TaskOptions}):
       Promise<{taskId: number}> {
     try {
       const taskId = await this.actorHandler.createTask(
@@ -59,7 +59,7 @@ export class ActorHostMessageHandler implements
     }
   }
 
-  async glicBrowserPerformActions(request: {actions: ArrayBuffer}):
+  async performActions(request: {actions: ArrayBuffer}):
       Promise<{actionsResult: ArrayBuffer}> {
     try {
       const resultProto = await this.actorHandler.performActions(
@@ -79,7 +79,7 @@ export class ActorHostMessageHandler implements
     }
   }
 
-  async glicBrowserCancelActions(request: {taskId: number}):
+  async cancelActions(request: {taskId: number}):
       Promise<{result: CancelActionsResult}> {
     const cancelResult = await this.actorHandler.cancelActions(request.taskId);
     return {
@@ -87,13 +87,13 @@ export class ActorHostMessageHandler implements
     };
   }
 
-  glicBrowserStopActorTask(
-      request: {taskId: number, stopReason: ActorTaskStopReason}): void {
+  stopActorTask(request: {taskId: number, stopReason: ActorTaskStopReason}):
+      void {
     this.actorHandler.stopActorTask(
         request.taskId, enumFromClient(request.stopReason));
   }
 
-  glicBrowserPauseActorTask(request: {
+  pauseActorTask(request: {
     taskId: number,
     pauseReason: ActorTaskPauseReason,
     tabId: string,
@@ -103,7 +103,7 @@ export class ActorHostMessageHandler implements
         idFromClient(request.tabId));
   }
 
-  async glicBrowserResumeActorTask(
+  async resumeActorTask(
       request: {taskId: number, tabContextOptions: TabContextOptions},
       extras: ResponseExtras): Promise<{
     resumeActorTaskResult: ResumeActorTaskResultPrivate,
@@ -127,7 +127,7 @@ export class ActorHostMessageHandler implements
     };
   }
 
-  glicBrowserInterruptActorTask(request: {
+  interruptActorTask(request: {
     taskId: number,
     interruptReason?: ActorTaskInterruptReason,
   }): void {
@@ -135,13 +135,13 @@ export class ActorHostMessageHandler implements
         request.taskId, enumFromClient(request.interruptReason));
   }
 
-  glicBrowserUninterruptActorTask(request: {
+  uninterruptActorTask(request: {
     taskId: number,
   }): void {
     this.actorHandler.uninterruptActorTask(request.taskId);
   }
 
-  async glicBrowserCreateActorTab(request: {
+  async createActorTab(request: {
     taskId: number,
     options: {
       initiatorTabId?: string,
@@ -167,7 +167,7 @@ export class ActorHostMessageHandler implements
     return {};
   }
 
-  glicBrowserLogBeginAsyncEvent(request: {
+  logBeginAsyncEvent(request: {
     asyncEventId: number,
     taskId: number,
     event: string,
@@ -178,25 +178,23 @@ export class ActorHostMessageHandler implements
         request.details);
   }
 
-  glicBrowserLogEndAsyncEvent(request: {asyncEventId: number, details: string}):
-      void {
+  logEndAsyncEvent(request: {asyncEventId: number, details: string}): void {
     this.actorHandler.logEndAsyncEvent(
         BigInt(request.asyncEventId), request.details);
   }
 
-  glicBrowserLogInstantEvent(
-      request: {taskId: number, event: string, details: string}): void {
+  logInstantEvent(request: {taskId: number, event: string, details: string}):
+      void {
     this.actorHandler.logInstantEvent(
         request.taskId, request.event, request.details);
   }
 
-  glicBrowserJournalClear(): void {
+  journalClear(): void {
     this.actorHandler.journalClear();
   }
 
-  async glicBrowserJournalSnapshot(
-      request: {clear: boolean},
-      extras: ResponseExtras): Promise<{journal: Journal}> {
+  async journalSnapshot(request: {clear: boolean}, extras: ResponseExtras):
+      Promise<{journal: Journal}> {
     const result = await this.actorHandler.journalSnapshot(request.clear);
     const journalArray = new Uint8Array(result.journal.data);
     extras.addTransfer(journalArray.buffer);
@@ -207,22 +205,20 @@ export class ActorHostMessageHandler implements
     };
   }
 
-  glicBrowserJournalStart(
-      request: {maxBytes: number, captureScreenshots: boolean}): void {
+  journalStart(request: {maxBytes: number, captureScreenshots: boolean}): void {
     this.actorHandler.journalStart(
         BigInt(request.maxBytes), request.captureScreenshots);
   }
 
-  glicBrowserJournalStop(): void {
+  journalStop(): void {
     this.actorHandler.journalStop();
   }
 
-  glicBrowserJournalRecordFeedback(
-      request: {positive: boolean, reason: string}): void {
+  journalRecordFeedback(request: {positive: boolean, reason: string}): void {
     this.actorHandler.journalRecordFeedback(request.positive, request.reason);
   }
 
-  glicBrowserAutofillSuggestionDialogOnFormPresented(payload: {
+  autofillSuggestionDialogOnFormPresented(payload: {
     taskId: number,
     params: {formFillingRequestIndex: number},
   }): void {
@@ -230,7 +226,7 @@ export class ActorHostMessageHandler implements
         payload.taskId, payload.params);
   }
 
-  glicBrowserAutofillSuggestionDialogOnFormPreviewChanged(payload: {
+  autofillSuggestionDialogOnFormPreviewChanged(payload: {
     taskId: number,
     params: {
       formFillingRequestIndex: number,
@@ -244,7 +240,7 @@ export class ActorHostMessageHandler implements
         });
   }
 
-  glicBrowserAutofillSuggestionDialogOnFormConfirmed(payload: {
+  autofillSuggestionDialogOnFormConfirmed(payload: {
     taskId: number,
     params: {
       formFillingRequestIndex: number,

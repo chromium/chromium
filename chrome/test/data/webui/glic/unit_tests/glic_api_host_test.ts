@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GatedSender, ObservableValue, PostMessageRequestSender, PostMessageRouterImpl, Queue} from 'chrome://glic/glic.js';
+import {defInterface, defMessage, GatedSender, ObservableValue, PostMessageRequestSender, PostMessageRouterImpl, Queue} from 'chrome://glic/glic.js';
 import type {RequestMessage} from 'chrome://glic/glic.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -17,16 +17,22 @@ class StubSender {
   }
 }
 
-interface DemoInterface {
-  requestType: {
-    request: {field: string},
-    backgroundAllowed: true,
-  };
-  requestType2: {
-    request: {field: string},
-    backgroundAllowed: true,
-  };
-}
+const DemoInterfaceDef = defInterface({
+  name: 'DemoInterface',
+  methods: [
+    {
+      name: 'requestType',
+      request: defMessage<{field: string}>(),
+      backgroundAllowed: true,
+    },
+    {
+      name: 'requestType2',
+      request: defMessage<{field: string}>(),
+      backgroundAllowed: true,
+    },
+  ],
+});
+type DemoInterface = typeof DemoInterfaceDef;
 
 
 suite('Queue', () => {
@@ -91,7 +97,7 @@ suite('GlicApiHost', () => {
     new PostMessageRequestSender(router);
     const shouldGate = ObservableValue.withValue(true);
     const gatedSender = new GatedSender<DemoInterface>(
-        router.newPipeWithRemote<DemoInterface>().remote, shouldGate);
+        router.newPipeWithRemote(DemoInterfaceDef).remote, shouldGate);
     return {stubSender, gatedSender, shouldGate};
   }
 
