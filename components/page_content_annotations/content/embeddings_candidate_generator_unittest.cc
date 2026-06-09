@@ -80,13 +80,14 @@ TEST_P(EmbeddingsCandidateGeneratorTest,
   attr_0->mutable_text_data()->set_text_content("This is the first paragraph.");
 
   // Add another text node with text content whose number of word >
-  // `MaxWordsPerAggregatePassage`.
+  // `MaxWordsPerAggregatePassage`. It will be tokenized into multiple
+  // passages in the final candidates list.
   auto* child_1 = root_node->add_children_nodes();
   auto* attr_1 = child_1->mutable_content_attributes();
   attr_1->set_attribute_type(
       optimization_guide::proto::ContentAttributeType::CONTENT_ATTRIBUTE_TEXT);
   attr_1->mutable_text_data()->set_text_content(
-      "This paragraph has too many words so it should be dropped from the "
+      "This paragraph has too many words so it should be split across the "
       "final passages.");
 
   // Add another text node with text content whose number of word <
@@ -102,27 +103,63 @@ TEST_P(EmbeddingsCandidateGeneratorTest,
       /*page_content_passages_to_generate=*/10u, "Page Title",
       "https://example.com/");
 
-  ASSERT_EQ(candidates.size(), 5u);
+  ASSERT_EQ(candidates.size(), 6u);
 
   EXPECT_EQ(candidates[0].first, "This is the first paragraph.");
   EXPECT_EQ(candidates[0].second, EmbeddingPassageType::kPageContent);
 
-  // TODO(b/510424894): There is a bug in embeddings candidates generation for
-  // APC that `MinWordsPerPassage` and `MaxWordsPerAggregatePassage` are not
-  // enforced correctly. Once fixed, exclude the two page-content candidates
-  // here; their word counts fall outside the allowed range.
-  EXPECT_EQ(candidates[1].first,
-            "This paragraph has too many words so it should be dropped from "
-            "the final passages.");
+  EXPECT_EQ(candidates[1].first, "This paragraph has too many");
   EXPECT_EQ(candidates[1].second, EmbeddingPassageType::kPageContent);
-  EXPECT_EQ(candidates[2].first, "The end.");
+
+  EXPECT_EQ(candidates[2].first, "words so it should be");
   EXPECT_EQ(candidates[2].second, EmbeddingPassageType::kPageContent);
 
-  EXPECT_EQ(candidates[3].first, "Page Title");
-  EXPECT_EQ(candidates[3].second, EmbeddingPassageType::kTitle);
+  EXPECT_EQ(candidates[3].first, "split across the final passages.");
+  EXPECT_EQ(candidates[3].second, EmbeddingPassageType::kPageContent);
 
-  EXPECT_EQ(candidates[4].first, "Page Title - https://example.com/");
-  EXPECT_EQ(candidates[4].second, EmbeddingPassageType::kTitleAndUrl);
+  EXPECT_EQ(candidates[4].first, "Page Title");
+  EXPECT_EQ(candidates[4].second, EmbeddingPassageType::kTitle);
+
+  EXPECT_EQ(candidates[5].first, "Page Title - https://example.com/");
+  EXPECT_EQ(candidates[5].second, EmbeddingPassageType::kTitleAndUrl);
+}
+
+TEST_P(EmbeddingsCandidateGeneratorTest,
+       GenerateEmbeddingsCandidatesMinMaxThresholdsSame) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      passage_embeddings::kPassageEmbedder,
+      {{"MaxWordsPerAggregatePassage", "2"}, {"MinWordsPerPassage", "2"}});
+
+  optimization_guide::proto::AnnotatedPageContent apc;
+  auto* root_node = apc.mutable_root_node();
+  auto* child = root_node->add_children_nodes();
+  auto* attr = child->mutable_content_attributes();
+  attr->set_attribute_type(
+      optimization_guide::proto::ContentAttributeType::CONTENT_ATTRIBUTE_TEXT);
+  attr->mutable_text_data()->set_text_content(
+      "one two three four five six seven eight nine ten eleven");
+
+  auto candidates = GenerateEmbeddingsCandidates(
+      base::MakeRefCounted<RefCountedAnnotatedPageContent>(apc),
+      /*page_content_passages_to_generate=*/10u, /*title=*/"", /*url=*/"");
+
+  ASSERT_EQ(candidates.size(), 5u);
+
+  EXPECT_EQ(candidates[0].first, "one two");
+  EXPECT_EQ(candidates[0].second, EmbeddingPassageType::kPageContent);
+
+  EXPECT_EQ(candidates[1].first, "three four");
+  EXPECT_EQ(candidates[1].second, EmbeddingPassageType::kPageContent);
+
+  EXPECT_EQ(candidates[2].first, "five six");
+  EXPECT_EQ(candidates[2].second, EmbeddingPassageType::kPageContent);
+
+  EXPECT_EQ(candidates[3].first, "seven eight");
+  EXPECT_EQ(candidates[3].second, EmbeddingPassageType::kPageContent);
+
+  EXPECT_EQ(candidates[4].first, "nine ten");
+  EXPECT_EQ(candidates[4].second, EmbeddingPassageType::kPageContent);
 }
 
 // Test embeddings generation for PDF text.
