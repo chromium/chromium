@@ -21,3 +21,10 @@ include_rules = [
     "+third_party/blink/renderer/modules/modules_export.h",
     "+third_party/blink/renderer/modules/webrtc",
 ]
+
+specific_include_rules = {
+    ".*test.*": [
+        "+base/threading/thread.h",
+        "+media/base/mock_audio_renderer_sink.h",
+    ],
+}

@@ -220,8 +220,6 @@ int32_t WebRtcAudioDeviceImpl::Terminate() {
   scoped_refptr<blink::WebRtcAudioRenderer> renderer_to_disconnect;
   {
     base::AutoLock auto_lock(lock_);
-    DCHECK(!renderer_ || !renderer_->IsStarted())
-        << "The shared audio renderer shouldn't be running";
     renderer_to_disconnect = renderer_;
     capturers_.clear();
   }
@@ -234,18 +232,11 @@ int32_t WebRtcAudioDeviceImpl::Terminate() {
     // we hold this local reference, the off-thread destruction causes memory
     // corruption. Bounce the final reference to the main thread using the
     // renderer's own frame-associated task runner to safely die.
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        renderer_to_disconnect->GetTaskRunner();
-
-    if (task_runner) {
-      PostCrossThreadTask(
-          *task_runner, FROM_HERE,
-          CrossThreadBindOnce(
-              [](scoped_refptr<blink::WebRtcAudioRenderer> renderer) {
-                // 'renderer' goes out of scope here, triggering the destructor
-                // safely.
-              },
-              std::move(renderer_to_disconnect)));
+    if (scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+            renderer_to_disconnect->GetTaskRunner()) {
+      // ReleaseSoon is required over PostCrossThreadTask to handle task queue
+      // shutdown safely during iframe detachment.
+      task_runner->ReleaseSoon(FROM_HERE, std::move(renderer_to_disconnect));
     }
   }
 
