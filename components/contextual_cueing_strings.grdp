@@ -52,7 +52,7 @@
   <message name="IDS_CONTEXTUAL_CUEING_TAB_SHARING_CURRENT_TAB" desc="Marker for the active tab in the contextual cue tab sharing list.">
     Current tab
   </message>
-  <message name="IDS_CONTEXTUAL_CUEING_TAB_SHARING_EXPAND_BUTTON_ANNOUNCEMENT" translateable="false" desc="Screen reader announcement text for the expand button for the contextual cue tab sharing list. WEBSITE_LIST_STR is a comma-separated list of website domains.">
+  <message name="IDS_CONTEXTUAL_CUEING_TAB_SHARING_EXPAND_BUTTON_ANNOUNCEMENT" desc="Screen reader announcement text for the expand button for the contextual cue tab sharing list. WEBSITE_LIST_STR is a comma-separated list of website domains.">
     {NUM_TABS, plural,
     =1 {Show tab sharing details. Sharing 1 tab from {WEBSITE_LIST_STR}}
     other {Show tab sharing details. Sharing {NUM_TABS} tabs from {WEBSITE_LIST_STR}}
