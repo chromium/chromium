@@ -217,14 +217,47 @@ int32_t WebRtcAudioDeviceImpl::Terminate() {
   scoped_refptr<blink::WebRtcAudioRenderer> renderer_to_disconnect;
   {
     base::AutoLock auto_lock(lock_);
-    DCHECK(!renderer_ || !renderer_->IsStarted())
-        << "The shared audio renderer shouldn't be running";
     renderer_to_disconnect = renderer_;
     capturers_.clear();
   }
 
   if (renderer_to_disconnect) {
     renderer_to_disconnect->DisconnectSource();
+<<<<<<< HEAD   (222e32c4524b8be9e974e11f332ff5e3845ca2eb [M149 7827_102] Fix potential GL context bypass when SkiaGra)
+||||||| BASE   (ea7d01d9e113c2088a3795028c033d214dc08f4f [M149] [Safe Browsing] Rework temp file TOCTOU vulnerability)
+
+    // WebRtcAudioRenderer holds strictly main-thread Oilpan handles and asserts
+    // its destruction sequence. If the main thread drops its reference while
+    // we hold this local reference, the off-thread destruction causes memory
+    // corruption. Bounce the final reference to the main thread using the
+    // renderer's own frame-associated task runner to safely die.
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        renderer_to_disconnect->GetTaskRunner();
+
+    if (task_runner) {
+      PostCrossThreadTask(
+          *task_runner, FROM_HERE,
+          CrossThreadBindOnce(
+              [](scoped_refptr<blink::WebRtcAudioRenderer> renderer) {
+                // 'renderer' goes out of scope here, triggering the destructor
+                // safely.
+              },
+              std::move(renderer_to_disconnect)));
+    }
+=======
+
+    // WebRtcAudioRenderer holds strictly main-thread Oilpan handles and asserts
+    // its destruction sequence. If the main thread drops its reference while
+    // we hold this local reference, the off-thread destruction causes memory
+    // corruption. Bounce the final reference to the main thread using the
+    // renderer's own frame-associated task runner to safely die.
+    if (scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+            renderer_to_disconnect->GetTaskRunner()) {
+      // ReleaseSoon is required over PostCrossThreadTask to handle task queue
+      // shutdown safely during iframe detachment.
+      task_runner->ReleaseSoon(FROM_HERE, std::move(renderer_to_disconnect));
+    }
+>>>>>>> CHANGE (90ceeedd80fb7108e55d455e9249aa614a677ccd [M149] Use ReleaseSoon for WebRtcAudioRenderer destruction.)
   }
 
   initialized_ = false;
