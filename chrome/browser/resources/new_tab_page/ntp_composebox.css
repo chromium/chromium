@@ -203,3 +203,15 @@ cr-composebox-voice-search {
   opacity: 0;
   transition: var(--icon-exit-transition);
 }
+
+#suggestionActivity {
+  color: var(--color-composebox-suggestion-activity);
+  display: flex;
+  font-size: 12px;
+  font-weight: 400;
+  justify-content: flex-end;
+  line-height: 18px;
+  padding-bottom: 10px;
+  padding-inline-end: 18px;
+  position: relative;
+}

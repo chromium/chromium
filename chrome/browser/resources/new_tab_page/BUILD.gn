@@ -106,6 +106,7 @@ build_webui("build") {
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/composebox:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
+    "//ui/webui/resources/cr_components/localized_link:build_ts",
     "//ui/webui/resources/cr_components/most_visited:build_ts",
     "//ui/webui/resources/cr_components/page_image_service:build_ts",
     "//ui/webui/resources/cr_components/search:build_ts",

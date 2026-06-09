@@ -530,6 +530,77 @@ suite('NewTabPageComposeboxTest', () => {
             'cr-composebox-submit'));
         assertFalse(!!$$<HTMLElement>(testProxy.element, '#carousel'));
       });
+
+      test('suggestion activity link triggers navigation', async () => {
+        createComposeboxElement(testProxy);
+        await microtasksFinished();
+
+        const matches = [
+          createSearchMatchForTesting({
+            isNoncannedAimSuggestion: true,
+          }),
+        ];
+        testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              matches,
+            }));
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+        await testProxy.element.updateComplete;
+
+        const suggestionActivity =
+            testProxy.element.shadowRoot.querySelector('#suggestionActivity');
+        assertTrue(!!suggestionActivity);
+        const localizedLink =
+            suggestionActivity.querySelector('localized-link');
+        assertTrue(!!localizedLink);
+
+        const testUrl = 'about:blank?activity';
+        const anchor = document.createElement('a');
+        anchor.href = testUrl;
+
+        let preventDefaultCalled = false;
+        const linkClickedEvent = new CustomEvent('link-clicked', {
+          detail: {
+            event: {
+              preventDefault: () => {
+                preventDefaultCalled = true;
+              },
+              currentTarget: anchor,
+            },
+          },
+        });
+        localizedLink.dispatchEvent(linkClickedEvent);
+
+        const url = await testProxy.handler.whenCalled('navigateUrl');
+        assertEquals(testUrl, url);
+        assertTrue(preventDefaultCalled);
+      });
+
+      test(
+          'suggestion activity link hidden when suggestions are non canned',
+          async () => {
+            createComposeboxElement(testProxy);
+            await microtasksFinished();
+
+            const matches = [
+              createSearchMatchForTesting({
+                isNoncannedAimSuggestion: false,
+              }),
+            ];
+            testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+                createAutocompleteResultForTesting({
+                  matches,
+                }));
+            await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+            await microtasksFinished();
+            await testProxy.element.updateComplete;
+
+            const suggestionActivity =
+                testProxy.element.shadowRoot.querySelector(
+                    '#suggestionActivity');
+            assertFalse(!!suggestionActivity);
+          });
     }
 
     test(
