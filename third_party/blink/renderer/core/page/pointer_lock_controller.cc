@@ -114,6 +114,28 @@ void PointerLockController::RequestPointerLock(
     return;
   }
 
+  // Rate limit pointer lock requests if the page has been unlocking too
+  // frequently. This prevents abuse where a page rapidly locks/unlocks the
+  // pointer to deny user input or bog down the browser process with too many
+  // inter-process messages. If the threshold is exceeded, reject all requests
+  // until the time window has passed.
+  if (RuntimeEnabledFeatures::RateLimitPointerLockRequestsEnabled() &&
+      element_ == nullptr && !lock_pending_) {
+    recent_lock_attempts_++;
+    if (last_successful_lock_timestamp_ + kLockRateLimitWindow >
+        base::TimeTicks::Now()) {
+      if (recent_lock_attempts_ > kMaxLocksInWindow) {
+        EnqueueEvent(event_type_names::kPointerlockerror, target);
+        resolver->RejectWithDOMException(
+            DOMExceptionCode::kNotAllowedError,
+            "Too many pointer lock requests in a short window of time.");
+        return;
+      }
+    } else if (!last_successful_lock_timestamp_.is_null()) {
+      recent_lock_attempts_ = 0;
+    }
+  }
+
   bool unadjusted_movement_requested = options && options->unadjustedMovement();
   if (element_) {
     if (element_->GetDocument() != target->GetDocument()) {
@@ -210,8 +232,10 @@ void PointerLockController::ProcessResult(
     ResultCallback callback,
     bool unadjusted_movement_requested,
     mojom::blink::PointerLockResult result) {
-  if (result == mojom::blink::PointerLockResult::kSuccess)
+  if (result == mojom::blink::PointerLockResult::kSuccess) {
+    last_successful_lock_timestamp_ = base::TimeTicks::Now();
     current_unadjusted_movement_setting_ = unadjusted_movement_requested;
+  }
   std::move(callback).Run(result);
 }
 

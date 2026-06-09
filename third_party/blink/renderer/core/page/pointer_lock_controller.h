@@ -87,6 +87,16 @@ class CORE_EXPORT PointerLockController final
   static Element* GetPointerLockedElement(LocalFrame* frame);
 
  private:
+  friend class PointerLockControllerRateLimitTest;
+  FRIEND_TEST_ALL_PREFIXES(PointerLockControllerRateLimitTest,
+                           SuccessfulLockAddsToRecentTimestamps);
+  FRIEND_TEST_ALL_PREFIXES(PointerLockControllerRateLimitTest,
+                           FailedLockDoesNotAffectRateLimit);
+  FRIEND_TEST_ALL_PREFIXES(PointerLockControllerRateLimitTest,
+                           RequestRejectedAfterThresholdExceeded);
+  FRIEND_TEST_ALL_PREFIXES(PointerLockControllerRateLimitTest,
+                           RequestAcceptedAfterRateLimitWindowPasses);
+
   void ClearElement();
   void EnqueueEvent(const AtomicString& type, Element*);
   void EnqueueEvent(const AtomicString& type, Document*);
@@ -123,6 +133,25 @@ class CORE_EXPORT PointerLockController final
   // in locked states. These values only get set when entering lock states.
   gfx::PointF pointer_lock_position_;
   gfx::PointF pointer_lock_screen_position_;
+
+  // If there are more than `kMaxLocksInWindow` lock requests within
+  // `kLockRateLimitWindow`, reject all pointer lock requests until
+  // `kLockRateLimitWindow` has passed since the last successful lock. These
+  // values were chosen were chosen to allow common use-cases and not determined
+  // through any user-study or specification. Rate limiting was added in blink
+  // instead of the browser process because a pointer lock request causes a
+  // roundtrip to the browser process, so a page that is spamming pointer lock
+  // requests would be able to cause a large amount of unnecessary IPC traffic
+  // which would bog down the browser and cause it to lag, even if the page is
+  // not able to successfully acquire pointer lock.
+  static constexpr size_t kMaxLocksInWindow = 4;
+  static constexpr base::TimeDelta kLockRateLimitWindow = base::Seconds(2);
+
+  // The timestamp of the most recent pointer lock request. Used for rate
+  // limiting to prevent abuse where a page rapidly locks and unlocks the
+  // pointer.
+  base::TimeTicks last_successful_lock_timestamp_;
+  uint8_t recent_lock_attempts_ = 0;
 
   bool current_unadjusted_movement_setting_ = false;
 };
