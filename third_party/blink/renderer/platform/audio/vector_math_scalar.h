@@ -9,6 +9,7 @@
 #include <cmath>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -308,35 +309,23 @@ ALWAYS_INLINE static void Conv(const float* source_p,
 #undef CONVOLVE_ONE_SAMPLE
 }
 
-ALWAYS_INLINE static void Vadd(const float* source1p,
-                               int source_stride1,
-                               const float* source2p,
-                               int source_stride2,
-                               float* dest_p,
-                               int dest_stride,
-                               uint32_t frames_to_process) {
-  while (frames_to_process > 0u) {
-    *dest_p = *source1p + *source2p;
-    UNSAFE_TODO(source1p += source_stride1);
-    UNSAFE_TODO(source2p += source_stride2);
-    UNSAFE_TODO(dest_p += dest_stride);
-    --frames_to_process;
+ALWAYS_INLINE static void Vadd(base::span<const float> source1,
+                               base::span<const float> source2,
+                               base::span<float> dest) {
+  DCHECK_EQ(source1.size(), dest.size());
+  DCHECK_EQ(source2.size(), dest.size());
+  for (size_t i = 0; i < dest.size(); ++i) {
+    dest[i] = source1[i] + source2[i];
   }
 }
 
-ALWAYS_INLINE static void Vsub(const float* source1p,
-                               int source_stride1,
-                               const float* source2p,
-                               int source_stride2,
-                               float* dest_p,
-                               int dest_stride,
-                               uint32_t frames_to_process) {
-  while (frames_to_process > 0u) {
-    *dest_p = *source1p - *source2p;
-    UNSAFE_TODO(source1p += source_stride1);
-    UNSAFE_TODO(source2p += source_stride2);
-    UNSAFE_TODO(dest_p += dest_stride);
-    --frames_to_process;
+ALWAYS_INLINE static void Vsub(base::span<const float> source1,
+                               base::span<const float> source2,
+                               base::span<float> dest) {
+  DCHECK_EQ(source1.size(), dest.size());
+  DCHECK_EQ(source2.size(), dest.size());
+  for (size_t i = 0; i < dest.size(); ++i) {
+    dest[i] = source1[i] - source2[i];
   }
 }
 
@@ -366,19 +355,13 @@ ALWAYS_INLINE static void Vmaxmgv(const float* source_p,
   }
 }
 
-ALWAYS_INLINE static void Vmul(const float* source1p,
-                               int source_stride1,
-                               const float* source2p,
-                               int source_stride2,
-                               float* dest_p,
-                               int dest_stride,
-                               uint32_t frames_to_process) {
-  while (frames_to_process > 0u) {
-    *dest_p = *source1p * *source2p;
-    UNSAFE_TODO(source1p += source_stride1);
-    UNSAFE_TODO(source2p += source_stride2);
-    UNSAFE_TODO(dest_p += dest_stride);
-    --frames_to_process;
+ALWAYS_INLINE static void Vmul(base::span<const float> source1,
+                               base::span<const float> source2,
+                               base::span<float> dest) {
+  DCHECK_EQ(source1.size(), dest.size());
+  DCHECK_EQ(source2.size(), dest.size());
+  for (size_t i = 0; i < dest.size(); ++i) {
+    dest[i] = source1[i] * source2[i];
   }
 }
 

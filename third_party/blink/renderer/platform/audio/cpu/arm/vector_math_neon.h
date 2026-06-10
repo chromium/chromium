@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/vector_math_scalar.h"
 
 namespace blink {
@@ -19,62 +20,50 @@ namespace neon {
 // TODO: Consider optimizing this.
 using scalar::Conv;
 
-ALWAYS_INLINE static void Vadd(const float* source1p,
-                               int source_stride1,
-                               const float* source2p,
-                               int source_stride2,
-                               float* dest_p,
-                               int dest_stride,
-                               uint32_t frames_to_process) {
-  int n = frames_to_process;
+ALWAYS_INLINE static void Vadd(base::span<const float> source1,
+                               base::span<const float> source2,
+                               base::span<float> dest) {
+  DCHECK_EQ(source1.size(), dest.size());
+  DCHECK_EQ(source2.size(), dest.size());
 
-  if (source_stride1 == 1 && source_stride2 == 1 && dest_stride == 1) {
-    int tail_frames = n % 4;
-    const float* end_p = UNSAFE_TODO(dest_p + n - tail_frames);
+  const size_t n = dest.size();
+  const size_t tail_frames = n % 4;
+  const size_t aligned_frames = n - tail_frames;
 
-    while (dest_p < end_p) {
-      float32x4_t source1 = vld1q_f32(source1p);
-      float32x4_t source2 = vld1q_f32(source2p);
-      vst1q_f32(dest_p, vaddq_f32(source1, source2));
-
-      UNSAFE_TODO(source1p += 4);
-      UNSAFE_TODO(source2p += 4);
-      UNSAFE_TODO(dest_p += 4);
-    }
-    n = tail_frames;
+  for (size_t i = 0; i < aligned_frames; i += 4) {
+    vst1q_f32(dest.subspan(i, 4u).data(),
+              vaddq_f32(vld1q_f32(source1.subspan(i, 4u).data()),
+                        vld1q_f32(source2.subspan(i, 4u).data())));
   }
 
-  scalar::Vadd(source1p, source_stride1, source2p, source_stride2, dest_p,
-               dest_stride, n);
+  if (tail_frames) {
+    scalar::Vadd(source1.subspan(aligned_frames, tail_frames),
+                 source2.subspan(aligned_frames, tail_frames),
+                 dest.subspan(aligned_frames, tail_frames));
+  }
 }
 
-ALWAYS_INLINE static void Vsub(const float* source1p,
-                               int source_stride1,
-                               const float* source2p,
-                               int source_stride2,
-                               float* dest_p,
-                               int dest_stride,
-                               uint32_t frames_to_process) {
-  int n = frames_to_process;
+ALWAYS_INLINE static void Vsub(base::span<const float> source1,
+                               base::span<const float> source2,
+                               base::span<float> dest) {
+  DCHECK_EQ(source1.size(), dest.size());
+  DCHECK_EQ(source2.size(), dest.size());
 
-  if (source_stride1 == 1 && source_stride2 == 1 && dest_stride == 1) {
-    int tail_frames = n % 4;
-    const float* end_p = UNSAFE_TODO(dest_p + n - tail_frames);
+  const size_t n = dest.size();
+  const size_t tail_frames = n % 4;
+  const size_t aligned_frames = n - tail_frames;
 
-    while (dest_p < end_p) {
-      float32x4_t source1 = vld1q_f32(source1p);
-      float32x4_t source2 = vld1q_f32(source2p);
-      vst1q_f32(dest_p, vsubq_f32(source1, source2));
-
-      UNSAFE_TODO(source1p += 4);
-      UNSAFE_TODO(source2p += 4);
-      UNSAFE_TODO(dest_p += 4);
-    }
-    n = tail_frames;
+  for (size_t i = 0; i < aligned_frames; i += 4) {
+    vst1q_f32(dest.subspan(i, 4u).data(),
+              vsubq_f32(vld1q_f32(source1.subspan(i, 4u).data()),
+                        vld1q_f32(source2.subspan(i, 4u).data())));
   }
 
-  scalar::Vsub(source1p, source_stride1, source2p, source_stride2, dest_p,
-               dest_stride, n);
+  if (tail_frames) {
+    scalar::Vsub(source1.subspan(aligned_frames, tail_frames),
+                 source2.subspan(aligned_frames, tail_frames),
+                 dest.subspan(aligned_frames, tail_frames));
+  }
 }
 
 ALWAYS_INLINE static void Vclip(const float* source_p,
@@ -134,33 +123,27 @@ ALWAYS_INLINE static void Vmaxmgv(const float* source_p,
   scalar::Vmaxmgv(source_p, source_stride, max_p, n);
 }
 
-ALWAYS_INLINE static void Vmul(const float* source1p,
-                               int source_stride1,
-                               const float* source2p,
-                               int source_stride2,
-                               float* dest_p,
-                               int dest_stride,
-                               uint32_t frames_to_process) {
-  int n = frames_to_process;
+ALWAYS_INLINE static void Vmul(base::span<const float> source1,
+                               base::span<const float> source2,
+                               base::span<float> dest) {
+  DCHECK_EQ(source1.size(), dest.size());
+  DCHECK_EQ(source2.size(), dest.size());
 
-  if (source_stride1 == 1 && source_stride2 == 1 && dest_stride == 1) {
-    int tail_frames = n % 4;
-    const float* end_p = UNSAFE_TODO(dest_p + n - tail_frames);
+  const size_t n = dest.size();
+  const size_t tail_frames = n % 4;
+  const size_t aligned_frames = n - tail_frames;
 
-    while (dest_p < end_p) {
-      float32x4_t source1 = vld1q_f32(source1p);
-      float32x4_t source2 = vld1q_f32(source2p);
-      vst1q_f32(dest_p, vmulq_f32(source1, source2));
-
-      UNSAFE_TODO(source1p += 4);
-      UNSAFE_TODO(source2p += 4);
-      UNSAFE_TODO(dest_p += 4);
-    }
-    n = tail_frames;
+  for (size_t i = 0; i < aligned_frames; i += 4) {
+    vst1q_f32(dest.subspan(i, 4u).data(),
+              vmulq_f32(vld1q_f32(source1.subspan(i, 4u).data()),
+                        vld1q_f32(source2.subspan(i, 4u).data())));
   }
 
-  scalar::Vmul(source1p, source_stride1, source2p, source_stride2, dest_p,
-               dest_stride, n);
+  if (tail_frames) {
+    scalar::Vmul(source1.subspan(aligned_frames, tail_frames),
+                 source2.subspan(aligned_frames, tail_frames),
+                 dest.subspan(aligned_frames, tail_frames));
+  }
 }
 
 ALWAYS_INLINE static void Vsma(const float* source_p,

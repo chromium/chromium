@@ -88,16 +88,16 @@ void Vadd(base::span<const float> source1,
           base::span<const float> source2,
           base::span<float> dest,
           uint32_t frames_to_process) {
-  impl::Vadd(source1.data(), 1, source2.data(), 1, dest.data(), 1,
-             frames_to_process);
+  impl::Vadd(source1.first(frames_to_process), source2.first(frames_to_process),
+             dest.first(frames_to_process));
 }
 
 void Vsub(base::span<const float> source1,
           base::span<const float> source2,
           base::span<float> dest,
           uint32_t frames_to_process) {
-  impl::Vsub(source1.data(), 1, source2.data(), 1, dest.data(), 1,
-             frames_to_process);
+  impl::Vsub(source1.first(frames_to_process), source2.first(frames_to_process),
+             dest.first(frames_to_process));
 }
 
 void Vclip(base::span<const float> source,
@@ -149,8 +149,8 @@ void Vmul(base::span<const float> source1,
           base::span<const float> source2,
           base::span<float> dest,
           uint32_t frames_to_process) {
-  impl::Vmul(source1.data(), 1, source2.data(), 1, dest.data(), 1,
-             frames_to_process);
+  impl::Vmul(source1.first(frames_to_process), source2.first(frames_to_process),
+             dest.first(frames_to_process));
 }
 
 void Vsma(base::span<const float> source,

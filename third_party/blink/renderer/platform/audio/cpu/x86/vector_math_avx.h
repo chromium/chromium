@@ -7,6 +7,7 @@
 
 #include <cstddef>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 
 namespace blink {
@@ -35,16 +36,14 @@ void PrepareFilterForConv(const float* filter_p,
                           AudioFloatArray* prepared_filter);
 
 // dest[k] = source1[k] + source2[k]
-void Vadd(const float* source1p,
-          const float* source2p,
-          float* dest_p,
-          uint32_t frames_to_process);
+void Vadd(base::span<const float> source1,
+          base::span<const float> source2,
+          base::span<float> dest);
 
 // dest[k] = source1[k] - source2[k]
-void Vsub(const float* source1p,
-          const float* source2p,
-          float* dest_p,
-          uint32_t frames_to_process);
+void Vsub(base::span<const float> source1,
+          base::span<const float> source2,
+          base::span<float> dest);
 
 // dest[k] = clip(source[k], low_threshold, high_threshold)
 //         = max(low_threshold, min(high_threshold, source[k]))
@@ -59,10 +58,9 @@ void Vclip(const float* source_p,
 void Vmaxmgv(const float* source_p, float* max_p, uint32_t frames_to_process);
 
 // dest[k] = source1[k] * source2[k]
-void Vmul(const float* source1p,
-          const float* source2p,
-          float* dest_p,
-          uint32_t frames_to_process);
+void Vmul(base::span<const float> source1,
+          base::span<const float> source2,
+          base::span<float> dest);
 
 // dest[k] += scale * source[k]
 void Vsma(const float* source_p,
