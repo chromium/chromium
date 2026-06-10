@@ -79,7 +79,14 @@ ReloadPageDialogController::ReloadPageDialogController(
     content::BrowserContext* browser_context)
     : web_contents_(web_contents), browser_context_(browser_context) {}
 
-ReloadPageDialogController::~ReloadPageDialogController() = default;
+ReloadPageDialogController::~ReloadPageDialogController() {
+#if BUILDFLAG(IS_ANDROID)
+  if (message_ && message_->is_in_queue()) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
+        message_.get(), messages::DismissReason::DISMISSED_BY_FEATURE);
+  }
+#endif
+}
 
 void ReloadPageDialogController::TriggerShow(
     const std::vector<const Extension*>& extensions) {
