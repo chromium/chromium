@@ -74,6 +74,12 @@ std::unique_ptr<ConnectorDataPipeGetter> CreateFileDataPipeGetterBlocking(
   // user clicking "Open Now" without causing download errors.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                             base::File::FLAG_WIN_SHARE_DELETE);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FilePath("/media/fuse/fusebox").IsParent(path)) {
+    return ConnectorDataPipeGetter::CreateFuseboxResumablePipeGetter(
+        std::move(file), is_obfuscated);
+  }
+#endif
 
   return ConnectorDataPipeGetter::CreateResumablePipeGetter(std::move(file),
                                                             is_obfuscated);

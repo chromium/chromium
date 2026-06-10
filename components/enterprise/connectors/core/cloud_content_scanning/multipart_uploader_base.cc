@@ -66,6 +66,13 @@ std::unique_ptr<ConnectorDataPipeGetter> CreateFileDataPipeGetterBlocking(
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                             base::File::FLAG_WIN_SHARE_DELETE);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FilePath("/media/fuse/fusebox").IsParent(path)) {
+    return ConnectorDataPipeGetter::CreateFuseboxMultipartPipeGetter(
+        boundary, metadata, std::move(file), is_obfuscated);
+  }
+#endif
+
   return ConnectorDataPipeGetter::CreateMultipartPipeGetter(
       boundary, metadata, std::move(file), is_obfuscated);
 }

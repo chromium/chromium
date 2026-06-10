@@ -96,8 +96,8 @@ class ConnectorDataPipeGetterTest : public testing::Test {
     EXPECT_TRUE(data_pipe_consumer_.is_valid());
     std::string body;
     body.reserve(expected_size);
-    size_t read_chunks = 0;
-    while (true) {
+    size_t target_size = max_chunks == 0 ? expected_size : max_chunks * 1024;
+    while (body.size() < target_size) {
       std::string buffer(1024, '\0');
       size_t read_size = 0;
       MojoResult result = data_pipe_consumer_->ReadData(
@@ -110,11 +110,8 @@ class ConnectorDataPipeGetterTest : public testing::Test {
       if (result != MOJO_RESULT_OK) {
         break;
       }
-      body.append(std::string_view(buffer).substr(0, read_size));
-      ++read_chunks;
-      if (max_chunks != 0 && read_chunks == max_chunks) {
-        break;
-      }
+      size_t bytes_to_append = std::min(read_size, target_size - body.size());
+      body.append(std::string_view(buffer).substr(0, bytes_to_append));
     }
 
     return body;
@@ -160,16 +157,41 @@ TEST_F(ConnectorDataPipeGetterTest, InternalMemoryMappedFileDestructor) {
 }
 #endif
 
+enum class PipeType {
+  kMmapFile,
+  kPage,
+#if BUILDFLAG(IS_CHROMEOS)
+  kChunkedFile,
+#endif
+};
+
 // Parametrization to share tests between:
 // 1. the file and page implementations.
 // 2. multipart and resumable upload.
 class ConnectorDataPipeGetterParametrizedTest
     : public ConnectorDataPipeGetterTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<PipeType, bool>> {
  public:
-  bool is_file_data_pipe() { return std::get<0>(GetParam()); }
-  bool is_page_data_pipe() { return !std::get<0>(GetParam()); }
+  PipeType pipe_type() { return std::get<0>(GetParam()); }
+  bool is_mmap_file_data_pipe() { return pipe_type() == PipeType::kMmapFile; }
+#if BUILDFLAG(IS_CHROMEOS)
+  bool is_chunked_file_data_pipe() {
+    return pipe_type() == PipeType::kChunkedFile;
+  }
+#endif
+  bool is_page_data_pipe() { return pipe_type() == PipeType::kPage; }
   bool is_resumable_upload() { return std::get<1>(GetParam()); }
+
+  bool is_file_resumable_test() {
+    if (!is_resumable_upload()) {
+      return false;
+    }
+#if BUILDFLAG(IS_CHROMEOS)
+    return is_mmap_file_data_pipe() || is_chunked_file_data_pipe();
+#else
+    return is_mmap_file_data_pipe();
+#endif
+  }
 
   // Helper to create a data pipe with its content either in memory or in a
   // files. If there is no space left on the device, return nullptr so the test
@@ -177,7 +199,7 @@ class ConnectorDataPipeGetterParametrizedTest
   std::unique_ptr<ConnectorDataPipeGetter> CreateDataPipeGetter(
       const std::string& content,
       bool is_obfuscated = false) {
-    if (is_file_data_pipe()) {
+    if (is_mmap_file_data_pipe()) {
       std::optional<base::File> file = CreateFile(content);
       if (!file) {
         return nullptr;
@@ -188,7 +210,21 @@ class ConnectorDataPipeGetterParametrizedTest
                        std::move(*file), is_obfuscated)
                  : ConnectorDataPipeGetter::CreateMultipartPipeGetter(
                        "boundary", metadata_, std::move(*file), is_obfuscated);
+#if BUILDFLAG(IS_CHROMEOS)
+    } else if (is_chunked_file_data_pipe()) {
+      std::optional<base::File> file = CreateFile(content);
+      if (!file) {
+        return nullptr;
+      }
+
+      return is_resumable_upload()
+                 ? ConnectorDataPipeGetter::CreateFuseboxResumablePipeGetter(
+                       std::move(*file), is_obfuscated)
+                 : ConnectorDataPipeGetter::CreateFuseboxMultipartPipeGetter(
+                       "boundary", metadata_, std::move(*file), is_obfuscated);
+#endif  // BUILDFLAG(IS_CHROMEOS)
     } else {
+      DCHECK(is_page_data_pipe());
       base::ReadOnlySharedMemoryRegion page = CreatePage(content);
       if (!page.IsValid()) {
         return nullptr;
@@ -208,9 +244,15 @@ class ConnectorDataPipeGetterParametrizedTest
   std::string metadata_ = "metadata";
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         ConnectorDataPipeGetterParametrizedTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ConnectorDataPipeGetterParametrizedTest,
+    testing::Combine(testing::Values(PipeType::kMmapFile,
+#if BUILDFLAG(IS_CHROMEOS)
+                                     PipeType::kChunkedFile,
+#endif
+                                     PipeType::kPage),
+                     testing::Bool()));
 
 TEST_P(ConnectorDataPipeGetterParametrizedTest, SmallFile) {
   std::string small_file_content = "small file content";
@@ -230,7 +272,12 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, SmallFile) {
       CreateDataPipeGetter(small_file_content);
   EXPECT_TRUE(data_pipe_getter);
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
-  EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
+  EXPECT_EQ(data_pipe_getter->is_mmap_file_data_pipe(),
+            is_mmap_file_data_pipe());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(data_pipe_getter->is_chunked_file_data_pipe(),
+            is_chunked_file_data_pipe());
+#endif
 
   if (is_resumable_upload()) {
     ASSERT_EQ(small_file_content, GetBodyFromPipe(data_pipe_getter.get(),
@@ -264,7 +311,12 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, LargeFile) {
   }
 
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
-  EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
+  EXPECT_EQ(data_pipe_getter->is_mmap_file_data_pipe(),
+            is_mmap_file_data_pipe());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(data_pipe_getter->is_chunked_file_data_pipe(),
+            is_chunked_file_data_pipe());
+#endif
 
   if (is_resumable_upload()) {
     ASSERT_EQ(large_file_content, GetBodyFromPipe(data_pipe_getter.get(),
@@ -311,7 +363,12 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, LargeFileAndMetadata) {
   }
 
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
-  EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
+  EXPECT_EQ(data_pipe_getter->is_mmap_file_data_pipe(),
+            is_mmap_file_data_pipe());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(data_pipe_getter->is_chunked_file_data_pipe(),
+            is_chunked_file_data_pipe());
+#endif
 
   ASSERT_EQ(expected_body,
             GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
@@ -335,7 +392,12 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, MultipleReads) {
       CreateDataPipeGetter(small_file_content);
   EXPECT_TRUE(data_pipe_getter);
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
-  EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
+  EXPECT_EQ(data_pipe_getter->is_mmap_file_data_pipe(),
+            is_mmap_file_data_pipe());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(data_pipe_getter->is_chunked_file_data_pipe(),
+            is_chunked_file_data_pipe());
+#endif
 
   for (int i = 0; i < 4; ++i) {
     if (is_resumable_upload()) {
@@ -371,7 +433,12 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, ResetsCorrectly) {
   }
 
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
-  EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
+  EXPECT_EQ(data_pipe_getter->is_mmap_file_data_pipe(),
+            is_mmap_file_data_pipe());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(data_pipe_getter->is_chunked_file_data_pipe(),
+            is_chunked_file_data_pipe());
+#endif
 
   // Reads part of the body, which validates that the next read is able to read
   // the entire body correctly after a reset.
@@ -390,7 +457,12 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, ResetsCorrectly) {
   data_pipe_getter->Reset();
 
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
-  EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
+  EXPECT_EQ(data_pipe_getter->is_mmap_file_data_pipe(),
+            is_mmap_file_data_pipe());
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(data_pipe_getter->is_chunked_file_data_pipe(),
+            is_chunked_file_data_pipe());
+#endif
   if (is_resumable_upload()) {
     ASSERT_EQ(large_file_content, GetBodyFromPipe(data_pipe_getter.get(),
                                                   large_file_content.size()));
@@ -401,7 +473,7 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, ResetsCorrectly) {
 }
 
 TEST_P(ConnectorDataPipeGetterParametrizedTest, DeobfuscationTest) {
-  if (!is_file_data_pipe() || !is_resumable_upload()) {
+  if (!is_file_resumable_test()) {
     // This test only applies to file-based resumable uploads.
     return;
   }
@@ -429,7 +501,7 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, DeobfuscationTest) {
 }
 
 TEST_P(ConnectorDataPipeGetterParametrizedTest, DeobfuscationErrorTest) {
-  if (!is_file_data_pipe() || !is_resumable_upload()) {
+  if (!is_file_resumable_test()) {
     return;
   }
 
@@ -445,6 +517,16 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, DeobfuscationErrorTest) {
 
   std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter =
       CreateDataPipeGetter(obfuscated_content_str, true);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (is_chunked_file_data_pipe()) {
+    // For chunked files, initialization (deobfuscation header validation and
+    // index building) is performed synchronously during construction. So if the
+    // header or chunk sizes are invalid, creation fail-fasts and returns
+    // nullptr.
+    ASSERT_FALSE(data_pipe_getter);
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(data_pipe_getter);
 
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
@@ -464,7 +546,7 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, DeobfuscationErrorTest) {
 }
 
 TEST_P(ConnectorDataPipeGetterParametrizedTest, DeobfuscationZeroChunkTest) {
-  if (!is_file_data_pipe() || !is_resumable_upload()) {
+  if (!is_file_resumable_test()) {
     return;
   }
 
@@ -478,6 +560,16 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, DeobfuscationZeroChunkTest) {
 
   std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter =
       CreateDataPipeGetter(obfuscated_content_str, true);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (is_chunked_file_data_pipe()) {
+    // For chunked files, initialization (deobfuscation header validation and
+    // index building) is performed synchronously during construction. So if the
+    // header or chunk sizes are invalid, creation fail-fasts and returns
+    // nullptr.
+    ASSERT_FALSE(data_pipe_getter);
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(data_pipe_getter);
 
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;

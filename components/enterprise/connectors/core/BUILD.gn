@@ -164,6 +164,13 @@ if (enterprise_cloud_content_analysis || is_android) {
     if (!is_ios) {
       deps += [ "//components/safe_browsing/content/browser/web_ui" ]
     }
+
+    if (is_chromeos) {
+      sources += [
+        "cloud_content_scanning/chunked_file_data_pipe_producer.cc",
+        "cloud_content_scanning/chunked_file_data_pipe_producer.h",
+      ]
+    }
   }
 
   source_set("cloud_content_scanning_test_support") {
@@ -335,6 +342,11 @@ if (enterprise_cloud_content_analysis || is_android) {
       "//testing/gtest",
       "//ui/gfx/range",
     ]
+    if (is_chromeos) {
+      sources += [
+        "cloud_content_scanning/chunked_file_data_pipe_producer_unittest.cc",
+      ]
+    }
   }
 }
 
