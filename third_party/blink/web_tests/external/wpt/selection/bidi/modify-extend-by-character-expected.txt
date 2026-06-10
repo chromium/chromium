@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] RTL text in LTR paragraph: extend right 2 chars
+  assert_equals: focusOffset after extend expected 2 but got 6
+[FAIL] RTL text in LTR paragraph: extend left 2 chars
+  assert_equals: focusOffset after extend expected 4 but got 0
+[FAIL] LTR text in RTL paragraph: extend right 2 chars
+  assert_equals: focusOffset after extend expected 5 but got 1
+[FAIL] LTR text in RTL paragraph: extend left 2 chars
+  assert_equals: focusOffset after extend expected 3 but got 7
+[FAIL] LTR-RTL context in LTR paragraph: extend right 3 chars
+  assert_equals: focusOffset after extend expected 11 but got 7
+[FAIL] LTR-RTL context in LTR paragraph: extend left 3 chars
+  assert_equals: focusOffset after extend expected 4 but got 8
+[FAIL] RTL-LTR context in LTR paragraph: extend right 3 chars
+  assert_equals: focusOffset after extend expected 14 but got 10
+[FAIL] RTL-LTR context in LTR paragraph: extend left 3 chars
+  assert_equals: focusOffset after extend expected 7 but got 11
+[FAIL] Mixed context in auto-dir paragraph: extend right 3 chars
+  assert_equals: focusOffset after extend expected 5 but got 14
+[FAIL] Mixed context in auto-dir paragraph: extend left 3 chars
+  assert_equals: focusOffset after extend expected 17 but got 8
+Harness: the test ran to completion.
+
