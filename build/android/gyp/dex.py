@@ -42,9 +42,6 @@ _MERGE_SERVICE_ENTRIES = (
     'META-INF/services/androidx.appsearch.app.AppSearchDocumentClassMap',
     'META-INF/services/kotlinx.coroutines.CoroutineExceptionHandler',
     'META-INF/services/kotlinx.coroutines.internal.MainDispatcherFactory',
-    'META-INF/services/org.chromium.base.test.util.LeakCanaryChecker$LeakCanaryConfigProvider',
-    'META-INF/services/org.chromium.base.test.BaseJUnit4ClassRunner$ClassCleanupHook',
-    'META-INF/services/org.chromium.base.test.BaseJUnit4ClassRunner$AfterCleanupCheck',
 )
 
 _IGNORE_SERVICE_ENTRIES = (
@@ -250,7 +247,7 @@ def _CreateServicesMap(service_jars):
           new_lines = z.read(n).decode('utf8').splitlines()
           old_lines.extend(l for l in new_lines if l not in old_lines)
           data = '\n'.join(old_lines) + '\n'
-          if n in _MERGE_SERVICE_ENTRIES or ret.get(n, data) == data:
+          if _MERGE_SERVICE_ENTRIES or ret.get(n, data) == data:
             ret[n] = data
             origins[n] = jar_path
           else:
