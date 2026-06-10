@@ -186,8 +186,8 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             FrameLayout.LayoutParams params =
                     new FrameLayout.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            Gravity.CENTER);
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            Gravity.CENTER_HORIZONTAL);
             mDialog.setContentView(mDialogView, params);
         }
 
