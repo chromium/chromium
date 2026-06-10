@@ -61,6 +61,9 @@ class UnprivilegedProcessDelegate : public IPC::Listener,
   void CrashProcess(const base::Location& location) override;
   void KillProcess() override;
 
+ protected:
+  virtual void ReportProcessLaunched(base::win::ScopedHandle worker_process);
+
  private:
   // IPC::Listener implementation.
   void OnChannelConnected(int32_t peer_pid) override;
@@ -70,7 +73,6 @@ class UnprivilegedProcessDelegate : public IPC::Listener,
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
   void ReportFatalError();
-  void ReportProcessLaunched(base::win::ScopedHandle worker_process);
 
   // The task runner serving job object notifications.
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

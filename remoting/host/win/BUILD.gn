@@ -169,6 +169,7 @@ source_set("win") {
     "session_interaction_strategy.h",
     "simple_task_dialog.cc",
     "simple_task_dialog.h",
+    "unprivileged_process_delegate.cc",
     "unprivileged_process_delegate.h",
     "window_station_and_desktop.cc",
     "window_station_and_desktop.h",
@@ -205,6 +206,7 @@ source_set("win") {
     "//crypto",
     "//ipc",
     "//remoting/base",
+    "//remoting/base/crash",
     "//remoting/host:common_headers",
     "//remoting/host:ipc_constants",
     "//remoting/host:platform_interfaces",
@@ -238,6 +240,7 @@ source_set("unit_tests") {
     "event_trace_data_unittest.cc",
     "mouse_cursor_monitor_win_unittest.cc",
     "rdp_client_unittest.cc",
+    "unprivileged_process_delegate_unittest.cc",
   ]
 
   deps = [
@@ -422,7 +425,6 @@ shared_library("remoting_core") {
     "host_service.cc",
     "rdp_desktop_session.cc",
     "rdp_desktop_session.h",
-    "unprivileged_process_delegate.cc",
     "wts_session_process_delegate.cc",
   ]
   deps = [
