@@ -11,7 +11,8 @@ namespace credential_provider_extension {
 
 // Returns `YES` if the requested host shares the exact same verified eTLD+1
 // (domain and registry) as the target credential host, taking private
-// registries into account.
+// registries into account, and verifies that `credentialHost` is a
+// registrable domain suffix of (or equal to) `requestedHost`.
 BOOL SecureHostsMatch(NSString* requestedHost, NSString* credentialHost);
 
 }  // namespace credential_provider_extension
