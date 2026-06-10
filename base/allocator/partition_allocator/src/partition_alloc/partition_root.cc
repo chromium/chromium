@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+#include "partition_alloc/internal/partition_root_internal.h"
+// clang-format on
+
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -11,7 +15,6 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/in_slot_metadata.h"
-#include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/oom.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_address_space.h"
@@ -2041,6 +2044,25 @@ PA_NOINLINE PartitionRoot* PartitionRoot::GetRootFromAddress(void* object) {
   }
 
   return nullptr;
+}
+
+void PartitionRoot::Zap(internal::SlotStart slot_start,
+                        SlotSpanMetadata* slot_span,
+                        uint32_t type_id) {
+  void* object = reinterpret_cast<void*>(slot_start.value());
+
+  uint64_t zap_value = internal::kIntendedLeakQuarantineMarker |
+                       (static_cast<uint64_t>(type_id) << 8);
+
+  size_t slot_size = slot_span->GetUtilizedSlotSize();
+  size_t count = slot_size / sizeof(uint64_t);
+  std::fill_n(static_cast<uint64_t*>(object), count, zap_value);
+
+  size_t remainder_offset = sizeof(uint64_t) * count;
+  size_t remainder_size = slot_size - remainder_offset;
+
+  std::fill_n(PA_UNSAFE_TODO(static_cast<uint8_t*>(object) + remainder_offset),
+              remainder_size, internal::kIntendedLeakQuarantineRemainder);
 }
 
 template <AllocFlags flags>

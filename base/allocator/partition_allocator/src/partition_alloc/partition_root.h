@@ -564,6 +564,7 @@ class alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE void FreeNoHooksImmediateInternal(
       internal::SlotStart slot_start,
       SlotSpanMetadata* slot_span,
+      FreeHintType<FreeHintFlags(flags)> hint,
       const internal::BucketSizeDetails& size_details);
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -917,6 +918,10 @@ class alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_NOINLINE void QuarantineForBrp(const SlotSpanMetadata* slot_span,
                                     internal::SlotStart slot_start);
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+
+  static void Zap(internal::SlotStart slot_start,
+                  SlotSpanMetadata* slot_span,
+                  uint32_t type_id);
 
 #if PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
   static internal::Lock& GetEnumeratorLock();

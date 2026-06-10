@@ -72,10 +72,11 @@ enum class FreeFlags {
   // `kWith[A-Za-z]+Hint` shows whether `FreeHint`'s member is available or not.
   kWithSizeHint = 1 << 4,       // `FreeHint::size` is available.
   kWithAlignmentHint = 1 << 5,  // `FreeHint::alignment` is available.
+  kWithTypeIdHint = 1 << 6,     // `FreeHint::type_id` is available.
   // Only used when MEMORY_TOOL_REPLACES_ALLOCATOR is defined, we will attempt
   // to use an aligned free function.
-  kAlignedFreeForMemoryTool = 1 << 6,  // Internal.
-  kIntendedLeak = 1 << 7,              // Internal.
+  kAlignedFreeForMemoryTool = 1 << 7,  // Internal.
+  kIntendedLeak = 1 << 8,              // Internal.
   kMaxValue = kIntendedLeak,
 };
 PA_DEFINE_OPERATORS_FOR_FLAGS(FreeFlags);
@@ -443,6 +444,16 @@ inline constexpr unsigned char kUninitializedByte = 0xAB;
 inline constexpr unsigned char kFreedByte = 0xCD;
 
 inline constexpr unsigned char kQuarantinedByte = 0xEF;
+
+// Each IntendedLeaked memory region: [0...slot_size) will be filled by:
+// [0     ... 8):         |EB B0 00 "typeid (32bit)" "unused(8bit)"|
+//   ...
+// [8(n-1)... 8n):        |EB B0 00 "typeid (32bit)" "unused(8bit)"|
+// [8n    ... slot_size): |EB EB ... EB| (remainder)
+// (*) n = slot_size / sizeof(uint64_t)
+inline constexpr uint64_t kIntendedLeakQuarantineMarker = 0xEBB0000000000000u;
+inline constexpr uint64_t kIntendedLeakQuarantineMask = 0xFFFFFF0000000000u;
+inline constexpr uint8_t kIntendedLeakQuarantineRemainder = 0xEB;
 
 }  // namespace internal
 

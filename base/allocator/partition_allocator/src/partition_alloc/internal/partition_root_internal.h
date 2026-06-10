@@ -601,6 +601,7 @@ template <FreeFlags flags>
 PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
     internal::SlotStart slot_start,
     SlotSpanMetadata* slot_span,
+    FreeHintType<FreeHintFlags(flags)> hint,
     const internal::BucketSizeDetails& size_details) {
   // The thread cache is added "in the middle" of the main allocator, that is:
   // - After all the cookie/in-slot metadata management
@@ -676,22 +677,26 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
   }
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-  // memset() can be really expensive.
-#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
-  internal::DebugMemset(slot_start.ToObject(), internal::kFreedByte,
-                        slot_span->GetUtilizedSlotSize());
-#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
-
   if constexpr (ContainsFlags(flags, FreeFlags::kIntendedLeak)) {
     // Must not enable `thread_cache` and `brp` to use `kIntendedLeak`.
     PA_CHECK(!settings_.with_thread_cache);
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     PA_CHECK(!brp_enabled());
 #endif
+    if constexpr (ContainsFlags(flags, FreeFlags::kWithTypeIdHint)) {
+      Zap(slot_start, slot_span, hint.type_id);
+    }
     intended_leak_size_.fetch_add(size_details.slot_size);
     return;  // Leak
-  } else if constexpr (ContainsFlags(flags,
-                                     FreeFlags::kSchedulerLoopQuarantine)) {
+  }
+
+  // memset() can be really expensive.
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
+  internal::DebugMemset(slot_start.ToObject(), internal::kFreedByte,
+                        slot_span->GetUtilizedSlotSize());
+#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
+
+  if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
     internal::ThreadCache* thread_cache = GetThreadCache();
     if (internal::ThreadCache::IsValid(thread_cache)) [[likely]] {
       thread_cache->GetSchedulerLoopQuarantineBranch().Quarantine(
@@ -718,7 +723,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
     internal::SlotStart slot_start,
     SlotSpanMetadata* slot_span) {
   auto size_details = SlotSpanToBucketSizeDetails(slot_span);
-  FreeNoHooksImmediateInternal<flags>(slot_start, slot_span, size_details);
+  FreeNoHooksImmediateInternal<flags>(slot_start, slot_span, {}, size_details);
 }
 
 template <FreeFlags flags>
@@ -730,13 +735,15 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
   if constexpr (ContainsFlags(flags, FreeFlags::kWithSizeHint)) {
     if (settings_.enable_free_with_size) {
       size_details = SizeToBucketSizeDetails(hint.size, slot_span);
-      FreeNoHooksImmediateInternal<flags>(slot_start, slot_span, size_details);
+      FreeNoHooksImmediateInternal<flags>(slot_start, slot_span, hint,
+                                          size_details);
       return;
     }
   }
   size_details = SlotSpanToBucketSizeDetails(slot_span);
 
-  FreeNoHooksImmediateInternal<flags>(slot_start, slot_span, size_details);
+  FreeNoHooksImmediateInternal<flags>(slot_start, slot_span, hint,
+                                      size_details);
 }
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)

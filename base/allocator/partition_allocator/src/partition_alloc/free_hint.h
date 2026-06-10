@@ -15,8 +15,8 @@ namespace internal {
 
 template <typename EnumType>
 constexpr inline EnumType FreeHintFlags(EnumType superset) {
-  return (superset &
-          (FreeFlags::kWithSizeHint | FreeFlags::kWithAlignmentHint));
+  return (superset & (FreeFlags::kWithSizeHint | FreeFlags::kWithAlignmentHint |
+                      FreeFlags::kWithTypeIdHint));
 }
 
 }  // namespace internal
@@ -42,6 +42,13 @@ struct FreeHint<FreeFlags::kWithSizeHint | FreeFlags::kWithAlignmentHint> {
   struct Type {
     size_t size = 0;
     size_t alignment = 0;
+  };
+};
+
+template <>
+struct FreeHint<FreeFlags::kWithTypeIdHint> {
+  struct Type {
+    uint32_t type_id = 0;
   };
 };
 

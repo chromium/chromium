@@ -106,11 +106,15 @@ EXPORT_TEMPLATE void PartitionRoot::FreeInline<FreeFlags::kIntendedLeak>(void*);
 EXPORT_TEMPLATE
 void PartitionRoot::FreeInline<FreeFlags::kWithSizeHint>(
     void*,
-    FreeHint<FreeFlags::kWithSizeHint>::Type);
+    FreeHintType<FreeFlags::kWithSizeHint>);
 EXPORT_TEMPLATE void PartitionRoot::FreeInline<FreeFlags::kWithSizeHint |
                                                FreeFlags::kWithAlignmentHint>(
     void*,
-    FreeHint<FreeFlags::kWithSizeHint | FreeFlags::kWithAlignmentHint>::Type);
+    FreeHintType<FreeFlags::kWithSizeHint | FreeFlags::kWithAlignmentHint>);
+EXPORT_TEMPLATE void PartitionRoot::FreeInline<FreeFlags::kIntendedLeak |
+                                               FreeFlags::kWithTypeIdHint>(
+    void*,
+    FreeHintType<FreeFlags::kWithTypeIdHint>);
 
 EXPORT_TEMPLATE void PartitionRoot::AlignedFree<FreeFlags::kNone>(void*);
 

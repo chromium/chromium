@@ -4106,6 +4106,12 @@ TEST_P(PartitionAllocTest, IntendedLeak) {
   void* ptr_to_keep_slot_span = root->Alloc(kTestAllocSize, type_name);
   void* ptr = root->Alloc(kTestAllocSize, type_name);
 
+  // Fill the memory region with any different value from kTypeId or
+  // kFreedBytes to see what code zaps the memory region. E.g. kFreedBytes means
+  // DebugMemset() with EXPENSIVE_DCHECKS_ARE_ON.
+  constexpr const uint8_t kAnyDummyValue = 0x12u;
+  PA_UNSAFE_TODO(memset(ptr, kAnyDummyValue, kTestAllocSize));
+
   // Remember `total_intended_leak_bytes` of the custom root.
   SimplePartitionStatsDumper dumper;
   root->DumpStats("CustomTestRoot", true, false, &dumper);
@@ -4113,11 +4119,21 @@ TEST_P(PartitionAllocTest, IntendedLeak) {
 
   auto* slot_span =
       SlotSpan::FromSlotStart(SlotStart::Unchecked(ptr).Untag(), root.get());
-  root->Free<FreeFlags::kIntendedLeak>(ptr);
+
+  constexpr const uint64_t kTypeId = 0xDEADBEAFu;
+  root->Free<FreeFlags::kIntendedLeak | FreeFlags::kWithTypeIdHint>(
+      ptr, {.type_id = kTypeId});
 
   // Leaked objects will be never found in the freelist of the `slot_span`.
   EXPECT_NE(SlotStart::Unchecked(ptr).Untag().value(),
             UntagPtr(slot_span->get_freelist_head()));
+
+  // The `ptr` must be zapped.
+  uint64_t value_after_intended_leaked = *reinterpret_cast<uint64_t*>(ptr);
+  EXPECT_EQ(value_after_intended_leaked & kIntendedLeakQuarantineMask,
+            kIntendedLeakQuarantineMarker);
+  EXPECT_EQ((value_after_intended_leaked & ~kIntendedLeakQuarantineMask) >> 8u,
+            kTypeId);
 
   // Compare `total_intended_leak_bytes` between before and after
   // `Free<kIntendedLeak>`.
