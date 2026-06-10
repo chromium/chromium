@@ -1773,7 +1773,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
 
   const DeepQuery kPathToLensButton{"contextual-tasks-app",
                                     "contextual-tasks-composebox",
-                                    "cr-composebox", "#lensIcon"};
+                                    "#composebox", "#lensIcon"};
 
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
 
