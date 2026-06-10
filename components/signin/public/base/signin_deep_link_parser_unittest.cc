@@ -51,6 +51,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_payload =
                 SigninDeepLinkPayload{
                     .entry_point_id = ExternalEntryPoint::kDesktopDefault,
+                    .entry_point_id_raw_value_for_metrics = 1,
                     .email = "test@gmail.com"},
         },
         ParseTestParam{
@@ -64,16 +65,20 @@ INSTANTIATE_TEST_SUITE_P(
             .deep_link_url =
                 "https://www.google.com/chrome/go-mobile?email=test@gmail.com",
             .expected_payload =
-                SigninDeepLinkPayload{.entry_point_id = std::nullopt,
-                                      .email = "test@gmail.com"},
+                SigninDeepLinkPayload{
+                    .entry_point_id = std::nullopt,
+                    .entry_point_id_raw_value_for_metrics = std::nullopt,
+                    .email = "test@gmail.com"},
         },
         ParseTestParam{
             .test_name = "EncodedEmail",
             .deep_link_url = "https://www.google.com/chrome/"
                              "go-mobile?email=test%40gmail.com",
             .expected_payload =
-                SigninDeepLinkPayload{.entry_point_id = std::nullopt,
-                                      .email = "test@gmail.com"},
+                SigninDeepLinkPayload{
+                    .entry_point_id = std::nullopt,
+                    .entry_point_id_raw_value_for_metrics = std::nullopt,
+                    .email = "test@gmail.com"},
         },
         ParseTestParam{
             .test_name = "EntryPointIdParameterPresentOnly",
@@ -82,14 +87,17 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_payload =
                 SigninDeepLinkPayload{
                     .entry_point_id = ExternalEntryPoint::kDesktopDefault,
+                    .entry_point_id_raw_value_for_metrics = 1,
                     .email = std::nullopt},
         },
         ParseTestParam{
             .test_name = "NoParametersPresent",
             .deep_link_url = "https://www.google.com/chrome/go-mobile",
             .expected_payload =
-                SigninDeepLinkPayload{.entry_point_id = std::nullopt,
-                                      .email = std::nullopt},
+                SigninDeepLinkPayload{
+                    .entry_point_id = std::nullopt,
+                    .entry_point_id_raw_value_for_metrics = std::nullopt,
+                    .email = std::nullopt},
         },
         ParseTestParam{
             .test_name = "UnknownEntryPointId",
@@ -99,6 +107,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_payload =
                 SigninDeepLinkPayload{
                     .entry_point_id = ExternalEntryPoint::kUnknown,
+                    .entry_point_id_raw_value_for_metrics = 1000,
                     .email = "test@gmail.com"},
         },
         ParseTestParam{
@@ -107,8 +116,10 @@ INSTANTIATE_TEST_SUITE_P(
                 "https://www.google.com/chrome/"
                 "go-mobile?entry_point_id=abc&email=test@gmail.com",
             .expected_payload =
-                SigninDeepLinkPayload{.entry_point_id = std::nullopt,
-                                      .email = "test@gmail.com"},
+                SigninDeepLinkPayload{
+                    .entry_point_id = std::nullopt,
+                    .entry_point_id_raw_value_for_metrics = std::nullopt,
+                    .email = "test@gmail.com"},
         },
         ParseTestParam{
             .test_name = "EmptyEmailParameter",
@@ -117,6 +128,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_payload =
                 SigninDeepLinkPayload{
                     .entry_point_id = ExternalEntryPoint::kDesktopDefault,
+                    .entry_point_id_raw_value_for_metrics = 1,
                     .email = std::nullopt},
         },
         ParseTestParam{
@@ -180,6 +192,7 @@ TEST_F(CrossDeviceSigninDeepLinkParserFactoryTest,
       parser->Parse(deep_link);
   const SigninDeepLinkPayload expected_payload = {
       .entry_point_id = ExternalEntryPoint::kDesktopDefault,
+      .entry_point_id_raw_value_for_metrics = 1,
       .email = "test@gmail.com"};
   EXPECT_THAT(parsed_payload, testing::Eq(expected_payload));
 }

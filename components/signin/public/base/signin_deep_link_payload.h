@@ -19,7 +19,10 @@ enum class ExternalEntryPoint : int {
   kDesktopDefault = 1,
   kMaxValue = kDesktopDefault,
 };
-// LINT.ThenChange(//components/signin/public/base/signin_deep_link_parser.cc:ExternalEntryPoint)
+// LINT.ThenChange(
+//   //components/signin/public/base/signin_deep_link_parser.cc:ExternalEntryPoint,
+//   //tools/metrics/histograms/metadata/signin/histograms.xml:ExternalEntryPoint
+// )
 
 // The payload of the signin deep link.
 struct SigninDeepLinkPayload {
@@ -29,6 +32,12 @@ struct SigninDeepLinkPayload {
   // integer but with unknown value. Otherwise, set to the value of the entry
   // point ID.
   std::optional<ExternalEntryPoint> entry_point_id = std::nullopt;
+  // The raw integer value of the entry point ID read from the deep link.
+  // Should only be used for metrics purposes.
+  // Set to std::nullopt if the entry point ID query parameter is not present or
+  // cannot be parsed as an integer.
+  std::optional<int> entry_point_id_raw_value_for_metrics = std::nullopt;
+
   // The email address value read from the deep link.
   // Set to std::nullopt if the email address query parameter is not present or
   // cannot be parsed.
