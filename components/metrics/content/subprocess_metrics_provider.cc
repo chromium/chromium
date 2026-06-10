@@ -317,7 +317,13 @@ void SubprocessMetricsProvider::MergeHistogramDeltasFromAllocator(
     // different types or buckets, which indicates a programming error (i.e.
     // non-matching logging code across browser and child for a histogram). In
     // this case DumpWithoutCrashing() with a crash key with the histogram name.
-    if (result != base::PersistentHistogramAllocator::MergeResult::kSuccess) {
+    using MergeResult = base::PersistentHistogramAllocator::MergeResult;
+    if (result != MergeResult::kSuccess &&
+        // kCouldNotCreate is returned when there is a type mismatch which is
+        // expected for expired histograms since child processes still log them.
+        // TODO(crbug.com/371184545): Apply expired histograms to child
+        // processes too.
+        result != MergeResult::kCouldNotCreate) {
       SCOPED_CRASH_KEY_STRING256("SubprocessMetricsProvider", "histogram",
                                  histogram->histogram_name());
       SCOPED_CRASH_KEY_NUMBER("SubprocessMetricsProvider", "merge_result",
