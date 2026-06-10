@@ -21,6 +21,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -61,7 +62,7 @@ public class AutoFetchNotifier {
     private static final String EXTRA_URL = "org.chromium.chrome.browser.offlinepages.URL";
     private static final String EXTRA_ACTION = "notification_action";
 
-    @VisibleForTesting public static @Nullable TestHooks mTestHooks;
+    private static @Nullable TestHooks sTestHooks;
 
     /** Interface for testing. */
     @VisibleForTesting
@@ -69,6 +70,12 @@ public class AutoFetchNotifier {
         void inProgressNotificationShown(Intent cancelButtonIntent, Intent deleteIntent);
 
         void completeNotificationShown(Intent clickIntent, Intent deleteIntent);
+    }
+
+    /** Sets the test hooks and registers a {@link ResettersForTesting} callback to clear them. */
+    public static void setTestHooksForTesting(TestHooks hooks) {
+        sTestHooks = hooks;
+        ResettersForTesting.register(() -> sTestHooks = null);
     }
 
     /*
@@ -198,8 +205,8 @@ public class AutoFetchNotifier {
                 .onNotificationShown(
                         NotificationUmaTracker.SystemNotificationType.OFFLINE_PAGES,
                         notification.getNotification());
-        if (mTestHooks != null) {
-            mTestHooks.inProgressNotificationShown(cancelButtonIntent, deleteIntent);
+        if (sTestHooks != null) {
+            sTestHooks.inProgressNotificationShown(cancelButtonIntent, deleteIntent);
         }
     }
 
@@ -374,8 +381,8 @@ public class AutoFetchNotifier {
                 .onNotificationShown(
                         NotificationUmaTracker.SystemNotificationType.OFFLINE_PAGES,
                         notification.getNotification());
-        if (mTestHooks != null) {
-            mTestHooks.completeNotificationShown(clickIntent, deleteIntent);
+        if (sTestHooks != null) {
+            sTestHooks.completeNotificationShown(clickIntent, deleteIntent);
         }
     }
 
