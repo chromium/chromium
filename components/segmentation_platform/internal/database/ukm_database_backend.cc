@@ -304,6 +304,7 @@ void UkmDatabaseBackend::AddUmaMetric(const std::string& profile_id,
     return;
   }
   uma_metrics_table_.AddUmaMetric(profile_id, row);
+  TrackChangesInTransaction(/*change_count=*/1);
 }
 
 std::optional<processing::IndexedTensors>
