@@ -464,6 +464,87 @@ IN_PROC_BROWSER_TEST_F(
   ui::SelectFileDialog::SetFactory(nullptr);
 }
 
+// Tests that recreation of a removed file and calling createWritable with
+// keepExistingData fails and preserves read permission revocation.
+IN_PROC_BROWSER_TEST_F(
+    ChromeFileSystemAccessPermissionContextRevokeAndRestoreBrowserTest,
+    BypassRevocationViaCreateWritableWithKeepExistingData) {
+  const base::FilePath test_file = CreateTestFile("test file contents");
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}));
+
+  // Auto-grant permissions.
+  FileSystemAccessPermissionRequestManager::FromWebContents(GetWebContents())
+      ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
+
+  // Navigate to a test page.
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Get a handle via showSaveFilePicker. This should grant read/write.
+  ASSERT_TRUE(content::ExecJs(GetWebContents(),
+                              "(async () => {"
+                              "  self.handle = await self.showSaveFilePicker();"
+                              "})()"));
+
+  // Verify initial permissions are granted, including extended permissions.
+  EXPECT_EQ("granted", content::EvalJs(GetWebContents(), R"((async () => {
+             return await self.handle.queryPermission({mode: 'readwrite'});
+            })())"));
+  const url::Origin origin = GetOrigin();
+  permission_context()->SetOriginHasExtendedPermissionForTesting(origin);
+  VerifyPermissions(origin, test_file,
+                    ChromeFileSystemAccessPermissionContext::HandleType::kFile,
+                    content::PermissionStatus::GRANTED,
+                    content::PermissionStatus::GRANTED,
+                    /*expected_extended_read=*/true,
+                    /*expected_extended_write=*/true);
+
+  // Remove the file via the handle.
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), "self.handle.remove()"));
+
+  // Verify read permission is revoked, and it's in downgraded read paths.
+  VerifyPermissions(origin, test_file,
+                    ChromeFileSystemAccessPermissionContext::HandleType::kFile,
+                    content::PermissionStatus::DENIED,
+                    content::PermissionStatus::GRANTED,
+                    /*expected_extended_read=*/false,
+                    /*expected_extended_write=*/true);
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      origin, test_file));
+
+  // Recreate the file on disk using base::WriteFile.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::WriteFile(test_file, "secret data"));
+  }
+
+  // Attempt to call self.handle.createWritable({keepExistingData: true}).
+  // It should fail with NotAllowedError DOMException.
+  auto result = content::EvalJs(GetWebContents(), R"((async () => {
+    try {
+      await self.handle.createWritable({keepExistingData: true});
+      return 'success';
+    } catch (e) {
+      return e.name;
+    }
+  })())");
+  EXPECT_EQ("NotAllowedError", result.ExtractString());
+
+  // Verify that the read permission remains denied and is in downgraded paths.
+  VerifyPermissions(origin, test_file,
+                    ChromeFileSystemAccessPermissionContext::HandleType::kFile,
+                    content::PermissionStatus::DENIED,
+                    content::PermissionStatus::GRANTED,
+                    /*expected_extended_read=*/false,
+                    /*expected_extended_write=*/true);
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      origin, test_file));
+
+  ui::SelectFileDialog::SetFactory(nullptr);
+}
+
 // Tests that after fileHandle.remove() is called, both the initial file handle
 // and a copy of the handle retrieved from IndexedDB have their read permissions
 // revoked.
