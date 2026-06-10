@@ -162,6 +162,9 @@ public class TabArchiverTest {
     public void tearDown() {
         runOnUiThreadBlocking(
                 () -> {
+                    if (mTabArchiver != null) {
+                        mTabArchiver.destroy();
+                    }
                     // Clear out all archived tabs between tests.
                     mArchivedTabModel
                             .getTabRemover()
@@ -667,8 +670,7 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () -> {
                     mTabArchiveSettings.setArchiveDuplicateTabsEnabled(true);
-                    mTabArchiver.doArchivePass(
-                            mActivityTestRule.getActivity().getTabModelSelectorSupplier().get());
+                    mTabArchiver.doArchivePass(mRegularTabModelSelector);
                 });
         CriteriaHelper.pollUiThread(() -> 4 == getTabCountOnUiThread(mRegularTabModel));
         assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
@@ -1197,6 +1199,7 @@ public class TabArchiverTest {
                             // Immediately destroying the TabArchiver will verify that the task is
                             // correctly cancelled.
                             mTabArchiver.destroy();
+                            mTabArchiver = null;
                             return tab;
                         });
 
@@ -1252,6 +1255,7 @@ public class TabArchiverTest {
                     // This should cause the callback to be destroyed, and the ptd should still
                     // exist with the value set earlier in the test.
                     mTabArchiver.destroy();
+                    mTabArchiver = null;
                     ArchivePersistedTabData.from(
                             archivedTab,
                             (ptd) -> {
