@@ -7,7 +7,8 @@
 namespace signin {
 
 bool SigninDeepLinkPayload::HasAllRequiredFields() const {
-  return entry_point_id.has_value() && email.has_value();
+  return entry_point_id.has_value() &&
+         entry_point_id_raw_value_for_metrics.has_value() && email.has_value();
 }
 
 }  // namespace signin

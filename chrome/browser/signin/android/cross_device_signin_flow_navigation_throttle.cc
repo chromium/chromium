@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/signin/android/signin_bridge_factory.h"
+#include "components/signin/public/base/signin_deep_link_metrics.h"
 #include "components/signin/public/base/signin_deep_link_parser.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -35,6 +36,8 @@ CrossDeviceSigninFlowNavigationThrottle::WillStartRequest() {
   const GURL& url = navigation_handle()->GetURL();
   const auto payload = deep_link_parser_.Parse(url);
   if (payload.has_value() && payload->HasAllRequiredFields()) {
+    signin_metrics::RecordUrlDetected(
+        payload->entry_point_id_raw_value_for_metrics.value());
     content::WebContents* web_contents = navigation_handle()->GetWebContents();
     if (!web_contents) {
       return content::NavigationThrottle::PROCEED;
