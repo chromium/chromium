@@ -7,20 +7,18 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 
 class Profile;
 
 namespace arc {
 
-class AdbSideloadingAvailabilityDelegate;
-
 // ArcActivationNecessityChecker checks if it's necessary to activate ARC
 // without the user's action.
 class ArcActivationNecessityChecker {
  public:
-  ArcActivationNecessityChecker(Profile* profile,
-                                AdbSideloadingAvailabilityDelegate*
-                                    adb_sideloading_availability_delegate);
+  explicit ArcActivationNecessityChecker(Profile* profile);
   ArcActivationNecessityChecker(const ArcActivationNecessityChecker&) = delete;
   ArcActivationNecessityChecker& operator=(
       const ArcActivationNecessityChecker&) = delete;
@@ -33,9 +31,12 @@ class ArcActivationNecessityChecker {
 
  private:
   void OnChecked(CheckCallback callback, bool result);
+  void OnQueryAdbSideload(
+      CheckCallback callback,
+      ash::SessionManagerClient::AdbSideloadResponseCode response_code,
+      bool is_allowed);
+
   const raw_ptr<Profile> profile_;
-  const raw_ptr<AdbSideloadingAvailabilityDelegate>
-      adb_sideloading_availability_delegate_;  // Owned by ArcSessionManager.
   base::WeakPtrFactory<ArcActivationNecessityChecker> weak_ptr_factory_{this};
 };
 

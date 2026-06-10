@@ -28,13 +28,14 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
-#include "chromeos/ash/experiences/arc/session/adb_sideloading_availability_delegate.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
@@ -60,24 +61,6 @@ namespace {
 constexpr char kPackageName[] = "com.example.third_party_app";
 constexpr char kUserEmail[] = "user@test";
 
-class FakeAdbSideloadingAvailabilityDelegate
-    : public AdbSideloadingAvailabilityDelegate {
- public:
-  FakeAdbSideloadingAvailabilityDelegate() = default;
-  ~FakeAdbSideloadingAvailabilityDelegate() override = default;
-
-  void set_result(bool result) { result_ = result; }
-
-  void CanChangeAdbSideloading(
-      base::OnceCallback<void(bool can_change_adb_sideloading)> callback)
-      override {
-    std::move(callback).Run(result_);
-  }
-
- private:
-  bool result_ = false;
-};
-
 class ArcActivationNecessityCheckerTest : public testing::Test {
  public:
   ArcActivationNecessityCheckerTest() = default;
@@ -93,6 +76,7 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
 
     ash::ConciergeClient::InitializeFake();
     ash::DlcserviceClient::InitializeFake();
+    ash::SessionManagerClient::InitializeFakeInMemory();
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
     arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
@@ -129,8 +113,7 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
 
     arc_session_manager_->SetProfile(profile_.get());
 
-    checker_ = std::make_unique<ArcActivationNecessityChecker>(
-        profile_.get(), &adb_sideloading_availability_delegate_);
+    checker_ = std::make_unique<ArcActivationNecessityChecker>(profile_.get());
 
     // Pre-installed apps shouldn't cause ARC activation.
     auto package_info = mojom::ArcPackageInfo::New();
@@ -147,6 +130,7 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
     arc_service_manager_.reset();
     profile_ = nullptr;
     testing_profile_manager_.DeleteAllTestingProfiles();
+    ash::SessionManagerClient::Shutdown();
     ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
   }
@@ -167,7 +151,6 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
 
   raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
-  FakeAdbSideloadingAvailabilityDelegate adb_sideloading_availability_delegate_;
   std::unique_ptr<ArcActivationNecessityChecker> checker_;
 };
 
@@ -208,7 +191,7 @@ TEST_F(ArcActivationNecessityCheckerTest, UnmanagedUserDisabled) {
 
 TEST_F(ArcActivationNecessityCheckerTest, AdbSideloadingIsAvailable) {
   base::HistogramTester histogram_tester;
-  adb_sideloading_availability_delegate_.set_result(true);
+  ash::FakeSessionManagerClient::Get()->set_adb_sideload_enabled(true);
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
   EXPECT_TRUE(future.Get());

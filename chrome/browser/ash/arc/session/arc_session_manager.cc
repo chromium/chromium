@@ -1304,8 +1304,7 @@ void ArcSessionManager::RequestEnableImpl() {
     } else {
       DCHECK(!activation_necessity_checker_);
       activation_necessity_checker_ =
-          std::make_unique<ArcActivationNecessityChecker>(
-              profile_, adb_sideloading_availability_delegate_.get());
+          std::make_unique<ArcActivationNecessityChecker>(profile_);
       activation_necessity_checker_->Check(
           base::BindOnce(&ArcSessionManager::OnActivationNecessityChecked,
                          weak_ptr_factory_.GetWeakPtr()));

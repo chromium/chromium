@@ -554,6 +554,7 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflowWithArcOnDemand) {
 
   // When signed-in, enabling ARC results in the READY state.
   arc_session_manager()->RequestEnable();
+  task_environment().RunUntilIdle();
   ASSERT_EQ(ArcSessionManager::State::READY, arc_session_manager()->state());
   ASSERT_TRUE(arc_session_manager()->IsActivationDelayed());
 
