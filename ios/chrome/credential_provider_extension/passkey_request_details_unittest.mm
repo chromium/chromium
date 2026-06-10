@@ -115,6 +115,31 @@ TEST_F(PasskeyRequestDetailsTest, MatchingPassword) {
                                    excludedCredentials:nil];
   EXPECT_TRUE([details hasMatchingPassword:credentials]);
 
+  // Private Registry boundary and hijack checks.
+  id<Credential> credentialRailway = TestPasswordCredential(
+      user1, @"https://railway.app/", @"railway.app", recentTime);
+  NSArray<id<Credential>>* credentialsWithRailway =
+      [credentials arrayByAddingObject:credentialRailway];
+
+  // Standard subdomain should match.
+  details = [[PasskeyRequestDetails alloc] initWithURL:@"www.login.railway.app"
+                                              username:user1
+                                   excludedCredentials:nil];
+  EXPECT_TRUE([details hasMatchingPassword:credentialsWithRailway]);
+
+  // Rogue subdomain crossing private suffix boundary should NOT match!
+  details =
+      [[PasskeyRequestDetails alloc] initWithURL:@"attacker.up.railway.app"
+                                        username:user1
+                             excludedCredentials:nil];
+  EXPECT_FALSE([details hasMatchingPassword:credentialsWithRailway]);
+
+  // False suffix match should NOT match!
+  details = [[PasskeyRequestDetails alloc] initWithURL:@"evil-railway.app"
+                                              username:user1
+                                   excludedCredentials:nil];
+  EXPECT_FALSE([details hasMatchingPassword:credentialsWithRailway]);
+
   // Empty credentials list.
   EXPECT_FALSE([details hasMatchingPassword:@[]]);
 
@@ -231,21 +256,21 @@ TEST_F(PasskeyRequestDetailsTest, MatchingPasswordTimeConstraints) {
 
   // Recent credential should match.
   PasskeyRequestDetails* detailsValid =
-      [[PasskeyRequestDetails alloc] initWithURL:url1
+      [[PasskeyRequestDetails alloc] initWithURL:domain1
                                         username:user1
                              excludedCredentials:nil];
   EXPECT_TRUE([detailsValid hasMatchingPassword:@[ validCred ]]);
 
   // Expired credential should not match.
   PasskeyRequestDetails* detailsExpired =
-      [[PasskeyRequestDetails alloc] initWithURL:url2
+      [[PasskeyRequestDetails alloc] initWithURL:domain2
                                         username:user2
                              excludedCredentials:nil];
   EXPECT_FALSE([detailsExpired hasMatchingPassword:@[ expiredCred ]]);
 
   // Never used credential should not match.
   PasskeyRequestDetails* detailsNeverUsed =
-      [[PasskeyRequestDetails alloc] initWithURL:url3
+      [[PasskeyRequestDetails alloc] initWithURL:domain3
                                         username:user3
                              excludedCredentials:nil];
   EXPECT_FALSE([detailsNeverUsed hasMatchingPassword:@[ neverUsedCred ]]);
