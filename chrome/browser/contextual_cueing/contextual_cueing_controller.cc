@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/i18n/message_formatter.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -787,6 +788,7 @@ void ContextualCueingController::MaybeShowTabList(
   int missing_favicon_count = 0;
   std::vector<page_actions::AnchoredMessageExpandableItem> tab_items;
   tab_items.reserve(tabs_to_show.size());
+  base::flat_set<std::string> domains;
   for (tabs::TabHandle handle : tabs_to_show) {
     const tabs::TabInterface* tab = handle.Get();
     if (!tab) {
@@ -808,6 +810,7 @@ void ContextualCueingController::MaybeShowTabList(
     }
 
     tab_items.emplace_back(std::move(favicon), std::move(title));
+    domains.insert(tab->GetURL().GetHost());
   }
 
   if (tab_items.size() < min_tab_count) {
@@ -819,14 +822,26 @@ void ContextualCueingController::MaybeShowTabList(
       // Exclusive max of background tabs plus active tab.
       kMaxNumBackgroundTabs.Get() + 2);
 
+  // Tab list heading.
   std::u16string heading = l10n_util::GetPluralStringFUTF16(
       IDS_CONTEXTUAL_CUEING_TAB_SHARING_HEADING, tab_items.size());
   CUEING_LOG(base::StringPrintf("heading: %s", base::UTF16ToUTF8(heading)));
 
+  std::u16string expand_announcement =
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_CONTEXTUAL_CUEING_TAB_SHARING_EXPAND_BUTTON_ANNOUNCEMENT),
+          "NUM_TABS", static_cast<int>(tab_items.size()), "WEBSITE_LIST_STR",
+          base::UTF8ToUTF16(base::JoinString(domains, ", ")));
+  CUEING_LOG(base::StringPrintf("expand button a11y string: %s",
+                                base::UTF16ToUTF8(expand_announcement)));
+
   page_action_controller->SetAnchoredMessageExpandableContent(
       kActionAnchoredContextualCue,
       std::make_optional<page_actions::AnchoredMessageExpandableContent>(
-          {.heading = heading, .items = std::move(tab_items)}));
+          {.heading = heading,
+           .items = std::move(tab_items),
+           .expand_button_tooltip = std::move(expand_announcement)}));
 }
 #endif
 
