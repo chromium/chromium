@@ -26,6 +26,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.LayoutInflaterUtils;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -185,15 +186,25 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
      */
     public void updateContainerHierarchy(boolean toFront) {
         assumeNonNull(mDialogView);
+        PropertyModel model = getDialogModel();
+        if (model != null) {
+            String title = model.get(ModalDialogProperties.TITLE);
+            if (title == null) {
+                title = model.get(ModalDialogProperties.CONTENT_DESCRIPTION);
+            }
+            mDialogView.setAccessibilityPaneTitle(title);
+        }
+        AccessibilityEvent event =
+                AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
         if (toFront) {
             mDialogView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-            mDialogView.requestFocus();
-            mDialogView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED);
         } else {
-            mDialogView.clearFocus();
+            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED);
             mDialogView.setImportantForAccessibility(
                     View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
         }
+        AccessibilityState.sendAccessibilityEvent(event);
     }
 
     /**

@@ -43,6 +43,7 @@ android_library("java") {
     "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_java",
   ]
 
