@@ -36,6 +36,7 @@ import type {TabSearchGroupItemElement} from './tab_search_group_item.js';
 import type {TabSearchItemElement} from './tab_search_item.js';
 import {getCss} from './tab_search_page.css.js';
 import {getHtml} from './tab_search_page.html.js';
+import type {TabSearchSplitItemElement} from './tab_search_split_item.js';
 import {tabHasMediaAlerts} from './tab_search_utils.js';
 import {TitleItem} from './title_item.js';
 
@@ -549,13 +550,18 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
 
   protected onItemClose_(e: Event) {
     performance.mark('tab_search:close_tab:metric_begin');
-    const target = e.currentTarget as TabSearchItemElement;
+    const target =
+        e.currentTarget as TabSearchItemElement | TabSearchSplitItemElement;
     const tabItem = target.data;
     const tabIndex = this.itemIndexToTabIndex_(Number(target.dataset['index']));
-    const tabId = tabItem.tab.tabId;
     this.recordMetricsForAction('CloseTab', tabIndex);
-    this.apiProxy_.closeTab(tabId);
-    this.announceA11y_(loadTimeData.getString('a11yTabClosed'));
+    if (tabItem instanceof SplitViewData && tabItem.tabs) {
+      this.apiProxy_.closeTabs([tabItem.tabs[0].tabId, tabItem.tabs[1].tabId]);
+      this.announceA11y_(loadTimeData.getString('a11ySplitViewClosed'));
+    } else if (tabItem instanceof TabData) {
+      this.apiProxy_.closeTab(tabItem.tab.tabId);
+      this.announceA11y_(loadTimeData.getString('a11yTabClosed'));
+    }
     listenOnce(this.$.tabsList, 'rendered-items-changed', () => {
       performance.mark('tab_search:close_tab:metric_end');
     });
@@ -829,17 +835,24 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
           0;
     });
 
-    let mediaTabs: TabData[] = [];
+    let mediaTabs: Array<TabData|SplitViewData> = [];
     // Audio & Video section will not be added when search criteria is applied.
     // Show media tabs in Open Tabs.
     if (this.searchText_.length === 0) {
-      mediaTabs = this.openTabs_.filter(
-                      tabData => tabData instanceof TabData &&
-                          tabHasMediaAlerts(tabData.tab as Tab)) as TabData[];
+      mediaTabs = this.openTabs_.filter(tabData => {
+        if (tabData instanceof TabData) {
+          return tabHasMediaAlerts(tabData.tab as Tab);
+        }
+        if (tabData instanceof SplitViewData && tabData.tabs) {
+          return tabHasMediaAlerts(tabData.tabs[0]) ||
+              tabHasMediaAlerts(tabData.tabs[1]);
+        }
+        return false;
+      });
     }
 
-    const filteredMediaTabs =
-        search<TabData>(this.searchText_, mediaTabs, this.searchOptions_);
+    const filteredMediaTabs = search<TabData|SplitViewData>(
+        this.searchText_, mediaTabs, this.searchOptions_);
 
     let filteredOpenTabs = search<TabData|SplitViewData>(
         this.searchText_, this.openTabs_, this.searchOptions_);
@@ -849,8 +862,12 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     // section.
     if (filteredOpenTabs.length > 0) {
       const firstTab = filteredOpenTabs[0]!;
-      const isMedia =
-          firstTab instanceof TabData && tabHasMediaAlerts(firstTab.tab as Tab);
+      const isMedia = firstTab instanceof TabData ?
+          tabHasMediaAlerts(firstTab.tab as Tab) :
+          (firstTab instanceof SplitViewData && firstTab.tabs ?
+               (tabHasMediaAlerts(firstTab.tabs[0]) ||
+                tabHasMediaAlerts(firstTab.tabs[1])) :
+               false);
       this.initiallySelectedIndex_ =
           (isMedia || filteredMediaTabs.length === 0) ?
           1 :
@@ -861,6 +878,11 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       filteredOpenTabs = filteredOpenTabs.filter(tabData => {
         if (tabData instanceof TabData) {
           return !tabHasMediaAlerts(tabData.tab as Tab);
+        }
+        if (tabData instanceof SplitViewData && tabData.tabs) {
+          return !(
+              tabHasMediaAlerts(tabData.tabs[0]) ||
+              tabHasMediaAlerts(tabData.tabs[1]));
         }
         return true;
       });

@@ -16,6 +16,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'closeTab',
+      'closeTabs',
       'closeWebUiTab',
       'getProfileData',
       'getIsSplit',
@@ -34,6 +35,10 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   closeTab(tabId: number) {
     this.methodCalled('closeTab', [tabId]);
+  }
+
+  closeTabs(tabIds: number[]) {
+    this.methodCalled('closeTabs', [tabIds]);
   }
 
   closeWebUiTab() {

@@ -40,6 +40,8 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/browser_tab_strip_service_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
@@ -226,6 +228,51 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   const auto result = service->CloseNodes({node_id});
   DCHECK(result.has_value());
   // Do not add code past this point.
+}
+
+void TabSearchPageHandler::CloseTabs(const std::vector<int32_t>& tab_ids) {
+  std::vector<tabs_api::NodeId> nodes;
+  std::optional<split_tabs::SplitTabId> split_id;
+  tabs::TabInterface* valid_tab = nullptr;
+
+  for (int32_t tab_id : tab_ids) {
+    tabs::TabInterface* const tab = GetTabInterface(tab_id);
+    if (!tab) {
+      continue;
+    }
+
+    if (!valid_tab) {
+      valid_tab = tab;
+    }
+
+    if (!split_id.has_value() && tab->GetSplit().has_value()) {
+      split_id = tab->GetSplit().value();
+    }
+
+    nodes.push_back(tabs_api::NodeId::FromTabHandle(tab->GetHandle()));
+  }
+
+  if (nodes.empty()) {
+    return;
+  }
+
+  num_tabs_closed_ += nodes.size();
+  profile_->GetPrefs()->SetBoolean(tab_search_prefs::kTabSearchUsed, true);
+
+  if (split_id.has_value()) {
+    BrowserWindowInterface* browser = valid_tab->GetBrowserWindowInterface();
+    TabStripModel* tab_strip_model =
+        browser ? browser->GetTabStripModel() : nullptr;
+    if (tab_strip_model && tab_strip_model->delegate()) {
+      tab_strip_model->delegate()->WillCloseSplit(split_id.value());
+    }
+  }
+
+  tabs_api::TabStripService* const service =
+      GetTabStripService(valid_tab->GetBrowserWindowInterface());
+  CHECK(service);
+  const auto result = service->CloseNodes(nodes);
+  DCHECK(result.has_value());
 }
 
 void TabSearchPageHandler::CloseWebUiTab() {

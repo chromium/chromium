@@ -115,3 +115,68 @@
 #groupDot {
   fill: var(--group-dot-color);
 }
+
+:host(:is(.hovered, .selected)) .button-container {
+  height: auto;
+  overflow: visible;
+  visibility: visible;
+  width: auto;
+}
+
+.button-container {
+  height: 0;
+  margin-inline-start: 2px;
+  overflow: hidden;
+  width: 0;
+}
+
+.button-container cr-icon-button {
+  --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
+}
+
+cr-icon-button {
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+}
+
+cr-tooltip {
+  white-space: nowrap;
+}
+
+#primaryContainer {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.media-alert {
+  -webkit-mask: center / contain no-repeat;
+  flex-shrink: 0;
+  height: var(--mwb-icon-size);
+  margin-inline-end: 8px;
+  margin-inline-start: 4px;
+  width: var(--mwb-icon-size);
+}
+
+.media-alert.media-recording,
+.media-alert.audio-recording,
+.media-alert.video-recording {
+  -webkit-mask-image: url(alert_indicators/tab_media_recording.svg);
+  background-color: var(
+      --media-recording-icon-color,
+      var(--color-tab-search-media-recording-icon));
+}
+
+.media-alert.audio-playing {
+  -webkit-mask-image: url(alert_indicators/tab_audio_rounded.svg);
+  background-color: var(
+      --audio-icon-color,
+      var(--color-tab-search-media-icon));
+}
+
+.media-alert.audio-muting {
+  -webkit-mask-image: url(alert_indicators/tab_audio_muting_rounded.svg);
+  background-color: var(
+      --audio-icon-color,
+      var(--color-tab-search-media-icon));
+}

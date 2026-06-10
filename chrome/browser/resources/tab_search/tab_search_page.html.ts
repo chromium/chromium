@@ -103,6 +103,7 @@ export function getHtml(this: TabSearchPageElement) {
             data-index="${index}"
             aria-label="${this.ariaLabel_(item)}"
             @click="${this.onItemClick_}"
+            @close="${this.onItemClose_}"
             @focus="${this.onItemFocus_}"
             @keydown="${this.onItemKeydown_}"
             role="option" tabindex="0">

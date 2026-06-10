@@ -63,6 +63,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   static constexpr webui::LocalizedString kStrings[] = {
       // Tab search UI strings
       {"a11yTabClosed", IDS_TAB_SEARCH_A11Y_TAB_CLOSED},
+      {"a11ySplitViewClosed", IDS_TAB_SEARCH_A11Y_SPLIT_VIEW_CLOSED},
       {"a11yFoundTab", IDS_TAB_SEARCH_A11Y_FOUND_TAB},
       {"a11yFoundTabFor", IDS_TAB_SEARCH_A11Y_FOUND_TAB_FOR},
       {"a11yFoundTabs", IDS_TAB_SEARCH_A11Y_FOUND_TABS},

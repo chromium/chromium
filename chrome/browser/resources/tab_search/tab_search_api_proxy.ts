@@ -17,6 +17,8 @@ export enum RecentlyClosedItemOpenAction {
 export interface TabSearchApiProxy {
   closeTab(tabId: number): void;
 
+  closeTabs(tabIds: number[]): void;
+
   closeWebUiTab(): void;
 
   getProfileData(): Promise<{profileData: ProfileData}>;
@@ -50,6 +52,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   closeTab(tabId: number) {
     this.handler.closeTab(tabId);
+  }
+
+  closeTabs(tabIds: number[]) {
+    this.handler.closeTabs(tabIds);
   }
 
   closeWebUiTab() {
