@@ -38,6 +38,37 @@ class MockPresentationAvailabilityObserver
   const Vector<KURL> urls_;
 };
 
+// Helper class for ReentrantRequestAvailability test.
+class ReentrantResolver final
+    : public ThenCallable<PresentationAvailability, ReentrantResolver> {
+ public:
+  ReentrantResolver(PresentationAvailabilityState* state,
+                    PresentationAvailability* availability,
+                    base::OnceClosure callback)
+      : state_(state),
+        availability_(availability),
+        callback_(std::move(callback)) {}
+
+  void React(ScriptState*, PresentationAvailability*) {
+    // Simulate re-entrant RequestAvailability call.
+    state_->RequestAvailability(availability_);
+    if (callback_) {
+      std::move(callback_).Run();
+    }
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(state_);
+    visitor->Trace(availability_);
+    ThenCallable<PresentationAvailability, ReentrantResolver>::Trace(visitor);
+  }
+
+ private:
+  Member<PresentationAvailabilityState> state_;
+  Member<PresentationAvailability> availability_;
+  base::OnceClosure callback_;
+};
+
 // Helper classes for WaitForPromise{Fulfillment,Rejection}(). Provides a
 // function that invokes |callback| when a ScriptPromise is resolved/rejected.
 class ClosureOnResolve final
@@ -636,6 +667,40 @@ TEST_F(PresentationAvailabilityStateTest,
                 AvailabilityChanged(ScreenAvailability::SOURCE_NOT_SUPPORTED));
   }
   ChangeURLState(url2_, ScreenAvailability::SOURCE_NOT_SUPPORTED);
+}
+
+TEST_F(PresentationAvailabilityStateTest, ReentrantRequestAvailability) {
+  PresentationAvailabilityStateTestingContext context;
+  EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url1_))
+      .Times(1);
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
+          context.GetScriptState(), context.GetExceptionContext());
+  auto* availability = MakeGarbageCollected<PresentationAvailability>(
+      context.GetExecutionContext(), Vector<KURL>({url1_}), false);
+  availability->AddResolver(resolver);
+  state_->AddObserver(availability);
+  auto promise = resolver->Promise();
+
+  base::RunLoop run_loop;
+  promise.Then(context.GetScriptState(),
+               MakeGarbageCollected<ReentrantResolver>(state_, availability,
+                                                       run_loop.QuitClosure()));
+
+  TestRequestAvailability({ScreenAvailability::AVAILABLE}, availability);
+
+  // Execute pending microtasks to trigger the re-entrant call.
+  context.GetScriptState()
+      ->GetContext()
+      ->GetMicrotaskQueue()
+      ->PerformCheckpoint(context.GetScriptState()->GetIsolate());
+  run_loop.Run();
+
+  // The re-entrant RequestAvailability call added 'availability' back to
+  // listener->availabilities.
+  state_->UpdateAvailability(url1_, ScreenAvailability::AVAILABLE);
+  state_->RemoveObserver(availability);
 }
 
 }  // namespace blink
