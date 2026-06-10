@@ -7,6 +7,7 @@ import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {ContextType, ContextualSearchInputStateDeletionType} from 'chrome://resources/cr_components/composebox/common.js';
 import {ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -399,6 +400,19 @@ suite('NewTabPageComposeboxTest', () => {
         useNtpComposeboxFork: useForked,
       });
     });
+
+    test(
+        'sets darkThemeColorsEnabled as false on search-animated-glow',
+        async () => {
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
+
+          const animatedGlow = testProxy.element.shadowRoot
+                                   .querySelector<SearchAnimatedGlowElement>(
+                                       'search-animated-glow');
+          assertTrue(!!animatedGlow);
+          assertFalse(animatedGlow.darkThemeColorsEnabled);
+        });
 
     test('ntp composebox uses configured forward submit icon', async () => {
       createComposeboxElement(testProxy, {

@@ -20,6 +20,7 @@ export function getHtml(this: NtpComposeboxElement) {
         .receivedSpeech="${this.receivedSpeech}"
         .isListening="${this.isListening}"
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
+        .darkThemeColorsEnabled="${false}"
         exportparts="composebox-background">
     </search-animated-glow>
     <ntp-error-scrim id="errorScrim" part="error-scrim"
