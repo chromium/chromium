@@ -1247,6 +1247,11 @@ BOOL ExtractInteractionState(NSData* data, NSData** interactionState) {
   // crash. Add a custom drop interaction alongside the default drop
   // interaction.
   [self addCustomURLDropInteractionIfNeeded];
+
+  if ([_containerView webViewContentView] && self.webStateImpl) {
+    [_containerView webViewContentView].mimeType =
+        base::SysUTF8ToNSString(self.webStateImpl->GetContentsMimeType());
+  }
 }
 
 - (void)loadCompleteWithSuccess:(BOOL)loadSuccess
