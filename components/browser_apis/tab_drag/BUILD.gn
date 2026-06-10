@@ -53,6 +53,7 @@ source_set("unit_tests") {
     "//components/browser_apis/tab_drag/sessions:impl",
     "//components/browser_apis/tab_drag/testing",
     "//components/browser_apis/tab_strip/types",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "components/browser_apis/tab_drag/adapters/tab_drag_session_input_adapter.h"
+#include "components/browser_apis/tab_drag/sessions/tab_drag_session_input_listener.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -24,6 +26,7 @@ class TabDragSession {
   TabDragSession(const std::vector<tabs_api::NodeId>& source_tab_ids,
                  const gfx::Point& start_point,
                  TabDragSessionInputAdapter& input_adapter,
+                 TabDragSessionInputListener* listener,
                  base::OnceClosure end_callback);
   TabDragSession(const TabDragSession&) = delete;
   TabDragSession& operator=(const TabDragSession&) = delete;
@@ -49,6 +52,7 @@ class TabDragSession {
 
   std::vector<tabs_api::NodeId> dragged_tabs_;
   const raw_ref<TabDragSessionInputAdapter> input_adapter_;
+  const raw_ptr<TabDragSessionInputListener> listener_;
 
   base::OnceClosure end_callback_;
 
