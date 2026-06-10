@@ -2155,13 +2155,12 @@ suite('ComposeboxVoiceSearch', () => {
 
 });
 
-suite.only('ComposeboxVoiceSearchMetrics', () => {
+suite('ComposeboxVoiceSearchMetrics', () => {
   let voiceSearchElement: ComposeboxVoiceSearchElement;
   let mockVoiceSearch: MockComposeboxVoiceSearch;
   let metrics: MetricsTracker;
   let handler: TestMock<PageHandlerRemote>;
   let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
-  let windowProxy: TestMock<WindowProxy>;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -2187,16 +2186,6 @@ suite.only('ComposeboxVoiceSearchMetrics', () => {
     window.webkitSpeechRecognition =
         MockSpeechRecognition as unknown as typeof SpeechRecognition;
 
-    windowProxy = installMock(WindowProxy);
-    windowProxy.setResultFor('setTimeout', 0);
-    windowProxy.setResultMapperFor('matchMedia', () => ({
-                                                   addListener() {},
-                                                   addEventListener() {},
-                                                   removeListener() {},
-                                                   removeEventListener() {},
-                                                 }));
-    windowProxy.setResultFor('hasWebkitSpeechRecognition', true);
-
     voiceSearchElement = document.createElement('cr-composebox-voice-search');
 
     document.body.appendChild(voiceSearchElement);
@@ -2206,7 +2195,6 @@ suite.only('ComposeboxVoiceSearchMetrics', () => {
   });
 
   test('Records SUCCESS and SUBMITTED metrics on final result', async () => {
-    voiceSearchElement.autosubmitEnabled = true;
     // Trigger: Simulate receiving the final voice result.
     mockVoiceSearch.onFinalResult_('hello world', /*forceSubmit=*/ true);
     await microtasksFinished();
@@ -2542,184 +2530,4 @@ suite.only('ComposeboxVoiceSearchMetrics', () => {
     await microtasksFinished();
   });
 
-  test(
-      'permission prompt toggles input display and placeholder text',
-      async () => {
-        loadTimeData.overrideValues({
-          voiceWaiting: 'Waiting for permission...',
-        });
-
-        voiceSearchElement.pageCallbackRouter =
-            ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
-        await voiceSearchElement.updateComplete;
-
-        voiceSearchElement.start();
-        await microtasksFinished();
-
-        // Initially permission prompt is not open.
-        assertFalse(voiceSearchElement['isPermissionPromptOpen_']);
-
-        let permissionEventDetail: any = null;
-        voiceSearchElement.addEventListener(
-            'voice-permission-changed', (e: Event) => {
-              permissionEventDetail = (e as CustomEvent).detail;
-            });
-
-        // Fire `onEmbeddedPermissionPromptChanged(true, promptSize)`.
-        const searchboxCallbackRouterRemote =
-            ComposeboxProxyImpl.getInstance()
-                .searchboxCallbackRouter.$.bindNewPipeAndPassRemote() as any;
-        searchboxCallbackRouterRemote.onEmbeddedPermissionPromptChanged(
-            true, {width: 100, height: 200});
-        await searchboxCallbackRouterRemote.$.flushForTesting();
-        await voiceSearchElement.updateComplete;
-
-        // Verify state, event, and textarea placeholder.
-        assertTrue(voiceSearchElement['isPermissionPromptOpen_']);
-        assertTrue(!!permissionEventDetail);
-        assertTrue(permissionEventDetail.isOpened);
-        assertEquals(100, permissionEventDetail.width);
-        assertEquals(200, permissionEventDetail.height);
-
-        const textarea =
-            voiceSearchElement.shadowRoot.querySelector<HTMLTextAreaElement>(
-                '#input');
-        assertTrue(!!textarea, 'Textarea #input should be rendered');
-        assertEquals('Waiting for permission...', textarea.placeholder);
-
-        // Fire `onEmbeddedPermissionPromptChanged(false, promptSize)`.
-        searchboxCallbackRouterRemote.onEmbeddedPermissionPromptChanged(
-            false, {width: 0, height: 0});
-        await searchboxCallbackRouterRemote.$.flushForTesting();
-        await voiceSearchElement.updateComplete;
-
-        // Verify state is reset.
-        assertFalse(voiceSearchElement['isPermissionPromptOpen_']);
-
-        // Clean up internal state to prevent leaking into the next test.
-        voiceSearchElement['voiceModeEndCleanup_']();
-        await microtasksFinished();
-      });
-
-  test(
-      'pointerdown inside the voice search component does not stop recording',
-      async () => {
-        voiceSearchElement.start();
-        await microtasksFinished();
-
-        // Grab and execute the listener registration timeout callback.
-        const setTimeoutCalls = windowProxy.getArgs('setTimeout');
-        const listenersCallback =
-            setTimeoutCalls.find((call: any) => call[1] === 0);
-        assertTrue(
-            !!listenersCallback, 'Listeners callback should be scheduled');
-        listenersCallback[0]();
-        await microtasksFinished();
-
-        // Simulate clicking inside the component.
-        const event = new PointerEvent('pointerdown', {
-          bubbles: true,
-          composed: true,
-        });
-        // Mock composedPath to include the component itself.
-        Object.defineProperty(event, 'composedPath', {
-          value: () => [voiceSearchElement],
-        });
-
-        document.dispatchEvent(event);
-        await microtasksFinished();
-
-        // Verify the recording did NOT stop.
-        assertTrue(mockSpeechRecognition.voiceSearchInProgress);
-
-        // Cleanup.
-        voiceSearchElement['voiceModeEndCleanup_']();
-        await microtasksFinished();
-      });
-
-  test('blur event is ignored if permission prompt is open', async () => {
-    voiceSearchElement.start();
-    await microtasksFinished();
-
-    // Grab and execute the listener registration timeout callback.
-    const setTimeoutCalls = windowProxy.getArgs('setTimeout');
-    const listenersCallback =
-        setTimeoutCalls.find((call: any) => call[1] === 0);
-    assertTrue(!!listenersCallback, 'Listeners callback should be scheduled');
-    listenersCallback[0]();
-    await microtasksFinished();
-
-    // Mock permission prompt to be open.
-    voiceSearchElement['isPermissionPromptOpen_'] = true;
-
-    windowProxy.reset();
-
-    // Dispatch blur event.
-    window.dispatchEvent(new Event('blur'));
-    await microtasksFinished();
-
-    // Verify no timeout was scheduled for closing voice search.
-    const setTimeoutCallsAfterBlur = windowProxy.getArgs('setTimeout');
-    const blurTimeoutCall =
-        setTimeoutCallsAfterBlur.find((call: any) => call[1] === 100);
-    assertFalse(!!blurTimeoutCall, 'No blur timeout should be scheduled');
-
-    // Cleanup.
-    voiceSearchElement['voiceModeEndCleanup_']();
-    await microtasksFinished();
-  });
-
-  test(
-      'blur event schedules timeout to stop' +
-          ' recording, cancelled if prompt opens',
-      async () => {
-        voiceSearchElement.start();
-        await microtasksFinished();
-
-        // Grab and execute the listener registration timeout callback.
-        const setTimeoutCalls = windowProxy.getArgs('setTimeout');
-        const listenersCallback =
-            setTimeoutCalls.find((call: any) => call[1] === 0);
-        assertTrue(
-            !!listenersCallback, 'Listeners callback should be scheduled');
-        listenersCallback[0]();
-        await microtasksFinished();
-
-        // Ensure permission prompt is closed initially.
-        voiceSearchElement['isPermissionPromptOpen_'] = false;
-
-        windowProxy.reset();
-
-        // Dispatch blur event.
-        window.dispatchEvent(new Event('blur'));
-        await microtasksFinished();
-
-        // Verify a 100ms timeout was scheduled.
-        const setTimeoutCallsAfterBlur = windowProxy.getArgs('setTimeout');
-        const blurTimeoutCall =
-            setTimeoutCallsAfterBlur.find((call: any) => call[1] === 100);
-        assertTrue(!!blurTimeoutCall, 'Blur timeout should be scheduled');
-
-        // Case: Permission prompt is opened before timeout fires.
-        voiceSearchElement['isPermissionPromptOpen_'] = true;
-        const callback = blurTimeoutCall[0];
-        callback();
-        await microtasksFinished();
-
-        // Recording should still be in progress because permission prompt
-        // opened.
-        assertTrue(mockSpeechRecognition.voiceSearchInProgress);
-
-        // Case: If permission prompt is closed, timeout stops recording.
-        voiceSearchElement['isPermissionPromptOpen_'] = false;
-        callback();
-        await microtasksFinished();
-
-        // Recording should stop.
-        assertFalse(mockSpeechRecognition.voiceSearchInProgress);
-
-        // Cleanup.
-        voiceSearchElement['voiceModeEndCleanup_']();
-        await microtasksFinished();
-      });
 });

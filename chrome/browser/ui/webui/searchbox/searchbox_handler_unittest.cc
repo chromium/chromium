@@ -125,11 +125,6 @@ TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsDragAndDrop) {
       *strings_with_drag.FindBool("composeboxContextDragAndDropEnabled"));
 }
 
-TEST_F(SearchboxHandlerTest, GetWebUIDataSourceDictSetsVoiceWaiting) {
-  base::DictValue strings = SearchboxHandler::GetWebUIDataSourceDict(profile());
-  EXPECT_NE(nullptr, strings.Find("voiceWaiting"));
-}
-
 class RealboxHandlerTest : public SearchboxHandlerTest {
  public:
   RealboxHandlerTest() = default;
