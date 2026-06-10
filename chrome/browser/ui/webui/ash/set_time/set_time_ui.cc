@@ -14,12 +14,14 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/build_time.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/system/timezone_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/set_time/set_time_dialog.h"
 #include "chrome/grit/set_time_dialog_resources.h"
@@ -119,7 +121,9 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
 
     Profile* profile = Profile::FromWebUI(web_ui());
     DCHECK(profile);
-    system::SetTimezoneFromUI(profile, timezone_id);
+    // TODO(crbug.com/489929293): Avoid using g_browser_process.
+    system::SetTimezoneFromUI(CHECK_DEREF(g_browser_process->local_state()),
+                              profile, timezone_id);
   }
 
   void DoneClicked(const base::ListValue& args) {

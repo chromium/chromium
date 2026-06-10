@@ -22,7 +22,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -203,10 +202,7 @@ bool HasSystemTimezonePolicy() {
   return false;
 }
 
-void UpdateSystemTimezone(Profile* profile) {
-  const PrefService& local_state =
-      CHECK_DEREF(g_browser_process->local_state());
-
+void UpdateSystemTimezone(PrefService& local_state, Profile* profile) {
   if (IsTimezonePrefsManaged(local_state, ash::prefs::kUserTimezone)) {
     VLOG(1) << "Ignoring user timezone change, because timezone is enterprise "
                "managed.";
@@ -225,8 +221,7 @@ void UpdateSystemTimezone(Profile* profile) {
   const std::string value =
       profile->GetPrefs()->GetString(ash::prefs::kUserTimezone);
   if (user_is_owner) {
-    g_browser_process->local_state()->SetString(
-        ash::prefs::kSigninScreenTimezone, value);
+    local_state.SetString(ash::prefs::kSigninScreenTimezone, value);
   }
 
   if (user_manager->GetPrimaryUser() == user &&
@@ -235,10 +230,9 @@ void UpdateSystemTimezone(Profile* profile) {
   }
 }
 
-void SetTimezoneFromUI(Profile* profile, const std::string& timezone_id) {
-  const PrefService& local_state =
-      CHECK_DEREF(g_browser_process->local_state());
-
+void SetTimezoneFromUI(PrefService& local_state,
+                       Profile* profile,
+                       const std::string& timezone_id) {
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
 
@@ -248,8 +242,7 @@ void SetTimezoneFromUI(Profile* profile, const std::string& timezone_id) {
   }
 
   if (ProfileHelper::IsSigninProfile(profile)) {
-    SetSystemAndSigninScreenTimezone(
-        CHECK_DEREF(g_browser_process->local_state()), timezone_id);
+    SetSystemAndSigninScreenTimezone(local_state, timezone_id);
     return;
   }
 

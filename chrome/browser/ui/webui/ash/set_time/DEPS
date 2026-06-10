@@ -17,3 +17,9 @@ include_rules = [
   "+chrome/common",
   "+chrome/grit",
 ]
+
+specific_include_rules = {
+  "set_time_ui\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}

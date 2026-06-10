@@ -1298,7 +1298,8 @@ void Preferences::ApplyPreferences(ApplyReason reason,
 
   if (pref_name == ash::prefs::kUserTimezone &&
       reason != REASON_ACTIVE_USER_CHANGED) {
-    system::UpdateSystemTimezone(ProfileHelper::Get()->GetProfileByUser(user_));
+    system::UpdateSystemTimezone(local_state_.get(),
+                                 ProfileHelper::Get()->GetProfileByUser(user_));
   }
 
   if (reason == REASON_INITIALIZATION ||

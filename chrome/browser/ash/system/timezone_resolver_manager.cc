@@ -280,7 +280,9 @@ int TimeZoneResolverManager::GetEffectiveAutomaticTimezoneManagementSetting() {
 
 void TimeZoneResolverManager::OnUserProfileLoaded(const AccountId& account_id) {
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  system::UpdateSystemTimezone(profile);
+  // TODO(crbug.com/404133899): Avoid using g_browser_process.
+  system::UpdateSystemTimezone(CHECK_DEREF(g_browser_process->local_state()),
+                               profile);
 
   auto* user_manager = user_manager::UserManager::Get();
   const auto* user = user_manager->FindUser(account_id);
