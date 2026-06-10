@@ -1028,7 +1028,10 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
     @VisibleForTesting
     protected void closePreviousMessage() {
-        if (mDismissRunnable != null) mDismissRunnable.run();
+        if (mDismissRunnable != null) {
+            mDismissRunnable.run();
+            mDismissRunnable = null;
+        }
         mPropertyModel = null;
     }
 
@@ -1187,6 +1190,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
     private void onMessageDismissed(Integer dismissReason) {
         mPropertyModel = null;
+        mDismissRunnable = null;
         if (dismissReason == DismissReason.GESTURE) {
             computeNextStepForUpdate(null, false, true, false);
         }
