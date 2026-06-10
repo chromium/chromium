@@ -875,7 +875,7 @@ class AvdConfig:
       return
 
     # Otherwise run uninstall to remove existing image, and proceed next steps
-    self.Uninstall()
+    self.UninstallRawSystemImage()
 
     # The process steps include:
     #  * Install the raw package (zip file) from CIPD and unzip to a temp dir
@@ -1047,15 +1047,18 @@ class AvdConfig:
         raise AvdException('Failed to uninstall CIPD packages: %s' % str(e),
                            command=ensure_cmd)
 
-    # Delete processed raw system image file
+    self.UninstallRawSystemImage()
+
+  def UninstallRawSystemImage(self):
+    """Delete processed raw system image file."""
     if self._config.HasField('raw_system_image_package'):
-      logging.info('Deleting processed raw system image.')
       target_path = os.path.join(
           COMMON_CIPD_ROOT,
           self.GetDestPath(self._config.raw_system_image_package),
           'system-images',
       )
       if os.path.exists(target_path):
+        logging.info('Deleting processed raw system image in %r', target_path)
         shutil.rmtree(target_path)
 
   def Install(self):

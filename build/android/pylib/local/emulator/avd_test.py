@@ -378,8 +378,8 @@ class AvdProcessRawSystemImageTest(unittest.TestCase):
   @patch('glob.glob')
   @patch('os.walk')
   @patch('pylib.local.emulator.avd.AvdConfig._InstallCipdPackages')
-  @patch('pylib.local.emulator.avd.AvdConfig.Uninstall')
-  def testProcessRawSystemImageSuccessful(self, mock_uninstall,
+  @patch('pylib.local.emulator.avd.AvdConfig.UninstallRawSystemImage')
+  def testProcessRawSystemImageSuccessful(self, mock_uninstall_raw,
                                           mock_install_cipd, mock_walk,
                                           mock_glob, mock_tempdir,
                                           _mock_zipfile, mock_ini_load,
@@ -453,7 +453,7 @@ class AvdProcessRawSystemImageTest(unittest.TestCase):
     with patch('builtins.open', mock_open_obj):
       avd_config._ProcessRawSystemImage()
 
-    mock_uninstall.assert_called_once()
+    mock_uninstall_raw.assert_called_once()
     mock_install_cipd.assert_called_once_with(
         [avd_config._config.raw_system_image_package])
     mock_rmtree.assert_called_once()
@@ -473,8 +473,8 @@ class AvdProcessRawSystemImageTest(unittest.TestCase):
   @patch('glob.glob')
   @patch('os.walk')
   @patch('pylib.local.emulator.avd.AvdConfig._InstallCipdPackages')
-  @patch('pylib.local.emulator.avd.AvdConfig.Uninstall')
-  def testProcessRawSystemImageVersionMismatch(self, mock_uninstall,
+  @patch('pylib.local.emulator.avd.AvdConfig.UninstallRawSystemImage')
+  def testProcessRawSystemImageVersionMismatch(self, mock_uninstall_raw,
                                                mock_install_cipd, mock_walk,
                                                mock_glob, mock_tempdir,
                                                _mock_zipfile, mock_ini_load,
@@ -548,7 +548,7 @@ class AvdProcessRawSystemImageTest(unittest.TestCase):
     with patch('builtins.open', mock_open_obj):
       avd_config._ProcessRawSystemImage()
 
-    mock_uninstall.assert_called_once()
+    mock_uninstall_raw.assert_called_once()
     mock_install_cipd.assert_called_once_with(
         [avd_config._config.raw_system_image_package])
     mock_rmtree.assert_called_once()
