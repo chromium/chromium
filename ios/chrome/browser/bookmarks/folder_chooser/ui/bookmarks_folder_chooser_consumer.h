@@ -29,11 +29,13 @@ struct QueryFields;
 
 // "Mobile Bookmarks" folder node that always exists by default.
 - (const bookmarks::BookmarkNode*)mobileFolderNode;
-// The list of visible folders to show.
-- (std::vector<raw_ptr<const bookmarks::BookmarkNode>>)visibleFolderNodes;
-// The list of visible folders to show, if they are matching `query`.
-- (std::vector<raw_ptr<const bookmarks::BookmarkNode>>)
-    visibleFolderNodesForQuery:(const bookmarks::QueryFields&)query;
+// The list of ids of visible folders to show.
+- (std::vector<int64_t>)visibleFolderNodeIds;
+// The list of ids of visible folders to show, if they are matching `query`.
+- (std::vector<int64_t>)visibleFolderNodeIdsForQuery:
+    (const bookmarks::QueryFields&)query;
+// Retrieve the BookmarkNode with `nodeId` from this sub-data source.
+- (const bookmarks::BookmarkNode*)bookmarkNodeForId:(int64_t)nodeId;
 
 @end
 
