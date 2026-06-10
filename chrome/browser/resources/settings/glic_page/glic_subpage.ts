@@ -787,6 +787,12 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   private onWebActuationToggleVisibilityChanged_(visible: boolean) {
     this.webActuationFeatureEnabled_ = visible;
   }
+
+  private isExperimentalTriggeringDisabled_(
+      webActuationEnabled: boolean,
+      isWebActuationDisabledForEnterprise: boolean): boolean {
+    return !webActuationEnabled || isWebActuationDisabledForEnterprise;
+  }
 }
 
 declare global {

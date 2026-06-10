@@ -379,6 +379,9 @@ void GlicHandler::HandleSetWebActuationEnabled(const base::ListValue& args) {
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
   if (glic_service) {
     glic_service->enabling().SetUserEnabledActuationOnWeb(enabled);
+    if (!enabled) {
+      glic_service->enabling().SetExperimentalTriggeringEnabled(false);
+    }
   }
 }
 
