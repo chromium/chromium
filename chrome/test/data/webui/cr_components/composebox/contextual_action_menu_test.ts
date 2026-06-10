@@ -880,6 +880,75 @@ suite('ContextualActionMenu', () => {
   });
   // </if>
 
+  test(
+      'Share tabs flyout keyboard navigation focuses first non-disabled item',
+      async () => {
+        loadTimeData.overrideValues({
+          contextManagementInComposeboxEnabled: true,
+        });
+
+        actionMenu.remove();
+        actionMenu =
+            document.createElement('cr-composebox-contextual-action-menu');
+        const tab1: TabInfo = {
+          tabId: 1,
+          title: 'Tab 1',
+          url: {url: 'about:blank'},
+          lastActiveTime: {internalValue: 0n},
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        } as any;
+        const tab2: TabInfo = {
+          tabId: 2,
+          title: 'Tab 2',
+          url: {url: 'about:blank'},
+          lastActiveTime: {internalValue: 0n},
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        } as any;
+
+        actionMenu.tabSuggestions = [tab1, tab2];
+        actionMenu.aimThreadRestoredTabs = [tab1];
+        actionMenu.inputState = new MockInputState({
+                                  allowedInputTypes: [InputType.kBrowserTab],
+                                }) as any;
+        document.body.appendChild(actionMenu);
+        await microtasksFinished();
+
+        // Open the main contextual action menu.
+        actionMenu.showAt(actionMenu);
+        await microtasksFinished();
+
+        // Get the trigger button and the flyout container.
+        const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+        const flyout = $$(actionMenu, '.share-tabs-flyout') as HTMLElement;
+        assertTrue(!!trigger);
+        assertTrue(!!flyout);
+
+        // Simulate an ArrowRight keydown event on the trigger to expand the
+        // flyout.
+        trigger.dispatchEvent(
+            new KeyboardEvent('keydown', {key: 'ArrowRight', bubbles: true}));
+        await actionMenu.updateComplete;
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        await microtasksFinished();
+
+        // Assert that the flyout is now visible.
+        assertFalse(flyout.hidden);
+
+        // Assert that the keyboard focus has successfully moved to the second
+        // button inside the flyout, because the first is disabled.
+        const buttons =
+            flyout.querySelectorAll<HTMLButtonElement>('button.dropdown-item');
+        assertEquals(2, buttons.length);
+        assertTrue(buttons[0]!.disabled);
+        assertFalse(buttons[1]!.disabled);
+
+        assertEquals(buttons[1]!, actionMenu.shadowRoot.activeElement);
+      });
+
   test('Tabs counter visibility', async () => {
     actionMenu.showAt(actionMenu);
     await microtasksFinished();
