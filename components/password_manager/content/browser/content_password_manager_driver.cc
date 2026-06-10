@@ -547,7 +547,9 @@ void ContentPasswordManagerDriver::PasswordFormsRendered(
 
 void ContentPasswordManagerDriver::PasswordFormSubmitted(
     const autofill::FormData& raw_form) {
-  if (!CheckFrameActiveAndNotPrerendering(render_frame_host_)) {
+  // Don't check IsActive(): the submitting frame may have entered BFCache.
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_)) {
     return;
   }
 
@@ -598,7 +600,9 @@ void ContentPasswordManagerDriver::InformAboutUserInput(
 
 void ContentPasswordManagerDriver::DynamicFormSubmission(
     autofill::mojom::SubmissionIndicatorEvent submission_indication_event) {
-  if (!CheckFrameActiveAndNotPrerendering(render_frame_host_)) {
+  // Don't check IsActive(): the submitting frame may have entered BFCache.
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(
+          render_frame_host_)) {
     return;
   }
   GetPasswordManager()->OnDynamicFormSubmission(this,

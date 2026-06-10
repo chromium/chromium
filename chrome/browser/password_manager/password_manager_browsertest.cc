@@ -3873,8 +3873,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
   client->SetTestObserver(nullptr);
 }
 
+// Submission IPCs from BFCached frames are legitimate because the renderer
+// queues them before the frame enters BFCache.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
-                       NoSavePasswordPromptFromBFCachedFrame) {
+                       SavePasswordPromptFromBFCachedFrameIsProcessed) {
   // Navigate to a page with a password form.
   NavigateToFile("/password/password_form.html");
   content::RenderFrameHostWrapper rfh(WebContents()->GetPrimaryMainFrame());
@@ -3919,22 +3921,19 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
   static_cast<autofill::mojom::PasswordManagerDriver*>(driver)
       ->PasswordFormSubmitted(form_data);
 
-  // For regression testing: if the validation check is disabled and a form
-  // manager is created, we wait for the password store fetch to complete so
-  // that the test fails immediately due to a prompt showing, rather than timing
-  // out.
+  // Wait for the password store fetch to complete.
   ChromePasswordManagerClient* client =
       ChromePasswordManagerClient::FromWebContents(WebContents());
-  if (client->GetPasswordManager()->IsPasswordFieldDetectedOnPage()) {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return client->GetPasswordManager()->HaveFormManagersReceivedData(driver);
-    }));
-  }
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return client->GetPasswordManager()->HaveFormManagersReceivedData(driver);
+  }));
 
   static_cast<autofill::mojom::PasswordManagerDriver*>(driver)
       ->DynamicFormSubmission(
           autofill::mojom::SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
-  EXPECT_FALSE(prompt_observer.IsSavePromptAvailable());
+
+  // The submission IPC should be processed even from a BFCached frame.
+  EXPECT_TRUE(prompt_observer.IsSavePromptAvailable());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
