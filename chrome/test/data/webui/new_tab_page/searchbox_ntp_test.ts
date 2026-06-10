@@ -53,7 +53,7 @@ function createCalculatorMatch(modifiers: Partial<AutocompleteMatch>):
     destinationUrl: 'https://www.google.com/search?q=2+%2B+3',
     fillIntoEdit: '5',
     type: 'search-calculator-answer',
-    iconPath: 'calculator.svg',
+    iconPath: 'calculator_cr23.svg',
     ...modifiers,
   });
 }
@@ -2507,7 +2507,7 @@ suite('SearchboxTest', () => {
     assertEquals(1, matchEls.length);
 
     verifyMatch(matches[0]!, matchEls[0]!);
-    assertIconMaskImageUrl(matchEls[0]!.$.icon, 'calculator.svg');
+    assertIconMaskImageUrl(matchEls[0]!.$.icon, 'calculator_cr23.svg');
     assertIconMaskImageUrl(realbox.$.input.$.icon, 'search.svg');
 
     // Separator is not displayed

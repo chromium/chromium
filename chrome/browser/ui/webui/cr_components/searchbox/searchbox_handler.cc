@@ -113,27 +113,24 @@ std::u16string GetSmartTabSharingMegaplusString() {
 constexpr int kPromptHeightBuffer = 40;
 constexpr int kPromptWidthBuffer = 40;
 
-// TODO(niharm): convert back to constexpr char[] once feature is cleaned up
-const char* kAnswerCurrencyIconResourceName =
-    "//resources/cr_components/searchbox/icons/currency.svg";
+constexpr char kAnswerCurrencyIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/currency_cr23.svg";
 constexpr char kAnswerDefaultIconResourceName[] =
     "//resources/cr_components/searchbox/icons/default.svg";
-const char* kAnswerDictionaryIconResourceName =
-    "//resources/cr_components/searchbox/icons/definition.svg";
-const char* kAnswerFinanceIconResourceName =
-    "//resources/cr_components/searchbox/icons/finance.svg";
-const char* kAnswerSunriseIconResourceName =
-    "//resources/cr_components/searchbox/icons/sunrise.svg";
-const char* kAnswerTranslationIconResourceName =
-    "//resources/cr_components/searchbox/icons/translation.svg";
-const char* kBookmarkIconResourceName = "//resources/images/icon_bookmark.svg";
-const char* kCalculatorIconResourceName =
-    "//resources/cr_components/searchbox/icons/calculator.svg";
-const char* kChromeProductIconResourceName =
-    "//resources/cr_components/searchbox/icons/chrome_product.svg";
-const char* kClockIconResourceName = "//resources/images/icon_clock.svg";
-const char* kDinoIconResourceName =
-    "//resources/cr_components/searchbox/icons/dino.svg";
+constexpr char kAnswerDictionaryIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/definition_cr23.svg";
+constexpr char kAnswerFinanceIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/finance_cr23.svg";
+constexpr char kAnswerSunriseIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/sunrise_cr23.svg";
+constexpr char kAnswerTranslationIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/translation_cr23.svg";
+constexpr char kBookmarkIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/bookmark_cr23.svg";
+constexpr char kCalculatorIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/calculator_cr23.svg";
+constexpr char kDinoIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/dino_cr23.svg";
 constexpr char kDriveDocsIconResourceName[] =
     "//resources/cr_components/searchbox/icons/drive_docs.svg";
 constexpr char kDriveFolderIconResourceName[] =
@@ -163,8 +160,8 @@ constexpr char kGoogleAgentspaceIconResourceName[] =
     "//resources/cr_components/searchbox/icons/google_agentspace_logo.svg";
 constexpr char kGoogleAgentspace25IconResourceName[] =
     "//resources/cr_components/searchbox/icons/google_agentspace_logo_25.svg";
-const char* kGoogleGIconResourceName =
-    "//resources/cr_components/searchbox/icons/google_g.svg";
+constexpr char kGoogleGIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/google_g_cr23.svg";
 constexpr char kGoogleKeepNoteIconResourceName[] =
     "//resources/cr_components/searchbox/icons/note.svg";
 constexpr char kGoogleSitesIconResourceName[] =
@@ -178,100 +175,43 @@ constexpr char kGoogleAgentspaceMonochromeLogo25Icon[] =
     "//resources/cr_components/searchbox/icons/"
     "google_agentspace_monochrome_logo_25.svg";
 #endif
-const char* kHistoryIconResourceName = "//resources/images/icon_history.svg";
-const char* kIncognitoIconResourceName =
-    "//resources/cr_components/searchbox/icons/incognito.svg";
-const char* kJourneysIconResourceName =
-    "//resources/cr_components/searchbox/icons/journeys.svg";
-const char* kNotesSparkIconResourceName =
+constexpr char kHistoryIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/history_cr23.svg";
+constexpr char kIncognitoIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/incognito_cr23.svg";
+constexpr char kJourneysIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/journeys_cr23.svg";
+constexpr char kNotesSparkIconResourceName[] =
     "//resources/cr_components/searchbox/icons/notes_spark.svg";
-const char* kPageIconResourceName =
-    "//resources/cr_components/searchbox/icons/page.svg";
-const char* kPedalsIconResourceName = "//theme/current-channel-logo";
-const char* kSearchIconResourceName = "//resources/images/icon_search.svg";
-const char* kSparkIconResourceName =
+constexpr char kPageIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/page_cr23.svg";
+constexpr char kPedalsIconResourceName[] = "//theme/current-channel-logo";
+constexpr char kSearchIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/search_cr23.svg";
+constexpr char kSparkIconResourceName[] =
     "//resources/cr_components/searchbox/icons/spark.svg";
-const char* kStarActiveIconResourceName =
+constexpr char kStarActiveIconResourceName[] =
     "//resources/cr_components/searchbox/icons/star_active.svg";
-const char* kSubdirectoryArrowRightResourceName =
+constexpr char kSubdirectoryArrowRightResourceName[] =
     "//resources/cr_components/searchbox/icons/subdirectory_arrow_right.svg";
-const char* kTabIconResourceName =
-    "//resources/cr_components/searchbox/icons/tab.svg";
-const char* kTrendingUpIconResourceName =
-    "//resources/cr_components/searchbox/icons/trending_up.svg";
+constexpr char kTabIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/tab_cr23.svg";
+constexpr char kTrendingUpIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/trending_up_cr23.svg";
 
 #if BUILDFLAG(IS_MAC)
-const char* kMacShareIconResourceName =
-    "//resources/cr_components/searchbox/icons/mac_share.svg";
+constexpr char kMacShareIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/mac_share_cr23.svg";
 #elif BUILDFLAG(IS_WIN)
-const char* kWinShareIconResourceName =
-    "//resources/cr_components/searchbox/icons/win_share.svg";
+constexpr char kWinShareIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/win_share_cr23.svg";
 #elif BUILDFLAG(IS_LINUX)
-const char* kLinuxShareIconResourceName =
-    "//resources/cr_components/searchbox/icons/share.svg";
+constexpr char kLinuxShareIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/share_cr23.svg";
 #else
-const char* kShareIconResourceName =
-    "//resources/cr_components/searchbox/icons/share.svg";
+constexpr char kShareIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/share_cr23.svg";
 #endif
-
-static void DefineChromeRefreshRealboxIcons() {
-  kAnswerCurrencyIconResourceName =
-      "//resources/cr_components/searchbox/icons/currency_cr23.svg";
-  kAnswerDictionaryIconResourceName =
-      "//resources/cr_components/searchbox/icons/definition_cr23.svg";
-  kAnswerFinanceIconResourceName =
-      "//resources/cr_components/searchbox/icons/finance_cr23.svg";
-  kAnswerSunriseIconResourceName =
-      "//resources/cr_components/searchbox/icons/sunrise_cr23.svg";
-  kAnswerTranslationIconResourceName =
-      "//resources/cr_components/searchbox/icons/translation_cr23.svg";
-  kBookmarkIconResourceName =
-      "//resources/cr_components/searchbox/icons/bookmark_cr23.svg";
-  kCalculatorIconResourceName =
-      "//resources/cr_components/searchbox/icons/calculator_cr23.svg";
-  kChromeProductIconResourceName =
-      "//resources/cr_components/searchbox/icons/chrome_product_cr23.svg";
-  kClockIconResourceName =
-      "//resources/cr_components/searchbox/icons/clock_cr23.svg";
-  kDinoIconResourceName =
-      "//resources/cr_components/searchbox/icons/dino_cr23.svg";
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  kGoogleGIconResourceName =
-      "//resources/cr_components/searchbox/icons/google_g_cr23.svg";
-#endif
-
-  kHistoryIconResourceName =
-      "//resources/cr_components/searchbox/icons/history_cr23.svg";
-  kIncognitoIconResourceName =
-      "//resources/cr_components/searchbox/icons/incognito_cr23.svg";
-  kJourneysIconResourceName =
-      "//resources/cr_components/searchbox/icons/journeys_cr23.svg";
-  kPageIconResourceName =
-      "//resources/cr_components/searchbox/icons/page_cr23.svg";
-  kPedalsIconResourceName =
-      "//resources/cr_components/searchbox/icons/chrome_product_cr23.svg";
-  kSearchIconResourceName =
-      "//resources/cr_components/searchbox/icons/search_cr23.svg";
-  kTabIconResourceName =
-      "//resources/cr_components/searchbox/icons/tab_cr23.svg";
-  kTrendingUpIconResourceName =
-      "//resources/cr_components/searchbox/icons/trending_up_cr23.svg";
-
-#if BUILDFLAG(IS_MAC)
-  kMacShareIconResourceName =
-      "//resources/cr_components/searchbox/icons/mac_share_cr23.svg";
-#elif BUILDFLAG(IS_WIN)
-  kWinShareIconResourceName =
-      "//resources/cr_components/searchbox/icons/win_share_cr23.svg";
-#elif BUILDFLAG(IS_LINUX)
-  kLinuxShareIconResourceName =
-      "//resources/cr_components/searchbox/icons/share_cr23.svg";
-#else
-  kShareIconResourceName =
-      "//resources/cr_components/searchbox/icons/share_cr23.svg";
-#endif
-}
 
 std::u16string GetAdditionalA11yMessage(
     const AutocompleteMatch& match,
@@ -531,7 +471,6 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
                                  u"https://myactivity.google.com/"
                                  u"activitycontrols?settings=search&utm_source="
                                  u"aim&utm_campaign=aim_str"));
-  DefineChromeRefreshRealboxIcons();
   dict.Set("searchboxDefaultIcon", kSearchIconResourceName);
 
   dict.Set("searchboxVoiceSearch", options.enable_voice_search);
