@@ -431,6 +431,72 @@ class ProcessRevisionsTest(unittest.TestCase):
             cl_objects[2].dir_metadata.get_metadata('foo/file.cc'),
             {'component': 'NewFoo'})
 
+    def test_process_commits_ipc_review(self):
+        self.mock_revision_exists.return_value = True
+
+        cl_infos = {
+            'commit1': {
+                'revision':
+                'commit1',
+                'cl_number':
+                1111,
+                'commit_time':
+                datetime.datetime(2026,
+                                  6,
+                                  3,
+                                  20,
+                                  1,
+                                  0,
+                                  tzinfo=datetime.timezone.utc),
+                'commit_position':
+                100,
+                'description':
+                'Commit 1',
+            },
+            'commit2': {
+                'revision':
+                'commit2',
+                'cl_number':
+                2222,
+                'commit_time':
+                datetime.datetime(2026,
+                                  6,
+                                  3,
+                                  20,
+                                  2,
+                                  0,
+                                  tzinfo=datetime.timezone.utc),
+                'commit_position':
+                101,
+                'description':
+                'Commit 2',
+            },
+        }
+        self.mock_extract_cl_info.side_effect = (
+            lambda rev: ClInfo(dir_metadata=MetadataTree(), **cl_infos[rev]))
+
+        initial_tree = MetadataTree()
+        parsed_files = {}
+        dir_metadata_paths = set()
+
+        commits = [
+            local_git_steps._RevisionAndChangedFiles(
+                revision='commit1',
+                changed_files=['some/file.cc', 'some/interfaces.mojom']),
+            local_git_steps._RevisionAndChangedFiles(
+                revision='commit2', changed_files=['some/other_file.cc']),
+        ]
+
+        cl_objects = local_git_steps._process_commits(commits, initial_tree,
+                                                      parsed_files,
+                                                      dir_metadata_paths)
+
+        self.assertEqual(len(cl_objects), 2)
+        self.assertEqual(cl_objects[0].revision, 'commit1')
+        self.assertEqual(cl_objects[0].hashtags, {'ipc_review'})
+        self.assertEqual(cl_objects[1].revision, 'commit2')
+        self.assertEqual(cl_objects[1].hashtags, set())
+
     def test_process_commits_missing_cp_raises_error(self):
         self.mock_revision_exists.return_value = True
         self.mock_extract_cl_info.side_effect = ValueError('Missing CP')

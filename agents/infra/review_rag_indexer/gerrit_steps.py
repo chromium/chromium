@@ -89,7 +89,7 @@ def _fetch_hashtags_for_cl(project: str, session_manager: _SessionManager,
                 f'Expected list of hashtags for CL {cl_info.cl_number}, '
                 f'got {type(hashtags)}')
 
-        cl_info.hashtags = [str(h) for h in hashtags]
+        cl_info.hashtags.update(str(h) for h in hashtags)
         logging.debug('Found hashtags for CL %d: %s', cl_info.cl_number,
                       cl_info.hashtags)
         return True

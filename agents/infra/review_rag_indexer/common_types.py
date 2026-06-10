@@ -60,4 +60,4 @@ class ClInfo:
     # The DIR_METADATA state at the time the CL landed.
     dir_metadata: MetadataTree
     # The hashtags associated with the CL.
-    hashtags: list[str] = dataclasses.field(default_factory=list)
+    hashtags: set[str] = dataclasses.field(default_factory=set)

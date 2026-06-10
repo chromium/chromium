@@ -227,6 +227,8 @@ def _process_commits(
         for f in commit.changed_files:
             if f.endswith('DIR_METADATA') or f in parsed_files:
                 metadata_changes.append(f)
+            elif f.endswith('.mojom'):
+                cl_info.hashtags.add('ipc_review')
 
         if metadata_changes:
             logging.debug('Commit %s changed metadata files: %s',

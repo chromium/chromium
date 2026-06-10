@@ -64,7 +64,7 @@ class FetchHashtagsForClTest(unittest.TestCase):
                                                      self.cl_info)
 
         self.assertTrue(result)
-        self.assertEqual(self.cl_info.hashtags, ['tag1', 'tag2'])
+        self.assertEqual(self.cl_info.hashtags, {'tag1', 'tag2'})
         self.mock_get.assert_called_once_with(
             'https://chromium-review.googlesource.com/changes/1234/hashtags',
             timeout=30,
@@ -80,7 +80,7 @@ class FetchHashtagsForClTest(unittest.TestCase):
                                                      self.cl_info)
 
         self.assertTrue(result)
-        self.assertEqual(self.cl_info.hashtags, ['tag1', 'tag2'])
+        self.assertEqual(self.cl_info.hashtags, {'tag1', 'tag2'})
 
     def test_failure_returns_false(self):
         self.mock_get.side_effect = requests.exceptions.ConnectionError(
@@ -91,7 +91,7 @@ class FetchHashtagsForClTest(unittest.TestCase):
                 'chromium', self.manager, self.cl_info)
 
         self.assertFalse(result)
-        self.assertEqual(self.cl_info.hashtags, [])
+        self.assertEqual(self.cl_info.hashtags, set())
         self.mock_get.assert_called_once()
         self.assertTrue(
             any('Failed to fetch hashtags' in line for line in log.output))
@@ -122,6 +122,32 @@ class FetchHashtagsForClTest(unittest.TestCase):
         self.assertIn('Expected list of hashtags', str(cm.exception))
         self.assertEqual(self.mock_get.call_count, 1)
         self.mock_sleep.assert_not_called()
+
+    def test_success_merges_hashtags(self):
+        self.cl_info.hashtags = {'ipc_review', 'existing_tag'}
+        mock_response = mock.Mock()
+        mock_response.text = ')]}\'\n["tag1", "ipc_review", "tag2"]'
+        mock_response.status_code = 200
+        self.mock_get.return_value = mock_response
+
+        result = gerrit_steps._fetch_hashtags_for_cl('chromium', self.manager,
+                                                     self.cl_info)
+
+        self.assertTrue(result)
+        self.assertEqual(self.cl_info.hashtags,
+                         {'ipc_review', 'existing_tag', 'tag1', 'tag2'})
+
+    def test_failure_preserves_hashtags(self):
+        self.cl_info.hashtags = {'ipc_review'}
+        self.mock_get.side_effect = requests.exceptions.ConnectionError(
+            'Connection aborted')
+
+        with self.assertLogs(level='WARNING'):
+            result = gerrit_steps._fetch_hashtags_for_cl(
+                'chromium', self.manager, self.cl_info)
+
+        self.assertFalse(result)
+        self.assertEqual(self.cl_info.hashtags, {'ipc_review'})
 
 
 class RetrieveHashtagsTest(unittest.TestCase):
