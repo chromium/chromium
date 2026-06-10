@@ -49,6 +49,7 @@ class PasswordCombinedSelectorView
 
   // views::DialogDelegate:
   bool Accept() override;
+  bool ShouldAllowKeyEventsDuringInputProtection() const override;
 
   const std::vector<raw_ptr<views::RadioButton>>& GetRadioButtonsForTesting()
       const {
