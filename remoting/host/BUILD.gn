@@ -263,7 +263,10 @@ source_set("clipboard") {
   }
 
   if (is_win) {
-    sources += [ "clipboard_win.cc" ]
+    sources += [
+      "clipboard_win.cc",
+      "clipboard_win.h",
+    ]
   }
 }
 
@@ -918,6 +921,7 @@ source_set("unit_tests") {
 
   deps = [
     ":client_session_control",
+    ":clipboard",
     ":common",
     ":display_layout",
     ":enterprise_params",
@@ -1030,6 +1034,7 @@ source_set("unit_tests") {
 
   if (is_win) {
     sources += [
+      "clipboard_win_unittest.cc",
       "pairing_registry_delegate_win_unittest.cc",
       "touch_injector_win_unittest.cc",
     ]
