@@ -114,7 +114,6 @@ public class HistoryPane extends PaneBase {
                             /* showAppFilter= */ true,
                             ChromeFeatureList.isEnabled(
                                     ChromeFeatureList.ANDROID_HISTORY_CLUSTERING),
-                            HistoryManager.SearchConfiguration.NONE,
                             this::onHistoryItemOpened,
                             // TODO(crbug.com/427776544): make history pane support edge to edge.
                             /* edgeToEdgePadAdjusterGenerator= */ null);

@@ -635,9 +635,6 @@ public class HubToolbarMediatorUnitTest {
                         .expectIntRecord(
                                 "Android.HubSearch.SearchBoxEntrypointV2",
                                 HubSearchEntrypoint.TAB_GROUPS_SEARCHBOX)
-                        .expectIntRecord(
-                                "Android.HubSearch.SearchBoxEntrypointV2",
-                                HubSearchEntrypoint.HISTORY_SEARCHBOX)
                         .build();
 
         // Fake clicks on the search box.
@@ -655,10 +652,10 @@ public class HubToolbarMediatorUnitTest {
         mModel.get(SEARCH_LISTENER).run();
         verify(mSearchActivityClient, times(3)).requestOmniboxForResult(any());
 
-        // Toggle to history pane, which is enabled for hub search
+        // Toggle to history pane, which is not enabled for hub search
         mFocusedPaneSupplier.set(mHistoryPane);
         mModel.get(SEARCH_LISTENER).run();
-        verify(mSearchActivityClient, times(4)).requestOmniboxForResult(any());
+        verify(mSearchActivityClient, times(3)).requestOmniboxForResult(any());
         histograms.assertExpected();
     }
 
@@ -688,9 +685,6 @@ public class HubToolbarMediatorUnitTest {
                         .expectIntRecord(
                                 "Android.HubSearch.SearchBoxEntrypointV2",
                                 HubSearchEntrypoint.TAB_GROUPS_LOUPE)
-                        .expectIntRecord(
-                                "Android.HubSearch.SearchBoxEntrypointV2",
-                                HubSearchEntrypoint.HISTORY_LOUPE)
                         .build();
 
         // Fake clicks on the search box.
@@ -708,10 +702,10 @@ public class HubToolbarMediatorUnitTest {
         mModel.get(SEARCH_LISTENER).run();
         verify(mSearchActivityClient, times(3)).requestOmniboxForResult(any());
 
-        // Toggle to history pane, which is enabled for hub search
+        // Toggle to history pane, which is not enabled for hub search
         mFocusedPaneSupplier.set(mHistoryPane);
         mModel.get(SEARCH_LISTENER).run();
-        verify(mSearchActivityClient, times(4)).requestOmniboxForResult(any());
+        verify(mSearchActivityClient, times(3)).requestOmniboxForResult(any());
         histograms.assertExpected();
     }
 

@@ -14,15 +14,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import android.view.View;
 import android.widget.EditText;
 
-import org.hamcrest.Matcher;
-
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.base.test.transit.ViewSpec;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.HistoryItemView;
-import org.chromium.chrome.browser.hub.HubUtils;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
@@ -30,34 +25,12 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /** The History pane station. */
 public class HistoryPaneStation extends HubBaseStation {
-    public ViewElement<View> searchElement;
-
     public HistoryPaneStation(boolean regularTabsExist, boolean incognitoTabsExist) {
         super(
                 /* isIncognito= */ false,
                 regularTabsExist,
                 incognitoTabsExist,
                 /* hasMenuButton= */ false);
-
-        declareElementFactory(
-                mActivityElement,
-                delayedElements -> {
-                    Matcher<View> searchBox = withId(R.id.search_box);
-                    ViewSpec<View> searchLoupe =
-                            toolbarElement.descendant(withId(R.id.search_loupe));
-                    if (shouldHubSearchBoxBeVisible()) {
-                        searchElement = delayedElements.declareView(searchLoupe);
-                        delayedElements.declareNoView(searchBox);
-                    } else {
-                        searchElement = delayedElements.declareView(searchBox);
-                        delayedElements.declareNoView(searchLoupe);
-                    }
-                });
-    }
-
-    private boolean shouldHubSearchBoxBeVisible() {
-        return HubUtils.isScreenWidthTablet(
-                mActivityElement.value().getResources().getConfiguration().screenWidthDp);
     }
 
     @Override
@@ -91,12 +64,16 @@ public class HistoryPaneStation extends HubBaseStation {
     /** Non-empty state of the history pane. */
     public static class HistoryWithEntriesFacility extends Facility<HistoryPaneStation> {
         public final ViewElement<View> recyclerViewElement;
-        public final @Nullable ViewElement<View> searchButtonElement;
+        public final ViewElement<View> searchButtonElement;
 
         public HistoryWithEntriesFacility(boolean isLargeFormFactorDevice) {
             recyclerViewElement = declareView(withId(R.id.history_page_recycler_view));
-            searchButtonElement = null;
-            declareNoView(withId(R.id.search_menu_id));
+            if (isLargeFormFactorDevice) {
+                searchButtonElement = null;
+                declareNoView(withId(R.id.search_menu_id));
+                return;
+            }
+            searchButtonElement = declareView(withId(R.id.search_menu_id));
         }
 
         /** Expect an entry to be displayed in the history pane. */
@@ -116,7 +93,7 @@ public class HistoryPaneStation extends HubBaseStation {
             } else {
                 SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
                 HistorySearchFacility historySearch = new HistorySearchFacility();
-                mHostStation.searchElement.clickTo().enterFacilities(softKeyboard, historySearch);
+                searchButtonElement.clickTo().enterFacilities(softKeyboard, historySearch);
                 softKeyboard.close();
                 return historySearch;
             }
