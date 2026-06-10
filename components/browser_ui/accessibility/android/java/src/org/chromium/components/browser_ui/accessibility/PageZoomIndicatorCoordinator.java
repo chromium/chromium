@@ -11,8 +11,6 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.PopupWindow;
 
-import androidx.core.view.accessibility.AccessibilityEventCompat;
-
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -189,15 +187,13 @@ public class PageZoomIndicatorCoordinator {
      * @param isShowing Whether the message is visible. {@code true} if shown, {@code false} if
      *     hidden.
      */
-    @SuppressWarnings("WrongConstant")
     private void sendPaneChangeAccessibilityEvent(boolean isShowing) {
         AccessibilityEvent event =
                 AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
         if (isShowing) {
-            event.setContentChangeTypes(AccessibilityEventCompat.CONTENT_CHANGE_TYPE_PANE_APPEARED);
+            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED);
         } else {
-            event.setContentChangeTypes(
-                    AccessibilityEventCompat.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED);
+            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED);
         }
         AccessibilityState.sendAccessibilityEvent(event);
     }
