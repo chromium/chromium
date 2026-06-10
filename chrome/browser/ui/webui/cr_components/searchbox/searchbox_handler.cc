@@ -1142,6 +1142,8 @@ void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
 
   autocomplete_input.set_input_state(GetInputState());
   autocomplete_input.set_previous_query(GetPreviousQuery());
+  autocomplete_input.set_suggest_inventory(
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT);
 
   edit_model()->SetAutocompleteInput(autocomplete_input);
   omnibox_controller()->StartAutocomplete(autocomplete_input);

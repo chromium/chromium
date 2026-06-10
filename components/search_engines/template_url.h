@@ -27,6 +27,7 @@
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
+#include "third_party/omnibox_proto/suggest_inventory.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -236,6 +237,11 @@ class TemplateURLRef {
     // Input state. This is specifically the contextual state, with regards to
     // the tools and models that may be selected.
     omnibox::InputState input_state;
+
+    // The suggest inventory to be sent as query parameters in the suggest
+    // requests.
+    omnibox::SuggestInventory suggest_inventory =
+        omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT;
 
     // Which omnibox the user used to type the prefix.
     metrics::OmniboxEventProto::PageClassification page_classification =
