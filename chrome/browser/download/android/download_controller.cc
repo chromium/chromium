@@ -135,15 +135,6 @@ void RemoveDownloadItem(std::unique_ptr<DownloadManagerGetter> getter,
   }
 }
 
-void ScheduleRemoveDownloadItem(download::DownloadItem* download) {
-  auto download_manager_getter = std::make_unique<DownloadManagerGetter>(
-      content::DownloadItemUtils::GetBrowserContext(download)
-          ->GetDownloadManager());
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RemoveDownloadItem, std::move(download_manager_getter),
-                     download->GetGuid()));
-}
 
 bool ShouldOpenPdfInline(DownloadItem* item) {
   BrowserContext* context = content::DownloadItemUtils::GetBrowserContext(item);
@@ -196,6 +187,18 @@ void LogAppVerificationPromptToPrefs(download::DownloadItem* item) {
 }
 
 }  // namespace
+
+// static
+void DownloadController::ScheduleRemoveDownloadItem(
+    download::DownloadItem* item) {
+  auto download_manager_getter = std::make_unique<DownloadManagerGetter>(
+      content::DownloadItemUtils::GetBrowserContext(item)
+          ->GetDownloadManager());
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RemoveDownloadItem, std::move(download_manager_getter),
+                     item->GetGuid()));
+}
 
 static void JNI_DownloadController_CancelDownload(
     JNIEnv* env,
