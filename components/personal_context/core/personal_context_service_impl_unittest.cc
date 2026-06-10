@@ -103,18 +103,28 @@ TEST_F(PersonalContextServiceImplTest, FetchContextDelegatesToManager) {
   ASSERT_EQ("foo response", result.response.value().value());
 }
 
-TEST_F(PersonalContextServiceImplTest, FetchPiiEntitiesReturnsFailure) {
+TEST_F(PersonalContextServiceImplTest, FetchPiiEntitiesDelegatesToManager) {
+  SetAutomaticIssueOfAccessTokens();
+
   base::test::TestFuture<FetchPiiEntitiesResult> future;
 
   proto::FetchPiiEntitiesRequest request;
+  request.set_feature(proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL);
   ContextMemoryRequestOptions options;
   personal_context_service()->FetchPiiEntities(request, options,
                                                future.GetCallback());
 
+  proto::FetchPiiEntitiesResponse pii_response;
+  pii_response.set_server_request_id("test_id");
+  std::string serialized_response;
+  pii_response.SerializeToString(&serialized_response);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://example.com/v1:fetchPiiEntities", serialized_response,
+      net::HTTP_OK, network::TestURLLoaderFactory::kUrlMatchPrefix);
+
   FetchPiiEntitiesResult result = future.Take();
-  ASSERT_FALSE(result.response.has_value());
-  EXPECT_EQ(result.response.error().error(),
-            ContextMemoryError::ExecutionError::kGenericFailure);
+  ASSERT_TRUE(result.response.has_value());
+  EXPECT_EQ("test_id", result.response.value().server_request_id());
 }
 
 }  // namespace

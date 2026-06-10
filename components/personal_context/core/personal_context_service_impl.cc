@@ -36,10 +36,8 @@ void PersonalContextServiceImpl::FetchPiiEntities(
     const proto::FetchPiiEntitiesRequest& request,
     const ContextMemoryRequestOptions& options,
     FetchPiiContextCallback callback) {
-  // TODO(b/509660524): Implement FetchPiiEntities.
-  std::move(callback).Run(FetchPiiEntitiesResult(
-      base::unexpected(ContextMemoryError::FromExecutionError(
-          ContextMemoryError::ExecutionError::kGenericFailure))));
+  personal_context_manager_->FetchPiiEntities(request, options.request_timeout,
+                                              std::move(callback));
 }
 
 }  // namespace personal_context
