@@ -43,6 +43,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CleanupItems"/>
   <variant name="CleanupOldEntries"/>
   <variant name="DeleteAllUrls"/>
+  <variant name="InitDatabase"/>
   <variant name="OnUrlValidated"/>
   <variant name="RemoveUrls"/>
   <variant name="RunReadOnlyQueries"/>

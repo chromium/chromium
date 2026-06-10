@@ -128,7 +128,7 @@ UkmDatabaseBackend::~UkmDatabaseBackend() {
 }
 
 bool UkmDatabaseBackend::InitDatabase() {
-  SCOPED_UMA_HISTOGRAM_TIMER("SegmentationPlatform.UkmDatabase.InitTime");
+  SCOPED_UMA_HISTOGRAM_TIMER("SegmentationPlatform.Database.InitDatabase");
   base::File::Error error{};
   bool result = true;
   if (in_memory_) {
