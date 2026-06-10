@@ -121,6 +121,10 @@ class GlicDragAndDropPolicyTest extends ApiTestFixtureBase {
     assertEquals('cors-allowed.jpg', droppedData);
   }
 
+  async testWebToGlicDragMaterializationFromDetached() {
+    await this.testWebToGlicDragMaterialization();
+  }
+
   async testWebToGlicDragDlpBlocked() {
     const {dragEnterPromise, dragOverPromise, state} =
         this.setupDragAndDropHandlers();

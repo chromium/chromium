@@ -33,7 +33,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/drag_and_drop_test_utils.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -50,6 +49,8 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/window.h"
@@ -71,7 +72,7 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
   using InProcessBrowserTest::browser;
 
   GlicDragAndDropPolicyTest()
-      : GlicApiBrowserTest("./glic_drag_and_drop_interactive_uitest.js") {
+      : GlicApiBrowserTest("./glic_drag_and_drop_browsertest.js") {
     feature_list_.InitWithFeatures({features::kGlicDragAndDropFileUpload,
                                     features::kGlicWebDragAndDropFileUpload},
                                    {});
@@ -197,10 +198,6 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
       ADD_FAILURE() << "NavigateToURL failed";
       return nullptr;
     }
-    if (!ui_test_utils::BringBrowserWindowToFront(browser())) {
-      ADD_FAILURE() << "BringBrowserWindowToFront failed";
-      return nullptr;
-    }
     content::WebContents* source_wc =
         browser()->tab_strip_model()->GetActiveWebContents();
     if (!source_wc) {
@@ -249,34 +246,26 @@ class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
                                    "rect.top + rect.height / 2")
                        .ExtractDouble();
 
-    gfx::Rect container_bounds = source_wc->GetContainerBounds();
-    gfx::Point drag_start_point(container_bounds.x() + img_x,
-                                container_bounds.y() + img_y);
+    gfx::Point drag_start_point(img_x, img_y);
     gfx::Point drag_end_point = drag_start_point + gfx::Vector2d(100, 100);
 
-    // Start Gtest's real OS mouse drag events.
-    base::RunLoop drag_start_loop;
-    ui_controls::SendMouseMoveNotifyWhenDone(
-        drag_start_point.x(), drag_start_point.y(),
-        base::BindLambdaForTesting([&]() {
-          ui_controls::SendMouseEventsNotifyWhenDone(
-              ui_controls::LEFT, ui_controls::DOWN,
-              base::BindLambdaForTesting([&]() {
-                // Move in multiple steps to ensure Blink detects the drag.
-                ui_controls::SendMouseMove(drag_start_point.x() + 20,
-                                           drag_start_point.y() + 20);
-                ui_controls::SendMouseMove(drag_start_point.x() + 40,
-                                           drag_start_point.y() + 40);
-                ui_controls::SendMouseMoveNotifyWhenDone(
-                    drag_end_point.x(), drag_end_point.y(),
-                    base::BindLambdaForTesting([&]() {
-                      ui_controls::SendMouseEventsNotifyWhenDone(
-                          ui_controls::LEFT, ui_controls::UP,
-                          drag_start_loop.QuitClosure());
-                    }));
-              }));
-        }));
-    drag_start_loop.Run();
+    content::SimulateMouseEvent(
+        source_wc, blink::WebInputEvent::Type::kMouseDown,
+        blink::WebMouseEvent::Button::kLeft, drag_start_point);
+    content::SimulateMouseEvent(source_wc,
+                                blink::WebInputEvent::Type::kMouseMove,
+                                blink::WebMouseEvent::Button::kLeft,
+                                drag_start_point + gfx::Vector2d(20, 20));
+    content::SimulateMouseEvent(source_wc,
+                                blink::WebInputEvent::Type::kMouseMove,
+                                blink::WebMouseEvent::Button::kLeft,
+                                drag_start_point + gfx::Vector2d(40, 40));
+    content::SimulateMouseEvent(
+        source_wc, blink::WebInputEvent::Type::kMouseMove,
+        blink::WebMouseEvent::Button::kLeft, drag_end_point);
+    content::SimulateMouseEvent(source_wc, blink::WebInputEvent::Type::kMouseUp,
+                                blink::WebMouseEvent::Button::kLeft,
+                                drag_end_point);
   }
 
  private:
@@ -462,6 +451,82 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest,
   histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult",
                                       GlicDragAndDropValidationResult::kSuccess,
                                       1);
+}
+
+// Linux does not natively support direct in-memory FileContents retrieval
+// inside OSExchangeData. Web-to-Glic drag-and-drop is fully supported on macOS,
+// Windows and ChromeOS, so this specific materialization test is disabled on
+// Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_testWebToGlicDragMaterializationFromDetached \
+  DISABLED_testWebToGlicDragMaterializationFromDetached
+#else
+#define MAYBE_testWebToGlicDragMaterializationFromDetached \
+  testWebToGlicDragMaterializationFromDetached
+#endif
+IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest,
+                       MAYBE_testWebToGlicDragMaterializationFromDetached) {
+  base::HistogramTester histogram_tester;
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                SuccessfulResponse({"dlp"});
+          }),
+          "fake-dm-token"));
+
+  // 1. Open GLIC as detached and prepare the guest.
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTabAndDetach());
+  EXPECT_TRUE(glic_instance->IsDetached());
+  Host* glic_host = &glic_instance->host();
+  PrepareGuestForDrag(*glic_host);
+
+  // 2. Setup Source Tab with an image.
+  content::WebContents* source_wc = SetupSourceTabWithDraggableImage();
+  ASSERT_TRUE(source_wc);
+
+  // 3. Setup the drop simulation to run WHILE the source drag is active.
+  drag_and_drop_test_utils::DragAndDropSimulator simulator(
+      glic_host->webui_contents());
+  gfx::Point host_relative_point = GetGuestCenterInHost(*glic_host);
+
+  // 4. Start waiting for a drag to initiate.
+  drag_and_drop_test_utils::DragStartWaiter waiter(
+      source_wc, base::BindLambdaForTesting([&]() {
+        base::ScopedClosureRunner release_runner(base::BindOnce(
+            &drag_and_drop_test_utils::DragStartWaiter::ReleaseDrag,
+            base::Unretained(&waiter)));
+
+        simulator.SimulateDragEnter(host_relative_point,
+                                    waiter.TakeCapturedData());
+        simulator.SimulateDrop(host_relative_point);
+      }));
+  waiter.SuppressPassingStartDragFurther();
+
+  // 5. Simulate a real drag starting in the source tab.
+  SimulateMouseDragFromImage(source_wc);
+
+  // 6. Wait for the entire drag-and-drop sequence to finish.
+  waiter.WaitUntilDragStart();
+
+  ContinueJsTest();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount("Glic.InvokeResult.WebDragDrop",
+                                           0 /* kSuccess */) == 1;
+  }));
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ContentType",
+                                      GlicDragAndDropContentType::kImage, 1);
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult",
+                                      GlicDragAndDropValidationResult::kSuccess,
+                                      1);
+
+  // Verify that the GlicInstance remains detached and did not attach to the
+  // source tab.
+  EXPECT_TRUE(glic_instance->IsDetached());
 }
 
 // Linux does not natively support direct in-memory FileContents retrieval
