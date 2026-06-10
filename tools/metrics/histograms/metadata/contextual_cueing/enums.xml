@@ -136,6 +136,9 @@ chromium-metrics-reviews@google.com.
     Cue could not be shown because not enough time has passed since the last
     click.
   </int>
+  <int value="30" label="Cue not shown: anchored message already showing">
+    Cue could not be shown because another anchored message is already showing.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:ContextualCueingDecision) -->
