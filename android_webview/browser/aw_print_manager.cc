@@ -62,8 +62,8 @@ void AwPrintManager::BindPrintManagerHost(
 }
 
 void AwPrintManager::PdfWritingDone(int page_count) {
-  // Invalidate the file descriptor so it doesn't get reused.
-  fd_ = base::kInvalidFd;
+  // The fd_ should have been reset when printing started.
+  CHECK_EQ(fd_, base::kInvalidFd);
   // Trigger the callback to notify the embedding application that printing is
   // done. A non-positive `page_count` value (<=0) will be presented as an error
   // callback to the application.
@@ -145,6 +145,16 @@ void AwPrintManager::ScriptedPrint(
 void AwPrintManager::DidPrintDocument(
     printing::mojom::DidPrintDocumentParamsPtr params,
     DidPrintDocumentCallback callback) {
+  // Exchange the fd_ with kInvalidFd here to prevent it from being used more
+  // than once.
+  int print_fd = std::exchange(fd_, base::kInvalidFd);
+
+  if (print_fd == base::kInvalidFd) {
+    PdfWritingDone(0);
+    std::move(callback).Run(false);
+    return;
+  }
+
   if (params->document_cookie != cookie()) {
     PdfWritingDone(0);
     std::move(callback).Run(false);
@@ -176,7 +186,8 @@ void AwPrintManager::DidPrintDocument(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
       ->PostTaskAndReplyWithResult(
-          FROM_HERE, base::BindOnce(&SaveDataToFd, fd_, number_pages(), data),
+          FROM_HERE,
+          base::BindOnce(&SaveDataToFd, print_fd, number_pages(), data),
           base::BindOnce(&AwPrintManager::OnDidPrintDocumentWritingDone,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
