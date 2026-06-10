@@ -11,7 +11,8 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 # since it depends on aura::WindowOcclusionTracker which is not
 # supported on Linux.
 use_web_contents_occlusion_helper = is_win || is_chromeos || is_mac
-use_stub_occlusion_helper = is_android || is_linux
+use_widget_occlusion_helper = is_linux
+use_stub_occlusion_helper = is_android
 
 source_set("picture_in_picture") {
   sources = [
@@ -73,6 +74,10 @@ source_set("picture_in_picture") {
   if (use_web_contents_occlusion_helper) {
     sources +=
         [ "auto_picture_in_picture_window_occlusion_helper_web_contents.h" ]
+  }
+  if (use_widget_occlusion_helper) {
+    sources += [ "auto_picture_in_picture_window_occlusion_helper_widget.h" ]
+    public_deps += [ "//chrome/browser/ui/browser_window" ]
   }
 }
 
@@ -160,6 +165,9 @@ source_set("impl") {
   if (use_web_contents_occlusion_helper) {
     sources +=
         [ "auto_picture_in_picture_window_occlusion_helper_web_contents.cc" ]
+  }
+  if (use_widget_occlusion_helper) {
+    sources += [ "auto_picture_in_picture_window_occlusion_helper_widget.cc" ]
   }
   if (use_stub_occlusion_helper) {
     sources += [ "auto_picture_in_picture_window_occlusion_helper_stub.cc" ]
@@ -299,12 +307,8 @@ if (!is_android) {
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    if (use_stub_occlusion_helper) {
-      sources = []
-    } else {
-      sources =
-          [ "auto_picture_in_picture_window_occlusion_interactive_uitest.cc" ]
-    }
+    sources =
+        [ "auto_picture_in_picture_window_occlusion_interactive_uitest.cc" ]
 
     deps = [
       ":picture_in_picture",
