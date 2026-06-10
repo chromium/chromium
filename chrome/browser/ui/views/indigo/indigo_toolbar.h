@@ -21,11 +21,14 @@ namespace views {
 class View;
 }  // namespace views
 
-DECLARE_UI_CLASS_PROPERTY_TYPE(gfx::Point*)
+DECLARE_UI_CLASS_PROPERTY_TYPE(gfx::Rect*)
+DECLARE_UI_CLASS_PROPERTY_TYPE(gfx::Vector2d*)
 
 namespace indigo {
 
-extern const ui::ClassProperty<gfx::Point*>* const kIndigoToolbarOffsetKey;
+extern const ui::ClassProperty<gfx::Rect*>* const kIndigoTrackedElementRectKey;
+extern const ui::ClassProperty<gfx::Vector2d*>* const
+    kIndigoToolbarCornerOffsetKey;
 
 std::unique_ptr<views::View> CreateIndigoOverlayView();
 
@@ -67,23 +70,9 @@ class IndigoToolbar {
   // unit tests), and this toolbar's view coordinates with it to arrange its
   // layout.
   void Show(views::View* parent_view);
-
-  // Shows the toolbar at a position computed by the given callback.
-  // The callback `toolbar_origin_func` receives the preferred size of the
-  // toolbar view, excluding the view shadow, and should return the origin point
-  // of the content area (also excluding the view shadow, relative to the web
-  // view) where the toolbar should be placed. This is useful when the
-  // positioning depends on the toolbar's preferred size, which is only known
-  // after layout.
-  //
-  // `parent_view` should be the ContentsContainerView, as described above,
-  // except in unit tests.
-  void ShowAt(
-      views::View* parent_view,
-      base::FunctionRef<gfx::Point(const gfx::Size&)> toolbar_origin_func);
-
-  void ShowInside(views::View* parent_view, const gfx::Rect& rect);
   void Hide();
+
+  void UpdateTrackedPosition(const gfx::Rect& rect);
 
   // Reclaims ownership of the toolbar view when the tab is hidden.
   void TabWillBecomeHidden();

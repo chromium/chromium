@@ -33,6 +33,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
@@ -45,7 +46,8 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(gfx::Point*)
 
 namespace indigo {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Point, kIndigoToolbarOffsetKey)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kIndigoTrackedElementRectKey)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Vector2d, kIndigoToolbarCornerOffsetKey)
 
 namespace {
 
@@ -78,7 +80,7 @@ class IndigoOverlayTargeterDelegate : public views::ViewTargeterDelegate {
   }
 };
 
-class IndigoOverlayLayoutManager : public views::LayoutManager {
+class IndigoOverlayLayoutManager : public views::LayoutManagerBase {
  public:
   IndigoOverlayLayoutManager() = default;
   IndigoOverlayLayoutManager(const IndigoOverlayLayoutManager&) = delete;
@@ -86,38 +88,44 @@ class IndigoOverlayLayoutManager : public views::LayoutManager {
       delete;
   ~IndigoOverlayLayoutManager() override = default;
 
-  void Layout(views::View* host) override {
-    for (views::View* child : host->children()) {
-      if (!child->GetVisible()) {
-        continue;
-      }
-      const gfx::Point* offset = child->GetProperty(kIndigoToolbarOffsetKey);
-      gfx::Size preferred_size = child->GetPreferredSize();
-      if (offset) {
-        child->SetBoundsRect(gfx::Rect(*offset, preferred_size));
-      } else {
-        child->SetBoundsRect(gfx::Rect(gfx::Point(), preferred_size));
-      }
-    }
-  }
-
-  gfx::Size GetPreferredSize(const views::View* host) const override {
+ protected:
+  views::ProposedLayout CalculateProposedLayout(
+      const views::SizeBounds& size_bounds) const override {
+    views::ProposedLayout layout;
     gfx::Rect bounds;
-    for (const views::View* child : host->children()) {
-      if (!child->GetVisible()) {
+
+    for (views::View* child : host_view()->children()) {
+      if (!IsChildIncludedInLayout(child)) {
         continue;
       }
-      const gfx::Point* offset = child->GetProperty(kIndigoToolbarOffsetKey);
-      gfx::Point origin = offset ? *offset : gfx::Point();
-      bounds.Union(gfx::Rect(origin, child->GetPreferredSize()));
+      gfx::Size preferred_size = child->GetPreferredSize(views::SizeBounds());
+      gfx::Point origin = GetChildOrigin(child);
+      gfx::Rect child_bounds(origin, preferred_size);
+      layout.child_layouts.push_back(
+          {child, child->GetVisible(), child_bounds, size_bounds});
+      bounds.Union(child_bounds);
     }
-    return bounds.size();
+    layout.host_size = bounds.size();
+    return layout;
   }
 
-  gfx::Size GetPreferredSize(
-      const views::View* host,
-      const views::SizeBounds& available_size) const override {
-    return GetPreferredSize(host);
+ private:
+  gfx::Point GetChildOrigin(const views::View* child) const {
+    const gfx::Rect* tracked_rect =
+        child->GetProperty(kIndigoTrackedElementRectKey);
+    const gfx::Vector2d* corner_offset =
+        child->GetProperty(kIndigoToolbarCornerOffsetKey);
+    gfx::Size preferred_size = child->GetPreferredSize();
+    gfx::Insets insets = child->GetInsets();
+
+    if (tracked_rect && !tracked_rect->IsEmpty() && corner_offset) {
+      gfx::Point top_right = tracked_rect->top_right();
+      gfx::Point toolbar_top_right = top_right + *corner_offset;
+      return gfx::Point(
+          toolbar_top_right.x() - preferred_size.width() + insets.right(),
+          toolbar_top_right.y() - insets.top());
+    }
+    return gfx::Point(kToolbarInitialOffset, kToolbarInitialOffset);
   }
 };
 
@@ -343,9 +351,7 @@ std::unique_ptr<views::Button> IndigoToolbar::CreateExpandedButton(
       .Build();
 }
 
-void IndigoToolbar::ShowAt(
-    views::View* parent_view,
-    base::FunctionRef<gfx::Point(const gfx::Size&)> toolbar_origin_func) {
+void IndigoToolbar::Show(views::View* parent_view) {
   views::View* view = view_tracker_.view();
   if (!view) {
     owned_view_ = CreateToolbarView();
@@ -353,19 +359,17 @@ void IndigoToolbar::ShowAt(
     view_tracker_.SetView(view);
   }
 
-  gfx::Insets insets = view->GetInsets();
-  gfx::Size preferred_size = view->GetPreferredSize();
-  gfx::Size content_size = preferred_size;
-  content_size.Enlarge(-insets.width(), -insets.height());
-  gfx::Point point = toolbar_origin_func(content_size);
+  // Default properties: initially unanchored with default corner offset.
+  view->SetProperty(kIndigoTrackedElementRectKey, gfx::Rect());
+  view->SetProperty(
+      kIndigoToolbarCornerOffsetKey,
+      gfx::Vector2d(-kToolbarInitialOffset, kToolbarInitialOffset));
 
-  gfx::Point preferred_offset = point;
-  preferred_offset.Offset(-insets.left(), -insets.top());
-  view->SetProperty(kIndigoToolbarOffsetKey, preferred_offset);
+  view->SetVisible(false);
 
   if (!parent_view) {
-    // View is created and offset is stored in owned_view_, but cannot be shown
-    // yet.
+    // View is created and properties are stored in owned_view_, but cannot be
+    // shown yet.
     return;
   }
 
@@ -376,20 +380,6 @@ void IndigoToolbar::ShowAt(
   } else {
     view->InvalidateLayout();
   }
-}
-
-void IndigoToolbar::Show(views::View* parent_view) {
-  ShowAt(parent_view, [](const gfx::Size& size) {
-    return gfx::Point(kToolbarInitialOffset, kToolbarInitialOffset);
-  });
-}
-
-void IndigoToolbar::ShowInside(views::View* parent_view,
-                               const gfx::Rect& rect) {
-  ShowAt(parent_view, [rect](const gfx::Size& size) {
-    return gfx::Point(rect.right() - size.width() - kToolbarInitialOffset,
-                      rect.y() + kToolbarInitialOffset);
-  });
 }
 
 void IndigoToolbar::Hide() {
@@ -459,6 +449,17 @@ void IndigoToolbar::OnReplacePhotoClicked() {
 
 void IndigoToolbar::OnDeletePhotoClicked() {
   delegate_->OnDeleteOriginalPhoto(this);
+}
+
+void IndigoToolbar::UpdateTrackedPosition(const gfx::Rect& rect) {
+  views::View* view = view_tracker_.view();
+  if (view) {
+    view->SetVisible(!rect.IsEmpty());
+    view->SetProperty(kIndigoTrackedElementRectKey, rect);
+    if (view->parent()) {
+      view->parent()->InvalidateLayout();
+    }
+  }
 }
 
 }  // namespace indigo

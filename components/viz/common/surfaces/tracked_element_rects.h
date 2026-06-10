@@ -30,7 +30,7 @@ enum class TrackedElementFeature : int32_t {
   kIframeTracking = 0,
   kPasswordTracking = 1,
   kTrackedElementFeatureEnd,
-  kTrackedElementFeatureMax = kTrackedElementFeatureEnd + 1,
+  kTrackedElementFeatureMax = kTrackedElementFeatureEnd + 2,
 };
 
 // New struct to hold the tracked element clipped/visible bounds and other data.
