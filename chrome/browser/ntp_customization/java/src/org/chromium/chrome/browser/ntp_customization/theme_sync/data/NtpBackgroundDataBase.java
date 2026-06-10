@@ -25,6 +25,7 @@ import java.util.Objects;
 public abstract class NtpBackgroundDataBase {
     public static final String PORTRAIT_MATRIX_KEY = "portraitMatrix";
     public static final String LANDSCAPE_MATRIX_KEY = "landscapeMatrix";
+    public static final String BACKGROUND_IMAGE_INFO_KEY = "backgroundImageInfo";
 
     @VisibleForTesting static final String PLATFORM_TYPE_KEY = "platformType";
     @VisibleForTesting static final String BACKGROUND_TYPE_KEY = "backgroundType";

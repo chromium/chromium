@@ -86,7 +86,13 @@ public class NtpBackgroundDataUtils {
         }
     }
 
-    /** Converts a {@link Point} to a {@link JSONArray}. */
+    /**
+     * Converts a {@link Point} to a {@link JSONArray}.
+     *
+     * @param point The {@link Point} to convert.
+     * @return The {@link JSONArray} representation of the {@link Point}, or null if the input is
+     *     null.
+     */
     public static @Nullable JSONArray pointToJsonArray(@Nullable Point point) {
         if (point == null) return null;
 
@@ -96,7 +102,13 @@ public class NtpBackgroundDataUtils {
         return jsonArray;
     }
 
-    /** Converts a {@link JSONArray} to a {@link Point}. */
+    /**
+     * Converts a {@link JSONArray} to a {@link Point}.
+     *
+     * @param jsonArray The {@link JSONArray} to convert.
+     * @return The {@link Point} represented by the {@link JSONArray}, or null if the input is null
+     *     or invalid.
+     */
     public static @Nullable Point jsonArrayToPoint(@Nullable JSONArray jsonArray) {
         if (jsonArray == null) return null;
 

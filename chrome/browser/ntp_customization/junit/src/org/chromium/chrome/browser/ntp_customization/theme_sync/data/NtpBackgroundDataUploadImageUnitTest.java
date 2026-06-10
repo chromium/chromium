@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization.theme_sync.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -20,6 +21,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase.PlatformType;
 
 /** Tests for {@link NtpBackgroundDataUploadImage}. */
@@ -28,15 +30,17 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgrou
 public class NtpBackgroundDataUploadImageUnitTest {
     @Test
     public void testEquals() {
+        BackgroundImageInfo info1 = new BackgroundImageInfo(new Matrix(), new Matrix(), null, null);
+        BackgroundImageInfo info2 = new BackgroundImageInfo(new Matrix(), new Matrix(), null, null);
         NtpBackgroundDataUploadImage data1 =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL, "path", Color.RED, new Matrix(), new Matrix());
+                        PlatformType.ANDROID_LOCAL, "path", info1, /* bitmap= */ null, Color.RED);
         NtpBackgroundDataUploadImage data2 =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL, "path", Color.RED, new Matrix(), new Matrix());
+                        PlatformType.ANDROID_LOCAL, "path", info2, /* bitmap= */ null, Color.RED);
         NtpBackgroundDataUploadImage data3 =
                 new NtpBackgroundDataUploadImage(
-                        PlatformType.ANDROID_LOCAL, "path2", Color.RED, new Matrix(), new Matrix());
+                        PlatformType.ANDROID_LOCAL, "path2", info1, /* bitmap= */ null, Color.RED);
 
         assertEquals(data1, data2);
         assertNotEquals(data1, data3);
@@ -49,13 +53,19 @@ public class NtpBackgroundDataUploadImageUnitTest {
         portraitMatrix.setTranslate(1f, 2f);
         Matrix landscapeMatrix = new Matrix();
         landscapeMatrix.setScale(0.5f, 0.5f);
+        BackgroundImageInfo backgroundImageInfo =
+                new BackgroundImageInfo(portraitMatrix, landscapeMatrix, null, null);
         String filePath = "/another/path.png";
         @PlatformType int platformType = PlatformType.ANDROID_LOCAL;
-        @ColorInt int primaryColor = Color.BLUE;
+        @ColorInt Integer primaryColor = Color.BLUE;
 
         NtpBackgroundDataUploadImage data =
                 new NtpBackgroundDataUploadImage(
-                        platformType, filePath, primaryColor, portraitMatrix, landscapeMatrix);
+                        platformType,
+                        filePath,
+                        backgroundImageInfo,
+                        /* bitmap= */ null,
+                        primaryColor);
 
         JSONObject json = data.toJson();
         NtpBackgroundDataUploadImage restored = NtpBackgroundDataUploadImage.fromJson(json);
@@ -64,7 +74,12 @@ public class NtpBackgroundDataUploadImageUnitTest {
         assertEquals(NtpBackgroundType.IMAGE_FROM_DISK, restored.getBackgroundType());
         assertEquals(filePath, restored.getLastUploadImageFilePath());
         assertEquals(primaryColor, restored.getPrimaryColor());
-        assertEquals(portraitMatrix, restored.getPortraitMatrix());
-        assertEquals(landscapeMatrix, restored.getLandscapeMatrix());
+        assertNotNull(restored.getBackgroundImageInfo());
+        assertEquals(
+                portraitMatrix.toShortString(),
+                restored.getBackgroundImageInfo().getPortraitMatrix().toShortString());
+        assertEquals(
+                landscapeMatrix.toShortString(),
+                restored.getBackgroundImageInfo().getLandscapeMatrix().toShortString());
     }
 }
