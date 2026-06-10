@@ -38,7 +38,11 @@ public class BottomBarView extends LinearLayout {
     private BottomBarButtonContainer[] mOtherContainers;
     private RippleDrawable[] mOtherRipples;
     private @Nullable Boolean mIsIncognito;
-    private boolean mNewTabBackgroundVisible;
+    private @Nullable Boolean mNewTabBackgroundVisible;
+    private int mNewTabPaddingStart;
+    private int mNewTabPaddingTop;
+    private int mNewTabPaddingEnd;
+    private int mNewTabPaddingBottom;
 
     public BottomBarView(Context context, @Nullable AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -72,6 +76,11 @@ public class BottomBarView extends LinearLayout {
                     mHomeContainer, mExtraContainer, mTabSwitcherContainer, mAppMenuContainer
                 };
         mOtherRipples = new RippleDrawable[mOtherContainers.length];
+
+        mNewTabPaddingStart = mNewTabButton.getPaddingStart();
+        mNewTabPaddingTop = mNewTabButton.getPaddingTop();
+        mNewTabPaddingEnd = mNewTabButton.getPaddingEnd();
+        mNewTabPaddingBottom = mNewTabButton.getPaddingBottom();
     }
 
     void setColorScheme(@BrandedColorScheme int colorScheme) {
@@ -96,8 +105,8 @@ public class BottomBarView extends LinearLayout {
                 mOtherContainers[i].setTargetBackground(mOtherRipples[i]);
             }
             mNewTabRippleNoBackground = createHoverableRipple(isIncognito);
-            if (!mNewTabBackgroundVisible) {
-                mNewTabButton.setBackground(mNewTabRippleNoBackground);
+            if (mNewTabBackgroundVisible == null || !mNewTabBackgroundVisible) {
+                setNewTabButtonBackground(mNewTabRippleNoBackground);
             }
         }
 
@@ -127,12 +136,24 @@ public class BottomBarView extends LinearLayout {
     }
 
     /*package*/ void setNewTabBackgroundVisible(boolean visible) {
+        if (mNewTabBackgroundVisible != null && mNewTabBackgroundVisible == visible) {
+            return;
+        }
         mNewTabBackgroundVisible = visible;
         if (visible) {
-            mNewTabButton.setBackground(mNewTabRippleBackground);
+            setNewTabButtonBackground(mNewTabRippleBackground);
         } else {
-            mNewTabButton.setBackground(mNewTabRippleNoBackground);
+            setNewTabButtonBackground(mNewTabRippleNoBackground);
         }
+    }
+
+    private void setNewTabButtonBackground(Drawable drawable) {
+        if (mNewTabButton.getBackground() == drawable) {
+            return;
+        }
+        mNewTabButton.setBackground(drawable);
+        mNewTabButton.setPaddingRelative(
+                mNewTabPaddingStart, mNewTabPaddingTop, mNewTabPaddingEnd, mNewTabPaddingBottom);
     }
 
     /**

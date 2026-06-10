@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.bottombar;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.SystemClock;
 
@@ -27,6 +28,8 @@ import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -89,8 +92,10 @@ public class BottomBarMediator
     private boolean mGlicTimeToAppearRecorded;
     private long mBottomBarShownTimeMs = -1;
     private long mGlicAppearedTimeMs = -1;
+    private final Context mContext;
 
     /**
+     * @param context The context to use for the bottom bar.
      * @param model The property model to update.
      * @param buttonManager The {@link BottomBarButtonManager} for the bottom bar buttons.
      * @param themeColorProvider The provider to observe theme changes from.
@@ -105,6 +110,7 @@ public class BottomBarMediator
      * @param actionRegistry The {@link ActionRegistry}.
      */
     public BottomBarMediator(
+            Context context,
             PropertyModel model,
             BottomBarButtonManager buttonManager,
             ThemeColorProvider themeColorProvider,
@@ -116,6 +122,7 @@ public class BottomBarMediator
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             BottomBarPromoDialogCoordinator promoDialogCoordinator,
             ActionRegistry actionRegistry) {
+        mContext = context;
         mModel = model;
         mButtonManager = buttonManager;
         mThemeColorProvider = themeColorProvider;
@@ -307,10 +314,18 @@ public class BottomBarMediator
         PropertyModel glicModel = mGlicActionSupplier.get();
         if (glicModel == null) return;
 
+        HighlightParams glicHighlightParams = new HighlightParams(HighlightShape.RECTANGLE);
+        glicHighlightParams.setBoundsRespectPadding(true);
+        int circleRadius =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_bar_button_highlight_radius);
+        glicHighlightParams.setCornerRadius(circleRadius);
+
         IphIntent glicIph =
                 new IphIntent.Builder(FeatureConstants.ANDROID_BOTTOM_BAR_GLIC)
                         .setStringResId(R.string.iph_android_bottom_bar_glic)
                         .setAccessibilityResId(R.string.iph_android_bottom_bar_glic)
+                        .setHighlightParams(glicHighlightParams)
                         .setOnDismissCallback(this::triggerNewTabIph)
                         .build();
 
@@ -321,13 +336,26 @@ public class BottomBarMediator
         PropertyModel newTabModel = mNewTabActionSupplier.get();
         if (newTabModel == null) return;
 
-        IphIntent newTabIph =
+        IphIntent.Builder newTabIphBuilder =
                 new IphIntent.Builder(FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB)
                         .setStringResId(R.string.iph_android_bottom_bar_new_tab)
-                        .setAccessibilityResId(R.string.iph_android_bottom_bar_new_tab)
-                        .build();
+                        .setAccessibilityResId(R.string.iph_android_bottom_bar_new_tab);
 
-        newTabModel.set(ActionProperties.IPH_INTENT, newTabIph);
+        HighlightParams newTabHighlightParams = new HighlightParams(HighlightShape.RECTANGLE);
+        newTabHighlightParams.setBoundsRespectPadding(true);
+        if (mButtonManager.hasCenteredButton()) {
+            newTabHighlightParams.setCornerRadius(
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.bottom_bar_new_tab_background_radius));
+        } else {
+            int circleRadius =
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.bottom_bar_button_highlight_radius);
+            newTabHighlightParams.setCornerRadius(circleRadius);
+        }
+        newTabIphBuilder.setHighlightParams(newTabHighlightParams);
+
+        newTabModel.set(ActionProperties.IPH_INTENT, newTabIphBuilder.build());
     }
 
     @Override

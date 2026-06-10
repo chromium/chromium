@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -119,6 +120,12 @@ public class BottomBarMediatorUnitTest {
 
         when(mView.getContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
+        when(mResources.getDimensionPixelSize(R.dimen.bottom_bar_new_tab_background_radius))
+                .thenReturn(12);
+        when(mResources.getDimensionPixelSize(R.dimen.bottom_bar_new_tab_background_size))
+                .thenReturn(40);
+        when(mResources.getDimensionPixelSize(R.dimen.bottom_bar_button_highlight_radius))
+                .thenReturn(20);
     }
 
     @After
@@ -583,6 +590,10 @@ public class BottomBarMediatorUnitTest {
         assertNotNull(command);
         assertEquals(FeatureConstants.ANDROID_BOTTOM_BAR_GLIC, command.featureName);
         assertNotNull(command.onDismissCallback);
+        assertNotNull(command.highlightParams);
+        assertEquals(HighlightShape.RECTANGLE, command.highlightParams.getShape());
+        assertTrue(command.highlightParams.getBoundsRespectPadding());
+        assertEquals(20, command.highlightParams.getCornerRadius());
 
         // Simulate dismissing the Glic IPH, which chains to the New Tab IPH.
         command.onDismissCallback.run();
@@ -591,6 +602,60 @@ public class BottomBarMediatorUnitTest {
         assertNotNull(newTabIph);
         assertEquals(
                 FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB, newTabIph.getFeatureNameForTesting());
+
+        newTabIph.tryShow(mView, mUserEducationHelper);
+        ArgumentCaptor<IphCommand> newTabCommandCaptor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper, times(2)).requestShowIph(newTabCommandCaptor.capture());
+        IphCommand newTabCommand = newTabCommandCaptor.getAllValues().get(1);
+        assertNotNull(newTabCommand);
+        assertEquals(FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB, newTabCommand.featureName);
+        assertNotNull(newTabCommand.highlightParams);
+        assertEquals(HighlightShape.RECTANGLE, newTabCommand.highlightParams.getShape());
+        assertTrue(newTabCommand.highlightParams.getBoundsRespectPadding());
+        assertEquals(20, newTabCommand.highlightParams.getCornerRadius());
+    }
+
+    @Test
+    public void testNewTabIphHighlight_WithCenteredButton() {
+        when(mButtonManager.hasCenteredButton()).thenReturn(true);
+        PropertyModel glicModel = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
+        PropertyModel newTabModel = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
+        mGlicActionSupplier.set(glicModel);
+        mNewTabActionSupplier.set(newTabModel);
+
+        createMediator(/* shouldIncludeHomeButton= */ true);
+        assertNotNull(mMediator);
+
+        mMediator.onPromoDialogAccepted();
+
+        IphIntent glicIph = glicModel.get(ActionProperties.IPH_INTENT);
+        assertNotNull(glicIph);
+        glicIph.tryShow(mView, mUserEducationHelper);
+
+        ArgumentCaptor<IphCommand> commandCaptor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper, times(1)).requestShowIph(commandCaptor.capture());
+        IphCommand command = commandCaptor.getValue();
+        assertNotNull(command);
+
+        // Dismiss Glic IPH to chain to New Tab IPH.
+        command.onDismissCallback.run();
+
+        IphIntent newTabIph = newTabModel.get(ActionProperties.IPH_INTENT);
+        assertNotNull(newTabIph);
+
+        newTabIph.tryShow(mView, mUserEducationHelper);
+        ArgumentCaptor<IphCommand> newTabCommandCaptor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper, times(2)).requestShowIph(newTabCommandCaptor.capture());
+        IphCommand newTabCommand = newTabCommandCaptor.getAllValues().get(1);
+        assertNotNull(newTabCommand);
+        assertEquals(FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB, newTabCommand.featureName);
+        assertNotNull(newTabCommand.highlightParams);
+        assertEquals(HighlightShape.RECTANGLE, newTabCommand.highlightParams.getShape());
+        assertTrue(newTabCommand.highlightParams.getBoundsRespectPadding());
+
+        // Corner radius should be 12 (from bottom_bar_new_tab_background_radius) because
+        // hasCenteredButton is true.
+        assertEquals(12, newTabCommand.highlightParams.getCornerRadius());
     }
 
     @Test
@@ -619,6 +684,7 @@ public class BottomBarMediatorUnitTest {
     private void createMediator(boolean shouldIncludeHomeButton) {
         mMediator =
                 new BottomBarMediator(
+                        mContext,
                         mModel,
                         mButtonManager,
                         mThemeColorProvider,
