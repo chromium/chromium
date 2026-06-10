@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_UTILS_H_
 
+#include <functional>
+
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
@@ -12,6 +15,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_tracker.h"
 
 namespace content {
 class WebContents;
@@ -172,6 +176,32 @@ std::optional<gfx::Rect> GetDisplayBounds(const gfx::Rect& element_bounds);
 // Returns the intersection between the given element and its display.
 // If no display data is available, returns provided element bounds.
 gfx::Rect IntersectWithDisplayBounds(const gfx::Rect& element_bounds);
+
+// Tracks the lifetime of `view` and runs a sequence of `callbacks` in order.
+// Aborts the sequence early and returns `false` if `view` is destroyed
+// during any of the calls. Returns `true` if the view survived the entire
+// sequence.
+//
+// This is typically used to prevent Use-After-Free (UAF) vulnerabilities on
+// Windows when firing platform accessibility events (e.g., focus or selection
+// changes).
+template <typename... Callables>
+bool TrackAndRun(views::View* view, Callables&&... callbacks) {
+  CHECK(view);
+  views::ViewTracker tracker(view);
+  bool alive = true;
+
+  auto run_one = [&](auto&& cb) {
+    if (alive) {
+      std::invoke(std::forward<decltype(cb)>(cb));
+      alive = (tracker.view() != nullptr);
+    }
+  };
+
+  (run_one(std::forward<Callables>(callbacks)), ...);
+
+  return alive;
+}
 
 }  // namespace autofill
 

@@ -190,17 +190,33 @@ views::View* PopupRowWithButtonView::GetButtonContainer() {
 }
 
 void PopupRowWithButtonView::HandleKeyPressEventFocusOnButton() {
-  button_->GetViewAccessibility().SetPopupFocusOverride();
-  button_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection,
+  if (!TrackAndRun(
+          this,
+          [this]() { button_->GetViewAccessibility().SetPopupFocusOverride(); },
+          [this]() {
+            button_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection,
                                               true);
+          })) {
+    return;
+  }
   views::InkDrop::Get(button_->ink_drop_view())->GetInkDrop()->SetHovered(true);
   UpdateFocusedPartAndSelectedSuggestion(RowWithButtonPart::kButton);
 }
 
 void PopupRowWithButtonView::HandleKeyPressEventFocusOnContent() {
-  UpdateFocusedPartAndSelectedSuggestion(RowWithButtonPart::kContent);
-  GetContentView().GetViewAccessibility().SetPopupFocusOverride();
-  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
+  if (!TrackAndRun(
+          this,
+          [this]() {
+            UpdateFocusedPartAndSelectedSuggestion(RowWithButtonPart::kContent);
+          },
+          [this]() {
+            GetContentView().GetViewAccessibility().SetPopupFocusOverride();
+          },
+          [this]() {
+            NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
+          })) {
+    return;
+  }
   views::InkDrop::Get(button_->ink_drop_view())
       ->GetInkDrop()
       ->SetHovered(false);
@@ -247,7 +263,11 @@ bool PopupRowWithButtonView::HandleKeyPressEvent(
 }
 
 void PopupRowWithButtonView::SetSelectedCell(std::optional<CellType> cell) {
-  autofill::PopupRowView::SetSelectedCell(cell);
+  if (!TrackAndRun(this, [this, cell]() {
+        autofill::PopupRowView::SetSelectedCell(cell);
+      })) {
+    return;
+  }
 
   button_->SetVisible(ShouldButtonBeVisible());
 
