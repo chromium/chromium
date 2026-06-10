@@ -25,6 +25,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.FrameLayout;
@@ -34,7 +35,6 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.view.accessibility.AccessibilityEventCompat;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
 import org.chromium.base.Callback;
@@ -460,9 +460,9 @@ public class FindToolbar extends LinearLayout implements BackPressHandler, SideU
                             // to a view, which is discouraged in general but reasonable in this
                             // case.
                             mFindQuery.sendAccessibilityEvent(
-                                    AccessibilityEventCompat.TYPE_VIEW_HOVER_ENTER);
+                                    AccessibilityEvent.TYPE_VIEW_HOVER_ENTER);
                             mFindQuery.sendAccessibilityEvent(
-                                    AccessibilityEventCompat.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
+                                    AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
                         }
                     },
                     0);
