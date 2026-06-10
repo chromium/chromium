@@ -133,6 +133,13 @@ DesktopDragDropClientOzone::DesktopDragDropClientOzone(
     ui::WmDragHandler* drag_handler)
     : root_window_(root_window), drag_handler_(drag_handler) {}
 
+// static
+base::AutoReset<bool>
+DesktopDragDropClientOzone::ScopedSuppressForWindowMove() {
+  DCHECK(!g_is_dragging);
+  return base::AutoReset<bool>(&g_is_dragging, true);
+}
+
 DesktopDragDropClientOzone::~DesktopDragDropClientOzone() {
   ResetDragDropTarget();
   observers_.Notify(
