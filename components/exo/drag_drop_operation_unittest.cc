@@ -28,8 +28,11 @@
 #include "components/exo/test/test_data_source_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/client/drag_drop_client.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "url/gurl.h"
@@ -44,6 +47,30 @@ using ::testing::Property;
 using ::testing::Return;
 
 constexpr char kTextMimeType[] = "text/plain";
+
+class TestDragDropController : public ash::DragDropController {
+ public:
+  explicit TestDragDropController(base::OnceClosure quit_closure)
+      : quit_closure_(std::move(quit_closure)) {}
+  ~TestDragDropController() override = default;
+
+  ui::mojom::DragOperation StartDragAndDrop(
+      std::unique_ptr<ui::OSExchangeData> data,
+      aura::Window* root_window,
+      aura::Window* source_window,
+      const gfx::Point& screen_location,
+      int allowed_operations,
+      ui::mojom::DragEventSource source) override {
+    captured_data_ = std::move(data);
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+    return ui::mojom::DragOperation::kNone;
+  }
+
+  std::unique_ptr<ui::OSExchangeData> captured_data_;
+  base::OnceClosure quit_closure_;
+};
 
 }  // namespace
 
@@ -274,6 +301,109 @@ TEST_F(DragDropOperationTest, DragDropFromNestedPopup) {
   generator.ReleaseLeftButton();
   EXPECT_EQ(0, GetDragStartCountAndReset());
   EXPECT_EQ(1, GetDragEndCountAndReset());
+}
+
+TEST_F(DragDropOperationTest, WebCustomDataFiltersFilesAppKeysAndTaints) {
+  TestDataExchangeDelegate data_exchange_delegate;
+  data_exchange_delegate.set_endpoint_type(ui::EndpointType::kCrostini);
+
+  base::flat_map<std::u16string, std::u16string> custom_data;
+  custom_data[u"text/uri-list"] = u"data";
+  custom_data[u"fs/tag"] = u"filemanager-data";
+  custom_data[u"fs/sources"] =
+      u"filesystem:chrome://file-manager/external/Downloads-u-HASH/secret.txt";
+  custom_data[u"safe_key"] = u"safe_value";
+  base::Pickle pickle;
+  ui::WriteCustomDataToPickle(custom_data, &pickle);
+  std::string custom_data_str(pickle.AsStringView());
+
+  auto delegate = std::make_unique<TestDataSourceDelegate>();
+  auto data_source = std::make_unique<DataSource>(delegate.get());
+  const std::string kMimeType = "chromium/x-web-custom-data";
+  delegate->SetData(kMimeType, std::move(custom_data_str));
+  data_source->Offer(kMimeType);
+
+  auto origin_surface = std::make_unique<Surface>();
+  ash::Shell::GetPrimaryRootWindow()->AddChild(origin_surface->window());
+
+  auto* original_dnd_controller =
+      aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow());
+  {
+    base::RunLoop run_loop;
+    auto test_drag_drop_controller =
+        std::make_unique<TestDragDropController>(run_loop.QuitClosure());
+    aura::client::SetDragDropClient(ash::Shell::GetPrimaryRootWindow(),
+                                    test_drag_drop_controller.get());
+
+    auto operation = DragDropOperation::Create(
+        &data_exchange_delegate, data_source.get(), origin_surface.get(),
+        /*icon=*/nullptr, gfx::PointF(), ui::mojom::DragEventSource::kMouse);
+
+    run_loop.Run();
+
+    ASSERT_TRUE(test_drag_drop_controller->captured_data_);
+    ui::OSExchangeData* captured_data =
+        test_drag_drop_controller->captured_data_.get();
+
+    EXPECT_TRUE(captured_data->IsRendererTainted());
+
+    std::optional<base::Pickle> captured_pickle = captured_data->GetPickledData(
+        ui::ClipboardFormatType::DataTransferCustomType());
+    ASSERT_TRUE(captured_pickle.has_value());
+
+    auto map = ui::ReadCustomDataIntoMap(*captured_pickle);
+    ASSERT_TRUE(map.has_value());
+
+    auto it_uri = map->find(u"text/uri-list");
+    ASSERT_NE(it_uri, map->end());
+    EXPECT_EQ(it_uri->second, u"data");
+
+    auto it_safe = map->find(u"safe_key");
+    ASSERT_NE(it_safe, map->end());
+    EXPECT_EQ(it_safe->second, u"safe_value");
+
+    EXPECT_TRUE(map->find(u"fs/tag") == map->end());
+    EXPECT_TRUE(map->find(u"fs/sources") == map->end());
+  }
+  aura::client::SetDragDropClient(ash::Shell::GetPrimaryRootWindow(),
+                                  original_dnd_controller);
+}
+
+TEST_F(DragDropOperationTest, DragFromDefaultEndpointIsNotTainted) {
+  TestDataExchangeDelegate data_exchange_delegate;
+  data_exchange_delegate.set_endpoint_type(ui::EndpointType::kDefault);
+
+  auto delegate = std::make_unique<TestDataSourceDelegate>();
+  auto data_source = std::make_unique<DataSource>(delegate.get());
+  data_source->Offer(kTextMimeType);
+  delegate->SetData(kTextMimeType, "data");
+
+  auto origin_surface = std::make_unique<Surface>();
+  ash::Shell::GetPrimaryRootWindow()->AddChild(origin_surface->window());
+
+  auto* original_dnd_controller =
+      aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow());
+  {
+    base::RunLoop run_loop;
+    auto test_drag_drop_controller =
+        std::make_unique<TestDragDropController>(run_loop.QuitClosure());
+    aura::client::SetDragDropClient(ash::Shell::GetPrimaryRootWindow(),
+                                    test_drag_drop_controller.get());
+
+    auto operation = DragDropOperation::Create(
+        &data_exchange_delegate, data_source.get(), origin_surface.get(),
+        /*icon=*/nullptr, gfx::PointF(), ui::mojom::DragEventSource::kMouse);
+
+    run_loop.Run();
+
+    ASSERT_TRUE(test_drag_drop_controller->captured_data_);
+    ui::OSExchangeData* captured_data =
+        test_drag_drop_controller->captured_data_.get();
+
+    EXPECT_FALSE(captured_data->IsRendererTainted());
+  }
+  aura::client::SetDragDropClient(ash::Shell::GetPrimaryRootWindow(),
+                                  original_dnd_controller);
 }
 
 }  // namespace exo

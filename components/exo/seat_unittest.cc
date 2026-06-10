@@ -370,6 +370,55 @@ TEST_F(SeatTest, SetSelectionWebCustomData) {
   EXPECT_EQ(result, u"data");
 }
 
+TEST_F(SeatTest, SetSelectionWebCustomDataFiltersFilesAppKeys) {
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
+
+  base::flat_map<std::u16string, std::u16string> custom_data;
+  custom_data[u"text/uri-list"] = u"data";
+  custom_data[u"fs/tag"] = u"filemanager-data";
+  custom_data[u"fs/sources"] =
+      u"filesystem:chrome://file-manager/external/Downloads-u-HASH/secret.txt";
+  custom_data[u"safe_key"] = u"safe_value";
+  base::Pickle pickle;
+  ui::WriteCustomDataToPickle(custom_data, &pickle);
+  std::string custom_data_str(pickle.AsStringView());
+
+  TestDataSourceDelegate delegate;
+  const std::string kMimeType = "chromium/x-web-custom-data";
+  delegate.SetData(kMimeType, std::move(custom_data_str));
+  DataSource source(&delegate);
+  source.Offer(kMimeType);
+  seat.SetSelection(&source);
+
+  RunReadingTask();
+
+  std::u16string result_uri =
+      ui::clipboard_test_util::ReadDataTransferCustomData(
+          ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+          u"text/uri-list", /*data_dst=*/nullptr);
+  EXPECT_EQ(result_uri, u"data");
+
+  std::u16string result_safe =
+      ui::clipboard_test_util::ReadDataTransferCustomData(
+          ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+          u"safe_key", /*data_dst=*/nullptr);
+  EXPECT_EQ(result_safe, u"safe_value");
+
+  std::u16string result_fs_tag =
+      ui::clipboard_test_util::ReadDataTransferCustomData(
+          ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+          u"fs/tag", /*data_dst=*/nullptr);
+  EXPECT_TRUE(result_fs_tag.empty());
+
+  std::u16string result_fs_sources =
+      ui::clipboard_test_util::ReadDataTransferCustomData(
+          ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+          u"fs/sources", /*data_dst=*/nullptr);
+  EXPECT_TRUE(result_fs_sources.empty());
+}
+
 TEST_F(SeatTest, SetSelection_TwiceSame) {
   TestSeat seat;
   Surface focused_surface;

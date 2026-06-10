@@ -24,6 +24,8 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/window_tracker.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -38,6 +40,7 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace exo {
 namespace {
@@ -192,6 +195,14 @@ DragDropOperation::DragDropOperation(
   os_exchange_data_->SetSource(
       std::make_unique<ui::DataTransferEndpoint>(endpoint_type));
 
+  if (endpoint_type == ui::EndpointType::kUnknownVm ||
+      endpoint_type == ui::EndpointType::kArc ||
+      endpoint_type == ui::EndpointType::kBorealis ||
+      endpoint_type == ui::EndpointType::kCrostini ||
+      endpoint_type == ui::EndpointType::kPluginVm) {
+    os_exchange_data_->MarkRendererTaintedFromOrigin(url::Origin());
+  }
+
   extended_drag_source_ = ExtendedDragSource::Get();
   if (extended_drag_source_) {
     drag_drop_controller_->set_toplevel_window_drag_delegate(
@@ -306,10 +317,20 @@ void DragDropOperation::OnFileContentsRead(const std::string& mime_type,
 void DragDropOperation::OnWebCustomDataRead(const std::string& mime_type,
                                             const std::vector<uint8_t>& data) {
   DCHECK(os_exchange_data_);
-  base::Pickle pickle = base::Pickle::WithData(data);
-  os_exchange_data_->SetPickledData(
-      ui::ClipboardFormatType::DataTransferCustomType(), pickle);
-  mime_type_ = mime_type;
+  // |data| comes from a guest VM. Re-serialize and drop FilesApp-internal
+  // `fs/*` keys so a guest cannot forge fs/tag + fs/sources and drive
+  // FilesApp / HoldingSpace into operating on host paths it was never shared.
+  if (auto map = ui::ReadCustomDataIntoMap(data)) {
+    std::erase_if(*map,
+                  [](const auto& kv) { return kv.first.starts_with(u"fs/"); });
+    if (!map->empty()) {
+      base::Pickle pickle;
+      ui::WriteCustomDataToPickle(*map, &pickle);
+      os_exchange_data_->SetPickledData(
+          ui::ClipboardFormatType::DataTransferCustomType(), pickle);
+      mime_type_ = mime_type;
+    }
+  }
   counter_.Run();
 }
 
