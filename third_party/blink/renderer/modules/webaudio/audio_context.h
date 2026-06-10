@@ -188,6 +188,14 @@ class MODULES_EXPORT AudioContext final
   // https://webaudio.github.io/web-audio-api/#BaseAudioContext
   V8AudioContextState state() const override;
 
+  // Returns the current state as a std::string for log messages. Uses the
+  // non-virtual BaseAudioContext::state() so logging does not record the
+  // UseCounters in AudioContext::state(). When formatting log messages,
+  // this must be used instead of state().
+  std::string GetStateStringForLogMessage() const {
+    return BaseAudioContext::state().AsCStr();
+  }
+
   // https://webaudio.github.io/web-audio-api/#AudioContext
   double baseLatency() const;
   double outputLatency() const;
@@ -275,6 +283,7 @@ class MODULES_EXPORT AudioContext final
   FRIEND_TEST_ALL_PREFIXES(AudioContextTest, MediaDevicesService);
   FRIEND_TEST_ALL_PREFIXES(AudioContextTest,
                            OnRenderErrorFromPlatformDestination);
+  FRIEND_TEST_ALL_PREFIXES(AudioContextTest, AsyncStateUseCountersLogMessage);
 
   class StatsUpdateRestrictor;
 

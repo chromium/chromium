@@ -3,12 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
-#include "third_party/blink/public/web/web_heap.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_worklet_options.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_worklet_messaging_proxy.h"
-#include "third_party/blink/renderer/core/workers/worker_thread.h"
-#include "third_party/blink/renderer/modules/webaudio/delay_node.h"
 
 #include <array>
 #include <memory>
@@ -29,7 +23,9 @@
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_worklet_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_sink_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiocontextlatencycategory_double.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiocontextrendersizecategory_unsignedlong.h"
@@ -39,10 +35,15 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/mediastream/sub_capture_target.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_playback_stats.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_playout_stats.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_worklet_messaging_proxy.h"
+#include "third_party/blink/renderer/modules/webaudio/delay_node.h"
+#include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -395,6 +396,15 @@ class AudioContextTest : public PageTestBase {
 
   AudioContextTestPlatform* platform() {
     return platform_.GetTestingPlatformSupport();
+  }
+
+  void ClearAudioContextAsyncStateUseCounters() {
+    GetDocument().ClearUseCounterForTesting(
+        WebFeature::kAudioContextAsyncStateTransitions);
+    GetDocument().ClearUseCounterForTesting(
+        WebFeature::kAudioContextAsyncTransitionToRunningStateRead);
+    GetDocument().ClearUseCounterForTesting(
+        WebFeature::kAudioContextAsyncTransitionToSuspendedStateRead);
   }
 
  private:
@@ -2231,6 +2241,51 @@ TEST_F(AudioContextTest, SuspendWhileInterruptedStaysSuspended) {
 
   // Context stays suspended.
   ExpectContextSuspended(audio_context);
+}
+
+// Internal logging must not record the AudioContext async-state
+// UseCounters. AudioContext::SendLogMessage() and the constructor of
+// MediaStreamAudioDestinationNode get the context state for the log
+// messages. To format a log message without recording the counters,
+// they read it via GetStateStringForLogMessage() which uses the
+// non-counting state getter (BaseAudioContext::state()) instead of
+// AudioContext::state().
+TEST_F(AudioContextTest, AsyncStateUseCountersLogMessage) {
+  for (bool feature_enabled : {true, false}) {
+    SCOPED_TRACE(testing::Message() << "feature_enabled: " << feature_enabled);
+
+    ScopedAudioContextAsyncStateTransitionsForTest scoped_feature(
+        feature_enabled);
+
+    AudioContextOptions* options = AudioContextOptions::Create();
+
+    AudioContext* audio_context = AudioContext::Create(
+        GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+
+    ClearAudioContextAsyncStateUseCounters();
+
+    audio_context->SendLogMessage("function_name", "log_message");
+
+    // AudioContext::SendLogMessage() must not record UseCounters.
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kAudioContextAsyncStateTransitions));
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kAudioContextAsyncTransitionToRunningStateRead));
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kAudioContextAsyncTransitionToSuspendedStateRead));
+    ClearAudioContextAsyncStateUseCounters();
+
+    MediaStreamAudioDestinationNode::Create(*audio_context, 2,
+                                            ASSERT_NO_EXCEPTION);
+
+    // MediaStreamAudioDestinationNode::Create() must not record counters.
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kAudioContextAsyncStateTransitions));
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kAudioContextAsyncTransitionToRunningStateRead));
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kAudioContextAsyncTransitionToSuspendedStateRead));
+  }
 }
 
 }  // namespace blink

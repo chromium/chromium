@@ -92,7 +92,7 @@ MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
       String::Format("({context.state=%s}, {context.sampleRate=%.0f}, "
                      "{number_of_channels=%u}, {handler=0x%" PRIXPTR
                      "}, [this=0x%" PRIXPTR "])",
-                     context.state().AsString().Utf8().c_str(),
+                     context.GetStateStringForLogMessage().c_str(),
                      context.sampleRate(), number_of_channels,
                      reinterpret_cast<uintptr_t>(&Handler()),
                      reinterpret_cast<uintptr_t>(this)));

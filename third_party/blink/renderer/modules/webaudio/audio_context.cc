@@ -2037,8 +2037,9 @@ void AudioContext::set_clock_for_testing(const base::TickClock* clock) {
 void AudioContext::SendLogMessage(const char* const function_name,
                                   const String& message) {
   WebRtcLogMessage(base::StrCat(
-      {"[WA]AC::", function_name, " ", message.Utf8(), " [state=",
-       state().AsCStr(), " sink_descriptor_=", sink_descriptor_.SinkId().Utf8(),
+      {"[WA]AC::", function_name, " ", message.Utf8(),
+       " [state=", GetStateStringForLogMessage(),
+       " sink_descriptor_=", sink_descriptor_.SinkId().Utf8(),
        ", sink_id_given_=", base::ToString(is_sink_id_given_), "]"}));
 }
 
