@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization.theme_sync.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import android.graphics.Color;
@@ -23,6 +24,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase.PlatformType;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -49,23 +51,23 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                 new NtpBackgroundDataThemeCollection(
                         PlatformType.ANDROID_LOCAL,
                         info1,
-                        Color.RED,
-                        /* portraitMatrix= */ null,
-                        /* landscapeMatrix= */ null);
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        Color.RED);
         NtpBackgroundDataThemeCollection data2 =
                 new NtpBackgroundDataThemeCollection(
                         PlatformType.ANDROID_LOCAL,
                         info2,
-                        Color.RED,
-                        /* portraitMatrix= */ null,
-                        /* landscapeMatrix= */ null);
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        Color.RED);
         NtpBackgroundDataThemeCollection data3 =
                 new NtpBackgroundDataThemeCollection(
                         PlatformType.ANDROID_LOCAL,
                         info1,
-                        Color.BLUE,
-                        /* portraitMatrix= */ null,
-                        /* landscapeMatrix= */ null);
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        Color.BLUE);
 
         assertEquals(data1, data2);
         assertNotEquals(data1, data3);
@@ -76,7 +78,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
     public void testToJsonAndFromJson() throws JSONException {
         @PlatformType int platformType = PlatformType.ANDROID_LOCAL;
         @NtpBackgroundType int backgroundType = NtpBackgroundType.THEME_COLLECTION;
-        @ColorInt int primaryColor = Color.BLUE;
+        @ColorInt Integer primaryColor = Color.BLUE;
         GURL url = JUnitTestGURLs.URL_1;
         String collectionId = "collection";
         boolean isDailyRefreshEnabled = true;
@@ -91,9 +93,12 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         landscapeMatrix.setValues(new float[] {2, 0, 0, 0, 2, 0, 0, 0, 1});
         portraitMatrix.setTranslate(2f, 3f);
 
+        BackgroundImageInfo backgroundImageInfo =
+                new BackgroundImageInfo(portraitMatrix, landscapeMatrix, null, null);
+
         NtpBackgroundDataThemeCollection data =
                 new NtpBackgroundDataThemeCollection(
-                        platformType, info, primaryColor, portraitMatrix, landscapeMatrix);
+                        platformType, info, backgroundImageInfo, /* bitmap= */ null, primaryColor);
 
         JSONObject json = data.toJson();
         NtpBackgroundDataThemeCollection restored = NtpBackgroundDataThemeCollection.fromJson(json);
@@ -107,15 +112,20 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                 isDailyRefreshEnabled, restored.getCustomBackgroundInfo().isDailyRefreshEnabled);
         assertEquals(primaryColor, restored.getPrimaryColor());
 
-        assertEquals(portraitMatrix, restored.getPortraitMatrix());
-        assertEquals(landscapeMatrix, restored.getLandscapeMatrix());
+        assertNotNull(restored.getBackgroundImageInfo());
+        assertEquals(
+                portraitMatrix.toShortString(),
+                restored.getBackgroundImageInfo().getPortraitMatrix().toShortString());
+        assertEquals(
+                landscapeMatrix.toShortString(),
+                restored.getBackgroundImageInfo().getLandscapeMatrix().toShortString());
     }
 
     @Test
-    public void testNullMatrices() throws JSONException {
+    public void testNullBackgroundImageInfo() throws JSONException {
         @PlatformType int platformType = PlatformType.ANDROID_LOCAL;
         @NtpBackgroundType int backgroundType = NtpBackgroundType.THEME_COLLECTION;
-        @ColorInt int primaryColor = Color.BLUE;
+        @ColorInt Integer primaryColor = Color.BLUE;
         GURL url = JUnitTestGURLs.URL_1;
         String collectionId = "collection";
         boolean isDailyRefreshEnabled = true;
@@ -127,14 +137,13 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                 new NtpBackgroundDataThemeCollection(
                         platformType,
                         info,
-                        primaryColor,
-                        /* portraitMatrix= */ null,
-                        /* landscapeMatrix= */ null);
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        primaryColor);
 
         JSONObject json = data.toJson();
         NtpBackgroundDataThemeCollection restored = NtpBackgroundDataThemeCollection.fromJson(json);
 
-        assertNull(restored.getPortraitMatrix());
-        assertNull(restored.getLandscapeMatrix());
+        assertNull(restored.getBackgroundImageInfo());
     }
 }
