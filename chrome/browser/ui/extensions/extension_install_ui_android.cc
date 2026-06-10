@@ -27,6 +27,20 @@
 #include "ui/base/models/dialog_model.h"
 
 namespace {
+BrowserWindowInterface* GetActiveBrowserWindowInterfaceForProfile(
+    Profile* profile) {
+  BrowserWindowInterface* active_bwi = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* bwi) {
+        if (bwi->GetProfile() == profile) {
+          active_bwi = bwi;
+          return false;
+        }
+        return true;
+      });
+  return active_bwi;
+}
+
 void ShowExtensionsMenuManageIph(
     base::WeakPtr<content::WebContents> web_contents) {
   if (!web_contents) {
@@ -35,15 +49,8 @@ void ShowExtensionsMenuManageIph(
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  BrowserWindowInterface* target_bwi = nullptr;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* bwi) {
-        if (bwi->GetProfile() == profile) {
-          target_bwi = bwi;
-          return false;
-        }
-        return true;
-      });
+  BrowserWindowInterface* target_bwi =
+      GetActiveBrowserWindowInterfaceForProfile(profile);
 
   if (target_bwi) {
     ExtensionsContainer* container = ExtensionsContainer::From(*target_bwi);
@@ -54,6 +61,20 @@ void ShowExtensionsMenuManageIph(
 }
 
 content::WebContents* GetWebContentsForProfile(Profile* profile) {
+  BrowserWindowInterface* active_bwi =
+      GetActiveBrowserWindowInterfaceForProfile(profile);
+
+  if (active_bwi) {
+    TabModel* tab_model = TabModelList::FindTabModelWithWindowSessionId(
+        active_bwi->GetSessionID());
+    if (tab_model) {
+      content::WebContents* web_contents = tab_model->GetActiveWebContents();
+      if (web_contents) {
+        return web_contents;
+      }
+    }
+  }
+
   for (const TabModel* tab_model : TabModelList::models()) {
     if (tab_model->GetProfile() != profile) {
       continue;
