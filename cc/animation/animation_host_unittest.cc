@@ -416,8 +416,12 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
 
   const auto& scroll_tree = property_trees.scroll_tree();
   SetScrollOffset(&property_trees, element_id_, gfx::PointF(0, 20));
-  EXPECT_TRUE(host_impl_->TickAnimations(base::TimeTicks(), scroll_tree, false,
-                                         nullptr));
+  auto result = host_impl_->TickAnimations(base::TimeTicks(), scroll_tree,
+                                           false, nullptr);
+  // Scroll-linked animations are ticked but do not need to schedule another
+  // frame, since new scroll input will independently request a frame.
+  EXPECT_TRUE(result.animated);
+  EXPECT_FALSE(result.needs_next_frame);
 
   EXPECT_EQ(keyframe_model->run_state(), KeyframeModel::STARTING);
   double tick_time =
@@ -426,8 +430,10 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
       ToMilliseconds(scroll_timeline->Duration(scroll_tree, false));
   EXPECT_NEAR(tick_time, 0.2 * duration, 1e-6);
   scroll_timeline->DetachAnimation(animation);
-  EXPECT_FALSE(host_impl_->TickAnimations(base::TimeTicks(), scroll_tree, false,
-                                          nullptr));
+  result = host_impl_->TickAnimations(base::TimeTicks(), scroll_tree, false,
+                                      nullptr);
+  EXPECT_FALSE(result.animated);
+  EXPECT_FALSE(result.needs_next_frame);
 }
 
 TEST_F(AnimationHostTest, TickScrollLinkedAnimationNonCompositedScroll) {
@@ -463,8 +469,12 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimationNonCompositedScroll) {
 
   auto& scroll_tree = property_trees.scroll_tree_mutable();
   SetScrollOffset(&property_trees, element_id_, gfx::PointF(0, 20));
-  EXPECT_TRUE(host_impl_->TickAnimations(base::TimeTicks(), scroll_tree, false,
-                                         nullptr));
+  // Scroll-linked animations are ticked but do not need to schedule another
+  // frame, since new scroll input will independently request a frame.
+  auto result = host_impl_->TickAnimations(base::TimeTicks(), scroll_tree,
+                                           false, nullptr);
+  EXPECT_TRUE(result.animated);
+  EXPECT_FALSE(result.needs_next_frame);
 
   EXPECT_EQ(keyframe_model->run_state(), KeyframeModel::STARTING);
   double tick_time = (scroll_timeline->CurrentTime(scroll_tree, false).value() -
@@ -476,16 +486,20 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimationNonCompositedScroll) {
   // Simulate that the main thread commits a different scroll offset.
   synced_offset->PushMainToPending(gfx::PointF(0, 10));
   synced_offset->PushPendingToActive();
-  EXPECT_TRUE(host_impl_->TickAnimations(base::TimeTicks(), scroll_tree, false,
-                                         nullptr));
+  result = host_impl_->TickAnimations(base::TimeTicks(), scroll_tree, false,
+                                      nullptr);
+  EXPECT_TRUE(result.animated);
+  EXPECT_FALSE(result.needs_next_frame);
   tick_time = ToMilliseconds(scroll_timeline->CurrentTime(scroll_tree, false));
   double duration =
       ToMilliseconds(scroll_timeline->Duration(scroll_tree, false));
   EXPECT_NEAR(tick_time, 0.1 * duration, 1e-6);
 
   scroll_timeline->DetachAnimation(animation);
-  EXPECT_FALSE(host_impl_->TickAnimations(base::TimeTicks(), scroll_tree, false,
-                                          nullptr));
+  result = host_impl_->TickAnimations(base::TimeTicks(), scroll_tree, false,
+                                      nullptr);
+  EXPECT_FALSE(result.animated);
+  EXPECT_FALSE(result.needs_next_frame);
 }
 
 TEST_F(AnimationHostTest, TickScrollLinkedAnimationSmooth) {

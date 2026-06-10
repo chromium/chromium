@@ -26,6 +26,18 @@ class LayerTreeMutator;
 class PropertyTrees;
 class ScrollTree;
 
+struct AnimationTickResult {
+  // True if any animation changed a value this frame; callers use it to decide
+  // whether the current frame must be redrawn / committed.
+  bool animated = false;
+
+  // True if some animation needs a follow-up frame to keep progressing (callers
+  // request another BeginImplFrame). Scroll-linked animations leave this false,
+  // since new scroll input requests its own frame, letting the compositor go
+  // idle when scrolling stops.
+  bool needs_next_frame = false;
+};
+
 // Used as the return value of GetAnimationScales() to indicate that there is
 // no active transform animation or the scale cannot be computed.
 inline constexpr float kInvalidScale = 0.f;
@@ -67,10 +79,10 @@ class MutatorHost {
   virtual bool ActivateAnimations(MutatorEvents* events) = 0;
   // TODO(smcgruer): Once we only tick scroll-based animations on scroll, we
   // don't need to pass the scroll tree in here.
-  virtual bool TickAnimations(base::TimeTicks monotonic_time,
-                              const ScrollTree& scroll_tree,
-                              bool is_active_tree,
-                              MutatorEvents* events) = 0;
+  virtual AnimationTickResult TickAnimations(base::TimeTicks monotonic_time,
+                                             const ScrollTree& scroll_tree,
+                                             bool is_active_tree,
+                                             MutatorEvents* events) = 0;
   // Tick animations that depends on scroll offset.
   virtual void TickScrollAnimations(base::TimeTicks monotonic_time,
                                     const ScrollTree& scroll_tree) = 0;

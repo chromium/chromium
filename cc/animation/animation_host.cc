@@ -655,10 +655,11 @@ bool AnimationHost::ActivateAnimations(MutatorEvents* mutator_events) {
   return true;
 }
 
-bool AnimationHost::TickAnimations(base::TimeTicks monotonic_time,
-                                   const ScrollTree& scroll_tree,
-                                   bool is_active_tree,
-                                   MutatorEvents* mutator_events) {
+AnimationTickResult AnimationHost::TickAnimations(
+    base::TimeTicks monotonic_time,
+    const ScrollTree& scroll_tree,
+    bool is_active_tree,
+    MutatorEvents* mutator_events) {
   if (is_active_tree) {
     // We update triggers first since they affect whether an animation is in
     // effect or not.
@@ -677,12 +678,12 @@ bool AnimationHost::TickAnimations(base::TimeTicks monotonic_time,
   // The ticking of worklet animations is deferred until draw to ensure that
   // mutator output takes effect in the same impl frame that it was mutated.
   if (is_active_tree && !NeedsTickAnimations()) {
-    return false;
+    return {};
   }
 
   TRACE_EVENT_INSTANT("cc", "NeedsTickAnimations");
 
-  bool animated = false;
+  AnimationTickResult result;
 
   std::vector<AnimationTimeline*> scroll_timelines;
   for (auto& kv : id_to_timeline_map_.Read(*this)) {
@@ -690,15 +691,20 @@ bool AnimationHost::TickAnimations(base::TimeTicks monotonic_time,
     if (timeline->IsScrollTimeline()) {
       scroll_timelines.push_back(timeline);
     } else {
-      animated |= timeline->TickTimeLinkedAnimations(
-          ticking_animations_.Read(*this), monotonic_time, !is_active_tree);
+      if (timeline->TickTimeLinkedAnimations(ticking_animations_.Read(*this),
+                                             monotonic_time, !is_active_tree)) {
+        result.animated = true;
+        result.needs_next_frame = true;
+      }
     }
   }
   // Tick the scroll-linked animations last, since a smooth scroll (time-linked)
   // might update the scroll offset.
   for (auto* timeline : scroll_timelines) {
-    animated |= timeline->TickScrollLinkedAnimations(
-        ticking_animations_.Read(*this), scroll_tree, is_active_tree);
+    if (timeline->TickScrollLinkedAnimations(ticking_animations_.Read(*this),
+                                             scroll_tree, is_active_tree)) {
+      result.animated = true;
+    }
   }
 
   // TODO(majidvp): At the moment we call this for both active and pending
@@ -710,7 +716,7 @@ bool AnimationHost::TickAnimations(base::TimeTicks monotonic_time,
   // handle these mutations are performed on receiving the asynchronous results.
   TickMutator(monotonic_time, scroll_tree, is_active_tree);
 
-  return animated;
+  return result;
 }
 
 void AnimationHost::TickScrollAnimations(base::TimeTicks monotonic_time,

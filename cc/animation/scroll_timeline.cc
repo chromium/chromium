@@ -147,11 +147,13 @@ void ScrollTimeline::PushPropertiesTo(AnimationTimeline* impl_timeline) {
   ScrollTimeline* scroll_timeline = ToScrollTimeline(impl_timeline);
   scroll_timeline->pending_id_.Write(*this) = pending_id_.Read(*this);
   scroll_timeline->pending_offsets_.Write(*this) = pending_offsets_.Read(*this);
+  scroll_timeline->last_tick_time_.Write(*scroll_timeline) = std::nullopt;
 }
 
 void ScrollTimeline::ActivateTimeline() {
   active_id_.Write(*this) = pending_id_.Read(*this);
   active_offsets_.Write(*this) = pending_offsets_.Read(*this);
+  last_tick_time_.Write(*this) = std::nullopt;
   for (auto& kv : id_to_animation_map_.Write(*this)) {
     auto& animation = kv.second;
     if (animation->IsWorkletAnimation())
@@ -167,6 +169,17 @@ bool ScrollTimeline::TickScrollLinkedAnimations(
       CurrentTime(scroll_tree, is_active_tree);
   if (!tick_time)
     return false;
+
+  // Whether the scroll offset changed since the last active-tree tick. If not,
+  // the animation produces the same value as last frame and reporting "not
+  // animated" lets the compositor go idle. Newly attached animations still
+  // draw, since attaching resets |last_tick_time_|.
+  bool time_changed = true;
+  if (is_active_tree) {
+    auto& last_time = last_tick_time_.Write(*this);
+    time_changed = !last_time.has_value() || last_time.value() != tick_time;
+    last_time = tick_time;
+  }
 
   bool animated = false;
   // This potentially iterates over all ticking animations multiple
@@ -185,10 +198,9 @@ bool ScrollTimeline::TickScrollLinkedAnimations(
     if (!animation->IsScrollLinkedAnimation())
       continue;
 
-    animation->Tick(tick_time.value());
-    animated = true;
+    animated |= animation->Tick(tick_time.value());
   }
-  return animated;
+  return animated && time_changed;
 }
 
 void ScrollTimeline::UpdateScrollerIdAndScrollOffsets(
