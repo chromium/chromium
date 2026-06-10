@@ -264,6 +264,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
 
   base::WeakPtrFactory<DesktopWindowTreeHostPlatform> close_widget_factory_{
       this};
+  base::WeakPtrFactory<DesktopWindowTreeHostPlatform> weak_factory_{this};
 };
 
 }  // namespace views
