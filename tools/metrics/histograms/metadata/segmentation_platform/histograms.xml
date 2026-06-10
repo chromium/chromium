@@ -40,6 +40,10 @@ chromium-metrics-reviews@google.com.
 
 <variants name="DatabaseOperation">
   <variant name="AddUmaMetric"/>
+  <variant name="CleanupItems"/>
+  <variant name="CleanupOldEntries"/>
+  <variant name="DeleteAllUrls"/>
+  <variant name="OnUrlValidated"/>
   <variant name="RemoveUrls"/>
   <variant name="RunReadOnlyQueries"/>
   <variant name="StoreUkmEntry"/>
