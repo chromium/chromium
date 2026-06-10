@@ -34,6 +34,7 @@
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/drop_data.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -1334,14 +1335,21 @@ void PasteFromGeminiIfAllowedByPolicy(content::RenderFrameHost* destination,
       auto verdict = rules_service->GetPasteFromGeminiInChromeVerdict(
           GetSourceURL(destination));
       auto* factory = GetDialogFactory();
+      auto* web_contents =
+          content::WebContents::FromRenderFrameHost(destination);
 
       switch (verdict.level()) {
         case data_controls::Rule::Level::kBlock:
           MaybeReportDataControlsPasteFromGemini(destination, verdict,
                                                  data.size());
           if (factory) {
+            // TODO(crbug.com/473047343): Add browsertests to validate surfacing
+            // works.
+            if (web_contents && web_contents->GetDelegate()) {
+              web_contents->GetDelegate()->ActivateContents(web_contents);
+            }
             factory->ShowDialogIfNeeded(
-                content::WebContents::FromRenderFrameHost(destination),
+                web_contents,
                 data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
           }
           std::move(callback).Run(false);
@@ -1350,8 +1358,13 @@ void PasteFromGeminiIfAllowedByPolicy(content::RenderFrameHost* destination,
           MaybeReportDataControlsPasteFromGemini(destination, verdict,
                                                  data.size());
           if (factory) {
+            // TODO(crbug.com/473047343): Add browsertests to validate surfacing
+            // works.
+            if (web_contents && web_contents->GetDelegate()) {
+              web_contents->GetDelegate()->ActivateContents(web_contents);
+            }
             factory->ShowDialogIfNeeded(
-                content::WebContents::FromRenderFrameHost(destination),
+                web_contents,
                 data_controls::DataControlsDialog::Type::kClipboardPasteWarn,
                 base::BindOnce(
                     [](content::GlobalRenderFrameHostId rfh_id,

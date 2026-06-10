@@ -64,6 +64,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "net/base/mime_util.h"
@@ -606,6 +607,14 @@ ContentAnalysisDelegate::GetFilesRequestHandlerForTesting() {
 bool ContentAnalysisDelegate::ShowFinalResultInDialog() {
   if (!dialog_) {
     return false;
+  }
+
+  if (access_point_ == DeepScanAccessPoint::ACTOR && web_contents_ &&
+      final_result_ != FinalContentAnalysisResult::SUCCESS) {
+    // TODO(crbug.com/473047343): Add browsertests to validate surfacing works.
+    if (web_contents_->GetDelegate()) {
+      web_contents_->GetDelegate()->ActivateContents(web_contents_.get());
+    }
   }
 
   dialog_->ShowResult(final_result_);
