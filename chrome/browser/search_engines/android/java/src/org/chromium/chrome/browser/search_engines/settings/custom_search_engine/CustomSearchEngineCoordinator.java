@@ -5,12 +5,9 @@
 package org.chromium.chrome.browser.search_engines.settings.custom_search_engine;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
@@ -48,17 +45,7 @@ public class CustomSearchEngineCoordinator {
                         mModalDialogManager,
                         TemplateUrlServiceFactory.getForProfile(profile));
 
-        mAdapter = new SimpleRecyclerViewAdapter(mModelList);
-        mAdapter.registerType(
-                SiteSearchProperties.ViewType.SEARCH_ENGINE,
-                parent -> {
-                    View view =
-                            LayoutInflater.from(parent.getContext())
-                                    .inflate(R.layout.site_search_engine_item, parent, false);
-                    view.setTag(new SiteSearchViewBinder.ViewHolder(view));
-                    return view;
-                },
-                SiteSearchViewBinder::bind);
+        mAdapter = new CustomSearchEngineAdapter(context, mModelList);
 
         mMediator =
                 new CustomSearchEngineMediator(
