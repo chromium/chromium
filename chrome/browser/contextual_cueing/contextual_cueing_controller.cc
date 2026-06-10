@@ -193,12 +193,18 @@ ContextualCueingController::ContextualCueingController(
     page_content_annotations_service_->AddObserver(
         page_content_annotations::AnnotationType::kCategoryClassifier, this);
   }
+  if (tab_list_interface_) {
+    tab_list_interface_->AddTabListInterfaceObserver(this);
+  }
 }
 
 ContextualCueingController::~ContextualCueingController() {
   if (page_content_annotations_service_) {
     page_content_annotations_service_->RemoveObserver(
         page_content_annotations::AnnotationType::kCategoryClassifier, this);
+  }
+  if (tab_list_interface_) {
+    tab_list_interface_->RemoveTabListInterfaceObserver(this);
   }
 }
 
@@ -231,20 +237,18 @@ void ContextualCueingController::OnPageContentAnnotated(
       tab_list_interface_->GetActiveTab()
           ? tab_list_interface_->GetActiveTab()->GetContents()
           : nullptr;
-  ukm::SourceId source_id = GetActiveTabSourceId();
   if (!active_web_contents ||
       visit.url != active_web_contents->GetLastCommittedURL()) {
     CUEING_LOG(base::StringPrintf(
-        "%s ineligible for cue: No longer active tab after "
-        "category classification.",
+        "Ignoring category classification - received category classification "
+        "not for current active tab. Received URL: %s Current URL: %s",
+        visit.url.spec(),
         active_web_contents ? active_web_contents->GetLastCommittedURL().spec()
                             : "unknown"));
-    RecordContextualCueingDecision(
-        source_id, ContextualCueingDecision::
-                       kNoLongerActiveTabAfterCategoryClassification);
     return;
   }
 
+  ukm::SourceId source_id = GetActiveTabSourceId();
   if (!IsUrlEligibleForCue(active_web_contents->GetLastCommittedURL())) {
     CUEING_LOG(
         base::StringPrintf("%s ineligible for cue: URL is ineligible.",
@@ -323,6 +327,22 @@ void ContextualCueingController::OnPageContentAnnotated(
                          "succeeded. Initiating model execution request.",
                          active_web_contents->GetLastCommittedURL().spec()));
   InitiateModelExecutionRequest();
+}
+
+void ContextualCueingController::OnActiveTabChanged(TabListInterface& tab_list,
+                                                    tabs::TabInterface* tab) {
+  if (tab) {
+    ActiveTabUrlChanged(tab->GetURL());
+  }
+}
+
+void ContextualCueingController::ActiveTabUrlChanged(const GURL& url) {
+  if (url == last_logged_active_url_) {
+    return;
+  }
+  last_logged_active_url_ = url;
+  CUEING_LOG(
+      base::StringPrintf("Active tab URL changed to %s", url.spec().c_str()));
 }
 
 void ContextualCueingController::InitiateModelExecutionRequest() {
