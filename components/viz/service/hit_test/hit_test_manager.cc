@@ -59,7 +59,7 @@ void HitTestManager::OnSurfaceActivated(const SurfaceId& surface_id) {
   }
 }
 
-void HitTestManager::SubmitHitTestRegionList(
+bool HitTestManager::SubmitHitTestRegionList(
     const SurfaceId& surface_id,
     const uint32_t frame_index,
     std::optional<HitTestRegionList> hit_test_region_list) {
@@ -75,10 +75,10 @@ void HitTestManager::SubmitHitTestRegionList(
       frame_index_map[frame_index] = std::move(last_hit_test_region_list);
       frame_index_map.erase(last_frame_index);
     }
-    return;
+    return true;
   }
   if (!ValidateHitTestRegionList(surface_id, &*hit_test_region_list))
-    return;
+    return false;
   ++submit_hit_test_region_list_index_;
 
   // TODO(gklassen): Runtime validation that hit_test_region_list is valid.
@@ -86,6 +86,7 @@ void HitTestManager::SubmitHitTestRegionList(
   // TODO(gklassen): FrameSink needs to inform the host of a difficult renderer.
   hit_test_region_lists_[surface_id][frame_index] =
       std::move(*hit_test_region_list);
+  return true;
 }
 
 const HitTestRegionList* HitTestManager::GetActiveHitTestRegionList(
@@ -135,8 +136,10 @@ bool HitTestManager::ValidateHitTestRegionList(
     return false;
   }
   for (auto& region : hit_test_region_list->regions) {
-    // TODO(gklassen): Ensure that |region->frame_sink_id| is a child of
-    // |frame_sink_id|.
+    // We cannot determine if the region is a child of |frame_sink_id|. As the
+    // hierarchy arrives asynchronously from the Viz host, submitted to
+    // FrameSinkManagerImpl. While the HitTestRegionList arrive from Clients
+    // during SubmitCompositorFrame. Validation will occur during Aggregation.
     if (region.frame_sink_id.client_id() == 0) {
       region.frame_sink_id = FrameSinkId(surface_id.frame_sink_id().client_id(),
                                          region.frame_sink_id.sink_id());

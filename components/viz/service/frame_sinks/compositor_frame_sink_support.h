@@ -49,8 +49,8 @@ class Surface;
 class SurfaceManager;
 
 // Possible outcomes of MaybeSubmitCompositorFrame().
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// These values were previously persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
 enum class SubmitResult {
   ACCEPTED = 0,
   COPY_OUTPUT_REQUESTS_NOT_ALLOWED = 1,
@@ -58,8 +58,9 @@ enum class SubmitResult {
   SIZE_MISMATCH = 3,
   SURFACE_ID_DECREASED = 4,
   SURFACE_OWNED_BY_ANOTHER_CLIENT = 5,
+  HIT_TEST_DATA_INVALID = 6,
   // Magic constant used by the histogram macros.
-  kMaxValue = SURFACE_OWNED_BY_ANOTHER_CLIENT,
+  kMaxValue = HIT_TEST_DATA_INVALID,
 };
 
 class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
