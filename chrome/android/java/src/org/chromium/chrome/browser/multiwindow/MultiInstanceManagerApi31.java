@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
@@ -430,7 +431,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         int id = INVALID_WINDOW_ID;
         boolean newInstanceIdAllocated = false;
         @InstanceAllocationType int allocationType = InstanceAllocationType.INVALID_INSTANCE;
-        for (int i = 0; i < getMaxInstances(); ++i) {
+        int maxRange =
+                ChromeFeatureList.sAllocInstanceIdIncreasedDefaultRange.isEnabled()
+                        ? TabWindowManager.MAX_SELECTORS_1000
+                        : getMaxInstances();
+        for (int i = 0; i < maxRange; ++i) {
             int persistedTaskId = ChromeMultiInstancePersistentStore.readTaskId(i);
             if (persistedTaskId != INVALID_TASK_ID) {
                 continue;
@@ -438,19 +443,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             if (ChromeMultiInstancePersistentStore.readMarkedForDeletion(i)) {
                 continue;
             }
+
+            boolean instanceExists = ChromeMultiInstancePersistentStore.hasInstance(i);
             if (id == INVALID_WINDOW_ID
                     || ChromeMultiInstancePersistentStore.readLastAccessedTime(i)
                             > ChromeMultiInstancePersistentStore.readLastAccessedTime(id)) {
-                // Last accessed time equals to 0 means the corresponding persistent state does not
-                // exist. The profile type check should only be enforced when restoring from
-                // persistent state.
-                // TODO(crbug.com/456289090): Handle the scenario where we are at instance limit
-                // (with all non-REGULAR windows) with no live activities and a new REGULAR window
-                // is attempted to be created from the launcher.
+                // The profile type check should only be enforced when restoring from persistent
+                // state.
                 // TODO(crbug.com/458129266): Rely on profile exists check instead of feature flag 6
                 // months post launch.
                 if (IncognitoUtils.shouldOpenIncognitoAsWindow()
-                        && ChromeMultiInstancePersistentStore.readLastAccessedTime(i) != 0
+                        && instanceExists
                         && ChromeMultiInstancePersistentStore.readProfileType(i)
                                 != (isIncognitoIntent
                                         ? SupportedProfileType.OFF_THE_RECORD
