@@ -1225,6 +1225,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.valid = true;
     config.availability = Comparator(ANY, 0);
     config.session_rate = Comparator(ANY, 0);
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
     config.blocked_by.type = BlockedBy::Type::NONE;
     config.blocking.type = Blocking::Type::NONE;
     config.trigger =
