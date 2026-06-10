@@ -229,6 +229,7 @@ android_resources("devui_resources") {
     "java/res_devui/menu/options_menu.xml",
     "java/res_devui/values-night/colors.xml",
     "java/res_devui/values-night/styles.xml",
+    "java/res_devui/values-television/styles.xml",
     "java/res_devui/values/colors.xml",
     "java/res_devui/values/drawables.xml",
     "java/res_devui/values/strings.xml",

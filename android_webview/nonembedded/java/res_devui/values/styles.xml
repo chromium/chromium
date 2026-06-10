@@ -37,4 +37,9 @@
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
     </style>
+    <!-- Intentionally no-op to support TV-specific styles in values-television/styles.xml. -->
+    <style name="TvNonFocusable" />
+    <style name="TvSelectableBackground" />
+    <style name="TvClickableRow" />
+    <style name="TvNonFocusableClickable" />
 </resources>

@@ -24,6 +24,8 @@
         <Button
             android:text="Delete All"
             android:id="@+id/delete_all_net_logs_button"
+            android:nextFocusUp="@id/delete_all_net_logs_button"
+            android:nextFocusDown="@id/net_log_list"
             android:layout_marginStart="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,6 +52,7 @@
 
     <ListView
         android:id="@+id/net_log_list"
+        android:nextFocusUp="@id/delete_all_net_logs_button"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

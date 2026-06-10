@@ -23,7 +23,6 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -187,8 +186,6 @@ public class FlagsFragment extends DevUiBaseFragment {
         if (shouldRequestFocus()) {
             searchBar.requestFocus();
         }
-        searchBar.setNextFocusUpId(searchBar.getId());
-        resetFlagsButton.setNextFocusUpId(resetFlagsButton.getId());
         flagsListView.setItemsCanFocus(true);
 
         // Without forcing this, the focus will focus on a random item in the list.
@@ -522,8 +519,7 @@ public class FlagsFragment extends DevUiBaseFragment {
             flagToggle.setEnabled(mEnabled);
 
             if (isTV()) {
-                setupTvFocusForToggleableFlag(
-                        view, flagName, flagDescription, flagToggle, position);
+                setupTvFocusForToggleableFlag(view, flagToggle, position);
             }
 
             ArrayAdapter<String> adapter;
@@ -550,22 +546,12 @@ public class FlagsFragment extends DevUiBaseFragment {
             return view;
         }
 
-        private void setupTvFocusForToggleableFlag(
-                View view,
-                TextView flagName,
-                TextView flagDescription,
-                Spinner flagToggle,
-                int position) {
-            // Making the whole view focusable so the screen auto-scrolls to the correct position.
-            view.setFocusable(true);
-            view.setClickable(true);
-            view.setBackgroundResource(getSelectableItemBackgroundResId());
+        private void setupTvFocusForToggleableFlag(View view, Spinner flagToggle, int position) {
+            // Properties handled by styles in values-television/styles.xml:
+            // - view focusable/clickable
+            // - flagName/flagDescription/flagToggle not focusable
+            // - flagToggle clickable
 
-            flagName.setFocusable(false);
-            flagDescription.setFocusable(false);
-            flagToggle.setFocusable(false);
-
-            flagToggle.setClickable(true);
             view.setOnClickListener(
                     v -> {
                         // Because the flag view is focusable, user would perform click on the flag
@@ -573,20 +559,7 @@ public class FlagsFragment extends DevUiBaseFragment {
                         flagToggle.post(() -> flagToggle.performClick());
                     });
             // Without this, the focus escape to the nav bar when pressing down on the last item.
-            preventFocusEscapeFromLastItem(view, position);
-        }
-
-        private void preventFocusEscapeFromLastItem(View view, int position) {
-            // Trap the focus when pressing down on the last item
-            view.setOnKeyListener(
-                    (v, keyCode, event) -> {
-                        if (event.getAction() == MotionEvent.ACTION_DOWN
-                                && keyCode == KeyEvent.KEYCODE_DPAD_DOWN
-                                && position == getCount() - 1) {
-                            return true;
-                        }
-                        return false;
-                    });
+            preventFocusEscapeFromLastItem(view, position == getCount() - 1);
         }
 
         private View getWarningMessage(View view) {
@@ -602,18 +575,7 @@ public class FlagsFragment extends DevUiBaseFragment {
                         + " security or privacy. Enabled features apply to WebViews across all apps"
                         + " on the device.");
 
-            if (isTV()) {
-                setupTvFocusForWarningMessage(view);
-            }
-
             return view;
-        }
-
-        private void setupTvFocusForWarningMessage(View view) {
-            view.setFocusable(true);
-
-            // When focused, the background would be highlighted.
-            view.setBackgroundResource(getSelectableItemBackgroundResId());
         }
 
         @Override

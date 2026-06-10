@@ -8,6 +8,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/toggleable_flag"
+    style="@style/TvClickableRow"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -15,6 +16,7 @@
     <!-- A compound drawable will be populated at runtime, but it's OK to configure drawablePadding now. -->
     <TextView
         android:id="@+id/flag_name"
+        style="@style/TvNonFocusable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textIsSelectable="true"
@@ -26,6 +28,7 @@
 
     <TextView
         android:id="@+id/flag_description"
+        style="@style/TvNonFocusable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
@@ -33,6 +36,7 @@
 
     <Spinner
         android:id="@+id/flag_toggle"
+        style="@style/TvNonFocusableClickable"
         android:spinnerMode="dialog"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />

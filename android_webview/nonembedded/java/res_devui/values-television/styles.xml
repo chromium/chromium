@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2026 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+<resources>
+    <!-- Style for elements which are focusable for phones (such as for talkback)
+         but which are non-focusable for TV (because there's no need to D-pad navigate to them). -->
+    <style name="TvNonFocusable">
+        <item name="android:focusable">false</item>
+    </style>
+    <style name="TvSelectableBackground">
+        <item name="android:focusable">true</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
+    <style name="TvClickableRow" parent="TvSelectableBackground">
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+    </style>
+    <style name="TvNonFocusableClickable" parent="TvNonFocusable">
+        <item name="android:clickable">true</item>
+    </style>
+</resources>

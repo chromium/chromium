@@ -66,14 +66,8 @@ public class HomeFragment extends DevUiBaseFragment {
 
         if (isTV()) {
             View navBarButton = activity.findViewById(R.id.navigation_home);
-            setupTvFocusOnCreated(mInfoListView, navBarButton);
+            registerBackPressToNavBarCallback(navBarButton);
         }
-    }
-
-    private void setupTvFocusOnCreated(View infoListView, View navBarButton) {
-        infoListView.setNextFocusUpId(infoListView.getId());
-        infoListView.setNextFocusDownId(infoListView.getId());
-        registerBackPressToNavBarCallback(navBarButton);
     }
 
     @Override

@@ -94,7 +94,6 @@ public class NetLogsFragment extends DevUiBaseFragment {
         if (shouldRequestFocus()) {
             deleteAllNetLogsButton.requestFocus();
         }
-        deleteAllNetLogsButton.setNextFocusUpId(deleteAllNetLogsButton.getId());
         netLogListView.setItemsCanFocus(true);
 
         registerBackPressToNavBarCallback(navBarButton);
@@ -257,11 +256,7 @@ public class NetLogsFragment extends DevUiBaseFragment {
         }
 
         private void setupTvFocusForNetLogEntry(View view, TextView fileNameView, int position) {
-            view.setFocusable(true);
-            view.setClickable(true);
             view.setOnClickListener(v -> fileNameView.post(() -> fileNameView.performClick()));
-            // When focused, the background would be highlighted.
-            view.setBackgroundResource(getSelectableItemBackgroundResId());
 
             // Without this, the focus escape to the nav bar when pressing down on the last item.
             preventFocusEscapeFromLastItem(view, position);

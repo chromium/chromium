@@ -5,6 +5,8 @@ package org.chromium.android_webview.devui;
 
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
@@ -17,15 +19,12 @@ import org.chromium.base.metrics.RecordHistogram;
 public abstract class DevUiBaseFragment extends Fragment {
     private long mStartOfSession;
     private boolean mShouldRequestFocus;
-    private Boolean mIsTV;
+    private final boolean mIsTV = DeviceInfo.isTV();
 
     /**
      * @return true if the device is an Android TV.
      */
     public boolean isTV() {
-        if (mIsTV == null) {
-            mIsTV = DeviceInfo.isTV();
-        }
         return mIsTV;
     }
 
@@ -113,5 +112,18 @@ public abstract class DevUiBaseFragment extends Fragment {
                 .getTheme()
                 .resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
         return outValue.resourceId;
+    }
+
+    /** Trap the focus when pressing down on the last item. */
+    protected void preventFocusEscapeFromLastItem(View view, boolean isLastItem) {
+        view.setOnKeyListener(
+                (v, keyCode, event) -> {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN
+                            && keyCode == KeyEvent.KEYCODE_DPAD_DOWN
+                            && isLastItem) {
+                        return true;
+                    }
+                    return false;
+                });
     }
 }

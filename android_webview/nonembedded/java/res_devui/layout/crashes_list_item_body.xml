@@ -6,6 +6,7 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/TvNonFocusable"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="2dp"
@@ -39,6 +40,8 @@
             <ImageButton
                 android:contentDescription="Hide Crash Button"
                 android:id="@+id/crash_hide_button"
+                android:nextFocusLeft="@id/crash_hide_button"
+                android:nextFocusRight="@id/crash_hide_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="4dp"
@@ -49,6 +52,8 @@
         <!--suppress HardcodedText -->
         <Button
             android:id="@+id/crash_report_button"
+            android:nextFocusRight="@id/crash_hide_button"
+            android:nextFocusLeft="@id/crash_report_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="8dp"
@@ -59,6 +64,8 @@
         <!--suppress HardcodedText -->
         <Button
             android:id="@+id/crash_upload_button"
+            android:nextFocusRight="@id/crash_hide_button"
+            android:nextFocusLeft="@id/crash_upload_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="8dp"
