@@ -4309,6 +4309,15 @@ const FeatureEntry::FeatureVariation kSeamlessSigninVariations[] = {
      kSeamlessSigninTwoButtonsSignin, nullptr},
     {"with compact layout and \"Sign in as\" button (group 4)",
      kSeamlessSigninCompactSignin, nullptr}};
+
+const FeatureEntry::FeatureParam kCrossDeviceSigninDefaultUrl[] = {
+    {"url", "https://www.google.com/chrome/go-mobile"},
+};
+
+const FeatureEntry::FeatureVariation kCrossDeviceSigninVariations[] = {
+    {"Default URL (https://www.google.com/chrome/go-mobile)",
+     kCrossDeviceSigninDefaultUrl, nullptr},
+};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -11526,7 +11535,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"cross-device-signin", flag_descriptions::kCrossDeviceSigninName,
      flag_descriptions::kCrossDeviceSigninDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kCrossDeviceSignin)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kCrossDeviceSignin,
+                                    kCrossDeviceSigninVariations,
+                                    "CrossDeviceSignin")},
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
