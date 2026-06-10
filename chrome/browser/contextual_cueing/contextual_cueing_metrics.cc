@@ -41,6 +41,7 @@ void RecordCueShownMetrics(ukm::SourceId source_id,
                            base::TimeDelta latency) {
   base::UmaHistogramSparse("ContextualCueing.V2.CueShown",
                            base::HashMetricName(cuj));
+  base::UmaHistogramTimes("ContextualCueing.V2.CueShownLatency", latency);
 
   auto* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::builders::ContextualCueing_CueShown(source_id)

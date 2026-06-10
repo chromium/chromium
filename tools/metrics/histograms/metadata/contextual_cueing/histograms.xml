@@ -244,6 +244,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualCueing.V2.CueShownLatency" units="ms"
+    expires_after="2026-09-13">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>pulkitaga@google.com</owner>
+  <summary>
+    The latency between the navigation committing and when the contextual cue is
+    shown. Recorded when the contextual cue is shown to the user.
+  </summary>
+</histogram>
+
 <histogram name="ContextualCueing.V2.Decision" enum="ContextualCueingDecision"
     expires_after="2026-11-15">
   <owner>sophiechang@chromium.org</owner>
