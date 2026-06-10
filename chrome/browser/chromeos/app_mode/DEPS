@@ -48,21 +48,21 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "chrome_kiosk_app_launcher\.cc": [
+  "chrome_kiosk_app_launcher\\.cc": [
     "+chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h",
   ],
-  "chrome_kiosk_app_launcher_unittest.cc": [
+  "chrome_kiosk_app_launcher_unittest\\.cc": [
     "+ash/test/ash_test_helper.h",
     "+chrome/browser/ash/app_mode/test_kiosk_extension_builder.h",
     "+chrome/browser/ash/extensions/scoped_app_window.h",
   ],
-  "kiosk_troubleshooting_controller_ash.cc": [
+  "kiosk_troubleshooting_controller_ash\\.cc": [
     "+ash/accelerators/accelerator_commands.h",
     "+ash/accelerators/accelerator_controller_impl.h",
     "+ash/public/cpp/new_window_delegate.h",
     "+ash/shell.h"
   ],
-  "kiosk_browser_session_unittest.cc": [
+  "kiosk_browser_session_unittest\\.cc": [
     "+ash/accelerators/accelerator_controller_impl.h",
     "+ash/public/cpp/session/session_types.h",
     "+ash/public/cpp/test/test_new_window_delegate.h",
@@ -78,11 +78,11 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_window/public/browser_window_features.h",
     "+chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h",
   ],
-  "kiosk_browser_logs_collector.cc": [
+  "kiosk_browser_logs_collector\\.cc": [
     "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
   ],
-  "kiosk_app_windows_logs_collector_unittest.cc": [
+  "kiosk_app_windows_logs_collector_unittest\\.cc": [
     "+ash/test/ash_test_helper.h",
     "+chrome/browser/ash/extensions/scoped_app_window.h",
   ],

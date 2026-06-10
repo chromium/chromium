@@ -23,7 +23,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*test\.c": [
+  ".*test\\.c": [
     "+chrome/browser/ash/printing",
   ],
 }
