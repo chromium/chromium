@@ -694,6 +694,16 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
   const components_sharing_message::GlicExperimentalTriggering::TaskMetadata*
       request_metadata =
           request.has_task_metadata() ? &request.task_metadata() : nullptr;
+
+  if (request.has_glic_experimental_triggering_version() &&
+      !IsVersionSupported(request.glic_experimental_triggering_version())) {
+    std::move(done_callback)
+        .Run(CreateResponseMessage(
+            context_id, TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
+            "Rejected: version mismatch or unavailable.", request_metadata));
+    return;
+  }
+
   if (!message.has_server_channel_configuration()) {
     std::move(done_callback)
         .Run(CreateResponseMessage(
@@ -760,4 +770,20 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
 void GlicExperimentalTriggeringMessageHandler::OnUpdatesHandlerCleanup(
     std::string context_id) {
   context_id_to_updates_handler_map_.erase(context_id);
+}
+
+bool GlicExperimentalTriggeringMessageHandler::IsVersionSupported(
+    int incoming_version) const {
+  std::optional<int> local_version = GetLocalTriggeringVersion();
+  return local_version.has_value() && incoming_version <= *local_version;
+}
+
+std::optional<int>
+GlicExperimentalTriggeringMessageHandler::GetLocalTriggeringVersion() const {
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_,
+                                                         /*create=*/false);
+  return glic_service
+             ? glic_service->enabling().GetExperimentalTriggeringVersion()
+             : std::nullopt;
 }

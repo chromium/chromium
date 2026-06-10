@@ -52,6 +52,8 @@ components_sharing_message::SharingMessage CreateTriggeringMessage(
   auto* triggering = message.mutable_glic_experimental_triggering();
   triggering->mutable_task_metadata()->set_sender_sequence_number(
       sequence_number);
+  // Set the current version by default to test the version check success path.
+  triggering->set_glic_experimental_triggering_version(1);
   return message;
 }
 
@@ -997,9 +999,11 @@ BuildNoRequestPayloadExperimentalTriggeringMessage() {
 }
 
 components_sharing_message::SharingMessage
-BuildNoBrowserWindowExperimentalTriggeringMessage() {
+BuildNoVersionNoBrowserWindowMessage() {
   components_sharing_message::SharingMessage message =
       CreateTriggeringMessage();
+  message.mutable_glic_experimental_triggering()
+      ->clear_glic_experimental_triggering_version();
   message.mutable_glic_experimental_triggering()
       ->mutable_request()
       ->mutable_trigger_actuation_request();
@@ -1014,6 +1018,24 @@ BuildStopActuationNoMatchingUpdatesHandler() {
       ->mutable_stop_actuation_request()
       ->set_stop_reason("STOPPED_BY_USER");
 
+  return message;
+}
+
+components_sharing_message::SharingMessage BuildNewerVersionMessage() {
+  components_sharing_message::SharingMessage message =
+      CreateTriggeringMessage();
+  auto* triggering = message.mutable_glic_experimental_triggering();
+  triggering->set_glic_experimental_triggering_version(2);
+  triggering->mutable_request()->mutable_trigger_actuation_request();
+  return message;
+}
+
+components_sharing_message::SharingMessage BuildSameVersionMessage() {
+  components_sharing_message::SharingMessage message =
+      CreateTriggeringMessage();
+  message.mutable_glic_experimental_triggering()
+      ->mutable_request()
+      ->mutable_trigger_actuation_request();
   return message;
 }
 
@@ -1084,8 +1106,7 @@ INSTANTIATE_TEST_SUITE_P(
                                "Received GlicExperimentalTriggering "
                                "message with no request payload."}},
         TestScenarioParam{
-            "NoBrowserWindow",
-            BuildNoBrowserWindowExperimentalTriggeringMessage(),
+            "NoBrowserWindow", BuildNoVersionNoBrowserWindowMessage(),
             ExpectedTaskUpdate{TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
                                "No browser window found for current profile"},
             /*browser_window=*/false},
@@ -1094,7 +1115,16 @@ INSTANTIATE_TEST_SUITE_P(
             BuildStopActuationNoMatchingUpdatesHandler(),
             ExpectedTaskUpdate{
                 TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
-                "Failed to stop task due to missing glic instance."}}),
+                "Failed to stop task due to missing glic instance."}},
+        TestScenarioParam{
+            "NewerVersion", BuildNewerVersionMessage(),
+            ExpectedTaskUpdate{TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
+                               "Rejected: version mismatch or unavailable."}},
+        TestScenarioParam{
+            "SameVersionNoBrowserWindow", BuildSameVersionMessage(),
+            ExpectedTaskUpdate{TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
+                               "No browser window found for current profile"},
+            /*browser_window=*/false}),
     [](const testing::TestParamInfo<TestScenarioParam>& info) {
       return info.param.test_name;
     });
