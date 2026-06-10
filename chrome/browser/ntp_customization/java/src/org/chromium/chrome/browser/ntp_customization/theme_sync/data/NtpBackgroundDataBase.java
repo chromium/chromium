@@ -23,11 +23,12 @@ import java.util.Objects;
 /** Base class for NTP background data. */
 @NullMarked
 public abstract class NtpBackgroundDataBase {
+    public static final String PORTRAIT_MATRIX_KEY = "portraitMatrix";
+    public static final String LANDSCAPE_MATRIX_KEY = "landscapeMatrix";
+
     @VisibleForTesting static final String PLATFORM_TYPE_KEY = "platformType";
     @VisibleForTesting static final String BACKGROUND_TYPE_KEY = "backgroundType";
     @VisibleForTesting static final String PRIMARY_COLOR_KEY = "primaryColor";
-    @VisibleForTesting static final String PORTRAIT_MATRIX_KEY = "portraitMatrix";
-    @VisibleForTesting static final String LANDSCAPE_MATRIX_KEY = "landscapeMatrix";
 
     @IntDef({
         PlatformType.UNKNOWN,

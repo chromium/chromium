@@ -14,6 +14,8 @@ import static org.chromium.chrome.browser.ntp_customization.theme.upload_image.B
 import android.graphics.Matrix;
 import android.graphics.Point;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -152,5 +154,48 @@ public class BackgroundImageInfoUnitTest {
 
         assertNull(info.getPortraitWindowSize());
         assertNull(info.getLandscapeWindowSize());
+    }
+
+    @Test
+    public void testToJsonAndFromJson() throws JSONException {
+        Matrix portraitMatrix = new Matrix();
+        portraitMatrix.setScale(2.5f, 3.5f);
+        Matrix landscapeMatrix = new Matrix();
+        landscapeMatrix.setTranslate(10f, 20f);
+        Point portraitSize = new Point(1080, 1920);
+        Point landscapeSize = new Point(1920, 1080);
+
+        BackgroundImageInfo info =
+                new BackgroundImageInfo(
+                        portraitMatrix, landscapeMatrix, portraitSize, landscapeSize);
+
+        JSONObject json = info.toJson();
+        BackgroundImageInfo restored = BackgroundImageInfo.fromJson(json);
+
+        assertNotNull(restored);
+        assertEquals(portraitMatrix.toShortString(), restored.getPortraitMatrix().toShortString());
+        assertEquals(
+                landscapeMatrix.toShortString(), restored.getLandscapeMatrix().toShortString());
+        assertEquals(portraitSize, restored.getPortraitWindowSize());
+        assertEquals(landscapeSize, restored.getLandscapeWindowSize());
+    }
+
+    @Test
+    public void testToJsonAndFromJson_NullWindowSizes() throws JSONException {
+        Matrix portraitMatrix = new Matrix();
+        Matrix landscapeMatrix = new Matrix();
+
+        BackgroundImageInfo info =
+                new BackgroundImageInfo(portraitMatrix, landscapeMatrix, null, null);
+
+        JSONObject json = info.toJson();
+        BackgroundImageInfo restored = BackgroundImageInfo.fromJson(json);
+
+        assertNotNull(restored);
+        assertEquals(portraitMatrix.toShortString(), restored.getPortraitMatrix().toShortString());
+        assertEquals(
+                landscapeMatrix.toShortString(), restored.getLandscapeMatrix().toShortString());
+        assertNull(restored.getPortraitWindowSize());
+        assertNull(restored.getLandscapeWindowSize());
     }
 }

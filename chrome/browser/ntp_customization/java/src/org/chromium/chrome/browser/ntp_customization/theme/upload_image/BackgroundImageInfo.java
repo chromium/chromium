@@ -11,9 +11,15 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataUtils;
 
 import java.util.Arrays;
 
@@ -27,7 +33,8 @@ import java.util.Arrays;
 public class BackgroundImageInfo {
     private static final String TAG = "BackgroundImageInfo";
     private static final String DELIMITER = "|";
-
+    private static final String PORTRAIT_WINDOW_SIZE_KEY = "portraitWindowSize";
+    private static final String LANDSCAPE_WINDOW_SIZE_KEY = "landscapeWindowSize";
     private @Nullable Point mPortraitWindowSize;
     private @Nullable Point mLandscapeWindowSize;
 
@@ -270,5 +277,62 @@ public class BackgroundImageInfo {
                 new Matrix(info.getLandscapeMatrix()),
                 info.getPortraitWindowSize(),
                 info.getLandscapeWindowSize());
+    }
+
+    /** Returns the JSON representation of the object. */
+    public JSONObject toJson() throws JSONException {
+        JSONObject json = new JSONObject();
+        JSONArray portraitMatrixArray = NtpBackgroundDataUtils.matrixToJsonArray(mPortraitMatrix);
+        if (portraitMatrixArray != null) {
+            json.put(NtpBackgroundDataBase.PORTRAIT_MATRIX_KEY, portraitMatrixArray);
+        }
+        JSONArray landscapeMatrixArray = NtpBackgroundDataUtils.matrixToJsonArray(mLandscapeMatrix);
+        if (landscapeMatrixArray != null) {
+            json.put(NtpBackgroundDataBase.LANDSCAPE_MATRIX_KEY, landscapeMatrixArray);
+        }
+        if (mPortraitWindowSize != null) {
+            JSONArray portraitSizeArray =
+                    NtpBackgroundDataUtils.pointToJsonArray(mPortraitWindowSize);
+            if (portraitSizeArray != null) {
+                json.put(PORTRAIT_WINDOW_SIZE_KEY, portraitSizeArray);
+            }
+        }
+        if (mLandscapeWindowSize != null) {
+            JSONArray landscapeSizeArray =
+                    NtpBackgroundDataUtils.pointToJsonArray(mLandscapeWindowSize);
+            if (landscapeSizeArray != null) {
+                json.put(LANDSCAPE_WINDOW_SIZE_KEY, landscapeSizeArray);
+            }
+        }
+        return json;
+    }
+
+    /** Returns the BackgroundImageInfo object from the given JSON. */
+    public static @Nullable BackgroundImageInfo fromJson(JSONObject json) throws JSONException {
+        Matrix portraitMatrix =
+                NtpBackgroundDataUtils.jsonArrayToMatrix(
+                        json.getJSONArray(NtpBackgroundDataBase.PORTRAIT_MATRIX_KEY));
+        Matrix landscapeMatrix =
+                NtpBackgroundDataUtils.jsonArrayToMatrix(
+                        json.getJSONArray(NtpBackgroundDataBase.LANDSCAPE_MATRIX_KEY));
+        if (portraitMatrix == null || landscapeMatrix == null) {
+            return null;
+        }
+
+        Point portraitSize = null;
+        if (json.has(PORTRAIT_WINDOW_SIZE_KEY)) {
+            portraitSize =
+                    NtpBackgroundDataUtils.jsonArrayToPoint(
+                            json.getJSONArray(PORTRAIT_WINDOW_SIZE_KEY));
+        }
+        Point landscapeSize = null;
+        if (json.has(LANDSCAPE_WINDOW_SIZE_KEY)) {
+            landscapeSize =
+                    NtpBackgroundDataUtils.jsonArrayToPoint(
+                            json.getJSONArray(LANDSCAPE_WINDOW_SIZE_KEY));
+        }
+
+        return new BackgroundImageInfo(
+                portraitMatrix, landscapeMatrix, portraitSize, landscapeSize);
     }
 }

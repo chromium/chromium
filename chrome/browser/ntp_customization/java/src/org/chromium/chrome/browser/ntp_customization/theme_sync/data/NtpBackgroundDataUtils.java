@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpB
 
 import android.content.Context;
 import android.graphics.Matrix;
+import android.graphics.Point;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,19 +47,21 @@ public class NtpBackgroundDataUtils {
      *
      * @param jsonArray The {@link JSONArray} to convert.
      * @return The {@link Matrix} represented by the {@link JSONArray}.
-     * @throws JSONException If the {@link JSONArray} is not a valid representation of a {@link
-     *     Matrix}.
      */
-    static @Nullable Matrix jsonArrayToMatrix(@Nullable JSONArray jsonArray) throws JSONException {
+    public static @Nullable Matrix jsonArrayToMatrix(@Nullable JSONArray jsonArray) {
         if (jsonArray == null) return null;
 
-        float[] values = new float[9];
-        for (int i = 0; i < 9; i++) {
-            values[i] = (float) jsonArray.getDouble(i);
+        try {
+            float[] values = new float[9];
+            for (int i = 0; i < 9; i++) {
+                values[i] = (float) jsonArray.getDouble(i);
+            }
+            Matrix matrix = new Matrix();
+            matrix.setValues(values);
+            return matrix;
+        } catch (JSONException e) {
+            return null;
         }
-        Matrix matrix = new Matrix();
-        matrix.setValues(values);
-        return matrix;
     }
 
     /**
@@ -66,17 +69,44 @@ public class NtpBackgroundDataUtils {
      *
      * @param matrix The {@link Matrix} to convert.
      * @return The {@link JSONArray} representation of the {@link Matrix}.
-     * @throws JSONException If there is an error creating the {@link JSONArray}.
      */
-    static @Nullable JSONArray matrixToJsonArray(@Nullable Matrix matrix) throws JSONException {
+    public static @Nullable JSONArray matrixToJsonArray(@Nullable Matrix matrix) {
         if (matrix == null) return null;
 
-        float[] values = new float[9];
-        matrix.getValues(values);
-        JSONArray jsonArray = new JSONArray();
-        for (float v : values) {
-            jsonArray.put(v);
+        try {
+            float[] values = new float[9];
+            matrix.getValues(values);
+            JSONArray jsonArray = new JSONArray();
+            for (float v : values) {
+                jsonArray.put(v);
+            }
+            return jsonArray;
+        } catch (JSONException e) {
+            return null;
         }
+    }
+
+    /** Converts a {@link Point} to a {@link JSONArray}. */
+    public static @Nullable JSONArray pointToJsonArray(@Nullable Point point) {
+        if (point == null) return null;
+
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(point.x);
+        jsonArray.put(point.y);
         return jsonArray;
+    }
+
+    /** Converts a {@link JSONArray} to a {@link Point}. */
+    public static @Nullable Point jsonArrayToPoint(@Nullable JSONArray jsonArray) {
+        if (jsonArray == null) return null;
+
+        try {
+            if (jsonArray.length() != 2) {
+                return null;
+            }
+            return new Point(jsonArray.getInt(0), jsonArray.getInt(1));
+        } catch (JSONException e) {
+            return null;
+        }
     }
 }

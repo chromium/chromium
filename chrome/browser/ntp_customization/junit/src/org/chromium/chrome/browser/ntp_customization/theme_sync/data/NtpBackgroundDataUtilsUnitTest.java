@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.view.ContextThemeWrapper;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -112,5 +113,30 @@ public class NtpBackgroundDataUtilsUnitTest {
 
         assertNull(NtpBackgroundDataUtils.matrixToJsonArray(null));
         assertNull(NtpBackgroundDataUtils.jsonArrayToMatrix(null));
+    }
+
+    @Test
+    public void testPointConversion() throws JSONException {
+        Point point = new Point(123, 456);
+
+        JSONArray jsonArray = NtpBackgroundDataUtils.pointToJsonArray(point);
+        assertNotNull(jsonArray);
+        assertEquals(2, jsonArray.length());
+        assertEquals(123, jsonArray.getInt(0));
+        assertEquals(456, jsonArray.getInt(1));
+
+        Point restoredPoint = NtpBackgroundDataUtils.jsonArrayToPoint(jsonArray);
+        assertNotNull(restoredPoint);
+        assertEquals(point, restoredPoint);
+
+        assertNull(NtpBackgroundDataUtils.pointToJsonArray(null));
+        assertNull(NtpBackgroundDataUtils.jsonArrayToPoint(null));
+    }
+
+    @Test
+    public void testJsonArrayToPoint_invalidLength_returnsNull() throws JSONException {
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(1);
+        assertNull(NtpBackgroundDataUtils.jsonArrayToPoint(jsonArray));
     }
 }

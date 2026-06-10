@@ -12,6 +12,7 @@ import android.graphics.Matrix;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -76,8 +77,14 @@ public class NtpBackgroundDataUploadImage extends NtpBackgroundDataBase {
         JSONObject json = super.toJson();
         json.put(LAST_UPLOAD_IMAGE_FILE_PATH_KEY, mLastUploadImageFilePath);
         json.put(PRIMARY_COLOR_KEY, mPrimaryColor);
-        json.put(PORTRAIT_MATRIX_KEY, NtpBackgroundDataUtils.matrixToJsonArray(mPortraitMatrix));
-        json.put(LANDSCAPE_MATRIX_KEY, NtpBackgroundDataUtils.matrixToJsonArray(mLandscapeMatrix));
+        JSONArray portraitMatrixArray = NtpBackgroundDataUtils.matrixToJsonArray(mPortraitMatrix);
+        if (portraitMatrixArray != null) {
+            json.put(PORTRAIT_MATRIX_KEY, portraitMatrixArray);
+        }
+        JSONArray landscapeMatrixArray = NtpBackgroundDataUtils.matrixToJsonArray(mLandscapeMatrix);
+        if (landscapeMatrixArray != null) {
+            json.put(LANDSCAPE_MATRIX_KEY, landscapeMatrixArray);
+        }
         return json;
     }
 
