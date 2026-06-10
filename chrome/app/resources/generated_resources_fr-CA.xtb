@@ -1088,7 +1088,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{La désinstallation de « <ph name="APP_NAME" /> » désinstallera également cette application :}one{La désinstallation de « <ph name="APP_NAME" /> » désinstallera également cette application :}other{La désinstallation de « <ph name="APP_NAME" /> » désinstallera également ces applications :}}</translation>
 <translation id="1786290960428378411">Demande de lecture et de modification</translation>
 <translation id="1789543093145556097">Toujours masquer</translation>
-<translation id="179021551944139249">Ajouter un lien à la Liste de lecture</translation>
+<translation id="179021551944139249">Ajouter le lien à la Liste de lecture</translation>
 <translation id="1790976235243700817">Révoquer l'accès</translation>
 <translation id="1791662854739702043">Module installé</translation>
 <translation id="1792619191750875668">Affichage étendu</translation>
@@ -2463,7 +2463,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2751454300227269244">Bougez votre bouche vers la droite</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> souhaite connaître le numéro d'identifiant de votre clé de sécurité. Le site saura exactement quelle clé de sécurité vous utilisez.</translation>
 <translation id="275213133112113418">Votre carte est enregistrée</translation>
-<translation id="2752805177271551234">Utiliser l'historique d'entrée</translation>
+<translation id="2752805177271551234">Utiliser l'historique d'entrées</translation>
 <translation id="2754226775788136540">Recherche d'appareils à association rapide enregistrés avec <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">De la productivité au divertissement, trouvez les applications dont vous avez besoin dans la boutique Google Play Store. Vous pouvez installer des applications à tout moment.</translation>
 <translation id="2755367719610958252">Gérer les fonctionnalités d'accessibilité</translation>
@@ -7428,7 +7428,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6427752304227226701">Signaler un site dangereux…</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Aucun mot de passe enregistré.}=1{Vérification de {COUNT} mot de passe…}one{Vérification de {COUNT} mots de passe...}other{Vérification de {COUNT} mots de passe...}}</translation>
 <translation id="6429384232893414837">Erreur de mise à jour</translation>
-<translation id="6430202563517028640">Ajouter un lien à la Liste de lecture</translation>
+<translation id="6430202563517028640">Ajouter le lien à la Liste de lecture</translation>
 <translation id="6430814529589430811">Certificat unique codé base64 ASCII</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> va configurer les mises à jour automatiques pour tous les utilisateurs de cet ordinateur.</translation>
 <translation id="6434104957329207050">Vitesse de recherche de point</translation>

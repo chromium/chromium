@@ -246,6 +246,7 @@
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 個結果，共 <ph name="TOTAL_RESULTS" /> 個</translation>
 <translation id="2091863218454846791">目前顯示的是密集檢視</translation>
 <translation id="2093731487903423814">過去 15 分鐘</translation>
+<translation id="2094298041331405438">輕觸這裡即可關閉所有無痕視窗</translation>
 <translation id="2096577711562668473">要變更自動填入服務嗎？</translation>
 <translation id="2109384632594340939">個人資料相片</translation>
 <translation id="2111511281910874386">前往指定頁面</translation>
@@ -507,6 +508,7 @@
 <translation id="3114507951000454849">閱讀今日新聞 <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">詳細資料</translation>
 <translation id="3123734510202723619">公告事項</translation>
+<translation id="3132267803114336523">如要關閉所有無痕視窗，請輕觸無痕模式指標</translation>
 <translation id="3134385238404760368">最近未使用任何分頁</translation>
 <translation id="3135655388926735587">輕觸「最近關閉的分頁」</translation>
 <translation id="314939179385989105">Chrome 首頁</translation>

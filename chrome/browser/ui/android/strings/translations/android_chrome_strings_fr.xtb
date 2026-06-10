@@ -246,6 +246,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2082238445998314030">Résultat <ph name="RESULT_NUMBER" /> sur <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Affichage de la vue compacte</translation>
 <translation id="2093731487903423814">15 dernières minutes</translation>
+<translation id="2094298041331405438">Appuyer ici pour fermer toutes les fenêtres de navigation privée</translation>
 <translation id="2096577711562668473">Modifier le service de saisie automatique ?</translation>
 <translation id="2109384632594340939">photo de profil</translation>
 <translation id="2111511281910874386">Accéder à la page</translation>
@@ -499,7 +500,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3067505415088964188">Prix bas</translation>
 <translation id="3070005020161560471">Traduire automatiquement</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> va s'ouvrir dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_LINK2" />. Les <ph name="BEGIN_LINK3" />Règles de confidentialité<ph name="END_LINK3" /> s'appliquent également.</translation>
-<translation id="3080375898390966733">Chercher dans onglet avec Google Lens</translation>
+<translation id="3080375898390966733">Explorer l'onglet avec Google Lens</translation>
 <translation id="3080525922482950719">Vous pouvez enregistrer des pages pour les consulter plus tard ou hors connexion</translation>
 <translation id="3087734570205094154">En bas</translation>
 <translation id="3091010850649238832">Afficher le contenu du presse-papiers</translation>
@@ -507,6 +508,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3114507951000454849">Lisez les actualités du jour <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Plus d'informations</translation>
 <translation id="3123734510202723619">Annonces</translation>
+<translation id="3132267803114336523">Pour fermer toutes les fenêtres de navigation privée, appuyer sur l'indicateur de navigation privée</translation>
 <translation id="3134385238404760368">Aucun onglet récent</translation>
 <translation id="3135655388926735587">Appuyez sur "Onglets récents"</translation>
 <translation id="314939179385989105">Page d'accueil de Chrome</translation>

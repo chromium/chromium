@@ -6,6 +6,7 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Pots tornar aquí per obrir de nou les pestanyes que has tancat fa poc</translation>
 <translation id="1016495303386450659">S'ha actualitzat l'element.</translation>
+<translation id="1018804590490383958">Escaneja i emplena automàticament</translation>
 <translation id="1019990162050689579">Activitat en aplicacions de Gemini</translation>
 <translation id="102916930470544692">Clau d'accés</translation>
 <translation id="1030376737535466765">Obre el gestor de contrasenyes</translation>
@@ -1540,6 +1541,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Posició de la barra d'adreces</translation>
 <translation id="6307241780749477694">Verifica la teva identitat per obtenir totes les teves contrasenyes en aquest dispositiu</translation>
+<translation id="6307792728709337290">Desa la targeta al teu Compte de Google perquè s'empleni automàticament en aquesta compra i en les que facis en el futur a Chrome.</translation>
 <translation id="6316141353357700666">Tria la contrasenya que vols utilitzar de la llista que es mostra.</translation>
 <translation id="6321526113093607004">Afegeix a Adreces d'interès</translation>
 <translation id="6327249202318869726">Gemini està desactivat per al teu compte. Contacta amb el teu administrador per obtenir més informació.</translation>

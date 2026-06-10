@@ -246,6 +246,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2082238445998314030">Výsledek <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Je zobrazeno kompaktní zobrazení</translation>
 <translation id="2093731487903423814">posledních 15 minut</translation>
+<translation id="2094298041331405438">Klepnutím sem zavřete všechna anonymní okna</translation>
 <translation id="2096577711562668473">Změnit službu automatického vyplňování?</translation>
 <translation id="2109384632594340939">profilová fotka</translation>
 <translation id="2111511281910874386">Přejít na stránku</translation>
@@ -507,6 +508,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3114507951000454849">Přečtěte si dnešní zprávy <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Další podrobnosti</translation>
 <translation id="3123734510202723619">Oznámení</translation>
+<translation id="3132267803114336523">Pokud chcete zavřít všechna anonymní okna, klepněte na indikátor anonymního režimu</translation>
 <translation id="3134385238404760368">Žádné nedávné karty</translation>
 <translation id="3135655388926735587">Klepněte na Nedávno použité karty</translation>
 <translation id="314939179385989105">Domovská stránka Chromu</translation>

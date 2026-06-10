@@ -246,6 +246,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2082238445998314030">Tulemus <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Näidatakse kompaktset vaadet</translation>
 <translation id="2093731487903423814">viimase 15 minuti jooksul</translation>
+<translation id="2094298041331405438">Puudutage siin, et sulgeda kõik inkognito aknad.</translation>
 <translation id="2096577711562668473">Kas muuta automaattäite teenust?</translation>
 <translation id="2109384632594340939">profiilipilt</translation>
 <translation id="2111511281910874386">Minge lehele</translation>
@@ -507,6 +508,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3114507951000454849">Lugege tänaseid uudiseid <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Rohkem üksikasju</translation>
 <translation id="3123734510202723619">Teadaanded</translation>
+<translation id="3132267803114336523">Kõigi inkognito akende sulgemiseks puudutage inkognito indikaatorit.</translation>
 <translation id="3134385238404760368">Hiljutisi vahelehti pole.</translation>
 <translation id="3135655388926735587">Puudutage valikut Hiljutised vahelehed.</translation>
 <translation id="314939179385989105">Chrome'i avaleht</translation>

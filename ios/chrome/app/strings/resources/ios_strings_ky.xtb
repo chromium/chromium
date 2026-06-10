@@ -6,6 +6,7 @@
 <translation id="1005230401424685968">ЖЖЖЖ</translation>
 <translation id="1013952917065545813">Бул жерге кайтып келип, жакында жабылган өтмөктөрдү кайра ача аласыз</translation>
 <translation id="1016495303386450659">Нерсе жаңырды</translation>
+<translation id="1018804590490383958">Скандоо жана автотолтуруу</translation>
 <translation id="1019990162050689579">Gemini колдонмолорундагы аракеттер</translation>
 <translation id="102916930470544692">Киргизүүчү ачкыч</translation>
 <translation id="1030376737535466765">Сырсөз башкаргычын ачыңыз</translation>
@@ -486,7 +487,7 @@
 <translation id="2640733327287333451">Колдонуучунун аты жок ••••••</translation>
 <translation id="264215785133931186">Жаңы эле текшерилди</translation>
 <translation id="2647434099613338025">Тил кошуу</translation>
-<translation id="2648812801228676606"><ph name="NAME_OR_EMAIL" /> катары кирип турасыз</translation>
+<translation id="2648812801228676606"><ph name="NAME_OR_EMAIL" /> аккаунтуна кирип турасыз</translation>
 <translation id="2649592894792404568">Сырсөздөрдү башкаргычтагы маалыматтарыңызды өчүргөнү жатасыз</translation>
 <translation id="2652129567809778422">Сырсөздү тандоо</translation>
 <translation id="2658056020748144467">Файлды ачуу мүмкүн эмес</translation>
@@ -1540,6 +1541,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6301767200000930965">Аа</translation>
 <translation id="630308129961693966">Дарек тилкесинин ордун тандаңыз</translation>
 <translation id="6307241780749477694">Бул түзмөктөгү бардык сырсөздөрүңүздү алуу үчүн бул сиз экениңизди ырастаңыз</translation>
+<translation id="6307792728709337290">Бул жана Chrome'догу келечектеги сатып алууларда картаңызды автотолтуруу үчүн аны Google аккаунтуңузга сактап коюңуз.</translation>
 <translation id="6316141353357700666">Тизмеден сырсөз тандаңыз.</translation>
 <translation id="6321526113093607004">Кыстармаларга кошуу</translation>
 <translation id="6327249202318869726">Аккаунтуңузда Gemini өчүрүлгөн. Кеңири маалымат алуу үчүн администраторуңузга кайрылыңыз.</translation>

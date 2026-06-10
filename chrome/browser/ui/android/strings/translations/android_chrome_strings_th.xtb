@@ -246,6 +246,7 @@
 <translation id="2082238445998314030">ผลลัพธ์ <ph name="RESULT_NUMBER" /> จาก <ph name="TOTAL_RESULTS" /> รายการ</translation>
 <translation id="2091863218454846791">กำลังแสดงมุมมองแบบอัดแน่น</translation>
 <translation id="2093731487903423814">15 นาทีที่ผ่านมา</translation>
+<translation id="2094298041331405438">แตะที่นี่เพื่อปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="2096577711562668473">เปลี่ยนบริการป้อนข้อความอัตโนมัติไหม</translation>
 <translation id="2109384632594340939">รูปโปรไฟล์</translation>
 <translation id="2111511281910874386">ไปที่หน้า</translation>
@@ -507,6 +508,7 @@
 <translation id="3114507951000454849">อ่านข่าววันนี้ <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">รายละเอียดเพิ่มเติม</translation>
 <translation id="3123734510202723619">ประกาศ</translation>
+<translation id="3132267803114336523">หากต้องการปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด ให้แตะสัญลักษณ์โหมดไม่ระบุตัวตน</translation>
 <translation id="3134385238404760368">ไม่มีแท็บล่าสุด</translation>
 <translation id="3135655388926735587">แตะแท็บล่าสุด</translation>
 <translation id="314939179385989105">หน้าแรกของ Chrome</translation>

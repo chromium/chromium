@@ -246,6 +246,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Visar kompakt vy</translation>
 <translation id="2093731487903423814">de senaste 15 minuterna</translation>
+<translation id="2094298041331405438">Tryck här om du vill stänga alla inkognitofönster</translation>
 <translation id="2096577711562668473">Vill du ändra autofylltjänsten?</translation>
 <translation id="2109384632594340939">din profilbild</translation>
 <translation id="2111511281910874386">Öppna sida</translation>
@@ -507,6 +508,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3114507951000454849">Läs dagens nyheter <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Mer information</translation>
 <translation id="3123734510202723619">Meddelanden</translation>
+<translation id="3132267803114336523">Tryck på inkognitoikonen om du vill stänga alla inkognitofönster</translation>
 <translation id="3134385238404760368">Inga nya flikar</translation>
 <translation id="3135655388926735587">Tryck på Senaste flikarna</translation>
 <translation id="314939179385989105">Chromes startsida</translation>

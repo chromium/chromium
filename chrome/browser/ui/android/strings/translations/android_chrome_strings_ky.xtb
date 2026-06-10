@@ -246,6 +246,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ичинен <ph name="RESULT_NUMBER" /> натыйжа</translation>
 <translation id="2091863218454846791">Чакан көрүнүш</translation>
 <translation id="2093731487903423814">акыркы 15 мүнөттө</translation>
+<translation id="2094298041331405438">Бардык жашыруун терезелерди жабуу үчүн бул жерди таптаңыз</translation>
 <translation id="2096577711562668473">Автотолтуруу кызматтары өзгөртүлсүнбү?</translation>
 <translation id="2109384632594340939">профилиңиздин сүрөтүн</translation>
 <translation id="2111511281910874386">Веб баракчага өтүү</translation>
@@ -507,6 +508,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3114507951000454849">Бүгүнкү жаңылыктарды окуңуз <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Толук маалымат</translation>
 <translation id="3123734510202723619">Жарыялар</translation>
+<translation id="3132267803114336523">Бардык Жашыруун терезелерди жабуу үчүн Жашыруун режимдин индикаторун таптаңыз</translation>
 <translation id="3134385238404760368">Жакында ачылган өтмөктөр жок</translation>
 <translation id="3135655388926735587">Акыркы өтмөктөрдү таптаңыз</translation>
 <translation id="314939179385989105">Chrome’дун башкы бети</translation>
@@ -646,7 +648,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3771290962915251154">Бул параметр өчүрүлгөн, анткени Ата-эненин көзөмөлү күйүк</translation>
 <translation id="3771694256347217732">Google'дун Тейлөө шарттары</translation>
 <translation id="3777796259512476958">Көпчүлүк сайттардагы аккаунттарыңыздан чыгарыласыз</translation>
-<translation id="3786379886124795923">Chrome'го кирүү үчүн QR кодун скандадыңыз. Бул профилден сырсөздөрдү, кыстармаларды жана башкаларды алгыңыз келгенин ырастаңыз.</translation>
+<translation id="3786379886124795923">Chrome'го кирүү үчүн QR кодду скандадыңыз. Бул профилден сырсөздөрдү, кыстармаларды жана башка нерселерди алгыңыз келгенин ырастаңыз.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 өтмөк}other{# өтмөк}}</translation>
 <translation id="3792938779249970121">Аккаунт тандоо</translation>
 <translation id="3795154175078851242">Сүрөттү шилтемеси менен көчүрүү</translation>
@@ -832,7 +834,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4532845899244822526">Куржун тандаңыз</translation>
 <translation id="4535755320005483982">Жалпы <ph name="GROUP_TITLE" /> өтмөктөр тобу</translation>
 <translation id="4537137366307982887">Билдирмелерди күйгүзүүнү сунуштаган ылдыйкы экран толугу менен ачык</translation>
-<translation id="4537987892902330164"><ph name="NAME_OR_EMAIL" /> катары кирип турасыз.</translation>
+<translation id="4537987892902330164"><ph name="NAME_OR_EMAIL" /> аккаунтуна кирип турасыз.</translation>
 <translation id="4543131175509360848">Киргизүүчү ачкычтардын бир да бети жок</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> өтмөк}other{<ph name="TAB_COUNT_MANY" /> өтмөк, <ph name="TAB_COUNT_INCOGNITO" /> жашыруун}}</translation>
 <translation id="4558311620361989323">Веб баракчасынын кыска жолдору</translation>
@@ -2032,7 +2034,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="95817756606698420">Chrome Кытай жергесинде издөө үчүн <ph name="BEGIN_BOLD" />Sogou'ду<ph name="END_BOLD" /> колдоно алат. Аны <ph name="BEGIN_LINK" />Параметрлерден<ph name="END_LINK" /> өзгөртүп койсоңуз болот.</translation>
 <translation id="961856697154696964">Серептөө дайындарын өчүрүү</translation>
 <translation id="963246339335003378">Маселелерди башкаргычты ачуу</translation>
-<translation id="966337994629449077"><ph name="FROM_EMAIL" /> катары кирип турасыз.\n\nКомпьютерден улантуу үчүн <ph name="TO_EMAIL" /> аккаунтуна которулуңуз. Бул аккаунттагы сырсөздөрдү, кыстармаларды жана башкаларды ала аласыз.</translation>
+<translation id="966337994629449077"><ph name="FROM_EMAIL" /> аккаунтуна кирип турасыз.\n\nКомпьютерден улантуу үчүн <ph name="TO_EMAIL" /> аккаунтуна которулуңуз. Бул аккаунттагы сырсөздөр, кыстармалар жана башка нерселер жеткиликтүү болот.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> мүн. калды</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Бардык өтмөктөрдү жабуу</translation>

@@ -246,6 +246,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2082238445998314030">Rezultat <ph name="RESULT_NUMBER" /> od <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2091863218454846791">Prikazivanje kompaktnog prikaza</translation>
 <translation id="2093731487903423814">posljednjih 15 minuta</translation>
+<translation id="2094298041331405438">Dodirnite ovdje da zatvorite sve anonimne prozore</translation>
 <translation id="2096577711562668473">Promijeniti uslugu automatskog popunjavanja?</translation>
 <translation id="2109384632594340939">sliku profila</translation>
 <translation id="2111511281910874386">Idi na stranicu</translation>
@@ -507,6 +508,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3114507951000454849">Pročitajte današnje vijesti <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">Više detalja</translation>
 <translation id="3123734510202723619">Najave</translation>
+<translation id="3132267803114336523">Zatvaranje svih anonimnih prozora dodirom na pokazatelj anonimnog načina rada</translation>
 <translation id="3134385238404760368">Nema nedavnih kartica</translation>
 <translation id="3135655388926735587">Dodirnite Nedavne kartice</translation>
 <translation id="314939179385989105">Početna stranica Chromea</translation>

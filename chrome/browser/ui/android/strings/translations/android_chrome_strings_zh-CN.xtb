@@ -246,6 +246,7 @@
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 条结果，共 <ph name="TOTAL_RESULTS" /> 条</translation>
 <translation id="2091863218454846791">当前显示的是精简视图</translation>
 <translation id="2093731487903423814">过去 15 分钟</translation>
+<translation id="2094298041331405438">点按此处可关闭所有无痕式窗口</translation>
 <translation id="2096577711562668473">要更改自动填充服务吗？</translation>
 <translation id="2109384632594340939">个人资料照片</translation>
 <translation id="2111511281910874386">转至相关网页</translation>
@@ -507,6 +508,7 @@
 <translation id="3114507951000454849">阅读今日新闻 <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">更多详情</translation>
 <translation id="3123734510202723619">通告</translation>
+<translation id="3132267803114336523">如要关闭所有无痕式窗口，请点按无痕模式指示器</translation>
 <translation id="3134385238404760368">近期没有打开标签页</translation>
 <translation id="3135655388926735587">点按“最近打开的标签页”</translation>
 <translation id="314939179385989105">Chrome 主页</translation>

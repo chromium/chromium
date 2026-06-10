@@ -246,6 +246,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2082238445998314030">結果 <ph name="TOTAL_RESULTS" /> 件中 <ph name="RESULT_NUMBER" /> 件目</translation>
 <translation id="2091863218454846791">コンパクト表示を表示しています</translation>
 <translation id="2093731487903423814">過去 15 分間</translation>
+<translation id="2094298041331405438">ここをタップするとすべてのシークレット ウィンドウを閉じます</translation>
 <translation id="2096577711562668473">自動入力サービスを変更しますか？</translation>
 <translation id="2109384632594340939">プロフィール写真</translation>
 <translation id="2111511281910874386">ページを開く</translation>
@@ -507,6 +508,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3114507951000454849">今日のニュースをチェック <ph name="NEWS_ICON" /></translation>
 <translation id="3122883569442693641">詳細</translation>
 <translation id="3123734510202723619">お知らせ</translation>
+<translation id="3132267803114336523">すべてのシークレット ウィンドウを閉じるには、シークレット モードのインジケーターをタップします</translation>
 <translation id="3134385238404760368">最近使用したタブはありません</translation>
 <translation id="3135655388926735587">[最近使ったタブ] をタップ</translation>
 <translation id="314939179385989105">Chrome のホームページ</translation>
