@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.82"
+rust-version = "1.85"
 name = "prost"
-version = "0.14.3"
+version = "0.14.4"
 authors = [
     "Dan Burkert <dan@danburkert.com>",
     "Lucio Franco <luciofranco14@gmail.com>",
@@ -60,15 +60,15 @@ version = "1"
 default-features = false
 
 [dependencies.prost-derive]
-version = "0.14.3"
+version = "0.14.4"
 optional = true
 
 [dev-dependencies.criterion]
-version = "0.7"
+version = "0.8"
 default-features = false
 
 [dev-dependencies.proptest]
 version = "1"
 
 [dev-dependencies.rand]
-version = "0.9"
+version = "0.10"

@@ -47,10 +47,9 @@ See the [snazzy repository][snazzy] for a simple start-to-finish example.
 
 ### MSRV
 
-`prost` follows the `tokio-rs` project's MSRV model and supports 1.82. For more
-information on the tokio msrv policy you can check it out [here][tokio msrv]
-
-[tokio msrv]: https://github.com/tokio-rs/tokio/#supported-rust-versions
+`prost` will keep a rolling MSRV (minimum supported rust version) policy of at least 6 months. 
+When increasing the MSRV, the new Rust version must have been released at least six months ago. 
+The current MSRV is 1.85.
 
 ## Generated Code
 
@@ -165,7 +164,7 @@ The `#[derive(::prost::Enumeration)]` annotation added to the generated
 
 ```rust,ignore
 impl PhoneType {
-    pub fn is_valid(value: i32) -> bool { ... }
+    pub const fn is_valid(value: i32) -> bool { ... }
     #[deprecated]
     pub fn from_i32(value: i32) -> Option<PhoneType> { ... }
 }
@@ -381,9 +380,9 @@ the `std` features in `prost` and `prost-types`:
 
 ```ignore
 [dependencies]
-prost = { version = "0.14.3", default-features = false, features = ["derive"] }
+prost = { version = "0.14.4", default-features = false, features = ["derive"] }
 # Only necessary if using Protobuf well-known types:
-prost-types = { version = "0.14.3", default-features = false }
+prost-types = { version = "0.14.4", default-features = false }
 ```
 
 Additionally, configure `prost-build` to output `BTreeMap`s instead of `HashMap`s
@@ -460,9 +459,21 @@ pub enum Gender {
 
 ## Nix
 
-The prost project maintains flakes support for local development. Once you have
-nix and nix flakes setup you can just run `nix develop` to get a shell
-configured with the required dependencies to compile the whole project.
+The prost project supports development using Nix flakes. Once you have Nix and flakes enabled, you can simply run:
+
+```bash
+nix develop
+```
+
+This will drop you into a shell with all dependencies configured to build the entire project.
+
+If you want to use the minimum supported Rust version ([see MSRV](#msrv)) as required by policy, run:
+
+```bash
+nix develop .#rust_minimum_version
+```
+
+This ensures compatibility testing and development with the oldest supported toolchain version.
 
 ## Feature Flags
 - `std`: Enable integration with standard library. Disable this feature for `no_std` support. This feature is enabled by default.

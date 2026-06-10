@@ -1,10 +1,9 @@
 //! Utility functions and types for encoding and decoding Protobuf types.
 //!
-//! This module contains the encoding and decoding primitives for Protobuf as
-//! described in <https://protobuf.dev/programming-guides/encoding/>.
+//! This module contains the encoding and decoding primitives for Protobuf as described in
+//! <https://protobuf.dev/programming-guides/encoding/>.
 //!
-//! This module is `pub`, but is only for prost internal use. The `prost-derive`
-//! crate needs access for its `Message` implementations.
+//! This module is `pub`, but is only for prost internal use. The `prost-derive` crate needs access for its `Message` implementations.
 
 use alloc::collections::BTreeMap;
 use alloc::string::String;
@@ -50,21 +49,24 @@ pub struct DecodeContext {
 impl Default for DecodeContext {
     #[inline]
     fn default() -> DecodeContext {
-        DecodeContext { recurse_count: crate::RECURSION_LIMIT }
+        DecodeContext {
+            recurse_count: crate::RECURSION_LIMIT,
+        }
     }
 }
 
 impl DecodeContext {
     /// Call this function before recursively decoding.
     ///
-    /// There is no `exit` function since this function creates a new
-    /// `DecodeContext` to be used at the next level of recursion. Continue
-    /// to use the old context
+    /// There is no `exit` function since this function creates a new `DecodeContext`
+    /// to be used at the next level of recursion. Continue to use the old context
     // at the previous level of recursion.
     #[cfg(not(feature = "no-recursion-limit"))]
     #[inline]
     pub(crate) fn enter_recursion(&self) -> DecodeContext {
-        DecodeContext { recurse_count: self.recurse_count - 1 }
+        DecodeContext {
+            recurse_count: self.recurse_count - 1,
+        }
     }
 
     #[cfg(feature = "no-recursion-limit")]
@@ -468,12 +470,54 @@ macro_rules! fixed_width {
         }
     };
 }
-fixed_width!(f32, 4, WireType::ThirtyTwoBit, float, put_f32_le, get_f32_le);
-fixed_width!(f64, 8, WireType::SixtyFourBit, double, put_f64_le, get_f64_le);
-fixed_width!(u32, 4, WireType::ThirtyTwoBit, fixed32, put_u32_le, get_u32_le);
-fixed_width!(u64, 8, WireType::SixtyFourBit, fixed64, put_u64_le, get_u64_le);
-fixed_width!(i32, 4, WireType::ThirtyTwoBit, sfixed32, put_i32_le, get_i32_le);
-fixed_width!(i64, 8, WireType::SixtyFourBit, sfixed64, put_i64_le, get_i64_le);
+fixed_width!(
+    f32,
+    4,
+    WireType::ThirtyTwoBit,
+    float,
+    put_f32_le,
+    get_f32_le
+);
+fixed_width!(
+    f64,
+    8,
+    WireType::SixtyFourBit,
+    double,
+    put_f64_le,
+    get_f64_le
+);
+fixed_width!(
+    u32,
+    4,
+    WireType::ThirtyTwoBit,
+    fixed32,
+    put_u32_le,
+    get_u32_le
+);
+fixed_width!(
+    u64,
+    8,
+    WireType::SixtyFourBit,
+    fixed64,
+    put_u64_le,
+    get_u64_le
+);
+fixed_width!(
+    i32,
+    4,
+    WireType::ThirtyTwoBit,
+    sfixed32,
+    put_i32_le,
+    get_i32_le
+);
+fixed_width!(
+    i64,
+    8,
+    WireType::SixtyFourBit,
+    sfixed64,
+    put_i64_le,
+    get_i64_le
+);
 
 /// Macro which emits encoding functions for a length-delimited type.
 macro_rules! length_delimited {
@@ -528,19 +572,16 @@ pub mod string {
         // ## Unsafety
         //
         // `string::merge` reuses `bytes::merge`, with an additional check of utf-8
-        // well-formedness. If the utf-8 is not well-formed, or if any other error
-        // occurs, then the string is cleared, so as to avoid leaking a string
-        // field with invalid data.
+        // well-formedness. If the utf-8 is not well-formed, or if any other error occurs, then the
+        // string is cleared, so as to avoid leaking a string field with invalid data.
         //
-        // This implementation uses the unsafe `String::as_mut_vec` method instead of
-        // the safe alternative of temporarily swapping an empty `String` into
-        // the field, because it results in up to 10% better performance on the
-        // protobuf message decoding benchmarks.
+        // This implementation uses the unsafe `String::as_mut_vec` method instead of the safe
+        // alternative of temporarily swapping an empty `String` into the field, because it results
+        // in up to 10% better performance on the protobuf message decoding benchmarks.
         //
-        // It's required when using `String::as_mut_vec` that invalid utf-8 data not be
-        // leaked into the backing `String`. To enforce this, even in the event
-        // of a panic in `bytes::merge` or in the buf implementation, a drop
-        // guard is used.
+        // It's required when using `String::as_mut_vec` that invalid utf-8 data not be leaked into
+        // the backing `String`. To enforce this, even in the event of a panic in `bytes::merge` or
+        // in the buf implementation, a drop guard is used.
         unsafe {
             struct DropGuard<'a>(&'a mut Vec<u8>);
             impl Drop for DropGuard<'_> {
@@ -666,15 +707,11 @@ pub mod bytes {
         }
         let len = len as usize;
 
-        // Clear the existing value. This follows from the following rule in the
-        // encoding guide[1]:
+        // Clear the existing value. This follows from the following rule in the encoding guide[1]:
         //
-        // > Normally, an encoded message would never have more than one instance of a
-        // > non-repeated
-        // > field. However, parsers are expected to handle the case in which they do.
-        // > For numeric
-        // > types and strings, if the same field appears multiple times, the parser
-        // > accepts the
+        // > Normally, an encoded message would never have more than one instance of a non-repeated
+        // > field. However, parsers are expected to handle the case in which they do. For numeric
+        // > types and strings, if the same field appears multiple times, the parser accepts the
         // > last value it sees.
         //
         // [1]: https://protobuf.dev/programming-guides/encoding/#last-one-wins
@@ -769,10 +806,15 @@ pub mod message {
     {
         check_wire_type(WireType::LengthDelimited, wire_type)?;
         ctx.limit_reached()?;
-        merge_loop(msg, buf, ctx.enter_recursion(), |msg: &mut M, buf: &mut B, ctx| {
-            let (tag, wire_type) = decode_key(buf)?;
-            msg.merge_field(tag, wire_type, buf, ctx)
-        })
+        merge_loop(
+            msg,
+            buf,
+            ctx.enter_recursion(),
+            |msg: &mut M, buf: &mut B, ctx| {
+                let (tag, wire_type) = decode_key(buf)?;
+                msg.merge_field(tag, wire_type, buf, ctx)
+            },
+        )
     }
 
     pub fn encode_repeated<M>(tag: u32, messages: &[M], buf: &mut impl BufMut)
@@ -1077,8 +1119,15 @@ macro_rules! map {
                 + values
                     .iter()
                     .map(|(key, val)| {
-                        let len = (if key == &K::default() { 0 } else { key_encoded_len(1, key) })
-                            + (if val == val_default { 0 } else { val_encoded_len(2, val) });
+                        let len = (if key == &K::default() {
+                            0
+                        } else {
+                            key_encoded_len(1, key)
+                        }) + (if val == val_default {
+                            0
+                        } else {
+                            val_encoded_len(2, val)
+                        });
                         encoded_len_varint(len as u64) + len
                     })
                     .sum::<usize>()
@@ -1175,8 +1224,13 @@ mod test {
         }?;
 
         let mut roundtrip_value = T::default();
-        merge(wire_type, &mut roundtrip_value, &mut buf, DecodeContext::default())
-            .map_err(|error| TestCaseError::fail(error.to_string()))?;
+        merge(
+            wire_type,
+            &mut roundtrip_value,
+            &mut buf,
+            DecodeContext::default(),
+        )
+        .map_err(|error| TestCaseError::fail(error.to_string()))?;
 
         prop_assert!(
             !buf.has_remaining(),
@@ -1242,8 +1296,13 @@ mod test {
                 decoded_wire_type
             );
 
-            merge(wire_type, &mut roundtrip_value, &mut buf, DecodeContext::default())
-                .map_err(|error| TestCaseError::fail(error.to_string()))?;
+            merge(
+                wire_type,
+                &mut roundtrip_value,
+                &mut buf,
+                DecodeContext::default(),
+            )
+            .map_err(|error| TestCaseError::fail(error.to_string()))?;
         }
 
         prop_assert_eq!(value, roundtrip_value);
@@ -1266,8 +1325,8 @@ mod test {
         assert!(s.is_empty());
     }
 
-    /// This big bowl o' macro soup generates an encoding property test for each
-    /// combination of map type, scalar map key, and value type.
+    /// This big bowl o' macro soup generates an encoding property test for each combination of map
+    /// type, scalar map key, and value type.
     /// TODO: these tests take a long time to compile, can this be improved?
     #[cfg(feature = "std")]
     macro_rules! map_tests {
@@ -1371,8 +1430,8 @@ mod test {
     ]);
 
     #[test]
-    /// `decode_varint` accepts a `Buf`, which can be multiple concatenated
-    /// buffers. This test ensures that future optimizations don't break the
+    /// `decode_varint` accepts a `Buf`, which can be multiple concatenated buffers.
+    /// This test ensures that future optimizations don't break the
     /// `decode_varint` for non-continuous memory.
     fn split_varint_decoding() {
         let mut test_values = Vec::<u64>::with_capacity(10 * 2);

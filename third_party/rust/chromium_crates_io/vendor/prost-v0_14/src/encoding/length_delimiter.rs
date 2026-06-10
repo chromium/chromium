@@ -9,10 +9,10 @@ use crate::encoding::varint::{decode_varint, encode_varint, encoded_len_varint};
 
 /// Encodes a length delimiter to the buffer.
 ///
-/// See [Message.encode_length_delimited] for more info.
+/// See [Message::encode_length_delimited] for more info.
 ///
-/// An error will be returned if the buffer does not have sufficient capacity to
-/// encode the delimiter.
+/// An error will be returned if the buffer does not have sufficient capacity to encode the
+/// delimiter.
 pub fn encode_length_delimiter(length: usize, buf: &mut impl BufMut) -> Result<(), EncodeError> {
     let length = length as u64;
     let required = encoded_len_varint(length);
@@ -26,25 +26,35 @@ pub fn encode_length_delimiter(length: usize, buf: &mut impl BufMut) -> Result<(
 
 /// Returns the encoded length of a length delimiter.
 ///
-/// Applications may use this method to ensure sufficient buffer capacity before
-/// calling `encode_length_delimiter`. The returned size will be between 1 and
-/// 10, inclusive.
+/// Applications may use this method to ensure sufficient buffer capacity before calling
+/// `encode_length_delimiter`. The returned size will be between 1 and 10, inclusive.
 pub fn length_delimiter_len(length: usize) -> usize {
     encoded_len_varint(length as u64)
 }
 
 /// Decodes a length delimiter from the buffer.
 ///
-/// This method allows the length delimiter to be decoded independently of the
-/// message, when the message is encoded with [Message.encode_length_delimited].
+/// This method allows the length delimiter to be decoded independently of the message, when the
+/// message is encoded with [Message::encode_length_delimited].
 ///
 /// An error may be returned in two cases:
 ///
-///  * If the supplied buffer contains fewer than 10 bytes, then an error
-///    indicates that more input is required to decode the full delimiter.
-///  * If the supplied buffer contains 10 bytes or more, then the buffer
-///    contains an invalid delimiter, and typically the buffer should be
-///    considered corrupt.
+///  * If the supplied buffer contains fewer than 10 bytes, then an error indicates that more
+///    input is required to decode the full delimiter.
+///  * If the supplied buffer contains 10 bytes or more, then the buffer contains an invalid
+///    delimiter, and typically the buffer should be considered corrupt.
+///
+/// # Examples
+///
+/// ```
+/// use prost::bytes::Bytes;
+///
+/// let mut buf = Bytes::from(vec![0x04, 0x0a, 0x02, 0x01, 0x02]);
+/// let len = prost::decode_length_delimiter(&mut buf).unwrap();
+///
+/// assert_eq!(len, 4);
+/// assert_eq!(&buf[..], [0x0a, 0x02, 0x01, 0x02]);
+/// ```
 pub fn decode_length_delimiter(mut buf: impl Buf) -> Result<usize, DecodeError> {
     let length = decode_varint(&mut buf)?;
     if length > usize::MAX as u64 {

@@ -8,8 +8,7 @@ use alloc::{format, string::String};
 /// Associate a type name with a [`Message`] type.
 pub trait Name: Message {
     /// Simple name for this [`Message`].
-    /// This name is the same as it appears in the source .proto file, e.g.
-    /// `FooBar`.
+    /// This name is the same as it appears in the source .proto file, e.g. `FooBar`.
     const NAME: &'static str;
 
     /// Package name this message type is contained in. They are domain-like

@@ -41,7 +41,10 @@ impl DecodeError {
     #[cold]
     #[doc(hidden)]
     pub fn new(description: impl Into<Cow<'static, str>>) -> DecodeError {
-        DecodeErrorKind::Other { description: description.into() }.into()
+        DecodeErrorKind::Other {
+            description: description.into(),
+        }
+        .into()
     }
 
     /// Creates a new `DecodeError` with a DecodeErrorKind::UnexpectedTypeUrl.
@@ -53,8 +56,11 @@ impl DecodeError {
         actual: impl Into<String>,
         expected: impl Into<String>,
     ) -> DecodeError {
-        DecodeErrorKind::UnexpectedTypeUrl { actual: actual.into(), expected: expected.into() }
-            .into()
+        DecodeErrorKind::UnexpectedTypeUrl {
+            actual: actual.into(),
+            expected: expected.into(),
+        }
+        .into()
     }
 
     /// Pushes a (message, field) name location pair on to the location stack.
@@ -87,7 +93,12 @@ impl fmt::Display for DecodeError {
 
 impl From<DecodeErrorKind> for DecodeError {
     fn from(description: DecodeErrorKind) -> Self {
-        DecodeError { inner: Box::new(Inner { description, stack: Vec::new() }) }
+        DecodeError {
+            inner: Box::new(Inner {
+                description,
+                stack: Vec::new(),
+            }),
+        }
     }
 }
 
@@ -107,7 +118,10 @@ pub(crate) enum DecodeErrorKind {
     /// Invalid tag value: 0
     InvalidTag,
     /// Invalid wire type
-    UnexpectedWireType { actual: WireType, expected: WireType },
+    UnexpectedWireType {
+        actual: WireType,
+        expected: WireType,
+    },
     /// Buffer underflow
     BufferUnderflow,
     /// Delimited length exceeded
@@ -176,7 +190,10 @@ pub struct EncodeError {
 impl EncodeError {
     /// Creates a new `EncodeError`.
     pub(crate) fn new(required: usize, remaining: usize) -> EncodeError {
-        EncodeError { required, remaining }
+        EncodeError {
+            required,
+            remaining,
+        }
     }
 
     /// Returns the required buffer capacity to encode the message.
@@ -184,8 +201,7 @@ impl EncodeError {
         self.required
     }
 
-    /// Returns the remaining length in the provided buffer at the time of
-    /// encoding.
+    /// Returns the remaining length in the provided buffer at the time of encoding.
     pub fn remaining(&self) -> usize {
         self.remaining
     }
@@ -249,6 +265,9 @@ mod test {
         let std_io_error = std::io::Error::from(decode_error);
 
         assert_eq!(std_io_error.kind(), std::io::ErrorKind::InvalidData);
-        assert_eq!(std_io_error.to_string(), "failed to decode Protobuf message: invalid varint");
+        assert_eq!(
+            std_io_error.to_string(),
+            "failed to decode Protobuf message: invalid varint"
+        );
     }
 }
