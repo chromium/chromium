@@ -146,15 +146,19 @@ bool CobrowseBrowserAgent::IsTabGridVisible() {
 
 void CobrowseBrowserAgent::OnWebStateInserted(web::WebState* web_state) {
   CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
-  tab_helper->SetDelegate(this);
-  tab_helper->SetSceneCommandsHandler(
-      HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands));
+  if (tab_helper) {
+    tab_helper->SetDelegate(this);
+    tab_helper->SetSceneCommandsHandler(
+        HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands));
+  }
 }
 
 void CobrowseBrowserAgent::OnWebStateRemoved(web::WebState* web_state) {
   CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
-  tab_helper->SetDelegate(nullptr);
-  tab_helper->SetSceneCommandsHandler(nil);
+  if (tab_helper) {
+    tab_helper->SetDelegate(nullptr);
+    tab_helper->SetSceneCommandsHandler(nil);
+  }
 }
 
 void CobrowseBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
