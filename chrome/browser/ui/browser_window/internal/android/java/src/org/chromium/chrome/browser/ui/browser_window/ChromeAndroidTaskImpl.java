@@ -34,6 +34,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
@@ -477,6 +478,15 @@ final class ChromeAndroidTaskImpl
                 }
             };
 
+    // TODO(https://crbug.com/518763461): remove flag once verified
+    private static int getTaskId(Activity activity) {
+        if (ChromeFeatureList.sTaskGetIdAnrFix.isEnabled()) {
+            return ApplicationStatus.getTaskId(activity);
+        } else {
+            return activity.getTaskId();
+        }
+    }
+
     private static Activity getActivity(ActivityWindowAndroid activityWindowAndroid) {
         Activity activity = activityWindowAndroid.getActivity().get();
         assert activity != null : "ActivityWindowAndroid should have an Activity.";
@@ -542,8 +552,7 @@ final class ChromeAndroidTaskImpl
         // AppTask can be null when ChromeAndroidTask is for a CCT window. Please see
         // http://crbug.com/468113288 for details.
         var activity = topActivityScopedObjects.mActivity;
-        var appTask =
-                AndroidTaskUtils.getAppTaskFromId(activity, ApplicationStatus.getTaskId(activity));
+        var appTask = AndroidTaskUtils.getAppTaskFromId(activity, getTaskId(activity));
         if (appTask == null) {
             Log.w(TAG, "Unable to set bounds: null AppTask");
             return WindowResizePrecheckResult.NULL_APP_TASK;
@@ -562,7 +571,7 @@ final class ChromeAndroidTaskImpl
 
     ChromeAndroidTaskImpl(ActivityScopedObjects activityScopedObjects) {
         Activity activity = getActivity(activityScopedObjects.mActivityWindowAndroid);
-        mId = ApplicationStatus.getTaskId(activity);
+        mId = getTaskId(activity);
 
         Profile initialProfile =
                 activityScopedObjects.mTabModelSelector.getCurrentModel().getProfile();
@@ -631,7 +640,7 @@ final class ChromeAndroidTaskImpl
         mWindowStateManager.update(
                 topActivityScopedObjects.mActivity,
                 topActivityScopedObjects.mActivityWindowAndroid.getDisplay());
-        mId = ApplicationStatus.getTaskId(topActivityScopedObjects.mActivity);
+        mId = getTaskId(topActivityScopedObjects.mActivity);
         @Nullable Rect futureBounds = mPendingActionManager.getFutureBoundsInDp();
         @Nullable Rect futureRestoredBounds = mPendingActionManager.getFutureRestoredBoundsInDp();
         mState = State.IDLE;
@@ -1330,7 +1339,7 @@ final class ChromeAndroidTaskImpl
         assert profile != null;
         if (mState == State.IDLE) {
             assert mId != null;
-            assert mId == ApplicationStatus.getTaskId(getActivity(activityWindowAndroid))
+            assert mId == getTaskId(getActivity(activityWindowAndroid))
                     : "The new ActivityWindowAndroid doesn't belong to this Task.";
         } else {
             assert mId == null;
@@ -1681,8 +1690,7 @@ final class ChromeAndroidTaskImpl
         int displayId = topActivityScopedObjects.mActivityWindowAndroid.getDisplay().getDisplayId();
 
         var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
-        var appTask =
-                AndroidTaskUtils.getAppTaskFromId(activity, ApplicationStatus.getTaskId(activity));
+        var appTask = AndroidTaskUtils.getAppTaskFromId(activity, getTaskId(activity));
         assert aconfigFlaggedApiDelegate != null && appTask != null
                 : "use canResizeInternal() to prevent null values";
 
@@ -1712,8 +1720,7 @@ final class ChromeAndroidTaskImpl
             var activity = topActivityScopedObjects.mActivity;
             mPendingActionManager.requestAction(PendingAction.SHOW);
             mState = State.PENDING_UPDATE;
-            ApiCompatibilityUtils.moveTaskToFront(
-                    activity, ApplicationStatus.getTaskId(activity), 0);
+            ApiCompatibilityUtils.moveTaskToFront(activity, getTaskId(activity), 0);
         }
     }
 
@@ -1721,7 +1728,7 @@ final class ChromeAndroidTaskImpl
         var activity = topActivityScopedObjects.mActivity;
         mPendingActionManager.requestAction(PendingAction.ACTIVATE);
         mState = State.PENDING_UPDATE;
-        ApiCompatibilityUtils.moveTaskToFront(activity, ApplicationStatus.getTaskId(activity), 0);
+        ApiCompatibilityUtils.moveTaskToFront(activity, getTaskId(activity), 0);
     }
 
     @RequiresApi(api = VERSION_CODES.R)
@@ -1869,8 +1876,7 @@ final class ChromeAndroidTaskImpl
                     if (VERSION.SDK_INT < VERSION_CODES.R) {
                         isTaskVisible =
                                 ApplicationStatus.isTaskVisible(
-                                        ApplicationStatus.getTaskId(
-                                                activityScopedObjects.mActivity));
+                                        getTaskId(activityScopedObjects.mActivity));
                     } else {
                         isTaskVisible =
                                 mWindowStateManager.getWindowState() != WindowState.MINIMIZED;

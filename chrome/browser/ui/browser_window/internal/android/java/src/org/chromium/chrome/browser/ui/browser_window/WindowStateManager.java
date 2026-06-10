@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
@@ -169,7 +170,12 @@ final class WindowStateManager {
     }
 
     private static boolean isMinimized(Activity activity) {
-        return !ApplicationStatus.isTaskVisible(ApplicationStatus.getTaskId(activity));
+        // TODO(https://crbug.com/518763461): remove flag once verified
+        if (ChromeFeatureList.sTaskGetIdAnrFix.isEnabled()) {
+            return !ApplicationStatus.isTaskVisible(ApplicationStatus.getTaskId(activity));
+        } else {
+            return !ApplicationStatus.isTaskVisible(activity.getTaskId());
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)

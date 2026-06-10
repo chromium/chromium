@@ -687,6 +687,7 @@ public abstract class ChromeFeatureList {
             "TabSwitcherGroupSuggestionsTestModeAndroid";
     public static final String TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH =
             "TabWindowManagerReportIndicesMismatch";
+    public static final String TASK_GET_ID_ANR_FIX = "TaskGetIdAnrFix";
     public static final String TASK_MANAGER_CLANK = "TaskManagerClank";
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
@@ -1519,6 +1520,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_SWITCHER_GROUP_SUGGESTIONS_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherGroupSuggestionsTestModeAndroid =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_GROUP_SUGGESTIONS_TEST_MODE_ANDROID, false);
+    public static final MutableFlagWithSafeDefault sTaskGetIdAnrFix =
+            newMutableFlagWithSafeDefault(TASK_GET_ID_ANR_FIX, true);
     public static final MutableFlagWithSafeDefault sTipsSelfService =
             newMutableFlagWithSafeDefault(TIPS_SELF_SERVICE, false);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =

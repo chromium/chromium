@@ -22,6 +22,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.PendingTaskInfo;
@@ -306,7 +307,12 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         Activity activity = activityWindowAndroid.getActivity().get();
         assert activity != null : "ActivityWindowAndroid should have an Activity.";
 
-        return ApplicationStatus.getTaskId(activity);
+        // TODO(https://crbug.com/518763461): remove flag once verified
+        if (ChromeFeatureList.sTaskGetIdAnrFix.isEnabled()) {
+            return ApplicationStatus.getTaskId(activity);
+        } else {
+            return activity.getTaskId();
+        }
     }
 
     /** Returns an array of the native {@code BrowserWindowInterface} addresses. */
