@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon_source.h"
+#include "chrome/browser/extensions/chrome_app_deprecation.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -137,7 +138,7 @@ void AppHomePageHandler::LoadDeprecatedAppsDialogIfRequired() {
                                         &app_id)) {
     if (extensions::IsExtensionUnsupportedDeprecatedApp(profile_, app_id) &&
         extensions::IsExtensionForceInstalled(profile_, app_id, nullptr)) {
-      if (extensions::IsPreinstalledAppId(app_id)) {
+      if (extensions::chrome_app_deprecation::IsPreinstalledAppId(app_id)) {
         TabDialogs::FromWebContents(web_contents)
             ->ShowForceInstalledPreinstalledDeprecatedAppDialog(app_id,
                                                                 web_contents);
@@ -162,7 +163,7 @@ void AppHomePageHandler::LaunchAppInternal(
                                      web_ui_->GetWebContents());
       return;
     } else {
-      if (extensions::IsPreinstalledAppId(app_id)) {
+      if (extensions::chrome_app_deprecation::IsPreinstalledAppId(app_id)) {
         TabDialogs::FromWebContents(web_ui_->GetWebContents())
             ->ShowForceInstalledPreinstalledDeprecatedAppDialog(
                 app_id, web_ui_->GetWebContents());

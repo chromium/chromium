@@ -14,8 +14,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/chrome_app_deprecation.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -99,7 +99,7 @@ GetChromeAppConfigs() {
 void ForceInstalledPreinstalledDeprecatedAppDialogView::CreateAndShowDialog(
     const extensions::ExtensionId& extension_id,
     content::WebContents* web_contents) {
-  CHECK(extensions::IsPreinstalledAppId(extension_id));
+  CHECK(extensions::chrome_app_deprecation::IsPreinstalledAppId(extension_id));
   auto* browser_context = web_contents->GetBrowserContext();
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(browser_context)

@@ -4,12 +4,12 @@
 
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/extensions/chrome_app_deprecation.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
-#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -110,7 +110,8 @@ IN_PROC_BROWSER_TEST_F(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
                        DialogLaunchedForForceInstalledPreinstalledApp) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Set app as a preinstalled app.
-  extensions::SetPreinstalledAppIdForTesting(app_id_.c_str());
+  extensions::chrome_app_deprecation::SetPreinstalledAppIdForTesting(
+      app_id_.c_str());
   auto link_config_reset = ForceInstalledPreinstalledDeprecatedAppDialogView::
       SetOverrideLinkConfigForTesting(
           {.link = GURL(embedded_test_server()->GetURL("/")),

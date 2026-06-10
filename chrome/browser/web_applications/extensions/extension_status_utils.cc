@@ -9,6 +9,7 @@
 #include "base/one_shot_event.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/chrome_app_deprecation.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/preinstalled_extensions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,16 +22,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 
-namespace {
-
-const char* g_preinstalled_app_for_testing = nullptr;
-
-}  // namespace
-
 namespace extensions {
-namespace testing {
-bool g_enable_chrome_apps_for_testing = false;
-}
 
 bool IsExtensionBlockedByPolicy(content::BrowserContext* context,
                                 const std::string& extension_id) {
@@ -93,29 +85,6 @@ bool IsExternalExtensionUninstalled(content::BrowserContext* context,
   return prefs && prefs->IsExternalExtensionUninstalled(extension_id);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
-                                         const std::string& extension_id) {
-  if (testing::g_enable_chrome_apps_for_testing) {
-    return false;
-  }
-
-  if (extension_id == extensions::kWebStoreAppId)
-    return false;
-
-  auto* registry = ExtensionRegistry::Get(context);
-  // May be nullptr in unit tests.
-  if (!registry)
-    return false;
-
-  const extensions::Extension* app = registry->GetExtensionById(
-      extension_id, extensions::ExtensionRegistry::EVERYTHING);
-  if (!app || !app->is_app())
-    return false;
-
-  return true;
-}
-#endif
 
 void OnExtensionSystemReady(content::BrowserContext* context,
                             base::OnceClosure callback) {
@@ -133,22 +102,11 @@ bool DidPreinstalledAppsPerformNewInstallation(Profile* profile) {
 }
 
 bool IsPreinstalledAppId(const std::string& app_id) {
-  if (g_preinstalled_app_for_testing &&
-      app_id == g_preinstalled_app_for_testing)
-    return true;
-
-  // Also update the duplicated function in extensions/common/constants.cc when
-  // changing the logic here.
-  return app_id == extension_misc::kGmailAppId ||
-         app_id == extension_misc::kGoogleDocsAppId ||
-         app_id == extension_misc::kGoogleDriveAppId ||
-         app_id == extension_misc::kGoogleSheetsAppId ||
-         app_id == extension_misc::kGoogleSlidesAppId ||
-         app_id == extension_misc::kYoutubeAppId;
+  return chrome_app_deprecation::IsPreinstalledAppId(app_id);
 }
 
 void SetPreinstalledAppIdForTesting(const char* app_id) {
-  g_preinstalled_app_for_testing = app_id;
+  chrome_app_deprecation::SetPreinstalledAppIdForTesting(app_id);
 }
 
 }  // namespace extensions

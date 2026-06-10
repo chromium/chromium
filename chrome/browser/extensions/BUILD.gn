@@ -202,6 +202,8 @@ source_set("extensions") {
     "browser_extension_window_controller.h",
     "browser_window_util.cc",
     "browser_window_util.h",
+    "chrome_app_deprecation.cc",
+    "chrome_app_deprecation.h",
     "chrome_app_icon.cc",
     "chrome_app_icon.h",
     "chrome_app_icon_delegate.h",

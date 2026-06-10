@@ -10,8 +10,8 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/extensions/chrome_app_deprecation.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/common/extension.h"
 
