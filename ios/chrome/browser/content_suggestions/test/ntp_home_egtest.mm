@@ -235,6 +235,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
     config.features_enabled.push_back(kChromeNextIa);
     config.additional_args.push_back("--test-ios-module-ranker=safety_check");
   }
+  if ([self isRunningTest:@selector(testMinimumHeight)]) {
+    config.features_enabled.push_back(kChromeNextIa);
+  }
 
   return config;
 }
@@ -1133,10 +1136,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
         @"MostVisitedTilesCollectionView goes through its next layout pass "
         @"based on the actual width of the new tab page content.");
   }
-  if (!base::ios::IsRunningOnIOS26OrLater()) {
-    // TODO(crbug.com/521678721): test flaky on iOS18.
-    EARL_GREY_TEST_SKIPPED(@"Flaky test");
-  }
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
   GREYWaitForAppToIdle(@"App failed to idle");
   [self
@@ -1168,7 +1167,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // Ensures that fake omnibox visibility is correct.
   // On iPads, fake omnibox disappears and becomes real omnibox. On other
   // devices, fake omnibox persists and sticks to top.
-  if ([ChromeEarlGrey isIPadIdiom]) {
+  if ([ChromeEarlGrey isIPadIdiom] && [ChromeEarlGrey isChromeNextEnabled]) {
     [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
         assertWithMatcher:mostlyNotVisible()];
   } else {
