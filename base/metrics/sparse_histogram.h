@@ -78,7 +78,7 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
                   HistogramSamples::Metadata* meta,
                   HistogramSamples::Metadata* logged_meta);
 
-  friend BASE_EXPORT HistogramBase* DeserializeHistogramInfo(
+  friend HistogramBase* HistogramBase::DeserializeInfo(
       base::PickleIterator* iter,
       NameMapper mapper);
   static HistogramBase* DeserializeInfoImpl(base::PickleIterator* iter,
