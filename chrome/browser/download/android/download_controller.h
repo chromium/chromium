@@ -64,6 +64,9 @@ class DownloadController : public DownloadControllerBase {
   static void CloseTabIfEmpty(content::WebContents* web_contents,
                               download::DownloadItem* download);
 
+  // Schedules the removal of a download item on the UI thread.
+  static void ScheduleRemoveDownloadItem(download::DownloadItem* download);
+
   // Callback when user permission prompt finishes. Args: whether file access
   // permission is acquired, which permission to update.
   using AcquirePermissionCallback =
