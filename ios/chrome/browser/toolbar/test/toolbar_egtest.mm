@@ -64,15 +64,19 @@
       performAction:grey_longPress()];
 
   // Verify that the context menu is displayed with expected actions.
-  NSString* newIncognitoTabTitle =
-      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
-  NSString* closeTabTitle =
-      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB);
-
-  [[EarlGrey selectElementWithMatcher:grey_text(newIncognitoTabTitle)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey selectElementWithMatcher:grey_text(closeTabTitle)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_TOOLS_MENU_NEW_TAB)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_TOOLS_MENU_CLOSE_TAB)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

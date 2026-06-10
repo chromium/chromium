@@ -163,14 +163,6 @@ id<GREYMatcher> IncognitoNewTabButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_longPress()];
 
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
-    AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                       IDS_IOS_TOOLS_MENU_NEW_TAB)]
-        assertWithMatcher:grey_nil()];
-    return;
-  }
   AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
@@ -184,14 +176,6 @@ id<GREYMatcher> IncognitoNewTabButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_longPress()];
 
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
-    AssertContextMenuItemDisabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                       IDS_IOS_TOOLS_MENU_NEW_TAB)]
-        assertWithMatcher:grey_nil()];
-    return;
-  }
   AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   AssertContextMenuItemDisabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
@@ -200,19 +184,11 @@ id<GREYMatcher> IncognitoNewTabButton() {
 // item should be disabled in the popup menu triggered by long-pressing the tab
 // grid button.
 - (void)testTabGridButtonLongPressMenuWhenIncognitoOnly {
-  SetIncognitoAvailabiliy(IncognitoAvailability::kOnly);
+  [self restartWithIncognitoPolicy:IncognitoAvailability::kOnly];
   // Long press the tab grid button.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_longPress()];
 
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
-    AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                       IDS_IOS_TOOLS_MENU_NEW_TAB)]
-        assertWithMatcher:grey_nil()];
-    return;
-  }
   AssertContextMenuItemDisabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
