@@ -148,12 +148,18 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
         DCHECK(trs);
         trs->LoadTabsFromLastSession();
         if (!trs->entries().empty()) {
-          if (trs->entries().front()->type ==
-              sessions::tab_restore::Type::WINDOW) {
-            string_id = IDS_REOPEN_WINDOW;
-          } else if (trs->entries().front()->type ==
-                     sessions::tab_restore::Type::GROUP) {
-            string_id = IDS_REOPEN_GROUP;
+          switch (trs->entries().front()->type) {
+            case sessions::tab_restore::Type::WINDOW:
+              string_id = IDS_REOPEN_WINDOW;
+              break;
+            case sessions::tab_restore::Type::GROUP:
+              string_id = IDS_REOPEN_GROUP;
+              break;
+            case sessions::tab_restore::Type::SPLIT:
+              string_id = IDS_REOPEN_SPLIT;
+              break;
+            case sessions::tab_restore::Type::TAB:
+              break;
           }
         }
       }
