@@ -8,6 +8,7 @@ import("//android_webview/variables.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/python.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/repack.gni")
@@ -902,6 +903,16 @@ test("android_webview_unittests") {
     "../nonembedded/component_updater/aw_component_update_service_test.cc",
     "../nonembedded/component_updater/aw_component_updater_configurator_unittest.cc",
   ]
+
+  if (enable_printing) {
+    sources += [ "../browser/aw_print_manager_unittest.cc" ]
+    deps += [
+      "//components/printing/common",
+      "//components/printing/common:mojo_interfaces",
+      "//printing",
+      "//printing:settings",
+    ]
+  }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
