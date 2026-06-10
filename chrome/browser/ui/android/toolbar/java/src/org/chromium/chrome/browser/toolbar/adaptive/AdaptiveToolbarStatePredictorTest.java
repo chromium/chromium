@@ -246,7 +246,7 @@ public class AdaptiveToolbarStatePredictorTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.GLIC)
     @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
-    public void testGlicEnabled() {
+    public void testGlicEnabled_GlicNotRecommendedInAuto() {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
 
         AdaptiveToolbarStatePredictor statePredictor =
@@ -255,15 +255,38 @@ public class AdaptiveToolbarStatePredictorTest {
                         AdaptiveToolbarButtonVariant.UNKNOWN,
                         List.of(AdaptiveToolbarButtonVariant.VOICE));
 
-        // Glic should be included in results.
+        // Glic should NOT be included in results when in AUTO.
         UiState expected =
                 new UiState(
                         true,
                         new ArrayList<Integer>(
                                 List.of(
                                         AdaptiveToolbarButtonVariant.VOICE,
-                                        AdaptiveToolbarButtonVariant.GLIC)),
+                                        AdaptiveToolbarButtonVariant.SHARE)),
                         AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.VOICE);
+        statePredictor.recomputeUiState(verifyResultCallback(expected));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testGlicManualOverride() {
+        AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
+
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.GLIC,
+                        List.of(AdaptiveToolbarButtonVariant.VOICE));
+
+        // Manual override of GLIC should be respected.
+        UiState expected =
+                new UiState(
+                        true,
+                        new ArrayList<Integer>(List.of(AdaptiveToolbarButtonVariant.GLIC)),
+                        AdaptiveToolbarButtonVariant.GLIC,
                         AdaptiveToolbarButtonVariant.VOICE);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
