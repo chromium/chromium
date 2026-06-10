@@ -22,7 +22,8 @@ namespace {
 // Silently returns when seeing any data problem in the pickle.
 void DeserializeHistogramAndAddSamples(PickleIterator* iter,
                                        HistogramBase::NameMapper mapper) {
-  HistogramBase* histogram = DeserializeHistogramInfo(iter, std::move(mapper));
+  HistogramBase* histogram =
+      HistogramBase::DeserializeInfo(iter, std::move(mapper));
   if (!histogram) {
     return;
   }

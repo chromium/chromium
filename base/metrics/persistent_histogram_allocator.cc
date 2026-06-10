@@ -747,7 +747,7 @@ PersistentHistogramAllocator::GetOrCreateStatisticsRecorderHistogram(
         name_override);
   }
 
-  existing = DeserializeHistogramInfo(&iter, mapper);
+  existing = HistogramBase::DeserializeInfo(&iter, mapper);
   if (!existing) {
     return nullptr;
   }

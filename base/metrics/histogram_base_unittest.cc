@@ -53,13 +53,13 @@ TEST_F(HistogramBaseTest, DeserializeHistogram) {
 
   PickleIterator iter(pickle);
   HistogramBase* deserialized =
-      DeserializeHistogramInfo(&iter, base::NullCallback());
+      HistogramBase::DeserializeInfo(&iter, base::NullCallback());
   EXPECT_EQ(histogram, deserialized);
 
   ResetStatisticsRecorder();
 
   PickleIterator iter2(pickle);
-  deserialized = DeserializeHistogramInfo(&iter2, base::NullCallback());
+  deserialized = HistogramBase::DeserializeInfo(&iter2, base::NullCallback());
   EXPECT_TRUE(deserialized);
   EXPECT_NE(histogram, deserialized);
   EXPECT_EQ("TestHistogram", deserialized->histogram_name());
@@ -78,13 +78,13 @@ TEST_F(HistogramBaseTest, DeserializeLinearHistogram) {
 
   PickleIterator iter(pickle);
   HistogramBase* deserialized =
-      DeserializeHistogramInfo(&iter, base::NullCallback());
+      HistogramBase::DeserializeInfo(&iter, base::NullCallback());
   EXPECT_EQ(histogram, deserialized);
 
   ResetStatisticsRecorder();
 
   PickleIterator iter2(pickle);
-  deserialized = DeserializeHistogramInfo(&iter2, base::NullCallback());
+  deserialized = HistogramBase::DeserializeInfo(&iter2, base::NullCallback());
   EXPECT_TRUE(deserialized);
   EXPECT_NE(histogram, deserialized);
   EXPECT_EQ("TestHistogram", deserialized->histogram_name());
@@ -101,13 +101,13 @@ TEST_F(HistogramBaseTest, DeserializeBooleanHistogram) {
 
   PickleIterator iter(pickle);
   HistogramBase* deserialized =
-      DeserializeHistogramInfo(&iter, base::NullCallback());
+      HistogramBase::DeserializeInfo(&iter, base::NullCallback());
   EXPECT_EQ(histogram, deserialized);
 
   ResetStatisticsRecorder();
 
   PickleIterator iter2(pickle);
-  deserialized = DeserializeHistogramInfo(&iter2, base::NullCallback());
+  deserialized = HistogramBase::DeserializeInfo(&iter2, base::NullCallback());
   EXPECT_TRUE(deserialized);
   EXPECT_NE(histogram, deserialized);
   EXPECT_EQ("TestHistogram", deserialized->histogram_name());
@@ -129,13 +129,13 @@ TEST_F(HistogramBaseTest, DeserializeCustomHistogram) {
 
   PickleIterator iter(pickle);
   HistogramBase* deserialized =
-      DeserializeHistogramInfo(&iter, base::NullCallback());
+      HistogramBase::DeserializeInfo(&iter, base::NullCallback());
   EXPECT_EQ(histogram, deserialized);
 
   ResetStatisticsRecorder();
 
   PickleIterator iter2(pickle);
-  deserialized = DeserializeHistogramInfo(&iter2, base::NullCallback());
+  deserialized = HistogramBase::DeserializeInfo(&iter2, base::NullCallback());
   EXPECT_TRUE(deserialized);
   EXPECT_NE(histogram, deserialized);
   EXPECT_EQ("TestHistogram", deserialized->histogram_name());
@@ -152,13 +152,13 @@ TEST_F(HistogramBaseTest, DeserializeSparseHistogram) {
 
   PickleIterator iter(pickle);
   HistogramBase* deserialized =
-      DeserializeHistogramInfo(&iter, base::NullCallback());
+      HistogramBase::DeserializeInfo(&iter, base::NullCallback());
   EXPECT_EQ(histogram, deserialized);
 
   ResetStatisticsRecorder();
 
   PickleIterator iter2(pickle);
-  deserialized = DeserializeHistogramInfo(&iter2, base::NullCallback());
+  deserialized = HistogramBase::DeserializeInfo(&iter2, base::NullCallback());
   EXPECT_TRUE(deserialized);
   EXPECT_NE(histogram, deserialized);
   EXPECT_EQ("TestHistogram", deserialized->histogram_name());
