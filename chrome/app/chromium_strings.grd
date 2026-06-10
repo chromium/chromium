@@ -405,17 +405,34 @@ New bookmarks can’t be saved in your account until you delete some. If you sig
 New bookmarks can’t be saved in your account until you delete some. If you sign out now, unsaved bookmarks will be deleted.
         </message>
       </if>
-      <message name="IDS_RESET_PROFILE_SETTINGS_EXPLANATION_IN_BULLET_POINTS" desc="A label formatted with bullet points describing the consequences of the 'reset profile settings' feature">
-        This action will:
-        <ph name="LINE_BREAKS">&lt;br&gt;&lt;br&gt;</ph>
-          • Reset some Chromium settings and Chromium shortcuts
-          <ph name="LINE_BREAK">&lt;br&gt;</ph>
-          • Disable extensions
-          <ph name="LINE_BREAK">&lt;br&gt;</ph>
-          • Delete cookies and other temporary site data
+      <if expr="is_win">
+        <message name="IDS_RESET_PROFILE_SETTINGS_EXPLANATION_IN_BULLET_POINTS" desc="A label formatted with bullet points describing the consequences of the 'reset profile settings' feature">
+          This action will:
           <ph name="LINE_BREAKS">&lt;br&gt;&lt;br&gt;</ph>
-          Bookmarks, history, and saved passwords won't be affected.
-      </message>
+            • Reset your startup page, new tab page, search engine and pinned tabs
+            <ph name="LINE_BREAK">&lt;br&gt;</ph>
+            • Disable extensions
+            <ph name="LINE_BREAK">&lt;br&gt;</ph>
+            • Delete cookies and other temporary site data
+            <ph name="LINE_BREAK">&lt;br&gt;</ph>
+            • Reset Chromium shortcuts
+            <ph name="LINE_BREAKS">&lt;br&gt;&lt;br&gt;</ph>
+            Bookmarks, history, and saved passwords won't be affected.
+        </message>
+      </if>
+      <if expr="not is_win">
+        <message name="IDS_RESET_PROFILE_SETTINGS_EXPLANATION_IN_BULLET_POINTS" desc="A label formatted with bullet points describing the consequences of the 'reset profile settings' feature">
+          This action will:
+          <ph name="LINE_BREAKS">&lt;br&gt;&lt;br&gt;</ph>
+            • Reset your startup page, new tab page, search engine and pinned tabs
+            <ph name="LINE_BREAK">&lt;br&gt;</ph>
+            • Disable extensions
+            <ph name="LINE_BREAK">&lt;br&gt;</ph>
+            • Delete cookies and other temporary site data
+            <ph name="LINE_BREAKS">&lt;br&gt;&lt;br&gt;</ph>
+            Bookmarks, history, and saved passwords won't be affected.
+        </message>
+      </if>
       <if expr="not is_chromeos">
         <!-- Browser Window Title Format -->
         <if expr="_is_chrome_for_testing_branded">

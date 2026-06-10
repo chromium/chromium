@@ -91,13 +91,9 @@ export class SettingsResetProfileDialogElement extends
           {substitutions: [this.triggeredResetToolName_]});
     }
 
-    if (loadTimeData.getBoolean('showExplanationWithBulletPoints')) {
-      return this.i18nAdvanced('resetPageExplanationBulletPoints', {
-        tags: ['LINE_BREAKS', 'LINE_BREAK'],
-      });
-    }
-
-    return this.i18nAdvanced('resetPageExplanation');
+    return this.i18nAdvanced('resetPageExplanationBulletPoints', {
+      tags: ['LINE_BREAKS', 'LINE_BREAK'],
+    });
   }
 
   private getPageTitle_(): string {

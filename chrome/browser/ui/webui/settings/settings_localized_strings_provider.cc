@@ -1076,7 +1076,6 @@ void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"resetPageTitle", IDS_SETTINGS_RESET},
       {"resetTrigger", IDS_SETTINGS_RESET_SETTINGS_TRIGGER},
-      {"resetPageExplanation", IDS_RESET_PROFILE_SETTINGS_EXPLANATION},
       {"resetPageExplanationBulletPoints",
        IDS_RESET_PROFILE_SETTINGS_EXPLANATION_IN_BULLET_POINTS},
       {"triggeredResetPageExplanation",
@@ -1100,13 +1099,6 @@ void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddBoolean(
       "showResetProfileBanner",
       ResetSettingsHandler::ShouldShowResetProfileBanner(profile));
-  bool is_reset_shortcuts_feature_enabled = false;
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/40192052): Remove this flag from the JS.
-  is_reset_shortcuts_feature_enabled = true;
-#endif
-  html_source->AddBoolean("showExplanationWithBulletPoints",
-                          is_reset_shortcuts_feature_enabled);
 
   html_source->AddString("resetPageLearnMoreUrl",
                          chrome::kResetProfileSettingsLearnMoreURL);
