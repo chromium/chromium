@@ -59,6 +59,11 @@ _WILDCARD_REPLACE = ['en_US']
 # Strings to ignore when comparing file names for similarity
 _FILENAME_IGNORE = ['.js', '.css', 'bundle', '.min', '.', '-', '[', ']']
 
+_UUID_REGEX = re.compile(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'
+                         r'[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
+
+_NAMED_WILDCARD_REGEX = re.compile(r':[a-zA-Z_][a-zA-Z0-9_]*')
+
 # Compression level for the inline zstd-compressed pervasive list
 _ZSTD_COMPRESSION_LEVEL = 19
 
@@ -128,19 +133,55 @@ class PervasiveResourceCollector:
   def _url_matches_pattern(self, url: str, pattern: str) -> bool:
     """Checks if the given URL matches the provided wildcard pattern.
 
-        Args:
-          url: The URL to check.
-          pattern: The pattern to match against (supports '*' wildcard).
+    This matches the pattern compilation and matching logic of Chrome's
+    SimpleUrlPatternMatcher, which implements a restricted subset of the
+    URLPattern spec supporting only bare '*' wildcards (matching arbitrary
+    depth) and named wildcards (like :v, matching a single path segment).
 
-        Returns:
-          True if the URL matches the pattern, False otherwise.
-        """
-    if '*' not in pattern:
+    Args:
+      url: The URL to check.
+      pattern: The pattern to match against.
+
+    Returns:
+      True if the URL matches the pattern, False otherwise.
+    """
+    if '*' not in pattern and ':' not in pattern:
       return url == pattern
-    pat = re.escape(pattern)
-    pat = pat.replace('\\*', '.*')
-    match = re.fullmatch(pat, url)
+
+    assert '__NAMED_WILDCARD__' not in pattern
+    assert '__BARE_WILDCARD__' not in pattern
+    temp_pattern = re.sub(_NAMED_WILDCARD_REGEX, '__NAMED_WILDCARD__', pattern)
+    temp_pattern = temp_pattern.replace('*', '__BARE_WILDCARD__')
+
+    escaped_pattern = re.escape(temp_pattern)
+
+    escaped_pattern = escaped_pattern.replace('__NAMED_WILDCARD__', '[^/]+')
+    escaped_pattern = escaped_pattern.replace('__BARE_WILDCARD__', '.*')
+
+    match = re.fullmatch(escaped_pattern, url)
     return match is not None
+
+  def _is_uuid(self, s: str) -> bool:
+    """Checks if a string matches the UUID format."""
+    return _UUID_REGEX.match(s) is not None
+
+  def _replace_wildcards_with_names(self, pattern: str) -> str:
+    """Replaces whole-segment '*' wildcards with unique named wildcards.
+
+    e.g. (:v1, :v2, ...)
+    """
+    assert not _NAMED_WILDCARD_REGEX.search(pattern)
+    parts = pattern.split('/')
+    count = 1
+    for i, part in enumerate(parts):
+      if part == '*':
+        parts[i] = f':v{count}'
+        count += 1
+    if count == 2:
+      # Only one wildcard was replaced, use ':v' instead of ':v1'
+      parts[parts.index(':v1')] = ':v'
+    return '/'.join(parts)
+
 
   def _is_current_crawl_done(self) -> bool:
     """Checks if the current month's crawl is expected to be done.
@@ -439,6 +480,23 @@ class PervasiveResourceCollector:
     if not differences:
       return None
 
+    # Do not support more that 5 path segments that need to be wildcards.
+    # We normally expect for there to be only one or two.
+    if len(differences) > 5:
+      return None
+
+    # Defense-in-depth fallback: Reject the pattern if any differing segment in
+    # the base path or candidates is a UUID. This prevents generating an overly
+    # broad wildcard segment that would match arbitrary tenant/extension UUIDs.
+    for diff in differences:
+      if self._is_uuid(path_parts[diff]):
+        return None
+      for candidate in candidates:
+        candidate_parts = candidate.split('/')
+        if (len(candidate_parts) > diff
+            and self._is_uuid(candidate_parts[diff])):
+          return None
+
     # The case where a small number of path segments differ
     # and the filename is the same
     filename_matches = differences[-1] != len(path_parts) - 1
@@ -503,14 +561,26 @@ class PervasiveResourceCollector:
           dest = self._destinations[url]
           body_hash = list(o[path][self._current_date].keys())[0]
           target_size = o[path][self._current_date][body_hash]['size']
-          path_segments = len(path.split('/'))
+          path_parts = path.split('/')
+          path_segments = len(path_parts)
           # Find candidate paths that are within 5% of the target size
-          # (assume minor changes from version to version)
-          # with "similar" urls
+          # (assume minor changes from version to version) with "similar" urls.
+          # UUID segments in the paths must match exactly.
           candidates = []
           target_size_min = target_size
           target_size_max = target_size
           for p in list(o.keys()):
+            p_parts = p.split('/')
+            if len(p_parts) != path_segments:
+              continue
+            uuid_mismatch = False
+            for idx, part in enumerate(path_parts):
+              if self._is_uuid(part) and p_parts[idx] != part:
+                uuid_mismatch = True
+                break
+            if uuid_mismatch:
+              continue
+
             curl = f'{origin}{p}'
             cdest = self._destinations.get(curl)
             cfilepart = p.split('/')[-1]
@@ -520,7 +590,6 @@ class PervasiveResourceCollector:
             similarity = s.ratio()
             block_count = len(s.get_matching_blocks())
             if (p != path and p not in candidates and cdest == dest
-                and len(p.split('/')) == path_segments
                 and similarity >= _MIN_FILENAME_RATIO
                 and block_count <= _MAX_FILENAME_MATCHING_BLOCKS
                 and abs(len(filepart) - len(cfilepart))
@@ -542,8 +611,7 @@ class PervasiveResourceCollector:
             if pattern:
               for sub in _WILDCARD_REPLACE:
                 pattern = pattern.replace(sub, '*')
-              while '/*/*/' in pattern:
-                pattern = pattern.replace('/*/*/', '/*/')
+              pattern = self._replace_wildcards_with_names(pattern)
               # Make sure the aggregate of all of the candidates meet the
               # pervasive threshold
               matched_urls = []
