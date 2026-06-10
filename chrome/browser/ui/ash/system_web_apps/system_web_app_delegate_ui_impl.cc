@@ -84,11 +84,11 @@ BrowserDelegate* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   std::optional<webapps::LaunchParams> launch_params;
   if (has_launch_params) {
     webapps::LaunchParams params_to_send;
-    params_to_send.started_new_navigation = true;
-    params_to_send.app_id = params.app_id;
-    params_to_send.target_url = url;
-    params_to_send.dir = std::move(launch_dir);
-    params_to_send.paths = params.launch_files;
+    params_to_send.set_started_new_navigation(true);
+    params_to_send.set_app_id(params.app_id);
+    params_to_send.set_target_url(url);
+    params_to_send.set_dir(std::move(launch_dir));
+    params_to_send.set_paths(params.launch_files);
     launch_params = std::move(params_to_send);
   }
 
@@ -111,8 +111,8 @@ BrowserDelegate* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     // dispatched immediately, because a new navigation has not started. Update
     // it to show that behavior.
     if (launch_params.has_value()) {
-      launch_params->started_new_navigation = false;
-      launch_params->target_url = web_contents->GetURL();
+      launch_params->set_started_new_navigation(false);
+      launch_params->set_target_url(web_contents->GetURL());
       web_app::WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
           web_contents, std::move(*launch_params));
     }

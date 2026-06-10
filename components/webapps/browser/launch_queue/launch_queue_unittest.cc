@@ -122,9 +122,9 @@ class LaunchQueueTest : public content::RenderViewHostTestHarness {
   LaunchParams CreateLaunchParams(const GURL& target_url,
                                   bool started_new_navigation = true) {
     LaunchParams params;
-    params.target_url = target_url;
-    params.started_new_navigation = started_new_navigation;
-    params.app_id = "test_app_id";
+    params.set_target_url(target_url);
+    params.set_started_new_navigation(started_new_navigation);
+    params.set_app_id("test_app_id");
     return params;
   }
 
@@ -148,8 +148,7 @@ TEST_F(LaunchQueueTest, EnqueueImmediatelyDispatches) {
 TEST_F(LaunchQueueTest, EnqueueInvalidParams) {
   GURL launch_url("https://example.com/launch");
   LaunchParams params = CreateLaunchParams(launch_url);
-  params.paths.push_back(
-      base::FilePath(FILE_PATH_LITERAL("sensitive_file.txt")));
+  params.add_path(base::FilePath(FILE_PATH_LITERAL("sensitive_file.txt")));
 
   EXPECT_CALL(*delegate_, IsValidLaunchParams(testing::_))
       .WillOnce(testing::Return(false));

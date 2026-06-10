@@ -16,7 +16,7 @@ TEST(TwaLaunchQueueDelegateTest, IsValidLaunchParams) {
   // Helper lambda to test a single path
   auto check_path = [&](const std::string& path_str) {
     LaunchParams params;
-    params.paths.emplace_back(path_str);
+    params.add_path(base::FilePath(path_str));
     return delegate.IsValidLaunchParams(params);
   };
 

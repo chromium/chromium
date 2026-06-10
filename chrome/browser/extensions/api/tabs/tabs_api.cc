@@ -1248,9 +1248,9 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
       NavigateParams navigate_params = create_nav_params(
           registrar.GetAppStartUrl(iwa_id), /*is_first_nav=*/true);
       webapps::LaunchParams launch_params;
-      launch_params.app_id = iwa_id;
-      launch_params.target_url = original_url;
       CHECK(navigate_params.web_app_navigation_data);
+      launch_params.set_app_id(iwa_id);
+      launch_params.set_target_url(original_url);
       navigate_params.web_app_navigation_data->SetLaunchParams(
           std::move(launch_params));
 

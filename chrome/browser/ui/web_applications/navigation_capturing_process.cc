@@ -1424,10 +1424,10 @@ NavigationCapturingProcess::HandleRedirectImpl() {
       // or showing the navigation capturing IPH.
       CHECK(!time_navigation_started_.is_null());
       webapps::LaunchParams launch_params;
-      launch_params.app_id = *target_app_id;
-      launch_params.target_url = final_url;
-      launch_params.time_navigation_started_for_enqueue =
-          time_navigation_started_;
+      launch_params.set_app_id(*target_app_id);
+      launch_params.set_target_url(final_url);
+      launch_params.set_time_navigation_started_for_enqueue(
+          time_navigation_started_);
       WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
           pre_existing_contents, std::move(launch_params));
       MaybeShowNavigationCaptureIph(*target_app_id, &*profile_,
@@ -1976,9 +1976,10 @@ NavigationCapturingProcess::CapturedFocusExisting(Browser* browser,
   bool is_current_container_window = WebAppBrowserController::IsWebApp(browser);
 
   webapps::LaunchParams launch_params;
-  launch_params.app_id = app_id;
-  launch_params.target_url = url;
-  launch_params.time_navigation_started_for_enqueue = time_navigation_started_;
+  launch_params.set_app_id(app_id);
+  launch_params.set_target_url(url);
+  launch_params.set_time_navigation_started_for_enqueue(
+      time_navigation_started_);
   WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
       contents, std::move(launch_params));
 
@@ -2017,7 +2018,7 @@ void NavigationCapturingProcess::SetLaunchedAppIdAndUpdateLaunchParams(
         WebAppLaunchNavigationHandleUserData::GetForNavigationHandle(
             *navigation_handle());
     return user_data ? std::make_optional<GURL>(
-                           user_data->GetLaunchParams().target_url)
+                           user_data->GetLaunchParams().target_url())
                      : std::nullopt;
   }();
 

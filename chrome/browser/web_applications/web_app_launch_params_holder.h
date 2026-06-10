@@ -9,7 +9,7 @@
 #include "components/webapps/common/web_app_id.h"
 
 namespace webapps {
-struct LaunchParams;
+class LaunchParams;
 }
 
 namespace web_app {

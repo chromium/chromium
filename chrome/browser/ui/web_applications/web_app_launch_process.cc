@@ -408,9 +408,9 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
       // it can be tied to the current navigation.
       if (auto holder = tab_helper->pending_launch_params_holder()) {
         webapps::LaunchParams launch_params;
-        launch_params.app_id = web_app_->app_id();
-        launch_params.target_url = launch_url;
-        launch_params.paths = params_->launch_files;
+        launch_params.set_app_id(web_app_->app_id());
+        launch_params.set_target_url(launch_url);
+        launch_params.set_paths(params_->launch_files);
         holder->SetLaunchParams(std::move(launch_params));
       }
       return {.web_contents = existing_tab, .did_navigate = false};
@@ -450,9 +450,9 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
   }
 
   webapps::LaunchParams launch_params;
-  launch_params.app_id = web_app_->app_id();
-  launch_params.target_url = launch_url;
-  launch_params.paths = params_->launch_files;
+  launch_params.set_app_id(web_app_->app_id());
+  launch_params.set_target_url(launch_url);
+  launch_params.set_paths(params_->launch_files);
   nav_params.web_app_navigation_data->SetLaunchParams(std::move(launch_params));
 
   return {.web_contents = NavigateWebAppUsingParams(nav_params),
@@ -472,11 +472,11 @@ void WebAppLaunchProcess::MaybeEnqueueWebLaunchParams(
   }
 
   webapps::LaunchParams launch_params;
-  launch_params.started_new_navigation = false;
-  launch_params.app_id = web_app_->app_id();
-  launch_params.target_url = launch_url;
-  launch_params.paths =
-      is_file_handling ? params_->launch_files : std::vector<base::FilePath>();
+  launch_params.set_started_new_navigation(false);
+  launch_params.set_app_id(web_app_->app_id());
+  launch_params.set_target_url(launch_url);
+  launch_params.set_paths(is_file_handling ? params_->launch_files
+                                           : std::vector<base::FilePath>());
 
   WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
       web_contents, std::move(launch_params));

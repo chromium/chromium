@@ -24,7 +24,7 @@ struct PathInfo;
 
 namespace webapps {
 
-struct LaunchParams;
+class LaunchParams;
 
 // LaunchQueueDelegate represents a platform-specific behaviour
 // of the LaunchQueue class.

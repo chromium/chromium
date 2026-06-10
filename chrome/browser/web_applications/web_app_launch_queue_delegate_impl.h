@@ -24,8 +24,7 @@ struct PathInfo;
 
 namespace webapps {
 
-struct LaunchParams;
-
+class LaunchParams;
 }
 
 namespace web_app {

@@ -22,7 +22,7 @@ void TwaLaunchNavigationHandleUserData::EnqueueNonNavigating(
   TwaLaunchQueueTabHelper* tab_helper =
       TwaLaunchQueueTabHelper::GetOrCreateForWebContents(web_contents);
   CHECK(tab_helper);
-  launch_params.started_new_navigation = false;
+  launch_params.set_started_new_navigation(false);
   tab_helper->EnsureLaunchQueue().Enqueue(std::move(launch_params));
 }
 

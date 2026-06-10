@@ -21,7 +21,7 @@ struct PathInfo;
 
 namespace webapps {
 
-struct LaunchParams;
+class LaunchParams;
 
 class LaunchQueueDelegate {
  public:

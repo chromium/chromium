@@ -483,10 +483,11 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
   FocusAppContainer(existing_app_host->browser, existing_app_host->tab_index);
 
   webapps::LaunchParams launch_params;
-  launch_params.app_id = app_id;
-  launch_params.target_url = launch_url;
+  launch_params.set_app_id(app_id);
+  launch_params.set_target_url(launch_url);
   if (!time_reparent_started.is_null()) {
-    launch_params.time_navigation_started_for_enqueue = time_reparent_started;
+    launch_params.set_time_navigation_started_for_enqueue(
+        time_reparent_started);
   }
 
   if (client_mode == LaunchHandler::ClientMode::kNavigateExisting) {

@@ -34,10 +34,10 @@ bool IsSensitivePath(const base::FilePath& path) {
 
 bool TwaLaunchQueueDelegate::IsValidLaunchParams(
     const webapps::LaunchParams& launch_params) const {
-  if (!launch_params.dir.empty() && IsSensitivePath(launch_params.dir)) {
+  if (!launch_params.dir().empty() && IsSensitivePath(launch_params.dir())) {
     return false;
   }
-  for (const auto& path : launch_params.paths) {
+  for (const auto& path : launch_params.paths()) {
     if (IsSensitivePath(path)) {
       return false;
     }

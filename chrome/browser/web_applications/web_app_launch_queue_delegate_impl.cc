@@ -31,8 +31,8 @@ LaunchQueueDelegateImpl::LaunchQueueDelegateImpl(
 
 bool LaunchQueueDelegateImpl::IsValidLaunchParams(
     const webapps::LaunchParams& launch_params) const {
-  return launch_params.dir.empty() ||
-         registrar_->IsSystemApp(launch_params.app_id);
+  return launch_params.dir().empty() ||
+         registrar_->IsSystemApp(launch_params.app_id());
 }
 
 bool LaunchQueueDelegateImpl::IsInScope(
@@ -43,7 +43,8 @@ bool LaunchQueueDelegateImpl::IsInScope(
   // App scope is a web app concept that is not applicable for extensions.
   // Therefore this check will be skipped when launching an extension URL.
   return IsExtensionURL(current_url) ||
-         registrar_->IsUrlInAppExtendedScope(current_url, launch_params.app_id);
+         registrar_->IsUrlInAppExtendedScope(current_url,
+                                             launch_params.app_id());
 }
 
 // On Chrome OS paths that exist on an external mount point need to be treated

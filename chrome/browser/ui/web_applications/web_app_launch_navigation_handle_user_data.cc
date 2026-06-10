@@ -30,7 +30,7 @@ void WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
   CHECK(web_contents);
   WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
-  launch_params.started_new_navigation = false;
+  launch_params.set_started_new_navigation(false);
   tab_helper->EnqueueLaunchParams(std::move(launch_params));
 }
 
@@ -55,7 +55,7 @@ WebAppLaunchNavigationHandleUserData::GetLaunchParams() const {
 
 void WebAppLaunchNavigationHandleUserData::SetLaunchParams(
     webapps::LaunchParams launch_params) {
-  app_id_ = launch_params.app_id;
+  app_id_ = launch_params.app_id();
   launch_params_ = std::move(launch_params);
   if (web_contents_) {
     WebAppTabHelper* tab_helper =
@@ -80,11 +80,11 @@ void WebAppLaunchNavigationHandleUserData::SetLaunchParamsMetadata(
     launch_params_.emplace();
   }
   app_id_ = app_id;
-  launch_params_->app_id = app_id;
-  launch_params_->target_url = target_url;
-  if (launch_params_->time_navigation_started_for_enqueue.is_null()) {
-    launch_params_->time_navigation_started_for_enqueue =
-        time_navigation_started;
+  launch_params_->set_app_id(std::move(app_id));
+  launch_params_->set_target_url(std::move(target_url));
+  if (launch_params_->time_navigation_started_for_enqueue().is_null()) {
+    launch_params_->set_time_navigation_started_for_enqueue(
+        time_navigation_started);
   }
 
   if (web_contents_) {
@@ -106,11 +106,11 @@ void WebAppLaunchNavigationHandleUserData::
   CHECK(tab_helper);
 
   // Extract app_id and target_url before moving launch_params_.
-  const webapps::AppId app_id = launch_params_->app_id;
-  const GURL target_url = launch_params_->target_url;
+  const webapps::AppId app_id = launch_params_->app_id();
+  const GURL target_url = launch_params_->target_url();
 
   // Keep started_new_navigation = true so Blink records correct metrics.
-  launch_params_->started_new_navigation = true;
+  launch_params_->set_started_new_navigation(true);
   if (tab_helper->EnsureLaunchQueue().IsInScope(*launch_params_,
                                                 navigation_handle_->GetURL())) {
     tab_helper->EnqueueLaunchParams(std::move(*launch_params_));

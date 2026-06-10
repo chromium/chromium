@@ -29,7 +29,7 @@ class WebContents;
 
 namespace webapps {
 class LaunchQueue;
-struct LaunchParams;
+class LaunchParams;
 }
 
 namespace web_app {
