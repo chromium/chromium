@@ -4,8 +4,6 @@
 
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 
-#include "build/build_config.h"
-
 #include <memory>
 #include <utility>
 
@@ -30,33 +28,21 @@ bool BinaryFeatureExtractor::ExtractImageFeatures(
     ExtractHeadersOption options,
     ClientDownloadRequest_ImageHeaders* image_headers,
     google::protobuf::RepeatedPtrField<std::string>* signed_data) {
-  base::FilePath temp_dir;
-  if (!base::GetTempDir(&temp_dir)) {
-    return false;
-  }
-
   base::FilePath temp_path;
-  base::File temp_file = base::CreateAndOpenTemporaryFileInDir(
-      temp_dir, &temp_path,
-      base::File::FLAG_WIN_TEMPORARY | base::File::FLAG_DELETE_ON_CLOSE);
-  if (!temp_file.IsValid()) {
+  if (!base::CreateTemporaryFile(&temp_path)) {
     return false;
   }
 
-
-
-  {
-    base::File source_file(file_path,
-                           base::File::FLAG_OPEN | base::File::FLAG_READ);
-    if (!source_file.IsValid()) {
-      return false;
-    }
-
-    if (!base::CopyFileContents(source_file, temp_file)) {
-      base::DeleteFile(temp_path);
-      return false;
-    }
+  if (!base::CopyFile(file_path, temp_path)) {
+    base::DeleteFile(temp_path);
+    return false;
   }
+
+  base::File temp_file;
+  temp_file.Initialize(temp_path, base::File::FLAG_OPEN |
+                                      base::File::FLAG_READ |
+                                      base::File::FLAG_WIN_TEMPORARY |
+                                      base::File::FLAG_DELETE_ON_CLOSE);
 
   base::MemoryMappedFile mapped_file;
   if (!mapped_file.Initialize(std::move(temp_file))) {
