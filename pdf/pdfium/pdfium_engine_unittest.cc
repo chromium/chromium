@@ -90,6 +90,7 @@ using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::Mock;
 using ::testing::NiceMock;
+using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::Return;
 using ::testing::StrictMock;
@@ -717,19 +718,19 @@ TEST_P(PDFiumEngineTest, GetPageSizeInPoints) {
 
   ASSERT_EQ(engine.GetNumberOfPages(), 7);
   EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/0),
-              testing::Optional(gfx::SizeF(612.0f, 792.0f)));
+              Optional(gfx::SizeF(612.0f, 792.0f)));
   EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/1),
-              testing::Optional(gfx::SizeF(595.0f, 842.0f)));
+              Optional(gfx::SizeF(595.0f, 842.0f)));
   EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/2),
-              testing::Optional(gfx::SizeF(200.0f, 200.0f)));
+              Optional(gfx::SizeF(200.0f, 200.0f)));
   EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/3),
-              testing::Optional(gfx::SizeF(1000.0f, 200.0f)));
+              Optional(gfx::SizeF(1000.0f, 200.0f)));
   EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/4),
-              testing::Optional(gfx::SizeF(200.0f, 1000.0f)));
+              Optional(gfx::SizeF(200.0f, 1000.0f)));
   EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/5),
-              testing::Optional(gfx::SizeF(1500.0f, 50.0f)));
+              Optional(gfx::SizeF(1500.0f, 50.0f)));
   EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/6),
-              testing::Optional(gfx::SizeF(50.0f, 1500.0f)));
+              Optional(gfx::SizeF(50.0f, 1500.0f)));
   EXPECT_THAT(engine.GetPageSizeInPoints(/*page_index=*/7), std::nullopt);
 }
 
@@ -3141,7 +3142,7 @@ class PDFiumEngineInkDrawTextTest : public PDFiumTestBase {
     ASSERT_EQ(kInkTextAnnotationIdentifierKey,
               base::UTF16ToUTF8(GetPageObjectMarkName(mark)));
     EXPECT_THAT(GetPageObjectMarkIntParam(mark, "TextboxId"),
-                testing::Optional(expected_textbox_id));
+                Optional(expected_textbox_id));
   }
 };
 
@@ -3651,32 +3652,26 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
     FPDF_PAGEOBJECTMARK mark = FPDFPageObj_GetMark(obj, 0);
     EXPECT_EQ(kInkTextAnnotationIdentifierKey,
               base::UTF16ToUTF8(GetPageObjectMarkName(mark)));
-    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "TextboxId"),
-                testing::Optional(1));
+    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "TextboxId"), Optional(1));
 
     EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Version"),
-                testing::Optional(kInkTextAnnotationVersion));
+                Optional(kInkTextAnnotationVersion));
     // Bounds are converted from CSS pixels to PDF points.
-    EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsX"),
-                testing::Optional(15.0f));
-    EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsY"),
-                testing::Optional(15.0f));
+    EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsX"), Optional(15.0f));
+    EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsY"), Optional(15.0f));
     EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsWidth"),
-                testing::Optional(75.0f));
+                Optional(75.0f));
     EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsHeight"),
-                testing::Optional(75.0f));
+                Optional(75.0f));
     EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Typeface"),
-                testing::Optional(static_cast<int>(TextTypeface::kSansSerif)));
+                Optional(static_cast<int>(TextTypeface::kSansSerif)));
     EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Alignment"),
-                testing::Optional(static_cast<int>(TextAlignment::kLeft)));
-    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Orientation"),
-                testing::Optional(0));
-    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "IsBold"),
-                testing::Optional(1));
-    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "IsItalic"),
-                testing::Optional(0));
+                Optional(static_cast<int>(TextAlignment::kLeft)));
+    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Orientation"), Optional(0));
+    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "IsBold"), Optional(1));
+    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "IsItalic"), Optional(0));
     EXPECT_THAT(GetPageObjectMarkStringParam(mark, "Text"),
-                testing::Optional(std::u16string(kExpectedText16)));
+                Optional(std::u16string(kExpectedText16)));
   }
 }
 
