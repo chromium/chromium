@@ -9273,14 +9273,9 @@ crbug.com/513985436 [ Release Win11-arm64 ] virtual/text-antialias/selection/khm
 # TODO(crbug.com/493947412): Failing on all platforms (Linux/Mac/Win). Re-enable once extension WPT infra is implemented.
 crbug.com/493947412 external/wpt/web-extensions/browser.runtime.extension.html [ Failure ]
 
-# WebMCP: Since getTools() without arguments strictly returns same-origin tools,
-# the following cross-origin WPT tests that do not specify fromOrigins now fail.
-crbug.com/485810761 external/wpt/webmcp/imperative/executeTool-caller-navigate-abort.https.html [ Failure ]
-crbug.com/485810761 external/wpt/webmcp/imperative/executeTool-target-detachment.https.html [ Failure ]
-crbug.com/485810761 external/wpt/webmcp/imperative/exposedTo-cross-origin-child.https.html [ Failure ]
-crbug.com/485810761 external/wpt/webmcp/imperative/exposedTo-multiple-children.https.html [ Failure ]
-crbug.com/485810761 external/wpt/webmcp/imperative/exposedTo-window-open.https.html [ Failure ]
-crbug.com/485810761 external/wpt/webmcp/imperative/unregister-during-executeTool.https.html [ Failure ]
+# WebMCP: Flaky WPT tests.
+crbug.com/521896358 external/wpt/webmcp/declarative/getTools-declarative-schema.https.html [ Failure Pass Timeout ]
+crbug.com/521896358 external/wpt/webmcp/imperative/document-domain-enabled.https.html [ Failure Pass ]
 
 # Gardener 2026-06-01
 crbug.com/517759858 [ Win11-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedFrame-timestamps.html [ Failure ]
