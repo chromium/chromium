@@ -1331,7 +1331,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   // Clears any uncleared attachments attached to the given frame buffer.
   // Returns false if there was a generated GL error.
-  void ClearUnclearedAttachments(GLenum target, Framebuffer* framebuffer);
+  bool ClearUnclearedAttachments(GLenum target, Framebuffer* framebuffer);
 
   // overridden from GLES2Decoder
   bool ClearLevel(Texture* texture,
@@ -4044,7 +4044,9 @@ bool GLES2DecoderImpl::CheckFramebufferValid(
   if (renderbuffer_manager()->HaveUnclearedRenderbuffers() ||
       texture_manager()->HaveUnclearedMips()) {
     if (!framebuffer->IsCleared()) {
-      ClearUnclearedAttachments(target, framebuffer);
+      if (!ClearUnclearedAttachments(target, framebuffer)) {
+        return false;
+      }
     }
   }
   return true;
@@ -7060,8 +7062,8 @@ void GLES2DecoderImpl::DoSampleCoverage(GLclampf value, GLboolean invert) {
 }
 
 // Assumes framebuffer is complete.
-void GLES2DecoderImpl::ClearUnclearedAttachments(
-    GLenum target, Framebuffer* framebuffer) {
+bool GLES2DecoderImpl::ClearUnclearedAttachments(GLenum target,
+                                                 Framebuffer* framebuffer) {
   bool rasterizer_discard_enabled = state_.enable_flags.rasterizer_discard;
   if (rasterizer_discard_enabled) {
     state_.SetDeviceCapabilityState(GL_RASTERIZER_DISCARD, false);
@@ -7070,8 +7072,12 @@ void GLES2DecoderImpl::ClearUnclearedAttachments(
   // Clear textures that we can't use glClear first. These textures will be
   // marked as cleared after the call and no longer be part of the following
   // code.
-  framebuffer->ClearUnclearedIntOr3DTexturesOrPartiallyClearedTextures(
-      this, texture_manager());
+  if (!framebuffer->ClearUnclearedIntOr3DTexturesOrPartiallyClearedTextures(
+          this, texture_manager())) {
+    MarkContextLost(error::kUnknown);
+    group_->LoseContexts(error::kUnknown);
+    return false;
+  }
 
   bool cleared_int_renderbuffers = false;
   Framebuffer* draw_framebuffer = GetBoundDrawFramebuffer();
@@ -7163,6 +7169,7 @@ void GLES2DecoderImpl::ClearUnclearedAttachments(
   if (rasterizer_discard_enabled) {
     state_.SetDeviceCapabilityState(GL_RASTERIZER_DISCARD, true);
   }
+  return true;
 }
 
 void GLES2DecoderImpl::RestoreClearState() {
