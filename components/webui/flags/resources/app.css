@@ -211,16 +211,17 @@ button {
   border: 0;
   border-radius: 50%;
   display: none;
-  height: 20px;
-  opacity: 0.5;
+  height: 24px;
+  opacity: 0.75;
   padding: 0;
   position: absolute;
   right: 8px;
-  top: calc(50% - 10px);
-  width: 20px;
+  top: calc(50% - 12px);
+  width: 24px;
 }
 
-.clear-search:focus {
+.clear-search:focus,
+.clear-search:hover {
   opacity: 1;
 }
 
@@ -232,6 +233,8 @@ button {
   background: var(--secondary-color);
   border: 0;
   mask-image: url(chrome://resources/images/icon_cancel.svg);
+  mask-position: center;
+  mask-repeat: no-repeat;
   mask-size: 20px;
   height: 100%;
   width: 100%;
