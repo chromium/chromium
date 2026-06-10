@@ -794,6 +794,9 @@ void ContextualCueingController::ShowCue(
 void ContextualCueingController::MaybeShowTabList(
     page_actions::PageActionController* page_action_controller,
     const std::vector<tabs::TabHandle>& tabs_to_show) {
+  page_action_controller->SetAnchoredMessageExpandableContent(
+      kActionAnchoredContextualCue, std::nullopt);
+
   const TabListVisibility visibility_mode = kTabListVisibility.Get();
   if (visibility_mode == TabListVisibility::kNever) {
     return;
