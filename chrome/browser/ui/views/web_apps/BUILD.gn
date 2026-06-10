@@ -8,7 +8,7 @@ source_set("browser_tests") {
   sources = [
     "create_shortcut_confirmation_view_browsertest.cc",
     "simple_install_dialog_bubble_view_browsertest.cc",
-    "sub_apps_install_dialog_controller_browsertest.cc",
+    "sub_apps/sub_apps_install_dialog_controller_browsertest.cc",
     "web_app_blocked_migration_infobar_delegate_browsertest.cc",
     "web_app_install_dialog_browsertest.cc",
     "web_app_install_flow_browsertest.cc",
