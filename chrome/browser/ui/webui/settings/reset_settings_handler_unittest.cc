@@ -6,12 +6,10 @@
 
 #include <stddef.h>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/profile_resetter/fake_profile_resetter.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
@@ -88,17 +86,7 @@ TEST_F(ResetSettingsHandlerTest, HandleResetProfileSettings) {
   EXPECT_EQ(expected_callback_id, *callback_id);
 }
 
-class ResetSettingsHandlerV2Test : public ResetSettingsHandlerTest {
- public:
-  ResetSettingsHandlerV2Test() {
-    feature_list_.InitAndEnableFeature(features::kShowResetProfileBannerV2);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ResetSettingsHandlerV2Test, HandleGetTamperedPreferencePaths) {
+TEST_F(ResetSettingsHandlerTest, HandleGetTamperedPreferencePaths) {
   base::ListValue tampered_prefs;
   tampered_prefs.Append("some.unrelated.pref.path");
   tampered_prefs.Append(
@@ -140,32 +128,12 @@ TEST_F(ResetSettingsHandlerV2Test, HandleGetTamperedPreferencePaths) {
       results.count(l10n_util::GetStringUTF8(IDS_SETTINGS_RESET_EXTENSIONS)));
 }
 
-TEST_F(ResetSettingsHandlerV2Test,
+TEST_F(ResetSettingsHandlerTest,
        HandleGetTamperedPreferencePaths_EmptyWhenNoPrefs) {
   profile()->GetPrefs()->ClearPref(user_prefs::kTrackedPreferencesReset);
 
   base::ListValue args;
   args.Append("test-callback-id-456");
-  handler()->HandleGetTamperedPreferencePaths(args);
-
-  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
-  const base::ListValue* result_list = call_data.arg3()->GetIfList();
-  ASSERT_TRUE(result_list);
-  EXPECT_TRUE(result_list->empty());
-}
-
-TEST_F(ResetSettingsHandlerTest,
-       HandleGetTamperedPreferencePaths_EmptyWhenFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kShowResetProfileBannerV2);
-  // Setup: Add a tampered pref.
-  base::ListValue tampered_prefs;
-  tampered_prefs.Append(prefs::kShowHomeButton);
-  profile()->GetPrefs()->SetList(user_prefs::kTrackedPreferencesReset,
-                                 std::move(tampered_prefs));
-
-  base::ListValue args;
-  args.Append("test-callback-id-789");
   handler()->HandleGetTamperedPreferencePaths(args);
 
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();

@@ -21,7 +21,6 @@
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -213,11 +212,6 @@ void ResetSettingsHandler::HandleGetTamperedPreferencePaths(
 
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
-
-  if (!base::FeatureList::IsEnabled(features::kShowResetProfileBannerV2)) {
-    ResolveJavascriptCallback(callback_id, base::Value(base::ListValue()));
-    return;
-  }
 
   base::ListValue tampered_paths;
   const base::ListValue& tampered_prefs =

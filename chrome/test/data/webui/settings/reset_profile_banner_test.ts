@@ -5,8 +5,8 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsResetProfileBannerElement} from 'chrome://settings/settings.js';
-import {loadTimeData, ResetBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {loadTimeData, ResetBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestResetBrowserProxy} from './test_reset_browser_proxy.js';
 
@@ -25,53 +25,15 @@ class TestResetBrowserProxyWithOpen extends TestResetBrowserProxy {
   }
 }
 
-suite('BannerTests', function() {
-  let resetBanner: SettingsResetProfileBannerElement;
-  let browserProxy: TestResetBrowserProxy;
-
-  setup(function() {
-    loadTimeData.overrideValues({showResetProfileBannerV2: false});
-    browserProxy = new TestResetBrowserProxy();
-    ResetBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    resetBanner = document.createElement('settings-reset-profile-banner');
-    document.body.appendChild(resetBanner);
-    assertTrue(resetBanner.$.dialog.open);
-  });
-
-  teardown(function() {
-    resetBanner.remove();
-  });
-
-  // Tests that the reset profile banner navigates to the Reset profile dialog
-  // URL when the "reset all settings" button is clicked.
-  test('ResetBannerReset', function() {
-    assertNotEquals(
-        routes.RESET_DIALOG, Router.getInstance().getCurrentRoute());
-    resetBanner.$.reset.click();
-    assertEquals(routes.RESET_DIALOG, Router.getInstance().getCurrentRoute());
-    assertFalse(resetBanner.$.dialog.open);
-  });
-
-  // Tests that the reset profile banner closes itself when the OK button is
-  // clicked and that |onHideResetProfileBanner| is called.
-  test('ResetBannerOk', async function() {
-    resetBanner.$.ok.click();
-    await browserProxy.whenCalled('onHideResetProfileBanner');
-    assertFalse(resetBanner.$.dialog.open);
-  });
-});
-
-suite('ResetProfileBannerV2', function() {
+suite('ResetProfileBanner', function() {
   let banner: SettingsResetProfileBannerElement;
   let browserProxy: TestResetBrowserProxyWithOpen;
 
   setup(function() {
     loadTimeData.overrideValues({
-      showResetProfileBannerV2: true,
       // These are mock strings for verification.
-      resetAutomatedDialogV2Title: 'Chrome reset these settings',
-      resetAutomatedDialogV2Body: 'To protect you, Chrome reset them.',
+      resetAutomatedDialogTitle: 'Chrome reset these settings',
+      resetAutomatedDialogBody: 'To protect you, Chrome reset them.',
       gotIt: 'Got it',
       learnMore: 'Learn more',
       resetProfileBannerLearnMoreUrl:
@@ -87,7 +49,7 @@ suite('ResetProfileBannerV2', function() {
     banner.remove();
   });
 
-  test('showsV2BannerWithCorrectContent', async function() {
+  test('showsBannerWithCorrectContent', async function() {
     const tamperedPrefs = ['Your search engine', 'Your pinned tabs'];
     browserProxy.setTamperedPreferencePaths(tamperedPrefs);
     banner = document.createElement('settings-reset-profile-banner');
@@ -102,8 +64,7 @@ suite('ResetProfileBannerV2', function() {
     assertTrue(dialog.open, 'Dialog should be open');
 
     // Verify title and body strings.
-    const title =
-        banner.shadowRoot!.querySelector('[slot=title] > div:not([hidden])');
+    const title = banner.shadowRoot!.querySelector('[slot=title]');
     const body = banner.shadowRoot!.querySelector('[slot=body]');
     assertTrue(!!title);
     assertTrue(!!body);
@@ -117,7 +78,7 @@ suite('ResetProfileBannerV2', function() {
     assertEquals(tamperedPrefs[1], listItems[1]!.textContent.trim());
 
     // Verify button text.
-    const learnMoreButton = banner.shadowRoot!.querySelector('#learnMoreV2');
+    const learnMoreButton = banner.shadowRoot!.querySelector('#learnMore');
     const confirmButton = banner.shadowRoot!.querySelector('#confirm');
     assertTrue(!!learnMoreButton);
     assertTrue(!!confirmButton);
@@ -166,7 +127,7 @@ suite('ResetProfileBannerV2', function() {
     flush();
 
     const learnMoreButton =
-        banner.shadowRoot!.querySelector<HTMLElement>('#learnMoreV2');
+        banner.shadowRoot!.querySelector<HTMLElement>('#learnMore');
     assertTrue(!!learnMoreButton);
     learnMoreButton.click();
 

@@ -1087,15 +1087,11 @@ void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"resetPageFeedback", IDS_SETTINGS_RESET_PROFILE_FEEDBACK},
 
       // Automatic reset banner (now a dialog).
-      {"resetAutomatedDialogTitle", IDS_SETTINGS_RESET_AUTOMATED_DIALOG_TITLE},
-      {"resetAutomatedDialogV2Title",
+      {"resetAutomatedDialogTitle",
        IDS_SETTINGS_RESET_AUTOMATED_DIALOG_V2_TITLE},
-      {"resetAutomatedDialogV2Body",
-       IDS_SETTINGS_RESET_AUTOMATED_DIALOG_V2_BODY},
+      {"resetAutomatedDialogBody", IDS_SETTINGS_RESET_AUTOMATED_DIALOG_V2_BODY},
       {"resetPinnedTabs", IDS_SETTINGS_RESET_PINNED_TABS},
       {"gotIt", IDS_SETTINGS_GOT_IT},
-      {"resetProfileBannerButton", IDS_SETTINGS_RESET_BANNER_RESET_BUTTON_TEXT},
-      {"resetProfileBannerDescription", IDS_SETTINGS_RESET_BANNER_TEXT},
       {"resetLearnMoreAccessibilityText",
        IDS_SETTINGS_RESET_LEARN_MORE_ACCESSIBILITY_TEXT},
   };
