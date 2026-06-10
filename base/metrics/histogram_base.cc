@@ -72,20 +72,35 @@ HistogramBase* HistogramBase::DeserializeInfo(
     return nullptr;
   }
 
+  HistogramBase* result;
   switch (type) {
     case HISTOGRAM:
-      return Histogram::DeserializeInfoImpl(iter, mapper);
+      result = Histogram::DeserializeInfoImpl(iter, mapper);
+      break;
     case LINEAR_HISTOGRAM:
-      return LinearHistogram::DeserializeInfoImpl(iter, mapper);
+      result = LinearHistogram::DeserializeInfoImpl(iter, mapper);
+      break;
     case BOOLEAN_HISTOGRAM:
-      return BooleanHistogram::DeserializeInfoImpl(iter, mapper);
+      result = BooleanHistogram::DeserializeInfoImpl(iter, mapper);
+      break;
     case CUSTOM_HISTOGRAM:
-      return CustomHistogram::DeserializeInfoImpl(iter, mapper);
+      result = CustomHistogram::DeserializeInfoImpl(iter, mapper);
+      break;
     case SPARSE_HISTOGRAM:
-      return SparseHistogram::DeserializeInfoImpl(iter, mapper);
+      result = SparseHistogram::DeserializeInfoImpl(iter, mapper);
+      break;
     default:
       return nullptr;
   }
+
+  if (result != nullptr &&
+      result->GetHistogramType() != static_cast<HistogramType>(type)) {
+    // If there's a type mismatch, this could be a DummyHistogram returned by
+    // FactoryGetInternal() due to invalid arguments. In this case, return
+    // nullptr to indicate an error.
+    return nullptr;
+  }
+  return result;
 }
 
 HistogramBase::HistogramBase(DurableStringView name)
