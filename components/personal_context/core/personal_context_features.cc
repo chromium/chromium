@@ -10,12 +10,6 @@ namespace personal_context::features {
 
 BASE_FEATURE(kPersonalContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE_PARAM(bool,
-                   kPersonalContextEnableFetchContext,
-                   &kPersonalContext,
-                   "personal_context_enable_fetch_context",
-                   false);
-
 BASE_FEATURE_PARAM(std::string,
                    kPersonalContextEligibleTiers,
                    &kPersonalContext,

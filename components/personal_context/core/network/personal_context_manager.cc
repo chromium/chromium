@@ -80,17 +80,6 @@ void PersonalContextManager::FetchContext(
     FetchContextCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!features::kPersonalContextEnableFetchContext.Get()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            FetchContextResult(
-                base::unexpected(ContextMemoryError::FromExecutionError(
-                    ContextMemoryError::ExecutionError::kGenericFailure)))));
-    return;
-  }
-
   ActiveFeatureFetchers& fetchers_for_feature = active_fetchers_[feature];
   if (fetchers_for_feature.size() == GetMaxParallelFeatureFetchers(feature)) {
     // Cancel the fetcher with the smallest ID. Since IDs are assigned in

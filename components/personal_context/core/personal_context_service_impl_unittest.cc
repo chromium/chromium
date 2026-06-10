@@ -42,8 +42,7 @@ class PersonalContextServiceImplTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kPersonalContext,
         {{features::kContextMemoryServiceBaseUrl.name,
-          "https://example.com/v1"},
-         {features::kPersonalContextEnableFetchContext.name, "true"}});
+          "https://example.com/v1"}});
     url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);

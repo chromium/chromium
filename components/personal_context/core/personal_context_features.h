@@ -14,10 +14,6 @@ namespace personal_context::features {
 // all Personal Context features and services are turned off.
 BASE_DECLARE_FEATURE(kPersonalContext);
 
-// Determines whether the `FetchContext` API is allowed to execute network
-// requests.
-BASE_DECLARE_FEATURE_PARAM(bool, kPersonalContextEnableFetchContext);
-
 // Comma-separated list of AI subscription tiers that are eligible to use
 // Personal Context features (e.g., "1,2").
 BASE_DECLARE_FEATURE_PARAM(std::string, kPersonalContextEligibleTiers);
