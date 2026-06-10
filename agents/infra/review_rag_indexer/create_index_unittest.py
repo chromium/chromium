@@ -78,7 +78,9 @@ class CreateIndexTest(fake_filesystem_unittest.TestCase):
     @mock.patch('create_index._perform_initial_setup')
     @mock.patch('create_index._retrieve_previous_run_info')
     @mock.patch('create_index.local_git_steps.process_local_git_data')
-    def test_main_success(self, mock_process_local_git_data, mock_retrieve,
+    @mock.patch('create_index.gerrit_steps.retrieve_hashtags')
+    def test_main_success(self, mock_retrieve_hashtags,
+                          mock_process_local_git_data, mock_retrieve,
                           mock_setup):
         mock_process_local_git_data.return_value = []
         approximate_base = datetime.datetime.now(tz=datetime.timezone.utc)
@@ -105,8 +107,10 @@ class CreateIndexTest(fake_filesystem_unittest.TestCase):
         self.assertFalse(called_args.dryrun)
         self.assertIsNone(called_args.previous_run)
         self.assertEqual(called_args.head_git_revision, 'HEAD')
+        self.assertEqual(called_args.num_network_workers, 20)
 
         mock_process_local_git_data.assert_called_once_with(called_args)
+        mock_retrieve_hashtags.assert_called_once_with(called_args, [])
 
     @mock.patch('sys.argv', [
         'create_index.py', '--since', '1 hour ago', '--project', 'proj',
@@ -116,7 +120,9 @@ class CreateIndexTest(fake_filesystem_unittest.TestCase):
     @mock.patch('create_index._retrieve_previous_run_info')
     @mock.patch('create_index.local_git_steps.process_local_git_data')
     @mock.patch('create_index.git_utils.revision_exists')
-    def test_main_success_with_head_git_revision(self, mock_revision_exists,
+    @mock.patch('create_index.gerrit_steps.retrieve_hashtags')
+    def test_main_success_with_head_git_revision(self, mock_retrieve_hashtags,
+                                                 mock_revision_exists,
                                                  mock_process_local_git_data,
                                                  mock_retrieve, mock_setup):
         mock_revision_exists.return_value = True
@@ -130,6 +136,7 @@ class CreateIndexTest(fake_filesystem_unittest.TestCase):
         called_args = mock_retrieve.call_args[0][0]
         self.assertIsInstance(called_args, create_index.CommonArgs)
         self.assertEqual(called_args.head_git_revision, 'my_head_rev')
+        mock_retrieve_hashtags.assert_called_once_with(called_args, [])
 
     @mock.patch('sys.argv', [
         'create_index.py', '--since', '1 hour ago', '--project', 'proj',
@@ -149,6 +156,37 @@ class CreateIndexTest(fake_filesystem_unittest.TestCase):
             'Invalid head git revision: invalid_rev' in stderr.getvalue())
         mock_setup.assert_not_called()
         mock_revision_exists.assert_called_once_with('invalid_rev')
+
+    @mock.patch('sys.argv', [
+        'create_index.py', '--since', '1 hour ago', '--project', 'proj',
+        '--repo', 'repo', '--num-network-workers', '42'
+    ])
+    @mock.patch('create_index._perform_initial_setup')
+    @mock.patch('create_index._retrieve_previous_run_info')
+    @mock.patch('create_index.local_git_steps.process_local_git_data')
+    @mock.patch('create_index.gerrit_steps.retrieve_hashtags')
+    def test_main_success_custom_workers(self, _mock_retrieve_hashtags,
+                                         mock_process_local_git_data,
+                                         mock_retrieve, _mock_setup):
+        mock_process_local_git_data.return_value = []
+        create_index.main()
+
+        called_args = mock_retrieve.call_args[0][0]
+        self.assertEqual(called_args.num_network_workers, 42)
+
+    @mock.patch('sys.argv', [
+        'create_index.py', '--since', '1 hour ago', '--project', 'proj',
+        '--repo', 'repo', '--num-network-workers', '0'
+    ])
+    @mock.patch('create_index._perform_initial_setup')
+    def test_main_invalid_workers_fails_validation(self, mock_setup):
+        with (self.assertRaises(SystemExit),
+              contextlib.redirect_stderr(io.StringIO()) as stderr):
+            create_index.main()
+
+        self.assertTrue(
+            '--num-network-workers must be positive' in stderr.getvalue())
+        mock_setup.assert_not_called()
 
 
 class CreateIndexRetrievePreviousRunInfoTest(fake_filesystem_unittest.TestCase

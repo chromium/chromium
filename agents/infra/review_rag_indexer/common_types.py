@@ -35,6 +35,8 @@ class CommonArgs:
     previous_run: PreviousRunInfo | None
     # A git revision to treat as HEAD, ignoring commits after it.
     head_git_revision: str = 'HEAD'
+    # The number of workers to use for network operations.
+    num_network_workers: int = 20
 
     @property
     def clobber(self) -> bool:
@@ -57,3 +59,5 @@ class ClInfo:
     description: str
     # The DIR_METADATA state at the time the CL landed.
     dir_metadata: MetadataTree
+    # The hashtags associated with the CL.
+    hashtags: list[str] = dataclasses.field(default_factory=list)
