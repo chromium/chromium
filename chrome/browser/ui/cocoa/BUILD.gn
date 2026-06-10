@@ -166,6 +166,7 @@ source_set("cocoa") {
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/window_metadata",
     "//chrome/browser/web_applications",
     "//components/bookmarks/browser",
     "//components/bookmarks/managed",

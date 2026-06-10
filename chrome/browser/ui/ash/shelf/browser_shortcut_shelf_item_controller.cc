@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/theme_resources.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
@@ -315,7 +316,8 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
       // Set the title of the app menu item to the browser window title if the
       // user set one on the window. Otherwise, use the title defined in
       // ChromeShelfController.
-      std::string browser_title = browser->GetBrowser().user_title();
+      std::string browser_title =
+          WindowMetadataController::From(&browser->GetBrowser())->user_title();
       std::u16string item_title = browser_title.empty()
                                       ? controller->GetAppMenuTitle(tab)
                                       : base::UTF8ToUTF16(browser_title);

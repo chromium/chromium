@@ -59,6 +59,7 @@ include_rules = [
   "+chrome/browser/ui/views/frame",
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/ui/webui/ash/settings/app_management",
+  "+chrome/browser/ui/window_metadata/window_metadata_controller.h",
   "+chrome/browser/web_applications",
   "+chrome/common",
   "+chrome/grit",

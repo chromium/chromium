@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -457,13 +458,13 @@ TEST_F(BrowserViewTest, UpdateWindowTitle) {
   AddTab(browser(), GURL("about:blank"));
   AddTab(browser(), GURL("about:blank"));
   std::string user_title1 = "Test Title";
-  browser()->SetWindowUserTitle(user_title1);
+  WindowMetadataController::From(browser())->SetWindowUserTitle(user_title1);
   auto window_title = browser_view()->GetAccessibleWindowTitle();
   EXPECT_EQ(base::UTF8ToUTF16(user_title1),
             window_title.substr(0, user_title1.size()));
 
   std::string user_title2 = "Test Title 2";
-  browser()->SetWindowUserTitle(user_title2);
+  WindowMetadataController::From(browser())->SetWindowUserTitle(user_title2);
   window_title = browser_view()->GetAccessibleWindowTitle();
   EXPECT_EQ(base::UTF8ToUTF16(user_title2),
             window_title.substr(0, user_title2.size()));

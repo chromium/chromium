@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/web_contents.h"
 
@@ -176,7 +177,7 @@
   }
 
   return base::SysUTF8ToNSString(
-      _browser->GetBrowserForMigrationOnly()->user_title());
+      WindowMetadataController::From(_browser.get())->user_title());
 }
 
 - (void)setGivenName:(NSString*)name {
@@ -184,8 +185,8 @@
     return;
   }
 
-  _browser->GetBrowserForMigrationOnly()->SetWindowUserTitle(
-      base::SysNSStringToUTF8(name));
+  WindowMetadataController::From(_browser.get())
+      ->SetWindowUserTitle(base::SysNSStringToUTF8(name));
 }
 
 - (NSString*)mode {

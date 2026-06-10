@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -78,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
   EXPECT_EQ(u"2", items[1].title);
 
   // Setting the window title will update the app menu item.
-  browser1->SetWindowUserTitle("foobar");
+  WindowMetadataController::From(browser1)->SetWindowUserTitle("foobar");
   items = GetAppMenuItems(controller, ui::EF_NONE);
   ASSERT_EQ(2U, items.size());
   EXPECT_EQ(u"0", items[0].title);
@@ -86,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
 
   // If the window title is cleared, the active content title will be set again
   // as the menu item title.
-  browser1->SetWindowUserTitle("");
+  WindowMetadataController::From(browser1)->SetWindowUserTitle("");
   items = GetAppMenuItems(controller, ui::EF_NONE);
   ASSERT_EQ(2U, items.size());
   EXPECT_EQ(u"0", items[0].title);

@@ -85,6 +85,7 @@
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -1971,8 +1972,10 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWindowUserTitle) {
 
   // Set a custom user title to this second browser window.
   const std::string custom_user_title = "Window 2";
-  browser2->SetWindowUserTitle(custom_user_title);
-  ASSERT_EQ(custom_user_title, browser2->user_title());
+  WindowMetadataController::From(browser2)->SetWindowUserTitle(
+      custom_user_title);
+  ASSERT_EQ(custom_user_title,
+            WindowMetadataController::From(browser2)->user_title());
 
   // Simulate an exit by shutting down the session service. If we don't do this
   // the window close is treated as though the user closed the window and won't
@@ -1993,11 +1996,12 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWindowUserTitle) {
 
   // The user title should be empty for first window as it did not have a
   // custom title.
-  EXPECT_TRUE(new_browser1->GetBrowserForMigrationOnly()->user_title().empty());
+  EXPECT_TRUE(
+      WindowMetadataController::From(new_browser1)->user_title().empty());
 
   // The user title for second window should be restored.
   EXPECT_EQ(custom_user_title,
-            new_browser2->GetBrowserForMigrationOnly()->user_title());
+            WindowMetadataController::From(new_browser2)->user_title());
 }
 
 // Make sure after a restore the number of processes matches that of the number

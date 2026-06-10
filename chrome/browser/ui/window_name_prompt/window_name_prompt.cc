@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -26,7 +27,7 @@ void SetBrowserTitleFromTextfield(Browser* browser,
   } else {
     base::RecordAction(base::UserMetricsAction("WindowNaming_Set"));
   }
-  browser->SetWindowUserTitle(text);
+  WindowMetadataController::From(browser)->SetWindowUserTitle(text);
 }
 
 std::unique_ptr<ui::DialogModel> CreateWindowNamePromptDialogModel(
@@ -41,7 +42,9 @@ std::unique_ptr<ui::DialogModel> CreateWindowNamePromptDialogModel(
           kWindowNameFieldId,
           // Deliberately use no label - the dialog contains only this
           // textfield, and its title serves as a label for the textfield.
-          {}, base::UTF8ToUTF16(browser->user_title()),
+          {},
+          base::UTF8ToUTF16(
+              WindowMetadataController::From(browser)->user_title()),
           // Despite what the above comment says, the textfield still needs an
           // accessible name - otherwise a screenreader user with their focus on
           // the field will have no context for what the field means.

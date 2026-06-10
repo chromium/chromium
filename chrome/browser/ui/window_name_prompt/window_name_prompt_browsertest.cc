@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/dialog_model_field.h"
@@ -26,7 +27,7 @@ std::string GetTextfieldContents(ui::TestDialogModelHost* host) {
 }
 
 IN_PROC_BROWSER_TEST_F(WindowNamePromptTest, OpensWithInitialName) {
-  browser()->SetWindowUserTitle("foobar");
+  WindowMetadataController::From(browser())->SetWindowUserTitle("foobar");
 
   auto host = std::make_unique<ui::TestDialogModelHost>(
       chrome::CreateWindowNamePromptDialogModelForTesting(browser()));
@@ -43,11 +44,11 @@ IN_PROC_BROWSER_TEST_F(WindowNamePromptTest, AcceptNonemptySetsName) {
 
   ui::TestDialogModelHost::Accept(std::move(host));
 
-  EXPECT_EQ(browser()->user_title(), "foo");
+  EXPECT_EQ(WindowMetadataController::From(browser())->user_title(), "foo");
 }
 
 IN_PROC_BROWSER_TEST_F(WindowNamePromptTest, AcceptEmptyClearsName) {
-  browser()->SetWindowUserTitle("foo");
+  WindowMetadataController::From(browser())->SetWindowUserTitle("foo");
 
   auto host = std::make_unique<ui::TestDialogModelHost>(
       chrome::CreateWindowNamePromptDialogModelForTesting(browser()));
@@ -57,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(WindowNamePromptTest, AcceptEmptyClearsName) {
 
   ui::TestDialogModelHost::Accept(std::move(host));
 
-  EXPECT_EQ(browser()->user_title(), "");
+  EXPECT_EQ(WindowMetadataController::From(browser())->user_title(), "");
 }
 
 IN_PROC_BROWSER_TEST_F(WindowNamePromptTest, CancelDoesntTouchName) {
@@ -67,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(WindowNamePromptTest, CancelDoesntTouchName) {
 
   ui::TestDialogModelHost::Cancel(std::move(host));
 
-  EXPECT_EQ(browser()->user_title(), "");
+  EXPECT_EQ(WindowMetadataController::From(browser())->user_title(), "");
 }
 
 }  // namespace

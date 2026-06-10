@@ -67,15 +67,3 @@ IN_PROC_BROWSER_TEST_F(WindowMetadataControllerBrowserTest,
       controller->GetWindowTitleForCurrentTab(/*include_app_name=*/true);
   EXPECT_FALSE(title.empty());
 }
-
-IN_PROC_BROWSER_TEST_F(WindowMetadataControllerBrowserTest,
-                       BrowserDelegatesMatchController) {
-  // Verify that the Browser wrapper methods delegate to the controller.
-  WindowMetadataController* controller =
-      WindowMetadataController::From(browser());
-  ASSERT_TRUE(controller);
-
-  browser()->SetWindowUserTitle("Delegate Test");
-  EXPECT_EQ("Delegate Test", controller->user_title());
-  EXPECT_EQ("Delegate Test", browser()->user_title());
-}

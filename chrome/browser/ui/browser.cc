@@ -795,7 +795,6 @@ bool Browser::IsAttemptingToCloseBrowser() const {
   return UnloadController::From(this)->is_attempting_to_close_browser();
 }
 
-
 void Browser::SetWindowUserTitle(const std::string& user_title) {
   WindowMetadataController::From(this)->SetWindowUserTitle(user_title);
 }

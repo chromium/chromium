@@ -78,6 +78,7 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -681,7 +682,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 
     Browser* new_browser = browser_created_observer.Wait();
     ASSERT_TRUE(new_browser);
-    EXPECT_EQ(expected_name, new_browser->user_title());
+    EXPECT_EQ(expected_name,
+              WindowMetadataController::From(new_browser)->user_title());
 
     CloseBrowserSynchronously(new_browser);
   }
@@ -714,10 +716,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 #if BUILDFLAG(IS_WIN)
   // On Windows, the invalid UTF-16 is converted with "best effort" replacement,
   // resulting in the Unicode replacement character "\xEF\xBF\xBD".
-  EXPECT_EQ("\xEF\xBF\xBD", new_browser->user_title());
+  EXPECT_EQ("\xEF\xBF\xBD",
+            WindowMetadataController::From(new_browser)->user_title());
 #else
   // On POSIX/Linux, the invalid UTF-8 is strictly rejected, falling back to "".
-  EXPECT_EQ("", new_browser->user_title());
+  EXPECT_EQ("", WindowMetadataController::From(new_browser)->user_title());
 #endif
 
   CloseBrowserSynchronously(new_browser);

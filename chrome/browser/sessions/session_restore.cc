@@ -78,6 +78,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_metrics.h"
@@ -839,7 +840,8 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       if (is_normal_window) {
         has_normal_browser = true;
         last_normal_browser = browser;
-        browser->SetWindowUserTitle(window->user_title);
+        WindowMetadataController::From(browser)->SetWindowUserTitle(
+            window->user_title);
       }
 
       // 3. Track TYPE_APP browsers.

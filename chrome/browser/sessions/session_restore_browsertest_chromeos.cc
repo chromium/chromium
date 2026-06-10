@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -156,14 +157,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
   // A browser window is always created to the current desk, which
   // is the first desk by default.
   EXPECT_TRUE(browser());
-  browser()->SetWindowUserTitle("0");
+  WindowMetadataController::From(browser())->SetWindowUserTitle("0");
 
   // Create a second normal browser window in the second desk by
   // setting window workspace property.
   SwitchToDesk(1);
   Browser* browser_desk1 =
       CreateBrowserWithParams(Browser::CreateParams(profile(), true));
-  browser_desk1->SetWindowUserTitle("1");
+  WindowMetadataController::From(browser_desk1)->SetWindowUserTitle("1");
   browser_desk1->GetWindow()->GetNativeWindow()->SetProperty(
       aura::client::kWindowWorkspaceKey, 1);
 
@@ -174,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
       Browser::CreateParams(profile(), true);
   browser_desk2_params.initial_workspace = "2";
   Browser* browser_desk2 = CreateBrowserWithParams(browser_desk2_params);
-  browser_desk2->SetWindowUserTitle("2");
+  WindowMetadataController::From(browser_desk2)->SetWindowUserTitle("2");
 
   TurnOnSessionRestore();
 }
@@ -202,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
             .front();
     ASSERT_TRUE(browser);
     ASSERT_EQ(base::NumberToString(i),
-              browser->GetBrowserForMigrationOnly()->user_title());
+              WindowMetadataController::From(browser)->user_title());
 
     // Check that a browser window is restored to the right desk i_th.
     ASSERT_TRUE(ash::AutotestDesksApi().IsWindowInDesk(

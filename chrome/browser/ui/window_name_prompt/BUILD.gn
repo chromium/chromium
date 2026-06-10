@@ -12,6 +12,7 @@ source_set("window_name_prompt") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser/ui/dialogs",
+    "//chrome/browser/ui/window_metadata",
     "//ui/base/interaction",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -26,6 +27,7 @@ source_set("browser_tests") {
   deps = [
     "//base",
     "//chrome/browser/ui/",
+    "//chrome/browser/ui/window_metadata",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",
     "//ui/base:test_support",

@@ -140,6 +140,7 @@ source_set("impl") {
       "//chrome/browser/ui/webui/tab_strip_internals",
       "//chrome/browser/ui/webui/tab_strip_internals:impl",
       "//chrome/browser/ui/webui/whats_new",
+      "//chrome/browser/ui/window_metadata",
       "//chrome/browser/web_applications",
       "//components/keep_alive_registry",
       "//components/media_device_salt",

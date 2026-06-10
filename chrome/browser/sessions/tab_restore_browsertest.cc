@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -1601,7 +1602,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, GetRestoreWindowType) {
 
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithName) {
   AddFileSchemeTabs(browser(), 1);
-  browser()->SetWindowUserTitle("foobar");
+  WindowMetadataController::From(browser())->SetWindowUserTitle("foobar");
 
   // Create a second browser.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -1620,7 +1621,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithName) {
   ASSERT_NO_FATAL_FAILURE(
       RestoreTab(/*target_browser=*/nullptr, active_tab_index));
   BrowserWindowInterface* const browser = browser_created_observer.Wait();
-  EXPECT_EQ("foobar", browser->GetBrowserForMigrationOnly()->user_title());
+  EXPECT_EQ("foobar", WindowMetadataController::From(browser)->user_title());
 }
 
 // Closing the last tab in a group then restoring will place the group back with

@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -140,7 +141,7 @@ std::string BrowserLiveTabContext::GetAppName() const {
 }
 
 std::string BrowserLiveTabContext::GetUserTitle() const {
-  return browser_->GetBrowserForMigrationOnly()->user_title();
+  return WindowMetadataController::From(&*browser_)->user_title();
 }
 
 sessions::LiveTab* BrowserLiveTabContext::GetLiveTabAt(int index) const {

@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -393,7 +394,8 @@ void SessionService::WindowOpened(Browser* browser) {
   RestoreIfNecessary(StartupTabs(), browser, /* restore_apps */ false);
   SetWindowType(browser->session_id(), browser->type());
   SetWindowAppName(browser->session_id(), browser->app_name());
-  SetWindowUserTitle(browser->session_id(), browser->user_title());
+  SetWindowUserTitle(browser->session_id(),
+                     WindowMetadataController::From(browser)->user_title());
 
   // Save a browser workspace after window is created in `Browser()`.
   // Bento desks restore feature in ash requires this line to restore correctly
