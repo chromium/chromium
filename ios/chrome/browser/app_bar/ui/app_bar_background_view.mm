@@ -58,8 +58,10 @@ void AddCutoutToPath(UIBezierPath* path, CGRect bounds) {
   self = [super initWithFrame:frame];
   if (self) {
     self.opaque = NO;
-    _backgroundShapeLayer = [CAShapeLayer layer];
-    [self.layer insertSublayer:_backgroundShapeLayer atIndex:0];
+    if (!IsFullscreenRefactoringEnabled()) {
+      _backgroundShapeLayer = [CAShapeLayer layer];
+      [self.layer insertSublayer:_backgroundShapeLayer atIndex:0];
+    }
 
     [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                        withAction:@selector(updateBackgroundColor)];
@@ -142,13 +144,14 @@ void AddCutoutToPath(UIBezierPath* path, CGRect bounds) {
 
 // Updates the background color of the app bar.
 - (void)updateBackgroundColor {
+  if (IsFullscreenRefactoringEnabled()) {
+    return;
+  }
   UIColor* color = [UIColor colorNamed:kAppBarColor];
   if (self.hideColorBackground) {
     color = [UIColor clearColor];
   } else if (self.incognito) {
     color = [UIColor colorNamed:kAppBarIncognitoColor];
-  } else if (IsFullscreenRefactoringEnabled()) {
-    color = [UIColor clearColor];
   }
   _backgroundShapeLayer.fillColor = color.CGColor;
 }
