@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -939,6 +940,26 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAccountWithAvatar) {
                          return value != nil;
                        }]
                      signedIn:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button falls back to kAccount when Gemini is
+// disabled by enterprise policy, even if location is eligible.
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateAccountFallbackPolicy) {
+  SetLocationEligible(true);
+
+  // Set policy to disabled.
+  regular_profile_->GetTestingPrefService()->SetInteger(
+      prefs::kGeminiEnabledByPolicy,
+      static_cast<int>(gemini::SettingsPolicy::kNotAllowed));
+
+  OCMExpect([consumer_
+      setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                  highlighted:NO
+                      enabled:YES
+                       avatar:nil
+                     signedIn:NO]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
