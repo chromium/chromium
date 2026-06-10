@@ -89,6 +89,8 @@ public class ListMenuItemProperties {
             new ReadableBooleanPropertyKey();
     public static final ReadableBooleanPropertyKey KEEP_START_ICON_SPACING_WHEN_HIDDEN =
             new ReadableBooleanPropertyKey();
+    public static final WritableObjectPropertyKey<Boolean> SHOULD_TINT_END_ICON =
+            new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<View.OnKeyListener> KEY_LISTENER =
             new WritableObjectPropertyKey<>();
@@ -122,6 +124,7 @@ public class ListMenuItemProperties {
         TEXT_APPEARANCE_ID,
         IS_TEXT_ELLIPSIZED_AT_END,
         KEEP_START_ICON_SPACING_WHEN_HIDDEN,
+        SHOULD_TINT_END_ICON,
         KEY_LISTENER,
         TOUCH_LISTENER,
         ORDER
