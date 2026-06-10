@@ -6,7 +6,6 @@
 #define SKIA_PUBLIC_MOJOM_SKCOLORSPACE_MOJOM_TRAITS_H_
 
 #include <array>
-#include <cmath>
 
 #include "base/compiler_specific.h"
 #include "skia/public/mojom/skcolorspace.mojom-shared.h"
@@ -36,9 +35,6 @@ struct StructTraits<skia::mojom::SkcmsMatrix3x3DataView, ::skcms_Matrix3x3> {
     }
     for (size_t i = 0; i < 3; ++i) {
       for (size_t j = 0; j < 3; ++j) {
-        if (!std::isfinite(data_matrix[3 * i + j])) {
-          return false;
-        }
         UNSAFE_TODO(out->vals[i][j]) = data_matrix[3 * i + j];
       }
     }
@@ -59,13 +55,6 @@ struct StructTraits<skia::mojom::SkcmsTransferFunctionDataView,
 
   static bool Read(skia::mojom::SkcmsTransferFunctionDataView data,
                    ::skcms_TransferFunction* trfn) {
-    if (!std::isfinite(data.g()) || !std::isfinite(data.a()) ||
-        !std::isfinite(data.b()) || !std::isfinite(data.c()) ||
-        !std::isfinite(data.d()) || !std::isfinite(data.e()) ||
-        !std::isfinite(data.f())) {
-      return false;
-    }
-
     trfn->g = data.g();
     trfn->a = data.a();
     trfn->b = data.b();

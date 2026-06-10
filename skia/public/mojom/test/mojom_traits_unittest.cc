@@ -15,8 +15,6 @@
 #include "skia/public/mojom/hdr_metadata_mojom_traits.h"
 #include "skia/public/mojom/image_info.mojom-shared.h"
 #include "skia/public/mojom/image_info.mojom.h"
-#include "skia/public/mojom/skcolor4f.mojom.h"
-#include "skia/public/mojom/skcolor4f_mojom_traits.h"
 #include "skia/public/mojom/skcolorspace.mojom.h"
 #include "skia/public/mojom/skcolorspace_mojom_traits.h"
 #include "skia/public/mojom/skcolorspace_primaries.mojom.h"
@@ -38,20 +36,6 @@
 
 namespace skia {
 namespace {
-
-// A helper to construct a skia.mojom.SkColor4f without using StructTraits
-// to bypass checks on the sending/serialization side.
-skia::mojom::SkColor4fPtr ConstructSkColor4f(float r,
-                                             float g,
-                                             float b,
-                                             float a) {
-  auto mojom_color = skia::mojom::SkColor4f::New();
-  mojom_color->r = r;
-  mojom_color->g = g;
-  mojom_color->b = b;
-  mojom_color->a = a;
-  return mojom_color;
-}
 
 // A helper to construct a skia.mojom.BitmapN32 without using StructTraits
 // to bypass checks on the sending/serialization side.
@@ -219,61 +203,6 @@ TEST(StructTraitsTest, SkColorSpace) {
       mojo::test::SerializeAndDeserialize<skia::mojom::SkColorSpacePrimaries>(
           in_p, out_p));
   EXPECT_TRUE(in_p == out_p);
-}
-
-TEST(StructTraitsTest, SkColor4f) {
-  SkColor4f input = {0.1f, 0.2f, 0.3f, 0.4f};
-  SkColor4f output;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::SkColor4f>(
-      input, output));
-  EXPECT_EQ(input, output);
-
-  const float kNaN = std::numeric_limits<float>::quiet_NaN();
-  const float kInf = std::numeric_limits<float>::infinity();
-
-  // Test NaN in each component.
-  {
-    auto input_nan = ConstructSkColor4f(kNaN, 0.2f, 0.3f, 0.4f);
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::SkColor4f>(
-        input_nan, output));
-  }
-  {
-    auto input_nan = ConstructSkColor4f(0.1f, kNaN, 0.3f, 0.4f);
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::SkColor4f>(
-        input_nan, output));
-  }
-  {
-    auto input_nan = ConstructSkColor4f(0.1f, 0.2f, kNaN, 0.4f);
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::SkColor4f>(
-        input_nan, output));
-  }
-  {
-    auto input_nan = ConstructSkColor4f(0.1f, 0.2f, 0.3f, kNaN);
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::SkColor4f>(
-        input_nan, output));
-  }
-
-  // Test Infinity in each component.
-  {
-    auto input_inf = ConstructSkColor4f(kInf, 0.2f, 0.3f, 0.4f);
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::SkColor4f>(
-        input_inf, output));
-  }
-  {
-    auto input_inf = ConstructSkColor4f(0.1f, kInf, 0.3f, 0.4f);
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::SkColor4f>(
-        input_inf, output));
-  }
-  {
-    auto input_inf = ConstructSkColor4f(0.1f, 0.2f, kInf, 0.4f);
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::SkColor4f>(
-        input_inf, output));
-  }
-  {
-    auto input_inf = ConstructSkColor4f(0.1f, 0.2f, 0.3f, kInf);
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::SkColor4f>(
-        input_inf, output));
-  }
 }
 
 TEST(StructTraitsTest, TileMode) {
@@ -643,29 +572,6 @@ TEST(StructTraitsTest, SkHdrContentLightLevelInformation) {
   EXPECT_EQ(in.fMaxFALL, out.fMaxFALL);
 }
 
-TEST(StructTraitsTest, SkHdrContentLightLevelInformation_InvalidFloats) {
-  const float kNaN = std::numeric_limits<float>::quiet_NaN();
-  const float kInf = std::numeric_limits<float>::infinity();
-
-  skhdr::ContentLightLevelInformation in;
-  in.fMaxCLL = 1.2f;
-  in.fMaxFALL = 3.4f;
-  skhdr::ContentLightLevelInformation out;
-
-  {
-    skhdr::ContentLightLevelInformation bad = in;
-    bad.fMaxCLL = kNaN;
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
-                 skia::mojom::SkHdrContentLightLevelInformation>(bad, out));
-  }
-  {
-    skhdr::ContentLightLevelInformation bad = in;
-    bad.fMaxFALL = kInf;
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
-                 skia::mojom::SkHdrContentLightLevelInformation>(bad, out));
-  }
-}
-
 TEST(StructTraitsTest, SkHdrMasteringDisplayColorVolume) {
   skhdr::MasteringDisplayColorVolume in;
   in.fDisplayPrimaries = SkNamedPrimaries::kRec2020;
@@ -681,30 +587,6 @@ TEST(StructTraitsTest, SkHdrMasteringDisplayColorVolume) {
             out.fMaximumDisplayMasteringLuminance);
   EXPECT_EQ(in.fMinimumDisplayMasteringLuminance,
             out.fMinimumDisplayMasteringLuminance);
-}
-
-TEST(StructTraitsTest, SkHdrMasteringDisplayColorVolume_InvalidFloats) {
-  const float kNaN = std::numeric_limits<float>::quiet_NaN();
-  const float kInf = std::numeric_limits<float>::infinity();
-
-  skhdr::MasteringDisplayColorVolume in;
-  in.fDisplayPrimaries = SkNamedPrimaries::kRec2020;
-  in.fMaximumDisplayMasteringLuminance = 1.2f;
-  in.fMinimumDisplayMasteringLuminance = 3.4f;
-  skhdr::MasteringDisplayColorVolume out;
-
-  {
-    skhdr::MasteringDisplayColorVolume bad = in;
-    bad.fMaximumDisplayMasteringLuminance = kNaN;
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
-                 skia::mojom::SkHdrMasteringDisplayColorVolume>(bad, out));
-  }
-  {
-    skhdr::MasteringDisplayColorVolume bad = in;
-    bad.fMinimumDisplayMasteringLuminance = kInf;
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
-                 skia::mojom::SkHdrMasteringDisplayColorVolume>(bad, out));
-  }
 }
 
 TEST(StructTraitsTest, SkHdrAdaptiveGlobalToneMap) {
@@ -800,78 +682,6 @@ TEST(StructTraitsTest, SkHdrAdaptiveGlobalToneMap) {
             out.fHeadroomAdaptiveToneMap->fAlternateImages[0]
                 .fColorGainFunction.fGainCurve.fControlPoints[0]
                 .fM);
-}
-
-TEST(StructTraitsTest, SkHdrAdaptiveGlobalToneMap_InvalidFloats) {
-  const float kNaN = std::numeric_limits<float>::quiet_NaN();
-  const float kInf = std::numeric_limits<float>::infinity();
-
-  skhdr::AdaptiveGlobalToneMap::HeadroomAdaptiveToneMap inHatm;
-  inHatm.fBaselineHdrHeadroom = 0.1f,
-  inHatm.fGainApplicationSpacePrimaries = SkNamedPrimaries::kRec2020;
-  inHatm.fAlternateImages = {
-      {
-          .fHdrHeadroom = 0.2,
-          .fColorGainFunction =
-              {
-                  .fComponentMixing =
-                      {
-                          .fRed = 0.1f,
-                          .fGreen = 0.2f,
-                          .fBlue = 0.3f,
-                          .fMax = 0.4f,
-                          .fMin = 0.5f,
-                          .fComponent = 0.6f,
-                      },
-                  .fGainCurve =
-                      {
-                          .fControlPoints =
-                              {
-                                  {.fX = 0.7f, .fY = 0.8f, .fM = 0.9f},
-                              },
-                      },
-              },
-      },
-  };
-  skhdr::AdaptiveGlobalToneMap in = {
-      .fHdrReferenceWhite = 100.0f,
-      .fHeadroomAdaptiveToneMap = {inHatm},
-  };
-  skhdr::AdaptiveGlobalToneMap out;
-
-  {
-    skhdr::AdaptiveGlobalToneMap bad = in;
-    bad.fHdrReferenceWhite = kNaN;
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
-                 skia::mojom::SkHdrAdaptiveGlobalToneMap>(bad, out));
-  }
-  {
-    skhdr::AdaptiveGlobalToneMap bad = in;
-    bad.fHeadroomAdaptiveToneMap->fBaselineHdrHeadroom = kInf;
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
-                 skia::mojom::SkHdrAdaptiveGlobalToneMap>(bad, out));
-  }
-  {
-    skhdr::AdaptiveGlobalToneMap bad = in;
-    bad.fHeadroomAdaptiveToneMap->fAlternateImages[0].fHdrHeadroom = kNaN;
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
-                 skia::mojom::SkHdrAdaptiveGlobalToneMap>(bad, out));
-  }
-  {
-    skhdr::AdaptiveGlobalToneMap bad = in;
-    bad.fHeadroomAdaptiveToneMap->fAlternateImages[0]
-        .fColorGainFunction.fComponentMixing.fRed = kInf;
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
-                 skia::mojom::SkHdrAdaptiveGlobalToneMap>(bad, out));
-  }
-  {
-    skhdr::AdaptiveGlobalToneMap bad = in;
-    bad.fHeadroomAdaptiveToneMap->fAlternateImages[0]
-        .fColorGainFunction.fGainCurve.fControlPoints[0]
-        .fX = kNaN;
-    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
-                 skia::mojom::SkHdrAdaptiveGlobalToneMap>(bad, out));
-  }
 }
 
 }  // namespace

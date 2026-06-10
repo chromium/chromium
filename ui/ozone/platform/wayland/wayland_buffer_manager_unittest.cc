@@ -838,6 +838,154 @@ TEST_P(WaylandBufferManagerTest, CommitBufferNullWidget) {
   base::RunLoop().RunUntilIdle();
 }
 
+// Tests that committing overlays with bounds_rect containing NaN or infinity
+// values is illegal - the host terminates the gpu process.
+TEST_P(WaylandBufferManagerTest, CommitOverlaysNonsensicalBoundsRect) {
+  if (!connection_->ShouldUseOverlayDelegation()) {
+    GTEST_SKIP();
+  }
+
+  const std::vector<gfx::RectF> bounds_rect_test_data = {
+      gfx::RectF(std::numeric_limits<float>::quiet_NaN(),
+                 window_->GetBoundsInPixels().y(),
+                 std::numeric_limits<float>::quiet_NaN(),
+                 window_->GetBoundsInPixels().height()),
+      gfx::RectF(window_->GetBoundsInPixels().x(),
+                 std::numeric_limits<float>::infinity(),
+                 window_->GetBoundsInPixels().width(),
+                 std::numeric_limits<float>::infinity())};
+
+  constexpr bool config[2] = {/*root_has_nan_bounds=*/true,
+                              /*non_root_overlay_has_nan_bounds=*/false};
+  constexpr uint32_t kBufferId1 = 1;
+  constexpr uint32_t kBufferId2 = 2;
+  constexpr uint32_t kBufferId3 = 3;
+
+  for (bool should_root_have_nan_bounds : config) {
+    for (const auto& faulty_bounds_rect : bounds_rect_test_data) {
+      CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                        kBufferId1);
+      CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                        kBufferId2);
+      CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                        kBufferId3);
+      ProcessCreatedBufferResourcesWithExpectation(3u /* expected size */,
+                                                   false /* fail */);
+
+      // Can't commit for bounds rect containing NaN
+      SetTerminateCallbackExpectationAndDestroyChannel(&callback_,
+                                                       true /*fail*/);
+
+      size_t z_order = 0;
+      std::vector<wl::WaylandOverlayConfig> overlay_configs;
+      if (should_root_have_nan_bounds) {
+        // The root surface has nan bounds.
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            INT32_MIN, kBufferId1, faulty_bounds_rect));
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            z_order++, kBufferId2, window_->GetBoundsInPixels()));
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            z_order++, kBufferId3, window_->GetBoundsInPixels()));
+      } else {
+        // Overlays have nan bounds. Given playback starts with the biggest
+        // z-order number, add two more overlays around the faulty overlay
+        // config so that the test ensures no further playback happens and it
+        // doesn't crash.
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            INT32_MIN, kBufferId1, window_->GetBoundsInPixels()));
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            z_order++, kBufferId2, window_->GetBoundsInPixels()));
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            z_order++, kBufferId3, faulty_bounds_rect));
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            z_order++, kBufferId2, window_->GetBoundsInPixels()));
+      }
+      buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), 1u,
+                                          gfx::FrameData(delegate_.viz_seq()),
+                                          std::move(overlay_configs));
+
+      base::RunLoop().RunUntilIdle();
+
+      if (!should_root_have_nan_bounds) {
+        // This case submits kBufferId2 twice. So, a second handle is requested
+        // during a frame playback if explicit sync is unavailable.
+        ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
+                                                     false /* fail */);
+      }
+
+      EXPECT_EQ("Overlay bounds_rect is invalid (NaN or infinity).",
+                channel_destroyed_error_message_);
+
+      std::vector<uint32_t> ids_of_subsurfaces;
+      ids_of_subsurfaces.reserve(window_->wayland_subsurfaces_.size());
+      for (auto& subsurface : window_->wayland_subsurfaces_) {
+        ids_of_subsurfaces.emplace_back(
+            subsurface->wayland_surface()->get_surface_id());
+      }
+
+      PostToServerAndWait([id = surface_id_, ids_of_subsurfaces](
+                              wl::TestWaylandServerThread* server) {
+        // Clear all the possible frame and release callbacks.
+        auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+        for (auto subsurface_id : ids_of_subsurfaces) {
+          auto* mock_surface_of_subsurface =
+              server->GetObject<wl::MockSurface>(subsurface_id);
+          EXPECT_TRUE(mock_surface_of_subsurface);
+          mock_surface_of_subsurface->SendFrameCallback();
+        }
+
+        mock_surface->SendFrameCallback();
+      });
+    }
+  }
+}
+
+// A similar test to the above with the only difference that a background
+// dummy buffer is not used as delegation is disabled.
+TEST_P(WaylandBufferManagerTest,
+       CommitOverlaysNonsensicalBoundsRectSingleOverlay) {
+  if (connection_->ShouldUseOverlayDelegation()) {
+    GTEST_SKIP();
+  }
+
+  const std::vector<gfx::RectF> bounds_rect_test_data = {
+      gfx::RectF(std::numeric_limits<float>::quiet_NaN(),
+                 window_->GetBoundsInPixels().y(),
+                 std::numeric_limits<float>::quiet_NaN(),
+                 window_->GetBoundsInPixels().height()),
+      gfx::RectF(window_->GetBoundsInPixels().x(),
+                 std::numeric_limits<float>::infinity(),
+                 window_->GetBoundsInPixels().width(),
+                 std::numeric_limits<float>::infinity())};
+
+  for (const auto& faulty_bounds_rect : bounds_rect_test_data) {
+    constexpr uint32_t kBufferId1 = 1;
+
+    CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                      kBufferId1);
+    ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
+                                                 false /* fail */);
+
+    // Can't commit for bounds rect containing NaN
+    SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
+
+    size_t z_order = 0;
+    std::vector<wl::WaylandOverlayConfig> overlay_configs;
+
+    overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+        z_order, kBufferId1, faulty_bounds_rect));
+
+    buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), 1u,
+                                        gfx::FrameData(delegate_.viz_seq()),
+                                        std::move(overlay_configs));
+
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_EQ("Overlay bounds_rect is invalid (NaN or infinity).",
+              channel_destroyed_error_message_);
+  }
+}
+
 TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
   constexpr uint32_t kBufferId1 = 1;
   constexpr uint32_t kBufferId2 = 2;

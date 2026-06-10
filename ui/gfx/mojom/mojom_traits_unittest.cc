@@ -13,21 +13,17 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mojom/accelerated_widget_mojom_traits.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
-#include "ui/gfx/mojom/color_space.mojom.h"
-#include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/hdr_metadata.mojom.h"
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
 #include "ui/gfx/mojom/native_handle_types_mojom_traits.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom.h"
 #include "ui/gfx/mojom/presentation_feedback_mojom_traits.h"
 #include "ui/gfx/mojom/traits_test_service.mojom.h"
-#include "ui/gfx/mojom/transform_mojom_traits.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/selection_bound.h"
@@ -481,69 +477,6 @@ TEST_F(StructTraitsTest, HDRMetadata) {
   EXPECT_NE(input, output);
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
   EXPECT_EQ(input, output);
-}
-
-TEST_F(StructTraitsTest, Transform_InvalidFloats) {
-  const double nan = std::numeric_limits<double>::quiet_NaN();
-  const double inf = std::numeric_limits<double>::infinity();
-
-  gfx::Transform output;
-
-  // We can construct a transform with NaN matrix.
-  std::array<double, 16> bad_matrix;
-  bad_matrix.fill(0.0);
-  bad_matrix[0] = nan;
-  gfx::Transform input_nan = gfx::Transform::ColMajor(bad_matrix);
-  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<gfx::mojom::Transform>(
-      input_nan, output));
-
-  bad_matrix[0] = inf;
-  gfx::Transform input_inf = gfx::Transform::ColMajor(bad_matrix);
-  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<gfx::mojom::Transform>(
-      input_inf, output));
-}
-
-TEST_F(StructTraitsTest, ColorSpace_InvalidFloats) {
-  const float nan = std::numeric_limits<float>::quiet_NaN();
-  const float inf = std::numeric_limits<float>::infinity();
-
-  gfx::ColorSpace output;
-
-  skcms_Matrix3x3 bad_primaries = {
-      {{1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}}};
-
-  // Test NaN custom primaries
-  bad_primaries.vals[0][0] = nan;
-  gfx::ColorSpace input_nan_prim = gfx::ColorSpace::CreateCustom(
-      bad_primaries, gfx::ColorSpace::TransferID::SRGB);
-  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<gfx::mojom::ColorSpace>(
-      input_nan_prim, output));
-
-  // Test Inf custom primaries
-  bad_primaries.vals[0][0] = inf;
-  gfx::ColorSpace input_inf_prim = gfx::ColorSpace::CreateCustom(
-      bad_primaries, gfx::ColorSpace::TransferID::SRGB);
-  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<gfx::mojom::ColorSpace>(
-      input_inf_prim, output));
-
-  // Test custom transfer function params
-  skcms_Matrix3x3 good_primaries = {
-      {{1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}}};
-  skcms_TransferFunction bad_fn = {2.2f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-
-  // Test NaN transfer param
-  bad_fn.g = nan;
-  gfx::ColorSpace input_nan_fn =
-      gfx::ColorSpace::CreateCustom(good_primaries, bad_fn);
-  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<gfx::mojom::ColorSpace>(
-      input_nan_fn, output));
-
-  // Test Inf transfer param
-  bad_fn.g = inf;
-  gfx::ColorSpace input_inf_fn =
-      gfx::ColorSpace::CreateCustom(good_primaries, bad_fn);
-  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<gfx::mojom::ColorSpace>(
-      input_inf_fn, output));
 }
 
 }  // namespace gfx

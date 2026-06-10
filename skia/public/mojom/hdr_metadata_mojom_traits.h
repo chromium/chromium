@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SKIA_PUBLIC_MOJOM_HDR_METADATA_MO_TRAITS_H_
-#define SKIA_PUBLIC_MOJOM_HDR_METADATA_MO_TRAITS_H_
-
-#include <cmath>
+#ifndef SKIA_PUBLIC_MOJOM_HDR_METADATA_MOJOM_TRAITS_H_
+#define SKIA_PUBLIC_MOJOM_HDR_METADATA_MOJOM_TRAITS_H_
 
 #include "skia/public/mojom/hdr_metadata.mojom-shared.h"
 #include "skia/public/mojom/skcolorspace_primaries_mojom_traits.h"
@@ -25,9 +23,6 @@ struct StructTraits<skia::mojom::SkHdrContentLightLevelInformationDataView,
 
   static bool Read(skia::mojom::SkHdrContentLightLevelInformationDataView data,
                    skhdr::ContentLightLevelInformation* out) {
-    if (!std::isfinite(data.max_cll()) || !std::isfinite(data.max_fall())) {
-      return false;
-    }
     out->fMaxCLL = data.max_cll();
     out->fMaxFALL = data.max_fall();
     return true;
@@ -50,10 +45,6 @@ struct StructTraits<skia::mojom::SkHdrMasteringDisplayColorVolumeDataView,
 
   static bool Read(skia::mojom::SkHdrMasteringDisplayColorVolumeDataView data,
                    skhdr::MasteringDisplayColorVolume* out) {
-    if (!std::isfinite(data.max_luminance()) ||
-        !std::isfinite(data.min_luminance())) {
-      return false;
-    }
     if (!data.ReadPrimaries(&out->fDisplayPrimaries)) {
       return false;
     }
@@ -81,10 +72,6 @@ struct StructTraits<skia::mojom::SkHdrAgtmGainCurveControlPointDataView,
 
   static bool Read(skia::mojom::SkHdrAgtmGainCurveControlPointDataView data,
                    skhdr::AdaptiveGlobalToneMap::GainCurve::ControlPoint* out) {
-    if (!std::isfinite(data.x()) || !std::isfinite(data.y()) ||
-        !std::isfinite(data.m())) {
-      return false;
-    }
     out->fX = data.x();
     out->fY = data.y();
     out->fM = data.m();
@@ -140,11 +127,6 @@ struct StructTraits<skia::mojom::SkHdrAgtmComponentMixingFunctionDataView,
 
   static bool Read(skia::mojom::SkHdrAgtmComponentMixingFunctionDataView data,
                    skhdr::AdaptiveGlobalToneMap::ComponentMixingFunction* out) {
-    if (!std::isfinite(data.red()) || !std::isfinite(data.green()) ||
-        !std::isfinite(data.blue()) || !std::isfinite(data.max()) ||
-        !std::isfinite(data.min()) || !std::isfinite(data.component())) {
-      return false;
-    }
     out->fRed = data.red();
     out->fGreen = data.green();
     out->fBlue = data.blue();
@@ -196,9 +178,6 @@ struct StructTraits<skia::mojom::SkHdrAgtmAlternateImageDataView,
 
   static bool Read(skia::mojom::SkHdrAgtmAlternateImageDataView data,
                    skhdr::AdaptiveGlobalToneMap::AlternateImage* out) {
-    if (!std::isfinite(data.hdr_headroom())) {
-      return false;
-    }
     out->fHdrHeadroom = data.hdr_headroom();
     if (!data.ReadColorGainFunction(&out->fColorGainFunction)) {
       return false;
@@ -226,9 +205,6 @@ struct StructTraits<skia::mojom::SkHdrAgtmHeadroomAdaptiveToneMapDataView,
 
   static bool Read(skia::mojom::SkHdrAgtmHeadroomAdaptiveToneMapDataView data,
                    skhdr::AdaptiveGlobalToneMap::HeadroomAdaptiveToneMap* out) {
-    if (!std::isfinite(data.baseline_hdr_headroom())) {
-      return false;
-    }
     out->fBaselineHdrHeadroom = data.baseline_hdr_headroom();
     if (!data.ReadGainApplicationSpacePrimaries(
             &out->fGainApplicationSpacePrimaries)) {
@@ -256,9 +232,6 @@ struct StructTraits<skia::mojom::SkHdrAdaptiveGlobalToneMapDataView,
 
   static bool Read(skia::mojom::SkHdrAdaptiveGlobalToneMapDataView data,
                    skhdr::AdaptiveGlobalToneMap* out) {
-    if (!std::isfinite(data.hdr_reference_white())) {
-      return false;
-    }
     out->fHdrReferenceWhite = data.hdr_reference_white();
     if (!data.ReadHeadroomAdaptiveToneMap(&out->fHeadroomAdaptiveToneMap)) {
       return false;

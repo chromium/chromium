@@ -5,8 +5,6 @@
 #ifndef UI_GFX_GEOMETRY_MOJOM_GEOMETRY_MOJOM_TRAITS_H_
 #define UI_GFX_GEOMETRY_MOJOM_GEOMETRY_MOJOM_TRAITS_H_
 
-#include <cmath>
-
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_f.h"
@@ -46,10 +44,6 @@ struct StructTraits<gfx::mojom::InsetsFDataView, gfx::InsetsF> {
   static float bottom(const gfx::InsetsF& p) { return p.bottom(); }
   static float right(const gfx::InsetsF& p) { return p.right(); }
   static bool Read(gfx::mojom::InsetsFDataView data, gfx::InsetsF* out) {
-    if (!std::isfinite(data.top()) || !std::isfinite(data.left()) ||
-        !std::isfinite(data.bottom()) || !std::isfinite(data.right())) {
-      return false;
-    }
     *out = gfx::InsetsF::TLBR(data.top(), data.left(), data.bottom(),
                               data.right());
     return true;
@@ -71,9 +65,6 @@ struct StructTraits<gfx::mojom::PointFDataView, gfx::PointF> {
   static float x(const gfx::PointF& p) { return p.x(); }
   static float y(const gfx::PointF& p) { return p.y(); }
   static bool Read(gfx::mojom::PointFDataView data, gfx::PointF* out) {
-    if (!std::isfinite(data.x()) || !std::isfinite(data.y())) {
-      return false;
-    }
     out->SetPoint(data.x(), data.y());
     return true;
   }
@@ -85,10 +76,6 @@ struct StructTraits<gfx::mojom::Point3FDataView, gfx::Point3F> {
   static float y(const gfx::Point3F& p) { return p.y(); }
   static float z(const gfx::Point3F& p) { return p.z(); }
   static bool Read(gfx::mojom::Point3FDataView data, gfx::Point3F* out) {
-    if (!std::isfinite(data.x()) || !std::isfinite(data.y()) ||
-        !std::isfinite(data.z())) {
-      return false;
-    }
     out->SetPoint(data.x(), data.y(), data.z());
     return true;
   }
@@ -116,10 +103,6 @@ struct StructTraits<gfx::mojom::RectFDataView, gfx::RectF> {
   static float width(const gfx::RectF& p) { return p.width(); }
   static float height(const gfx::RectF& p) { return p.height(); }
   static bool Read(gfx::mojom::RectFDataView data, gfx::RectF* out) {
-    if (!std::isfinite(data.x()) || !std::isfinite(data.y()) ||
-        !std::isfinite(data.width()) || !std::isfinite(data.height())) {
-      return false;
-    }
     if (data.width() < 0 || data.height() < 0)
       return false;
 
@@ -146,12 +129,8 @@ struct StructTraits<gfx::mojom::SizeFDataView, gfx::SizeF> {
   static float width(const gfx::SizeF& p) { return p.width(); }
   static float height(const gfx::SizeF& p) { return p.height(); }
   static bool Read(gfx::mojom::SizeFDataView data, gfx::SizeF* out) {
-    if (!std::isfinite(data.width()) || !std::isfinite(data.height())) {
+    if (data.width() < 0 || data.height() < 0)
       return false;
-    }
-    if (data.width() < 0 || data.height() < 0) {
-      return false;
-    }
 
     out->SetSize(data.width(), data.height());
     return true;
@@ -174,9 +153,6 @@ struct StructTraits<gfx::mojom::Vector2dFDataView, gfx::Vector2dF> {
   static float x(const gfx::Vector2dF& v) { return v.x(); }
   static float y(const gfx::Vector2dF& v) { return v.y(); }
   static bool Read(gfx::mojom::Vector2dFDataView data, gfx::Vector2dF* out) {
-    if (!std::isfinite(data.x()) || !std::isfinite(data.y())) {
-      return false;
-    }
     out->set_x(data.x());
     out->set_y(data.y());
     return true;
@@ -189,10 +165,6 @@ struct StructTraits<gfx::mojom::Vector3dFDataView, gfx::Vector3dF> {
   static float y(const gfx::Vector3dF& v) { return v.y(); }
   static float z(const gfx::Vector3dF& v) { return v.z(); }
   static bool Read(gfx::mojom::Vector3dFDataView data, gfx::Vector3dF* out) {
-    if (!std::isfinite(data.x()) || !std::isfinite(data.y()) ||
-        !std::isfinite(data.z())) {
-      return false;
-    }
     out->set_x(data.x());
     out->set_y(data.y());
     out->set_z(data.z());
@@ -207,10 +179,6 @@ struct StructTraits<gfx::mojom::QuaternionDataView, gfx::Quaternion> {
   static double z(const gfx::Quaternion& q) { return q.z(); }
   static double w(const gfx::Quaternion& q) { return q.w(); }
   static bool Read(gfx::mojom::QuaternionDataView data, gfx::Quaternion* out) {
-    if (!std::isfinite(data.x()) || !std::isfinite(data.y()) ||
-        !std::isfinite(data.z()) || !std::isfinite(data.w())) {
-      return false;
-    }
     out->set_x(data.x());
     out->set_y(data.y());
     out->set_z(data.z());

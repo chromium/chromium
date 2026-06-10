@@ -6,7 +6,6 @@
 #define UI_GFX_MOJOM_TRANSFORM_MOJOM_TRAITS_H_
 
 #include <array>
-#include <cmath>
 
 #include "base/check.h"
 #include "mojo/public/cpp/bindings/array_traits.h"
@@ -59,11 +58,6 @@ struct UnionTraits<gfx::mojom::TransformDataDataView, gfx::Transform> {
       case gfx::mojom::TransformDataDataView::Tag::kMatrix: {
         ArrayDataView<double> matrix_data;
         data.GetMatrixDataView(&matrix_data);
-        for (double val : base::span(matrix_data)) {
-          if (!std::isfinite(val)) {
-            return false;
-          }
-        }
         *out = gfx::Transform::ColMajor(base::span(matrix_data).first<16>());
         return true;
       }

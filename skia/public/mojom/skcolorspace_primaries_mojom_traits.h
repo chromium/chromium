@@ -5,8 +5,6 @@
 #ifndef SKIA_PUBLIC_MOJOM_SKCOLORSPACE_PRIMARIES_MOJOM_TRAITS_H_
 #define SKIA_PUBLIC_MOJOM_SKCOLORSPACE_PRIMARIES_MOJOM_TRAITS_H_
 
-#include <cmath>
-
 #include "skia/ext/skcolorspace_primaries.h"
 #include "skia/public/mojom/skcolorspace_primaries.mojom.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -43,12 +41,6 @@ struct StructTraits<skia::mojom::SkColorSpacePrimariesDataView,
 
   static bool Read(skia::mojom::SkColorSpacePrimariesDataView data,
                    ::SkColorSpacePrimaries* color) {
-    if (!std::isfinite(data.rX()) || !std::isfinite(data.rY()) ||
-        !std::isfinite(data.gX()) || !std::isfinite(data.gY()) ||
-        !std::isfinite(data.bX()) || !std::isfinite(data.bY()) ||
-        !std::isfinite(data.wX()) || !std::isfinite(data.wY())) {
-      return false;
-    }
     color->fRX = data.rX();
     color->fRY = data.rY();
     color->fGX = data.gX();
