@@ -34,6 +34,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -42,8 +43,9 @@ import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -62,7 +64,8 @@ public class BottomBarCoordinatorUnitTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private BottomBarMediator.VisibilityDelegate mVisibilityDelegate;
     @Mock private Profile mProfile;
-    @Mock private UserEducationHelper mUserEducationHelper;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private Tracker mTracker;
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
@@ -83,10 +86,12 @@ public class BottomBarCoordinatorUnitTest {
     private FrameLayout mParent;
     private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
+    private SettableNonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private BottomBarCoordinator mCoordinator;
 
     @Before
     public void setUp() {
+        TrackerFactory.setTrackerForTests(mTracker);
         when(mActionRegistry.get(ActionId.NEW_TAB)).thenReturn(mActionSupplier);
         when(mActionRegistry.get(ActionId.HOME_BUTTON)).thenReturn(mHomeActionSupplier);
         when(mActionRegistry.get(ActionId.APP_MENU)).thenReturn(mMenuActionSupplier);
@@ -101,18 +106,19 @@ public class BottomBarCoordinatorUnitTest {
         mParent = new FrameLayout(mActivity);
         mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
         mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
+        mModalDialogManagerSupplier = ObservableSuppliers.createNonNull(mModalDialogManager);
         mProfileSupplier.set(mProfile);
         mCoordinator =
                 new BottomBarCoordinator(
                         mParent,
-                        mUserEducationHelper,
                         mActionRegistry,
                         mThemeColorProvider,
                         mTabSupplier,
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         mProfileSupplier,
-                        mOmniboxFocusStateSupplier);
+                        mOmniboxFocusStateSupplier,
+                        mModalDialogManagerSupplier);
     }
 
     @Test
@@ -211,22 +217,5 @@ public class BottomBarCoordinatorUnitTest {
         // Unfocus omnibox, should show again.
         mOmniboxFocusStateSupplier.set(false);
         verify(mVisibilityDelegate, times(2)).onVisibilityChanged(true);
-    }
-
-    @Test
-    public void testIphSetup_setsPropertiesOnModels() {
-        PropertyModel glicModel = new PropertyModel.Builder(ActionProperties.BASE_KEYS).build();
-        PropertyModel newTabModel = new PropertyModel.Builder(ActionProperties.BASE_KEYS).build();
-
-        mGlicActionSupplier.set(glicModel);
-        mActionSupplier.set(newTabModel);
-
-        // Verify USER_EDUCATION_HELPER is set on both.
-        assertEquals(mUserEducationHelper, glicModel.get(ActionProperties.USER_EDUCATION_HELPER));
-        assertEquals(mUserEducationHelper, newTabModel.get(ActionProperties.USER_EDUCATION_HELPER));
-
-        // Verify IPH_INTENT is set on both.
-        assertNotNull(glicModel.get(ActionProperties.IPH_INTENT));
-        assertNotNull(newTabModel.get(ActionProperties.IPH_INTENT));
     }
 }

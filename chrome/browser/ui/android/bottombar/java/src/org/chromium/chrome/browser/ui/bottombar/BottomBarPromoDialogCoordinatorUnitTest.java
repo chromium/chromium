@@ -34,6 +34,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -66,6 +67,7 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
     private Context mContext;
     private Activity mActivity;
     private SettableNullableObservableSupplier<Profile> mProfileSupplier;
+    private SettableNonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private BottomBarPromoDialogCoordinator mCoordinator;
 
     @Before
@@ -74,11 +76,12 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mProfileSupplier = ObservableSuppliers.createNullable();
         mProfileSupplier.set(mProfile);
+        mModalDialogManagerSupplier = ObservableSuppliers.createNonNull(mModalDialogManager);
         TrackerFactory.setTrackerForTests(mTracker);
 
         mCoordinator =
                 new BottomBarPromoDialogCoordinator(
-                        mActivity, mModalDialogManager, mProfileSupplier);
+                        mActivity, mModalDialogManagerSupplier, mProfileSupplier);
         mCoordinator.setListener(mListener);
     }
 

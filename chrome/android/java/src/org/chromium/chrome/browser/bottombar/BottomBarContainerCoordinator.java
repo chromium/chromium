@@ -29,8 +29,8 @@ import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.bottombar.BottomBar;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarCoordinator;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMediator;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * Container for the bottom bar.
@@ -76,19 +76,24 @@ public class BottomBarContainerCoordinator
     /**
      * @param bottomBarContainer The {@link FrameLayout} for the bottom bar.
      * @param requestLayerUpdateCallback A callback to request layer updates.
+     * @param actionRegistry The {@link ActionRegistry}.
      * @param tabSupplier Supplier for the current tab.
      * @param themeColorProvider Theme color provider for the bottom bar.
+     * @param homepageEnabledSupplier Supplier of whether the homepage is enabled.
+     * @param profileSupplier Supplier of the current profile.
+     * @param omniboxFocusStateSupplier Supplier of the omnibox focus state.
+     * @param modalDialogManagerSupplier Supplier of the {@link ModalDialogManager}.
      */
     public BottomBarContainerCoordinator(
             FrameLayout bottomBarContainer,
-            UserEducationHelper userEducationHelper,
             Callback<Boolean> requestLayerUpdateCallback,
             ActionRegistry actionRegistry,
             NullableObservableSupplier<Tab> tabSupplier,
             ThemeColorProvider themeColorProvider,
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             NullableObservableSupplier<Profile> profileSupplier,
-            NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier) {
+            NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
+            NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mBottomBarContainer = bottomBarContainer;
         Context context = bottomBarContainer.getContext();
         mContext = context;
@@ -100,14 +105,14 @@ public class BottomBarContainerCoordinator
         mBottomBarCoordinator =
                 new BottomBarCoordinator(
                         bottomBarContainer,
-                        userEducationHelper,
                         actionRegistry,
                         themeColorProvider,
                         tabSupplier,
                         homepageEnabledSupplier,
                         this,
                         profileSupplier,
-                        omniboxFocusStateSupplier);
+                        omniboxFocusStateSupplier,
+                        modalDialogManagerSupplier);
     }
 
     @Override
