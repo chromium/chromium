@@ -1353,6 +1353,57 @@ suite('ComposeboxVoiceSearch', () => {
     assertEquals(mockSpeechRecognition.startCount, 1);
   });
 
+  test(
+      'calling start() immediately after abort() safely restarts recognition',
+      async () => {
+        const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+        const mockVoiceSearch =
+            voiceSearchElement as unknown as MockComposeboxVoiceSearch;
+
+        // Start 1st time.
+        voiceSearchElement.start();
+        await microtasksFinished();
+        assertEquals(mockSpeechRecognition.startCount, 1);
+        assertTrue(mockVoiceSearch.voiceRecognition_.voiceSearchInProgress);
+
+        const originalAbort = mockSpeechRecognition.abort;
+        let onEndCalled = false;
+        mockSpeechRecognition.abort = function() {
+          this.voiceSearchInProgress = false;
+          // Defer onend call to simulate async browser behavior.
+          window.setTimeout(() => {
+            onEndCalled = true;
+            this.onend!();
+          }, 0);
+        };
+
+        // Call onCloseClick_ (which calls abort()).
+        mockVoiceSearch.onCloseClick_();
+
+        // At this point, the mock has aborted, but onend has not been called yet.
+        // So recognitionActive_ is still true and call start() again.
+        voiceSearchElement.start();
+
+        // The startCount should still be 1, because the start has been queued.
+        assertEquals(mockSpeechRecognition.startCount, 1);
+
+        // Now wait for the deferred onend to fire.
+        await new Promise(resolve => window.setTimeout(resolve, 10));
+        await microtasksFinished();
+
+        // After onend fires, the queued start should execute, bringing startCount to 2.
+        assertEquals(mockSpeechRecognition.startCount, 2);
+        assertTrue(onEndCalled);
+
+        // Restore original abort.
+        mockSpeechRecognition.abort = originalAbort;
+
+        // Cleanup.
+        mockVoiceSearch.state_ = -1;
+        mockVoiceSearch.voiceRecognition_.abort();
+        await microtasksFinished();
+      });
+
   test('on result updates the searchbox input', async () => {
     const voiceSearchButton = getVoiceSearchButton(composeboxElement);
     voiceSearchButton!.click();
@@ -1414,6 +1465,7 @@ suite('ComposeboxVoiceSearch', () => {
 
     const [callback] = await windowProxy.whenCalled('setTimeout');
     callback();
+
     await microtasksFinished();
     await showPromise;
     await composeboxElement.updateComplete;
