@@ -56,6 +56,7 @@
 
 namespace {
 
+#if !BUILDFLAG(IS_MAC)
 void AddItemWithIconMaybe(ui::SimpleMenuModel* model,
                           int command_id,
                           int string_id,
@@ -69,6 +70,7 @@ void AddItemWithIconMaybe(ui::SimpleMenuModel* model,
     model->AddItemWithStringId(command_id, string_id);
   }
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -146,10 +148,15 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
                                IDS_GROUP_UNGROUPED_TABS);
   }
 
+#if BUILDFLAG(IS_MAC)
+  model->AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS);
+  model->AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
+#else
   AddItemWithIconMaybe(model, IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS,
                        kBookmarkAllTabsChromeRefreshOldIcon);
   AddItemWithIconMaybe(model, IDC_NAME_WINDOW, IDS_NAME_WINDOW,
                        kNameWindowOldIcon);
+#endif  // BUILDFLAG(IS_MAC)
 
   if (base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton)) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
