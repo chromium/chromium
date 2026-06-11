@@ -810,6 +810,49 @@ TEST_F(TabTest, ActiveTabFaviconSwapWithCloseOnHover) {
   EXPECT_TRUE(icon->GetVisible());
 }
 
+TEST_F(TabTest, CloseButtonOnlyIconShowingOnHoverAndCentered) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTabStripDeclutter);
+
+  auto controller = std::make_unique<FakeTabSlotController>();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  Tab* tab = widget->SetContentsView(
+      std::make_unique<Tab>(tabs::TabHandle(1), controller.get()));
+  controller->set_active_tab(tab);
+
+  tabs::TabData data;
+  data.should_display_favicon = true;
+  tab->SetDataForTesting(data);
+
+  // Make the tab small enough so that only the close button shows
+  // and it is centered.
+  const int max_width_to_center_icon =
+      GetLayoutConstant(LayoutConstant::kTabPreTitlePadding) +
+      GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding);
+
+  const int insets_width = tab->tab_style_views()->GetContentsInsets().width();
+  const int total_width =
+      insets_width + GetLayoutConstant(LayoutConstant::kTabCloseButtonSize) +
+      max_width_to_center_icon - 1;
+
+  widget->SetBounds(gfx::Rect(0, 0, total_width, 50));
+  LayoutTab(tab);
+  // On hover, it should show close button and hide favicon.
+  tab->OnMouseEntered(ui::MouseEvent(ui::EventType::kMouseMoved, gfx::Point(),
+                                     gfx::Point(), base::TimeTicks(), 0, 0));
+  tab->InvalidateLayout();
+  LayoutTab(tab);
+
+  // Active tab should show favicon and hide close button when space is limited.
+  EXPECT_TRUE(GetCloseButton(tab)->GetVisible());
+  EXPECT_FALSE(GetTabIcon(tab)->GetVisible());
+  // Close button should be centered.
+  EXPECT_LE(std::abs(tab->width() / 2 -
+                     GetCloseButton(tab)->bounds().CenterPoint().x()),
+            1);
+}
+
 TEST_F(TabTest, ExtraLeftPaddingShownOnSiteWithoutFavicon) {
   auto controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget =
