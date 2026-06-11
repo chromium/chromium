@@ -79,6 +79,16 @@ function createAppearancePage() {
         },
       },
     },
+    bookmark_bar: {
+      show_on_all_tabs: {
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+      visibility_state: {
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: 0,
+      },
+    },
     tab_search: {
       is_right_aligned: {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -127,8 +137,12 @@ function createAppearancePage() {
   flush();
 }
 
-suite('AppearanceHandler', function() {
+suite('AppearancePage', function() {
   setup(function() {
+    loadTimeData.overrideValues({
+      ntpSimplificationBookmarksBarEnabled: false,
+    });
+
     appearanceBrowserProxy = new TestAppearanceBrowserProxy();
     AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
 
@@ -489,6 +503,55 @@ suite('AppearanceHandler', function() {
     assertTrue(!!autoPinToggle);
     assertTrue(autoPinToggle.hidden);
   });
+
+  test('bookmarks bar toggle visibility', async function() {
+    createAppearancePage();
+    await microtasksFinished();
+
+    assertTrue(!!appearancePage.shadowRoot!.querySelector('#showBookmarksBar'));
+    assertFalse(!!appearancePage.shadowRoot!.querySelector(
+        '#bookmarksBarVisibilityDropdown'));
+  });
+
+  test(
+      'bookmarks bar dropdown menu updates visibility_state', async function() {
+        loadTimeData.overrideValues({
+          ntpSimplificationBookmarksBarEnabled: true,
+        });
+        createAppearancePage();
+        await microtasksFinished();
+
+        assertFalse(
+            !!appearancePage.shadowRoot!.querySelector('#showBookmarksBar'));
+
+        assertEquals(
+            0, appearancePage.getPref('bookmark_bar.visibility_state').value);
+
+        const dropdown = appearancePage.shadowRoot!
+                             .querySelector<SettingsDropdownMenuElement>(
+                                 '#bookmarksBarVisibilityDropdown');
+        assertTrue(!!dropdown);
+
+        const selectElement = dropdown.$.dropdownMenu;
+
+        assertEquals('0', selectElement.value);
+
+        selectElement.value = '1';
+        selectElement.dispatchEvent(new Event('change'));
+        await microtasksFinished();
+
+        assertEquals(
+            1, appearancePage.getPref('bookmark_bar.visibility_state').value);
+        assertEquals('1', selectElement.value);
+
+        selectElement.value = '2';
+        selectElement.dispatchEvent(new Event('change'));
+        await microtasksFinished();
+
+        assertEquals(
+            2, appearancePage.getPref('bookmark_bar.visibility_state').value);
+        assertEquals('2', selectElement.value);
+      });
 });
 
 suite('TabStripPositionSettings', () => {

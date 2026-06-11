@@ -217,6 +217,31 @@ export class SettingsAppearancePageElement extends
         },
       },
 
+      ntpSimplificationBookmarksBarEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'ntpSimplificationBookmarksBarEnabled');
+        },
+      },
+
+      // The values in this array must match the BookmarkBarVisibilityState enum
+      // defined in components/bookmarks/common/bookmark_bar_visibility_state.h.
+      bookmarksBarOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {value: 0, name: loadTimeData.getString('bookmarksBarAlwaysShow')},
+            {
+              value: 1,
+              name: loadTimeData.getString('bookmarksBarOnlyShowOnNtp'),
+            },
+            {value: 2, name: loadTimeData.getString('bookmarksBarAlwaysHide')},
+          ];
+        },
+      },
+
       showVerticalTabsExpandOnHoverEnabled_: {
         type: Boolean,
         value() {
@@ -326,6 +351,8 @@ export class SettingsAppearancePageElement extends
   // </if>
 
   declare private showVerticalTabsEnabled_: boolean;
+  declare private ntpSimplificationBookmarksBarEnabled_: boolean;
+  declare private bookmarksBarOptions_: DropdownMenuOptionList;
   declare private showVerticalTabsExpandOnHoverEnabled_: boolean;
   declare private showTabSearchEnabled_: boolean;
   declare private showProjectsPanelEnabled_: boolean;
