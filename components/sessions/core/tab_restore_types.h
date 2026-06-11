@@ -195,8 +195,10 @@ struct SESSIONS_EXPORT Group : public Entry {
   // there.
   SessionID::id_type browser_id = 0;
 
-  // A mapping of split tab IDs to the split tabs inside this group.
-  std::map<split_tabs::SplitTabId, std::vector<raw_ptr<Tab>>> split_tabs;
+  // The split views in the group. These are only used to query properties
+  // about a split view such as visual data. As such, splits in this structure
+  // should NOT contain any tabs.
+  std::map<split_tabs::SplitTabId, std::unique_ptr<Split>> split_tabs;
 };
 
 // Represents a previously open window.

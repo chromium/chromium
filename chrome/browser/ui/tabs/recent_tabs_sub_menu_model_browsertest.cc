@@ -693,6 +693,64 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
   VerifyModel(window_submenu->GetSubmenuModelAt(3), kSplitSubmenuData);
 }
 
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
+                       RecentlyClosedGroupWithSplit) {
+  Init();
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  DisableSync();
+
+  TabRestoreServiceFactory::GetForProfile(browser()->profile());
+
+  AddTabToBrowser(GURL("http://foo/1"));
+  AddTabToBrowser(GURL("http://foo/2"));
+  AddTabToBrowser(GURL("http://foo/3"));
+
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2, 3});
+
+  // Pair tabs at index 1 and 2 into a split view.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {2}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Close the group.
+  browser()->tab_strip_model()->CloseAllTabsInGroup(group);
+
+  RecentTabsSubMenuModel model(nullptr, browser());
+
+  std::vector<ModelData> kData = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // History
+      {ui::MenuModel::TYPE_COMMAND, true},    // History Cluster
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // Recently closed
+      {ui::MenuModel::TYPE_SUBMENU, true},    // <group>
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_TITLE, false},     // Your devices
+      {ui::MenuModel::TYPE_COMMAND, true}     // recent tabs login
+  };
+
+  VerifyModel(model, kData);
+
+  constexpr ModelData kGroupSubmenuData[] = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // Restore group
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_SUBMENU, true},    // <split view>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://foo/3>
+  };
+  const ui::MenuModel* const group_submenu = model.GetSubmenuModelAt(4);
+  ASSERT_NO_FATAL_FAILURE(VerifyModel(group_submenu, kGroupSubmenuData));
+
+  constexpr ModelData kSplitSubmenuData[] = {
+      {ui::MenuModel::TYPE_COMMAND, true},    // Restore split view
+      {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://foo/1>
+      {ui::MenuModel::TYPE_COMMAND, true},    // <tab for http://foo/2>
+  };
+  VerifyModel(group_submenu->GetSubmenuModelAt(2), kSplitSubmenuData);
+}
+
 IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
                        RecentlyClosedTabsAndWindowsFromLastSessionWithRefresh) {
   Init();

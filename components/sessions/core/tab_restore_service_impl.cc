@@ -547,6 +547,15 @@ std::unique_ptr<sessions::tab_restore::Split> CreateSplitEntryFromCommand(
   return split;
 }
 
+void MaybeAddSplitToGroup(sessions::tab_restore::Group& group,
+                          const sessions::tab_restore::Tab& tab) {
+  if (tab.split_id.has_value() &&
+      !group.split_tabs.contains(tab.split_id.value())) {
+    group.split_tabs.emplace(tab.split_id.value(),
+                             sessions::tab_restore::Split::FromTab(tab));
+  }
+}
+
 }  // namespace
 
 // TabRestoreServiceImpl::PersistenceDelegate
@@ -1597,9 +1606,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
       auto& group = static_cast<tab_restore::Group&>(*entry);
       group.split_tabs.clear();
       for (auto& tab : group.tabs) {
-        if (tab->split_id.has_value()) {
-          group.split_tabs[tab->split_id.value()].push_back(tab.get());
-        }
+        MaybeAddSplitToGroup(group, *tab);
       }
     }
   }
@@ -1691,6 +1698,10 @@ bool TabRestoreServiceImpl::PersistenceDelegate::ConvertSessionWindowToWindow(
     if (split_id.has_value()) {
       tab.split_id = split_id;
       tab.split_visual_data = splits[split_id.value()]->visual_data;
+    }
+
+    if (group_id.has_value() && split_id.has_value()) {
+      MaybeAddSplitToGroup(*groups[group_id.value()], tab);
     }
 
     tab.pinned = i->pinned;
