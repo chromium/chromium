@@ -226,6 +226,15 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // Side Panel colors.
   mixer[kColorSidePanelBackground] = {ui::kColorSysBaseContainer};
 
+  // Contextual Tasks Banner Promo colors.
+  mixer[kColorContextualTasksBannerPromoBackground] = {
+      ui::kColorSysBaseContainer};
+  mixer[kColorContextualTasksBannerPromoText] = {ui::kColorSysOnSurface};
+  mixer[kColorContextualTasksBannerPromoIconBackground] = {
+      ui::kColorSysTonalContainer};
+  mixer[kColorContextualTasksBannerPromoIconForeground] = {
+      ui::kColorSysPrimary};
+
   // Read Anything (in the side panel) colors.
   mixer[kColorReadAnythingCurrentReadAloudHighlight] = {
       ui::kColorSysStateHoverOnSubtle};
