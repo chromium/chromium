@@ -427,7 +427,8 @@ CTFontRef PlatformFontMac::GetCTFont() const {
 }
 
 sk_sp<SkTypeface> PlatformFontMac::GetNativeSkTypeface() const {
-  return SkMakeTypefaceFromCTFont(GetCTFont());
+  CTFontRef ct_font = GetCTFont();
+  return ct_font ? SkMakeTypefaceFromCTFont(ct_font) : nullptr;
 }
 
 // static
@@ -467,6 +468,9 @@ PlatformFontMac::PlatformFontMac(CTFontRef ct_font,
       << "use the SystemFontType constructor. Extend the SystemFontType enum "
       << "if necessary.";
 #endif  // DCHECK_IS_ON()
+  sk_sp<SkTypeface> typeface =
+      ct_font ? SkMakeTypefaceFromCTFont(ct_font) : nullptr;
+  set_typeface_unique_id(typeface ? typeface->uniqueID() : 0);
   CalculateMetricsAndInitRenderParams();
 }
 
