@@ -57,6 +57,16 @@ class GlicExperimentalTriggeringMessageHandler : public SharingMessageHandler {
 
   void OnUpdatesHandlerCleanup(std::string context_id);
 
+  // Returns true if the incoming experimental triggering version is supported
+  // by the client. Returns false if the incoming version is newer than the
+  // client version, or if the client version is unavailable.
+  bool IsVersionSupported(int incoming_version) const;
+
+  // Returns the local experimental triggering version supported by the client.
+  // Returns std::nullopt if the version is unavailable (e.g. if the user is in
+  // the kUnavailable state).
+  std::optional<int> GetLocalTriggeringVersion() const;
+
   const raw_ptr<Profile> profile_;
   const raw_ptr<SharingMessageSender> message_sender_;
   std::map<std::string, std::unique_ptr<ExperimentalTriggeringUpdatesHandler>>
