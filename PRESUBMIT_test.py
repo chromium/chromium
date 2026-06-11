@@ -3044,6 +3044,8 @@ class BannedTypeCheckTest(unittest.TestCase):
                      ['if (is_desktop_android) {']),
             MockFile('ui/webui/resources/BUILD.gn',
                      ['if (is_desktop_android) {']),
+            MockFile('chrome/test/data/webui/BUILD.gn',
+                     ['if (is_desktop_android) {']),
         ]
 
         results = PRESUBMIT.CheckNoBannedPatterns(input_api, MockOutputApi())
@@ -3056,6 +3058,8 @@ class BannedTypeCheckTest(unittest.TestCase):
             all('some/path/ok.gn' not in r.message for r in results))
         self.assertTrue(
             all('ui/webui/resources/' not in r.message for r in results))
+        self.assertTrue(
+            all('chrome/test/data/webui/' not in r.message for r in results))
 
     def testBannedCppFunctions(self):
         input_api = MockInputApi()

@@ -45,6 +45,7 @@ if (enable_extensions_core) {
       "//chrome/browser/favicon",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/extensions:resources",
+      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui:plural_string_handler",
       "//chrome/browser/ui/webui/page_not_available_for_guest",
