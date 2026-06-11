@@ -71,7 +71,8 @@ bool SafeBrowsingPrefChangeHandler::SuppressNotificationForTailoredSecurity() {
 // TODO(crbug.com/378888301): Add tests for Chrome Toast and Android modal
 // logic.
 void SafeBrowsingPrefChangeHandler::
-    MaybeShowEnhancedProtectionSettingChangeNotification() {
+    MaybeShowEnhancedProtectionSettingChangeNotification(
+        content::WebContents* web_contents) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_MAC)
   if (!profile_ ||
@@ -138,7 +139,9 @@ void SafeBrowsingPrefChangeHandler::
   // 2. If the user has turned off ESB and is on the security page, we do
   // not show a toast at all.
   TabStripModel* tab_strip_model = browser->GetTabStripModel();
-  content::WebContents* web_contents = tab_strip_model->GetActiveWebContents();
+  if (!web_contents) {
+    web_contents = tab_strip_model->GetActiveWebContents();
+  }
   bool is_security_page =
       web_contents ? web_contents->GetLastCommittedURL().spec().starts_with(
                          "chrome://settings/security")
@@ -186,21 +189,30 @@ void SafeBrowsingPrefChangeHandler::
     return;
   }
 
-  content::WebContents* web_contents = nullptr;
-  for (const TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() != profile_) {
-      continue;
-    }
-    int tab_count = tab_model->GetTabCount();
-    for (int i = 0; i < tab_count; i++) {
-      web_contents = tab_model->GetWebContentsAt(i);
-      if (web_contents) {
+  content::WebContents* target_web_contents = web_contents;
+  if (!target_web_contents) {
+    // If web_contents is not passed, we fallback to searching the tab models.
+    // This path is safe from JNI-induced deadlocks because it is only called
+    // when the tab list is stable (e.g., during startup or from the retry
+    // timer), and not synchronously during tab addition callbacks.
+    for (const TabModel* tab_model : TabModelList::models()) {
+      if (tab_model->GetProfile() != profile_) {
+        continue;
+      }
+      int tab_count = tab_model->GetTabCount();
+      for (int i = 0; i < tab_count; i++) {
+        target_web_contents = tab_model->GetWebContentsAt(i);
+        if (target_web_contents) {
+          break;
+        }
+      }
+      if (target_web_contents) {
         break;
       }
     }
   }
 
-  if (!web_contents) {
+  if (!target_web_contents) {
     // Instantiate the retry handler here, if it hasn't been already
     profile_->GetPrefs()->SetInteger(
         prefs::kSafeBrowsingSyncedEnhancedProtectionRetryState,
@@ -234,7 +246,7 @@ void SafeBrowsingPrefChangeHandler::
     bool is_enhanced_enabled =
         IsEnhancedProtectionEnabled(*profile_->GetPrefs());
     message_ = std::make_unique<TailoredSecurityConsentedModalAndroid>(
-        web_contents, is_enhanced_enabled,
+        target_web_contents, is_enhanced_enabled,
         base::BindOnce(
             &SafeBrowsingPrefChangeHandler::ConsentedMessageDismissed,
             weak_ptr_factory_.GetWeakPtr()),
@@ -279,11 +291,9 @@ void SafeBrowsingPrefChangeHandler::DidAddTab(TabAndroid* tab,
                                               TabModel::TabLaunchType type) {
   RemoveTabModelObserver();
   RemoveTabModelListObserver();
-  // Get the Profile from the TabAndroid
-  if (!tab || !tab->web_contents()) {
-    return;
+  if (tab && tab->web_contents()) {
+    MaybeShowEnhancedProtectionSettingChangeNotification(tab->web_contents());
   }
-  RetryStateCallback();
 }
 
 void SafeBrowsingPrefChangeHandler::OnTabModelAdded(TabModel* tab_model) {
