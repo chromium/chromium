@@ -1103,7 +1103,7 @@
 <translation id="2688186765492306706">500x760 mm</translation>
 <translation id="2688969097326701645">はい、続行します</translation>
 <translation id="2690699652723742414">過去 30 日間</translation>
-<translation id="2691385045260836588">機種</translation>
+<translation id="2691385045260836588">車種</translation>
 <translation id="2691924980723297736">安全性に関する警告</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core を使用すると、ブラウザ ポリシー、アプリ、拡張機能をクラウドから管理できます</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> に質問</translation>
@@ -1667,7 +1667,7 @@
 <translation id="3587725436724465984">お客様の組織では、<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> がポリシーに違反している可能性のあるサイトとして判別されています。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">中</translation>
 <translation id="3589519427766620380">Google レンズでこのページについて質問する</translation>
-<translation id="3596918995172292499">ナンバー プレート発行元の州</translation>
+<translation id="3596918995172292499">プレートの地名</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />、<ph name="DOMAIN" />、<ph name="TIME" /></translation>
 <translation id="3600492954573979888">[Google のプライバシー設定を管理] ボタンです。実行すると Google アカウントのプライバシー設定に移動できます</translation>
 <translation id="3603507503523709">アプリケーションは管理者によってブロックされています</translation>
@@ -3182,7 +3182,7 @@
 <translation id="5950901984834744590">かみそり、シェーバー</translation>
 <translation id="5951495562196540101">一般ユーザー向けアカウントでは登録できません（ライセンス パッケージが利用可能です）。</translation>
 <translation id="5952076224478208938">メーカー</translation>
-<translation id="5952196777020238475">ライセンス番号</translation>
+<translation id="5952196777020238475">免許証番号</translation>
 <translation id="5953516610448771166">このメディアでは自動字幕起こしを使用できません。字幕を使用するには、このサイトで <ph name="CONTENT_SETTINGS" /> をブロックしてください。</translation>
 <translation id="5960795367348889467">認証</translation>
 <translation id="5963413905009737549">セクション</translation>
