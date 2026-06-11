@@ -1404,7 +1404,8 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
   }
 
   auto omnibox_popup_ui = GetOmniboxPopupUI();
-  if (!omnibox_popup_ui || !omnibox_popup_ui->composebox_handler()) {
+  if (!omnibox_popup_ui || !omnibox_popup_ui->composebox_handler() ||
+      !omnibox_popup_ui->composebox_handler()->input_state_model()) {
     return false;
   }
 
