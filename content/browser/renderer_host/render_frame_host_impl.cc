@@ -19528,8 +19528,10 @@ void RenderFrameHostImpl::SetFrameTree(FrameTree& frame_tree) {
 
 void RenderFrameHostImpl::SetPolicyContainerForEarlyCommitAfterCrash(
     scoped_refptr<PolicyContainerHost> policy_container_host) {
-  CHECK_EQ(lifecycle_state(), LifecycleStateImpl::kSpeculative);
-  CHECK(!policy_container_host_);
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Speculatively reverted
+  // to DCHECK because of a past crash spike. See crbug.com/517224615.
+  DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kSpeculative);
+  DCHECK(!policy_container_host_);
   SetPolicyContainerHost(std::move(policy_container_host));
 }
 
