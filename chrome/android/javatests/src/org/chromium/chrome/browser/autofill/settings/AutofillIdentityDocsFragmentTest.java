@@ -608,7 +608,7 @@ public class AutofillIdentityDocsFragmentTest {
 
     @Test
     @MediumTest
-    public void testTitle() {
+    public void testScreenSetup() {
         mSettingsActivityTestRule.startSettingsActivity();
 
         AutofillIdentityDocsFragment fragment = mSettingsActivityTestRule.getFragment();
@@ -617,6 +617,10 @@ public class AutofillIdentityDocsFragmentTest {
                         mSettingsActivityTestRule
                                 .getActivity()
                                 .getString(R.string.autofill_identity_docs_title));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertThat(fragment.getPreferenceScreen().shouldUseGeneratedIds()).isFalse();
+                });
     }
 
     @Test
