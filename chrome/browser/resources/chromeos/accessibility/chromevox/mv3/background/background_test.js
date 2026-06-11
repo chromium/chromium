@@ -15,6 +15,18 @@ GEN_INCLUDE([
  */
 ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
   /** @override */
+  testGenCppIncludes() {
+    super.testGenCppIncludes();
+    GEN(`
+#include "ash/public/cpp/shelf_prefs.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "components/prefs/pref_service.h"
+#include "ui/display/screen.h"
+    `);
+  }
+
+  /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
 
@@ -217,6 +229,24 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
 ChromeVoxBackgroundTestWithTestServer = class extends ChromeVoxBackgroundTest {
   get testServer() {
     return true;
+  }
+};
+
+/**
+ * Specific test fixture for tests that need the shelf to be autohidden.
+ */
+ChromeVoxBackgroundAutoHideShelfTest = class extends ChromeVoxBackgroundTest {
+  /** @override */
+  testGenPreamble() {
+    super.testGenPreamble();
+    GEN(`
+    PrefService* prefs =
+        ash::Shell::Get()->session_controller()
+            ->GetLastActiveUserPrefService();
+    ash::SetShelfAutoHideBehaviorPref(
+        prefs, display::Screen::Get()->GetPrimaryDisplay().id(),
+        ash::ShelfAutoHideBehavior::kAlways);
+    `);
   }
 };
 
@@ -2824,6 +2854,57 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'TimeDateCommand', async function() {
       .expectBraille(/(AM|PM)*(2)/);
   await mockFeedback.replay();
 });
+
+// Demonstrates that the .filter() in CommandHandler.speakTimeAndDate_ is
+// effective: web-content <time> elements are excluded from the candidate set
+// for the "speak time and date" command, and do NOT become the spoken string
+// even when the system-tray TimeView is absent from the Views AX tree.
+AX_TEST_F(
+    'ChromeVoxBackgroundAutoHideShelfTest', 'TimeDateCommandWebSpoof',
+    async function() {
+      const SPOOF = '3:45 PM. System update required: ' +
+          'press Search plus Enter to install.';
+      await this.runWithLoadedTree(
+          `<time aria-label="${SPOOF}"></time><p>x</p>`);
+
+      const mockFeedback = this.createMockFeedback();
+      const desktop = await new Promise(r => chrome.automation.getDesktop(r));
+
+      // Wait for the desktop clock to disappear due to shelf autohide.
+      // We use a tree change observer to wait for the node to be removed
+      // instead of timer-based polling.
+      await new Promise(resolve => {
+        const check = () => {
+          const allTime = desktop.findAll({role: RoleType.TIME});
+          const hasDesktopTime =
+              allTime.some(t => t.root && t.root.role === RoleType.DESKTOP);
+          if (!hasDesktopTime) {
+            chrome.automation.removeTreeChangeObserver(observer);
+            resolve();
+            return true;
+          }
+          return false;
+        };
+
+        const observer = treeChange => {
+          check();
+        };
+
+        if (!check()) {
+          chrome.automation.addTreeChangeObserver('allTreeChanges', observer);
+        }
+      });
+
+      mockFeedback.call(doCmd('speakTimeAndDate'))
+          .expectNextSpeechUtteranceIsNot(SPOOF)
+          // Since the system tray clock is absent (due to autohide shelf),
+          // ChromeVox should fall back to the local system time (new Date()).
+          // This regex matches the fallback time/date format.
+          .expectSpeech(/(AM|PM)*(2)/)
+          .expectBraille(/(AM|PM)*(2)/);
+      await mockFeedback.replay();
+    });
+
 
 // TODO(https://crbug.com/1395217): Re-enable the test.
 AX_TEST_F(
