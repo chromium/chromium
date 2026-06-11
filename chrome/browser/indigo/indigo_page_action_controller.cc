@@ -547,8 +547,7 @@ void IndigoPageActionController::OnOnboardingDialogClosed(
     }
 
     if (disposition == OnboardingDisposition::kReplacePhoto) {
-      // TODO(b/516859835, b/512246764): Reset old replacements and trigger
-      // regeneration.
+      OnRegenerate(toolbar_.get());
     } else {
       indigo_service_->GetCombinedEligibility(
           base::BindOnce(&IndigoPageActionController::ContinueInvoke,
