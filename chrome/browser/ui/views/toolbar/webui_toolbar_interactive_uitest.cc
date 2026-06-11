@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -22,12 +23,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -41,9 +44,11 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -51,6 +56,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -59,6 +65,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/screen.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/metrics.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
@@ -1175,4 +1182,389 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
       // Cleanup.
       Do(base::BindLambdaForTesting([&]() { drag_drop_client.reset(); })));
 #endif  // defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+}
+
+class WebUIToolbarFocusInteractiveUiTestBase
+    : public WebUIAndViewsToolbarInteractiveUiTestBase {
+ public:
+  void SetUpOnMainThread() override {
+    WebUIAndViewsToolbarInteractiveUiTestBase::SetUpOnMainThread();
+    // Enable/pin home and split-tabs buttons so they can be focused.
+    browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+    browser()->profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
+                                                 true);
+    // Wait for the toolbar to load.
+    ASSERT_TRUE(base::test::RunUntil([browser = browser()]() {
+      InitialWebUIManager* manager = InitialWebUIManager::From(browser);
+      return !manager || !manager->IsShowPending();
+    }));
+  }
+
+ protected:
+  views::View* GetViewForIdentifier(Browser* browser,
+                                    ui::ElementIdentifier el_id) {
+    auto* element_tracker_views = views::ElementTrackerViews::GetInstance();
+    ui::ElementContext context = BrowserElements::From(browser)->GetContext();
+    return element_tracker_views->GetFirstMatchingView(el_id, context);
+  }
+
+  auto ExpectFocusedView(ui::ElementIdentifier element_id) {
+    return Steps(PollUntil(
+        base::BindRepeating(
+            [](WebUIToolbarFocusInteractiveUiTestBase* test,
+               ui::ElementIdentifier el_id) {
+              views::View* expected_view =
+                  test->GetViewForIdentifier(test->browser(), el_id);
+              views::View* focused_view =
+                  BrowserView::GetBrowserViewForBrowser(test->browser())
+                      ->GetFocusManager()
+                      ->GetFocusedView();
+              return expected_view && focused_view &&
+                     (focused_view == expected_view ||
+                      expected_view->Contains(focused_view));
+            },
+            base::Unretained(this), element_id),
+        "Wait for expected view to gain focus"));
+  }
+
+  auto ExpectFocusedWebUIElement(const std::string& expected_id) {
+    return Steps(WaitForJsResultAt(
+        WebUIToolbarId(),
+        WebContentsInteractionTestUtil::DeepQuery({"toolbar-app"}),
+        R"JS(
+        el => {
+          let active = el.shadowRoot.activeElement;
+          while (active && active.shadowRoot &&
+              active.shadowRoot.activeElement) {
+            active = active.shadowRoot.activeElement;
+          }
+          if (!active) return '';
+          let curr = active;
+          while (curr && curr !== el) {
+            if (curr.id && curr.id !== 'container' &&
+                curr.id !== 'textInput' && curr.id !== 'button') {
+              return curr.id;
+            }
+            if (curr.id === 'container') {
+              return 'location-icon-container';
+            }
+            if (curr.id === 'textInput') {
+              return 'omnibox-text-input';
+            }
+            let parent = curr.parentElement || curr.parentNode;
+            if (parent && parent.host) {
+              curr = parent.host;
+            } else {
+              curr = parent;
+            }
+          }
+          return active.id || active.tagName;
+        }
+        )JS",
+        expected_id));
+  }
+};
+
+// Test focus traversal of with only WebUI navigation controls.
+class WebUIToolbarFocusMinimalInteractiveUiTest
+    : public WebUIToolbarFocusInteractiveUiTestBase {
+ public:
+  WebUIToolbarFocusMinimalInteractiveUiTest() {
+    feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUIBackForwardButton,
+         features::kWebUIReloadButton, features::kWebUIHomeButton,
+         features::kWebUISplitTabsButton,
+         features::kSkipIPCChannelPausingForNonGuests,
+         features::kWebUIInProcessResourceLoadingV2,
+         features::kInitialWebUISyncNavStartToCommit},
+        {features::kWebUILocationBar, features::kWebUIPinnedToolbarActions});
+  }
+  ~WebUIToolbarFocusMinimalInteractiveUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusMinimalInteractiveUiTest,
+                       KeyboardNavigation) {
+  // Navigate to a URL so that back button is enabled.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+
+  // Move mouse off of toolbar. Having the mouse over the reload button when a
+  // page finishes loading may temporarily disable the reload button, making it
+  // no longer focusable, which will cause walking through focusable elements to
+  // skip over it, and the test will then fail.
+  RunTestSequence(MoveMouseTo(ToolbarView::kToolbarElementId,
+                              base::BindOnce([](ui::TrackedElement* el) {
+                                return el->GetScreenBounds().bottom_center() +
+                                       gfx::Vector2d(0, 1);
+                              })));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
+  // Navigate back once so forward is enabled too.
+  content::TestNavigationObserver back_nav_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  browser()->command_controller()->ExecuteCommand(IDC_BACK);
+  back_nav_observer.Wait();
+
+  RunTestSequence(
+      // 1. Wait for toolbar to load.
+      WaitForToolbarLoaded(),
+
+      // Wait for Lit rendering to complete (until Back button is rendered in
+      // shadow DOM).
+      WaitForElementVisible(WebUIToolbarId(),
+                            DeepQuery({"toolbar-app", "#back"})),
+
+      // 2. Focus the toolbar using the browser command (Alt+Shift+T).
+      Do(base::BindLambdaForTesting([this]() {
+        browser()->command_controller()->ExecuteCommand(IDC_FOCUS_TOOLBAR);
+      })),
+      ExpectFocusedWebUIElement("back"),
+
+      // 3. ArrowRight -> Forward (WebUI).
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("forward"),
+
+      // 4. ArrowRight -> Reload (WebUI).
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("reload"),
+
+      // 5. ArrowRight -> Home (WebUI).
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("home"),
+
+      // 6. ArrowRight -> SplitTabs (WebUI).
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("split-tabs"),
+
+      // 7. ArrowRight -> LocationBar (Views!).
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedView(kLocationBarElementId),
+
+  // Focus is now in the C++ Omnibox. Escaping it via simulated Tab keys is
+  // highly unstable in headless environments, so we programmatically set
+  // pane focus on the Profile (Avatar) button instead.
+#if BUILDFLAG(IS_CHROMEOS)
+      // ChromeOS has no avatar button, so use app menu instead.
+      Do(base::BindLambdaForTesting([this]() {
+        auto* view =
+            GetViewForIdentifier(browser(), kToolbarAppMenuButtonElementId);
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar()
+            ->SetPaneFocus(view);
+      })),
+      ExpectFocusedView(kToolbarAppMenuButtonElementId),
+#else
+      Do(base::BindLambdaForTesting([this]() {
+        auto* view =
+            GetViewForIdentifier(browser(), kToolbarAvatarButtonElementId);
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar()
+            ->SetPaneFocus(view);
+      })),
+      ExpectFocusedView(kToolbarAvatarButtonElementId),
+
+      // 10. ArrowRight -> Chrome Menu (Views).
+      SendKeyPress(kToolbarAvatarButtonElementId, ui::VKEY_RIGHT),
+      ExpectFocusedView(kToolbarAppMenuButtonElementId),
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+      // 11. ArrowRight -> Back (WebUI, wrap-around!).
+      SendKeyPress(kToolbarAppMenuButtonElementId, ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("back"),
+
+      // 12. Now test backward navigation: ArrowLeft on Back -> Chrome Menu
+      // (Views, wrap-around!).
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_LEFT),
+      ExpectFocusedView(kToolbarAppMenuButtonElementId),
+
+#if !BUILDFLAG(IS_CHROMEOS)
+      // Skip for ChromeOS which has no profile button.
+
+      // 13. ArrowLeft -> Profile (Views).
+      SendKeyPress(kToolbarAppMenuButtonElementId, ui::VKEY_LEFT),
+      ExpectFocusedView(kToolbarAvatarButtonElementId),
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+      // 14. Test Home and End keys.
+      // Focus WebUI WebView in C++ to ensure it has active pane focus before
+      // key injection.
+      Do(base::BindLambdaForTesting([this]() {
+        auto* view = BrowserView::GetBrowserViewForBrowser(browser())
+                         ->toolbar()
+                         ->GetWebUIToolbarViewForTesting();
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar()
+            ->SetPaneFocus(view);
+      })),
+      ExpectFocusedView(kWebUIToolbarElementIdentifier),
+
+      // Focus Reload button via JS.
+      ExecuteJsAt(WebUIToolbarId(),
+                  {"toolbar-app", "#reload", "cr-icon-button"},
+                  "el => el.focus()"),
+      ExpectFocusedWebUIElement("reload"),
+
+      // Dispatch Home keydown event via JS to focus Back button.
+      ExecuteJsAt(WebUIToolbarId(),
+                  {"toolbar-app", "#reload", "cr-icon-button"},
+                  "el => {"
+                  "  const event = new KeyboardEvent('keydown', {key: 'Home', "
+                  "bubbles: true, composed: true});"
+                  "  "
+                  "el.dispatchEvent(event);"
+                  "}"),
+      ExpectFocusedWebUIElement("back"),
+
+      // Press End -> focuses Chrome Menu.
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_END),
+      ExpectFocusedView(kToolbarAppMenuButtonElementId));
+}
+
+// Test focus traversal of all WebUI controls.
+class WebUIToolbarFocusFullInteractiveUiTest
+    : public WebUIToolbarFocusInteractiveUiTestBase {
+ public:
+  WebUIToolbarFocusFullInteractiveUiTest() {
+    feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUIBackForwardButton,
+         features::kWebUIReloadButton, features::kWebUIHomeButton,
+         features::kWebUISplitTabsButton, features::kWebUILocationBar,
+         features::kWebUIPinnedToolbarActions,
+         ::tabs::kHorizontalTabStripComboButton,
+         features::kSkipIPCChannelPausingForNonGuests,
+         features::kWebUIInProcessResourceLoadingV2,
+         features::kInitialWebUISyncNavStartToCommit},
+        {});
+  }
+  ~WebUIToolbarFocusFullInteractiveUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
+                       KeyboardNavigation) {
+  // Navigate to a URL so that back/forward buttons are enabled.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+
+  // Move mouse off of toolbar. Having the mouse over the reload button when a
+  // page finishes loading may temporarily disable the reload button, making it
+  // no longer focusable, which will cause walking through focusable elements to
+  // skip over it, and the test will then fail.
+  RunTestSequence(MoveMouseTo(ToolbarView::kToolbarElementId,
+                              base::BindOnce([](ui::TrackedElement* el) {
+                                return el->GetScreenBounds().bottom_center() +
+                                       gfx::Vector2d(0, 1);
+                              })));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
+  // Navigate back once so forward is enabled too.
+  content::TestNavigationObserver back_nav_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  browser()->command_controller()->ExecuteCommand(IDC_BACK);
+  back_nav_observer.Wait();
+
+  RunTestSequence(
+      // 1. Wait for toolbar to load.
+      WaitForToolbarLoaded(),
+
+      // Pin an action so that WebUIPinnedToolbarActions has at least one action
+      // and is visible!
+      Do(base::BindLambdaForTesting([this]() {
+        PinnedToolbarActionsModel::Get(browser()->profile())
+            ->UpdatePinnedState(kActionCopyUrl, true);
+      })),
+
+      // Wait for Lit rendering to complete (until Back button is rendered in
+      // shadow DOM).
+      WaitForElementVisible(WebUIToolbarId(),
+                            DeepQuery({"toolbar-app", "#back"})),
+
+      // 2. Focus the toolbar using the browser command (Alt+Shift+T).
+      Do(base::BindLambdaForTesting([this]() {
+        browser()->command_controller()->ExecuteCommand(IDC_FOCUS_TOOLBAR);
+      })),
+      ExpectFocusedWebUIElement("back"),
+
+      // 3. ArrowRight to SplitTabs.
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("forward"),
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("reload"),
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("home"),
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("split-tabs"),
+
+      // 4. ArrowRight -> LocationIcon (WebUI).
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("location-icon-container"),
+
+      // 5. ArrowRight -> Omnibox input (WebUI).
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("omnibox-text-input"),
+
+      // 6. ArrowRight inside Omnibox should NOT shift focus.
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("omnibox-text-input"),
+
+      // 7. Focus PinnedActions (WebUI) using JS to avoid keyboard tab flakiness
+      // in test environments.
+      ExecuteJsAt(WebUIToolbarId(),
+                  {"toolbar-app", "#pinnedToolbarActions",
+                   "pinned-toolbar-action", "cr-icon-button"},
+                  "el => el.focus()"),
+      ExpectFocusedWebUIElement("pinnedToolbarActions"),
+
+#if BUILDFLAG(IS_CHROMEOS)
+      // ChromeOS has no profile button, so skip to Chrome menu.
+
+      // 8. ArrowRight -> Chrome Menu (Views).
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedView(kToolbarAppMenuButtonElementId),
+#else
+      // 8. ArrowRight -> Profile (Views).
+      // Since Extensions is hidden in the test profile, focus goes directly to
+      // Profile.
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedView(kToolbarAvatarButtonElementId),
+
+      // 10. ArrowRight -> Chrome Menu (Views).
+      SendKeyPress(kToolbarAvatarButtonElementId, ui::VKEY_RIGHT),
+      ExpectFocusedView(kToolbarAppMenuButtonElementId),
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+      // 11. ArrowRight -> Back (WebUI, wrap-around!).
+      SendKeyPress(kToolbarAppMenuButtonElementId, ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("back"),
+
+      // 12. Test Home and End keys.
+      // Focus Reload button via JS.
+      ExecuteJsAt(WebUIToolbarId(),
+                  {"toolbar-app", "#reload", "cr-icon-button"},
+                  "el => el.focus()"),
+      ExpectFocusedWebUIElement("reload"),
+
+      // Dispatch Home keydown event via JS to focus Back button.
+      ExecuteJsAt(WebUIToolbarId(),
+                  {"toolbar-app", "#reload", "cr-icon-button"},
+                  "el => {"
+                  "  const event = new KeyboardEvent('keydown', {key: 'Home', "
+                  "bubbles: true, composed: true});"
+                  "  "
+                  "el.dispatchEvent(event);"
+                  "}"),
+      ExpectFocusedWebUIElement("back"),
+
+      // Press End -> focuses last pane element (Chrome Menu).
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_END),
+      ExpectFocusedView(kToolbarAppMenuButtonElementId));
 }
