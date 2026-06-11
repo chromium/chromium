@@ -37,6 +37,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_separator_types.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -212,7 +213,9 @@ void PinnedActionToolbarButton::Layout(PassKey) {
       image_container_view()->GetLocalBounds();
   const int new_x = image_container_bounds.x() +
                     (image_container_bounds.width() - status_rect.width()) / 2;
-  const int new_y = image_container_bounds.bottom() + kStatusIndicatorSpacing;
+  const int new_y =
+      image_container_bounds.bottom() +
+      (features::IsRoundedIconsEnabled() ? 0 : kStatusIndicatorSpacing);
   // Set the new origin for status_rect
   status_rect.set_origin(gfx::Point(new_x, new_y));
   status_indicator_->SetBoundsRect(status_rect);
