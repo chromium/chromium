@@ -26,4 +26,9 @@ void StubWebAuthnClientAndroid::OnWebAuthnRequestPending(
 void StubWebAuthnClientAndroid::CleanupWebAuthnRequest(
     content::RenderFrameHost* frame_host) {}
 
+bool StubWebAuthnClientAndroid::ShouldDisallowCredentialRequest(
+    content::RenderFrameHost* render_frame_host) {
+  return false;
+}
+
 }  // namespace webauthn

@@ -76,6 +76,13 @@ class WebAuthnClientAndroid {
   // displayed through autofill.
   virtual void CleanupWebAuthnRequest(content::RenderFrameHost* frame_host) = 0;
 
+  // Returns true if the credential request should be disallowed by the
+  // embedder. This is used on Android to block WebAuthn requests when the
+  // embedder detects that a user-facing actor (e.g. implemented in chrome/) is
+  // already active on the tab, preventing overlapping UI sheets.
+  virtual bool ShouldDisallowCredentialRequest(
+      content::RenderFrameHost* render_frame_host) = 0;
+
   // Called when a pendingGetCredential call is completed. The provided closure
   // can be used to trigger CredMan UI flows. Android U+ only.
   void OnCredManConditionalRequestPending(

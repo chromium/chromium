@@ -239,6 +239,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/payments/content/android:junit_test_support",
+    "//components/ukm/android:java",
     "//content/public/android:content_java",
     "//mojo/public/mojom/base:base_java",
     "//net/android:net_java",

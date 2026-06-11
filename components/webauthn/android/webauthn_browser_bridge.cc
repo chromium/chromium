@@ -284,6 +284,21 @@ void WebauthnBrowserBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
+static bool JNI_WebauthnBrowserBridge_ShouldDisallowCredentialRequest(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jframe_host) {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
+  if (!render_frame_host) {
+    return false;
+  }
+  auto* client = WebAuthnClientAndroid::GetClient();
+  if (!client) {
+    return false;
+  }
+  return client->ShouldDisallowCredentialRequest(render_frame_host);
+}
+
 }  // namespace webauthn
 
 DEFINE_JNI(WebauthnBrowserBridge)
