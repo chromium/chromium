@@ -56,6 +56,9 @@ public class BottomSheetObserverTest {
         /** A {@link CallbackHelper} that can wait for the onOffsetChanged event. */
         public final CallbackHelper mOffsetChangedCallbackHelper = new CallbackHelper();
 
+        /** A {@link CallbackHelper} that can wait for the onContainerBottomMarginChanged event. */
+        public final CallbackHelper mBottomMarginChangedCallbackHelper = new CallbackHelper();
+
         /** A {@link CallbackHelper} that can wait for the onSheetContentChanged event. */
         public final CallbackHelper mContentChangedCallbackHelper = new CallbackHelper();
 
@@ -67,6 +70,8 @@ public class BottomSheetObserverTest {
 
         /** The last value that the onOffsetChanged event sent. */
         private float mLastOffsetChangedValue;
+
+        private int mLastBottomMargin;
 
         @Override
         public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
@@ -101,6 +106,16 @@ public class BottomSheetObserverTest {
         /** @return The last value passed in to {@link #onSheetOffsetChanged(float)}. */
         public float getLastOffsetChangedValue() {
             return mLastOffsetChangedValue;
+        }
+
+        @Override
+        public void onContainerBottomMarginChanged(int bottomMargin) {
+            mLastBottomMargin = bottomMargin;
+            mBottomMarginChangedCallbackHelper.notifyCalled();
+        }
+
+        public int getLastBottomMargin() {
+            return mLastBottomMargin;
         }
     }
 
@@ -453,5 +468,16 @@ public class BottomSheetObserverTest {
         // Check the offset.
         assertEquals(
                 wrappedContentHeight, mBottomSheetController.getCurrentOffset(), MathUtils.EPSILON);
+    }
+
+    @Test
+    @MediumTest
+    public void testBottomMarginChangedEvent() throws TimeoutException {
+        CallbackHelper callbackHelper = mObserver.mBottomMarginChangedCallbackHelper;
+        int callbackCount = callbackHelper.getCallCount();
+        int newMargin = 100;
+        ThreadUtils.runOnUiThreadBlocking(() -> mTestSupport.setBottomMargin(newMargin));
+        callbackHelper.waitForCallback(callbackCount, 1);
+        assertEquals(newMargin, mObserver.getLastBottomMargin());
     }
 }
