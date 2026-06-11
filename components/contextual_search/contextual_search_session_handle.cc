@@ -551,6 +551,7 @@ void ContextualSearchSessionHandle::NotifyQuerySubmittedSessionState(
     bool has_tab_context = false;
     bool has_non_tab_context = false;
     bool has_drive_context = false;
+    int tab_count = 0;
     for (const auto& file_info : file_infos) {
       if (file_info.tab_url.has_value()) {
         has_tab_context = true;
@@ -560,10 +561,17 @@ void ContextualSearchSessionHandle::NotifyQuerySubmittedSessionState(
       if (file_info.input_data && file_info.input_data->drive_id.has_value()) {
         has_drive_context = true;
       }
+      if (file_info.mime_type == lens::MimeType::kAnnotatedPageContent) {
+        tab_count++;
+      }
     }
     metrics_recorder->NotifyQuerySubmitted(has_tab_context, has_non_tab_context,
                                            query_text_length, file_infos.size(),
                                            has_drive_context);
+    if (tab_count > 0) {
+      metrics_recorder->RecordAttachmentCountAtSubmission(
+          lens::MimeType::kAnnotatedPageContent, tab_count);
+    }
   }
 }
 

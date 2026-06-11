@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
@@ -207,6 +208,23 @@ TEST_F(ContextualSearchSessionHandleTest, GetSubmittedContextTabTitles) {
   std::vector<std::string> tab_titles = handle_->GetSubmittedContextTabTitles();
   ASSERT_EQ(tab_titles.size(), 1u);
   EXPECT_EQ(tab_titles[0], "title 1");
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       NotifyQuerySubmittedSessionState_TabAttachmentCount) {
+  base::HistogramTester histogram_tester;
+
+  FileInfo tab_info;
+  tab_info.file_token = base::UnguessableToken::Create();
+  tab_info.mime_type = lens::MimeType::kAnnotatedPageContent;
+  tab_info.tab_url = GURL("https://www.google.com");
+
+  std::vector<FileInfo> file_infos = {tab_info};
+
+  handle_->NotifyQuerySubmittedSessionState(file_infos, /*query_text_length=*/5);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.Query.AttachmentCount.Tab.Unknown", 1, 1);
 }
 
 }  // namespace contextual_search

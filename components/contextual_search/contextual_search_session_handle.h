@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -221,6 +222,9 @@ class ContextualSearchSessionHandle {
  private:
   friend class ContextualSearchService;
   friend class MockContextualSearchSessionHandle;
+  FRIEND_TEST_ALL_PREFIXES(
+      ContextualSearchSessionHandleTest,
+      NotifyQuerySubmittedSessionState_TabAttachmentCount);
 
   ContextualSearchSessionHandle(
       base::WeakPtr<ContextualSearchService> service,
