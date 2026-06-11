@@ -202,7 +202,7 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
     views::SetImageFromVectorIconWithColor(
         close_button.get(),
         features::IsRoundedIconsEnabled()
-            ? vector_icons::kCloseSmallIcon
+            ? vector_icons::kCloseIcon
             : vector_icons::kCloseChromeRefreshOldIcon,
         {kColorInfoBarButtonIcon, kColorInfoBarForeground,
          kColorInfoBarButtonIconHovered});

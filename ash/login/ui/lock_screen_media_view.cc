@@ -68,7 +68,7 @@ class DismissButton : public views::ImageButton {
     views::SetImageFromVectorIconWithColor(
         this,
         ::features::IsRoundedIconsEnabled()
-            ? vector_icons::kCloseSmallIcon
+            ? vector_icons::kCloseIcon
             : vector_icons::kCloseRoundedOldIcon,
         {foreground_color_id, foreground_disabled_color_id},
         kDismissButtonIconSize);

@@ -1371,7 +1371,7 @@ void CaptionBubble::SetTextColor() {
       kButtonDip, {header_color, icon_disabled_color});
   views::SetImageFromVectorIconWithColor(
       close_button_,
-      features::IsRoundedIconsEnabled() ? vector_icons::kCloseSmallIcon
+      features::IsRoundedIconsEnabled() ? vector_icons::kCloseIcon
                                         : vector_icons::kCloseRoundedOldIcon,
       kButtonDip, {header_color, icon_disabled_color});
   views::SetImageFromVectorIconWithColor(

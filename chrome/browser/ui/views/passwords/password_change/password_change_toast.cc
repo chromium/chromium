@@ -142,7 +142,7 @@ PasswordChangeToast::PasswordChangeToast(ToastOptions toast_configuration) {
       base::BindRepeating(&PasswordChangeToast::OnCloseButtonClicked,
                           base::Unretained(this)),
       features::IsRoundedIconsEnabled()
-          ? vector_icons::kCloseSmallIcon
+          ? vector_icons::kCloseIcon
           : vector_icons::kCloseChromeRefreshOldIcon,
       layout_provider->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE),
       ui::kColorToastForeground));

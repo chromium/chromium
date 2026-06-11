@@ -80,7 +80,7 @@ TEST_F(ImageButtonFactoryWidgetTest, SetImageFromVectorIconWithColor) {
   AddImageButton(CreateVectorImageButton(Button::PressedCallback()));
   SetImageFromVectorIconWithColor(button(),
                                   features::IsRoundedIconsEnabled()
-                                      ? vector_icons::kCloseSmallIcon
+                                      ? vector_icons::kCloseIcon
                                       : vector_icons::kCloseRoundedOldIcon,
                                   {SK_ColorBLUE, SK_ColorBLUE});
   EXPECT_FALSE(button()->GetImage(Button::STATE_NORMAL).isNull());
@@ -100,12 +100,12 @@ TEST_F(ImageButtonFactoryWidgetTest,
   constexpr int kIconSize = 16;
   SetImageFromVectorIconWithColor(toggle_button_ptr,
                                   features::IsRoundedIconsEnabled()
-                                      ? vector_icons::kCloseSmallIcon
+                                      ? vector_icons::kCloseIcon
                                       : vector_icons::kCloseRoundedOldIcon,
                                   kIconSize, {SK_ColorBLUE, SK_ColorGRAY});
   SetToggledImageFromVectorIconWithColor(
       toggle_button_ptr,
-      features::IsRoundedIconsEnabled() ? vector_icons::kCloseSmallIcon
+      features::IsRoundedIconsEnabled() ? vector_icons::kCloseIcon
                                         : vector_icons::kCloseRoundedOldIcon,
       kIconSize, {SK_ColorRED, SK_ColorGRAY});
 
@@ -127,7 +127,7 @@ TEST_F(ImageButtonFactoryWidgetTest, IconColorsWithCustomHoveredColor) {
   IconColors colors(SK_ColorBLUE, SK_ColorGRAY, ui::kColorIcon);
   SetImageFromVectorIconWithColor(button(),
                                   features::IsRoundedIconsEnabled()
-                                      ? vector_icons::kCloseSmallIcon
+                                      ? vector_icons::kCloseIcon
                                       : vector_icons::kCloseRoundedOldIcon,
                                   colors);
   EXPECT_FALSE(button()->GetImage(Button::STATE_NORMAL).isNull());
@@ -139,7 +139,7 @@ TEST_F(ImageButtonFactoryWidgetTest, IconColorsWithCustomHoveredColor) {
 TEST_F(ImageButtonFactoryWidgetTest, CreateVectorImageButtonWithNativeTheme) {
   AddImageButton(CreateVectorImageButtonWithNativeTheme(
       Button::PressedCallback(), features::IsRoundedIconsEnabled()
-                                     ? vector_icons::kCloseSmallIcon
+                                     ? vector_icons::kCloseIcon
                                      : vector_icons::kCloseRoundedOldIcon));
   EXPECT_EQ(button()->GetColorProvider()->GetColor(ui::kColorIcon),
             InkDrop::Get(button())->GetBaseColor());

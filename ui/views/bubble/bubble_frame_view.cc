@@ -179,7 +179,7 @@ std::unique_ptr<Button> BubbleFrameView::CreateCloseButton(
     Button::PressedCallback callback) {
   auto close_button = CreateVectorImageButtonWithNativeTheme(
       std::move(callback), features::IsRoundedIconsEnabled()
-                               ? vector_icons::kCloseSmallIcon
+                               ? vector_icons::kCloseIcon
                                : vector_icons::kCloseChromeRefreshOldIcon);
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button->GetViewAccessibility().SetName(

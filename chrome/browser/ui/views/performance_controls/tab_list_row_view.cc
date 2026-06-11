@@ -205,7 +205,7 @@ TabListRowView::TabListRowView(
       views::CreateVectorImageButtonWithNativeTheme(
           base::BindOnce(std::move(close_button_callback), this),
           features::IsRoundedIconsEnabled()
-              ? vector_icons::kCloseSmallIcon
+              ? vector_icons::kCloseIcon
               : vector_icons::kCloseChromeRefreshOldIcon);
 
   // The close button should not be visible by default and should show up when

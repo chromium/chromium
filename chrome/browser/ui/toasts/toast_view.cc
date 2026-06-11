@@ -228,7 +228,7 @@ void ToastView::Init() {
             base::BindRepeating(&ToastView::Close, base::Unretained(this),
                                 ToastCloseReason::kCloseButton)),
         features::IsRoundedIconsEnabled()
-            ? vector_icons::kCloseSmallIcon
+            ? vector_icons::kCloseIcon
             : vector_icons::kCloseChromeRefreshOldIcon,
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE),
         ui::kColorToastForeground, ui::kColorIconDisabled,
