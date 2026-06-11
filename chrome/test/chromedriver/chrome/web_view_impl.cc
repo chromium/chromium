@@ -1882,6 +1882,7 @@ Status WebViewImpl::GetBackendNodeIdByElement(const std::string& frame,
 Status WebViewImpl::GetFrameOwnerElementId(const std::string& frame_id,
                                            const std::string& parent_frame_id,
                                            std::string* element_id) {
+  WebViewImplHolder target_holder(this);
   // Collect the three parts needed to construct the f.X.d.X.e.X element id
   // 1. Get the effective parent_frame_id
   std::string effective_parent_frame_id =
