@@ -150,9 +150,20 @@ void TabMenuModel::BuildSendTabToSelfSubmenu(int index) {
       send_tab_to_self_submenu_.get());
 
 #if BUILDFLAG(IS_MAC)
-  AddSubMenuWithStringId(TabStripModel::CommandSendTabToSelf,
-                         IDS_MENU_SEND_TAB_TO_SELF,
-                         send_tab_to_self_submenu_.get());
+  if (features::IsMenuSimplificationEnabled()) {
+    AddSubMenuWithStringIdAndIcon(
+        TabStripModel::CommandSendTabToSelf, IDS_MENU_SEND_TAB_TO_SELF,
+        send_tab_to_self_submenu_.get(),
+        ui::ImageModel::FromVectorIcon(
+            features::IsRoundedIconsEnabled()   ? kDevicesIcon
+            : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                                : kDevicesOldIcon,
+            ui::kColorMenuIcon, kTabMenuIconSize));
+  } else {
+    AddSubMenuWithStringId(TabStripModel::CommandSendTabToSelf,
+                           IDS_MENU_SEND_TAB_TO_SELF,
+                           send_tab_to_self_submenu_.get());
+  }
 #else
   AddSubMenuWithStringIdAndIcon(
       TabStripModel::CommandSendTabToSelf, IDS_MENU_SEND_TAB_TO_SELF,
@@ -173,8 +184,18 @@ void TabMenuModel::BuildSendTabToSelfSubmenu(int index) {
 
 void TabMenuModel::BuildLegacySendTabToSelfItem() {
 #if BUILDFLAG(IS_MAC)
-  AddItem(TabStripModel::CommandSendTabToSelf,
-          l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
+  if (features::IsMenuSimplificationEnabled()) {
+    AddItemWithIcon(
+        TabStripModel::CommandSendTabToSelf,
+        l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
+        ui::ImageModel::FromVectorIcon(
+            features::IsRoundedIconsEnabled()   ? kDevicesIcon
+            : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
+                                                : kDevicesOldIcon));
+  } else {
+    AddItem(TabStripModel::CommandSendTabToSelf,
+            l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
+  }
 #else
   AddItemWithIcon(
       TabStripModel::CommandSendTabToSelf,
