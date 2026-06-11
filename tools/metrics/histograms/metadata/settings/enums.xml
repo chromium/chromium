@@ -383,6 +383,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Automated Password Change"/>
   <int value="7" label="Suggestions row click"/>
   <int value="8" label="Skills row click"/>
+  <int value="9" label="Indigo row click"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:AiPageInteractions) -->
