@@ -443,6 +443,134 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerTabListOnlyIfMultipleTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
+    ContextualCueingControllerTabListOnlyIfMultipleTest,
+    RemoveTabIncludedInActiveMultiTabCueStopsShowingCueOnActiveTab) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://www.example.com/1")));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  content::WebContents* background_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  SessionID background_tab_id =
+      sessions::SessionTabHelper::IdForTab(background_contents);
+
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_contents);
+
+  page_actions::PageActionController* page_action_controller =
+      GetPageActionController();
+  CHECK(page_action_controller);
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  optimization_guide::proto::ContextualCueingResponse response =
+      MakeCompleteResponse();
+  auto* cue = response.mutable_contextual_cues(0);
+  auto* tab1 = cue->mutable_anchored_message_cue()->add_tabs_to_show();
+  tab1->set_tab_id(background_tab_id.id());
+  tab1->set_url("https://www.example.com/1");
+  auto* tab2 = cue->mutable_anchored_message_cue()->add_tabs_to_show();
+  tab2->set_tab_id(active_tab_id.id());
+  tab2->set_url("https://www.activetab.com/abc");
+
+  SeedExecutionResult(response);
+  SimulateFilterPassed();
+
+  base::HistogramTester histogram_tester;
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+
+  // The contextual cue anchored message should be shown on the active tab.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  // Close the background tab.
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+
+  // The contextual cue anchored message should not be shown on the active tab.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualCueingControllerTabListOnlyIfMultipleTest,
+    UrlChangeOnBackgroundTabForMultiTabCueStopsShowingCueOnActiveTab) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://www.example.com/1")));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  content::WebContents* background_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  SessionID background_tab_id =
+      sessions::SessionTabHelper::IdForTab(background_contents);
+
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_contents);
+
+  page_actions::PageActionController* page_action_controller =
+      GetPageActionController();
+  CHECK(page_action_controller);
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  optimization_guide::proto::ContextualCueingResponse response =
+      MakeCompleteResponse();
+  auto* cue = response.mutable_contextual_cues(0);
+  auto* tab1 = cue->mutable_anchored_message_cue()->add_tabs_to_show();
+  tab1->set_tab_id(background_tab_id.id());
+  tab1->set_url("https://www.example.com/1");
+  auto* tab2 = cue->mutable_anchored_message_cue()->add_tabs_to_show();
+  tab2->set_tab_id(active_tab_id.id());
+  tab2->set_url("https://www.activetab.com/abc");
+
+  SeedExecutionResult(response);
+  SimulateFilterPassed();
+
+  base::HistogramTester histogram_tester;
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+
+  // The contextual cue anchored message should be shown on the active tab.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  // Activate the background tab and have it navigate to a new URL.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://www.othertab.com/2")));
+
+  // Activate the original foreground tab.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+
+  // The contextual cue anchored message should not be shown on the active tab.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(
     ContextualCueingControllerBrowserTest,
     ShouldNotRecordDecisionIfReturnedCategoryClassificationNotForActiveTab) {
   base::HistogramTester histogram_tester;

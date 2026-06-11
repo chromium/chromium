@@ -58,9 +58,13 @@ void ContextualCueingWebContentsObserver::DidFinishNavigation(
 
   if (auto* controller =
           ContextualCueingController::GetForWebContents(GetWebContents())) {
-    controller->HideCue();
-    if (auto* tab = tabs::TabInterface::MaybeGetFromContents(&GetWebContents());
-        tab->IsActivated()) {
+    auto* tab = tabs::TabInterface::MaybeGetFromContents(&GetWebContents());
+    if (!tab) {
+      return;
+    }
+    controller->HideCueForTab(tab);
+    controller->HideAllCuesDependingOnTab(tab);
+    if (tab->IsActivated()) {
       controller->ActiveTabUrlChanged(navigation_handle->GetURL());
     }
   }

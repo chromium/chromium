@@ -17,8 +17,10 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "components/sessions/core/session_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 class BrowserWindowInterface;
@@ -92,11 +94,17 @@ class ContextualCueingController
   // TabListInterfaceObserver:
   void OnActiveTabChanged(TabListInterface& tab_list,
                           tabs::TabInterface* tab) override;
+  void OnTabRemoved(TabListInterface& tab_list,
+                    tabs::TabInterface* tab,
+                    TabRemovedReason reason) override;
 
   void ActiveTabUrlChanged(const GURL& url);
 
-  // Hide the cue if it's showing.
-  void HideCue();
+  // Hide the cue for `tab` if it's showing.
+  void HideCueForTab(tabs::TabInterface* tab);
+
+  // Hide the cue for all tabs that have a multi-tab cue associated with `tab`.
+  void HideAllCuesDependingOnTab(tabs::TabInterface* tab);
 
   // Returns the CueTarget for the given CueTargetType, or nullptr if there is
   // none.
@@ -195,6 +203,11 @@ class ContextualCueingController
 #endif
 
   GURL last_logged_active_url_;
+
+  // Map from the session ID of the tab that has a multi-tab cue associated with
+  // it to the set of session IDs for tabs that have a multi-tab cue including
+  // the key tab's session ID.
+  std::map<SessionID, std::set<SessionID>> multi_tab_cues_map_;
 
   base::WeakPtrFactory<ContextualCueingController> weak_ptr_factory_{this};
 };
