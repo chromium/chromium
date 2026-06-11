@@ -514,6 +514,15 @@ void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
     ShowFloatyIfInvoked(/*animated=*/false,
                         gemini::FloatyUpdateSource::Keyboard);
     is_hidden_by_keyboard_ = false;
+  } else {
+    bool is_visible_and_expanded =
+        is_floaty_invoked_ && !is_floaty_temporarily_hidden_ &&
+        last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded;
+
+    if (IsFullscreenRefactoringEnabled() && is_visible_and_expanded) {
+      ios::provider::UpdateOverlayOffsetWithOpacity(GetFloatyOffset(),
+                                                    GetFloatyProgress());
+    }
   }
 }
 
