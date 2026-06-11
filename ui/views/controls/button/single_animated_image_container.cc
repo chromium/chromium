@@ -70,7 +70,14 @@ SingleAnimatedImageContainer::SingleAnimatedImageContainer(
   }
 }
 
-SingleAnimatedImageContainer::~SingleAnimatedImageContainer() = default;
+SingleAnimatedImageContainer::~SingleAnimatedImageContainer() {
+  // The image in the image_view may still contain a reference to the
+  // lottie animation owned by this class. We need to clear the ImageModel
+  // before the lottie animation is deleted.
+  if (ImageView* image_view = static_cast<ImageView*>(GetView()); image_view) {
+    image_view->SetImage(ui::ImageModel());
+  }
+}
 
 void SingleAnimatedImageContainer::AddAnimatedImage(int resource_id) {
   if (HasAnimatedImage(resource_id)) {
