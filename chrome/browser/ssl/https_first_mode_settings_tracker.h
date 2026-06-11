@@ -48,6 +48,30 @@ enum class HttpsFirstModeSetting {
 //      /tools/metrics/histograms/metadata/security/enums.xml
 // )
 
+// Detailed HFM state at startup, distinguishing between different enablement
+// reasons. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused. Must be kept in sync with
+// HttpsFirstModeStartupState in enums.xml.
+enum class HttpsFirstModeStartupState {
+  kDisabled = 0,
+  kEnabledFull = 1,
+  kEnabledBalancedExplicit = 2,
+  kEnabledBalancedTypicallySecure = 3,
+  kEnabledBalancedEsbPairing = 4,
+  kEnabledBalancedAutoEnable = 5,
+  kMaxValue = kEnabledBalancedAutoEnable,
+};
+
+// Events for implicit HFM setting changes (e.g. due to ESB pairing).
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Must be kept in sync with HttpsFirstModeImplicitStateChange in enums.xml.
+enum class HttpsFirstModeImplicitStateChange {
+  kBalancedEnabledByEsb = 0,
+  kBalancedDisabledByEsb = 1,
+  kMaxValue = kBalancedDisabledByEsb,
+};
+
 // A `KeyedService` that tracks changes to the HTTPS-First Mode pref for each
 // profile. This is currently used for:
 // - Recording pref state in metrics and registering the client for a synthetic

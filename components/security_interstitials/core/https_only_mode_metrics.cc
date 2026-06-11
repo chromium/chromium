@@ -11,6 +11,8 @@ namespace security_interstitials::https_only_mode {
 const char kEventHistogram[] = "Security.HttpsFirstMode.NavigationEvent";
 const char kEventHistogramWithEngagementHeuristic[] =
     "Security.HttpsFirstModeWithEngagementHeuristic.NavigationEvent";
+const char kEventHistogramWithEsbPairing[] =
+    "Security.HttpsFirstModeWithEsbPairing.NavigationEvent";
 
 const char kNavigationRequestSecurityLevelHistogram[] =
     "Security.NavigationRequestSecurityLevel";
@@ -44,6 +46,10 @@ void RecordHttpsFirstModeNavigation(
     // enabled by the UI setting.
     base::UmaHistogramEnumeration(kEventHistogramWithEngagementHeuristic,
                                   event);
+  }
+
+  if (interstitial_state.enabled_by_esb_pairing) {
+    base::UmaHistogramEnumeration(kEventHistogramWithEsbPairing, event);
   }
 }
 
@@ -90,6 +96,9 @@ InterstitialReason GetInterstitialReason(
   }
   if (interstitial_state.enabled_by_pref) {
     return InterstitialReason::kPref;
+  }
+  if (interstitial_state.enabled_by_esb_pairing) {
+    return InterstitialReason::kEsbPairing;
   }
   if (interstitial_state.enabled_in_balanced_mode) {
     return InterstitialReason::kBalanced;

@@ -205,6 +205,48 @@ std::string GetSyntheticFieldTrialGroupName(HttpsFirstModeSetting setting) {
   }
 }
 
+HttpsFirstModeStartupState GetStartupDetailedState(Profile* profile) {
+  PrefService* prefs = profile->GetPrefs();
+
+  if (base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeForAdvancedProtectionUsers)) {
+    auto* ap_manager =
+        safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+            profile);
+    if (ap_manager && ap_manager->IsUnderAdvancedProtection()) {
+      return HttpsFirstModeStartupState::kEnabledFull;
+    }
+  }
+
+  if (prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
+    return HttpsFirstModeStartupState::kEnabledFull;
+  }
+
+  if (IsBalancedModeEnabled(prefs)) {
+    bool user_has_modified_settings =
+        prefs->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
+        prefs->HasPrefPath(prefs::kHttpsFirstBalancedMode);
+    if (!user_has_modified_settings) {
+      if (base::FeatureList::IsEnabled(
+              features::kHttpsFirstModeDefaultSettingPairsWithEsb) &&
+          safe_browsing::IsEnhancedProtectionEnabled(*prefs)) {
+        return HttpsFirstModeStartupState::kEnabledBalancedEsbPairing;
+      }
+      if (base::FeatureList::IsEnabled(
+              features::kHttpsFirstBalancedModeAutoEnable)) {
+        return HttpsFirstModeStartupState::kEnabledBalancedAutoEnable;
+      }
+    } else {
+      if (prefs->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled)) {
+        return HttpsFirstModeStartupState::kEnabledBalancedTypicallySecure;
+      }
+      return HttpsFirstModeStartupState::kEnabledBalancedExplicit;
+    }
+  }
+
+  return HttpsFirstModeStartupState::kDisabled;
+}
+
 }  // namespace
 
 HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
@@ -240,6 +282,9 @@ HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
   HttpsFirstModeSetting setting = GetCurrentSetting();
   base::UmaHistogramEnumeration(
       "Security.HttpsFirstMode.SettingEnabledAtStartup2", setting);
+  base::UmaHistogramEnumeration(
+      "Security.HttpsFirstMode.SettingEnabledAtStartupDetailed",
+      GetStartupDetailedState(profile_));
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       kHttpsFirstModeSyntheticFieldTrialName,
       GetSyntheticFieldTrialGroupName(setting));
@@ -388,6 +433,23 @@ void HttpsFirstModeService::OnSafeBrowsingEnhancedPrefChanged() {
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       kHttpsFirstModeSyntheticFieldTrialName,
       GetSyntheticFieldTrialGroupName(setting));
+
+  // Log implicit HFM state changes due to ESB pairing.
+  if (base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeDefaultSettingPairsWithEsb)) {
+    PrefService* prefs = profile_->GetPrefs();
+    bool user_has_modified_settings =
+        prefs->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
+        prefs->HasPrefPath(prefs::kHttpsFirstBalancedMode);
+    if (!user_has_modified_settings) {
+      bool esb_enabled = safe_browsing::IsEnhancedProtectionEnabled(*prefs);
+      base::UmaHistogramEnumeration(
+          "Security.HttpsFirstMode.SettingImplicitlyChanged",
+          esb_enabled
+              ? HttpsFirstModeImplicitStateChange::kBalancedEnabledByEsb
+              : HttpsFirstModeImplicitStateChange::kBalancedDisabledByEsb);
+    }
+  }
 
   // Reset the HTTP allowlist and HTTPS enforcelist when the pref changes.
   if (!keep_http_allowlist_on_next_pref_change_) {

@@ -91,6 +91,17 @@ ComputeInterstitialState(content::WebContents* web_contents, const GURL& url) {
   if (IsBalancedModeEnabled(prefs) && state &&
       !state->HttpsFirstBalancedModeSuppressedForTesting()) {
     interstitial_state.enabled_in_balanced_mode = true;
+
+    // Determine if Balanced Mode was enabled specifically due to ESB pairing.
+    bool user_has_modified_settings =
+        prefs->HasPrefPath(prefs::kHttpsOnlyModeEnabled) ||
+        prefs->HasPrefPath(prefs::kHttpsFirstBalancedMode);
+    if (!user_has_modified_settings &&
+        base::FeatureList::IsEnabled(
+            features::kHttpsFirstModeDefaultSettingPairsWithEsb) &&
+        safe_browsing::IsEnhancedProtectionEnabled(*prefs)) {
+      interstitial_state.enabled_by_esb_pairing = true;
+    }
   }
 
   auto* storage_partition =

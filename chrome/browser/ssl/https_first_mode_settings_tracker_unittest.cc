@@ -1317,3 +1317,160 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, BalancedModeEnabledForEsbUsers) {
   EXPECT_EQ(service->GetCurrentSetting(),
             HttpsFirstModeSetting::kEnabledBalanced);
 }
+
+TEST_F(HttpsFirstModeSettingsTrackerTest, StartupDetailedState_Disabled) {
+  base::HistogramTester histograms;
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  histograms.ExpectUniqueSample(
+      "Security.HttpsFirstMode.SettingEnabledAtStartupDetailed",
+      HttpsFirstModeStartupState::kDisabled, 1);
+}
+
+TEST_F(HttpsFirstModeSettingsTrackerTest, StartupDetailedState_EnabledFull) {
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
+
+  base::HistogramTester histograms;
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  histograms.ExpectUniqueSample(
+      "Security.HttpsFirstMode.SettingEnabledAtStartupDetailed",
+      HttpsFirstModeStartupState::kEnabledFull, 1);
+}
+
+TEST_F(HttpsFirstModeSettingsTrackerTest,
+       StartupDetailedState_EnabledBalancedExplicit) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpsFirstBalancedMode);
+
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, true);
+
+  base::HistogramTester histograms;
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  histograms.ExpectUniqueSample(
+      "Security.HttpsFirstMode.SettingEnabledAtStartupDetailed",
+      HttpsFirstModeStartupState::kEnabledBalancedExplicit, 1);
+}
+
+TEST_F(HttpsFirstModeSettingsTrackerTest,
+       StartupDetailedState_EnabledBalancedTypicallySecure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpsFirstBalancedMode);
+
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeAutoEnabled, true);
+
+  base::HistogramTester histograms;
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  histograms.ExpectUniqueSample(
+      "Security.HttpsFirstMode.SettingEnabledAtStartupDetailed",
+      HttpsFirstModeStartupState::kEnabledBalancedTypicallySecure, 1);
+}
+
+TEST_F(HttpsFirstModeSettingsTrackerTest,
+       StartupDetailedState_EnabledBalancedEsbPairing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kHttpsFirstBalancedMode,
+                            features::
+                                kHttpsFirstModeDefaultSettingPairsWithEsb},
+      /*disabled_features=*/{});
+
+  safe_browsing::SetEnhancedProtectionPref(profile()->GetPrefs(), true);
+
+  base::HistogramTester histograms;
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  histograms.ExpectUniqueSample(
+      "Security.HttpsFirstMode.SettingEnabledAtStartupDetailed",
+      HttpsFirstModeStartupState::kEnabledBalancedEsbPairing, 1);
+}
+
+TEST_F(HttpsFirstModeSettingsTrackerTest,
+       StartupDetailedState_EnabledBalancedAutoEnable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kHttpsFirstBalancedMode,
+                            features::kHttpsFirstBalancedModeAutoEnable},
+      /*disabled_features=*/{});
+
+  base::HistogramTester histograms;
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  histograms.ExpectUniqueSample(
+      "Security.HttpsFirstMode.SettingEnabledAtStartupDetailed",
+      HttpsFirstModeStartupState::kEnabledBalancedAutoEnable, 1);
+}
+
+TEST_F(HttpsFirstModeSettingsTrackerTest,
+       StartupDetailedState_AdvancedProtection) {
+  feature_list()->InitAndEnableFeature(
+      features::kHttpsFirstModeForAdvancedProtectionUsers);
+
+  safe_browsing::AdvancedProtectionStatusManager* aps_manager =
+      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+          profile());
+  ASSERT_TRUE(aps_manager);
+  aps_manager->SetAdvancedProtectionStatusForTesting(true);
+
+  base::HistogramTester histograms;
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  histograms.ExpectUniqueSample(
+      "Security.HttpsFirstMode.SettingEnabledAtStartupDetailed",
+      HttpsFirstModeStartupState::kEnabledFull, 1);
+}
+
+TEST_F(HttpsFirstModeSettingsTrackerTest, ImplicitTransition_EsbToggled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kHttpsFirstBalancedMode,
+                            features::
+                                kHttpsFirstModeDefaultSettingPairsWithEsb},
+      /*disabled_features=*/{});
+
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  base::HistogramTester histograms;
+
+  // 1. Enable ESB. HFM is in default state, so it should implicitly enable HFM
+  // Balanced.
+  safe_browsing::SetEnhancedProtectionPref(profile()->GetPrefs(), true);
+  histograms.ExpectUniqueSample(
+      "Security.HttpsFirstMode.SettingImplicitlyChanged",
+      HttpsFirstModeImplicitStateChange::kBalancedEnabledByEsb, 1);
+
+  // 2. Disable ESB. Should implicitly disable HFM Balanced.
+  safe_browsing::SetEnhancedProtectionPref(profile()->GetPrefs(), false);
+  histograms.ExpectBucketCount(
+      "Security.HttpsFirstMode.SettingImplicitlyChanged",
+      HttpsFirstModeImplicitStateChange::kBalancedDisabledByEsb, 1);
+  histograms.ExpectTotalCount(
+      "Security.HttpsFirstMode.SettingImplicitlyChanged", 2);
+
+  // 3. Explicitly set HFM Balanced to false. Now HFM is NOT in default state.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, false);
+
+  // 4. Enable ESB again. Should NOT log any implicit change.
+  safe_browsing::SetEnhancedProtectionPref(profile()->GetPrefs(), true);
+  histograms.ExpectTotalCount(
+      "Security.HttpsFirstMode.SettingImplicitlyChanged", 2);
+}

@@ -151,6 +151,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/security_interstitials/core/https_only_mode_metrics.h) -->
 
+<enum name="HttpsFirstModeImplicitStateChange">
+  <int value="0" label="Balanced Mode implicitly enabled by ESB"/>
+  <int value="1" label="Balanced Mode implicitly disabled by ESB"/>
+</enum>
+
 <enum name="HttpsFirstModeInterstitialReason">
   <int value="0" label="kUnknown">Unknown reason</int>
   <int value="1" label="kPref">
@@ -172,6 +177,9 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="6" label="kBalanced">
     The interstitial was shown because the user was in balanced mode.
+  </int>
+  <int value="7" label="kEsbPairing">
+    The interstitial was shown because HFM was enabled via ESB pairing.
   </int>
 </enum>
 
@@ -214,6 +222,15 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ssl/https_first_mode_settings_tracker.h) -->
+
+<enum name="HttpsFirstModeStartupState">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="Enabled (Full)"/>
+  <int value="2" label="Enabled (Balanced) - Explicitly by user"/>
+  <int value="3" label="Enabled (Balanced) - Typically Secure heuristic"/>
+  <int value="4" label="Enabled (Balanced) - Paired with ESB"/>
+  <int value="5" label="Enabled (Balanced) - Auto-enable feature"/>
+</enum>
 
 <enum name="IOSKeychainMigrationResult">
   <int value="0" label="Not needed"/>
