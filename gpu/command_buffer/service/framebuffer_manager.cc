@@ -610,8 +610,9 @@ bool Framebuffer::ContainsActiveIntegerAttachments() const {
   return draw_buffer_type_mask_ != mask;
 }
 
-void Framebuffer::ClearUnclearedIntOr3DTexturesOrPartiallyClearedTextures(
-    GLES2Decoder* decoder, TextureManager* texture_manager) {
+bool Framebuffer::ClearUnclearedIntOr3DTexturesOrPartiallyClearedTextures(
+    GLES2Decoder* decoder,
+    TextureManager* texture_manager) {
   for (AttachmentMap::const_iterator it = attachments_.begin();
        it != attachments_.end(); ++it) {
     if (!it->second->IsTextureAttachment() || it->second->cleared())
@@ -620,12 +621,14 @@ void Framebuffer::ClearUnclearedIntOr3DTexturesOrPartiallyClearedTextures(
         reinterpret_cast<TextureAttachment*>(it->second.get());
     if (attachment->IsPartiallyCleared() || attachment->Is3D() ||
         GLES2Util::IsIntegerFormat(attachment->internal_format())) {
-      texture_manager->ClearTextureLevel(decoder,
-                                         attachment->texture(),
-                                         attachment->target(),
-                                         attachment->level());
+      if (!texture_manager->ClearTextureLevel(decoder, attachment->texture(),
+                                              attachment->target(),
+                                              attachment->level())) {
+        return false;
+      }
     }
   }
+  return true;
 }
 
 // TODO(jiawei.shao@intel.com): when the texture or the renderbuffer in
