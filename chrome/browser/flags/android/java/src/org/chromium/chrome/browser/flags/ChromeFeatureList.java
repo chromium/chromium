@@ -165,6 +165,8 @@ public abstract class ChromeFeatureList {
     public static final String ACTOR_LOGIN_PERMISSIONS_UI = "ActorLoginPermissionsUi";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2 =
             "AdaptiveButtonInTopToolbarCustomizationV2";
+    public static final String ALLOC_INSTANCE_ID_INCREASED_DEFAULT_RANGE =
+            "AllocInstanceIdIncreasedDefaultRange";
     // Don't clean up this flag yet, BCIV is launched, so this needs to be enabled by
     // default, but some render tests need to disable this so that the hairline isn't
     // included in the screenshot. See https://crbug.com/394842006 for more details.
@@ -735,6 +737,8 @@ public abstract class ChromeFeatureList {
     // keep-sorted start group_prefixes=["public static final CachedFlag"]
     public static final CachedFlag sAccountForSuppressedKeyboardInsets =
             newCachedFlag(ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS, /* defaultValue= */ true);
+    public static final CachedFlag sAllocInstanceIdIncreasedDefaultRange =
+            newCachedFlag(ALLOC_INSTANCE_ID_INCREASED_DEFAULT_RANGE, /* defaultValue= */ true);
     public static final CachedFlag sAndroidAnimatedProgressBarInBrowser =
             newCachedFlag(
                     ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER,
@@ -1231,6 +1235,7 @@ public abstract class ChromeFeatureList {
             List.of(
                     // keep-sorted start
                     sAccountForSuppressedKeyboardInsets,
+                    sAllocInstanceIdIncreasedDefaultRange,
                     sAndroidAnimatedProgressBarInBrowser,
                     sAndroidApb144Patch1,
                     sAndroidApb144Patch2,
