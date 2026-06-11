@@ -162,7 +162,7 @@ TEST_F(AccountCapabilitiesTest, CanSignInToChrome) {
 
 TEST_F(AccountCapabilitiesTest, MustFetchAppleAgeRangeInChrome) {
   base::test::ScopedFeatureList feature_list{
-      switches::kEnforceMustFetchAppleAgeRangeInChromeCapability};
+      switches::kBuildExternalPrivacyContext};
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.must_fetch_apple_age_range_in_chrome(),
             signin::Tribool::kUnknown);
@@ -179,7 +179,7 @@ TEST_F(AccountCapabilitiesTest, MustFetchAppleAgeRangeInChrome) {
 
 TEST_F(AccountCapabilitiesTest, MustSkipAppleAgeRangeInChrome) {
   base::test::ScopedFeatureList feature_list{
-      switches::kEnforceMustSkipAppleAgeRangeInChromeCapability};
+      switches::kBuildExternalPrivacyContext};
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.must_skip_apple_age_range_in_chrome(),
             signin::Tribool::kUnknown);

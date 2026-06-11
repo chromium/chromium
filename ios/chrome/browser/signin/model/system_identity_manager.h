@@ -288,14 +288,17 @@ class SystemIdentityManager {
                                  FetchCapabilitiesCallback callback) = 0;
 
   // Asynchronously returns the capabilities for `identity`.
-  // `completion` is called once all capabilities in `names` are fetched or have
-  // failed. `partial_callback` is called multiple times as a subset of
-  // capabilities in `names` are fetched.
+  // * `partial_callback` is called multiple times as a subset of capabilities
+  // in `names` are fetched.
+  // * `completion` is called once after all capabilities in `names` are fetched
+  // or the fetch has failed. No more calls to `partial_callback` are expected
+  // after `completion` is called.
+  // TODO(crbug.com/517899430): Have `completion` as the last parameter.
   virtual void FetchCapabilitiesWithPartial(
       id<SystemIdentity> identity,
       const std::vector<std::string>& names,
       FetchCapabilitiesCompletion completion,
-      FetchPartialCapabilitiesCallback partial_callback);
+      FetchPartialCapabilitiesCallback partial_callback) = 0;
 
   // Registers the provider for building external privacy context.
   virtual void RegisterExternalPrivacyContextProvider(
