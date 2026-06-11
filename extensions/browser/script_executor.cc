@@ -208,6 +208,16 @@ class Handler : public content::WebContentsObserver {
       return content::RenderFrameHost::FrameIterationAction::kContinue;
     }
 
+    // Avoid injecting into error documents (e.g. frames blocked by CSP) and
+    // their subtrees, matching the explicit-frameId execution path validation.
+    // This prevents compromised renderers from tricking ScriptInjectionTracker
+    // into believing an extension is executing scripts inside an
+    // attacker-controlled process.
+    // See https://crbug.com/517153117.
+    if (frame->IsErrorDocument()) {
+      return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+    }
+
     if (!is_web_view_ &&
         host_id_.type == mojom::HostID::HostType::kExtensions) {
       // TODO(crbug.com/502262220): We do permission checks in at least three
