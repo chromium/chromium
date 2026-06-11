@@ -1153,6 +1153,17 @@ bool IsFullscreenNextIAEnabled() {
 
   crash_keys::SetCurrentOrientation(GetInterfaceOrientation(),
                                     [[UIDevice currentDevice] orientation]);
+
+  if (!IsFullscreenNextIAEnabled()) {
+    __weak BrowserViewController* weakSelf = self;
+    [coordinator
+        animateAlongsideTransition:^(
+            id<UIViewControllerTransitionCoordinatorContext>) {
+          [weakSelf animateTransition];
+          [weakSelf invalidateFullscreenInsets];
+        }
+                        completion:nil];
+  }
 }
 
 - (void)invalidateFullscreenInsets {
