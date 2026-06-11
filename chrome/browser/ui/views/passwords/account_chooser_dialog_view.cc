@@ -116,6 +116,11 @@ bool AccountChooserDialogView::Accept() {
   return false;
 }
 
+bool AccountChooserDialogView::ShouldAllowKeyEventsDuringInputProtection()
+    const {
+  return false;
+}
+
 void AccountChooserDialogView::InitWindow() {
   auto contents_view = std::make_unique<views::View>();
   contents_view->SetLayoutManager(std::make_unique<views::FillLayout>());
