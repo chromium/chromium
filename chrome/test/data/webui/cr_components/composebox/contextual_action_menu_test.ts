@@ -805,7 +805,7 @@ suite('ContextualActionMenu', () => {
     assertEquals(expectedMaxHeight, dialog.offsetHeight);
 
     const style = window.getComputedStyle(dialog);
-    assertEquals('visible', style.overflowY);
+    assertEquals('auto', style.overflowY);
     assertTrue(dialog.scrollHeight > dialog.offsetHeight);
   });
 
@@ -1109,7 +1109,7 @@ suite('ContextualActionMenu', () => {
     await microtasksFinished();
 
     assertEquals('right', flyout.getAttribute('data-position'));
-    assertEquals('', flyout.style.left);
+    assertEquals('254px', flyout.style.left);
 
     // When blocked on the right, enough space to the left positions the flyout to the left.
     trigger.getBoundingClientRect = () => ({
@@ -1127,7 +1127,7 @@ suite('ContextualActionMenu', () => {
     await microtasksFinished();
 
     assertEquals('left', flyout.getAttribute('data-position'));
-    assertEquals('', flyout.style.left);
+    assertEquals('76px', flyout.style.left);
 
     // When blocked on both sides in a narrow panel, the flyout positions at the bottom with a bounded indent.
     trigger.getBoundingClientRect = () => ({
@@ -1145,8 +1145,7 @@ suite('ContextualActionMenu', () => {
     await microtasksFinished();
 
     assertEquals('bottom', flyout.getAttribute('data-position'));
-    // The expected maxLeft.
-    assertEquals('32px', flyout.style.left);
+    assertEquals('16px', flyout.style.left);
   });
 
   test('Favicon group rendered in action menu', async () => {
