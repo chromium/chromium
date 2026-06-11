@@ -37,6 +37,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_ui_delegate.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
@@ -49,6 +50,8 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/skills/mocks/mock_skills_service.h"
+#include "components/skills/public/skill.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -129,6 +132,7 @@ class IndigoPageActionControllerTest : public testing::Test {
     tab_interface_.reset();
     mock_optimization_guide_ = nullptr;
     mock_glic_keyed_service_ = nullptr;
+    mock_skills_service_ = nullptr;
     identity_test_env_adaptor_.reset();
     profile_.reset();
     testing_profile_manager_ = nullptr;
@@ -147,6 +151,13 @@ class IndigoPageActionControllerTest : public testing::Test {
                                   -> std::unique_ptr<KeyedService> {
             return std::make_unique<
                 testing::NiceMock<MockOptimizationGuideKeyedService>>();
+          }));
+      builder.AddTestingFactory(
+          skills::SkillsServiceFactory::GetInstance(),
+          base::BindRepeating([](content::BrowserContext* context)
+                                  -> std::unique_ptr<KeyedService> {
+            return std::make_unique<
+                testing::NiceMock<skills::MockSkillsService>>();
           }));
       builder.AddTestingFactory(
           glic::GlicKeyedServiceFactory::GetInstance(),
@@ -178,6 +189,11 @@ class IndigoPageActionControllerTest : public testing::Test {
           static_cast<testing::NiceMock<MockOptimizationGuideKeyedService>*>(
               OptimizationGuideKeyedServiceFactory::GetForProfile(
                   profile_.get()));
+
+      mock_skills_service_ =
+          static_cast<testing::NiceMock<skills::MockSkillsService>*>(
+              skills::SkillsServiceFactory::GetForProfile(profile_.get()));
+      CHECK(mock_skills_service_);
 
       SetModelExecutionCapability(true);
 
@@ -296,6 +312,8 @@ class IndigoPageActionControllerTest : public testing::Test {
   raw_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<testing::NiceMock<glic::MockGlicKeyedService>>
       mock_glic_keyed_service_ = nullptr;
+  raw_ptr<testing::NiceMock<skills::MockSkillsService>> mock_skills_service_ =
+      nullptr;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
@@ -901,6 +919,39 @@ TEST_F(IndigoPageActionControllerTest,
 
   // Expect NO call to InvokeWithAutoSubmit.
   EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _)).Times(0);
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  controller_->InvokeAction();
+}
+
+TEST_F(IndigoPageActionControllerTest, InvokeActionOpensGlicWithSkill) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigoOpenGlic, {{"indigo_glic_skill_id", "test_skill_id"}});
+
+  // Mock the skill lookup
+  skills::Skill mock_skill;
+  mock_skill.id = "test_skill_id";
+  mock_skill.prompt = "skill test prompt";
+  mock_skill.source = sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
+
+  EXPECT_CALL(*mock_skills_service_, GetSkillById("test_skill_id"))
+      .WillOnce(testing::Return(&mock_skill));
+
+  // Verify Glic is called with the skill prompt
+  EXPECT_CALL(*mock_glic_keyed_service_,
+              InvokeWithAutoSubmit(_, HasGlicPrompt("skill test prompt")))
+      .WillOnce(::testing::Return(base::WeakPtr<glic::GlicInstance>()));
 
   GURL url("https://example.com");
   ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);

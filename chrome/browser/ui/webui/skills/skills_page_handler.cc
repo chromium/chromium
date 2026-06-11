@@ -28,6 +28,11 @@ namespace {
 SkillCategoryToSkillMap Translate1PSkills(const SkillProtoList& skills_list) {
   SkillCategoryToSkillMap translated_map;
   for (const auto& skill : skills_list) {
+    // Skills belonging to the "Internal" category are used programmatically
+    // (e.g., by Indigo) and should be hidden from the WebUI browser.
+    if (skill.category() == "Internal") {
+      continue;
+    }
     Skill translated_skill;
     translated_skill.id = skill.id();
     translated_skill.name = skill.name();

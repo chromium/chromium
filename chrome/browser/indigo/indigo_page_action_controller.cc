@@ -34,6 +34,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
@@ -43,6 +44,8 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/page_content_annotations/core/tracked_element_feature.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/skills/public/skill.h"
+#include "components/skills/public/skills_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -241,14 +244,29 @@ void IndigoPageActionController::ContinueInvoke(
           glic::Target(&tab()),
           glic::mojom::InvocationSource::kIndigoPageAction);
 
-      std::string prompt = features::kIndigoGlicPrompt.Get();
-      if (prompt.empty()) {
-        std::string prompt_key = features::kIndigoGlicPromptKey.Get();
-        if (!prompt_key.empty() && indigo_service_) {
-          std::optional<std::string> proto_prompt =
-              indigo_service_->GetPrompt(prompt_key);
-          if (proto_prompt.has_value()) {
-            prompt = *proto_prompt;
+      std::string skill_id = features::kIndigoGlicSkillId.Get();
+      const skills::Skill* skill = nullptr;
+      if (!skill_id.empty()) {
+        if (auto* skills_service =
+                skills::SkillsServiceFactory::GetForProfile(profile)) {
+          skill = skills_service->GetSkillById(skill_id);
+        }
+      }
+
+      std::string prompt;
+      if (skill) {
+        prompt = skill->prompt;
+        options.skill_id = skill_id;
+      } else {
+        prompt = features::kIndigoGlicPrompt.Get();
+        if (prompt.empty()) {
+          std::string prompt_key = features::kIndigoGlicPromptKey.Get();
+          if (!prompt_key.empty() && indigo_service_) {
+            std::optional<std::string> proto_prompt =
+                indigo_service_->GetPrompt(prompt_key);
+            if (proto_prompt.has_value()) {
+              prompt = *proto_prompt;
+            }
           }
         }
       }
