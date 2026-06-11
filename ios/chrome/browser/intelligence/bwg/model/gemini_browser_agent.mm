@@ -56,6 +56,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -301,6 +303,11 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
       scene_state_observer_ =
           [[GeminiSceneStateObserver alloc] initWithBrowserAgent:this
                                                       sceneState:scene_state];
+      if (IsChromeNextIaEnabled()) {
+        tab_grid_state_observer_bridge_ =
+            [[TabGridStateObserverBridge alloc] initWithObserver:this];
+        [scene_state.tabGridState addObserver:tab_grid_state_observer_bridge_];
+      }
     }
 
     scroll_observer_ = [[GeminiScrollObserver alloc]
@@ -348,6 +355,12 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
   }
   [scene_state_observer_ disconnect];
   scene_state_observer_ = nil;
+
+  if (tab_grid_state_observer_bridge_ && browser_) {
+    SceneState* scene_state = browser_->GetSceneState();
+    [scene_state.tabGridState removeObserver:tab_grid_state_observer_bridge_];
+  }
+  tab_grid_state_observer_bridge_ = nil;
 
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
@@ -643,12 +656,23 @@ void GeminiBrowserAgent::UpdateGeminiLiveIconVisibility() {
 
 CGFloat GeminiBrowserAgent::GetFloatyOffset() {
   CHECK(IsFullscreenInitialized());
-  CGFloat max_bottom_inset =
-      IsFullscreenRefactoringEnabled()
-          ? FullscreenBrowserAgent::FromBrowser(browser_)->max_insets().bottom
-          : fullscreen_controller_->GetMaxViewportInsets().bottom;
+
+  CGFloat max_bottom_inset = 0;
 
   SceneState* scene_state = browser_->GetSceneState();
+  if (IsChromeNextIaEnabled() && scene_state &&
+      scene_state.tabGridState.tabGridVisible) {
+    if (scene_state.layoutState.appBarPosition == AppBarPosition::kBottom) {
+      max_bottom_inset = kAppBarHeight;
+    } else {
+      max_bottom_inset = 0;
+    }
+  } else {
+    max_bottom_inset =
+        IsFullscreenRefactoringEnabled()
+            ? FullscreenBrowserAgent::FromBrowser(browser_)->max_insets().bottom
+            : fullscreen_controller_->GetMaxViewportInsets().bottom;
+  }
 
   if (!IsFullscreenRefactoringEnabled() && IsChromeNextIaEnabled()) {
     // The legacy FullscreenController is unaware of the App Bar's height.
@@ -1397,6 +1421,21 @@ void GeminiBrowserAgent::DidUpdateObscuredInsetRange(
 
 void GeminiBrowserAgent::WillShutDown(FullscreenBrowserAgent* agent) {
   fullscreen_observation_.Reset();
+}
+
+#pragma mark - TabGridStateObserver
+
+void GeminiBrowserAgent::WillEnterTabGrid() {
+  if (IsFullscreenInitialized()) {
+    ios::provider::UpdateOverlayOffsetWithOpacity(GetFloatyOffset(), 1.0);
+  }
+}
+
+void GeminiBrowserAgent::WillExitTabGrid() {
+  if (IsFullscreenInitialized()) {
+    ios::provider::UpdateOverlayOffsetWithOpacity(GetFloatyOffset(),
+                                                  GetFloatyProgress());
+  }
 }
 
 #pragma mark - Private
