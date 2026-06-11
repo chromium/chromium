@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.bottombar;
 
 import android.content.Context;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -20,6 +21,7 @@ public class BottomBarConfigUtils {
     /** Whether the bottom bar is enabled. */
     public static boolean isBottomBarEnabled(Context context) {
         return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && !DeviceInfo.isAutomotive()
                 && ChromeFeatureList.sAndroidBottomBar.isEnabled();
     }
 

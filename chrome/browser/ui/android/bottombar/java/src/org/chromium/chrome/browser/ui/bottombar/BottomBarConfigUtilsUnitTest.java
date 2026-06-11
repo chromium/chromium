@@ -21,6 +21,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -55,6 +56,13 @@ public class BottomBarConfigUtilsUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testIsBottomBarEnabled_Phone() {
         assertTrue(BottomBarConfigUtils.isBottomBarEnabled(mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testIsBottomBarEnabled_Automotive() {
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        assertFalse(BottomBarConfigUtils.isBottomBarEnabled(mContext));
     }
 
     @Test

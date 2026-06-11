@@ -27,6 +27,7 @@ android_resources("java_resources") {
 android_library("config_java") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarConfigUtils.java" ]
   deps = [
+    "//base:build_info_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
