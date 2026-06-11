@@ -26,11 +26,13 @@
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "net/base/io_buffer.h"
@@ -131,6 +133,9 @@ class FileSystemAccessFileWriterImplTestBase : public testing::Test {
 
   void TearDown() override {
     manager_.reset();
+
+    ChildProcessSecurityPolicyImpl::GetInstance()->Remove(
+        ChildProcessId::FromUnsafeValue(kProcessId));
 
     task_environment_.RunUntilIdle();
     // TODO(crbug.com/40266589): Figure out what code is leaking open
@@ -293,6 +298,10 @@ class FileSystemAccessFileWriterImplTestBase : public testing::Test {
         file_system_context_, chrome_blob_context_,
         /*permission_context=*/permission_context(),
         /*off_the_record=*/false);
+    ChildProcessSecurityPolicyImpl::GetInstance()->AddForTesting(
+        ChildProcessId::FromUnsafeValue(kProcessId), &browser_context_);
+    ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(
+        kProcessId, url::Origin::Create(kTestURL));
     manager_->BindReceiver(kBindingContext,
                            manager_remote_.BindNewPipeAndPassReceiver());
 
@@ -388,6 +397,7 @@ class FileSystemAccessFileWriterImplTestBase : public testing::Test {
   raw_ptr<storage::BlobStorageContext> blob_context_ = nullptr;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote_;
+  TestBrowserContext browser_context_;
 
   FileSystemURL test_file_url_;
   FileSystemURL test_swap_url_;
