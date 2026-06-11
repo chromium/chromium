@@ -263,9 +263,6 @@ void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
     return;
   }
 
-  AccessibilityInfoDataWrapper* const source_node =
-      GetFromId(event_data.source_id);
-
   std::vector<int32_t> update_ids = ProcessHooksOnEvent(event_data);
 
   // Prep the event and send it to automation.
@@ -273,8 +270,8 @@ void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
       android_focused_id_.has_value() ? GetFromId(*android_focused_id_)
                                       : nullptr;
   std::vector<ui::AXEvent> events;
-  const std::optional<ax::mojom::Event> event_type =
-      ToAXEvent(event_data.event_type, source_node, focused_node);
+  const std::optional<ax::mojom::Event> event_type = ToAXEvent(
+      event_data.event_type, GetFromId(event_data.source_id), focused_node);
   if (event_type) {
     ui::AXEvent event;
     event.event_type = event_type.value();
@@ -304,7 +301,7 @@ void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
     // If the event source is ignored, it's possible that the name is used by
     // ancestor.
     AccessibilityInfoDataWrapper* parent =
-        GetFirstAccessibilityFocusableAncestor(source_node);
+        GetFirstAccessibilityFocusableAncestor(GetFromId(event_data.source_id));
     update_ids.push_back(parent ? parent->GetId() : event_data.source_id);
   }
 

