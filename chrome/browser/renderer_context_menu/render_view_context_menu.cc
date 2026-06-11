@@ -5718,7 +5718,7 @@ void RenderViewContextMenu::AppendRevisedTextSelectionSection() {
 
     if (CanPartiallyTranslateTargetLanguage()) {
       AppendPartialTranslateItem();
-    } else {
+    } else if (CanTranslate(/*menu_logging=*/false)) {
       AppendTranslateItem();
     }
   } else {
@@ -5734,7 +5734,7 @@ void RenderViewContextMenu::AppendRevisedTextSelectionSection() {
 
     if (CanPartiallyTranslateTargetLanguage()) {
       AppendPartialTranslateItem();
-    } else {
+    } else if (CanTranslate(/*menu_logging=*/false)) {
       AppendTranslateItem();
     }
   }
