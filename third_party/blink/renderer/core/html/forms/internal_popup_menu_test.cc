@@ -12,14 +12,18 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
+#include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/page_popup_controller.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
@@ -106,6 +110,48 @@ TEST_F(InternalPopupMenuTest, MediaFeatureOverridesPropagation) {
                 ->GetPreferredColorScheme(),
             mojom::PreferredColorScheme::kDark);
   popup2->ClosePopup();
+}
+
+// See crbug.com/516936863.
+TEST_F(InternalPopupMenuTest, PagePopupControllerUAFAfterOrphanedFree) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), R"HTML(
+    <select id=sel>
+      <option>1</option>
+      <option>2</option>
+    </select>
+  )HTML",
+                                     base_url);
+  Document& document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* sel =
+      To<HTMLSelectElement>(document.getElementById(AtomicString("sel")));
+  ASSERT_TRUE(sel);
+  auto* menu = MakeGarbageCollected<InternalPopupMenu>(
+      MakeGarbageCollected<EmptyChromeClient>(), *sel);
+
+  WebPagePopupImpl* popup = web_view->OpenPagePopup(menu);
+  popup->DidShowPopup();
+
+  Page* popup_page = popup->GetDocument().Unwrap<Document>()->GetPage();
+  ASSERT_TRUE(popup_page);
+  Persistent<PagePopupController> controller =
+      PagePopupController::From(*popup_page);
+  ASSERT_TRUE(controller);
+
+  web_view->CleanupPagePopup();
+
+  test::RunPendingTasks();
+
+  controller->setWindowRect(0, 0, 100, 100);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

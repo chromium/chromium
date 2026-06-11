@@ -1032,6 +1032,15 @@ void WebPagePopupImpl::Close() {
     closing_ = true;
     // This should end up running ClosePopup() though the PopupClient.
     Cancel();
+    // Cancel() may have synchronously triggered ClosePopup() and destroyed
+    // page_.
+    if (page_) {
+      EventDispatchForbiddenScope::AllowUserAgentEvents allow_events;
+      if (auto* controller = PagePopupController::From(*page_)) {
+        controller->ClearPagePopupClient();
+      }
+      DestroyPage();
+    }
   }
 
   // TODO(dtapuska): WidgetBase shutdown should happen before Page is
