@@ -1457,6 +1457,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2039464276165755892">Ẩn nội dung thông báo khi phát hiện có người khác</translation>
 <translation id="2040460856718599782">Rất tiếc! Đã xảy ra sự cố khi tìm cách xác thực bạn. Vui lòng kiểm tra kỹ thông tin xác thực đăng nhập của bạn và thử lại.</translation>
 <translation id="2040822390690632244">Nội dung cập nhật, trợ giúp, tuỳ chọn cho nhà phát triển</translation>
+<translation id="2040827008689966558">Mở lại chế độ xem màn hình chia đôi đã đóng</translation>
 <translation id="2040894699575719559">Đã chặn quyền truy cập vị trí</translation>
 <translation id="2042279886444479655">Các hồ sơ đang hoạt động</translation>
 <translation id="2044014337866019681">Để mở khóa phiên này, hãy đảm bảo rằng bạn đang xác minh <ph name="ACCOUNT" />.</translation>
@@ -3449,6 +3450,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3474624961160222204">Tiếp tục bằng tài khoản <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Tiết kiệm bộ nhớ ở mức trung bình. Các thẻ sẽ ngừng hoạt động sau một khoảng thời gian dài.</translation>
 <translation id="347785443197175480">Tiếp tục cho phép <ph name="HOST" /> truy cập vào máy ảnh và micrô của bạn</translation>
+<translation id="3478038704461103178">Đã đóng chế độ xem màn hình chia đôi</translation>
 <translation id="3479357084663933762">Mù màu xanh lục nhẹ</translation>
 <translation id="3479552764303398839">Để sau</translation>
 <translation id="3479685872808224578">Không tìm thấy máy chủ máy in này. Vui lòng kiểm tra địa chỉ rồi thử lại.</translation>
@@ -7626,6 +7628,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6563055593659435495">Không duy trì được kết nối với điện thoại của bạn. Hãy đảm bảo điện thoại của bạn ở gần, đã mở khoá, đang bật Bluetooth và Wi-Fi.</translation>
 <translation id="6564343790052433242">Để tạo khoá truy cập cho <ph name="APP_NAME" />, bạn phải bật Trình quản lý mật khẩu của Google</translation>
 <translation id="6565899972286925956">Tạo bất cứ thứ gì</translation>
+<translation id="6566648465417201421">Mở lại chế độ xem màn hình chia đôi đã đóng</translation>
 <translation id="656679903990115526">Quét mã này bằng điện thoại để lưu và tự động điền mật khẩu, nhờ đó dễ dàng đăng nhập vào các trang web và ứng dụng</translation>
 <translation id="6568283005472142698">Tìm thẻ</translation>
 <translation id="6569931898053264308">Mức tiết kiệm trung bình</translation>

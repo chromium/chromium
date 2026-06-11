@@ -1447,6 +1447,7 @@
 <translation id="2039464276165755892">偵測到有人窺探螢幕時，隱藏通知內容</translation>
 <translation id="2040460856718599782">糟糕！嘗試驗證你的身分時發生錯誤。請重新檢查你的登入憑證，然後再試一次。</translation>
 <translation id="2040822390690632244">更新、說明、開發人員選項</translation>
+<translation id="2040827008689966558">重新開啟已關閉的分割畫面</translation>
 <translation id="2040894699575719559">禁止取得位置資訊</translation>
 <translation id="2042279886444479655">使用中的設定檔</translation>
 <translation id="2044014337866019681">請確認你驗證的是 <ph name="ACCOUNT" />，才能解鎖工作階段。</translation>
@@ -3433,6 +3434,7 @@
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3477772589943384839">取得中等記憶體節省量。分頁會在較長時段過後進入閒置狀態。</translation>
 <translation id="347785443197175480">繼續允許 <ph name="HOST" /> 存取你的攝影機和麥克風</translation>
+<translation id="3478038704461103178">分割畫面已關閉</translation>
 <translation id="3479357084663933762">綠色弱</translation>
 <translation id="3479552764303398839">現在不要</translation>
 <translation id="3479685872808224578">偵測不到印表機伺服器。請檢查位址是否正確，然後再試一次。</translation>
@@ -7600,6 +7602,7 @@
 <translation id="6563055593659435495">無法與你的手機維持連線狀態。請確認你的手機在附近，且已解鎖及開啟藍牙功能和 Wi-Fi。</translation>
 <translation id="6564343790052433242">必須啟用 Google 密碼管理工具，才能為「<ph name="APP_NAME" />」建立密碼金鑰</translation>
 <translation id="6565899972286925956">創作任何內容</translation>
+<translation id="6566648465417201421">重新開啟已關閉的分割畫面</translation>
 <translation id="656679903990115526">用手機掃描這個 QR code，即可儲存及自動填入密碼，輕鬆登入網站和應用程式</translation>
 <translation id="6568283005472142698">分頁搜尋</translation>
 <translation id="6569931898053264308">節省量：中</translation>

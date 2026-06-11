@@ -1446,6 +1446,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2039464276165755892">Ocultar contido das notificacións cando se detecta a presenza doutra persoa</translation>
 <translation id="2040460856718599782">Produciuse un erro ao tentar autenticarte. Volve comprobar as túas credenciais de inicio de sesión e téntao de novo.</translation>
 <translation id="2040822390690632244">Actualizacións, axuda, opcións de programación</translation>
+<translation id="2040827008689966558">Volver abrir vista dividida pechada</translation>
 <translation id="2040894699575719559">Bloqueouse a localización</translation>
 <translation id="2042279886444479655">Perfís activos</translation>
 <translation id="2044014337866019681">Asegúrate de estar verificando a conta <ph name="ACCOUNT" /> para desbloquear a sesión.</translation>
@@ -3435,6 +3436,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Aforra memoria de forma moderada. As túas pestanas pasarán a estar inactivas despois dun período longo de tempo.</translation>
 <translation id="347785443197175480">Continuar permitindo a <ph name="HOST" /> acceder á túa cámara e micrófono</translation>
+<translation id="3478038704461103178">Vista dividida pechada</translation>
 <translation id="3479357084663933762">Deuteranomalía</translation>
 <translation id="3479552764303398839">Agora non</translation>
 <translation id="3479685872808224578">Non se puido detectar o servidor de impresión. Comproba o enderezo e téntao de novo.</translation>
@@ -7612,6 +7614,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6563055593659435495">Non se puido manter a conexión co teléfono. Asegúrate de ter o teléfono preto, desbloqueado e co Bluetooth e a wifi activados.</translation>
 <translation id="6564343790052433242">Se queres crear unha clave de acceso para <ph name="APP_NAME" />, o xestor de contrasinais de Google debe estar activado</translation>
 <translation id="6565899972286925956">Crea o que queiras</translation>
+<translation id="6566648465417201421">Volver abrir vista dividida pechada</translation>
 <translation id="656679903990115526">Escanea este código co teléfono para gardar e autocompletar os contrasinais e poder iniciar sesión facilmente nos sitios e nas aplicacións</translation>
 <translation id="6568283005472142698">Busca de pestanas</translation>
 <translation id="6569931898053264308">Aforro moderado</translation>

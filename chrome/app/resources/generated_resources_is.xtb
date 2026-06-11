@@ -1457,6 +1457,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2039464276165755892">Fela efni tilkynninga þegar einhver annar greinist</translation>
 <translation id="2040460856718599782">Úbbs! Eitthvað fór úrskeiðis þegar reynt var að sannvotta þig. Farðu vel yfir innskráningarupplýsingarnar þínar og reyndu aftur.</translation>
 <translation id="2040822390690632244">Uppfærslur, hjálp, forritunarkostir</translation>
+<translation id="2040827008689966558">Opna aftur lokaðan tvískiptan skjá</translation>
 <translation id="2040894699575719559">Lokað á staðsetningu</translation>
 <translation id="2042279886444479655">Virkir prófílar</translation>
 <translation id="2044014337866019681">Gakktu úr skugga um að þú sért að staðfesta <ph name="ACCOUNT" /> til að taka lotuna úr lás.</translation>
@@ -3449,6 +3450,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3474624961160222204">Halda áfram sem <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Fáðu minnissparnað í meðallagi. Fliparnir þínir verða óvirkir eftir lengri tíma.</translation>
 <translation id="347785443197175480">Halda áfram að veita <ph name="HOST" /> aðgang að myndavélinni og hljóðnemanum</translation>
+<translation id="3478038704461103178">Tvískiptum skjá lokað</translation>
 <translation id="3479357084663933762">Grænlitaskerðing (deuteranomaly)</translation>
 <translation id="3479552764303398839">Ekki núna</translation>
 <translation id="3479685872808224578">Prentþjónninn fannst ekki. Athugaðu vistfangið og reyndu aftur.</translation>
@@ -7626,6 +7628,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6563055593659435495">Ekki er hægt að halda tengingu við símann þinn. Gakktu úr skugga um að síminn sé nálægt þér, ólæstur og með kveikt á Bluetooth og WiFi.</translation>
 <translation id="6564343790052433242">Kveikt verður að vera á Google-aðgangsorðastjórnun til að búa til aðgangslykil fyrir <ph name="APP_NAME" /></translation>
 <translation id="6565899972286925956">Skapaðu hvað sem er</translation>
+<translation id="6566648465417201421">Opna aftur lokaðan tvískiptan skjá</translation>
 <translation id="656679903990115526">Skannaðu þetta með símanum þínum til að vista og fylla aðgangsorðin þín sjálfkrafa út til að skrá þig inn á vefsvæði og forrit á einfaldan hátt</translation>
 <translation id="6568283005472142698">Flipaleit</translation>
 <translation id="6569931898053264308">Miðlungs sparnaður</translation>

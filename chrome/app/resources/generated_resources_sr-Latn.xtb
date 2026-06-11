@@ -1443,6 +1443,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2039464276165755892">Sakrij sadržaj obaveštenja kada se otkrije neko drugi</translation>
 <translation id="2040460856718599782">Ups! Nešto je pošlo naopako dok smo pokušavali da potvrdimo vašu autentičnost. Proverite ponovo akreditive za prijavljivanje i pokušajte ponovo.</translation>
 <translation id="2040822390690632244">Ažuriranja, pomoć, opcije za programere</translation>
+<translation id="2040827008689966558">Ponovo otvori zatvoreni podeljeni prikaz</translation>
 <translation id="2040894699575719559">Lokacija je blokirana</translation>
 <translation id="2042279886444479655">Aktivni profili</translation>
 <translation id="2044014337866019681">Uverite se da verifikujete <ph name="ACCOUNT" /> da biste otključali sesiju.</translation>
@@ -3432,6 +3433,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Ostvarite umerenu uštedu memorije. Kartice postaju neaktivne posle dužeg vremenskog perioda.</translation>
 <translation id="347785443197175480">I dalje dozvoljavaj sajtu <ph name="HOST" /> da pristupa kameri i mikrofonu</translation>
+<translation id="3478038704461103178">Podeljeni prikaz je zatvoren</translation>
 <translation id="3479357084663933762">Deuteranomalija</translation>
 <translation id="3479552764303398839">Ne sada</translation>
 <translation id="3479685872808224578">Otkrivanje servera za štampanje nije uspelo. Proverite adresu i probajte ponovo.</translation>
@@ -7608,6 +7610,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6563055593659435495">Nismo uspeli da održimo vezu sa telefonom. Uverite se da je telefon u blizini, da je otključan i da su Bluetooth i WiFi uključeni.</translation>
 <translation id="6564343790052433242">Da biste napravili pristupni ključ za <ph name="APP_NAME" />, Google menadžer lozinki mora da bude uključen</translation>
 <translation id="6565899972286925956">Napravite bilo šta</translation>
+<translation id="6566648465417201421">Ponovo otvori zatvoreni podeljeni prikaz</translation>
 <translation id="656679903990115526">Skenirajte ovo telefonom da biste sačuvali i automatski popunjavali lozinke i lako se prijavljivali na sajtove i u aplikacije</translation>
 <translation id="6568283005472142698">Pretraga kartica</translation>
 <translation id="6569931898053264308">Srednje uštede</translation>

@@ -1443,6 +1443,7 @@
 <translation id="2039464276165755892">他者の検出時に通知内容を非表示</translation>
 <translation id="2040460856718599782">ユーザー認証時に問題が発生しました。ログイン情報をお確かめのうえ、もう一度お試しください。</translation>
 <translation id="2040822390690632244">更新、ヘルプ、デベロッパー オプション</translation>
+<translation id="2040827008689966558">閉じた分割ビューを再度開く</translation>
 <translation id="2040894699575719559">位置情報をブロック中</translation>
 <translation id="2042279886444479655">有効なプロファイル</translation>
 <translation id="2044014337866019681">セッションのロックを解除するには、<ph name="ACCOUNT" /> の確認を行ってください。</translation>
@@ -3428,6 +3429,7 @@
 <translation id="3474624961160222204"><ph name="NAME" /> として続行</translation>
 <translation id="3477772589943384839">メモリを適度に節約します。タブは長時間経過してから非アクティブになります。</translation>
 <translation id="347785443197175480"><ph name="HOST" /> によるカメラとマイクへのアクセスを引き続き許可する</translation>
+<translation id="3478038704461103178">分割ビューを閉じました</translation>
 <translation id="3479357084663933762">第二色弱</translation>
 <translation id="3479552764303398839">後で</translation>
 <translation id="3479685872808224578">プリント サーバーを検出できませんでした。アドレスを確認してから、もう一度お試しください。</translation>
@@ -7596,6 +7598,7 @@
 <translation id="6563055593659435495">スマートフォンとの接続を維持できません。スマートフォンが近くにあってロックが解除され、Bluetooth と Wi−Fi がオンになっていることを確認してください。</translation>
 <translation id="6564343790052433242"><ph name="APP_NAME" /> のパスキーを作成するには、Google パスワード マネージャーをオンにする必要があります</translation>
 <translation id="6565899972286925956">あらゆるものを作成できます</translation>
+<translation id="6566648465417201421">閉じた分割ビューを再度開く</translation>
 <translation id="656679903990115526">スマートフォンでスキャンしてパスワードを保存すると、サイトやアプリで自動入力して簡単にログインできます</translation>
 <translation id="6568283005472142698">タブ検索</translation>
 <translation id="6569931898053264308">中量の節約</translation>

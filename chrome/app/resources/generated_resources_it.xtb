@@ -1446,6 +1446,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2039464276165755892">Nascondi contenuti notifiche quando un'altra persona osserva lo schermo</translation>
 <translation id="2040460856718599782">Spiacenti. Si è verificato un problema durante il tentativo di autenticazione. Controlla attentamente le tue credenziali di accesso e riprova.</translation>
 <translation id="2040822390690632244">Aggiornamenti, guida, opzioni sviluppatore</translation>
+<translation id="2040827008689966558">Riapri visualizzazione divisa chiusa</translation>
 <translation id="2040894699575719559">Posizione bloccata</translation>
 <translation id="2042279886444479655">Profili attivi</translation>
 <translation id="2044014337866019681">Per sbloccare la sessione devi assicurarti di verificare l'account <ph name="ACCOUNT" />.</translation>
@@ -3435,6 +3436,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3474624961160222204">Continua come <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Risparmio di memoria moderato. Le schede diventano inattive dopo un periodo di tempo più lungo.</translation>
 <translation id="347785443197175480">Continua a consentire l'accesso di <ph name="HOST" /> alla webcam e al microfono</translation>
+<translation id="3478038704461103178">Visualizzazione divisa chiusa</translation>
 <translation id="3479357084663933762">Deuteranomalia</translation>
 <translation id="3479552764303398839">Non adesso</translation>
 <translation id="3479685872808224578">Impossibile rilevare il server di stampa. Verifica l'indirizzo e riprova.</translation>
@@ -7608,6 +7610,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6563055593659435495">Impossibile mantenere una connessione con lo smartphone. Assicurati che il tuo smartphone sia nelle vicinanze e sbloccato e che il Bluetooth e il Wi-Fi siano attivi.</translation>
 <translation id="6564343790052433242">Per creare una passkey per <ph name="APP_NAME" />, il Gestore delle password di Google deve essere attivo</translation>
 <translation id="6565899972286925956">Crea ciò che vuoi</translation>
+<translation id="6566648465417201421">Riapri visualizzazione divisa chiusa</translation>
 <translation id="656679903990115526">Scansiona questo codice con lo smartphone per salvare e compilare automaticamente le password e accedere facilmente a siti e app</translation>
 <translation id="6568283005472142698">Ricerca di schede</translation>
 <translation id="6569931898053264308">Medi risparmi</translation>

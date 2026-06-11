@@ -1447,6 +1447,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2039464276165755892">Skrývať obsah upozornení, keď zariadenie rozpozná inú osobu</translation>
 <translation id="2040460856718599782">Hops, pri overovaní vašej totožnosti sa vyskytla chyba. Skontrolujte znova svoje prihlasovacie údaje a skúste to znova.</translation>
 <translation id="2040822390690632244">Aktualizácie, pomocník, možnosti pre vývojárov</translation>
+<translation id="2040827008689966558">Znova otvoriť zavreté rozdelené zobrazenie</translation>
 <translation id="2040894699575719559">Poloha je blokovaná</translation>
 <translation id="2042279886444479655">Aktívne profily</translation>
 <translation id="2044014337866019681">Ak chcete túto reláciu odblokovať, overte účet <ph name="ACCOUNT" />.</translation>
@@ -3436,6 +3437,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3474624961160222204">Pokračovať ako <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Získate priemernú úsporu pamäte. Karty sa po dlhšom čase deaktivujú.</translation>
 <translation id="347785443197175480">Aj naďalej povoliť stránkam <ph name="HOST" /> prístup ku kamere a mikrofónu</translation>
+<translation id="3478038704461103178">Rozdelené zobrazenie je zatvorené</translation>
 <translation id="3479357084663933762">Deuteranomália</translation>
 <translation id="3479552764303398839">Teraz nie</translation>
 <translation id="3479685872808224578">Tlačový server sa nepodarilo rozpoznať. Skontrolujte adresu a skúste to znova.</translation>
@@ -7611,6 +7613,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6563055593659435495">Pripojenie s vaším telefónom sa nedá udržať. Uistite sa, že telefón máte nablízku, odomknutý a so zapnutým rozhraním Bluetooth a pripojením Wi‑Fi.</translation>
 <translation id="6564343790052433242">Ak chcete vytvoriť prístupový kľúč k aplikácii <ph name="APP_NAME" />, Správca hesiel Google musí byť zapnutý</translation>
 <translation id="6565899972286925956">Vytvorte čokoľvek</translation>
+<translation id="6566648465417201421">Znova otvoriť zavreté rozdelené zobrazenie</translation>
 <translation id="656679903990115526">Naskenujte tento kód telefónom, aby ste si mohli uložiť heslá a automaticky ich dopĺňať, a ľahko sa tak prihlasovať na weboch a v aplikáciách</translation>
 <translation id="6568283005472142698">Vyhľadávanie kariet</translation>
 <translation id="6569931898053264308">Stredné úspory</translation>

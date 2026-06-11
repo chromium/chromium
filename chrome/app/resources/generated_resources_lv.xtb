@@ -1447,6 +1447,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2039464276165755892">Paslēpt paziņojumu saturu, kad tiek konstatēts, ka uz ekrānu skatās cita persona</translation>
 <translation id="2040460856718599782">Diemžēl, mēģinot jūs autentificēt, radās problēma. Lūdzu, vēlreiz pārbaudiet savus akreditācijas datus un mēģiniet vēlreiz pierakstīties.</translation>
 <translation id="2040822390690632244">Atjauninājumi, palīdzība, izstrādātāju opcijas</translation>
+<translation id="2040827008689966558">Atkārtoti atvērt aizvērtu dalīto skatu</translation>
 <translation id="2040894699575719559">Atrašanās vieta ir bloķēta</translation>
 <translation id="2042279886444479655">Aktīvie profili</translation>
 <translation id="2044014337866019681">Lai atbloķētu sesiju, verificējiet kontu <ph name="ACCOUNT" />.</translation>
@@ -3434,6 +3435,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3474624961160222204">Turpināt kā: <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Ietaupiet vidēji daudz vietas atmiņā. Cilnes kļūs neaktīvas pēc ilgāka laika perioda.</translation>
 <translation id="347785443197175480">Arī turpmāk ļaut vietnei <ph name="HOST" /> piekļūt kamerai un mikrofonam</translation>
+<translation id="3478038704461103178">Dalītais skats ir aizvērts</translation>
 <translation id="3479357084663933762">Deiteranomālija</translation>
 <translation id="3479552764303398839">Vēlāk</translation>
 <translation id="3479685872808224578">Nevarēja noteikt drukas serveri. Lūdzu, pārbaudiet adresi un mēģiniet vēlreiz.</translation>
@@ -7607,6 +7609,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6563055593659435495">Nevar uzturēt savienojumu ar jūsu tālruni. Tālrunim ir jāatrodas tuvumā, tam jābūt atbloķētam, un tajā ir jābūt ieslēgtam Bluetooth un Wi-Fi savienojumam.</translation>
 <translation id="6564343790052433242">Lai izveidotu piekļuves atslēgu vietnei <ph name="APP_NAME" />, Google paroļu pārvaldniekam ir jābūt ieslēgtam.</translation>
 <translation id="6565899972286925956">Varat izveidot jebko</translation>
+<translation id="6566648465417201421">Atkārtoti atvērt aizvērtu dalīto skatu</translation>
 <translation id="656679903990115526">Skenējiet šo kodu ar tālruni, lai saglabātu un automātiski aizpildītu paroles un varētu ērti pierakstīties vietnēs un lietotnēs</translation>
 <translation id="6568283005472142698">Meklēšana cilnēs</translation>
 <translation id="6569931898053264308">Vidējs ietaupījums</translation>

@@ -1447,6 +1447,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2039464276165755892">Başka birisi algılandığında bildirim içeriğini gizle</translation>
 <translation id="2040460856718599782">Hata! Kimliğiniz doğrulanmaya çalışılırken bir şeyler ters gitti. Lütfen oturum açma kimlik bilgilerinizi tekrar kontrol edin ve yeniden deneyin.</translation>
 <translation id="2040822390690632244">Güncellemeler, yardım, geliştirici seçenekleri</translation>
+<translation id="2040827008689966558">Kapatılan bölünmüş görünümü yeniden aç</translation>
 <translation id="2040894699575719559">Konum engellendi</translation>
 <translation id="2042279886444479655">Etkin profiller</translation>
 <translation id="2044014337866019681">Oturumun kilidini açmak için lütfen <ph name="ACCOUNT" /> hesabını doğruladığınızdan emin olun.</translation>
@@ -3432,6 +3433,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3474624961160222204"><ph name="NAME" /> olarak devam et</translation>
 <translation id="3477772589943384839">Orta düzeyde bellek tasarrufu sağlar. Sekmeleriniz daha uzun süre sonra devre dışı kalır.</translation>
 <translation id="347785443197175480"><ph name="HOST" /> sitesinin kamerama ve mikrofonuma erişmesine izin vermeye devam et</translation>
+<translation id="3478038704461103178">Bölünmüş Görünüm Kapatıldı</translation>
 <translation id="3479357084663933762">Döteranomali</translation>
 <translation id="3479552764303398839">Şimdi değil</translation>
 <translation id="3479685872808224578">Yazdırma sunucusu algılanamadı. Lütfen adresi kontrol edip tekrar deneyin.</translation>
@@ -7609,6 +7611,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6563055593659435495">Telefonunuzla bağlantı sürdürülemiyor. Telefonunuzun yakında bulunduğundan, kilidinin ve Bluetooth ile kablosuz bağlantının da açık olduğundan emin olun.</translation>
 <translation id="6564343790052433242"><ph name="APP_NAME" /> için geçiş anahtarı oluşturmak istiyorsanız Google Şifre Yöneticisi'nin etkin olması gerekir</translation>
 <translation id="6565899972286925956">İstediğinizi üretin</translation>
+<translation id="6566648465417201421">Kapatılan Bölünmüş Görünümü Yeniden Aç</translation>
 <translation id="656679903990115526">Sitelerde ve uygulamalarda kolayca oturum açmak için telefonunuzla bu kodu tarayarak şifrelerinizi kaydedin ve otomatik doldurun</translation>
 <translation id="6568283005472142698">Sekme Araması</translation>
 <translation id="6569931898053264308">Orta Seviye Tasarruf</translation>

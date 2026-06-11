@@ -1457,6 +1457,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2039464276165755892">Ocultar conteúdo de notificações quando outra pessoa for detectada</translation>
 <translation id="2040460856718599782">Epa! Ocorreu um erro na tentativa de autenticação. Verifique suas credenciais de login e tente novamente.</translation>
 <translation id="2040822390690632244">Atualizações, ajuda, opções para desenvolvedores</translation>
+<translation id="2040827008689966558">Reabrir a visualização dividida fechada</translation>
 <translation id="2040894699575719559">Acesso ao local bloqueado</translation>
 <translation id="2042279886444479655">Perfis ativos</translation>
 <translation id="2044014337866019681">Você precisa verificar a conta <ph name="ACCOUNT" /> para desbloquear a sessão.</translation>
@@ -3449,6 +3450,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Tenha uma economia de memória moderada. As guias ficam inativas depois de um período mais longo.</translation>
 <translation id="347785443197175480">Continuar permitindo que <ph name="HOST" /> acesse sua câmera e seu microfone</translation>
+<translation id="3478038704461103178">Visualização dividida fechada</translation>
 <translation id="3479357084663933762">Deuteranomalia</translation>
 <translation id="3479552764303398839">Não agora</translation>
 <translation id="3479685872808224578">Não foi possível detectar o servidor de impressão. Verifique o endereço e tente novamente.</translation>
@@ -7627,6 +7629,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6563055593659435495">Não é possível manter uma conexão com o smartphone. Confira se o smartphone está por perto, desbloqueado e com o Bluetooth e o Wi-Fi ativados.</translation>
 <translation id="6564343790052433242">Para criar uma chave de acesso para <ph name="APP_NAME" />, ative o Gerenciador de Senhas do Google</translation>
 <translation id="6565899972286925956">Crie o que quiser</translation>
+<translation id="6566648465417201421">Reabrir a visualização dividida fechada</translation>
 <translation id="656679903990115526">Leia o QR code com seu celular para salvar e preencher automaticamente suas senhas, facilitando o login em sites e apps</translation>
 <translation id="6568283005472142698">Pesquisa em todas as guias</translation>
 <translation id="6569931898053264308">Economia média</translation>

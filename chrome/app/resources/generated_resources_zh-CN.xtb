@@ -1442,6 +1442,7 @@
 <translation id="2039464276165755892">当系统检测到有人在窥视时隐藏通知内容</translation>
 <translation id="2040460856718599782">糟糕！尝试验证您的身份时出现错误。请仔细检查您的登录凭据，然后重试。</translation>
 <translation id="2040822390690632244">更新、帮助、开发者选项</translation>
+<translation id="2040827008689966558">重新打开已关闭的拆分视图</translation>
 <translation id="2040894699575719559">已阻止获取位置信息</translation>
 <translation id="2042279886444479655">使用中的配置文件</translation>
 <translation id="2044014337866019681">请确保您验证的账号是 <ph name="ACCOUNT" /> 以解锁会话。</translation>
@@ -3428,6 +3429,7 @@
 <translation id="3474624961160222204">以“<ph name="NAME" />”的身份继续</translation>
 <translation id="3477772589943384839">节省适量内存。标签页会在较长的一段时间后变为非活跃状态。</translation>
 <translation id="347785443197175480">继续允许 <ph name="HOST" /> 使用您的摄像头和麦克风</translation>
+<translation id="3478038704461103178">已关闭拆分视图</translation>
 <translation id="3479357084663933762">绿色弱</translation>
 <translation id="3479552764303398839">以后再说</translation>
 <translation id="3479685872808224578">检测不到打印服务器。请检查该地址，然后重试。</translation>
@@ -7599,6 +7601,7 @@
 <translation id="6563055593659435495">无法保持与手机的连接。请确保手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
 <translation id="6564343790052433242">若要为“<ph name="APP_NAME" />”创建通行密钥，必须开启 Google 密码管理工具</translation>
 <translation id="6565899972286925956">尽情创作</translation>
+<translation id="6566648465417201421">重新打开已关闭的拆分视图</translation>
 <translation id="656679903990115526">使用手机扫描此二维码，即可保存并自动填充您的密码，从而轻松登录网站和应用</translation>
 <translation id="6568283005472142698">标签页搜索</translation>
 <translation id="6569931898053264308">节省适量内存</translation>

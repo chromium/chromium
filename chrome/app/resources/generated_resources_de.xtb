@@ -1444,6 +1444,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2039464276165755892">Benachrichtigungen ausblenden, wenn eine andere Person erkannt wird</translation>
 <translation id="2040460856718599782">Hoppla! Bei der Authentifizierung ist ein Fehler aufgetreten. Bitte überprüfe deine Anmeldedaten und versuche es erneut.</translation>
 <translation id="2040822390690632244">Updates, Hilfe, Entwickleroptionen</translation>
+<translation id="2040827008689966558">Geschlossene geteilte Ansicht wieder öffnen</translation>
 <translation id="2040894699575719559">Standort blockiert</translation>
 <translation id="2042279886444479655">Aktive Profile</translation>
 <translation id="2044014337866019681">Bitte bestätige <ph name="ACCOUNT" />, um die Sitzung zu entsperren.</translation>
@@ -3431,6 +3432,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3474624961160222204">Als <ph name="NAME" /> fortfahren</translation>
 <translation id="3477772589943384839">Du erzielst mäßige Arbeitsspeichereinsparungen. Deine Tabs werden nach längerer Zeit inaktiv.</translation>
 <translation id="347785443197175480"><ph name="HOST" /> weiterhin Zugriff auf Kamera und Mikrofon gestatten</translation>
+<translation id="3478038704461103178">Geteilte Ansicht geschlossen</translation>
 <translation id="3479357084663933762">Deuteranomalie</translation>
 <translation id="3479552764303398839">Jetzt nicht</translation>
 <translation id="3479685872808224578">Der Druckserver wurde nicht erkannt. Prüfe die Adresse und versuche es noch einmal.</translation>
@@ -7603,6 +7605,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6563055593659435495">Verbindung mit deinem Smartphone kann nicht aufrechterhalten werden. Dein Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="6564343790052433242">Damit du einen Passkey für <ph name="APP_NAME" /> erstellen kannst, muss der Google Passwortmanager aktiviert sein</translation>
 <translation id="6565899972286925956">Kreativität ohne Grenzen</translation>
+<translation id="6566648465417201421">Geschlossene geteilte Ansicht wieder öffnen</translation>
 <translation id="656679903990115526">Scanne diesen QR-Code mit deinem Smartphone, um deine Passwörter zu speichern und automatisch ausfüllen zu lassen, damit du dich einfacher auf Websites und in Apps anmelden kannst</translation>
 <translation id="6568283005472142698">Tab-Suche</translation>
 <translation id="6569931898053264308">Mittlere Einsparungen</translation>

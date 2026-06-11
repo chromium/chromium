@@ -1445,6 +1445,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2039464276165755892">Ukryj treść powiadomień, kiedy ktoś inny patrzy na ekran</translation>
 <translation id="2040460856718599782">Ups, wystąpił błąd podczas próby uwierzytelnienia. Sprawdź poprawność danych logowania i spróbuj ponownie.</translation>
 <translation id="2040822390690632244">Aktualizacje, pomoc, opcje dla programistów</translation>
+<translation id="2040827008689966558">Otwórz ponownie zamknięty widok dzielony</translation>
 <translation id="2040894699575719559">Lokalizacja zablokowana</translation>
 <translation id="2042279886444479655">Aktywne profile</translation>
 <translation id="2044014337866019681">Aby odblokować sesję, upewnij się, że potwierdzasz własność konta <ph name="ACCOUNT" />.</translation>
@@ -3415,6 +3416,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3474624961160222204">Kontynuuj jako <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Umiarkowana oszczędność pamięci. Karty stają się nieaktywne po dłuższym czasie.</translation>
 <translation id="347785443197175480">Nadal zezwalaj witrynie <ph name="HOST" /> na dostęp do kamery i mikrofonu</translation>
+<translation id="3478038704461103178">Widok dzielony został zamknięty</translation>
 <translation id="3479357084663933762">Deuteranomalia</translation>
 <translation id="3479552764303398839">Nie teraz</translation>
 <translation id="3479685872808224578">Nie udało się wykryć serwera druku. Sprawdź adres i spróbuj ponownie.</translation>
@@ -7587,6 +7589,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6563055593659435495">Nie można utrzymać połączenia z telefonem. Sprawdź, czy telefon jest w pobliżu, jest odblokowany i ma włączone Bluetooth oraz Wi-Fi.</translation>
 <translation id="6564343790052433242">Aby utworzyć klucz dostępu do aplikacji <ph name="APP_NAME" />, musisz włączyć Menedżera haseł Google</translation>
 <translation id="6565899972286925956">Stwórz, co tylko chcesz</translation>
+<translation id="6566648465417201421">Otwórz ponownie zamknięty widok dzielony</translation>
 <translation id="656679903990115526">Zeskanuj ten kod telefonem, aby zapisać hasła i automatycznie je uzupełniać, co ułatwi Ci logowanie się na stronach i w aplikacjach</translation>
 <translation id="6568283005472142698">Wyszukiwanie kart</translation>
 <translation id="6569931898053264308">Średnia oszczędność</translation>

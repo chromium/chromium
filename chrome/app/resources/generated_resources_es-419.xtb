@@ -1444,6 +1444,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2039464276165755892">Ocultar el contenido de las notificaciones cuando se detecte a otra persona</translation>
 <translation id="2040460856718599782">Se produjo un error cuando intentábamos autenticarte. Verifica tus credenciales de acceso y vuelve a intentarlo.</translation>
 <translation id="2040822390690632244">Actualizaciones, ayuda, opciones para desarrolladores</translation>
+<translation id="2040827008689966558">Volver a abrir la vista dividida cerrada</translation>
 <translation id="2040894699575719559">Ubicación bloqueada</translation>
 <translation id="2042279886444479655">Perfiles activos</translation>
 <translation id="2044014337866019681">Para desbloquear la sesión, asegúrate de verificar <ph name="ACCOUNT" />.</translation>
@@ -3433,6 +3434,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Obtén un ahorro de memoria moderado. Las pestañas se vuelven inactivas después de un período más largo.</translation>
 <translation id="347785443197175480">Continuar permitiendo que <ph name="HOST" /> acceda a la cámara y al micrófono</translation>
+<translation id="3478038704461103178">Se cerró la vista dividida</translation>
 <translation id="3479357084663933762">Deuteronomalía</translation>
 <translation id="3479552764303398839">Ahora no</translation>
 <translation id="3479685872808224578">No se pudo detectar el servidor de impresión. Verifica la dirección y vuelve a intentarlo.</translation>
@@ -7610,6 +7612,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6563055593659435495">No se puede mantener la conexión con tu teléfono. Asegúrate de que el teléfono esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas.</translation>
 <translation id="6564343790052433242">Para crear una llave de acceso para <ph name="APP_NAME" />, el Administrador de contraseñas de Google debe estar activado</translation>
 <translation id="6565899972286925956">Crea lo que quieras</translation>
+<translation id="6566648465417201421">Volver a abrir la vista dividida cerrada</translation>
 <translation id="656679903990115526">Escanea este código con tu teléfono para guardar y autocompletar tus contraseñas y acceder fácilmente a sitios y apps</translation>
 <translation id="6568283005472142698">Búsqueda de pestañas</translation>
 <translation id="6569931898053264308">Ahorro: moderado</translation>

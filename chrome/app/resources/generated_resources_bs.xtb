@@ -1454,6 +1454,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2039464276165755892">Sakrijte sadržaj obavještenja kada se otkrije prisustvo druge osobe</translation>
 <translation id="2040460856718599782">Ups!  Došlo je do greške prilikom vaše autentifikacije.  Ponovo provjerite akreditive za prijavu i pokušajte ponovo.</translation>
 <translation id="2040822390690632244">Ažuriranja, pomoć i opcije za programere</translation>
+<translation id="2040827008689966558">Ponovo otvori zatvoreni podijeljeni prikaz</translation>
 <translation id="2040894699575719559">Lokacija je blokirana</translation>
 <translation id="2042279886444479655">Aktivni profili</translation>
 <translation id="2044014337866019681">Provjerite potvrđujete li račun <ph name="ACCOUNT" /> radi otključavanja sesije.</translation>
@@ -3446,6 +3447,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Dobijte umjerene uštede memorije. Kartice postaju neaktivne nakon dužeg perioda.</translation>
 <translation id="347785443197175480">I dalje dozvoljavaj host računaru <ph name="HOST" /> da pristupa kameri i mikrofonu</translation>
+<translation id="3478038704461103178">Podijeljeni prikaz je zatvoren</translation>
 <translation id="3479357084663933762">Deuteranomalija</translation>
 <translation id="3479552764303398839">Ne sada</translation>
 <translation id="3479685872808224578">Otkrivanje servera za štampanje nije uspjelo. Provjerite adresu i pokušajte ponovo.</translation>
@@ -7623,6 +7625,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6563055593659435495">Nije moguće održavati vezu s telefonom. Provjerite nalazi li se telefon u blizini, je li otključan i jesu li uključeni Bluetooth i WiFi.</translation>
 <translation id="6564343790052433242">Da kreirate pristupni ključ za aplikaciju <ph name="APP_NAME" />, Google upravitelj lozinki mora biti uključen</translation>
 <translation id="6565899972286925956">Kreirajte bilo šta</translation>
+<translation id="6566648465417201421">Ponovo otvori zatvoreni podijeljeni prikaz</translation>
 <translation id="656679903990115526">Skenirajte ovo telefonom da sačuvate i automatski popunite lozinke radi lakše prijave na web lokacije i u aplikacije</translation>
 <translation id="6568283005472142698">Pretraživanje kartica</translation>
 <translation id="6569931898053264308">Srednje uštede</translation>

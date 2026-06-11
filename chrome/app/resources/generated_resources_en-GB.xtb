@@ -1457,6 +1457,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2039464276165755892">Hide notification content when someone else is detected</translation>
 <translation id="2040460856718599782">Oops!  Something went wrong when trying to authenticate you. Please double-check your sign-in credentials and try again.</translation>
 <translation id="2040822390690632244">Updates, help, developer options</translation>
+<translation id="2040827008689966558">Reopen closed split view</translation>
 <translation id="2040894699575719559">Location blocked</translation>
 <translation id="2042279886444479655">Active profiles</translation>
 <translation id="2044014337866019681">Please make sure that you are verifying <ph name="ACCOUNT" /> to unlock the session.</translation>
@@ -3449,6 +3450,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3474624961160222204">Continue as <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Get moderate memory savings. Your tabs become inactive after a longer period of time.</translation>
 <translation id="347785443197175480">Continue allowing <ph name="HOST" /> to access your camera and microphone</translation>
+<translation id="3478038704461103178">Split view closed</translation>
 <translation id="3479357084663933762">Deuteranomaly</translation>
 <translation id="3479552764303398839">Not now</translation>
 <translation id="3479685872808224578">Couldn't detect the print server. Please check the address and try again.</translation>
@@ -7626,6 +7628,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6563055593659435495">Can't maintain a connection with your phone. Make sure that your phone is nearby, unlocked and that Bluetooth and Wi-Fi are turned on.</translation>
 <translation id="6564343790052433242">To create a passkey for <ph name="APP_NAME" />, Google Password Manager must be on</translation>
 <translation id="6565899972286925956">Create anything</translation>
+<translation id="6566648465417201421">Reopen closed split view</translation>
 <translation id="656679903990115526">Scan this with your phone to save and autofill your passwords to easily sign in to sites and apps</translation>
 <translation id="6568283005472142698">Tab search</translation>
 <translation id="6569931898053264308">Medium savings</translation>

@@ -1446,6 +1446,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2039464276165755892">Ezkutatu jakinarazpenetako edukia beste norbaiten aurpegia hautematen denean</translation>
 <translation id="2040460856718599782">Arazo bat izan da zu autentifikatzen saiatzean. Egiaztatu bi aldiz saioa hasteko erabili dituzun kredentzialak eta saiatu berriro.</translation>
 <translation id="2040822390690632244">Eguneratzeak, laguntza, garatzaileentzako aukerak</translation>
+<translation id="2040827008689966558">Ireki berriro itxitako ikuspegi zatitua</translation>
 <translation id="2040894699575719559">Blokeatu egin da kokapena</translation>
 <translation id="2042279886444479655">Profil aktiboak</translation>
 <translation id="2044014337866019681">Ziurtatu <ph name="ACCOUNT" /> kontua ari zarela egiaztatzen saioa desblokeatzeko.</translation>
@@ -3433,6 +3434,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3474624961160222204">Egin aurrera <ph name="NAME" /> gisa</translation>
 <translation id="3477772589943384839">Lortu memoria-aurrezte ertaina. Tarte luzeago baten ondoren ezartzen dira inaktibo fitxak.</translation>
 <translation id="347785443197175480">Jarraitu <ph name="HOST" /> webguneari kamera eta mikrofonoa atzitzea baimentzen</translation>
+<translation id="3478038704461103178">Itxi da ikuspegi zatitua</translation>
 <translation id="3479357084663933762">Deuteranomalia</translation>
 <translation id="3479552764303398839">Orain ez</translation>
 <translation id="3479685872808224578">Ezin izan da hauteman inprimatze-zerbitzaria. Egiaztatu helbidea zuzena dela eta saiatu berriro.</translation>
@@ -7605,6 +7607,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6563055593659435495">Ezin da mantendu gailua telefonoarekin konektatuta. Ziurtatu telefonoa hurbil eta desblokeatuta dagoela, eta Bluetootha eta wifia aktibatuta dauzkala.</translation>
 <translation id="6564343790052433242"><ph name="APP_NAME" /> atzitzeko sarbide-gako bat sortzeko, Google-ren Pasahitz-kudeatzailea aktibatuta eduki behar duzu</translation>
 <translation id="6565899972286925956">Sortu edozer</translation>
+<translation id="6566648465417201421">Ireki berriro itxitako ikuspegi zatitua</translation>
 <translation id="656679903990115526">Eskaneatu hau telefonoarekin pasahitzak gordetzeko eta automatikoki betetzeko, webgune eta aplikazioetan saioa erraz hasteko</translation>
 <translation id="6568283005472142698">Fitxa-bilaketa</translation>
 <translation id="6569931898053264308">Aurrezte ertaina</translation>

@@ -1457,6 +1457,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2039464276165755892">Itago ang content ng notification kapag may na-detect na ibang tao</translation>
 <translation id="2040460856718599782">Oops!  May maling nangyari habang sinusubukan kang i-authenticate.  Mangyaring i-double check ang iyong mga credential sa pag-sign in at subukan ulit.</translation>
 <translation id="2040822390690632244">Mga update, tulong, at opsyon ng developer</translation>
+<translation id="2040827008689966558">Buksan ulit ang nakasarang split view</translation>
 <translation id="2040894699575719559">Na-block ang lokasyon</translation>
 <translation id="2042279886444479655">Mga aktibong profile</translation>
 <translation id="2044014337866019681">Tiyaking ang <ph name="ACCOUNT" /> ang vine-verify mo para ma-unlock ang session.</translation>
@@ -3449,6 +3450,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3474624961160222204">Magpatuloy bilang si <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Gawin ang katamtamang pagtitipid sa memory. Hindi na magiging aktibo ang iyong mga tab pagkalipas ng mas mahabang period.</translation>
 <translation id="347785443197175480">Magpatuloy sa pagpayag sa <ph name="HOST" /> na i-access ang iyong camera at mikropono</translation>
+<translation id="3478038704461103178">Isinara ang Split View</translation>
 <translation id="3479357084663933762">Deuteranomaly</translation>
 <translation id="3479552764303398839">Hindi ngayon</translation>
 <translation id="3479685872808224578">Hindi ma-detect ang server sa pag-print. Pakisuri ang address at subukan ulit.</translation>
@@ -7626,6 +7628,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6563055593659435495">Hindi makapagpanatili ng koneksyon sa iyong telepono. Tiyaking nasa malapit at naka-unlock ang iyong telepono, at naka-on ang Bluetooth at Wi-Fi</translation>
 <translation id="6564343790052433242">Para makagawa ng passkey para sa <ph name="APP_NAME" />, naka-on dapat ang Google Password Manager</translation>
 <translation id="6565899972286925956">Gumawa ng kahit ano</translation>
+<translation id="6566648465417201421">Buksan Ulit ang Nakasarang Split View</translation>
 <translation id="656679903990115526">I-scan ito gamit ang iyong telepono para i-save at i-autofill ang mga password mo para madaling makapag-sign in sa mga site at app</translation>
 <translation id="6568283005472142698">Paghahanap sa Tab</translation>
 <translation id="6569931898053264308">Katamtamang Natipid</translation>

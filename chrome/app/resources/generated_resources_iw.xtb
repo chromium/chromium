@@ -652,7 +652,7 @@
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{הוספת הכרטיסייה לקבוצה חדשה}one{הוספת כרטיסיות לקבוצה חדשה}two{הוספת כרטיסיות לקבוצה חדשה}other{הוספת כרטיסיות לקבוצה חדשה}}</translation>
 <translation id="1470946456740188591">‏כדי להפעיל או להשבית או הגלישה באמצעות סמן הטקסט, אפשר להשתמש במקשי הקיצור Ctrl+Search+7</translation>
 <translation id="1471034383866732283">למצב הקריאה יש בעיה באיתור התוכן הראשי בדף הזה</translation>
-<translation id="1472675084647422956">הצגת יותר מידע</translation>
+<translation id="1472675084647422956">עוד</translation>
 <translation id="1473223074251193484">‏קביעת ההגדרות האישיות לשיתוף אינטרנט בין מכשירים (tethering)</translation>
 <translation id="1473616112002966036">&amp;פריים</translation>
 <translation id="1473927070149284123">אפשר לנסות שוב או להתחבר לרשת באופן ידני</translation>
@@ -1453,6 +1453,7 @@
 <translation id="2039464276165755892">הסתרת תוכן ההתראות כשהמערכת מזהה אדם נוסף</translation>
 <translation id="2040460856718599782">אופס! משהו השתבש במהלך ניסיון האימות שלך. יש לבדוק שוב את פרטי הכניסה שלך ולנסות שוב.</translation>
 <translation id="2040822390690632244">עדכונים, עזרה, אפשרויות למפתחים</translation>
+<translation id="2040827008689966558">פתיחה מחדש של התצוגה המפוצלת שנסגרה</translation>
 <translation id="2040894699575719559">המיקום נחסם</translation>
 <translation id="2042279886444479655">פרופילים פעילים</translation>
 <translation id="2044014337866019681">עליך לוודא שהחשבון המאומת הוא <ph name="ACCOUNT" /> כדי לבטל את נעילת הפעילות.</translation>
@@ -3445,6 +3446,7 @@
 <translation id="3474624961160222204">המשך כ-<ph name="NAME" /></translation>
 <translation id="3477772589943384839">חיסכון בינוני במשאבי הזיכרון. הכרטיסיות מושבתות אחרי פרק זמן ארוך יותר.</translation>
 <translation id="347785443197175480">אני רוצה להמשיך לאפשר ל-<ph name="HOST" /> לגשת למצלמה ולמיקרופון</translation>
+<translation id="3478038704461103178">התצוגה המפוצלת נסגרה</translation>
 <translation id="3479357084663933762">דוטרנומליה</translation>
 <translation id="3479552764303398839">לא עכשיו</translation>
 <translation id="3479685872808224578">לא ניתן היה להתחבר אל שרת ההדפסה. יש לבדוק את הכתובת ולנסות שוב.</translation>
@@ -5740,7 +5742,7 @@
 <translation id="513555878193063507">‏הוספה של APN חדש</translation>
 <translation id="5136343472380336530">‏יש לוודא ששני המכשירים אינם נעולים, שהם קרובים זה לזה ושבשניהם מופעל Bluetooth. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="5136529877787728692">F7</translation>
-<translation id="5138227688689900538">פחות מידע</translation>
+<translation id="5138227688689900538">פחות</translation>
 <translation id="5139823398361067371">יש להזין את קוד האימות של מפתח האבטחה. אם לא ידוע לך מהו קוד האימות, יהיה עליך לאפס את מפתח האבטחה.</translation>
 <translation id="5139955368427980650">&amp;פתיחה</translation>
 <translation id="5140742218917419811">מקשים לשימוש</translation>
@@ -7623,6 +7625,7 @@
 <translation id="6563055593659435495">‏החיבור לטלפון לא יציב. צריך לוודא שהטלפון נמצא בקרבת מקום ושהוא לא נעול. בנוסף, צריך לוודא שה-Bluetooth וה-Wi-Fi מופעלים.</translation>
 <translation id="6564343790052433242">‏כדי ליצור מפתח גישה ל-<ph name="APP_NAME" />, צריך להפעיל את מנהל הסיסמאות של Google</translation>
 <translation id="6565899972286925956">אפשר ליצור כל דבר</translation>
+<translation id="6566648465417201421">פתיחה מחדש של התצוגה המפוצלת שנסגרה</translation>
 <translation id="656679903990115526">כדי להיכנס בקלות לאתרים ולאפליקציות, אפשר לסרוק את הקוד הזה בטלפון ואז לשמור את הסיסמאות ולמלא אותן באופן אוטומטי</translation>
 <translation id="6568283005472142698">חיפוש בכרטיסיות</translation>
 <translation id="6569931898053264308">חיסכון של נפח בינוני</translation>

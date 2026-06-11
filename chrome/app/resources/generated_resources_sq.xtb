@@ -1443,6 +1443,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2039464276165755892">Fshih përmbajtjet e njoftimeve kur zbulohet dikush tjetër</translation>
 <translation id="2040460856718599782">Gabim! Diçka nuk shkoi mirë gjatë përpjekjes për të të vërtetuar. Kontrollo për së dyti kredencialet e identifikimit dhe provo sërish.</translation>
 <translation id="2040822390690632244">Përditësimet, ndihma, opsionet e zhvilluesit</translation>
+<translation id="2040827008689966558">Rihap pamjen e ndarë të mbyllur</translation>
 <translation id="2040894699575719559">Vendndodhja u bllokua</translation>
 <translation id="2042279886444479655">Profilet aktive</translation>
 <translation id="2044014337866019681">Sigurohu që po verifikon <ph name="ACCOUNT" /> për të shkyçur sesionin.</translation>
@@ -3433,6 +3434,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3474624961160222204">Vazhdo si <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Merr kursim mesatar të memories. Skedat e tua bëhen joaktive pas një periudhe më të gjatë kohore.</translation>
 <translation id="347785443197175480">Vazhdo të lejosh <ph name="HOST" /> që të qaset te kamera dhe mikrofoni</translation>
+<translation id="3478038704461103178">"Pamja e ndarë" u mbyll</translation>
 <translation id="3479357084663933762">Deuteranomali</translation>
 <translation id="3479552764303398839">Jo tani</translation>
 <translation id="3479685872808224578">Serveri i printimit nuk mund të zbulohej. Kontrollo adresën dhe provo përsëri.</translation>
@@ -7608,6 +7610,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6563055593659435495">Nuk mund të ruhej një lidhje me telefonin tënd. Sigurohu që telefoni yt të jetë në afërsi, i shkyçur dhe që Bluetooth-i dhe Wi-Fi të jenë aktivizuar.</translation>
 <translation id="6564343790052433242">Për të krijuar një çelës kalimi për <ph name="APP_NAME" />, "Menaxheri i fjalëkalimeve i Google" duhet të jetë aktiv</translation>
 <translation id="6565899972286925956">Krijo gjithçka</translation>
+<translation id="6566648465417201421">Rihap "Pamjen e ndarë" të mbyllur</translation>
 <translation id="656679903990115526">Skanoje këtë me telefonin tënd për t'i ruajtur dhe plotësuar automatikisht fjalëkalimet e tua për t'u identifikuar me lehtësi në sajte dhe aplikacione</translation>
 <translation id="6568283005472142698">Kërkimi në skeda</translation>
 <translation id="6569931898053264308">Kursime mesatare</translation>

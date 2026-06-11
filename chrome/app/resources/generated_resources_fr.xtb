@@ -1447,6 +1447,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2039464276165755892">Masquer les notifications lorsqu'une autre personne est détectée</translation>
 <translation id="2040460856718599782">Petit problème… Une erreur s'est produite lors de la tentative d'authentification. Veuillez vérifier vos identifiants de connexion, puis réessayer.</translation>
 <translation id="2040822390690632244">Mises à jour, aide, options pour les développeurs</translation>
+<translation id="2040827008689966558">Rouvrir la vue fractionnée fermée</translation>
 <translation id="2040894699575719559">Position bloquée</translation>
 <translation id="2042279886444479655">Profils actifs</translation>
 <translation id="2044014337866019681">Pour déverrouiller la session, vérifiez que vous êtes bien en train de valider <ph name="ACCOUNT" />.</translation>
@@ -3434,6 +3435,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3474624961160222204">Continuer en tant que <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Économies de mémoire modérées. Les onglets deviennent inactifs après une longue période.</translation>
 <translation id="347785443197175480">Continuer à autoriser <ph name="HOST" /> à accéder à votre caméra et à votre micro</translation>
+<translation id="3478038704461103178">Vue fractionnée fermée</translation>
 <translation id="3479357084663933762">Deutéranomalie</translation>
 <translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3479685872808224578">Impossible de détecter le serveur d'impression. Veuillez vérifier l'adresse, puis réessayer.</translation>
@@ -7610,6 +7612,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6563055593659435495">Impossible de maintenir la connexion avec votre téléphone. Vérifiez que votre téléphone est à proximité et débloqué, et que le Bluetooth et le Wi-Fi sont activés.</translation>
 <translation id="6564343790052433242">Pour créer une clé d'accès pour <ph name="APP_NAME" />, vous devez activer le Gestionnaire de mots de passe de Google</translation>
 <translation id="6565899972286925956">Créez ce que vous voulez</translation>
+<translation id="6566648465417201421">Rouvrir la vue fractionnée fermée</translation>
 <translation id="656679903990115526">Scannez ce code avec votre téléphone pour enregistrer et saisir automatiquement vos mots de passe afin de vous connecter facilement à des sites et applis</translation>
 <translation id="6568283005472142698">Recherche dans les onglets</translation>
 <translation id="6569931898053264308">Économies moyennes</translation>

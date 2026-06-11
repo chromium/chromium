@@ -1455,6 +1455,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2039464276165755892">Az értesítések tartalmának elrejtése, amikor valaki mást észlel a rendszer</translation>
 <translation id="2040460856718599782">Hoppá! Hiba történt, miközben a rendszer megpróbálta azonosítani. Kérjük, ellenőrizze még egyszer bejelentkezési adatait, majd próbálja meg ismét.</translation>
 <translation id="2040822390690632244">Frissítések, súgó, fejlesztői beállítások</translation>
+<translation id="2040827008689966558">Bezárt osztott nézet ismételt megnyitása</translation>
 <translation id="2040894699575719559">Helyadatok letiltva</translation>
 <translation id="2042279886444479655">Aktív profilok</translation>
 <translation id="2044014337866019681">A munkamenet zárolásának feloldásához igazolja a következő fiókot: <ph name="ACCOUNT" />.</translation>
@@ -3447,6 +3448,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3474624961160222204">Folytatás mint <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Mérsékelt memóriamegtakarítást kaphat. A lapok hosszabb idő után válnak inaktívvá.</translation>
 <translation id="347785443197175480">A(z) <ph name="HOST" /> továbbra is hozzáférhet az Ön kamerájához és mikrofonjához</translation>
+<translation id="3478038704461103178">Osztott nézet bezárva</translation>
 <translation id="3479357084663933762">Deuteranomália</translation>
 <translation id="3479552764303398839">Ne most</translation>
 <translation id="3479685872808224578">Nem sikerült felfedezni a nyomtatószervert. Ellenőrizze a címet, majd próbálja újra.</translation>
@@ -7624,6 +7626,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6563055593659435495">Nem sikerült fenntartani a telefon kapcsolatát. Gondoskodjon arról, hogy telefonja a közelben legyen feloldott állapotban, valamint arról, hogy a Bluetooth- és a Wi-Fi-kapcsolat be legyen kapcsolva.</translation>
 <translation id="6564343790052433242">A(z) <ph name="APP_NAME" /> alkalmazáshoz való azonosítókulcs létrehozásához a Google Jelszókezelőnek bekapcsolva kell lennie</translation>
 <translation id="6565899972286925956">Bármit létrehozhat</translation>
+<translation id="6566648465417201421">Bezárt osztott nézet ismételt megnyitása</translation>
 <translation id="656679903990115526">Olvassa be a telefonjával, hogy menthesse és automatikusan kitölthesse jelszavait, és így egyszerűen bejelentkezhessen a webhelyekre és az alkalmazásokba.</translation>
 <translation id="6568283005472142698">Keresés a lapokon</translation>
 <translation id="6569931898053264308">Közepes megtakarítás</translation>

@@ -1447,6 +1447,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2039464276165755892">Sakrij sadržaj obavijesti kad se detektira neka druga osoba</translation>
 <translation id="2040460856718599782">Ups! Nešto nije u redu s vašom autentifikacijom. Još jedanput provjerite svoje vjerodajnice za prijavu i pokušajte ponovo.</translation>
 <translation id="2040822390690632244">Ažuriranja, pomoć, opcije za razvojne programere</translation>
+<translation id="2040827008689966558">Ponovno otvori zatvoreni podijeljeni prikaz</translation>
 <translation id="2040894699575719559">Lokacija je blokirana</translation>
 <translation id="2042279886444479655">Aktivni profili</translation>
 <translation id="2044014337866019681">Provjerite potvrđujete li račun <ph name="ACCOUNT" /> da biste otključali sesiju.</translation>
@@ -3436,6 +3437,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Ostvarite umjerenu uštedu memorije. Kartice će nakon duljeg razdoblja postati neaktivne.</translation>
 <translation id="347785443197175480">Nastavi dopuštati hostu <ph name="HOST" /> pristup kameri i mikrofonu</translation>
+<translation id="3478038704461103178">Podijeljeni prikaz je zatvoren</translation>
 <translation id="3479357084663933762">Deuteranomalija</translation>
 <translation id="3479552764303398839">Ne sada</translation>
 <translation id="3479685872808224578">Poslužitelj za ispis nije pronađen. Provjerite adresu i pokušajte ponovo.</translation>
@@ -7608,6 +7610,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6563055593659435495">Održavanje veze s vašim telefonom nije uspjelo. Provjerite je li telefon u blizini, je li otključan i jesu li na njemu uključeni Bluetooth i Wi-Fi.</translation>
 <translation id="6564343790052433242">Da biste izradili pristupni ključ za web-lokaciju <ph name="APP_NAME" />, Google upravitelj zaporki mora biti uključen</translation>
 <translation id="6565899972286925956">Izradite što god želite</translation>
+<translation id="6566648465417201421">Ponovno otvori zatvoreni podijeljeni prikaz</translation>
 <translation id="656679903990115526">Skenirajte to telefonom da biste spremili i automatski popunili zaporke te se lako prijavljivali na web-lokacije i u aplikacije</translation>
 <translation id="6568283005472142698">Pretraživanje kartica</translation>
 <translation id="6569931898053264308">Srednja ušteda</translation>

@@ -1447,6 +1447,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2039464276165755892">Başqası aşkar edildikdə bildiriş məzmununu gizlədin</translation>
 <translation id="2040460856718599782">Sizi doğrulayan zaman xəta oldu. Giriş kredensiallarınızı yoxlayın və yenidən cəhd edin.</translation>
 <translation id="2040822390690632244">Güncəllənmə, kömək, developer seçimləri</translation>
+<translation id="2040827008689966558">Bağlanmış bölünmüş görünüşü yenidən açın</translation>
 <translation id="2040894699575719559">Məkan blok edildi</translation>
 <translation id="2042279886444479655">Aktiv profillər</translation>
 <translation id="2044014337866019681">Seansı blokdan çıxarmaq üçün <ph name="ACCOUNT" /> hesabını doğruladığınıza əmin olun.</translation>
@@ -3439,6 +3440,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3474624961160222204"><ph name="NAME" /> olaraq davam edin</translation>
 <translation id="3477772589943384839">Yaddaşa orta səviyyədə qənaət edin. Tablar uzun müddətdən sonra qeyri-aktiv olur.</translation>
 <translation id="347785443197175480"><ph name="HOST" /> hostuna kameranıza və mikrofonunuza giriş verirsiniz</translation>
+<translation id="3478038704461103178">Bölünmüş Görünüş bağlandı</translation>
 <translation id="3479357084663933762">Deyteranomaliya</translation>
 <translation id="3479552764303398839">İndi yox</translation>
 <translation id="3479685872808224578">Çap serverini aşkar etmək mümkün olmadı. Ünvanı yoxlayın və yenidən cəhd edin.</translation>
@@ -7614,6 +7616,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6563055593659435495">Telefonunuzla bağlantını saxlamaq mümkün deyil. Telefonunuzun yaxınlıqda, kiliddən çıxarılmış olduğuna, Bluetooth və Wi-Fi-ın yandırılmış olduğuna əmin olun.</translation>
 <translation id="6564343790052433242"><ph name="APP_NAME" /> üçün giriş açarı yaratmaq məqsədilə Google Parol Meneceri aktiv olmalıdır</translation>
 <translation id="6565899972286925956">İstənilən şeyi yaradın</translation>
+<translation id="6566648465417201421">Bağlanmış bölünmüş görünüşü yenidən açın</translation>
 <translation id="656679903990115526">Sayt və tətbiqlərə asanlıqla daxil olmaq məqsədilə parolları yadda saxlamaq və avtomatik doldurmaq üçün telefonunuzla skan edin</translation>
 <translation id="6568283005472142698">Tab Axtarışı</translation>
 <translation id="6569931898053264308">Orta səviyyədə qənaət</translation>

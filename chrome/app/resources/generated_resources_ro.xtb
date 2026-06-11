@@ -1447,6 +1447,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2039464276165755892">Ascunde conținutul notificării când este detectată o altă persoană</translation>
 <translation id="2040460856718599782">Hopa! A apărut o eroare la autentificarea dvs. Verificați încă o dată datele de conectare și încercați din nou.</translation>
 <translation id="2040822390690632244">Actualizări, ajutor, opțiuni pentru dezvoltatori</translation>
+<translation id="2040827008689966558">Redeschide afișarea împărțită închisă</translation>
 <translation id="2040894699575719559">Accesul la locație a fost blocat</translation>
 <translation id="2042279886444479655">Profiluri active</translation>
 <translation id="2044014337866019681">Confirmă <ph name="ACCOUNT" /> pentru a debloca sesiunea.</translation>
@@ -3435,6 +3436,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3474624961160222204">Continuă ca <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Fă economii moderate de memorie. Filele devin inactive după o perioadă mai lungă.</translation>
 <translation id="347785443197175480">Permiteți în continuare accesul <ph name="HOST" /> la camera și microfonul dvs.</translation>
+<translation id="3478038704461103178">Afișarea împărțită a fost închisă</translation>
 <translation id="3479357084663933762">Deuteranomalie</translation>
 <translation id="3479552764303398839">Nu acum</translation>
 <translation id="3479685872808224578">Nu s-a putut detecta serverul de printare. Verifică adresa și încearcă din nou.</translation>
@@ -7610,6 +7612,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6563055593659435495">Nu se poate păstra conexiunea cu telefonul. Asigură-te că telefonul este în apropiere, deblocat, cu Bluetooth și Wi-Fi activate.</translation>
 <translation id="6564343790052433242">Ca să creezi o cheie de acces pentru <ph name="APP_NAME" />, trebuie să activezi Managerul de parole Google</translation>
 <translation id="6565899972286925956">Creează orice</translation>
+<translation id="6566648465417201421">Redeschide afișarea împărțită închisă</translation>
 <translation id="656679903990115526">Scanează codul cu telefonul pentru a salva și a completa automat parolele ca să te conectezi cu ușurință la site-uri și aplicații</translation>
 <translation id="6568283005472142698">Căutarea filelor</translation>
 <translation id="6569931898053264308">Economii medii de memorie</translation>

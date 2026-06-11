@@ -1447,6 +1447,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2039464276165755892">Skrýt obsah oznámení, když je poblíž někdo další</translation>
 <translation id="2040460856718599782">Jejda! Při ověřování vaší totožnosti došlo k chybě. Zkontrolujte prosím identifikační údaje a zkuste to znovu.</translation>
 <translation id="2040822390690632244">Aktualizace, nápověda, možnosti pro vývojáře</translation>
+<translation id="2040827008689966558">Znovu otevřít zavřené rozdělené zobrazení</translation>
 <translation id="2040894699575719559">Místo bylo zablokováno</translation>
 <translation id="2042279886444479655">Aktivní profily</translation>
 <translation id="2044014337866019681">Pokud tuto relaci chcete odemknout, zkontrolujte, zda ověřujete účet <ph name="ACCOUNT" />.</translation>
@@ -3434,6 +3435,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3474624961160222204">Pokračovat jako <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Získáte malou úsporu paměti. Karty přestanou být aktivní po delší době.</translation>
 <translation id="347785443197175480">Povolit webu <ph name="HOST" /> přístup k webové kameře a mikrofonu i nadále</translation>
+<translation id="3478038704461103178">Rozdělené zobrazení bylo zavřeno</translation>
 <translation id="3479357084663933762">Deuteranomálie</translation>
 <translation id="3479552764303398839">Teď ne</translation>
 <translation id="3479685872808224578">K tiskovému serveru se nelze připojit. Zkontrolujte adresu a zkuste to znovu.</translation>
@@ -7605,6 +7607,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6563055593659435495">Nelze udržet spojení s telefonem. Zkontrolujte, zda je telefon poblíž, zda je odemknutý a zda jsou zapnuté Bluetooth a Wi-Fi.</translation>
 <translation id="6564343790052433242">K vytvoření přístupového klíče pro aplikaci <ph name="APP_NAME" /> musí být Správce hesel Google zapnutý</translation>
 <translation id="6565899972286925956">Vytvořte cokoli</translation>
+<translation id="6566648465417201421">Znovu otevřít zavřené rozdělené zobrazení</translation>
 <translation id="656679903990115526">Naskenujte telefonem tenhle kód a ukládejte si a automaticky vyplňujte hesla pro snadné přihlašování na weby a do aplikací</translation>
 <translation id="6568283005472142698">Vyhledávání v kartách</translation>
 <translation id="6569931898053264308">Střední úspora</translation>

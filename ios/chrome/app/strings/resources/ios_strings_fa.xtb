@@ -177,7 +177,7 @@
 <translation id="1580783302095112590">نامه ارسال شد.</translation>
 <translation id="1582732959743469162">با این کار کل پیشرفت بارگیری کنونی‌تان متوقف خواهد شد.</translation>
 <translation id="1594034544529347967">تاریخ شروع</translation>
-<translation id="1598485494295307681">درحال شنیدن</translation>
+<translation id="1598485494295307681">درحال گوش کردن</translation>
 <translation id="1598751033135758830">باز کردن در برنامه…</translation>
 <translation id="1600571977391127696">برخی‌از محتوا ممکن است برای همه مناسب نباشد.</translation>
 <translation id="1601560923496285236">اعمال</translation>
@@ -937,7 +937,7 @@
 <translation id="4282944936010261425">هیچ‌گونه مشکل امنیتی برای برطرف کردن وجود ندارد.</translation>
 <translation id="4286718549648564014">نشانی به حساب <ph name="USER_EMAIL" /> شما منتقل شد</translation>
 <translation id="4287172530684295552">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
-<translation id="428768789042547925">ویژگی‌های جدید</translation>
+<translation id="428768789042547925">تازه‌ها</translation>
 <translation id="429074084062258019">{count,plural, =1{افزودن زبانه به گروه}one{افزودن زبانه به گروه}other{افزودن زبانه‌ها به گروه}}</translation>
 <translation id="4294506173142861371">به‌عنوان <ph name="FIRST_NAME" /> به سیستم وارد می‌شوید؟</translation>
 <translation id="4302061870579014542">تنظیم کردن موقعیت</translation>

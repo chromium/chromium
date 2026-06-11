@@ -1457,6 +1457,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2039464276165755892">Dölj aviseringar när någon annan tittar på skärmen</translation>
 <translation id="2040460856718599782">Hoppsan! Något gick fel när du försökte verifiera dig. Dubbelkolla dina inloggningsuppgifter och försök igen.</translation>
 <translation id="2040822390690632244">Uppdateringar, hjälp, utvecklaralternativ</translation>
+<translation id="2040827008689966558">Öppna delad vy som stängts igen</translation>
 <translation id="2040894699575719559">Platsen är blockerad</translation>
 <translation id="2042279886444479655">Aktiva profiler</translation>
 <translation id="2044014337866019681">Kontrollera att du verifierar <ph name="ACCOUNT" /> om du vill låsa upp sessionen.</translation>
@@ -3449,6 +3450,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3474624961160222204">Fortsätt som <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Spara måttligt mycket minne. Flikarna blir inaktiva efter en längre tid.</translation>
 <translation id="347785443197175480">Fortsätt tillåta att <ph name="HOST" /> använder kameran och mikrofonen</translation>
+<translation id="3478038704461103178">Delad vy har stängts</translation>
 <translation id="3479357084663933762">Deuteranopi</translation>
 <translation id="3479552764303398839">Inte nu</translation>
 <translation id="3479685872808224578">Utskriftsservern hittades inte. Kontrollera webbadressen och försök igen.</translation>
@@ -7626,6 +7628,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6563055593659435495">Det gick inte att upprätthålla anslutningen till telefonen. Se till att telefonen finns i närheten, är olåst och att Bluetooth och wifi har aktiverats på den.</translation>
 <translation id="6564343790052433242">Google Lösenordshantering måste vara aktiverad om du vill skapa en nyckel för <ph name="APP_NAME" /></translation>
 <translation id="6565899972286925956">Skapa vad som helst</translation>
+<translation id="6566648465417201421">Öppna delad vy som stängts igen</translation>
 <translation id="656679903990115526">Skanna detta med telefonen för att spara och autofylla dina lösenord så att du enkelt kan logga in på webbplatser och i appar</translation>
 <translation id="6568283005472142698">Sök bland flikar</translation>
 <translation id="6569931898053264308">Medelstora besparingar</translation>

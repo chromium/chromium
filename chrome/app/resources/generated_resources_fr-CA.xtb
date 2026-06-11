@@ -1447,6 +1447,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2039464276165755892">Masquer le contenu des notifications lorsque quelqu'un d'autre regarde votre écran</translation>
 <translation id="2040460856718599782">Oups... Nous n'avons pas réussi à vous authentifier. Veuillez vérifier vos authentifiants de connexion, puis réessayer.</translation>
 <translation id="2040822390690632244">Mises à jour, aide, options pour les développeurs</translation>
+<translation id="2040827008689966558">Rouvrir l'affichage partagé fermé</translation>
 <translation id="2040894699575719559">Lieu bloqué</translation>
 <translation id="2042279886444479655">Profils actifs</translation>
 <translation id="2044014337866019681">Assurez-vous de vérifier <ph name="ACCOUNT" /> pour déverrouiller la session.</translation>
@@ -3438,6 +3439,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3474624961160222204">Contin. comme <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Obtenez des économies de mémoire modérées. Vos onglets deviennent inactifs après une plus longue période.</translation>
 <translation id="347785443197175480">Continuer à autoriser <ph name="HOST" /> à accéder à votre caméra et à votre microphone</translation>
+<translation id="3478038704461103178">Affichage partagé fermé</translation>
 <translation id="3479357084663933762">Deutéranomalie</translation>
 <translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3479685872808224578">Impossible de détecter le serveur d'impression. Veuillez vérifier l'adresse, puis réessayez.</translation>
@@ -7613,6 +7615,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6563055593659435495">Impossible de maintenir une connexion avec votre téléphone. Assurez-vous que votre téléphone est à proximité et déverrouillé, et que le Bluetooth et le Wi-Fi sont activés.</translation>
 <translation id="6564343790052433242">Pour créer une clé d'accès pour <ph name="APP_NAME" />, le gestionnaire de mots de passe Google doit être activé</translation>
 <translation id="6565899972286925956">Créez n'importe quoi</translation>
+<translation id="6566648465417201421">Rouvrir l'affichage partagé fermé</translation>
 <translation id="656679903990115526">Balayez ce code avec votre téléphone pour enregistrer et remplir automatiquement vos mots de passe afin de vous connecter facilement aux sites et aux applis</translation>
 <translation id="6568283005472142698">Recherche d'onglet</translation>
 <translation id="6569931898053264308">Économies moyennes</translation>

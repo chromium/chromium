@@ -1458,6 +1458,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2039464276165755892">Skjul notifikationsindhold, når der registreres en anden person</translation>
 <translation id="2040460856718599782">Ups! Noget gik galt under forsøget på at godkende dig. Kontrollér dine loginoplysninger, og prøv igen.</translation>
 <translation id="2040822390690632244">Opdateringer, hjælp, indstillinger for udviklere</translation>
+<translation id="2040827008689966558">Åbn den opdelte visning igen</translation>
 <translation id="2040894699575719559">Stedet er blokeret</translation>
 <translation id="2042279886444479655">Aktive profiler</translation>
 <translation id="2044014337866019681">Sørg for, at du verificerer <ph name="ACCOUNT" /> for at låse sessionen op.</translation>
@@ -3450,6 +3451,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3474624961160222204">Fortsæt som <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Få moderate hukommelsesbesparelser. Dine faner bliver inaktive efter en længere periode.</translation>
 <translation id="347785443197175480">Tillad fortsat, at <ph name="HOST" /> har adgang til dit kamera og din mikrofon</translation>
+<translation id="3478038704461103178">Opdelt visning er lukket</translation>
 <translation id="3479357084663933762">Deuteranomali</translation>
 <translation id="3479552764303398839">Ikke nu</translation>
 <translation id="3479685872808224578">Printerserveren kunne ikke registreres. Tjek adressen, og prøv igen.</translation>
@@ -7627,6 +7629,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6563055593659435495">Forbindelsen til din telefon kan ikke opretholdes. Sørg for, at din telefon er i nærheden, at den er låst op, og at Bluetooth og Wi-Fi er aktiveret.</translation>
 <translation id="6564343790052433242">Google Adgangskodeadministrator skal være aktiveret for at oprette en adgangsnøgle til <ph name="APP_NAME" /></translation>
 <translation id="6565899972286925956">Opret hvad som helst</translation>
+<translation id="6566648465417201421">Åbn opdelt visning igen</translation>
 <translation id="656679903990115526">Scan dette med din telefon for at gemme og automatisk udfylde dine adgangskoder, så du nemt kan logge ind på websites og i apps</translation>
 <translation id="6568283005472142698">Fanesøgning</translation>
 <translation id="6569931898053264308">Mellemstore hukommelsesbesparelser</translation>

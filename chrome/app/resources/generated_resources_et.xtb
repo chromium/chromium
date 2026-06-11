@@ -1448,6 +1448,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2039464276165755892">Peida märguande sisu, kui tuvastatakse keegi teine</translation>
 <translation id="2040460856718599782">Vabandust! Teie autentimisel läks midagi valesti. Kontrollige veel kord sisselogimise mandaate ja proovige uuesti.</translation>
 <translation id="2040822390690632244">Värskendused, abi, arendaja valikud</translation>
+<translation id="2040827008689966558">Ava suletud poolitatud vaade uuesti</translation>
 <translation id="2040894699575719559">Asukoht on blokeeritud</translation>
 <translation id="2042279886444479655">Aktiivsed profiilid</translation>
 <translation id="2044014337866019681">Seansi avamiseks veenduge, et kinnitaksite konto <ph name="ACCOUNT" />.</translation>
@@ -3440,6 +3441,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3474624961160222204">Jätka kasutajana <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Säästate mälumahtu keskmiselt. Teie vahelehed muutuvad pärast pikemalt aega inaktiivseks.</translation>
 <translation id="347785443197175480">Luba hostile <ph name="HOST" /> jätkuvalt juurdepääs kaamerale ja mikrofonile</translation>
+<translation id="3478038704461103178">Poolitatud vaade suleti.</translation>
 <translation id="3479357084663933762">Deuteranomaalia</translation>
 <translation id="3479552764303398839">Mitte praegu</translation>
 <translation id="3479685872808224578">Prindiserverit ei õnnestunud tuvastada. Kontrollige aadressi ja proovige uuesti.</translation>
@@ -7617,6 +7619,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6563055593659435495">Teie telefoniga ei saa ühendust säilitada. Veenduge, et teie telefon oleks läheduses, avatud ning Bluetooth ja WiFi oleksid sisse lülitatud.</translation>
 <translation id="6564343790052433242">Rakenduse <ph name="APP_NAME" /> jaoks pääsuvõtme loomiseks peab Google'i paroolihaldur olema sisse lülitatud.</translation>
 <translation id="6565899972286925956">Looge midagi.</translation>
+<translation id="6566648465417201421">Ava suletud poolitatud vaade uuesti</translation>
 <translation id="656679903990115526">Skannige see oma telefoniga, et oma paroolid salvestada ja automaatselt täita ning hõlpsasti saitidele ja rakendustesse sisse logida.</translation>
 <translation id="6568283005472142698">Otsing vahelehtedelt</translation>
 <translation id="6569931898053264308">Keskmine sääst</translation>

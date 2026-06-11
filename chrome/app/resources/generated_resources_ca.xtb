@@ -1442,6 +1442,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2039464276165755892">Amaga el contingut de la notificació quan es detecti una altra persona</translation>
 <translation id="2040460856718599782">S'ha produït un error quan provàvem d'autenticar-te. Comprova les teves credencials d'inici de sessió i torna-ho a provar.</translation>
 <translation id="2040822390690632244">Novetats, ajuda i opcions per a desenvolupadors</translation>
+<translation id="2040827008689966558">Torna a obrir la vista dividida tancada</translation>
 <translation id="2040894699575719559">S'ha bloquejat la ubicació</translation>
 <translation id="2042279886444479655">Perfils actius</translation>
 <translation id="2044014337866019681">Comprova que estàs verificant <ph name="ACCOUNT" /> per desbloquejar la sessió.</translation>
@@ -3424,6 +3425,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3474624961160222204">Continua com a <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Aconsegueix un estalvi de memòria moderat. Les pestanyes es desactiven després d'un període de temps més llarg.</translation>
 <translation id="347785443197175480">Continua permetent que <ph name="HOST" /> accedeixi a la càmera i al micròfon</translation>
+<translation id="3478038704461103178">La vista dividida s'ha tancat</translation>
 <translation id="3479357084663933762">Deuteranomalia</translation>
 <translation id="3479552764303398839">Ara no</translation>
 <translation id="3479685872808224578">No s'ha pogut detectar el servidor d'impressió. Comprova l'adreça i torna-ho a provar.</translation>
@@ -7591,6 +7593,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6563055593659435495">No es pot mantenir la connexió amb el teu telèfon. Comprova que el telèfon sigui a prop teu, que estigui desbloquejat i que tingui el Bluetooth i la Wi-Fi activats.</translation>
 <translation id="6564343790052433242">Si vols crear una clau d'accés per a <ph name="APP_NAME" />, el gestor de contrasenyes de Google ha d'estar activat</translation>
 <translation id="6565899972286925956">Crea qualsevol cosa</translation>
+<translation id="6566648465417201421">Torna a obrir la vista dividida tancada</translation>
 <translation id="656679903990115526">Escaneja aquest codi amb el telèfon per desar i emplenar automàticament les contrasenyes i iniciar la sessió fàcilment a llocs web i aplicacions</translation>
 <translation id="6568283005472142698">Cerca de pestanyes</translation>
 <translation id="6569931898053264308">Estalvi mitjà</translation>

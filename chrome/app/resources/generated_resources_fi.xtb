@@ -1456,6 +1456,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2039464276165755892">Piilota ilmoitussisältö, kun toinen henkilö havaitaan</translation>
 <translation id="2040460856718599782">Hups! Jotain meni vikaan todennuksen aikana. Tarkista kirjautumistietosi ja yritä uudelleen.</translation>
 <translation id="2040822390690632244">Päivitykset, ohjeet, kehittäjäasetukset</translation>
+<translation id="2040827008689966558">Avaa suljettu jaettu näkymä uudelleen</translation>
 <translation id="2040894699575719559">Sijainti estetty</translation>
 <translation id="2042279886444479655">Aktiiviset profiilit</translation>
 <translation id="2044014337866019681">Avaa istunto varmistamalla, että vahvistamasi tili on <ph name="ACCOUNT" />.</translation>
@@ -3448,6 +3449,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3474624961160222204">Jatka käyttäjänä <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Saat kohtuullisen muistinsäästön. Välilehdet muuttuvat epäaktiivisiksi pidemmän ajan kuluttua.</translation>
 <translation id="347785443197175480">Anna sivuston <ph name="HOST" /> käyttää edelleen kameraasi ja mikrofoniasi</translation>
+<translation id="3478038704461103178">Jaettu näkymä suljettu</translation>
 <translation id="3479357084663933762">Deuteranomalia</translation>
 <translation id="3479552764303398839">Ei nyt</translation>
 <translation id="3479685872808224578">Tulostuspalvelinta ei havaittu. Tarkista osoite ja yritä uudelleen.</translation>
@@ -7622,6 +7624,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6563055593659435495">Menetimme yhteyden puhelimeesi. Varmista, että puhelin on lähellä, sen lukitus on avattu ja Bluetooth ja Wi-Fi ovat päällä.</translation>
 <translation id="6564343790052433242">Google Salasanojen on oltava päällä, jotta voit luoda avainkoodin tänne: <ph name="APP_NAME" /></translation>
 <translation id="6565899972286925956">Luo mitä tahansa</translation>
+<translation id="6566648465417201421">Avaa suljettu jaettu näkymä uudelleen</translation>
 <translation id="656679903990115526">Skannaa tämä puhelimella, niin voit tallentaa ja täyttää salasanat automaattisesti ja kirjautua sivustoille ja sovelluksiin helposti</translation>
 <translation id="6568283005472142698">Välilehtihaku</translation>
 <translation id="6569931898053264308">Kohtalaiset säästöt</translation>
