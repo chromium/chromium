@@ -41,8 +41,9 @@ void IndigoImageReplacement::ReplacementFrameAttached(
   tracked_element_id_ = tracked_element_id;
 }
 
-void IndigoImageReplacement::OnReadyToRender() {
+int32_t IndigoImageReplacement::OnReadyToRender() {
   remote_->RenderReplacement();
+  return manager_->active_invocation_id().value().GetUnsafeValue();
 }
 
 std::vector<uint8_t> IndigoImageReplacement::TakeOriginalImageWebpBytes() {

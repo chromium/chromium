@@ -44,7 +44,7 @@ class IndigoImageReplacement {
   }
 
   // Methods called by indigoPrivate extension functions:
-  void OnReadyToRender();
+  int32_t OnReadyToRender();
   std::vector<uint8_t> TakeOriginalImageWebpBytes();
   const GURL& GetReplacementImageURL() const;
   bool SetPendingReplacementImageCallback(

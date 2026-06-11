@@ -61,11 +61,12 @@ class ApiClient : public signin::IdentityManager::Observer {
   ApiClient& operator=(const ApiClient&) = delete;
   ~ApiClient() override;
 
-  // Sends a request to the generate endpoint.
+  // Sends a request to the generate endpoint. Returns a callback that will
+  // cancel the request when run.
   using GenerateCallback = base::OnceCallback<void(
       base::expected<GeneratedImage, GenerateImageError>)>;
-  void Generate(base::span<const uint8_t> product_image_bytes,
-                GenerateCallback callback);
+  base::OnceClosure Generate(base::span<const uint8_t> product_image_bytes,
+                             GenerateCallback callback);
 
   // Sends a request to the status endpoint.
   using StatusCallback =

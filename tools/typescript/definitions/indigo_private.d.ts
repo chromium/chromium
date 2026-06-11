@@ -9,12 +9,21 @@ export {};
 declare global {
   export namespace chrome {
     export namespace indigoPrivate {
+      export interface OnRegenerateStartedEvent {
+        addListener(
+            listener: () => void,
+            filter?: {instanceId: number}): void;
+        removeListener(listener: () => void): void;
+        hasListener(listener: () => void): boolean;
+      }
+
       export interface ImageData {
         value: ArrayBuffer | string;
       }
-      export function readyToRender(): Promise<void>;
+      export function readyToRender(): Promise<number>;
       export function getOriginalImage(): Promise<ImageData>;
       export function getReplacementImage(): Promise<ImageData>;
+      export const onRegenerateStarted: OnRegenerateStartedEvent;
     }
   }
 }

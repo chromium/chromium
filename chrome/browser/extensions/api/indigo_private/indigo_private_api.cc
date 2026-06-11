@@ -44,8 +44,8 @@ ExtensionFunction::ResponseAction IndigoPrivateReadyToRenderFunction::Run() {
     return RespondNow(Error("No image replacement found"));
   }
 
-  replacement->OnReadyToRender();
-  return RespondNow(NoArguments());
+  int32_t invocation_id = replacement->OnReadyToRender();
+  return RespondNow(WithArguments(invocation_id));
 }
 
 IndigoPrivateGetOriginalImageFunction::IndigoPrivateGetOriginalImageFunction() =
