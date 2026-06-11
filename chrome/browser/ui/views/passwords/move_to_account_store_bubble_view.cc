@@ -284,9 +284,8 @@ MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(
 
   AddChildView(CreateDescription(controller_.GetProfileEmail()));
 
-  auto computer_view = std::make_unique<ImageWithBadge>(
-      features::IsRoundedIconsEnabled() ? kComputerCustomIcon
-                                        : kHardwareComputerSmallOldIcon);
+  auto computer_view =
+      std::make_unique<ImageWithBadge>(kHardwareComputerSmallCustomIcon);
   auto avatar_view = std::make_unique<ImageWithBadge>(
       *controller_.GetProfileIcon(kImageSize).ToImageSkia());
 
