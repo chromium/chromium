@@ -171,7 +171,7 @@ if (current_toolchain == default_toolchain) {
       "extension_off_old.icon",
       "extension_old.icon",
       "extension_on_old.icon",
-      "family_link_filled.icon",
+      "family_link.icon",
       "family_link_old.icon",
       "feedback.icon",
       "feedback_old.icon",

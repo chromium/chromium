@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiIconSupervised) {
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
   EXPECT_EQ(features::IsRoundedIconsEnabled()
-                ? vector_icons::kFamilyLinkFilledIcon.name
+                ? vector_icons::kFamilyLinkIcon.name
                 : vector_icons::kFamilyLinkOldIcon.name,
             GetManagedUiIcon(profile.get()).name);
 }
