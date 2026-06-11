@@ -22,6 +22,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/indigo/proto/indigo_prompts.pb.h"
+#include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -53,7 +55,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -520,6 +526,25 @@ TEST_F(IndigoPageActionControllerTest, ShowsAnchoredMessageThenSuggestionChip) {
     GURL url("https://example.com/1");
     ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
 
+    EXPECT_CALL(
+        *page_action_controller_,
+        SetAnchoredMessageText(
+            kActionIndigo, l10n_util::GetStringUTF16(
+                               IDS_INDIGO_ENTRYPOINT_ANCHORED_MESSAGE_TEXT)));
+    gfx::ImageSkia* expected_skia =
+        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_GLIC_BUTTON_ALT_ICON);
+    EXPECT_CALL(
+        *page_action_controller_,
+        SetAnchoredMessageIcon(
+            kActionIndigo,
+            testing::Truly([expected_skia](const ui::ImageModel& model) {
+              return expected_skia
+                         ? (model.IsImage() &&
+                            model.GetImage().AsImageSkia().BackedBySameObjectAs(
+                                *expected_skia))
+                         : model.IsEmpty();
+            })));
     EXPECT_CALL(
         *page_action_controller_,
         ShowAnchoredMessage(
