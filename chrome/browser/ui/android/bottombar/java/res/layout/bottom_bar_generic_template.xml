@@ -5,9 +5,13 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
+ <!-- Padding is used to define the bounds of the IPH highlight rectangle
+      shape (using boundsRespectPadding). -->
 <ImageView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/BottomToolbarButton"
     android:focusable="true"
+    android:paddingHorizontal="@dimen/bottom_bar_button_padding_horizontal"
+    android:paddingVertical="@dimen/bottom_bar_button_padding_vertical"
     tools:ignore="ContentDescription" />

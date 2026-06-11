@@ -6,11 +6,12 @@ found in the LICENSE file.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:width="40dp"
-        android:height="40dp"
+        android:width="@dimen/bottom_bar_new_tab_background_size"
+        android:height="@dimen/bottom_bar_new_tab_background_size"
         android:gravity="center">
         <shape android:shape="rectangle">
-            <corners android:radius="12dp" />
+            <corners
+                android:radius="@dimen/bottom_bar_new_tab_background_radius" />
             <solid android:color="@android:color/white" />
         </shape>
     </item>

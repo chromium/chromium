@@ -52,6 +52,8 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1">
+        <!-- Padding is used to define the bounds of the IPH highlight
+             rectangle shape (using boundsRespectPadding). -->
         <ImageView
             android:id="@+id/new_tab_button"
             style="@style/BottomToolbarButton"
@@ -59,6 +61,9 @@ found in the LICENSE file.
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:focusable="true"
+            android:paddingHorizontal=
+                "@dimen/bottom_bar_button_padding_horizontal"
+            android:paddingVertical="@dimen/bottom_bar_button_padding_vertical"
             tools:ignore="ContentDescription" />
     </org.chromium.chrome.browser.ui.bottombar.BottomBarButtonContainer>
 

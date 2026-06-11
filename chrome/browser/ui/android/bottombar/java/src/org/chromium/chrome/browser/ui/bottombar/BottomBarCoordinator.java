@@ -85,6 +85,7 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
 
         mMediator =
                 new BottomBarMediator(
+                        context,
                         mModel,
                         mButtonManager,
                         themeColorProvider,

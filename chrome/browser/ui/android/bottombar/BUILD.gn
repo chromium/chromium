@@ -14,6 +14,7 @@ android_resources("java_resources") {
     "java/res/layout/bottom_bar_layout.xml",
     "java/res/layout/bottom_bar_list_menu_template.xml",
     "java/res/layout/bottom_bar_promo_dialog_view.xml",
+    "java/res/values/dimens.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/bars_common:java_resources",
@@ -115,6 +116,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/user_education:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
     "//components/signin/public/android:java",
