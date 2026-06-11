@@ -91,6 +91,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "DefaultBrowserUpdateSuccess";
     case ToastId::kSendTabToSelfNoInternetConnection:
       return "SendTabToSelfNoInternetConnection";
+    case ToastId::kIndigoInvokeError:
+      return "IndigoInvokeError";
   }
 
   NOTREACHED();

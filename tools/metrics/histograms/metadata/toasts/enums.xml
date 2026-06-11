@@ -100,6 +100,7 @@ chromium-metrics-reviews@google.com.
   <int value="39" label="Send Tab To Self successfully sent but throttled"/>
   <int value="40" label="Default browser update success"/>
   <int value="41" label="Send Tab To Self no internet connection"/>
+  <int value="42" label="Indigo invocation error"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

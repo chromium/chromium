@@ -147,6 +147,14 @@
         Delete original photo
       </message>
 
+       <!-- Error Toast -->
+      <message name="IDS_INDIGO_INVOKE_ERROR_TOAST_BODY" desc="Text on a toast notification that is shown when Indigo encounters an invocation or image generation error." translateable="false">
+        Something went wrong
+      </message>
+      <message name="IDS_INDIGO_INVOKE_ERROR_TOAST_TRY_AGAIN_BUTTON" desc="Text for the try again button on the Indigo invocation error toast notification." translateable="false">
+        Try again
+      </message>
+
       <!-- Settings -->
       <!-- TODO(b/500383894): Move these to settings_strings.grdp when the feature is public. -->
       <message name="IDS_INDIGO_SETTINGS_LABEL" desc="Label for the Indigo setting." translateable="false">

@@ -62,7 +62,8 @@ enum class ToastId {
   kSendTabToSelfSuccessThrottled = 39,
   kDefaultBrowserUpdateSuccess = 40,
   kSendTabToSelfNoInternetConnection = 41,
-  kMaxValue = kSendTabToSelfNoInternetConnection,
+  kIndigoInvokeError = 42,
+  kMaxValue = kIndigoInvokeError,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 
