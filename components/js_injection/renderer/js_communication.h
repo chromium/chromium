@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -68,8 +69,9 @@ class JsCommunication
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::JsCommunication> pending_receiver);
 
-  using JsObjectMap = std::map<std::pair<std::u16string, int32_t>,
-                               std::unique_ptr<JsObjectInfo>>;
+  using JsObjectMap = base::flat_map<
+      int32_t,
+      base::flat_map<std::u16string, std::unique_ptr<JsObjectInfo>>>;
   JsObjectMap js_objects_;
 
   // In some cases DidClearWindowObject will be called twice in a row, we need

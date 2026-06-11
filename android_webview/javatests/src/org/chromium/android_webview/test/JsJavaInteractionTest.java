@@ -42,6 +42,7 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -1612,6 +1613,43 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
                 "registerJavaScriptWorld should return 0 for empty string",
                 0,
                 registerWorld(mAwContents, ""));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testBridgePrototypeChainEndsInIsolatedWorld() throws Throwable {
+        String isolatedWorld = "testWorld";
+        registerWorld(mAwContents, isolatedWorld);
+
+        addWebMessageListenerOnUiThreadInIsolatedWorld(
+                mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener, isolatedWorld);
+
+        final String script =
+                String.format(
+                        Locale.ROOT,
+                        """
+                            let p = %s;
+                            while (Object.getPrototypeOf(p)) {
+                                p = Object.getPrototypeOf(p);
+                            }
+                            %s.postMessage(p === Object.prototype ? 'true' : 'false');
+                        """,
+                        JS_OBJECT_NAME,
+                        JS_OBJECT_NAME);
+
+        addJavaScriptOnEventOnUiThread(
+                mAwContents,
+                script,
+                DocumentInjectionTime.DOCUMENT_START,
+                new String[] {"*"},
+                isolatedWorld);
+
+        loadUrlFromPath(POST_MESSAGE_SIMPLE_HTML);
+
+        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+        Assert.assertEquals("true", data.getAsString());
+        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
     @Test
