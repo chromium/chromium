@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <memory>
+#include <optional>
 
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -84,9 +85,10 @@ class ZoomButtonHighlightPathGenerator : public views::HighlightPathGenerator {
 std::unique_ptr<views::ImageButton> CreateZoomButton(
     views::Button::PressedCallback callback,
     const gfx::VectorIcon& icon,
-    int tooltip_id) {
-  auto zoom_button =
-      views::CreateVectorImageButtonWithNativeTheme(std::move(callback), icon);
+    int tooltip_id,
+    std::optional<int> icon_size = std::nullopt) {
+  auto zoom_button = views::CreateVectorImageButtonWithNativeTheme(
+      std::move(callback), icon, icon_size);
   zoom_button->SetTooltipText(l10n_util::GetStringUTF16(tooltip_id));
   views::HighlightPathGenerator::Install(
       zoom_button.get(), std::make_unique<ZoomButtonHighlightPathGenerator>());
@@ -290,10 +292,13 @@ void ZoomBubbleView::Init() {
   };
 
   // Add Zoom Out ("-") button.
+  const int zoom_out_icon_size = 20;
   zoom_out_button_ = AddChildView(CreateZoomButton(
       zoom_callback(content::PAGE_ZOOM_OUT),
       features::IsRoundedIconsEnabled() ? kRemoveIcon : kRemoveOldIcon,
-      IDS_ACCNAME_ZOOM_MINUS2));
+      IDS_ACCNAME_ZOOM_MINUS2,
+      features::IsRoundedIconsEnabled() ? std::make_optional(zoom_out_icon_size)
+                                        : std::nullopt));
   zoom_out_button_->SetProperty(views::kMarginsKey,
                                 gfx::Insets(vector_button_margin));
 
