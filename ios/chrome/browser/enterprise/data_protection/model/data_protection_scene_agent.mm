@@ -68,7 +68,7 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
                                         PrefObserverDelegate,
                                         ProfileStateObserver,
                                         RulesServiceObserving,
-                                        TabGridStateObserver,
+                                        TabGridStateObserving,
                                         TabsDependencyInstalling>
 @end
 
@@ -168,7 +168,7 @@ bool AreEnterpriseLookupsEnabled(const ProfileIOS& profile) {
   [self updateScreenshotProtection];
 }
 
-#pragma mark - TabGridStateObserver
+#pragma mark - TabGridStateObserving
 
 - (void)willEnterTabGrid {
   [self updateScreenshotProtection];

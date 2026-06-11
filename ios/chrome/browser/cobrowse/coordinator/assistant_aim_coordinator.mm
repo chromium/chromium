@@ -37,7 +37,7 @@
 @interface AssistantAIMCoordinator () <AssistantAIMViewControllerDelegate,
                                        AssistantContainerDelegate,
                                        AssistantAIMMediatorDelegate,
-                                       TabGridStateObserver>
+                                       TabGridStateObserving>
 
 // Returns whether the tab grid is currently visible.
 - (BOOL)isTabGridVisible;
@@ -207,7 +207,7 @@ class AssistantAIMUIStateProvider
   return self.browser->GetSceneState().tabGridState.tabGridVisible;
 }
 
-#pragma mark - TabGridStateObserver
+#pragma mark - TabGridStateObserving
 
 - (void)willEnterTabGrid {
   [self setVisible:NO];

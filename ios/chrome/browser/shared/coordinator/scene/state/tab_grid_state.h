@@ -13,7 +13,7 @@ class TabGroup;
 @class TabGridState;
 
 // Protocol for observers of the tab grid state.
-@protocol TabGridStateObserver <NSObject>
+@protocol TabGridStateObserving <NSObject>
 
 @optional
 
@@ -60,9 +60,9 @@ class TabGroup;
 @property(nonatomic, assign) const TabGroup* visibleTabGroup;
 
 // Adds observer.
-- (void)addObserver:(id<TabGridStateObserver>)observer;
+- (void)addObserver:(id<TabGridStateObserving>)observer;
 // Removes observer.
-- (void)removeObserver:(id<TabGridStateObserver>)observer;
+- (void)removeObserver:(id<TabGridStateObserving>)observer;
 
 @end
 

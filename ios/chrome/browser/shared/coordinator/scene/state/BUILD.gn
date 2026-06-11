@@ -13,6 +13,9 @@ source_set("state") {
     "scene_ui_blocker_state.mm",
     "tab_grid_state.h",
     "tab_grid_state.mm",
+    "tab_grid_state_observer.h",
+    "tab_grid_state_observer_bridge.h",
+    "tab_grid_state_observer_bridge.mm",
   ]
   deps = [
     ":incognito_lock_state",

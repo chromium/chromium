@@ -177,7 +177,7 @@
                                      OverscrollActionsControllerDelegate,
                                      ProfileStateObserver,
                                      SceneStateObserver,
-                                     TabGridStateObserver,
+                                     TabGridStateObserving,
                                      FamilyLinkUserCapabilitiesObserving,
                                      NewTabPageShortcutsHandler,
                                      SafariDataImportChildCoordinatorDelegate> {
@@ -1979,7 +1979,7 @@
                       BrowserCoordinatorCommands) showMultimodalActionsMenu];
 }
 
-#pragma mark - TabGridStateObserver
+#pragma mark - TabGridStateObserving
 
 - (void)willEnterTabGrid {
   [self clearPresentedState];
