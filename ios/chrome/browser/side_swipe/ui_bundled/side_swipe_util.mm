@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "url/gurl.h"
@@ -86,4 +87,23 @@ UIImage* SwipeNavigationSnapshot(UISwipeGestureRecognizerDirection direction,
   }
 
   return nil;
+}
+
+void TranslateTargetView(UIView* target_view,
+                         CGFloat distance,
+                         UISwipeGestureRecognizerDirection direction) {
+  if (IsFullscreenRefactoringEnabled()) {
+    CGFloat translationX = (direction == UISwipeGestureRecognizerDirectionLeft)
+                               ? -distance
+                               : distance;
+    target_view.transform = CGAffineTransformMakeTranslation(translationX, 0);
+  } else {
+    CGRect frame = target_view.frame;
+    if (direction == UISwipeGestureRecognizerDirectionLeft) {
+      frame.origin.x = -distance;
+    } else {
+      frame.origin.x = distance;
+    }
+    target_view.frame = frame;
+  }
 }

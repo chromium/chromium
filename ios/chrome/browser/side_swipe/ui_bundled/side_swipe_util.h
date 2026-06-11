@@ -36,4 +36,12 @@ BOOL IsSwipingToAnOverlay(UISwipeGestureRecognizerDirection direction,
 UIImage* SwipeNavigationSnapshot(UISwipeGestureRecognizerDirection direction,
                                  web::WebState* currentWebState);
 
+// Translates the `target_view` by `distance` in `direction`. If
+// `IsFullscreenRefactoringEnabled()` is true, the translation is performed via
+// CGAffineTransformMakeTranslation. Otherwise, it directly updates
+// `target_view.frame`.
+void TranslateTargetView(UIView* target_view,
+                         CGFloat distance,
+                         UISwipeGestureRecognizerDirection direction);
+
 #endif  // IOS_CHROME_BROWSER_SIDE_SWIPE_UI_BUNDLED_SIDE_SWIPE_UTIL_H_

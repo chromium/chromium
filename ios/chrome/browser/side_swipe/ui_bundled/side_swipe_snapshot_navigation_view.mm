@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_gesture_recognizer.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
@@ -52,13 +53,7 @@ const NSTimeInterval kNavigationDelay = 0.2;
   CGFloat distance = gesture.direction == UISwipeGestureRecognizerDirectionLeft
                          ? (width - currentPoint.x + gesture.swipeOffset)
                          : currentPoint.x - gesture.swipeOffset;
-  CGRect frame = self.targetView.frame;
-  if (gesture.direction == UISwipeGestureRecognizerDirectionLeft) {
-    frame.origin.x = -distance;
-  } else {
-    frame.origin.x = distance;
-  }
-  self.targetView.frame = frame;
+  TranslateTargetView(self.targetView, distance, gesture.direction);
 
   if (gesture.state == UIGestureRecognizerStateEnded ||
       gesture.state == UIGestureRecognizerStateCancelled ||
@@ -93,10 +88,7 @@ const NSTimeInterval kNavigationDelay = 0.2;
     (UISwipeGestureRecognizerDirection)direction {
   CGFloat width = CGRectGetWidth(self.targetView.bounds);
   // Position the target view's frame offscreen.
-  CGRect targetFrame = self.targetView.frame;
-  targetFrame.origin.x =
-      direction == UISwipeGestureRecognizerDirectionLeft ? width : -width;
-  self.targetView.frame = targetFrame;
+  TranslateTargetView(self.targetView, -width, direction);
 }
 
 - (void)moveTargetViewOnScreenWithAnimation {
@@ -153,24 +145,19 @@ const NSTimeInterval kNavigationDelay = 0.2;
                                  withDirection:
                                      (UISwipeGestureRecognizerDirection)
                                          direction {
-  CGRect targetFrame = self.targetView.frame;
-  CGFloat width = CGRectGetWidth(targetFrame);
+  CGFloat width = CGRectGetWidth(self.targetView.bounds);
 
   if (completed) {
-    targetFrame.origin.x =
-        direction == UISwipeGestureRecognizerDirectionRight ? width : -width;
+    TranslateTargetView(self.targetView, width, direction);
   } else {
-    targetFrame.origin.x = 0;
+    TranslateTargetView(self.targetView, 0, direction);
   }
-
-  self.targetView.frame = targetFrame;
 }
 
 // Resets the target frame.
 - (void)resetTargetViewFrame {
-  CGRect frame = self.targetView.frame;
-  frame.origin.x = 0;
-  self.targetView.frame = frame;
+  TranslateTargetView(self.targetView, 0,
+                      UISwipeGestureRecognizerDirectionRight);
 }
 
 // Resets the target frame and removes the view.
