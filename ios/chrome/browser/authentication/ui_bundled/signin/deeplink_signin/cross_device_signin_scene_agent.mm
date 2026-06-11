@@ -51,7 +51,14 @@
              accessPoint:signin_metrics::AccessPoint::kDeepLinkDefault
              promoAction:signin_metrics::PromoAction::
                              PROMO_ACTION_NO_SIGNIN_PROMO];
-  [_sceneHandler showSignin:command baseViewController:nil];
+
+  // Defer the presentation of the sign-in UI to the next run loop turn.
+  // This ensures that the view hierarchy is fully loaded, navigation action is
+  // completed, and the base view controller is attached to the window.
+  __weak id<SceneCommands> weakSceneHandler = _sceneHandler;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSceneHandler showSignin:command baseViewController:nil];
+  });
 }
 
 @end

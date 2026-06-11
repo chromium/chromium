@@ -6,6 +6,7 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_matchers.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -56,6 +57,29 @@ using l10n_util::GetNSString;
       base::SysNSStringToUTF16(fakeIdentity.userGivenName));
   [SigninEarlGreyUI dismissSigninConfirmationSnackbarWithTitle:expectedMessage
                                                  assertVisible:YES];
+}
+
+// Tests that opening a cross-device sign-in deep link for an account that is
+// not signed in shows the sign-in flow.
+- (void)testCrossDeviceSigninNotSignedIn {
+  // Add a fake identity to the device, but keep the user signed out.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedOut];
+
+  // Construct the deep link URL.
+  NSString* urlString = [NSString
+      stringWithFormat:
+          @"https://www.google.com/chrome/go-mobile?email=%@&entry_point_id=1",
+          fakeIdentity.userEmail];
+  NSURL* url = [NSURL URLWithString:urlString];
+
+  // Simulate opening the URL from an external app.
+  [ChromeEarlGrey simulateExternalAppURLOpeningWithURL:url];
+
+  // Verify that the sign-in screen is presented.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::SigninScreenPromoMatcher()];
 }
 
 @end
