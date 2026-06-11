@@ -156,6 +156,7 @@ source_set("impl") {
       "//chrome/browser/web_applications",
       "//components/keep_alive_registry",
       "//components/performance_manager",
+      "//components/site_engagement/content",
       "//ui/base/idle",
     ]
   }

@@ -1900,6 +1900,9 @@ const base::FeatureParam<int> kSmartRestartLockScreenDisruptionThreshold{
 const base::FeatureParam<base::TimeDelta> kSmartRestartLockScreenDelay{
     &kSmartRestartLockScreen, "lock_restart_delay", base::Minutes(5)};
 
+const base::FeatureParam<double> kSmartRestartLockBypassBeforeUnloadThreshold{
+    &kSmartRestartLockScreen, "lock_bypass_beforeunload_threshold", -1.0};
+
 // A feature to record the difference in the number of tabs and windows between
 // the last session and the current session on restart.
 BASE_FEATURE(kRecordTabWindowDiffOnRestart, base::FEATURE_ENABLED_BY_DEFAULT);

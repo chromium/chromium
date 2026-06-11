@@ -19,6 +19,7 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/site_engagement/content/site_engagement_score.h"
 #include "ui/base/idle/idle.h"
 
 namespace smart_restart {
@@ -183,6 +184,42 @@ void SmartRestartManager::MaybeExecuteLockScreenRestart() {
     base::UmaHistogramCustomCounts(
         "Session.SmartRestart.Lock.TimeSinceUpgradeDetected", gap.InMinutes(),
         1, base::Days(30).InMinutes(), 50);
+
+    // Check if we should bypass beforeunload handlers based on session state
+    // and feature parameters.
+    double beforeunload_threshold =
+        features::kSmartRestartLockBypassBeforeUnloadThreshold.Get();
+    if (beforeunload_threshold >= 0.0 && state.beforeunload_tab_count > 0) {
+      int ratio = (state.beforeunload_tab_count * 100) / state.total_tab_count;
+      base::UmaHistogramPercentage(
+          "Session.SmartRestart.Lock.SuppressedBeforeUnloadRatio", ratio);
+      base::UmaHistogramCounts1000(
+          "Session.SmartRestart.Lock.SuppressedBeforeUnloadCount",
+          state.beforeunload_tab_count);
+
+      double max_score = -1.0;
+      for (double score : state.beforeunload_scores) {
+        base::UmaHistogramExactLinear(
+            "Session.SmartRestart.Lock.SuppressedBeforeUnloadEngagementScore",
+            static_cast<int>(score), 101);
+        max_score = std::max(max_score, score);
+      }
+
+      // Execute the actual restart only if the threshold is configured for a
+      // value at or below the maximum possible engagement score, and the
+      // maximum engagement score across all the user's open beforeunload tabs
+      // does not exceed that threshold.
+      if (beforeunload_threshold <=
+              site_engagement::SiteEngagementScore::kMaxPoints &&
+          max_score <= beforeunload_threshold) {
+        chrome::RelaunchIgnoreUnloadHandlers();
+      } else {
+        // If we're not bypassing beforeunload handlers, we should reset the
+        // restart state to allow for a potential subsequent attempt.
+        is_executing_restart_ = false;
+      }
+      return;
+    }
 
     // If the user has 0 tabs open restart in the background to avoid
     // unexpectedly opening a visible window when they return.

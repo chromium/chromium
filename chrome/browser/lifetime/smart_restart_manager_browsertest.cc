@@ -32,6 +32,7 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/site_engagement/content/site_engagement_score.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -515,6 +516,129 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerConservativeBrowserTest,
       "Session.SmartRestart.Lock.ProtectionReason.LowTab",
       static_cast<int>(Blocker::kCapturingVideo), 1);
 }
+
+class SmartRestartManagerBypassBeforeUnloadParameterizedTest
+    : public SmartRestartManagerTestBase,
+      public ::testing::WithParamInterface<double> {
+ public:
+  SmartRestartManagerBypassBeforeUnloadParameterizedTest() {
+    double threshold = GetParam();
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSmartRestart, {{"restart_delay", "1s"}}},
+         {features::kSmartRestartLockScreen,
+          {{"lock_restart_delay", "1s"},
+           {"lock_bypass_beforeunload_threshold",
+            base::NumberToString(threshold)}}}},
+        {});
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SmartRestartManagerBypassBeforeUnloadParameterizedTest,
+    ::testing::Values(-1.0,
+                      15.0,
+                      site_engagement::SiteEngagementScore::kMaxPoints + 1.0));
+
+IN_PROC_BROWSER_TEST_P(SmartRestartManagerBypassBeforeUnloadParameterizedTest,
+                       LockScreenRestartWithBeforeUnload) {
+  base::HistogramTester histogram_tester;
+  PrefService* local_state = g_browser_process->local_state();
+
+  // Navigate to a page and add a beforeunload handler + user activation.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecJs(tab, "window.onbeforeunload = () => 'draft';"));
+  content::PrepContentsForBeforeUnloadTest(tab);
+
+  // Setup: Pending update and lock screen.
+  fake_upgrade_detector_.SetUpgradeAvailable();
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartLastSessionOnShutdown));
+
+  manager_->SetLockedStateForTesting(true);
+
+  double threshold = GetParam();
+  if (threshold < 0.0) {
+    // Range 1 (Disabled): The restart is blocked, and beforeunload keeps High
+    // Disruption.
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Seconds(2));
+    run_loop.Run();
+
+    EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartLastSessionOnShutdown));
+
+    histogram_tester.ExpectUniqueSample(
+        "Session.SmartRestart.Lock.ExecutionOutcome",
+        static_cast<int>(ExtendedExecutionOutcome::kBlockedByDisruptionLevel),
+        1);
+
+    histogram_tester.ExpectBucketCount(
+        "Session.SmartRestart.Lock.ProtectionReason",
+        static_cast<int>(Blocker::kBeforeUnloadHandler), 1);
+
+    // Cleanup to prevent beforeunload prompt from blocking test teardown.
+    ASSERT_TRUE(content::ExecJs(tab, "window.onbeforeunload = null;"));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  } else if (threshold <= site_engagement::SiteEngagementScore::kMaxPoints) {
+    // Range 2 (Live Gate): The restart executes successfully, invoking
+    // RelaunchIgnoreUnloadHandlers. In our test case the tab's score is 0.0
+    // which is <= threshold (15.0).
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return local_state->GetBoolean(prefs::kRestartLastSessionOnShutdown);
+    }));
+
+    histogram_tester.ExpectUniqueSample(
+        "Session.SmartRestart.Lock.ExecutionOutcome",
+        static_cast<int>(ExtendedExecutionOutcome::kExecuted), 1);
+
+    histogram_tester.ExpectUniqueSample(
+        "Session.SmartRestart.Lock.SuppressedBeforeUnloadRatio", 100, 1);
+
+    histogram_tester.ExpectUniqueSample(
+        "Session.SmartRestart.Lock.SuppressedBeforeUnloadCount", 1, 1);
+
+    histogram_tester.ExpectUniqueSample(
+        "Session.SmartRestart.Lock.SuppressedBeforeUnloadEngagementScore", 0,
+        1);
+
+    // Cleanup to prevent actual restart during teardown.
+    browser_shutdown::SetTryingToQuit(false);
+    local_state->SetBoolean(prefs::kRestartLastSessionOnShutdown, false);
+  } else {
+    // Range 3 (Dry-Run): The relaunch is intercepted, metrics are logged, and
+    // returns without relaunching.
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Seconds(2));
+    run_loop.Run();
+
+    EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartLastSessionOnShutdown));
+
+    histogram_tester.ExpectUniqueSample(
+        "Session.SmartRestart.Lock.ExecutionOutcome",
+        static_cast<int>(ExtendedExecutionOutcome::kExecuted), 1);
+
+    histogram_tester.ExpectUniqueSample(
+        "Session.SmartRestart.Lock.SuppressedBeforeUnloadRatio", 100, 1);
+
+    histogram_tester.ExpectUniqueSample(
+        "Session.SmartRestart.Lock.SuppressedBeforeUnloadCount", 1, 1);
+
+    histogram_tester.ExpectUniqueSample(
+        "Session.SmartRestart.Lock.SuppressedBeforeUnloadEngagementScore", 0,
+        1);
+
+    // Cleanup to prevent beforeunload prompt from blocking test teardown.
+    ASSERT_TRUE(content::ExecJs(tab, "window.onbeforeunload = null;"));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  }
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace smart_restart

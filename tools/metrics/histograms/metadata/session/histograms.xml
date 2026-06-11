@@ -359,6 +359,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.SmartRestart.Lock.SuppressedBeforeUnloadCount"
+    units="tabs" expires_after="2026-10-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The absolute count of open tabs that had active beforeunload handlers and
+    whose prompts would have been skipped during a warning-suppressed Smart
+    Restart relaunch on an OS Lock event. During the initial dry-run phase, this
+    records potential suppressions without actually triggering the restart.
+  </summary>
+</histogram>
+
+<histogram
+    name="Session.SmartRestart.Lock.SuppressedBeforeUnloadEngagementScore"
+    units="units" expires_after="2026-10-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The site engagement score of each tab containing a beforeunload handler
+    whose prompt would have been skipped during a warning-suppressed Smart
+    Restart relaunch on an OS Lock event. During the initial dry-run phase, this
+    records potential suppressions without actually triggering the restart.
+  </summary>
+</histogram>
+
+<histogram name="Session.SmartRestart.Lock.SuppressedBeforeUnloadRatio"
+    units="%" expires_after="2026-10-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The percentage of open tabs that had active beforeunload handlers and whose
+    prompts would have been skipped during a warning-suppressed Smart Restart
+    relaunch on an OS Lock event. During the initial dry-run phase, this records
+    potential suppressions without actually triggering the restart.
+  </summary>
+</histogram>
+
 <histogram name="Session.SmartRestart.Lock.TimeSinceUpgradeDetected"
     units="minutes" expires_after="2026-10-01">
   <owner>victortan@chromium.org</owner>

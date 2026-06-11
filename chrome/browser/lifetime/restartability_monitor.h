@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/containers/enum_set.h"
 
 namespace smart_restart {
@@ -130,6 +132,8 @@ struct ExtendedRestartabilityState {
 
   RestartabilityState baseline;
   int total_tab_count = 0;
+  int beforeunload_tab_count = 0;
+  std::vector<double> beforeunload_scores;
   SmartRestartDisruptionLevel max_disruption_level =
       SmartRestartDisruptionLevel::kNoDisruption;
 

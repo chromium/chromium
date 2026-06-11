@@ -20,9 +20,11 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/render_frame_host.h"
@@ -60,7 +62,6 @@ Level GetDisruptionLevel(Blocker blocker) {
 
     // --- High Disruption ---
     case Blocker::kIncognito:
-    case Blocker::kBeforeUnloadHandler:
     case Blocker::kDownload:
     case Blocker::kMedia:
     case Blocker::kAppWindow:
@@ -80,6 +81,11 @@ Level GetDisruptionLevel(Blocker blocker) {
     case Blocker::kVisiblePausedMedia:
     case Blocker::kLensShared:
       return Level::kHighDisruption;
+
+    case Blocker::kBeforeUnloadHandler:
+      return features::kSmartRestartLockBypassBeforeUnloadThreshold.Get() >= 0.0
+                 ? Level::kMediumDisruption
+                 : Level::kHighDisruption;
   }
 }
 
@@ -384,10 +390,19 @@ RestartabilityMonitor::ComputeExtendedRestartabilityState() {
             continue;
           }
 
-          if (!state.baseline.has_dirty_tabs &&
-              CouldTabDisplayBeforeUnloadDialog(contents)) {
-            state.baseline.has_dirty_tabs = true;
-            state.AddBlocker(Blocker::kBeforeUnloadHandler);
+          if (CouldTabDisplayBeforeUnloadDialog(contents)) {
+            state.beforeunload_tab_count++;
+            if (!state.baseline.has_dirty_tabs) {
+              state.baseline.has_dirty_tabs = true;
+              state.AddBlocker(Blocker::kBeforeUnloadHandler);
+            }
+            Profile* profile = browser_interface->GetProfile();
+            if (profile) {
+              double score =
+                  site_engagement::SiteEngagementService::Get(profile)
+                      ->GetScore(contents->GetLastCommittedURL());
+              state.beforeunload_scores.push_back(score);
+            }
           }
 
           auto page_node = performance_manager::PerformanceManager::
