@@ -8,9 +8,11 @@
 
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/favicon_size.h"
 #include "ui/views/layout/layout_provider.h"
 
 namespace {
@@ -62,11 +64,18 @@ int TabStyle::GetPinnedWidth(const bool is_split) const {
 }
 
 int TabStyle::GetMinimumActiveWidth(const bool is_split) const {
-  const int close_button_size =
-      GetLayoutConstant(LayoutConstant::kTabCloseButtonSize);
   const gfx::Insets insets = GetContentsInsets();
+  // Rounded icons decreased `kTabCloseButtonSize` to less than
+  // `gfx::kFaviconSize`. We do not want the min size of the
+  // active tab to change from this, so we set the size large enough
+  // so that the active tab can always fit the favicon and close button.
+  static const int min_content_width =
+      features::IsRoundedIconsEnabled()
+          ? std::max(gfx::kFaviconSize,
+                     GetLayoutConstant(LayoutConstant::kTabCloseButtonSize))
+          : GetLayoutConstant(LayoutConstant::kTabCloseButtonSize);
   const int min_active_width =
-      close_button_size + insets.left() + insets.right();
+      min_content_width + insets.left() + insets.right();
 
   if (is_split) {
     // Only have one set of horizontal padding between tabs in an active split.
