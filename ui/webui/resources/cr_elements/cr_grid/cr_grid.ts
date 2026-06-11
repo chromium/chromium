@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReachedCase} from '//resources/js/assert.js';
+import {isMac} from '//resources/js/platform.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -67,7 +68,7 @@ export class CrGridElement extends CrLitElement {
   }
 
   protected onKeydown_(e: KeyboardEvent) {
-    if (['Enter', ' '].includes(e.key)) {
+    if (e.key === ' ' || (e.key === 'Enter' && !(isMac && e.ctrlKey))) {
       e.preventDefault();
       e.stopPropagation();
       (e.target as HTMLElement).click();

@@ -18,6 +18,8 @@ import {CrRippleMixin} from '../cr_ripple/cr_ripple_mixin.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {assert} from '//resources/js/assert.js';
+import {isMac} from '//resources/js/platform.js';
+
 import {getCss} from './cr_toggle.css.js';
 import {getHtml} from './cr_toggle.html.js';
 
@@ -187,7 +189,7 @@ export class CrToggleElement extends CrToggleElementBase {
   }
 
   private onKeyDown_(e: KeyboardEvent) {
-    if (e.key !== ' ' && e.key !== 'Enter') {
+    if (e.key !== ' ' && (e.key !== 'Enter' || (isMac && e.ctrlKey))) {
       return;
     }
 
@@ -203,7 +205,7 @@ export class CrToggleElement extends CrToggleElementBase {
   }
 
   private onKeyUp_(e: KeyboardEvent) {
-    if (e.key !== ' ' && e.key !== 'Enter') {
+    if (e.key !== ' ' && (e.key !== 'Enter' || (isMac && e.ctrlKey))) {
       return;
     }
 

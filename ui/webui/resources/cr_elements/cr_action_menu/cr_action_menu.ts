@@ -254,7 +254,8 @@ export class CrActionMenuElement extends CrLitElement {
       return;
     }
 
-    if (e.key !== 'Enter' && e.key !== 'ArrowUp' && e.key !== 'ArrowDown') {
+    if ((e.key !== 'Enter' || (isMac && e.ctrlKey)) && e.key !== 'ArrowUp' &&
+        e.key !== 'ArrowDown') {
       return;
     }
 
