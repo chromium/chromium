@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/i18n/base_i18n_switches.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -1567,4 +1568,73 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
       // Press End -> focuses last pane element (Chrome Menu).
       SendKeyPress(WebUIToolbarId(), ui::VKEY_END),
       ExpectFocusedView(kToolbarAppMenuButtonElementId));
+}
+
+class WebUIToolbarFocusFullRtlInteractiveUiTest
+    : public WebUIToolbarFocusFullInteractiveUiTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebUIToolbarFocusFullInteractiveUiTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kForceUIDirection,
+                                    switches::kForceDirectionRTL);
+  }
+};
+
+// In RTL mode, right arrow should move to previous control, not next one.
+// (and correspondingly for left arrow)
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullRtlInteractiveUiTest,
+                       KeyboardNavigation) {
+  // Navigate to a URL so that back/forward buttons are enabled.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+
+  // Move mouse off of toolbar. Having the mouse over the reload button when a
+  // page finishes loading may temporarily disable the reload button, making it
+  // no longer focusable, which will cause walking through focusable elements to
+  // skip over it, and the test will then fail.
+  RunTestSequence(MoveMouseTo(ToolbarView::kToolbarElementId,
+                              base::BindOnce([](ui::TrackedElement* el) {
+                                return el->GetScreenBounds().bottom_center() +
+                                       gfx::Vector2d(0, 3);
+                              })));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
+  // Navigate back once so forward is enabled too.
+  content::TestNavigationObserver back_nav_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  browser()->command_controller()->ExecuteCommand(IDC_BACK);
+  back_nav_observer.Wait();
+
+  RunTestSequence(
+      // 1. Wait for toolbar to load.
+      WaitForToolbarLoaded(),
+
+      // Wait for Lit rendering to complete (until Back button is rendered in
+      // shadow DOM).
+      WaitForElementVisible(WebUIToolbarId(),
+                            DeepQuery({"toolbar-app", "#back"})),
+
+      // 2. Focus the toolbar using the browser command (Alt+Shift+T).
+      Do(base::BindLambdaForTesting([this]() {
+        browser()->command_controller()->ExecuteCommand(IDC_FOCUS_TOOLBAR);
+      })),
+      ExpectFocusedWebUIElement("back"),
+
+      // 3. ArrowLeft to advance all the way to split-tabs button
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_LEFT),
+      ExpectFocusedWebUIElement("forward"),
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_LEFT),
+      ExpectFocusedWebUIElement("reload"),
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_LEFT),
+      ExpectFocusedWebUIElement("home"),
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_LEFT),
+      ExpectFocusedWebUIElement("split-tabs"),
+
+      // Now ArrowRight should move back.
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("home"),
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_RIGHT),
+      ExpectFocusedWebUIElement("reload"));
 }
