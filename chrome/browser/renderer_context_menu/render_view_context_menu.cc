@@ -2975,7 +2975,7 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
     AppendPrintItem();
     if (CanPartiallyTranslateTargetLanguage()) {
       AppendPartialTranslateItem();
-    } else {
+    } else if (CanTranslate(/*menu_logging=*/false)) {
       AppendTranslateItem();
     }
   }
