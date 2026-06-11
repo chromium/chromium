@@ -154,7 +154,13 @@ IndigoImageReplacementManager::GetPrimaryTrackedElementId() const {
   if (!primary_receiver_id_) {
     return std::nullopt;
   }
-  return receivers_.GetContext(*primary_receiver_id_)->tracked_element_id();
+  const IndigoImageReplacement* image_replacement =
+      receivers_.GetContext(*primary_receiver_id_);
+  if (!image_replacement) {
+    return std::nullopt;
+  }
+  CHECK(image_replacement->is_primary());
+  return image_replacement->tracked_element_id();
 }
 
 void IndigoImageReplacementManager::ReplacementFrameAttached(
