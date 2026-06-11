@@ -62,12 +62,15 @@ void IncognitoMenuView::BuildMenu() {
   SetProfileIdentityWithCallToAction(std::move(params));
   AddBottomMargin();
 
+  const float icon_to_image_ratio =
+      features::IsRoundedIconsEnabled() ? 1.3 : 1.0;
   AddFeatureButton(close_button_title,
                    base::BindRepeating(&IncognitoMenuView::OnExitButtonClicked,
                                        base::Unretained(this)),
                    features::IsRoundedIconsEnabled()
                        ? vector_icons::kCloseIcon
-                       : vector_icons::kCloseOldIcon);
+                       : vector_icons::kCloseOldIcon,
+                   icon_to_image_ratio);
 }
 
 std::u16string IncognitoMenuView::GetAccessibleWindowTitle() const {
