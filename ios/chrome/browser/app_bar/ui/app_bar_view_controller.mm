@@ -404,6 +404,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 - (void)updateTabCount:(NSUInteger)count {
   _tabCount = count;
   _tabCountLabel.attributedText = TextForTabCount(count, kTabGridFontSize);
+  _tabGridButton.accessibilityValue = [NSString stringWithFormat:@"%lu", count];
 }
 
 - (void)setTabGridVisible:(BOOL)tabGridVisible {
@@ -855,6 +856,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   UIImage* image = DefaultAppBarSymbol(kAppSymbol);
   UIButton* button = [self buttonWithTitle:title image:image];
   button.accessibilityIdentifier = kAppBarTabGridButtonIdentifier;
+  _tabGridButton = button;
 
   UIButtonConfiguration* configuration = button.configuration;
   // Make the base image clear so we can overlay our own with the label while
@@ -1048,6 +1050,9 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   [_tabGridSymbolView setSymbolImage:DefaultAppBarSymbol(symbolName)
                withContentTransition:[NSSymbolReplaceContentTransition
                                          replaceOffUpTransition]];
+  _tabGridButton.accessibilityLabel = l10n_util::GetNSString(
+      shouldShowTabGroupSymbol ? IDS_IOS_TOOLBAR_SHOW_TAB_GROUP
+                               : IDS_IOS_TOOLBAR_SHOW_TABS);
   if (shouldShowTabGroupSymbol) {
     [NSLayoutConstraint
         deactivateConstraints:_tabGridButtonNormalStateConstraints];

@@ -40,6 +40,7 @@ constexpr CGFloat kButtonImageSize = 23;
       }
                 incognito:incognito];
   if (self) {
+    self.isAccessibilityElement = YES;
     _tabGridContentView = [[UIView alloc] init];
     _tabGridContentView.translatesAutoresizingMaskIntoConstraints = NO;
     _tabGridContentView.userInteractionEnabled = NO;
@@ -98,6 +99,7 @@ constexpr CGFloat kButtonImageSize = 23;
   }
   _tabCount = tabCount;
   _tabCountLabel.attributedText = TextForTabCount(tabCount, kTabGridFontSize);
+  [self setAccessibilityValue:[NSString stringWithFormat:@"%lu", tabCount]];
 }
 
 - (void)setInTabGroup:(BOOL)inTabGroup {
