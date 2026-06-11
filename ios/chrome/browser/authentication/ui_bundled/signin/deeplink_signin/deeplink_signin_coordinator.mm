@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator_delegate.h"
@@ -16,10 +17,13 @@
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @interface DeeplinkSigninCoordinator () <FullscreenSigninCoordinatorDelegate>
 @end
@@ -69,11 +73,19 @@
       ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
   _selectedIdentity = _accountManagerService->GetIdentityOnDeviceWithEmail(
       _selectedAccountEmail);
+
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(self.profile);
+  id<SystemIdentity> primaryIdentity = authService->GetPrimaryIdentity();
+
   if (!_selectedIdentity) {
     // Provided email doesn't exist on device.
     [self startAddAccountFlow];
-  } else {
+  } else if (!primaryIdentity ||
+             primaryIdentity.gaiaId != _selectedIdentity.gaiaId) {
     [self startSigninFlow];
+  } else {
+    [self showAlreadySignedInSnackbarAndFinish];
   }
 }
 
@@ -85,6 +97,19 @@
 }
 
 #pragma mark - Private
+
+- (void)showAlreadySignedInSnackbarAndFinish {
+  NSString* name = _selectedIdentity.userGivenName.length > 0
+                       ? _selectedIdentity.userGivenName
+                       : _selectedIdentity.userEmail;
+  TriggerSigninConfirmationSnackbarWithCustomTitle(
+      _selectedIdentity, self.browser,
+      l10n_util::GetNSStringF(
+          IDS_IOS_DEEPLINK_SIGNIN_ALREADY_SIGNED_IN_DESCRIPTION,
+          base::SysNSStringToUTF16(name)));
+  [self runCompletionWithSigninResult:SigninCoordinatorResultSuccess
+                   completionIdentity:_selectedIdentity];
+}
 
 - (void)startAddAccountFlow {
   CHECK(!_childCoordinator);

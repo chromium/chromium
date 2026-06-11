@@ -92,11 +92,18 @@
                    withUnknownCapabilities:(BOOL)unknownCapabilities;
 
 // Handles the identity confirmation snackbar. If `assertVisible` is YES,
-// the test will fail if the snackbar is not visible. Otherwise, it will
-// just check for its presence. If the snackbar is visible, it is dismissed.
+// the test will fail if the snackbar is not visible. Otherwise, if the snackbar
+// is visible, it is dismissed.
 + (void)dismissSigninConfirmationSnackbarForIdentity:
             (FakeSystemIdentity*)identity
                                        assertVisible:(BOOL)assertVisible;
+
+// Handles the identity confirmation snackbar with a title. If `assertVisible`
+// is YES, the test will fail if the snackbar is not visible. Otherwise, if the
+// snackbar is visible, it is dismissed.
++ (void)dismissSigninConfirmationSnackbarWithTitle:(NSString*)title
+                                     assertVisible:(BOOL)assertVisible;
+
 // Opens settings > identity.
 + (void)openSyncSettings;
 

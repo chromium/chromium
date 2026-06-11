@@ -61,8 +61,12 @@ UIImage* GetEnterpriseIcon() {
 
 }  // namespace
 
-SnackbarMessage* CreateIdentitySnackbarMessage(id<SystemIdentity> identity,
-                                               Browser* browser) {
+// Creates and returns a snackbar message with the user's identity information,
+// using the given custom title.
+SnackbarMessage* CreateIdentitySnackbarMessageWithCustomTitle(
+    id<SystemIdentity> identity,
+    Browser* browser,
+    NSString* title) {
   CHECK(identity, base::NotFatalUntil::M151);
   // Retrieve necessary services and profile information.
   ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
@@ -76,14 +80,6 @@ SnackbarMessage* CreateIdentitySnackbarMessage(id<SystemIdentity> identity,
   base::UmaHistogramBoolean(
       /*name=*/kIdentitySnackbarHadUserName,
       /*sample=*/(identity.userGivenName != nil));
-
-  // Determine the main title of the snackbar.
-  NSString* title =
-      (identity.userGivenName)
-          ? l10n_util::GetNSStringF(
-                IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
-                base::SysNSStringToUTF16(identity.userGivenName))
-          : l10n_util::GetNSString(IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE);
 
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
 
@@ -128,9 +124,35 @@ SnackbarMessage* CreateIdentitySnackbarMessage(id<SystemIdentity> identity,
   return message;
 }
 
+SnackbarMessage* CreateIdentitySnackbarMessage(id<SystemIdentity> identity,
+                                               Browser* browser) {
+  CHECK(identity, base::NotFatalUntil::M151);
+  // Determine the main title of the snackbar.
+  NSString* title =
+      (identity.userGivenName)
+          ? l10n_util::GetNSStringF(
+                IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
+                base::SysNSStringToUTF16(identity.userGivenName))
+          : l10n_util::GetNSString(IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE);
+
+  return CreateIdentitySnackbarMessageWithCustomTitle(identity, browser, title);
+}
+
 void TriggerAccountSwitchSnackbarWithIdentity(id<SystemIdentity> identity,
                                               Browser* browser) {
   SnackbarMessage* message = CreateIdentitySnackbarMessage(identity, browser);
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+  id<SnackbarCommands> snackbar_commands_handler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  [snackbar_commands_handler showSnackbarMessageOverBrowserToolbar:message];
+}
+
+void TriggerSigninConfirmationSnackbarWithCustomTitle(
+    id<SystemIdentity> identity,
+    Browser* browser,
+    NSString* custom_title) {
+  SnackbarMessage* message = CreateIdentitySnackbarMessageWithCustomTitle(
+      identity, browser, custom_title);
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   id<SnackbarCommands> snackbar_commands_handler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
