@@ -97,9 +97,3 @@
   transform: translate(-50%, -50%);
   position: absolute;
 }
-
-@media (prefers-color-scheme: dark) {
-  :host {
-    --color-recording-wave: #37466d;
-  }
-}

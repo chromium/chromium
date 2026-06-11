@@ -23,6 +23,7 @@ export function getHtml(this: NtpSearchboxElement) {
       <search-animated-glow
         animation-state="${this.animationState}"
         .isListening="${this.isListening}"
+        .darkThemeColorsEnabled="${false}"
         part="animated-glow">
       </search-animated-glow>
     ` : ''}

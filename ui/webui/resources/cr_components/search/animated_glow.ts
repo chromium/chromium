@@ -87,6 +87,9 @@ export class SearchAnimatedGlowElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      darkThemeColorsEnabled: {
+        type: Boolean,
+      },
     };
   }
 
@@ -104,6 +107,7 @@ export class SearchAnimatedGlowElement extends CrLitElement {
   accessor isListening: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;
   accessor isZeroState: boolean = false;
+  accessor darkThemeColorsEnabled: boolean = true;
 
   private targetAngle_: number = 0;
   private maskCurrAngle_: number = 0;

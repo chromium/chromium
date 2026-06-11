@@ -23,6 +23,7 @@ export function getHtml(this: ComposeboxElement) {
         .receivedSpeech="${this.receivedSpeech}"
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
         .isZeroState="${this.isZeroState}"
+        .darkThemeColorsEnabled="${this.entrypointName !== ''}"
         exportparts="composebox-background">
     </search-animated-glow>
   ` : ''}
