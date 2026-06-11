@@ -322,7 +322,20 @@ export class ContextualActionMenuElement extends
   }
 
   protected isToolDisabled_(tool: ToolMode): boolean {
+    if (this.uploadButtonDisabled) {
+      return true;
+    }
+    if (this.isToolActive_(tool)) {
+      return false;
+    }
     return this.isItemDisabled_(tool, this.inputState?.disabledTools);
+  }
+
+  protected isToolActive_(tool: ToolMode): boolean {
+    if (!this.inputState) {
+      return false;
+    }
+    return this.inputState.activeTool === tool;
   }
 
   protected isModelAllowed_(model: ModelMode): boolean {

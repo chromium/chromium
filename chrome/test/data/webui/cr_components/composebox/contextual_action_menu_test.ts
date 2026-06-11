@@ -115,7 +115,7 @@ suite('ContextualActionMenu', () => {
     assertTrue(!!$$(actionMenu, `[data-model="${ModelMode.kGeminiPro}"]`));
 
     assertEquals(
-        'menuitem',
+        'menuitemradio',
         $$(actionMenu, `[data-mode="${ToolMode.kDeepSearch}"]`)!
             .getAttribute('role'));
     assertEquals(
@@ -273,6 +273,54 @@ suite('ContextualActionMenu', () => {
 
     assertEquals('false', regularModel.getAttribute('aria-checked'));
     assertEquals('true', thinkingModel.getAttribute('aria-checked'));
+  });
+
+  test('Shows active tool checkmark and does not disable it', async () => {
+    actionMenu.inputState = new MockInputState({
+      allowedTools: [ToolMode.kDeepSearch, ToolMode.kImageGen],
+      activeTool: ToolMode.kDeepSearch,
+      disabledTools: [ToolMode.kDeepSearch],
+      toolConfigs: [
+        {
+          tool: ToolMode.kDeepSearch,
+          menuLabel: 'Deep Search',
+          disableActiveModelSelection: false,
+          chipLabel: '',
+          hintText: '',
+          aimUrlParams: [],
+        },
+        {
+          tool: ToolMode.kImageGen,
+          menuLabel: 'Generate Image',
+          disableActiveModelSelection: false,
+          chipLabel: '',
+          hintText: '',
+          aimUrlParams: [],
+        },
+      ],
+      toolsSectionConfig: {header: ''},
+      modelSectionConfig: {header: ''},
+    });
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    const deepSearch =
+        $$(actionMenu, `[data-mode="${ToolMode.kDeepSearch}"]`) as
+        HTMLButtonElement;
+    const imageGen =
+        $$(actionMenu, `[data-mode="${ToolMode.kImageGen}"]`) as
+        HTMLButtonElement;
+
+    assertEquals('menuitemradio', deepSearch.getAttribute('role'));
+    assertEquals('true', deepSearch.getAttribute('aria-checked'));
+
+    assertEquals('menuitemradio', imageGen.getAttribute('role'));
+    assertEquals('false', imageGen.getAttribute('aria-checked'));
+
+    assertFalse(deepSearch.disabled);
+
+    assertTrue(!!deepSearch.querySelector('cr-icon[icon="cr:check"]'));
+    assertFalse(!!imageGen.querySelector('cr-icon[icon="cr:check"]'));
   });
 
   test('Shows image and file upload when allowed', async () => {
@@ -1211,6 +1259,7 @@ suite('ContextualActionMenu', () => {
         InputType.kBrowserTab,
       ],
       allowedTools: [ToolMode.kDeepSearch],
+      activeTool: ToolMode.kDeepSearch,
       toolConfigs: [{
         tool: ToolMode.kDeepSearch,
         menuLabel: 'Deep Search',
