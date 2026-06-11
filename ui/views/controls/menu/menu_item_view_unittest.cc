@@ -512,12 +512,12 @@ TEST_F(MenuItemViewPaintUnitTest, MinorTextAndIconAssertionCoverage) {
   AddItem(u"No secondary label, minor icon only", std::u16string(),
           std::u16string(),
           ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                             ? kCheckIcon
+                                             ? kCheckSmallIcon
                                              : views::kMenuCheckOldIcon));
   AddItem(u"No secondary label, minor text and icon", std::u16string(),
           u"minor text",
           ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                             ? kCheckIcon
+                                             ? kCheckSmallIcon
                                              : views::kMenuCheckOldIcon));
   AddItem(u"Secondary label, no minor content", u"secondary label",
           std::u16string(), ui::ImageModel());
@@ -526,12 +526,12 @@ TEST_F(MenuItemViewPaintUnitTest, MinorTextAndIconAssertionCoverage) {
   AddItem(u"Secondary label, minor icon only", u"secondary label",
           std::u16string(),
           ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                             ? kCheckIcon
+                                             ? kCheckSmallIcon
                                              : views::kMenuCheckOldIcon));
   AddItem(u"Secondary label, minor text and icon", u"secondary label",
           u"minor text",
           ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                             ? kCheckIcon
+                                             ? kCheckSmallIcon
                                              : views::kMenuCheckOldIcon));
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
@@ -615,14 +615,16 @@ TEST_F(MenuItemViewPaintUnitTest, SelectionIconColors) {
   MenuItemView* item_with_default_color =
       menu_item_view()->AppendMenuItem(1, u"item 1");
   item_with_default_color->SetIcon(ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? kCheckIcon : views::kMenuCheckOldIcon,
+      features::IsRoundedIconsEnabled() ? kCheckSmallIcon
+                                        : views::kMenuCheckOldIcon,
       ui::kColorMenuIcon));
 
   MenuItemView* item_with_colored_icon =
       menu_item_view()->AppendMenuItem(2, u"item 2");
   const SkColor custom_color2 = SK_ColorRED;
   item_with_colored_icon->SetIcon(ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? kCheckIcon : views::kMenuCheckOldIcon,
+      features::IsRoundedIconsEnabled() ? kCheckSmallIcon
+                                        : views::kMenuCheckOldIcon,
       custom_color2));
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),

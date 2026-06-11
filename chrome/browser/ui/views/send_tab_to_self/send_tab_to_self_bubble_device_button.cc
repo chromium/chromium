@@ -75,7 +75,7 @@ std::unique_ptr<views::ImageView> CreateCheckmarkIcon() {
     return nullptr;
   }
   return std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
+      features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kCheckOldIcon,
       ui::kColorAccent, kCheckmarkIconSize));
 }
 
