@@ -421,6 +421,23 @@ TEST(JPEGImageDecoderTest, SupportedScaleNumeratorBound) {
   ASSERT_EQ(numerator_overflow, static_cast<unsigned>(7));
 }
 
+// Regression test for crbug.com/500104917.
+TEST(JPEGImageDecoderTest, DesiredScaleNumeratorPrecision) {
+  // 16777216 = 2^24. Single-precision float can represent integers exactly
+  // up to this value. 16777217 is rounded to 16777216.0f.
+  wtf_size_t max_decoded_bytes = 16777216;
+  wtf_size_t original_bytes = 16777217;
+  unsigned scale_denominator = 8;
+
+  // With float:
+  // floor(sqrt(16777216.0f / 16777216.0f) * 8) = 8
+  // With double:
+  // floor(sqrt(16777216.0 / 16777217.0) * 8) = 7
+  auto numerator = JPEGImageDecoder::DesiredScaleNumerator(
+      max_decoded_bytes, original_bytes, scale_denominator);
+  EXPECT_EQ(numerator, 7u);
+}
+
 struct ColorSpaceTestParam {
   std::string file;
   bool expected_success = false;
