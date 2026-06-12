@@ -353,6 +353,14 @@ export class ContextualTasksAppElement extends CrLitElement {
   // double animations.
   private isInitialFrameLoad_: boolean = true;
 
+  private constructorStartTime_: number;
+  private isFirstLoadCommit_: boolean = true;
+
+  constructor() {
+    super();
+    this.constructorStartTime_ = performance.now();
+  }
+
   private updateThemeFromUrl(url: URL) {
     const csParam = url.searchParams.get('cs');
     if (csParam === '0') {
@@ -759,6 +767,13 @@ export class ContextualTasksAppElement extends CrLitElement {
     // If is from inner iframe and not from main webview URL:
     if (!ev.isTopLevel) {
       return;
+    }
+    if (this.isFirstLoadCommit_) {
+      this.isFirstLoadCommit_ = false;
+      const latencyMs =
+          Math.round(performance.now() - this.constructorStartTime_);
+      chrome.metricsPrivate.recordMediumTime(
+          'ContextualTasks.OAuth.StartToCommitLatency', latencyMs);
     }
     this.updateBasicModeAfterNavigation();
     this.maybeOnThreadFrameTopLevelNavigation(ev.url);
