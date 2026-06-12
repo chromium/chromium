@@ -4871,6 +4871,20 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
     }
 #endif
 
+    contextual_tasks::ContextualTasksUiService* ui_service =
+        contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+            profile);
+    if (ui_service && ui_service->IsTrackedWindow(web_contents)) {
+      // This preference must be set here because OverrideWebPreferences is
+      // the central place in Chrome to modify WebPreferences for renderers.
+      // There is no component-specific hook in
+      // chrome/browser/contextual_tasks that allows overriding these
+      // preferences directly. We need to allow scripts to close windows for
+      // tracked guest windows so that the page that was opened via
+      // window.open can close itself if needed (e.g., via window.close()).
+      web_prefs->allow_scripts_to_close_windows = true;
+    }
+
     web_prefs->is_initial_profile =
         profile->GetOriginalProfile()->GetBaseName() ==
         ProfileManager::GetInitialProfileDir();

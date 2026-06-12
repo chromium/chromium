@@ -9,6 +9,7 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/testing_profile.h"
@@ -46,7 +47,7 @@ class ContextualTasksWindowTrackerTest
 
   void TearDown() override { content::RenderViewHostTestHarness::TearDown(); }
 
-  base::Uuid task_id_ = base::Uuid::GenerateRandomV4();
+  ContextualTaskId task_id_ = ContextualTaskId(base::Uuid::GenerateRandomV4());
   GURL expected_url_ = GURL("https://example.com");
 };
 

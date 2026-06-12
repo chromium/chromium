@@ -30,6 +30,31 @@ void ContextualTasksWindowTrackerManager::RemoveTracker(
                 [tracker](const auto& ptr) { return ptr.get() == tracker; });
 }
 
+void ContextualTasksWindowTrackerManager::RegisterWindow(
+    ContextualTaskId task_id,
+    const GURL& url,
+    ContextualWindowId window_id) {
+  for (const auto& tracker : window_trackers_) {
+    if (tracker->task_id() == task_id && tracker->expected_url() == url &&
+        !tracker->window_id().has_value()) {
+      tracker->SetWindowId(window_id);
+      break;
+    }
+  }
+}
+
+void ContextualTasksWindowTrackerManager::CloseTrackedWindow(
+    ContextualWindowId window_id) {
+  for (const auto& tracker : window_trackers_) {
+    if (tracker->window_id() == window_id) {
+      if (tracker->GetTabWebContents()) {
+        tracker->GetTabWebContents()->Close();
+      }
+      break;
+    }
+  }
+}
+
 bool ContextualTasksWindowTrackerManager::IsTrackedWindow(
     content::WebContents* web_contents) const {
   for (const auto& tracker : window_trackers_) {

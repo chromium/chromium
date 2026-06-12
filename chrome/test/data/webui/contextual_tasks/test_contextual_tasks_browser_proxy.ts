@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {PageCallbackRouter} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
-import type {ComposeboxPosition, ContextInfo, InjectedInput, PageHandlerInterface, PageInterface, PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
+import type {ComposeboxPosition, ContextInfo, ContextualTaskId, ContextualWindowId, InjectedInput, PageHandlerInterface, PageInterface, PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {PostMessageHandler} from 'chrome://contextual-tasks/post_message_handler.js';
 import type {PageHandler as ComposeboxPageHandler, PageHandlerFactory as ComposeboxPageHandlerFactory} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
@@ -44,6 +44,7 @@ class MockPage extends TestBrowserProxy implements PageInterface {
       'onSidePanelPinStateChanged',
       'setInNlm',
       'setExpandButtonEnabled',
+      'onWindowClosed',
     ]);
   }
 
@@ -165,6 +166,10 @@ class MockPage extends TestBrowserProxy implements PageInterface {
   setExpandButtonEnabled(enabled: boolean) {
     this.methodCalled('setExpandButtonEnabled', enabled);
   }
+
+  onWindowClosed(windowId: ContextualWindowId) {
+    this.methodCalled('onWindowClosed', windowId);
+  }
 }
 
 /**
@@ -213,6 +218,9 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'pinSidePanel',
       'unpinSidePanel',
       'isSidePanelPinned',
+      'registerWindow',
+      'onWindowClosed',
+      'closeWindow',
     ]);
 
     this.url_ = url;
@@ -405,6 +413,19 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
   isSidePanelPinned() {
     this.methodCalled('isSidePanelPinned');
     return Promise.resolve({isPinned: false});
+  }
+
+  registerWindow(
+      taskId: ContextualTaskId, url: string, windowId: ContextualWindowId) {
+    this.methodCalled('registerWindow', taskId, url, windowId);
+  }
+
+  onWindowClosed(windowId: ContextualWindowId) {
+    this.methodCalled('onWindowClosed', windowId);
+  }
+
+  closeWindow(windowId: ContextualWindowId) {
+    this.methodCalled('closeWindow', windowId);
   }
 }
 

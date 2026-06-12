@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "base/uuid.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
@@ -26,7 +26,7 @@ namespace contextual_tasks {
 class ContextualTasksWindowTracker {
  public:
   ContextualTasksWindowTracker(
-      const base::Uuid& task_id,
+      const ContextualTaskId& task_id,
       const GURL& expected_url,
       base::WeakPtr<content::WebContents> initiator_contents,
       base::OnceCallback<void(base::WeakPtr<ContextualTasksWindowTracker>)>
@@ -43,10 +43,13 @@ class ContextualTasksWindowTracker {
   void OnWindowClosed();
 
   // Accessors.
-  const base::Uuid& task_id() const { return task_id_; }
+  const ContextualTaskId& task_id() const { return task_id_; }
   const GURL& expected_url() const { return expected_url_; }
   content::WebContents* GetTabWebContents() const {
     return tab_ ? tab_->GetContents() : nullptr;
+  }
+  const std::optional<ContextualWindowId>& window_id() const {
+    return window_id_;
   }
   base::WeakPtr<content::WebContents> initiator_contents() const {
     return initiator_contents_;
@@ -55,15 +58,18 @@ class ContextualTasksWindowTracker {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  void SetWindowId(ContextualWindowId window_id) { window_id_ = window_id; }
+
  private:
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
 
   // The ID of the task associated with this window tracking.
-  base::Uuid task_id_;
-
+  ContextualTaskId task_id_;
   // The URL we expect the new window to load.
   GURL expected_url_;
+  // The unique ID assigned to the tracked window.
+  std::optional<ContextualWindowId> window_id_;
   // The WebContents that initiated the window opening.
   base::WeakPtr<content::WebContents> initiator_contents_;
   // The tab being tracked.
