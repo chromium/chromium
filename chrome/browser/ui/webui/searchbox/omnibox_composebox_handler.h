@@ -16,6 +16,8 @@ class WebContents;
 
 // ComposeboxHandler for the Omnibox Popup.
 class OmniboxComposeboxHandler : public ComposeboxHandler {
+  friend class OmniboxComposeboxHandlerTest;
+
  public:
   OmniboxComposeboxHandler(
       mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
@@ -32,6 +34,10 @@ class OmniboxComposeboxHandler : public ComposeboxHandler {
 
   // composebox::mojom::PageHandler:
   void HandleFileUpload(bool is_image) override;
+
+ protected:
+  // ComposeboxHandler:
+  void OpenUrl(GURL url, const WindowOpenDisposition disposition) override;
 
  private:
   void OnAimEligibilityChanged();

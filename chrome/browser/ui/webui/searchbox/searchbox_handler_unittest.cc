@@ -11,7 +11,9 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -22,15 +24,19 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
-#include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
+#include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
@@ -62,6 +68,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 class SearchboxHandlerTest : public ::testing::Test {
  public:
@@ -175,6 +182,7 @@ class MockSearchboxHandlerDelegate : public SearchboxHandler::Delegate {
               OnEmbeddedPermissionDialogChanged,
               (bool is_showing, const gfx::Size& prompt_size),
               (override));
+  MOCK_METHOD(OmniboxController*, GetOmniboxController, (), (override));
 };
 }  // namespace
 
@@ -870,4 +878,93 @@ TEST_F(SearchboxOmniboxClientNavigationTest,
       /*destination_url_entered_without_scheme=*/false,
       /*destination_url_entered_with_http_scheme=*/false,
       /*text=*/u"google", match, /*alternative_nav_match=*/AutocompleteMatch());
+}
+
+namespace {
+class MockPage : public composebox::mojom::Page {
+ public:
+  MockPage() = default;
+  ~MockPage() override = default;
+
+  mojo::PendingRemote<composebox::mojom::Page> BindAndGetRemote() {
+    DCHECK(!receiver_.is_bound());
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  mojo::Receiver<composebox::mojom::Page> receiver_{this};
+};
+}  // namespace
+
+class OmniboxComposeboxHandlerTest : public SearchboxHandlerTest {
+ public:
+  OmniboxComposeboxHandlerTest() = default;
+  ~OmniboxComposeboxHandlerTest() override = default;
+
+  void OpenUrl(GURL url, WindowOpenDisposition disposition) {
+    handler_->OpenUrl(url, disposition);
+  }
+
+  void SetUp() override {
+    SearchboxHandlerTest::SetUp();
+
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+    auto mock_controller = std::make_unique<testing::NiceMock<
+        contextual_search::MockContextualSearchContextController>>();
+    auto* service = ContextualSearchServiceFactory::GetForProfile(profile());
+    session_handle_ = service->CreateSessionForTesting(
+        std::move(mock_controller), /*metrics_recorder=*/nullptr);
+
+    handler_ = std::make_unique<OmniboxComposeboxHandler>(
+        mojo::PendingReceiver<composebox::mojom::PageHandler>(),
+        page_.BindAndGetRemote(),
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+        searchbox_page_.BindAndGetRemote(), profile(), web_contents_.get(),
+        base::BindLambdaForTesting(
+            [this]() -> contextual_search::ContextualSearchSessionHandle* {
+              return session_handle_.get();
+            }),
+        base::BindLambdaForTesting([]() {}));
+
+    handler_->set_delegate(&mock_delegate_);
+  }
+
+  void TearDown() override {
+    handler_.reset();
+    session_handle_.reset();
+    web_contents_.reset();
+    SearchboxHandlerTest::TearDown();
+  }
+
+ protected:
+  content::RenderViewHostTestEnabler test_render_host_factories_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  testing::NiceMock<MockPage> page_;
+  testing::NiceMock<MockSearchboxPage> searchbox_page_;
+  testing::NiceMock<MockSearchboxHandlerDelegate> mock_delegate_;
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      session_handle_;
+  std::unique_ptr<OmniboxComposeboxHandler> handler_;
+};
+
+TEST_F(OmniboxComposeboxHandlerTest, OpenUrl_StopsAutocomplete) {
+  auto client = std::make_unique<TestOmniboxClient>();
+  auto omnibox_controller =
+      std::make_unique<OmniboxController>(std::move(client), std::nullopt);
+
+  auto mock_autocomplete_controller =
+      std::make_unique<testing::NiceMock<MockAutocompleteController>>(
+          std::make_unique<MockAutocompleteProviderClient>(), 0);
+  omnibox_controller->SetAutocompleteControllerForTesting(
+      std::move(mock_autocomplete_controller));
+
+  EXPECT_CALL(mock_delegate_, GetOmniboxController())
+      .WillRepeatedly(testing::Return(omnibox_controller.get()));
+
+  OpenUrl(GURL("https://example.com"), WindowOpenDisposition::CURRENT_TAB);
+
+  EXPECT_TRUE(omnibox_controller->autocomplete_controller()->done());
 }

@@ -156,7 +156,6 @@ ComposeboxHandler::ComposeboxHandler(
                                  web_contents,
                                  std::move(controller),
                                  std::move(get_session_callback)),
-      web_contents_(web_contents),
       clear_session_callback_(std::move(clear_session_callback)),
       page_{std::move(pending_page)},
       handler_(this, std::move(pending_handler)) {

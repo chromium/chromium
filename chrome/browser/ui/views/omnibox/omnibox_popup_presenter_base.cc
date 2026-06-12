@@ -446,3 +446,7 @@ void OmniboxPopupPresenterBase::OnEmbeddedPermissionDialogChanged(
           },
           weak_factory_.GetWeakPtr()));
 }
+
+OmniboxController* OmniboxPopupPresenterBase::GetOmniboxController() {
+  return controller();
+}

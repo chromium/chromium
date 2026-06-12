@@ -64,6 +64,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
     virtual void OnEmbeddedPermissionDialogChanged(
         bool is_showing,
         const gfx::Size& prompt_size) = 0;
+    virtual OmniboxController* GetOmniboxController();
   };
 
   SearchboxHandler(const SearchboxHandler&) = delete;
