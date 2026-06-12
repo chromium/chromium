@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServicePdfBrowserTest,
       extensions::EventRouter::Get(browser()->profile()));
 
   ui_service->OnThreadLinkClicked(citation_url, task.GetTaskId(), nullptr,
-                                  browser()->GetWeakPtr());
+                                  browser()->GetWeakPtr(), url::Origin());
 
   observer.WaitForEventWithName(
       extensions::api::pdf_viewer_private::OnShouldUpdateViewport::kEventName);
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServicePdfBrowserTest,
   GURL bad_url("https://example.com/other.pdf#page=2");
 
   ui_service->OnThreadLinkClicked(bad_url, task.GetTaskId(), nullptr,
-                                  browser()->GetWeakPtr());
+                                  browser()->GetWeakPtr(), url::Origin());
 
   // Wait for the new tab to be created.
   EXPECT_TRUE(base::test::RunUntil(
