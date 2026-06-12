@@ -274,6 +274,7 @@ suite('OmniboxComposeboxTest', () => {
           mimeType: 'application/pdf',
           imageDataUrl: null,  // Non-image
           errorType: null,
+          iconUrl: 'https://example.com/icon.png',
         },
       }],
       toolMode: 0,
@@ -297,6 +298,7 @@ suite('OmniboxComposeboxTest', () => {
     assertEquals(
         ContextUploadStatus.kNotUploaded,
         addedFile.status);  // Non-image starts as not uploaded.
+    assertEquals('https://example.com/icon.png', addedFile.iconUrl);
     assertTrue(clearMatchesPassed);
   });
 
@@ -475,6 +477,7 @@ suite('OmniboxComposeboxTest', () => {
           errorType:
               ContextUploadErrorType
                   .kBrowserProcessingFileTooLargeError,  // Validation error.
+          iconUrl: null,
         },
       }],
       toolMode: 0,
@@ -503,6 +506,7 @@ suite('OmniboxComposeboxTest', () => {
               imageDataUrl: null,
               errorType: ContextUploadErrorType
                              .kBrowserProcessingUnsupportedFileTypeError,
+              iconUrl: null,
             },
           }],
           toolMode: 0,
