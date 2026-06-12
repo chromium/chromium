@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
       "test query", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
       /*meta_key=*/false,
-      /*shift_key=*/false);
+      /*shift_key=*/false, /*is_voice_search=*/false);
 
   // Verify the client message sent.
   auto* test_side_panel_coordinator = GetLensSidePanelCoordinator();
@@ -392,8 +392,8 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   // Send a query with params.
   std::map<std::string, std::string> additional_params;
   additional_params["gs_lcrp"] = "test_value";
-  GetLensComposeboxController()->IssueComposeboxQuery("test query",
-                                                      additional_params);
+  GetLensComposeboxController()->IssueComposeboxQuery(
+      "test query", additional_params, /*is_voice_search=*/false);
 
   // Verify the client message sent.
   auto* test_side_panel_coordinator = GetLensSidePanelCoordinator();
@@ -436,8 +436,8 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   // Send a query with params before handshake.
   std::map<std::string, std::string> additional_params;
   additional_params["gs_lcrp"] = "test_value";
-  GetLensComposeboxController()->IssueComposeboxQuery("test query",
-                                                      additional_params);
+  GetLensComposeboxController()->IssueComposeboxQuery(
+      "test query", additional_params, /*is_voice_search=*/false);
 
   // Verify the client message was not sent.
   auto* test_side_panel_coordinator = GetLensSidePanelCoordinator();
@@ -532,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
       "test query", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
       /*meta_key=*/false,
-      /*shift_key=*/false);
+      /*shift_key=*/false, /*is_voice_search=*/false);
   histogram_tester.ExpectBucketCount(
       "Lens.Composebox.UserAction",
       lens::LensComposeboxUserAction::kQuerySubmitted, 1);
@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
       "test query 2", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
       /*meta_key=*/false,
-      /*shift_key=*/false);
+      /*shift_key=*/false, /*is_voice_search=*/false);
   histogram_tester.ExpectBucketCount(
       "Lens.Composebox.UserAction",
       lens::LensComposeboxUserAction::kQuerySubmitted, 2);
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
       "test query", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
       /*meta_key=*/false,
-      /*shift_key=*/false);
+      /*shift_key=*/false, /*is_voice_search=*/false);
 
   // The new query should be logged as submitted but not issued.
   histogram_tester.ExpectBucketCount(
@@ -704,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
       "test query", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
       /*meta_key=*/false,
-      /*shift_key=*/false);
+      /*shift_key=*/false, /*is_voice_search=*/false);
   histogram_tester.ExpectBucketCount(
       "Lens.Composebox.UserAction",
       lens::LensComposeboxUserAction::kQuerySubmitted, 1);
@@ -717,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       "test query 2", /*mouse_button=*/0, /*alt_key=*/false,
       /*ctrl_key=*/false,
       /*meta_key=*/false,
-      /*shift_key=*/false);
+      /*shift_key=*/false, /*is_voice_search=*/false);
   histogram_tester.ExpectBucketCount(
       "Lens.Composebox.UserAction",
       lens::LensComposeboxUserAction::kQuerySubmitted, 2);
@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
       "test query", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
       /*meta_key=*/false,
-      /*shift_key=*/false);
+      /*shift_key=*/false, /*is_voice_search=*/false);
 
   // Verify the client message sent.
   auto* test_side_panel_coordinator = GetLensSidePanelCoordinator();
@@ -822,7 +822,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
       "test query 2", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
       /*meta_key=*/false,
-      /*shift_key=*/false);
+      /*shift_key=*/false, /*is_voice_search=*/false);
 
   // Verify the new message.
   submit_query = test_side_panel_coordinator->last_sent_client_message_to_aim_
@@ -1095,7 +1095,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
       "test query", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
       /*meta_key=*/false,
-      /*shift_key=*/false);
+      /*shift_key=*/false, /*is_voice_search=*/false);
 
   // Verify the client message sent.
   auto* test_side_panel_coordinator = GetLensSidePanelCoordinator();
@@ -1126,7 +1126,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       "test query 2", /*mouse_button=*/0, /*alt_key=*/false,
       /*ctrl_key=*/false,
       /*meta_key=*/false,
-      /*shift_key=*/false);
+      /*shift_key=*/false, /*is_voice_search=*/false);
 
   // Verify the new message has no image crop in the vsint data.
   submit_query = test_side_panel_coordinator->last_sent_client_message_to_aim_
@@ -1376,7 +1376,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   // Send a query.
   GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
       "test query", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
-      /*meta_key=*/false, /*shift_key=*/false);
+      /*meta_key=*/false, /*shift_key=*/false, /*is_voice_search=*/false);
 
   // Verify overlay is hidden.
   ASSERT_TRUE(base::test::RunUntil(

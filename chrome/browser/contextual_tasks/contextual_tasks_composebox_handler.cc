@@ -135,7 +135,8 @@ void ContextualTasksOmniboxClient::OnAutocompleteAccept(
     const AutocompleteMatch& alternative_nav_match) {
   std::string query_text;
   net::GetValueForKeyInQuery(destination_url, "q", &query_text);
-  composebox_handler_->CreateAndSendQueryMessage(query_text);
+  composebox_handler_->CreateAndSendQueryMessage(query_text,
+                                                 /*is_voice_search=*/false);
 }
 
 lens::LensOverlayDismissalSource ToLensOverlayDismissalSource(
@@ -298,14 +299,16 @@ void ContextualTasksComposeboxHandler::SubmitQuery(
     bool alt_key,
     bool ctrl_key,
     bool meta_key,
-    bool shift_key) {
-  CreateAndSendQueryMessage(query_text);
+    bool shift_key,
+    bool is_voice_search) {
+  CreateAndSendQueryMessage(query_text, is_voice_search);
   // TODO(crbug.com/469535685): This should reflect the response from the
   // webview when PostMessageToWebview provides one.
 }
 
 void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
-    const std::string& query) {
+    const std::string& query,
+    bool is_voice_search) {
   // Retrieve the overlay token before closing the overlay, as the controller
   // might be destroyed or reset during closure.
   std::optional<base::UnguessableToken> overlay_token = GetLensOverlayToken();
@@ -326,7 +329,8 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
       session_handle->GetUploadedContextTokens().empty();
   if (!task_id.has_value() || !contextual_tasks_service ||
       is_only_visual_selection) {
-    ContinueCreateAndSendQueryMessage(query, task_id, overlay_token);
+    ContinueCreateAndSendQueryMessage(query, task_id, overlay_token,
+                                      is_voice_search);
     return;
   }
 
@@ -369,6 +373,19 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   // It is safe to use base::Unretained(this) here because `recontextualizer_`
   // is owned by `this` and will be destroyed when `this` is destroyed,
   // cancelling any pending callbacks.
+  auto callback = base::BindOnce(
+      [](ContextualTasksComposeboxHandler* handler, std::string query,
+         std::optional<base::Uuid> task_id,
+         std::optional<base::UnguessableToken> token, bool voice,
+         base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
+             handle) {
+        // The session handle is accessed via GetContextualSessionHandle(),
+        // so we ignore it here.
+        handler->ContinueCreateAndSendQueryMessage(query, task_id, token,
+                                                   voice);
+      },
+      base::Unretained(this), query, task_id, overlay_token, is_voice_search);
+
   recontextualizer_->Contextualize(
       task_id, query, tabs_to_recontextualize, tabs_to_force_contextualize,
       base::BindRepeating(
@@ -377,18 +394,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
       base::BindRepeating(&ContextualTasksComposeboxHandler::
                               OnTabProcessedForQueryContextualization,
                           base::Unretained(this)),
-      base::BindOnce(
-          [](ContextualTasksComposeboxHandler* handler, std::string query,
-             std::optional<base::Uuid> task_id,
-             std::optional<base::UnguessableToken> token,
-             base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
-                 handle) {
-            // The session handle is accessed via GetContextualSessionHandle(),
-            // so we ignore it here.
-            handler->ContinueCreateAndSendQueryMessage(query, task_id, token);
-          },
-          base::Unretained(this), query, task_id, overlay_token),
-      IsSmartTabSharingActive());
+      std::move(callback), IsSmartTabSharingActive());
 }
 
 contextual_tasks::ContextualTasksService*
@@ -485,7 +491,8 @@ void ContextualTasksComposeboxHandler::OnTabProcessedForQueryContextualization(
 void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
     std::string query,
     std::optional<base::Uuid> original_task_id,
-    std::optional<base::UnguessableToken> overlay_token) {
+    std::optional<base::UnguessableToken> overlay_token,
+    bool is_voice_search) {
   if (recontextualization_pending_count_ > 0) {
     recontextualization_pending_count_--;
   }
@@ -504,7 +511,7 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
         contextual_tasks::PrepareClientToAimRequestInfo(
             query, session_handle, web_ui_interface_,
             GetInputState().active_tool, GetInputState().active_model,
-            GetActiveTabContextId(), overlay_token);
+            GetActiveTabContextId(), overlay_token, is_voice_search);
 
     // Delay submission if context still uploading.
     if (IsAnyContextUploading()) {

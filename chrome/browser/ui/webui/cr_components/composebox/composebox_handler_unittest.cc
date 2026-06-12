@@ -119,7 +119,8 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
 
   void SubmitQueryAndWaitForNavigation() {
     content::TestNavigationObserver navigation_observer(web_contents());
-    handler().SubmitQuery(kQueryText, 1, false, false, false, false);
+    handler().SubmitQuery(kQueryText, 1, false, false, false, false,
+                          /*is_voice_search=*/false);
     auto navigation = content::NavigationSimulator::CreateFromPending(
         web_contents()->GetController());
     ASSERT_TRUE(navigation);

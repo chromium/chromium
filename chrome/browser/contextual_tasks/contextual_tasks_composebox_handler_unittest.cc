@@ -499,7 +499,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery) {
       CloseLensSync(
           lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted));
 
-  handler_->SubmitQuery("test query", 0, false, false, false, false);
+  handler_->SubmitQuery("test query", 0, false, false, false, false, false);
   EXPECT_EQ(session_handle_->previous_query(), "test query");
 }
 
@@ -526,7 +526,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, CreateAndSendQueryMessage) {
       });
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
@@ -551,7 +551,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       });
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
@@ -573,7 +573,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       });
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
@@ -666,7 +666,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
   run_loop.Run();
 }
 
@@ -766,7 +766,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
   run_loop.Run();
 }
 
@@ -866,7 +866,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
   run_loop.Run();
 }
 
@@ -920,7 +920,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
   run_loop.Run();
 }
 
@@ -979,7 +979,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
   run_loop.Run();
 }
 
@@ -1123,7 +1123,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
   run_loop.Run();
 }
 
@@ -1217,7 +1217,7 @@ TEST_F(
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
   run_loop.Run();
 }
 
@@ -1303,7 +1303,7 @@ TEST_P(ContextualTasksComposeboxHandlerToolModeTest, SetsToolModeFlags) {
       });
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
 
-  handler_->CreateAndSendQueryMessage("test query");
+  handler_->CreateAndSendQueryMessage("test query", false);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1420,7 +1420,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
   run_loop.Run();
 
   ASSERT_FALSE(handler_->IsAnyContextUploading());
@@ -1502,7 +1502,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, DeleteContext_Delayed) {
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
   run_loop.Run();
 }
 
@@ -1580,7 +1580,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_WaitsForUpload) {
   // Do not submit request to server yet.
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(0);
 
-  handler_->SubmitQuery("Summarize the tab", 0, false, false, false, false);
+  handler_->SubmitQuery("Summarize the tab", 0, false, false, false, false,
+                        false);
   ASSERT_TRUE(handler_->IsAnyContextUploading());
   ASSERT_TRUE(handler_->HasPendingQueryForTesting());
 
@@ -1728,7 +1729,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_FALSE(handler_->HasPendingQueryForTesting());
 
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(0);
-  handler_->SubmitQuery("What is this?", 0, false, false, false, false);
+  handler_->SubmitQuery("What is this?", 0, false, false, false, false, false);
 
   ASSERT_TRUE(handler_->IsAnyContextUploading());
   ASSERT_TRUE(handler_->HasPendingQueryForTesting());
@@ -1819,7 +1820,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(0);
 
   // Should stash message instead of submit.
-  handler_->SubmitQuery("Summarize the tab", 0, false, false, false, false);
+  handler_->SubmitQuery("Summarize the tab", 0, false, false, false, false,
+                        false);
 
   ASSERT_TRUE(handler_->IsAnyContextUploading());
   ASSERT_TRUE(handler_->HasPendingQueryForTesting());
@@ -1912,7 +1914,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   // Do not submit request to server yet.
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(0);
 
-  handler_->SubmitQuery("Summarize the tab", 0, false, false, false, false);
+  handler_->SubmitQuery("Summarize the tab", 0, false, false, false, false,
+                        false);
   ASSERT_TRUE(handler_->IsAnyContextUploading());
   ASSERT_TRUE(handler_->HasPendingQueryForTesting());
 
@@ -2032,7 +2035,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_TRUE(handler_->IsAnyContextUploading());
   // No pending query yet since have not submitted yet.
   ASSERT_FALSE(handler_->HasPendingQueryForTesting());
-  handler_->SubmitQuery("What is this?", 0, false, false, false, false);
+  handler_->SubmitQuery("What is this?", 0, false, false, false, false, false);
   base::RunLoop().RunUntilIdle();
 
   // Now the delayed tabs should have uploaded.
@@ -2104,7 +2107,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery_Immediately) {
   EXPECT_CALL(*mock_controller_, GetFileInfo(*current_token))
       .WillRepeatedly(testing::Return(&uploading_info));
 
-  handler_->SubmitQuery("What is this?", 0, false, false, false, false);
+  handler_->SubmitQuery("What is this?", 0, false, false, false, false, false);
 
   ASSERT_TRUE(handler_->IsAnyContextUploading());
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(0);
@@ -2259,7 +2262,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
                 contextual_search::ContextUploadStatus::kUploadSuccessful);
           });
 
-  handler_->SubmitQuery("Combined Test", 0, false, false, false, false);
+  handler_->SubmitQuery("Combined Test", 0, false, false, false, false, false);
   base::RunLoop().RunUntilIdle();
 
   // Delayed tabs should be uploaded once submit is run.
@@ -2438,7 +2441,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       .WillRepeatedly(testing::Return(&file_info_rB));
 
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(0);
-  handler_->SubmitQuery("Stress Test", 0, false, false, false, false);
+  handler_->SubmitQuery("Stress Test", 0, false, false, false, false, false);
   base::RunLoop().RunUntilIdle();
 
   // Delayed tab #2 finishes uploading.
@@ -2515,7 +2518,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       });
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
@@ -2581,7 +2584,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_)).Times(0);
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(0);
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
 
   EXPECT_TRUE(handler_->HasPendingQueryForTesting());
 
@@ -2661,7 +2664,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       });
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
@@ -2716,7 +2719,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       });
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest, ClearFiles_Delayed) {
@@ -2784,7 +2787,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ClearFiles_Delayed) {
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
   run_loop.Run();
 }
 
@@ -3253,7 +3256,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
                         callback) { pending_callback = std::move(callback); });
 
   // 2. Call CreateAndSendQueryMessage.
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
 
   // Verify: recontextualization is pending, so the query is blocked.
   ASSERT_TRUE(handler_->IsAnyContextUploading());
@@ -3374,7 +3377,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
-  handler_->CreateAndSendQueryMessage(kQuery);
+  handler_->CreateAndSendQueryMessage(kQuery, false);
   run_loop.Run();
 
   // Verify: No context was uploaded, pending uploads are back to 0.
@@ -3434,7 +3437,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   ASSERT_EQ(handler_->GetNumContextUploading(), 1);
 
   // Submit query manually. It should be stashed.
-  handler_->SubmitQuery("Test query", 0, false, false, false, false);
+  handler_->SubmitQuery("Test query", 0, false, false, false, false, false);
   ASSERT_TRUE(handler_->HasPendingQueryForTesting());
 
   // Now expect the stashed query to be sent when the chip completes

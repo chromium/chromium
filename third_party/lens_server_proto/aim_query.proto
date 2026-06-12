@@ -99,6 +99,7 @@ message QueryPayload {
   enum QueryTextSource {
     QUERY_TEXT_SOURCE_UNSPECIFIED = 0;
     QUERY_TEXT_SOURCE_KEYBOARD_INPUT = 1;
+    QUERY_TEXT_SOURCE_VOICE_INPUT = 2;
   }
 
   // The user query.

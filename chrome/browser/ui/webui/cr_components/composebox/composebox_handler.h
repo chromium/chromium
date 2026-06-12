@@ -70,7 +70,8 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
                    bool alt_key,
                    bool ctrl_key,
                    bool meta_key,
-                   bool shift_key) override;
+                   bool shift_key,
+                   bool is_voice_search) override;
   void ClearFiles(bool should_block_auto_suggested_tabs) override;
 
   // This is called from either the ComposeboxOmniboxClient when a match is
@@ -82,7 +83,8 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
   void SubmitQuery(const std::string& query_text,
                    WindowOpenDisposition disposition,
                    omnibox::ChromeAimEntryPoint aim_entrypoint,
-                   std::map<std::string, std::string> additional_params);
+                   std::map<std::string, std::string> additional_params,
+                   bool is_voice_search);
 
   virtual void ClearSessionHandle();
 

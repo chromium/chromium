@@ -1186,7 +1186,8 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
                                              bool alt_key,
                                              bool ctrl_key,
                                              bool meta_key,
-                                             bool shift_key) {
+                                             bool shift_key,
+                                             bool is_voice_search) {
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
@@ -1198,7 +1199,7 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
               /*is_prefetch=*/false));
 
   ContextualizeQueryAndOpenUrl(query_text, disposition, aim_entry_point,
-                               /*additional_params=*/{});
+                               /*additional_params=*/{}, is_voice_search);
 }
 
 void ContextualSearchboxHandler::MaybeTriggerSmartTabSharingPromo(
@@ -1255,7 +1256,8 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
     const std::string& query_text,
     WindowOpenDisposition disposition,
     omnibox::ChromeAimEntryPoint aim_entry_point,
-    std::map<std::string, std::string> additional_params) {
+    std::map<std::string, std::string> additional_params,
+    bool is_voice_search) {
   MaybeTriggerSmartTabSharingPromo(query_text, web_contents_);
 
 // TODO(b/502297163): Implement for Android.
@@ -1270,21 +1272,21 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
             [](ContextualSearchboxHandler* self, const std::string& query,
                WindowOpenDisposition disp,
                omnibox::ChromeAimEntryPoint entry_point,
-               std::map<std::string, std::string> params,
+               std::map<std::string, std::string> params, bool voice,
                base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
                    handle) {
               self->ComputeAndOpenQueryUrl(query, disp, entry_point,
-                                           std::move(params));
+                                           std::move(params), voice);
             },
             base::Unretained(this), query_text, disposition, aim_entry_point,
-            std::move(additional_params)),
+            std::move(additional_params), is_voice_search),
         /*enable_smart_tab_selection=*/IsSmartTabSharingActive());
     return;
   }
 #endif
 
   ComputeAndOpenQueryUrl(query_text, disposition, aim_entry_point,
-                         std::move(additional_params));
+                         std::move(additional_params), is_voice_search);
 }
 
 void ContextualSearchboxHandler::OnRelevantTabsReceivedToMaybeShowPromo(
@@ -1296,7 +1298,8 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     const std::string& query_text,
     WindowOpenDisposition disposition,
     omnibox::ChromeAimEntryPoint aim_entry_point,
-    std::map<std::string, std::string> additional_params) {
+    std::map<std::string, std::string> additional_params,
+    bool is_voice_search) {
   auto* contextual_session_handle = GetContextualSessionHandle();
   std::vector<const contextual_search::FileInfo*> file_info_list;
   if (contextual_session_handle) {
@@ -1321,6 +1324,7 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     search_url_request_info->query_text = query_text;
     search_url_request_info->additional_params = additional_params;
     search_url_request_info->aim_entry_point = aim_entry_point;
+    search_url_request_info->is_voice_search = is_voice_search;
 
     file_info_list =
         contextual_session_handle->GetController()->GetFileInfoList();
