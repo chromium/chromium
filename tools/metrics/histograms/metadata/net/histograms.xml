@@ -4370,6 +4370,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.NetworkTransaction.AsyncRetryOnTooManyConnectionErrors.{Occurrence}"
+    enum="Boolean" expires_after="2026-10-01">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Recorded when the mitigation for priority starvation (switching to async
+    retry after a threshold of connection errors) is triggered. {Occurrence}
+  </summary>
+  <token key="Occurrence">
+    <variant name="Every" summary="Recorded every time it is triggered."/>
+    <variant name="First"
+        summary="Recorded only the first time it is triggered for a
+                 transaction."/>
+  </token>
+</histogram>
+
 <histogram name="Net.NetworkTransaction.ConnectedCallbackDelay" units="ms"
     expires_after="2026-08-09">
   <owner>hayato@chromium.org</owner>
@@ -4479,6 +4496,18 @@ chromium-metrics-reviews@google.com.
     Measures the CPU time taken by creating a HttpStreamRequest. Recoreded every
     time the HttpNetworkTransaction::DoCreateStream() is called for HTTP stream
     request.
+  </summary>
+</histogram>
+
+<histogram name="Net.NetworkTransaction.RetryAttemptsOnConnectionErrors"
+    units="count" expires_after="2026-10-01">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The number of retry attempts made for connection errors during the lifetime
+    of a single HttpNetworkTransaction. Recorded when the transaction is
+    destroyed, if there was at least one retry attempt. The maximum value is
+    kMaxRetryAttemptsOnConnectionErrors (50).
   </summary>
 </histogram>
 

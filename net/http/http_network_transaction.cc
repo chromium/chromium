@@ -109,6 +109,11 @@ const size_t kMaxRetryAttempts = 2;
 // after which we give up and crash early.
 const size_t kMaxRetryAttemptsOnConnectionErrors = 50;
 
+// The threshold of connection error retry attempts at which we switch to
+// asynchronous retry.
+const size_t kAsyncRetryThresholdOnConnectionErrors =
+    kMaxRetryAttemptsOnConnectionErrors / 2;
+
 // Max number of calls to RestartWith* allowed for a single connection. A single
 // HttpNetworkTransaction should not signal very many restartable errors, but it
 // may occur due to a bug (e.g. https://crbug.com/823387 or
@@ -340,6 +345,13 @@ HttpNetworkTransaction::HttpNetworkTransaction(RequestPriority priority,
       priority_(priority) {}
 
 HttpNetworkTransaction::~HttpNetworkTransaction() {
+  if (retry_attempts_on_connection_errors_ > 0) {
+    base::UmaHistogramExactLinear(
+        "Net.NetworkTransaction.RetryAttemptsOnConnectionErrors",
+        retry_attempts_on_connection_errors_,
+        kMaxRetryAttemptsOnConnectionErrors + 1);
+  }
+
 #if BUILDFLAG(ENABLE_REPORTING)
   // If no error or success report has been generated yet at this point, then
   // this network transaction was prematurely cancelled.
@@ -2120,12 +2132,22 @@ int HttpNetworkTransaction::HandleIOError(int error) {
         if (base::FeatureList::IsEnabled(
                 features::kAsyncRetryOnTooManyConnectionErrors) &&
             // For performance reasons, we initially retry synchronously.
-            // However, after a threshold of attempts
-            // (= kMaxRetryAttemptsOnConnectionErrors / 2), we switch to
-            // asynchronous retry to break potential priority starvation loops
-            // as described above.
+            // However, after a threshold of attempts, we switch to asynchronous
+            // retry to break potential priority starvation loops as described
+            // above.
             retry_attempts_on_connection_errors_ >=
-                kMaxRetryAttemptsOnConnectionErrors / 2) {
+                kAsyncRetryThresholdOnConnectionErrors) {
+          base::UmaHistogramBoolean(
+              "Net.NetworkTransaction.AsyncRetryOnTooManyConnectionErrors."
+              "Every",
+              true);
+          if (retry_attempts_on_connection_errors_ ==
+              kAsyncRetryThresholdOnConnectionErrors) {
+            base::UmaHistogramBoolean(
+                "Net.NetworkTransaction.AsyncRetryOnTooManyConnectionErrors."
+                "First",
+                true);
+          }
           // Use WeakPtr to prevent a potential dangling pointer crash. See
           // http://crbug.com/506964502 for more details.
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
