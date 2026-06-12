@@ -82,9 +82,10 @@ gfx::NativeView CredentialProviderWebDialogViewWithModal::GetHostView() const {
 
 gfx::Point CredentialProviderWebDialogViewWithModal::GetDialogPosition(
     const gfx::Size& size) {
-  const gfx::Size& host_size =
-      GetWidget()->GetClientAreaBoundsInScreen().size();
-  return gfx::Point(std::max(0, (host_size.width() - size.width()) / 2),
+  const gfx::Size& host_size = GetWidget()->GetWindowBoundsInScreen().size();
+  // We offset left_border to shift the dialog left,
+  // effectively placing the 'visible' part of the dialog in the center.
+  return gfx::Point((size.width() - host_size.width()),
                     std::max(0, (host_size.height() - size.height()) / 2));
 }
 
