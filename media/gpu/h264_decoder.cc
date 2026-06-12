@@ -1174,10 +1174,15 @@ bool H264Decoder::UpdateMaxNumReorderFrames(const H264SPS* sps) {
   return true;
 }
 
-bool H264Decoder::ProcessSPS(int sps_id, bool* need_new_buffers) {
-  DVLOG(4) << "Processing SPS id:" << sps_id;
+bool H264Decoder::ProcessPPSAndSPS(int pps_id, bool* need_new_buffers) {
+  DVLOG(4) << "Processing PPS id:" << pps_id;
 
-  const H264SPS* sps = parser_.GetSPS(sps_id);
+  const H264PPS* pps = parser_.GetPPS(pps_id);
+  if (!pps) {
+    return false;
+  }
+
+  const H264SPS* sps = parser_.GetSPS(pps->seq_parameter_set_id);
   if (!sps)
     return false;
 
@@ -1316,6 +1321,11 @@ bool H264Decoder::ProcessSPS(int sps_id, bool* need_new_buffers) {
     return false;
   DVLOG(1) << "max_num_reorder_frames: " << max_num_reorder_frames_;
 
+  if (*need_new_buffers) {
+    ref_pic_list_p0_.clear();
+    ref_pic_list_b0_.clear();
+    ref_pic_list_b1_.clear();
+  }
   return true;
 }
 
@@ -1656,6 +1666,25 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
             // There is only a single clear byte for the NALU information for
             // full sample encryption, and the rest is encrypted.
             if (!subsamples.empty() && subsamples[0].clear_bytes == 1) {
+              if (base::FeatureList::IsEnabled(
+                      kVaapiEarlyPPSParsingForCENCv1)) {
+                // On ChromeOS for CENCv1 on some devices, we need to wait until
+                // after the decoder buffers are created to be able to process
+                // the encrypted slice header.
+                bool need_new_buffers = false;
+                if (!ProcessPPSAndSPS(last_parsed_pps_id_, &need_new_buffers)) {
+                  SET_ERROR_AND_RETURN();
+                }
+
+                if (need_new_buffers) {
+                  // Yield `kConfigChange` to the client so they can allocate
+                  // new surfaces. We do not advance `state_` or clear
+                  // `curr_nalu_`. When Decode() resumes, it will re-enter this
+                  // block, but ProcessPPSAndSPS will evaluate `need_new_buffers
+                  // = false` and proceed.
+                  return kConfigChange;
+                }
+              }
               CHECK_ACCELERATOR_RESULT(ProcessEncryptedSliceHeader(subsamples));
               parsed_header = true;
               curr_slice_hdr_->pic_parameter_set_id = last_parsed_pps_id_;
@@ -1680,14 +1709,13 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
             // |curr_pic_| already exists, so skip to ProcessCurrentSlice().
             state_ = State::kTryCurrentSlice;
           } else {
-            const H264PPS* pps =
-                parser_.GetPPS(curr_slice_hdr_->pic_parameter_set_id);
-            if (!pps) {
-              SET_ERROR_AND_RETURN();
-            }
-
+            // When kVaapiEarlyPPSParsingForCENCv1 is enabled and the stream is
+            // CENCv1, ProcessPPSAndSPS will always set `need_new_buffers` to
+            // false, since the configuration change gets handled in the
+            // ProcessPPSAndSPS call above.
             bool need_new_buffers = false;
-            if (!ProcessSPS(pps->seq_parameter_set_id, &need_new_buffers)) {
+            if (!ProcessPPSAndSPS(curr_slice_hdr_->pic_parameter_set_id,
+                                  &need_new_buffers)) {
               SET_ERROR_AND_RETURN();
             }
 
@@ -1695,11 +1723,8 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
               // Yield `kConfigChange` to the client so they can allocate new
               // surfaces. We do not advance `state_` or clear `curr_nalu_`.
               // When Decode() resumes, it will re-enter this block, but
-              // ProcessSPS will evaluate `need_new_buffers = false` and
+              // ProcessPPSAndSPS will evaluate `need_new_buffers = false` and
               // proceed.
-              ref_pic_list_p0_.clear();
-              ref_pic_list_b0_.clear();
-              ref_pic_list_b1_.clear();
               return kConfigChange;
             }
 

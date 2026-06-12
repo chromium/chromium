@@ -776,6 +776,18 @@ BASE_FEATURE(kVaapiOnNvidiaGPUs,
 #endif
 );
 
+// Ensures that the VAAPI context has been created before performing encrypted
+// slice header parsing on ChromeOS VAAPI systems.
+// TODO(b/520117896): remove the feature when a workaround can be found in the
+// H264VaapiDecoderDelegate.
+BASE_FEATURE(kVaapiEarlyPPSParsingForCENCv1,
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_VAAPI)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // Enable VA-API hardware low power encoder for all codecs on intel Gen9x gpu.
 BASE_FEATURE(kVaapiLowPowerEncoderGen9x, base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -255,7 +255,7 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   };
 
   // Process H264 stream structures.
-  bool ProcessSPS(int sps_id, bool* need_new_buffers);
+  bool ProcessPPSAndSPS(int pps_id, bool* need_new_buffers);
 
   // Processes a CENCv1 encrypted slice header and fills in |curr_slice_hdr_|
   // with the relevant parsed fields.

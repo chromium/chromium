@@ -15,9 +15,11 @@
 #include "base/command_line.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
 #include "media/filters/h26x_annex_b_bitstream_builder.h"
 #include "media/gpu/h264_builder.h"
@@ -637,6 +639,13 @@ TEST_F(H264DecoderTest, SetEncryptedStream) {
 TEST_F(H264DecoderTest, ParseEncryptedSliceHeaderRetry) {
   SetInputFrameFiles({kBaselineFrame0});
 
+  // If the kVaapiEarlyPPSParsingForCENCv1 feature is enabled, the decode call
+  // should return a kConfigChange first. If not, the kConfigChange happens
+  // later.
+  if (base::FeatureList::IsEnabled(kVaapiEarlyPPSParsingForCENCv1)) {
+    ASSERT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode(true));
+  }
+
   EXPECT_CALL(*accelerator_, ParseEncryptedSliceHeader(_, _, _, _))
       .WillOnce(Return(H264Decoder::H264Accelerator::Status::kTryAgain));
   ASSERT_EQ(AcceleratedVideoDecoder::kTryAgain, Decode(true));
@@ -658,7 +667,10 @@ TEST_F(H264DecoderTest, ParseEncryptedSliceHeaderRetry) {
             accelerator_->last_pps_nalu_data, slice_hdr_out);
       });
 
-  ASSERT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode(true));
+  if (!base::FeatureList::IsEnabled(kVaapiEarlyPPSParsingForCENCv1)) {
+    ASSERT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode(true));
+  }
+
   EXPECT_EQ(gfx::Size(320, 192), decoder_->GetPicSize());
   EXPECT_EQ(H264PROFILE_BASELINE, decoder_->GetProfile());
   EXPECT_LE(9u, decoder_->GetRequiredNumOfPictures());
