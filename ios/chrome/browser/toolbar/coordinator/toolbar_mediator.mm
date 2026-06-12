@@ -6,10 +6,14 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/notimplemented.h"
+#import "base/strings/string_util.h"
+#import "components/country_codes/country_codes.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "components/regional_capabilities/regional_capabilities_service.h"
+#import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
@@ -19,6 +23,8 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
@@ -63,6 +69,8 @@
       _activeWebStateObservationForwarder;
   std::unique_ptr<web::WebStateObserverBridge> _activeWebStateObserver;
   ToolbarButtonMenuFactory* _buttonMenuFactory;
+  raw_ptr<PrefService> _prefService;
+  raw_ptr<AuthenticationService> _authenticationService;
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Pref tracking if bottom omnibox is enabled.
@@ -109,7 +117,9 @@
                       actionFactory:actionFactory];
     _buttonMenuFactory.delegate = self;
 
+    _authenticationService = authenticationService;
     CHECK(prefService);
+    _prefService = prefService;
     _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
     _prefChangeRegistrar->Init(prefService);
     _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
@@ -206,6 +216,8 @@
   _geminiBrowserAgent = nil;
   _prefChangeRegistrar.reset();
   _prefObserverBridge.reset();
+  _prefService = nullptr;
+  _authenticationService = nullptr;
 }
 
 - (void)setConsumer:(id<ToolbarConsumer>)consumer {
@@ -569,9 +581,33 @@
 
 // Updates the consumer with the latest assistant button state.
 - (void)updateAssistantButton {
-  BOOL visible = _geminiBrowserAgent &&
+  BOOL geminiAllowed = NO;
+  if (_geminiService) {
+    geminiAllowed = _geminiService->IsProfileEligibleForGemini();
+    if (!geminiAllowed && _authenticationService &&
+        !_authenticationService->HasPrimaryIdentity()) {
+      // If the profile is ineligible, it might be just because the user is
+      // signed out. We still want to show the Gemini button (disabled) for
+      // signed-out users to encourage sign-in, unless a local enterprise
+      // policy explicitly disables it.
+      geminiAllowed = gemini::GeminiAllowedByPolicy(_prefService);
+    }
+  }
+
+  BOOL isEEAOrJapan = NO;
+  variations::VariationsService* variationsService =
+      GetApplicationContext()->GetVariationsService();
+  if (variationsService) {
+    country_codes::CountryId countryId(
+        base::ToUpperASCII(variationsService->GetStoredPermanentCountry()));
+    isEEAOrJapan = regional_capabilities::RegionalCapabilitiesService::
+                       IsInAnySearchEngineChoiceScreenRegion(countryId) ||
+                   countryId == country_codes::CountryId("JP");
+  }
+
+  BOOL visible = IsPageActionMenuEnabled() && geminiAllowed && !isEEAOrJapan;
+  BOOL enabled = visible && _geminiBrowserAgent &&
                  _geminiBrowserAgent->IsGeminiAvailableForActiveWebState();
-  BOOL enabled = visible;
 
   [self.consumer setAssistantButtonVisible:visible enabled:enabled];
 }
