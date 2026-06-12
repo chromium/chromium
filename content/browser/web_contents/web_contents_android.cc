@@ -836,6 +836,10 @@ int WebContentsAndroid::GetWidth(JNIEnv* env) {
   return web_contents_->GetNativeView()->GetSizeDIPs().width();
 }
 
+bool WebContentsAndroid::IsBeingCaptured(JNIEnv* env) {
+  return web_contents_->IsBeingCaptured();
+}
+
 int WebContentsAndroid::GetHeight(JNIEnv* env) {
   return web_contents_->GetNativeView()->GetSizeDIPs().height();
 }

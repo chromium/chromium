@@ -43,6 +43,16 @@ import org.chromium.url.GURL;
 public class MockWebContents implements WebContents, WebContentsObserver.Observable {
     public RenderFrameHost renderFrameHost;
     private GURL mLastCommittedUrl;
+    private boolean mIsBeingCaptured;
+
+    @Override
+    public boolean isBeingCaptured() {
+        return mIsBeingCaptured;
+    }
+
+    public void setIsBeingCaptured(boolean isBeingCaptured) {
+        mIsBeingCaptured = isBeingCaptured;
+    }
 
     @Override
     public void setDelegates(

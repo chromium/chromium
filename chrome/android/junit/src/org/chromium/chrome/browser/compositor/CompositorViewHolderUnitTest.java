@@ -1554,4 +1554,62 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.updateWebContentsSize(mTab);
         assertEquals(new Size(300, 400), mCompositorViewHolder.getLastNormalSize());
     }
+
+    @Test
+    public void testOnSurfaceResized_BackgroundTabCaptured_SyncsPhysicalSize() {
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        mCompositorViewHolder.onNativeLibraryReady(mWindowAndroid, null, mPrefService);
+        when(mPrefService.getBoolean(any())).thenReturn(false);
+
+        // Active foreground tab
+        when(mContentView.getWindowToken()).thenReturn(mock(IBinder.class));
+        when(mWebContents.isBeingCaptured()).thenReturn(false);
+
+        // Add a background captured tab
+        MockTab bgTab = mTabModelSelector.addMockTab();
+        WebContents bgWebContents = mock(WebContents.class);
+        when(bgTab.getWebContents()).thenReturn(bgWebContents);
+        when(bgWebContents.isBeingCaptured()).thenReturn(true);
+
+        int width = 1080;
+        int height = 1920;
+
+        mCompositorViewHolder.onSurfaceResized(width, height);
+
+        // Active foreground tab is updated
+        verify(mCompositorView, times(1))
+                .onPhysicalBackingSizeChanged(eq(mWebContents), eq(width), eq(height));
+        // Background captured tab is ALSO updated
+        verify(mCompositorView, times(1))
+                .onPhysicalBackingSizeChanged(eq(bgWebContents), eq(width), eq(height));
+    }
+
+    @Test
+    public void testOnSurfaceResized_BackgroundTabNotCaptured_DoesNotSyncPhysicalSize() {
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        mCompositorViewHolder.onNativeLibraryReady(mWindowAndroid, null, mPrefService);
+        when(mPrefService.getBoolean(any())).thenReturn(false);
+
+        // Active foreground tab
+        when(mContentView.getWindowToken()).thenReturn(mock(IBinder.class));
+        when(mWebContents.isBeingCaptured()).thenReturn(false);
+
+        // Add a background non-captured tab
+        MockTab bgTab = mTabModelSelector.addMockTab();
+        WebContents bgWebContents = mock(WebContents.class);
+        when(bgTab.getWebContents()).thenReturn(bgWebContents);
+        when(bgWebContents.isBeingCaptured()).thenReturn(false);
+
+        int width = 1080;
+        int height = 1920;
+
+        mCompositorViewHolder.onSurfaceResized(width, height);
+
+        // Active foreground tab is updated
+        verify(mCompositorView, times(1))
+                .onPhysicalBackingSizeChanged(eq(mWebContents), eq(width), eq(height));
+        // Background non-captured tab is NOT updated
+        verify(mCompositorView, never())
+                .onPhysicalBackingSizeChanged(eq(bgWebContents), anyInt(), anyInt());
+    }
 }

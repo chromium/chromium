@@ -139,6 +139,11 @@ public interface WebContents extends Parcelable {
     void destroy();
 
     /**
+     * @return Whether the WebContents is currently being captured.
+     */
+    boolean isBeingCaptured();
+
+    /**
      * @return Whether or not the native object associated with this WebContent is destroyed.
      */
     boolean isDestroyed();

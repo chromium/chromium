@@ -191,6 +191,7 @@ class CONTENT_EXPORT WebContentsAndroid {
   void SetSize(JNIEnv* env, int32_t width, int32_t height);
   int GetWidth(JNIEnv* env);
   int GetHeight(JNIEnv* env);
+  bool IsBeingCaptured(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateEventForwarder(
       JNIEnv* env);

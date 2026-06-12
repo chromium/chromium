@@ -1224,6 +1224,7 @@ public class CompositorViewHolder extends FrameLayout
                     MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
             view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
             webContents.setSize(webContentsWidth, webContentsHeight);
+
             requestRender();
         }
     }
@@ -1273,9 +1274,32 @@ public class CompositorViewHolder extends FrameLayout
     @Override
     public void onSurfaceResized(int width, int height) {
         View view = getContentView();
-        WebContents webContents = getWebContents();
-        if (view == null || webContents == null) return;
-        onPhysicalBackingSizeChanged(webContents, width, height);
+        WebContents activeWebContents = getWebContents();
+        if (view == null || activeWebContents == null) return;
+        onPhysicalBackingSizeChanged(activeWebContents, width, height);
+
+        // Background tabs skip physical surface updates to save resources.
+        // However, if a tab is being captured (e.g., screen sharing), it actively
+        // draws frames. We must sync its physical size here to prevent the video
+        // capture stream from freezing due to a frame containment failure.
+        syncBackgroundCapturedTabsPhysicalSize(activeWebContents, width, height);
+    }
+
+    private void syncBackgroundCapturedTabsPhysicalSize(
+            WebContents activeWebContents, int width, int height) {
+        if (mTabModelSelector == null) return;
+
+        for (TabModel tabModel : mTabModelSelector.getModels()) {
+            for (Tab tab : tabModel) {
+                if (tab == null) continue;
+                WebContents tabWebContents = tab.getWebContents();
+                if (tabWebContents != null
+                        && tabWebContents != activeWebContents
+                        && tabWebContents.isBeingCaptured()) {
+                    onPhysicalBackingSizeChanged(tabWebContents, width, height);
+                }
+            }
+        }
     }
 
     private void onPhysicalBackingSizeChanged(WebContents webContents, int width, int height) {
