@@ -86,6 +86,11 @@
   --mask-angle-end: 200deg;
 }
 
+.audio-animation {
+  opacity: 1;
+  transition: opacity 300ms ease-in-out;
+}
+
 #dragDropPlaceholder {
   color: var(--color-drag-placeholder-font);
   display: none;
@@ -694,8 +699,16 @@
   }
 }
 
-:host(:not([is-listening])) #recordingWave {
-  display: none;
+/* Use opacity and pointer-events to utilize fade transition. */
+:host(:not([is-listening])) .audio-animation {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Hide audio animation via fade if permission prompt is showing. */
+:host(.embedded-permission-prompt-showing) .audio-animation {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Overlay that goes over any of the above effects
