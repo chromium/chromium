@@ -20,7 +20,6 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 
 import {Deferred} from './Deferred.js';
-import {LogType} from './log.js';
 import {ProcessingQueue} from './ProcessingQueue.js';
 import type {Result} from './result.js';
 
@@ -66,7 +65,7 @@ describe('ProcessingQueue', () => {
     const error = new Error('Processor reject');
     const processor = sinon.stub().returns(Promise.reject(error));
     const logger = sinon.spy();
-    const queue = new ProcessingQueue<number>(processor, logger);
+    const queue = new ProcessingQueue<number>(processor, () => logger);
     const deferred = new Deferred<Result<number>>();
 
     queue.add(deferred, '');
@@ -83,8 +82,8 @@ describe('ProcessingQueue', () => {
     // Assert `_catch` was called for waiting entry and processor call.
     const loggerErrorValues = logger
       .getCalls()
-      .filter((c) => c.args[0] === LogType.debugError)
-      .map((c) => c.args[2]);
+      .filter((c) => c.args[0] === 'Event was not processed:')
+      .map((c) => c.args[1]);
     expect(loggerErrorValues).to.deep.equal([error.message]);
   });
 
@@ -92,7 +91,7 @@ describe('ProcessingQueue', () => {
     const error = new Error('Processor reject');
     const processor = sinon.stub().returns(Promise.resolve());
     const logger = sinon.spy();
-    const queue = new ProcessingQueue<number>(processor, logger);
+    const queue = new ProcessingQueue<number>(processor, () => logger);
     const deferred1 = new Deferred<Result<number>>();
     const deferred2 = new Deferred<Result<number>>();
 
@@ -112,8 +111,8 @@ describe('ProcessingQueue', () => {
     // Assert `_catch` was called for waiting entry and processor call.
     const loggerErrorValues = logger
       .getCalls()
-      .filter((c) => c.args[0] === LogType.debugError)
-      .map((c) => c.args[2]);
+      .filter((c) => c.args[0] === 'Event was not processed:')
+      .map((c) => c.args[1]);
     expect(loggerErrorValues).to.deep.equal([error.message]);
   });
 
@@ -121,7 +120,7 @@ describe('ProcessingQueue', () => {
     const error = new Error('Processor reject');
     const processor = sinon.stub().returns(Promise.resolve());
     const logger = sinon.spy();
-    const queue = new ProcessingQueue<number>(processor, logger);
+    const queue = new ProcessingQueue<number>(processor, () => logger);
     const deferred1 = new Deferred<Result<number>>();
     const deferred2 = new Deferred<Result<number>>();
 
@@ -144,8 +143,8 @@ describe('ProcessingQueue', () => {
     // Assert `_catch` was called for waiting entry and processor call.
     const loggerErrorValues = logger
       .getCalls()
-      .filter((c) => c.args[0] === LogType.debugError)
-      .map((c) => c.args[2]);
+      .filter((c) => c.args[0] === 'Event threw before sending:')
+      .map((c) => c.args[1]);
     expect(loggerErrorValues).to.deep.equal([error.message]);
   });
 
@@ -181,7 +180,7 @@ describe('ProcessingQueue', () => {
   it('processing log name when starting to process new values', async () => {
     const processor = sinon.stub().returns(Promise.resolve());
     const logger = sinon.spy();
-    const queue = new ProcessingQueue<number>(processor, logger);
+    const queue = new ProcessingQueue<number>(processor, () => logger);
     const eventNames = [
       'EventNameOne',
       'EventNameTwo',
@@ -207,8 +206,8 @@ describe('ProcessingQueue', () => {
 
     const processedValues = logger
       .getCalls()
-      .filter((c) => c.args[0] === ProcessingQueue.LOGGER_PREFIX)
-      .map((c) => c.args[2]);
+      .filter((c) => c.args[0] === 'Processing event:')
+      .map((c) => c.args[1]);
     expect(processedValues).to.deep.equal(eventNames);
   });
 });

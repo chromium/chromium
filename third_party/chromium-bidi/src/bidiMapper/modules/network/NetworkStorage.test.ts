@@ -38,9 +38,12 @@ import {NetworkStorage} from './NetworkStorage.js';
 function logger(...args: any[]) {
   // eslint-disable-next-line no-constant-condition
   if (false) {
-    // eslint-disable-next-line no-console
-    console.log(...args);
+    return () => {
+      // eslint-disable-next-line no-console
+      console.log(...args);
+    };
   }
+  return;
 }
 
 describe('NetworkStorage', () => {

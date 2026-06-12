@@ -192,8 +192,7 @@ export class CdpTarget {
    */
   get windowId(): number {
     if (this.#windowId === undefined) {
-      this.#logger?.(
-        LogType.debugError,
+      this.#logger?.(LogType.debugError)?.(
         'Getting windowId before it was set, returning 0',
       );
     }
@@ -264,8 +263,7 @@ export class CdpTarget {
     for (const result of results) {
       if (result instanceof Error) {
         // Ignore errors during configuring targets, just log them.
-        this.#logger?.(
-          LogType.debugError,
+        this.#logger?.(LogType.debugError)?.(
           'Error happened when configuring a new target',
           result,
         );
@@ -365,7 +363,7 @@ export class CdpTarget {
           return await this.#cdpClient.sendCommand('Fetch.disable');
         })
         .catch((error) => {
-          this.#logger?.(LogType.bidi, 'Disable failed', error);
+          this.#logger?.(LogType.bidi)?.('Disable failed', error);
         });
     }
   }
@@ -382,7 +380,7 @@ export class CdpTarget {
         this.toggleFetchIfNeeded(),
       ]);
     } catch (err) {
-      this.#logger?.(LogType.debugError, err);
+      this.#logger?.(LogType.debugError)?.(err);
       if (!this.#isExpectedError(err)) {
         throw err;
       }
@@ -403,7 +401,7 @@ export class CdpTarget {
         cacheDisabled,
       });
     } catch (err) {
-      this.#logger?.(LogType.debugError, err);
+      this.#logger?.(LogType.debugError)?.(err);
       this.#cacheDisableState = !cacheDisabled;
       if (!this.#isExpectedError(err)) {
         throw err;
@@ -425,7 +423,7 @@ export class CdpTarget {
         enabled ? 'DeviceAccess.enable' : 'DeviceAccess.disable',
       );
     } catch (err) {
-      this.#logger?.(LogType.debugError, err);
+      this.#logger?.(LogType.debugError)?.(err);
       this.#deviceAccessEnabled = !enabled;
       if (!this.#isExpectedError(err)) {
         throw err;
@@ -447,7 +445,7 @@ export class CdpTarget {
         enabled ? 'Preload.enable' : 'Preload.disable',
       );
     } catch (err) {
-      this.#logger?.(LogType.debugError, err);
+      this.#logger?.(LogType.debugError)?.(err);
       this.#preloadEnabled = !enabled;
       if (!this.#isExpectedError(err)) {
         throw err;
@@ -546,8 +544,7 @@ export class CdpTarget {
       this.#fetchDomainStages.response !== stages.response ||
       this.#fetchDomainStages.auth !== stages.auth;
 
-    this.#logger?.(
-      LogType.debugInfo,
+    this.#logger?.(LogType.debugInfo)?.(
       'Toggle Network',
       `Fetch (${fetchEnable}) ${fetchChanged}`,
     );

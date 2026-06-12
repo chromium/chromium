@@ -167,8 +167,7 @@ export class CollectorsStorage {
       dataType === Network.DataType.Request &&
       request.bodySize > collector.maxEncodedDataSize
     ) {
-      this.#logger?.(
-        LogType.debug,
+      this.#logger?.(LogType.debug)?.(
         `Request's ${request.id} body size is too big for the collector ${collectorId}`,
       );
       return false;
@@ -178,15 +177,13 @@ export class CollectorsStorage {
       dataType === Network.DataType.Response &&
       request.encodedResponseBodySize > collector.maxEncodedDataSize
     ) {
-      this.#logger?.(
-        LogType.debug,
+      this.#logger?.(LogType.debug)?.(
         `Request's ${request.id} response is too big for the collector ${collectorId}`,
       );
       return false;
     }
 
-    this.#logger?.(
-      LogType.debug,
+    this.#logger?.(LogType.debug)?.(
       `Collector ${collectorId} collected ${dataType} of ${request.id}`,
     );
     return true;

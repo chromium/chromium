@@ -256,7 +256,7 @@ export class BrowsingContextImpl {
   /** Sets the parent context ID and updates parent's children. */
   set parentId(parentId: BrowsingContext.BrowsingContext | null) {
     if (this.#parentId !== null) {
-      this.#logger?.(LogType.debugError, 'Parent context already set');
+      this.#logger?.(LogType.debugError)?.('Parent context already set');
       // Cannot do anything except logging, as throwing will stop event processing. So
       // just return,
       return;
@@ -434,8 +434,7 @@ export class BrowsingContextImpl {
       }
 
       if (this.#loaderId === undefined) {
-        this.#logger?.(
-          LogType.debugError,
+        this.#logger?.(LogType.debugError)?.(
           'LoaderId should be defined when file upload is shown',
           params,
         );
@@ -618,8 +617,7 @@ export class BrowsingContextImpl {
             // Sandbox should have the same origin as the context itself, but in CDP
             // it has an empty one.
             if (!this.#defaultRealmDeferred.isFinished) {
-              this.#logger?.(
-                LogType.debugError,
+              this.#logger?.(LogType.debugError)?.(
                 'Unexpectedly, isolated realm created before the default one',
               );
             }
@@ -716,8 +714,7 @@ export class BrowsingContextImpl {
       }
       const accepted = params.result;
       if (this.#lastUserPromptType === undefined) {
-        this.#logger?.(
-          LogType.debugError,
+        this.#logger?.(LogType.debugError)?.(
           'Unexpectedly no opening prompt event before closing one',
         );
       }
@@ -963,8 +960,7 @@ export class BrowsingContextImpl {
     if (this.#lifecycle.DOMContentLoaded.isFinished) {
       this.#lifecycle.DOMContentLoaded = new Deferred();
     } else {
-      this.#logger?.(
-        BrowsingContextImpl.LOGGER_PREFIX,
+      this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX)?.(
         'Document changed (DOMContentLoaded)',
       );
     }
@@ -972,8 +968,7 @@ export class BrowsingContextImpl {
     if (this.#lifecycle.load.isFinished) {
       this.#lifecycle.load = new Deferred();
     } else {
-      this.#logger?.(
-        BrowsingContextImpl.LOGGER_PREFIX,
+      this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX)?.(
         'Document changed (load)',
       );
     }
@@ -1716,8 +1711,7 @@ export class BrowsingContextImpl {
     );
 
     if (locatorResult.type !== 'success') {
-      this.#logger?.(
-        BrowsingContextImpl.LOGGER_PREFIX,
+      this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX)?.(
         'Failed locateNodesByLocator',
         locatorResult,
       );

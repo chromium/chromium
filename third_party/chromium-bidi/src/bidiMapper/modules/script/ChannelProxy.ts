@@ -60,7 +60,7 @@ export class ChannelProxy {
       const channelHandle = await this.#getHandleFromWindow(realm);
       void this.#startListener(realm, channelHandle, eventManager);
     } catch (error) {
-      this.#logger?.(LogType.debugError, error);
+      this.#logger?.(LogType.debugError)?.(error);
     }
   }
 
@@ -213,7 +213,7 @@ export class ChannelProxy {
       } catch (error) {
         // If an error is thrown, then the channel is permanently broken, so we
         // exit the loop.
-        this.#logger?.(LogType.debugError, error);
+        this.#logger?.(LogType.debugError)?.(error);
         break;
       }
     }

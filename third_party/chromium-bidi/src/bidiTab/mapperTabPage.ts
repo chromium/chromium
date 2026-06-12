@@ -39,7 +39,7 @@ function stringify(message: unknown) {
   return message;
 }
 
-export function log(logPrefix: LogPrefix, ...messages: unknown[]) {
+export function log(logPrefix: LogPrefix) {
   // If run not in browser (e.g. unit test), do nothing.
   if (!globalThis.document.documentElement) {
     return;
@@ -48,9 +48,11 @@ export function log(logPrefix: LogPrefix, ...messages: unknown[]) {
   // Skip sending BiDi logs as they are logged once by `bidi:server:*`
   if (!logPrefix.startsWith(LogType.bidi)) {
     // If `sendDebugMessage` is defined, send the log message there.
-    globalThis.window?.sendDebugMessage?.(
-      JSON.stringify({logType: logPrefix, messages}, null, 2),
-    );
+    return (...messages: unknown[]) => {
+      globalThis.window?.sendDebugMessage?.(
+        JSON.stringify({logType: logPrefix, messages}, null, 2),
+      );
+    };
   }
 
   const debugContainer = document.getElementById('logs');
@@ -58,14 +60,16 @@ export function log(logPrefix: LogPrefix, ...messages: unknown[]) {
     return;
   }
 
-  // This piece of HTML should be added:
-  // <div class="pre">...log message...</div>
-  const lineElement = document.createElement('div');
-  lineElement.className = 'pre';
+  return (...messages: unknown[]) => {
+    // This piece of HTML should be added:
+    // <div class="pre">...log message...</div>
+    const lineElement = document.createElement('div');
+    lineElement.className = 'pre';
 
-  lineElement.textContent = [logPrefix, ...messages].map(stringify).join(' ');
-  debugContainer.appendChild(lineElement);
-  if (debugContainer.childNodes.length > 400) {
-    debugContainer.removeChild(debugContainer.childNodes[0]!);
-  }
+    lineElement.textContent = [logPrefix, ...messages].map(stringify).join(' ');
+    debugContainer.appendChild(lineElement);
+    if (debugContainer.childNodes.length > 400) {
+      debugContainer.removeChild(debugContainer.childNodes[0]!);
+    }
+  };
 }

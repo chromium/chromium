@@ -154,7 +154,7 @@ export class StorageProcessor {
         throw new NoSuchUserContextException(err.message);
       }
 
-      this.#logger?.(LogType.debugError, err);
+      this.#logger?.(LogType.debugError)?.(err);
       throw new UnableToSetCookieException(err.toString());
     }
     return {
@@ -219,8 +219,7 @@ export class StorageProcessor {
     }
 
     if (unsupportedPartitionKeys.size > 0) {
-      this.#logger?.(
-        LogType.debugInfo,
+      this.#logger?.(LogType.debugInfo)?.(
         `Unsupported partition keys: ${JSON.stringify(
           Object.fromEntries(unsupportedPartitionKeys),
         )}`,

@@ -82,7 +82,7 @@ export abstract class Realm {
       } else {
         // No need to await for the object to be released.
         void this.#releaseObject(objectId).catch((error) =>
-          this.#logger?.(LogType.debugError, error),
+          this.#logger?.(LogType.debugError)?.(error),
         );
       }
     }

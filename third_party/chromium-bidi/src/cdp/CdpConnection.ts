@@ -121,16 +121,16 @@ export class MapperCdpConnection implements CdpConnection {
       void this.#transport
         .sendMessage(JSON.stringify(cdpMessage))
         ?.catch((error) => {
-          this.#logger?.(LogType.debugError, error);
+          this.#logger?.(LogType.debugError)?.(error);
           this.#transport.close();
         });
-      this.#logger?.(MapperCdpConnection.LOGGER_PREFIX_SEND, cdpMessage);
+      this.#logger?.(MapperCdpConnection.LOGGER_PREFIX_SEND)?.(cdpMessage);
     });
   }
 
   #onMessage = (json: string) => {
     const message: CdpMessage<any> = JSON.parse(json);
-    this.#logger?.(MapperCdpConnection.LOGGER_PREFIX_RECV, message);
+    this.#logger?.(MapperCdpConnection.LOGGER_PREFIX_RECV)?.(message);
 
     // Update client map if a session is attached
     // Listen for these events on every session.

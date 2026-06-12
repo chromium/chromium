@@ -243,7 +243,7 @@ export class NavigationTracker {
     url: string,
     canBeInitialNavigation: boolean = false,
   ): NavigationState {
-    this.#logger?.(LogType.debug, 'createCommandNavigation');
+    this.#logger?.(LogType.debug)?.('createCommandNavigation');
     this.#isInitialNavigation =
       canBeInitialNavigation &&
       this.#isInitialNavigation &&
@@ -271,7 +271,7 @@ export class NavigationTracker {
 
   // Update the current url.
   onTargetInfoChanged(url: string) {
-    this.#logger?.(LogType.debug, `onTargetInfoChanged ${url}`);
+    this.#logger?.(LogType.debug)?.(`onTargetInfoChanged ${url}`);
     this.#lastCommittedNavigation.url = url;
   }
 
@@ -299,7 +299,7 @@ export class NavigationTracker {
    * @param {string} unreachableUrl indicated the navigation is actually failed.
    */
   frameNavigated(url: string, loaderId: string, unreachableUrl?: string) {
-    this.#logger?.(LogType.debug, `frameNavigated ${url}`);
+    this.#logger?.(LogType.debug)?.(`frameNavigated ${url}`);
 
     if (unreachableUrl !== undefined) {
       // The navigation failed.
@@ -339,8 +339,7 @@ export class NavigationTracker {
     url: string,
     navigationType: Protocol.Page.NavigatedWithinDocumentEvent['navigationType'],
   ) {
-    this.#logger?.(
-      LogType.debug,
+    this.#logger?.(LogType.debug)?.(
       `navigatedWithinDocument ${url}, ${navigationType}`,
     );
 
@@ -378,7 +377,7 @@ export class NavigationTracker {
    * `Page.frameNavigated` or on navigating command finished with a new loader Id.
    */
   loadPageEvent(loaderId: string) {
-    this.#logger?.(LogType.debug, 'loadPageEvent');
+    this.#logger?.(LogType.debug)?.('loadPageEvent');
     // Even if it was an initial navigation, it is finished.
     this.#isInitialNavigation = false;
 
@@ -389,7 +388,7 @@ export class NavigationTracker {
    * Fail navigation due to navigation command failed.
    */
   failNavigation(navigation: NavigationState, errorText: string) {
-    this.#logger?.(LogType.debug, 'failCommandNavigation');
+    this.#logger?.(LogType.debug)?.('failCommandNavigation');
     navigation.fail(errorText);
   }
 
@@ -398,8 +397,7 @@ export class NavigationTracker {
    * cross-document navigation.
    */
   navigationCommandFinished(navigation: NavigationState, loaderId?: string) {
-    this.#logger?.(
-      LogType.debug,
+    this.#logger?.(LogType.debug)?.(
       `finishCommandNavigation ${navigation.navigationId}, ${loaderId}`,
     );
 
@@ -416,7 +414,9 @@ export class NavigationTracker {
     loaderId: string,
     navigationType: string,
   ) {
-    this.#logger?.(LogType.debug, `frameStartedNavigating ${url}, ${loaderId}`);
+    this.#logger?.(LogType.debug)?.(
+      `frameStartedNavigating ${url}, ${loaderId}`,
+    );
 
     if (
       this.#pendingNavigation &&

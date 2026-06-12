@@ -597,7 +597,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         });
       } else {
         const error = e as Error;
-        this.#logger?.(LogType.bidi, error);
+        this.#logger?.(LogType.bidi)?.(error);
         // Heuristic required for processing cases when a browsing context is gone
         // during the command processing, e.g. like in test
         // `test_input_keyDown_closes_browsing_context`.

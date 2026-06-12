@@ -62,7 +62,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
 
   #handleIncomingMessage = (message: ChromiumBidi.Command) => {
     void this.#commandProcessor.processCommand(message).catch((error) => {
-      this.#logger?.(LogType.debugError, error);
+      this.#logger?.(LogType.debugError)?.(error);
     });
   };
 

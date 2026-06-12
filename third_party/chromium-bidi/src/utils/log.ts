@@ -28,4 +28,6 @@ export enum LogType {
 
 export type LogPrefix = LogType | `${LogType}:${string}`;
 
-export type LoggerFn = (type: LogPrefix, ...messages: unknown[]) => void;
+export type LoggerFn = (
+  type: LogPrefix,
+) => ((...messages: unknown[]) => void) | undefined;

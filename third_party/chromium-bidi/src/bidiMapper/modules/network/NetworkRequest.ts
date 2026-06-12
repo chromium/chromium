@@ -185,8 +185,7 @@ export class NetworkRequest {
   /** CdpTarget can be changed when frame is moving out of process. */
   updateCdpTarget(cdpTarget: CdpTarget) {
     if (cdpTarget !== this.#cdpTarget) {
-      this.#logger?.(
-        LogType.debugInfo,
+      this.#logger?.(LogType.debugInfo)?.(
         `Request ${this.id} was moved from ${this.#cdpTarget.id} to ${cdpTarget.id}`,
       );
       this.#cdpTarget = cdpTarget;
@@ -265,8 +264,7 @@ export class NetworkRequest {
       if (Number.isInteger(bodySize)) {
         return bodySize;
       }
-      this.#logger?.(
-        LogType.debugError,
+      this.#logger?.(LogType.debugError)?.(
         "Unexpected non-integer 'Content-Length' header",
       );
     }
@@ -921,7 +919,7 @@ export class NetworkRequest {
     try {
       event = getEvent();
     } catch (error) {
-      this.#logger?.(LogType.debugError, error);
+      this.#logger?.(LogType.debugError)?.(error);
       return;
     }
 

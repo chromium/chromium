@@ -35,7 +35,7 @@ export class WindowBidiTransport implements BidiTransport {
 
   constructor() {
     window.onBidiMessage = (message: string) => {
-      log(WindowBidiTransport.LOGGER_PREFIX_RECV, message);
+      log(WindowBidiTransport.LOGGER_PREFIX_RECV)?.(message);
       try {
         const command = WindowBidiTransport.#parseBidiMessage(message);
         this.#onMessage?.call(null, command);
@@ -52,7 +52,7 @@ export class WindowBidiTransport implements BidiTransport {
   }
 
   sendMessage(message: ChromiumBidi.Message) {
-    log(WindowBidiTransport.LOGGER_PREFIX_SEND, message);
+    log(WindowBidiTransport.LOGGER_PREFIX_SEND)?.(message);
     const json = JSON.stringify(message);
     window.sendBidiResponse(json);
   }

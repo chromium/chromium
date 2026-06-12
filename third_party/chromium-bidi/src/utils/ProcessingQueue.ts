@@ -50,13 +50,15 @@ export class ProcessingQueue<T> {
         continue;
       }
       const [entryPromise, name] = arrayEntry;
-      this.#logger?.(ProcessingQueue.LOGGER_PREFIX, 'Processing event:', name);
+      this.#logger?.(ProcessingQueue.LOGGER_PREFIX)?.(
+        'Processing event:',
+        name,
+      );
 
       await entryPromise
         .then((entry) => {
           if (entry.kind === 'error') {
-            this.#logger?.(
-              LogType.debugError,
+            this.#logger?.(LogType.debugError)?.(
               'Event threw before sending:',
               entry.error.message,
               entry.error.stack,
@@ -66,8 +68,7 @@ export class ProcessingQueue<T> {
           return this.#processor(entry.value);
         })
         .catch((error) => {
-          this.#logger?.(
-            LogType.debugError,
+          this.#logger?.(LogType.debugError)?.(
             'Event was not processed:',
             error?.message,
           );

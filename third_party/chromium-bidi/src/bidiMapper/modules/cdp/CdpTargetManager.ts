@@ -170,7 +170,7 @@ export class CdpTargetManager {
         .then(() =>
           parentSessionCdpClient.sendCommand('Target.detachFromTarget', params),
         )
-        .catch((error) => this.#logger?.(LogType.debugError, error));
+        .catch((error) => this.#logger?.(LogType.debugError)?.(error));
     };
 
     // Do not attach to the Mapper target.

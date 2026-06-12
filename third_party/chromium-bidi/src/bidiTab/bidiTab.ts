@@ -85,7 +85,7 @@ async function runMapperInstance(selfTargetId: string) {
     log,
   );
 
-  log(LogType.debugInfo, 'Mapper instance has been launched');
+  log(LogType.debugInfo)?.('Mapper instance has been launched');
 
   return bidiServer;
 }

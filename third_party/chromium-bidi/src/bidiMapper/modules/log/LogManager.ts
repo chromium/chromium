@@ -161,7 +161,7 @@ export class LogManager {
       });
       if (realm === undefined) {
         // Ignore exceptions not attached to any realm.
-        this.#logger?.(LogType.cdp, params);
+        this.#logger?.(LogType.cdp)?.(params);
         return;
       }
 
@@ -209,7 +209,7 @@ export class LogManager {
       });
       if (realm === undefined) {
         // Ignore exceptions not attached to any realm.
-        this.#logger?.(LogType.cdp, params);
+        this.#logger?.(LogType.cdp)?.(params);
         return;
       }
 
