@@ -1132,9 +1132,9 @@ void ExtensionsToolbarDesktop::UpdateCloseSidePanelButtonIcon() {
       prefs::kSidePanelHorizontalAlignment);
   close_side_panel_button_->SetVectorIcon(
       is_right_aligned                    ? features::IsRoundedIconsEnabled()
-                                                ? kRightPanelCloseIcon
+                                                ? kRightPanelCloseFlippableIcon
                                                 : kRightPanelCloseOldIcon
-      : features::IsRoundedIconsEnabled() ? kLeftPanelCloseIcon
+      : features::IsRoundedIconsEnabled() ? kLeftPanelCloseFlippableIcon
                                           : kLeftPanelCloseOldIcon);
 }
 

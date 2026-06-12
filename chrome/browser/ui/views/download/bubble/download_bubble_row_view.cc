@@ -462,7 +462,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   subpage_icon_ =
       subpage_icon_holder_->AddChildView(std::make_unique<views::ImageView>());
   subpage_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightIcon
+      features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightFlippableIcon
                                         : vector_icons::kSubmenuArrowOldIcon,
       ui::kColorIcon));
   subpage_icon_->SetProperty(

@@ -65,7 +65,7 @@ class ShowAllDownloadsButton : public RichHoverButton {
             /*subtitle_text=*/std::u16string(),
             ui::ImageModel::FromVectorIcon(
                 features::IsRoundedIconsEnabled()
-                    ? vector_icons::kOpenInNewIcon
+                    ? vector_icons::kOpenInNewFlippableIcon
                     : vector_icons::kLaunchChromeRefreshOldIcon,
                 kColorDownloadBubbleShowAllDownloadsIcon,
                 GetLayoutConstant(LayoutConstant::kDownloadIconSize))) {

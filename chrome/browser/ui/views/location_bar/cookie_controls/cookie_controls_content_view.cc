@@ -209,7 +209,7 @@ void CookieControlsContentView::AddFeedbackSection() {
                                         : kSubmitFeedbackOldIcon,
       ui::kColorMenuIcon, GetDefaultIconSize());
   const ui::ImageModel launch_icon = ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewIcon
+      features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewFlippableIcon
                                         : vector_icons::kLaunchOldIcon,
       ui::kColorMenuIcon, GetLayoutConstant(LayoutConstant::kPageInfoIconSize));
 

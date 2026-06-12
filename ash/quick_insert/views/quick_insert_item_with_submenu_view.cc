@@ -94,7 +94,7 @@ QuickInsertItemWithSubmenuView::QuickInsertItemWithSubmenuView()
                       .SetImageSize(kIconSizeDip)
                       .SetImage(ui::ImageModel::FromVectorIcon(
                           ::features::IsRoundedIconsEnabled()
-                              ? vector_icons::kKeyboardArrowRightIcon
+                              ? vector_icons::kKeyboardArrowRightFlippableIcon
                               : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
                           cros_tokens::kCrosSysOnSurface))))
       .BuildChildren();

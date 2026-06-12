@@ -111,7 +111,7 @@ TreeView::TreeView()
 
   folder_icon_ = ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled()
-          ? vector_icons::kFolderIcon
+          ? vector_icons::kFolderFlippableIcon
           : vector_icons::kFolderChromeRefreshOldIcon,
       ui::kColorIcon);
 
@@ -1252,7 +1252,7 @@ void TreeView::PaintExpandControl(gfx::Canvas* canvas,
                                   const gfx::Rect& node_bounds,
                                   bool expanded) {
   gfx::ImageSkia arrow = gfx::CreateVectorIcon(
-      features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightIcon
+      features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightFlippableIcon
                                         : vector_icons::kSubmenuArrowOldIcon,
       color_utils::DeriveDefaultIconColor(
           drawing_provider()->GetTextColorForNode(this, nullptr)));

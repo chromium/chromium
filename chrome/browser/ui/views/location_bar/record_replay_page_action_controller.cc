@@ -161,7 +161,7 @@ void RecordReplayPageActionController::OnRetrieveRecordingsComplete(
       if (!recent_recordings_.empty()) {
         tooltip_text = u"Replay (UT)";
         icon = &(features::IsRoundedIconsEnabled()
-                     ? vector_icons::kPlayArrowFilledIcon
+                     ? vector_icons::kPlayArrowFilledFlippableIcon
                      : vector_icons::kPlayArrowOldIcon);
         color = gfx::kGoogleGreen600;
       } else {

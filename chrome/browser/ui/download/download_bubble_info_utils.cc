@@ -366,13 +366,13 @@ std::vector<DownloadBubbleQuickAction> QuickActionsForDownload(
                          l10n_util::GetStringUTF16(
                              IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION),
                          &(features::IsRoundedIconsEnabled()
-                               ? vector_icons::kFolderIcon
+                               ? vector_icons::kFolderFlippableIcon
                                : vector_icons::kFolderChromeRefreshOldIcon));
     actions.emplace_back(
         DownloadCommands::Command::OPEN_WHEN_COMPLETE,
         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION),
         &(features::IsRoundedIconsEnabled()
-              ? vector_icons::kOpenInNewIcon
+              ? vector_icons::kOpenInNewFlippableIcon
               : vector_icons::kLaunchChromeRefreshOldIcon));
   }
 

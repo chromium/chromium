@@ -497,9 +497,10 @@ std::unique_ptr<RichHoverButton> CreateManagePasswordRow(
       /*subtitle_text=*/std::u16string(),
       /*action_image_icon=*/
       ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled()   ? views::kOpenInNewIcon
-          : features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewIcon
-                                              : vector_icons::kLaunchOldIcon,
+          features::IsRoundedIconsEnabled() ? views::kOpenInNewIcon
+          : features::IsRoundedIconsEnabled()
+              ? vector_icons::kOpenInNewFlippableIcon
+              : vector_icons::kLaunchOldIcon,
           ui::kColorIconSecondary,
           GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
   manage_password_row->SetID(static_cast<int>(

@@ -54,7 +54,7 @@ std::unique_ptr<views::ImageView> GetSecondaryIconForRow(
              : std::make_unique<views::ImageView>(
                    ui::ImageModel::FromVectorIcon(
                        features::IsRoundedIconsEnabled()
-                           ? vector_icons::kKeyboardArrowRightIcon
+                           ? vector_icons::kKeyboardArrowRightFlippableIcon
                            : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
                        ui::kColorIcon, kIconSize));
 }

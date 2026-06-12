@@ -872,7 +872,7 @@ const gfx::VectorIcon& GetExpandableMenuIcon(SuggestionType type) {
                    ? kMoreVertIcon
                    : kBrowserToolsChromeRefreshOldIcon
          : ::features::IsRoundedIconsEnabled()
-             ? vector_icons::kKeyboardArrowRightIcon
+             ? vector_icons::kKeyboardArrowRightFlippableIcon
              : vector_icons::kSubmenuArrowChromeRefreshOldIcon;
 }
 

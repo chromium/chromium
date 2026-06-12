@@ -169,7 +169,7 @@ AccountHoverButtonSecondaryView::AccountHoverButtonSecondaryView() {
   std::unique_ptr<views::ImageView> arrow_image_view =
       std::make_unique<views::ImageView>();
   arrow_image_view->SetImage(ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightIcon
+      features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightFlippableIcon
                                         : vector_icons::kSubmenuArrowOldIcon,
       ui::kColorIcon, kArrowIconSize));
   arrow_image_view_ = AddChildView(std::move(arrow_image_view));
@@ -192,7 +192,7 @@ void AccountHoverButtonSecondaryView::SetDisabledOpacity() {
   }
 
   arrow_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightIcon
+      features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightFlippableIcon
                                         : vector_icons::kSubmenuArrowOldIcon,
       ui::kColorLabelForegroundDisabled, kArrowIconSize));
 }

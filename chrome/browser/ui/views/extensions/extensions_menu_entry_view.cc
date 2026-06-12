@@ -65,7 +65,7 @@ views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
     // button is not disabled.
     auto arrow_icon = ui::ImageModel::FromVectorIcon(
         features::IsRoundedIconsEnabled()
-            ? vector_icons::kKeyboardArrowRightIcon
+            ? vector_icons::kKeyboardArrowRightFlippableIcon
             : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
         kColorExtensionMenuIcon, small_icon_size);
 

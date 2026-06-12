@@ -156,7 +156,7 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
   redirect_icon_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&ActorTaskListBubbleRowButton::OnRedirectIconPressed,
                           base::Unretained(this)),
-      features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewIcon
+      features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewFlippableIcon
                                         : vector_icons::kLaunchOldIcon,
       kRedirectIconSize, ui::kColorMenuIcon, ui::kColorMenuIcon,
       ui::kColorMenuIcon));

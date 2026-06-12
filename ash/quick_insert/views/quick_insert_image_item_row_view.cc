@@ -86,7 +86,8 @@ QuickInsertImageItemRowView::QuickInsertImageItemRowView(
                                   std::move(more_items_callback),
                                   IconButton::Type::kMediumFloating,
                                   ::features::IsRoundedIconsEnabled()
-                                      ? &vector_icons::kKeyboardArrowRightIcon
+                                      ? &vector_icons::
+                                            kKeyboardArrowRightFlippableIcon
                                       : &vector_icons::
                                             kSubmenuArrowChromeRefreshOldIcon,
                                   std::move(more_items_accessible_name),

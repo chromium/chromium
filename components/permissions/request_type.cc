@@ -105,7 +105,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
                  : vector_icons::kContentPasteOldIcon;
     case RequestType::kDiskQuota:
       return ::features::IsRoundedIconsEnabled()
-                 ? vector_icons::kFolderIcon
+                 ? vector_icons::kFolderFlippableIcon
                  : vector_icons::kFolderChromeRefreshOldIcon;
     case RequestType::kGeolocation:
       return ::features::IsRoundedIconsEnabled()
