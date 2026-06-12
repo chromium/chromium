@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    window.receivedMessages = [];
+    window.addEventListener('message', (event) => {
+      window.receivedMessages.push(event.data);
+      // Only send the handshake response when a HandshakePing message
+      // (identified by protobuf tag byte 10) is received.
+      if (event.source && new Uint8Array(event.data)[0] === 10) {
+        // Send a binary protobuf AimToClientMessage containing an empty
+        // HandshakeResponse (field 1, wire type 2, length 0 -> [10, 0])
+        // to complete the handshake for the contextual tasks WebUI.
+        const response = new Uint8Array([10, 0]);
+        event.source.postMessage(response.buffer, event.origin);
+      }
+    });
+  </script>
+</body>
+</html>
