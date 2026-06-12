@@ -231,7 +231,9 @@ class DataWriterFileStreamWriter final : public storage::FileStreamWriter {
 
 // Represents an ongoing operation of writing to an IOutputStream.
 class OutputStreamWriteOperation
-    : public base::RefCountedThreadSafe<OutputStreamWriteOperation> {
+    : public base::RefCountedThreadSafe<
+          OutputStreamWriteOperation,
+          content::BrowserThread::DeleteOnIOThread> {
  public:
   OutputStreamWriteOperation(
       content::BrowserContext::BlobContextGetter blob_context_getter,
@@ -258,9 +260,23 @@ class OutputStreamWriteOperation
   }
 
  private:
-  friend class base::RefCountedThreadSafe<OutputStreamWriteOperation>;
+  friend class base::RefCountedThreadSafe<
+      OutputStreamWriteOperation,
+      content::BrowserThread::DeleteOnIOThread>;
+  friend struct content::BrowserThread::DeleteOnThread<
+      content::BrowserThread::IO>;
+  friend class base::DeleteHelper<OutputStreamWriteOperation>;
 
-  ~OutputStreamWriteOperation() = default;
+  ~OutputStreamWriteOperation() {
+    // Though at the time of this writing the only thing this class owns that
+    // needs to be destroyed on the IO thread is the FileWriterDelegate (because
+    // it owns a BlobReader, which owns a BlobDataSnapshot, which must be
+    // destroyed on the IO thread), this class is largely IO-centric, so to
+    // protect against future changes that may modify what needs to be destroyed
+    // on the IO thread we broadly enforce the class as a whole is always
+    // destroyed there.
+    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  }
 
   void WriteStreamOnIOThread() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
