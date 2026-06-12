@@ -69,12 +69,15 @@ void ThemeColorsSourceManager::PopulateLocalResourceLoaderConfig(
       auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
       if (theme_service) {
         color_provider = theme_service->GetColorProvider();
-        // When `WebUIReloadButtonPrewarmWebUI` is enabled, the
-        // ThemeColorsSourceManager needs to be set up before the WebContents is
-        // added to the Widget. In this case, it's expected that we will fetch
-        // the theme service using the `profile_` instead.
-        if (!(features::IsWebUIToolbarEnabled() &&
-              features::kWebUIReloadButtonPrewarmWebUI.Get())) {
+        // When `WebUIToolbarProcessOverheadExperiment` or
+        // `WebUIReloadButtonPrewarmWebUI` is enabled, the
+        // `ThemeColorsSourceManager` needs to be set up before the WebContents
+        // is added to the Widget. In this case, it's expected that we will
+        // fetch the theme service using the `profile_` instead.
+        if (!(base::FeatureList::IsEnabled(
+                  features::kWebUIToolbarProcessOverheadExperiment) ||
+              (features::IsWebUIToolbarEnabled() &&
+               features::kWebUIReloadButtonPrewarmWebUI.Get()))) {
           base::debug::DumpWithoutCrashing();
         }
       }
