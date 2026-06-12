@@ -42,6 +42,10 @@
   }
 }
 
+:host-context([webui-refresh-2026]) #enable-section .enabled-text {
+  color: var(--color-extension-manager-highlight-text);
+}
+
 #icon {
   height: 24px;
   margin-inline-end: 12px;
@@ -132,6 +136,12 @@
   #reload-button {
     color: var(--google-blue-500);
   }
+}
+
+:host-context([webui-refresh-2026]) .warning .action-button,
+:host-context([webui-refresh-2026]) #reload-button {
+  background: none;
+  color: var(--color-extension-manager-highlight-text);
 }
 
 .warning span {

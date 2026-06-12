@@ -139,6 +139,9 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorExtensionsMenuText] = {ui::kColorSysOnSurface};
   mixer[kColorExtensionsMenuSecondaryText] = {ui::kColorSysOnSurfaceSubtle};
 
+  // Extension manager WebUI colors.
+  mixer[kColorExtensionManagerHighlightText] = {ui::kColorSysPrimary};
+
   // Lens overlay colors.
   mixer[kColorLensOverlayToastBackground] = {ui::kColorSysInverseSurface};
   mixer[kColorLensOverlayToastButtonBorder] = {ui::kColorSysInverseOnSurface};

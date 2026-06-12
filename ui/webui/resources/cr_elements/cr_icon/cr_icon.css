@@ -24,3 +24,10 @@
   width: var(--iron-icon-width, 24px);
   height: var(--iron-icon-height, 24px);
 }
+
+:host-context([webui-refresh-2026]) {
+  &:host(:focus) {
+    border-radius: 2px;
+    outline: solid 2px var(--cr-focus-outline-color);
+  }
+}

@@ -48,3 +48,10 @@ cr-icon {
   border-top: var(--cr-separator-line);
   margin-inline-start: var(--cr-section-indent-width);
 }
+
+:host-context([webui-refresh-2026]) {
+  a:focus {
+    border-radius: 2px;
+    outline: solid 2px var(--cr-focus-outline-color);
+  }
+}

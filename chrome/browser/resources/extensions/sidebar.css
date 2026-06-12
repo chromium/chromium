@@ -61,3 +61,11 @@
 #promo-message-text a {
   color: var(--cr-link-color);
 }
+
+:host-context([webui-refresh-2026]) {
+  #discover-more-text a:focus,
+  #promo-message-text a:focus {
+    border-radius: 2px;
+    outline: solid 2px var(--cr-focus-outline-color);
+  }
+}

@@ -508,10 +508,9 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
           l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME)));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  source->AddString("webuiRefresh2026",
-                    base::FeatureList::IsEnabled(features::kWebuiRefresh2026)
-                        ? "webui-refresh-2026"
-                        : "");
+  source->AddString("webuiRefresh2026", features::IsWebuiRefresh2026Enabled()
+                                            ? "webui-refresh-2026"
+                                            : "");
 
   return source;
 }
