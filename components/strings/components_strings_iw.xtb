@@ -313,7 +313,7 @@
 <translation id="1465457928007067810">‏מספר ה-IBAN נשמר בחשבון שלך ב-Google</translation>
 <translation id="1467432559032391204">שמאלה</translation>
 <translation id="1468653229182955856">הקוד שלך עבור <ph name="EMBEDDED_ORIGIN" /> כדי להמשיך אל <ph name="TOP_ORIGIN" /> הוא <ph name="ONE_TIME_CODE" /></translation>
-<translation id="1472675084647422956">הצגת יותר מידע</translation>
+<translation id="1472675084647422956">עוד</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">צריך להזין 3 מילים לפחות כדי לקבל עזרה בכתיבה</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -2648,7 +2648,7 @@ Del</translation>
 <translation id="5136841603454277753">צריך להזין את הקוד הנכון</translation>
 <translation id="5137761395480718572">‏האפליקציה הזו מבקשת הרשאה להתקין פרטי כניסה ל-Wi-Fi. לאחר ההגדרה, <ph name="DEVICE_TYPE" /> יתחבר באופן אוטומטי לרשתות ה-Wi-Fi הקיימות. כדי להסיר את פרטי הכניסה האלה, צריך להסיר את האפליקציה. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">הכרטיס הווירטואלי לא זמין כרגע. עליך לפנות לבנק</translation>
-<translation id="5138227688689900538">פחות מידע</translation>
+<translation id="5138227688689900538">פחות</translation>
 <translation id="5140155249377545621">רישיונות נהיגה</translation>
 <translation id="5143310416385956149">‏הסריקה נשמרה ב-OneDrive</translation>
 <translation id="5144613843429436866">נתת הרשאה של <ph name="PERMISSION" /> לאתר הזה</translation>

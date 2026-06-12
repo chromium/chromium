@@ -697,7 +697,7 @@
 <translation id="35083190962747987">開啟 ${url}</translation>
 <translation id="3511519535430890904">新增瀏覽防護功能</translation>
 <translation id="3512572904898385012">現在可以使用相機購物及翻譯。輕觸即可體驗。</translation>
-<translation id="3517216995152707259">刪除瀏覽資料並不會登出 Google 帳戶。必須<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />，才能登出帳戶。</translation>
+<translation id="3517216995152707259">即使刪除瀏覽資料，Google 帳戶仍會保持登入。如果想登出帳戶，請<ph name="BEGIN_LINK" />從 Chrome 登出<ph name="END_LINK" />。</translation>
 <translation id="3519792890877853853">這張資訊卡會針對已開啟分頁中的產品顯示評論</translation>
 <translation id="3519905498307021260">{count,plural, =1{開啟分頁}other{開啟 {count} 個分頁}}</translation>
 <translation id="3523513363815970085">隱藏「常用網站」</translation>
