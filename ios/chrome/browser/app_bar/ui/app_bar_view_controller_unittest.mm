@@ -439,6 +439,39 @@ TEST_F(AppBarViewControllerTest, TestTabGridButtonAccessibilityValue) {
   EXPECT_NSEQ(button.accessibilityValue, @"0");
 }
 
+// Tests that assistant button in kLens state sets correct image and title.
+TEST_F(AppBarViewControllerTest, TestAssistantButtonStateLens) {
+  UIButton* button = assistantButton();
+  ASSERT_NE(button, nil);
+
+  // Test full title when width is default (or 0).
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kLens
+                                highlighted:NO
+                                    enabled:YES
+                                     avatar:nil
+                                   signedIn:NO];
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+
+  UIButtonConfiguration* config = button.configuration;
+  EXPECT_NSEQ(config.title, l10n_util::GetNSString(IDS_IOS_LENS_PRODUCT_NAME));
+  EXPECT_NE(config.image, nil);
+
+  // Set the view width to a very small size to force truncation.
+  view_controller_.view.frame = CGRectMake(0, 0, 100, 50);
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kLens
+                                highlighted:NO
+                                    enabled:YES
+                                     avatar:nil
+                                   signedIn:NO];
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+
+  config = button.configuration;
+  EXPECT_NSEQ(config.title,
+              l10n_util::GetNSString(IDS_IOS_LENS_PRODUCT_NAME_TRUNCATED));
+}
+
 using AppBarViewControllerTestManual = PlatformTest;
 
 // Tests that setting incognito before the view is loaded correctly applies

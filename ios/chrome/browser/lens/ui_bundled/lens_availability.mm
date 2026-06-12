@@ -78,7 +78,8 @@ void LogLensSupportStatusForLensEntryPoint(
       break;
     case LensEntrypoint::HomeScreenWidget:
     case LensEntrypoint::AppIconLongPress:
-      // App icon long press cannot log availailability.
+    case LensEntrypoint::AppBar:
+      // App icon long press and AppBar cannot log availability.
       return;
     default:
       NOTREACHED() << "Unsupported Lens Entry Point.";

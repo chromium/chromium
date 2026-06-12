@@ -10,11 +10,17 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/string_util.h"
+#import "components/country_codes/country_codes.h"
+#import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "components/regional_capabilities/regional_capabilities_service.h"
+#import "components/search/search.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
@@ -32,6 +38,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
@@ -76,6 +83,9 @@
 
 // The web state list currently observed by this mediator.
 @property(nonatomic, assign) WebStateList* currentWebStateList;
+
+// Override Lens availability for testing.
+@property(nonatomic, assign) BOOL overrideLensAvailabilityForTesting;
 
 // The TabGroup currently visible.
 @property(nonatomic, assign) const TabGroup* currentTabGroup;
@@ -314,6 +324,7 @@
   _incognitoFullscreenBrowserAgent = nullptr;
   _regularFullscreenHandler = nil;
   _incognitoFullscreenHandler = nil;
+  _lensHandler = nil;
   [_tabGridState removeObserver:self];
   [_incognitoState removeObserver:self];
   _observerBridge.reset();
@@ -546,6 +557,16 @@
       [self.sceneHandler showAssistant];
       break;
     }
+    case AppBarAssistantButtonState::kLens: {
+      OpenLensInputSelectionCommand* command =
+          [[OpenLensInputSelectionCommand alloc]
+                  initWithEntryPoint:LensEntrypoint::AppBar
+                   presentationStyle:LensInputSelectionPresentationStyle::
+                                         SlideFromRight
+              presentationCompletion:nil];
+      [self.lensHandler openLensInputSelection:command];
+      break;
+    }
     case AppBarAssistantButtonState::kAccount:
       if (_authenticationService->HasPrimaryIdentity()) {
         [self.delegate showAccountMenu:sender];
@@ -704,11 +725,31 @@
       geminiAllowed = gemini::GeminiAllowedByPolicy(_prefService);
     }
   }
+  BOOL useLens = _overrideLensAvailabilityForTesting;
+  if (!useLens) {
+    useLens = lens_availability::CheckAvailabilityForLensEntryPoint(
+        LensEntrypoint::AppBar,
+        search::DefaultSearchProviderIsGoogle(_templateURLService));
+  }
 
-  if (IsPageActionMenuEnabled() && geminiAllowed) {
+  BOOL isEEAOrJapan = NO;
+  variations::VariationsService* variationsService =
+      GetApplicationContext()->GetVariationsService();
+  if (variationsService) {
+    country_codes::CountryId countryId(
+        base::ToUpperASCII(variationsService->GetStoredPermanentCountry()));
+    isEEAOrJapan = regional_capabilities::RegionalCapabilitiesService::
+                       IsInAnySearchEngineChoiceScreenRegion(countryId) ||
+                   countryId == country_codes::CountryId("JP");
+  }
+
+  if (IsPageActionMenuEnabled() && geminiAllowed && !isEEAOrJapan) {
     state = AppBarAssistantButtonState::kAsk;
-  } else if (IsAimCobrowseEnabled() && IsAssistantContainerEnabled()) {
+  } else if (IsAimCobrowseEnabled() && IsAssistantContainerEnabled() &&
+             AimEligibilityService::IsAimAllowedByPolicy(_prefService)) {
     state = AppBarAssistantButtonState::kAIM;
+  } else if (useLens) {
+    state = AppBarAssistantButtonState::kLens;
   }
 
   BOOL highlighted = NO;

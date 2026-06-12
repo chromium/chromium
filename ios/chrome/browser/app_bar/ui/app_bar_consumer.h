@@ -16,6 +16,7 @@ typedef NS_ENUM(NSUInteger, AppBarButtonType) {
 
 // The states for the assistant button.
 enum class AppBarAssistantButtonState {
+  kLens,
   kAsk,
   kAIM,
   kAccount,

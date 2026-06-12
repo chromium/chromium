@@ -30,6 +30,7 @@ class PrefService;
 @protocol FullscreenCommands;
 @class TabGridState;
 @protocol TabGroupsCommands;
+@protocol LensCommands;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
 class WebStateList;
@@ -70,6 +71,9 @@ class WebStateList;
 
 // Handler for the BWG commands.
 @property(nonatomic, weak) id<BWGCommands> geminiHandler;
+
+// Handler for the lens commands.
+@property(nonatomic, weak) id<LensCommands> lensHandler;
 
 // The regular FullscreenCommands handler.
 @property(nonatomic, weak) id<FullscreenCommands> regularFullscreenHandler;

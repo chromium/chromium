@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/application_locale_storage/application_locale_storage.h"
+#import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/search_engines/search_engines_test_environment.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -47,6 +49,7 @@
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -81,6 +84,10 @@
 @protocol TestAppBarConsumer <AppBarConsumer,
                               FullscreenUIElement,
                               FullscreenBrowserAgentObserving>
+@end
+
+@interface AppBarMediator (Testing)
+@property(nonatomic, assign) BOOL overrideLensAvailabilityForTesting;
 @end
 
 namespace {
@@ -233,6 +240,14 @@ class AppBarMediatorTest : public PlatformTest {
     mediator_.sceneHandler = mock_scene_handler_;
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
     mediator_.settingsHandler = mock_settings_handler_;
+    mock_lens_handler_ = OCMProtocolMock(@protocol(LensCommands));
+    [regular_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_lens_handler_
+                     forProtocol:@protocol(LensCommands)];
+    [incognito_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_lens_handler_
+                     forProtocol:@protocol(LensCommands)];
+    mediator_.lensHandler = mock_lens_handler_;
     mock_gemini_handler_ = OCMProtocolMock(@protocol(BWGCommands));
     mediator_.geminiHandler = mock_gemini_handler_;
     mock_tab_groups_handler_ = OCMProtocolMock(@protocol(TabGroupsCommands));
@@ -316,6 +331,7 @@ class AppBarMediatorTest : public PlatformTest {
   id mock_settings_handler_;
   id mock_gemini_handler_;
   id mock_tab_groups_handler_;
+  id mock_lens_handler_;
 };
 
 // Tests that the consumer is updated when a web state is added.
@@ -845,6 +861,52 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonTappedEligible) {
 
 // Tests that the assistant button is in the kAIM state when the correct
 // features are enabled.
+// Tests that the assistant button falls back to kLens when the AIM is disabled
+// by enterprise policy and Lens is available.
+TEST_F(AppBarMediatorTest,
+       TestAssistantButtonStateAIM_DisabledByPolicyLensFallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kAssistantContainer, kAimCobrowse, kGeminiKillSwitch},
+      {kPageActionMenu});
+
+  regular_profile_->GetTestingPrefService()->SetInteger(
+      omnibox::kAIModeSettings, 1);
+  mediator_.overrideLensAvailabilityForTesting = YES;
+
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kLens
+                                   highlighted:NO
+                                       enabled:YES
+                                        avatar:nil
+                                      signedIn:NO]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button falls back to kAccount when the AIM is
+// disabled by enterprise policy and Lens is NOT available.
+TEST_F(AppBarMediatorTest,
+       TestAssistantButtonStateAIM_DisabledByPolicyAccountFallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kAssistantContainer, kAimCobrowse, kGeminiKillSwitch},
+      {kPageActionMenu});
+
+  regular_profile_->GetTestingPrefService()->SetInteger(
+      omnibox::kAIModeSettings, 1);
+  mediator_.overrideLensAvailabilityForTesting = NO;
+  SetLocationEligible(false);
+
+  OCMExpect([consumer_
+      setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                  highlighted:NO
+                      enabled:YES
+                       avatar:nil
+                     signedIn:NO]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
 TEST_F(AppBarMediatorTest, TestAssistantButtonStateAIM) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -860,18 +922,167 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAIM) {
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
-// Tests that tapping the assistant button in the kAIM state dispatches the
-// assistant command.
-TEST_F(AppBarMediatorTest, TestAssistantButtonTappedAIM) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kAssistantContainer, kGeminiKillSwitch},
-                                {kPageActionMenu});
-  [mediator_ updateAssistantButton];
+// Tests that the assistant button is in the kLens state when location is
+// ineligible (fallback state).
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateLensFallback) {
+  SetLocationEligible(false);
+  mediator_.overrideLensAvailabilityForTesting = YES;
 
-  OCMExpect([mock_scene_handler_ showAssistant]);
-  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAIM
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kLens
+                                   highlighted:NO
+                                       enabled:YES
+                                        avatar:nil
+                                      signedIn:NO]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button remains ineligible for kAsk when the country
+// is in the EEA (e.g., France), even if the PageActionMenu feature is enabled.
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateEEACountryGated) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kPageActionMenu}, {});
+
+  // Set country to France ("fr"), which is in EEA.
+  scoped_variations_service_.Get()->OverrideStoredPermanentCountry("fr");
+  TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->Set(
+      "en-US");
+
+  SignInAndSetCapability(true);
+  mediator_.overrideLensAvailabilityForTesting = YES;
+
+  // Expect fallback to kLens instead of kAsk.
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kLens
+                                   highlighted:NO
+                                       enabled:YES
+                                        avatar:nil
+                                      signedIn:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button remains ineligible for kAsk when the country
+// is Japan ("jp"), even if the PageActionMenu feature is enabled.
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateJapanCountryGated) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kPageActionMenu}, {});
+
+  // Set country to Japan ("jp").
+  scoped_variations_service_.Get()->OverrideStoredPermanentCountry("jp");
+  TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->Set(
+      "en-US");
+
+  SignInAndSetCapability(true);
+  mediator_.overrideLensAvailabilityForTesting = YES;
+
+  // Expect fallback to kLens instead of kAsk.
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kLens
+                                   highlighted:NO
+                                       enabled:YES
+                                        avatar:nil
+                                      signedIn:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button is in the kAsk state when the country is
+// not in the EEA and not Japan (e.g., Brazil), and the PageActionMenu feature
+// is enabled.
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateNonEEANonJapanEligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kPageActionMenu}, {});
+
+  // Set country to Brazil ("br"), which is not in EEA or Japan.
+  scoped_variations_service_.Get()->OverrideStoredPermanentCountry("br");
+  TestingApplicationContext::GetGlobal()->GetApplicationLocaleStorage()->Set(
+      "en-US");
+
+  SignInAndSetCapability(true);
+
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                   highlighted:NO
+                                       enabled:NO
+                                        avatar:nil
+                                      signedIn:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button remains in the kLens state when signed in but
+// not location eligible (fallback state).
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateLensFallbackSignedIn) {
+  // Tear down mediator and agent before changing location eligibility.
+  [mediator_ disconnect];
+  mediator_ = nil;
+  regular_browser_->RemoveUserData(GeminiBrowserAgent::UserDataKey());
+
+  SetLocationEligible(false);
+  SignInAndSetCapability(false);
+
+  // Recreate agent and mediator with the new location eligibility.
+  GeminiBrowserAgent::CreateForBrowser(regular_browser_.get());
+
+  BrowserActionFactory* regular_action_factory =
+      [[BrowserActionFactory alloc] initWithBrowser:regular_browser_.get()
+                                           scenario:kTestMenuScenario];
+  BrowserActionFactory* incognito_action_factory =
+      [[BrowserActionFactory alloc] initWithBrowser:incognito_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  mediator_ = [[AppBarMediator alloc]
+          initWithRegularWebStateList:regular_web_state_list_.get()
+                incognitoWebStateList:incognito_web_state_list_.get()
+          regularFullscreenController:TestFullscreenController::FromBrowser(
+                                          regular_browser_.get())
+        incognitoFullscreenController:TestFullscreenController::FromBrowser(
+                                          incognito_browser_.get())
+        regularFullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(
+                                          regular_browser_.get())
+      incognitoFullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(
+                                          incognito_browser_.get())
+                 regularActionFactory:regular_action_factory
+               incognitoActionFactory:incognito_action_factory
+                          prefService:regular_profile_->GetTestingPrefService()
+                   templateURLService:search_engines_test_environment_
+                                          .template_url_service()
+                authenticationService:auth_service_
+                      identityManager:IdentityManagerFactory::GetForProfile(
+                                          regular_profile_.get())
+                        geminiService:gemini_service_ptr_.get()
+                   geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(
+                                          regular_browser_.get())
+                            URLLoader:url_loader_
+                         tabGridState:tab_grid_state_
+                       incognitoState:incognito_state_];
+  mediator_.consumer = consumer_;
+  mediator_.sceneHandler = mock_scene_handler_;
+  mediator_.settingsHandler = mock_settings_handler_;
+  mediator_.lensHandler = mock_lens_handler_;
+
+  mediator_.overrideLensAvailabilityForTesting = YES;
+
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kLens
+                                   highlighted:NO
+                                       enabled:YES
+                                        avatar:nil
+                                      signedIn:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that tapping the assistant button in the kLens state dispatches
+// the Lens command.
+TEST_F(AppBarMediatorTest, TestAssistantButtonTappedLens) {
+  OCMExpect([mock_lens_handler_
+      openLensInputSelection:[OCMArg
+                                 checkWithBlock:^BOOL(
+                                     OpenLensInputSelectionCommand* command) {
+                                   return command.entryPoint ==
+                                          LensEntrypoint::AppBar;
+                                 }]]);
+  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kLens
                                    fromView:nil];
-  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_lens_handler_);
 }
 
 // Tests that the assistant button is in the kAccount state by default.
