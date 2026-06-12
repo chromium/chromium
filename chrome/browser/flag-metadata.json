@@ -5110,6 +5110,14 @@
     "expiry_milestone": 155
   },
   {
+    "name": "gemini-luminous",
+    "owners": [
+      "yasamans@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "gemini-maps-rich-ui",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 160

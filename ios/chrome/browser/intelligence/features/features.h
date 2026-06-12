@@ -406,6 +406,12 @@ BASE_DECLARE_FEATURE(kGeneralizedGeminiEntryFlow);
 // Returns true if the generalized Gemini entry flow is enabled.
 bool IsGeneralizedGeminiEntryFlowEnabled();
 
+// Feature flag controlling Gemini Luminous.
+BASE_DECLARE_FEATURE(kGeminiLuminous);
+
+// Returns true if Gemini Luminous is enabled.
+bool IsGeminiLuminousEnabled();
+
 #pragma mark - Debugging Features
 
 // Holds the variations of the BWG Promo Consent flow for debugging.

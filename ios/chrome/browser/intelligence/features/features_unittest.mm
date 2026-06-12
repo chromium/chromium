@@ -232,3 +232,19 @@ TEST_F(ActorFeaturesTest,
   // Restore locale.
   locale_storage->Set(original_locale);
 }
+
+TEST_F(ActorFeaturesTest, IsGeminiLuminousEnabled_Default) {
+  EXPECT_FALSE(IsGeminiLuminousEnabled());
+}
+
+TEST_F(ActorFeaturesTest, IsGeminiLuminousEnabled_Enabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kGeminiLuminous, kPageActionMenu}, {});
+  EXPECT_TRUE(IsGeminiLuminousEnabled());
+}
+
+TEST_F(ActorFeaturesTest, IsGeminiLuminousEnabled_Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({}, {kGeminiLuminous});
+  EXPECT_FALSE(IsGeminiLuminousEnabled());
+}
