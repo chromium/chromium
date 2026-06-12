@@ -784,9 +784,19 @@ class NtpComposeboxSearchFulfillmentTest
       public testing::WithParamInterface<ComposeboxSearchParam> {
  public:
   NtpComposeboxSearchFulfillmentTest() {
+    content::SpeechRecognitionManager::SetManagerForTesting(
+        &fake_speech_recognition_manager_);
     feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
                                                 GetDisabledFeatures());
   }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NtpRealboxUiTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("use-fake-ui-for-media-stream");
+  }
+
+ protected:
+  content::FakeSpeechRecognitionManager fake_speech_recognition_manager_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -808,6 +818,11 @@ IN_PROC_BROWSER_TEST_P(NtpComposeboxSearchFulfillmentTest,
                        SearchNavigatesOnSubmit) {
   const ComposeboxSearchParam& param = GetParam();
   const std::string query = "test";
+
+  if (param.is_voice) {
+    fake_speech_recognition_manager_.set_should_send_fake_response(false);
+    fake_speech_recognition_manager_.SetFakeResult(query, /*is_final=*/true);
+  }
 
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kVoiceSearchVisibleEvent);
   WebContentsInteractionTestUtil::StateChange voice_search_visible;
@@ -832,6 +847,10 @@ IN_PROC_BROWSER_TEST_P(NtpComposeboxSearchFulfillmentTest,
       param.is_voice
           ? Steps(ClickElement(kNtpElementId, kComposeboxVoiceSearchButton),
                   WaitForStateChange(kNtpElementId, voice_search_visible),
+                  Do([&]() {
+                    fake_speech_recognition_manager_.SendFakeResponse(
+                        /*end_recognition=*/true, base::DoNothing());
+                  }),
                   TriggerAimVoiceSearch(kNtpElementId, kComposeboxVoiceSearch,
                                         query))
           : Steps(FocusAndInputText(kNtpElementId, kComposeboxInput),
