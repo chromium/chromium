@@ -448,12 +448,20 @@ void EmbeddedPermissionPrompt::CloseViewAndScrim() {
   scoped_tab_modal_ui_.reset();
 }
 
-void EmbeddedPermissionPrompt::FinalizePrompt() {
-  CloseViewAndScrim();
-
+void EmbeddedPermissionPrompt::FocusThenClose() {
+  // Focus must be restored to the browser before the prompt widget is destroyed
+  // to ensure the OS properly targets the browser tab when the prompt closes
+  // instead of a random window. This is a particular bug related to how native
+  // Windows handles focus after an ambiguous focus release.
   if (web_contents()) {
     web_contents()->Focus();
   }
+
+  CloseViewAndScrim();
+}
+
+void EmbeddedPermissionPrompt::FinalizePrompt() {
+  FocusThenClose();
 
   // If by this point we've not sent an action to the delegate, send a dismiss
   // action.
