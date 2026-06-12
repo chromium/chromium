@@ -1022,7 +1022,7 @@
 <translation id="2552246211866555379">Hagaki 紙匣</translation>
 <translation id="2552295903035773204">開始使用螢幕鎖定功能驗證卡片</translation>
 <translation id="2552532158894206888">右鍵</translation>
-<translation id="2553352788023127673">搜尋記錄和密碼可以在相關管理設定中刪除</translation>
+<translation id="2553352788023127673">前往相關管理設定即可刪除搜尋記錄和密碼</translation>
 <translation id="2553853292994445426">請檢查你的安全 DNS 設定。可能是已設定的安全 DNS 伺服器導致連線失敗。</translation>
 <translation id="255497580849974774">請將裝置接上電源，在更新期間不要拔除。</translation>
 <translation id="2555855727505718984">自動填入功能不會在這部裝置上使用這項資訊協助填寫表單</translation>
@@ -4798,7 +4798,7 @@
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">我知道了</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理 Cookie 偏好設定</translation>
-<translation id="8433057134996913067">你會因此登出大多數網站。</translation>
+<translation id="8433057134996913067">你會因此登出大多數網站</translation>
 <translation id="8434840396568290395">寵物</translation>
 <translation id="8435542599425298931">「<ph name="URL" />」想存取這部裝置上的其他應用程式和服務</translation>
 <translation id="8436623588884785770">新增政策</translation>
