@@ -144,6 +144,10 @@
   transition-duration: var(--on-press-duration);
 }
 
+#composebox::part(input) {
+  min-height: 44px;
+}
+
 #composebox::part(voice-stop-button) {
   background-color: var(--color-sys-neutral-container);
   --cr-icon-button-fill-color: var(--color-sys-on-surface);
@@ -165,7 +169,15 @@ cr-composebox[searchbox-layout-mode='TallBottomContext']::part(submit) {
   inset-inline-end: 8px;
 }
 
-#composebox::part(voice-icon) {
+/* Only set min height/width if it exists;
+ * otherwise use existing min height/width.
+ */
+cr-composebox.has-embedded-permission-prompt::part(composebox) {
+  min-height: var(--cr_composebox_minimum_height);
+  min-width: var(--cr_composebox_minimum_width);
+}
+
+cr-composebox::part(voice-icon) {
   --cr-icon-button-fill-color: var(--cr-composebox-voice-icon-fill-color);
 }
 
