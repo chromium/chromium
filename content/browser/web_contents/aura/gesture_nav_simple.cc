@@ -232,9 +232,7 @@ Affordance::Affordance(GestureNavSimple* owner,
                         ? vector_icons::kArrowForwardIcon
                         : vector_icons::kForwardArrowOldIcon);
   } else if (mode_ == OVERSCROLL_SOUTH) {
-    arrow_icon_ =
-        &(features::IsRoundedIconsEnabled() ? vector_icons::kRefreshIcon
-                                            : vector_icons::kReloadOldIcon);
+    arrow_icon_ = &vector_icons::kReloadCustomIcon;
   }
 
   DCHECK(arrow_icon_);

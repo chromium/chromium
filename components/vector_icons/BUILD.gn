@@ -362,7 +362,7 @@ if (current_toolchain == default_toolchain) {
       "receipt_long_old.icon",
       "refresh.icon",
       "reload_chrome_refresh_old.icon",
-      "reload_old.icon",
+      "reload_custom.icon",
       "replay.icon",
       "replay_10.icon",
       "replay_10_old.icon",
