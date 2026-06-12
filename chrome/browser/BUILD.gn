@@ -1378,6 +1378,7 @@ source_set("core") {
       "//chrome/browser/ash/file_suggest",
       "//chrome/browser/ash/file_system_provider/fileapi",
       "//chrome/browser/ash/fileapi",
+      "//chrome/browser/ash/fusebox",
       "//chrome/browser/ash/login",
       "//chrome/browser/ash/login/auth",
       "//chrome/browser/ash/login/demo_mode:demo_mode_login",

@@ -82,6 +82,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   friend class base::DeleteHelper<FileSelectHelper>;
   friend class FileSelectHelperContactsAndroid;
   friend class FileSelectHelperTest;
+  friend class FileSelectHelperChromeOSTest;
   friend struct content::BrowserThread::DeleteOnThread<
       content::BrowserThread::UI>;
 
@@ -233,6 +234,11 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   // Checks to see if scans are required for the specified files.
   void PerformContentAnalysisIfNeeded(
       std::vector<blink::mojom::FileChooserFileInfoPtr> list);
+
+  // Helper to resolve virtual file system paths to local Fusebox paths on
+  // ChromeOS.
+  base::FilePath MaybeSubstituteFuseboxFilePath(
+      const blink::mojom::FileSystemFileInfo& file_system_info);
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   // Callback used to receive the results of a content analysis scan.
