@@ -105,6 +105,9 @@ const char kGcpwAdditionalOauthScopes[] = "gcpw-additional-oauth-scopes";
 // shown as part of the login process or not.
 const char kShowTosSwitch[] = "show_tos";
 
+// Enables modal dialogs for GCPW.
+const char kEnableGcpwModalDialog[] = "enable-gcpw-modal-dialog";
+
 // Parameter appended to sign in URL to pass valid signin domains to the inline
 // login handler. These domains are separated by ','.
 const char kEmailDomainsSigninPromoParameter[] = "emailDomains";

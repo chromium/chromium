@@ -92,6 +92,9 @@ extern const wchar_t kRegDeveloperMode[];
 // associated account changes.
 extern const wchar_t kRegUpdateCredentialsOnChange[];
 
+// Enables modal dialogs for GCPW.
+extern const wchar_t kRegEnableGcpwModalDialog[];
+
 // Registry key that indicates account name for an unassociated Windows account
 // should be in shorter form.
 extern const wchar_t kRegUseShorterAccountName[];
