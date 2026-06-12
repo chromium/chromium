@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -52,13 +53,14 @@ class ContextualTasksWindowTrackerTest
 TEST_F(ContextualTasksWindowTrackerTest, TimeoutCallsCallback) {
   NiceMock<MockTabListInterface> mock_tab_list;
   bool callback_called = false;
-  ContextualTasksWindowTracker* callback_tracker_arg = nullptr;
+  base::WeakPtr<ContextualTasksWindowTracker> callback_tracker_arg;
 
   auto tracker = std::make_unique<ContextualTasksWindowTracker>(
-      &mock_tab_list, task_id_, expected_url_,
+      task_id_, expected_url_, nullptr,
+
       base::BindOnce(
-          [](bool* called, ContextualTasksWindowTracker** arg,
-             ContextualTasksWindowTracker* t) {
+          [](bool* called, base::WeakPtr<ContextualTasksWindowTracker>* arg,
+             base::WeakPtr<ContextualTasksWindowTracker> t) {
             *called = true;
             *arg = t;
           },
@@ -70,17 +72,19 @@ TEST_F(ContextualTasksWindowTrackerTest, TimeoutCallsCallback) {
   task_environment()->FastForwardBy(base::Seconds(10));
 
   EXPECT_TRUE(callback_called);
-  EXPECT_EQ(callback_tracker_arg, tracker.get());
+  EXPECT_EQ(callback_tracker_arg.get(), tracker.get());
 }
 
-TEST_F(ContextualTasksWindowTrackerTest, TabRemovedCallsCallback) {
-  NiceMock<MockTabListInterface> mock_tab_list;
+TEST_F(ContextualTasksWindowTrackerTest, GuestWindowDestroyedCallsCallback) {
   bool callback_called = false;
 
   auto tracker = std::make_unique<ContextualTasksWindowTracker>(
-      &mock_tab_list, task_id_, expected_url_,
+      task_id_, expected_url_, nullptr,
+
       base::BindOnce(
-          [](bool* called, ContextualTasksWindowTracker*) { *called = true; },
+          [](bool* called, base::WeakPtr<ContextualTasksWindowTracker>) {
+            *called = true;
+          },
           &callback_called));
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -89,87 +93,22 @@ TEST_F(ContextualTasksWindowTrackerTest, TabRemovedCallsCallback) {
       ->NavigateAndCommit(expected_url_);
 
   tabs::MockTabInterface mock_tab;
-  ON_CALL(mock_tab, GetContents).WillByDefault(Return(web_contents.get()));
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents.get(),
+                                                       &mock_tab);
 
-  tracker->OnTabAdded(mock_tab_list, &mock_tab, 0);
+  tabs::TabInterface::WillDetach detach_callback;
+  EXPECT_CALL(mock_tab, RegisterWillDetach(_))
+      .WillOnce([&](tabs::TabInterface::WillDetach callback) {
+        detach_callback = std::move(callback);
+        return base::CallbackListSubscription();
+      });
+
+  tracker->SetTabWebContents(web_contents.get());
   EXPECT_FALSE(callback_called);
 
-  tracker->OnTabRemoved(mock_tab_list, &mock_tab, TabRemovedReason::kDeleted);
-  EXPECT_TRUE(base::test::RunUntil([&]() { return callback_called; }));
-}
+  ASSERT_FALSE(detach_callback.is_null());
+  detach_callback.Run(&mock_tab, tabs::TabInterface::DetachReason::kDelete);
 
-TEST_F(ContextualTasksWindowTrackerTest, TabListDestroyedCallsCallback) {
-  NiceMock<MockTabListInterface> mock_tab_list;
-  bool callback_called = false;
-
-  auto tracker = std::make_unique<ContextualTasksWindowTracker>(
-      &mock_tab_list, task_id_, expected_url_,
-      base::BindOnce(
-          [](bool* called, ContextualTasksWindowTracker*) { *called = true; },
-          &callback_called));
-
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      browser_context(), content::SiteInstance::Create(browser_context()));
-  content::WebContentsTester::For(web_contents.get())
-      ->NavigateAndCommit(expected_url_);
-
-  tabs::MockTabInterface mock_tab;
-  ON_CALL(mock_tab, GetContents).WillByDefault(Return(web_contents.get()));
-
-  tracker->OnTabAdded(mock_tab_list, &mock_tab, 0);
-  EXPECT_FALSE(callback_called);
-
-  tracker->OnTabListDestroyed(mock_tab_list);
-  EXPECT_TRUE(base::test::RunUntil([&]() { return callback_called; }));
-}
-
-TEST_F(ContextualTasksWindowTrackerTest,
-       TabListDestroyedBeforeFoundCallsCallback) {
-  NiceMock<MockTabListInterface> mock_tab_list;
-  bool callback_called = false;
-
-  auto tracker = std::make_unique<ContextualTasksWindowTracker>(
-      &mock_tab_list, task_id_, expected_url_,
-      base::BindOnce(
-          [](bool* called, ContextualTasksWindowTracker*) { *called = true; },
-          &callback_called));
-
-  EXPECT_FALSE(callback_called);
-
-  tracker->OnTabListDestroyed(mock_tab_list);
-  EXPECT_TRUE(base::test::RunUntil([&]() { return callback_called; }));
-}
-
-TEST_F(ContextualTasksWindowTrackerTest, BrowserCreatedAddsObserver) {
-  NiceMock<MockTabListInterface> mock_tab_list;
-  bool callback_called = false;
-
-  auto tracker = std::make_unique<ContextualTasksWindowTracker>(
-      nullptr, task_id_, expected_url_,
-      base::BindOnce(
-          [](bool* called, ContextualTasksWindowTracker*) { *called = true; },
-          &callback_called));
-
-  MockBrowserWindowInterface mock_browser;
-  ui::UnownedUserDataHost user_data_host;
-  EXPECT_CALL(mock_browser, GetUnownedUserDataHost())
-      .WillRepeatedly(ReturnRef(user_data_host));
-  ui::ScopedUnownedUserData<TabListInterface> scoped_user_data(
-      mock_browser.GetUnownedUserDataHost(), mock_tab_list);
-
-  tracker->OnBrowserCreated(&mock_browser);
-
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      browser_context(), content::SiteInstance::Create(browser_context()));
-  content::WebContentsTester::For(web_contents.get())
-      ->NavigateAndCommit(expected_url_);
-
-  tabs::MockTabInterface mock_tab;
-  ON_CALL(mock_tab, GetContents).WillByDefault(Return(web_contents.get()));
-
-  tracker->OnTabAdded(mock_tab_list, &mock_tab, 0);
-
-  tracker->OnTabRemoved(mock_tab_list, &mock_tab, TabRemovedReason::kDeleted);
   EXPECT_TRUE(base::test::RunUntil([&]() { return callback_called; }));
 }
 

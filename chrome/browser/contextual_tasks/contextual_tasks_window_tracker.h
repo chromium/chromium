@@ -5,71 +5,80 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_WINDOW_TRACKER_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_WINDOW_TRACKER_H_
 
-#include <set>
-
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
-#include "chrome/browser/tab_list/tab_list_interface_observer.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
-class TabListInterface;
+namespace content {
+class WebContents;
 
-namespace tabs {
-class TabInterface;
 }
 
 namespace contextual_tasks {
 
-// Tracks a window (tab) opened via HandleNavigationImpl that was
-// allowed to open naturally. It associates the window with a task ID.
-class ContextualTasksWindowTracker : public BrowserCollectionObserver,
-                                     public TabListInterfaceObserver {
+// Tracks the association between the mock <webview> window that was created in
+// app.ts and the actual web contents that opened.
+class ContextualTasksWindowTracker {
  public:
   ContextualTasksWindowTracker(
-      TabListInterface* current_tab_list,
       const base::Uuid& task_id,
       const GURL& expected_url,
-      base::OnceCallback<void(ContextualTasksWindowTracker*)>
+      base::WeakPtr<content::WebContents> initiator_contents,
+      base::OnceCallback<void(base::WeakPtr<ContextualTasksWindowTracker>)>
           on_closed_callback);
-  ~ContextualTasksWindowTracker() override;
+  ~ContextualTasksWindowTracker();
   ContextualTasksWindowTracker(const ContextualTasksWindowTracker&) = delete;
   ContextualTasksWindowTracker& operator=(const ContextualTasksWindowTracker&) =
       delete;
 
-  // BrowserCollectionObserver:
-  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  // Assigns the tab's WebContents to be tracked.
+  void SetTabWebContents(content::WebContents* web_contents);
 
-  // TabListInterfaceObserver:
-  void OnTabAdded(TabListInterface& tab_list,
-                  tabs::TabInterface* tab,
-                  int index) override;
-  void OnTabRemoved(TabListInterface& tab_list,
-                    tabs::TabInterface* tab,
-                    TabRemovedReason removed_reason) override;
-  void OnTabListDestroyed(TabListInterface& tab_list) override;
-
+  // Called when the window is closed to notify the window tracker manager.
   void OnWindowClosed();
 
-  // Accessors for testing.
+  // Accessors.
   const base::Uuid& task_id() const { return task_id_; }
   const GURL& expected_url() const { return expected_url_; }
-  tabs::TabInterface* tracked_tab() const { return tracked_tab_; }
+  content::WebContents* GetTabWebContents() const {
+    return tab_ ? tab_->GetContents() : nullptr;
+  }
+  base::WeakPtr<content::WebContents> initiator_contents() const {
+    return initiator_contents_;
+  }
+  base::WeakPtr<ContextualTasksWindowTracker> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
+
+  // The ID of the task associated with this window tracking.
   base::Uuid task_id_;
+
+  // The URL we expect the new window to load.
   GURL expected_url_;
-  raw_ptr<tabs::TabInterface> tracked_tab_ = nullptr;
-  std::set<raw_ptr<TabListInterface>> observed_tab_lists_;
-  base::OnceCallback<void(ContextualTasksWindowTracker*)> on_closed_callback_;
+  // The WebContents that initiated the window opening.
+  base::WeakPtr<content::WebContents> initiator_contents_;
+  // The tab being tracked.
+  raw_ptr<tabs::TabInterface> tab_ = nullptr;
+
+  // Subscriptions for tab events.
+  base::CallbackListSubscription tab_subscription_;
+
+  // Callback to run when the window is closed or timeout occurs.
+  base::OnceCallback<void(base::WeakPtr<ContextualTasksWindowTracker>)>
+      on_closed_callback_;
+  // Timer to stop tracking after a timeout.
   base::OneShotTimer timeout_timer_;
 
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
-      browser_collection_observation_{this};
+  base::WeakPtrFactory<ContextualTasksWindowTracker> weak_ptr_factory_{this};
 };
 
 }  // namespace contextual_tasks
