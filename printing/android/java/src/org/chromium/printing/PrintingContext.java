@@ -4,21 +4,27 @@
 
 package org.chromium.printing;
 
+import static org.chromium.printing.PrintingControllerImpl.INVALID_FD;
+
 import android.app.Activity;
+import android.os.ParcelFileDescriptor;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.io.IOException;
+
 /**
- * This class is responsible for communicating with its native counterpart through JNI to handle
- * the generation of PDF.  On the Java side, it works with a {@link PrintingController}
- * to talk to the framework.
+ * This class is responsible for communicating with its native counterpart through JNI to handle the
+ * generation of PDF. On the Java side, it works with a {@link PrintingController} to talk to the
+ * framework.
  */
 @JNINamespace("printing")
 @NullMarked
@@ -42,10 +48,28 @@ public class PrintingContext {
         return new PrintingContext(nativeObjectPointer, window);
     }
 
+    /**
+     * Takes a duplicated file descriptor stored in the controller. The caller (typically native
+     * code) takes ownership of the returned file descriptor and is responsible for closing it. This
+     * is done to prevent Use-After-Close issues by ensuring both Java and C++ have their own
+     * independent references to the file.
+     *
+     * @return The duplicated file descriptor, or {@link PrintingControllerImpl#INVALID_FD} if
+     *     failed.
+     */
     @CalledByNative
-    public int getFileDescriptor() {
+    public int takeDuplicatedFileDescriptor() {
         ThreadUtils.assertOnUiThread();
-        return mController.getFileDescriptor();
+        ParcelFileDescriptor pfd = mController.getParcelFileDescriptor();
+        if (pfd == null) return INVALID_FD;
+        try {
+            // Duplicate the file descriptor to pass ownership to C++.
+            // This prevents UAC as C++ holds its own reference.
+            return pfd.dup().detachFd();
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to duplicate file descriptor", e);
+            return INVALID_FD;
+        }
     }
 
     @CalledByNative
