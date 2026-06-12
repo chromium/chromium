@@ -30,6 +30,12 @@
 namespace policy {
 
 namespace {
+
+// Expiration time for the command is this high because this command is
+// persisted on the server side for a year in case the device comes back online.
+constexpr base::TimeDelta kRemoteQueryGeolocationCommandExpirationTime =
+    base::Days(365);  // 1 year.
+
 constexpr char kResultCode[] = "result_code";
 constexpr char kLatitude[] = "latitude";
 constexpr char kLongitude[] = "longitude";
@@ -139,6 +145,10 @@ DeviceCommandQueryGeolocationJob::CheckIfCommandIsAllowed() const {
         LOCATION_TRACKING_DISABLED;
   }
   return std::nullopt;
+}
+
+bool DeviceCommandQueryGeolocationJob::IsExpired(base::TimeTicks now) {
+  return now > issued_time() + kRemoteQueryGeolocationCommandExpirationTime;
 }
 
 void DeviceCommandQueryGeolocationJob::RunImpl(

@@ -38,6 +38,7 @@ class DeviceCommandQueryGeolocationJob : public RemoteCommandJob {
 
  private:
   // RemoteCommandJob:
+  bool IsExpired(base::TimeTicks now) override;
   void RunImpl(CallbackWithResult result_callback) override;
 
   void RunImplInternal(CallbackWithResult result_callback, bool retried);
