@@ -9,9 +9,14 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/deeplink_signin/cross_device_signin_url_interceptor.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
 #import "url/gurl.h"
 
@@ -45,6 +50,17 @@
 
 // Dispatched when the URL is intercepted.
 - (void)handleCrossDeviceSigninWithIdentity:(const std::string&)email {
+  ProfileIOS* profile = self.sceneState.profileState.profile;
+  CHECK(profile);
+
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  CHECK(authService);
+  if (!authService->SigninEnabled()) {
+    // TODO(crbug.com/508261572): Display appropriate error.
+    return;
+  }
+
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
        initWithOperation:AuthenticationOperation::kDeepLinkSignin
       targetAccountEmail:base::SysUTF8ToNSString(email)

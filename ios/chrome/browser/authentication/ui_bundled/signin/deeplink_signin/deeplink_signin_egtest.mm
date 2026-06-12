@@ -3,13 +3,19 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/policy/policy_constants.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -22,6 +28,12 @@ using l10n_util::GetNSString;
 @end
 
 @implementation DeeplinkSigninTestCase
+
+- (void)tearDownHelper {
+  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kSigninAllowedOnDevice];
+
+  [super tearDownHelper];
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
@@ -80,6 +92,62 @@ using l10n_util::GetNSString;
   // Verify that the sign-in screen is presented.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       chrome_test_util::SigninScreenPromoMatcher()];
+}
+
+// Tests that opening a cross-device sign-in deep link when sign-in is disabled
+// by enterprise policy doesn't trigger the sign-in UI.
+- (void)testCrossDeviceSigninDisabledByPolicy {
+  // Disable sign-in with policy.
+  policy_test_utils::SetPolicy(static_cast<int>(BrowserSigninMode::kDisabled),
+                               policy::key::kBrowserSignin);
+
+  // Add a fake identity to the device, but keep the user signed out.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Construct the deep link URL.
+  NSString* urlString = [NSString
+      stringWithFormat:
+          @"https://www.google.com/chrome/go-mobile?email=%@&entry_point_id=1",
+          fakeIdentity.userEmail];
+  NSURL* url = [NSURL URLWithString:urlString];
+
+  // Simulate opening the URL from an external app.
+  [ChromeEarlGrey simulateExternalAppURLOpeningWithURL:url];
+
+  // Verify that the sign-in screen is not presented.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that opening a cross-device sign-in deep link when sign-in is disabled
+// manually by the user does not show the sign-in screen or any prompt.
+- (void)testCrossDeviceSigninDisabledByUser {
+  // Disable sign-in manually.
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:prefs::kSigninAllowedOnDevice];
+
+  // Add a fake identity to the device, but keep the user signed out.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Construct the deep link URL.
+  NSString* urlString = [NSString
+      stringWithFormat:
+          @"https://www.google.com/chrome/go-mobile?email=%@&entry_point_id=1",
+          fakeIdentity.userEmail];
+  NSURL* url = [NSURL URLWithString:urlString];
+
+  // Simulate opening the URL from an external app.
+  [ChromeEarlGrey simulateExternalAppURLOpeningWithURL:url];
+
+  // Verify that the sign-in screen is not presented.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
+      assertWithMatcher:grey_nil()];
 }
 
 @end
