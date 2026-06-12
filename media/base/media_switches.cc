@@ -817,7 +817,7 @@ BASE_FEATURE(kVideoBlitColorAccuracy,
 BASE_FEATURE(kCastVideoEncoderFrameDrop, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Gated behind feature flag to allow safe rollback of zero-copy capture.
-BASE_FEATURE(kZeroCopyDesktopCapture, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kZeroCopyDesktopCapture, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables optimizations to flush() and configure() in the WebCodecs' audio and
 // video decoder implementations. Kill-switch to be removed after M145 stable.
