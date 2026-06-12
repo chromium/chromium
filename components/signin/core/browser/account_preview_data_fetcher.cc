@@ -4,8 +4,10 @@
 
 #include "components/signin/core/browser/account_preview_data_fetcher.h"
 
+#include <algorithm>
 #include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -55,24 +57,21 @@ std::optional<int> ParseDataTypeId(std::string_view name) {
   return std::nullopt;
 }
 
-// Parses the response from the stats endpoint. Returns std::nullopt if the
-// response format is not as expected or if the data is empty.
-std::optional<AccountPreviewData> ParseStatsResponse(
-    const std::optional<std::string>& response_body,
-    std::optional<AccountPreviewData> data) {
-  if (!data.has_value() || !response_body.has_value()) {
-    return std::nullopt;
-  }
+// Parses the response from the stats endpoint. Returns true if the
+// response format is as expected (or if the data is properly structured
+// but empty).
+bool ParseStatsResponse(const std::string& response_body,
+                        AccountPreviewData& data) {
   std::optional<base::Value> value =
-      base::JSONReader::Read(response_body.value(), base::JSON_PARSE_RFC);
+      base::JSONReader::Read(response_body, base::JSON_PARSE_RFC);
   if (!value || !value->is_dict()) {
-    return std::nullopt;
+    return false;
   }
   const auto& dict = value->GetDict();
   const auto* list = dict.FindList("dataTypeStatistics");
   if (!list) {
     // An empty valid result is still considered a success.
-    return data;
+    return true;
   }
   for (const auto& item : *list) {
     if (!item.is_dict()) {
@@ -99,31 +98,28 @@ std::optional<AccountPreviewData> ParseStatsResponse(
     base::StringToInt64(*count_str, &count_int64);
     // Counts should always be non-negative.
     size_t count = count_int64 >= 0 ? static_cast<size_t>(count_int64) : 0;
-    data->counts[type] = count;
+    data.counts[type] = count;
   }
-  return data;
+  return true;
 }
 
-// Parses the response from the previews endpoint. Returns std::nullopt if the
-// response format is not as expected or if the data is empty.
-std::optional<AccountPreviewData> ParsePreviewsResponse(
-    const std::optional<std::string>& response_body,
-    std::optional<AccountPreviewData> data) {
-  if (!data.has_value() || !response_body.has_value()) {
-    return std::nullopt;
-  }
+// Parses the response from the previews endpoint. Returns true if the
+// response format is as expected (or if the data is properly structured
+// but empty).
+bool ParsePreviewsResponse(const std::string& response_body,
+                           AccountPreviewData& data) {
   std::optional<base::Value> value =
-      base::JSONReader::Read(response_body.value(), base::JSON_PARSE_RFC);
+      base::JSONReader::Read(response_body, base::JSON_PARSE_RFC);
   if (!value || !value->is_dict()) {
-    return std::nullopt;
+    return false;
   }
   const auto& dict = value->GetDict();
   const auto* list = dict.FindList("entitiesPreviews");
   if (!list) {
     // An empty valid result is still considered a success.
-    return data;
+    return true;
   }
-  data->password_domains.clear();
+  data.password_domains.clear();
   for (const auto& item : *list) {
     if (!item.is_dict()) {
       continue;
@@ -141,10 +137,10 @@ std::optional<AccountPreviewData> ParsePreviewsResponse(
     const std::string* domain =
         url ? url : password_preview->FindString("hashedUrl");
     if (domain) {
-      data->password_domains.push_back(*domain);
+      data.password_domains.push_back(*domain);
     }
   }
-  return data;
+  return true;
 }
 
 std::string_view GetBaseUrl(version_info::Channel channel) {
@@ -214,7 +210,7 @@ void AccountPreviewDataFetcher::OnAccessTokenReceived(
 
 void AccountPreviewDataFetcher::StartNetworkRequests(
     const std::string& access_token) {
-  barrier_closure_ = base::BarrierClosure(
+  barrier_callback_ = base::BarrierCallback<bool>(
       2, base::BindOnce(&AccountPreviewDataFetcher::OnFetchCompleted,
                         weak_ptr_factory_.GetWeakPtr()));
 
@@ -295,8 +291,9 @@ void AccountPreviewDataFetcher::OnStatsFetchCompleted(
                                 response_body.has_value()
                                     ? FetchState::kStatisticsHasResult
                                     : FetchState::kStatisticsEmptyResult);
-  fetched_data_ = ParseStatsResponse(response_body, std::move(fetched_data_));
-  barrier_closure_.Run();
+  bool success = response_body.has_value() &&
+                 ParseStatsResponse(*response_body, *fetched_data_);
+  barrier_callback_.Run(success);
 }
 
 void AccountPreviewDataFetcher::OnPreviewsFetchCompleted(
@@ -306,19 +303,24 @@ void AccountPreviewDataFetcher::OnPreviewsFetchCompleted(
                                 response_body.has_value()
                                     ? FetchState::kEntityPreviewHasResult
                                     : FetchState::kEntityPreviewEmptyResult);
-  fetched_data_ =
-      ParsePreviewsResponse(response_body, std::move(fetched_data_));
-  barrier_closure_.Run();
+  bool success = response_body.has_value() &&
+                 ParsePreviewsResponse(*response_body, *fetched_data_);
+  barrier_callback_.Run(success);
 }
 
-void AccountPreviewDataFetcher::OnFetchCompleted() {
+void AccountPreviewDataFetcher::OnFetchCompleted(std::vector<bool> results) {
+  // If all requests failed, clear the fetched data.
+  if (std::ranges::none_of(results, [](bool success) { return success; })) {
+    fetched_data_ = std::nullopt;
+  }
+
   base::UmaHistogramEnumeration(kFetchStateHistogram,
                                 fetched_data_.has_value()
                                     ? FetchState::kCompletedWithResults
                                     : FetchState::kCompletedWithoutResults);
-  // PostTask is required here because `barrier_closure_` is owned by `this`
+  // PostTask is required here because `barrier_callback_` is owned by `this`
   // and is triggering this callback (`OnFetchCompleted()`). If `callback_`
-  // causes `this` to be deleted, the destruction of `barrier_closure_` could
+  // causes `this` to be deleted, the destruction of `barrier_callback_` could
   // result in a use-after-free.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

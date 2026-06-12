@@ -152,7 +152,137 @@ TEST_F(AccountPreviewDataFetcherTest, StatsFailure) {
       identity_test_env_.MakeAccountAvailable("user@gmail.com");
 
   MockFailedStatsFetch(&test_url_loader_factory_, net::ERR_FAILED);
-  MockSuccessfulPreviewsFetch(&test_url_loader_factory_);
+  MockSuccessfulPreviewsFetch(&test_url_loader_factory_, {"google.com"});
+
+  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
+      future;
+  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
+      account_info.gaia, identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
+
+  auto [gaia_id, result_data] = future.Take();
+  EXPECT_EQ(account_info.gaia, gaia_id);
+  ASSERT_TRUE(result_data.has_value());
+  EXPECT_TRUE(result_data->counts.empty());
+  ASSERT_EQ(1U, result_data->password_domains.size());
+  EXPECT_EQ("google.com", result_data->password_domains[0]);
+
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kRequested, 1);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kStatisticsEmptyResult, 1);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kStatisticsHasResult, 0);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kEntityPreviewHasResult, 1);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kCompletedWithResults, 1);
+  histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
+}
+
+TEST_F(AccountPreviewDataFetcherTest, PreviewsFailure) {
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  MockSuccessfulStatsFetch(&test_url_loader_factory_, {.bookmark_count = 5});
+  MockFailedPreviewsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+
+  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
+      future;
+  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
+      account_info.gaia, identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
+
+  auto [gaia_id, result_data] = future.Take();
+  EXPECT_EQ(account_info.gaia, gaia_id);
+  ASSERT_TRUE(result_data.has_value());
+  EXPECT_EQ(5U, result_data->counts[syncer::BOOKMARKS]);
+  EXPECT_TRUE(result_data->password_domains.empty());
+
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kRequested, 1);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kStatisticsHasResult, 1);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kEntityPreviewEmptyResult, 1);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kEntityPreviewHasResult, 0);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kCompletedWithResults, 1);
+  histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
+}
+
+TEST_F(AccountPreviewDataFetcherTest, StatsInvalidJson) {
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  test_url_loader_factory_.AddResponse(kTestStatsUrl, "{ invalid json }");
+  MockSuccessfulPreviewsFetch(&test_url_loader_factory_, {"yahoo.com"});
+
+  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
+      future;
+  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
+      account_info.gaia, identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
+
+  auto [gaia_id, result_data] = future.Take();
+  EXPECT_EQ(account_info.gaia, gaia_id);
+  ASSERT_TRUE(result_data.has_value());
+  EXPECT_TRUE(result_data->counts.empty());
+  ASSERT_EQ(1U, result_data->password_domains.size());
+  EXPECT_EQ("yahoo.com", result_data->password_domains[0]);
+
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kRequested, 1);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kStatisticsHasResult, 1);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kEntityPreviewHasResult, 1);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kCompletedWithResults, 1);
+  histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
+}
+
+TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidJson) {
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  MockSuccessfulStatsFetch(&test_url_loader_factory_, {.password_count = 10});
+  test_url_loader_factory_.AddResponse(kTestPreviewsUrl, "{ invalid json }");
+
+  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
+      future;
+  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
+      account_info.gaia, identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
+
+  auto [gaia_id, result_data] = future.Take();
+  EXPECT_EQ(account_info.gaia, gaia_id);
+  ASSERT_TRUE(result_data.has_value());
+  EXPECT_EQ(10U, result_data->counts[syncer::PASSWORDS]);
+  EXPECT_TRUE(result_data->password_domains.empty());
+
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kRequested, 1);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kStatisticsHasResult, 1);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kEntityPreviewHasResult, 1);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kCompletedWithResults, 1);
+  histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
+}
+
+TEST_F(AccountPreviewDataFetcherTest, BothRequestsFail) {
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  MockFailedStatsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  MockFailedPreviewsFetch(&test_url_loader_factory_, net::ERR_FAILED);
 
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
       future;
@@ -170,98 +300,7 @@ TEST_F(AccountPreviewDataFetcherTest, StatsFailure) {
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kStatisticsEmptyResult, 1);
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kStatisticsHasResult, 0);
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kEntityPreviewHasResult, 1);
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kCompletedWithoutResults, 1);
-  histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
-}
-
-TEST_F(AccountPreviewDataFetcherTest, PreviewsFailure) {
-  AccountInfo account_info =
-      identity_test_env_.MakeAccountAvailable("user@gmail.com");
-
-  MockSuccessfulStatsFetch(&test_url_loader_factory_);
-  MockFailedPreviewsFetch(&test_url_loader_factory_, net::ERR_FAILED);
-
-  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
-      future;
-  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
-
-  auto [gaia_id, result_data] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
-  EXPECT_FALSE(result_data.has_value());
-
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kRequested, 1);
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kStatisticsHasResult, 1);
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kEntityPreviewEmptyResult, 1);
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kEntityPreviewHasResult, 0);
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kCompletedWithoutResults, 1);
-  histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
-}
-
-TEST_F(AccountPreviewDataFetcherTest, StatsInvalidJson) {
-  AccountInfo account_info =
-      identity_test_env_.MakeAccountAvailable("user@gmail.com");
-
-  test_url_loader_factory_.AddResponse(kTestStatsUrl, "{ invalid json }");
-  MockSuccessfulPreviewsFetch(&test_url_loader_factory_);
-
-  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
-      future;
-  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
-
-  auto [gaia_id, result_data] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
-  EXPECT_FALSE(result_data.has_value());
-
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kRequested, 1);
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kStatisticsHasResult, 1);
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kEntityPreviewHasResult, 1);
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kCompletedWithoutResults, 1);
-  histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
-}
-
-TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidJson) {
-  AccountInfo account_info =
-      identity_test_env_.MakeAccountAvailable("user@gmail.com");
-
-  MockSuccessfulStatsFetch(&test_url_loader_factory_);
-  test_url_loader_factory_.AddResponse(kTestPreviewsUrl, "{ invalid json }");
-
-  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
-      future;
-  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
-      account_info.gaia, identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      version_info::Channel::UNKNOWN, future.GetCallback());
-
-  auto [gaia_id, result_data] = future.Take();
-  EXPECT_EQ(account_info.gaia, gaia_id);
-  EXPECT_FALSE(result_data.has_value());
-
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kRequested, 1);
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kStatisticsHasResult, 1);
-  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
-                                      FetchState::kEntityPreviewHasResult, 1);
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kCompletedWithoutResults, 1);
   histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
