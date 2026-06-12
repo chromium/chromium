@@ -6,6 +6,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_window_tracker.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "components/omnibox/common/logger.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -57,12 +58,55 @@ void ContextualTasksWindowTrackerManager::CloseTrackedWindow(
 
 bool ContextualTasksWindowTrackerManager::IsTrackedWindow(
     content::WebContents* web_contents) const {
+  OMNIBOX_LOG("window_tracker") << "IsTrackedWindow, searching "
+                                << window_trackers_.size() << " trackers";
   for (const auto& tracker : window_trackers_) {
     if (tracker->GetTabWebContents() == web_contents) {
+      OMNIBOX_LOG("window_tracker")
+          << "IsTrackedWindow: matched by WebContents pointer";
       return true;
     }
   }
+  OMNIBOX_LOG("window_tracker") << "IsTrackedWindow: not matched";
   return false;
+}
+
+bool ContextualTasksWindowTrackerManager::IsPendingWindow(
+    const GURL& url,
+    content::WebContents* source_contents) const {
+  return GetPendingTracker(url, source_contents) != nullptr;
+}
+
+ContextualTasksWindowTracker*
+ContextualTasksWindowTrackerManager::GetPendingTracker(
+    const GURL& url,
+    content::WebContents* source_contents) const {
+  OMNIBOX_LOG("window_tracker") << "GetPendingTracker, searching "
+                                << window_trackers_.size() << " trackers";
+  for (const auto& tracker : window_trackers_) {
+    // Check pending trackers.
+    if (!tracker->GetTabWebContents()) {
+      // Note: Matching by URL alone is a heuristic for pending trackers when
+      // no opener relationship is available (e.g., when the navigation did not
+      // originate from a tracked window). This is sufficient here to enable
+      // scripts to close the window, but should be made more robust if
+      // possible.
+      content::WebContents* initiator = tracker->initiator_contents().get();
+      OMNIBOX_LOG("window_tracker")
+          << "GetPendingTracker: checking pending tracker for URL: "
+          << tracker->expected_url().spec() << ", current URL: " << url
+          << ", initiator URL: "
+          << (initiator ? initiator->GetVisibleURL().spec() : "null")
+          << ", source URL: " << source_contents->GetVisibleURL().spec();
+      if (source_contents == initiator && url == tracker->expected_url()) {
+        OMNIBOX_LOG("window_tracker")
+            << "GetPendingTracker: matched pending tracker by URL: "
+            << url.spec();
+        return tracker.get();
+      }
+    }
+  }
+  return nullptr;
 }
 
 ContextualTasksWindowTracker*
@@ -95,6 +139,15 @@ void ContextualTasksWindowTrackerManager::OnTabAdded(TabListInterface& tab_list,
   content::WebContents* inserted_contents = tab->GetContents();
   if (!inserted_contents) {
     return;
+  }
+
+  // Try to match by WebContents pointer first, if it was already associated
+  // but didn't have a TabInterface yet.
+  for (const auto& tracker : window_trackers_) {
+    if (tracker->GetTabWebContents() == inserted_contents) {
+      tracker->OnTabInterfaceAvailable(tab);
+      return;
+    }
   }
 
   content::RenderFrameHost* opener_rfh = inserted_contents->GetOpener();

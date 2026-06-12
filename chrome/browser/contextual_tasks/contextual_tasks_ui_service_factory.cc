@@ -84,12 +84,13 @@ ContextualTasksUiServiceFactory::BuildServiceInstanceForBrowserContext(
           profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
           AimEligibilityServiceFactory::GetForProfile(profile));
 
-  return std::make_unique<ContextualTasksUiService>(
+  auto service = std::make_unique<ContextualTasksUiService>(
       profile, std::move(delegate),
       ContextualTasksServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       AimEligibilityServiceFactory::GetForProfile(profile),
       std::move(eligibility_manager), std::move(cookie_synchronizer));
+  return service;
 }
 
 void ContextualTasksUiServiceFactory::RegisterProfilePrefs(

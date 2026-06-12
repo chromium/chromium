@@ -7,6 +7,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/omnibox/common/logger.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 
 namespace contextual_tasks {
@@ -35,16 +36,25 @@ ContextualTasksWindowTracker::~ContextualTasksWindowTracker() = default;
 
 void ContextualTasksWindowTracker::SetTabWebContents(
     content::WebContents* web_contents) {
+  web_contents_ = web_contents->GetWeakPtr();
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(web_contents);
   OMNIBOX_LOG("window_tracker")
       << "SetTabWebContents: tab found = " << (tab != nullptr);
   if (tab) {
-    timeout_timer_.Stop();
-    tab_ = tab;
-    tab_subscription_ = tab->RegisterWillDetach(base::BindRepeating(
-        &ContextualTasksWindowTracker::OnTabWillDetach, GetWeakPtr()));
+    OnTabInterfaceAvailable(tab);
   }
+}
+
+void ContextualTasksWindowTracker::OnTabInterfaceAvailable(
+    tabs::TabInterface* tab) {
+  if (tab_) {
+    return;
+  }
+  timeout_timer_.Stop();
+  tab_ = tab;
+  tab_subscription_ = tab->RegisterWillDetach(base::BindRepeating(
+      &ContextualTasksWindowTracker::OnTabWillDetach, GetWeakPtr()));
 }
 
 void ContextualTasksWindowTracker::OnTabWillDetach(
@@ -66,6 +76,16 @@ void ContextualTasksWindowTracker::OnWindowClosed() {
         FROM_HERE,
         base::BindOnce(std::move(on_closed_callback_), GetWeakPtr()));
   }
+}
+
+void ContextualTasksWindowTracker::SetOpenURLParams(
+    const content::OpenURLParams& params) {
+  open_url_params_ = std::make_unique<content::OpenURLParams>(params);
+}
+
+const content::OpenURLParams* ContextualTasksWindowTracker::open_url_params()
+    const {
+  return open_url_params_.get();
 }
 
 }  // namespace contextual_tasks
