@@ -36,6 +36,18 @@ bool TestMenuDelegate::ShowContextMenu(MenuItemView* source,
   return !commands_without_context_menus_.contains(id);
 }
 
+bool TestMenuDelegate::IsItemChecked(int id) const {
+  return checked_commands_.contains(id);
+}
+
+void TestMenuDelegate::SetItemChecked(int id, bool checked) {
+  if (checked) {
+    checked_commands_.insert(id);
+  } else {
+    checked_commands_.erase(id);
+  }
+}
+
 void TestMenuDelegate::ExecuteCommand(int id) {
   execute_command_id_ = id;
 }

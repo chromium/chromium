@@ -62,6 +62,8 @@ class TestMenuDelegate : public MenuDelegate {
                        int id,
                        const gfx::Point& p,
                        ui::mojom::MenuSourceType source_type) override;
+  bool IsItemChecked(int id) const override;
+  void SetItemChecked(int id, bool checked);
   void ExecuteCommand(int id) override;
   void OnMenuClosed(MenuItemView* menu) override;
   views::View::DropCallback GetDropCallback(
@@ -109,6 +111,7 @@ class TestMenuDelegate : public MenuDelegate {
   bool should_close_on_drag_complete_ = false;
 
   base::flat_set<int> commands_without_context_menus_;
+  base::flat_set<int> checked_commands_;
 };
 
 // Test api which caches the currently active MenuController. Can be used to

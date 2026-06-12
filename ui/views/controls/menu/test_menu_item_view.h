@@ -43,6 +43,10 @@ class TestMenuItemView : public MenuItemView {
   static ImageView* submenu_arrow_image_view(MenuItemView* view) {
     return view->submenu_arrow_image_view_;
   }
+
+  static ImageView* radio_check_image_view(MenuItemView* view) {
+    return view->radio_check_image_view_;
+  }
 };
 
 }  // namespace views

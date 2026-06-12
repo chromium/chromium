@@ -77,6 +77,8 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
   bool IsCommandEnabled(int command_id) const override;
   bool IsCommandVisible(int command_id) const override;
   bool ShouldCloseAllMenusOnExecute(int id) override;
+  bool ShouldExecuteCommandWithoutClosingMenu(int id,
+                                              const ui::Event& e) override;
   void OnMenuClosed(views::MenuItemView* menu) override;
 
   // Overridden from BookmarkContextMenuControllerDelegate:
@@ -86,6 +88,8 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
                                 VectorExperimental>>& bookmarks) override;
   void DidExecuteCommand(int command_id) override;
+
+  void UpdateSubMenuState();
 
  private:
   std::unique_ptr<BookmarkContextMenuController> controller_;

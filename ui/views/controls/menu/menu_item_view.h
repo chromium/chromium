@@ -435,6 +435,9 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   virtual void UpdateAccessibleCheckedState();
 
+  // Updates both the visual checkmark icon and accessibility checked state.
+  void RefreshCheckmarkState();
+
   void SetTriggerActionWithNonIconChildViews(
       bool trigger_action_with_non_icon_child_views) {
     trigger_action_with_non_icon_child_views_ =
