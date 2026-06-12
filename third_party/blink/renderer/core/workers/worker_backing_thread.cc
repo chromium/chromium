@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
+#include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
@@ -91,6 +92,14 @@ void RemoveForegroundedWorkerIsolate(v8::Isolate* isolate) {
   ForegroundedIsolates().erase(isolate);
 }
 
+bool IsDenormalDisabledThreadType(ThreadType type) {
+  // Disable denormals on WebAudio threads for performance reasons.  See:
+  // https://esdiscuss.org/topic/float-denormal-issue-in-javascript-processor-node-in-web-audio-api
+  return type == ThreadType::kOfflineAudioWorkletThread ||
+         type == ThreadType::kRealtimeAudioWorkletThread ||
+         type == ThreadType::kSemiRealtimeAudioWorkletThread;
+}
+
 }  // namespace
 
 // Wrapper functions defined in third_party/blink/public/web/blink.h
@@ -119,13 +128,21 @@ void SetMemorySaverModeForWorkerThreadIsolates(bool memory_saver_mode_enabled);
 
 WorkerBackingThread::WorkerBackingThread(const ThreadCreationParams& params)
     : backing_thread_(blink::NonMainThread::CreateThread(
-          ThreadCreationParams(params).SetSupportsGC(true))) {}
+          ThreadCreationParams(params).SetSupportsGC(true))),
+      is_denormal_disabled_thread_(
+          IsDenormalDisabledThreadType(params.thread_type)) {}
 
 WorkerBackingThread::~WorkerBackingThread() = default;
 
 void WorkerBackingThread::InitializeOnBackingThread(
     const WorkerBackingThreadStartupData& startup_data) {
   DCHECK(backing_thread_->IsCurrentThread());
+
+  // Denormals must be disabled before the V8 isolate is initialized so that the
+  // isolate's internal state and generated code respect the flag.
+  if (is_denormal_disabled_thread_) {
+    DenormalModifier::DisableDenormals();
+  }
 
   DCHECK(!isolate_);
   ThreadScheduler* scheduler = BackingThread().Scheduler();
