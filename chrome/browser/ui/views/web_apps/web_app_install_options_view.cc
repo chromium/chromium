@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
 #include "chrome/browser/web_applications/icons/icon_masker.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/elide_url.h"
@@ -213,7 +215,7 @@ WebAppInstallOptionsView::WebAppInstallOptionsView(OptionsData options_data) {
       break;
     }
     case InstallOsType::kWin: {
-      AddChildView(
+      auto container =
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
               .SetBetweenChildSpacing(10)
@@ -252,15 +254,21 @@ WebAppInstallOptionsView::WebAppInstallOptionsView(OptionsData options_data) {
                       .SetChecked(true)
                       .CopyAddressTo(&add_desktop_shortcut_checkbox_)
                       .SetProperty(views::kElementIdentifierKey,
-                                   kCreateShortcutCheckboxId),
-                  views::Builder<views::Checkbox>()
-                      .SetText(l10n_util::GetStringUTF16(
-                          IDS_WEB_APP_INSTALL_PIN_TO_TASKBAR))
-                      .SetChecked(true)
-                      .CopyAddressTo(&pin_to_task_bar_checkbox_)
-                      .SetProperty(views::kElementIdentifierKey,
-                                   kPinToTaskbarCheckboxId))
-              .Build());
+                                   kCreateShortcutCheckboxId))
+              .Build();
+
+      if (base::FeatureList::IsEnabled(features::kWebAppInstallDialogWinPin)) {
+        pin_to_task_bar_checkbox_ = container->AddChildView(
+            views::Builder<views::Checkbox>()
+                .SetText(l10n_util::GetStringUTF16(
+                    IDS_WEB_APP_INSTALL_PIN_TO_TASKBAR))
+                .SetChecked(true)
+                .SetProperty(views::kElementIdentifierKey,
+                             kPinToTaskbarCheckboxId)
+                .Build());
+      }
+
+      AddChildView(std::move(container));
       break;
     }
     case InstallOsType::kMac: {

@@ -289,6 +289,11 @@ class WebAppInstallFlowOptionsViewTest
       public ::testing::WithParamInterface<
           std::tuple<InstallDialogType, CheckboxOptions>> {
  public:
+  WebAppInstallFlowOptionsViewTest() {
+    win_pin_feature_list_.InitAndEnableFeature(
+        features::kWebAppInstallDialogWinPin);
+  }
+
   void TearDownOnMainThread() override {
     web_app::test::UninstallAllWebApps(browser()->profile());
     WebAppBrowserTestBase::TearDownOnMainThread();
@@ -325,6 +330,9 @@ class WebAppInstallFlowOptionsViewTest
     }
     NOTREACHED();
   }
+
+ private:
+  base::test::ScopedFeatureList win_pin_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(WebAppInstallFlowOptionsViewTest, OptionsParameters) {
