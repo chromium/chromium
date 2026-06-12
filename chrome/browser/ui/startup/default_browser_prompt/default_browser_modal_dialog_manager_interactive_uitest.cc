@@ -9,20 +9,19 @@
 
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/test_future.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
-#include "chrome/browser/default_browser/test_support/fake_default_browser_setter.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_modal_dialog_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/webui/default_browser/default_browser_modal_dialog_delegate.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 
 class DefaultBrowserModalDialogManagerInteractiveTest
-    : public InteractiveBrowserTest {
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<bool> {
  protected:
   DefaultBrowserModalDialogManagerInteractiveTest() = default;
   ~DefaultBrowserModalDialogManagerInteractiveTest() override = default;
@@ -30,27 +29,35 @@ class DefaultBrowserModalDialogManagerInteractiveTest
   void SetUp() override {
     feature_list_.InitAndEnableFeatureWithParameters(
         default_browser::kDefaultBrowserPromptSurfaces,
-        {{"prompt_surface", "modal_dialog_without_settings_illustration"}});
+        {{"prompt_surface",
+          GetParam() ? "modal_dialog_with_settings_illustration"
+                     : "modal_dialog_without_settings_illustration"}});
     InteractiveBrowserTest::SetUp();
   }
 
   void TearDownOnMainThread() override {
-    manager_.reset();
+    DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
+        DefaultBrowserPromptManager::CloseReason::kDismiss);
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
-  void ShowDialogManager(bool use_settings_illustration) {
-    manager_ =
-        std::make_unique<default_browser::DefaultBrowserModalDialogManager>(
-            use_settings_illustration);
-    manager_->Show(/*can_pin_to_taskbar=*/false);
+  void ShowDialog() {
+    DefaultBrowserPromptManager::GetInstance()->ShowPrompts(
+        /*can_pin_to_taskbar=*/false);
   }
 
-  void CloseDialogs() { manager_->CloseAll(); }
+  void CloseDialogs() {
+    DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
+        DefaultBrowserPromptManager::CloseReason::kDismiss);
+  }
 
   void DismissDialogs() {
-    manager_->HandleDismiss();
-    manager_->CloseAll();
+    auto* prompt_manager = DefaultBrowserPromptManager::GetInstance();
+    if (auto* surface_manager = prompt_manager->GetPromptSurfaceManager()) {
+      surface_manager->HandleDismiss();
+    }
+    prompt_manager->CloseAllPrompts(
+        DefaultBrowserPromptManager::CloseReason::kDismiss);
   }
 
   MultiStep VerifyHistogram(const std::string& histogram_name,
@@ -64,81 +71,90 @@ class DefaultBrowserModalDialogManagerInteractiveTest
     return steps;
   }
 
-  std::unique_ptr<default_browser::DefaultBrowserModalDialogManager> manager_;
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(DefaultBrowserModalDialogManagerInteractiveTest,
-                       ShowAndIgnoreWithoutIllustration) {
+IN_PROC_BROWSER_TEST_P(DefaultBrowserModalDialogManagerInteractiveTest,
+                       ShowAndIgnore) {
   RunTestSequence(
-      Do([this]() { ShowDialogManager(/*use_settings_illustration=*/false); }),
+      Do([this]() { ShowDialog(); }),
       InAnyContext(WaitForShow(default_browser::kDefaultBrowserModalDialogId)),
-      VerifyHistogram("DefaultBrowser.ModalDialogWithoutSettingsIllustration."
-                      "ShellIntegration.Shown",
-                      1, 1),
+      VerifyHistogram(
+          GetParam() ? "DefaultBrowser.ModalDialogWithSettingsIllustration."
+                       "ShellIntegration.Shown"
+                     : "DefaultBrowser.ModalDialogWithoutSettingsIllustration."
+                       "ShellIntegration.Shown",
+          1, 1),
       Do([this]() { CloseDialogs(); }),
       InAnyContext(WaitForHide(default_browser::kDefaultBrowserModalDialogId)),
-      Do([this]() { manager_.reset(); }),
       VerifyHistogram(
-          "DefaultBrowser.ModalDialogWithoutSettingsIllustration."
-          "ShellIntegration.Interaction",
+          GetParam() ? "DefaultBrowser.ModalDialogWithSettingsIllustration."
+                       "ShellIntegration.Interaction"
+                     : "DefaultBrowser.ModalDialogWithoutSettingsIllustration."
+                       "ShellIntegration.Interaction",
           static_cast<int>(
               default_browser::DefaultBrowserInteractionType::kIgnored),
           1));
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultBrowserModalDialogManagerInteractiveTest,
-                       ShowAndDismissWithoutIllustration) {
+IN_PROC_BROWSER_TEST_P(DefaultBrowserModalDialogManagerInteractiveTest,
+                       ShowAndDismiss) {
   RunTestSequence(
-      Do([this]() { ShowDialogManager(/*use_settings_illustration=*/false); }),
+      Do([this]() { ShowDialog(); }),
       InAnyContext(WaitForShow(default_browser::kDefaultBrowserModalDialogId)),
-      VerifyHistogram("DefaultBrowser.ModalDialogWithoutSettingsIllustration."
-                      "ShellIntegration.Shown",
-                      1, 1),
+      VerifyHistogram(
+          GetParam() ? "DefaultBrowser.ModalDialogWithSettingsIllustration."
+                       "ShellIntegration.Shown"
+                     : "DefaultBrowser.ModalDialogWithoutSettingsIllustration."
+                       "ShellIntegration.Shown",
+          1, 1),
       Do([this]() { DismissDialogs(); }),
       InAnyContext(WaitForHide(default_browser::kDefaultBrowserModalDialogId)),
       VerifyHistogram(
-          "DefaultBrowser.ModalDialogWithoutSettingsIllustration."
-          "ShellIntegration.Interaction",
+          GetParam() ? "DefaultBrowser.ModalDialogWithSettingsIllustration."
+                       "ShellIntegration.Interaction"
+                     : "DefaultBrowser.ModalDialogWithoutSettingsIllustration."
+                       "ShellIntegration.Interaction",
           static_cast<int>(
               default_browser::DefaultBrowserInteractionType::kDismissed),
           1));
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultBrowserModalDialogManagerInteractiveTest,
-                       ShowAndIgnoreWithIllustration) {
+IN_PROC_BROWSER_TEST_P(DefaultBrowserModalDialogManagerInteractiveTest,
+                       CloseWidgetViaEscAndResize) {
+  ui::Accelerator esc_accelerator(ui::VKEY_ESCAPE, ui::EF_NONE);
   RunTestSequence(
-      Do([this]() { ShowDialogManager(/*use_settings_illustration=*/true); }),
+      Do([this]() { ShowDialog(); }),
       InAnyContext(WaitForShow(default_browser::kDefaultBrowserModalDialogId)),
-      VerifyHistogram("DefaultBrowser.ModalDialogWithSettingsIllustration."
-                      "ShellIntegration.Shown",
-                      1, 1),
-      Do([this]() { CloseDialogs(); }),
-      InAnyContext(WaitForHide(default_browser::kDefaultBrowserModalDialogId)),
-      Do([this]() { manager_.reset(); }),
       VerifyHistogram(
-          "DefaultBrowser.ModalDialogWithSettingsIllustration."
-          "ShellIntegration.Interaction",
-          static_cast<int>(
-              default_browser::DefaultBrowserInteractionType::kIgnored),
-          1));
-}
-
-IN_PROC_BROWSER_TEST_F(DefaultBrowserModalDialogManagerInteractiveTest,
-                       ShowAndDismissWithIllustration) {
-  RunTestSequence(
-      Do([this]() { ShowDialogManager(/*use_settings_illustration=*/true); }),
-      InAnyContext(WaitForShow(default_browser::kDefaultBrowserModalDialogId)),
-      VerifyHistogram("DefaultBrowser.ModalDialogWithSettingsIllustration."
-                      "ShellIntegration.Shown",
-                      1, 1),
-      Do([this]() { DismissDialogs(); }),
+          GetParam() ? "DefaultBrowser.ModalDialogWithSettingsIllustration."
+                       "ShellIntegration.Shown"
+                     : "DefaultBrowser.ModalDialogWithoutSettingsIllustration."
+                       "ShellIntegration.Shown",
+          1, 1),
+      SendAccelerator(default_browser::kDefaultBrowserModalDialogId,
+                      esc_accelerator),
       InAnyContext(WaitForHide(default_browser::kDefaultBrowserModalDialogId)),
+      Do([this]() {
+        // Resize the parent browser window to trigger any layout/positioning
+        // updates and verify that no crash occurs.
+        browser()->window()->SetBounds(gfx::Rect(10, 10, 800, 600));
+      }),
       VerifyHistogram(
-          "DefaultBrowser.ModalDialogWithSettingsIllustration."
-          "ShellIntegration.Interaction",
+          GetParam() ? "DefaultBrowser.ModalDialogWithSettingsIllustration."
+                       "ShellIntegration.Interaction"
+                     : "DefaultBrowser.ModalDialogWithoutSettingsIllustration."
+                       "ShellIntegration.Interaction",
           static_cast<int>(
               default_browser::DefaultBrowserInteractionType::kDismissed),
           1));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DefaultBrowserModalDialogManagerInteractiveTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WithIllustration"
+                                             : "WithoutIllustration";
+                         });
