@@ -103,6 +103,7 @@ class DesktopEventHandler::Core : public base::RefCountedThreadSafe<Core> {
   // This is set to null after Stop() is called, i.e., DesktopEventHandler has
   // been destroyed.
   std::unique_ptr<Delegate> delegate_ GUARDED_BY(delegate_lock_);
+  bool stopping_ GUARDED_BY(delegate_lock_) = false;
 
   // Fields below are only initialized after the worker thread has started.
   std::unique_ptr<webrtc::Desktop> desktop_;
@@ -159,11 +160,21 @@ void DesktopEventHandler::Core::Start() {
 
 void DesktopEventHandler::Core::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(caller_sequence_checker_);
-  base::AutoLock lock(delegate_lock_);
-  delegate_.reset();
-  if (worker_task_runner_) {
-    worker_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&Core::DestroyWorkerThread, this));
+  // Extract the delegate under the lock but destroy it outside the lock block
+  // to avoid deadlock and minimize lock contention.
+  std::unique_ptr<Delegate> delegate_to_destroy;
+  scoped_refptr<base::SequencedTaskRunner> task_runner;
+  {
+    base::AutoLock lock(delegate_lock_);
+    stopping_ = true;
+    task_runner = worker_task_runner_;
+    if (!task_runner) {
+      delegate_to_destroy = std::move(delegate_);
+    }
+  }
+  if (task_runner) {
+    task_runner->PostTask(FROM_HERE,
+                          base::BindOnce(&Core::DestroyWorkerThread, this));
   }
 }
 
@@ -244,18 +255,25 @@ void DesktopEventHandler::Core::CheckInputDesktop() {
 void DesktopEventHandler::Core::DestroyWorkerThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
 
+  // Extract the delegate under the lock but destroy it outside the lock block
+  // to avoid deadlock and minimize lock contention.
+  std::unique_ptr<Delegate> delegate_to_destroy;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_to_release;
   {
     base::AutoLock lock(delegate_lock_);
     if (delegate_) {
       delegate_->OnWorkerThreadStopping();
+      if (stopping_) {
+        delegate_to_destroy = std::move(delegate_);
+      }
     }
+    task_runner_to_release = std::move(worker_task_runner_);
   }
   check_input_desktop_timer_.Stop();
   if (win_event_hook_) {
     UnhookWinEvent(win_event_hook_);
     win_event_hook_ = nullptr;
   }
-  worker_task_runner_ = nullptr;
 }
 
 // DesktopEventHandler implementation
