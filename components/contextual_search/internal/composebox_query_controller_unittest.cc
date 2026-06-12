@@ -3098,7 +3098,7 @@ TEST_F(ComposeboxQueryControllerTest,
   // Check that the timestamps are attached to the url to verify the request was
   // processed.
   std::string qsubts_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
       aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
   // Verify other expected parameters to ensure it's a valid AIM URL.
@@ -3178,7 +3178,7 @@ TEST_F(
   // Check that the timestamps are attached to the url to verify the request was
   // processed.
   std::string qsubts_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
       aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
   // Verify other expected parameters to ensure it's a valid AIM URL.
@@ -3221,7 +3221,7 @@ TEST_F(ComposeboxQueryControllerTest,
 
   // Check that the timestamps are attached to the url.
   std::string qsubts_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
       aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
   std::string cud_value;
@@ -3261,7 +3261,7 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
 
   // Check that the timestamps are attached to the url.
   std::string qsubts_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
       aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
   std::string cud_value;
@@ -3322,7 +3322,7 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
 
   // Check that the timestamps are attached to the url.
   std::string qsubts_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
       aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
   std::string cud_value;
@@ -3549,7 +3549,7 @@ TEST_F(ComposeboxQueryControllerTest,
 
   // Check that the timestamps are attached to the url.
   std::string qsubts_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
       search_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
   std::string cud_value;
@@ -3653,7 +3653,7 @@ TEST_F(ComposeboxQueryControllerTest,
 
   // Check that the timestamps are attached to the url.
   std::string qsubts_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
       search_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
   std::string cud_value;
@@ -3748,7 +3748,7 @@ TEST_F(ComposeboxQueryControllerTest, InteractionQuerySubmittedWithImageCrop) {
 
   // Check that the timestamps are attached to the url.
   std::string qsubts_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
       search_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
   std::string cud_value;
@@ -3819,7 +3819,7 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedImage) {
 
   // Check that the timestamps are attached to the url.
   std::string qsubts_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
       aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
   std::string cud_value;
@@ -4464,7 +4464,7 @@ TEST_F(ComposeboxQueryControllerTest,
 
   // Check that the timestamps are attached to the url.
   std::string qsubts_value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
       aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
 
   std::string cud_value;
