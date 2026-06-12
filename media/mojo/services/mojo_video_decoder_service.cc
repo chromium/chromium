@@ -436,6 +436,20 @@ void MojoVideoDecoderService::OnReaderRead(
     return;
   }
 
+  // The renderer must never set secure_handle. Legitimate secure handles are
+  // always attached on the GPU side by V4L2VideoDecoder::AttachSecureBuffer
+  // (via the V4L2_CID_MPEG_MTK_GET_SECURE_HANDLE ioctl) AFTER the buffer has
+  // crossed the Mojo boundary. A non-zero handle arriving from the renderer is
+  // a forgery: it would cause DecoderBufferTranscryptor::DecryptPendingBuffer
+  // to skip AttachSecureBuffer and propagate an attacker-chosen value through
+  // the browser process to the cdm-oemcrypto daemon and the TrustZone TA.
+  if (!buffer->end_of_stream() && buffer->side_data() &&
+      buffer->side_data()->secure_handle) {
+    std::move(bad_message_callback)
+        .Run("Renderer sent non-zero DecoderBufferSideData.secure_handle.");
+    return;
+  }
+
   decoder_->Decode(
       std::move(buffer),
       base::BindOnce(&MojoVideoDecoderService::OnDecoderDecoded, weak_this_,
