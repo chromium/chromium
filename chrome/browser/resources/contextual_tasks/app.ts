@@ -537,7 +537,9 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.setupWebviewRequestOverrides();
 
     // Handle newwindow events with mock webviews.
-    new WindowManager(this.$.threadFrame);
+    if (loadTimeData.getBoolean('windowTrackingEnabled')) {
+      new WindowManager(this.$.threadFrame);
+    }
 
     // Check if the URL that loaded this page has a task attached to it. If it
     // does, we'll use the tasks URL to load the embedded page.

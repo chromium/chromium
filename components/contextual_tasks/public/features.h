@@ -103,9 +103,14 @@ BASE_DECLARE_FEATURE(kContextualTasksWebpageApcComparison);
 // experience for link clicks.
 BASE_DECLARE_FEATURE(kAimTriggeredThreadLinks);
 
+// Enables window tracking for Contextual Tasks.
+BASE_DECLARE_FEATURE(kContextualTasksWindowTracking);
+
 bool GetIsContextualTasksPdfCitationsEnabled();
 
 bool GetIsContextualTasksLazyFetchClusterInfoEnabled();
+
+bool GetIsContextualTasksWindowTrackingEnabled();
 
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {

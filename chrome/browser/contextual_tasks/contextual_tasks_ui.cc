@@ -501,6 +501,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       "enableLockAndUnlockInputCapability",
       contextual_tasks::ShouldEnableLockAndUnlockInputCapability());
   source->AddBoolean("enableFileHint", contextual_tasks::GetEnableFileHint());
+  source->AddBoolean(
+      "windowTrackingEnabled",
+      contextual_tasks::GetIsContextualTasksWindowTrackingEnabled());
   source->AddBoolean("enableComposeboxJumpFix",
                      contextual_tasks::GetEnableComposeboxJumpFix());
   source->AddBoolean("roundedClipPathEnabled",
