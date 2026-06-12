@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/download/download_permission_request.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_observer.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -522,6 +524,72 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   EXPECT_EQ(content::CursorUtils::GetLastCursorForWebContents(
                 GetTestApi().manager()->GetAssociatedWebContents()),
             ui::mojom::CursorType::kCustom);
+}
+
+namespace {
+class TestPermissionPromptObserver
+    : public EmbeddedPermissionPromptObserver::Observer {
+ public:
+  TestPermissionPromptObserver() = default;
+  ~TestPermissionPromptObserver() override = default;
+
+  void OnEmbeddedPermissionPromptChanged(
+      bool is_showing,
+      const gfx::Size& prompt_size) override {
+    is_showing_history_.push_back(is_showing);
+    sizes_.push_back(prompt_size);
+  }
+
+  const std::vector<bool>& is_showing_history() const {
+    return is_showing_history_;
+  }
+  const std::vector<gfx::Size>& sizes() const { return sizes_; }
+
+ private:
+  std::vector<bool> is_showing_history_;
+  std::vector<gfx::Size> sizes_;
+};
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
+                       PermissionPromptBubbleNotifiesObserver) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EmbeddedPermissionPromptObserver* observer =
+      EmbeddedPermissionPromptObserver::FromWebContents(web_contents);
+  if (!observer) {
+    EmbeddedPermissionPromptObserver::CreateForWebContents(web_contents);
+    observer = EmbeddedPermissionPromptObserver::FromWebContents(web_contents);
+  }
+
+  TestPermissionPromptObserver test_observer;
+  observer->AddObserver(&test_observer);
+
+  // Must use a request type that does not support the confirmation chip (like
+  // "downloads") so that it immediately triggers a `PermissionPromptBubble`.
+  // Using a request type like "mic" would show a Chip first and not immediately
+  // instantiate the PermissionPromptBubble class under test.
+  ShowUi("downloads");
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return test_observer.is_showing_history().size() >= 1u; }));
+
+  // Verify that it notified is_showing = true, and empty size (0, 0) is ignored
+  // because the size is unused in the PermissionPromptBubble` class and not
+  // because the height/width should be 0.
+  ASSERT_EQ(1u, test_observer.is_showing_history().size());
+  EXPECT_TRUE(test_observer.is_showing_history()[0]);
+  EXPECT_EQ(gfx::Size(0, 0), test_observer.sizes()[0]);
+
+  // Accept/Dismiss the prompt to verify is_showing = false is dispatched.
+  GetTestApi().manager()->Accept(/*prompt_options=*/std::monostate());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return test_observer.is_showing_history().size() >= 2u; }));
+
+  ASSERT_EQ(2u, test_observer.is_showing_history().size());
+  EXPECT_FALSE(test_observer.is_showing_history()[1]);
+  EXPECT_EQ(gfx::Size(0, 0), test_observer.sizes()[1]);
+
+  observer->RemoveObserver(&test_observer);
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,

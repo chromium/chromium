@@ -153,7 +153,9 @@ export class OmniboxAimAppElement extends CrLitElement {
     this.pageHandler_.showContextMenu(point);
   }
 
-  // Fired from voice search component in cr-composebox.
+  // Fired from voice search component in cr-composebox if minimum height
+  // and width are non zero when permission prompt is displayed, or any time
+  // when permission prompt hides.
   protected onEmbeddedVoicePermissionPromptChanged(
       e: CustomEvent<VoicePermissionPromptState>) {
     if (e.detail.isOpened) {  // Permission prompt opened.
