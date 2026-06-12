@@ -1140,6 +1140,20 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Returned and sign-in activity was not destroyed"/>
 </enum>
 
+<!-- LINT.IfChange(SigninCrossDeviceInitialState) -->
+
+<enum name="SigninCrossDeviceInitialState">
+  <int value="0" label="SignedOut_TargetAccountOnDevice"/>
+  <int value="1" label="SignedOut_TargetAccountNotOnDevice"/>
+  <int value="2" label="SignedIn_WithDifferentAccount_TargetAccountOnDevice"/>
+  <int value="3"
+      label="SignedIn_WithDifferentAccount_TargetAccountNotOnDevice"/>
+  <int value="4" label="SignedIn_WithTargetAccount"/>
+  <int value="5" label="FlowForbidden"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/public/base/signin_deep_link_metrics.h:CrossDeviceInitialState) -->
+
 <enum name="SigninDiceResponseHeader">
   <int value="0" label="Signin"/>
   <int value="1" label="SignoutPrimary">

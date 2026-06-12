@@ -9,6 +9,21 @@
 
 namespace signin_metrics {
 
+// Initial state of the accounts on the device.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: CrossDeviceInitialState
+// LINT.IfChange(CrossDeviceInitialState)
+enum class CrossDeviceInitialState {
+  kSignedOutTargetAccountOnDevice = 0,
+  kSignedOutTargetAccountNotOnDevice = 1,
+  kSignedInWithDifferentAccountTargetAccountOnDevice = 2,
+  kSignedInWithDifferentAccountTargetAccountNotOnDevice = 3,
+  kSignedInWithTargetAccount = 4,
+  kFlowForbidden = 5,
+  kMaxValue = kFlowForbidden,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninCrossDeviceInitialState)
+
 // Records the raw external entry point ID detected from the cross-device
 // sign-in URL.
 void RecordUrlDetected(int entry_point_id);
@@ -17,6 +32,10 @@ void RecordUrlDetected(int entry_point_id);
 // cross-device sign-in flow starts.
 void RecordInitialAccountsNumber(signin::ExternalEntryPoint entry_point,
                                  int count);
+
+// Records the initial state of the accounts on the device.
+void RecordInitialState(signin::ExternalEntryPoint entry_point,
+                        CrossDeviceInitialState state);
 
 }  // namespace signin_metrics
 

@@ -26,4 +26,16 @@ TEST(SigninDeepLinkMetricsTest, RecordInitialAccountsNumber) {
       "Signin.CrossDevice.InitialAccountsNumber.DesktopDefault", 3, 1);
 }
 
+TEST(SigninDeepLinkMetricsTest, RecordInitialState) {
+  base::HistogramTester histogram_tester;
+  RecordInitialState(signin::ExternalEntryPoint::kDesktopDefault,
+                     CrossDeviceInitialState::kSignedInWithTargetAccount);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDevice.InitialState",
+      CrossDeviceInitialState::kSignedInWithTargetAccount, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDevice.InitialState.DesktopDefault",
+      CrossDeviceInitialState::kSignedInWithTargetAccount, 1);
+}
+
 }  // namespace signin_metrics

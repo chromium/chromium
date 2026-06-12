@@ -1625,6 +1625,19 @@ prefs when the profile is loaded.  -->
   <token key="ExternalEntryPoint" variants="ExternalEntryPoint"/>
 </histogram>
 
+<histogram name="Signin.CrossDevice.InitialState{ExternalEntryPoint}"
+    enum="SigninCrossDeviceInitialState" expires_after="2027-05-25">
+  <owner>lbarczynski@google.com</owner>
+  <owner>myuu@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records the initial state of the device and accounts after successfully
+    parsing the cross-device sign-in deep link, but before the actual flow
+    starts. Recorded for {ExternalEntryPoint}.
+  </summary>
+  <token key="ExternalEntryPoint" variants="ExternalEntryPoint"/>
+</histogram>
+
 <histogram name="Signin.CrossDevice.UrlDetected" units="entry point id"
     expires_after="2027-05-25">
   <owner>lbarczynski@google.com</owner>

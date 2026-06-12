@@ -39,4 +39,12 @@ void RecordInitialAccountsNumber(signin::ExternalEntryPoint entry_point,
                               count);
 }
 
+void RecordInitialState(signin::ExternalEntryPoint entry_point,
+                        CrossDeviceInitialState state) {
+  const std::string_view metric = "Signin.CrossDevice.InitialState";
+  base::UmaHistogramEnumeration(metric, state);
+  base::UmaHistogramEnumeration(base::StrCat({metric, GetSuffix(entry_point)}),
+                                state);
+}
+
 }  // namespace signin_metrics

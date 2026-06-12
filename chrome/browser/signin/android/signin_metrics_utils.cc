@@ -4,6 +4,7 @@
 
 #include "base/android/jni_android.h"
 #include "chrome/browser/profiles/profile_metrics.h"
+#include "components/signin/public/base/signin_deep_link_metrics.h"
 #include "components/signin/public/base/signin_metrics.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -45,6 +46,21 @@ static void JNI_SigninMetricsUtils_LogSigninOffered(JNIEnv* env,
   signin_metrics::LogSignInOffered(
       static_cast<signin_metrics::AccessPoint>(access_point),
       static_cast<signin_metrics::PromoAction>(signin_promo_action));
+}
+
+static void JNI_SigninMetricsUtils_RecordCrossDeviceInitialState(
+    JNIEnv* env,
+    int32_t entry_point,
+    int32_t state) {
+  CHECK_GE(entry_point, 0);
+  CHECK_LE(entry_point,
+           static_cast<int>(signin::ExternalEntryPoint::kMaxValue));
+  CHECK_GE(state, 0);
+  CHECK_LE(state, static_cast<int>(
+                      signin_metrics::CrossDeviceInitialState::kMaxValue));
+  signin_metrics::RecordInitialState(
+      static_cast<signin::ExternalEntryPoint>(entry_point),
+      static_cast<signin_metrics::CrossDeviceInitialState>(state));
 }
 
 DEFINE_JNI(SigninMetricsUtils)

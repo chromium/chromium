@@ -11,7 +11,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.signin.base.ExternalEntryPoint;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
+import org.chromium.components.signin.metrics.CrossDeviceInitialState;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SigninPromoAction;
 import org.chromium.components.signin.metrics.SyncButtonsType;
@@ -101,6 +103,17 @@ public class SigninMetricsUtils {
                 "Signin.SyncButtons.Shown", type, SyncButtonsType.MAX_VALUE);
     }
 
+    /**
+     * Records the initial state of the accounts on the device.
+     *
+     * @param entryPoint The external entry point of the deep link.
+     * @param state The initial state of the accounts on the device.
+     */
+    public static void recordCrossDeviceInitialState(
+            @ExternalEntryPoint int entryPoint, @CrossDeviceInitialState int state) {
+        SigninMetricsUtilsJni.get().recordCrossDeviceInitialState(entryPoint, state);
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
@@ -109,6 +122,9 @@ public class SigninMetricsUtils {
         void logAccountConsistencyPromoAction(int consistencyPromoAction, int accessPoint);
 
         void logSigninOffered(int signinPromoAction, int accessPoint);
+
+        void recordCrossDeviceInitialState(
+                @ExternalEntryPoint int entryPoint, @CrossDeviceInitialState int state);
     }
 
     private SigninMetricsUtils() {}

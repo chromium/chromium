@@ -136,6 +136,7 @@ if (is_android || is_ios) {
 if (is_android) {
   java_cpp_enum("signin_metrics_enum_javagen") {
     sources = [
+      "signin_deep_link_metrics.h",
       "signin_deep_link_payload.h",
       "signin_metrics.h",
     ]
