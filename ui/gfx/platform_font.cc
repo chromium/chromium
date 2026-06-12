@@ -36,13 +36,21 @@ int PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(
          user_or_locale_delta;
 }
 
+PlatformFont::PlatformFont() = default;
+PlatformFont::~PlatformFont() = default;
+
+void PlatformFont::set_typeface_unique_id(uint32_t id) {
+  CHECK_EQ(typeface_unique_id_, 0U);
+  CHECK_NE(id, 0U);
+  typeface_unique_id_ = id;
+}
+
 std::strong_ordering PlatformFont::Compare(const PlatformFont& other) const {
-  DCHECK(GetNativeSkTypeface());
-  DCHECK(other.GetNativeSkTypeface());
-  return std::make_tuple(GetNativeSkTypeface()->uniqueID(), GetFontSize(),
-                         GetStyle()) <=>
-         std::make_tuple(other.GetNativeSkTypeface()->uniqueID(),
-                         other.GetFontSize(), other.GetStyle());
+  CHECK_NE(typeface_unique_id_, 0U);
+  CHECK_NE(other.typeface_unique_id_, 0U);
+  return std::make_tuple(typeface_unique_id_, GetFontSize(), GetStyle()) <=>
+         std::make_tuple(other.typeface_unique_id_, other.GetFontSize(),
+                         other.GetStyle());
 }
 
 }  // namespace gfx

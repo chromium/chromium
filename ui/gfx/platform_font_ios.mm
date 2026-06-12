@@ -135,6 +135,9 @@ const FontRenderParams& PlatformFontIOS::GetFontRenderParams() {
 CTFontRef PlatformFontIOS::GetCTFont() const {
   UIFont* font = [UIFont fontWithName:base::SysUTF8ToNSString(font_name_)
                                  size:font_size_];
+  if (!font) {
+    font = [UIFont systemFontOfSize:font_size_];
+  }
 
   UIFontDescriptor* descriptor = [font fontDescriptor];
 
@@ -161,7 +164,8 @@ CTFontRef PlatformFontIOS::GetCTFont() const {
 }
 
 sk_sp<SkTypeface> PlatformFontIOS::GetNativeSkTypeface() const {
-  return SkMakeTypefaceFromCTFont(GetCTFont());
+  CTFontRef ct_font = GetCTFont();
+  return ct_font ? SkMakeTypefaceFromCTFont(ct_font) : nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -186,11 +190,16 @@ void PlatformFontIOS::InitWithNameSizeAndStyle(const std::string& font_name,
 }
 
 void PlatformFontIOS::CalculateMetrics() {
-  UIFont* font = base::apple::CFToNSPtrCast(GetCTFont());
+  CTFontRef ct_font = GetCTFont();
+  UIFont* font = base::apple::CFToNSPtrCast(ct_font);
   height_ = ceil(font.lineHeight);
   ascent_ = ceil(font.ascender);
   cap_height_ = ceil(font.capHeight);
   average_width_ = [@"x" cr_sizeWithFont:font].width;
+
+  sk_sp<SkTypeface> typeface =
+      ct_font ? SkMakeTypefaceFromCTFont(ct_font) : nullptr;
+  set_typeface_unique_id(typeface ? typeface->uniqueID() : 0);
 
   FontRenderParamsQuery query;
   query.families.push_back(font_name_);
