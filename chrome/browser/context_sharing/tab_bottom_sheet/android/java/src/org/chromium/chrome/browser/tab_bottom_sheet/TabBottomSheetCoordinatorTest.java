@@ -30,6 +30,8 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -51,6 +53,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -142,6 +145,13 @@ public class TabBottomSheetCoordinatorTest {
         containerView.setFocusableInTouchMode(true);
 
         View containerViewSpy = spy(containerView);
+        doAnswer(
+                        invocation -> {
+                            Runnable runnable = invocation.getArgument(0);
+                            return new Handler(Looper.getMainLooper()).post(runnable);
+                        })
+                .when(containerViewSpy)
+                .post(any(Runnable.class));
         mWebViewResizingHelper =
                 new WebViewResizingHelper(containerViewSpy, mWindowAndroid, Color.WHITE);
         when(mMockWebUi.getWebViewResizingHelper()).thenReturn(mWebViewResizingHelper);
@@ -231,6 +241,7 @@ public class TabBottomSheetCoordinatorTest {
                                     .thenReturn(content);
                             return true;
                         });
+        mActivityScenarioRule.getScenario().onActivity(activity -> activity.setContentView(mView));
         mCoordinator.tryToShowBottomSheet(/* animate= */ true, /* startsExpanded= */ true);
         when(mMockBottomSheetController.getCurrentSheetContent())
                 .thenReturn(mCoordinator.getSheetContentForTesting());
@@ -671,6 +682,32 @@ public class TabBottomSheetCoordinatorTest {
         View expandedContent = mView.findViewById(R.id.expanded_content_group);
 
         assertEquals(expectedLandscapeHeight, expandedContent.getLayoutParams().height);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":resize_webview/false")
+    public void testFixedHeightCalculation_AccountsForBottomControls() {
+        int bottomMargin = 400;
+        when(mMockBottomSheetController.isAnchoredToBottomControls()).thenReturn(true);
+        when(mMockBottomSheetController.getContainerBottomMargin()).thenReturn(bottomMargin);
+
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        // Run the runnable posted in tryToShowBottomSheet()
+        ShadowLooper.idleMainLooper();
+
+        View expandedContent = mView.findViewById(R.id.expanded_content_group);
+        assertEquals(
+                /* viewportHeight - bottomMargin = 1000 - 400 = 600 */ 600,
+                expandedContent.getLayoutParams().height);
+
+        int newMargin = 500;
+        when(mMockBottomSheetController.getContainerBottomMargin()).thenReturn(newMargin);
+        observer.onContainerBottomMarginChanged(newMargin);
+
+        assertEquals(
+                /* viewportHeight - newMargin = 1000 - 500 = 500 */ 500,
+                expandedContent.getLayoutParams().height);
     }
 
     @Test

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.isActivityInactive;
 
+import static java.lang.Math.max;
+
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -159,6 +161,7 @@ public class TabBottomSheetCoordinator {
     private boolean mIsShowingTabBottomSheet;
     private boolean mExpectingLayoutChange;
     private boolean mInitialContainerSizeChanged;
+
     private @Nullable KeyboardVisibilityListener mKeyboardVisibilityListener;
     private @Nullable ModalDialogManager mObservedModalDialogManager;
     private @Nullable ModalDialogManagerObserver mModalDialogManagerObserver;
@@ -483,6 +486,17 @@ public class TabBottomSheetCoordinator {
             }
 
             @Override
+            public void onContainerBottomMarginChanged(@Px int bottomMargin) {
+                if (mSheetContent == null || !mIsShowingTabBottomSheet) {
+                    return;
+                }
+
+                if (!ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()) {
+                    setToFixedHeightOrFallback();
+                }
+            }
+
+            @Override
             public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
                 if (mBottomSheetController.getSheetState() == SheetState.SCROLLING) {
                     mMediator.updateCrossFadeAlpha(offsetPx);
@@ -601,9 +615,23 @@ public class TabBottomSheetCoordinator {
         mMediator.setToFlexibleHeight();
     }
 
+    private @Px int getDesiredFixedHeight() {
+        int viewportHeight = getVisibleViewportHeight();
+        int desiredHeight = (int) (viewportHeight * getDefaultHeightRatio());
+
+        int bottomMargin = mBottomSheetController.getContainerBottomMargin();
+
+        // Prevent the bottom sheet from covering the bottom controls.
+        if (desiredHeight + bottomMargin > viewportHeight) {
+            desiredHeight = viewportHeight - bottomMargin;
+        }
+
+        return max(0, desiredHeight);
+    }
+
     private void setToFixedHeightOrFallback() {
         if (isActivityInactive(mWindowAndroid)) return;
-        @Px int fixedHeight = (int) (getVisibleViewportHeight() * getDefaultHeightRatio());
+        @Px int fixedHeight = getDesiredFixedHeight();
         mMediator.setToFixedHeight(fixedHeight);
 
         // In the case the bottom sheet is unable to set to our desired fixed height, fallback to
