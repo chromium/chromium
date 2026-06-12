@@ -15,3 +15,6 @@
 
 # GN configuration file identifying the root of the build tree.
 buildconfig = "//build_overrides/BUILDCONFIG.gn"
+
+# The path to the python interpreter.
+script_executable = "python3"
