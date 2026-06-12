@@ -78,7 +78,10 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
               @close-composebox="${this.onCloseComposebox_}"
               @voice-search-action="${this.onComposeVoiceSearchAction_}"
               .submitButtonIconType="${SubmitButtonIconType.FORWARD}"
-              .clearAllInputsWhenSubmittingQuery="${true}">
+              .clearAllInputsWhenSubmittingQuery="${true}"
+              .closeOnEscape="${false}"
+              .energyEffectEnabled="${this.energyEffectEnabled_}"
+              .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}">
           </ntp-composebox>
         ` : html`
           <cr-composebox id="composebox"
