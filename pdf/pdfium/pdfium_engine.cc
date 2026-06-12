@@ -3639,12 +3639,15 @@ void PDFiumEngine::FinishPaint(size_t progressive_index, SkBitmap& image_data) {
   MaybeRequestPendingThumbnail(page_index);
 }
 
-void PDFiumEngine::CancelPaints() {
+std::vector<gfx::Rect> PDFiumEngine::CancelPaints() {
+  std::vector<gfx::Rect> canceled_rects;
   for (const auto& paint : progressive_paints_) {
     FPDF_RenderPage_Close(pages_[paint.page_index()]->GetPage());
+    canceled_rects.push_back(paint.rect());
   }
 
   progressive_paints_.clear();
+  return canceled_rects;
 }
 
 void PDFiumEngine::FillPageSides(int progressive_index) {
@@ -5034,6 +5037,8 @@ gfx::Size PDFiumEngine::GetThumbnailSize(int page_index,
 void PDFiumEngine::ApplyStroke(int page_index,
                                InkStrokeId id,
                                const ink::Stroke& stroke) {
+  std::vector<gfx::Rect> canceled_rects = CancelPaints();
+
   // Saving a stroke will have the same page bounds limitations as the original
   // document.
   PDFiumPage* pdfium_page = GetPage(page_index);
@@ -5058,6 +5063,10 @@ void PDFiumEngine::ApplyStroke(int page_index,
     stroked_pages_unload_preventers_.insert(
         {page_index, PDFiumPage::ScopedUnloadPreventer(pdfium_page)});
   }
+
+  for (const gfx::Rect& rect : canceled_rects) {
+    client_->Invalidate(rect);
+  }
 }
 
 void PDFiumEngine::UpdateStrokeActive(int page_index,
@@ -5074,6 +5083,8 @@ void PDFiumEngine::UpdateStrokeActive(int page_index,
 }
 
 void PDFiumEngine::DiscardStroke(int page_index, InkStrokeId id) {
+  std::vector<gfx::Rect> canceled_rects = CancelPaints();
+
   CHECK(PageIndexInBounds(page_index));
   auto it = ink_stroke_data_.find(id);
   CHECK(it != ink_stroke_data_.end());
@@ -5095,6 +5106,10 @@ void PDFiumEngine::DiscardStroke(int page_index, InkStrokeId id) {
       });
   if (!page_still_has_shapes_or_strokes) {
     stroked_pages_unload_preventers_.erase(page_index);
+  }
+
+  for (const gfx::Rect& rect : canceled_rects) {
+    client_->Invalidate(rect);
   }
 }
 
