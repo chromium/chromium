@@ -62,7 +62,12 @@ class UnifiedConsentService
   UnifiedConsentService(sync_preferences::PrefServiceSyncable* pref_service,
                         signin::IdentityManager* identity_manager,
                         syncer::SyncService* sync_service,
-                        const std::vector<std::string>& service_pref_names);
+                        const std::vector<std::string>& service_pref_names
+#if BUILDFLAG(IS_CHROMEOS)
+                        ,
+                        bool is_new_profile
+#endif
+  );
 
   UnifiedConsentService(const UnifiedConsentService&) = delete;
   UnifiedConsentService& operator=(const UnifiedConsentService&) = delete;

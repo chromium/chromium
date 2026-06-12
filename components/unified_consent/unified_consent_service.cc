@@ -152,7 +152,12 @@ UnifiedConsentService::UnifiedConsentService(
     sync_preferences::PrefServiceSyncable* pref_service,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
-    const std::vector<std::string>& service_pref_names)
+    const std::vector<std::string>& service_pref_names
+#if BUILDFLAG(IS_CHROMEOS)
+    ,
+    bool is_new_profile
+#endif
+    )
     : pref_service_(pref_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
@@ -168,6 +173,16 @@ UnifiedConsentService::UnifiedConsentService(
 
   if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     last_sync_state_ = GetSyncState(sync_service_);
+#if BUILDFLAG(IS_CHROMEOS)
+    // On ChromeOS, the user is signed in before this service is constructed.
+    // If this is a new profile, set the initial value of MSBB by simulating a
+    // transition from signed-out to the current sync state.
+    if (!sync_service_->HasSyncConsent() && is_new_profile) {
+      SetUrlKeyedAnonymizedDataCollectionEnabled(
+          ShouldEnableUrlKeyedAnonymizedDataCollection(SyncState::kSignedOut,
+                                                       last_sync_state_));
+    }
+#endif
   }
 
   pref_service_->AddObserver(this);
