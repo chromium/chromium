@@ -558,6 +558,7 @@ final class SigninBridge {
                             context.getString(R.string.signin_deep_link_flow_signin_dismiss_button),
                             context.getString(R.string.history_sync_title),
                             context.getString(R.string.history_sync_subtitle))
+                    .historyOptInMode(HistorySyncConfig.OptInMode.NONE)
                     .selectedAccountEmail(targetEmail)
                     .signinFlow(SigninAndHistorySyncCoordinator.SigninFlow.DEFAULT_SIGNIN)
                     .build();
@@ -575,6 +576,7 @@ final class SigninBridge {
                                     R.string.signin_deep_link_flow_switch_account_dismiss_button),
                             context.getString(R.string.history_sync_title),
                             context.getString(R.string.history_sync_subtitle))
+                    .historyOptInMode(HistorySyncConfig.OptInMode.NONE)
                     .selectedAccountEmail(targetEmail)
                     .signinFlow(SigninAndHistorySyncCoordinator.SigninFlow.SWITCH_ACCOUNT)
                     .build();

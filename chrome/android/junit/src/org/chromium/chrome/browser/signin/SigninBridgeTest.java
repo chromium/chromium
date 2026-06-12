@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfi
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.SigninDelegateContext;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -606,6 +607,7 @@ public class SigninBridgeTest {
                                         R.string.signin_deep_link_flow_signin_dismiss_button),
                                 context.getString(R.string.history_sync_title),
                                 context.getString(R.string.history_sync_subtitle))
+                        .historyOptInMode(HistorySyncConfig.OptInMode.NONE)
                         .selectedAccountEmail(TestAccounts.ACCOUNT1.getEmail())
                         .signinFlow(SigninAndHistorySyncCoordinator.SigninFlow.DEFAULT_SIGNIN)
                         .build();
@@ -657,6 +659,7 @@ public class SigninBridgeTest {
                                                 .signin_deep_link_flow_switch_account_dismiss_button),
                                 context.getString(R.string.history_sync_title),
                                 context.getString(R.string.history_sync_subtitle))
+                        .historyOptInMode(HistorySyncConfig.OptInMode.NONE)
                         .selectedAccountEmail(TestAccounts.ACCOUNT2.getEmail())
                         .signinFlow(SigninAndHistorySyncCoordinator.SigninFlow.SWITCH_ACCOUNT)
                         .build();
@@ -729,6 +732,7 @@ public class SigninBridgeTest {
                                         R.string.signin_deep_link_flow_signin_dismiss_button),
                                 context.getString(R.string.history_sync_title),
                                 context.getString(R.string.history_sync_subtitle))
+                        .historyOptInMode(HistorySyncConfig.OptInMode.NONE)
                         .selectedAccountEmail(TestAccounts.ACCOUNT1.getEmail())
                         .signinFlow(SigninAndHistorySyncCoordinator.SigninFlow.DEFAULT_SIGNIN)
                         .build();
@@ -773,6 +777,7 @@ public class SigninBridgeTest {
                                         R.string.signin_deep_link_flow_signin_dismiss_button),
                                 context.getString(R.string.history_sync_title),
                                 context.getString(R.string.history_sync_subtitle))
+                        .historyOptInMode(HistorySyncConfig.OptInMode.NONE)
                         .selectedAccountEmail(TestAccounts.ACCOUNT1.getEmail())
                         .signinFlow(SigninAndHistorySyncCoordinator.SigninFlow.DEFAULT_SIGNIN)
                         .build();
@@ -824,6 +829,7 @@ public class SigninBridgeTest {
                                                 .signin_deep_link_flow_switch_account_dismiss_button),
                                 context.getString(R.string.history_sync_title),
                                 context.getString(R.string.history_sync_subtitle))
+                        .historyOptInMode(HistorySyncConfig.OptInMode.NONE)
                         .selectedAccountEmail(TestAccounts.ACCOUNT2.getEmail())
                         .signinFlow(SigninAndHistorySyncCoordinator.SigninFlow.SWITCH_ACCOUNT)
                         .build();
