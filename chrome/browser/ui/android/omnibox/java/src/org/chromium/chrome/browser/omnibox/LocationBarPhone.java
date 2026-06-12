@@ -9,6 +9,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -262,26 +263,118 @@ class LocationBarPhone extends LocationBarLayout {
             if (TextUtils.isEmpty(text)) {
                 text = mUrlBar.getHint();
             }
+            // TODO(crbug.com/522366005): Clean up layout loop risk in custom spans and restore
+            // native CharSequence measurement.
+            // Ensure we measure plain text to strip any spans (like BoundsEllipsisSpan)
+            // that could trigger layout requests during measurement, causing layout loops.
+            String plainText = text != null ? text.toString() : "";
 
             int desiredUrlWidth =
-                    getUrlTextWidth(text)
+                    getUrlTextWidth(plainText)
                             + mUrlBar.getPaddingStart()
                             + mUrlBar.getPaddingEnd()
                             + mUrlCenteringSafetyMarginPx;
 
-            int finalUrlWidth = Math.min(maxUrlWidth, Math.max(mMinUrlWidthPx, desiredUrlWidth));
-            if (urlBarLayoutParams.width != finalUrlWidth) {
+            int finalUrlWidth;
+            boolean fitsInCenteringSpace = desiredUrlWidth <= maxUrlWidth;
+            if (fitsInCenteringSpace) {
+                finalUrlWidth = desiredUrlWidth;
+            } else {
+                finalUrlWidth = Math.min(maxUrlWidth, Math.max(mMinUrlWidthPx, desiredUrlWidth));
+            }
+
+            updateUrlBarCenteringProperties(
+                    /* centeringApplied= */ true,
+                    fitsInCenteringSpace,
+                    finalUrlWidth,
+                    urlBarLayoutParams);
+        } else {
+            updateUrlBarCenteringProperties(
+                    /* centeringApplied= */ false,
+                    /* fitsInCenteringSpace= */ false,
+                    /* finalUrlWidth= */ 0,
+                    urlBarLayoutParams);
+        }
+    }
+
+    /**
+     * Updates the UrlBar's gravity, alignment, scrollability, and layout parameters based on
+     * whether the URL fits in the centering space.
+     *
+     * <p>If the URL fits, horizontal scrolling is disabled to prevent visual misalignment, and its
+     * scroll is reset to (0, 0).
+     *
+     * <p>If the URL does not fit, it is start-aligned, horizontal scrolling is enabled to allow
+     * navigating the full text, and its layout width is capped.
+     *
+     * @param fitsInCenteringSpace True if the URL fits within the maximum allowed centering width.
+     * @param finalUrlWidth The target width to set on the UrlBar's layout parameters.
+     * @param urlBarLayoutParams The ConstraintLayout LayoutParams for the UrlBar.
+     */
+    private void updateUrlBarCenteringProperties(
+            boolean centeringApplied,
+            boolean fitsInCenteringSpace,
+            int finalUrlWidth,
+            ConstraintLayout.LayoutParams urlBarLayoutParams) {
+        updateUrlBarAlignmentAndGravity(centeringApplied, fitsInCenteringSpace);
+
+        // Horizontal scrolling must be disabled when centering to ensure layout-gravity centering
+        // behaves correctly and doesn't get offset by residual scroll ranges. It is restored to
+        // true when not centering to allow horizontal scrolling/editing of long text.
+        mUrlBar.setHorizontallyScrolling(!centeringApplied || !fitsInCenteringSpace);
+
+        // Reset scroll position to 0 when centering. Otherwise, if the previous URL was long
+        // and scrolled, the short centered URL might remain scrolled out of view.
+        if (centeringApplied && fitsInCenteringSpace && mUrlBar.getScrollX() != 0) {
+            mUrlBar.scrollTo(0, 0);
+        }
+
+        if (centeringApplied) {
+            if (urlBarLayoutParams.width != finalUrlWidth
+                    || urlBarLayoutParams.matchConstraintMinWidth != 0) {
                 urlBarLayoutParams.width = finalUrlWidth;
+                urlBarLayoutParams.matchConstraintMinWidth = 0;
                 mUrlBar.setLayoutParams(urlBarLayoutParams);
             }
-        } else if (mUrlBar.getMaxWidth() != Integer.MAX_VALUE
-                || urlBarLayoutParams.width != ConstraintLayout.LayoutParams.MATCH_CONSTRAINT) {
-            // Reset the UrlBar to its default expandable behavior when not centering
-            // (e.g. when focused or on NTP), otherwise the restricted dimensions
-            // from centering will stick.
-            mUrlBar.setMaxWidth(Integer.MAX_VALUE);
-            urlBarLayoutParams.width = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT;
-            mUrlBar.setLayoutParams(urlBarLayoutParams);
+        } else {
+            if (mUrlBar.getMaxWidth() != Integer.MAX_VALUE
+                    || urlBarLayoutParams.width != ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
+                    || urlBarLayoutParams.matchConstraintMinWidth != mMinUrlWidthPx) {
+                mUrlBar.setMaxWidth(Integer.MAX_VALUE);
+                urlBarLayoutParams.width = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT;
+                urlBarLayoutParams.matchConstraintMinWidth = mMinUrlWidthPx;
+                mUrlBar.setLayoutParams(urlBarLayoutParams);
+            }
+        }
+    }
+
+    /**
+     * Updates the UrlBar's text alignment and gravity based on whether centering is applied and
+     * whether the URL fits within the centering space.
+     *
+     * @param centeringApplied True if the URL and status centering is currently applied.
+     * @param fitsInCenteringSpace True if the URL fits in the available centering space.
+     */
+    private void updateUrlBarAlignmentAndGravity(
+            boolean centeringApplied, boolean fitsInCenteringSpace) {
+        int targetGravity;
+        int targetAlignment;
+
+        if (centeringApplied) {
+            targetGravity =
+                    fitsInCenteringSpace
+                            ? Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL
+                            : Gravity.START | Gravity.CENTER_VERTICAL;
+            targetAlignment = View.TEXT_ALIGNMENT_GRAVITY;
+        } else {
+            targetGravity = Gravity.START | Gravity.CENTER_VERTICAL;
+            targetAlignment = View.TEXT_ALIGNMENT_VIEW_START;
+        }
+
+        if (mUrlBar.getGravity() != targetGravity
+                || mUrlBar.getTextAlignment() != targetAlignment) {
+            mUrlBar.setGravity(targetGravity);
+            mUrlBar.setTextAlignment(targetAlignment);
         }
     }
 

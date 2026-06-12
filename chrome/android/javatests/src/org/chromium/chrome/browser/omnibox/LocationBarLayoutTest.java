@@ -332,6 +332,13 @@ public class LocationBarLayoutTest {
                     return Math.abs(leftSpace - rightSpace) <= LAYOUT_ROUNDING_TOLERANCE_PX;
                 },
                 "URL bar failed to center");
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UrlBar urlBar = getUrlBar();
+                    assertFalse(urlBar.isHorizontallyScrollable());
+                    assertEquals(0, urlBar.getScrollX());
+                });
     }
 
     @Test
@@ -499,6 +506,12 @@ public class LocationBarLayoutTest {
                 },
                 "URL bar failed to center for short URL");
 
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(urlBar.isHorizontallyScrollable());
+                    assertEquals(0, urlBar.getScrollX());
+                });
+
         int initialLeft = urlBar.getLeft();
 
         // 2. Set long URL to force expansion/shifting
@@ -517,6 +530,11 @@ public class LocationBarLayoutTest {
         // Wait for position to change
         CriteriaHelper.pollUiThread(
                 () -> urlBar.getLeft() != initialLeft, "Position should change for long URL");
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(urlBar.isHorizontallyScrollable());
+                });
 
         // 3. Set short URL again
         ThreadUtils.runOnUiThreadBlocking(
