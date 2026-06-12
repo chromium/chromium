@@ -91,10 +91,13 @@
 
 namespace {
 
-// The floaty has innate padding which causes the floaty to be farther away from
-// the bottom toolbar. To properly position the floaty closer to the toolbar,
-// this constant is used to remove some of that innate padding.
-const CGFloat kFloatyIntrinsicPaddingCorrection = 8.0;
+// This is the inate padding of the Floaty default implementation. Remove it so
+// we can have our own padding defined.
+const CGFloat kFloatyIntrinsicPaddingCorrection = 34.0;
+
+// Bottom margin for floaty.
+const CGFloat kLegacyFloatingBottomMargin = 26;
+const CGFloat kFloatingBottomMargin = 10;
 
 // The vertical offset clearance required to position the dormant Live session
 // snackbar cleanly above the floaty pill. Note this includes the full floaty
@@ -701,8 +704,11 @@ CGFloat GeminiBrowserAgent::GetFloatyOffset() {
     max_bottom_inset += scene_state.window.safeAreaInsets.bottom;
   }
 
+  CGFloat bottomMargin = IsChromeNextIaEnabled() ? kFloatingBottomMargin
+                                                 : kLegacyFloatingBottomMargin;
+
   CGFloat offset = (max_bottom_inset * GetFloatyProgress()) -
-                   kFloatyIntrinsicPaddingCorrection;
+                   kFloatyIntrinsicPaddingCorrection + bottomMargin;
 
   return offset;
 }
@@ -762,6 +768,10 @@ void GeminiBrowserAgent::InvokeFloaty(GeminiConfiguration* config) {
   ios::provider::StartBwgOverlay(config);
   last_shown_view_state_ = ios::provider::GetCurrentGeminiViewState();
   is_floaty_invoked_ = true;
+  if (IsChromeNextIaEnabled()) {
+    ios::provider::UpdateOverlayOffsetWithOpacity(GetFloatyOffset(),
+                                                  GetFloatyProgress());
+  }
   for (auto& observer : observers_) {
     observer.OnFloatyInvokedChanged(is_floaty_invoked_);
   }
@@ -847,6 +857,12 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
     PropagatePageContextToProvider(initial_page_context);
     if (prepopulated_prompt) {
       ios::provider::UpdatePromptAction(entry_point, prepopulated_prompt);
+    }
+    if (IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled()) {
+      [HandlerForProtocol(browser_->GetCommandDispatcher(), FullscreenCommands)
+          exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::
+                                        kUserInitiatedFinishedByCode
+                           animated:YES];
     }
     ForceShowFloatyIfInvoked();
     ios::provider::UpdateGeminiViewState(
