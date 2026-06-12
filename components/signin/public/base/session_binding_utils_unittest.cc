@@ -102,7 +102,7 @@ TEST(SessionBindingUtilsTest,
      CreateKeyRegistrationHeaderAndPayloadForTokenBinding) {
   std::optional<std::string> result =
       CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
-          "test_client_id", "test_auth_code",
+          "test_client_id", TokenBindingAuthCode("test_auth_code"),
           GURL("https://accounts.google.com/RegisterKey"),
           crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
           std::vector<uint8_t>({1, 2, 3}),
@@ -137,10 +137,47 @@ TEST(SessionBindingUtilsTest,
 }
 
 TEST(SessionBindingUtilsTest,
+     CreateKeyRegistrationHeaderAndPayloadForTokenBindingWithChallenge) {
+  std::optional<std::string> result =
+      CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
+          "test_client_id", TokenBindingChallenge("test_challenge"),
+          GURL("https://accounts.google.com/RegisterKey"),
+          crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+          std::vector<uint8_t>({1, 2, 3}),
+          base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
+  ASSERT_TRUE(result.has_value());
+
+  std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
+      *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  ASSERT_EQ(header_and_payload.size(), 2U);
+  base::Value actual_header =
+      Base64UrlEncodedJsonToValue(header_and_payload[0]);
+  base::Value actual_payload =
+      Base64UrlEncodedJsonToValue(header_and_payload[1]);
+
+  base::DictValue expected_header =
+      base::DictValue().Set("alg", "ES256").Set("typ", "jwt");
+  base::DictValue expected_payload =
+      base::DictValue()
+          .Set("sub", "test_client_id")
+          .Set("aud", "https://accounts.google.com/RegisterKey")
+          .Set("jti", "test_challenge")
+          .Set("iat", 17280000)
+          .Set("key", base::DictValue()
+                          .Set("kty",
+                               "accounts.google.com/.well-known/kty/"
+                               "SubjectPublicKeyInfo")
+                          .Set("SubjectPublicKeyInfo", "AQID"));
+
+  EXPECT_EQ(actual_header, expected_header);
+  EXPECT_EQ(actual_payload, expected_payload);
+}
+
+TEST(SessionBindingUtilsTest,
      CreateKeyRegistrationHeaderAndPayloadForTokenBindingStripsUrl) {
   std::optional<std::string> result =
       CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
-          "test_client_id", "test_auth_code",
+          "test_client_id", TokenBindingAuthCode("test_auth_code"),
           GURL("https://accounts.google.com/RegisterKey?a=b#c"),
           crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
           std::vector<uint8_t>({1, 2, 3}),

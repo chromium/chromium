@@ -8,8 +8,10 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 
 #include "base/containers/span.h"
+#include "base/types/strong_alias.h"
 #include "crypto/signature_verifier.h"
 
 class GURL;
@@ -20,6 +22,11 @@ class Time;
 }
 
 namespace signin {
+
+using TokenBindingAuthCode =
+    base::StrongAlias<class TokenBindingAuthCodeTag, std::string>;
+using TokenBindingChallenge =
+    base::StrongAlias<class TokenBindingChallengeTag, std::string>;
 
 // Converts a known algorithm string into
 // `crypto::SignatureVerifier::SignatureAlgorithm`. Returns std::nullopt if
@@ -36,7 +43,8 @@ ParseSignatureAlgorithmList(std::string_view algorithm_list);
 // Creates header and payload parts of a registration JWT.
 std::optional<std::string> CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
     std::string_view client_id,
-    std::string_view auth_code,
+    const std::variant<TokenBindingAuthCode, TokenBindingChallenge>&
+        auth_code_or_challenge,
     const GURL& registration_url,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pubkey,

@@ -491,7 +491,9 @@ bool MutableProfileOAuth2TokenServiceDelegate::
     return false;
   }
   token_binding_helper_->GenerateBindingKeyRegistrationToken(
-      supported_algorithms, auth_code, std::move(callback));
+      supported_algorithms,
+      signin::TokenBindingAuthCode(std::string(auth_code)),
+      std::move(callback));
   return true;
 }
 

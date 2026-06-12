@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -18,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/public/base/binding_key_registration_token_result.h"
+#include "components/signin/public/base/session_binding_utils.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/signature_verifier.h"
@@ -126,7 +128,8 @@ class TokenBindingHelper {
   void GenerateBindingKeyRegistrationToken(
       base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
           supported_algorithms,
-      std::string_view auth_code,
+      const std::variant<signin::TokenBindingAuthCode,
+                         signin::TokenBindingChallenge>& auth_code_or_challenge,
       base::OnceCallback<void(
           std::optional<signin::BindingKeyRegistrationTokenResult>)> callback);
 

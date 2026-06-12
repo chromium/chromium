@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/base64url.h"
@@ -23,6 +24,7 @@
 #include "crypto/keypair.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
 #include "url/gurl.h"
@@ -145,16 +147,26 @@ ParseSignatureAlgorithmList(std::string_view algorithm_list) {
 
 std::optional<std::string> CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
     std::string_view client_id,
-    std::string_view auth_code,
+    const std::variant<TokenBindingAuthCode, TokenBindingChallenge>&
+        auth_code_or_challenge,
     const GURL& registration_url,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pubkey,
     base::Time timestamp) {
+  std::string jti = std::visit(
+      absl::Overload{[](const TokenBindingAuthCode& auth_code) {
+                       return Base64UrlEncode(
+                           crypto::SHA256HashString(auth_code.value()));
+                     },
+                     [](const TokenBindingChallenge& challenge) {
+                       return challenge.value();
+                     }},
+      auth_code_or_challenge);
   auto payload =
       base::DictValue()
           .Set("sub", client_id)
           .Set("aud", RemoveQueryAndFragment(registration_url).spec())
-          .Set("jti", Base64UrlEncode(crypto::SHA256HashString(auth_code)))
+          .Set("jti", std::move(jti))
           // Write out int64_t variable as a double.
           // Note: this may discard some precision, but for `base::Value`
           // there's no other option.

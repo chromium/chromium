@@ -169,14 +169,16 @@ bool TokenBindingHelper::IsRegistrationKeyReady() const {
 void TokenBindingHelper::GenerateBindingKeyRegistrationToken(
     base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
         supported_algorithms,
-    std::string_view auth_code,
+    const std::variant<signin::TokenBindingAuthCode,
+                       signin::TokenBindingChallenge>& auth_code_or_challenge,
     base::OnceCallback<void(
         std::optional<signin::BindingKeyRegistrationTokenResult>)> callback) {
   MaybeInitializeRegistrationTokenHelper(supported_algorithms);
   CHECK(registration_token_helper_);
 
   registration_token_helper_->GenerateForTokenBinding(
-      GaiaUrls::GetInstance()->oauth2_chrome_client_id(), auth_code,
+      GaiaUrls::GetInstance()->oauth2_chrome_client_id(),
+      auth_code_or_challenge,
       GURL("https://accounts.google.com/accountmanager"), std::move(callback));
 }
 
@@ -284,7 +286,8 @@ void TokenBindingHelper::PerformTokenBindingUpgrade(
   // `base::Unretained()` is safe because `this` owns
   // `registration_token_helper_`.
   GenerateBindingKeyRegistrationToken(
-      supported_algorithms, challenge,
+      supported_algorithms,
+      signin::TokenBindingChallenge(std::string(challenge)),
       base::BindOnce(&TokenBindingHelper::OnUpgradeRegistrationTokenGenerated,
                      base::Unretained(this), account_id));
 }

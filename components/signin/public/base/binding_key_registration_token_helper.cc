@@ -74,13 +74,14 @@ void BindingKeyRegistrationTokenHelper::GenerateForSessionBinding(
 }
 void BindingKeyRegistrationTokenHelper::GenerateForTokenBinding(
     std::string_view client_id,
-    std::string_view auth_code,
+    const std::variant<TokenBindingAuthCode, TokenBindingChallenge>&
+        auth_code_or_challenge,
     const GURL& registration_url,
     base::OnceCallback<void(std::optional<Result>)> callback) {
   CreateKeyLoaderIfNeeded();
   HeaderAndPayloadGenerator header_and_payload_generator = base::BindRepeating(
       &signin::CreateKeyRegistrationHeaderAndPayloadForTokenBinding,
-      std::string(client_id), std::string(auth_code), registration_url);
+      std::string(client_id), auth_code_or_challenge, registration_url);
   key_loader_->InvokeCallbackAfterKeyLoaded(base::BindOnce(
       &BindingKeyRegistrationTokenHelper::SignHeaderAndPayload,
       weak_ptr_factory_.GetWeakPtr(), std::move(header_and_payload_generator),

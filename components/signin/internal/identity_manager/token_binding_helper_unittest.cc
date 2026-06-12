@@ -19,11 +19,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "components/signin/internal/identity_manager/oauth2_upgrade_token_flow.h"
 #include "components/signin/public/base/binding_key_registration_token_result.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
+#include "components/signin/public/base/session_binding_utils.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/features.h"
@@ -43,6 +46,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -51,9 +55,12 @@ namespace {
 using GenerateAssertionFuture = base::test::TestFuture<std::string>;
 using ::base::test::ErrorIs;
 using ::testing::_;
+using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Pointee;
 using ::testing::Return;
+using ::testing::SaveArg;
 using ::unexportable_keys::UnexportableSigningKeyId;
 
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
@@ -93,6 +100,19 @@ class TokenBindingHelperTest : public testing::Test {
     RunBackgroundTasks();
     unexportable_keys::ServiceErrorOr<UnexportableSigningKeyId> key_id =
         generate_future.Get();
+    CHECK(key_id.has_value());
+    return *key_id;
+  }
+
+  UnexportableSigningKeyId UnwrapKey(base::span<const uint8_t> wrapped_key) {
+    base::test::TestFuture<
+        unexportable_keys::ServiceErrorOr<UnexportableSigningKeyId>>
+        unwrap_future;
+    unexportable_key_service_.FromWrappedSigningKeySlowlyAsync(
+        wrapped_key, kTaskPriority, unwrap_future.GetCallback());
+    RunBackgroundTasks();
+    unexportable_keys::ServiceErrorOr<UnexportableSigningKeyId> key_id =
+        unwrap_future.Get();
     CHECK(key_id.has_value());
     return *key_id;
   }
@@ -359,8 +379,8 @@ TEST_F(TokenBindingHelperTest,
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future;
   helper().GenerateBindingKeyRegistrationToken(
-      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code",
-      future.GetCallback());
+      {crypto::SignatureVerifier::ECDSA_SHA256},
+      signin::TokenBindingAuthCode("auth_code"), future.GetCallback());
   RunBackgroundTasks();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -371,6 +391,13 @@ TEST_F(TokenBindingHelperTest,
       *unexportable_key_service().GetAlgorithm(result.binding_key_id),
       *unexportable_key_service().GetSubjectPublicKeyInfo(
           result.binding_key_id)));
+  std::optional<base::DictValue> payload =
+      signin::ExtractPayloadFromJwt(result.registration_token);
+  ASSERT_TRUE(payload.has_value());
+  // Base64UrlEncode(SHA256("auth_code"));
+  const std::string expected_jti =
+      "IzVxWl6DYTXG2JhUYEcGknQfVYbfvrMUuiWd-5ceOT0";
+  EXPECT_EQ(*payload->FindString("jti"), expected_jti);
 }
 
 TEST_F(TokenBindingHelperTest,
@@ -383,8 +410,8 @@ TEST_F(TokenBindingHelperTest,
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future;
   helper().GenerateBindingKeyRegistrationToken(
-      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code",
-      future.GetCallback());
+      {crypto::SignatureVerifier::ECDSA_SHA256},
+      signin::TokenBindingAuthCode("auth_code"), future.GetCallback());
   RunBackgroundTasks();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -408,11 +435,11 @@ TEST_F(TokenBindingHelperTest,
       future_2;
 
   helper().GenerateBindingKeyRegistrationToken(
-      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code_1",
-      future_1.GetCallback());
+      {crypto::SignatureVerifier::ECDSA_SHA256},
+      signin::TokenBindingAuthCode("auth_code_1"), future_1.GetCallback());
   helper().GenerateBindingKeyRegistrationToken(
-      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code_2",
-      future_2.GetCallback());
+      {crypto::SignatureVerifier::ECDSA_SHA256},
+      signin::TokenBindingAuthCode("auth_code_2"), future_2.GetCallback());
   RunBackgroundTasks();
 
   ASSERT_TRUE(future_1.Get().has_value());
@@ -441,8 +468,8 @@ TEST_F(TokenBindingHelperTest,
       future_3;
 
   helper().GenerateBindingKeyRegistrationToken(
-      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code_1",
-      future_1.GetCallback());
+      {crypto::SignatureVerifier::ECDSA_SHA256},
+      signin::TokenBindingAuthCode("auth_code_1"), future_1.GetCallback());
   RunBackgroundTasks();
   ASSERT_TRUE(future_1.Get().has_value());
   EXPECT_EQ(future_1.Get()->wrapped_binding_key, wrapped_key);
@@ -454,8 +481,8 @@ TEST_F(TokenBindingHelperTest,
   EXPECT_TRUE(helper().IsRegistrationKeyReady());
 
   helper().GenerateBindingKeyRegistrationToken(
-      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code_2",
-      future_2.GetCallback());
+      {crypto::SignatureVerifier::ECDSA_SHA256},
+      signin::TokenBindingAuthCode("auth_code_2"), future_2.GetCallback());
   RunBackgroundTasks();
   ASSERT_TRUE(future_2.Get().has_value());
   EXPECT_EQ(future_1.Get()->binding_key_id, future_2.Get()->binding_key_id);
@@ -465,8 +492,8 @@ TEST_F(TokenBindingHelperTest,
   EXPECT_FALSE(helper().IsRegistrationKeyReady());
 
   helper().GenerateBindingKeyRegistrationToken(
-      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code_3",
-      future_3.GetCallback());
+      {crypto::SignatureVerifier::ECDSA_SHA256},
+      signin::TokenBindingAuthCode("auth_code_3"), future_3.GetCallback());
   RunBackgroundTasks();
   ASSERT_TRUE(future_3.Get().has_value());
   EXPECT_NE(future_2.Get()->binding_key_id, future_3.Get()->binding_key_id);
@@ -483,8 +510,8 @@ TEST_F(TokenBindingHelperTest,
       future_2;
 
   helper().GenerateBindingKeyRegistrationToken(
-      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code_1",
-      future_1.GetCallback());
+      {crypto::SignatureVerifier::ECDSA_SHA256},
+      signin::TokenBindingAuthCode("auth_code_1"), future_1.GetCallback());
 
   // Adding an unbound token (setting binding key to empty for an account that
   // didn't have a binding key) should not clear the in-progress registration
@@ -493,8 +520,8 @@ TEST_F(TokenBindingHelperTest,
   helper().SetBindingKey(account_id, {});
 
   helper().GenerateBindingKeyRegistrationToken(
-      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code_2",
-      future_2.GetCallback());
+      {crypto::SignatureVerifier::ECDSA_SHA256},
+      signin::TokenBindingAuthCode("auth_code_2"), future_2.GetCallback());
   RunBackgroundTasks();
 
   ASSERT_TRUE(future_1.Get().has_value());
@@ -531,8 +558,8 @@ TEST_F(TokenBindingHelperTest,
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future;
   helper().GenerateBindingKeyRegistrationToken(
-      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code",
-      future.GetCallback());
+      {crypto::SignatureVerifier::ECDSA_SHA256},
+      signin::TokenBindingAuthCode("auth_code"), future.GetCallback());
   RunBackgroundTasks();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -553,8 +580,8 @@ TEST_F(TokenBindingHelperTest, OnAllCredentialsLoadedReusesExistingKey) {
       std::optional<signin::BindingKeyRegistrationTokenResult>>
       future;
   helper().GenerateBindingKeyRegistrationToken(
-      {crypto::SignatureVerifier::ECDSA_SHA256}, "auth_code",
-      future.GetCallback());
+      {crypto::SignatureVerifier::ECDSA_SHA256},
+      signin::TokenBindingAuthCode("auth_code"), future.GetCallback());
   RunBackgroundTasks();
 
   ASSERT_TRUE(future.Get().has_value());
@@ -599,9 +626,12 @@ class TokenBindingHelperUpgradeTest : public TokenBindingHelperTest {
 
 TEST_F(TokenBindingHelperUpgradeTest, PerformTokenBindingUpgrade) {
   CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
+  std::vector<uint8_t> saved_wrapped_key;
   EXPECT_CALL(mock_save_callback(),
-              Run(account_id, std::string_view("test_token"), testing::_))
-      .WillOnce(Return(TokenBindingHelper::SaveBindingKeyResult::kSuccess));
+              Run(account_id, std::string_view("test_token"), _))
+      .WillOnce(
+          DoAll(SaveArg<2>(&saved_wrapped_key),
+                Return(TokenBindingHelper::SaveBindingKeyResult::kSuccess)));
 
   StartUpgrade(account_id);
   RunBackgroundTasks();
@@ -611,6 +641,27 @@ TEST_F(TokenBindingHelperUpgradeTest, PerformTokenBindingUpgrade) {
   ASSERT_EQ(pending.size(), 1u);
   EXPECT_EQ(pending[0].request.url,
             GaiaUrls::GetInstance()->oauth2_upgrade_token_url());
+
+  // Extract registration JWT from the request body.
+  std::string request_body = network::GetUploadData(pending[0].request);
+  base::DictValue parsed_body = base::test::ParseJsonDict(request_body);
+  const std::string* registration_jwt =
+      parsed_body.FindString("tokenBindingRegistrationJwt");
+  ASSERT_TRUE(registration_jwt);
+
+  // "jti" payload field should contain the challenge.
+  std::optional<base::DictValue> payload =
+      signin::ExtractPayloadFromJwt(*registration_jwt);
+  ASSERT_TRUE(payload.has_value());
+  EXPECT_THAT(payload->FindString("jti"),
+              Pointee(std::string("test_challenge")));
+
+  // Registration JWT should be properly signed.
+  ASSERT_FALSE(saved_wrapped_key.empty());
+  UnexportableSigningKeyId key_id = UnwrapKey(saved_wrapped_key);
+  EXPECT_TRUE(signin::VerifyJwtSignature(
+      *registration_jwt, *unexportable_key_service().GetAlgorithm(key_id),
+      *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
 
   test_url_loader_factory()->SimulateResponseForPendingRequest(
       GaiaUrls::GetInstance()->oauth2_upgrade_token_url().spec(), "");

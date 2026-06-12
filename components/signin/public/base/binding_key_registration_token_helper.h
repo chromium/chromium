@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/signin/public/base/binding_key_registration_token_result.h"
+#include "components/signin/public/base/session_binding_utils.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/signature_verifier.h"
@@ -103,7 +104,8 @@ class BindingKeyRegistrationTokenHelper {
       base::OnceCallback<void(std::optional<Result>)> callback);
   virtual void GenerateForTokenBinding(
       std::string_view client_id,
-      std::string_view auth_code,
+      const std::variant<TokenBindingAuthCode, TokenBindingChallenge>&
+          auth_code_or_challenge,
       const GURL& registration_url,
       base::OnceCallback<void(std::optional<Result>)> callback);
 
