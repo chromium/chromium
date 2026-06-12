@@ -206,10 +206,11 @@ void TouchToFillController::OnCredentialSelected(
     password_manager::metrics_util::LogFillSuggestionGroupedMatchAccepted(
         /*grouped_match_accepted=*/false);
   }
-  // Unretained is safe here because TouchToFillController owns the delegate.
+  // A WeakPtr is necessary because the delegate may trigger this callback
+  // during or after the destruction of this controller.
   ttf_delegate_->OnCredentialSelected(
       credential, base::BindOnce(&TouchToFillController::ActionCompleted,
-                                 base::Unretained(this)));
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TouchToFillController::OnAcknowledgementBeforeFillingReceived(
@@ -222,8 +223,8 @@ void TouchToFillController::OnAcknowledgementBeforeFillingReceived(
 
   switch (dismiss_reason) {
     case AcknowledgeGroupedCredentialSheetBridge::DismissReason::kAccept:
-      // Unretained is safe here because TouchToFillController owns the
-      // delegate.
+      // A WeakPtr is necessary because the delegate may trigger this callback
+      // during or after the destruction of this controller.
       ttf_delegate_->OnCredentialSelected(
           credential, base::BindOnce(&TouchToFillController::ActionCompleted,
                                      weak_ptr_factory_.GetWeakPtr()));
@@ -241,24 +242,28 @@ void TouchToFillController::OnAcknowledgementBeforeFillingReceived(
 void TouchToFillController::OnPasskeyCredentialSelected(
     const PasskeyCredential& credential) {
   view_.reset();
-  // Unretained is safe here because TouchToFillController owns the delegate.
+  // A WeakPtr is necessary because the delegate may trigger this callback
+  // during or after the destruction of this controller.
   ttf_delegate_->OnPasskeyCredentialSelected(
       credential, base::BindOnce(&TouchToFillController::ActionCompleted,
-                                 base::Unretained(this)));
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TouchToFillController::OnManagePasswordsSelected(bool passkeys_shown) {
   view_.reset();
-  // Unretained is safe here because TouchToFillController owns the delegate.
+  // A WeakPtr is necessary because the delegate may trigger this callback
+  // during or after the destruction of this controller.
   ttf_delegate_->OnManagePasswordsSelected(
       passkeys_shown, base::BindOnce(&TouchToFillController::ActionCompleted,
-                                     base::Unretained(this)));
+                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TouchToFillController::OnHybridSignInSelected() {
   view_.reset();
+  // A WeakPtr is necessary because the delegate may trigger this callback
+  // during or after the destruction of this controller.
   ttf_delegate_->OnHybridSignInSelected(base::BindOnce(
-      &TouchToFillController::ActionCompleted, base::Unretained(this)));
+      &TouchToFillController::ActionCompleted, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TouchToFillController::OnShowCredManSelected() {
@@ -271,9 +276,10 @@ void TouchToFillController::OnCredManUiClosed(bool success) {
   if (!ttf_delegate_) {
     return;
   }
-  // Unretained is safe here because TouchToFillController owns the delegate.
+  // A WeakPtr is necessary because the delegate may trigger this callback
+  // during or after the destruction of this controller.
   ttf_delegate_->OnCredManDismissed(base::BindOnce(
-      &TouchToFillController::ActionCompleted, base::Unretained(this)));
+      &TouchToFillController::ActionCompleted, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TouchToFillController::OnDismiss() {
@@ -284,9 +290,10 @@ void TouchToFillController::OnDismiss() {
     // PasswordSuggestionBottomSheetV2 is launched
     return;
   }
-  // Unretained is safe here because TouchToFillController owns the delegate.
+  // A WeakPtr is necessary because the delegate may trigger this callback
+  // during or after the destruction of this controller.
   ttf_delegate_->OnDismiss(base::BindOnce(
-      &TouchToFillController::ActionCompleted, base::Unretained(this)));
+      &TouchToFillController::ActionCompleted, weak_ptr_factory_.GetWeakPtr()));
 }
 
 Profile* TouchToFillController::GetProfile() {
