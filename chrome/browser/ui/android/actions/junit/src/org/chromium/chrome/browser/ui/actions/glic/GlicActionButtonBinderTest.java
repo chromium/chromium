@@ -9,6 +9,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -24,6 +26,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.glic.GlicUiHelper;
+import org.chromium.chrome.browser.ui.actions.ActionButtonBinder;
+import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link GlicActionButtonBinder}. */
@@ -63,5 +68,20 @@ public class GlicActionButtonBinderTest {
         mModel.set(GlicActionProperties.GLIC_DRAWABLE, mLayerDrawable);
         GlicActionButtonBinder.bind(mModel, mImageView, GlicActionProperties.GLIC_DRAWABLE);
         verify(mAnimatableDrawable).start();
+    }
+
+    @Test
+    public void testWorkingDrawableTinting() {
+        when(mDrawable.mutate()).thenReturn(mDrawable);
+        Drawable workingDrawable = GlicUiHelper.createWorkingDrawable(mContext, mDrawable);
+
+        mModel.set(GlicActionProperties.GLIC_DRAWABLE, workingDrawable);
+        GlicActionButtonBinder.bind(mModel, mImageView, GlicActionProperties.GLIC_DRAWABLE);
+
+        ColorStateList tint = ColorStateList.valueOf(Color.BLUE);
+        mModel.set(ActionProperties.ICON_TINT, tint);
+        ActionButtonBinder.bind(mModel, mImageView, ActionProperties.ICON_TINT);
+
+        verify(mDrawable).setTintList(tint);
     }
 }

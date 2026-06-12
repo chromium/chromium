@@ -123,7 +123,17 @@ public class GlicActionCoordinator {
 
         mDefaultDrawable = AppCompatResources.getDrawable(activity, glicIconResId);
         mFilledDrawable = AppCompatResources.getDrawable(activity, R.drawable.ic_spark_filled_24dp);
-        mWorkingDrawable = GlicUiHelper.createWorkingDrawable(activity, mFilledDrawable);
+
+        // Create a separate instance of the spark icon for mWorkingDrawable.
+        // Sharing the same drawable instance (mFilledDrawable) across multiple states
+        // causes the ImageView's callback clearing logic to break the callback chain of
+        // the child drawable. This results in the spark icon layer losing its themed tint
+        // initially when entering the WORKING state, until  a hover/state change forces a full view
+        // redraw.
+        Drawable workingSparkIcon =
+                AppCompatResources.getDrawable(activity, R.drawable.ic_spark_filled_24dp);
+        mWorkingDrawable = GlicUiHelper.createWorkingDrawable(activity, workingSparkIcon);
+
         Drawable sparkIcon =
                 AppCompatResources.getDrawable(activity, R.drawable.ic_spark_filled_24dp);
         int dotColor = activity.getColor(R.color.default_icon_color_accent1_baseline);
