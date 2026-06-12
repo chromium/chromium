@@ -9,20 +9,27 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
+
+class Profile;
 
 namespace contextual_tasks {
 
 class ContextualTasksWindowTracker;
 
 // Centralized class to track all window trackers for Contextual Tasks.
-class ContextualTasksWindowTrackerManager : public TabListInterfaceObserver {
+class ContextualTasksWindowTrackerManager : public TabListInterfaceObserver,
+                                            public BrowserCollectionObserver {
  public:
-  ContextualTasksWindowTrackerManager();
+  explicit ContextualTasksWindowTrackerManager(Profile* profile);
   ~ContextualTasksWindowTrackerManager() override;
 
   // TabListInterfaceObserver:
@@ -30,6 +37,10 @@ class ContextualTasksWindowTrackerManager : public TabListInterfaceObserver {
                   tabs::TabInterface* tab,
                   int index) override;
   void OnTabListDestroyed(TabListInterface& tab_list) override;
+
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   // Starts observing the given tab list.
   void ObserveTabList(TabListInterface* tab_list);
@@ -91,6 +102,11 @@ class ContextualTasksWindowTrackerManager : public TabListInterfaceObserver {
   std::vector<std::unique_ptr<ContextualTasksWindowTracker>> window_trackers_;
 
   std::set<TabListInterface*> observed_tab_lists_;
+
+  raw_ptr<Profile> profile_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 }  // namespace contextual_tasks

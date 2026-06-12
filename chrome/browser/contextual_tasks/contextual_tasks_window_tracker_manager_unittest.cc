@@ -6,6 +6,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_window_tracker.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -31,7 +32,8 @@ class ContextualTasksWindowTrackerManagerTest
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    manager_ = std::make_unique<ContextualTasksWindowTrackerManager>();
+    manager_ = std::make_unique<ContextualTasksWindowTrackerManager>(
+        Profile::FromBrowserContext(browser_context()));
   }
 
   void TearDown() override {

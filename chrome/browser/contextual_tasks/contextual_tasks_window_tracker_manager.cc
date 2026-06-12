@@ -4,17 +4,38 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_window_tracker_manager.h"
 
+#include "base/logging.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_window_tracker.h"
 #include "chrome/browser/contextual_tasks/guest_opener_user_data.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/omnibox/common/logger.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace contextual_tasks {
 
-ContextualTasksWindowTrackerManager::ContextualTasksWindowTrackerManager() =
-    default;
+ContextualTasksWindowTrackerManager::ContextualTasksWindowTrackerManager(
+    Profile* profile)
+    : profile_(profile) {
+  auto* collection = GlobalBrowserCollection::GetInstance();
+  if (collection) {
+    browser_collection_observation_.Observe(collection);
+    // Observe existing browsers for this profile.
+    collection->ForEach([this](BrowserWindowInterface* browser) {
+      if (browser->GetProfile()->GetOriginalProfile() ==
+          profile_->GetOriginalProfile()) {
+        TabListInterface* tab_list = TabListInterface::From(browser);
+        if (tab_list) {
+          ObserveTabList(tab_list);
+        }
+      }
+      return true;
+    });
+  }
+}
+
 ContextualTasksWindowTrackerManager::~ContextualTasksWindowTrackerManager() {
   for (auto* tab_list : observed_tab_lists_) {
     tab_list->RemoveTabListInterfaceObserver(this);
@@ -163,6 +184,23 @@ ContextualTasksWindowTrackerManager::FindTrackerByMessageProxy(
     }
   }
   return nullptr;
+}
+
+void ContextualTasksWindowTrackerManager::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
+  if (browser->GetProfile()->GetOriginalProfile() ==
+      profile_->GetOriginalProfile()) {
+    TabListInterface* tab_list = TabListInterface::From(browser);
+    if (tab_list) {
+      ObserveTabList(tab_list);
+    }
+  }
+}
+
+void ContextualTasksWindowTrackerManager::OnBrowserClosed(
+    BrowserWindowInterface* browser) {
+  // TabListInterfaceObserver::OnTabListDestroyed will handle cleanup of
+  // observed tab lists when the browser is destroyed.
 }
 
 void ContextualTasksWindowTrackerManager::ObserveTabList(
