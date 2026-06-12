@@ -1894,7 +1894,11 @@ RenderWidgetHostInputEventRouter::FindViewFromFrameSinkId(
       iter == owner_map_.end() ? nullptr : iter->second.get();
 
   if (view && ancestor_to_verify && view != ancestor_to_verify &&
-      !RenderWidgetHostViewInput::IsAncestorView(view, ancestor_to_verify)) {
+      view->GetParentViewInput() != ancestor_to_verify) {
+    // We restrict targeting verification strictly to immediate direct children
+    // (parent-child relationship) rather than allowing any-depth descendants
+    // (IsAncestorView), which prevents a compromised renderer from bypassing
+    // intermediate frames to target nested grandchildren.
     return nullptr;
   }
 
