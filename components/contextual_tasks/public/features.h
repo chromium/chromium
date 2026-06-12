@@ -99,6 +99,10 @@ BASE_DECLARE_FEATURE(kContextualTasksLazyFetchClusterInfo);
 // flow.
 BASE_DECLARE_FEATURE(kContextualTasksWebpageApcComparison);
 
+// When enabled, AIM must send the browser a message to initiate the cobrowse
+// experience for link clicks.
+BASE_DECLARE_FEATURE(kAimTriggeredThreadLinks);
+
 bool GetIsContextualTasksPdfCitationsEnabled();
 
 bool GetIsContextualTasksLazyFetchClusterInfoEnabled();

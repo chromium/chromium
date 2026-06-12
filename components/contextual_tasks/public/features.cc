@@ -131,6 +131,8 @@ BASE_FEATURE(kContextualTasksWebpageApcComparison,
 // Enables prefetching of cookies for contextual tasks.
 BASE_FEATURE(kContextualTasksCookiePrefetch, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAimTriggeredThreadLinks, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool GetIsContextualTasksPdfCitationsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksPdfCitations);
 }
