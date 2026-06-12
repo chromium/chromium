@@ -37,7 +37,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
-#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_observer.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
@@ -1048,16 +1048,15 @@ SearchboxHandler::SearchboxHandler(
   controller_ = owned_controller_.get();
 
   if (web_contents_) {
-    EmbeddedPermissionPromptObserver::CreateForWebContents(web_contents_);
-    EmbeddedPermissionPromptObserver::FromWebContents(web_contents_)
-        ->AddObserver(this);
+    PermissionPromptObserver::CreateForWebContents(web_contents_);
+    PermissionPromptObserver::FromWebContents(web_contents_)->AddObserver(this);
   }
 }
 
 SearchboxHandler::~SearchboxHandler() {
   if (web_contents_) {
     if (auto* observer =
-            EmbeddedPermissionPromptObserver::FromWebContents(web_contents_)) {
+            PermissionPromptObserver::FromWebContents(web_contents_)) {
       observer->RemoveObserver(this);
     }
   }
@@ -1421,9 +1420,8 @@ void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
   }
 }
 
-void SearchboxHandler::OnEmbeddedPermissionPromptChanged(
-    bool is_showing,
-    const gfx::Size& prompt_size) {
+void SearchboxHandler::OnPermissionPromptChanged(bool is_showing,
+                                                 const gfx::Size& prompt_size) {
   gfx::Size size_with_buffer;
   if (is_showing) {
     const int width = prompt_size.width();
