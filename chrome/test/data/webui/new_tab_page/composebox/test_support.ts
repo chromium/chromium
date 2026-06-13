@@ -76,6 +76,7 @@ setupComposeboxTest<T extends ComposeboxUnionElement = ComposeboxElement>():
 
   setup(() => {
     loadTimeData.overrideValues({
+      'useNtpComposeboxFork': false,
       'composeboxImageFileTypes':
           'image/avif,image/bmp,image/jpeg,image/png,image/webp,image/heif,image/heic',
       'composeboxAttachmentFileTypes': '.pdf,application/pdf',
