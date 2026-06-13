@@ -5,7 +5,10 @@
 #ifndef REMOTING_HOST_LINUX_LINUX_PROCESS_LAUNCHER_DELEGATE_H_
 #define REMOTING_HOST_LINUX_LINUX_PROCESS_LAUNCHER_DELEGATE_H_
 
+#include <sys/types.h>
+
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/environment.h"
@@ -46,13 +49,13 @@ class LinuxWorkerProcessLauncherDelegate
     // to be launched, i.e. calling setsid().
     bool new_session = false;
 
-    // The effective user ID of the process to be launched. A negative value
+    // The effective user ID of the process to be launched. `std::nullopt`
     // indicates no change of the effective user.
-    int uid = -1;
+    std::optional<uid_t> uid;
 
-    // The effective  group ID of the process to be launched. A negative value
+    // The effective group ID of the process to be launched. `std::nullopt`
     // indicates no change of the effective group ID.
-    int gid = -1;
+    std::optional<gid_t> gid;
 
     // The working directory of the process to be launched. An empty value
     // indicates no change of the working directory.
