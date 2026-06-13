@@ -108,4 +108,9 @@ const base::FeatureParam<TabListVisibility> kTabListVisibility(
     TabListVisibility::kOnlyIfMultiple,
     &kTabListVisibilityOptions);
 
+const base::FeatureParam<bool> kShouldShowCueInSplitView(
+    &kContextualCueingV2,
+    "ContextualCueingV2ShouldShowCueInSplitView",
+    false);
+
 }  // namespace contextual_cueing

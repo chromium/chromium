@@ -68,6 +68,9 @@ enum class TabListVisibility {
 };
 extern const base::FeatureParam<TabListVisibility> kTabListVisibility;
 
+// If true, show the cue even if the tab is shown in split view.
+extern const base::FeatureParam<bool> kShouldShowCueInSplitView;
+
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_FEATURES_H_

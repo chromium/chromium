@@ -63,6 +63,7 @@
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/tabs/public/tab_handle_factory.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -635,8 +636,11 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
   }
 #endif
 
+  auto* active_tab = tab_list_interface_->GetActiveTab();
+  CHECK(active_tab);
+
   auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
-      tab_list_interface_->GetActiveTab()->GetContents());
+      active_tab->GetContents());
   if (infobar_manager && !infobar_manager->infobars().empty()) {
     CUEING_LOG(
         "Not attempting to show/generate cue because infobar is visible.");
@@ -655,19 +659,25 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
     return ContextualCueingDecision::kSidePanelShowing;
   }
 
+  if (active_tab->IsSplit() && !kShouldShowCueInSplitView.Get()) {
+    CUEING_LOG(
+        "Not attempting to show/generate cue because active tab is in "
+        "split view.");
+    RecordContextualCueingDecision(source_id,
+                                   ContextualCueingDecision::kTabInSplitView);
+    return ContextualCueingDecision::kTabInSplitView;
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
-  if (tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab()) {
-    if (page_actions::PageActionController* page_action_controller =
-            active_tab->GetTabFeatures()->page_action_controller()) {
-      if (page_action_controller->GetActiveAnchoredMessage().has_value()) {
-        CUEING_LOG(
-            "Not attempting to show/generate cue because another anchored "
-            "message is currently showing.");
-        RecordContextualCueingDecision(
-            source_id,
-            ContextualCueingDecision::kAnchoredMessageAlreadyShowing);
-        return ContextualCueingDecision::kAnchoredMessageAlreadyShowing;
-      }
+  if (page_actions::PageActionController* page_action_controller =
+          active_tab->GetTabFeatures()->page_action_controller()) {
+    if (page_action_controller->GetActiveAnchoredMessage().has_value()) {
+      CUEING_LOG(
+          "Not attempting to show/generate cue because another anchored "
+          "message is currently showing.");
+      RecordContextualCueingDecision(
+          source_id, ContextualCueingDecision::kAnchoredMessageAlreadyShowing);
+      return ContextualCueingDecision::kAnchoredMessageAlreadyShowing;
     }
   }
 #endif
