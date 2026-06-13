@@ -122,6 +122,10 @@ bool SingleAnimatedImageContainer::IsShowingAnimation() const {
 
 void SingleAnimatedImageContainer::PlayAnimation(AnimationDefinition definition,
                                                  AnimationConfig config) {
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
+    return;
+  }
+
   if (config.direction == AnimationDirection::kForward) {
     slide_animation_.Reset(0.0f);
     AddAnimatedImage(definition.resource_id);
