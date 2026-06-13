@@ -135,16 +135,17 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
   explicit MockUiServiceForUrlIntercept(
       Profile* profile,
       contextual_tasks::ContextualTasksService* contextual_tasks_service,
-      AimEligibilityService* aim_eligibility_service)
+      AimEligibilityService* aim_eligibility_service,
+      signin::IdentityManager* identity_manager)
       : ContextualTasksUiService(
             profile,
             std::make_unique<NiceMock<MockContextualTasksUiServiceDelegate>>(),
             contextual_tasks_service,
-            /*identity_manager=*/nullptr,
+            identity_manager,
             aim_eligibility_service,
             std::make_unique<FakeContextualTasksEligibilityManager>(
                 profile->GetPrefs(),
-                /*identity_manager=*/nullptr,
+                identity_manager,
                 aim_eligibility_service),
             /*cookie_synchronizer=*/nullptr) {}
   ~MockUiServiceForUrlIntercept() override = default;
@@ -260,10 +261,14 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
         .WillByDefault(Return(true));
     ON_CALL(*aim_eligibility_service_, IsCobrowseEligible())
         .WillByDefault(Return(true));
+    ON_CALL(*aim_eligibility_service_, RegisterEligibilityChangedCallback(_))
+        .WillByDefault([](base::RepeatingClosure) {
+          return base::CallbackListSubscription();
+        });
 
     service_for_nav_ = std::make_unique<MockUiServiceForUrlIntercept>(
         profile_.get(), contextual_tasks_service_.get(),
-        aim_eligibility_service_.get());
+        aim_eligibility_service_.get(), identity_test_env_->identity_manager());
 
     ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
         .WillByDefault(Return(true));
@@ -2304,6 +2309,191 @@ TEST_F(ContextualTasksUiServiceTest, OnWebUIDestroyed) {
       .Times(1);
 
   service.OnWebUIDestroyed(&browser_window, task_id);
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_AiPage_CobrowseNotEligible_NotIntercepted) {
+  GURL ai_url(kAiPageUrl);
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_CALL(*service_for_nav_, LoadUrlInWebContents(_, _)).Times(0);
+
+  // Should return false to allow normal navigation to the AI page.
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(ai_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_WebUI_NotEligible_Redirects) {
+  GURL webui_url(chrome::kChromeUIContextualTasksURL);
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->GetFakeEligibilityManager()->SetIsEligible(false);
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+
+  // Run the message loop to allow the navigation to complete.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    content::NavigationEntry* entry =
+        web_contents->GetController().GetPendingEntry();
+    return entry && entry->GetURL().host() == "www.google.com";
+  }));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_WebUI_CobrowseNotEligible_Redirects) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasks);
+  GURL webui_url(chrome::kChromeUIContextualTasksURL);
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  identity_test_env_->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+
+  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+      .WillRepeatedly(Return(false));
+
+  EXPECT_TRUE(real_service_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+
+  // Run the message loop to allow the navigation to complete.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    content::NavigationEntry* entry =
+        web_contents->GetController().GetPendingEntry();
+    return entry && entry->GetURL().host() == "www.google.com";
+  }));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_WebUI_NotSignedIn_Redirects) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasks);
+  GURL webui_url(chrome::kChromeUIContextualTasksURL);
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+      .WillRepeatedly(Return(true));
+
+  EXPECT_TRUE(real_service_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+
+  // Run the message loop to allow the navigation to complete.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    content::NavigationEntry* entry =
+        web_contents->GetController().GetPendingEntry();
+    return entry && entry->GetURL().host() == "www.google.com";
+  }));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_WebUI_DefaultSearchNotGoogle_Redirects) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasks);
+  GURL webui_url(chrome::kChromeUIContextualTasksURL);
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  identity_test_env_->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_.get());
+  TemplateURLData data;
+  data.SetShortName(u"NonGoogle");
+  data.SetKeyword(u"NonGoogle");
+  data.SetURL("https://www.nongoogle.com/search?q={searchTerms}");
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+
+  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+      .WillRepeatedly(Return(false));
+
+  EXPECT_TRUE(real_service_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+
+  // Run the message loop to allow the navigation to complete.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    content::NavigationEntry* entry =
+        web_contents->GetController().GetPendingEntry();
+    return entry && entry->GetURL().host() == "www.google.com";
+  }));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_WebUI_Internals_NotRedirected) {
+  GURL webui_url(std::string(chrome::kChromeUIContextualTasksURL) +
+                 "internals");
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->GetFakeEligibilityManager()->SetIsEligible(false);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ(web_contents->GetController().GetPendingEntry(), nullptr);
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_WebUI_TestLoader_NotRedirected) {
+  GURL webui_url(std::string(chrome::kChromeUIContextualTasksURL) +
+                 "test_loader.html");
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->GetFakeEligibilityManager()->SetIsEligible(false);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ(web_contents->GetController().GetPendingEntry(), nullptr);
 }
 
 TEST_F(ContextualTasksUiServiceTest, RegisterWindow_UpdatesTracker) {

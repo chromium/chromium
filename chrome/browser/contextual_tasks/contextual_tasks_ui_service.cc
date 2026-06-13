@@ -39,6 +39,7 @@
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/guest_opener_user_data.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -80,6 +81,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -976,6 +978,52 @@ void ContextualTasksUiService::OnSearchResultsNavigationInSidePanel(
   web_ui_interface->TransferNavigationToEmbeddedPage(url_params);
 }
 
+bool ContextualTasksUiService::MaybeHandleTopLevelNavigation(
+    content::OpenURLParams& url_params,
+    content::WebContents* source_contents,
+    tabs::TabInterface* tab,
+    bool is_from_embedded_page) {
+  if (is_from_embedded_page) {
+    return false;
+  }
+
+  if (ShouldRedirectIneligibleRequest(url_params.url)) {
+    ScheduleRedirectWebUIUrlToAim(
+        std::move(url_params),
+        source_contents ? source_contents->GetWeakPtr() : nullptr, tab);
+    return true;
+  }
+
+  return false;
+}
+
+bool ContextualTasksUiService::ShouldRedirectIneligibleRequest(
+    const GURL& url) const {
+  // If it's a top-level frame refresh/navigation while viewing an internal
+  // context, and the user environment isn't eligible, bounce immediately.
+  bool is_eligible = eligibility_manager_ && eligibility_manager_->IsEligible();
+
+  if (is_eligible) {
+    return false;
+  }
+
+  if (!IsContextualTasksUrl(url)) {
+    return false;
+  }
+  // Don't intercept internal debugging tools
+  if (url.path() == "/internals") {
+    return false;
+  }
+  // Don't intercept WebUI tests
+  if (url.path() == "/test_loader.html" ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kBrowserTest)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ContextualTasksUiService::HandleNavigation(
     content::OpenURLParams url_params,
     content::WebContents* source_contents,
@@ -1143,6 +1191,12 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       << (url_params.initiator_origin.has_value()
               ? url_params.initiator_origin->Serialize()
               : "null");
+
+  if (MaybeHandleTopLevelNavigation(url_params, source_contents, tab,
+                                    is_from_embedded_page)) {
+    return true;
+  }
+
   // Make sure the user is eligible to use the feature before attempting to
   // intercept.
   if (!eligibility_manager_ ||
@@ -1703,6 +1757,38 @@ void ContextualTasksUiService::LoadUrlInWebContents(
   content::NavigationController::LoadURLParams params(url);
   params.transition_type = ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
   web_contents->GetController().LoadURLWithParams(params);
+}
+
+void ContextualTasksUiService::ScheduleRedirectWebUIUrlToAim(
+    content::OpenURLParams url_params,
+    base::WeakPtr<content::WebContents> source_contents,
+    tabs::TabInterface* target_tab) {
+  url_params.url = GetAiUrlFromWebUIUrl(GetDefaultAiPageUrl(), url_params.url);
+
+  // Fall back to the main active tab window contents if the raw pointer is
+  // unassigned
+  base::WeakPtr<content::WebContents> destination_contents = source_contents;
+  if (!destination_contents && target_tab) {
+    destination_contents = target_tab->GetContents()->GetWeakPtr();
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<content::WebContents> wc,
+                        const content::OpenURLParams& open_url_params) {
+                       if (!wc) {
+                         return;
+                       }
+                       content::NavigationController::LoadURLParams load_params(
+                           open_url_params);
+                       load_params.transition_type =
+                           ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+
+                       // This triggers the breakout from the secure subframe
+                       // cleanly
+                       wc->GetController().LoadURLWithParams(load_params);
+                     },
+                     destination_contents, std::move(url_params)));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

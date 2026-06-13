@@ -23,7 +23,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/page_navigator.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -62,6 +62,7 @@ class LensMediaLinkHandler;
 }  // namespace lens
 
 namespace contextual_tasks {
+
 inline constexpr char kTaskQueryParam[] = "chrome_task_id";
 inline constexpr char kChromeHostParam[] = "chrome_host";
 
@@ -159,9 +160,9 @@ class ContextualTasksUiService : public KeyedService {
   // order to handle it manually. Returns true if the navigation is being
   // handled by the service (e.g. the navigation is blocked), and false
   // otherwise. The WebContents the navigation originated from is provided
-  // along with `is_to_new_tab` which indicates whether the navigation would
-  // open in a new tab or window. The `initiated_in_page` param is to help
-  // determine if the navigation was from something like a link or redirect
+  // along with `from_can_create_window` which indicates whether the navigation
+  // would open in a new tab or window. The `is_from_embedded_page` param is to
+  // help determine if the navigation was from something like a link or redirect
   // versus an action in Chrome's UI like back/forward.
   virtual bool HandleNavigation(
       content::OpenURLParams url_params,
@@ -421,6 +422,12 @@ class ContextualTasksUiService : public KeyedService {
       const GURL& url,
       base::WeakPtr<content::WebContents> web_contents);
 
+  // Redirects a navigation to a contextual tasks WebUI URL to an AIM URL.
+  void ScheduleRedirectWebUIUrlToAim(
+      content::OpenURLParams url_params,
+      base::WeakPtr<content::WebContents> source_contents,
+      tabs::TabInterface* target_tab);
+
   // Creates a LensMediaLinkHandler for the given WebContents.
   // Virtual to allow overriding in tests to mock the handler.
 #if !BUILDFLAG(IS_ANDROID)
@@ -434,6 +441,22 @@ class ContextualTasksUiService : public KeyedService {
   virtual bool MaybeHandlePdfCitation(const GURL& url,
                                       tabs::TabInterface* tab,
                                       const base::Uuid& task_id);
+
+  // Helper functions for breaking down HandleNavigationImpl.
+  // Evaluates top-level navigations (i.e., those not originating from an
+  // embedded page within the WebUI) to determine if they should be intercepted
+  // or specially handled by the service. Returns true if the navigation was
+  // handled (e.g. redirected) and should not proceed normally.
+  virtual bool MaybeHandleTopLevelNavigation(
+      content::OpenURLParams& url_params,
+      content::WebContents* source_contents,
+      tabs::TabInterface* tab,
+      bool is_from_embedded_page);
+
+  // Checks whether a top-level navigation targeting a Contextual Tasks WebUI
+  // URL occurs in an environment that is ineligible for the feature (e.g., user
+  // is ineligible or Google is not the default search provider).
+  virtual bool ShouldRedirectIneligibleRequest(const GURL& url) const;
 
  private:
   void StartAccessTokenFetch();

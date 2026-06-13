@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -21,6 +22,8 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -111,10 +114,35 @@ guest_view::TestGuestViewManager& GetGuestViewManager(
 }
 
 class GuestUtilBrowserTest : public GlicBrowserTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &GuestUtilBrowserTest::OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+
+  virtual void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) {
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          auto service =
+              std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                  *Profile::FromBrowserContext(context)->GetPrefs(), nullptr,
+                  nullptr, nullptr);
+          ON_CALL(*service, IsAimEligible())
+              .WillByDefault(testing::Return(true));
+          return service;
+        }));
+  }
+
  protected:
   guest_view::TestGuestViewManagerFactory& factory() { return factory_; }
 
  private:
+  base::CallbackListSubscription create_services_subscription_;
   guest_view::TestGuestViewManagerFactory factory_;
 };
 
