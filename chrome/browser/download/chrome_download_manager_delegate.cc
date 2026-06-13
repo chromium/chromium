@@ -985,7 +985,10 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
              !item->IsUserConfirmed()) {
     // Don't complete the download of a non-dangerous file until the user
     // consents.
-    DownloadController::GetInstance()->ShowDangerousDownloadDialog(item);
+    if (DownloadController::GetInstance()->ShowDangerousDownloadDialog(item)) {
+      DownloadItemModel model{item};
+      MaybeRecordDangerousDownloadWarningShown(model);
+    }
     return false;
 #endif  // BUILDFLAG(IS_ANDROID)
   } else if (!state->is_complete() &&

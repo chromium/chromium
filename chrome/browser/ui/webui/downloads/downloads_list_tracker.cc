@@ -498,7 +498,9 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->has_safe_browsing_verdict =
       WasSafeBrowsingVerdictObtained(download_item);
 
-  MaybeRecordDangerousDownloadWarningShown(download_model);
+  if (download_model.IsDangerous()) {
+    MaybeRecordDangerousDownloadWarningShown(download_model);
+  }
 
   if (download_item->IsDangerous()) {
     // It's likely that SHOWN has already been logged from the download bubble,

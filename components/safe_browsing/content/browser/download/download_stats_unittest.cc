@@ -44,6 +44,22 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDangerousDownloadWarningShown) {
                    "SafeBrowsing.Download.WarningShown"));
 
   RecordDangerousDownloadWarningShown(
+      download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      base::FilePath(FILE_PATH_LITERAL("file.apk")),
+      /*is_https=*/true, /*has_user_gesture=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientDownload.Warning.FileType.Safe.Shown",
+      /*sample=*/kApkFileTypeUmaValue, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientDownload.Warning.DownloadIsHttps.Safe.Shown",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientDownload.Warning.DownloadHasUserGesture.Safe.Shown",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+  EXPECT_EQ(2, user_action_tester.GetActionCount(
+                   "SafeBrowsing.Download.WarningShown"));
+
+  RecordDangerousDownloadWarningShown(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
       base::FilePath(FILE_PATH_LITERAL("file.exe")),
       /*is_https=*/false, /*has_user_gesture=*/false);
@@ -59,7 +75,7 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDangerousDownloadWarningShown) {
       "SBClientDownload.Warning.DownloadHasUserGesture.Uncommon.Shown",
       /*sample=*/0,
       /*expected_count=*/1);
-  EXPECT_EQ(2, user_action_tester.GetActionCount(
+  EXPECT_EQ(3, user_action_tester.GetActionCount(
                    "SafeBrowsing.Download.WarningShown"));
 }
 

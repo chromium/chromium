@@ -428,19 +428,23 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
 
   if (item->IsDangerous() && (item->GetState() != DownloadItem::CANCELLED)) {
     DownloadItemModel model{item};
-    MaybeRecordDangerousDownloadWarningShown(model);
+    bool dialog_shown = false;
     if (item->GetDangerType() ==
         download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
-      OnSensitiveDownload(item);
+      dialog_shown = OnSensitiveDownload(item);
     } else if (isEnterpriseBlockDownloadDangerType(item->GetDangerType())) {
       // The download is deemed blocked by enterprise policy, do
       // nothing here so the download will fail the completion check.
     } else if (ShouldShowSafeBrowsingAndroidDownloadWarnings()) {
-      ShowDangerousDownloadWarning(model);
+      dialog_shown = ShowDangerousDownloadWarning(model);
     } else {
       // Don't show notification for a dangerous download, as user can resume
       // the download after browser crash through notification.
-      OnDangerousDownload(item);
+      dialog_shown = OnDangerousDownload(item);
+    }
+
+    if (dialog_shown) {
+      MaybeRecordDangerousDownloadWarningShown(model);
     }
     return;
   }
@@ -467,7 +471,7 @@ void DownloadController::OnDownloadDestroyed(download::DownloadItem* item) {
   }
 }
 
-void DownloadController::ShowDangerousDownloadWarning(DownloadUIModel& model) {
+bool DownloadController::ShowDangerousDownloadWarning(DownloadUIModel& model) {
   download::DownloadItem* item = model.GetDownloadItem();
   CHECK(item);
   // Schedule the dangerous download to be canceled after a time delay.
@@ -488,15 +492,16 @@ void DownloadController::ShowDangerousDownloadWarning(DownloadUIModel& model) {
   if (item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE ||
       item->GetDangerType() ==
           download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED) {
-    ShowDangerousDownloadDialog(item);
+    return ShowDangerousDownloadDialog(item);
   }
+  return false;
 }
 
-void DownloadController::OnDangerousDownload(download::DownloadItem* item) {
+bool DownloadController::OnDangerousDownload(download::DownloadItem* item) {
   // The chrome.downloads extension API uses the dangerous download prompt
   // shared by all extensions platforms (see download_danger_dialog.cc).
   if (item->GetDownloadSource() == download::DownloadSource::EXTENSION_API) {
-    return;
+    return false;
   }
 
   ui::WindowAndroid* window_android =
@@ -508,9 +513,10 @@ void DownloadController::OnDangerousDownload(download::DownloadItem* item) {
         std::make_unique<DangerousDownloadDialogBridge>();
   }
   dangerous_download_bridge_->Show(item, window_android);
+  return (window_android != nullptr);
 }
 
-void DownloadController::OnSensitiveDownload(download::DownloadItem* item) {
+bool DownloadController::OnSensitiveDownload(download::DownloadItem* item) {
   ui::WindowAndroid* window_android =
       GetWindowHelper(item, /*should_schedule_removal=*/true,
                       /*fallback_to_current_window=*/false);
@@ -520,12 +526,13 @@ void DownloadController::OnSensitiveDownload(download::DownloadItem* item) {
         std::make_unique<PolicyWarningDownloadDialogBridge>();
   }
   policy_warning_download_bridge_->Show(item, window_android);
+  return (window_android != nullptr);
 }
 
-void DownloadController::ShowDangerousDownloadDialog(
+bool DownloadController::ShowDangerousDownloadDialog(
     download::DownloadItem* item) {
   if (item->GetDownloadSource() == download::DownloadSource::EXTENSION_API) {
-    return;
+    return false;
   }
 
   // Reached post-download (unlike OnDangerousDownload). If the original
@@ -535,7 +542,7 @@ void DownloadController::ShowDangerousDownloadDialog(
       GetWindowHelper(item, /*should_schedule_removal=*/false,
                       /*fallback_to_current_window=*/true);
   if (!window_android) {
-    return;
+    return false;
   }
 
   if (!dangerous_download_bridge_) {
@@ -543,6 +550,7 @@ void DownloadController::ShowDangerousDownloadDialog(
         std::make_unique<DangerousDownloadDialogBridge>();
   }
   dangerous_download_bridge_->Show(item, window_android);
+  return true;
 }
 
 void DownloadController::EnableVerifyAppsDone(

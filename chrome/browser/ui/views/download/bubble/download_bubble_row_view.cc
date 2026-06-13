@@ -770,7 +770,9 @@ void DownloadBubbleRowView::UpdateLabels() {
 
 void DownloadBubbleRowView::RecordMetricsOnUpdate() {
   // This should only be logged once per download.
-  MaybeRecordDangerousDownloadWarningShown(*info_->model());
+  if (info_->model()->IsDangerous()) {
+    MaybeRecordDangerousDownloadWarningShown(*info_->model());
+  }
   if (!has_download_completion_been_logged_ &&
       info_->model()->GetState() == download::DownloadItem::COMPLETE) {
     has_download_completion_been_logged_ = true;

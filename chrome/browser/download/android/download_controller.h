@@ -74,9 +74,10 @@ class DownloadController : public DownloadControllerBase {
 
   DownloadCallbackValidator* validator() { return &validator_; }
 
-  // The download item is not dangerous.
-  // Shows the DangerousDownloadDialog (confirmation dialog for safe downloads).
-  void ShowDangerousDownloadDialog(download::DownloadItem* item);
+  // The download item is not dangerous. Shows the DangerousDownloadDialog
+  // (confirmation dialog for safe downloads). Returns whether the dialog was
+  // shown.
+  bool ShowDangerousDownloadDialog(download::DownloadItem* item);
 
  private:
   friend struct base::DefaultSingletonTraits<DownloadController>;
@@ -95,16 +96,18 @@ class DownloadController : public DownloadControllerBase {
   void OnDownloadUpdated(download::DownloadItem* item) override;
   void OnDownloadDestroyed(download::DownloadItem* item) override;
 
-  // The download item contains dangerous file types.
-  // Shows the DangerousDownloadDialog (generic dangerous filetype warning).
-  void OnDangerousDownload(download::DownloadItem* item);
+  // The download item contains dangerous file types. Shows the
+  // DangerousDownloadDialog (generic dangerous filetype warning). Returns
+  // whether the dialog was shown.
+  bool OnDangerousDownload(download::DownloadItem* item);
 
-  // The download item contains sensitive content.
-  // Shows the PolicyWarningDownloadDialog.
-  void OnSensitiveDownload(download::DownloadItem* item);
+  // The download item contains sensitive content. Shows the
+  // PolicyWarningDownloadDialog. Returns whether the dialog was shown.
+  bool OnSensitiveDownload(download::DownloadItem* item);
 
   // Shows the UI warnings from Safe Browsing malicious APK download check.
-  void ShowDangerousDownloadWarning(DownloadUIModel& model);
+  // Returns whether the dialog was shown.
+  bool ShowDangerousDownloadWarning(DownloadUIModel& model);
 
   // Helper methods to start android download on UI thread.
   void StartAndroidDownload(const content::WebContents::Getter& wc_getter,
