@@ -231,15 +231,6 @@ bool IsValidSourceContext(RenderProcessHost& process,
 bool IsValidSourceUrl(content::RenderProcessHost& process,
                       const GURL& source_url,
                       const PortContext& source_context) {
-  // Some scenarios may end up with an empty `source_url` (e.g. this may have
-  // been triggered by the ExtensionApiTabTest.TabConnect test).
-  //
-  // TODO(crbug.com/40240882): Remove this workaround once the bug is
-  // fixed.
-  if (source_url.is_empty()) {
-    return true;
-  }
-
   // Extract the `base_origin`.
   //
   // We don't use `ChildProcessSecurityPolicy::CanCommitURL` because: 1) it
@@ -298,6 +289,15 @@ bool IsValidSourceUrl(content::RenderProcessHost& process,
     bad_message::ReceivedBadMessage(
         &process, bad_message::EMF_INVALID_MESSAGE_FROM_SANDBOXED_PROCESS);
     return false;
+  }
+
+  // Some scenarios may end up with an empty `source_url` (e.g. this may have
+  // been triggered by the ExtensionApiTabTest.TabConnect test).
+  //
+  // TODO(crbug.com/40240882): Remove this workaround once the bug is
+  // fixed.
+  if (source_url.is_empty()) {
+    return true;
   }
 
   // Verify `source_url` via ChildProcessSecurityPolicy::HostsOrigin.
