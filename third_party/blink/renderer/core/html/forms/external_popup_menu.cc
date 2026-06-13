@@ -143,16 +143,17 @@ bool ExternalPopupMenu::ShowInternal() {
     // Adjust anchor position to stay within web contents, otherwise the popup
     // could be rendered entirely outside of the web contents. If this select
     // is in a cross-origin iframe, then the anchor will be confined to the
-    // bounds of the iframe rather than the entire web contents.
+    // bounds of the iframe rather than the entire web contents. If the select
+    // doesn't intersect with the viewport, which can happen with oopifs, then
+    // the picker won't be opened.
     if (RuntimeEnabledFeatures::SelectAnchorInViewportEnabled() &&
         local_frame_->GetPage()) {
       gfx::Rect viewport_rect(
           local_frame_->GetPage()->GetVisualViewport().Size());
-      // rect_in_viewport should always overlap with viewport_rect. If the
-      // select element is positioned outside of the viewport, then
-      // MenuListSelectType::ShowPopup has an early return which prevents us
-      // from getting here.
-      CHECK(viewport_rect.Intersects(rect_in_viewport));
+      if (!viewport_rect.Intersects(rect_in_viewport)) {
+        DidCancel();
+        return false;
+      }
       rect_in_viewport.Intersect(viewport_rect);
     }
 

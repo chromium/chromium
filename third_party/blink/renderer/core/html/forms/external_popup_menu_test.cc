@@ -22,11 +22,13 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
@@ -700,6 +702,70 @@ TEST_F(ExternalPopupMenuTest, RemoveFrameOnChange) {
   // the page.
   select->SelectOptionByPopup(1);
   // The test passes if the test didn't crash and ASAN didn't complain.
+}
+
+TEST_F(ExternalPopupMenuTest, OopifSelectOutsideViewport) {
+  frame_test_helpers::WebViewHelper helper;
+  helper.InitializeRemote();
+  WebLocalFrameImpl* local_child =
+      helper.CreateLocalChild(*helper.RemoteMainFrame());
+  ASSERT_TRUE(local_child);
+  helper.GetWebView()->Resize(gfx::Size(800, 600));
+
+  // The select is positioned at (200, 200)
+  std::string html = R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        margin: 0;
+      }
+      select {
+        position: absolute;
+        left: 200px;
+        top: 200px;
+        width: 100px;
+        height: 30px;
+      }
+    </style>
+    <select id="select">
+      <option>1</option>
+      <option>2</option>
+    </select>
+  )HTML";
+
+  frame_test_helpers::LoadHTMLString(
+      local_child, html, url_test_helpers::ToKURL("http://example.com/"));
+
+  // Resize the child frame view to be large enough to contain the select.
+  local_child->GetFrameView()->Resize(500, 500);
+  local_child->GetFrame()->GetDocument()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kTest);
+
+  // Set the visual viewport to be smaller than the select's position.
+  // Select is at (200, 200, 100, 30).
+  // Viewport is 100x100.
+  helper.GetWebView()->GetPage()->GetVisualViewport().SetSize(
+      gfx::Size(100, 100));
+
+  helper.GetWebView()->GetChromeClient().SetUseExternalPopupMenus(true);
+  auto* select = To<HTMLSelectElement>(
+      local_child->GetFrame()->GetDocument()->getElementById(
+          AtomicString("select")));
+  ASSERT_TRUE(select);
+
+  // Set viewport intersection.
+  mojom::blink::ViewportIntersectionState intersection_state;
+  intersection_state.main_frame_intersection = gfx::Rect(0, 0, 500, 500);
+  intersection_state.viewport_intersection = gfx::Rect(0, 0, 500, 500);
+  intersection_state.outermost_main_frame_size = gfx::Size(800, 600);
+  local_child->GetFrame()->SetViewportIntersectionFromParent(
+      intersection_state);
+
+  // The select is at (200, 200) which does not intersect the 100x100 viewport,
+  // but it is visible within the 500x500 child frame (as configured by the
+  // viewport intersection). The select should not open.
+  select->ShowPopup();
+  EXPECT_FALSE(select->PopupIsVisible());
 }
 
 }  // namespace blink

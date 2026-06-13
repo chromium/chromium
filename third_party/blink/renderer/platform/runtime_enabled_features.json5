@@ -5252,7 +5252,7 @@
       // overlapping browser UI.
       // TODO(https://issues.chromium.org/issues/511869411): Remove this flag
       // after it has been shipped for long enough.
-      // Shipped in M150, safe to remove in M152.
+      // Shipped in M150, changed slightly in M151, safe to remove in M153.
       name: "SelectAnchorInViewport",
       status: "stable",
     },
