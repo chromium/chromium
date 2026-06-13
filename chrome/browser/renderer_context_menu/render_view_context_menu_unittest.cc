@@ -2270,6 +2270,32 @@ class RenderViewContextMenuMenuSimplificationTest
     feature_list_.InitAndEnableFeature(features::kMenuSimplification);
   }
 
+  base::ScopedClosureRunner SetUpTranslateClient() {
+    translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
+    NavigateAndCommit(GURL("https://www.example.com"));
+    SetUserSelectedDefaultSearchProvider("https://www.google.com", true);
+    ChromeTranslateClient::CreateForWebContents(web_contents());
+    ChromeTranslateClient* chrome_translate_client =
+        ChromeTranslateClient::FromWebContents(web_contents());
+    DCHECK(chrome_translate_client);
+    chrome_translate_client->GetTranslateManager()
+        ->GetLanguageState()
+        ->LanguageDetermined("fr", true);
+    return base::ScopedClosureRunner(base::BindOnce(
+        &translate::TranslateManager::SetIgnoreMissingKeyForTesting, false));
+  }
+
+  int CountOccurrences(const TestRenderViewContextMenu& menu, int command_id) {
+    int count = 0;
+    const ui::SimpleMenuModel& model = menu.menu_model();
+    for (size_t i = 0; i < model.GetItemCount(); ++i) {
+      if (model.GetCommandIdAt(i) == command_id) {
+        count++;
+      }
+    }
+    return count;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -2390,4 +2416,44 @@ TEST_F(RenderViewContextMenuMenuSimplificationTest, LinkAndSelectionLayout) {
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_COPY));
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+}
+
+TEST_F(RenderViewContextMenuMenuSimplificationTest,
+       TranslateSelectionOnlyOnce_NonEditable) {
+  auto reset_ignore_missing_key = SetUpTranslateClient();
+
+  content::ContextMenuParams params;
+  params.selection_text = u"hello world";
+  params.is_editable = false;
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  menu->SetBrowser(GetBrowser());
+  menu->Init();
+
+  // Verify that the partial translate item is present.
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+
+  // Verify that it is present exactly once.
+  EXPECT_EQ(1, CountOccurrences(*menu, IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+}
+
+TEST_F(RenderViewContextMenuMenuSimplificationTest,
+       TranslateSelectionOnlyOnce_Editable) {
+  auto reset_ignore_missing_key = SetUpTranslateClient();
+
+  content::ContextMenuParams params;
+  params.selection_text = u"hello world";
+  params.is_editable = true;
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  menu->SetBrowser(GetBrowser());
+  menu->Init();
+
+  // Verify that the partial translate item is present.
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+
+  // Verify that it is present exactly once.
+  EXPECT_EQ(1, CountOccurrences(*menu, IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
 }
