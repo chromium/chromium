@@ -32,7 +32,6 @@ class ContextualTasksButton
   METADATA_HEADER(ContextualTasksButton, ToolbarButton)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kContextualTasksToolbarButton);
   explicit ContextualTasksButton(
       BrowserWindowInterface* browser_window_interface);
   ~ContextualTasksButton() override;

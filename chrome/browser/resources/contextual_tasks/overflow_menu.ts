@@ -104,6 +104,11 @@ export class OverflowMenuElement extends CrLitElement {
   protected onPinClick_() {
     this.close();
     this.isPinned = !this.isPinned;
+    if (this.isPinned) {
+      this.browserProxy_.handler.pinSidePanel();
+    } else {
+      this.browserProxy_.handler.unpinSidePanel();
+    }
     this.fire('pin-click');
   }
 

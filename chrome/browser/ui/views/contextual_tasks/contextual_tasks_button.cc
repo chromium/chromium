@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -59,9 +60,6 @@
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContextualTasksButton,
-                                      kContextualTasksToolbarButton);
 
 namespace {
 
@@ -201,7 +199,8 @@ ContextualTasksButton::ContextualTasksButton(
       browser_window_interface_(browser_window_interface) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  SetProperty(views::kElementIdentifierKey, kContextualTasksToolbarButton);
+  SetProperty(views::kElementIdentifierKey,
+              kContextualTasksEphemeralToolbarButtonElementId);
   const std::u16string button_tooltip =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       (contextual_tasks::kShowEntryPoint.Get() ==

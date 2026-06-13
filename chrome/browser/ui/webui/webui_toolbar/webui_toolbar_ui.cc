@@ -297,6 +297,7 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
        kSharedTabGroupCommentsActionElementId,
        kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId,
        kPinnedToolbarActionShowSidePanelBookmarksElementId,
+       kPinnedToolbarActionShowSidePanelContextualTasksElementId,
        kPinnedToolbarActionSendTabToSelfElementId,
        kToolbarAvatarButtonElementId,
        PermissionChipView::kPermissionRequestChipElementId,

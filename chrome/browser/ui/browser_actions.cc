@@ -37,6 +37,7 @@
 #endif
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
@@ -489,7 +490,7 @@ void BrowserActions::InitializeSidePanelActions() {
                 actions::kActionItemPinnableKey,
                 static_cast<
                     std::underlying_type_t<actions::ActionPinnableState>>(
-                    actions::ActionPinnableState::kNotPinnable))
+                    actions::ActionPinnableState::kPinnable))
             .Build());
   }
 
