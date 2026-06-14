@@ -49,22 +49,18 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::
   // called, but the reference to controller is not reset. This reference needs
   // to be reset via CardUnmaskAuthenticationSelectionDialogView::Dismiss() to
   // avoid a crash.
-  if (dialog_view_wrapper_) {
-    dialog_view_wrapper_->Dismiss(/*user_closed_dialog=*/true,
-                                  /*server_success=*/false);
-    // Reset the view to make sure the Java side can no longer reach the C++
-    // controller.
-    dialog_view_wrapper_ = nullptr;
+  if (dialog_view_) {
+    dialog_view_->Dismiss(/*user_closed_dialog=*/true,
+                          /*server_success=*/false);
   }
 }
 
 void CardUnmaskAuthenticationSelectionDialogControllerImpl::ShowDialog(
     CardUnmaskAuthenticationSelectionDialogControllerImpl::CreateAndShowCallback
         create_and_show_callback) {
-  // `dialog_view_` can be `nullptr` if the dialog was not shown for any reason.
-  dialog_view_wrapper_ = CardUnmaskAuthenticationSelectionDialogWrapper(
-      std::move(create_and_show_callback).Run(this));
+  dialog_view_ = std::move(create_and_show_callback).Run(this);
 
+  DCHECK(dialog_view_);
   AutofillMetrics::LogCardUnmaskAuthenticationSelectionDialogShown(
       challenge_options_.size());
 }
@@ -72,12 +68,10 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::ShowDialog(
 void CardUnmaskAuthenticationSelectionDialogControllerImpl::
     DismissDialogUponServerProcessedAuthenticationMethodRequest(
         bool server_success) {
-  if (dialog_view_wrapper_) {
-    dialog_view_wrapper_->Dismiss(/*user_closed_dialog=*/false, server_success);
-    // Reset the view to make sure the Java side can no longer reach the C++
-    // controller.
-    dialog_view_wrapper_ = nullptr;
-  }
+  if (!dialog_view_)
+    return;
+
+  dialog_view_->Dismiss(/*user_closed_dialog=*/false, server_success);
 }
 
 void CardUnmaskAuthenticationSelectionDialogControllerImpl::OnDialogClosed(
@@ -121,9 +115,7 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::OnDialogClosed(
   }
 
   challenge_option_selected_ = false;
-  // Reset the view so that the controller can no longer dismiss the view
-  // itself.
-  dialog_view_wrapper_ = nullptr;
+  dialog_view_ = nullptr;
   confirm_unmasking_method_callback_.Reset();
   cancel_unmasking_closure_.Reset();
   selected_challenge_option_id_ = {};
@@ -154,18 +146,18 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::
         .Run(selected_challenge_option_id_.value());
   }
 
-  if (dialog_view_wrapper_) {
+  if (dialog_view_) {
     switch (selected_challenge_option_type_) {
       case CardUnmaskChallengeOptionType::kCvc:
         // For CVC flow, skip the OTP pending dialog since we go straight to the
         // Card Unmask Prompt.
-        dialog_view_wrapper_->Dismiss(/*user_closed_dialog=*/false,
-                                      /*server_success=*/false);
+        dialog_view_->Dismiss(/*user_closed_dialog=*/false,
+                              /*server_success=*/false);
         break;
       case CardUnmaskChallengeOptionType::kSmsOtp:
       case CardUnmaskChallengeOptionType::kEmailOtp:
         // Show the OTP pending dialog.
-        dialog_view_wrapper_->UpdateContent();
+        dialog_view_->UpdateContent();
         break;
       case CardUnmaskChallengeOptionType::kThreeDomainSecure:
         // TODO(crbug.com/41494927): Add kThreeDomainSecure logic.
