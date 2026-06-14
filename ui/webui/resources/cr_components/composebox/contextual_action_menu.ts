@@ -625,7 +625,7 @@ export class ContextualActionMenuElement extends
 
       this.updateComplete.then(() => {
         const firstTabItem = this.shadowRoot.querySelector<HTMLElement>(
-            '.share-tabs-flyout button.dropdown-item');
+            '.share-tabs-flyout button.dropdown-item:not([disabled])');
         if (firstTabItem) {
           firstTabItem.focus();
         }
