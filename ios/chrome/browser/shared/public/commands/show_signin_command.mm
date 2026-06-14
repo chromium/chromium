@@ -25,7 +25,9 @@
                                (SigninCoordinatorCompletionCallback)completion
                  prepareChangeProfile:(ProceduralBlock)prepareChangeProfile
     changeProfileContinuationProvider:
-        (const ChangeProfileContinuationProvider&)provider {
+        (const ChangeProfileContinuationProvider&)provider
+                   externalEntryPoint:
+                       (signin::ExternalEntryPoint)externalEntryPoint {
   if ((self = [super init])) {
     // Only `InstantSignin` can be opened with an identity selected.
     DCHECK(operation == AuthenticationOperation::kInstantSignin || !identity);
@@ -43,6 +45,7 @@
     _fullScreenPromo = NO;
     _prepareChangeProfile = prepareChangeProfile;
     _provider = provider;
+    _externalEntryPoint = externalEntryPoint;
   }
   return self;
 }
@@ -62,7 +65,8 @@
                             promoAction:promoAction
                              completion:completion
                    prepareChangeProfile:nil
-      changeProfileContinuationProvider:provider];
+      changeProfileContinuationProvider:provider
+                     externalEntryPoint:signin::ExternalEntryPoint::kUnknown];
 }
 
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
@@ -130,7 +134,9 @@
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
                targetAccountEmail:(NSString*)targetAccountEmail
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
-                      promoAction:(signin_metrics::PromoAction)promoAction {
+                      promoAction:(signin_metrics::PromoAction)promoAction
+               externalEntryPoint:
+                   (signin::ExternalEntryPoint)externalEntryPoint {
   return [self initWithOperation:operation
                                identity:nil
                      targetAccountEmail:targetAccountEmail
@@ -138,7 +144,8 @@
                             promoAction:promoAction
                              completion:nil
                    prepareChangeProfile:nil
-      changeProfileContinuationProvider:DoNothingContinuationProvider()];
+      changeProfileContinuationProvider:DoNothingContinuationProvider()
+                     externalEntryPoint:externalEntryPoint];
 }
 
 - (void)addSigninCompletion:(SigninCoordinatorCompletionCallback)completion {

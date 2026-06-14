@@ -8,6 +8,7 @@
 
 #import "base/functional/bind.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/signin/public/base/signin_deep_link_payload.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -28,11 +29,14 @@ class CrossDeviceSigninURLInterceptorTest : public PlatformTest {
 };
 
 TEST_F(CrossDeviceSigninURLInterceptorTest, InterceptsValidUrl) {
-  std::string intercepted_email;
-  auto interceptor = std::make_unique<CrossDeviceSigninURLInterceptor>(
-      base::BindRepeating([](std::string* out_email,
-                             const std::string& email) { *out_email = email; },
-                          &intercepted_email));
+  signin::SigninDeepLinkPayload intercepted_payload;
+  auto interceptor =
+      std::make_unique<CrossDeviceSigninURLInterceptor>(base::BindRepeating(
+          [](signin::SigninDeepLinkPayload* out_payload,
+             const signin::SigninDeepLinkPayload& payload) {
+            *out_payload = payload;
+          },
+          &intercepted_payload));
 
   EXPECT_TRUE(interceptor->active());
   EXPECT_TRUE(interceptor->prevent_normal_flow());
@@ -42,48 +46,60 @@ TEST_F(CrossDeviceSigninURLInterceptorTest, InterceptsValidUrl) {
       "https://signin.example.com/?email=user@example.com&entry_point_id=1"));
   EXPECT_TRUE(interceptor->OnIntercept(params));
 
-  EXPECT_EQ(intercepted_email, "user@example.com");
+  EXPECT_EQ(intercepted_payload.email, "user@example.com");
+  EXPECT_EQ(intercepted_payload.entry_point_id,
+            signin::ExternalEntryPoint::kDesktopDefault);
+  EXPECT_EQ(intercepted_payload.entry_point_id_raw_value_for_metrics, 1);
 }
 
 TEST_F(CrossDeviceSigninURLInterceptorTest,
        DoesNotInterceptIfMissingRequiredFields) {
-  std::string intercepted_email;
-  auto interceptor = std::make_unique<CrossDeviceSigninURLInterceptor>(
-      base::BindRepeating([](std::string* out_email,
-                             const std::string& email) { *out_email = email; },
-                          &intercepted_email));
+  signin::SigninDeepLinkPayload intercepted_payload;
+  auto interceptor =
+      std::make_unique<CrossDeviceSigninURLInterceptor>(base::BindRepeating(
+          [](signin::SigninDeepLinkPayload* out_payload,
+             const signin::SigninDeepLinkPayload& payload) {
+            *out_payload = payload;
+          },
+          &intercepted_payload));
 
   // Missing entry_point_id.
   UrlLoadParams params = UrlLoadParams::InCurrentTab(
       GURL("https://signin.example.com/?email=user@example.com"));
   EXPECT_FALSE(interceptor->OnIntercept(params));
 
-  EXPECT_TRUE(intercepted_email.empty());
+  EXPECT_FALSE(intercepted_payload.email.has_value());
 }
 
 TEST_F(CrossDeviceSigninURLInterceptorTest, DoesNotInterceptIfFeatureDisabled) {
   base::test::ScopedFeatureList local_feature_list;
   local_feature_list.InitAndDisableFeature(switches::kCrossDeviceSignin);
 
-  std::string intercepted_email;
-  auto interceptor = std::make_unique<CrossDeviceSigninURLInterceptor>(
-      base::BindRepeating([](std::string* out_email,
-                             const std::string& email) { *out_email = email; },
-                          &intercepted_email));
+  signin::SigninDeepLinkPayload intercepted_payload;
+  auto interceptor =
+      std::make_unique<CrossDeviceSigninURLInterceptor>(base::BindRepeating(
+          [](signin::SigninDeepLinkPayload* out_payload,
+             const signin::SigninDeepLinkPayload& payload) {
+            *out_payload = payload;
+          },
+          &intercepted_payload));
 
   UrlLoadParams params = UrlLoadParams::InCurrentTab(GURL(
       "https://signin.example.com/?email=user@example.com&entry_point_id=1"));
   EXPECT_FALSE(interceptor->OnIntercept(params));
 
-  EXPECT_TRUE(intercepted_email.empty());
+  EXPECT_FALSE(intercepted_payload.email.has_value());
 }
 
 TEST_F(CrossDeviceSigninURLInterceptorTest, DoesNotInterceptIfIncognito) {
-  std::string intercepted_email;
-  auto interceptor = std::make_unique<CrossDeviceSigninURLInterceptor>(
-      base::BindRepeating([](std::string* out_email,
-                             const std::string& email) { *out_email = email; },
-                          &intercepted_email));
+  signin::SigninDeepLinkPayload intercepted_payload;
+  auto interceptor =
+      std::make_unique<CrossDeviceSigninURLInterceptor>(base::BindRepeating(
+          [](signin::SigninDeepLinkPayload* out_payload,
+             const signin::SigninDeepLinkPayload& payload) {
+            *out_payload = payload;
+          },
+          &intercepted_payload));
 
   UrlLoadParams params = UrlLoadParams::InCurrentTab(GURL(
       "https://signin.example.com/?email=user@example.com&entry_point_id=1"));
@@ -91,7 +107,7 @@ TEST_F(CrossDeviceSigninURLInterceptorTest, DoesNotInterceptIfIncognito) {
 
   EXPECT_FALSE(interceptor->OnIntercept(params));
 
-  EXPECT_TRUE(intercepted_email.empty());
+  EXPECT_FALSE(intercepted_payload.email.has_value());
   EXPECT_TRUE(interceptor->prevent_normal_flow());
 }
 

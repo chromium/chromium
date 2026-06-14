@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/ios/block_types.h"
+#import "components/signin/public/base/signin_deep_link_payload.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -67,6 +68,8 @@ enum class AuthenticationOperation {
                  prepareChangeProfile:(ProceduralBlock)prepareChangeProfile
     changeProfileContinuationProvider:
         (const ChangeProfileContinuationProvider&)provider
+                   externalEntryPoint:
+                       (signin::ExternalEntryPoint)externalEntryPoint
     NS_DESIGNATED_INITIALIZER;
 
 // Initializes a command to perform, without pre-profile-switch.
@@ -115,7 +118,9 @@ enum class AuthenticationOperation {
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
                targetAccountEmail:(NSString*)targetAccountEmail
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
-                      promoAction:(signin_metrics::PromoAction)promoAction;
+                      promoAction:(signin_metrics::PromoAction)promoAction
+               externalEntryPoint:
+                   (signin::ExternalEntryPoint)externalEntryPoint;
 
 // Replaces `self.completion` by a function calling both `self.completion` and
 // `completion`.
@@ -141,6 +146,10 @@ enum class AuthenticationOperation {
 // the device, `identity` will be nil, but `targetAccountEmail` is still used to
 // prefill the sign-in/add-account flow.
 @property(nonatomic, copy, readonly) NSString* targetAccountEmail;
+
+// The external entry point for the deep link sign-in flow.
+@property(nonatomic, assign, readonly)
+    signin::ExternalEntryPoint externalEntryPoint;
 
 // Customize content on sign-in and history sync screens.
 // Default: `kDefault`.

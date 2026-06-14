@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "components/signin/public/base/signin_deep_link_payload.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/buggy_authentication_view_owner.h"
@@ -248,7 +249,9 @@ class PrefRegistrySyncable;
                                    (NSString*)selectedAccountEmail
                   changeProfileContinuationProvider:
                       (const ChangeProfileContinuationProvider&)
-                          changeProfileContinuationProvider;
+                          changeProfileContinuationProvider
+                                 externalEntryPoint:(signin::ExternalEntryPoint)
+                                                        externalEntryPoint;
 
 // ChromeCoordinator.
 - (void)start NS_REQUIRES_SUPER;

@@ -37,8 +37,7 @@ bool CrossDeviceSigninURLInterceptor::OnIntercept(const UrlLoadParams& params) {
   std::optional<signin::SigninDeepLinkPayload> payload =
       parser->Parse(params.web_params.url);
   if (payload.has_value() && payload->HasAllRequiredFields()) {
-    CHECK(payload->email.has_value());
-    callback_.Run(payload->email.value());
+    callback_.Run(payload.value());
     return true;
   }
 

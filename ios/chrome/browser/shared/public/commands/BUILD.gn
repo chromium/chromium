@@ -136,6 +136,7 @@ source_set("commands") {
     "//base",
     "//components/browsing_data/core",
     "//components/password_manager/core/browser",
+    "//components/signin/public/base:signin_deep_link",
     "//components/supervised_user/core/common",
     "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/browsing_data/model:model_remove_mask",

@@ -9,6 +9,9 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_deep_link_metrics.h"
+#import "components/signin/public/base/signin_deep_link_payload.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -22,6 +25,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -34,14 +38,17 @@
   id<SystemIdentity> _selectedIdentity;
   ChromeCoordinator* _childCoordinator;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  signin::ExternalEntryPoint _externalEntryPoint;
 }
 
-- (instancetype)
-           initWithBaseViewController:(UIViewController*)viewController
-                              browser:(Browser*)browser
-                 selectedAccountEmail:(NSString*)selectedAccountEmail
-    changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
-                                          changeProfileContinuationProvider {
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                      selectedAccountEmail:(NSString*)selectedAccountEmail
+         changeProfileContinuationProvider:
+             (const ChangeProfileContinuationProvider&)
+                 changeProfileContinuationProvider
+                        externalEntryPoint:
+                            (signin::ExternalEntryPoint)externalEntryPoint {
   CHECK(selectedAccountEmail.length);
   DCHECK_EQ(browser->type(), Browser::Type::kRegular);
 
@@ -56,6 +63,7 @@
     CHECK(changeProfileContinuationProvider);
     _selectedAccountEmail = selectedAccountEmail;
     _changeProfileContinuationProvider = changeProfileContinuationProvider;
+    _externalEntryPoint = externalEntryPoint;
   }
   return self;
 }
@@ -78,13 +86,37 @@
       AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> primaryIdentity = authService->GetPrimaryIdentity();
 
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.profile);
+  int accountsCount =
+      static_cast<int>(identityManager->GetAccountsWithRefreshTokens().size());
+  signin_metrics::RecordInitialAccountsNumber(_externalEntryPoint,
+                                              accountsCount);
+
   if (!_selectedIdentity) {
     // Provided email doesn't exist on device.
+    signin_metrics::CrossDeviceInitialState initialState =
+        primaryIdentity
+            ? signin_metrics::CrossDeviceInitialState::
+                  kSignedInWithDifferentAccountTargetAccountNotOnDevice
+            : signin_metrics::CrossDeviceInitialState::
+                  kSignedOutTargetAccountNotOnDevice;
+    signin_metrics::RecordInitialState(_externalEntryPoint, initialState);
     [self startAddAccountFlow];
   } else if (!primaryIdentity ||
              primaryIdentity.gaiaId != _selectedIdentity.gaiaId) {
+    signin_metrics::CrossDeviceInitialState initialState =
+        !primaryIdentity
+            ? signin_metrics::CrossDeviceInitialState::
+                  kSignedOutTargetAccountOnDevice
+            : signin_metrics::CrossDeviceInitialState::
+                  kSignedInWithDifferentAccountTargetAccountOnDevice;
+    signin_metrics::RecordInitialState(_externalEntryPoint, initialState);
     [self startSigninFlow];
   } else {
+    signin_metrics::RecordInitialState(
+        _externalEntryPoint,
+        signin_metrics::CrossDeviceInitialState::kSignedInWithTargetAccount);
     [self showAlreadySignedInSnackbarAndFinish];
   }
 }

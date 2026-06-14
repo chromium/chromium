@@ -10,13 +10,17 @@
 #import "base/functional/callback.h"
 #import "ios/chrome/browser/url_loading/model/url_interceptor.h"
 
+namespace signin {
+struct SigninDeepLinkPayload;
+}
+
 // A URL interceptor that intercepts cross-device sign-in URLs, parses the email
 // and entry point ID using `SigninDeepLinkParser`, and calls the callback on
 // successful parsing.
 class CrossDeviceSigninURLInterceptor : public URLInterceptor {
  public:
-  using InterceptCallback =
-      base::RepeatingCallback<void(const std::string& email)>;
+  using InterceptCallback = base::RepeatingCallback<void(
+      const signin::SigninDeepLinkPayload& payload)>;
 
   explicit CrossDeviceSigninURLInterceptor(InterceptCallback callback);
 

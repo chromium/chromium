@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_DEEPLINK_SIGNIN_DEEPLINK_SIGNIN_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_DEEPLINK_SIGNIN_DEEPLINK_SIGNIN_COORDINATOR_H_
 
+#import "components/signin/public/base/signin_deep_link_payload.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 
 @class ScreenProvider;
@@ -20,12 +21,14 @@
 //     email. This will start the add account flow if the account is not
 //     present in device. If there are multiple accounts on device the selected
 //     account will be shown as chosen in account picker flow.
-- (instancetype)
-           initWithBaseViewController:(UIViewController*)viewController
-                              browser:(Browser*)browser
-                 selectedAccountEmail:(NSString*)selectedAccountEmail
-    changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
-                                          changeProfileContinuationProvider
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                      selectedAccountEmail:(NSString*)selectedAccountEmail
+         changeProfileContinuationProvider:
+             (const ChangeProfileContinuationProvider&)
+                 changeProfileContinuationProvider
+                        externalEntryPoint:
+                            (signin::ExternalEntryPoint)externalEntryPoint
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

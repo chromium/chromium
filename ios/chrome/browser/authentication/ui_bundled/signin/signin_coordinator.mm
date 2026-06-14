@@ -163,7 +163,9 @@ using signin_metrics::PromoAction;
                                      selectedAccountEmail:
                                          command.targetAccountEmail
                         changeProfileContinuationProvider:
-                            command.changeProfileContinuationProvider];
+                            command.changeProfileContinuationProvider
+                                       externalEntryPoint:
+                                           command.externalEntryPoint];
       break;
     }
   }
@@ -374,13 +376,16 @@ using signin_metrics::PromoAction;
                                    (NSString*)selectedAccountEmail
                   changeProfileContinuationProvider:
                       (const ChangeProfileContinuationProvider&)
-                          changeProfileContinuationProvider {
+                          changeProfileContinuationProvider
+                                 externalEntryPoint:(signin::ExternalEntryPoint)
+                                                        externalEntryPoint {
   CHECK(base::FeatureList::IsEnabled(switches::kCrossDeviceSignin));
   return [[DeeplinkSigninCoordinator alloc]
              initWithBaseViewController:viewController
                                 browser:browser
                    selectedAccountEmail:selectedAccountEmail
-      changeProfileContinuationProvider:changeProfileContinuationProvider];
+      changeProfileContinuationProvider:changeProfileContinuationProvider
+                     externalEntryPoint:externalEntryPoint];
 }
 
 #pragma mark - SigninCoordinator

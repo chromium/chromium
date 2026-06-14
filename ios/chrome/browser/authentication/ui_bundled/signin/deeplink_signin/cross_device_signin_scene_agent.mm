@@ -7,6 +7,8 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/signin/public/base/signin_deep_link_metrics.h"
+#import "components/signin/public/base/signin_deep_link_payload.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -35,8 +37,8 @@
     if (base_url.is_valid()) {
       __weak __typeof(self) weakSelf = self;
       auto interceptor = std::make_unique<CrossDeviceSigninURLInterceptor>(
-          base::BindRepeating(^(const std::string& email) {
-            [weakSelf handleCrossDeviceSigninWithIdentity:email];
+          base::BindRepeating(^(const signin::SigninDeepLinkPayload& payload) {
+            [weakSelf handleCrossDeviceSigninWithPayload:payload];
           }));
       bool success = sceneURLLoadingService->AddInterceptor(
           base_url, std::move(interceptor));
@@ -49,24 +51,39 @@
 #pragma mark - Private
 
 // Dispatched when the URL is intercepted.
-- (void)handleCrossDeviceSigninWithIdentity:(const std::string&)email {
+- (void)handleCrossDeviceSigninWithPayload:
+    (const signin::SigninDeepLinkPayload&)payload {
   ProfileIOS* profile = self.sceneState.profileState.profile;
   CHECK(profile);
+
+  // Record URL detected.
+  signin_metrics::RecordUrlDetected(
+      payload.entry_point_id_raw_value_for_metrics.value());
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(profile);
   CHECK(authService);
+
+  // If the flow is forbidden, record the metric and return early.
   if (!authService->SigninEnabled()) {
+    signin_metrics::RecordInitialState(
+        payload.entry_point_id.value(),
+        signin_metrics::CrossDeviceInitialState::kFlowForbidden);
     // TODO(crbug.com/508261572): Display appropriate error.
     return;
   }
 
+  NSString* targetEmail = base::SysUTF8ToNSString(payload.email.value());
+  signin::ExternalEntryPoint externalEntryPoint =
+      payload.entry_point_id.value();
+
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
        initWithOperation:AuthenticationOperation::kDeepLinkSignin
-      targetAccountEmail:base::SysUTF8ToNSString(email)
+      targetAccountEmail:targetEmail
              accessPoint:signin_metrics::AccessPoint::kDeepLinkDefault
              promoAction:signin_metrics::PromoAction::
-                             PROMO_ACTION_NO_SIGNIN_PROMO];
+                             PROMO_ACTION_NO_SIGNIN_PROMO
+      externalEntryPoint:externalEntryPoint];
 
   // Defer the presentation of the sign-in UI to the next run loop turn.
   // This ensures that the view hierarchy is fully loaded, navigation action is
