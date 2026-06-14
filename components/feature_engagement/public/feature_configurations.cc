@@ -741,10 +741,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.used = EventConfig("android_bottom_bar_new_tab_used",
                               Comparator(EQUAL, 0), 360, 360);
 
-    // Require that the GLIC IPH has been shown at least once.
-    config.event_configs.insert(
-        EventConfig("android_bottom_bar_glic_trigger",
-                    Comparator(GREATER_THAN_OR_EQUAL, 1), 360, 360));
     return config;
   }
 

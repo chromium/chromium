@@ -113,6 +113,8 @@ public class BottomBarMediatorUnitTest {
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
 
+        when(mPromoDialogCoordinator.maybeShowPromoDialog()).thenReturn(true);
+
         mGlicActionSupplier = ObservableSuppliers.createNullable();
         mNewTabActionSupplier = ObservableSuppliers.createNullable();
         when(mActionRegistry.get(ActionId.GLIC)).thenReturn(mGlicActionSupplier);
@@ -568,6 +570,8 @@ public class BottomBarMediatorUnitTest {
         mGlicActionSupplier.set(glicModel);
         mNewTabActionSupplier.set(newTabModel);
 
+        mModel.set(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE, true);
+
         createMediator(/* shouldIncludeHomeButton= */ true);
         assertNotNull(mMediator);
 
@@ -622,6 +626,8 @@ public class BottomBarMediatorUnitTest {
         PropertyModel newTabModel = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
         mGlicActionSupplier.set(glicModel);
         mNewTabActionSupplier.set(newTabModel);
+
+        mModel.set(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE, true);
 
         createMediator(/* shouldIncludeHomeButton= */ true);
         assertNotNull(mMediator);
@@ -679,6 +685,104 @@ public class BottomBarMediatorUnitTest {
 
         assertNull(glicModel.get(ActionProperties.IPH_INTENT));
         assertNull(newTabModel.get(ActionProperties.IPH_INTENT));
+    }
+
+    @Test
+    public void testNewTabIphCaching_GlicNotVisible() {
+        PropertyModel newTabModel = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
+        mNewTabActionSupplier.set(newTabModel);
+
+        // Create mediator with GLIC not visible, which triggers New Tab IPH.
+        mModel.set(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE, false);
+        createMediator(/* shouldIncludeHomeButton= */ true);
+        assertNotNull(mMediator);
+
+        IphIntent firstIntent = newTabModel.get(ActionProperties.IPH_INTENT);
+        assertNotNull(firstIntent);
+        assertEquals(
+                FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB,
+                firstIntent.getFeatureNameForTesting());
+
+        // Simulate a visibility change to trigger maybeShowPromoDialog again.
+        mOmniboxFocusStateSupplier.set(true);
+        mOmniboxFocusStateSupplier.set(false);
+
+        IphIntent secondIntent = newTabModel.get(ActionProperties.IPH_INTENT);
+        assertNotNull(secondIntent);
+        assertEquals(firstIntent, secondIntent);
+    }
+
+    @Test
+    public void testIphOrchestration_NewTabFirst_ThenGlicPromo() {
+        PropertyModel glicModel = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
+        PropertyModel newTabModel = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
+        mGlicActionSupplier.set(glicModel);
+        mNewTabActionSupplier.set(newTabModel);
+
+        // Create mediator with GLIC not visible, which triggers New Tab IPH.
+        mModel.set(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE, false);
+        createMediator(/* shouldIncludeHomeButton= */ true);
+        assertNotNull(mMediator);
+
+        IphIntent initialNewTabIph = newTabModel.get(ActionProperties.IPH_INTENT);
+        assertNotNull(initialNewTabIph);
+        assertEquals(
+                FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB,
+                initialNewTabIph.getFeatureNameForTesting());
+
+        // Simulate showing the initial New Tab IPH.
+        assertTrue(initialNewTabIph.tryShow(mView, mUserEducationHelper));
+        verify(mUserEducationHelper, times(1)).requestShowIph(any());
+
+        // GLIC button becomes visible.
+        verify(mButtonManager).setListener(mButtonManagerListenerCaptor.capture());
+        BottomBarButtonManager.Listener listener = mButtonManagerListenerCaptor.getValue();
+        mModel.set(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE, true);
+        listener.onButtonVisibilityChanged(ActionId.GLIC, true);
+
+        verify(mPromoDialogCoordinator, times(1)).maybeShowPromoDialog();
+        mMediator.onPromoDialogAccepted();
+        IphIntent glicIph = glicModel.get(ActionProperties.IPH_INTENT);
+        assertNotNull(glicIph);
+        assertEquals(FeatureConstants.ANDROID_BOTTOM_BAR_GLIC, glicIph.getFeatureNameForTesting());
+
+        // Showing the GLIC IPH.
+        assertTrue(glicIph.tryShow(mView, mUserEducationHelper));
+        ArgumentCaptor<IphCommand> commandCaptor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper, times(2)).requestShowIph(commandCaptor.capture());
+        IphCommand glicCommand = commandCaptor.getAllValues().get(1);
+        assertEquals(FeatureConstants.ANDROID_BOTTOM_BAR_GLIC, glicCommand.featureName);
+
+        glicCommand.onDismissCallback.run();
+
+        IphIntent chainedNewTabIph = newTabModel.get(ActionProperties.IPH_INTENT);
+        assertNotNull(chainedNewTabIph);
+
+        // Because the New Tab IPH intent is cached, it should be the exact same instance.
+        assertEquals(initialNewTabIph, chainedNewTabIph);
+
+        // Verify that trying to show it a second time is blocked.
+        assertFalse(chainedNewTabIph.tryShow(mView, mUserEducationHelper));
+        verify(mUserEducationHelper, times(2)).requestShowIph(any());
+    }
+
+    @Test
+    public void testPromoDialog_GlicVisible_PromoSkipped_TriggersNewTabIph() {
+        when(mPromoDialogCoordinator.maybeShowPromoDialog()).thenReturn(false);
+        PropertyModel newTabModel = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
+        mNewTabActionSupplier.set(newTabModel);
+
+        mModel.set(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE, true);
+
+        createMediator(/* shouldIncludeHomeButton= */ true);
+
+        verify(mPromoDialogCoordinator, times(1)).maybeShowPromoDialog();
+
+        // The fallback triggerNewTabIph should fire since promo was skipped
+        IphIntent newTabIph = newTabModel.get(ActionProperties.IPH_INTENT);
+        assertNotNull(newTabIph);
+        assertEquals(
+                FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB, newTabIph.getFeatureNameForTesting());
     }
 
     private void createMediator(boolean shouldIncludeHomeButton) {

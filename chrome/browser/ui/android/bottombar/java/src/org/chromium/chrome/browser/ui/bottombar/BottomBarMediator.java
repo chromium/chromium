@@ -92,6 +92,7 @@ public class BottomBarMediator
     private boolean mGlicTimeToAppearRecorded;
     private long mBottomBarShownTimeMs = -1;
     private long mGlicAppearedTimeMs = -1;
+    private @Nullable IphIntent mNewTabIphIntent;
     private final Context mContext;
 
     /**
@@ -198,16 +199,22 @@ public class BottomBarMediator
                 RecordHistogram.recordLongTimesHistogram(GLIC_TIME_TO_APPEAR_HISTOGRAM, 0);
                 mGlicTimeToAppearRecorded = true;
             }
-            maybeShowPromoDialog();
+            maybeShowIphs();
         }
     }
 
-    private void maybeShowPromoDialog() {
+    private void maybeShowIphs() {
         boolean isBottomBarVisible = Boolean.TRUE.equals(mIsVisible);
         boolean isGlicVisible =
                 Boolean.TRUE.equals(mModel.get(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE));
         if (isBottomBarVisible && isGlicVisible) {
-            mPromoDialogCoordinator.maybeShowPromoDialog();
+            if (!mPromoDialogCoordinator.maybeShowPromoDialog()) {
+                triggerNewTabIph();
+            }
+        } else if (isBottomBarVisible) {
+            // Trigger the new tab IPH if the bottom bar is visible but the GLIC button is not
+            // visible.
+            triggerNewTabIph();
         }
     }
 
@@ -280,7 +287,7 @@ public class BottomBarMediator
     @Override
     public void onButtonVisibilityChanged(int actionId, boolean visible) {
         if (actionId == ActionId.GLIC && visible) {
-            maybeShowPromoDialog();
+            maybeShowIphs();
         }
     }
 
@@ -336,6 +343,9 @@ public class BottomBarMediator
         PropertyModel newTabModel = mNewTabActionSupplier.get();
         if (newTabModel == null) return;
 
+        // Only trigger the New Tab IPH once.
+        if (mNewTabIphIntent != null) return;
+
         IphIntent.Builder newTabIphBuilder =
                 new IphIntent.Builder(FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB)
                         .setStringResId(R.string.iph_android_bottom_bar_new_tab)
@@ -354,8 +364,9 @@ public class BottomBarMediator
             newTabHighlightParams.setCornerRadius(circleRadius);
         }
         newTabIphBuilder.setHighlightParams(newTabHighlightParams);
-
-        newTabModel.set(ActionProperties.IPH_INTENT, newTabIphBuilder.build());
+        IphIntent newTabIph = newTabIphBuilder.build();
+        newTabModel.set(ActionProperties.IPH_INTENT, newTabIph);
+        mNewTabIphIntent = newTabIph;
     }
 
     @Override
@@ -385,5 +396,6 @@ public class BottomBarMediator
         if (newTabModel != null) {
             newTabModel.set(ActionProperties.IPH_INTENT, null);
         }
+        mNewTabIphIntent = null;
     }
 }

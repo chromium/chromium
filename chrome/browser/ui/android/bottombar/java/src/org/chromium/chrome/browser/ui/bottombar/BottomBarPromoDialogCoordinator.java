@@ -75,15 +75,19 @@ public class BottomBarPromoDialogCoordinator
     }
 
     /** Evaluates whether to show the introductory promo dialog and shows it if eligible. */
-    public void maybeShowPromoDialog() {
-        if (mDialogModel != null) return;
+    public boolean maybeShowPromoDialog() {
+        if (mDialogModel != null) {
+            return true;
+        }
 
         Profile profile = mProfileSupplier.get();
-        if (profile == null) return;
+        if (profile == null) {
+            return false;
+        }
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         if (!tracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG)) {
-            return;
+            return false;
         }
         mTracker = tracker;
 
@@ -114,6 +118,7 @@ public class BottomBarPromoDialogCoordinator
                         .build();
 
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP, true);
+        return true;
     }
 
     @Override
