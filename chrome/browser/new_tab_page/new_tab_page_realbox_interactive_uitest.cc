@@ -108,7 +108,7 @@ const DeepQuery kLensSearchButton = {"ntp-app", "ntp-searchbox",
                                      "#lensSearchButton"};
 const DeepQuery kComposeButton = {"ntp-app", "ntp-searchbox", "#composeButton",
                                   "#composeButton"};
-const DeepQuery kComposeboxVoiceSearchButton = {"ntp-app", "cr-composebox",
+const DeepQuery kComposeboxVoiceSearchButton = {"ntp-app", "#composebox",
                                                 "#voiceSearchButton"};
 const DeepQuery kContextualEntrypoint = {"ntp-app", "ntp-searchbox", "#context",
                                          "#entrypointButton", "#entrypoint"};
@@ -117,9 +117,9 @@ const DeepQuery kSearchboxContextMenuDialog = {
 const DeepQuery kComposeboxContextMenuDialog = {
     "ntp-app", "#composebox", "#contextEntrypoint",
     "#menu",   "#menu",       "#dialog"};
-const DeepQuery kComposeboxInput = {"ntp-app", "cr-composebox",
+const DeepQuery kComposeboxInput = {"ntp-app", "#composebox",
                                     "cr-composebox-input", "#input"};
-const DeepQuery kComposeboxVoiceSearch = {"ntp-app", "cr-composebox",
+const DeepQuery kComposeboxVoiceSearch = {"ntp-app", "#composebox",
                                           "#voiceSearch"};
 const DeepQuery kComposeboxSubmitButton = {
     "ntp-app", "#composebox", "cr-composebox-submit", "#submitContainer"};
@@ -151,7 +151,7 @@ const DeepQuery kFileUploadItem = {"ntp-app", "ntp-searchbox", "#context",
 const DeepQuery kComposeboxFileThumbnail = {"ntp-app", "#composebox",
                                             "cr-composebox-file-carousel",
                                             "cr-composebox-file-thumbnail"};
-const DeepQuery kToolChipButton = {"ntp-app", "cr-composebox", "#context",
+const DeepQuery kToolChipButton = {"ntp-app", "#composebox", "#context",
                                    "cr-composebox-tool-chip",
                                    "#toolEnabledButton"};
 const DeepQuery kScrim = {"ntp-app", "#scrim"};
