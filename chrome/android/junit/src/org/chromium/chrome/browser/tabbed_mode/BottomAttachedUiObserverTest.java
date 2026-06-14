@@ -550,6 +550,40 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void
+            testAdaptsColorToBottomSheet_anchorToBrowserControls_fullWidthExpandedWithControls() {
+        when(mBottomSheetController.isFullWidth()).thenReturn(true);
+        when(mBottomControlsStacker.isLayerVisible(eq(LayerType.BOTTOM_CHIN))).thenReturn(true);
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(Set.of(LayerType.BOTTOM_CHIN, LayerType.BOTTOM_SHEET))))
+                .thenReturn(true);
+        when(mBottomSheetController.isAnchoredToBottomControls()).thenReturn(true);
+        doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CONTROLS_HEIGHT, 0);
+        mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
+
+        // Sheet is not visible yet. Bottom attached color defaults to bottom controls color.
+        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR).assertForceShowDivider(false);
+
+        doReturn(SheetState.FULL).when(mBottomSheetController).getSheetState();
+        mBottomAttachedUiObserver.onSheetStateChanged(SheetState.FULL, 0);
+
+        // Although the bottom sheet is fully expanded, it is anchored above other visible bottom
+        // controls (e.g., bottom toolbar). Therefore, the bottom sheet color (yellow) is ignored,
+        // and the observer falls back to the bottom controls color.
+        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR).assertForceShowDivider(false);
+        dismissBottomSheet();
+
+        // Sheet is dismissed. Color remains bottom controls color.
+        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR).assertForceShowDivider(false);
+    }
+
+    @Test
     public void testAdaptsColorToBottomSheet_anchorToBrowserControls_fullWidthOnBottomChin() {
         when(mBottomSheetController.isFullWidth()).thenReturn(true);
         when(mBottomControlsStacker.isLayerVisible(eq(LayerType.BOTTOM_CHIN))).thenReturn(true);
@@ -570,18 +604,22 @@ public class BottomAttachedUiObserverTest {
     public void testAdaptsColorToBottomSheet_anchorToBrowserControls_fullWidthOnOtherControls() {
         when(mBottomSheetController.isFullWidth()).thenReturn(true);
         when(mBottomControlsStacker.isLayerVisible(eq(LayerType.BOTTOM_CHIN))).thenReturn(true);
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(eq(LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(
                         eq(Set.of(LayerType.BOTTOM_CHIN, LayerType.BOTTOM_SHEET))))
                 .thenReturn(true);
 
         doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CONTROLS_HEIGHT, 0);
         mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
-        mColorChangeObserver.assertColor(null).assertForceShowDivider(false);
+        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR).assertForceShowDivider(false);
 
         peekBottomSheet();
-        mColorChangeObserver.assertColor(null).assertForceShowDivider(false);
+        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR).assertForceShowDivider(false);
         dismissBottomSheet();
-        mColorChangeObserver.assertColor(null).assertForceShowDivider(false);
+        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR).assertForceShowDivider(false);
     }
 
     @Test
@@ -622,18 +660,22 @@ public class BottomAttachedUiObserverTest {
     public void testAdaptsColorToBottomSheet_anchorToBrowserControls_notFullWidthOtherControls() {
         when(mBottomSheetController.isFullWidth()).thenReturn(false);
         when(mBottomControlsStacker.isLayerVisible(eq(LayerType.BOTTOM_CHIN))).thenReturn(true);
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(eq(LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
         when(mBottomControlsStacker.hasVisibleLayersOtherThan(
                         eq(Set.of(LayerType.BOTTOM_CHIN, LayerType.BOTTOM_SHEET))))
                 .thenReturn(true);
 
         doReturn(BOTTOM_SHEET_YELLOW).when(mBottomSheetController).getSheetBackgroundColor();
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CONTROLS_HEIGHT, 0);
         mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
-        mColorChangeObserver.assertColor(null).assertForceShowDivider(false);
+        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR).assertForceShowDivider(false);
 
         peekBottomSheet();
-        mColorChangeObserver.assertColor(null).assertForceShowDivider(false);
+        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR).assertForceShowDivider(false);
         dismissBottomSheet();
-        mColorChangeObserver.assertColor(null).assertForceShowDivider(false);
+        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR).assertForceShowDivider(false);
     }
 
     @Test

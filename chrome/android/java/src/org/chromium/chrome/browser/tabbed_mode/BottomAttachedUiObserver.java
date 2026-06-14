@@ -390,6 +390,29 @@ public class BottomAttachedUiObserver
             return false;
         }
 
+        if (BottomBarConfigUtils.isBottomBarEnabled(mContext)) {
+            if (mIsSheetAnchoredToBottomControls) {
+                // Unscrimmed bottom sheets are anchored to the browser controls and pushed up by a
+                // bottom margin equal to the controls' height. Because they do not cover the
+                // controls even when expanded, we should match the sheet's color ONLY if there are
+                // no other browser controls present besides the bottom chin.
+                return !mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        Set.of(LayerType.BOTTOM_CHIN, LayerType.BOTTOM_SHEET));
+            } else if (isFullWidthBottomSheetExpanded()) {
+                // When a scrimmed bottom sheet is expanded (HALF or FULL) in full width, it has no
+                // bottom margin and covers the bottom controls and bottom chin, so the bottom sheet
+                // color should always be matched.
+                return true;
+            } else {
+                // When using bottom chin, the chin is covered by the sheet so sheet color could
+                // should not be used in partial width. When sheet is in full width, it covers the
+                // chin. So the chin's color is not impacted by the bottom sheet in any width
+                // setting. When the bottom chin is not in use, the sheet is attached to the nav bar
+                // directly, so bottom sheet color should be used.
+                return !mBottomControlsStacker.isLayerVisible(LayerType.BOTTOM_CHIN);
+            }
+        }
+
         if (isFullWidthBottomSheetExpanded()) {
             // When the bottom sheet is expanded (HALF or FULL), it covers the bottom controls
             // and bottom chin, so the bottom sheet color should always be matched.
