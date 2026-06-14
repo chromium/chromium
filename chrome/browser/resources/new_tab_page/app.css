@@ -316,7 +316,7 @@ svg {
   position: fixed;
 }
 
-:host([energy-effect-enabled_]) cr-composebox {
+:host([energy-effect-enabled_]) #composebox {
   --cr-composebox-expanded-border-radius: 28px;
 }
 
