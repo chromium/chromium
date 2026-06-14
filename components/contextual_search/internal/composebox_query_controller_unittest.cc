@@ -5438,6 +5438,49 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_MultipleDriveFileUploads) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Act: Start the file upload flow (Drive 1).
+  const base::UnguessableToken file_token_1 = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data_1 =
+      std::make_unique<lens::ContextualInputData>();
+  input_data_1->primary_content_type = lens::MimeType::kUnknown;
+  input_data_1->drive_id = "drive_1";
+  input_data_1->mime_type_string = "application/vnd.google-apps.document";
+  controller().StartFileUploadFlow(file_token_1, std::move(input_data_1),
+                                   /*image_options=*/std::nullopt);
+
+  WaitForClusterInfo();
+
+  WaitForFileUpload(file_token_1, lens::MimeType::kUnknown);
+
+  // Act: Start the file upload flow (Drive 2).
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data_2 =
+      std::make_unique<lens::ContextualInputData>();
+  input_data_2->primary_content_type = lens::MimeType::kUnknown;
+  input_data_2->drive_id = "drive_2";
+  input_data_2->mime_type_string = "application/vnd.google-apps.document";
+  controller().StartFileUploadFlow(file_token_2, std::move(input_data_2),
+                                   /*image_options=*/std::nullopt);
+
+  WaitForFileUpload(file_token_2, lens::MimeType::kUnknown);
+
+  // Verify the request IDs have different UUIDs and different context IDs.
+  auto* file_info_1 = controller().GetFileInfoForTesting(file_token_1);
+  auto* file_info_2 = controller().GetFileInfoForTesting(file_token_2);
+  ASSERT_TRUE(file_info_1);
+  ASSERT_TRUE(file_info_2);
+  ASSERT_TRUE(file_info_1->request_id.has_value());
+  ASSERT_TRUE(file_info_2->request_id.has_value());
+  EXPECT_NE(file_info_1->request_id->uuid(), file_info_2->request_id->uuid());
+  EXPECT_NE(file_info_1->request_id->context_id(),
+            file_info_2->request_id->context_id());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        CreateSearchUrl_SkipsTabAndUnresolvedUrl) {
   // Act: Start the session.
   controller().InitializeIfNeeded();

@@ -1146,8 +1146,12 @@ void ComposeboxQueryController::StartFileUploadFlow(
     current_file_info.request_id->set_is_implicit_upload(
         current_file_info.is_implicit_upload);
   } else if (current_file_info.input_data->drive_id.has_value()) {
+    request_id_generator_.SetContextId(RandInt64());
+    request_id_generator_.SetHasChromeTabData(false);
+    request_id_generator_.SetIsImplicitUpload(false);
     current_file_info.request_id = *request_id_generator_.GetNextRequestId(
-        base_update_mode, current_file_info.mime_type_string.value(),
+        lens::RequestIdUpdateMode::kMultiContextUploadRequest,
+        current_file_info.mime_type_string.value(),
         lens::LensOverlayRequestId::MEDIA_TYPE_UNRESOLVED);
   } else if (IsUnresolvedUrlUpload(current_file_info)) {
     request_id_generator_.SetContextId(RandInt64());
