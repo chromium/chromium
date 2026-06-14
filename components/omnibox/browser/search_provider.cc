@@ -951,6 +951,7 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
       input.lens_overlay_suggest_inputs();
   search_term_args.input_state = input.input_state();
   search_term_args.previous_query = input.previous_query();
+  search_term_args.suggest_inventory = input.suggest_inventory();
 
   const SearchTermsData& search_terms_data =
       client()->GetTemplateURLService()->search_terms_data();

@@ -591,6 +591,42 @@ TEST_F(RemoteSuggestionsServiceTest, PreviousQueryAppendedIfAvailable) {
            {{"q", "current_query"}, {"pq", "previous_query_text"}});
 }
 
+TEST_F(RemoteSuggestionsServiceTest, SuggestInventoryQueryParamAppended) {
+  // Set up a Google search provider.
+  auto google_template_url = CreateGoogleTemplateURL(
+      "https://www.google.com/search?q={searchTerms}&client=chrome-compose",
+      "https://www.google.com/suggest?q={searchTerms}&client=chrome-compose");
+
+  TemplateURLRef::SearchTermsArgs search_terms_args(u"query");
+  search_terms_args.suggest_inventory =
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_TRAVEL;
+  GURL url = RemoteSuggestionsService::EndpointUrl(
+      *google_template_url, search_terms_args, SearchTermsData());
+
+  // 'azi' should be getting attached as a URL param and the chrome-compose
+  // param should not be getting overridden.
+  CheckUrl(url, "https://www.google.com/suggest",
+           {{"q", "query"}, {"client", "chrome-compose"}, {"azi", "1"}});
+}
+
+TEST_F(RemoteSuggestionsServiceTest,
+       SuggestInventoryDefaultQueryParamNotAppended) {
+  // Set up a Google search provider.
+  auto google_template_url = CreateGoogleTemplateURL(
+      "https://www.google.com/search?q={searchTerms}&client=chrome-compose",
+      "https://www.google.com/suggest?q={searchTerms}&client=chrome-compose");
+
+  TemplateURLRef::SearchTermsArgs search_terms_args(u"query");
+  search_terms_args.suggest_inventory =
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT;
+  GURL url = RemoteSuggestionsService::EndpointUrl(
+      *google_template_url, search_terms_args, SearchTermsData());
+
+  // 'azi' should not be getting attached since it is default.
+  CheckUrl(url, "https://www.google.com/suggest",
+           {{"q", "query"}, {"client", "chrome-compose"}});
+}
+
 TEST_F(RemoteSuggestionsServiceTest,
        LensOverlaySuggestInputsAppendedQueryParamsForContextualSearchbox) {
   // Set up a Google search provider.

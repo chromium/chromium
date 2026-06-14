@@ -597,3 +597,20 @@ TEST(AutocompleteInputTest, SanitizeString) {
                             u"  foo  ", /*trim_whitespace=*/false));
   EXPECT_EQ(u"bar", AutocompleteInput::SanitizeString(u"bar\r\n\t"));
 }
+
+TEST(AutocompleteInputTest, SuggestInventory) {
+  AutocompleteInput input;
+  // Should default to SUGGEST_INVENTORY_DEFAULT.
+  EXPECT_EQ(omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
+            input.suggest_inventory());
+
+  input.set_suggest_inventory(
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_TRAVEL);
+  EXPECT_EQ(omnibox::SuggestInventory::SUGGEST_INVENTORY_TRAVEL,
+            input.suggest_inventory());
+
+  input.Clear();
+  // Clear should reset it back to default.
+  EXPECT_EQ(omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
+            input.suggest_inventory());
+}
