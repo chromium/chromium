@@ -5,7 +5,7 @@
 import type {WindowOpenDisposition} from '//resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import type {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {OmniboxPopupSelection, PageHandlerInterface, PageRemote, PlaceholderConfig, SelectedFileInfo, SmartComposeStats} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {PageCallbackRouter} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus, PageCallbackRouter} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
@@ -58,7 +58,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'activateMetricsFunnel',
       'setPopupSelection',
       'openPopupSelection',
-      'shouldShowDriveDisclaimer',
+      'getDriveDisclaimerStatus',
       'onDriveDisclaimerAccepted',
       'getPageClassification',
       'setSmartComposeStats',
@@ -270,9 +270,12 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
         'openPopupSelection', {resultSequenceId, selection, disposition});
   }
 
-  shouldShowDriveDisclaimer(): Promise<{shouldShow: boolean}> {
-    this.methodCalled('shouldShowDriveDisclaimer');
-    return Promise.resolve({shouldShow: false});
+  getDriveDisclaimerStatus(): Promise<{status: DriveDisclaimerStatus}> {
+    this.methodCalled('getDriveDisclaimerStatus');
+    if (this.results_.has('getDriveDisclaimerStatus')) {
+      return this.results_.get('getDriveDisclaimerStatus');
+    }
+    return Promise.resolve({status: DriveDisclaimerStatus.kRestricted});
   }
 
   onDriveDisclaimerAccepted() {

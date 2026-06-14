@@ -158,8 +158,8 @@ class ContextualSearchboxHandler
                              bool shift_key) override;
   void SetSmartComposeStats(
       searchbox::mojom::SmartComposeStatsPtr smart_compose_stats) override;
-  void ShouldShowDriveDisclaimer(
-      ShouldShowDriveDisclaimerCallback callback) override;
+  void GetDriveDisclaimerStatus(
+      GetDriveDisclaimerStatusCallback callback) override;
   void OnDriveDisclaimerAccepted() override;
   void QueryAutocomplete(const std::u16string& input,
                          bool prevent_inline_autocomplete,

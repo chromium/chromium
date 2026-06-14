@@ -1466,9 +1466,9 @@ std::string SearchboxHandler::GetPreviousQuery() {
   return std::string();
 }
 
-void SearchboxHandler::ShouldShowDriveDisclaimer(
-    ShouldShowDriveDisclaimerCallback callback) {
-  std::move(callback).Run(false);
+void SearchboxHandler::GetDriveDisclaimerStatus(
+    GetDriveDisclaimerStatusCallback callback) {
+  std::move(callback).Run(searchbox::mojom::DriveDisclaimerStatus::kRestricted);
 }
 
 void SearchboxHandler::OnDriveDisclaimerAccepted() {}

@@ -176,8 +176,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void SetActiveModelMode(omnibox::ModelMode model) override {}
   void RecordModelSelectionAction(omnibox::ModelMode model) override {}
   void ActivateMetricsFunnel(const std::string& funnel_name) override {}
-  void ShouldShowDriveDisclaimer(
-      ShouldShowDriveDisclaimerCallback callback) override;
+  void GetDriveDisclaimerStatus(
+      GetDriveDisclaimerStatusCallback callback) override;
   void OnDriveDisclaimerAccepted() override;
   void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
   void GetPageClassification(GetPageClassificationCallback callback) override;

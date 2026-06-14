@@ -236,10 +236,11 @@ TEST_F(RealboxHandlerTest, OnPermissionPromptChanged) {
   }
 }
 
-TEST_F(RealboxHandlerTest, ShouldShowDriveDisclaimer) {
-  base::test::TestFuture<bool> future;
-  handler_->ShouldShowDriveDisclaimer(future.GetCallback());
-  EXPECT_FALSE(future.Take());
+TEST_F(RealboxHandlerTest, GetDriveDisclaimerStatus) {
+  base::test::TestFuture<searchbox::mojom::DriveDisclaimerStatus> future;
+  handler_->GetDriveDisclaimerStatus(future.GetCallback());
+  EXPECT_EQ(searchbox::mojom::DriveDisclaimerStatus::kRestricted,
+            future.Take());
 }
 
 TEST_F(RealboxHandlerTest, OnDriveUploadClicked) {

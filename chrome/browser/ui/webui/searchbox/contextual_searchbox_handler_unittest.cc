@@ -1608,24 +1608,25 @@ TEST_F(ContextualSearchboxHandlerTest, OnDrivePickerResult_OnError) {
   EXPECT_TRUE(future.Wait());
 }
 
-TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_ShouldShow) {
+TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_NotAccepted) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
 
-  base::test::TestFuture<bool> future;
-  handler().ShouldShowDriveDisclaimer(future.GetCallback());
-  EXPECT_TRUE(future.Get());
+  base::test::TestFuture<searchbox::mojom::DriveDisclaimerStatus> future;
+  handler().GetDriveDisclaimerStatus(future.GetCallback());
+  EXPECT_EQ(searchbox::mojom::DriveDisclaimerStatus::kNotAccepted,
+            future.Get());
 }
 
-TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_AfterAccepted) {
+TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_Accepted) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
 
   handler().OnDriveDisclaimerAccepted();
 
-  base::test::TestFuture<bool> future;
-  handler().ShouldShowDriveDisclaimer(future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  base::test::TestFuture<searchbox::mojom::DriveDisclaimerStatus> future;
+  handler().GetDriveDisclaimerStatus(future.GetCallback());
+  EXPECT_EQ(searchbox::mojom::DriveDisclaimerStatus::kAccepted, future.Get());
 }
 
 TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_FlagDisabled) {
@@ -1633,9 +1634,9 @@ TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_FlagDisabled) {
   feature_list.InitAndDisableFeature(
       omnibox::kComposeboxDriveContextMenuOption);
 
-  base::test::TestFuture<bool> future;
-  handler().ShouldShowDriveDisclaimer(future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  base::test::TestFuture<searchbox::mojom::DriveDisclaimerStatus> future;
+  handler().GetDriveDisclaimerStatus(future.GetCallback());
+  EXPECT_EQ(searchbox::mojom::DriveDisclaimerStatus::kRestricted, future.Get());
 }
 
 TEST_F(ContextualSearchboxHandlerTest, OnDriveUploadClicked) {
