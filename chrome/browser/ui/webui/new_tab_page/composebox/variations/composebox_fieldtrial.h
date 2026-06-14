@@ -105,6 +105,9 @@ BASE_DECLARE_FEATURE(kNtpRealboxCyclingPlaceholders);
 // Whether to enable multi-line input in the searchbox.
 extern const base::FeatureParam<bool> kMultiLineEnabled;
 
+// Whether to enable the dynamic version of the AI Mode button in the realbox.
+BASE_DECLARE_FEATURE(kNtpRealboxDynamicAiModeButton);
+
 bool IsNtpRealboxNextEnabled(Profile* profile);
 
 }  // namespace ntp_realbox
