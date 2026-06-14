@@ -809,8 +809,8 @@ suite('ContextualActionMenu', () => {
     assertTrue(dialog.scrollHeight > dialog.offsetHeight);
   });
 
-  // TODO(crbug.com/512920161): Reenable this test on Linux and Mac and Windows
-  // <if expr="not is_linux and not is_macosx and not is_win">
+  // TODO(crbug.com/512920161): Deflake and reenable this test.
+  // <if expr="not is_linux and not is_macosx and not is_win and not is_chromeos">
   test('Share tabs flyout keyboard navigation', async () => {
     loadTimeData.overrideValues({
       contextManagementInComposeboxEnabled: true,
@@ -878,7 +878,6 @@ suite('ContextualActionMenu', () => {
     // Assert that the focus is correctly returned to the parent trigger button.
     assertEquals(trigger, actionMenu.shadowRoot.activeElement);
   });
-  // </if>
 
   test(
       'Share tabs flyout keyboard navigation focuses first non-disabled item',
@@ -948,6 +947,7 @@ suite('ContextualActionMenu', () => {
 
         assertEquals(buttons[1]!, actionMenu.shadowRoot.activeElement);
       });
+  // </if>
 
   test('Tabs counter visibility', async () => {
     actionMenu.showAt(actionMenu);
