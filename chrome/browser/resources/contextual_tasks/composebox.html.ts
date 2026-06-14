@@ -47,6 +47,42 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
         --composebox-height: ${this.composeboxHeight_}px;
         --composebox-dropdown-height: ${this.composeboxDropdownHeight_}px;"
         >
+      ${this.useFork_ ? html`
+        <contextual-tasks-inner-composebox
+          id="composebox"
+          .isSidePanel="${this.isSidePanel}"
+          .autofocus="${false}"
+          carousel-on-top_
+          entrypoint-name="ContextualTasks"
+          searchbox-layout-mode="TallBottomContext"
+          .lensButtonDisabled="${this.lensButtonDisabled_}"
+          .showLensButton="${this.shouldShowLensButton_()}"
+          .suggestionActivityEnabled="${false}"
+          .disableCaretColorAnimation="${!this.caretAnimationsEnabled_}"
+          .inputPlaceholderOverride="${this.getInputPlaceholder_()}"
+          .dropdownNeeded="${this.isDropdownNeeded_()}"
+          .lensButtonTriggersOverlay="${true}"
+          .enableCarouselScrolling="${true}"
+          .isFollowupQuery="${!this.isZeroState}"
+          .enableFileHint="${this.enableFileHint_}"
+          .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted()}"
+          .clearAllInputsWhenSubmittingQuery="${true}"
+          .showVoiceSearch="${true}"
+          .usePecApi="${this.usePecApi_}"
+          .smartTabSharingVisible="${this.smartTabSharingVisible_}"
+          .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
+          .energyEffectEnabled="${this.energyEffectAnimationEnabled_}"
+          .glifAnimationState="${this.glifAnimationState_}"
+          .disableFallbackGlifAnimation="${true}"
+          .isZeroState="${this.isZeroState}"
+          @result-changed="${this.onSuggestionsResultChanged_}"
+          @open-image-upload="${this.onOpenImageUpload_}"
+          @open-file-upload="${this.onOpenFileUpload_}"
+          @input-state-changed="${this.onInputStateChanged_}"
+          @show-suggestion-activity-link=
+              "${this.onShowSuggestionActivityLink_}">
+      </contextual-tasks-inner-composebox>
+    ` : html`
       <cr-composebox
           id="composebox"
           .isSidePanel="${this.isSidePanel}"
@@ -81,6 +117,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           @show-suggestion-activity-link=
               "${this.onShowSuggestionActivityLink_}">
       </cr-composebox>
+    `}
     </div>
     ${!this.isSidePanel && this.enableNativeZeroStateSuggestions ? html`
       <cr-composebox-dropdown
