@@ -52,9 +52,7 @@ class VIEWS_EXPORT SingleAnimatedImageContainer : public SingleImageContainer,
     AnimationEndBehavior end_behavior;
   };
 
-  SingleAnimatedImageContainer(
-      LabelButton* button,
-      base::TimeDelta animation_duration = base::Milliseconds(250));
+  explicit SingleAnimatedImageContainer(LabelButton* button);
   SingleAnimatedImageContainer(const SingleAnimatedImageContainer&) = delete;
   SingleAnimatedImageContainer& operator=(const SingleAnimatedImageContainer&) =
       delete;
