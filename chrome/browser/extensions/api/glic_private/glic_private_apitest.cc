@@ -505,4 +505,39 @@ IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest,
       << message_;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+class GlicPrivateApiActuationDisabledTest
+    : public glic::GlicBrowserTestMixin<GlicPrivateApiTestBase> {
+ public:
+  GlicPrivateApiActuationDisabledTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{extensions_features::kApiGlicPrivate, {}},
+         {extensions_features::kApiGlicAccessFromGoogleWebpage, {}},
+         {extensions_features::kApiGlicAccessFromPromotionPage, {}}},
+        {{features::kGlicActor, features::kGlicShowForSignedOut}});
+  }
+
+  void SetUpOnMainThread() override {
+    GlicPrivateApiTestBase::SetUpOnMainThread();
+    SetupIdentityAndCapabilities();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiActuationDisabledTest, Invoke) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
+      kGlicPrivateTestExtensionId);
+
+  auto interceptor = CreateMockPromptResponseInterceptor();
+
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "actuation_disabled"},
+      {.load_as_component = true}))
+      << message_;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace extensions

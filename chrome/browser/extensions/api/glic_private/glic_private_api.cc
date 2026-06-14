@@ -387,11 +387,6 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
     return RespondNow(GetPromptResponseValueAndLog(
         extensions::api::glic_private::ErrorCode::kLocalGlicNotReady));
   }
-  if (!profile_state.actuation_allowed) {
-    return RespondNow(
-        GetPromptResponseValueAndLog(extensions::api::glic_private::ErrorCode::
-                                         kLocalGlicActuationNotAllowed));
-  }
   if (extensions_features::kGlicRequireConsentForInvokeParam.Get() &&
       !profile_state.is_enabled_and_consented) {
     return RespondNow(
@@ -476,6 +471,11 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
       return RespondNow(GetPromptResponseValueAndLog(
           extensions::api::glic_private::ErrorCode::kLocalMissingPromptId));
     }
+  }
+  if (!profile_state.actuation_allowed) {
+    return RespondNow(
+        GetPromptResponseValueAndLog(extensions::api::glic_private::ErrorCode::
+                                         kLocalGlicActuationNotAllowed));
   }
 
   GetPromptFromId(*profile, *params->details.prompt_id,
