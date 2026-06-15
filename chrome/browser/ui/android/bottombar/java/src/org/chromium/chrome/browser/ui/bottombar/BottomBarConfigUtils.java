@@ -52,11 +52,30 @@ public class BottomBarConfigUtils {
     public static boolean isNtpScrollOffEnabled(@Nullable Tab tab, @Nullable Context context) {
         if (tab == null || context == null) return false;
         return !tab.isIncognito()
-                && tab.getNativePage() != null
+                && isNtpWithBottomBar(tab, context)
+                && ChromeFeatureList.sAndroidBottomBarNtpScrollOffEnabled.getValue();
+    }
+
+    /**
+     * Whether to force {@link BrowserControlsState#BOTH} constraints for the bottom controls.
+     *
+     * <p>When the current tab is on an NTP, the constraints emitted for the bottom bar are
+     * overridden and forced to {@link BrowserControlsState#BOTH}. This ensures that
+     * ScrollingBottomViewResourceFrameLayout allows screenshot updates, preventing stale
+     * screenshots. It does not affect the physical scroll behavior of the bottom bar, which is
+     * driven by the actual tab constraints.
+     */
+    public static boolean shouldForceBothConstraintsForBottomControls(
+            @Nullable Tab tab, @Nullable Context context) {
+        if (tab == null || context == null) return false;
+        return isNtpWithBottomBar(tab, context);
+    }
+
+    private static boolean isNtpWithBottomBar(Tab tab, Context context) {
+        return tab.getNativePage() != null
                 && "newtab".equals(tab.getNativePage().getHost())
                 && isBottomBarEnabled(context)
-                && !shouldDisableOnNtp()
-                && ChromeFeatureList.sAndroidBottomBarNtpScrollOffEnabled.getValue();
+                && !shouldDisableOnNtp();
     }
 
     /** Whether to always use the filled GLIC icon. */

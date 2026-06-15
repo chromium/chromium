@@ -197,4 +197,56 @@ public class BottomBarConfigUtilsUnitTest {
     public void testAlwaysUseFilledIcon_FalseParam() {
         assertFalse(BottomBarConfigUtils.alwaysUseFilledIcon());
     }
+
+    @Test
+    public void testShouldForceBothConstraints_NullInputs() {
+        assertFalse(
+                BottomBarConfigUtils.shouldForceBothConstraintsForBottomControls(null, mContext));
+        assertFalse(BottomBarConfigUtils.shouldForceBothConstraintsForBottomControls(mTab, null));
+        assertFalse(BottomBarConfigUtils.shouldForceBothConstraintsForBottomControls(null, null));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
+    public void testShouldForceBothConstraints_ValidNtp_ScrollOffEnabled() {
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        when(mNativePage.getHost()).thenReturn("newtab");
+
+        assertTrue(
+                BottomBarConfigUtils.shouldForceBothConstraintsForBottomControls(mTab, mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
+    public void testShouldForceBothConstraints_IncognitoNtp() {
+        when(mTab.isIncognito()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        when(mNativePage.getHost()).thenReturn("newtab");
+
+        // Should return true for incognito NTP even though scroll-off is disabled.
+        assertTrue(
+                BottomBarConfigUtils.shouldForceBothConstraintsForBottomControls(mTab, mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
+    public void testShouldForceBothConstraints_NormalPage() {
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(null);
+
+        assertFalse(
+                BottomBarConfigUtils.shouldForceBothConstraintsForBottomControls(mTab, mContext));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testShouldForceBothConstraints_BottomBarDisabled() {
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        when(mNativePage.getHost()).thenReturn("newtab");
+
+        assertFalse(
+                BottomBarConfigUtils.shouldForceBothConstraintsForBottomControls(mTab, mContext));
+    }
 }
