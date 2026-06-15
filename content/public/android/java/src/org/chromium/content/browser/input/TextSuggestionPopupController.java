@@ -97,6 +97,21 @@ public class TextSuggestionPopupController implements WindowEventObserver, Hidea
         }
     }
 
+    @Override
+    public void destroy() {
+        boolean lastShownDestroyed = mLastShownHost == null;
+        for (TextSuggestionHost host : mTextSuggestionHosts.values()) {
+            if (host == mLastShownHost) {
+                lastShownDestroyed = true;
+            }
+            host.destroy();
+        }
+        mTextSuggestionHosts.clear();
+        assert lastShownDestroyed;
+        mLastShownHost = null;
+        hidePopups();
+    }
+
     @CalledByNative
     private static void onNativeTextSuggestionHostDestroyed(
             WebContents webContents, long nativeTextSuggestionHostPtr) {
@@ -289,6 +304,10 @@ public class TextSuggestionPopupController implements WindowEventObserver, Hidea
 
     public @Nullable TextSuggestionHost getLastShownHostForTesting() {
         return mLastShownHost;
+    }
+
+    public void setLastShownHostForTesting(TextSuggestionHost host) {
+        mLastShownHost = host;
     }
 
     public Map<Long, TextSuggestionHost> getTextSuggestionHostsForTesting() {

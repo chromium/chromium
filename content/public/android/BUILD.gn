@@ -745,6 +745,7 @@ robolectric_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/input/RangeTest.java",
     "junit/src/org/chromium/content/browser/input/StylusGestureConverterTest.java",
     "junit/src/org/chromium/content/browser/input/TextInputStateTest.java",
+    "junit/src/org/chromium/content/browser/input/TextSuggestionPopupControllerTest.java",
     "junit/src/org/chromium/content/browser/input/ThreadedInputConnectionFactoryTest.java",
     "junit/src/org/chromium/content/browser/input/ThreadedInputConnectionTest.java",
     "junit/src/org/chromium/content/browser/picker/DateDialogNormalizerTest.java",

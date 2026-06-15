@@ -26,6 +26,10 @@ public class TextSuggestionHost {
         mNativePtr = 0;
     }
 
+    public long getNativePtrForTesting() {
+        return mNativePtr;
+    }
+
     /** Tells Blink to replace the active suggestion range with the specified replacement. */
     public void applySpellCheckSuggestion(String suggestion) {
         if (mNativePtr == 0) return;
