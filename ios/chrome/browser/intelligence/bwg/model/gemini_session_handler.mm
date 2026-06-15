@@ -303,7 +303,6 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   // Ensure page context is attached for a new chat.
   ios::provider::UpdatePageAttachmentState(
       ios::provider::GeminiPageContextAttachmentState::kAttached);
-  geminiTabHelper->NotifyPageContextUpdated(webState);
   // Record the new chat metric.
   RecordGeminiNewChatButtonTapped();
 
