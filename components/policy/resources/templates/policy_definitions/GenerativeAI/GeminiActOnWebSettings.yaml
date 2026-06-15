@@ -16,8 +16,6 @@ owners:
 - liuwilliam@chromium.org
 - file://chrome/browser/glic/OWNERS
 example_value: 0
-future_on:
-- android
 features:
   dynamic_refresh: true
   per_profile: true
@@ -36,6 +34,7 @@ items:
   value: 1
 default: 0
 supported_on:
+- android:150-
 - chrome.*:143-
 - chrome_os:144-
 tags: []

@@ -18,9 +18,8 @@ example_value:
 - hosting.com/good_path
 - https://server:8080/path
 - .exact.hostname.com
-future_on:
-- android
 supported_on:
+- android:150-
 - chrome.*:146-
 - chrome_os:146-
 features:
