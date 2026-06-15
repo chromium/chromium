@@ -286,7 +286,7 @@ suite('SearchEnginePageTests', function() {
 
   // Tests that the add search engine dialog opens when the corresponding
   // button is tapped.
-  test('AddSearchEngineDialog', function() {
+  test('AddSearchEngineDialog', async function() {
     assertFalse(
         !!page.shadowRoot!.querySelector('settings-search-engine-edit-dialog'));
     const addSearchEngineButton =
@@ -297,6 +297,10 @@ suite('SearchEnginePageTests', function() {
     flush();
     assertTrue(
         !!page.shadowRoot!.querySelector('settings-search-engine-edit-dialog'));
+
+    const interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(SearchEnginesInteractions.ADD_SEARCH_ENGINE, interaction);
   });
 
   test('EditSearchEngineDialog', async function() {

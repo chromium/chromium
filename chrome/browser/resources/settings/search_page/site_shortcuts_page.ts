@@ -23,7 +23,7 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {CategorizedTemplateUrls, SearchEngine, SearchEnginesBrowserProxy} from './search_engines_browser_proxy.js';
-import {SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
+import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
 import type {SettingsSearchEnginesListElement} from './search_engines_list.js';
 import {getTemplate} from './site_shortcuts_page.html.js';
 
@@ -183,7 +183,16 @@ export class SiteShortcutsPageElement extends SiteShortcutsPageElementBase {
 
   private onAddSearchEngineClick_(e: Event) {
     e.stopPropagation();
+    this.browserProxy_.recordSearchEnginesPageHistogram(
+        SearchEnginesInteractions.ADD_SEARCH_ENGINE);
     this.openEditDialog_(null, this.$.addSearchEngine);
+  }
+
+  private onSectionExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    const interaction = e.detail.value ?
+        SearchEnginesInteractions.SITE_SHORTCUTS_SECTION_EXPANDED :
+        SearchEnginesInteractions.SITE_SHORTCUTS_SECTION_COLLAPSED;
+    this.browserProxy_.recordSearchEnginesPageHistogram(interaction);
   }
 }
 

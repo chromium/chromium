@@ -32,7 +32,7 @@ import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import type {CategorizedTemplateUrls, SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_engines_browser_proxy.js';
-import {SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
+import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
 import {getTemplate} from './search_page.html.js';
 
 const SettingsSearchPageElementBase =
@@ -132,6 +132,8 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   }
 
   private onManageSearchEnginesClick_() {
+    this.browserProxy_.recordSearchEnginesPageHistogram(
+        SearchEnginesInteractions.SUBPAGE_NAVIGATED);
     Router.getInstance().navigateTo(routes.SEARCH_ENGINES);
   }
 

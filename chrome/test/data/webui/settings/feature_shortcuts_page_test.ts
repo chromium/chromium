@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {CategorizedTemplateUrls, FeatureShortcutsPageElement} from 'chrome://settings/settings.js';
-import {SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
@@ -124,5 +124,43 @@ suite('FeatureShortcutsPageTest', function() {
 
     assertTrue(isVisible(page.$.noActiveShortcutsFound));
     assertTrue(isVisible(page.$.noInactiveShortcutsFound));
+  });
+
+  test('RecordInteractionWhenSectionsAreExpandedOrCollapsed', async function() {
+    // Expand the active shortcuts section.
+    browserProxy.resetResolver('recordSearchEnginesPageHistogram');
+    page.$.activeShortcutsRow.click();
+    let interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(
+        SearchEnginesInteractions.FEATURE_SHORTCUTS_SECTION_EXPANDED,
+        interaction);
+
+    // Collapse the active shortcuts section.
+    browserProxy.resetResolver('recordSearchEnginesPageHistogram');
+    page.$.activeShortcutsRow.click();
+    interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(
+        SearchEnginesInteractions.FEATURE_SHORTCUTS_SECTION_COLLAPSED,
+        interaction);
+
+    // Expand the inactive shortcuts section.
+    browserProxy.resetResolver('recordSearchEnginesPageHistogram');
+    page.$.inactiveShortcutsRow.click();
+    interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(
+        SearchEnginesInteractions.FEATURE_SHORTCUTS_SECTION_EXPANDED,
+        interaction);
+
+    // Collapse the inactive shortcuts section.
+    browserProxy.resetResolver('recordSearchEnginesPageHistogram');
+    page.$.inactiveShortcutsRow.click();
+    interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(
+        SearchEnginesInteractions.FEATURE_SHORTCUTS_SECTION_COLLAPSED,
+        interaction);
   });
 });

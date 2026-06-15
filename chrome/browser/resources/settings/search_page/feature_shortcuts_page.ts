@@ -20,9 +20,8 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './feature_shortcuts_page.html.js';
-import type {CategorizedTemplateUrls} from './search_engines_browser_proxy.js';
-import {SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
-import type {SearchEngine} from './search_engines_browser_proxy.js';
+import type {CategorizedTemplateUrls, SearchEngine} from './search_engines_browser_proxy.js';
+import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
 import type {SettingsSearchEnginesListElement} from './search_engines_list.js';
 
 export interface FeatureShortcutsPageElement {
@@ -79,6 +78,14 @@ export class FeatureShortcutsPageElement extends
   private enginesChanged_(categorizedTemplateUrls: CategorizedTemplateUrls) {
     this.activeShortcuts = categorizedTemplateUrls.activeFeatureShortcuts;
     this.inactiveShortcuts = categorizedTemplateUrls.inactiveFeatureShortcuts;
+  }
+
+  private onSectionExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    const interaction = e.detail.value ?
+        SearchEnginesInteractions.FEATURE_SHORTCUTS_SECTION_EXPANDED :
+        SearchEnginesInteractions.FEATURE_SHORTCUTS_SECTION_COLLAPSED;
+    SearchEnginesBrowserProxyImpl.getInstance()
+        .recordSearchEnginesPageHistogram(interaction);
   }
 }
 

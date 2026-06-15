@@ -1373,10 +1373,13 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 <histogram name="Settings.SearchEngines.Interactions"
     enum="SettingsSearchEnginesInteractions" expires_after="2026-09-27">
   <owner>yoangela@chromium.org</owner>
+  <owner>amelies@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
-    Which Search Engines settings page elements a user interacted with. Recorded
-    every time a user interacts with an element of interest.
+    Which Search Engines and Search settings page elements a user interacted
+    with (e.g. section expand/collapse, subpage navigation, and engine editing).
+    Recorded every time a user interacts with an element of interest. Buckets
+    4-13 were added in M150.
   </summary>
 </histogram>
 

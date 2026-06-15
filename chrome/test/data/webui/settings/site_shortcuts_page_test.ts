@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SiteShortcutsPageElement} from 'chrome://settings/settings.js';
-import {SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
@@ -176,11 +176,16 @@ suite('SiteShortcutsPageTest', function() {
     await flushTasks();
 
     // Click on "Add".
+    browserProxy.resetResolver('recordSearchEnginesPageHistogram');
     page.$.addSearchEngine.click();
     await flushTasks();
 
     assertTrue(
         !!page.shadowRoot!.querySelector('settings-search-engine-edit-dialog'));
+
+    const interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(SearchEnginesInteractions.ADD_SEARCH_ENGINE, interaction);
   });
 
   test('EditSearchEngineEventOpensEditDialog', async function() {
@@ -246,5 +251,41 @@ suite('SiteShortcutsPageTest', function() {
     await flushTasks();
 
     assertEquals(0, browserProxy.getCallCount('removeSearchEngine'));
+  });
+
+  test('RecordInteractionWhenSectionsAreExpandedOrCollapsed', async function() {
+    // Expand the active shortcuts section.
+    browserProxy.resetResolver('recordSearchEnginesPageHistogram');
+    page.$.activeShortcutsRow.click();
+    let interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(
+        SearchEnginesInteractions.SITE_SHORTCUTS_SECTION_EXPANDED, interaction);
+
+    // Collapse the active shortcuts section.
+    browserProxy.resetResolver('recordSearchEnginesPageHistogram');
+    page.$.activeShortcutsRow.click();
+    interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(
+        SearchEnginesInteractions.SITE_SHORTCUTS_SECTION_COLLAPSED,
+        interaction);
+
+    // Expand the inactive shortcuts section.
+    browserProxy.resetResolver('recordSearchEnginesPageHistogram');
+    page.$.inactiveShortcutsRow.click();
+    interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(
+        SearchEnginesInteractions.SITE_SHORTCUTS_SECTION_EXPANDED, interaction);
+
+    // Collapse the inactive shortcuts section.
+    browserProxy.resetResolver('recordSearchEnginesPageHistogram');
+    page.$.inactiveShortcutsRow.click();
+    interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(
+        SearchEnginesInteractions.SITE_SHORTCUTS_SECTION_COLLAPSED,
+        interaction);
   });
 });

@@ -9,7 +9,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CategorizedTemplateUrls, SearchEnginesInfo, SettingsSearchPageElement} from 'chrome://settings/settings.js';
 import type {CrCheckboxElement} from 'chrome://settings/lazy_load.js';
-import {resetRouterForTesting, SearchEnginesBrowserProxyImpl, loadTimeData} from 'chrome://settings/settings.js';
+import {resetRouterForTesting, SearchEnginesBrowserProxyImpl, Router, routes, loadTimeData, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -224,11 +224,17 @@ suite('SearchPageTests', function() {
     assertFalse(saveGuestChoice);
   });
 
-  test('Link row to search engines subpage is visible', async function() {
+  test('Link row navigates to search engines subpage', async function() {
     await flushTasks();
     const trigger =
         page.shadowRoot!.querySelector<HTMLElement>('#enginesSubpageTrigger');
     assertTrue(!!trigger);
+
+    trigger.click();
+    assertEquals(routes.SEARCH_ENGINES, Router.getInstance().getCurrentRoute());
+    const interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(SearchEnginesInteractions.SUBPAGE_NAVIGATED, interaction);
   });
 });
 

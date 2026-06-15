@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsOmniboxExtensionEntryElement, SettingsSearchEngineEntryElement} from 'chrome://settings/lazy_load.js';
 import type { SearchEngine, CrActionMenuElement } from 'chrome://settings/settings.js';
-import { ExtensionControlBrowserProxyImpl, SearchEnginesBrowserProxyImpl, ChoiceMadeLocation } from 'chrome://settings/settings.js';
+import { ExtensionControlBrowserProxyImpl, SearchEnginesBrowserProxyImpl, ChoiceMadeLocation, SearchEnginesInteractions } from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import { eventToPromise, isVisible } from 'chrome://webui-test/test_util.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
@@ -158,6 +158,11 @@ suite('SearchEngineEntryTest', function() {
         'view-or-edit-search-engine', entry);
     editButton.click();
     const e = await promise;
+
+    const interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(SearchEnginesInteractions.EDIT_SEARCH_ENGINE, interaction);
+
     assertEquals(engine, e.detail.engine);
     assertEquals(
         entry.shadowRoot!.querySelector('cr-icon-button'),
@@ -822,10 +827,17 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     assertTrue(!!editButton);
     assertTrue(isVisible(editButton));
 
+    browserProxy.resetResolver('recordSearchEnginesPageHistogram');
+
     const whenFired = eventToPromise<ViewOrEditSearchEngineEvent>(
         'view-or-edit-search-engine', entry);
     editButton.click();
     const e = await whenFired;
+
+    const interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(SearchEnginesInteractions.EDIT_SEARCH_ENGINE, interaction);
+
     assertFalse(menu.open);
     assertEquals(entry.engine, e.detail.engine);
     assertEquals(
@@ -851,10 +863,15 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     assertTrue(!!disableButton);
     assertTrue(isVisible(disableButton));
 
+    browserProxy.resetResolver('recordSearchEnginesPageHistogram');
     disableButton.click();
     const extensionId =
         await extensionBrowserProxy.whenCalled('disableExtension');
     assertEquals(entry.engine.extension!.id, extensionId);
+
+    const interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(SearchEnginesInteractions.EXTENSION_DISABLE, interaction);
   });
 
   // Tests that the "Disable" option is hidden for extensions that cannot be
@@ -887,10 +904,15 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     assertTrue(!!manageButton);
     assertTrue(isVisible(manageButton));
 
+    browserProxy.resetResolver('recordSearchEnginesPageHistogram');
     manageButton.click();
     const extensionId =
         await extensionBrowserProxy.whenCalled('manageExtension');
     assertEquals(entry.engine.extension!.id, extensionId);
+
+    const interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(SearchEnginesInteractions.EXTENSION_MANAGE, interaction);
 
     // The context menu was closed.
     const menu = entry.shadowRoot!.querySelector('cr-action-menu');
@@ -911,5 +933,15 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     entry.engine = createSampleOmniboxExtension();
     openActionMenu(entry);
     assertButtonHidden(entry, '#deleteOption');
+  });
+
+  // Tests that opening the action menu records a user interaction.
+  test('OpenActionMenu_Histogram', async function() {
+    entry.engine = createSampleSearchEngine();
+    openActionMenu(entry);
+
+    const interaction =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(SearchEnginesInteractions.MORE_ACTIONS, interaction);
   });
 });

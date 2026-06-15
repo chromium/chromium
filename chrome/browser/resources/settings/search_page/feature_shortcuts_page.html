@@ -24,7 +24,8 @@
 <settings-section page-title="$i18n{searchFeatureShortcuts}">
   <!-- Active feature & extension shortcuts -->
   <cr-expand-button id="activeShortcutsRow"
-      expanded="{{activeShortcutsExpanded_}}" class="cr-row first">
+      expanded="{{activeShortcutsExpanded_}}" class="cr-row first"
+      on-expanded-changed="onSectionExpandedChanged_">
     <div class="expand-row">
       <div class="text-content-group">
         $i18n{searchFeatureShortcutsActiveShortcuts}
@@ -50,7 +51,8 @@
 
   <!-- Inactive feature & extension shortcuts -->
   <cr-expand-button id="inactiveShortcutsRow"
-      expanded="{{inactiveShortcutsExpanded_}}" class="cr-row">
+      expanded="{{inactiveShortcutsExpanded_}}" class="cr-row"
+      on-expanded-changed="onSectionExpandedChanged_">
     <div class="expand-row">
       <div class="text-content-group">
         $i18n{searchFeatureShortcutsInactiveShortcuts}

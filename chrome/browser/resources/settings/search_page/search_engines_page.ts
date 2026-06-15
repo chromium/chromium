@@ -258,6 +258,8 @@ export class SettingsSearchEnginesPageElement extends
 
   private onAddSearchEngineClick_(e: Event) {
     e.preventDefault();
+    this.browserProxy_.recordSearchEnginesPageHistogram(
+        SearchEnginesInteractions.ADD_SEARCH_ENGINE);
     this.openEditDialog_(
         null, this.shadowRoot!.querySelector('#addSearchEngine')!);
   }

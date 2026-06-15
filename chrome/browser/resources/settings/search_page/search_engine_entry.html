@@ -110,7 +110,7 @@
               </button>
             </template>
             <template is="dom-if" if="[[searchSettingsUpdateEnabled_]]">
-              <button class="dropdown-item" on-click="onEditClick_"
+              <button class="dropdown-item" on-click="onViewOrEditClick_"
                   hidden$="[[!showEditOption_(engine)]]" id="editOption">
                 $i18n{edit}
               </button>

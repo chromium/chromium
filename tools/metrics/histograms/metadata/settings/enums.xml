@@ -530,6 +530,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Search engine deactivated"/>
   <int value="2" label="Keyboard shortcut switched to Tab only"/>
   <int value="3" label="Keyboard shortcut switched to Space or Tab"/>
+  <int value="4" label="Expand site search shortcuts section"/>
+  <int value="5" label="Collapse site search shortcuts section"/>
+  <int value="6" label="Expand feature shortcuts section"/>
+  <int value="7" label="Collapse feature shortcuts section"/>
+  <int value="8" label="Click search engine more actions (three-dot menu)"/>
+  <int value="9" label="Click edit search engine"/>
+  <int value="10" label="Click add search engine button"/>
+  <int value="11" label="Navigate to nested search engines subpage"/>
+  <int value="12" label="Click disable extension (in three-dot menu)"/>
+  <int value="13" label="Click manage extension (in three-dot menu)"/>
 </enum>
 
 <!-- LINT.IfChange(SettingsSearchExitReason) -->
