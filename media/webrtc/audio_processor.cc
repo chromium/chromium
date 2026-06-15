@@ -287,7 +287,7 @@ AudioProcessor::AudioProcessor(
   CHECK(input_format_.IsValid());
   CHECK(output_format_.IsValid());
   if (webrtc_audio_processing_) {
-    DCHECK_EQ(
+    CHECK_EQ(
         webrtc::AudioProcessing::GetFrameSize(output_format_.sample_rate()),
         output_format_.frames_per_buffer());
   }
