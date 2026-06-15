@@ -302,8 +302,9 @@ std::string GetAppSandboxSecureDirectiveValues(
     // Keyword directive sources are surrounded with quotes, e.g. 'self',
     // 'sha256-...', 'unsafe-eval', 'nonce-...'. These do not specify a remote
     // host or '*', so keep them and restrict the rest.
-    if (source_lower.size() > 1u && source_lower[0] == '\'' &&
-        source_lower.back() == '\'') {
+    if ((source_lower.size() > 1u && source_lower[0] == '\'' &&
+         source_lower.back() == '\'') ||
+        source_lower == "blob:" || source_lower == "filesystem:") {
       seen_self_or_none |= source_lower == "'none'" || source_lower == "'self'";
       sane_csp_parts.push_back(source_lower);
     } else if (warnings) {

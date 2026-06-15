@@ -604,6 +604,10 @@ TEST(ExtensionCSPValidator, EffectiveSandboxedPageCSP) {
       CheckCSP(SanitizeSandboxPageCSP("worker-src http://evil.com"),
                "worker-src 'self'; child-src 'self';",
                insecure_value_warning("worker-src", "http://evil.com")));
+
+  EXPECT_TRUE(
+      CheckCSP(SanitizeSandboxPageCSP("worker-src 'self' blob: filesystem:"),
+               "worker-src 'self' blob: filesystem:; child-src 'self';"));
 }
 
 namespace extensions {
