@@ -719,11 +719,14 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   //
   // Compare the buffer before and after the lock. If existing text was
   // modified (`pre_lock_buffer` is not a prefix of
-  // `string_buffer_document_`) and there was no active composition at
-  // lock start, this is an autocorrect replacement by the touch keyboard.
+  // `string_buffer_document_`), no composition is involved, and no IME is
+  // active, this is an autocorrect replacement by the touch keyboard. Skip
+  // when an IME is active since autocorrect is a touch-keyboard-only
+  // concept; IMEs may insert characters without composition (e.g.
+  // full-width space) that would be falsely reverted.
   if (should_block_autocorrect && !pre_lock_buffer.empty() &&
       !string_pending_insertion_.empty() && !had_composition_at_lock_start &&
-      !has_composition_range_) {
+      !has_composition_range_ && !IsInputIME()) {
     // Check if the pre-lock buffer content was preserved. Normal typing
     // appends new characters, so the old content remains as a prefix.
     // Autocorrect replaces existing characters, breaking the prefix.
@@ -1750,6 +1753,9 @@ void TSFTextStore::ResetCacheAfterEditSession() {
 }
 
 bool TSFTextStore::IsInputIME() const {
+  if (is_input_ime_for_testing_.has_value()) {
+    return *is_input_ime_for_testing_;
+  }
   TF_INPUTPROCESSORPROFILE profile;
   if (SUCCEEDED(input_processor_profile_mgr_->GetActiveProfile(
           GUID_TFCAT_TIP_KEYBOARD, &profile))) {
