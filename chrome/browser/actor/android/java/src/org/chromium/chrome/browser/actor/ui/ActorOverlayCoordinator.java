@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -54,6 +55,7 @@ public class ActorOverlayCoordinator {
     private final SnackbarManager.SnackbarController mSnackbarController;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileObserver;
+    private final TabModelSelector mTabModelSelector;
     private final @Nullable SideUiStateProvider mSideUiStateProvider;
     private @Nullable SideUiObserver mSideUiObserver;
     private @Nullable ActorKeyedService mActorKeyedService;
@@ -88,6 +90,7 @@ public class ActorOverlayCoordinator {
         mSnackbarManager = snackbarManager;
         mBackPressHandlerRegistry = backPressHandlerRegistry;
         mProfileSupplier = profileSupplier;
+        mTabModelSelector = tabModelSelector;
 
         mModel =
                 new PropertyModel.Builder(ActorOverlayProperties.ALL_KEYS)
@@ -192,9 +195,15 @@ public class ActorOverlayCoordinator {
 
     private void handleTakeOverTask() {
         assert mActorKeyedService != null;
-        ActorTask activeTask = mActorKeyedService.getCurrentActiveTask();
-        if (activeTask != null) {
-            activeTask.takeOverTask();
+        int tabId = mTabModelSelector.getCurrentTabId();
+        if (tabId == Tab.INVALID_TAB_ID) return;
+
+        Integer taskId = mActorKeyedService.getActiveTaskIdOnTab(tabId);
+        if (taskId != null) {
+            ActorTask task = mActorKeyedService.getTask(taskId);
+            if (task != null) {
+                task.takeOverTask();
+            }
         }
     }
 

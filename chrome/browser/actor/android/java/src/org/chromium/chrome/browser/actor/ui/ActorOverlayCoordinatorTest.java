@@ -725,7 +725,10 @@ public class ActorOverlayCoordinatorTest {
         Assert.assertNotNull(clickListener);
 
         ActorTask activeTask = Mockito.mock(ActorTask.class);
-        when(mActorKeyedService.getCurrentActiveTask()).thenReturn(activeTask);
+        int taskId = 456;
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID);
+        when(mActorKeyedService.getActiveTaskIdOnTab(TAB_ID)).thenReturn(taskId);
+        when(mActorKeyedService.getTask(taskId)).thenReturn(activeTask);
 
         clickListener.onClick(mView);
         verify(activeTask).takeOverTask();
