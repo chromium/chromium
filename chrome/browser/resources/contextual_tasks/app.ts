@@ -838,7 +838,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       // Since a separate IPH "Try It" promo may turn the STS feature on, make
       // sure it is not already on before promoting with the help bubble.
       if (menu && !menu.smartTabSharingActive) {
-        const menuItem = menu.shadowRoot?.querySelector('#smartTabSharingItem');
+        const menuItem = menu.shadowRoot?.querySelector('#shareTabsTrigger');
         if (menuItem) {
           const rect = menuItem.getBoundingClientRect();
           const floatingAnchor = this.shadowRoot.querySelector<HTMLElement>(
