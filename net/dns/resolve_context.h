@@ -318,7 +318,7 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   // need for check_empty to be true.
   base::ObserverList<DohStatusObserver,
                      false /* check_empty */,
-                     false /* allow_reentrancy */>
+                     base::ObserverListReentrancyPolicy::kDisallowReentrancy>
       doh_status_observers_;
 
   // Per-session data is only stored and valid for the latest session. Before

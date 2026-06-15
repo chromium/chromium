@@ -196,7 +196,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
 
   base::ObserverList<AXModeObserver,
                      /*check_empty=*/true,
-                     /*allow_reentrancy=*/false>
+                     base::ObserverListReentrancyPolicy::kDisallowReentrancy>
       observers_ GUARDED_BY_CONTEXT(thread_checker_);
 
 #if BUILDFLAG(IS_WIN)

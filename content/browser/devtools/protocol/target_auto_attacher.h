@@ -83,7 +83,11 @@ class TargetAutoAttacher {
   void DispatchTargetInfoChanged(DevToolsAgentHost* host);
 
  private:
-  base::ObserverList<Client, false, true> clients_;
+  base::ObserverList<
+      Client,
+      false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      clients_;
   base::flat_set<raw_ptr<Client, CtnExperimental>>
       clients_requesting_wait_for_debugger_;
 };

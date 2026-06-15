@@ -251,7 +251,10 @@ class DevToolsSession : public protocol::FrontendChannel,
       child_sessions_;
   base::OnceClosure runtime_resume_;
   raw_ptr<DevToolsExternalAgentProxyDelegate> proxy_delegate_ = nullptr;
-  base::ObserverList<ChildObserver, true, false> child_observers_;
+  base::ObserverList<ChildObserver,
+                     true,
+                     base::ObserverListReentrancyPolicy::kDisallowReentrancy>
+      child_observers_;
   base::WeakPtrFactory<DevToolsSession> weak_factory_{this};
 };
 

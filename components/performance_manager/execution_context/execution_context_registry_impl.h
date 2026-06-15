@@ -99,7 +99,7 @@ class ExecutionContextRegistryImpl
 
   base::ObserverList<ExecutionContextObserver,
                      /* check_empty = */ true,
-                     /* allow_reentrancy */ false>
+                     base::ObserverListReentrancyPolicy::kDisallowReentrancy>
       observers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

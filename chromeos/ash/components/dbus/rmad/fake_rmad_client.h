@@ -111,7 +111,9 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   rmad::GetLogReply get_log_reply_;
   rmad::SaveLogReply save_log_reply_;
   rmad::RecordBrowserActionMetricReply record_browser_action_metric_reply_;
-  base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
+  base::ObserverList<Observer,
+                     /*check_empty=*/true,
+                     base::ObserverListReentrancyPolicy::kDisallowReentrancy>
       observers_;
   std::string diagnostics_logs_text_;
 

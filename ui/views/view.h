@@ -2412,7 +2412,12 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Observers -----------------------------------------------------------------
 
-  base::ObserverList<ViewObserver>::Unchecked observers_;
+  // A ViewObserver handles an event that invokes other events, therefore is
+  // inherently reentrant.
+  base::ObserverList<ViewObserver,
+                     /*check_empty=*/false,
+                     base::ObserverListReentrancyPolicy::kAllowReentrancy>::
+      Unchecked observers_;
 
   // Creation and lifetime -----------------------------------------------------
 
