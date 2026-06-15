@@ -258,9 +258,13 @@ void ActorLoginCredentialFiller::ProcessRetrievedForms(
 
   device_authenticator_ = client_->GetDeviceAuthenticator();
 
+  bool is_primary_main_frame =
+      signin_form_manager->GetDriver()->IsInPrimaryMainFrame();
+
   MaybeReauthAndFillAllEligibleFields(
       std::move(eligible_managers),
-      password_manager::CloneStoredCredential(*stored_credential));
+      password_manager::CloneStoredCredential(*stored_credential),
+      is_primary_main_frame);
 }
 
 std::pair<password_manager::PasswordFormManager*,
@@ -268,14 +272,6 @@ std::pair<password_manager::PasswordFormManager*,
 ActorLoginCredentialFiller::FindReferenceFormAndCredential(
     const std::vector<password_manager::PasswordFormManager*>&
         eligible_managers) {
-  // Check if there is a primary main frame form.
-  password_manager::PasswordFormManager* preferred_manager =
-      ActorLoginFormFinder::GetSigninFormManager(eligible_managers);
-  if (preferred_manager &&
-      preferred_manager->GetDriver()->IsInPrimaryMainFrame()) {
-    return {preferred_manager, GetMatchingStoredCredential(*preferred_manager)};
-  }
-
   // Try to find a manager where the credential is an exact match.
   for (auto* manager : eligible_managers) {
     const password_manager::StoredCredential* match =
@@ -296,7 +292,11 @@ ActorLoginCredentialFiller::FindReferenceFormAndCredential(
     }
   }
 
-  // Fall back to the default preferred manager.
+  password_manager::PasswordFormManager* preferred_manager =
+      ActorLoginFormFinder::GetSigninFormManager(eligible_managers);
+  // Note: this will be PSL-match form, if one exists,  however, if a permanent
+  // permission is used, `GetMatchingStoredCredential` will return nullptr,
+  // because it shouldn't be filled in PSL-matched forms.
   if (preferred_manager) {
     return {preferred_manager, GetMatchingStoredCredential(*preferred_manager)};
   }
@@ -306,14 +306,8 @@ ActorLoginCredentialFiller::FindReferenceFormAndCredential(
 
 void ActorLoginCredentialFiller::MaybeReauthAndFillAllEligibleFields(
     std::vector<password_manager::PasswordFormManager*> eligible_managers,
-    password_manager::StoredCredential stored_credential) {
-  // If there is a login form in the primary main frame, don't fill
-  // iframes as we prefer forms from the primary main frame.
-  bool is_primary_main_frame =
-      ActorLoginFormFinder::GetSigninFormManager(eligible_managers)
-          ->GetDriver()
-          ->IsInPrimaryMainFrame();
-
+    password_manager::StoredCredential stored_credential,
+    bool is_primary_main_frame) {
   // TODO(crbug.com/458711310): Avoid re-calling this method after fetching
   // forms if re-authentication occurs before filling.
   if (IsReauthBeforeFillingRequired()) {
@@ -362,6 +356,17 @@ ActorLoginCredentialFiller::GetMatchingStoredCredential(
         password_manager_util::GetLoginMatchType::kGrouped) {
       continue;
     }
+
+    // PSL matches are never assigned persistent permission during discovery.
+    // If we are attempting to use a persistent permission, the intended target
+    // was an exact or affiliated match. We must not allow falling back to a
+    // PSL match.
+    if (credential_.has_persistent_permission &&
+        password_manager_util::GetMatchType(stored_credential_form) ==
+            password_manager_util::GetLoginMatchType::kPSL) {
+      continue;
+    }
+
     if (stored_credential_form.username_value == credential_.username &&
         stored_credential_form.signon_realm == credential_.signon_realm) {
       matching_stored_credential = &stored_credential_form;

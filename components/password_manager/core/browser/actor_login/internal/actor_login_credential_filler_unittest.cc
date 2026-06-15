@@ -1414,39 +1414,46 @@ TEST_P(
             LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 }
 
-// The main frame is always preferred for filling.
+// The primary main frame form is preferred for filling if both the main frame
+// and iframe forms only have PSL matches.
 TEST_P(ActorLoginCredentialFillerTest,
-       FillMainFrameFormEvenIfIframeHasExactMatch) {
+       PreferMainFrameOverIframeIfBothArePSLMatches) {
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   const url::Origin iframe_origin =
       url::Origin::Create(GURL("https://login.example.com"));
-  // The credential request origin is the iframe origin, where it matches
-  // exactly.
+  const url::Origin saved_origin =
+      url::Origin::Create(GURL("https://login2.example.com"));
+
+  // The credential request origin is the saved origin.
   const Credential credential =
-      CreateTestCredential(kTestUsername, iframe_origin.GetURL(), origin);
+      CreateTestCredential(kTestUsername, saved_origin.GetURL(), origin);
   const FormData main_frame_form_data = CreateSigninFormData(origin.GetURL());
   const FormData iframe_form_data =
       CreateSigninFormData(iframe_origin.GetURL());
 
-  // Saved credential is an exact match for the iframe.
-  SetSavedCredential(&form_fetcher_, iframe_origin.GetURL(), kTestUsername,
-                     kTestPassword);
-
-  // Main frame form manager uses a separate fetcher where this credential is a
-  // PSL match (since iframe_origin same-site with main frame origin).
+  // Main frame form manager uses a fetcher where this credential is a PSL
+  // match.
   FakeFormFetcher main_frame_fetcher;
   PasswordForm main_frame_psl_match = CreateSavedPasswordForm(
-      iframe_origin.GetURL(), kTestUsername, kTestPassword);
+      saved_origin.GetURL(), kTestUsername, kTestPassword);
   main_frame_psl_match.match_type =
       password_manager::PasswordForm::MatchType::kPSL;
   main_frame_fetcher.SetBestMatches({main_frame_psl_match});
+
+  // Iframe form manager also uses a fetcher where this credential is a PSL
+  // match.
+  FakeFormFetcher iframe_fetcher;
+  PasswordForm iframe_psl_match = CreateSavedPasswordForm(
+      saved_origin.GetURL(), kTestUsername, kTestPassword);
+  iframe_psl_match.match_type = password_manager::PasswordForm::MatchType::kPSL;
+  iframe_fetcher.SetBestMatches({iframe_psl_match});
 
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
   MockStubPasswordManagerDriver iframe_driver;
   form_managers.push_back(CreateFormManagerWithParsedForm(
       origin, main_frame_form_data, mock_driver_, main_frame_fetcher));
   form_managers.push_back(CreateFormManagerWithParsedForm(
-      iframe_origin, iframe_form_data, iframe_driver, form_fetcher_));
+      iframe_origin, iframe_form_data, iframe_driver, iframe_fetcher));
 
   const PasswordForm* parsed_form_main =
       form_managers[0]->GetParsedObservedForm();
@@ -1468,10 +1475,12 @@ TEST_P(ActorLoginCredentialFillerTest,
   ON_CALL(iframe_driver, IsNestedWithinFencedFrame)
       .WillByDefault(Return(false));
 
+  ON_CALL(mock_driver_, CheckViewAreaVisible)
+      .WillByDefault(WithArg<1>(&PostResponse<true>));
   ON_CALL(iframe_driver, CheckViewAreaVisible)
       .WillByDefault(WithArg<1>(&PostResponse<true>));
 
-  // Main frame form is filled (even though it is only a PSL match).
+  // The main frame form (with PSL match) is filled because it is preferred.
   EXPECT_CALL(
       mock_driver_,
       FillField(parsed_form_main->username_element_renderer_id,
@@ -1485,8 +1494,7 @@ TEST_P(ActorLoginCredentialFillerTest,
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
 
-  // Iframe form (with the exact match) should NOT be filled because the primary
-  // main frame form is prioritized and we skip iframes.
+  // The iframe form (also with PSL match) should NOT be filled.
   EXPECT_CALL(iframe_driver, FillField).Times(0);
 
   filler->AttemptLogin(&mock_password_manager_);
@@ -2820,6 +2828,64 @@ TEST_P(ActorLoginCredentialFillerTest, UnrelatedOrigin_FillFails) {
   EXPECT_CALL(mock_form_cache_, GetFormManagers).Times(0);
   filler->AttemptLogin(&mock_password_manager_);
   const LoginStatusResultOrError& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), LoginStatusResult::kErrorInvalidCredential);
+}
+
+// Test that the filler doesn't fill the main frame if there is a PSL match.
+// This might happen if the page changes in between the call to
+// `GetCredentials` and `AttemptLogin`.
+TEST_P(ActorLoginCredentialFillerTest,
+       DoesntFillMainFramePSLMatchIfPersistentPermissionIsSet) {
+  const url::Origin main_frame_origin =
+      url::Origin::Create(GURL("https://bad.example.com"));
+  const url::Origin saved_origin =
+      url::Origin::Create(GURL("https://login.example.com"));
+
+  // The credential being passed has persistent permission, meaning it was
+  // automatically selected because the user permanently allowed it for the
+  // exact/affiliated origin (login.example.com).
+  Credential credential = CreateTestCredential(
+      kTestUsername, saved_origin.GetURL(), main_frame_origin);
+  credential.has_persistent_permission = true;
+
+  const FormData form_data = CreateSigninFormData(main_frame_origin.GetURL());
+
+  // Create a saved credential that matches the main frame origin ONLY via PSL.
+  // The credential was saved on login.example.com.
+  password_manager::PasswordForm saved_form = CreateSavedPasswordForm(
+      saved_origin.GetURL(), kTestUsername, kTestPassword);
+  saved_form.match_type = password_manager::PasswordForm::MatchType::kPSL;
+  form_fetcher_.SetBestMatches({saved_form});
+
+  ON_CALL(mock_driver_, GetLastCommittedOrigin)
+      .WillByDefault(ReturnRef(main_frame_origin));
+  // Set IsInPrimaryMainFrame to return true, otherwise IsLoginFormAsync won't
+  // run.
+  ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(true));
+
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(CreateFormManagerWithParsedForm(
+      main_frame_origin, form_data, mock_driver_));
+
+  EXPECT_CALL(mock_driver_,
+              CheckViewAreaVisible(form_data.fields()[0].renderer_id(), _))
+      .WillOnce(WithArg<1>(&PostResponse<true>));
+  EXPECT_CALL(mock_driver_,
+              CheckViewAreaVisible(form_data.fields()[1].renderer_id(), _))
+      .WillOnce(WithArg<1>(&PostResponse<true>));
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  ActorLoginCredentialFiller filler(
+      main_frame_origin, credential, should_store_permission(), &mock_client_,
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
+      .WillRepeatedly(Return(base::span(form_managers)));
+
+  filler.AttemptLogin(&mock_password_manager_);
+  const LoginStatusResultOrError& result = future.Get();
+
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), LoginStatusResult::kErrorInvalidCredential);
 }

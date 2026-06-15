@@ -110,7 +110,8 @@ class ActorLoginCredentialFiller {
   // `eligible_managers`.
   void MaybeReauthAndFillAllEligibleFields(
       std::vector<password_manager::PasswordFormManager*> eligible_managers,
-      password_manager::StoredCredential stored_credential);
+      password_manager::StoredCredential stored_credential,
+      bool is_primary_main_frame);
 
   // Triggers the device reauthentication flow.
   // `on_reauth_cb` is executed only if reauthentication is successful.
