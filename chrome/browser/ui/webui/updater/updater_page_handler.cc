@@ -14,6 +14,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -226,7 +227,10 @@ void UnzipUpdaterHistoryFilesImpl(
   }
 
   base::FilePath archive_path = temp_dir.GetPath().AppendASCII("input.zip");
-  if (!base::WriteFile(archive_path, zip_data)) {
+  base::File archive(archive_path,
+                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  if (!archive.IsValid() ||
+      !archive.WriteAtCurrentPosAndCheck(base::span(zip_data))) {
     std::move(callback).Run(
         base::unexpected(updater_ui::mojom::UnzipUpdaterHistoryFilesError::New(
             "Failed to write user-supplied zip data to storage")));
