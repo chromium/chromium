@@ -90,6 +90,8 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/bookmarks/common/bookmark_bar_visibility_state.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/contextual_tasks/public/features.h"
@@ -1605,6 +1607,31 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetMetadata(108, "agale@chromium.org",
                        "Triggered when Battery Saver Mode is active.")));
+
+  // kIPHBookmarkBarSimplifiedFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHBookmarkBarSimplifiedFeature,
+          kBrowserDialogAnchorElementId,
+          IDS_BOOKMARK_BAR_HIDDEN_INACTIVITY_PROMO_LABEL,
+          IDS_PROMO_UNDO_BUTTON,
+          base::BindRepeating(
+              [](ContextPtr ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                Browser* const browser = GetBrowser(ctx);
+                if (!browser) {
+                  return;
+                }
+                browser->profile()->GetPrefs()->SetInteger(
+                    bookmarks::prefs::kBookmarkBarVisibilityState,
+                    static_cast<int>(
+                        bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp));
+              }))
+          .SetCustomActionIsDefault(false)
+          .SetBubbleArrow(HelpBubbleArrow::kTopCenter)
+          .SetMetadata(150, "jennserrano@google.com",
+                       "Triggered when the bookmark bar is auto-hidden after "
+                       "inactivity.")));
 
   // kIPHMemorySaverModeFeature:
   registry.RegisterFeature(std::move(

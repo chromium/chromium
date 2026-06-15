@@ -254,6 +254,7 @@ const base::Feature* const kAllFeatures[] = {
     // keep-sorted start case=no
     &kIPHBackNavigationMenuFeature,
     &kIPHBatterySaverModeFeature,
+    &kIPHBookmarkBarSimplifiedFeature,
     &kIPHCompanionSidePanelFeature,
     &kIPHCompanionSidePanelRegionSearchFeature,
     &kIPHComposeMSBBSettingsFeature,
