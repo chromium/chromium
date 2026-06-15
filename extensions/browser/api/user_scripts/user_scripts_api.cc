@@ -694,19 +694,6 @@ ExtensionFunction::ResponseAction UserScriptsExecuteFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  // Validate injection target.
-  scripting::InjectionTarget internal_injection_target =
-      ConvertToInternalInjectionTarget(std::move(injection_.target));
-  ScriptExecutor* script_executor = nullptr;
-  ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
-  std::set<int> frame_ids;
-  if (!scripting::CanAccessTarget(
-          *extension()->permissions_data(), internal_injection_target,
-          browser_context(), include_incognito_information(), &script_executor,
-          &frame_scope, &frame_ids, &error)) {
-    return RespondNow(Error(std::move(error)));
-  }
-
   // Retrieve injection sources in order. Since file sources need to be loaded,
   // we use a nullopt for placeholder in the source list. After files are
   // successfully loaded, they should be converted to js source too.
@@ -729,21 +716,18 @@ ExtensionFunction::ResponseAction UserScriptsExecuteFunction::Run() {
         std::move(file_sources), script_parsing::ContentScriptType::kJs,
         *extension(), kRequiresLocalization,
         base::BindOnce(&UserScriptsExecuteFunction::DidLoadResources, this,
-                       script_executor, frame_scope, std::move(frame_ids),
                        std::move(sources)),
         &error);
   } else {
-    Execute(std::move(sources), script_executor, frame_scope, frame_ids,
-            &error);
+    if (!Execute(std::move(sources), &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
   }
 
   return RespondLater();
 }
 
 void UserScriptsExecuteFunction::DidLoadResources(
-    ScriptExecutor* script_executor,
-    ScriptExecutor::FrameScope frame_scope,
-    std::set<int> frame_ids,
     std::vector<std::optional<mojom::JSSourcePtr>> sources,
     std::vector<scripting::InjectedFileSource> file_sources,
     std::optional<std::string> load_error) {
@@ -773,15 +757,26 @@ void UserScriptsExecuteFunction::DidLoadResources(
   CHECK_EQ(file_index, static_cast<int>(file_sources.size()));
 
   std::string error;
-  Execute(std::move(sources), script_executor, frame_scope, frame_ids, &error);
+  if (!Execute(std::move(sources), &error)) {
+    Respond(Error(std::move(error)));
+  }
 }
 
-void UserScriptsExecuteFunction::Execute(
+bool UserScriptsExecuteFunction::Execute(
     std::vector<std::optional<mojom::JSSourcePtr>> sources,
-    ScriptExecutor* script_executor,
-    ScriptExecutor::FrameScope frame_scope,
-    std::set<int> frame_ids,
     std::string* error) {
+  scripting::InjectionTarget internal_injection_target =
+      ConvertToInternalInjectionTarget(std::move(injection_.target));
+  ScriptExecutor* script_executor = nullptr;
+  ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
+  std::set<int> frame_ids;
+  if (!scripting::CanAccessTarget(
+          *extension()->permissions_data(), internal_injection_target,
+          browser_context(), include_incognito_information(), &script_executor,
+          &frame_scope, &frame_ids, error)) {
+    return false;
+  }
+
   mojom::ExecutionWorld execution_world =
       ConvertExecutionWorld(injection_.world);
   std::optional<std::string> execution_world_id = injection_.world_id;
@@ -799,6 +794,8 @@ void UserScriptsExecuteFunction::Execute(
       execution_world_id, script_executor, frame_scope, frame_ids,
       inject_immediately, user_gesture(),
       base::BindOnce(&UserScriptsExecuteFunction::OnScriptExecuted, this));
+
+  return true;
 }
 
 void UserScriptsExecuteFunction::OnScriptExecuted(

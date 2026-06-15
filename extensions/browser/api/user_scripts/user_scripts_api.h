@@ -115,18 +115,12 @@ class UserScriptsExecuteFunction : public ExtensionFunction {
   ~UserScriptsExecuteFunction() override = default;
 
   // Called when the resource files to be injected has been loaded.
-  void DidLoadResources(ScriptExecutor* script_executor,
-                        ScriptExecutor::FrameScope frame_scope,
-                        std::set<int> frame_ids,
-                        std::vector<std::optional<mojom::JSSourcePtr>> sources,
+  void DidLoadResources(std::vector<std::optional<mojom::JSSourcePtr>> sources,
                         std::vector<scripting::InjectedFileSource> file_sources,
                         std::optional<std::string> load_error);
 
   // Triggers the execution of `sources` in the appropriate context.
-  void Execute(std::vector<std::optional<mojom::JSSourcePtr>> sources,
-               ScriptExecutor* script_executor,
-               ScriptExecutor::FrameScope frame_scope,
-               std::set<int> frame_ids,
+  bool Execute(std::vector<std::optional<mojom::JSSourcePtr>> sources,
                std::string* error);
 
   // Invoked when script execution is complete.

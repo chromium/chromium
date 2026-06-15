@@ -1,0 +1,14 @@
+{
+  "name": "UserScripts Navigation Race",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "userScripts"
+  ],
+  "host_permissions": [
+    "http://a.com/*"
+  ]
+}
