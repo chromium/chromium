@@ -7,7 +7,9 @@
 
 #include <msctf.h>
 #include <wrl/client.h>
+
 #include <deque>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -481,6 +483,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   Microsoft::WRL::ComPtr<ITfContext> context_;
   Microsoft::WRL::ComPtr<ITfInputProcessorProfileMgr>
       input_processor_profile_mgr_;
+
+  // Test override for `IsInputIME()`.
+  std::optional<bool> is_input_ime_for_testing_;
 
   // Current list of requested supported attribute values.
   // Currently the supported attributes are URL and InputScope.

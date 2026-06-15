@@ -187,6 +187,10 @@ class TSFTextStoreTest : public testing::Test {
   }
   size_t* composition_start() { return &text_store_->composition_start_; }
 
+  void set_is_input_ime_for_testing(bool value) {
+    text_store_->is_input_ime_for_testing_ = value;
+  }
+
   base::win::ScopedCOMInitializer com_initializer_;
   MockTextInputClient text_input_client_;
   MockImeKeyEventDispatcher ime_key_event_dispatcher_;
@@ -5409,6 +5413,119 @@ TEST_F(TSFTextStoreTest, AutocorrectOffAllowsIMENewCompositionMidText) {
   // Verify the buffer contains "한ㄴ국" (Korean IME insertion preserved, not
   // reverted).
   EXPECT_EQ(u"\uD55C\u3134\uAD6D", *string_buffer());
+}
+
+// Japanese IME inserts full-width space (U+3000) without composition.
+// Regression test for crbug.com/521644696.
+class AutocorrectOffFullWidthSpaceNoCompositionTestCallback
+    : public TSFTextStoreTestCallback {
+ public:
+  explicit AutocorrectOffFullWidthSpaceNoCompositionTestCallback(
+      TSFTextStore* text_store)
+      : TSFTextStoreTestCallback(text_store) {}
+
+  AutocorrectOffFullWidthSpaceNoCompositionTestCallback(
+      const AutocorrectOffFullWidthSpaceNoCompositionTestCallback&) = delete;
+  AutocorrectOffFullWidthSpaceNoCompositionTestCallback& operator=(
+      const AutocorrectOffFullWidthSpaceNoCompositionTestCallback&) = delete;
+
+  HRESULT LockGranted1(DWORD flags) {
+    SetTextTest(0, 0, L"hello", S_OK);
+    SetSelectionTest(5, 5, S_OK);
+    *edit_flag() = true;
+    *composition_start() = 0;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+
+  void InsertText1(
+      const std::u16string& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+    EXPECT_EQ(u"hello", text);
+    SetTextRange(0, 5);
+    SetSelectionRange(5, 5);
+    SetTextBuffer(u"hello");
+  }
+
+  // IME inserts U+3000 at position 2 without composition.
+  HRESULT LockGranted2(DWORD flags) {
+    GetTextTest(0, -1, L"hello", 5);
+    SetSelectionTest(2, 2, S_OK);
+    SetTextTest(2, 2, L"\u3000", S_OK);
+    GetTextTest(0, -1, L"he\u3000llo", 6);
+    SetSelectionTest(3, 3, S_OK);
+    *edit_flag() = true;
+    *has_composition_range() = false;
+    return S_OK;
+  }
+
+  void InsertText2(
+      const std::u16string& text,
+      ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
+    EXPECT_EQ(u"\u3000", text);
+    SetTextRange(0, 6);
+    SetSelectionRange(3, 3);
+    SetTextBuffer(u"he\u3000llo");
+  }
+};
+
+TEST_F(TSFTextStoreTest, AutocorrectOffAllowsFullWidthSpaceWithoutComposition) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTSFHonorAutocorrectOff);
+
+  // Simulate Japanese IME being active.
+  set_is_input_ime_for_testing(true);
+
+  EXPECT_CALL(text_input_client_, GetTextInputType())
+      .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
+
+  EXPECT_CALL(text_input_client_, GetTextInputFlags())
+      .WillRepeatedly(Return(TEXT_INPUT_FLAG_AUTOCORRECT_OFF));
+
+  AutocorrectOffFullWidthSpaceNoCompositionTestCallback callback(
+      text_store_.get());
+
+  EXPECT_CALL(text_input_client_, InsertText(_, _))
+      .WillOnce(Invoke(
+          &callback,
+          &AutocorrectOffFullWidthSpaceNoCompositionTestCallback::InsertText1))
+      .WillOnce(Invoke(
+          &callback,
+          &AutocorrectOffFullWidthSpaceNoCompositionTestCallback::InsertText2));
+
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(Invoke(
+          &callback,
+          &AutocorrectOffFullWidthSpaceNoCompositionTestCallback::LockGranted1))
+      .WillOnce(Invoke(&callback,
+                       &AutocorrectOffFullWidthSpaceNoCompositionTestCallback::
+                           LockGranted2));
+
+  ON_CALL(text_input_client_, HasCompositionText())
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::HasCompositionText));
+
+  ON_CALL(text_input_client_, GetTextRange(_))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextRange));
+
+  ON_CALL(text_input_client_, GetTextFromRange(_, _))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextFromRange));
+
+  ON_CALL(text_input_client_, GetEditableSelectionRange(_))
+      .WillByDefault(Invoke(
+          &callback, &TSFTextStoreTestCallback::GetEditableSelectionRange));
+
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  EXPECT_EQ(u"he\u3000llo", *string_buffer());
 }
 
 }  // namespace
