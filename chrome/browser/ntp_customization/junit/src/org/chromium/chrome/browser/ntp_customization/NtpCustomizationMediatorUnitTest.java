@@ -746,7 +746,7 @@ public class NtpCustomizationMediatorUnitTest {
                         mBottomSheetController,
                         mBottomSheetContent,
                         mViewFlipperPropertyModel,
-                        mContainerPropertyModel,
+                        null, // Standalone sheets do not have a container property model
                         mProfileSupplier,
                         mWindowAndroid,
                         mSnackbarManager);
@@ -760,6 +760,34 @@ public class NtpCustomizationMediatorUnitTest {
         verify(mBottomSheetController).hideContent(eq(mBottomSheetContent), eq(true));
         assertNull(
                 "Current bottom sheet type should be reset", mMediator.getCurrentBottomSheetType());
+    }
+
+    @Test
+    public void testOnTemplateURLServiceChanged_StandaloneThemeTipSheet() {
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+
+        mMediator =
+                new NtpCustomizationMediator(
+                        mContext,
+                        mBottomSheetController,
+                        mBottomSheetContent,
+                        mViewFlipperPropertyModel,
+                        null, // Standalone sheets do not have a container property model
+                        mProfileSupplier,
+                        mWindowAndroid,
+                        mSnackbarManager);
+        mMediator.setCurrentBottomSheetForTesting(THEME_TIP);
+
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+
+        clearInvocations(mBottomSheetController);
+
+        // This should not throw NullPointerException despite the  container property model being
+        // null. It should also not attempt to dismiss since the sheet type is THEME_TIP and not
+        // FEED.
+        mMediator.onTemplateURLServiceChanged();
+
+        verify(mBottomSheetController, never()).hideContent(any(), anyBoolean());
     }
 
     @Test
