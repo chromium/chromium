@@ -11600,6 +11600,15 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   // (e.g. "http://localhost"). In such cases, don't verify the URL, but require
   // the URL to commit in the process of the main frame.
   if (IsMhtmlSubframe()) {
+    // Documents derived from an MHTML archive are behind sandbox flags, so
+    // their origin is opaque. The early-return below validates neither URL
+    // nor origin, so a compromised renderer could otherwise launder an
+    // arbitrary non-opaque origin past this point via
+    // DidCommitSameDocumentNavigation.
+    if (!origin.opaque()) {
+      LogCanCommitOriginAndUrlFailureReason("mhtml_subframe_non_opaque_origin");
+      return CanCommitStatus::CANNOT_COMMIT_ORIGIN;
+    }
     RenderFrameHostImpl* main_frame = GetMainFrame();
     if (IsSameSiteInstance(main_frame)) {
       return CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL;
