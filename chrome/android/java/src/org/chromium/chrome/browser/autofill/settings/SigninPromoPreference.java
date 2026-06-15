@@ -23,6 +23,7 @@ public class SigninPromoPreference extends Preference {
     /** Constructor for inflating from XML. */
     public SigninPromoPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        setSelectable(false);
     }
 
     /** Sets the coordinator for the sign-in promo. */

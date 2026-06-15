@@ -16,6 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -207,6 +208,26 @@ public class HomeOfTransactionsFragmentTest {
                                                 .signin_promo_description_autofill_and_passwords_seamless)));
         onView(withId(R.id.signin_promo_primary_button)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_promo_secondary_button)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton",
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
+    public void testSignInPromoNotSelectable() {
+        signInPromoDeclined(false);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        HomeOfTransactionsFragment fragment = mSettingsActivityTestRule.getFragment();
+        SigninPromoPreference preference =
+                (SigninPromoPreference)
+                        fragment.findPreference(HomeOfTransactionsFragment.PREF_SIGNIN_PROMO);
+        assertFalse(preference.isSelectable());
     }
 
     @Test
