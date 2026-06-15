@@ -67,6 +67,9 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
     case 'both_access_disabled':
       tests_runBothAccessDisabled(documentId);
       return;
+    case 'actuation_disabled':
+      tests_runActuationDisabled(documentId);
+      return;
     case 'account_mismatch':
       tests_runAccountMismatch(documentId);
       return;
@@ -296,6 +299,50 @@ function tests_runBothAccessDisabled(documentId) {
             documentId,
           }),
           'Error: local-glic-access-from-page-disabled');
+      chrome.test.succeed();
+    },
+  ]);
+}
+
+function tests_runActuationDisabled(documentId) {
+  chrome.test.runTests([
+    async function invokeUniversalCartWithPromptFails() {
+      await chrome.test.assertPromiseRejects(
+          chrome.glicPrivate.invoke({
+            promptId: 'TEST_PROMPT_ID',
+            invocationSource:
+                chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
+            documentId,
+          }),
+          'Error: local-glic-actuation-not-allowed');
+      chrome.test.succeed();
+    },
+    async function invokeUniversalCartWithoutPromptFails() {
+      await chrome.test.assertPromiseRejects(
+          chrome.glicPrivate.invoke({
+            invocationSource:
+                chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
+            documentId,
+          }),
+          'Error: local-missing-prompt-id');
+      chrome.test.succeed();
+    },
+    async function invokePromotionPageWithPromptFails() {
+      await chrome.test.assertPromiseRejects(
+          chrome.glicPrivate.invoke({
+            promptId: 'TEST_PROMPT_ID',
+            invocationSource:
+                chrome.glicPrivate.InvocationSource.PROMOTION_PAGE,
+            documentId,
+          }),
+          'Error: local-glic-actuation-not-allowed');
+      chrome.test.succeed();
+    },
+    async function invokePromotionPageWithoutPromptSuccess() {
+      await chrome.glicPrivate.invoke({
+        invocationSource: chrome.glicPrivate.InvocationSource.PROMOTION_PAGE,
+        documentId,
+      });
       chrome.test.succeed();
     },
   ]);
