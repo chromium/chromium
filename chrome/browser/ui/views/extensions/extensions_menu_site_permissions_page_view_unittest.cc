@@ -519,13 +519,7 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
   // also have a site permissions page.
   NavigateAndCommit("http://www.b.com");
 
-  // Menu should stay open in site permissions page for `extension`.
-  EXPECT_FALSE(IsMainPageOpened());
-  EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
-
-  // Extension didn't request specific access to url B, but it has active tab
-  // access. Thus, user can only select "on click" access.
-  EXPECT_TRUE(on_click_button->GetEnabled());
-  EXPECT_FALSE(on_site_button->GetEnabled());
-  EXPECT_FALSE(on_all_sites_button->GetEnabled());
+  // Menu should navigate back to main page.
+  EXPECT_TRUE(IsMainPageOpened());
+  EXPECT_FALSE(IsSitePermissionsPageOpened(extension->id()));
 }

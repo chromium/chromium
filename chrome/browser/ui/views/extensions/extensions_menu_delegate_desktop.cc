@@ -123,17 +123,12 @@ void ExtensionsMenuDelegateDesktop::OnPageNavigation() {
     return;
   }
 
+  // If the site permissions page is open, navigate back to the main page.
+  // This prevents the extension from gaining permissions to a new origin
+  // that the user didn't intend to authorize during a race condition.
   auto* site_permissions_page = GetSitePermissionsPage(current_page_.view());
   CHECK(site_permissions_page);
-  if (menu_model_->CanShowSitePermissionsPage(
-          site_permissions_page->extension_id())) {
-    // Update site permissions page if it is open and the extension can have
-    // one.
-    UpdateSitePermissionsPage(site_permissions_page);
-  } else {
-    // Otherwise navigate back to the main page.
-    OpenMainPage();
-  }
+  OpenMainPage();
 }
 
 void ExtensionsMenuDelegateDesktop::OnHostAccessRequestAdded(
