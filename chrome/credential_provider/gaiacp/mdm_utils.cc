@@ -427,23 +427,26 @@ bool IsGemEnabled() {
 bool IsOnlineLoginEnforced(const std::wstring& sid) {
   DWORD global_flag = GetGlobalFlagOrDefault(kRegMdmEnforceOnlineLogin, 0);
 
-  // Return true if global flag is set. If it is not set check for
-  // the user flag.
-  if (global_flag)
+  if (global_flag) {
+    LOGFN(VERBOSE) << "GetGlobalFlagOrDefault for " << kRegMdmEnforceOnlineLogin
+                   << " returned value: true. Enforcing online login.";
     return true;
-
+  }
 
   DWORD is_online_login_enforced_for_user = 0;
   HRESULT hr = GetUserProperty(sid, kRegMdmEnforceOnlineLogin,
-                       &is_online_login_enforced_for_user);
+                               &is_online_login_enforced_for_user);
 
   if (FAILED(hr)) {
-    LOGFN(VERBOSE) << "GetUserProperty for " << kRegMdmEnforceOnlineLogin
-                << " failed. hr=" << putHR(hr);
-    // Fallback to the less obstructive option to not enforce login via google
-    // when fetching the registry entry fails.
+    // Silently fall back to not enforcing online login if the registry entry is
+    // missing.
     return false;
   }
+
+  LOGFN(VERBOSE) << "GetUserProperty for " << kRegMdmEnforceOnlineLogin
+                 << " found for user: " << sid.c_str()
+                 << ", Value: " << is_online_login_enforced_for_user
+                 << ". Enforcing online login.";
 
   return is_online_login_enforced_for_user;
 }
