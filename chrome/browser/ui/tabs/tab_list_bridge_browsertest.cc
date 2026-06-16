@@ -997,6 +997,7 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, OpenTab) {
   const GURL url1("about:blank?q=1");
   const GURL url2("about:blank?q=2");
   const GURL url3("about:blank?q=3");
+  const GURL url4("about:blank?q=4");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), url1, WindowOpenDisposition::CURRENT_TAB,
@@ -1022,6 +1023,15 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, OpenTab) {
   EXPECT_THAT(tab_list_interface->GetAllTabs(),
               testing::ElementsAre(MatchesTab(url2), MatchesTab(url1),
                                    MatchesTab(url3)));
+
+  // Open a tab at the end of the tab strip by specifying the tab strip size
+  // as the index.
+  tab_list_interface->OpenTab(url4, tab_list_interface->GetTabCount());
+  EXPECT_EQ(3, tab_list_interface->GetActiveIndex());
+  EXPECT_TRUE(content::WaitForLoadStop(tab_strip_model->GetWebContentsAt(3)));
+  EXPECT_THAT(tab_list_interface->GetAllTabs(),
+              testing::ElementsAre(MatchesTab(url2), MatchesTab(url1),
+                                   MatchesTab(url3), MatchesTab(url4)));
 }
 
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, InsertWebContentsAt) {
