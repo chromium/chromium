@@ -467,7 +467,7 @@ void ContextualCueingHelper::OnCueingDecision(
       /*activity=*/std::nullopt,
       base::BindRepeating(&ContextualCueingService::OnNudgeActivity,
                           contextual_cueing_service_->GetWeakPtr(),
-                          web_contents(), document_available_time,
+                          web_contents()->GetWeakPtr(), document_available_time,
                           decision_result->is_dynamic));
 }
 

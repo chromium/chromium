@@ -263,7 +263,7 @@ bool ContextualCueingService::IsPageTypeEligibleForContextualSuggestions(
 }
 
 void ContextualCueingService::OnNudgeActivity(
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     base::TimeTicks document_available_time,
     bool is_dynamic,
     glic::GlicNudgeActivity activity) {
@@ -271,13 +271,13 @@ void ContextualCueingService::OnNudgeActivity(
 
   std::optional<base::TimeTicks> nudge_time =
       recent_nudge_tracker_.GetMostRecentNudgeTime();
-  const GURL& url = web_contents->GetLastCommittedURL();
   NudgeInteraction interaction;
   bool log_ukm = false;
   switch (activity) {
     case glic::GlicNudgeActivity::kNudgeShown:
       interaction = NudgeInteraction::kShown;
-      CueingNudgeShown(url);
+      CueingNudgeShown(web_contents ? web_contents->GetLastCommittedURL()
+                                    : GURL());
       break;
     case glic::GlicNudgeActivity::kNudgeClicked:
       CueingNudgeClicked();
@@ -321,7 +321,7 @@ void ContextualCueingService::OnNudgeActivity(
   LogNudgeInteractionHistogram(interaction, is_dynamic);
   // As this function is called multiple times per nudge only some of the
   // activities result in a UKM call.
-  if (log_ukm) {
+  if (log_ukm && web_contents) {
     CHECK(nudge_time);
     LogNudgeInteractionUKM(
         web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(), interaction,

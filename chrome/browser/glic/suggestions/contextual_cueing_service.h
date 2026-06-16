@@ -67,7 +67,7 @@ class ContextualCueingService
   void ReportPageLoad();
 
   // Called when cueing nudge activity happens.
-  void OnNudgeActivity(content::WebContents* web_contents,
+  void OnNudgeActivity(base::WeakPtr<content::WebContents> web_contents,
                        base::TimeTicks document_available_time,
                        bool is_dynamic,
                        glic::GlicNudgeActivity activity);
