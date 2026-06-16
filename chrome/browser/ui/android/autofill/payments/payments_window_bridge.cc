@@ -72,6 +72,10 @@ void PaymentsWindowBridge::OnWebContentsDestroyed(JNIEnv* env) {
   payments_window_delegate_->WebContentsDestroyed();
 }
 
+void PaymentsWindowBridge::OnUserDeniedTabOpening(JNIEnv* env) {
+  payments_window_delegate_->OnUserDeniedTabOpening();
+}
+
 }  // namespace autofill::payments
 
 DEFINE_JNI(PaymentsWindowBridge)

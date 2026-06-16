@@ -36,6 +36,7 @@ class MockPaymentsWindowDelegate : public PaymentsWindowDelegate {
               (content::WebContents&),
               (override));
   MOCK_METHOD(void, WebContentsDestroyed, (), (override));
+  MOCK_METHOD(void, OnUserDeniedTabOpening, (), (override));
 };
 
 class MockPaymentsWindowBridge : public PaymentsWindowBridge {
@@ -374,6 +375,26 @@ TEST_F(
   const GURL late_redirect_url("https://www.example.com/late-redirect");
   window_manager().OnDidFinishNavigationForBnpl(late_redirect_url);
 
+  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
+}
+
+// Test that when the user denies tab opening, the flow is cancelled and metrics
+// are logged.
+TEST_F(AndroidPaymentsWindowManagerTest, OnUserDeniedTabOpening) {
+  InitBnplFlowForTest();
+
+  EXPECT_CALL(bnpl_tab_closed_callback_,
+              Run(PaymentsWindowManager::BnplFlowResult::kFailure, GURL()));
+
+  // Simulate user denial.
+  window_manager().OnUserDeniedTabOpening();
+
+  // Verify metrics and state reset.
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Bnpl.PopupWindowResult.Affirm",
+      PaymentsWindowManager::BnplFlowResult::kFailure, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Bnpl.PopupWindowLatency.Affirm.Failure", 0);
   EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
 }
 

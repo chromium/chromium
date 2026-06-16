@@ -54,6 +54,9 @@ class PaymentsWindowBridge {
   // Called when WebContents is being destroyed.
   void OnWebContentsDestroyed(JNIEnv* env);
 
+  // Called when the user denied tab opening.
+  void OnUserDeniedTabOpening(JNIEnv* env);
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_payments_window_bridge_;
   const raw_ref<PaymentsWindowDelegate> payments_window_delegate_;

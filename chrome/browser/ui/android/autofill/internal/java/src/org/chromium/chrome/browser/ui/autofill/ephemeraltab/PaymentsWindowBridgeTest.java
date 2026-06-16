@@ -84,6 +84,15 @@ public class PaymentsWindowBridgeTest {
     }
 
     @Test
+    public void testOnUserDeniedTabOpening() {
+        PaymentsWindowBridgeJni.setInstanceForTesting(mNativeMock);
+
+        mPaymentsWindowBridge.onUserDeniedTabOpening();
+
+        verify(mNativeMock).onUserDeniedTabOpening(AUTOFILL_PAYMENTS_WINDOW_BRIDGE_NATIVE_POINTER);
+    }
+
+    @Test
     public void testNativeMethodsNotCalledAfterNativeDestroyed() {
         PaymentsWindowBridgeJni.setInstanceForTesting(mNativeMock);
 
@@ -94,6 +103,7 @@ public class PaymentsWindowBridgeTest {
         mPaymentsWindowBridge.onNavigationFinished(ISSUER_URL);
         mPaymentsWindowBridge.onWebContentsObservationStarted(mMerchantWebContents);
         mPaymentsWindowBridge.onWebContentsDestroyed();
+        mPaymentsWindowBridge.onUserDeniedTabOpening();
 
         verifyNoInteractions(mNativeMock);
     }

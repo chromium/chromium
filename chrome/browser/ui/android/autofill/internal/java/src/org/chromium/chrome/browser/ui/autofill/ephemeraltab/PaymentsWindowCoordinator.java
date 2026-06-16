@@ -65,7 +65,11 @@ class PaymentsWindowCoordinator implements EphemeralTabObserver {
                 /* canPromoteToNewTab= */ false,
                 /* shouldHaveContextMenu= */ false,
                 /* initiatorOrigin= */ null,
-                /* requestDeniedCallback */ () -> {});
+                /* requestDeniedCallback= */ this::onUserDeniedTabOpening);
+    }
+
+    private void onUserDeniedTabOpening() {
+        mPaymentsWindowBridge.onUserDeniedTabOpening();
     }
 
     /** Attempts to close an ephemeral tab. */

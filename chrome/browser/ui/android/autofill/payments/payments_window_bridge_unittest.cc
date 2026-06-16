@@ -27,6 +27,7 @@ class MockPaymentsWindowDelegate : public PaymentsWindowDelegate {
               (content::WebContents&),
               (override));
   MOCK_METHOD(void, WebContentsDestroyed, (), (override));
+  MOCK_METHOD(void, OnUserDeniedTabOpening, (), (override));
 };
 
 class PaymentsWindowBridgeTest : public ChromeRenderViewHostTestHarness {
@@ -75,5 +76,12 @@ TEST_F(PaymentsWindowBridgeTest,
   EXPECT_CALL(mock_delegate_, WebContentsDestroyed());
 
   payments_window_bridge_->OnWebContentsDestroyed(env_);
+}
+
+TEST_F(PaymentsWindowBridgeTest,
+       OnUserDeniedTabOpening_ForwardsCallToDelegate) {
+  EXPECT_CALL(mock_delegate_, OnUserDeniedTabOpening());
+
+  payments_window_bridge_->OnUserDeniedTabOpening(env_);
 }
 }  // namespace autofill::payments

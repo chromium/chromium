@@ -94,6 +94,31 @@ public class PaymentsWindowCoordinatorTest {
     }
 
     @Test
+    public void testOpenEphemeralTab_whenDenied_thenCallsBridge() {
+        when(mMerchantWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        EphemeralTabCoordinatorSupplier.setInstanceForTesting(mEphemeralTabCoordinator);
+        ProfileJni.setInstanceForTesting(mProfileNatives);
+        when(mProfileNatives.fromWebContents(eq(mMerchantWebContents))).thenReturn(mProfile);
+        ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+
+        mCoordinator.openEphemeralTab(ISSUER_URL, TAB_TITLE, mMerchantWebContents);
+
+        verify(mEphemeralTabCoordinator)
+                .requestOpenSheet(
+                        /* url= */ eq(ISSUER_URL),
+                        /* fullPageUrl= */ any(),
+                        /* title= */ eq(TAB_TITLE),
+                        eq(mProfile),
+                        /* canPromoteToNewTab= */ eq(false),
+                        /* shouldHaveContextMenu= */ eq(false),
+                        /* initiatorOrigin= */ any(),
+                        callbackCaptor.capture());
+
+        callbackCaptor.getValue().run();
+        verify(mPaymentsWindowBridge).onUserDeniedTabOpening();
+    }
+
+    @Test
     public void testOpenEphemeralTab_whenInvalidWindowAndroid_thenDoesNotRequestToOpenSheet() {
         when(mMerchantWebContents.getTopLevelNativeWindow()).thenReturn(/* windowAndroid= */ null);
 

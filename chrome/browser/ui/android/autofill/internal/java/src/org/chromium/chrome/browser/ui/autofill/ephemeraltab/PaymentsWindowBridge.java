@@ -81,6 +81,11 @@ class PaymentsWindowBridge {
         PaymentsWindowBridgeJni.get().onWebContentsDestroyed(mNativePaymentsWindowBridge);
     }
 
+    void onUserDeniedTabOpening() {
+        if (mNativePaymentsWindowBridge == 0) return;
+        PaymentsWindowBridgeJni.get().onUserDeniedTabOpening(mNativePaymentsWindowBridge);
+    }
+
     @NativeMethods
     interface Natives {
         void onNavigationFinished(long nativePaymentsWindowBridge, GURL clickedUrl);
@@ -89,5 +94,7 @@ class PaymentsWindowBridge {
                 long nativePaymentsWindowBridge, WebContents webContents);
 
         void onWebContentsDestroyed(long nativePaymentsWindowBridge);
+
+        void onUserDeniedTabOpening(long nativePaymentsWindowBridge);
     }
 }

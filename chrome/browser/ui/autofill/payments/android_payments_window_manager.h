@@ -45,6 +45,7 @@ class AndroidPaymentsWindowManager : public PaymentsWindowManager,
       content::WebContents& web_contents) override;
   void WebContentsDestroyed() override;
   void OnDidFinishNavigationForBnpl(const GURL& url) override;
+  void OnUserDeniedTabOpening() override;
 
  private:
   friend class AndroidPaymentsWindowManagerTestApi;
