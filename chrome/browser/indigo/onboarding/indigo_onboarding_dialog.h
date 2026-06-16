@@ -110,6 +110,8 @@ class IndigoOnboardingDialog
   views::WebView* GetWebView() const;
   void ShutdownWebModalManager();
 
+  void DestroyWidget();
+
   // It is safe to hold a raw pointer to `tab_` because the dialog is tab-modal
   // and will be closed (and this object destroyed by its owner) if the tab is
   // destroyed.

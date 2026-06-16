@@ -216,9 +216,7 @@ IndigoOnboardingDialog::~IndigoOnboardingDialog() {
   if (widget_) {
     ShutdownWebModalManager();
   }
-  if (std::unique_ptr<views::Widget> widget = std::move(widget_)) {
-    widget.reset();
-  }
+  DestroyWidget();
 }
 
 void IndigoOnboardingDialog::Close() {
@@ -242,13 +240,7 @@ void IndigoOnboardingDialog::OnWidgetClosed(
     views::Widget::ClosedReason reason) {
   ShutdownWebModalManager();
 
-  // Stop observing the view before it is destroyed by the widget.
-  view_observation_.Reset();
-
-  // As recommended in the comment on `views::Widget::MakeCloseSynchronous`,
-  // destroy the widget here.
-  std::unique_ptr<views::Widget> widget = std::move(widget_);
-  widget.reset();
+  DestroyWidget();
 
   if (close_callback_) {
     std::move(close_callback_).Run(onboarding_result_);
@@ -266,6 +258,16 @@ void IndigoOnboardingDialog::ShutdownWebModalManager() {
     if (manager) {
       manager->SetDelegate(nullptr);
     }
+  }
+}
+
+void IndigoOnboardingDialog::DestroyWidget() {
+  // Stop observing the view before it is destroyed by the widget.
+  view_observation_.Reset();
+  // As recommended in the comment on `views::Widget::MakeCloseSynchronous`,
+  // destroy the widget here.
+  if (std::unique_ptr<views::Widget> widget = std::move(widget_)) {
+    widget.reset();
   }
 }
 
