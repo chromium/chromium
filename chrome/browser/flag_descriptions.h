@@ -6146,6 +6146,11 @@ inline constexpr char kTabBottomSheetName[] = "Tab bottom sheet";
 inline constexpr char kTabBottomSheetDescription[] =
     "Enables the tab bottom sheet feature.";
 
+inline constexpr char kTabBottomSheetResizeWebviewName[] =
+    "Tab bottom sheet - Resize WebView";
+inline constexpr char kTabBottomSheetResizeWebviewDescription[] =
+    "Enables the tab bottom sheet to resize the WebView when opened.";
+
 inline constexpr char kTabClosureMethodRefactorName[] =
     "Tab closure method refactor";
 inline constexpr char kTabClosureMethodRefactorDescription[] =

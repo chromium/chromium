@@ -11000,6 +11000,7 @@ from previous Chrome versions.
   <int value="-1052415111" label="malware-interstitial-v2"/>
   <int value="-1052219252" label="disable-captive-portal-bypass-proxy"/>
   <int value="-1052115254" label="TextfieldFocusOnTapUp:disabled"/>
+  <int value="-1051716702" label="TabBottomSheetResizeWebview:enabled"/>
   <int value="-1051602723" label="IPH_LauncherSearchHelpUi:enabled"/>
   <int value="-1051509976" label="ServiceWorkerOnUI:disabled"/>
   <int value="-1050121997"
@@ -16240,6 +16241,7 @@ from previous Chrome versions.
   <int value="669105788"
       label="AutofillEnableAmountExtractionAllowlist:disabled"/>
   <int value="669958310" label="EnableSuggestedLocalFiles:disabled"/>
+  <int value="670749866" label="TabBottomSheetResizeWebview:disabled"/>
   <int value="670987023" label="kEnterpriseBadgingForNtpFooter:enabled"/>
   <int value="671427343"
       label="DnsOverHttpsWithIdentifiersReuseOldPolicy:enabled"/>

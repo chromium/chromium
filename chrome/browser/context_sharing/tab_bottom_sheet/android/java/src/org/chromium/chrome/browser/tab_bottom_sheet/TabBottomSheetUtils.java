@@ -31,7 +31,8 @@ public final class TabBottomSheetUtils {
     }
 
     public static boolean canResizeWebView() {
-        return ChromeFeatureList.sTabBottomSheetResizeWebview.getValue();
+        return isTabBottomSheetEnabled()
+                && ChromeFeatureList.sTabBottomSheetResizeWebview.isEnabled();
     }
 
     /**

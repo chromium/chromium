@@ -139,7 +139,8 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
     @Override
     public float getHalfHeightRatio() {
         // TODO(crbug.com/502611927): Update this for AIM.
-        return ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()
+        return (ChromeFeatureList.sTabBottomSheet.isEnabled()
+                        && ChromeFeatureList.sTabBottomSheetResizeWebview.isEnabled())
                 ? mFullHeightRatio
                 : HeightMode.DISABLED;
     }
@@ -147,7 +148,8 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
     @Override
     public float getFullHeightRatio() {
         // TODO(crbug.com/502611927): Update this for AIM.
-        return ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()
+        return (ChromeFeatureList.sTabBottomSheet.isEnabled()
+                        && ChromeFeatureList.sTabBottomSheetResizeWebview.isEnabled())
                 ? HeightMode.RESIZE_CONTENT
                 : HeightMode.WRAP_CONTENT;
     }

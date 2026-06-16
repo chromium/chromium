@@ -757,13 +757,9 @@ const FeatureEntry::FeatureVariation
 const FeatureEntry::FeatureParam kTabBottomSheetSuppressToolbarParam[] = {
     {"suppress_bottom_toolbar_while_open", "true"}};
 
-const FeatureEntry::FeatureParam kTabBottomSheetResizeWebviewParam[] = {
-    {"resize_webview", "true"}};
-
 const FeatureEntry::FeatureVariation kTabBottomSheetVariations[] = {
     {"Suppress bottom toolbar while open", kTabBottomSheetSuppressToolbarParam,
-     nullptr},
-    {"Resize webview", kTabBottomSheetResizeWebviewParam, nullptr}};
+     nullptr}};
 
 const FeatureEntry::FeatureParam kAndroidSidePanelDevFeatureTabScoped[] = {
     {"scope", "tab"}};
@@ -9985,6 +9981,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabBottomSheet,
                                     kTabBottomSheetVariations,
                                     "TabBottomSheet")},
+
+    {"tab-bottom-sheet-resize-webview",
+     flag_descriptions::kTabBottomSheetResizeWebviewName,
+     flag_descriptions::kTabBottomSheetResizeWebviewDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabBottomSheetResizeWebview)},
 
     {"android-tips-notifications",
      flag_descriptions::kAndroidTipsNotificationsName,
