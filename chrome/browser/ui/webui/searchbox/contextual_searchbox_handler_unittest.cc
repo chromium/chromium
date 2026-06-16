@@ -130,7 +130,11 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
                                    web_contents,
                                    std::move(controller),
                                    std::move(get_session_callback)) {}
-  ~FakeContextualSearchboxHandler() override = default;
+  ~FakeContextualSearchboxHandler() override {
+#if !BUILDFLAG(IS_ANDROID)
+    OnDrivePickerDisconnected();
+#endif
+  }
 
   // searchbox::mojom::PageHandler
   void ExecuteAction(uint8_t line,
@@ -1491,19 +1495,18 @@ TEST_F(ContextualSearchboxHandlerTest, OnDriveUploadClicked_DoubleClick) {
   auto* mock_ptr = mock_drive_picker_controller.get();
   handler().SetDrivePickerController(std::move(mock_drive_picker_controller));
 
+  // Verify that the controller is only shown once even if clicked multiple
+  // times.
   EXPECT_CALL(*mock_ptr, ShowDrivePickerHost(testing::_)).Times(1);
 
   base::test::TestFuture<searchbox::mojom::DriveUploadResponsePtr> future;
   handler().OnDriveUploadClicked(future.GetCallback());
   EXPECT_TRUE(handler().IsDrivePickerReceiverBound());
 
-  // Second click should not call ShowDrivePickerHost and should run the new
-  // callback with an empty response if it replaces the old one, but wait, the
-  // current implementation CHECKS that it is null. So we should only test that
-  // we can't call it again while bound.
-  // To avoid the CHECK crash, we shouldn't call it again in the test if we
-  // expect it to fail, OR we should fix the implementation to handle it.
-  // Given the CHECK, we'll just verify it's bound.
+  // Subsequent clicks while the picker is active should be ignored.
+  base::test::TestFuture<searchbox::mojom::DriveUploadResponsePtr>
+      second_future;
+  handler().OnDriveUploadClicked(second_future.GetCallback());
 }
 
 TEST_F(ContextualSearchboxHandlerTest, OnDrivePickerDisconnected) {

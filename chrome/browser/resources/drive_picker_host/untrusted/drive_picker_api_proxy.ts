@@ -55,6 +55,7 @@ export interface GooglePickerBuilder {
   setDeveloperKey(key: string): GooglePickerBuilder;
   setAppId(appId: string): GooglePickerBuilder;
   setOrigin(origin: string): GooglePickerBuilder;
+  setSize(width: number, height: number): GooglePickerBuilder;
   enableFeature(feature: string): GooglePickerBuilder;
   setCallback(callback: (data: GooglePickerResponse) => void):
       GooglePickerBuilder;
@@ -154,6 +155,7 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
               // Drive Picker to appear since untrusted content is
               // blocked by Chrome.
               .setOrigin('chrome://drive-picker-host')
+              .setSize(window.innerWidth, window.innerHeight)
               .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
               .setCallback((data: GooglePickerResponse) => {
                 const action = data[google.picker.Response.ACTION];

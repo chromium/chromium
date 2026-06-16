@@ -35,6 +35,7 @@ source_set("drive_picker_host") {
     "//chrome/browser/ui/webui/drive_picker_host",
     "//chrome/browser/ui/webui/drive_picker_host:mojo_bindings",
     "//chrome/common",
+    "//components/constrained_window",
     "//content/public/browser",
     "//net",
     "//skia",
