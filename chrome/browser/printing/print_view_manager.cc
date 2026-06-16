@@ -236,6 +236,7 @@ void PrintViewManager::PrintPreviewDone() {
     MaybeUnblockScriptedPreviewRPH();
     scripted_print_preview_rph_ = nullptr;
   }
+  ClearPrintPreviewSettings();
   print_preview_state_ = NOT_PREVIEWING;
   print_preview_rfh_ = nullptr;
   for (auto& observer : GetTestObservers()) {

@@ -1512,15 +1512,15 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  TestPrintViewManager print_view_manager(web_contents);
-  PrintViewManager::SetReceiverImplForTesting(&print_view_manager);
+  TestPrintViewManager* print_view_manager =
+      TestPrintViewManager::CreateForWebContents(web_contents);
 
   PrintAndWaitUntilPreviewIsReady();
 
   EXPECT_EQ(3u, rendered_page_count());
 
   const mojom::PrintPagesParamsPtr& snooped_params =
-      print_view_manager.snooped_params();
+      print_view_manager->snooped_params();
   ASSERT_TRUE(snooped_params);
   EXPECT_EQ(test::kPrinterCapabilitiesDpi, snooped_params->params->dpi);
 
@@ -1546,15 +1546,15 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  TestPrintViewManager print_view_manager(web_contents);
-  PrintViewManager::SetReceiverImplForTesting(&print_view_manager);
+  TestPrintViewManager* print_view_manager =
+      TestPrintViewManager::CreateForWebContents(web_contents);
 
   AdjustMediaAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(1u, rendered_page_count());
 
   const mojom::PrintPagesParamsPtr& snooped_params =
-      print_view_manager.snooped_params();
+      print_view_manager->snooped_params();
   ASSERT_TRUE(snooped_params);
   EXPECT_EQ(test::kPrinterCapabilitiesDpi, snooped_params->params->dpi);
 
