@@ -481,6 +481,55 @@ TEST_F(CdmDocumentServiceImplTest, MigrateCdmStorePathRootAcl) {
       FILE_GENERIC_READ | FILE_GENERIC_WRITE | DELETE,
       CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE));
 }
+
+// Verifies that an existing per-origin subdirectory still grants the
+// lpacMediaFoundationCdmData SID effective read/write/delete access after the
+// CDM store root's ACL is re-applied on a subsequent call to
+// GetMediaFoundationCdmData().
+//
+// The first call creates the root with the inherit-only broad ACE and
+// pre-creates <origin_id>/, which inherits (I)(OI)(CI)(R,W,D) for the SID at
+// creation time. The second call sees the root already exists and runs the
+// migration path, which revokes the SID's ACEs on the root (cascading the
+// removal through NTFS auto-inheritance onto existing children) and then
+// re-applies the inherit-only broad ACE. The final re-apply must propagate
+// the new ACE onto existing <origin_id>/ subdirectories so the LPAC retains
+// access to per-origin CDM state created in an earlier session.
+TEST_F(CdmDocumentServiceImplTest, MigrationPreservesAccessOnExistingSubdirs) {
+  NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin));
+
+  // Session 1: creates the root and pre-creates the per-origin subdir.
+  auto data1 = GetMediaFoundationCdmData();
+  ASSERT_TRUE(data1);
+  base::FilePath origin_subdir =
+      data1->cdm_store_path_root.AppendASCII(data1->origin_id.ToString());
+  ASSERT_TRUE(base::PathExists(origin_subdir));
+
+  auto sids = base::win::Sid::FromNamedCapabilityVector(
+      {sandbox::policy::kMediaFoundationCdmData});
+  ASSERT_FALSE(sids.empty());
+
+  // After session 1, the per-origin subdir should have inherited the broad
+  // ACE from the root (effective on the subdir itself, not just inherit-only).
+  EXPECT_TRUE(base::win::HasAccessToPath(
+      origin_subdir, sids, FILE_GENERIC_READ | FILE_GENERIC_WRITE | DELETE,
+      CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE))
+      << "Newly-created per-origin subdir should inherit the LPAC ACE.";
+
+  // Session 2: same origin, root already exists -> migration path runs.
+  auto data2 = GetMediaFoundationCdmData();
+  ASSERT_TRUE(data2);
+  ASSERT_EQ(data1->origin_id, data2->origin_id);
+  ASSERT_TRUE(base::PathExists(origin_subdir));
+
+  // After migration, the same per-origin subdir must still grant the LPAC SID
+  // effective FILE_GENERIC_READ | FILE_GENERIC_WRITE | DELETE.
+  EXPECT_TRUE(base::win::HasAccessToPath(
+      origin_subdir, sids, FILE_GENERIC_READ | FILE_GENERIC_WRITE | DELETE,
+      CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE))
+      << "After migration, per-origin subdir lost effective LPAC access; the "
+         "inherit-only ACE on the root did not propagate to existing children.";
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

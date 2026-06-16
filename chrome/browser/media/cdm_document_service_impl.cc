@@ -159,12 +159,20 @@ bool CreateCdmStorePathRootAndGrantAccessIfNeeded(
   }
 
   // Grant full access to children via inheritance, so that subdirectories
-  // corresponding to specific origin IDs are accessible.
+  // corresponding to specific origin IDs are accessible. Use recursive=true so
+  // the write goes through SetNamedSecurityInfoW, which triggers NTFS DACL
+  // auto-inheritance propagation. This is required to push the new inheritable
+  // ACE onto existing <origin_id>/ subdirectories whose inherited copy of this
+  // ACE was just stripped by RevokeAccess above. With recursive=false the
+  // write would go through SetSecurityInfo(SE_KERNEL_OBJECT), which does not
+  // propagate to existing children, leaving them inaccessible to the LPAC.
+  // The ACE applied to the root itself is identical in either case; only the
+  // propagation to existing children differs.
   return base::win::GrantAccessToPath(
       cdm_store_path_root, sids,
       FILE_GENERIC_READ | FILE_GENERIC_WRITE | DELETE,
       CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE,
-      /*recursive=*/false);
+      /*recursive=*/true);
 }
 
 std::unique_ptr<media::MediaFoundationCdmData>
