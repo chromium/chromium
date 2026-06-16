@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.open_in_app.OpenInAppDelegate;
 import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
 import org.chromium.chrome.browser.password_manager.CctPasswordSavingMetricsRecorderBridge;
@@ -261,12 +261,11 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public boolean shouldDisableAllExternalIntents() {
-        if (!ChromeFeatureList.sGlic.isEnabled()) {
+        Profile profile = mTab.getProfile();
+        if (profile == null || !GlicEnabling.isEnabledForProfile(profile)) {
             return false;
         }
 
-        Profile profile = mTab.getProfile();
-        if (profile == null) return false;
         var actorService = ActorKeyedServiceFactory.getForProfile(profile);
         if (actorService == null) {
             return false;

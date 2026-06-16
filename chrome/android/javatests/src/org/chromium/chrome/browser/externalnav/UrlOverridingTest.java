@@ -97,6 +97,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -969,6 +970,7 @@ public class UrlOverridingTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.GLIC})
     public void testNavigationWithFallbackURL_ActorTaskShouldBlock() throws Exception {
+        GlicEnabling.setEnabledForTesting(true);
         ActorKeyedService mockActorService = Mockito.mock(ActorKeyedService.class);
         ActorKeyedServiceFactory.setForTesting(mockActorService);
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();

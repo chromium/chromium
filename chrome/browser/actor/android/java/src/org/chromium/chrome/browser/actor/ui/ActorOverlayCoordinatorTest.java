@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -101,6 +102,7 @@ public class ActorOverlayCoordinatorTest {
 
     @Before
     public void setUp() {
+        GlicEnabling.setEnabledForTesting(true);
         Activity activity = Robolectric.buildActivity(Activity.class).get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         ActorOverlayView realView =
@@ -116,6 +118,7 @@ public class ActorOverlayCoordinatorTest {
         mUserDataHost = new UserDataHost();
         Mockito.when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
         Mockito.when(mTab.getId()).thenReturn(TAB_ID);
+        Mockito.when(mTab.getProfile()).thenReturn(mProfile);
 
         // Make ActorUiTabController.from() return a real instance.
         mTabController = ActorUiTabController.from(mTab);
@@ -531,6 +534,7 @@ public class ActorOverlayCoordinatorTest {
         Tab tab2 = Mockito.mock(Tab.class);
         UserDataHost userDataHost2 = new UserDataHost();
         Mockito.when(tab2.getUserDataHost()).thenReturn(userDataHost2);
+        Mockito.when(tab2.getProfile()).thenReturn(mProfile);
 
         clearInvocations(mView);
         mCurrentTabSupplier.set(tab2);
@@ -592,6 +596,7 @@ public class ActorOverlayCoordinatorTest {
         Tab tab2 = Mockito.mock(Tab.class);
         UserDataHost userDataHost2 = new UserDataHost();
         Mockito.when(tab2.getUserDataHost()).thenReturn(userDataHost2);
+        Mockito.when(tab2.getProfile()).thenReturn(mProfile);
         mCurrentTabSupplier.set(tab2);
         ActorUiTabController tabController2 = ActorUiTabController.from(tab2);
 
