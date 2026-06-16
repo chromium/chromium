@@ -852,6 +852,8 @@ BASE_DECLARE_FEATURE(kHttpsFirstModeIncognito);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kIndigo);
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool> kIndigoRequireGlicEnabling;
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kIndigoAnchoredMessageResetDuration;
 COMPONENT_EXPORT(CHROME_FEATURES)
