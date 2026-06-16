@@ -199,7 +199,6 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
   TRACE_EVENT("ui", "-[SceneViewController viewSafeAreaInsetsDidChange]");
   [super viewSafeAreaInsetsDidChange];
   [self updateAssistantTopConstraints:self.layoutState.containedLayoutActive];
-  [self.view layoutIfNeeded];
 }
 
 #pragma mark - Public
@@ -379,7 +378,6 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
 - (void)layoutState:(LayoutState*)layoutState
     didChangeWindowedMode:(BOOL)windowedMode {
   [self updateAssistantTopConstraints:self.layoutState.containedLayoutActive];
-  [self.view layoutIfNeeded];
 }
 
 - (void)layoutState:(LayoutState*)layoutState
