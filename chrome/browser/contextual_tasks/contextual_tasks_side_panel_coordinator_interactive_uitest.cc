@@ -1058,9 +1058,8 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExistsEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFrameLoadedEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kComposeboxFocusedEvent);
 
-IN_PROC_BROWSER_TEST_F(
-    ContextualTasksSidePanelCoordinatorInteractiveUiTest,
-    DISABLED_ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden) {
   SetUpTasks();
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
