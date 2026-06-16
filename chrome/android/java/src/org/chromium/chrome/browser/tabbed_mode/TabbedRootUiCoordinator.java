@@ -1215,7 +1215,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         initiateTabBottomSheetManagers();
 
-        if (GlicEnabling.isEnabledByFlags() && mTabBottomSheetManager != null) {
+        if (GlicEnabling.isEnabledByFlags()
+                && (mTabBottomSheetManager != null || AndroidSidePanelEnabledFn.isEnabled())) {
             GlicNavigationUtils.setLauncher(SigninAndHistorySyncActivityLauncherImpl::get);
             ViewStub actorOverlayStub = mActivity.findViewById(R.id.actor_overlay_stub);
             mGlicUiCoordinator =

@@ -38,7 +38,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistr
 public class GlicUiCoordinator implements Destroyable {
 
     private final Activity mActivity;
-    private final ActorControlCoordinator mActorControlCoordinator;
+    private final @Nullable ActorControlCoordinator mActorControlCoordinator;
     private final ActorOverlayCoordinator mActorOverlayCoordinator;
     private final ActorTaskHelper mActorTaskHelper;
 
@@ -62,7 +62,7 @@ public class GlicUiCoordinator implements Destroyable {
      */
     public GlicUiCoordinator(
             Activity activity,
-            TabBottomSheetManager tabBottomSheetManager,
+            @Nullable TabBottomSheetManager tabBottomSheetManager,
             MonotonicObservableSupplier<Profile> profileSupplier,
             NullableObservableSupplier<Tab> activityTabProvider,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
@@ -77,19 +77,23 @@ public class GlicUiCoordinator implements Destroyable {
             @Nullable SideUiStateProvider sideUiStateProvider) {
         mActivity = activity;
 
-        mActorControlCoordinator =
-                new ActorControlCoordinator(
-                        mActivity,
-                        tabBottomSheetManager,
-                        profileSupplier,
-                        activityTabProvider,
-                        (tabId) -> {
-                            TabModelSelector selector = tabModelSelectorSupplier.get();
-                            if (selector != null) {
-                                TabModelUtils.selectTabById(
-                                        selector, tabId, TabSelectionType.FROM_USER);
-                            }
-                        });
+        if (tabBottomSheetManager != null) {
+            mActorControlCoordinator =
+                    new ActorControlCoordinator(
+                            mActivity,
+                            tabBottomSheetManager,
+                            profileSupplier,
+                            activityTabProvider,
+                            (tabId) -> {
+                                TabModelSelector selector = tabModelSelectorSupplier.get();
+                                if (selector != null) {
+                                    TabModelUtils.selectTabById(
+                                            selector, tabId, TabSelectionType.FROM_USER);
+                                }
+                            });
+        } else {
+            mActorControlCoordinator = null;
+        }
 
         mActorOverlayCoordinator =
                 new ActorOverlayCoordinator(
@@ -114,7 +118,9 @@ public class GlicUiCoordinator implements Destroyable {
 
     @Override
     public void destroy() {
-        mActorControlCoordinator.destroy();
+        if (mActorControlCoordinator != null) {
+            mActorControlCoordinator.destroy();
+        }
         mActorOverlayCoordinator.destroy();
         mActorTaskHelper.onDestroy();
         mActorTaskHelper.destroy();
