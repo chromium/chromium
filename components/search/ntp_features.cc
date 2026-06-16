@@ -510,6 +510,14 @@ const base::FeatureParam<int> kMaxMostVisitedTilesInExpandedState{
 const base::FeatureParam<int> kMaxEnterpriseShortcuts{
     &ntp_features::kNtpShortcutsRedesign, "max_enterprise_shortcuts", 10};
 
+const base::FeatureParam<int> kBookmarkBarCountThreshold{
+    &ntp_features::kNtpSimplificationBookmarkBar, "BookmarkBarCountThreshold",
+    15};
+const base::FeatureParam<base::TimeDelta> kBookmarkBarMinStalenessTimeInterval(
+    &ntp_features::kNtpSimplificationBookmarkBar,
+    "BookmarkBarMinStalenessTimeInterval",
+    base::Days(1));
+
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
       kNtpModulesLoadTimeoutMilliseconds,

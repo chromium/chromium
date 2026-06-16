@@ -672,6 +672,16 @@ inline constexpr char kBookmarkBarHoverCount[] = "bookmark_bar.hover_count";
 inline constexpr char kBookmarkBarNavigationCount[] =
     "bookmark_bar.navigation_count";
 
+// A time pref that records the previous time the bookmark bar was rendered on
+// the NTP. It is only updated max once per 24 hours.
+inline constexpr char kBookmarkBarPreviousInitialRenderOnNtpTime[] =
+    "bookmark_bar.previous_render_on_ntp_time";
+
+// An integer pref that records how many times the bookmark bar is rendered on
+// the NTP. It is only updated max once per 24 hours.
+inline constexpr char kBookmarkBarRenderedOnNtpCount[] =
+    "bookmark_bar.rendered_on_ntp_count";
+
 // A boolean pref set to true if the Split Tab button should be pinned to the
 // toolbar.
 inline constexpr char kPinSplitTabButton[] = "browser.pin_split_tab_button";

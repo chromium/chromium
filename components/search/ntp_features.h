@@ -278,6 +278,15 @@ extern const base::FeatureParam<int> kStaleShortcutsCountThreshold;
 // and eligible for auto-removal.
 extern const base::FeatureParam<int> kStaleModulesCountThreshold;
 
+// Parameter determining the count at which the bookmark bar will be eligible
+// for auto-removal.
+extern const base::FeatureParam<int> kBookmarkBarCountThreshold;
+
+// Parameter determining the minimum amount of time before auto-removal prefs
+// are updated.
+extern const base::FeatureParam<base::TimeDelta>
+    kBookmarkBarMinStalenessTimeInterval;
+
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
 

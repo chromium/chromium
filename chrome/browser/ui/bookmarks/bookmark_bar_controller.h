@@ -111,6 +111,8 @@ class BookmarkBarController : public TabStripModelObserver,
   // Simplification experiment is active.
   void OnBookmarkBarVisibilityStateChanged();
 
+  void MaybeUpdateAutoRemovalPrefs();
+
   const raw_ref<BrowserWindowInterface> browser_;
   const raw_ref<TabStripModel> tab_strip_model_;
 
