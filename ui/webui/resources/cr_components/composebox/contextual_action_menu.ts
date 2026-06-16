@@ -33,11 +33,14 @@ const MENU_WIDTH_PX = 190;
 
 const SHARE_TABS_MENU_WIDTH_PX = 240;
 const SHARE_TABS_FLYOUT_CLOSE_DELAY_MS = 300;
-const SHARE_TABS_FLYOUT_GAP_PX = 4;
+const SHARE_TABS_FLYOUT_GAP_PX = 0;
 
 const ALIGNMENT_THRESHOLD_PX = 160;
 const VIEWPORT_BUFFER_PX = 16;
 const MIN_MENU_HEIGHT_PX = 100;
+
+// Gap between tab shared menu and context menu in px.
+const MENU_GAP = 0;
 
 export interface ContextualActionMenuElement {
   $: {
@@ -184,6 +187,11 @@ export class ContextualActionMenuElement extends
         },
       ],
     ]);
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.setAttribute('style', `--menu-gap: ${MENU_GAP}px;`);
   }
 
   override disconnectedCallback() {
@@ -663,14 +671,22 @@ export class ContextualActionMenuElement extends
 
       flyout.style.top = `${triggerRect.top}px`;
 
-      if (triggerRect.right + flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX <=
-          viewportWidth) {
+      // If the flyout fits in the window when on the right, put it on the
+      // right:
+      if (flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX <=
+            // Space remaining to right of right part of button:
+          viewportWidth - triggerRect.right) {
+
         this.shareTabsFlyoutPosition_ = 'right';
         flyout.style.left = `${triggerRect.right + SHARE_TABS_FLYOUT_GAP_PX}px`;
+        flyout.style.right = '';
       } else if (triggerRect.left >= flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX) {
+        // Otherwise, if the space on the left (x=0 to the x=left edge of the
+        // button) is enough for the flyout and gap:
         this.shareTabsFlyoutPosition_ = 'left';
         flyout.style.left =
             `${triggerRect.left - flyoutWidth - SHARE_TABS_FLYOUT_GAP_PX}px`;
+        flyout.style.right = '';
       } else {
         this.shareTabsFlyoutPosition_ = 'bottom';
         flyout.style.top = `${triggerRect.bottom + SHARE_TABS_FLYOUT_GAP_PX}px`;

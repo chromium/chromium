@@ -1200,7 +1200,7 @@ suite('ContextualActionMenu', () => {
     await microtasksFinished();
 
     assertEquals('right', flyout.getAttribute('data-position'));
-    assertEquals('254px', flyout.style.left);
+    assertEquals('250px', flyout.style.left);
 
     // When blocked on the right, enough space to the left positions the flyout to the left.
     trigger.getBoundingClientRect = () => ({
@@ -1218,7 +1218,7 @@ suite('ContextualActionMenu', () => {
     await microtasksFinished();
 
     assertEquals('left', flyout.getAttribute('data-position'));
-    assertEquals('76px', flyout.style.left);
+    assertEquals('80px', flyout.style.left);
 
     // When blocked on both sides in a narrow panel, the flyout positions at the bottom with a bounded indent.
     trigger.getBoundingClientRect = () => ({
