@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -172,6 +173,23 @@ public class ListMenuItemViewBinder {
             @ColorRes
             int tintColorId = model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);
             ListMenuUtils.applyTintToAllIcons(view, tintColorId);
+            Boolean shouldTintEndIcon = model.get(ListMenuItemProperties.SHOULD_TINT_END_ICON);
+            if (shouldTintEndIcon != null && !shouldTintEndIcon) {
+                if (endIcon != null) {
+                    ImageViewCompat.setImageTintList(endIcon, null);
+                }
+            }
+        } else if (propertyKey == ListMenuItemProperties.SHOULD_TINT_END_ICON) {
+            Boolean shouldTintEndIcon = model.get(ListMenuItemProperties.SHOULD_TINT_END_ICON);
+            if (endIcon != null) {
+                if (shouldTintEndIcon != null && !shouldTintEndIcon) {
+                    ImageViewCompat.setImageTintList(endIcon, null);
+                } else {
+                    int tintColorId =
+                            model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);
+                    ListMenuUtils.applyTintToAllIcons(view, tintColorId);
+                }
+            }
         } else if (propertyKey == ListMenuItemProperties.TEXT_APPEARANCE_ID) {
             textView.setTextAppearance(model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
         } else if (propertyKey == ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END) {

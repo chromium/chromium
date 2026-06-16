@@ -67,6 +67,9 @@ public class ListMenuItemViewBinderUnitTest {
         when(mListItemView.findViewById(R.id.menu_item_end_icon)).thenReturn(mEndIcon);
         when(mListItemView.findViewById(R.id.menu_item_subtitle)).thenReturn(mSubtitleView);
         when(mStartIcon.getLayoutParams()).thenReturn(mLayoutParams);
+        when(mStartIcon.getContext()).thenReturn(mContext);
+        when(mEndIcon.getContext()).thenReturn(mContext);
+        when(mSubmenuArrow.getContext()).thenReturn(mContext);
 
         // Required for ListMenuUtils.applyTintToAllIcons recursion to find icons.
         // Hierarchy from list_menu_item.xml:
@@ -200,6 +203,64 @@ public class ListMenuItemViewBinderUnitTest {
         verify(mStartIcon).setImageTintList(null);
         verify(mEndIcon).setImageTintList(null);
         verify(mSubmenuArrow).setImageTintList(null);
+    }
+
+    @Test
+    @SmallTest
+    public void testIconTint_shouldNotTintEndIcon() {
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(
+                                ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
+                                R.color.default_text_color_link_baseline)
+                        .with(ListMenuItemProperties.SHOULD_TINT_END_ICON, false)
+                        .build();
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID);
+
+        verify(mStartIcon).setImageTintList(any(ColorStateList.class));
+        verify(mSubmenuArrow).setImageTintList(any(ColorStateList.class));
+        // End icon should have its tint cleared (set to null)
+        verify(mEndIcon).setImageTintList(null);
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldTintEndIconProperty() {
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.SHOULD_TINT_END_ICON, false)
+                        .build();
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.SHOULD_TINT_END_ICON);
+
+        // End icon should have its tint cleared (set to null)
+        verify(mEndIcon).setImageTintList(null);
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldTintEndIconProperty_recyclesToTrue() {
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(
+                                ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
+                                R.color.default_text_color_link_baseline)
+                        .with(ListMenuItemProperties.SHOULD_TINT_END_ICON, false)
+                        .build();
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.SHOULD_TINT_END_ICON);
+
+        // End icon should have its tint cleared (set to null)
+        verify(mEndIcon).setImageTintList(null);
+
+        // Set shouldTintEndIcon to true
+        propertyModel.set(ListMenuItemProperties.SHOULD_TINT_END_ICON, true);
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.SHOULD_TINT_END_ICON);
+
+        // Now end icon should be tinted using ICON_TINT_COLOR_STATE_LIST_ID
+        verify(mEndIcon).setImageTintList(any(ColorStateList.class));
     }
 
     @Test

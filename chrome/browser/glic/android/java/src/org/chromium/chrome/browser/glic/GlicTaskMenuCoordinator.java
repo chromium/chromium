@@ -204,8 +204,9 @@ public class GlicTaskMenuCoordinator {
             }
 
             int endIconRes = getEndIconRes(needsReview, AndroidSidePanelEnabledFn.isEnabled());
-            builder.withEndIconWidth(endIconWidthPx).withEndIconRes(endIconRes);
-
+            builder.withEndIconWidth(endIconWidthPx)
+                    .withEndIconRes(endIconRes)
+                    .withShouldTintEndIcon(endIconRes != R.drawable.glic_menu_dot);
             modelList.add(builder.build());
         }
 

@@ -42,6 +42,7 @@ public class ListItemBuilder {
     private boolean mIsTextEllipsizedAtEnd;
     private boolean mIsIncognito;
     private boolean mShouldTintIcon;
+    private boolean mShouldTintEndIcon;
     private @ColorRes int mIconTintColorStateList;
     private int mStartIconWidth;
     private int mEndIconWidth;
@@ -61,6 +62,7 @@ public class ListItemBuilder {
 
         mEnabled = true;
         mShouldTintIcon = true;
+        mShouldTintEndIcon = true;
     }
 
     /**
@@ -117,6 +119,15 @@ public class ListItemBuilder {
      */
     public ListItemBuilder withShouldTintIcon(boolean shouldTintIcon) {
         mShouldTintIcon = shouldTintIcon;
+        return this;
+    }
+
+    /**
+     * @param shouldTintEndIcon Whether the end icon should be tinted. By default, end icons are
+     *     tinted.
+     */
+    public ListItemBuilder withShouldTintEndIcon(boolean shouldTintEndIcon) {
+        mShouldTintEndIcon = shouldTintEndIcon;
         return this;
     }
 
@@ -251,7 +262,8 @@ public class ListItemBuilder {
         if (!hasSubmenu) {
             builder.with(ListMenuItemProperties.MENU_ITEM_ID, mMenuId)
                     .with(ListMenuItemProperties.START_ICON_ID, mStartIconRes)
-                    .with(ListMenuItemProperties.END_ICON_ID, mEndIconRes);
+                    .with(ListMenuItemProperties.END_ICON_ID, mEndIconRes)
+                    .with(ListMenuItemProperties.SHOULD_TINT_END_ICON, mShouldTintEndIcon);
         } else {
             builder.with(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER, () -> mSubmenuItems);
         }
