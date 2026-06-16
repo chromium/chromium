@@ -122,6 +122,8 @@ void SpeechSynthesis::speak(ScriptState* script_state,
   if (!script_state->ContextIsValid())
     return;
 
+  UseCounter::Count(GetSupplementable(), WebFeature::kWebSpeechTtsSynthesize);
+
   // Note: Non-UseCounter based TTS metrics are of the form TextToSpeech.* and
   // are generally global, whereas these are scoped to a single page load.
   UseCounter::Count(GetSupplementable(), WebFeature::kTextToSpeech_Speak);
@@ -189,11 +191,17 @@ void SpeechSynthesis::DidResumeSpeaking(SpeechSynthesisUtterance* utterance) {
 void SpeechSynthesis::DidFinishSpeaking(
     SpeechSynthesisUtterance* utterance,
     mojom::blink::SpeechSynthesisErrorCode error_code) {
+  if (GetSupplementable()) {
+    UseCounter::Count(GetSupplementable(), WebFeature::kWebSpeechTtsSuccess);
+  }
   HandleSpeakingCompleted(utterance, error_code);
 }
 
 void SpeechSynthesis::SpeakingErrorOccurred(
     SpeechSynthesisUtterance* utterance) {
+  if (GetSupplementable()) {
+    UseCounter::Count(GetSupplementable(), WebFeature::kWebSpeechTtsError);
+  }
   HandleSpeakingCompleted(
       utterance, mojom::blink::SpeechSynthesisErrorCode::kErrorOccurred);
 }

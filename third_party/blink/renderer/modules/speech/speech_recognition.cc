@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/modules/speech/speech_recognition_phrase.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -196,6 +197,7 @@ ScriptPromise<V8AvailabilityStatus> SpeechRecognition::available(
     const blink::SpeechRecognitionOptions* options,
     ExceptionState& exception_state) {
   LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
+  UseCounter::Count(window, WebFeature::kWebSpeechSttAvailable);
   auto* controller = SpeechRecognitionController::From(window);
   if (!controller || !script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -335,6 +337,10 @@ ScriptPromise<IDLBoolean> SpeechRecognition::install(
 
 void SpeechRecognition::ResultRetrieved(
     Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results) {
+  if (GetExecutionContext()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kWebSpeechSttResultRetrieved);
+  }
   auto it = std::stable_partition(
       results.begin(), results.end(),
       [](const auto& result) { return !result->is_provisional; });
@@ -376,6 +382,9 @@ void SpeechRecognition::ResultRetrieved(
 
 void SpeechRecognition::ErrorOccurred(
     media::mojom::blink::SpeechRecognitionErrorPtr error) {
+  if (GetExecutionContext()) {
+    UseCounter::Count(GetExecutionContext(), WebFeature::kWebSpeechSttError);
+  }
   base::UmaHistogramEnumeration(kWebSpeechErrorOccurredHistogram, error->code);
   if (error->code ==
       media::mojom::blink::SpeechRecognitionErrorCode::kNoMatch) {
@@ -628,6 +637,7 @@ void SpeechRecognition::StartController(
   // SpeechRecognitionMediaStreamAudioSink), the caller must not invoke it after
   // the ExecutionContext is destroyed.
   CHECK(GetExecutionContext());
+  UseCounter::Count(GetExecutionContext(), WebFeature::kWebSpeechSttStart);
 
   LocalDOMWindow* window = DomWindow();
   bool can_use_on_device_recognition = window->IsFeatureEnabled(

@@ -481,6 +481,13 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kCredentialsGetImmediateMediationWithWebAuthnOnly,
           WebFeature::kCredentialsGetImmediateMediationWithWebAuthnAndPasswords,
           WebFeature::kPreventSvgFilterPaint,
+          WebFeature::kWebSpeechSttAvailable,
+          WebFeature::kWebSpeechSttStart,
+          WebFeature::kWebSpeechSttResultRetrieved,
+          WebFeature::kWebSpeechSttError,
+          WebFeature::kWebSpeechTtsSynthesize,
+          WebFeature::kWebSpeechTtsSuccess,
+          WebFeature::kWebSpeechTtsError,
           // NOTE: before adding new use counters here, verify in UMA that
           // their emissions are very rare, e.g. <1% of page loads.
       }));

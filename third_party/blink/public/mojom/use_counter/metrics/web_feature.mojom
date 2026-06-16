@@ -5218,6 +5218,14 @@ enum WebFeature {
   kSubtleCryptoGetPublicKey = 5901,
   kCapabilityDelegationOfDigitalCredentialsCreate = 5902,
   kCapabilityDelegationOfDigitalCredentialsGet = 5903,
+  kModelContextGetTools = 5904,
+  kWebSpeechSttAvailable = 5905,
+  kWebSpeechSttStart = 5906,
+  kWebSpeechSttResultRetrieved = 5907,
+  kWebSpeechSttError = 5908,
+  kWebSpeechTtsSynthesize = 5909,
+  kWebSpeechTtsSuccess = 5910,
+  kWebSpeechTtsError = 5911,
   kEmailVerificationProtocol = 5916,
 
   // Add new features immediately above this line. Don't change the existing
