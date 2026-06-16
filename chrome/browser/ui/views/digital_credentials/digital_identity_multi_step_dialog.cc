@@ -272,10 +272,18 @@ void DigitalIdentityMultiStepDialog::TryShow(
                    std::move(custom_body_field));
 
   if (new_dialog_delegate) {
+    base::WeakPtr<DigitalIdentityMultiStepDialog> weak_ptr =
+        weak_ptr_factory_.GetWeakPtr();
     // views::Widget takes ownership of `new_dialog_delegate`.
-    dialog_ = constrained_window::ShowWebModalDialogViews(
-                  new_dialog_delegate.release(), web_contents_.get())
-                  ->GetWeakPtr();
+    views::Widget* widget = constrained_window::ShowWebModalDialogViews(
+        new_dialog_delegate.release(), web_contents_.get());
+    // `ShowWebModalDialogViews` can spin a nested message loop and
+    // synchronously destroy `this`. Check `weak_ptr` before accessing member
+    // variables.
+    if (!weak_ptr) {
+      return;
+    }
+    dialog_ = widget->GetWeakPtr();
   }
   if (dialog_title.empty()) {
     // Adding a top margin is necessary only when there is no title in which

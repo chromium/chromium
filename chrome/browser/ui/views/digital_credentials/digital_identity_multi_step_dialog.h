@@ -151,6 +151,8 @@ class DigitalIdentityMultiStepDialog {
   base::WeakPtr<content::WebContents> web_contents_;
 
   base::WeakPtr<views::Widget> dialog_;
+
+  base::WeakPtrFactory<DigitalIdentityMultiStepDialog> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DIGITAL_CREDENTIALS_DIGITAL_IDENTITY_MULTI_STEP_DIALOG_H_
