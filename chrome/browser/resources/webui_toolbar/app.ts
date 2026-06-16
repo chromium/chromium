@@ -51,7 +51,7 @@ import {PointerProxyImpl} from './pointer_proxy.js';
 import type {PointerProxy} from './pointer_proxy.js';
 import {PermissionChipElement} from './permission_chip.js';
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
-import {getClickSourceType, getContextMenuSourceType} from './toolbar_button.js';
+import {getClickSourceType, getContextMenuSourceType, PressHandler} from './toolbar_button.js';
 
 export {
   BrowserProxyImpl,
@@ -61,6 +61,7 @@ export {
   EventDispositionFlag,
   getClickSourceType,
   getContextMenuSourceType,
+  PressHandler,
   IconTable,
   IconType,
   LhsChipIdentifier,
