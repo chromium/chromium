@@ -621,8 +621,12 @@ TEST_F(LazyLoadMediaTest, LazyLoadVideoWithTrackDefersTrackLoading) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  // Now both the video and its track should start loading.
+  // Now both the video and its deferred track should start loading. Serving
+  // the track resource fires its load event, proving the request was issued.
   EXPECT_TRUE(ConsoleMessages().Contains("video loadstart"));
+  track_resource.Complete("WEBVTT\n\n00:00:00.000 --> 00:00:01.000\nhello\n");
+  test::RunPendingTasks();
+  EXPECT_TRUE(ConsoleMessages().Contains("track loaded"));
 }
 
 // Test that removed lazy media elements are garbage collected properly.
