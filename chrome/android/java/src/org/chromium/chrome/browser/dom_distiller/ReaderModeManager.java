@@ -19,6 +19,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.RequiredCallback;
@@ -734,8 +735,9 @@ public class ReaderModeManager extends EmptyTabObserver
     }
 
     public void activateReaderMode(@EntryPoint int entryPoint) {
-        Runnable activateRunnable =
-                () -> {
+        Callback<Boolean> activateCallback =
+                (confirmed) -> {
+                    if (!confirmed) return;
                     // Contextual page action buttons can't be dismissed, instead we consider a
                     // shown but unused
                     // button as "dismissed" and mute the site on setReaderModeUiShown(). When the
@@ -768,8 +770,8 @@ public class ReaderModeManager extends EmptyTabObserver
                 };
 
         ActorUiTabController controller = ActorUiTabController.from(mTab);
-        if (controller == null || !controller.showTaskAbortConfirmationDialog(activateRunnable)) {
-            activateRunnable.run();
+        if (controller == null || !controller.showTaskAbortConfirmationDialog(activateCallback)) {
+            activateCallback.onResult(true);
         }
     }
 

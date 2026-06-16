@@ -417,7 +417,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 /* canPromoteToNewTab= */ mActivityType == ActivityType.TABBED
                         || mActivityType == ActivityType.CUSTOM_TAB,
                 /* shouldHaveContextMenu= */ true,
-                initiatorOrigin);
+                initiatorOrigin,
+                () -> {});
     }
 
     /**

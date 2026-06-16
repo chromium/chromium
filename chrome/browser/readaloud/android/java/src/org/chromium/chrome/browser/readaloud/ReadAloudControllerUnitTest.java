@@ -208,6 +208,7 @@ public class ReadAloudControllerUnitTest {
     @Captor ArgumentCaptor<LayoutStateObserver> mLayoutStateObserver;
     @Captor ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserver;
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
+    @Captor ArgumentCaptor<Callback<Boolean>> mGlicCallbackCaptor;
 
     @Mock private Playback mPlayback;
     @Mock private Playback.Metadata mMetadata;
@@ -1024,11 +1025,11 @@ public class ReadAloudControllerUnitTest {
     @EnableFeatures(ChromeFeatureList.GLIC)
     public void testPlayTab_WithGlicActive_Confirm() {
         when(mActorUiTabController.isActorActive()).thenReturn(true);
-        when(mActorUiTabController.showTaskAbortConfirmationDialog(any(Runnable.class)))
+        when(mActorUiTabController.showTaskAbortConfirmationDialog(any()))
                 .thenAnswer(
                         invocation -> {
-                            Runnable runnable = invocation.getArgument(0);
-                            runnable.run();
+                            Callback<Boolean> callback = invocation.getArgument(0);
+                            callback.onResult(true);
                             return true;
                         });
 
@@ -1038,7 +1039,7 @@ public class ReadAloudControllerUnitTest {
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
 
-        verify(mActorUiTabController).showTaskAbortConfirmationDialog(any(Runnable.class));
+        verify(mActorUiTabController).showTaskAbortConfirmationDialog(any());
         verify(mPlaybackHooks).createPlayback(any(), any());
     }
 
@@ -1046,8 +1047,7 @@ public class ReadAloudControllerUnitTest {
     @EnableFeatures(ChromeFeatureList.GLIC)
     public void testPlayTab_WithGlicActive_Cancel() {
         when(mActorUiTabController.isActorActive()).thenReturn(true);
-        when(mActorUiTabController.showTaskAbortConfirmationDialog(any(Runnable.class)))
-                .thenReturn(true);
+        when(mActorUiTabController.showTaskAbortConfirmationDialog(any())).thenReturn(true);
 
         mFakeTranslateBridge.setCurrentLanguage("en");
         mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
@@ -1055,17 +1055,16 @@ public class ReadAloudControllerUnitTest {
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();
 
-        verify(mActorUiTabController).showTaskAbortConfirmationDialog(any(Runnable.class));
+        verify(mActorUiTabController).showTaskAbortConfirmationDialog(any());
         verify(mPlaybackHooks, never()).createPlayback(any(), any());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC)
     public void testPlayTab_WithGlicActive_Confirm_AfterDestroy() {
-        // Setup: Mock active Glic task and capture dialogue confirm runnable
-        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        // Setup: Mock active Glic task and capture dialogue confirm callback
         when(mActorUiTabController.isActorActive()).thenReturn(true);
-        when(mActorUiTabController.showTaskAbortConfirmationDialog(runnableCaptor.capture()))
+        when(mActorUiTabController.showTaskAbortConfirmationDialog(mGlicCallbackCaptor.capture()))
                 .thenReturn(true);
 
         mFakeTranslateBridge.setCurrentLanguage("en");
@@ -1080,13 +1079,13 @@ public class ReadAloudControllerUnitTest {
 
         // Action 3: Trigger the captured callback simulating clicking Confirm on stale prompt
         // dialog
-        runnableCaptor.getValue().run();
+        mGlicCallbackCaptor.getValue().onResult(true);
         resolvePromises();
 
         // Verification: Assert showTaskAbortConfirmationDialog was called,
         // but verify createPlayback was NEVER called (proving the cancelable wrapper blocked
         // execution successfully after destroy).
-        verify(mActorUiTabController).showTaskAbortConfirmationDialog(any(Runnable.class));
+        verify(mActorUiTabController).showTaskAbortConfirmationDialog(any());
         verify(mPlaybackHooks, never()).createPlayback(any(), any());
     }
 
