@@ -1186,6 +1186,12 @@ public class ImeAdapterImpl
     public boolean performEditorAction(int actionCode) {
         if (!isValid()) return false;
 
+        // Only hide the keyboard on DONE if fullscreen IME is allowed/enabled.
+        // See crbug.com/498324340.
+        if (actionCode == EditorInfo.IME_ACTION_DONE && mAllowFullscreenIme) {
+            hideKeyboard();
+        }
+
         // If mTextInputAction has been specified (indicating an enterKeyHint
         // has been specified in the HTML) then we do will send the enter key
         // events. Otherwise we fallback to having the enter key move focus

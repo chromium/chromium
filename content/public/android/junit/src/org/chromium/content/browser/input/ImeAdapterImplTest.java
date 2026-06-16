@@ -594,4 +594,46 @@ public class ImeAdapterImplTest {
 
         verify(mInputMethodManagerWrapper).hideSoftInputFromWindow(any(), eq(0), isNull());
     }
+
+    @Test
+    public void testPerformEditorAction_ActionDoneWithAllowFullscreenImeHidesKeyboard() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.onConnectedToRenderProcess();
+        reset(mInputMethodManagerWrapper);
+        when(mInputMethodManagerWrapper.isActive(any())).thenReturn(true);
+
+        adapter.setAllowFullscreenIme(true);
+        adapter.performEditorAction(EditorInfo.IME_ACTION_DONE);
+
+        verify(mInputMethodManagerWrapper).isActive(any());
+        verify(mInputMethodManagerWrapper).hideSoftInputFromWindow(any(), eq(0), isNull());
+    }
+
+    @Test
+    public void testPerformEditorAction_ActionDoneWithoutAllowFullscreenImeDoesNotHideKeyboard() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.onConnectedToRenderProcess();
+        reset(mInputMethodManagerWrapper);
+
+        // mAllowFullscreenIme is false by default.
+        adapter.performEditorAction(EditorInfo.IME_ACTION_DONE);
+
+        verify(mInputMethodManagerWrapper, never()).isActive(any());
+        verify(mInputMethodManagerWrapper, never()).hideSoftInputFromWindow(any(), anyInt(), any());
+    }
+
+    @Test
+    public void testPerformEditorAction_ActionNextDoesNotHideKeyboard() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.onConnectedToRenderProcess();
+        reset(mInputMethodManagerWrapper);
+
+        adapter.performEditorAction(EditorInfo.IME_ACTION_NEXT);
+
+        verify(mInputMethodManagerWrapper, never()).isActive(any());
+        verify(mInputMethodManagerWrapper, never()).hideSoftInputFromWindow(any(), anyInt(), any());
+    }
 }
