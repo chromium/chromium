@@ -5834,7 +5834,9 @@ interface MediaStreamTrackGenerator : MediaStreamTrack
     method constructor
 interface MediaStreamTrackProcessor
     attribute @@toStringTag
+    getter discardedFrames
     getter readable
+    getter totalFrames
     method constructor
 interface MediaStreamTrackVideoStats
     attribute @@toStringTag
