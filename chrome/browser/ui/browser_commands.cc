@@ -134,6 +134,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/commerce/core/commerce_utils.h"
@@ -2468,6 +2469,27 @@ void OpenReportUnsafeSiteDialog(BrowserWindowInterface* browser) {
 void ToggleBookmarkBar(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("ShowBookmarksBar"));
   ToggleBookmarkBarWhenVisible(browser->GetProfile());
+}
+
+void SetBookmarkBarVisibilityState(
+    BrowserWindowInterface* browser,
+    bookmarks::BookmarkBarVisibilityState state) {
+  browser->GetProfile()->GetPrefs()->SetInteger(
+      bookmarks::prefs::kBookmarkBarVisibilityState, static_cast<int>(state));
+}
+
+void ToggleShowAppsShortcutInBookmarkBar(BrowserWindowInterface* browser) {
+  bool pref_enabled = browser->GetProfile()->GetPrefs()->GetBoolean(
+      bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
+  browser->GetProfile()->GetPrefs()->SetBoolean(
+      bookmarks::prefs::kShowAppsShortcutInBookmarkBar, !pref_enabled);
+}
+
+void ToggleShowTabGroupsInBookmarkBar(BrowserWindowInterface* browser) {
+  bool pref_enabled = browser->GetProfile()->GetPrefs()->GetBoolean(
+      bookmarks::prefs::kShowTabGroupsInBookmarkBar);
+  browser->GetProfile()->GetPrefs()->SetBoolean(
+      bookmarks::prefs::kShowTabGroupsInBookmarkBar, !pref_enabled);
 }
 
 void ToggleShowFullURLs(BrowserWindowInterface* browser) {

@@ -106,6 +106,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/bookmarks/browser/bookmark_model_load_waiter.h"
+#include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -323,6 +324,21 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
           base::Unretained(this)));
   profile_pref_registrar_.Add(
       bookmarks::prefs::kShowBookmarkBar,
+      base::BindRepeating(
+          &BrowserCommandController::UpdateCommandsForBookmarkBar,
+          base::Unretained(this)));
+  profile_pref_registrar_.Add(
+      bookmarks::prefs::kBookmarkBarVisibilityState,
+      base::BindRepeating(
+          &BrowserCommandController::UpdateCommandsForBookmarkBar,
+          base::Unretained(this)));
+  profile_pref_registrar_.Add(
+      bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
+      base::BindRepeating(
+          &BrowserCommandController::UpdateCommandsForBookmarkBar,
+          base::Unretained(this)));
+  profile_pref_registrar_.Add(
+      bookmarks::prefs::kShowTabGroupsInBookmarkBar,
       base::BindRepeating(
           &BrowserCommandController::UpdateCommandsForBookmarkBar,
           base::Unretained(this)));
@@ -1112,6 +1128,24 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_SHOW_BOOKMARK_BAR:
       ToggleBookmarkBar(browser_);
+      break;
+    case IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW:
+      SetBookmarkBarVisibilityState(
+          browser_, bookmarks::BookmarkBarVisibilityState::kAlwaysShow);
+      break;
+    case IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE:
+      SetBookmarkBarVisibilityState(
+          browser_, bookmarks::BookmarkBarVisibilityState::kAlwaysHide);
+      break;
+    case IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP:
+      SetBookmarkBarVisibilityState(
+          browser_, bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp);
+      break;
+    case IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT:
+      ToggleShowAppsShortcutInBookmarkBar(browser_);
+      break;
+    case IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS:
+      ToggleShowTabGroupsInBookmarkBar(browser_);
       break;
     case IDC_SHOW_FULL_URLS:
       ToggleShowFullURLs(browser_);
@@ -2165,13 +2199,37 @@ void BrowserCommandController::UpdateCommandsForBookmarkBar() {
     return;
   }
 
+  const bool common_enabled =
+      browser_defaults::bookmarks_enabled && !profile()->IsGuestSession() &&
+      !profile()->IsSystemProfile() && IsShowingMainUI();
+
+  const bool visibility_commands_enabled =
+      common_enabled &&
+      !profile()->GetPrefs()->IsManagedPreference(
+          bookmarks::prefs::kBookmarkBarVisibilityState) &&
+      !profile()->GetPrefs()->IsManagedPreference(
+          bookmarks::prefs::kShowBookmarkBar);
+
   command_updater_.UpdateCommandEnabled(
-      IDC_SHOW_BOOKMARK_BAR, browser_defaults::bookmarks_enabled &&
-                                 !profile()->IsGuestSession() &&
-                                 !profile()->IsSystemProfile() &&
-                                 !profile()->GetPrefs()->IsManagedPreference(
-                                     bookmarks::prefs::kShowBookmarkBar) &&
-                                 IsShowingMainUI());
+      IDC_SHOW_BOOKMARK_BAR,
+      common_enabled && !profile()->GetPrefs()->IsManagedPreference(
+                            bookmarks::prefs::kShowBookmarkBar));
+  command_updater_.UpdateCommandEnabled(IDC_BOOKMARK_BAR_SUBMENU,
+                                        common_enabled);
+  command_updater_.UpdateCommandEnabled(IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW,
+                                        visibility_commands_enabled);
+  command_updater_.UpdateCommandEnabled(IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE,
+                                        visibility_commands_enabled);
+  command_updater_.UpdateCommandEnabled(IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP,
+                                        visibility_commands_enabled);
+  command_updater_.UpdateCommandEnabled(
+      IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
+      common_enabled && !profile()->GetPrefs()->IsManagedPreference(
+                            bookmarks::prefs::kShowAppsShortcutInBookmarkBar));
+  command_updater_.UpdateCommandEnabled(
+      IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS,
+      common_enabled && !profile()->GetPrefs()->IsManagedPreference(
+                            bookmarks::prefs::kShowTabGroupsInBookmarkBar));
 }
 
 void BrowserCommandController::UpdateCommandsForFileSelectionDialogs() {

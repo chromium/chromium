@@ -106,6 +106,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
 #include "components/dom_distiller/content/browser/uma_helper.h"
@@ -1977,9 +1978,28 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
 }
 
 bool AppMenuModel::IsCommandIdChecked(int command_id) const {
+  PrefService* prefs = browser_->profile()->GetPrefs();
   if (command_id == IDC_SHOW_BOOKMARK_BAR) {
-    return browser_->profile()->GetPrefs()->GetBoolean(
-        bookmarks::prefs::kShowBookmarkBar);
+    return prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar);
+  }
+  if (command_id == IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS) {
+    return prefs->GetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar);
+  }
+  if (command_id == IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW) {
+    return prefs->GetInteger(bookmarks::prefs::kBookmarkBarVisibilityState) ==
+           static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow);
+  }
+  if (command_id == IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE) {
+    return prefs->GetInteger(bookmarks::prefs::kBookmarkBarVisibilityState) ==
+           static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide);
+  }
+  if (command_id == IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP) {
+    return prefs->GetInteger(bookmarks::prefs::kBookmarkBarVisibilityState) ==
+           static_cast<int>(
+               bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp);
+  }
+  if (command_id == IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT) {
+    return prefs->GetBoolean(bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
   }
   if (command_id == IDC_PROFILING_ENABLED) {
     return content::Profiling::BeingProfiled();

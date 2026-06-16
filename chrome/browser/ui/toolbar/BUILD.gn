@@ -160,6 +160,7 @@ source_set("impl") {
       "//chrome/browser/ui/tabs:tab_model",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/back_to_opener",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
       "//chrome/browser/ui/toolbar/chrome_labs",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/tabs/vertical",

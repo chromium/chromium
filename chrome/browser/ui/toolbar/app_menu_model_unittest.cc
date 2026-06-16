@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
+#include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_features.h"
@@ -48,6 +49,7 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/search/ntp_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
@@ -897,3 +899,61 @@ TEST_F(TabSearchMenuModelTest, TabSearchItem) {
   EXPECT_TRUE(tab_search_index.has_value());
   EXPECT_TRUE(toolModel.IsEnabledAt(tab_search_index.value()));
 }
+
+class AppMenuModelBookmarkBarTest : public AppMenuModelTest,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  AppMenuModelBookmarkBarTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          ntp_features::kNtpSimplificationBookmarkBar);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          ntp_features::kNtpSimplificationBookmarkBar);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(AppMenuModelBookmarkBarTest, BookmarkBarSubmenu) {
+  AppMenuModel model(this, browser());
+  model.Init();
+  BookmarkSubMenuModel bookmark_sub_model(&model, browser());
+
+  if (GetParam()) {
+    // Feature enabled: should have a submenu for Bookmarks Bar.
+    EXPECT_TRUE(bookmark_sub_model.GetIndexOfCommandId(IDC_BOOKMARK_BAR_SUBMENU)
+                    .has_value());
+    EXPECT_FALSE(bookmark_sub_model.GetIndexOfCommandId(IDC_SHOW_BOOKMARK_BAR)
+                     .has_value());
+
+    // Check items inside the submenu model.
+    auto index =
+        bookmark_sub_model.GetIndexOfCommandId(IDC_BOOKMARK_BAR_SUBMENU);
+    ASSERT_TRUE(index.has_value());
+    ui::SimpleMenuModel* sub_model = static_cast<ui::SimpleMenuModel*>(
+        bookmark_sub_model.GetSubmenuModelAt(index.value()));
+    ASSERT_TRUE(sub_model);
+
+    EXPECT_TRUE(
+        sub_model->GetIndexOfCommandId(IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW)
+            .has_value());
+    EXPECT_TRUE(
+        sub_model->GetIndexOfCommandId(IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE)
+            .has_value());
+    EXPECT_TRUE(
+        sub_model->GetIndexOfCommandId(IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP)
+            .has_value());
+  } else {
+    // Feature disabled: should have a single toggle item for Bookmarks Bar.
+    EXPECT_FALSE(
+        bookmark_sub_model.GetIndexOfCommandId(IDC_BOOKMARK_BAR_SUBMENU)
+            .has_value());
+    EXPECT_TRUE(bookmark_sub_model.GetIndexOfCommandId(IDC_SHOW_BOOKMARK_BAR)
+                    .has_value());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All, AppMenuModelBookmarkBarTest, testing::Bool());

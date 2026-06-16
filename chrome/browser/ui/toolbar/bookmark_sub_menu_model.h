@@ -33,6 +33,7 @@ class BookmarkSubMenuModel : public ui::SimpleMenuModel {
  private:
   void Build(Browser* browser);
 
+  std::unique_ptr<ui::SimpleMenuModel> bookmark_bar_sub_menu_model_;
   std::unique_ptr<ReadingListSubMenuModel> reading_list_sub_menu_model_;
 };
 
