@@ -521,11 +521,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="349" label="RFHI_SYNCHONOUS_COMMIT_ORIGIN_MISMATCH"/>
   <int value="350" label="RFHI_WEBMCP_INVALID_TOOL_OWNER"/>
   <int value="351" label="NR_BAD_ORIGIN_HEADER"/>
-  <int value="352"
-      label="BIBI_BIND_GAMEPAD_MONITOR_BLOCKED_BY_PERMISSIONS_POLICY"/>
+  <int value="352" label="RFH_DID_COMMIT_NAVIGATION_WHILE_BFCACHED"/>
   <int value="353"
-      label="BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY"/>
-  <int value="354" label="RFH_DID_COMMIT_NAVIGATION_WHILE_BFCACHED"/>
+      label="BIBI_BIND_WEBNN_CONTEXT_PROVIDER_BLOCKED_BY_PERMISSIONS_POLICY"/>
+  <int value="354"
+      label="BIBI_BIND_WEBNN_WEIGHTS_FILE_CREATOR_BLOCKED_BY_PERMISSIONS_POLICY"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
