@@ -148,6 +148,7 @@ class InitialWebUIBrowserTestBase : public InProcessBrowserTest {
     std::vector<base::test::FeatureRefAndParams> base_features = {
         {features::kInitialWebUI, {{"use_separate_process", "true"}}},
         {features::kWebUIReloadButton, {}},
+        {features::kInitialWebUIMetrics, {}},
         {features::kSkipIPCChannelPausingForNonGuests, {}},
         {features::kWebUIInProcessResourceLoadingV2, {}},
         {features::kInitialWebUISyncNavStartToCommit, {}}};
@@ -180,7 +181,7 @@ class InitialWebUIBrowserTestBase : public InProcessBrowserTest {
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
-  protected:
+ protected:
   ukm::TestAutoSetUkmRecorder& ukm_recorder() { return *ukm_recorder_; }
 
   std::unique_ptr<content::WebContents> CreateAndNavigateWebContents(
@@ -329,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
 // 3. The UKM flush (triggered by WebContents destruction) correctly records
 //    the buffered PageLoad metrics.
 IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest, RecordPageLoadUKM) {
-  using PageLoad = ukm::builders::PageLoad;
+  using PageLoad = ukm::builders::InitialWebUIPageLoad;
 
   // 1) Navigate to initial WebUI.
   GURL url(chrome::kChromeUIWebUIToolbarURL);

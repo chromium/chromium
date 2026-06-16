@@ -180,14 +180,6 @@ void PageLoadMetricsEmbedder::RegisterObservers(
     tracker->AddObserver(std::make_unique<NonTabPageLoadMetricsObserver>(
         std::string(GetNonTabWebUIName(web_contents()->GetBrowserContext(),
                                        navigation_handle->GetURL()))));
-    if (waap::IsForInitialWebUI(navigation_handle->GetURL())) {
-      // For initial WebUIs, record PageLoad UKMs.
-      std::unique_ptr<page_load_metrics::PageLoadMetricsObserver> ukm_observer =
-          UkmPageLoadMetricsObserver::CreateIfNeeded();
-      if (ukm_observer) {
-        tracker->AddObserver(std::move(ukm_observer));
-      }
-    }
     if (navigation_handle->GetURL().host() ==
         chrome::kChromeUIOmniboxPopupHost) {
       tracker->AddObserver(std::make_unique<TopChromeWebUIMetricsObserver>(

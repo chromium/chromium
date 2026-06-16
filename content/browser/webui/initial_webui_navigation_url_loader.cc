@@ -5,6 +5,7 @@
 #include "content/browser/webui/initial_webui_navigation_url_loader.h"
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/webui/url_data_manager_backend.h"
@@ -78,6 +79,20 @@ void InitialWebUINavigationURLLoader::OnResponseStarted() {
   response_head->parsed_headers =
       network::PopulateParsedHeaders(response_head->headers.get(), url);
   response_head->mime_type = source->source()->GetMimeType(url);
+
+  // Sets for the UKM navigation timing metrics.
+  auto now_time = base::Time::Now();
+  auto now_ticks = base::TimeTicks::Now();
+  response_head->request_time = now_time;
+  response_head->request_start = now_ticks;
+  response_head->response_time = now_time;
+  response_head->response_start = now_ticks;
+  response_head->load_timing.request_start_time = now_time;
+  response_head->load_timing.request_start = now_ticks;
+  response_head->load_timing.send_start = now_ticks;
+  response_head->load_timing.send_end = now_ticks;
+  response_head->load_timing.receive_headers_start = now_ticks;
+  response_head->load_timing.receive_headers_end = now_ticks;
 
   // Pass empty client endpoints and body, since the actual values will be set
   // from `RenderFrameImpl::CommitNavigation()` when doing in-renderer body

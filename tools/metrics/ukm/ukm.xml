@@ -11071,6 +11071,225 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="InitialWebUINavigationTiming" singular="True">
+  <owner>mych@google.com</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Navigation timing metrics associated with the main frame navigation for
+    Initial WebUI pages.
+  </summary>
+  <metric name="FirstRequestStart">
+    <summary>
+      The time relative to navigation start that the first HTTP request is sent
+      for the main resource of a main frame navigation.
+    </summary>
+  </metric>
+  <metric name="FirstResponseStart">
+    <summary>
+      The time relative to navigation start that the headers of the first HTTP
+      response are received for the main resource of a main frame navigation.
+    </summary>
+  </metric>
+  <metric name="NavigationCommitReceived">
+    <summary>
+      The time relative to navigation start that navigation commit message for a
+      main frame navigation is received from a renderer process.
+    </summary>
+  </metric>
+  <metric name="NavigationCommitReplySent">
+    <summary>
+      The time relative to navigation start that navigation commit reply for a
+      main frame navigation is sent to a renderer process.
+    </summary>
+  </metric>
+  <metric name="NavigationCommitSent">
+    <summary>
+      The time relative to navigation start that navigation commit message for a
+      main frame navigation is sent to a renderer process.
+    </summary>
+  </metric>
+  <metric name="NavigationDidCommit">
+    <summary>
+      The time relative to navigation start that navigation for a main frame
+      navigation did commit from a renderer process.
+    </summary>
+  </metric>
+</event>
+
+<event name="InitialWebUIPageLoad" singular="True">
+  <owner>mych@google.com</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Core metrics associated with the page loads for Initial WebUI pages.
+  </summary>
+  <metric name="CpuTimeMs">
+    <summary>
+      Amount of CPU wall time over the duration of a page load, while the page
+      is in the foreground. Measured in milliseconds.
+    </summary>
+  </metric>
+  <metric name="DayOfWeek">
+    <summary>
+      The day of the week when the page load was initiated. The time is measured
+      in the local time zone according to the system clock. Only collected for
+      page loads that start while on foreground.
+    </summary>
+  </metric>
+  <metric name="DocumentTiming.NavigationToDOMContentLoadedEventFired">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time the DOMContentLoaded event is fired, for main frame
+      documents.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DocumentTiming.NavigationToLoadEventFired">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time the load event is fired, for main frame documents.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="HourOfDay">
+    <summary>
+      The hour of the day when the page load was initiated. The time is measured
+      in the local time zone according to the system clock. Only collected for
+      page loads that start while on foreground.
+    </summary>
+  </metric>
+  <metric name="MainFrameResource.RequestHasNoStore" enum="Boolean">
+    <summary>
+      A boolean indicating if any mainpage resource has a 'Cache-control:
+      no-store' response header. Recorded only for main frame request.
+    </summary>
+  </metric>
+  <metric name="Navigation.PageEndReason3" enum="PageEndReason">
+    <summary>
+      The |page_load_metrics::PageEndReason| for the main frame navigation of
+      this page load. Replaced Navigation.PageEndReason2 on January 2021 to get
+      rid of END_HIDDEN and use END_APP_BACKGROUND on cases where the metrics
+      are flushed and the app enters the background.
+    </summary>
+  </metric>
+  <metric name="Navigation.PageTransition">
+    <summary>
+      The |ui::PageTransition| for the main frame navigation of this page load.
+    </summary>
+  </metric>
+  <metric name="Net.ErrorCode.OnFailedProvisionalLoad">
+    <summary>
+      The |net::Error| code for this page load. Only logged for failed
+      provisional navigations.
+    </summary>
+  </metric>
+  <metric name="PageTiming.ForegroundDurationMs">
+    <summary>
+      For page loads that start in the foreground, measures the duration of time
+      in milliseconds until one of the following events occurs: the load of the
+      main resource fails, the page load is stopped, the tab hosting the page is
+      closed, the render process hosting the page goes away, a new navigation
+      which later commits is initiated in the same tab, or the tab hosting the
+      page is backgrounded. This metric has a very long tail, for pages that
+      spend a long period of time in the foreground. As such, use of the mean or
+      tail values are not recommended.
+    </summary>
+  </metric>
+  <metric name="PageTiming.NavigationToFailedProvisionalLoad">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time the provisional load failed. Only measures provisional
+      loads that failed in the foreground.
+    </summary>
+  </metric>
+  <metric name="PageTiming.TotalForegroundDurationMs">
+    <summary>
+      The total amount of time the page spent in the foreground, in
+      milliseconds. Note that this metric adds all foreground durations
+      occurring for the page. For example: if the page starts foregrounded
+      during 1 second, then goes to the background for a while, then is
+      foregrounded again for 2 seconds, and then is unloaded, this metric
+      reports 3 seconds. To see metrics about consecutive foreground sessions,
+      see the PageForegroundSession event instead. This metric is recorded at
+      the end of each page load. As usual with PageLoad metrics, we consider app
+      backgrounding on Android to be the end of page load as well as the app
+      could be evicted by Android anytime after that happens.
+    </summary>
+  </metric>
+  <metric name="PaintTiming.NavigationToFirstContentfulPaint">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time when the page first paints content. A contentful paint
+      includes a paint of text, image, SVG, or canvas. Log of major changes:
+      http://bit.ly/chrome-speed-metrics-changelog
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.country,profile.system_ram"/>
+        <index fields="profile.is_dominant_version"/>
+        <index fields="profile.is_latest_version"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PaintTiming.NavigationToFirstPaint">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time the first paint is performed.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ParseTiming.NavigationToParseStart">
+    <summary>
+      Measures the time in milliseconds from navigation timing's navigation
+      start to the time the parser started, for main frame documents.
+    </summary>
+  </metric>
+  <metric name="SiteInstanceRenderProcessAssignment"
+      enum="SiteInstanceProcessAssignment">
+    <summary>
+      Records how the main frame's site instance was assigned to a renderer
+      process.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="WasCached">
+    <summary>
+      Set to 1 if the main resource was served from cache.
+    </summary>
+  </metric>
+</event>
+
 <event name="InputMethod.Assistive.AutocorrectV2">
   <owner>mehrab@google.com</owner>
   <summary>
