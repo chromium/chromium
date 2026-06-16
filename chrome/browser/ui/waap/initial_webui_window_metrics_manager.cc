@@ -33,7 +33,22 @@ InitialWebUIWindowMetricsManager::InitialWebUIWindowMetricsManager(
           ProfileBrowserCollection::GetForProfile(browser->GetProfile())
               ->GetSize() > 0) {}
 
-InitialWebUIWindowMetricsManager::~InitialWebUIWindowMetricsManager() = default;
+InitialWebUIWindowMetricsManager::~InitialWebUIWindowMetricsManager() {
+  if (!waap_service_) {
+    return;
+  }
+  if (!g_is_startup_first_paint_recorded &&
+      !skip_startup_metrics_for_testing_ &&
+      window_show_first_requested_time_.has_value()) {
+    waap_service_->OnStartupBrowserWindowClosedBeforeFirstPaint(
+        *window_show_first_requested_time_, base::TimeTicks::Now());
+  } else if (!is_new_window_first_paint_recorded_ &&
+             new_window_start_time_.has_value()) {
+    waap_service_->OnNewWindowBrowserWindowClosedBeforeFirstPaint(
+        creation_source_, was_created_with_existing_windows_,
+        *new_window_start_time_, base::TimeTicks::Now());
+  }
+}
 
 InitialWebUIWindowMetricsManager* InitialWebUIWindowMetricsManager::From(
     BrowserWindowInterface* browser_window_interface) {

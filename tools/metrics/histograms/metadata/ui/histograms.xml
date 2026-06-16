@@ -515,6 +515,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.ClosedBeforeFirstPaint"
+    units="ms" expires_after="2026-12-31">
+  <owner>annasato@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records the duration from window creation to closing the browser window for
+    new windows {CreationSource} {ExistingWindow}.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled, and when the initial paint has not been recorded.
+  </summary>
+  <token key="CreationSource" variants="CreationSource"/>
+  <token key="ExistingWindow" variants="ExistingWindow"/>
+</histogram>
+
+<histogram
     name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.FirstPaint.{StartPoint}"
     units="ms" expires_after="2026-11-08">
   <owner>mych@chromium.org</owner>
@@ -704,6 +720,23 @@ chromium-metrics-reviews@google.com.
     This is only recorded for desktop platforms when the InitialWebUIMetrics is
     enabled.
   </summary>
+</histogram>
+
+<histogram
+    name="InitialWebUI.Startup{Scenario}.BrowserWindow.ClosedBeforeFirstPaint{StartupTemperature}"
+    units="ms" expires_after="2026-12-31">
+  <owner>annasato@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records the duration from the initial show/activation request of the first
+    browser window during {Scenario} startup to closing the
+    window{StartupTemperature}.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled, and when the initial paint has not been recorded.
+  </summary>
+  <token key="Scenario" variants="Scenario"/>
+  <token key="StartupTemperature" variants="InitialWebUIStartupTemperature"/>
 </histogram>
 
 <histogram

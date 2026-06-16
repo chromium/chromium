@@ -359,6 +359,22 @@ void WaapUIMetricsService::OnNewWindowBrowserWindowShowRequestedToFirstPaint(
       with_existing_window, request_time, paint_time);
 }
 
+void WaapUIMetricsService::OnStartupBrowserWindowClosedBeforeFirstPaint(
+    base::TimeTicks request_time,
+    base::TimeTicks close_time) {
+  RecordStartupPaintMetric("BrowserWindow.ClosedBeforeFirstPaint", request_time,
+                           close_time);
+}
+
+void WaapUIMetricsService::OnNewWindowBrowserWindowClosedBeforeFirstPaint(
+    waap::NewWindowCreationSource source,
+    bool with_existing_window,
+    base::TimeTicks start_time,
+    base::TimeTicks close_time) {
+  RecordNewWindowPaintMetric("BrowserWindow.ClosedBeforeFirstPaint", source,
+                             with_existing_window, start_time, close_time);
+}
+
 void WaapUIMetricsService::OnReloadButtonMousePressToNextPaint(
     base::TimeTicks start_ticks,
     base::TimeTicks end_ticks) {
