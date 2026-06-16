@@ -33,12 +33,17 @@ dictionary ProfileState {
   required boolean shareImageAllowed;
   required boolean actuationAllowed;
   required boolean userEnableActuationOnWeb;
+  required boolean invocationSourceEnabled;
 };
 
 enum InvocationSource {
   "unknown",
   "universal-cart",
   "promotion-page"
+};
+
+dictionary GetStateParams {
+  InvocationSource invocationSource;
 };
 
 dictionary InvokeDetails {
@@ -83,7 +88,8 @@ interface GlicPrivate {
   // Retrieves the current Glic state for the profile.
   // |Returns|: Promise that resolves to the current Glic state.
   // |PromiseValue|: state: The current Glic state.
-  static Promise<ProfileState> getState(DOMString documentId);
+  static Promise<ProfileState> getState(DOMString documentId,
+      optional GetStateParams params);
 
   // Invokes glic with details.
   // |Returns|: Promise that resolves when invocation is successful.

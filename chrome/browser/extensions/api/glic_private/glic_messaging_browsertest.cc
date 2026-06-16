@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/callback_list.h"
+#include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/glic_private/glic_private_api_test_base.h"
@@ -60,6 +61,18 @@ class GlicMessagingBrowserTest : public GlicPrivateApiTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class GlicMessagingAccessDisabledBrowserTest : public GlicPrivateApiTestBase {
+ public:
+  GlicMessagingAccessDisabledBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {extensions_features::kApiGlicPrivate},
+        {extensions_features::kApiGlicAccessFromGoogleWebpage,
+         extensions_features::kApiGlicAccessFromPromotionPage});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 namespace {
 
@@ -116,6 +129,38 @@ content::EvalJsResult ExecuteActivateTabWithConversation(
       })()
       )",
       extension_misc::kGlicExtensionId, conversation_id.c_str());
+
+  return content::EvalJs(web_contents, script);
+}
+
+content::EvalJsResult ExecuteGetState(
+    content::WebContents* web_contents,
+    const std::optional<std::string>& invocation_source) {
+  std::string args_str = "undefined";
+  if (invocation_source) {
+    args_str = base::StringPrintf(R"({invocationSource: '%s'})",
+                                  invocation_source->c_str());
+  }
+
+  std::string script = base::StringPrintf(
+      R"(
+      (async () => {
+        if (!chrome.runtime || !chrome.runtime.sendMessage) {
+          return 'no_runtime';
+        }
+        return new Promise((resolve) => {
+          chrome.runtime.sendMessage(
+              '%s', {type: 'glicPrivate.getState', args: %s}, (response) => {
+                if (chrome.runtime.lastError) {
+                  resolve(chrome.runtime.lastError.message);
+                } else {
+                  resolve(JSON.stringify(response));
+                }
+              });
+        });
+      })()
+      )",
+      extension_misc::kGlicExtensionId, args_str.c_str());
 
   return content::EvalJs(web_contents, script);
 }
@@ -183,6 +228,57 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingBrowserTest, ExternalConnectable) {
           << result_string;
     }
   }
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMessagingBrowserTest, GetStateUniversalCart) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kGlicExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GURL("https://gemini.google.com/empty.html")));
+
+  content::EvalJsResult result =
+      ExecuteGetState(GetActiveWebContents(), "universal-cart");
+
+  std::string result_string = result.ExtractString();
+  std::optional<base::Value> response =
+      base::JSONReader::Read(result_string, 0);
+  ASSERT_TRUE(response && response->is_dict());
+  const auto* state = response->GetDict().FindDict("state");
+  ASSERT_TRUE(state);
+
+  std::optional<bool> invocation_source_enabled =
+      state->FindBool("invocationSourceEnabled");
+  ASSERT_TRUE(invocation_source_enabled.has_value());
+  EXPECT_TRUE(*invocation_source_enabled);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMessagingAccessDisabledBrowserTest,
+                       GetStateUniversalCart) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kGlicExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GURL("https://gemini.google.com/empty.html")));
+
+  content::EvalJsResult result =
+      ExecuteGetState(GetActiveWebContents(), "universal-cart");
+
+  std::string result_string = result.ExtractString();
+  std::optional<base::Value> response =
+      base::JSONReader::Read(result_string, 0);
+  ASSERT_TRUE(response && response->is_dict());
+  const auto* state = response->GetDict().FindDict("state");
+  ASSERT_TRUE(state);
+
+  std::optional<bool> invocation_source_enabled =
+      state->FindBool("invocationSourceEnabled");
+  ASSERT_TRUE(invocation_source_enabled.has_value());
+  EXPECT_FALSE(*invocation_source_enabled);
 }
 
 // Invoke is not supported in Android yet.
