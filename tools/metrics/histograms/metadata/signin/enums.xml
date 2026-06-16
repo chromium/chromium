@@ -1486,6 +1486,12 @@ chromium-metrics-reviews@google.com.
     A forced sign-out when the account capability CanSignInToChrome restricts
     signin. (iOS only).
   </int>
+  <int value="46"
+      label="User tapped on undo right after signin through autofill and
+             passwords sign-in promo">
+    User tapped on the 'Undo' button in a snackbar shown right after signin
+    through autofill and passwords promo. (Android only).
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">

@@ -168,6 +168,14 @@ public class SigninSnackbarControllerTest {
                 SigninSnackbarController.getSignoutReason(SigninAccessPoint.RECENT_TABS));
     }
 
+    @Test
+    public void testSignOutReasonFromAutofillAndPasswords() {
+        assertEquals(
+                SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_AUTOFILL_AND_PASSWORDS,
+                SigninSnackbarController.getSignoutReason(
+                        SigninAccessPoint.SETTINGS_AUTOFILL_AND_PASSWORDS));
+    }
+
     private void clickSnackbarUndoButton() {
         ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
         verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());

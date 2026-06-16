@@ -149,6 +149,9 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
 
         } else if (signinAccessPoint == SigninAccessPoint.RECENT_TABS) {
             return SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_RECENT_TABS;
+
+        } else if (signinAccessPoint == SigninAccessPoint.SETTINGS_AUTOFILL_AND_PASSWORDS) {
+            return SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_AUTOFILL_AND_PASSWORDS;
         }
 
         throw new IllegalStateException("Forbidden access point: " + signinAccessPoint);

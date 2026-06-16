@@ -349,6 +349,7 @@ public class SignOutCoordinatorTest {
                 case SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_BOOKMARKS:
                 case SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_NTP:
                 case SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_RECENT_TABS:
+                case SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_AUTOFILL_AND_PASSWORDS:
                     continue;
             }
             // All other reasons should throw.

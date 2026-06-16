@@ -153,8 +153,11 @@ enum class ProfileSignout {
   // A forced sign-out when the account capability CanSignInToChrome restricts
   // signin.
   kSignoutFromCanSignInToChromeCapability = 45,
+  // User tapped 'Undo' in a snackbar that is shown right after sign-in through
+  // Autofill and Passwords Sign-in promo. Android only.
+  kUserTappedUndoRightAfterSignInFromAutofillAndPasswords = 46,
   // Keep this as the last enum.
-  kMaxValue = kSignoutFromCanSignInToChromeCapability,
+  kMaxValue = kUserTappedUndoRightAfterSignInFromAutofillAndPasswords,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
