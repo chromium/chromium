@@ -20,6 +20,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/ContentUiEventHandler_jni.h"
@@ -106,12 +107,17 @@ void ContentUiEventHandler::SendMouseWheelEvent(
   ComputeEventLatencyOS(ui::EventType::kMousewheel, event_time, current_time);
 
   auto source = ui::MotionEventAndroidSourceJava::Create(motion_event, false);
+  int tool_type =
+      base::FeatureList::IsEnabled(ui::kAndroidTouchpadDetection)
+          ? ui::MotionEventAndroid::GetAndroidToolType(source->GetToolType(0))
+          : 0;
   ui::MotionEventAndroid::Pointer pointer(
       /*id=*/0, /*pos_x_pixels=*/source->GetXPix(0),
       /*pos_y_pixels=*/source->GetYPix(0),
       /*touch_major_pixels=*/0.0f,
       /*touch_minor_pixels=*/0.0f, /*pressure=*/0.0f, /*orientation_rad=*/0.0f,
-      /*tilt_rad=*/0.0f, /*tool_type=*/0);
+      /*tilt_rad=*/0.0f,
+      /*tool_type=*/tool_type);
 
   auto* view = web_contents_->GetNativeView();
   auto* window = view->GetWindowAndroid();

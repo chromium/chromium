@@ -36,6 +36,7 @@
 #include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/types/scroll_types.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -343,8 +344,9 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
     base::TimeDelta delayed_by) {
   // The current_native_scrolling_element should only be set for ScrollBegin.
   DCHECK(!scroll_state.data()->current_native_scrolling_element());
-  TRACE_EVENT2("cc", "InputHandler::ScrollUpdate", "dx", scroll_state.delta_x(),
-               "dy", scroll_state.delta_y());
+  TRACE_EVENT("cc", "InputHandler::ScrollUpdate", "dx", scroll_state.delta_x(),
+              "dy", scroll_state.delta_y(), "granularity",
+              scroll_state.delta_granularity());
 
   if (!CurrentlyScrollingNode())
     return InputHandlerScrollResult();
