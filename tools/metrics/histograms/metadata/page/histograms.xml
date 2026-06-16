@@ -74,6 +74,19 @@ chromium-metrics-reviews@google.com.
   <variant name="1000ms"/>
 </variants>
 
+<variants name="GWSFontLoadingMilestone">
+  <variant name="AFTEnd"
+      summary="up to the Above the Fold End (AFTEnd) performance mark.
+               Recorded when the AFTEnd mark is observed"/>
+  <variant name="Complete"
+      summary="during the lifetime of the page. Recorded when the page load
+               is completed (e.g., on navigation, tab closure, or
+               backgrounding)"/>
+  <variant name="FCP"
+      summary="up to First Contentful Paint (FCP). Recorded when FCP is
+               reached"/>
+</variants>
+
 <variants name="HiddenSuffix">
   <variant name="" summary="never hidden during the navigation"/>
   <variant name=".TabWasHiddenAtStartLaterShown"
@@ -1928,27 +1941,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.FontLoading.FallbackCount.Complete"
+    name="PageLoad.Clients.GoogleSearch.FontLoading.FallbackCount.{GWSFontLoadingMilestone}"
     units="count" expires_after="2027-06-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The number of times a system fallback font was used for character rendering
-    during the lifetime of a Google Search page load. Recorded when the page
-    load is completed (e.g., on navigation, tab closure, or backgrounding).
+    for a Google Search page load, {GWSFontLoadingMilestone}.
   </summary>
+  <token key="GWSFontLoadingMilestone" variants="GWSFontLoadingMilestone"/>
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.FontLoading.FallbackDuration.FCP"
+    name="PageLoad.Clients.GoogleSearch.FontLoading.FallbackDuration.{GWSFontLoadingMilestone}"
     units="ms" expires_after="2027-06-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The cumulative duration spent in system fallback font loading for character
-    rendering up to First Contentful Paint (FCP) for a Google Search page load.
-    Recorded when FCP is reached.
+    rendering for a Google Search page load, {GWSFontLoadingMilestone}.
   </summary>
+  <token key="GWSFontLoadingMilestone" variants="GWSFontLoadingMilestone"/>
 </histogram>
 
 <histogram
