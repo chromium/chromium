@@ -1749,6 +1749,7 @@ bool IsFullscreenNextIAEnabled() {
 
 // Returns the appropriate frame for the NTP.
 - (CGRect)ntpFrameForCurrentWebState {
+  CHECK(!IsFullscreenRefactoringEnabled(), base::NotFatalUntil::M160);
   DCHECK(self.ntpCoordinator.isNTPActiveForCurrentWebState);
   // NTP is laid out only in the visible part of the screen.
   UIEdgeInsets viewportInsets = UIEdgeInsetsZero;
@@ -2605,6 +2606,7 @@ bool IsFullscreenNextIAEnabled() {
 
 // Returns the frame for the new tab page view for the given web state.
 - (CGRect)newPageFrameForWebState:(web::WebState*)webState {
+  CHECK(!IsFullscreenRefactoringEnabled(), base::NotFatalUntil::M160);
   GURL tabURL = webState->GetVisibleURL();
   BOOL isNTP = tabURL == kChromeUINewTabURL;
 
@@ -2622,24 +2624,32 @@ bool IsFullscreenNextIAEnabled() {
 
 // Returns the frame for the foreground tab animation view.
 - (CGRect)foregroundTabAnimationViewFrameForWebState:(web::WebState*)webState {
+  CHECK(!CanShowTabStrip(self), base::NotFatalUntil::M160);
+
   GURL tabURL = webState->GetVisibleURL();
   BOOL isNTP = tabURL == kChromeUINewTabURL;
 
-  CGRect frameInView = self.view.bounds;
+  UIEdgeInsets insets = UIEdgeInsetsZero;
   // On iPhone landscape, the AppBar is covering part of screen under which the
   // NTP is not displayed.
-  if (isNTP && !_isOffTheRecord && !CanShowTabStrip(self) &&
-      IsChromeNextIaEnabled()) {
+  if (isNTP && !CanShowTabStrip(self) && IsChromeNextIaEnabled()) {
     AppBarPosition position = self.layoutState.appBarPosition;
-    UIEdgeInsets insets = UIEdgeInsetsZero;
 
     if (position == AppBarPosition::kLeft) {
       insets.left = kAppBarHeightLandscape;
     } else if (position == AppBarPosition::kRight) {
       insets.right = kAppBarHeightLandscape;
     }
-    frameInView = UIEdgeInsetsInsetRect(frameInView, insets);
   }
+
+  if (IsChromeNextIaEnabled() && isNTP && _isOffTheRecord) {
+    insets.bottom = [self secondaryToolbarHeightWithInset];
+    insets.top = [self expandedTopToolbarHeight];
+    if (self.layoutState.appBarPosition == AppBarPosition::kBottom) {
+      insets.bottom += kAppBarHeight;
+    }
+  }
+  CGRect frameInView = UIEdgeInsetsInsetRect(self.view.bounds, insets);
   return [self.contentArea convertRect:frameInView fromView:self.view];
 }
 
@@ -2685,6 +2695,8 @@ bool IsFullscreenNextIAEnabled() {
 
 - (void)animateNewTabForWebState:(web::WebState*)webState
       inForegroundWithCompletion:(ProceduralBlock)completion {
+  CHECK(!CanShowTabStrip(self), base::NotFatalUntil::M160);
+
   // Create the new page image, and load with the new tab snapshot except if
   // it is the NTP.
   UIView* newPage = [self viewForWebState:webState];
@@ -2700,7 +2712,11 @@ bool IsFullscreenNextIAEnabled() {
   BOOL isIncognito = _isOffTheRecord;
   BOOL useDeviceCornerRadius = NO;
 
-  newPage.frame = [self newPageFrameForWebState:webState];
+  if (IsFullscreenRefactoringEnabled()) {
+    newPage.frame = [self foregroundTabAnimationViewFrameForWebState:webState];
+  } else {
+    newPage.frame = [self newPageFrameForWebState:webState];
+  }
 
   if (isNTP && !isIncognito && !CanShowTabStrip(self)) {
     // Add a snapshot of the primary toolbar to the background as the
@@ -2750,8 +2766,15 @@ bool IsFullscreenNextIAEnabled() {
   if (IsChromeNextIaEnabled()) {
     animatedView.appBarPosition = self.layoutState.appBarPosition;
   }
-  animatedView.backgroundView =
-      [self.contentArea snapshotViewAfterScreenUpdates:NO];
+  if (IsFullscreenRefactoringEnabled() && isNTP) {
+    animatedView.backgroundView =
+        [self.contentArea resizableSnapshotViewFromRect:frame
+                                     afterScreenUpdates:NO
+                                          withCapInsets:UIEdgeInsetsZero];
+  } else {
+    animatedView.backgroundView =
+        [self.contentArea snapshotViewAfterScreenUpdates:NO];
+  }
 
   __weak UIView* weakAnimatedView = animatedView;
   auto completionBlock = ^() {
