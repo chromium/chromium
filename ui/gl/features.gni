@@ -7,7 +7,7 @@ import("//build/config/chrome_build.gni")
 
 declare_args() {
   # Should ANGLE be linked statically?
-  use_static_angle = is_android || is_ios || is_linux
+  use_static_angle = is_android || is_ios
 
   # Should ANGLE use the shared Vulkan loader on Mac?
   shared_libvulkan_on_mac = true
