@@ -458,7 +458,12 @@ void ContextualCueingHelper::OnCueingDecision(
     return;
   }
 
-  GetGlicNudgeController()->UpdateNudgeLabel(
+  auto* glic_nudge_controller = GetGlicNudgeController();
+  if (!glic_nudge_controller) {
+    return;
+  }
+
+  glic_nudge_controller->UpdateNudgeLabel(
       web_contents(), decision_result->cue_label,
       decision_result->prompt_suggestion.empty()
           ? std::nullopt
