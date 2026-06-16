@@ -82,7 +82,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "offline_pin_filled.icon",
     "offline_pin_old.icon",
     "page_chrome_refresh_old.icon",
-    "page_info.icon",
+    "page_info_custom.icon",
     "price_tracking_disabled_old.icon",
     "product_chrome_refresh_old.icon",
     "product_old.icon",

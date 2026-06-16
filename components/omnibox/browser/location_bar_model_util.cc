@@ -37,7 +37,7 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
                  : omnibox::kHttpChromeRefreshOldIcon;
     case security_state::SECURE:
       return features::IsRoundedIconsEnabled()
-                 ? omnibox::kPageInfoIcon
+                 ? omnibox::kPageInfoCustomIcon
                  : omnibox::kSecurePageInfoChromeRefreshOldIcon;
     case security_state::WARNING:
       if (base::FeatureList::IsEnabled(

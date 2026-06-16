@@ -213,7 +213,7 @@ void LocationIconView::MaybeAnimateIcon(bool open) {
         icon.IsVectorIcon() &&
         icon.GetVectorIcon().vector_icon() ==
             (features::IsRoundedIconsEnabled()
-                 ? &omnibox::kPageInfoIcon
+                 ? &omnibox::kPageInfoCustomIcon
                  : &omnibox::kSecurePageInfoChromeRefreshOldIcon);
 
     if (!is_page_info_icon) {

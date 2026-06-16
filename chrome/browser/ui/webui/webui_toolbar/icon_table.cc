@@ -25,6 +25,7 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/vector_icons.h"
@@ -84,7 +85,7 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
            {"webui-toolbar:omnibox_info", IconType::kIconSet}},
           {{&omnibox::kChromeProductIcon},
            {"webui-toolbar:omnibox_chrome_product", IconType::kIconSet}},
-          {{&omnibox::kPageInfoIcon},
+          {{&omnibox::kPageInfoCustomIcon},
            {"webui-toolbar:omnibox_page_info", IconType::kIconSet}},
           {{&omnibox::kStarIcon},
            {"webui-toolbar:omnibox_star", IconType::kIconSet}},
@@ -113,8 +114,10 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
           // Will be replaced by kChromeProductIcon.
           {{&omnibox::kProductChromeRefreshOldIcon},
            {"lhs_icons/product_chrome_refresh_icon.svg", IconType::kMaskUrl}},
-          // Will be replaced by kPageInfoIcon.
-          {{&omnibox::kSecurePageInfoChromeRefreshOldIcon},
+          // Will be replaced by kPageInfoCustomIcon.
+          {{&(features::IsRoundedIconsEnabled()
+                  ? omnibox::kPageInfoCustomIcon
+                  : omnibox::kSecurePageInfoChromeRefreshOldIcon)},
            {"lhs_icons/secure_page_info_chrome_refresh.svg",
             IconType::kMaskUrl}},
 

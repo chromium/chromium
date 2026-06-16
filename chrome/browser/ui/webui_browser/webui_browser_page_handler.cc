@@ -126,7 +126,7 @@ class WebUIBrowserGuestHandler
                       : omnibox::kHttpChromeRefreshOldIcon)) {
       icon_type = webui_browser::mojom::SecurityIcon::HttpChromeRefresh;
     } else if (icon == &(features::IsRoundedIconsEnabled()
-                             ? omnibox::kPageInfoIcon
+                             ? omnibox::kPageInfoCustomIcon
                              : omnibox::kSecurePageInfoChromeRefreshOldIcon)) {
       icon_type =
           webui_browser::mojom::SecurityIcon::SecurePageInfoChromeRefresh;

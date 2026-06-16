@@ -1,0 +1,40 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+CANVAS_DIMENSIONS, 24,
+// Bottom Left Line
+MOVE_TO, 5.0f, 15.5f,
+LINE_TO, 11.01773f, 15.5f,
+ARC_TO, 1.0f, 1.0f, 0, 0, 1, 11.01773f, 17.5f,
+LINE_TO, 5.0f, 17.5f,
+ARC_TO, 1.0f, 1.0f, 0, 0, 1, 5.0f, 15.5f,
+CLOSE,
+// Bottom Right Circle
+NEW_PATH,
+MOVE_TO, 17.6977f, 12.7f,
+ARC_TO, 3.8f, 3.8f, 0, 1, 0, 17.6977f, 20.3f,
+ARC_TO, 3.8f, 3.8f, 0, 1, 0, 17.6977f, 12.7f,
+CLOSE,
+MOVE_TO, 17.6977f, 14.7f,
+ARC_TO, 1.8f, 1.8f, 0, 1, 0, 17.6977f, 18.3f,
+ARC_TO, 1.8f, 1.8f, 0, 1, 0, 17.6977f, 14.7f,
+CLOSE,
+// Top Right Line
+NEW_PATH,
+MOVE_TO, 12.98227f, 6.5f,
+LINE_TO, 19.0f, 6.5f,
+ARC_TO, 1.0f, 1.0f, 0, 0, 1, 19.0f, 8.5f,
+LINE_TO, 12.98227f, 8.5f,
+ARC_TO, 1.0f, 1.0f, 0, 0, 1, 12.98227f, 6.5f,
+CLOSE,
+// Top Left Circle
+NEW_PATH,
+MOVE_TO, 6.30228f, 3.7f,
+ARC_TO, 3.8f, 3.8f, 0, 1, 0, 6.30228f, 11.3f,
+ARC_TO, 3.8f, 3.8f, 0, 1, 0, 6.30228f, 3.7f,
+CLOSE,
+MOVE_TO, 6.30228f, 5.7f,
+ARC_TO, 1.8f, 1.8f, 0, 1, 0, 6.30228f, 9.3f,
+ARC_TO, 1.8f, 1.8f, 0, 1, 0, 6.30228f, 5.7f,
+CLOSE

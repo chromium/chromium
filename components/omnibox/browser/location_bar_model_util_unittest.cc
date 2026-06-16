@@ -32,7 +32,7 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithSecureLevel) {
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
       security_state::SecurityLevel::SECURE, &visible_security_state);
   EXPECT_EQ(icon.name, features::IsRoundedIconsEnabled()
-                           ? omnibox::kPageInfoIcon.name
+                           ? omnibox::kPageInfoCustomIcon.name
                            : omnibox::kSecurePageInfoChromeRefreshOldIcon.name);
 }
 
