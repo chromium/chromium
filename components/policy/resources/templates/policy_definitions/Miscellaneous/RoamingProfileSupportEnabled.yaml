@@ -27,6 +27,7 @@ supported_on:
 - chrome.win:57-
 - chrome.mac:88-
 - chrome.linux:88-
+deprecated: true
 tags:
 - local-data-access
 type: main
