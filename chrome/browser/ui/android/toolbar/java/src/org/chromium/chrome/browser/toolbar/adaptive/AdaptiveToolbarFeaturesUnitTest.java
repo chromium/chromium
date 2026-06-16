@@ -73,7 +73,7 @@ public class AdaptiveToolbarFeaturesUnitTest {
     })
     public void testGetDefaultButtonVariant_BottomBarDisabled_GlicEnabled() {
         assertEquals(
-                AdaptiveToolbarButtonVariant.GLIC,
+                AdaptiveToolbarButtonVariant.NEW_TAB,
                 AdaptiveToolbarFeatures.getDefaultButtonVariant(mContext, mProfile));
     }
 

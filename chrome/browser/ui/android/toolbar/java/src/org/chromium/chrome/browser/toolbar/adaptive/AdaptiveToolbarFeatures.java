@@ -197,9 +197,6 @@ public class AdaptiveToolbarFeatures {
     public static @AdaptiveToolbarButtonVariant int getDefaultButtonVariant(
             Context context, Profile profile) {
         boolean isBottomBarEnabled = BottomBarConfigUtils.isBottomBarEnabled(context);
-        if (isGlicEnabledForProfile(profile) && !isBottomBarEnabled) {
-            return AdaptiveToolbarButtonVariant.GLIC;
-        }
         if (sDefaultSegmentForTesting != null) {
             return switch (sDefaultSegmentForTesting) {
                 case NEW_TAB -> AdaptiveToolbarButtonVariant.NEW_TAB;
