@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "crypto/process_bound_string.h"
 
 namespace network::enterprise_encryption {
@@ -26,6 +27,33 @@ void RecordReadResult(EncryptionError error) {
 void RecordWriteResult(EncryptionError error) {
   base::UmaHistogramEnumeration("Enterprise.EncryptedCache.Write.Result",
                                 error);
+}
+
+const char* GetDecryptionSourceSuffix(DecryptionSource source) {
+  switch (source) {
+    case DecryptionSource::kRead:
+      return "Read";
+    case DecryptionSource::kWrite:
+      return "Write";
+    case DecryptionSource::kEnsurePreviousNotLast:
+      return "EnsurePreviousNotLast";
+    case DecryptionSource::kTruncate:
+      return "Truncate";
+      NOTREACHED();
+  }
+}
+
+void RecordDecryptionFailureDetails(uint32_t chunk_index,
+                                    DecryptionFailureReason reason,
+                                    DecryptionSource source) {
+  const char* suffix = GetDecryptionSourceSuffix(source);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Enterprise.EncryptedCache.", suffix, ".DecryptionFailureReason"}),
+      reason);
+  base::UmaHistogramSparse(base::StrCat({"Enterprise.EncryptedCache.", suffix,
+                                         ".DecryptionFailureChunkIndex"}),
+                           chunk_index);
 }
 
 int64_t GetPhysicalOffset(uint32_t chunk_index) {
@@ -76,7 +104,7 @@ std::optional<size_t> EncryptedCacheFile::Read(int64_t offset,
   // Decrypt all chunks intersecting with the read range.
   for (uint32_t chunk_index = start_chunk_index; chunk_index <= end_chunk_index;
        ++chunk_index) {
-    auto result = ReadAndDecryptChunk(chunk_index);
+    auto result = ReadAndDecryptChunk(chunk_index, DecryptionSource::kRead);
     if (!result.has_value()) {
       RecordReadResult(EncryptionError::kDecryptionFailed);
       return std::nullopt;
@@ -256,7 +284,8 @@ bool EncryptedCacheFile::SetLength(int64_t length) {
 
     // Read existing data from this chunk to preserve it, and resize it to the
     // new length.
-    auto result = ReadAndDecryptChunk(new_last_chunk_index);
+    auto result =
+        ReadAndDecryptChunk(new_last_chunk_index, DecryptionSource::kTruncate);
     if (!result.has_value()) {
       return false;
     }
@@ -393,7 +422,8 @@ bool EncryptedCacheFile::WriteChunk(uint32_t chunk_index,
           .copy_from(data_to_write);
     } else {
       // Existing chunk partial write: Read-Modify-Write.
-      auto read_result = ReadAndDecryptChunk(chunk_index);
+      auto read_result =
+          ReadAndDecryptChunk(chunk_index, DecryptionSource::kWrite);
       if (!read_result.has_value()) {
         return false;
       }
@@ -416,12 +446,15 @@ bool EncryptedCacheFile::WriteChunk(uint32_t chunk_index,
 }
 
 base::expected<std::vector<uint8_t>, EncryptionError>
-EncryptedCacheFile::ReadAndDecryptChunk(uint32_t chunk_index) {
+EncryptedCacheFile::ReadAndDecryptChunk(uint32_t chunk_index,
+                                        DecryptionSource source) {
   int64_t file_length = file_->GetLength();
   int64_t chunk_offset = GetPhysicalOffset(chunk_index);
 
   if (chunk_offset >= file_length) {
     // Reading past EOF.
+    RecordDecryptionFailureDetails(
+        chunk_index, DecryptionFailureReason::kReadPastEof, source);
     return base::unexpected(EncryptionError::kDecryptionFailed);
   }
 
@@ -435,11 +468,20 @@ EncryptedCacheFile::ReadAndDecryptChunk(uint32_t chunk_index) {
 
   std::vector<uint8_t> ciphertext(to_read);
   if (!file_->ReadAndCheck(chunk_offset, ciphertext)) {
+    RecordDecryptionFailureDetails(
+        chunk_index, DecryptionFailureReason::kUnderlyingReadFailed, source);
     return base::unexpected(EncryptionError::kDecryptionFailed);
   }
 
   auto decrypt_result =
       encryptor_->DecryptChunk(ciphertext, chunk_index, is_last_chunk);
+  if (!decrypt_result.has_value()) {
+    DecryptionFailureReason reason =
+        ciphertext.size() < kAuthTagSize
+            ? DecryptionFailureReason::kCiphertextTooShort
+            : DecryptionFailureReason::kAeadOpenFailed;
+    RecordDecryptionFailureDetails(chunk_index, reason, source);
+  }
   return decrypt_result;
 }
 
@@ -460,7 +502,8 @@ bool EncryptedCacheFile::EnsurePreviousChunkNotLast(
   // last. We must re-encrypt it.
   if (new_logical_length > current_len &&
       new_last_chunk_index > old_last_chunk_index) {
-    auto result = ReadAndDecryptChunk(old_last_chunk_index);
+    auto result = ReadAndDecryptChunk(old_last_chunk_index,
+                                      DecryptionSource::kEnsurePreviousNotLast);
     if (!result.has_value()) {
       RecordReadResult(EncryptionError::kDecryptionFailed);
       return false;

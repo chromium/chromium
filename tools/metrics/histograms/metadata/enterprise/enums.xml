@@ -605,6 +605,14 @@ chromium-metrics-reviews@google.com.
   <int value="909" label="SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK"/>
 </enum>
 
+<enum name="EnterpriseDiskCacheDecryptionFailureReason">
+  <summary>Reasons why cache decryption failed.</summary>
+  <int value="0" label="Read Past EOF"/>
+  <int value="1" label="Underlying Read Failed"/>
+  <int value="2" label="Ciphertext Too Short"/>
+  <int value="3" label="AEAD Open Failed"/>
+</enum>
+
 <enum name="EnterpriseDiskCacheError">
   <summary>Errors triggered by encrypted HTTP cache file operations.</summary>
   <int value="0" label="Success"/>

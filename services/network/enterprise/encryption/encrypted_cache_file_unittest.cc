@@ -184,6 +184,11 @@ TEST_F(EncryptedCacheFileTest, Persistence) {
     // Read failure (decryption failed).
     histogram_tester.ExpectBucketCount("Enterprise.EncryptedCache.Read.Result",
                                        EncryptionError::kDecryptionFailed, 1);
+    histogram_tester.ExpectBucketCount(
+        "Enterprise.EncryptedCache.Read.DecryptionFailureReason",
+        DecryptionFailureReason::kAeadOpenFailed, 1);
+    histogram_tester.ExpectBucketCount(
+        "Enterprise.EncryptedCache.Read.DecryptionFailureChunkIndex", 0, 1);
   }
 }
 
@@ -345,6 +350,11 @@ TEST_F(EncryptedCacheFileTest, DeepCorruptionTest) {
                                        EncryptionError::kSuccess, 1);
     histogram_tester.ExpectBucketCount("Enterprise.EncryptedCache.Read.Result",
                                        EncryptionError::kDecryptionFailed, 1);
+    histogram_tester.ExpectBucketCount(
+        "Enterprise.EncryptedCache.Read.DecryptionFailureReason",
+        DecryptionFailureReason::kAeadOpenFailed, 1);
+    histogram_tester.ExpectBucketCount(
+        "Enterprise.EncryptedCache.Read.DecryptionFailureChunkIndex", 0, 1);
   }
 }
 
@@ -518,6 +528,206 @@ TEST_F(EncryptedCacheFileTest, SparseWrites) {
   auto read_data = encrypted_file->Read(kChunkDataSize, base::span(buffer));
   ASSERT_TRUE(read_data.has_value());
   EXPECT_EQ(data, std::string(buffer.begin(), buffer.end()));
+}
+
+class MockCacheFile : public disk_cache::CacheFile {
+ public:
+  explicit MockCacheFile(std::unique_ptr<disk_cache::CacheFile> delegate)
+      : delegate_(std::move(delegate)) {}
+  ~MockCacheFile() override = default;
+
+  bool IsValid() const override { return delegate_->IsValid(); }
+  base::File::Error error_details() const override {
+    return delegate_->error_details();
+  }
+  std::optional<size_t> Read(int64_t offset,
+                             base::span<uint8_t> data) override {
+    if (fail_read_) {
+      return std::nullopt;
+    }
+    return delegate_->Read(offset, data);
+  }
+  std::optional<size_t> Write(int64_t offset,
+                              base::span<const uint8_t> data) override {
+    return delegate_->Write(offset, data);
+  }
+  bool GetInfo(base::File::Info* file_info) override {
+    return delegate_->GetInfo(file_info);
+  }
+  int64_t GetLength() override { return delegate_->GetLength(); }
+  bool SetLength(int64_t length) override {
+    return delegate_->SetLength(length);
+  }
+  bool ReadAndCheck(int64_t offset, base::span<uint8_t> data) override {
+    if (fail_read_) {
+      return false;
+    }
+    return delegate_->ReadAndCheck(offset, data);
+  }
+  bool WriteAndCheck(int64_t offset, base::span<const uint8_t> data) override {
+    return delegate_->WriteAndCheck(offset, data);
+  }
+
+  void set_fail_read(bool fail) { fail_read_ = fail; }
+
+ private:
+  std::unique_ptr<disk_cache::CacheFile> delegate_;
+  bool fail_read_ = false;
+};
+
+TEST_F(EncryptedCacheFileTest, ReadPastEofFar) {
+  auto encrypted_file = CreateEncryptedFile();
+  std::string data = "Testing data!";
+  ASSERT_TRUE(encrypted_file->Write(0, base::as_byte_span(data)).has_value());
+
+  base::HistogramTester histogram_tester;
+  std::vector<uint8_t> buffer(10);
+  // Read far past EOF (offset in next chunk).
+  auto read_res =
+      encrypted_file->Read(kChunkDataSize + 100, base::span(buffer));
+  EXPECT_FALSE(read_res.has_value());
+
+  histogram_tester.ExpectBucketCount("Enterprise.EncryptedCache.Read.Result",
+                                     EncryptionError::kDecryptionFailed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.EncryptedCache.Read.DecryptionFailureReason",
+      DecryptionFailureReason::kReadPastEof, 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.EncryptedCache.Read.DecryptionFailureChunkIndex", 1, 1);
+}
+
+TEST_F(EncryptedCacheFileTest, CiphertextTooShort) {
+  std::string data = "Testing data!";
+  {
+    auto encrypted_file = CreateEncryptedFile();
+    ASSERT_TRUE(encrypted_file->Write(0, base::as_byte_span(data)).has_value());
+  }
+
+  // Truncate the file physically, so it is smaller than kHeaderSize +
+  // kAuthTagSize. Original file size: kHeaderSize + data.size() + kAuthTagSize
+  // = 40 + 13 + 16 = 69. Truncate to 50 bytes (which leaves less than 16 bytes
+  // for ciphertext/tag in the chunk).
+  {
+    base::File file(GetTestFilePath(), base::File::FLAG_OPEN |
+                                           base::File::FLAG_READ |
+                                           base::File::FLAG_WRITE);
+    ASSERT_TRUE(file.IsValid());
+    ASSERT_TRUE(file.SetLength(50));
+  }
+
+  base::HistogramTester histogram_tester;
+  auto encrypted_file = OpenEncryptedFile();
+  std::vector<uint8_t> buffer(data.size());
+  auto read_res = encrypted_file->Read(0, base::span(buffer));
+  EXPECT_FALSE(read_res.has_value());
+
+  histogram_tester.ExpectBucketCount("Enterprise.EncryptedCache.Read.Result",
+                                     EncryptionError::kDecryptionFailed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.EncryptedCache.Read.DecryptionFailureReason",
+      DecryptionFailureReason::kCiphertextTooShort, 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.EncryptedCache.Read.DecryptionFailureChunkIndex", 0, 1);
+}
+
+TEST_F(EncryptedCacheFileTest, UnderlyingReadError) {
+  base::FilePath path = GetTestFilePath();
+  base::File file(path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
+                            base::File::FLAG_WRITE);
+  auto basic_file =
+      std::make_unique<disk_cache::BasicCacheFile>(std::move(file));
+  auto mock_ptr = std::make_unique<MockCacheFile>(std::move(basic_file));
+  MockCacheFile* mock_raw = mock_ptr.get();
+
+  auto encrypted_file = std::make_unique<EncryptedCacheFile>(
+      std::move(mock_ptr), *process_bound_key_);
+
+  std::string data = "Some test content!";
+  ASSERT_TRUE(encrypted_file->Write(0, base::as_byte_span(data)).has_value());
+
+  // Now, tell MockCacheFile to fail reads.
+  mock_raw->set_fail_read(true);
+
+  base::HistogramTester histogram_tester;
+  std::vector<uint8_t> buffer(data.size());
+  auto read_res = encrypted_file->Read(0, base::span(buffer));
+  EXPECT_FALSE(read_res.has_value());
+
+  histogram_tester.ExpectBucketCount("Enterprise.EncryptedCache.Read.Result",
+                                     EncryptionError::kDecryptionFailed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.EncryptedCache.Read.DecryptionFailureReason",
+      DecryptionFailureReason::kUnderlyingReadFailed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.EncryptedCache.Read.DecryptionFailureChunkIndex", 0, 1);
+}
+
+TEST_F(EncryptedCacheFileTest, WritePathDecryptionFailure) {
+  std::string data = "Integrity data check!";
+  {
+    auto encrypted_file = CreateEncryptedFile();
+    ASSERT_TRUE(encrypted_file->Write(0, base::as_byte_span(data)).has_value());
+  }
+
+  // Corrupt a byte in the middle of payload to force decryption failure on
+  // subsequent write.
+  int64_t payload_offset = kHeaderSize + 5;
+  {
+    base::File file(GetTestFilePath(), base::File::FLAG_OPEN |
+                                           base::File::FLAG_READ |
+                                           base::File::FLAG_WRITE);
+    uint8_t byte = 0;
+    file.Read(payload_offset, base::byte_span_from_ref(byte));
+    byte ^= 0xFF;
+    file.Write(payload_offset, base::byte_span_from_ref(byte));
+  }
+
+  base::HistogramTester histogram_tester;
+  auto encrypted_file = OpenEncryptedFile();
+
+  // Try to write (partial overwrite) which triggers Read-Modify-Write
+  // decryption failure.
+  std::string overwrite_data = "overwrite";
+  auto res = encrypted_file->Write(5, base::as_byte_span(overwrite_data));
+  EXPECT_FALSE(res.has_value());
+
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.EncryptedCache.Write.DecryptionFailureReason",
+      DecryptionFailureReason::kAeadOpenFailed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.EncryptedCache.Write.DecryptionFailureChunkIndex", 0, 1);
+}
+
+TEST_F(EncryptedCacheFileTest, TruncatePathDecryptionFailure) {
+  std::string data = "Integrity data check!";
+  {
+    auto encrypted_file = CreateEncryptedFile();
+    ASSERT_TRUE(encrypted_file->Write(0, base::as_byte_span(data)).has_value());
+  }
+
+  // Corrupt a byte in the middle of payload.
+  int64_t payload_offset = kHeaderSize + 5;
+  {
+    base::File file(GetTestFilePath(), base::File::FLAG_OPEN |
+                                           base::File::FLAG_READ |
+                                           base::File::FLAG_WRITE);
+    uint8_t byte = 0;
+    file.Read(payload_offset, base::byte_span_from_ref(byte));
+    byte ^= 0xFF;
+    file.Write(payload_offset, base::byte_span_from_ref(byte));
+  }
+
+  base::HistogramTester histogram_tester;
+  auto encrypted_file = OpenEncryptedFile();
+
+  // Try to truncate the file, which requires reading the last chunk.
+  EXPECT_FALSE(encrypted_file->SetLength(5));
+
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.EncryptedCache.Truncate.DecryptionFailureReason",
+      DecryptionFailureReason::kAeadOpenFailed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.EncryptedCache.Truncate.DecryptionFailureChunkIndex", 0, 1);
 }
 
 }  // namespace network::enterprise_encryption

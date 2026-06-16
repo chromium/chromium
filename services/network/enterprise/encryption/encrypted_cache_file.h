@@ -15,6 +15,30 @@
 
 namespace network::enterprise_encryption {
 
+// Detailed failure reason for decryption failures. Do not reorder or delete
+// existing values.
+// LINT.IfChange(EnterpriseDiskCacheDecryptionFailureReason)
+enum class DecryptionFailureReason {
+  kReadPastEof = 0,
+  kUnderlyingReadFailed = 1,
+  kCiphertextTooShort = 2,
+  kAeadOpenFailed = 3,
+  kMaxValue = kAeadOpenFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseDiskCacheDecryptionFailureReason)
+
+// Source path trigger that caused decryption of a chunk.
+// Do not reorder or delete existing values.
+// LINT.IfChange(EncryptedCacheDecryptionSource)
+enum class DecryptionSource {
+  kRead = 0,
+  kWrite = 1,
+  kEnsurePreviousNotLast = 2,
+  kTruncate = 3,
+  kMaxValue = kTruncate,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/histograms.xml:EncryptedCacheDecryptionSource)
+
 // A decorator implementation of `CacheFile` that adds an encryption layer on
 // top of another `CacheFile` instance.
 class COMPONENT_EXPORT(NETWORK_SERVICE) EncryptedCacheFile
@@ -57,7 +81,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) EncryptedCacheFile
 
   // Reads and decrypts the specified chunk.
   base::expected<std::vector<uint8_t>, EncryptionError> ReadAndDecryptChunk(
-      uint32_t chunk_index);
+      uint32_t chunk_index,
+      DecryptionSource source);
 
   // Handles the transition of the previous last chunk to an intermediate chunk.
   // When extending the file, the old "last chunk" must be padded to the full

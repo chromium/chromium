@@ -100,6 +100,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/enterprise/connectors/core/common.h:DeepScanAccessPoint) -->
 
+<!-- LINT.IfChange(EncryptedCacheDecryptionSource) -->
+
+<variants name="EncryptedCacheDecryptionSource">
+  <variant name="EnsurePreviousNotLast"
+      summary="decryption triggered by write padding check"/>
+  <variant name="Read" summary="decryption triggered by client read"/>
+  <variant name="Truncate"
+      summary="decryption triggered by last chunk re-encryption on truncate"/>
+  <variant name="Write"
+      summary="decryption triggered by partial overwrite RMW"/>
+</variants>
+
+<!-- LINT.ThenChange(//services/network/enterprise/encryption/encrypted_cache_file.h:DecryptionSource) -->
+
 <variants name="EncryptedCacheOperation">
   <variant name="Open"
       summary="Opening the file (checking header validity and initializing
@@ -2318,6 +2332,33 @@ chromium-metrics-reviews@google.com.
     Tracks the success or failure of retrieving the primary key for the cache
     from profile prefs.
   </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.EncryptedCache.{DecryptionSource}.DecryptionFailureChunkIndex"
+    units="index" expires_after="2027-01-28">
+  <owner>haihan@google.com</owner>
+  <owner>valadkevich@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records the index of the chunk which failed to decrypt in the enterprise
+    encrypted cache file when {DecryptionSource}.
+  </summary>
+  <token key="DecryptionSource" variants="EncryptedCacheDecryptionSource"/>
+</histogram>
+
+<histogram
+    name="Enterprise.EncryptedCache.{DecryptionSource}.DecryptionFailureReason"
+    enum="EnterpriseDiskCacheDecryptionFailureReason"
+    expires_after="2027-01-28">
+  <owner>haihan@google.com</owner>
+  <owner>valadkevich@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records the detailed failure code when an operation on the encrypted cache
+    file fails due to decryption when {DecryptionSource}.
+  </summary>
+  <token key="DecryptionSource" variants="EncryptedCacheDecryptionSource"/>
 </histogram>
 
 <histogram name="Enterprise.EncryptedCache.{Operation}.Result"
