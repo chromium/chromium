@@ -9,7 +9,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -20,11 +24,13 @@
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/permissions/fake_bluetooth_chooser_controller.h"
 #include "components/permissions/fake_usb_chooser_controller.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/page_transition_types.h"
@@ -249,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothChooserBrowserTest, InvokeUi_PairedModal) {
   ShowAndVerifyUi();
 }
 
-class DeviceChooserBubbleSplitViewTest : public InProcessBrowserTest {
+class DeviceChooserBubbleTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -262,8 +268,8 @@ class DeviceChooserBubbleSplitViewTest : public InProcessBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(DeviceChooserBubbleSplitViewTest,
-                       ShowDeviceChooserDialog) {
+IN_PROC_BROWSER_TEST_F(DeviceChooserBubbleTest,
+                       ShowDeviceChooserDialogInSplitView) {
   ASSERT_TRUE(AddTabAtIndex(0, GetURL("example.com"),
                             ui::PageTransition::PAGE_TRANSITION_TYPED));
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
@@ -288,4 +294,23 @@ IN_PROC_BROWSER_TEST_F(DeviceChooserBubbleSplitViewTest,
       contents_container_views[0]->contents_outline_view()->is_highlighted());
   EXPECT_FALSE(
       contents_container_views[1]->contents_outline_view()->is_highlighted());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceChooserBubbleTest,
+                       ChooserBubblePreventsFullscreen) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("example.com")));
+
+  ShowChooserBubble(browser(), std::make_unique<FakeUsbChooserController>(0));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  FullscreenController* fullscreen_controller = browser()
+                                                    ->GetFeatures()
+                                                    .exclusive_access_manager()
+                                                    ->fullscreen_controller();
+
+  // While bubble is showing, tab fullscreen cannot be entered.
+  EXPECT_FALSE(content::ExecJs(web_contents,
+                               "document.documentElement.requestFullscreen()"));
+  EXPECT_FALSE(fullscreen_controller->IsTabFullscreen());
 }

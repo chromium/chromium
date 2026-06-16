@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
@@ -67,8 +66,9 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
  public:
   ChooserBubbleUiViewDelegate(
       Browser* browser,
-      content::WebContents* web_contents,
-      std::unique_ptr<permissions::ChooserController> chooser_controller);
+      content::WebContents* contents,
+      std::unique_ptr<permissions::ChooserController> chooser_controller,
+      base::ScopedClosureRunner fullscreen_blocker);
 
   ChooserBubbleUiViewDelegate(const ChooserBubbleUiViewDelegate&) = delete;
   ChooserBubbleUiViewDelegate& operator=(const ChooserBubbleUiViewDelegate&) =
@@ -111,10 +111,12 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
 ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
     Browser* browser,
     content::WebContents* contents,
-    std::unique_ptr<permissions::ChooserController> chooser_controller)
+    std::unique_ptr<permissions::ChooserController> chooser_controller,
+    base::ScopedClosureRunner fullscreen_blocker)
     : LocationBarBubbleDelegateView(
           GetChooserAnchorConfiguration(browser).anchor,
-          contents) {
+          contents),
+      fullscreen_blocker_(std::move(fullscreen_blocker)) {
   // ------------------------------------
   // | Chooser bubble title             |
   // | -------------------------------- |
@@ -151,19 +153,6 @@ ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
   SetCloseCallback(
       base::BindOnce(&DeviceChooserContentView::Close,
                      base::Unretained(device_chooser_content_view_)));
-  FullscreenController* fullscreen_controller = browser->GetFeatures()
-                                                    .exclusive_access_manager()
-                                                    ->fullscreen_controller();
-  CHECK(fullscreen_controller);
-  // Drop fullscreen mode for the current webcontent so that the user sees the
-  // URL.
-  if (fullscreen_controller->IsTabFullscreen()) {
-    auto blocker =
-        contents->ForSecurityDropFullscreen(display::kInvalidDisplayId);
-    if (blocker) {
-      fullscreen_blocker_ = std::move(*blocker);
-    }
-  }
 }
 
 ChooserBubbleUiViewDelegate::~ChooserBubbleUiViewDelegate() = default;
@@ -259,8 +248,16 @@ base::OnceClosure ShowDeviceChooserDialogForExtension(
     return base::DoNothing();
   }
 
+  std::optional<base::ScopedClosureRunner> fullscreen_blocker =
+      contents->ForSecurityDropFullscreen(display::kInvalidDisplayId);
+  if (!fullscreen_blocker.has_value()) {
+    // The WebContents ha been destroyed, bail out.
+    return base::DoNothing();
+  }
+
   auto bubble = std::make_unique<ChooserBubbleUiViewDelegate>(
-      browser->GetBrowserForMigrationOnly(), contents, std::move(controller));
+      browser->GetBrowserForMigrationOnly(), contents, std::move(controller),
+      std::move(fullscreen_blocker).value());
   base::OnceClosure close_closure = bubble->MakeCloseClosure();
   extensions_toolbar->ShowWidgetForExtension(
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble)),
@@ -309,8 +306,16 @@ base::OnceClosure ShowDeviceChooserDialog(
     return base::DoNothing();
   }
 
+  std::optional<base::ScopedClosureRunner> fullscreen_blocker =
+      contents->ForSecurityDropFullscreen(display::kInvalidDisplayId);
+  if (!fullscreen_blocker.has_value()) {
+    // The WebContents ha been destroyed, bail out.
+    return base::DoNothing();
+  }
+
   auto bubble = std::make_unique<ChooserBubbleUiViewDelegate>(
-      browser->GetBrowserForMigrationOnly(), contents, std::move(controller));
+      browser->GetBrowserForMigrationOnly(), contents, std::move(controller),
+      std::move(fullscreen_blocker).value());
 
   bubble->UpdateAnchor(browser->GetBrowserForMigrationOnly());
 
