@@ -2921,6 +2921,10 @@ bool HTMLMediaElement::IsLazyLoadDeferred() const {
   return lazy_media_load_state_ == LazyMediaLoadState::kDeferred;
 }
 
+bool HTMLMediaElement::IsLazyLoadResumed() const {
+  return lazy_media_load_state_ == LazyMediaLoadState::kFullMedia;
+}
+
 void HTMLMediaElement::LoadDeferredTracks() {
   for (HTMLTrackElement& track_element :
        Traversal<HTMLTrackElement>::ChildrenOf(*this)) {

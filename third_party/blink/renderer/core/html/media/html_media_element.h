@@ -218,6 +218,7 @@ class CORE_EXPORT HTMLMediaElement
   // Lazy loading support.
   bool HasLazyLoadingAttribute() const;
   bool IsLazyLoadDeferred() const;
+  bool IsLazyLoadResumed() const;
   void LoadDeferredMediaIfNeeded();
   void LoadDeferredTracks();
 

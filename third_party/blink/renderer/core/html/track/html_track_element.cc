@@ -165,7 +165,12 @@ void HTMLTrackElement::ScheduleLoad() {
     return;
   }
 
+  // Defer the track while the media element is, or is about to be, lazily
+  // deferred. Skip this once the media has resumed, otherwise
+  // LoadDeferredTracks() would re-defer the track here forever since the
+  // loading=lazy attribute is still present.
   if (RuntimeEnabledFeatures::LazyLoadVideoAndAudioEnabled() &&
+      !media_element->IsLazyLoadResumed() &&
       (media_element->IsLazyLoadDeferred() ||
        media_element->HasLazyLoadingAttribute())) {
     load_deferred_for_lazy_media_ = true;
