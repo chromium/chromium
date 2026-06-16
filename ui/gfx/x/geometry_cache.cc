@@ -34,12 +34,19 @@ GeometryCache::GeometryCache(Connection* connection,
 GeometryCache::~GeometryCache() = default;
 
 gfx::Rect GeometryCache::GetBoundsPx() {
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   if (!have_parent_) {
     parent_future_.DispatchNow();
+    if (!weak_this) {
+      return {};
+    }
   }
   CHECK(have_parent_);
   if (!have_geometry_) {
     geometry_future_.DispatchNow();
+    if (!weak_this) {
+      return {};
+    }
   }
   CHECK(have_geometry_);
 
@@ -47,6 +54,9 @@ gfx::Rect GeometryCache::GetBoundsPx() {
     return geometry_;
   }
   auto parent_bounds = parent_->GetBoundsPx();
+  if (!weak_this) {
+    return {};
+  }
   gfx::Vector2d offset(parent_bounds.x(), parent_bounds.y());
   return geometry_ + offset;
 }
