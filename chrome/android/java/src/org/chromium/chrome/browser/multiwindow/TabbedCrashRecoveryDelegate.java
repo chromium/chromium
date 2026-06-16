@@ -136,6 +136,12 @@ public class TabbedCrashRecoveryDelegate {
         if (crashedWindowTaskCount == crashedWindows.size() - 1) {
             // If all crashed windows (other than the current window) have live tasks already, do
             // not show the crash recovery prompt.
+            for (CrashRecoveryWindowInfo windowInfo : crashedWindows) {
+                int windowId = windowInfo.windowId;
+                if (windowId == hostActivity.getWindowId()) continue;
+                ChromeMultiInstancePersistentStore.writeIsRecoverable(
+                        windowId, /* isRecoverable= */ false);
+            }
             return;
         }
 
