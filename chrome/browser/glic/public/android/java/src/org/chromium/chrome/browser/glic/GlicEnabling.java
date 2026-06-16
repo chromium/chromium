@@ -47,6 +47,13 @@ public class GlicEnabling {
         return GlicEnablingJni.get().isEnabledForProfile(profile);
     }
 
+    /** Returns true if the user was previously determined to be ineligible for Glic. */
+    public static boolean wasPreviouslyNotAllowed(@Nullable Profile profile) {
+        if (profile == null) return false;
+        if (sIsEnabledForTesting != null) return sIsEnabledForTesting;
+        return GlicEnablingJni.get().wasPreviouslyNotAllowed(profile);
+    }
+
     /** Returns true if the Glic settings page should be shown for the given profile. */
     public static boolean shouldShowSettingsPage(@Nullable Profile profile) {
         if (profile == null) return false;
@@ -122,6 +129,8 @@ public class GlicEnabling {
         boolean isProfileEligible(@JniType("Profile*") Profile profile);
 
         boolean isEnabledForProfile(@JniType("Profile*") Profile profile);
+
+        boolean wasPreviouslyNotAllowed(@JniType("Profile*") Profile profile);
 
         boolean shouldShowSettingsPage(@JniType("Profile*") Profile profile);
 

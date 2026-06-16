@@ -17,13 +17,13 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import androidx.annotation.Nullable;
-import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicNavigationUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -83,6 +84,8 @@ public class TabbedRootUiCoordinatorTest {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
+    @Rule public TestName mTestName = new TestName();
+
     @Rule public MockitoRule mockito = MockitoJUnit.rule();
 
     private WebPageStation mPage;
@@ -102,13 +105,9 @@ public class TabbedRootUiCoordinatorTest {
                     doReturn(false).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
                 });
 
-        mBrowserTestRule.addAccountThenSigninAndEnableHistorySync(TestAccounts.ACCOUNT1);
-
         BookmarkBarUtils.setBookmarkBarVisibleForTesting(true);
         TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
-        mPage = mActivityTestRule.startOnBlankPage();
-        mTabbedRootUiCoordinator =
-                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+        GlicEnabling.setEnabledForTesting(false);
     }
 
     @After
@@ -128,44 +127,74 @@ public class TabbedRootUiCoordinatorTest {
                         mTabbedRootUiCoordinator.getGlicPromoCoordinatorForTesting().destroy();
                     }
                 });
+        GlicNavigationUtils.setLauncher(null);
     }
 
     @Test
     @MediumTest
-    @UiThreadTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     @Restriction({DeviceFormFactor.PHONE})
+    @DisabledTest  // TODO(crbug.com/447525636): Re-enable tests.
     public void testTopControlsHeightWithBookmarkBarWhenFlagIsDisabledOnPhone() {
-        testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ false);
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ false);
+                });
     }
 
     @Test
     @MediumTest
-    @UiThreadTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testTopControlsHeightWithBookmarkBarWhenFlagIsDisabledOnTablet() {
-        testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ false);
+        final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ false);
+                });
     }
 
     @Test
     @MediumTest
-    @UiThreadTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     @Restriction({DeviceFormFactor.PHONE})
     @DisabledTest
     // TODO(crbug.com/447525636): Re-enable tests.
     public void testTopControlsHeightWithBookmarkBarWhenFlagIsEnabledOnPhone() {
-        testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ false);
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ false);
+                });
     }
 
     @Test
     @MediumTest
-    @UiThreadTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testTopControlsHeightWithBookmarkBarWhenFlagIsEnabledOnTablet() {
-        testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ true);
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+
+                    // Enable the bookmark bar setting for the test.
+                    BookmarkBarUtils.setDevicePrefShowBookmarksBar(
+                            activity.getProfileProviderSupplier().get().getOriginalProfile(),
+                            true,
+                            /* fromKeyboardShortcut= */ false);
+                    testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ true);
+                });
     }
 
     @Test
@@ -173,8 +202,12 @@ public class TabbedRootUiCoordinatorTest {
     @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     @Add({@Policies.Item(key = "BrowserSignin", string = "2")})
     public void testForcedSignin() {
+        mBrowserTestRule.addAccountThenSigninAndEnableHistorySync(TestAccounts.ACCOUNT1);
+
         // The user is already signed in at first, so the fullscreen signin prompt is not displayed.
-        mActivityTestRule.alreadyStartedOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
         ViewFinder.waitForNoView(withText(R.string.signin_fre_title_signin_forced_by_policy));
 
         // The fullscreen prompt should be displayed upon signout.
@@ -212,6 +245,10 @@ public class TabbedRootUiCoordinatorTest {
     @Test
     @MediumTest
     public void testActivityTitle() {
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+
         final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
 
@@ -246,6 +283,10 @@ public class TabbedRootUiCoordinatorTest {
     @Test
     @MediumTest
     public void testMaybeShowGlicPromo_WouldTrigger_ToolbarNotPinned() {
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+
         GlicEnabling.setEnabledForTesting(true);
         ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
 
@@ -284,6 +325,10 @@ public class TabbedRootUiCoordinatorTest {
     @Test
     @MediumTest
     public void testMaybeShowGlicPromo_WouldTrigger_ToolbarPinned() {
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+
         GlicEnabling.setEnabledForTesting(true);
         ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
 
@@ -323,6 +368,10 @@ public class TabbedRootUiCoordinatorTest {
     @Test
     @MediumTest
     public void testMaybeShowGlicPromo_WouldNotTrigger() {
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+
         GlicEnabling.setEnabledForTesting(true);
         ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
 

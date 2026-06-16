@@ -20,6 +20,9 @@ bool JNI_GlicEnabling_IsProfileEligible(JNIEnv* env, Profile* profile) {
 bool JNI_GlicEnabling_IsEnabledForProfile(JNIEnv* env, Profile* profile) {
   return GlicEnabling::IsEnabledForProfile(profile);
 }
+bool JNI_GlicEnabling_WasPreviouslyNotAllowed(JNIEnv* env, Profile* profile) {
+  return GlicEnabling::WasPreviouslyNotAllowed(profile);
+}
 bool JNI_GlicEnabling_ShouldShowSettingsPage(JNIEnv* env, Profile* profile) {
   return GlicEnabling::ShouldShowSettingsPage(profile);
 }
