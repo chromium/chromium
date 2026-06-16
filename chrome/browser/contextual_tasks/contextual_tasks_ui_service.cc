@@ -158,10 +158,10 @@ constexpr net::BackoffEntry::Policy
     kIgnoreFirstErrorRequestAccessTokenBackoffPolicy = {
         // Number of initial errors (in sequence) to ignore before applying
         // exponential back-off rules.
-        1,
+        2,
 
         // Initial delay for exponential back-off in ms.
-        500,
+        150,
 
         // Factor by which the waiting time will be multiplied.
         2,
@@ -171,7 +171,7 @@ constexpr net::BackoffEntry::Policy
         0.2,  // 20%
 
         // Maximum amount of time we are willing to delay our request in ms.
-        10000,  // 10 seconds.
+        2000,  // 2 seconds.
 
         // Time to keep an entry from being discarded even when it
         // has no significant state, -1 to never discard.
@@ -180,6 +180,10 @@ constexpr net::BackoffEntry::Policy
         // Don't use initial delay unless the last request was an error.
         false,
 };
+
+// Heuristic threshold under which an OAuth token fetch is classified as a
+// local cache hit.
+constexpr base::TimeDelta kOAuthCacheHitThreshold = base::Milliseconds(30);
 
 constexpr char kAiPageHost[] = "https://google.com";
 constexpr char kDebugParam[] = "deb";
@@ -281,6 +285,10 @@ void ContextualTasksUiService::Shutdown() {
   }
   tracker_manager_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
+  if (current_oauth_fetch_trigger_.has_value()) {
+    RecordOAuthMetrics(GoogleServiceAuthError::CreateRequestCanceled(),
+                       signin::AccessTokenInfo());
+  }
   access_token_fetcher_.reset();
   token_refresh_timer_.Stop();
 }
@@ -301,6 +309,10 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
                               "OnNavigationToAiPageIntercepted called for URL: "
                            << url;
   CHECK(contextual_tasks_service_);
+
+  // Starts the access token fetch now so it happens in parallel to the WebUI
+  // initializing.
+  StartAccessTokenFetch(OAuthFetchTrigger::kAimNavigationInterception);
 
   // Get the session handle from the source web contents, if provided, to
   // propagate context from the source WebUI.
@@ -423,25 +435,89 @@ void ContextualTasksUiService::OnOAuthTokenReceived(
         token_refresh_timer_.Start(
             FROM_HERE, delay,
             base::BindOnce(&ContextualTasksUiService::StartAccessTokenFetch,
-                           weak_ptr_factory_.GetWeakPtr()));
+                           weak_ptr_factory_.GetWeakPtr(), std::nullopt));
       }
       return;
     }
 
-    // TODO(crbug.com/470109970): If at this point the token is empty, the error
-    // is not transient and a blocking error needs to shown to the user to
-    // prevent the user continuing to interact with broken UI.
+    RecordOAuthMetrics(error, access_token_info);
+    request_access_token_backoff_.Reset();
     OMNIBOX_LOG("nav_trace")
         << "ContextualTasks navigation trace: OnOAuthTokenReceived "
            "non-transient error, running callbacks with empty token";
     RunPendingAccessTokenCallbacks("");
     return;
   }
+  RecordOAuthMetrics(error, access_token_info);
   request_access_token_backoff_.Reset();
   OMNIBOX_LOG("nav_trace")
       << "ContextualTasks navigation trace: OnOAuthTokenReceived "
          "success, running callbacks";
   RunPendingAccessTokenCallbacks(access_token_info.token);
+}
+
+void ContextualTasksUiService::RecordOAuthMetrics(
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo access_token_info) {
+  if (!current_oauth_fetch_trigger_.has_value() ||
+      fetch_start_time_.is_null()) {
+    return;
+  }
+
+  base::TimeDelta latency = base::TimeTicks::Now() - fetch_start_time_;
+  int tries = request_access_token_backoff_.failure_count() + 1;
+  bool success = (error.state() == GoogleServiceAuthError::NONE);
+
+  bool was_cached = false;
+  if (success) {
+    // Heuristic for cache hit.
+    was_cached = (latency < kOAuthCacheHitThreshold);
+  }
+
+  // Record to .All
+  base::UmaHistogramMediumTimes("ContextualTasks.OAuth.Latency.All", latency);
+  base::UmaHistogramExactLinear("ContextualTasks.OAuth.TriesCount.All", tries,
+                                10);
+  if (success) {
+    base::UmaHistogramExactLinear(
+        "ContextualTasks.OAuth.TriesCountBeforeSuccess.All", tries, 10);
+  } else {
+    base::UmaHistogramExactLinear(
+        "ContextualTasks.OAuth.TriesCountBeforeFailure.All", tries, 10);
+  }
+  base::UmaHistogramBoolean("ContextualTasks.OAuth.Success.All", success);
+  if (success) {
+    base::UmaHistogramBoolean("ContextualTasks.OAuth.WasCached.All",
+                              was_cached);
+  }
+
+  // Record to .AimNavigation if applicable
+  if (*current_oauth_fetch_trigger_ ==
+      OAuthFetchTrigger::kAimNavigationInterception) {
+    base::UmaHistogramMediumTimes("ContextualTasks.OAuth.Latency.AimNavigation",
+                                  latency);
+    base::UmaHistogramExactLinear(
+        "ContextualTasks.OAuth.TriesCount.AimNavigation", tries, 10);
+    if (success) {
+      base::UmaHistogramExactLinear(
+          "ContextualTasks.OAuth.TriesCountBeforeSuccess.AimNavigation", tries,
+          10);
+    } else {
+      base::UmaHistogramExactLinear(
+          "ContextualTasks.OAuth.TriesCountBeforeFailure.AimNavigation", tries,
+          10);
+    }
+    base::UmaHistogramBoolean("ContextualTasks.OAuth.Success.AimNavigation",
+                              success);
+    if (success) {
+      base::UmaHistogramBoolean("ContextualTasks.OAuth.WasCached.AimNavigation",
+                                was_cached);
+    }
+  }
+
+  // Reset trigger.
+  current_oauth_fetch_trigger_ = std::nullopt;
+  fetch_start_time_ = base::TimeTicks();
 }
 
 void ContextualTasksUiService::ShowOauthErrorDialogForWebContents(
@@ -1030,25 +1106,33 @@ void ContextualTasksUiService::GetAccessToken(
       << "ContextualTasks navigation trace: GetAccessToken called";
   pending_access_token_callbacks_.emplace_back(std::move(callback),
                                                web_contents);
+  StartAccessTokenFetch(OAuthFetchTrigger::kFetchRequest);
+}
+
+void ContextualTasksUiService::StartAccessTokenFetch(
+    std::optional<OAuthFetchTrigger> trigger) {
+  OMNIBOX_LOG("nav_trace")
+      << "ContextualTasks navigation trace: StartAccessTokenFetch called";
 
   // If a request is already in progress, or we are waiting to retry, do
   // nothing.
   if (access_token_fetcher_ || token_refresh_timer_.IsRunning()) {
     OMNIBOX_LOG("nav_trace")
-        << "ContextualTasks navigation trace: GetAccessToken returning "
+        << "ContextualTasks navigation trace: StartAccessTokenFetch returning "
            "early because fetch is in progress or waiting to retry";
     return;
   }
 
-  OMNIBOX_LOG("nav_trace")
-      << "ContextualTasks navigation trace: GetAccessToken starting "
-         "access token fetch";
-  StartAccessTokenFetch();
-}
+  if (trigger.has_value() && !current_oauth_fetch_trigger_.has_value()) {
+    current_oauth_fetch_trigger_ = trigger;
+    fetch_start_time_ = base::TimeTicks::Now();
+    base::UmaHistogramBoolean("ContextualTasks.OAuth.Start.All", true);
+    if (*trigger == OAuthFetchTrigger::kAimNavigationInterception) {
+      base::UmaHistogramBoolean("ContextualTasks.OAuth.Start.AimNavigation",
+                                true);
+    }
+  }
 
-void ContextualTasksUiService::StartAccessTokenFetch() {
-  OMNIBOX_LOG("nav_trace")
-      << "ContextualTasks navigation trace: StartAccessTokenFetch called";
   token_refresh_timer_.Stop();
 
   if (!identity_manager_ ||
@@ -1056,6 +1140,10 @@ void ContextualTasksUiService::StartAccessTokenFetch() {
     OMNIBOX_LOG("nav_trace")
         << "ContextualTasks navigation trace: StartAccessTokenFetch "
            "returning early due to no primary account";
+    if (current_oauth_fetch_trigger_.has_value()) {
+      RecordOAuthMetrics(GoogleServiceAuthError::CreateAccountNotFound(),
+                         signin::AccessTokenInfo());
+    }
     RunPendingAccessTokenCallbacks("");
     return;
   }

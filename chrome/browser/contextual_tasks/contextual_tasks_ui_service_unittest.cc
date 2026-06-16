@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -340,6 +341,14 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<MockContextualTasksService> contextual_tasks_service_;
 };
 
+class ContextualTasksUiServiceTestWithMockTime
+    : public ContextualTasksUiServiceTest {
+ public:
+  ContextualTasksUiServiceTestWithMockTime()
+      : ContextualTasksUiServiceTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
 class ContextualTasksUiServiceTestParameterized
     : public ContextualTasksUiServiceTest,
       public testing::WithParamInterface<
@@ -361,9 +370,19 @@ TEST_P(ContextualTasksUiServiceTestParameterized, GetAccessToken_Success) {
 }
 
 TEST_P(ContextualTasksUiServiceTestParameterized, GetAccessToken_NotSignedIn) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<const std::string&> token_future;
   real_service_->GetAccessToken(token_future.GetCallback(), nullptr);
   EXPECT_EQ(token_future.Get(), "");
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.Start.All", true,
+                                      1);
+  histogram_tester.ExpectTotalCount("ContextualTasks.OAuth.Start.AimNavigation",
+                                    0);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.Success.All",
+                                      false, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.Success.AimNavigation", 0);
 }
 
 // TODO(crbug.com/477018818): Flaky on Linux ASan.
@@ -386,14 +405,29 @@ TEST_P(ContextualTasksUiServiceTestParameterized,
   real_service_->GetAccessToken(token_future.GetCallback(), nullptr);
 
   // First request fails with a transient error.
+  // Since we ignore the first 2 errors, this should retry immediately.
   identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 
-  // The service should retry. We need to fast forward time to trigger the
-  // retry. The backoff policy has an initial delay of 500ms.
-  task_environment()->FastForwardBy(base::Milliseconds(1000));
+  // Second request also fails with a transient error.
+  // This should also retry immediately.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 
-  // Second request succeeds.
+  // Third request fails with a transient error.
+  // Now we should apply backoff (150ms delay).
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
+
+  // The service should retry after delay. Fast forward by less than 150ms
+  // first.
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_FALSE(identity_test_env_->IsAccessTokenRequestPending());
+
+  // Fast forward the rest of the way.
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  // Fourth request succeeds.
   identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now() + base::Hours(1));
 
@@ -460,6 +494,273 @@ INSTANTIATE_TEST_SUITE_P(
     ContextualTasksUiServiceTestParameterized,
     testing::Values(base::test::TaskEnvironment::TimeSource::SYSTEM_TIME,
                     base::test::TaskEnvironment::TimeSource::MOCK_TIME));
+
+TEST_F(ContextualTasksUiServiceTest,
+       OnNavigationToAiPageIntercepted_TriggersTokenFetch) {
+  identity_test_env_->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+  base::WeakPtrFactory weak_factory(&tab);
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
+      .WillOnce(Return(task));
+  EXPECT_CALL(*contextual_tasks_service_,
+              AssociateTabWithTask(
+                  task.GetTaskId(),
+                  sessions::SessionTabHelper::IdForTab(web_contents.get())))
+      .Times(1);
+
+  real_service_->OnNavigationToAiPageIntercepted(intercepted_url,
+                                                 weak_factory.GetWeakPtr(),
+                                                 /*is_to_new_tab=*/false);
+
+  EXPECT_TRUE(identity_test_env_->IsAccessTokenRequestPending());
+}
+
+TEST_F(ContextualTasksUiServiceTestWithMockTime, OAuthMetrics_AimNavigation) {
+  base::HistogramTester histogram_tester;
+
+  identity_test_env_->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+  base::WeakPtrFactory weak_factory(&tab);
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
+      .WillOnce(Return(task));
+  EXPECT_CALL(*contextual_tasks_service_,
+              AssociateTabWithTask(
+                  task.GetTaskId(),
+                  sessions::SessionTabHelper::IdForTab(web_contents.get())))
+      .Times(1);
+
+  // Trigger early fetch (AimNavigation).
+  real_service_->OnNavigationToAiPageIntercepted(intercepted_url,
+                                                 weak_factory.GetWeakPtr(),
+                                                 /*is_to_new_tab=*/false);
+
+  // Respond with token to complete the fetch.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "fake_token", base::Time::Max());
+
+  // Verify metrics recorded to BOTH All and AimNavigation.
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.Start.All", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.OAuth.Start.AimNavigation", true, 1);
+
+  histogram_tester.ExpectTotalCount("ContextualTasks.OAuth.Latency.All", 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.Latency.AimNavigation", 1);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.TriesCount.All", 1,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.OAuth.TriesCount.AimNavigation", 1, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.OAuth.TriesCountBeforeSuccess.All", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.OAuth.TriesCountBeforeSuccess.AimNavigation", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.TriesCountBeforeFailure.All", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.TriesCountBeforeFailure.AimNavigation", 0);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.Success.All", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.OAuth.Success.AimNavigation", true, 1);
+
+  // Since it was "instant" in mock time, it should be counted as cached.
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.WasCached.All",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.OAuth.WasCached.AimNavigation", true, 1);
+}
+
+TEST_F(ContextualTasksUiServiceTestWithMockTime, OAuthMetrics_OtherNavigation) {
+  base::HistogramTester histogram_tester;
+
+  identity_test_env_->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  // Trigger standard fetch (Other).
+  base::test::TestFuture<const std::string&> token_future;
+  real_service_->GetAccessToken(token_future.GetCallback(), nullptr);
+
+  // Respond with token.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "fake_token", base::Time::Max());
+
+  EXPECT_EQ(token_future.Get(), "fake_token");
+
+  // Verify metrics recorded to All but NOT AimNavigation.
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.Start.All", true,
+                                      1);
+  histogram_tester.ExpectTotalCount("ContextualTasks.OAuth.Start.AimNavigation",
+                                    0);
+
+  histogram_tester.ExpectTotalCount("ContextualTasks.OAuth.Latency.All", 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.Latency.AimNavigation", 0);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.TriesCount.All", 1,
+                                      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.TriesCount.AimNavigation", 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.OAuth.TriesCountBeforeSuccess.All", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.TriesCountBeforeSuccess.AimNavigation", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.TriesCountBeforeFailure.All", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.TriesCountBeforeFailure.AimNavigation", 0);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.Success.All", true,
+                                      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.Success.AimNavigation", 0);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.WasCached.All",
+                                      true, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.WasCached.AimNavigation", 0);
+}
+
+TEST_F(ContextualTasksUiServiceTest, OAuthMetrics_PersistentError) {
+  base::HistogramTester histogram_tester;
+
+  identity_test_env_->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  base::test::TestFuture<const std::string&> token_future;
+  real_service_->GetAccessToken(token_future.GetCallback(), nullptr);
+
+  // First request fails with a persistent error.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
+
+  EXPECT_EQ(token_future.Get(), "");
+
+  // Verify metrics recorded to All but NOT AimNavigation.
+  histogram_tester.ExpectTotalCount("ContextualTasks.OAuth.Latency.All", 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.Latency.AimNavigation", 0);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.TriesCount.All", 1,
+                                      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.TriesCount.AimNavigation", 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.OAuth.TriesCountBeforeFailure.All", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.TriesCountBeforeFailure.AimNavigation", 0);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.TriesCountBeforeSuccess.All", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.TriesCountBeforeSuccess.AimNavigation", 0);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.Success.All",
+                                      false, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.Success.AimNavigation", 0);
+
+  // WasCached is only recorded on success.
+  histogram_tester.ExpectTotalCount("ContextualTasks.OAuth.WasCached.All", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.WasCached.AimNavigation", 0);
+}
+
+TEST_P(ContextualTasksUiServiceTestParameterized,
+       OAuthMetrics_TransientErrorAndSuccess) {
+  if (GetParam() == base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {
+    GTEST_SKIP() << "Retries won't work on SYSTEM_TIME";
+  }
+
+  base::HistogramTester histogram_tester;
+
+  identity_test_env_->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  base::test::TestFuture<const std::string&> token_future;
+  real_service_->GetAccessToken(token_future.GetCallback(), nullptr);
+
+  // First try fails with transient error.
+  // Retries immediately.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
+
+  // Second try fails with transient error.
+  // Retries immediately.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
+
+  // Third try fails with transient error.
+  // Delays 150ms.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
+
+  // No metrics recorded yet (still retrying).
+  histogram_tester.ExpectTotalCount("ContextualTasks.OAuth.Latency.All", 0);
+
+  // Fast forward to trigger retry.
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+
+  // Fourth try succeeds.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "fake_token", base::Time::Max());
+
+  EXPECT_EQ(token_future.Get(), "fake_token");
+
+  // Metrics recorded now.
+  histogram_tester.ExpectTotalCount("ContextualTasks.OAuth.Latency.All", 1);
+
+  // Tries count should be 4.
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.TriesCount.All", 4,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.OAuth.TriesCountBeforeSuccess.All", 4, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.OAuth.TriesCountBeforeFailure.All", 0);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.Success.All", true,
+                                      1);
+
+  // Since it took some time (>150ms backoff + network time), it might NOT be
+  // counted as cached. In our test, we fast-forwarded by 200ms, which is >
+  // 50ms, so WasCached should be FALSE.
+  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.WasCached.All",
+                                      false, 1);
+}
 
 TEST_F(ContextualTasksUiServiceTest, IsAiUrl_InvalidUrl) {
   GURL url("http://?a=12345");

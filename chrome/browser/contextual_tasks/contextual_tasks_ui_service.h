@@ -15,6 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
@@ -448,7 +449,21 @@ class ContextualTasksUiService : public KeyedService {
   virtual bool ShouldRedirectIneligibleRequest(const GURL& url) const;
 
  private:
-  void StartAccessTokenFetch();
+  enum class OAuthFetchTrigger {
+    // The fetch triggered by the navigation interception of a Google AI page.
+    kAimNavigationInterception,
+    // A resource request within the Contextual Tasks <webview>.
+    kFetchRequest,
+  };
+
+  // Starts an access token fetch for the primary account. Trigger is used
+  // to slice the access token metrics.
+  void StartAccessTokenFetch(
+      std::optional<OAuthFetchTrigger> trigger = std::nullopt);
+
+  // Records various metrics related to OAuth.
+  void RecordOAuthMetrics(GoogleServiceAuthError error,
+                          signin::AccessTokenInfo access_token_info);
 
   // Creates a WebContents for the given origin to be used as an
   // opener for message routing. This WebContents is not loading any content.
@@ -557,6 +572,12 @@ class ContextualTasksUiService : public KeyedService {
 
   // A timer used to refresh the OAuth token before it expires.
   base::OneShotTimer token_refresh_timer_;
+
+  // The trigger that started the current active OAuth token fetch.
+  std::optional<OAuthFetchTrigger> current_oauth_fetch_trigger_;
+
+  // The time when the current active OAuth token fetch was started.
+  base::TimeTicks fetch_start_time_;
 
   // The cookie synchronizer for the isolated partition.
   std::unique_ptr<ContextualTasksCookieSynchronizer> cookie_synchronizer_;

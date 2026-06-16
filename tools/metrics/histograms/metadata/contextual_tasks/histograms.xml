@@ -320,6 +320,145 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.OAuth.Latency.{OAuthTrigger}" units="ms"
+    expires_after="2026-12-31">
+  <owner>mercerd@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Records the total time taken to fetch the OAuth access token for Contextual
+    Tasks, including any retries due to transient errors. Recorded when the
+    fetch process finally completes (either success or persistent failure).
+    Slices: {OAuthTrigger}
+  </summary>
+  <token key="OAuthTrigger">
+    <variant name="AimNavigation"
+        summary="OAuth token fetches triggered early by top-level AIM
+                 navigation intercept"/>
+    <variant name="All" summary="all OAuth token fetches"/>
+  </token>
+</histogram>
+
+<histogram name="ContextualTasks.OAuth.Start.{OAuthTrigger}" enum="Boolean"
+    expires_after="2026-12-31">
+  <owner>mercerd@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Records initiations of the OAuth access token fetch process for Contextual
+    Tasks. Recorded when the fetch process begins, before any network requests
+    are made, regardless if the token is cached. Slices: {OAuthTrigger}
+  </summary>
+  <token key="OAuthTrigger">
+    <variant name="AimNavigation"
+        summary="OAuth token fetches triggered early by top-level AIM
+                 navigation intercept"/>
+    <variant name="All" summary="all OAuth token fetches"/>
+  </token>
+</histogram>
+
+<histogram name="ContextualTasks.OAuth.StartToCommitLatency" units="ms"
+    expires_after="2026-12-31">
+  <owner>mercerd@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Records the latency between the WebUI app constructor being called and the
+    first top-level load commit event of the hosted webview. This represents the
+    time from the WebUI being ready, and the top level AIM navigation actually
+    happening. Recorded once per WebUI initialization when the webview commits
+    its first top-level load.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.OAuth.Success.{OAuthTrigger}" enum="Boolean"
+    expires_after="2026-12-31">
+  <owner>mercerd@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Records whether the OAuth access token fetch for Contextual Tasks completed
+    successfully. Recorded when the fetch process finally completes, meaning no
+    more retries either due to a success or a persistent error. Slices:
+    {OAuthTrigger}
+  </summary>
+  <token key="OAuthTrigger">
+    <variant name="AimNavigation"
+        summary="OAuth token fetches triggered early by top-level AIM
+                 navigation intercept"/>
+    <variant name="All" summary="all OAuth token fetches"/>
+  </token>
+</histogram>
+
+<histogram name="ContextualTasks.OAuth.TriesCount.{OAuthTrigger}" units="count"
+    expires_after="2026-12-31">
+  <owner>mercerd@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Records the number of attempts (tries) required to complete the OAuth access
+    token fetch for Contextual Tasks. This includes transient error retries. A
+    value of 1 means it succeeded (or failed persistently) on the first try.
+    Recorded when the fetch process finally completes. Slices: {OAuthTrigger}
+  </summary>
+  <token key="OAuthTrigger">
+    <variant name="AimNavigation"
+        summary="OAuth token fetches triggered early by top-level AIM
+                 navigation intercept"/>
+    <variant name="All" summary="all OAuth token fetches"/>
+  </token>
+</histogram>
+
+<histogram name="ContextualTasks.OAuth.TriesCountBeforeFailure.{OAuthTrigger}"
+    units="count" expires_after="2026-12-31">
+  <owner>mercerd@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Records the number of attempts (tries) before the OAuth access token fetch
+    for Contextual Tasks ultimately failed. This includes transient error
+    retries. A value of 1 means it failed persistently on the first try.
+    Recorded when the fetch process finally completes with a persistent failure.
+    Slices: {OAuthTrigger}
+  </summary>
+  <token key="OAuthTrigger">
+    <variant name="AimNavigation"
+        summary="OAuth token fetches triggered early by top-level AIM
+                 navigation intercept"/>
+    <variant name="All" summary="all OAuth token fetches"/>
+  </token>
+</histogram>
+
+<histogram name="ContextualTasks.OAuth.TriesCountBeforeSuccess.{OAuthTrigger}"
+    units="count" expires_after="2026-12-31">
+  <owner>mercerd@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Records the number of attempts (tries) required to successfully complete the
+    OAuth access token fetch for Contextual Tasks. This includes transient error
+    retries. A value of 1 means it succeeded on the first try. Recorded when the
+    fetch process finally completes successfully. Slices: {OAuthTrigger}
+  </summary>
+  <token key="OAuthTrigger">
+    <variant name="AimNavigation"
+        summary="OAuth token fetches triggered early by top-level AIM
+                 navigation intercept"/>
+    <variant name="All" summary="all OAuth token fetches"/>
+  </token>
+</histogram>
+
+<histogram name="ContextualTasks.OAuth.WasCached.{OAuthTrigger}" enum="Boolean"
+    expires_after="2026-12-31">
+  <owner>mercerd@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Records whether the successfully fetched OAuth access token was served from
+    the local cache. This is determined by a heuristic where a response time of
+    less than 50ms is classified as a cache hit. Recorded only upon successful
+    token retrieval. Slices: {OAuthTrigger}
+  </summary>
+  <token key="OAuthTrigger">
+    <variant name="AimNavigation"
+        summary="OAuth token fetches triggered early by top-level AIM
+                 navigation intercept"/>
+    <variant name="All" summary="all OAuth token fetches"/>
+  </token>
+</histogram>
+
 <histogram name="ContextualTasks.Session.Completed" enum="Boolean"
     expires_after="2026-11-01">
   <owner>sophiechang@chromium.org</owner>
