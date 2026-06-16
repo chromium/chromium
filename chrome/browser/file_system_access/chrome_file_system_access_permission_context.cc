@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -2171,8 +2172,10 @@ void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
   // The only check for content-URIs is that they are not from an internal
   // FileProvider.
   if (path_info.path.IsContentUri()) {
+    std::string decoded_path = base::UnescapeBinaryURLComponent(
+        path_info.path.value(), base::UnescapeRule::NORMAL);
     std::move(callback).Run(base::StartsWith(
-        path_info.path.value(),
+        decoded_path,
         base::StrCat(
             {"content://", base::android::apk_info::package_name(), "."}),
         base::CompareCase::INSENSITIVE_ASCII));

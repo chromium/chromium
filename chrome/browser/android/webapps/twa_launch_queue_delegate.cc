@@ -6,6 +6,7 @@
 
 #include "base/android/apk_info.h"
 #include "base/files/file_path.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "components/webapps/browser/launch_queue/launch_params.h"
@@ -21,7 +22,9 @@ bool IsSensitivePath(const base::FilePath& path) {
     std::string package_name = base::android::apk_info::package_name();
     std::string chrome_content_prefix =
         base::StrCat({"content://", package_name, "."});
-    return base::StartsWith(path.value(), chrome_content_prefix,
+    std::string decoded_path = base::UnescapeBinaryURLComponent(
+        path.value(), base::UnescapeRule::NORMAL);
+    return base::StartsWith(decoded_path, chrome_content_prefix,
                             base::CompareCase::INSENSITIVE_ASCII);
   }
 

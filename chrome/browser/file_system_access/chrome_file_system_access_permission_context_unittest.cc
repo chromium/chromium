@@ -1093,6 +1093,18 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                         ".fileprovider/cache/file"})),
       HandleType::kFile));
 
+  // Percent-encoded authority should also fail.
+  EXPECT_TRUE(IsOpenAbort(
+      base::FilePath(
+          base::StrCat({"content://", base::android::apk_info::package_name(),
+                        "%2Efileprovider/cache/dir"})),
+      HandleType::kDirectory));
+  EXPECT_TRUE(IsOpenAbort(
+      base::FilePath(
+          base::StrCat({"content://", base::android::apk_info::package_name(),
+                        "%2efileprovider/cache/file"})),
+      HandleType::kFile));
+
   EXPECT_TRUE(IsOpenAllowed(base::FilePath("content://authority/dir"),
                             HandleType::kDirectory));
   EXPECT_TRUE(IsOpenAllowed(base::FilePath("content://authority/file"),
