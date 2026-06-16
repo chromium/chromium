@@ -457,9 +457,9 @@ void RecordFontMetrics(
   if (font_loading_metrics->fallback_duration) {
     base::UmaHistogramCustomTimes(
         base::StrCat(
-            {"PageLoad.Clients.GoogleSearch.FontLoading.FallbackDuration.",
+            {"PageLoad.Clients.GoogleSearch.FontLoading.FallbackDuration2.",
              suffix}),
-        font_loading_metrics->fallback_duration.value(), base::Milliseconds(10),
+        font_loading_metrics->fallback_duration.value(), base::Milliseconds(1),
         base::Minutes(10), 100);
   }
 
@@ -1193,8 +1193,8 @@ void GWSPageLoadMetricsObserver::LogFontMetrics() {
     RecordFontMetrics(font_loading_metrics, internal::kSuffixComplete);
 
     if (font_loading_metrics->fallback_initial_duration) {
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.GoogleSearch.FontLoading.InitialFallbackDuration."
+      PAGE_LOAD_HISTOGRAM2(
+          "PageLoad.Clients.GoogleSearch.FontLoading.InitialFallbackDuration2."
           "Complete",
           font_loading_metrics->fallback_initial_duration.value());
     }

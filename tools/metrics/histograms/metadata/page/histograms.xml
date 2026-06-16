@@ -1953,7 +1953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.FontLoading.FallbackDuration.{GWSFontLoadingMilestone}"
+    name="PageLoad.Clients.GoogleSearch.FontLoading.FallbackDuration2.{GWSFontLoadingMilestone}"
     units="ms" expires_after="2027-06-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -1965,7 +1965,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.FontLoading.InitialFallbackDuration.Complete"
+    name="PageLoad.Clients.GoogleSearch.FontLoading.InitialFallbackDuration2.Complete"
     units="ms" expires_after="2027-06-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
