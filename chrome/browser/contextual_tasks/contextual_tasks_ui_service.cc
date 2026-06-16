@@ -978,25 +978,6 @@ void ContextualTasksUiService::OnSearchResultsNavigationInSidePanel(
   web_ui_interface->TransferNavigationToEmbeddedPage(url_params);
 }
 
-bool ContextualTasksUiService::MaybeHandleTopLevelNavigation(
-    content::OpenURLParams& url_params,
-    content::WebContents* source_contents,
-    tabs::TabInterface* tab,
-    bool is_from_embedded_page) {
-  if (is_from_embedded_page) {
-    return false;
-  }
-
-  if (ShouldRedirectIneligibleRequest(url_params.url)) {
-    ScheduleRedirectWebUIUrlToAim(
-        std::move(url_params),
-        source_contents ? source_contents->GetWeakPtr() : nullptr, tab);
-    return true;
-  }
-
-  return false;
-}
-
 bool ContextualTasksUiService::ShouldRedirectIneligibleRequest(
     const GURL& url) const {
   // If it's a top-level frame refresh/navigation while viewing an internal
@@ -1192,8 +1173,11 @@ bool ContextualTasksUiService::HandleNavigationImpl(
               ? url_params.initiator_origin->Serialize()
               : "null");
 
-  if (MaybeHandleTopLevelNavigation(url_params, source_contents, tab,
-                                    is_from_embedded_page)) {
+  if (!is_from_embedded_page &&
+      ShouldRedirectIneligibleRequest(url_params.url)) {
+      ScheduleRedirectWebUIUrlToAim(
+        std::move(url_params),
+        source_contents ? source_contents->GetWeakPtr() : nullptr, tab);
     return true;
   }
 

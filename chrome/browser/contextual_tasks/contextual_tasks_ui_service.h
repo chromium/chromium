@@ -442,17 +442,6 @@ class ContextualTasksUiService : public KeyedService {
                                       tabs::TabInterface* tab,
                                       const base::Uuid& task_id);
 
-  // Helper functions for breaking down HandleNavigationImpl.
-  // Evaluates top-level navigations (i.e., those not originating from an
-  // embedded page within the WebUI) to determine if they should be intercepted
-  // or specially handled by the service. Returns true if the navigation was
-  // handled (e.g. redirected) and should not proceed normally.
-  virtual bool MaybeHandleTopLevelNavigation(
-      content::OpenURLParams& url_params,
-      content::WebContents* source_contents,
-      tabs::TabInterface* tab,
-      bool is_from_embedded_page);
-
   // Checks whether a top-level navigation targeting a Contextual Tasks WebUI
   // URL occurs in an environment that is ineligible for the feature (e.g., user
   // is ineligible or Google is not the default search provider).
