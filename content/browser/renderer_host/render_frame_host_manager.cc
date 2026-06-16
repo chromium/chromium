@@ -5286,10 +5286,12 @@ void RenderFrameHostManager::CommitPending(
   // null), check that |pending_rfh|'s old lifecycle state supports that.
   RenderFrameHostImpl::LifecycleStateImpl prev_state =
       pending_rfh->lifecycle_state();
-  CHECK(!pending_stored_page ||
-        prev_state == RenderFrameHostImpl::LifecycleStateImpl::kPrerendering ||
-        prev_state ==
-            RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  // TODO(522901110): CHECK-exclusion: Convert to a CHECK once we are confident
+  // it won't be triggered.
+  DCHECK(!pending_stored_page ||
+         prev_state == RenderFrameHostImpl::LifecycleStateImpl::kPrerendering ||
+         prev_state ==
+             RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
 
   // Now close any modal dialogs that would prevent us from unloading the old
   // frame. This must be done separately from RenderFrameHost::Unload(), so that

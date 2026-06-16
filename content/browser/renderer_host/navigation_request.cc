@@ -5872,7 +5872,9 @@ void NavigationRequest::OnStartChecksComplete(
     // As PrerenderCommitDeferringCondition makes sure to finish the prerender
     // initial navigation before activation, a valid last_response_head should
     // be always stored before reaching here.
-    CHECK(last_response_head);
+    // TODO(522882268): CHECK-exclusion: Convert to a CHECK once we are
+    // confident it won't be triggered.
+    DCHECK(last_response_head);
     cached_response_head = last_response_head->Clone();
   } else if (IsInitialWebUISyncNavigation()) {
     loader_type = NavigationURLLoader::LoaderType::kNoopForInitialWebUI;
@@ -8544,8 +8546,10 @@ void NavigationRequest::OnWillProcessResponseProcessed(
 void NavigationRequest::OnWillCommitWithoutUrlLoaderProcessed(
     NavigationThrottle::ThrottleCheckResult result) {
   CHECK_EQ(WILL_COMMIT_WITHOUT_URL_LOADER, state_);
-  CHECK(result.action() == NavigationThrottle::CANCEL_AND_IGNORE ||
-        result.action() == NavigationThrottle::PROCEED);
+  // TODO(522891290): CHECK-exclusion: Convert to a CHECK once we are confident
+  // it won't be triggered.
+  DCHECK(result.action() == NavigationThrottle::CANCEL_AND_IGNORE ||
+         result.action() == NavigationThrottle::PROCEED);
   CHECK(processing_navigation_throttle_);
   processing_navigation_throttle_ = false;
   if (complete_callback_for_testing_ &&
@@ -8660,7 +8664,9 @@ bool NavigationRequest::IsForMhtmlSubframe() const {
 
 void NavigationRequest::CancelDeferredNavigationInternal(
     NavigationThrottle::ThrottleCheckResult result) {
-  CHECK(processing_navigation_throttle_);
+  // TODO(522889716): CHECK-exclusion: Convert to a CHECK once we are confident
+  // it won't be triggered.
+  DCHECK(processing_navigation_throttle_);
   CHECK(result.action() == NavigationThrottle::CANCEL_AND_IGNORE ||
         result.action() == NavigationThrottle::CANCEL ||
         result.action() == NavigationThrottle::BLOCK_RESPONSE ||
@@ -8974,7 +8980,9 @@ void NavigationRequest::DidCommitNavigation(
     // The last committed load in collapsed frames will be an error page with
     // |kUnreachableWebDataURL|. Same-document navigation should not be
     // possible.
-    CHECK(!IsSameDocument() || !frame_tree_node()->is_collapsed());
+    // TODO(523045758): CHECK-exclusion: Convert to a CHECK once we are
+    // confident it won't be triggered.
+    DCHECK(!IsSameDocument() || !frame_tree_node()->is_collapsed());
     frame_tree_node()->SetCollapsed(false);
   }
 
@@ -9759,7 +9767,9 @@ void NavigationRequest::RemoveRequestHeader(std::string_view header_name) {
 
 void NavigationRequest::SetRequestHeader(std::string_view header_name,
                                          std::string_view header_value) {
-  CHECK(state_ == WILL_START_REQUEST || state_ == WILL_REDIRECT_REQUEST);
+  // TODO(523109612): CHECK-exclusion: Convert to a CHECK once we are confident
+  // it won't be triggered.
+  DCHECK(state_ == WILL_START_REQUEST || state_ == WILL_REDIRECT_REQUEST);
   headers_update_params_.modified_headers.SetHeader(header_name, header_value);
 }
 
