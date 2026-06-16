@@ -2348,31 +2348,27 @@ suite('NewTabPageAppTest', () => {
 
     // Testing Action Chips visibility on initial flag load values.
     [true, false].forEach(
-        (ntpNextDisablementEnabled) => [true, false].forEach(
-            (actionChipsEnabled) => [true, false].forEach(
-                (ntpNextFeaturesEnabled) => suite(
-                    'Action Chips settings rendered with actionChipsEnabled: ' +
-                        actionChipsEnabled + ' and ntpNextFeaturesEnabled: ' +
-                        ntpNextFeaturesEnabled +
-                        ' and ntpNextDisablementEnabled: ' +
-                        ntpNextDisablementEnabled,
-                    () => {
-                      suiteSetup(() => {
-                        loadTimeData.overrideValues({
-                          ntpNextFeaturesEnabled,
-                          actionChipsEnabled,
-                          ntpNextDisablementEnabled,
-                        });
-                      });
+        (actionChipsEnabled) => [true, false].forEach(
+            (ntpNextFeaturesEnabled) => suite(
+                'Action Chips settings rendered with actionChipsEnabled: ' +
+                    actionChipsEnabled +
+                    ' and ntpNextFeaturesEnabled: ' + ntpNextFeaturesEnabled,
+                () => {
+                  suiteSetup(() => {
+                    loadTimeData.overrideValues({
+                      ntpNextFeaturesEnabled,
+                      actionChipsEnabled,
+                    });
+                  });
 
-                      // Assert.
-                      test('Show action chips when appropriate', () => {
-                        const expectedVisibility = ntpNextFeaturesEnabled &&
-                            (!ntpNextDisablementEnabled || actionChipsEnabled);
-                        const chips = $$<HTMLElement>(app, 'ntp-action-chips');
-                        assertEquals(!!chips, expectedVisibility);
-                      });
-                    }))));
+                  // Assert.
+                  test('Show action chips when appropriate', () => {
+                    const expectedVisibility =
+                        ntpNextFeaturesEnabled && actionChipsEnabled;
+                    const chips = $$<HTMLElement>(app, 'ntp-action-chips');
+                    assertEquals(!!chips, expectedVisibility);
+                  });
+                })));
 
     // Testing Action Chips visibility on changing visibility prefs.
     [true, false].forEach(
