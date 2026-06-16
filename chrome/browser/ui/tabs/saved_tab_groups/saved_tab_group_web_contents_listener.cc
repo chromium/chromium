@@ -35,6 +35,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 namespace tab_groups {
 namespace {
@@ -183,8 +184,8 @@ void SavedTabGroupWebContentsListener::NavigateToUrlInternal(const GURL& url) {
     return;
   }
 
-  // Dont navigate to the new URL if its not valid for sync.
-  if (!IsURLValidForSavedTabGroups(url)) {
+  // Dont navigate to the new URL if its not valid for local tabs.
+  if (!IsURLValidForLocalTab(url)) {
     return;
   }
 
