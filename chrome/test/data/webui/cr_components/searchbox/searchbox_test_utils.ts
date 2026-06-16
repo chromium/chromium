@@ -67,6 +67,7 @@ export class MockInputState implements InputState {
       chipLabel: '',
       disableActiveModelSelection: false,
       aimUrlParams: [],
+      menuTooltip: '',
     },
     {
       tool: ComposeboxToolMode.kImageGen,
@@ -75,6 +76,7 @@ export class MockInputState implements InputState {
       chipLabel: '',
       disableActiveModelSelection: false,
       aimUrlParams: [],
+      menuTooltip: '',
     },
     {
       tool: ComposeboxToolMode.kCanvas,
@@ -83,6 +85,7 @@ export class MockInputState implements InputState {
       chipLabel: '',
       disableActiveModelSelection: false,
       aimUrlParams: [],
+      menuTooltip: '',
     },
   ];
   toolsSectionConfig: any|null = null;

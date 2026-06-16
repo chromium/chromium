@@ -426,6 +426,13 @@ StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::aim_url_params(
 }
 
 // static
+const std::string&
+StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::menu_tooltip(
+    const omnibox::ToolConfig& config) {
+  return config.menu_tooltip();
+}
+
+// static
 bool StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::Read(
     UsedToolConfigDataView data,
     omnibox::ToolConfig* output) {
@@ -466,6 +473,12 @@ bool StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::Read(
     *output->add_aim_url_params() = param;
   }
 
+  std::string menu_tooltip;
+  if (!data.ReadMenuTooltip(&menu_tooltip)) {
+    return false;
+  }
+  output->set_menu_tooltip(menu_tooltip);
+
   return true;
 }
 
@@ -499,6 +512,13 @@ StructTraits<UsedModelConfigDataView, omnibox::ModelConfig>::aim_url_params(
 }
 
 // static
+const std::string&
+StructTraits<UsedModelConfigDataView, omnibox::ModelConfig>::menu_tooltip(
+    const omnibox::ModelConfig& config) {
+  return config.menu_tooltip();
+}
+
+// static
 bool StructTraits<UsedModelConfigDataView, omnibox::ModelConfig>::Read(
     UsedModelConfigDataView data,
     omnibox::ModelConfig* output) {
@@ -529,6 +549,12 @@ bool StructTraits<UsedModelConfigDataView, omnibox::ModelConfig>::Read(
   for (const auto& param : params) {
     *output->add_aim_url_params() = param;
   }
+
+  std::string menu_tooltip;
+  if (!data.ReadMenuTooltip(&menu_tooltip)) {
+    return false;
+  }
+  output->set_menu_tooltip(menu_tooltip);
 
   return true;
 }

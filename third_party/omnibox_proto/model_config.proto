@@ -20,7 +20,7 @@ import "model_rule.proto";
 import "url_param.proto";
 
 // Configuration for a model mode.
-// Next ID: 8
+// Next ID: 10
 // LINT.IfChange(ModelConfig)
 message ModelConfig {
   // The model mode.
@@ -37,5 +37,11 @@ message ModelConfig {
   optional Icon icon = 6;
   // DO NOT USE in Chrome. Feature gate configs for the model.
   repeated FeatureGateConfig feature_gate_configs = 7;
+
+  // DO NOT USE in Chrome. Search VE logging fields.
+  reserved 8;
+
+  // Optional tooltip for the model in a menu.
+  string menu_tooltip = 9;
 }
 // LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ModelConfig)

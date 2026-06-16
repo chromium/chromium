@@ -22,6 +22,7 @@ export class MockInputState implements InputState {
       chipLabel: '',
       disableActiveModelSelection: false,
       aimUrlParams: [],
+      menuTooltip: '',
     },
     {
       tool: ToolMode.kImageGen,
@@ -30,6 +31,7 @@ export class MockInputState implements InputState {
       chipLabel: '',
       disableActiveModelSelection: false,
       aimUrlParams: [],
+      menuTooltip: '',
     },
     {
       tool: ToolMode.kCanvas,
@@ -38,6 +40,7 @@ export class MockInputState implements InputState {
       chipLabel: '',
       disableActiveModelSelection: false,
       aimUrlParams: [],
+      menuTooltip: '',
     },
   ];
   toolsSectionConfig: any|null = null;
@@ -113,6 +116,7 @@ export function createValidInputState(): InputState {
         hintText: 'Deep Search hint',
         disableActiveModelSelection: false,
         aimUrlParams: [],
+        menuTooltip: '',
       },
     ],
     toolsSectionConfig: {header: ''},
@@ -122,6 +126,7 @@ export function createValidInputState(): InputState {
         menuLabel: 'Gemini Pro',
         hintText: 'Gemini Pro hint',
         aimUrlParams: [],
+        menuTooltip: '',
       },
     ],
     modelSectionConfig: {

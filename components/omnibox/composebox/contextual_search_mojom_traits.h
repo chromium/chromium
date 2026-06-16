@@ -83,6 +83,7 @@ struct StructTraits<composebox_query::mojom::ToolConfigDataView,
   static const std::string& hint_text(const omnibox::ToolConfig& config);
   static std::vector<omnibox::UrlParam> aim_url_params(
       const omnibox::ToolConfig& config);
+  static const std::string& menu_tooltip(const omnibox::ToolConfig& config);
 
   static bool Read(composebox_query::mojom::ToolConfigDataView data,
                    omnibox::ToolConfig* output);
@@ -96,6 +97,7 @@ struct StructTraits<composebox_query::mojom::ModelConfigDataView,
   static const std::string& hint_text(const omnibox::ModelConfig& config);
   static std::vector<omnibox::UrlParam> aim_url_params(
       const omnibox::ModelConfig& config);
+  static const std::string& menu_tooltip(const omnibox::ModelConfig& config);
 
   static bool Read(composebox_query::mojom::ModelConfigDataView data,
                    omnibox::ModelConfig* output);

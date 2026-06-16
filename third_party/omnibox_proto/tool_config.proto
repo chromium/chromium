@@ -20,7 +20,7 @@ import "tool_substate_config.proto";
 import "url_param.proto";
 
 // Configuration for a tool mode.
-// Next ID: 11
+// Next ID: 14
 // LINT.IfChange(ToolConfig)
 message ToolConfig {
   // The tool mode.
@@ -46,5 +46,11 @@ message ToolConfig {
   optional Icon icon = 9;
   // Whether to hide the tool from the tools menu (including tool chips).
   bool hide_from_menu = 10;
+
+  // DO NOT USE in Chrome. Search VE logging fields.
+  reserved 11, 12;
+
+  // Optional tooltip for the tool in a menu.
+  string menu_tooltip = 13;
 }
 // LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ToolConfig)

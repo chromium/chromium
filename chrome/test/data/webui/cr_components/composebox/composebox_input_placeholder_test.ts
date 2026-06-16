@@ -123,6 +123,7 @@ suite('ComposeboxInputPlaceholder', () => {
         hintText: modelHint,
         menuLabel: '',
         aimUrlParams: [],
+        menuTooltip: '',
       }],
     });
 
@@ -164,6 +165,7 @@ suite('ComposeboxInputPlaceholder', () => {
                                       chipLabel: '',
                                       disableActiveModelSelection: false,
                                       aimUrlParams: [],
+                                      menuTooltip: '',
                                     })),
       }));
 

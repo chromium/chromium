@@ -146,6 +146,7 @@ struct ToolConfig {
   string chip_label;
   string hint_text;
   array<AimUrlParam> aim_url_params;
+  string menu_tooltip;
 };
 // LINT.ThenChange(//third_party/omnibox_proto/tool_config.proto:ToolConfig)
 
@@ -156,6 +157,7 @@ struct ModelConfig {
   string menu_label;
   string hint_text;
   array<AimUrlParam> aim_url_params;
+  string menu_tooltip;
 };
 // LINT.ThenChange(//third_party/omnibox_proto/model_config.proto:ModelConfig)
 

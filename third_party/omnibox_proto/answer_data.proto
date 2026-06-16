@@ -45,8 +45,9 @@ message FormattedString {
     // The text of the fragment.
     optional string text = 2;
     optional ColorType color = 3;
+    optional bool is_bolded = 4;
 
-    reserved 4 to 9;
+    reserved 5 to 9;
   }
   enum ColorType {
     COLOR_UNKNOWN = 0;

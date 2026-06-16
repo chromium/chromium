@@ -15,6 +15,7 @@ package omnibox;
 
 import "answer_data.proto";
 import "chrome_searchbox_stats.proto";
+import "suggest_inventory.proto";
 import "tool_mode.proto";
 
 // Suggest Template rendering data.
@@ -139,10 +140,14 @@ message SuggestTemplateInfo {
   // This sends information about what the Fusebox action does. For example,
   // it might preselect a tool, a model or something else.
   // See
-  // Next ID: 2
+  // Next ID: 3
   message FuseboxAction {
     // Which tool gets preselected when the user clicks on the suggestion.
     optional ToolMode preselected_tool = 1;
+
+    // The inventory of suggestions to show when the user clicks on the
+    // suggestion.
+    optional SuggestInventory preferred_inventory = 2;
   }
 
   optional FuseboxAction fusebox_action = 8;
