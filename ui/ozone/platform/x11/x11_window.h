@@ -169,9 +169,11 @@ class X11Window : public PlatformWindow,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(X11WindowTest, Shape);
-  FRIEND_TEST_ALL_PREFIXES(X11WindowTest, WindowManagerTogglesFullscreen);
+  FRIEND_TEST_ALL_PREFIXES(X11WindowTest,
+                           SynchronousDestructionDuringEventDispatch);
   FRIEND_TEST_ALL_PREFIXES(X11WindowTest,
                            ToggleMinimizePropogateToPlatformWindowDelegate);
+  FRIEND_TEST_ALL_PREFIXES(X11WindowTest, WindowManagerTogglesFullscreen);
 
   void UpdateDecorationInsets();
 
