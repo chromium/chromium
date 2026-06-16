@@ -559,4 +559,84 @@ TEST_F(X11WindowOzoneTest, SetOverrideRedirectSelfDeleteUaf) {
   connection->DestroyWindow({new_parent});
 }
 
+// Verifies that X11Window::DispatchUiEvent() does not cause a use-after-free
+// if the located_events_grabber is synchronously deleted during geometry fetch
+// (GetBoundsInPixels()).
+TEST_F(X11WindowOzoneTest, DispatchUiEventGrabberFreedDuringGeometryFetch) {
+  // Setup window1 (grabber)
+  testing::NiceMock<MockPlatformWindowDelegate> delegate1;
+  gfx::AcceleratedWidget widget1;
+  constexpr gfx::Rect bounds1(30, 80, 800, 600);
+  std::unique_ptr<PlatformWindow> window1 =
+      CreatePlatformWindow(&delegate1, bounds1, &widget1, nullptr);
+
+  // Setup window2 (target)
+  testing::NiceMock<MockPlatformWindowDelegate> delegate2;
+  gfx::AcceleratedWidget widget2;
+  constexpr gfx::Rect bounds2(900, 80, 800, 600);
+  std::unique_ptr<PlatformWindow> window2 =
+      CreatePlatformWindow(&delegate2, bounds2, &widget2, nullptr);
+
+  auto* connection = x11::Connection::Get();
+  auto xwindow1 = static_cast<x11::Window>(widget1);
+
+  // Set window1 as the grabber.
+  window1->SetCapture();
+  EXPECT_TRUE(window1->HasCapture());
+
+  // Force the grabber window's GeometryCache (and its parent chain) to
+  // become Ready.
+  window1->GetBoundsInPixels();
+
+  // Create a real parent window at a non-zero offset so that after reparenting,
+  // the absolute origin changes. override_redirect avoids any WM interference.
+  x11::Window new_parent = connection->GenerateId<x11::Window>();
+  connection->CreateWindow({
+      .wid = new_parent,
+      .parent = connection->default_root(),
+      .x = 200,
+      .y = 200,
+      .width = 1000,
+      .height = 1000,
+      .c_class = x11::WindowClass::InputOnly,
+      .override_redirect = x11::Bool32(true),
+  });
+
+  // Synthesize the ReparentNotify WM reparent event.
+  x11::ReparentNotifyEvent reparent{};
+  reparent.event = xwindow1;
+  reparent.window = xwindow1;
+  reparent.parent = new_parent;
+  reparent.x = 0;
+  reparent.y = 0;
+  x11::Event reparent_event(/*send_event=*/false, std::move(reparent));
+  connection->DispatchEvent(reparent_event);
+
+  // Arm the grabber window's delegate to free window1 during OnBoundsChanged.
+  bool armed = true;
+  bool freed = false;
+  EXPECT_CALL(delegate1, OnBoundsChanged(_))
+      .WillRepeatedly([&](const PlatformWindowDelegate::BoundsChange&) {
+        if (armed) {
+          armed = false;
+          freed = true;
+          window1.reset();
+        }
+      });
+
+  // Prepare a located event (e.g. mouse press) targeting window2 (widget2).
+  ScopedXI2Event xi_event;
+  xi_event.InitGenericButtonEvent(kPointerDeviceId, EventType::kMousePressed,
+                                  gfx::Point(100, 100), EF_NONE);
+
+  // Dispatch the event to window2.
+  DispatchXEvent(xi_event, widget2);
+
+  // Verify that window1 was indeed synchronously freed during the geometry
+  // fetch.
+  EXPECT_TRUE(freed) << "grabber delegate was never invoked synchronously";
+
+  connection->DestroyWindow({new_parent});
+}
+
 }  // namespace ui
