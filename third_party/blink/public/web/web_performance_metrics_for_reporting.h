@@ -164,6 +164,13 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   std::optional<base::TimeDelta> UserTimingMarkFullyLoaded() const;
   std::optional<base::TimeDelta> UserTimingMarkFullyVisible() const;
   std::optional<base::TimeDelta> UserTimingMarkInteractive() const;
+
+  base::TimeDelta SystemFallbackFontTime() const;
+  uint32_t SystemFallbackFontCount() const;
+  base::TimeDelta SystemFallbackFontInitialDuration() const;
+  uint32_t ShapeCacheHitCount() const;
+  uint32_t ShapeCacheMissCount() const;
+
   std::optional<std::tuple<std::string, base::TimeDelta>> CustomUserTimingMark()
       const;
 

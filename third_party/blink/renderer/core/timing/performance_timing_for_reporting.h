@@ -184,6 +184,12 @@ class CORE_EXPORT PerformanceTimingForReporting final
   // The start time of the prerender activation navigation.
   std::optional<base::TimeDelta> PrerenderActivationStart() const;
 
+  base::TimeDelta SystemFallbackFontTime() const;
+  uint32_t SystemFallbackFontCount() const;
+  base::TimeDelta SystemFallbackFontInitialDuration() const;
+  uint32_t ShapeCacheHitCount() const;
+  uint32_t ShapeCacheMissCount() const;
+
   void Trace(Visitor*) const override;
 
   uint64_t MonotonicTimeToIntegerMilliseconds(base::TimeTicks) const;
