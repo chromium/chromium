@@ -240,6 +240,8 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   // Virtual for testing.
   virtual GlicActorPolicyChecker& actor_policy_checker();
 
+  bool HasActorPolicyChecker() const { return !!actor_policy_checker_; }
+
  private:
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
   // callbacks.

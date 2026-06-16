@@ -54,6 +54,13 @@ public class GlicEnabling {
         return GlicEnablingJni.get().shouldShowSettingsPage(profile);
     }
 
+    /** Returns true if the web actuation / auto browse toggle should be shown for the profile. */
+    public static boolean shouldShowWebActuationToggle(@Nullable Profile profile) {
+        if (profile == null) return false;
+        if (sIsEnabledForTesting != null) return sIsEnabledForTesting;
+        return GlicEnablingJni.get().shouldShowWebActuationToggle(profile);
+    }
+
     /** Returns true if Glic is ready to be used for the given profile. */
     public static boolean isReadyForProfile(@Nullable Profile profile) {
         if (profile == null) return false;
@@ -117,6 +124,8 @@ public class GlicEnabling {
         boolean isEnabledForProfile(@JniType("Profile*") Profile profile);
 
         boolean shouldShowSettingsPage(@JniType("Profile*") Profile profile);
+
+        boolean shouldShowWebActuationToggle(@JniType("Profile*") Profile profile);
 
         boolean isReadyForProfile(@JniType("Profile*") Profile profile);
 
