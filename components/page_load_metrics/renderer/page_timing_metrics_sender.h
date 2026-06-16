@@ -100,7 +100,8 @@ class PageTimingMetricsSender {
   // sometime 'soon'.
   void Update(
       mojom::PageLoadTimingPtr timing,
-      const PageTimingMetadataRecorder::MonotonicTiming& monotonic_timing);
+      const PageTimingMetadataRecorder::MonotonicTiming& monotonic_timing,
+      mojom::FontLoadingMetricsPtr font_loading_metrics = nullptr);
 
   // Sends any queued timing data immediately and stops the send timer.
   void SendLatest();
@@ -135,6 +136,7 @@ class PageTimingMetricsSender {
   mojom::CpuTimingPtr last_cpu_timing_;
   std::vector<mojom::EventTimingPtr> event_timings_;
   std::optional<blink::SubresourceLoadMetrics> subresource_load_metrics_;
+  mojom::FontLoadingMetricsPtr last_font_loading_metrics_;
 
   // The the sender keep track of metadata as it comes in, because the sender is
   // scoped to a single committed load.

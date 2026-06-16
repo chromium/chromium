@@ -139,6 +139,7 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
   // in seconds since the Unix Epoch.
   virtual double GetNavigationStart() const;
   virtual Timing GetTiming() const;
+  virtual mojom::FontLoadingMetricsPtr GetFontLoadingMetrics() const;
   virtual mojom::CustomUserTimingMarkPtr GetCustomUserTimingMark() const;
   virtual std::unique_ptr<base::OneShotTimer> CreateTimer();
   virtual std::unique_ptr<PageTimingSender> CreatePageTimingSender(

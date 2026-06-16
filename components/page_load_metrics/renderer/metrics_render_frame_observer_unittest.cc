@@ -57,6 +57,10 @@ class TestMetricsRenderFrameObserver : public MetricsRenderFrameObserver,
                                             base::Milliseconds(100));
   }
 
+  mojom::FontLoadingMetricsPtr GetFontLoadingMetrics() const override {
+    return nullptr;
+  }
+
   bool HasNoRenderFrame() const override { return false; }
 
   bool IsMainFrame() const override { return true; }

@@ -433,6 +433,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
     std::vector<mojom::LargestContentfulPaintTimingPtr>
         soft_largest_contentful_paint,
+    mojom::FontLoadingMetricsPtr font_loading_metrics,
     internal::PageLoadTrackerPageType page_type) {
   if (embedder_interface_->IsExtensionUrl(
           render_frame_host->GetLastCommittedURL())) {
@@ -456,6 +457,9 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     UpdateMainFrameRenderData(*render_data);
     if (subresource_load_metrics) {
       UpdateMainFrameSubresourceLoadMetrics(*subresource_load_metrics);
+    }
+    if (font_loading_metrics) {
+      UpdateMainFrameFontLoadingMetrics(*font_loading_metrics);
     }
     UpdateSoftNavigationMetrics(std::move(soft_navigation_metrics),
                                 event_timings, render_data->new_layout_shifts,
@@ -591,6 +595,11 @@ void PageLoadMetricsUpdateDispatcher::UpdateSubFrameMetadata(
 void PageLoadMetricsUpdateDispatcher::UpdateMainFrameSubresourceLoadMetrics(
     const blink::SubresourceLoadMetrics& subresource_load_metrics) {
   subresource_load_metrics_ = subresource_load_metrics;
+}
+
+void PageLoadMetricsUpdateDispatcher::UpdateMainFrameFontLoadingMetrics(
+    const mojom::FontLoadingMetrics& font_loading_metrics) {
+  font_loading_metrics_ = font_loading_metrics.Clone();
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationMetrics(

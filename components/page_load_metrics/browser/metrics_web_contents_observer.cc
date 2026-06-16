@@ -1165,7 +1165,8 @@ void MetricsWebContentsObserver::OnTimingUpdated(
     std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
     std::vector<mojom::LargestContentfulPaintTimingPtr>
         soft_largest_contentful_paint,
-    std::vector<mojom::CustomUserTimingMarkPtr> user_timings) {
+    std::vector<mojom::CustomUserTimingMarkPtr> user_timings,
+    mojom::FontLoadingMetricsPtr font_loading_metrics) {
   if (metadata &&
       (metadata->main_frame_rect || metadata->main_frame_viewport_rect ||
        !metadata->main_frame_ad_rects.empty()) &&
@@ -1183,7 +1184,8 @@ void MetricsWebContentsObserver::OnTimingUpdated(
         std::move(new_features), resources, std::move(render_data),
         std::move(cpu_timing), std::move(event_timings),
         subresource_load_metrics, std::move(soft_navigation_metrics),
-        std::move(soft_largest_contentful_paint));
+        std::move(soft_largest_contentful_paint),
+        std::move(font_loading_metrics));
     tracker->AddCustomUserTimings(std::move(user_timings));
   }
 }
@@ -1232,7 +1234,8 @@ void MetricsWebContentsObserver::UpdateTiming(
     std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
     std::vector<mojom::LargestContentfulPaintTimingPtr>
         soft_largest_contentful_paint,
-    std::vector<mojom::CustomUserTimingMarkPtr> user_timings) {
+    std::vector<mojom::CustomUserTimingMarkPtr> user_timings,
+    mojom::FontLoadingMetricsPtr font_loading_metrics) {
   TRACE_EVENT("loading", "MetricsWebContentsObserver::UpdateTiming",
               "custom_timings_count", user_timings.size());
   content::RenderFrameHost* render_frame_host =
@@ -1242,7 +1245,7 @@ void MetricsWebContentsObserver::UpdateTiming(
                   std::move(cpu_timing), std::move(event_timings),
                   subresource_load_metrics, std::move(soft_navigation_metrics),
                   std::move(soft_largest_contentful_paint),
-                  std::move(user_timings));
+                  std::move(user_timings), std::move(font_loading_metrics));
 }
 
 void MetricsWebContentsObserver::AddCustomUserTiming(

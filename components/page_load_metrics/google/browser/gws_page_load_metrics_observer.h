@@ -215,6 +215,7 @@ class GWSPageLoadMetricsObserver
 
   void LogMetricsOnComplete(
       const page_load_metrics::mojom::PageLoadTiming& main_frame_timing);
+  void LogFontMetrics();
   void RecordNavigationTimingHistograms();
   void RecordLatencyHistograms(base::TimeTicks response_start_time);
   void RecordSessionDetails(

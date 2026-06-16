@@ -135,7 +135,8 @@ class MetricsWebContentsObserverTest
         std::vector<mojom::EventTimingPtr>(), std::nullopt,
         std::vector<mojom::SoftNavigationMetricsPtr>(),
         std::vector<mojom::LargestContentfulPaintTimingPtr>(),
-        std::vector<mojom::CustomUserTimingMarkPtr>());
+        std::vector<mojom::CustomUserTimingMarkPtr>(),
+        mojom::FontLoadingMetricsPtr());
   }
 
   void SimulateTimingUpdate(const mojom::PageLoadTiming& timing,
@@ -163,7 +164,8 @@ class MetricsWebContentsObserverTest
         std::vector<mojom::EventTimingPtr>(), std::nullopt,
         std::vector<mojom::SoftNavigationMetricsPtr>(),
         std::vector<mojom::LargestContentfulPaintTimingPtr>(),
-        std::vector<mojom::CustomUserTimingMarkPtr>());
+        std::vector<mojom::CustomUserTimingMarkPtr>(),
+        mojom::FontLoadingMetricsPtr());
   }
 
   void SimulateCustomUserTimingUpdate(
