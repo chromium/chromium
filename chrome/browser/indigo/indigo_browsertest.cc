@@ -15,6 +15,8 @@
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -148,8 +150,6 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InteractiveBrowserTest::SetUpCommandLine(command_line);
-    // Force Indigo page action and point to the generated stub script.
-    command_line->AppendSwitch("force-indigo");
     CHECK(temp_dir_.CreateUniqueTempDir());
     base::FilePath script_path =
         temp_dir_.GetPath().AppendASCII("stub_script.js");
@@ -244,6 +244,28 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
         }));
 
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    // Configure optimization guide for following URLs so indigo page action
+    // will show.
+    auto* optimization_guide_keyed_service =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile());
+    ASSERT_TRUE(optimization_guide_keyed_service);
+    optimization_guide_keyed_service->AddHintForTesting(
+        embedded_test_server()->GetURL("/image.html"),
+        optimization_guide::proto::OptimizationType::INDIGO, std::nullopt);
+    optimization_guide_keyed_service->AddHintForTesting(
+        embedded_test_server()->GetURL("/scroll.html"),
+        optimization_guide::proto::OptimizationType::INDIGO, std::nullopt);
+    optimization_guide_keyed_service->AddHintForTesting(
+        embedded_test_server()->GetURL("/transform.html"),
+        optimization_guide::proto::OptimizationType::INDIGO, std::nullopt);
+    optimization_guide_keyed_service->AddHintForTesting(
+        embedded_test_server()->GetURL("/empty.html"),
+        optimization_guide::proto::OptimizationType::INDIGO, std::nullopt);
+    optimization_guide_keyed_service->AddHintForTesting(
+        embedded_test_server()->GetURL("/title1.html"),
+        optimization_guide::proto::OptimizationType::INDIGO, std::nullopt);
   }
 
   void SetUpBrowserContextKeyedServices(
