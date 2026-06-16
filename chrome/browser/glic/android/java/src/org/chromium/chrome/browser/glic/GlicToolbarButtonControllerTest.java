@@ -377,6 +377,7 @@ public class GlicToolbarButtonControllerTest {
         ButtonData buttonData = controller.get(mTab);
 
         Assert.assertTrue(buttonData.getButtonSpec().isChecked());
+        Assert.assertTrue(buttonData.getButtonSpec().isSelected());
     }
 
     @Test
@@ -402,11 +403,13 @@ public class GlicToolbarButtonControllerTest {
 
         ButtonData buttonData = controller.get(mTab);
         Assert.assertTrue(buttonData.getButtonSpec().isChecked());
+        Assert.assertTrue(buttonData.getButtonSpec().isSelected());
 
         when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(false);
         controller.onGlobalShowHideForTesting();
         buttonData = controller.get(mTab);
         Assert.assertFalse(buttonData.getButtonSpec().isChecked());
+        Assert.assertFalse(buttonData.getButtonSpec().isSelected());
     }
 
     @Test

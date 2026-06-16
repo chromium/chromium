@@ -96,6 +96,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private boolean mIsIncognitoBranded;
     private boolean mSuppressCollapsedBackground;
     private boolean mIsCpaCheckedState;
+    private boolean mIsSelected;
     private @Nullable ColorStateList mForegroundColorTint;
     private int mBackgroundColorFilter;
     private Runnable mOnBeforeHideTransitionCallback = CallbackUtils.emptyRunnable();
@@ -221,9 +222,13 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
                 || mBrandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME;
     }
 
+    private boolean shouldSuppressCollapsedBackground() {
+        return mSuppressCollapsedBackground && !mIsSelected;
+    }
+
     void setSuppressCollapsedBackground(boolean suppressCollapsedBackground) {
         mSuppressCollapsedBackground = suppressCollapsedBackground;
-        if (mSuppressCollapsedBackground) {
+        if (shouldSuppressCollapsedBackground()) {
             mButton.setBackground(null);
             mBackground.setVisibility(GONE);
         } else {
@@ -233,7 +238,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     }
 
     private void setBackgroundResourceHelper(boolean isCpaCheckedState) {
-        if (mSuppressCollapsedBackground) {
+        if (shouldSuppressCollapsedBackground()) {
             mButton.setBackground(null);
             return;
         }
@@ -303,7 +308,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
                 && mCurrentButtonVariant == buttonData.getButtonSpec().getButtonVariant()
                 && mCanCurrentButtonShow == canShow
                 && mIconDrawable == buttonData.getButtonSpec().getDrawable()
-                && mActionChipLabelResId == buttonData.getButtonSpec().getActionChipLabelResId()) {
+                && mActionChipLabelResId == buttonData.getButtonSpec().getActionChipLabelResId()
+                && mIsSelected == buttonData.getButtonSpec().isSelected()
+                && mIsCpaCheckedState == buttonData.getButtonSpec().isChecked()) {
             return;
         }
 
@@ -366,6 +373,8 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         boolean isCpaCheckedState = buttonData.getButtonSpec().isChecked();
         mIsCpaCheckedState = isCpaCheckedState;
+        mIsSelected = buttonData.getButtonSpec().isSelected();
+        mButton.setSelected(mIsSelected);
 
         // Change the CPA background to a square if the button data instance is owned by
         // PriceTrackingButtonController and is a "checked" state.
@@ -660,6 +669,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
             mButton.setLongClickable(mLongClickListener != null);
             mButton.setOnLongClickListener(mLongClickListener);
             mButton.setContentDescription(mContentDescription);
+            mButton.setSelected(mIsSelected);
         }
 
         // When finished expanding the action chip schedule the collapse transition.
@@ -870,7 +880,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         // Background shows/hides with a fade animation.
         mBackground.setVisibility(
-                (mNextButtonType == ButtonType.DYNAMIC && !mSuppressCollapsedBackground)
+                (mNextButtonType == ButtonType.DYNAMIC && !shouldSuppressCollapsedBackground())
                         ? VISIBLE
                         : GONE);
 
@@ -955,7 +965,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         beginDelayedTransition(createActionChipTransition());
 
         updateBackgroundColorFilter(/* isActionChipExpanded= */ false);
-        if (mSuppressCollapsedBackground) {
+        if (shouldSuppressCollapsedBackground()) {
             mBackground.setVisibility(GONE);
         }
         mActionChipLabel.setVisibility(GONE);
@@ -1044,7 +1054,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         updateBackgroundColorFilter(/* isActionChipExpanded= */ false);
         mBackground.setVisibility(
-                (mNextButtonType == ButtonType.DYNAMIC && !mSuppressCollapsedBackground)
+                (mNextButtonType == ButtonType.DYNAMIC && !shouldSuppressCollapsedBackground())
                         ? VISIBLE
                         : GONE);
         mOnBeforeShowTransitionCallback.run();

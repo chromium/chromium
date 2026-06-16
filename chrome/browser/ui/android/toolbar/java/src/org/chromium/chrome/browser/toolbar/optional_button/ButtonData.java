@@ -66,6 +66,7 @@ public interface ButtonData {
         private final @StringRes int mTooltipTextResId;
         private final boolean mHasErrorBadge;
         private final boolean mIsChecked;
+        private final boolean mIsSelected;
         private final boolean mShouldSuppressCpa;
         private final int mActionChipCollapseDelayMs;
         private final @AttrRes int mActionChipBackgroundColorResId;
@@ -84,6 +85,7 @@ public interface ButtonData {
                 int tooltipTextResId,
                 boolean hasErrorBadge,
                 boolean isChecked,
+                boolean isSelected,
                 boolean shouldSuppressCpa,
                 int actionChipCollapseDelayMs,
                 @AttrRes int actionChipBackgroundColorResId,
@@ -101,6 +103,7 @@ public interface ButtonData {
             mTooltipTextResId = tooltipTextResId;
             mHasErrorBadge = hasErrorBadge;
             mIsChecked = isChecked;
+            mIsSelected = isSelected;
             mShouldSuppressCpa = shouldSuppressCpa;
             mActionChipCollapseDelayMs = actionChipCollapseDelayMs;
             mActionChipBackgroundColorResId = actionChipBackgroundColorResId;
@@ -122,6 +125,7 @@ public interface ButtonData {
             private @StringRes int mTooltipTextResId = INVALID_TOOLTIP_TEXT_ID;
             private boolean mHasErrorBadge;
             private boolean mIsChecked;
+            private boolean mIsSelected;
             private boolean mShouldSuppressCpa;
             private int mActionChipCollapseDelayMs = DEFAULT_ACTION_CHIP_DELAY_MS;
             private @AttrRes int mActionChipBackgroundColorResId = Resources.ID_NULL;
@@ -161,6 +165,7 @@ public interface ButtonData {
                 mTooltipTextResId = buttonSpec.mTooltipTextResId;
                 mHasErrorBadge = buttonSpec.mHasErrorBadge;
                 mIsChecked = buttonSpec.mIsChecked;
+                mIsSelected = buttonSpec.mIsSelected;
                 mShouldSuppressCpa = buttonSpec.mShouldSuppressCpa;
                 mActionChipCollapseDelayMs = buttonSpec.mActionChipCollapseDelayMs;
                 mActionChipBackgroundColorResId = buttonSpec.mActionChipBackgroundColorResId;
@@ -228,6 +233,11 @@ public interface ButtonData {
                 return this;
             }
 
+            public Builder setIsSelected(boolean isSelected) {
+                mIsSelected = isSelected;
+                return this;
+            }
+
             public Builder setShouldSuppressCpa(boolean shouldSuppressCpa) {
                 mShouldSuppressCpa = shouldSuppressCpa;
                 return this;
@@ -263,6 +273,7 @@ public interface ButtonData {
                         mTooltipTextResId,
                         mHasErrorBadge,
                         mIsChecked,
+                        mIsSelected,
                         mShouldSuppressCpa,
                         mActionChipCollapseDelayMs,
                         mActionChipBackgroundColorResId,
@@ -354,6 +365,11 @@ public interface ButtonData {
             return mIsChecked;
         }
 
+        /** Returns true if the button should be in a "selected" state. */
+        public boolean isSelected() {
+            return mIsSelected;
+        }
+
         /** Returns {@code true} if the button should suppress Contextual Page Actions. */
         public boolean shouldSuppressCpa() {
             return mShouldSuppressCpa;
@@ -401,6 +417,7 @@ public interface ButtonData {
                     && mTooltipTextResId == that.mTooltipTextResId
                     && mHasErrorBadge == that.mHasErrorBadge
                     && mIsChecked == that.mIsChecked
+                    && mIsSelected == that.mIsSelected
                     && mShouldSuppressCpa == that.mShouldSuppressCpa
                     && mActionChipCollapseDelayMs == that.mActionChipCollapseDelayMs
                     && mActionChipBackgroundColorResId == that.mActionChipBackgroundColorResId
@@ -427,6 +444,7 @@ public interface ButtonData {
                     mTooltipTextResId,
                     mHasErrorBadge,
                     mIsChecked,
+                    mIsSelected,
                     mShouldSuppressCpa,
                     mActionChipCollapseDelayMs,
                     mActionChipBackgroundColorResId,

@@ -6,6 +6,12 @@ found in the LICENSE file.
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/baseline_neutral_90_alpha_12" />
+            <corners android:radius="@dimen/modern_toolbar_background_corner_radius"/>
+        </shape>
+    </item>
     <item android:state_hovered="true">
         <shape android:shape="rectangle">
             <solid android:color="@color/baseline_neutral_90_alpha_8" />
