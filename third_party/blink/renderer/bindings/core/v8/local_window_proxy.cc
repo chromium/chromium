@@ -74,11 +74,85 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "v8/include/v8.h"
 
 namespace blink {
+
+namespace {
+
+// Direct Sockets is a conditional runtime-enabled feature whose exposure on the
+// window object is evaluated by V8 during the initial context creation (which
+// synchronously spawns an `about:blank` document).
+//
+// When a child window is opened in the same BrowsingContextGroup (reusing the
+// process), the initial `about:blank` document inherits the opener's origin but
+// does NOT inherit its browser-overridden RuntimeFeatureState. Since V8 reuses
+// this initial context when the window subsequently navigates same-origin, the
+// API exposure is never re-evaluated, leaving Direct Sockets permanently
+// disabled in the child window even after navigation commits.
+//
+// To prevent this state-loss, we synchronously inherit the `DirectSockets`
+// feature state from the same-origin opener context just before V8 generates
+// the bindings for the initial context.
+bool MaybeInheritDirectSocketsFromOpener(LocalFrame* frame) {
+  if (!frame) {
+    return false;
+  }
+  auto* opener_local_frame = DynamicTo<LocalFrame>(frame->Opener());
+  if (!opener_local_frame) {
+    return false;
+  }
+  LocalDOMWindow* opener_window = opener_local_frame->DomWindow();
+  LocalDOMWindow* window = frame->DomWindow();
+  if (!opener_window || !window) {
+    return false;
+  }
+
+  if (!window->GetSecurityOrigin()->IsSameOriginWith(
+          opener_window->GetSecurityOrigin())) {
+    return false;
+  }
+
+  if (RuntimeEnabledFeatures::DirectSocketsEnabled(opener_window)) {
+    if (auto* target_context =
+            window->GetRuntimeFeatureStateOverrideContext()) {
+      target_context->SetDirectSocketsForceEnabled();
+      return true;
+    }
+  }
+  return false;
+}
+
+// When a V8 context is created from a pre-compiled V8 Context Snapshot,
+// standard wrapper constructor objects (like Window) are retrieved as quick
+// cache-hits from V8's static PerContextData snapshot.
+//
+// Because V8 gets a cache hit, it entirely bypasses the slow compilation path
+// which would normally run standard properties-installation callbacks. As a
+// result, dynamically-enabled conditional properties (like Direct Sockets in an
+// IWA context) are never overlaid onto the restored global Window wrappers.
+//
+// To fix this omission, this helper manually retrieves the restored Window
+// prototype and constructor wrappers from the PerContextData cache, and forces
+// V8 to run the conditional bindings installation for the window.
+void ForceReinstallConditionalFeaturesForWindow(ScriptState* script_state) {
+  V8PerContextData* per_context_data = script_state->PerContextData();
+  v8::Local<v8::Function> interface_object =
+      per_context_data->ConstructorForType(V8Window::GetWrapperTypeInfo());
+  v8::Local<v8::Object> prototype_object =
+      per_context_data->PrototypeForType(V8Window::GetWrapperTypeInfo());
+
+  V8Window::GetWrapperTypeInfo()->InstallConditionalFeatures(
+      script_state->GetContext(), script_state->World(),
+      script_state->GetContext()->Global(), prototype_object, interface_object,
+      v8::Local<v8::Template>());
+}
+
+}  // namespace
 
 void LocalWindowProxy::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
@@ -288,9 +362,24 @@ void LocalWindowProxy::InstallConditionalFeatures() {
     V8ContextSnapshot::InstallContextIndependentProps(script_state_);
   }
 
+  // Direct Sockets state must be inherited from the opener BEFORE the
+  // unconditional Window wrapper warmup compilation below so that non-snapshot
+  // builds (like ChromeOS) compile the constructor with Direct Sockets natively
+  // active.
+  bool direct_sockets_inherited =
+      MaybeInheritDirectSocketsFromOpener(GetFrame());
+
   V8PerContextData* per_context_data = script_state_->PerContextData();
   std::ignore =
       per_context_data->ConstructorForType(V8Window::GetWrapperTypeInfo());
+
+  // On snapshot-based builds, the warmup above gets a cache hit on the
+  // pre-compiled feature-less wrapper. We must force-reinstall the conditional
+  // features AFTER warmup.
+  if (context_was_created_from_snapshot_ && direct_sockets_inherited) {
+    ForceReinstallConditionalFeaturesForWindow(script_state_);
+  }
+
   // Inform V8 that origin trial information is now connected with the context,
   // and V8 can extend the context with origin trial features.
   script_state_->GetIsolate()->InstallConditionalFeatures(
