@@ -670,6 +670,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ActorLogin.GetPermissions.Latency" units="ms"
+    expires_after="2026-12-04">
+  <owner>ioanap@chromium.org</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records the overall time elapsed between calling
+    ActorLoginPermissionsManager::GetAllPermissions and when all permissions
+    (both passwords and federated) have been retrieved.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ActorLogin.TimeFromAttemptToSuccess"
     units="ms" expires_after="2026-09-06">
   <owner>otara@google.com</owner>

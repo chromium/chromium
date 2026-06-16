@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permissions_manager.h"
 #include "components/password_manager/core/browser/actor_login/federated_permission.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -72,6 +73,7 @@ class ActorLoginPermissionsManagerImpl
   void OnFederatedPermissionsReceived(
       const syncer::SyncService* sync_service,
       GetAllPermissionsResult callback,
+      base::TimeTicks start_time,
       std::vector<FederatedPermission> federated_permissions);
 
   password_manager::SavedPasswordsPresenter presenter_;

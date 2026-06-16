@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -83,7 +84,8 @@ class ActorLoginPermissionsManagerTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   affiliations::FakeAffiliationService affiliation_service_;
   syncer::TestSyncService test_sync_service_;
   scoped_refptr<TestPasswordStore> profile_store_ =
@@ -101,6 +103,36 @@ TEST_F(ActorLoginPermissionsManagerTest, InitiallyEmpty) {
   permissions_manager_->GetAllPermissions(GetSyncService(),
                                           future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
+}
+
+// Tests that latency is recorded when `GetAllPermissions` is called after the
+// password stores are already fully initialized (which is handled by
+// `SetUp()`). Only the federated permissions service call is asynchronous here.
+TEST_F(ActorLoginPermissionsManagerTest, GetAllPermissions_RecordsLatency) {
+  base::HistogramTester histogram_tester;
+
+  base::TimeDelta delay = base::Milliseconds(45);
+  EXPECT_CALL(actor_login_permission_service_, ListAllPermissions)
+      .WillOnce(
+          [delay](base::OnceCallback<void(std::vector<FederatedPermission>)>
+                      callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+                FROM_HERE,
+                base::BindOnce(std::move(callback),
+                               std::vector<FederatedPermission>()),
+                delay);
+          });
+
+  base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
+      future;
+  permissions_manager_->GetAllPermissions(GetSyncService(),
+                                          future.GetCallback());
+
+  task_environment_.FastForwardBy(delay);
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.ActorLogin.GetPermissions.Latency", delay, 1);
 }
 
 TEST_F(ActorLoginPermissionsManagerTest, GetAllPermissions_OnlyPassword) {
@@ -471,6 +503,7 @@ class ActorLoginPermissionsManagerInitializationTest : public ::testing::Test {
   MockActorLoginPermissionService& actor_login_permission_service() {
     return actor_login_permission_service_;
   }
+  base::test::SingleThreadTaskEnvironment& task_env() { return task_env_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_env_{
@@ -538,6 +571,67 @@ TEST_F(ActorLoginPermissionsManagerInitializationTest,
   EXPECT_FALSE(manager.IsWaitingForPasswordStore());
   EXPECT_TRUE(future1.IsReady());
   EXPECT_TRUE(future2.IsReady());
+}
+
+// Tests that latency is correctly measured and recorded when
+// `GetAllPermissions` is called while the manager is still waiting for the
+// password stores to initialize. The recorded latency should cover the entire
+// duration from the request start until both stores finish initializing and
+// responding, even if the federated permission service completes its fetch
+// earlier.
+TEST_F(ActorLoginPermissionsManagerInitializationTest,
+       GetAllPermissions_RecordsLatencyWhenWaitingForPasswordStore) {
+  base::HistogramTester histogram_tester;
+  ActorLoginPermissionsManagerImpl manager(&affiliation_service(),
+                                           &actor_login_permission_service(),
+                                           profile_store(), account_store());
+
+  base::TimeDelta service_delay = base::Milliseconds(10);
+  EXPECT_CALL(actor_login_permission_service(), ListAllPermissions)
+      .WillOnce([service_delay](
+                    base::OnceCallback<void(std::vector<FederatedPermission>)>
+                        callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           std::vector<FederatedPermission>()),
+            service_delay);
+      });
+
+  base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
+      future;
+
+  manager.GetAllPermissions(GetSyncService(), future.GetCallback());
+
+  EXPECT_TRUE(manager.IsWaitingForPasswordStore());
+  EXPECT_FALSE(future.IsReady());
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.ActorLogin.GetPermissions.Latency", 0);
+
+  // Fast forward to complete the federated permissions service fetch.
+  // The manager should still be waiting for the password stores.
+  task_env().FastForwardBy(service_delay);
+  EXPECT_TRUE(manager.IsWaitingForPasswordStore());
+  EXPECT_FALSE(future.IsReady());
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.ActorLogin.GetPermissions.Latency", 0);
+
+  // Profile store finishes initializing 20ms later (total 30ms since start).
+  task_env().FastForwardBy(base::Milliseconds(20));
+  ProcessBackendTasks(profile_store_backend_runner());
+  EXPECT_TRUE(manager.IsWaitingForPasswordStore());
+  EXPECT_FALSE(future.IsReady());
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.ActorLogin.GetPermissions.Latency", 0);
+
+  // Account store finishes initializing 15ms later (total 45ms since start).
+  task_env().FastForwardBy(base::Milliseconds(15));
+  ProcessBackendTasks(account_store_backend_runner());
+  EXPECT_FALSE(manager.IsWaitingForPasswordStore());
+  EXPECT_TRUE(future.IsReady());
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.ActorLogin.GetPermissions.Latency",
+      base::Milliseconds(45), 1);
 }
 
 }  // namespace actor_login

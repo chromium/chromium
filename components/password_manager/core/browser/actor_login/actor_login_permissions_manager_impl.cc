@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
@@ -133,12 +134,14 @@ void ActorLoginPermissionsManagerImpl::GetAllPermissions(
   CHECK(actor_login_permission_service_);
   actor_login_permission_service_->ListAllPermissions(base::BindOnce(
       &ActorLoginPermissionsManagerImpl::OnFederatedPermissionsReceived,
-      weak_ptr_factory_.GetWeakPtr(), sync_service, std::move(callback)));
+      weak_ptr_factory_.GetWeakPtr(), sync_service, std::move(callback),
+      base::TimeTicks::Now()));
 }
 
 void ActorLoginPermissionsManagerImpl::OnFederatedPermissionsReceived(
     const syncer::SyncService* sync_service,
     GetAllPermissionsResult callback,
+    base::TimeTicks start_time,
     std::vector<FederatedPermission> federated_permissions) {
   if (presenter_.IsWaitingForPasswordStore()) {
     pending_get_permissions_callback_ =
@@ -146,7 +149,7 @@ void ActorLoginPermissionsManagerImpl::OnFederatedPermissionsReceived(
             .Then(base::BindOnce(&ActorLoginPermissionsManagerImpl::
                                      OnFederatedPermissionsReceived,
                                  weak_ptr_factory_.GetWeakPtr(), sync_service,
-                                 std::move(callback),
+                                 std::move(callback), start_time,
                                  std::move(federated_permissions)));
     return;
   }
@@ -155,6 +158,10 @@ void ActorLoginPermissionsManagerImpl::OnFederatedPermissionsReceived(
       saved_passwords_permissions =
           presenter_.GetActorLoginPermissions(sync_service);
   last_federated_permissions_ = federated_permissions;
+
+  base::UmaHistogramTimes("PasswordManager.ActorLogin.GetPermissions.Latency",
+                          base::TimeTicks::Now() - start_time);
+
   std::move(callback).Run(
       MergePermissions(std::move(saved_passwords_permissions),
                        std::move(federated_permissions)));
