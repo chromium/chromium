@@ -548,11 +548,14 @@ BASE_FEATURE(kInitialWebUI, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, the initial WebUI will not share processes with other WebUIs,
 // including non-initial topchrome WebUIs. Process sharing will still happen
 // between initial WebUIs.
+// NOTE: This is explicitly not enabled by default, and exists only as a
+// pre-emptive killswitch if other topchrome WebUIs are incompatible with the
+// optimizations done for the initial WebUI.
 BASE_FEATURE_PARAM(bool,
                    kInitialWebUIUseSeparateProcess,
                    &features::kInitialWebUI,
                    "use_separate_process",
-                   true);
+                   false);
 
 // If enabled, the initial WebUI GPU stream is set to UI priority.
 BASE_FEATURE_PARAM(bool,
