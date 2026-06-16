@@ -538,6 +538,8 @@ void WebRTCInternals::UpdateObserver(WebRTCInternalsUIObserver* observer) {
       observer->OnUpdate("add-media", &request);
     }
   }
+  UpdateWakeLock();
+  UpdateStatsTimer();
 }
 
 void WebRTCInternals::EnableAudioDebugRecordings(
