@@ -158,7 +158,9 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                             return true;
                         });
 
-        if (locationPref.isChecked()) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_EXPERIMENTAL_LOCATION)) {
+            locationPref.setVisible(false);
+        } else if (locationPref.isChecked()) {
             ensureFineLocationPermissionGranted();
         }
 
@@ -525,6 +527,10 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON);
                     } else {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON_TOGGLE);
+                    }
+                    if (!ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.GLIC_EXPERIMENTAL_LOCATION)) {
+                        indexData.removeEntryForKey(prefFrag, PERMISSION_LOCATION);
                     }
                     if (!ChromeFeatureList.isEnabled(
                             ChromeFeatureList.ACTOR_LOGIN_PERMISSIONS_UI)) {

@@ -58,7 +58,8 @@ import org.chromium.ui.base.TestActivity;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
     ChromeFeatureList.ANDROID_BOTTOM_BAR,
-    ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL
+    ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
+    ChromeFeatureList.GLIC_EXPERIMENTAL_LOCATION
 })
 @EnableFeatures(ChromeFeatureList.ACTOR_LOGIN_PERMISSIONS_UI)
 public class GlicSettingsUnitTest {
