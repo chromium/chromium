@@ -591,4 +591,14 @@ TEST_F(DesktopDragDropClientOzoneTest, RejectReentrantDrag) {
   EXPECT_EQ(DragOperation::kCopy, operation);
 }
 
+TEST_F(DesktopDragDropClientOzoneTest, RejectDragDuringWindowMove) {
+  // Simulate that a window-move loop is in progress.
+  auto suppress_drag =
+      DesktopDragDropClientOzone::ScopedSuppressForWindowMove();
+
+  // Attempt to start a drag operation. It should be rejected and return kNone.
+  DragOperation operation = StartDragAndDrop(ui::DragDropTypes::DRAG_COPY);
+  EXPECT_EQ(DragOperation::kNone, operation);
+}
+
 }  // namespace views

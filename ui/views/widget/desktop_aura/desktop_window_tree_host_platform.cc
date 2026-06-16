@@ -770,6 +770,11 @@ Widget::MoveLoopResult DesktopWindowTreeHostPlatform::RunMoveLoop(
     const gfx::Vector2d& drag_offset,
     Widget::MoveLoopSource source,
     Widget::MoveLoopEscapeBehavior escape_behavior) {
+  // The window-move loop runs a kNestableTasksAllowed RunLoop that pumps Mojo
+  // IPC; suppress renderer-initiated data drags for its duration so a
+  // compromised renderer in another window cannot hijack the user's gesture.
+  auto suppress_data_drag =
+      DesktopDragDropClientOzone::ScopedSuppressForWindowMove();
   auto* move_loop_handler = ui::GetWmMoveLoopHandler(*platform_window());
   if (move_loop_handler && move_loop_handler->RunMoveLoop(drag_offset)) {
     return Widget::MoveLoopResult::kSuccessful;
