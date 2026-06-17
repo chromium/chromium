@@ -227,16 +227,10 @@ bool VideoFrameLayout::FitsInContiguousBufferOfSize(size_t data_size) const {
               return planes_[a].offset < planes_[b].offset;
             });
 
-  size_t previous_plane_end = 0;
   for (size_t i = 0; i < num_planes; ++i) {
     size_t plane_idx = sorted_plane_indices[i];
     const auto& plane = planes_[plane_idx];
     if (plane.offset > data_size || plane.size > data_size) {
-      return false;
-    }
-
-    // Check that planes do not overlap.
-    if (plane.offset < previous_plane_end) {
       return false;
     }
 
@@ -262,7 +256,6 @@ bool VideoFrameLayout::FitsInContiguousBufferOfSize(size_t data_size) const {
         return false;
       }
     }
-    previous_plane_end = plane_end.ValueOrDie();
   }
 
   return true;
