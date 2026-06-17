@@ -215,9 +215,10 @@ export function getTitle(data: TabData|TabGroupData|SplitViewData): string|
 
   if (data instanceof SplitViewData) {
     if (data.tabs) {
-      // Returns the joined titles of both sub-tabs to allow search matching
-      // against either tab's title.
-      return `${data.tabs[0].title} ${data.tabs[1].title}`;
+      // Returns "Split View" followed by the joined titles of both sub-tabs to
+      // allow search matching against either "Split View" or either tab's
+      // title.
+      return `${data.title} ${data.tabs[0].title} ${data.tabs[1].title}`;
     }
     return data.title;
   }
