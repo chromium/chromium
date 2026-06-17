@@ -15,9 +15,8 @@ GlicNudgeControllerAndroid::GlicNudgeControllerAndroid(
     TabListInterface* tab_list,
     content::WebContents* web_contents)
     : tab_list_(tab_list) {
-  if (tab_list_) {
-    tab_list_observation_.Observe(tab_list_);
-  }
+  CHECK(tab_list);
+  tab_list_observation_.Observe(tab_list_);
   delegate_ =
       std::make_unique<GlicNudgeDelegateAndroid>(this, tab_list, web_contents);
   SetTabStripDelegate(delegate_.get());

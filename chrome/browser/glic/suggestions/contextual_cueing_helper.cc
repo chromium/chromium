@@ -142,9 +142,17 @@ glic::GlicNudgeController* ContextualCueingHelper::GetGlicNudgeController() {
   }
   return browser->GetFeatures().glic_nudge_controller();
 #else
+  if (!web_contents() || web_contents()->IsBeingDestroyed()) {
+    return nullptr;
+  }
+
   if (!glic_nudge_controller_) {
     TabListInterface* tab_list =
         TabModelList::GetTabModelForWebContents(web_contents());
+    if (!tab_list) {
+      return nullptr;
+    }
+
     glic_nudge_controller_ = std::make_unique<glic::GlicNudgeControllerAndroid>(
         tab_list, web_contents());
   }
