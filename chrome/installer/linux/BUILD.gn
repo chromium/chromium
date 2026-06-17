@@ -68,12 +68,10 @@ packaging_files_executables = [
 
 packaging_files_shlibs = []
 
-if (!use_static_angle) {
-  packaging_files_shlibs += [
-    "$root_out_dir/libEGL.so",
-    "$root_out_dir/libGLESv2.so",
-  ]
-}
+packaging_files_shlibs += [
+  "$root_out_dir/libEGL.so",
+  "$root_out_dir/libGLESv2.so",
+]
 
 if (bundle_widevine_cdm) {
   packaging_files_shlibs +=
@@ -217,14 +215,20 @@ strip_binary("strip_chrome_sandbox") {
   deps = [ "//sandbox/linux:chrome_sandbox" ]
 }
 
-if (!use_static_angle) {
-  strip_binary("strip_libEGL_shlib") {
-    binary_input = "$root_out_dir/libEGL.so"
+strip_binary("strip_libEGL_shlib") {
+  binary_input = "$root_out_dir/libEGL.so"
+  if (use_static_angle) {
+    deps = [ "//ui/gl:dummy_libEGL" ]
+  } else {
     deps = [ "//third_party/angle:libEGL" ]
   }
+}
 
-  strip_binary("strip_libGLESv2_shlib") {
-    binary_input = "$root_out_dir/libGLESv2.so"
+strip_binary("strip_libGLESv2_shlib") {
+  binary_input = "$root_out_dir/libGLESv2.so"
+  if (use_static_angle) {
+    deps = [ "//ui/gl:dummy_libGLESv2" ]
+  } else {
     deps = [ "//third_party/angle:libGLESv2" ]
   }
 }
@@ -455,10 +459,17 @@ group("installer_deps") {
   if (bundle_widevine_cdm) {
     public_deps += [ "//third_party/widevine/cdm" ]
   }
-  if (!use_static_angle) {
+  public_deps += [
+    ":strip_libEGL_shlib",
+    ":strip_libGLESv2_shlib",
+  ]
+  if (use_static_angle) {
     public_deps += [
-      ":strip_libEGL_shlib",
-      ":strip_libGLESv2_shlib",
+      "//ui/gl:dummy_libEGL",
+      "//ui/gl:dummy_libGLESv2",
+    ]
+  } else {
+    public_deps += [
       "//third_party/angle:libEGL",
       "//third_party/angle:libGLESv2",
     ]
