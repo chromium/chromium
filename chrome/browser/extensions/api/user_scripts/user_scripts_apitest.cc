@@ -19,10 +19,12 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
@@ -197,6 +199,68 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, ExecuteUserScripts_SizeLimit) {
       script_parsing::CreateScopedMaxScriptLengthForTesting(700u);
   ASSERT_TRUE(RunUserScriptsExtensionTest("user_scripts/execute_size_limit"))
       << message_;
+}
+
+// Tests that executing user scripts correctly handles a cross-document
+// navigation occurring during the asynchronous file loading phase, preventing
+// unauthorized script execution or improper marking of the new process.
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest,
+                       ExecuteUserScripts_CrossDocumentNavigationRace) {
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener tab_created_listener("tab_created",
+                                                    ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener execute_called_listener(
+      "execute_called", ReplyBehavior::kWillReply);
+
+  ResultCatcher catcher;
+
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("user_scripts/navigation_race"));
+  ASSERT_TRUE(extension);
+
+  user_scripts_test_util::SetUserScriptsAPIAllowed(profile(), extension->id(),
+                                                   /*allowed=*/true);
+
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+  ready_listener.Reply(
+      embedded_test_server()->GetURL("a.com", "/empty.html").spec());
+
+  ASSERT_TRUE(tab_created_listener.WaitUntilSatisfied());
+
+  // Block the file task runner.
+  base::WaitableEvent block_file_task_runner;
+  GetExtensionFileTaskRunner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
+        block_file_task_runner.Wait();
+      }));
+
+  tab_created_listener.Reply("");
+
+  ASSERT_TRUE(execute_called_listener.WaitUntilSatisfied());
+
+  // Now userScripts.execute() has been called. The file task is queued.
+  // Navigate the tab to c.com, which the extension does not have permission
+  // for.
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("c.com", "/empty.html")));
+
+  // Unblock file task runner
+  block_file_task_runner.Signal();
+
+  execute_called_listener.Reply("");
+
+  // Wait for the result from the extension. The execute should result in an
+  // expected error due to the script being blocked after the navigation.
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  // Verify that the new document's process was not marked as having run user
+  // scripts.
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
+      *main_frame->GetProcess(), extension->id()));
 }
 
 // TODO(crbug.com/335421977): Flaky on "Linux ChromiumOS MSan Tests".
