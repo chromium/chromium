@@ -94,6 +94,8 @@ void DrivePickerHostController::ShowDrivePickerHost(
                              ->AsDialogDelegate()
                              ->GetBubbleFrameView()) {
     frame_view->SetBackgroundColor(SK_ColorTRANSPARENT);
+    // Ensure the dialog frame itself is rectangular to match the picker's look.
+    frame_view->SetRoundedCorners(gfx::RoundedCornersF(0));
   }
 
   picker_widget_->Show();

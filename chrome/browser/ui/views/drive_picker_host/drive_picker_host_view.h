@@ -66,6 +66,7 @@ class DrivePickerHostView : public views::View,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void RequestFocus() override;
+  void AddedToWidget() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
   // `content::WebContentsDelegate`:
@@ -98,6 +99,8 @@ class DrivePickerHostView : public views::View,
  private:
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostViewTest, Initialization);
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostViewTest, TriggerDrivePickerHostUi);
+  FRIEND_TEST_ALL_PREFIXES(DrivePickerHostViewTest,
+                           SetsCornerRadiusOnAddedToWidget);
 
   // Reports an error back to the result handler in the request.
   void SendErrorToRequest(

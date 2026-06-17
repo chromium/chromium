@@ -41,6 +41,7 @@ source_set("drive_picker_host") {
     "//skia",
     "//ui/base",
     "//ui/base/metadata",
+    "//ui/compositor",
     "//ui/gfx",
     "//ui/views/controls/webview",
   ]
@@ -64,6 +65,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/compositor",
     "//ui/views:test_support",
   ]
 }

@@ -21,9 +21,11 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -90,6 +92,19 @@ void DrivePickerHostView::RequestFocus() {
     if (web_view->GetWebContents()) {
       web_view->GetWebContents()->Focus();
     }
+  }
+}
+
+void DrivePickerHostView::AddedToWidget() {
+  views::View::AddedToWidget();
+  views::WebView* web_view =
+      views::AsViewClass<views::WebView>(view_tracker_.view());
+  if (web_view) {
+    // Remove rounded corners to align with the Drive Picker's rectangular look.
+    web_view->holder()->SetCornerRadii(gfx::RoundedCornersF(0));
+
+    // Also ensure this view's layer is rectangular.
+    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(0));
   }
 }
 
