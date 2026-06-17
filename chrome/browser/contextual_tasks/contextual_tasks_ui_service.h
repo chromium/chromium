@@ -528,7 +528,8 @@ class ContextualTasksUiService : public KeyedService {
 
   // Navigates to a share URL.
   virtual void OpenUrl(const content::OpenURLParams& url_params,
-                       const blink::mojom::WindowFeatures& window_features);
+                       const blink::mojom::WindowFeatures& window_features,
+                       BrowserWindowInterface* browser);
 
   // Sets the initial thread URL for a given task and runs any pending
   // callbacks.

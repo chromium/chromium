@@ -195,7 +195,8 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
   MOCK_METHOD(void,
               OpenUrl,
               (const content::OpenURLParams& url_params,
-               const blink::mojom::WindowFeatures& window_features),
+               const blink::mojom::WindowFeatures& window_features,
+               BrowserWindowInterface* browser),
               (override));
 
   using ContextualTasksUiService::HandleNavigationImpl;
@@ -1616,7 +1617,7 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ViewedInSidePanel) {
   EXPECT_CALL(
       *service_for_nav_,
       OpenUrl(testing::Field(&content::OpenURLParams::url, navigated_url),
-              testing::_))
+              testing::_, testing::_))
       .Times(1);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
@@ -2133,7 +2134,7 @@ TEST_F(ContextualTasksUiServiceTest, ShareUrl_FromEmbeddedPage_Intercepted) {
                           &content::OpenURLParams::url,
                           GURL("https://google.com/"
                                "search?q=https%3A%2F%2Fshare.google%2Faimode")),
-                      testing::_))
+                      testing::_, testing::_))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
