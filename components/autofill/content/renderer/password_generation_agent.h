@@ -11,7 +11,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
@@ -96,7 +98,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
 
   // Returns true iff the currently handled 'blur' event is fake and should be
   // ignored.
-  bool ShouldIgnoreBlur() const;
+  bool ShouldIgnoreBlur();
 
 #if defined(UNIT_TEST)
   // This method requests the mojom::PasswordManagerClient which binds
@@ -181,9 +183,51 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
       blink::WebInputElement generation_element,
       const SynchronousFormCache& form_cache);
 
+  // Wraps an element with a write protector: The getter also returns a RAII
+  // object that disallows write access.
+  template <typename T>
+  class Protected {
+   public:
+    explicit Protected() = default;
+    Protected(const Protected&) = delete;
+    Protected& operator=(const Protected&) = delete;
+    ~Protected() = default;
+
+    struct ProtectedValueRef {
+      STACK_ALLOCATED();
+
+     public:
+      const T& value;
+      base::AutoReset<bool> protector;
+    };
+
+    // Returns a reference to the value which is valid for at least the lifetime
+    // of the returned protector.
+    //
+    // This Protected<> instance must outlive the returned reference and
+    // protector.
+    ProtectedValueRef GetAndProtect() {
+      return {value_, base::AutoReset(&protected_, true)};
+    }
+
+    // Writes the value.
+    // Crashes if a protector returned by GetAndProtect() is alive.
+    void CheckedSet(T value) {
+      CHECK(!protected_);
+      value_ = std::move(value);
+    }
+
+    // Returns true iff a protector returned by GetAndProtect() is alive.
+    bool IsProtected() const { return protected_; }
+
+   private:
+    T value_;
+    bool protected_ = false;
+  };
+
   // Contains the current element where generation is offered at the moment. It
   // can be either automatic or manual password generation.
-  std::unique_ptr<GenerationItemInfo> current_generation_item_;
+  Protected<std::unique_ptr<GenerationItemInfo>> current_generation_item_;
 
   // Contains correspondence between generation enabled element and data for
   // generation.
