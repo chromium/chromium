@@ -153,6 +153,16 @@ class TestPopupViewViews : public PopupViewViews {
         std::move(callback);
   }
 
+  void NotifyAXSelection(views::View& view) override {
+    if (destroy_on_notify_ax_selection_) {
+      GetWidget()->CloseNow();
+    } else {
+      PopupViewViews::NotifyAXSelection(view);
+    }
+  }
+
+  void DestroyOnNotifyAxSelection() { destroy_on_notify_ax_selection_ = true; }
+
  protected:
   gfx::Rect GetOptimalPositionAndPlaceArrowOnPopup(
       const gfx::Rect& element_bounds,
@@ -172,6 +182,7 @@ class TestPopupViewViews : public PopupViewViews {
  private:
   GetOptimalPositionAndPlaceArrowOnPopupOverride
       get_optimal_position_and_place_arrow_on_popup_override_;
+  bool destroy_on_notify_ax_selection_ = false;
 };
 
 class PopupViewViewsTest : public ChromeViewsTestBase {
@@ -2703,6 +2714,15 @@ TEST_F(PopupViewViewsTest, WarningOnShowA11yFocus) {
   ASSERT_TRUE(row_view);
 
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus, *row_view));
+}
+
+TEST_F(PopupViewViewsTest, WarningOnShow_DestroyOnA11yFocus) {
+  CreateView();
+  controller().set_suggestions({SuggestionType::kMixedFormMessage});
+  view().DestroyOnNotifyAxSelection();
+
+  // This should not crash!
+  ShowView(&view(), widget());
 }
 
 TEST_F(PopupViewViewsTest, Show_A11yAnnouncesPasswordRecovery) {

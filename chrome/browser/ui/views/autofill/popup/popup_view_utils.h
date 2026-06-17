@@ -185,8 +185,27 @@ gfx::Rect IntersectWithDisplayBounds(const gfx::Rect& element_bounds);
 // This is typically used to prevent Use-After-Free (UAF) vulnerabilities on
 // Windows when firing platform accessibility events (e.g., focus or selection
 // changes).
+// Note that when `view` is `this`, the return value must be handled and must be
+// propagated:
+//
+// [[nodiscard]] bool PopupBaseView::Foo() {
+//   if (!TrackAndRun(this, callable)) {
+//     return false;
+//   }
+//   DoSomethingElse();
+// }
+//
+// // You may only drop the return value if you can guarantee that nothing
+// // accesses `this` or members of `this` after calling `Bar();`.
+// [[nodiscard]] bool PopupBaseView::Bar() {
+//   if (!Foo()) { return false; }
+//   DoSomethingElse();
+//   return true;
+// }
+//
+// TODO(crbug.com/524084900): Migrate to a more robust pattern.
 template <typename... Callables>
-bool TrackAndRun(views::View* view, Callables&&... callbacks) {
+[[nodiscard]] bool TrackAndRun(views::View* view, Callables&&... callbacks) {
   CHECK(view);
   views::ViewTracker tracker(view);
   bool alive = true;

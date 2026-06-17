@@ -333,7 +333,9 @@ bool PopupViewViews::Show(
   MaybeAnnounceCurrentTabAndFootnote();
   MaybeAnnouncePasswordRecoveryPopup();
   MaybeAnnounceLoadingState();
-  MaybeA11yFocusInformationalSuggestion();
+  if (!MaybeA11yFocusInformationalSuggestion()) {
+    return false;
+  }
 
   return !CanActivate() || (GetWidget() && GetWidget()->IsActive());
 }
@@ -797,7 +799,9 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
 
   MaybeAnnouncePasswordRecoveryPopup();
   MaybeAnnounceLoadingState();
-  MaybeA11yFocusInformationalSuggestion();
+  if (!MaybeA11yFocusInformationalSuggestion()) {
+    return;
+  }
   ShowIPHFeaturePromos();
 }
 
@@ -1686,21 +1690,23 @@ bool PopupViewViews::SelectParentPopupContentCell() {
   return true;
 }
 
-void PopupViewViews::MaybeA11yFocusInformationalSuggestion() {
+bool PopupViewViews::MaybeA11yFocusInformationalSuggestion() {
   if (rows_.size() != 1) {
-    return;
+    return true;
   }
 
   if (auto* warning_view = std::get_if<PopupWarningView*>(&rows_[0]);
       warning_view && *warning_view) {
     PopupWarningView* view_ptr = *warning_view;
-    TrackAndRun(
+    return TrackAndRun(
         view_ptr, [this, view_ptr]() { NotifyAXSelection(*view_ptr); },
         [view_ptr]() {
           view_ptr->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus,
                                                        true);
         });
   }
+
+  return true;
 }
 
 base::WeakPtr<AutofillPopupView> PopupViewViews::GetWeakPtr() {
