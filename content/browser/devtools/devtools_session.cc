@@ -545,8 +545,26 @@ void DevToolsSession::DispatchProtocolResponseOrNotification(
     blink::mojom::DevToolsMessagePtr message,
     const std::string& session_id,
     const bool& is_notification) {
-  base::span<const uint8_t> message_span = message->data;
-  if (!ValidateMessage(session_id, /*expected_has_id=*/!is_notification,
+  // If BigBuffer is backed by shared memory, make a copy so that a compromised
+  // renderer wouldn't be able to mess with the message as we validate it.
+  std::vector<uint8_t> message_bytes;
+  base::span<const uint8_t> message_span;
+  switch (message->data.storage_type()) {
+    case mojo_base::BigBuffer::StorageType::kBytes:
+      message_span = message->data.byte_span();
+      break;
+    case mojo_base::BigBuffer::StorageType::kSharedMemory:
+      message_bytes.assign(message->data.begin(), message->data.end());
+      message_span = message_bytes;
+      break;
+    default:
+      // just keep span empty, this will cause renderer killed for invalid
+      // message below.
+      break;
+  }
+
+  if (message_span.empty() ||
+      !ValidateMessage(session_id, /*expected_has_id=*/!is_notification,
                        message_span)) {
     if (RenderProcessHost* process_host = agent_host->GetProcessHost()) {
       bad_message::ReceivedBadMessage(
