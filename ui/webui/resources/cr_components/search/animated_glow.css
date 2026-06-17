@@ -654,6 +654,10 @@
   animation: gradient-border-width-close-submit var(--expand-timing_);
 }
 
+:host([animation-state='listening']) .background {
+  animation: none;
+}
+
 :host([animation-state='dragging']) .background::before {
   animation: none;
   /* Frosted glass color; overlays the actual composebox background: */
