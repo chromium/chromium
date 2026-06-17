@@ -714,6 +714,7 @@ std::string_view GetRlzBrandCode(
                      {"UGAY", {"YDHM", "HVCY", "ILHO"}},
                      {"UGCB", {"OFRA", "PZBT", "HYKB"}},
                      {"UGDD", {"SCMD", "LRWA", "NTRL"}},
+                     {"UHAU", {"YVWR", "CTTB", "APPM"}},
                      {"UIST", {"PONZ", "WCLO", "LRCQ"}},
                      {"UIUB", {"TQTC", "XTMH", "YYPG"}},
                      {"UKVH", {"EXHG", "KWME", "YBFB"}},
