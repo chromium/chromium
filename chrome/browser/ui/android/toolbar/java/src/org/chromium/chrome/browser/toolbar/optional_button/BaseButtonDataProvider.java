@@ -109,12 +109,25 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
      * @param tab Current tab.
      */
     private void maybeSetIphCommandBuilder(@Nullable Tab tab) {
-        if (tab == null
-                || !FeatureList.isInitialized()
-                || mButtonData.getButtonSpec().getIphCommandBuilder() != null
-                || !AdaptiveToolbarFeatures.isCustomizationEnabled()
-                || AdaptiveToolbarFeatures.shouldShowActionChip(
-                        mButtonData.getButtonSpec().getButtonVariant())) {
+        // State not ready.
+        if (tab == null || !FeatureList.isInitialized()) {
+            return;
+        }
+
+        // Button already has an override IPH builder.
+        if (mButtonData.getButtonSpec().getIphCommandBuilder() != null) {
+            return;
+        }
+
+        // Adaptive toolbar customization is disabled.
+        if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) {
+            return;
+        }
+
+        // Do not show IPH if the action chip is shown with a valid label.
+        if (AdaptiveToolbarFeatures.shouldShowActionChip(
+                        mButtonData.getButtonSpec().getButtonVariant())
+                && mButtonData.getButtonSpec().getActionChipLabelResId() != Resources.ID_NULL) {
             return;
         }
 

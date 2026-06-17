@@ -225,6 +225,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
                 new ButtonSpec.Builder(desiredSpec)
                         .setIsChecked(mStateController.isPanelOpen())
                         .setIsSelected(mStateController.isPanelOpen())
+                        .setIphCommandBuilder(buttonData.getButtonSpec().getIphCommandBuilder())
                         .build());
 
         mButtonData.setEnabled(true);
