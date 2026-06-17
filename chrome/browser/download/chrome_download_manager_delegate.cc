@@ -982,7 +982,8 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
              IsApkFile(item) && state->is_complete() && !item->IsDangerous() &&
              item->GetDangerType() !=
                  download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED &&
-             !item->IsUserConfirmed()) {
+             !item->IsUserConfirmed() &&
+             download_prefs_->download_restriction() != policy::DownloadRestriction::MALICIOUS_FILES) {
     // Don't complete the download of a non-dangerous file until the user
     // consents.
     if (DownloadController::GetInstance()->ShowDangerousDownloadDialog(item)) {
