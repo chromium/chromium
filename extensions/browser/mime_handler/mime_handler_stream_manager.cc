@@ -220,8 +220,8 @@ MimeHandlerStreamManager::GetStreamContainer(
   // It's possible to have multiple `extensions::StreamContainer`s under the
   // same frame tree node ID. Verify the original URL in the stream container to
   // avoid a potential URL spoof.
-  if (embedder_host->GetLastCommittedURL() !=
-      stream_info->stream()->original_url()) {
+  if (!embedder_host->GetLastCommittedURL().EqualsIgnoringRef(
+          stream_info->stream()->original_url())) {
     return nullptr;
   }
 
@@ -255,7 +255,8 @@ MimeHandlerStreamManager::GetTopLevelHandlerExtensionId() const {
   // same frame tree node ID. Verify the original URL in the stream container
   // to avoid a potential URL spoof -- the same guard `GetStreamContainer()`
   // applies.
-  if (main_rfh->GetLastCommittedURL() != info->stream()->original_url()) {
+  if (!main_rfh->GetLastCommittedURL().EqualsIgnoringRef(
+          info->stream()->original_url())) {
     return std::nullopt;
   }
   return info->stream()->extension_id();
@@ -793,7 +794,7 @@ bool MimeHandlerStreamManager::MaybeDeleteStreamOnContentHostChanged(
   if (url.is_empty()) {
     return false;
   }
-  CHECK(url == stream_info->stream()->original_url());
+  CHECK(url.EqualsIgnoringRef(stream_info->stream()->original_url()));
 
   DeleteClaimedStreamInfo(embedder_host);
   // DO NOT add code past this point. `this` may have been deleted.

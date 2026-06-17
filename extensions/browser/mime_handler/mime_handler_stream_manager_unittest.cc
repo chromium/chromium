@@ -559,6 +559,45 @@ TEST_F(MimeHandlerStreamManagerTest, ContentRenderFrameHostChanged) {
 }
 
 TEST_F(MimeHandlerStreamManagerTest,
+       ContentRenderFrameHostChangedAllowsFragment) {
+  const GURL pdf_url(kOriginalUrl1);
+  const GURL pdf_url_with_fragment = pdf_url.Resolve("#fragment");
+
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
+  embedder_host = NavigateAndCommit(embedder_host, pdf_url);
+  auto* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* content_host =
+      CreateChildRenderFrameHost(extension_host, "content host");
+  content_host = NavigateAndCommit(content_host, pdf_url_with_fragment);
+  auto* new_host = CreateChildRenderFrameHost(extension_host, "new host");
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  manager->SetExtensionFrameTreeNodeIdForTesting(
+      embedder_host, extension_host->GetFrameTreeNodeId());
+  manager->SetContentFrameTreeNodeIdForTesting(
+      embedder_host, content_host->GetFrameTreeNodeId());
+  ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
+
+  content::OverrideLastCommittedOrigin(
+      extension_host,
+      url::Origin::Create(GURL(
+          "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html")));
+
+  // Changing the content host should delete the stream.
+  manager->RenderFrameHostChanged(content_host, new_host);
+
+  // There are no remaining streams, so `MimeHandlerStreamManager` should delete
+  // itself.
+  EXPECT_FALSE(mime_handler_stream_manager());
+}
+
+TEST_F(MimeHandlerStreamManagerTest,
        ContentHostChangedCallsValidateContentFrameHost) {
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   auto* extension_host =
@@ -1324,7 +1363,8 @@ TEST_F(MimeHandlerStreamManagerTest, AllowsFragmentNavigation) {
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
       embedder_host->GetFrameTreeNodeId(), "internal_id",
-      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      extensions::mime_handler::GenerateSampleStreamContainer(
+          1, /*embedded=*/false),
       std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
   manager->ClaimStreamInfoForTesting(embedder_host);
   manager->SetExtensionFrameTreeNodeIdForTesting(
@@ -1348,6 +1388,10 @@ TEST_F(MimeHandlerStreamManagerTest, AllowsFragmentNavigation) {
 
   EXPECT_TRUE(manager->IsExtensionHost(extension_host));
   EXPECT_TRUE(manager->IsContentHost(content_host));
+
+  EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
+  EXPECT_THAT(manager->GetTopLevelHandlerExtensionId(),
+              testing::Optional(std::string("extension_id1")));
 }
 
 }  // namespace extensions::mime_handler
