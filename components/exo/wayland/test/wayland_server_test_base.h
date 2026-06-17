@@ -68,7 +68,7 @@ class WaylandServerTestBase : public TestBase {
 
   std::unique_ptr<Server> CreateServer(
       std::unique_ptr<SecurityDelegate> security_delegate);
-  std::unique_ptr<Server> CreateServer();
+  virtual std::unique_ptr<Server> CreateServer();
 
  protected:
   std::unique_ptr<Display> display_;

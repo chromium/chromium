@@ -23,6 +23,7 @@ class MockSecurityDelegate : public SecurityDelegate {
               CanSetBounds,
               (aura::Window * window),
               (const, override));
+  MOCK_METHOD(bool, CanAccessRemoteShell, (), (const, override));
   MOCK_METHOD(std::vector<ui::FileInfo>,
               GetFilenames,
               (ui::EndpointType source, const std::vector<uint8_t>& data),
