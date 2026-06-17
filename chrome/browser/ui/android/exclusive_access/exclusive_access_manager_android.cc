@@ -154,6 +154,11 @@ void ExclusiveAccessManagerAndroid::ForceActiveTab(
 }
 
 void ExclusiveAccessManagerAndroid::Destroy(JNIEnv* env) {
+  if (eac_) {
+    // Notify the Java counterpart to drop its native pointer before
+    // the C++ object is destroyed, preventing a use-after-free.
+    eac_->Destroy(env);
+  }
   delete this;
 }
 
