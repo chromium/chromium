@@ -138,6 +138,10 @@ class RenderbufferAttachment
   scoped_refptr<Renderbuffer> renderbuffer_;
 };
 
+GLint Framebuffer::Attachment::layer() const {
+  return 0;
+}
+
 class TextureAttachment
     : public Framebuffer::Attachment {
  public:
@@ -188,7 +192,7 @@ class TextureAttachment
 
   GLsizei samples() const override { return samples_; }
 
-  GLint layer() const { return layer_; }
+  GLint layer() const override { return layer_; }
 
   GLenum target() const override { return target_; }
 
@@ -1235,6 +1239,47 @@ bool FramebufferManager::IsComplete(const Framebuffer* framebuffer) {
   DCHECK(framebuffer);
   return framebuffer->framebuffer_complete_state_count_id() ==
       framebuffer_state_change_count_;
+}
+
+std::vector<std::pair<scoped_refptr<Framebuffer>, GLenum>>
+FramebufferManager::GetBindingFramebuffersForTexture(TextureRef* texture_ref) {
+  std::vector<std::pair<scoped_refptr<Framebuffer>, GLenum>> result;
+  if (!texture_ref) {
+    return result;
+  }
+  for (const auto& pair : framebuffers_) {
+    Framebuffer* framebuffer = pair.second.get();
+    for (GLenum attachment_point :
+         {GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT}) {
+      const Framebuffer::Attachment* attachment =
+          framebuffer->GetAttachment(attachment_point);
+      if (attachment && attachment->IsTexture(texture_ref)) {
+        result.push_back({pair.second, attachment_point});
+      }
+    }
+  }
+  return result;
+}
+
+std::vector<std::pair<scoped_refptr<Framebuffer>, GLenum>>
+FramebufferManager::GetBindingFramebuffersForRenderbuffer(
+    Renderbuffer* renderbuffer) {
+  std::vector<std::pair<scoped_refptr<Framebuffer>, GLenum>> result;
+  if (!renderbuffer) {
+    return result;
+  }
+  for (const auto& pair : framebuffers_) {
+    Framebuffer* framebuffer = pair.second.get();
+    for (GLenum attachment_point :
+         {GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT}) {
+      const Framebuffer::Attachment* attachment =
+          framebuffer->GetAttachment(attachment_point);
+      if (attachment && attachment->IsRenderbuffer(renderbuffer)) {
+        result.push_back({pair.second, attachment_point});
+      }
+    }
+  }
+  return result;
 }
 
 }  // namespace gles2

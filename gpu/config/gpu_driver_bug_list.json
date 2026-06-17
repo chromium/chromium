@@ -3756,18 +3756,6 @@
       ]
     },
     {
-      "id": 477,
-      "description": "Recreate FBO upon flush/finish/fencesync under certain conditions on Qualcomm GPUs",
-      "gl_vendor": "Qualcomm.*",
-      "driver_version": {
-        "op": "<",
-        "value": "878"
-      },
-      "features": [
-        "recreate_fbo_upon_flush"
-      ]
-    },
-    {
       "id": 478,
       "description": "Program binaries don't contain transform feedback varyings on Mali GPUs",
       "cr_bugs": [510589906],
@@ -3778,6 +3766,19 @@
       "gl_renderer": "Mali.*",
       "features": [
         "disable_program_caching_for_transform_feedback"
+      ]
+    },
+    {
+      "id": 480,
+      "cr_bugs": [520656244],
+      "description": "Reattach FBO depth/stencil attachments when they are reallocated on Qualcomm GPUs",
+      "gl_vendor": "Qualcomm.*",
+      "driver_version": {
+        "op": "<",
+        "value": "878"
+      },
+      "features": [
+        "reattach_fbo_depth_stencil_on_reallocation"
       ]
     }
   ]

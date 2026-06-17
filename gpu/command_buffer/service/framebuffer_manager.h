@@ -58,6 +58,7 @@ class GPU_GLES2_EXPORT Framebuffer : public base::RefCounted<Framebuffer> {
     virtual bool IsRenderbuffer(Renderbuffer* renderbuffer) const = 0;
     virtual bool IsSameAttachment(const Attachment* attachment) const = 0;
     virtual bool Is3D() const = 0;
+    virtual GLint layer() const;
 
     // If it's a 3D texture attachment, return true if
     // FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER is smaller than the number of
@@ -382,6 +383,12 @@ class GPU_GLES2_EXPORT FramebufferManager {
   void MarkAsComplete(Framebuffer* framebuffer);
 
   bool IsComplete(const Framebuffer* framebuffer);
+
+  std::vector<std::pair<scoped_refptr<Framebuffer>, GLenum>>
+  GetBindingFramebuffersForTexture(TextureRef* texture_ref);
+
+  std::vector<std::pair<scoped_refptr<Framebuffer>, GLenum>>
+  GetBindingFramebuffersForRenderbuffer(Renderbuffer* renderbuffer);
 
   void IncFramebufferStateChangeCount() {
     // make sure this is never 0.
