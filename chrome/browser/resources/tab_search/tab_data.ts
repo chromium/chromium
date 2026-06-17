@@ -166,8 +166,12 @@ export function ariaLabel(itemData: ItemData): string {
   }
 
   if (itemData instanceof SplitViewData) {
-    return `${itemData.title} ${itemData.tabCount} tabs ${
-        itemData.lastActiveElapsedText} ${itemData.a11yTypeText}`;
+    const hostnames = itemData.tabUrls.slice(0, 2).map(
+        url => getDisplayHostnameForUrl(new URL(normalizeURL(url))));
+    const lastActive = itemData.lastActiveElapsedText;
+    const lastActivePart = lastActive ? `, ${lastActive}` : '';
+    return `Split view, ${hostnames[0]}, ${hostnames[1]}${lastActivePart}. ${
+        itemData.a11yTypeText}`;
   }
 
   if (itemData instanceof TabData) {

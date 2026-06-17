@@ -926,6 +926,14 @@ suite('TabSearchAppTest', () => {
     assertEquals(2, splitViewRow.tabCount);
     assertEquals('https://google.com', splitViewRow.tabUrls[0]);
     assertEquals('https://paypal.com', splitViewRow.tabUrls[1]);
+
+    const splitViewEl =
+        Array.from(queryRows())
+            .find(row => row.tagName.toLowerCase() === 'tab-search-split-item');
+    assertTrue(!!splitViewEl);
+    assertEquals(
+        'Split view, google.com, paypal.com. Open split view',
+        splitViewEl.getAttribute('aria-label'));
   });
 
   test('process recently closed split view into a single row', async () => {
@@ -961,6 +969,13 @@ suite('TabSearchAppTest', () => {
     assertEquals(2, splitViewRow.tabCount);
     assertEquals('https://google.com', splitViewRow.tabUrls[0]);
     assertEquals('https://paypal.com', splitViewRow.tabUrls[1]);
+
+    const splitViewEl = Array.from(rows).find(
+        row => row.tagName.toLowerCase() === 'tab-search-split-item');
+    assertTrue(!!splitViewEl);
+    const expectedLabel = 'Split view, google.com, paypal.com, 3 mins ago. ' +
+        'Recently closed split view';
+    assertEquals(expectedLabel, splitViewEl.getAttribute('aria-label'));
   });
 
   test('search matches across both sub-tab titles', async () => {
