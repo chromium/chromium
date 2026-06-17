@@ -56,7 +56,7 @@ constexpr int kToolbarPadding = 4;
 constexpr int kToolbarInitialOffset = 20;
 constexpr int kSeparatorHorizontalPadding = 8;
 constexpr int kControlIconSize = 16;
-constexpr int kActionIconSize = 20;
+constexpr int kActionIconSize = 16;
 constexpr int kLabelLeftMargin = 12;
 
 class IndigoOverlayTargeterDelegate : public views::ViewTargeterDelegate {
