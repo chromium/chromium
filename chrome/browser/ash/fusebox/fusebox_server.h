@@ -92,6 +92,10 @@ class Server : public ash::FilesInternalsDebugJSONProvider {
     return server ? server->InverseResolveFSURL(fs_url) : base::FilePath();
   }
 
+  // Overrides the default "/media/fuse/fusebox/" media path for testing.
+  // If `path` is empty, resets to the default media path.
+  static void OverrideFuseBoxMediaPathForTesting(std::string_view path);
+
   // ash::FilesInternalsDebugJSONProvider overrides.
   void GetDebugJSONForKey(
       std::string_view key,

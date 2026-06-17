@@ -14,22 +14,29 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/logging/logging_settings.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/connectors/test/fake_clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/common/files_scan_data.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/file_analysis_request_base.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -37,6 +44,14 @@
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "content/public/browser/storage_partition.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#endif
 
 class TestDragDropRequestHandler
     : public enterprise_connectors::test::FakeClipboardRequestHandler {
@@ -90,6 +105,88 @@ class TestDragDropRequestHandler
   }
 };
 
+class MockFileAnalysisRequest
+    : public enterprise_connectors::FileAnalysisRequestBase {
+ public:
+  MockFileAnalysisRequest(
+      const enterprise_connectors::AnalysisSettings& analysis_settings,
+      base::FilePath path,
+      enterprise_connectors::BinaryUploadRequest::ContentAnalysisCallback
+          callback)
+      : FileAnalysisRequestBase(
+            analysis_settings,
+            path,
+            path.BaseName(),
+            "application/octet-stream",
+            /*delay_opening_file=*/false,
+            std::move(callback),
+            base::BindRepeating([]() -> policy::BrowserPolicyConnector* {
+              return g_browser_process->browser_policy_connector();
+            }),
+            content::GetUIThreadTaskRunner({})) {}
+
+  void GetRequestData(DataCallback callback) override {
+    Data data;
+    data.size = 100;
+    data.mime_type = "application/octet-stream";
+    data.path = path_;
+    data.hash =
+        std::string("fake_sha256_hash_value_for_") + file_name_.AsUTF8Unsafe();
+    std::move(callback).Run(
+        enterprise_connectors::ScanRequestUploadResult::kSuccess,
+        std::move(data));
+  }
+
+ protected:
+  void ProcessZipFile(Data data) override {}
+  void ProcessRarFile(Data data) override {}
+};
+
+class MockDelegate : public enterprise_connectors::FilesRequestHandler {
+ public:
+  MockDelegate(
+      Profile* profile,
+      const std::string& source,
+      const std::string& destination,
+      const std::vector<base::FilePath>& paths,
+      enterprise_connectors::FilesRequestHandler::CompletionCallback callback)
+      : enterprise_connectors::FilesRequestHandler(profile,
+                                                   source,
+                                                   destination,
+                                                   paths,
+                                                   std::move(callback)) {}
+
+  std::unique_ptr<enterprise_connectors::FileAnalysisRequestBase>
+  CreateFileRequest(
+      size_t index,
+      const enterprise_connectors::AnalysisSettings& settings,
+      base::OnceCallback<void(enterprise_connectors::ScanRequestUploadResult,
+                              enterprise_connectors::ContentAnalysisResponse)>
+          callback,
+      base::OnceCallback<
+          void(const enterprise_connectors::BinaryUploadRequest&)>
+          request_start_callback) override {
+    return std::make_unique<MockFileAnalysisRequest>(settings, GetPath(index),
+                                                     std::move(callback));
+  }
+
+  void SetHandler(
+      enterprise_connectors::FilesRequestHandlerBase* handler) override {
+    handler_ = handler;
+    enterprise_connectors::FilesRequestHandler::SetHandler(handler);
+  }
+
+  bool UploadDataImpl() override {
+    for (size_t i = 0; i < GetFileCount(); ++i) {
+      handler_->PrepareFileRequest(i);
+    }
+    return true;
+  }
+
+ private:
+  raw_ptr<enterprise_connectors::FilesRequestHandlerBase> handler_ = nullptr;
+};
+
 class DragDropTestContentAnalysisDelegate
     : public enterprise_connectors::test::FakeContentAnalysisDelegate {
  public:
@@ -109,18 +206,49 @@ class DragDropTestContentAnalysisDelegate
   static std::unique_ptr<ContentAnalysisDelegate> Create(
       StatusCallback status_callback,
       std::string dm_token,
+      bool use_mock_handler,
       content::WebContents* web_contents,
       Data data,
       CompletionCallback callback) {
     auto ret = std::make_unique<DragDropTestContentAnalysisDelegate>(
         std::move(status_callback), std::move(dm_token), web_contents,
         std::move(data), std::move(callback));
-    enterprise_connectors::FilesRequestHandler::SetFactoryForTesting(
-        base::BindRepeating(
-            &enterprise_connectors::test::FakeFilesRequestHandler::Create,
-            base::BindRepeating(&DragDropTestContentAnalysisDelegate::
-                                    FakeUploadFileForDeepScanning,
-                                base::Unretained(ret.get()))));
+    if (use_mock_handler) {
+      enterprise_connectors::FilesRequestHandler::SetFactoryForTesting(
+          base::BindRepeating(
+              [](enterprise_connectors::test::FakeFilesRequestHandler::
+                     FakeFileUploadCallback fake_file_upload_callback,
+                 enterprise_connectors::ContentAnalysisInfo*
+                     content_analysis_info,
+                 enterprise_connectors::BinaryUploadService* upload_service,
+                 Profile* profile, GURL url, const std::string& source,
+                 const std::string& destination,
+                 const std::string& content_transfer_method,
+                 enterprise_connectors::DeepScanAccessPoint access_point,
+                 const std::vector<base::FilePath>& paths,
+                 enterprise_connectors::FilesRequestHandler::CompletionCallback
+                     callback)
+                  -> std::unique_ptr<
+                      enterprise_connectors::FilesRequestHandlerBase> {
+                auto delegate = std::make_unique<MockDelegate>(
+                    profile, source, destination, paths, std::move(callback));
+                return enterprise_connectors::test::FakeFilesRequestHandler::
+                    CreateWithDelegate(
+                        fake_file_upload_callback, content_analysis_info,
+                        upload_service, url, content_transfer_method,
+                        access_point, paths, std::move(delegate));
+              },
+              base::BindRepeating(&DragDropTestContentAnalysisDelegate::
+                                      FakeUploadFileForDeepScanning,
+                                  base::Unretained(ret.get()))));
+    } else {
+      enterprise_connectors::FilesRequestHandler::SetFactoryForTesting(
+          base::BindRepeating(
+              &enterprise_connectors::test::FakeFilesRequestHandler::Create,
+              base::BindRepeating(&DragDropTestContentAnalysisDelegate::
+                                      FakeUploadFileForDeepScanning,
+                                  base::Unretained(ret.get()))));
+    }
     enterprise_connectors::ClipboardRequestHandler::SetFactoryForTesting(
         base::BindRepeating(TestDragDropRequestHandler::Create,
                             base::Unretained(ret.get())));
@@ -143,14 +271,64 @@ class DragDropTestContentAnalysisDelegate
   }
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
+class FakeFuseboxDelegate : public fusebox::Server::Delegate {
+ public:
+  FakeFuseboxDelegate() = default;
+
+  void OnRegisterFSURLPrefix(const std::string& subdir) override {}
+  void OnUnregisterFSURLPrefix(const std::string& subdir) override {}
+};
+#endif
+
 class ChromeWebContentsViewDelegateHandleOnPerformingDrop
-    : public testing::Test {
+    : public testing::TestWithParam</*EnableDlpFileSystemApi_enabled=*/bool> {
  public:
   ChromeWebContentsViewDelegateHandleOnPerformingDrop() {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
   }
 
+ protected:
+  bool IsDlpFileSystemApiEnabled() const { return GetParam(); }
+
+  void SetUp() override {
+    if (IsDlpFileSystemApiEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          enterprise_data_protection::kEnableDlpFileSystemApi);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          enterprise_data_protection::kEnableDlpFileSystemApi);
+    }
+#if BUILDFLAG(IS_CHROMEOS)
+    storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+        "fake_mount", storage::kFileSystemTypeProvided,
+        storage::FileSystemMountOption(),
+        base::FilePath(FILE_PATH_LITERAL("/media/archive/fake_mount")));
+    storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+        "not_backed_mount", storage::kFileSystemTypeProvided,
+        storage::FileSystemMountOption(),
+        base::FilePath(FILE_PATH_LITERAL("/media/archive/not_backed_mount")));
+
+    fusebox_server_ =
+        std::make_unique<fusebox::Server>(&fake_fusebox_delegate_);
+    fusebox_server_->RegisterFSURLPrefix(
+        "fake_mount", "filesystem:chrome://file-manager/external/fake_mount",
+        /*read_only=*/false);
+#endif
+  }
+
+  void TearDown() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+        "fake_mount");
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+        "not_backed_mount");
+    fusebox_server_.reset();
+#endif
+  }
+
+ public:
   content::WebContents* contents() {
     if (!web_contents_) {
       content::WebContents::CreateParams params(profile_);
@@ -159,7 +337,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
     return web_contents_.get();
   }
 
-  void EnableDeepScanning(bool enable) {
+  void EnableDeepScanning(bool enable, bool use_mock_handler = false) {
     if (enable) {
       static constexpr char kEnabled[] = R"(
           {
@@ -226,7 +404,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
         });
     enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
         base::BindRepeating(&DragDropTestContentAnalysisDelegate::Create,
-                            callback, "dm_token"));
+                            callback, "dm_token", use_mock_handler));
     enterprise_connectors::ContentAnalysisDelegate::DisableUIForTesting();
     enterprise_connectors::ContentAnalysisDelegate::
         SetOnAckAllRequestsCallbackForTesting(base::BindOnce(
@@ -239,10 +417,12 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
   void RunTest(const content::DropData& data,
                bool enable,
                bool successful_text_scan,
-               std::set<base::FilePath> successful_file_paths) {
+               std::set<base::FilePath> successful_file_paths,
+               std::set<GURL> successful_vfs_urls = {},
+               bool use_mock_handler = false) {
     current_requests_count_ = 0;
     expected_final_actions_.clear();
-    EnableDeepScanning(enable);
+    EnableDeepScanning(enable, use_mock_handler);
     SetTextScanSucceeds(successful_text_scan);
 
     base::RunLoop run_loop;
@@ -252,13 +432,21 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
         contents(), data,
         base::BindLambdaForTesting(
             [&data, &successful_text_scan, &successful_file_paths,
+             &successful_vfs_urls,
              quit_closure](std::optional<content::DropData> result_data) {
-              if (successful_text_scan || !successful_file_paths.empty()) {
+              if (successful_text_scan || !successful_file_paths.empty() ||
+                  !successful_vfs_urls.empty()) {
                 EXPECT_TRUE(result_data.has_value());
                 EXPECT_EQ(result_data->filenames.size(),
                           successful_file_paths.size());
                 for (const auto& filename : result_data->filenames) {
                   EXPECT_TRUE(successful_file_paths.count(filename.path));
+                }
+                EXPECT_EQ(result_data->file_system_files.size(),
+                          successful_vfs_urls.size());
+                for (const auto& file_system_file :
+                     result_data->file_system_files) {
+                  EXPECT_TRUE(successful_vfs_urls.count(file_system_file.url));
                 }
                 if (successful_text_scan) {
                   if (data.url_infos.empty()) {
@@ -322,11 +510,15 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
   std::map<std::string,
            enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction>
       expected_final_actions_;
+#if BUILDFLAG(IS_CHROMEOS)
+  FakeFuseboxDelegate fake_fusebox_delegate_;
+  std::unique_ptr<fusebox::Server> fusebox_server_;
+#endif
 };
 
 // When no drop data is specified, HandleOnPerformingDrop() should indicate
 // the caller can proceed, whether scanning is enabled or not.
-TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, NoData) {
+TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, NoData) {
   content::DropData data;
 
   SetExpectedRequestsCount(0);
@@ -340,7 +532,7 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, NoData) {
 // When drop data is specified, but document_is_handling_drag is false,
 // HandleOnPerformingDrop() should indicate the caller can proceed
 // and no scanning is done.
-TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop,
+TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop,
        WithData_NoneDocOp) {
   content::DropData data;
   data.text = base::UTF8ToUTF16(large_text());
@@ -354,7 +546,7 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop,
 }
 
 // Make sure DropData::url_title is handled correctly.
-TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, UrlTitle) {
+TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, UrlTitle) {
   content::DropData data;
   data.document_is_handling_drag = true;
   data.url_infos = {ui::ClipboardUrlInfo(GURL("https://example.com"),
@@ -377,7 +569,7 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, UrlTitle) {
 }
 
 // Make sure DropData::text is handled correctly.
-TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Text) {
+TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Text) {
   content::DropData data;
   data.document_is_handling_drag = true;
   data.text = base::UTF8ToUTF16(large_text());
@@ -399,7 +591,7 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Text) {
 }
 
 // Make sure DropData::html is handled correctly.
-TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Html) {
+TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Html) {
   content::DropData data;
   data.document_is_handling_drag = true;
   data.html = base::UTF8ToUTF16(large_text());
@@ -421,7 +613,7 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Html) {
 }
 
 // Make sure DropData::filenames is handled correctly.
-TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Files) {
+TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Files) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
@@ -464,7 +656,7 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Files) {
 }
 
 // Make sure DropData::filenames directories are handled correctly.
-TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Directories) {
+TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Directories) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
@@ -540,3 +732,123 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Directories) {
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
           /*successful_file_paths*/ {});
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_P(ChromeWebContentsViewDelegateHandleOnPerformingDrop, VirtualFiles) {
+  content::WebContents* web_contents = contents();
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+
+  // Setup fusebox files
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath fake_mount_dir =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("fake_mount"));
+  ASSERT_TRUE(base::CreateDirectory(fake_mount_dir));
+
+  base::FilePath resolved_path_1 =
+      fake_mount_dir.Append(FILE_PATH_LITERAL("doc1.doc"));
+  base::FilePath resolved_path_2 =
+      fake_mount_dir.Append(FILE_PATH_LITERAL("doc2.doc"));
+
+  ASSERT_TRUE(base::WriteFile(resolved_path_1, "test content 1"));
+  ASSERT_TRUE(base::WriteFile(resolved_path_2, "test content 2"));
+
+  fusebox::Server::OverrideFuseBoxMediaPathForTesting(
+      temp_dir.GetPath().AsUTF8Unsafe() + "/");
+  base::ScopedClosureRunner reset_media_path(base::BindOnce(
+      []() { fusebox::Server::OverrideFuseBoxMediaPathForTesting(""); }));
+
+  storage::FileSystemContext* context =
+      profile
+          ->GetStoragePartition(
+              web_contents->GetPrimaryMainFrame()->GetSiteInstance())
+          ->GetFileSystemContext();
+
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+
+  // Create mock virtual file URLs
+  base::FilePath virtual_path_1(FILE_PATH_LITERAL("fake_mount/doc1.doc"));
+  base::FilePath virtual_path_2(FILE_PATH_LITERAL("fake_mount/doc2.doc"));
+  base::FilePath virtual_path_3(FILE_PATH_LITERAL("not_backed_mount/doc3.doc"));
+
+  file_manager::util::FileSystemURLAndHandle url_handle_1 =
+      file_manager::util::CreateIsolatedURLFromVirtualPath(*context, origin,
+                                                           virtual_path_1);
+  file_manager::util::FileSystemURLAndHandle url_handle_2 =
+      file_manager::util::CreateIsolatedURLFromVirtualPath(*context, origin,
+                                                           virtual_path_2);
+  file_manager::util::FileSystemURLAndHandle url_handle_3 =
+      file_manager::util::CreateIsolatedURLFromVirtualPath(*context, origin,
+                                                           virtual_path_3);
+
+  GURL url_1 = url_handle_1.url.ToGURL();
+  GURL url_2 = url_handle_2.url.ToGURL();
+  GURL url_3 = url_handle_3.url.ToGURL();
+
+  content::DropData data;
+  data.file_system_files.push_back({url_1, 10, std::string()});
+  data.file_system_files.push_back({url_2, 20, std::string()});
+  data.file_system_files.push_back({url_3, 30, std::string()});
+  data.document_is_handling_drag = true;
+
+  if (IsDlpFileSystemApiEnabled()) {
+    // Scenario 1: DLP Disabled -> All files allowed (including unscanned VFS 3)
+    SetExpectedRequestsCount(0);
+    RunTest(data, /*enable=*/false, /*successful_text_scan=*/false,
+            /*successful_file_paths=*/{},
+            /*successful_vfs_urls=*/{url_1, url_2, url_3},
+            /*use_mock_handler=*/true);
+
+    // Scenario 2: DLP Enabled, all allowed -> All files allowed (since no
+    // violations)
+    SetExpectedRequestsCount(2);
+    RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
+            /*successful_file_paths=*/{},
+            /*successful_vfs_urls=*/{url_1, url_2, url_3},
+            /*use_mock_handler=*/true);
+
+    // Scenario 3: DLP Enabled, selective block -> url_1 (resolved_path_1)
+    // blocks, others allowed. Note: url_3 is not backed by Fusebox, so it is
+    // allowed because it was never scanned.
+    SetExpectedRequestsCount(2);
+    SetFailingFileScans({resolved_path_1});
+    SetFailingFileAcks({resolved_path_1});
+    RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
+            /*successful_file_paths=*/{},
+            /*successful_vfs_urls=*/{url_2, url_3},
+            /*use_mock_handler=*/true);
+
+    // Scenario 4: DLP Enabled, all scannable files blocked -> Allow
+    // non-scannable Note: Since all files that *could* be scanned (url_1,
+    // url_2) are blocked, but url_3 is not scannable, the drop is not aborted
+    // and url_3 is allowed.
+    SetExpectedRequestsCount(2);
+    SetFailingFileScans({resolved_path_1, resolved_path_2});
+    SetFailingFileAcks({resolved_path_1, resolved_path_2});
+    RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
+            /*successful_file_paths=*/{},
+            /*successful_vfs_urls=*/{url_3},
+            /*use_mock_handler=*/true);
+  } else {
+    // When the feature is disabled, virtual files are allowed by default
+    // without scanning, regardless of DLP policy settings.
+    SetExpectedRequestsCount(0);
+    RunTest(data, /*enable=*/false, /*successful_text_scan=*/false,
+            /*successful_file_paths=*/{},
+            /*successful_vfs_urls=*/{url_1, url_2, url_3},
+            /*use_mock_handler=*/true);
+
+    RunTest(data, /*enable=*/true, /*successful_text_scan=*/false,
+            /*successful_file_paths=*/{},
+            /*successful_vfs_urls=*/{url_1, url_2, url_3},
+            /*use_mock_handler=*/true);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ChromeWebContentsViewDelegateHandleOnPerformingDrop,
+                         /*EnableDlpFileSystemApi_enabled=*/testing::Bool());

@@ -25,8 +25,9 @@ FilesScanData::PathsToScanResult GetPathsToScan(
     base::File::Info info;
 
     // Ignore the path if it's a symbolic link.
-    if (!base::GetFileInfo(file, &info) || info.is_symbolic_link)
+    if (!base::GetFileInfo(file, &info) || info.is_symbolic_link) {
       continue;
+    }
 
     // If the file is a directory, recursively add the files it holds to `data`.
     if (info.is_directory) {

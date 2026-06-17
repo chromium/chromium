@@ -7,10 +7,13 @@
 #include <algorithm>
 #include <optional>
 
+#include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/glic/host/glic_drag_and_drop_util.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,12 +36,62 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "content/public/browser/storage_partition.h"
+#include "storage/browser/file_system/file_system_context.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+// TODO(523329793): factor out common method for fusebox file substitution that
+// is shared between drag-and-drop and file_select_helper.cc
+base::FilePath MaybeSubstituteFuseboxFilePath(
+    Profile* profile,
+    content::WebContents* web_contents,
+    const GURL& file_system_url) {
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  content::SiteInstance* site_instance = rfh ? rfh->GetSiteInstance() : nullptr;
+  storage::FileSystemContext* file_system_context =
+      site_instance
+          ? profile->GetStoragePartition(site_instance)->GetFileSystemContext()
+          : nullptr;
+  if (!file_system_context) {
+    return base::FilePath();
+  }
+
+  const storage::FileSystemURL cracked_url =
+      file_system_context->CrackURLInFirstPartyContext(file_system_url);
+  if (!cracked_url.is_valid()) {
+    return base::FilePath();
+  }
+
+  GURL external_gurl;
+  if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
+          profile, cracked_url.path(), file_manager::util::GetFileManagerURL(),
+          &external_gurl)) {
+    return base::FilePath();
+  }
+
+  const storage::FileSystemURL external_cracked_url =
+      file_system_context->CrackURLInFirstPartyContext(external_gurl);
+  if (!external_cracked_url.is_valid()) {
+    return base::FilePath();
+  }
+
+  return fusebox::Server::SubstituteFuseboxFilePath(external_cracked_url);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void CompletionCallback(
     content::DropData drop_data,
     std::unique_ptr<enterprise_connectors::FilesScanData> files_scan_data,
     content::WebContentsViewDelegate::DropCompletionCallback callback,
+    base::flat_map<int, int> virtual_file_to_scan_file_index [[maybe_unused]],
     const enterprise_connectors::ContentAnalysisDelegate::Data& data,
     enterprise_connectors::ContentAnalysisDelegate::Result& result) {
   // If there are no negative results, proceed with just `drop_data`.
@@ -60,6 +113,15 @@ void CompletionCallback(
     return;
   }
 
+  // TODO(523333192): with the addition of virtual file support, the file
+  // indexes could be confusing. Consider refactoring for readability. Right
+  // now, result.paths_results is split as follows:
+  // * elements [0, drop_data.filenames.size()) are local files
+  // * elements
+  //      [drop_data.filenames.size(),
+  //      drop_data.filenames.size() + fusebox_backed_virtual_files.size())
+  //      are virtual files
+
   // For file drag-drops, block file paths depending on the verdict obtained for
   // child paths.
   DCHECK(files_scan_data);
@@ -69,7 +131,8 @@ void CompletionCallback(
   // If every file path should be blocked, the drop is aborted, otherwise it
   // continues by blocking sub-elements of the list. When everything is blocked,
   // it implies that no `result.paths_results` is allowed.
-  if (file_indexes_to_block.size() == drop_data.filenames.size()) {
+  if (file_indexes_to_block.size() ==
+      drop_data.filenames.size() + drop_data.file_system_files.size()) {
     for (size_t i = 0; i < data.paths.size(); ++i) {
       result.paths_results[i] = false;
     }
@@ -98,8 +161,26 @@ void CompletionCallback(
     }
     final_filenames.push_back(std::move(drop_data.filenames[i]));
   }
-
   drop_data.filenames = std::move(final_filenames);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          enterprise_data_protection::kEnableDlpFileSystemApi)) {
+    std::vector<content::DropData::FileSystemFileInfo> final_file_system_files;
+    for (size_t i = 0; i < drop_data.file_system_files.size(); ++i) {
+      if (virtual_file_to_scan_file_index.contains(i)) {
+        int scan_file_index = virtual_file_to_scan_file_index[i];
+        if (file_indexes_to_block.contains(scan_file_index)) {
+          continue;
+        }
+      }
+      final_file_system_files.push_back(
+          std::move(drop_data.file_system_files[i]));
+    }
+    drop_data.file_system_files = std::move(final_file_system_files);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   std::move(callback).Run(std::move(drop_data));
 }
 
@@ -113,11 +194,14 @@ class HandleDropScanData : public content::WebContentsObserver {
       content::WebContents* web_contents,
       content::DropData drop_data,
       enterprise_connectors::ContentAnalysisDelegate::Data analysis_data,
-      content::WebContentsViewDelegate::DropCompletionCallback callback)
+      content::WebContentsViewDelegate::DropCompletionCallback callback,
+      base::flat_map<int, int> virtual_file_to_scan_file_index)
       : content::WebContentsObserver(web_contents),
         drop_data_(std::move(drop_data)),
         analysis_data_(std::move(analysis_data)),
-        callback_(std::move(callback)) {}
+        callback_(std::move(callback)),
+        virtual_file_to_scan_file_index_(
+            std::move(virtual_file_to_scan_file_index)) {}
 
   void ScanData(
       std::unique_ptr<enterprise_connectors::FilesScanData> files_scan_data) {
@@ -130,7 +214,8 @@ class HandleDropScanData : public content::WebContentsObserver {
     enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
         web_contents(), std::move(analysis_data_),
         base::BindOnce(&CompletionCallback, std::move(drop_data_),
-                       std::move(files_scan_data), std::move(callback_)),
+                       std::move(files_scan_data), std::move(callback_),
+                       std::move(virtual_file_to_scan_file_index_)),
         enterprise_connectors::DeepScanAccessPoint::DRAG_AND_DROP);
 
     delete this;
@@ -146,6 +231,7 @@ class HandleDropScanData : public content::WebContentsObserver {
   content::DropData drop_data_;
   enterprise_connectors::ContentAnalysisDelegate::Data analysis_data_;
   content::WebContentsViewDelegate::DropCompletionCallback callback_;
+  base::flat_map<int, int> virtual_file_to_scan_file_index_;
 
   base::WeakPtrFactory<HandleDropScanData> weakptr_factory_{this};
 };
@@ -191,7 +277,7 @@ void HandleOnPerformingDrop(
   Profile* profile =
       Profile::FromBrowserContext(scan_target->GetBrowserContext());
   auto connector =
-      drop_data.filenames.empty()
+      drop_data.filenames.empty() && drop_data.file_system_files.empty()
           ? enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY
           : enterprise_connectors::AnalysisConnector::FILE_ATTACHED;
   if (!enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
@@ -230,18 +316,45 @@ void HandleOnPerformingDrop(
     scan_callback = std::move(callback);
   }
 
+  std::vector<base::FilePath> paths_to_scan;
+
+  // Initialize to local paths.
+  for (const auto& filename : drop_data.filenames) {
+    paths_to_scan.push_back(filename.path);
+  }
+
+  // Append fusebox-backed virtual files. Since, in theory, not all
+  // file_system_files would be scanned, we need to define a mapping between
+  // `drop_data.file_system_file` indices and `paths_to_scan` indices.
+  base::flat_map<int, int> virtual_file_to_scan_file_index;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          enterprise_data_protection::kEnableDlpFileSystemApi)) {
+    for (size_t i = 0; i < drop_data.file_system_files.size(); ++i) {
+      base::FilePath resolved_path = MaybeSubstituteFuseboxFilePath(
+          profile, scan_target, drop_data.file_system_files[i].url);
+      if (!resolved_path.empty()) {
+        virtual_file_to_scan_file_index[i] = paths_to_scan.size();
+        paths_to_scan.push_back(resolved_path);
+      }
+    }
+  }
+#endif
   // `handle_drop_scan_data` is created on the heap to stay alive regardless of
   // how long the threadpool work takes or in case `web_contents` is destroyed.
   // It deletes itself when `HandleDropScanData::ScanData` is called or when
   // `web_contents` gets destroyed.
+
+  // TODO(alshawwa): consider a refactor here. Non-const `drop_data` is copied
+  // to the `HandleDropScanData` ctor and then inspected later.
   auto* handle_drop_scan_data = new HandleDropScanData(
-      scan_target, drop_data, std::move(data), std::move(scan_callback));
-  if (drop_data.filenames.empty()) {
+      scan_target, drop_data, std::move(data), std::move(scan_callback),
+      std::move(virtual_file_to_scan_file_index));
+  if (paths_to_scan.empty()) {
     handle_drop_scan_data->ScanData(/*files_scan_data=*/nullptr);
   } else {
     auto files_scan_data =
-        std::make_unique<enterprise_connectors::FilesScanData>(
-            drop_data.filenames);
+        std::make_unique<enterprise_connectors::FilesScanData>(paths_to_scan);
     auto* files_scan_data_raw = files_scan_data.get();
     files_scan_data_raw->ExpandPaths(base::BindOnce(
         &HandleDropScanData::ScanData, handle_drop_scan_data->GetWeakPtr(),

@@ -88,6 +88,12 @@ source_set("impl") {
   if (enable_extensions) {
     deps += [ "//components/guest_view/browser" ]
   }
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/file_manager",
+      "//chrome/browser/ash/fusebox",
+    ]
+  }
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
@@ -128,6 +134,12 @@ if (!is_android) {
         "//chrome/browser/enterprise/connectors/test:test_support",
         "//components/enterprise/connectors/core:cloud_content_scanning",
       ]
+      if (is_chromeos) {
+        deps += [
+          "//chrome/browser/ash/file_manager",
+          "//chrome/browser/ash/fusebox",
+        ]
+      }
     }
   }
   source_set("browser_tests") {

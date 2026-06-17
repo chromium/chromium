@@ -39,6 +39,15 @@ class FakeFilesRequestHandler : public FilesRequestHandlerBase {
                           const std::vector<base::FilePath>& paths,
                           FilesRequestHandler::CompletionCallback callback);
 
+  FakeFilesRequestHandler(FakeFileUploadCallback fake_file_upload_callback,
+                          ContentAnalysisInfo* content_analysis_info,
+                          BinaryUploadService* upload_service,
+                          GURL url,
+                          const std::string& content_transfer_method,
+                          DeepScanAccessPoint access_point,
+                          const std::vector<base::FilePath>& paths,
+                          std::unique_ptr<Delegate> delegate);
+
   ~FakeFilesRequestHandler() override;
 
   static std::unique_ptr<FilesRequestHandlerBase> Create(
@@ -53,6 +62,16 @@ class FakeFilesRequestHandler : public FilesRequestHandlerBase {
       DeepScanAccessPoint access_point,
       const std::vector<base::FilePath>& paths,
       FilesRequestHandler::CompletionCallback callback);
+
+  static std::unique_ptr<FilesRequestHandlerBase> CreateWithDelegate(
+      FakeFileUploadCallback fake_file_upload_callback,
+      ContentAnalysisInfo* content_analysis_info,
+      BinaryUploadService* upload_service,
+      GURL url,
+      const std::string& content_transfer_method,
+      DeepScanAccessPoint access_point,
+      const std::vector<base::FilePath>& paths,
+      std::unique_ptr<Delegate> delegate);
 
   base::WeakPtr<FakeFilesRequestHandler> GetWeakPtr();
 

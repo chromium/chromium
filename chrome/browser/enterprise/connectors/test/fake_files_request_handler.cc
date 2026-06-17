@@ -34,6 +34,24 @@ FakeFilesRequestHandler::FakeFilesRequestHandler(
       paths_(paths),
       fake_file_upload_callback_(fake_file_upload_callback) {}
 
+FakeFilesRequestHandler::FakeFilesRequestHandler(
+    FakeFileUploadCallback fake_file_upload_callback,
+    ContentAnalysisInfo* content_analysis_info,
+    BinaryUploadService* upload_service,
+    GURL url,
+    const std::string& content_transfer_method,
+    DeepScanAccessPoint access_point,
+    const std::vector<base::FilePath>& paths,
+    std::unique_ptr<Delegate> delegate)
+    : FilesRequestHandlerBase(content_analysis_info,
+                              upload_service,
+                              url,
+                              content_transfer_method,
+                              access_point,
+                              std::move(delegate)),
+      paths_(paths),
+      fake_file_upload_callback_(fake_file_upload_callback) {}
+
 FakeFilesRequestHandler::~FakeFilesRequestHandler() = default;
 
 // static
@@ -53,6 +71,22 @@ std::unique_ptr<FilesRequestHandlerBase> FakeFilesRequestHandler::Create(
       fake_file_upload_callback, content_analysis_info, upload_service, profile,
       url, source, destination, content_transfer_method, access_point, paths,
       std::move(callback));
+}
+
+// static
+std::unique_ptr<FilesRequestHandlerBase>
+FakeFilesRequestHandler::CreateWithDelegate(
+    FakeFileUploadCallback fake_file_upload_callback,
+    ContentAnalysisInfo* content_analysis_info,
+    BinaryUploadService* upload_service,
+    GURL url,
+    const std::string& content_transfer_method,
+    DeepScanAccessPoint access_point,
+    const std::vector<base::FilePath>& paths,
+    std::unique_ptr<Delegate> delegate) {
+  return std::make_unique<FakeFilesRequestHandler>(
+      fake_file_upload_callback, content_analysis_info, upload_service, url,
+      content_transfer_method, access_point, paths, std::move(delegate));
 }
 
 void FakeFilesRequestHandler::UploadFileForDeepScanning(
