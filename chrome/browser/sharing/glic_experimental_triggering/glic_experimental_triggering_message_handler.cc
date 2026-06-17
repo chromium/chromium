@@ -154,6 +154,7 @@ CreateResponseMessage(
   return response;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<components_sharing_message::ResponseMessage>
 CreateResponseMessage(
     const std::string& context_id,
@@ -186,6 +187,7 @@ CreateResponseMessage(
   triggering->mutable_response()->set_device_opt_in_result(opt_in_result);
   return response;
 }
+#endif
 
 }  // namespace
 
@@ -248,15 +250,8 @@ class ExperimentalTriggeringUpdatesHandler
 
       case components_sharing_message::GlicExperimentalTriggering::
           ExperimentalTriggeringRequest::kDeviceOptInRequest: {
-#if !BUILDFLAG(IS_ANDROID)
         return ProcessDeviceOptInRequest(task_metadata,
                                          std::move(cleanup_runner));
-#else
-        return CreateResponseMessage(
-            context_id_, TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
-            "Ignoring unexpected Android Opt-in request.", task_metadata,
-            sequence_generator_.GetNext());
-#endif
       }
 
       case components_sharing_message::GlicExperimentalTriggering::
@@ -503,19 +498,14 @@ class ExperimentalTriggeringUpdatesHandler
       const components_sharing_message::GlicExperimentalTriggering::
           TaskMetadata* task_metadata,
       base::ScopedClosureRunner cleanup_runner) {
+#if BUILDFLAG(IS_ANDROID)
+    return CreateResponseMessage(context_id_, TaskUpdate::FAILED,
+                                 TaskUpdate::ERROR_MESSAGE,
+                                 "Ignoring unexpected Android Opt-in request.",
+                                 task_metadata, sequence_generator_.GetNext());
+#else
     if (!message_handler_) {
       return nullptr;
-    }
-
-    // TODO(b/515766485): Introduce (default on) feature flag to create a new
-    // tab if none active.
-    tabs::TabInterface* active_tab = message_handler_->GetActiveTab();
-    if (!active_tab) {
-      DLOG(ERROR) << "No active tab found for Profile for "
-                     "GlicExperimentalTriggering";
-      return CreateResponseMessage(
-          context_id_, ExperimentalTriggeringResponse::FAILED, task_metadata,
-          sequence_generator_.GetNext());
     }
 
     glic::GlicKeyedService* glic_service =
@@ -527,14 +517,32 @@ class ExperimentalTriggeringUpdatesHandler
           sequence_generator_.GetNext());
     }
 
-#if !BUILDFLAG(IS_ANDROID)
+    content::WebContents* web_contents = nullptr;
+    if (base::FeatureList::IsEnabled(
+            features::kGlicExperimentalTriggeringOptInTabFocus)) {
+      web_contents =
+          glic_service->opt_in_controller().GetOrCreateSuitableWebContents();
+    }
+    if (!web_contents) {
+      if (tabs::TabInterface* active_tab = message_handler_->GetActiveTab()) {
+        web_contents = active_tab->GetContents();
+      }
+    }
+
+    if (!web_contents) {
+      DLOG(ERROR) << "No target web contents found or created for "
+                     "GlicExperimentalTriggering";
+      return CreateResponseMessage(
+          context_id_, ExperimentalTriggeringResponse::FAILED, task_metadata,
+          sequence_generator_.GetNext());
+    }
+
     auto callback = base::BindOnce(
         &ExperimentalTriggeringUpdatesHandler::SendDeviceOptInResult,
         weak_ptr_factory_.GetWeakPtr());
 
-    glic_service->opt_in_controller().ShowDialog(active_tab->GetContents(),
+    glic_service->opt_in_controller().ShowDialog(web_contents,
                                                  std::move(callback));
-#endif
 
     // The dialog is shown, and SendDeviceOptInResult will be called when the
     // dialog is accepted or declined. SendDeviceOptInResult will clean up the
@@ -543,6 +551,7 @@ class ExperimentalTriggeringUpdatesHandler
     std::ignore = cleanup_runner.Release();
 
     return nullptr;
+#endif
   }
 
   components_sharing_message::SharingMessage CreateBaseResponse() {

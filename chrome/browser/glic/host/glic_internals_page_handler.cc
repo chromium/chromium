@@ -331,7 +331,13 @@ void GlicInternalsPageHandler::ShowExperimentalOptIn() {
     return;
   }
 
-  service->opt_in_controller().ShowDialog(webui_contents_, base::DoNothing());
+  content::WebContents* target_contents =
+      base::FeatureList::IsEnabled(
+          features::kGlicExperimentalTriggeringOptInTabFocus)
+          ? service->opt_in_controller().GetOrCreateSuitableWebContents()
+          : webui_contents_.get();
+
+  service->opt_in_controller().ShowDialog(target_contents, base::DoNothing());
 #endif
 }
 

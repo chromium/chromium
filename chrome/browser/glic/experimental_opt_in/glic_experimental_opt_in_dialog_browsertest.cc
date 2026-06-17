@@ -28,12 +28,15 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
@@ -47,6 +50,7 @@
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "ui/base/base_window.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
@@ -81,10 +85,25 @@ class GlicExperimentalOptInTest
     GURL test_url =
         opt_in_test_server_.GetURL("a.test", "/test_data/page.html");
 
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+
     base::FieldTrialParams params;
-    params["glic-experimental-triggering-opt-in-url"] = test_url.spec();
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicExperimentalTriggering, params);
+    params[features::kGlicExperimentalTriggeringOptInURL.name] =
+        test_url.spec();
+    enabled_features.push_back({features::kGlicExperimentalTriggering, params});
+
+    base::FieldTrialParams tab_focus_params;
+    tab_focus_params[features::kGlicExperimentalTriggeringTabFocusHosts.name] =
+        "a.test";
+    tab_focus_params[features::kGlicExperimentalTriggeringTabFocusPathSubstring
+                         .name] = "/test_data";
+    tab_focus_params[features::kGlicExperimentalTriggeringTabFocusFallbackURL
+                         .name] =
+        opt_in_test_server_.GetURL("a.test", "/test_data/fallback.html").spec();
+    enabled_features.push_back(
+        {features::kGlicExperimentalTriggeringOptInTabFocus, tab_focus_params});
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
 
     BaseClass::SetUp();
   }
@@ -126,6 +145,16 @@ class GlicExperimentalOptInTest
         web_contents, std::move(callback));
     if (!widget) {
       return nullptr;
+    }
+    if (auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+      if (auto* window = tab->GetBrowserWindowInterface()) {
+        auto* last_active =
+            GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+        if (last_active != window) {
+          ui_test_utils::BrowserDidBecomeActiveWaiter waiter(window);
+          waiter.Wait();
+        }
+      }
     }
     views::test::WidgetVisibleWaiter(widget).Wait();
     EXPECT_TRUE(widget->IsVisible());
@@ -863,6 +892,116 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
   EXPECT_NE(guest_contents->GetLastCommittedURL(), disallowed_url);
 
   service()->opt_in_controller().CloseDialog(false);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
+                       GetOrCreateSuitableWebContents_NoTriggeringTab) {
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  GURL fallback_url(
+      features::kGlicExperimentalTriggeringTabFocusFallbackURL.Get());
+
+  content::WebContents* web_contents =
+      service()->opt_in_controller().GetOrCreateSuitableWebContents();
+  ASSERT_TRUE(web_contents);
+
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  // The new tab should be opened in the background.
+  EXPECT_NE(browser()->tab_strip_model()->GetActiveWebContents(), web_contents);
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
+  EXPECT_EQ(web_contents->GetURL(), fallback_url);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
+                       GetOrCreateSuitableWebContents_ExistingTriggeringTab) {
+  GURL fallback_url(
+      features::kGlicExperimentalTriggeringTabFocusFallbackURL.Get());
+
+  chrome::AddSelectedTabWithURL(browser(), fallback_url,
+                                ui::PAGE_TRANSITION_LINK);
+  content::WebContents* triggering_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver observer(triggering_contents);
+  observer.Wait();
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  // Move target tab to the background.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // Confirm we get the target background tab's web contents...
+  content::WebContents* web_contents =
+      service()->opt_in_controller().GetOrCreateSuitableWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_EQ(web_contents, triggering_contents);
+
+  // ... but that it is not yet activated.
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  // Showing the dialog should activate the tab.
+  views::Widget* widget = ShowDialogAndWait(triggering_contents);
+  ASSERT_TRUE(widget);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
+            triggering_contents);
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicExperimentalOptInTest,
+    GetOrCreateSuitableWebContents_TargetInBackgroundWindow) {
+  // 1. We start with browser() (Window A, active).
+  // It has 1 tab (not matching).
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  // 2. Create Window B (background window).
+  BrowserWindowCreateParams params(*browser()->profile(),
+                                   /*from_user_gesture=*/true);
+  base::test::TestFuture<BrowserWindowInterface*> window_future;
+  CreateBrowserWindow(std::move(params), window_future.GetCallback());
+  BrowserWindowInterface* window_b = window_future.Get();
+  ASSERT_TRUE(window_b);
+
+  // Ensure Window A is active.
+  {
+    ui_test_utils::BrowserDidBecomeActiveWaiter waiter(browser());
+    browser()->GetWindow()->Activate();
+    waiter.Wait();
+  }
+
+  // 3. Add suitable tab to Window B.
+  GURL fallback_url(
+      features::kGlicExperimentalTriggeringTabFocusFallbackURL.Get());
+  content::WebContents* triggering_contents = chrome::AddAndReturnTabAt(
+      window_b, fallback_url, -1, /*foreground=*/true);
+  ASSERT_TRUE(triggering_contents);
+  content::TestNavigationObserver observer(triggering_contents);
+  observer.Wait();
+  // Ensure Window A is still active overall.
+  {
+    ui_test_utils::BrowserDidBecomeActiveWaiter waiter(browser());
+    browser()->GetWindow()->Activate();
+    waiter.Wait();
+  }
+
+  // 4. Call GetOrCreateSuitableWebContents.
+  content::WebContents* web_contents =
+      service()->opt_in_controller().GetOrCreateSuitableWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // It should find the tab in Window B.
+  EXPECT_EQ(web_contents, triggering_contents);
+
+  // Window A should still be active overall.
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser(),
+            browser());
+
+  // 5. Show dialog on the contents in Window B.
+  views::Widget* widget = ShowDialogAndWait(web_contents);
+  ASSERT_TRUE(widget);
+
+  // Window B should now be active!
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser(),
+            window_b);
 }
 
 }  // namespace glic

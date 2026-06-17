@@ -77,7 +77,13 @@ class GlicExperimentalTriggeringMessageHandlerBrowserTest
       : GlicApiBrowserTest(
             "./glic_experimental_triggering_message_handler_browsertest.js") {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicExperimentalTriggering, {}}}, {});
+        {{features::kGlicExperimentalTriggering, {}},
+         {features::kGlicExperimentalTriggeringOptInTabFocus,
+          {{"glic-experimental-triggering-tab-focus-hosts",
+            "127.0.0.1,localhost"},
+           {"glic-experimental-triggering-tab-focus-path-substring",
+            "/test_data"}}}},
+        {});
   }
   ~GlicExperimentalTriggeringMessageHandlerBrowserTest() override = default;
 

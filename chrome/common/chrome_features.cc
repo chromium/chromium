@@ -202,6 +202,8 @@ const base::FeatureParam<double> kGlicActorApcComparisonSamplingRate{
 BASE_FEATURE(kGlicIgnoreDogfoodClient, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicExperimentalTriggering, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicExperimentalTriggeringOptInTabFocus,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicExperimentalTriggeringSuppressDoneNotification,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicExperimentalTriggeringOptInBypass,
@@ -212,6 +214,23 @@ BASE_FEATURE(kGlicExperimentalTriggeringOpenWindowIfNone,
 const base::FeatureParam<std::string> kGlicExperimentalTriggeringOptInURL{
     &kGlicExperimentalTriggering, "glic-experimental-triggering-opt-in-url",
     "https://gemini.google.com/glic/intro?"};
+
+const base::FeatureParam<std::string> kGlicExperimentalTriggeringTabFocusHosts{
+    &kGlicExperimentalTriggeringOptInTabFocus,
+    "glic-experimental-triggering-tab-focus-hosts",
+    "gemini.google.com,gemini-autopush.corp.google.com"};
+
+const base::FeatureParam<std::string>
+    kGlicExperimentalTriggeringTabFocusPathSubstring{
+        &kGlicExperimentalTriggeringOptInTabFocus,
+        "glic-experimental-triggering-tab-focus-path-substring",
+        "/spark,/corp/spark"};
+
+const base::FeatureParam<std::string>
+    kGlicExperimentalTriggeringTabFocusFallbackURL{
+        &kGlicExperimentalTriggeringOptInTabFocus,
+        "glic-experimental-triggering-tab-focus-fallback-url",
+        "https://gemini.google.com/spark"};
 
 const base::FeatureParam<base::TimeDelta> kGlicActorPageToolTimeout{
     &kGlicActor, "glic-actor-page-tool-timeout", base::Seconds(30)};

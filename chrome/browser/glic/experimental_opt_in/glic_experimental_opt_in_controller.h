@@ -60,6 +60,11 @@ class GlicExperimentalOptInController {
   void CloseDialog(bool accepted);
   void OpenLinkInNewTab(const GURL& url);
 
+  // Gets, or creates, a web contents suitable for showing the experimental
+  // opt-in dialog over. Callers can then use the returned web contents with
+  // ShowDialog().
+  content::WebContents* GetOrCreateSuitableWebContents();
+
   GlicExperimentalOptInDialogView* GetDialogViewForTesting() {
     return dialog_view_.get();
   }
