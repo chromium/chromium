@@ -205,9 +205,6 @@ component("gl") {
     "//ui/base:ozone_buildflags",
     "//ui/gfx/mojom",
   ]
-  if (use_angle_stubs) {
-    deps += [ ":generate_angle_stubs" ]
-  }
   public_deps = [
     ":gl_enums",
     ":gl_headers",
@@ -218,6 +215,12 @@ component("gl") {
   ]
 
   data_deps = []
+
+  if (use_angle_stubs) {
+    # Added via data_deps so that the dummy libraries are generated for build
+    # infrastructure but not linked into dependent targets.
+    data_deps += [ ":generate_angle_stubs" ]
+  }
 
   if (enable_swiftshader) {
     data_deps += [

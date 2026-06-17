@@ -1362,7 +1362,16 @@ if (is_win) {
       if (build_with_internal_optimization_guide) {
         deps += [ "//components/optimization_guide/internal:optimization_guide_internal" ]
       }
-      if (!use_static_angle) {
+
+      # Because chrome_dump_syms explicitly lists the ANGLE .dylibs in sources,
+      # it must depend directly on the targets generating them to satisfy
+      # GN/analyze (since ui/gl:gl only includes them as data_deps).
+      if (use_static_angle) {
+        deps += [
+          "//ui/gl:dummy_libEGL",
+          "//ui/gl:dummy_libGLESv2",
+        ]
+      } else {
         deps += [
           "//third_party/angle:libEGL",
           "//third_party/angle:libGLESv2",
