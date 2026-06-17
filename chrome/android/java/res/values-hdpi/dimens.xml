@@ -7,9 +7,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <!-- The size of the bounding box for favicons. -->
-    <dimen name="compositor_tab_title_favicon_size">16dp</dimen>
-
     <!-- Location bar -->
     <dimen name="location_bar_status_separator_width">0.5dp</dimen>
 </resources>
