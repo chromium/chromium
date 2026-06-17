@@ -26,6 +26,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 #include "url/gurl.h"
 
@@ -177,24 +178,45 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, LocationIcon) {
   ASSERT_TRUE(omnibox);
   EXPECT_EQ("about:blank", base::UTF16ToUTF8(omnibox->GetText()));
 
-  const char kGetIcon[] = R"(
-    document.querySelector('toolbar-app')?.
-      shadowRoot?.querySelector('location-bar')?.
-      shadowRoot?.querySelector('location-icon')?.
-      shadowRoot?.querySelector('icon-from-table')?.
-      shadowRoot?.querySelector('#maskIconContainer')?.
-      getAttribute('style');
-  )";
+  if (features::IsRoundedIconsEnabled()) {
+    const char kGetIcon[] = R"(
+      document.querySelector('toolbar-app')?.
+        shadowRoot?.querySelector('location-bar')?.
+        shadowRoot?.querySelector('location-icon')?.
+        shadowRoot?.querySelector('icon-from-table')?.
+        shadowRoot?.querySelector('cr-icon')?.
+        icon;
+    )";
 
-  EXPECT_EQ("mask-image: url(lhs_icons/http_chrome_refresh.svg);",
-            content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
+    EXPECT_EQ("webui-toolbar:omnibox_info",
+              content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
 
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
-  EXPECT_EQ("chrome://version", base::UTF16ToUTF8(omnibox->GetText()));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+    EXPECT_EQ("chrome://version", base::UTF16ToUTF8(omnibox->GetText()));
 
-  EXPECT_EQ("mask-image: url(lhs_icons/product_chrome_refresh_icon.svg);",
-            content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
+    EXPECT_EQ("webui-toolbar:omnibox_chrome_product",
+              content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
+  } else {
+    const char kGetIcon[] = R"(
+      document.querySelector('toolbar-app')?.
+        shadowRoot?.querySelector('location-bar')?.
+        shadowRoot?.querySelector('location-icon')?.
+        shadowRoot?.querySelector('icon-from-table')?.
+        shadowRoot?.querySelector('#maskIconContainer')?.
+        getAttribute('style');
+    )";
+
+    EXPECT_EQ("mask-image: url(lhs_icons/http_chrome_refresh.svg);",
+              content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
+
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+    EXPECT_EQ("chrome://version", base::UTF16ToUTF8(omnibox->GetText()));
+
+    EXPECT_EQ("mask-image: url(lhs_icons/product_chrome_refresh_icon.svg);",
+              content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
+  }
 }
 
 }  // namespace
