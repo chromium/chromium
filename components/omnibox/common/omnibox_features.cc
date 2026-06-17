@@ -386,6 +386,13 @@ BASE_FEATURE(kComposeboxDriveContextMenuOption, DISABLED);
 // composebox.
 BASE_FEATURE(kComposeboxDriveContextMenuOptionDisclaimer, DISABLED);
 
+// Whether to force the Google Drive disclaimer to be accepted. This flag is
+// only used for testing purposes since dasher accounts are not allowed to
+// consent via pContext.
+BASE_FEATURE(kForceDriveDisclaimerAccepted,
+             "ForceDriveDisclaimerAccepted",
+             DISABLED);
+
 // Whether the composebox should show a verbatim match for context in
 // zero-suggest.
 BASE_FEATURE(kComposeboxVerbatimMatchZeroSuggest, ENABLED);

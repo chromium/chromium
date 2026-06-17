@@ -9,10 +9,12 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/contextual_search/footprints/public/fpop_service.h"
 #include "components/contextual_search/footprints/public/proto/footprints_oneplatform.pb.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -79,6 +81,21 @@ TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusAccepted) {
 
   base::test::TestFuture<DriveDisclaimerController::DisclaimerStatus> future;
   controller_->CheckDisclaimerStatusAsync(future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            DriveDisclaimerController::DisclaimerStatus::kAccepted);
+}
+
+TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusForcedAccepted) {
+  using ::testing::_;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kForceDriveDisclaimerAccepted);
+
+  // FPOP service should NOT be called when the flag is enabled.
+  EXPECT_CALL(*mock_fpop_service_, GetFacs(_, _)).Times(0);
+
+  base::test::TestFuture<DriveDisclaimerController::DisclaimerStatus> future;
+  controller_->CheckDisclaimerStatusAsync(future.GetCallback());
+
   EXPECT_EQ(future.Get(),
             DriveDisclaimerController::DisclaimerStatus::kAccepted);
 }

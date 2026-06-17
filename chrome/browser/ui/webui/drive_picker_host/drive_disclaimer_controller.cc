@@ -7,8 +7,11 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/task/sequenced_task_runner.h"
+#include "components/omnibox/common/omnibox_features.h"
 
 namespace drive_picker {
 
@@ -26,6 +29,15 @@ DriveDisclaimerController::~DriveDisclaimerController() = default;
 
 void DriveDisclaimerController::CheckDisclaimerStatusAsync(
     base::OnceCallback<void(DisclaimerStatus status)> completion_callback) {
+  // This flag is used for testing purposes only to force the disclaimer to be
+  // accepted.
+  if (base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(completion_callback),
+                                  DisclaimerStatus::kAccepted));
+    return;
+  }
+
   footprints::oneplatform::GetFacsRequest request;
   request.add_setting(
       contextual_search::kContextualSearchDriveDisclaimerAccepted);

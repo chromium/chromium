@@ -173,6 +173,9 @@ BASE_DECLARE_FEATURE(kComposeboxDriveContextMenuOption);
 // composebox.
 BASE_DECLARE_FEATURE(kComposeboxDriveContextMenuOptionDisclaimer);
 
+// Whether to force the Google Drive disclaimer to be accepted.
+BASE_DECLARE_FEATURE(kForceDriveDisclaimerAccepted);
+
 // Whether the composebox should show a verbatim match for context in
 // zero-suggest.
 BASE_DECLARE_FEATURE(kComposeboxVerbatimMatchZeroSuggest);
