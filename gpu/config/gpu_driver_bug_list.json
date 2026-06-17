@@ -3773,15 +3773,16 @@
       ]
     },
     {
-      "id": 477,
-      "description": "Recreate FBO upon flush/finish/fencesync under certain conditions on Qualcomm GPUs",
+      "id": 480,
+      "cr_bugs": [520656244],
+      "description": "Reattach FBO depth/stencil attachments when they are reallocated on Qualcomm GPUs",
       "gl_vendor": "Qualcomm.*",
       "driver_version": {
         "op": "<",
         "value": "878"
       },
       "features": [
-        "recreate_fbo_upon_flush"
+        "reattach_fbo_depth_stencil_on_reallocation"
       ]
     }
   ]
