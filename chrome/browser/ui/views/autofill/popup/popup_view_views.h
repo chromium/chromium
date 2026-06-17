@@ -322,7 +322,9 @@ class PopupViewViews : public PopupBaseView,
   // the suggestion's message is being announced to the user by focusing the row
   // view (which must be selectable). Currently, only `PopupWarningView` is
   // supported.
-  void MaybeA11yFocusInformationalSuggestion();
+  // Returns true if the popup survived the accessibility event dispatch, false
+  // if it was destroyed. DO NOT access the popup if it has been destroyed.
+  [[nodiscard]] bool MaybeA11yFocusInformationalSuggestion();
 
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
