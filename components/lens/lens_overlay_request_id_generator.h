@@ -113,6 +113,11 @@ class LensOverlayRequestIdGenerator {
     is_implicit_upload_ = is_implicit_upload;
   }
 
+  // Updates the drive id returned in future request ids.
+  void SetDriveId(std::optional<std::string> drive_id) {
+    drive_id_ = std::move(drive_id);
+  }
+
   // Sets the routing info to be included in the request id and returns the new
   // request id with this routing info.
   std::unique_ptr<lens::LensOverlayRequestId> SetRoutingInfo(
@@ -168,6 +173,9 @@ class LensOverlayRequestIdGenerator {
 
   // The mime type string.
   std::optional<std::string> mime_type_;
+
+  // The drive id of the file in the request, if any.
+  std::optional<std::string> drive_id_;
 
   // The current routing info. Not guaranteed to exist if not returned from the
   // server.

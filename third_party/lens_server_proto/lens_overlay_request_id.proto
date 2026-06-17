@@ -11,7 +11,7 @@ package lens;
 import "lens_overlay_routing_info.proto";
 
 // Request Id definition to support request sequencing and state lookup.
-// Next Id: 17
+// Next Id: 18
 message LensOverlayRequestId {
   // A unique identifier for a sequence of related Lens requests.
   optional uint64 uuid = 1;
@@ -71,4 +71,7 @@ message LensOverlayRequestId {
   // Whether or not the request is for an implicit context upload.
   // e.g. a viewport screenshot from the Lens overlay contextual searchbox.
   optional bool is_implicit_upload = 16;
+
+  // The drive id of the file in the request, if any.
+  optional string drive_id = 17;
 }

@@ -462,4 +462,40 @@ TEST_F(LensOverlayRequestIdGeneratorTest, ParseRequestId_InvalidProto) {
   EXPECT_EQ(parsed_request_id, nullptr);
 }
 
+TEST_F(LensOverlayRequestIdGeneratorTest, SetDriveId_SetsDriveIdOnNextRequest) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  request_id_generator.SetDriveId("some_drive_id");
+  std::unique_ptr<lens::LensOverlayRequestId> request_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kInitialRequest,
+          lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  ASSERT_EQ(request_id->drive_id(), "some_drive_id");
+
+  request_id_generator.SetDriveId(std::nullopt);
+  std::unique_ptr<lens::LensOverlayRequestId> request_id2 =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kPageContentRequest,
+          lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  ASSERT_FALSE(request_id2->has_drive_id());
+}
+
+TEST_F(LensOverlayRequestIdGeneratorTest,
+       CreateNextRequestIdForUpdate_PropagatesDriveId) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  request_id_generator.SetDriveId("test_drive_id");
+  std::unique_ptr<lens::LensOverlayRequestId> first_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kInitialRequest,
+          lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  ASSERT_EQ(first_id->drive_id(), "test_drive_id");
+
+  std::unique_ptr<lens::LensOverlayRequestId> input_id =
+      std::make_unique<lens::LensOverlayRequestId>(*first_id);
+  std::unique_ptr<lens::LensOverlayRequestId> second_id =
+      request_id_generator.CreateNextRequestIdForUpdate(
+          std::move(input_id),
+          RequestIdUpdateMode::kPageContentWithViewportRequest);
+  ASSERT_EQ(second_id->drive_id(), "test_drive_id");
+}
+
 }  // namespace lens

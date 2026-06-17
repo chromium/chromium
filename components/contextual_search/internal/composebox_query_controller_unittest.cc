@@ -1574,6 +1574,45 @@ TEST_F(ComposeboxQueryControllerTest,
             "test_image.jpg");
 }
 
+TEST_F(ComposeboxQueryControllerTest, UploadDriveFileRequestSuccess) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Act: Start the file upload flow for a Drive file.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kUnknown;
+  input_data->drive_id = "test_drive_id";
+  input_data->mime_type_string = "application/pdf";
+  input_data->file_name = "test_drive_file.pdf";
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  WaitForClusterInfo();
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kUnknown);
+
+  // Assert: Check that the file name and drive ID are correctly set in the file info.
+  auto* file_info = controller().GetFileInfoForTesting(file_token);
+  ASSERT_TRUE(file_info);
+  EXPECT_EQ(file_info->file_name, "test_drive_file.pdf");
+  ASSERT_TRUE(file_info->GetRequestIdForTesting().has_value());
+  EXPECT_EQ(file_info->GetRequestIdForTesting()->drive_id(), "test_drive_id");
+
+  // Validate the file upload request payload has drive metadata with correct drive id.
+  EXPECT_EQ(controller()
+                .last_sent_file_upload_request()
+                ->objects_request()
+                .payload()
+                .content_metadata()
+                .drive_metadata()
+                .drive_id(),
+            "test_drive_id");
+}
+
 TEST_F(ComposeboxQueryControllerTest,
        UploadFileRemainsActiveAfterClusterInfoExpiration) {
   CreateController(

@@ -1164,6 +1164,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
     request_id_generator_.SetContextId(RandInt64());
     request_id_generator_.SetHasChromeTabData(false);
     request_id_generator_.SetIsImplicitUpload(false);
+    request_id_generator_.SetDriveId(current_file_info.input_data->drive_id);
     current_file_info.request_id = *request_id_generator_.GetNextRequestId(
         lens::RequestIdUpdateMode::kMultiContextUploadRequest,
         current_file_info.mime_type_string.value(),
@@ -1172,6 +1173,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
     request_id_generator_.SetContextId(RandInt64());
     request_id_generator_.SetHasChromeTabData(false);
     request_id_generator_.SetIsImplicitUpload(true);
+    request_id_generator_.SetDriveId(std::nullopt);
     current_file_info.request_id = *request_id_generator_.GetNextRequestId(
         lens::RequestIdUpdateMode::kMultiContextUploadRequest,
         lens::LensOverlayRequestId::MEDIA_TYPE_UNRESOLVED_URL);
@@ -1186,6 +1188,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
         current_file_info.tab_session_id.has_value());
     request_id_generator_.SetIsImplicitUpload(
         current_file_info.is_implicit_upload);
+    request_id_generator_.SetDriveId(std::nullopt);
     if (current_file_info.mime_type != lens::MimeType::kImage &&
         !has_viewport_screenshot &&
         current_file_info.mime_type_string.has_value() &&

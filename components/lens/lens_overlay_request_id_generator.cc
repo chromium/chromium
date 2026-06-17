@@ -61,6 +61,7 @@ void LensOverlayRequestIdGenerator::ResetRequestId() {
   has_chrome_tab_data_ = false;
   is_implicit_upload_ = false;
   routing_info_.reset();
+  drive_id_.reset();
 }
 
 std::unique_ptr<lens::LensOverlayRequestId>
@@ -132,6 +133,9 @@ LensOverlayRequestIdGenerator::CreateNextRequestIdForUpdate(
   request_id->set_is_implicit_upload(previous_request_id->is_implicit_upload());
   if (previous_request_id->has_mime_type()) {
     request_id->set_mime_type(previous_request_id->mime_type());
+  }
+  if (previous_request_id->has_drive_id()) {
+    request_id->set_drive_id(previous_request_id->drive_id());
   }
 
   bool create_analytics_id =
@@ -211,6 +215,11 @@ void LensOverlayRequestIdGenerator::UpdateInternalStateFromRequestId(
   if (request_id.has_mime_type()) {
     mime_type_ = request_id.mime_type();
   }
+  if (request_id.has_drive_id()) {
+    drive_id_ = request_id.drive_id();
+  } else {
+    drive_id_.reset();
+  }
   if (request_id.has_routing_info()) {
     routing_info_ = request_id.routing_info();
   }
@@ -234,6 +243,9 @@ LensOverlayRequestIdGenerator::GetCurrentRequestId() {
   request_id->set_is_implicit_upload(is_implicit_upload_);
   if (mime_type_.has_value()) {
     request_id->set_mime_type(mime_type_.value());
+  }
+  if (drive_id_.has_value()) {
+    request_id->set_drive_id(drive_id_.value());
   }
   return request_id;
 }
