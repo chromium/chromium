@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
@@ -1318,4 +1319,31 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   EXPECT_FALSE(manager->GetPrimaryTrackedElementId().has_value());
 }
 
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       ShowsErrorToastOnPrimaryReplacementFailure) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  // Set up IndigoAgent host.
+  std::unique_ptr<FakeIndigoAgent> fake_agent =
+      SetupAndInvokeIndigoAgent(main_rfh.get());
+
+  // Simulate primary replacement creation failure by notifying the host
+  // directly.
+  fake_agent->host()->ReportInvokeError();
+  // Verify that an error toast is displayed.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    ToastController* const toast_controller =
+        ToastController::MaybeGetForWebContents(web_contents);
+    return toast_controller && toast_controller->IsShowingToast();
+  }));
+
+  ToastController* const toast_controller =
+      ToastController::MaybeGetForWebContents(web_contents);
+  EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kIndigoInvokeError);
+}
 }  // namespace indigo

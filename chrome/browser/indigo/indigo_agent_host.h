@@ -44,6 +44,7 @@ class IndigoAgentHost : public content::PageUserData<IndigoAgentHost>,
       mojo::PendingRemote<blink::mojom::ImageReplacement> replacement,
       bool is_primary,
       StartImageReplacementCallback callback) override;
+  void ReportInvokeError() override;
 
  private:
   enum class InjectionState {

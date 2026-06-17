@@ -15,6 +15,9 @@ interface IndigoAgentHost {
   StartImageReplacement(
       pending_remote<blink.mojom.ImageReplacement> replacement,
       bool is_primary) => ();
+
+  // Notifies the browser that an error occurred during invocation.
+  ReportInvokeError();
 };
 
 // Browser -> renderer interface for Indigo. This exists on the main frame only.

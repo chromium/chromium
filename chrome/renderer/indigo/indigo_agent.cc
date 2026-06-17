@@ -48,7 +48,9 @@ class IndigoContext final : public gin::Wrappable<IndigoContext> {
     return Wrappable<IndigoContext>::GetObjectTemplateBuilder(isolate)
         .SetMethod("setup", &IndigoContext::Setup)
         .SetMethod("startImageReplacement",
-                   &IndigoContext::StartImageReplacement);
+                   &IndigoContext::StartImageReplacement)
+        .SetMethod("notifyNoPrimaryImageFound",
+                   &IndigoContext::NotifyNoPrimaryImageFound);
   }
 
   void Trace(cppgc::Visitor* visitor) const final {
@@ -165,6 +167,9 @@ class IndigoContext final : public gin::Wrappable<IndigoContext> {
 
     auto result = blink::WebImageReplacement::CreateAndBindReceiver(element);
     if (!result.has_value()) {
+      if (indigo_agent_ && is_primary) {
+        indigo_agent_->GetHost().ReportInvokeError();
+      }
       isolate->ThrowException(v8::Exception::Error(
           gin::StringToV8(isolate, blink::WebString(result.error()).Utf8())));
       return;
@@ -173,6 +178,12 @@ class IndigoContext final : public gin::Wrappable<IndigoContext> {
     if (indigo_agent_) {
       indigo_agent_->GetHost().StartImageReplacement(
           std::move(result.value()), is_primary, base::DoNothing());
+    }
+  }
+
+  void NotifyNoPrimaryImageFound() {
+    if (indigo_agent_) {
+      indigo_agent_->GetHost().ReportInvokeError();
     }
   }
 
