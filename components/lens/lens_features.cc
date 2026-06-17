@@ -149,6 +149,9 @@ BASE_FEATURE(kLensSendUrlsInComposeboxes,
 BASE_FEATURE(kLensOnlySendAaiForModalityChips,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kLensOnlySendAaiExcludeRawAndDriveFiles{
+    &kLensOnlySendAaiForModalityChips, "exclude_raw_and_drive_files", true};
+
 BASE_FEATURE(kLensRestrictAnnotatedPageContentToSameSiteFramesForNextQueries,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -1337,6 +1340,10 @@ bool IsLensSendUrlsInComposeboxesEnabled() {
 
 bool IsLensOnlySendAaiForModalityChipsEnabled() {
   return base::FeatureList::IsEnabled(kLensOnlySendAaiForModalityChips);
+}
+
+bool IsLensOnlySendAaiExcludeRawAndDriveFilesEnabled() {
+  return kLensOnlySendAaiExcludeRawAndDriveFiles.Get();
 }
 
 }  // namespace lens::features

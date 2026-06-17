@@ -155,6 +155,21 @@ bool IsUnresolvedUrlUpload(const contextual_search::FileInfo& file_info) {
          file_info.input_data->parsed_url.has_value();
 }
 
+bool ShouldEmitFileToAddedInputs(const contextual_search::FileInfo& file_info) {
+  if (!lens::features::IsLensOnlySendAaiForModalityChipsEnabled()) {
+    return true;
+  }
+  if (lens::features::IsLensOnlySendAaiExcludeRawAndDriveFilesEnabled()) {
+    bool is_drive =
+        file_info.input_data && file_info.input_data->drive_id.has_value();
+    bool is_raw = file_info.request_id.has_value() &&
+                  file_info.request_id->media_type() ==
+                      lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE;
+    return is_drive || is_raw;
+  }
+  return false;
+}
+
 // The maximum number of times to retry fetching cluster info.
 constexpr int kMaxClusterInfoRetries = 3;
 
@@ -553,7 +568,7 @@ lens::AddedInputs ComposeboxQueryController::CreateAddedInputs(
       // Process modality chips.
       added_inputs.add_added_inputs()->CopyFrom(
           file_info->input_data->modality_chip_props->added_input());
-    } else if (!lens::features::IsLensOnlySendAaiForModalityChipsEnabled()) {
+    } else if (ShouldEmitFileToAddedInputs(*file_info)) {
       if (IsUnresolvedUrlUpload(*file_info)) {
         lens::AimThumbnail* thumbnail = added_inputs.add_turn_title_thumbnail();
         thumbnail->set_title(file_info->input_data->parsed_url.value());

@@ -133,7 +133,8 @@ class ComposeboxQueryControllerTest
       bool enable_only_send_aai_for_modality_chips = true,
       bool enable_send_contextual_input_upload_type = false,
       bool send_contextual_input_upload_type_in_search_url = true,
-      bool send_contextual_input_upload_type_in_aim_request = true) {
+      bool send_contextual_input_upload_type_in_aim_request = true,
+      bool exclude_raw_and_drive_files = true) {
     scoped_feature_list_.Reset();
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
@@ -162,8 +163,11 @@ class ComposeboxQueryControllerTest
     }
 
     if (enable_only_send_aai_for_modality_chips) {
+      base::FieldTrialParams params;
+      params["exclude_raw_and_drive_files"] =
+          exclude_raw_and_drive_files ? "true" : "false";
       enabled_features.push_back(
-          {lens::features::kLensOnlySendAaiForModalityChips, {}});
+          {lens::features::kLensOnlySendAaiForModalityChips, params});
     } else {
       disabled_features.push_back(
           lens::features::kLensOnlySendAaiForModalityChips);
@@ -6759,6 +6763,157 @@ TEST_F(ComposeboxQueryControllerTest,
 
   // Unresolved URL should NOT be in turn_title_thumbnail.
   EXPECT_EQ(added_inputs.turn_title_thumbnail_size(), 0);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateAddedInputs_OnlySendAaiForModalityChips_ExcludeRawAndDrive) {
+  // Scenario 1: Feature enabled, exclude_raw_and_drive_files is true (default).
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/false,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*attach_page_title_and_url_to_suggest_requests=*/false,
+      /*enable_send_vit_for_single_context_next_queries=*/true,
+      /*enable_send_raw_file_media_types=*/true,
+      /*enable_only_send_aai_for_modality_chips=*/true,
+      /*enable_send_contextual_input_upload_type=*/false,
+      /*send_contextual_input_upload_type_in_search_url=*/true,
+      /*send_contextual_input_upload_type_in_aim_request=*/true,
+      /*exclude_raw_and_drive_files=*/true);
+
+  controller().InitializeIfNeeded();
+
+  // 1. Modality chip.
+  const base::UnguessableToken modality_token =
+      base::UnguessableToken::Create();
+  lens::ModalityChipProps modality_chip_props;
+  modality_chip_props.set_id("test_chip_id");
+  modality_chip_props.mutable_added_input()->mutable_lens_file()->set_vsrid(
+      "modality_vsrid");
+  StartModalityChipUploadFlow(modality_token, modality_chip_props);
+  WaitForClusterInfo();
+  {
+    context_upload_status_future_.Take();
+    context_upload_status_future_.Take();
+  }
+
+  // 2. Raw file.
+  const base::UnguessableToken raw_file_token =
+      base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> raw_file_input_data =
+      std::make_unique<lens::ContextualInputData>();
+  raw_file_input_data->primary_content_type = lens::MimeType::kPdf;
+  raw_file_input_data->mime_type_string = "application/pdf";
+  raw_file_input_data->context_input = std::vector<lens::ContextualInput>();
+  raw_file_input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kPdf));
+  controller().StartFileUploadFlow(raw_file_token,
+                                   std::move(raw_file_input_data),
+                                   /*image_options=*/std::nullopt);
+  WaitForFileUpload(raw_file_token, lens::MimeType::kPdf);
+
+  // 3. Drive file.
+  const base::UnguessableToken drive_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> drive_input_data =
+      std::make_unique<lens::ContextualInputData>();
+  drive_input_data->primary_content_type = lens::MimeType::kUnknown;
+  drive_input_data->drive_id = "test_drive_id";
+  drive_input_data->mime_type_string = "application/vnd.google-apps.document";
+  controller().StartFileUploadFlow(drive_token, std::move(drive_input_data),
+                                   /*image_options=*/std::nullopt);
+  WaitForFileUpload(drive_token, lens::MimeType::kUnknown);
+
+  // 4. Regular PDF (not raw, no mime_type_string).
+  const base::UnguessableToken pdf_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(pdf_token, /*file_data=*/std::vector<uint8_t>());
+  WaitForFileUpload(pdf_token, lens::MimeType::kPdf);
+
+  // Act: Call CreateAddedInputs.
+  auto added_inputs = controller().CreateAddedInputs(
+      {modality_token, raw_file_token, drive_token, pdf_token},
+      /*include_files_without_lens_usage_intent=*/true);
+
+  // Assert: Modality chip, raw file, and Drive file should be in added_inputs.
+  // PDF should be excluded.
+  // Total added_inputs should be 3 (modality, raw, drive).
+  ASSERT_EQ(added_inputs.added_inputs_size(), 3);
+
+  std::set<std::string> vsrids;
+  for (int i = 0; i < added_inputs.added_inputs_size(); ++i) {
+    vsrids.insert(added_inputs.added_inputs(i).lens_file().vsrid());
+  }
+
+  EXPECT_TRUE(vsrids.contains("modality_vsrid"));
+
+  auto* raw_file_info = controller().GetFileInfoForTesting(raw_file_token);
+  EXPECT_TRUE(vsrids.contains(lens::Base64EncodeRequestId(
+      raw_file_info->GetRequestIdForTesting().value())));
+
+  auto* drive_file_info = controller().GetFileInfoForTesting(drive_token);
+  EXPECT_TRUE(vsrids.contains(lens::Base64EncodeRequestId(
+      drive_file_info->GetRequestIdForTesting().value())));
+
+  // Scenario 2: Feature enabled, exclude_raw_and_drive_files is false.
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/false,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*attach_page_title_and_url_to_suggest_requests=*/false,
+      /*enable_send_vit_for_single_context_next_queries=*/true,
+      /*enable_send_raw_file_media_types=*/true,
+      /*enable_only_send_aai_for_modality_chips=*/true,
+      /*enable_send_contextual_input_upload_type=*/false,
+      /*send_contextual_input_upload_type_in_search_url=*/true,
+      /*send_contextual_input_upload_type_in_aim_request=*/true,
+      /*exclude_raw_and_drive_files=*/false);
+
+  controller().InitializeIfNeeded();
+
+  StartModalityChipUploadFlow(modality_token, modality_chip_props);
+  WaitForClusterInfo();
+  {
+    context_upload_status_future_.Take();
+    context_upload_status_future_.Take();
+  }
+
+  std::unique_ptr<lens::ContextualInputData> raw_file_input_data_2 =
+      std::make_unique<lens::ContextualInputData>();
+  raw_file_input_data_2->primary_content_type = lens::MimeType::kPdf;
+  raw_file_input_data_2->mime_type_string = "application/pdf";
+  raw_file_input_data_2->context_input = std::vector<lens::ContextualInput>();
+  raw_file_input_data_2->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kPdf));
+  controller().StartFileUploadFlow(raw_file_token,
+                                   std::move(raw_file_input_data_2),
+                                   /*image_options=*/std::nullopt);
+  WaitForFileUpload(raw_file_token, lens::MimeType::kPdf);
+
+  std::unique_ptr<lens::ContextualInputData> drive_input_data_2 =
+      std::make_unique<lens::ContextualInputData>();
+  drive_input_data_2->primary_content_type = lens::MimeType::kUnknown;
+  drive_input_data_2->drive_id = "test_drive_id";
+  drive_input_data_2->mime_type_string = "application/vnd.google-apps.document";
+  controller().StartFileUploadFlow(drive_token, std::move(drive_input_data_2),
+                                   /*image_options=*/std::nullopt);
+  WaitForFileUpload(drive_token, lens::MimeType::kUnknown);
+
+  StartPdfFileUploadFlow(pdf_token, /*file_data=*/std::vector<uint8_t>());
+  WaitForFileUpload(pdf_token, lens::MimeType::kPdf);
+
+  auto added_inputs_2 = controller().CreateAddedInputs(
+      {modality_token, raw_file_token, drive_token, pdf_token},
+      /*include_files_without_lens_usage_intent=*/true);
+
+  // Assert: Only modality chip should be in added_inputs.
+  ASSERT_EQ(added_inputs_2.added_inputs_size(), 1);
+  EXPECT_EQ(added_inputs_2.added_inputs(0).lens_file().vsrid(),
+            "modality_vsrid");
 }
 
 TEST_F(ComposeboxQueryControllerTest,

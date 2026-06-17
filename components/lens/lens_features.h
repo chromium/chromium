@@ -1143,10 +1143,16 @@ extern bool IsLensSendRawFileMediaTypesEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensSendUrlsInComposeboxesEnabled();
 
-// Enables skipping unresolved urls and Lens files, and only sending AAI for
-// modality chips in composebox queries.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOnlySendAaiForModalityChipsEnabled();
+
+// Whether to exclude raw files and drive files from the OnlySendAai
+// restriction.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<bool> kLensOnlySendAaiExcludeRawAndDriveFiles;
+
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOnlySendAaiExcludeRawAndDriveFilesEnabled();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_
