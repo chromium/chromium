@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -71,6 +72,18 @@ public class CustomTabDelegateFactoryUnitTest {
 
     @Before
     public void setUp() {
+        // Common mocks for activateContents() execution.
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.isIncognitoBranded()).thenReturn(false);
+        when(mTab.isInitialized()).thenReturn(true);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
+        when(mWindowAndroid.isActivityTopResumedSupported()).thenReturn(false);
+        when(mActivity.isInMultiWindowMode()).thenReturn(true);
+    }
+
+    private void createFactory(@ActivityType int activityType) {
         mFactory =
                 new CustomTabDelegateFactory(
                         mActivity,
@@ -86,7 +99,7 @@ public class CustomTabDelegateFactoryUnitTest {
                         SupplierUtils.ofNull(),
                         SupplierUtils.ofNull(),
                         SupplierUtils.ofNull(),
-                        ActivityType.WEB_APK,
+                        activityType,
                         () -> mock(BottomSheetController.class),
                         mock(AuthTabVerifier.class),
                         mock(BrowserControlsManager.class),
@@ -94,16 +107,6 @@ public class CustomTabDelegateFactoryUnitTest {
                         SupplierUtils.of(false),
                         mock(ExclusiveAccessManager.class),
                         mock(DesktopWindowStateManager.class));
-
-        // Common mocks for activateContents() execution.
-        when(mTab.isIncognito()).thenReturn(false);
-        when(mTab.isIncognitoBranded()).thenReturn(false);
-        when(mTab.isInitialized()).thenReturn(true);
-        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModel.indexOf(mTab)).thenReturn(0);
-        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
-        when(mWindowAndroid.isActivityTopResumedSupported()).thenReturn(false);
-        when(mActivity.isInMultiWindowMode()).thenReturn(true);
     }
 
     @Test
@@ -111,6 +114,7 @@ public class CustomTabDelegateFactoryUnitTest {
     public void testBringActivityToForeground_WebApk() {
         // Mock WebAPK configurations.
         when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEB_APK);
+        createFactory(ActivityType.WEB_APK);
         WebApkExtras webApkExtras =
                 new WebApkExtras(
                         TEST_WEBAPK_PACKAGE_NAME,
@@ -151,6 +155,40 @@ public class CustomTabDelegateFactoryUnitTest {
                 WebApkConstants.WEBAPK_OPAQUE_MAIN_ACTIVITY_CLASS_NAME, component.getClassName());
 
         Assert.assertTrue(intent.getBooleanExtra(WebApkConstants.EXTRA_BRING_TO_FRONT, false));
+        Assert.assertEquals(
+                Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
+        Assert.assertEquals(
+                Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS,
+                intent.getFlags() & Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.USE_APP_TASK_FOR_CUSTOM_TAB_ACTIVATION)
+    public void testBringActivityToForeground_Twa() {
+        // Mock TWA configurations using doReturn to bypass final method calls.
+        doReturn(ActivityType.TRUSTED_WEB_ACTIVITY).when(mIntentDataProvider).getActivityType();
+        doReturn("org.chromium.twa.testpackage").when(mIntentDataProvider).getClientPackageName();
+        createFactory(ActivityType.TRUSTED_WEB_ACTIVITY);
+
+        TabWebContentsDelegateAndroid delegate = mFactory.createWebContentsDelegate(mTab);
+        Assert.assertNotNull(delegate);
+
+        // Invoke activateContents() which delegates to bringActivityToForeground().
+        delegate.activateContents();
+
+        // Intercept and verify the Intent.
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mActivity).startActivity(intentCaptor.capture());
+
+        Intent intent = intentCaptor.getValue();
+        Assert.assertNotNull(intent);
+
+        ComponentName component = intent.getComponent();
+        Assert.assertNotNull(component);
+        Assert.assertEquals("org.chromium.twa.testpackage", component.getPackageName());
+        Assert.assertEquals(
+                "com.google.androidbrowserhelper.trusted.FocusActivity", component.getClassName());
+
         Assert.assertEquals(
                 Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
         Assert.assertEquals(
