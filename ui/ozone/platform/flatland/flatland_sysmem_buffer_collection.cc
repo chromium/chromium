@@ -426,6 +426,12 @@ bool FlatlandSysmemBufferCollection::CreateVkImage(
 
   uint32_t viable_memory_types =
       properties.memoryTypeBits & requirements.memoryTypeBits;
+  if (viable_memory_types == 0) {
+    DLOG(ERROR) << "No viable memory types found.";
+    vkDestroyImage(vk_device_, *vk_image, nullptr);
+    *vk_image = VK_NULL_HANDLE;
+    return false;
+  }
   uint32_t memory_type = std::countr_zero(viable_memory_types);
 
   VkMemoryDedicatedAllocateInfoKHR dedicated_allocate = {
