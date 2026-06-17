@@ -115,9 +115,8 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
       </ntp-lens-upload-dialog>
     ` : ''}
   </div>
-  ${this.lazyRender_
-    && this.ntpNextFeaturesEnabled_
-    && (!this.ntpNextDisablementEnabled_ || this.isActionChipsVisible_) ? html`
+  ${this.lazyRender_ && this.ntpNextFeaturesEnabled_
+  && this.isActionChipsVisible_ ? html`
     <ntp-action-chips
         ?show-background="${this.showActionChipsBackground_()}"
         @action-chip-click="${this.onActionChipClick_}"

@@ -272,8 +272,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
                      ntp_features::kNtpNextShowDismissalUIParam.Get());
   source->AddBoolean("ntpNextDisablementContextMenuEnabled",
                      ntp_features::kNtpNextDisablementContextMenuParam.Get());
-  source->AddBoolean("ntpNextDisablementEnabled",
-                     ntp_features::kNtpNextDisablementParam.Get());
   source->AddBoolean(
 
       "oneGoogleBarEnabled",
@@ -749,7 +747,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
                                num_tools_eligible >= 2;
   bool show_action_chips =
       action_chips_eligible &&
-      profile->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible);
+      (!ntp_features::kNtpNextDisablementParam.Get() ||
+       profile->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible));
   if (!show_action_chips) {
     action_chips::RecordActionChipsAnyShown(false);
   }
