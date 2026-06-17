@@ -1089,7 +1089,11 @@ void WidgetBase::UpdateVisualState() {
       ShouldRecordBeginMainFrameMetrics()
           ? DocumentUpdateReason::kBeginMainFrame
           : DocumentUpdateReason::kTest;
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   client_->UpdateLifecycle(WebLifecycleUpdate::kAll, lifecycle_reason);
+  if (!weak_this) {
+    return;
+  }
   client_->SetSuppressFrameRequestsWorkaroundFor704763Only(false);
 }
 
@@ -1791,8 +1795,13 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
         screen_infos_.current().display_color_spaces);
   }
 
-  if (orientation_changed)
+  if (orientation_changed) {
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     client_->OrientationChanged();
+    if (!weak_this) {
+      return;
+    }
+  }
 
   client_->DidUpdateSurfaceAndScreen(previous_original_screen_infos);
 }
