@@ -65,30 +65,19 @@ OmniboxContextMenu::OmniboxContextMenu(views::Widget* parent_widget,
   }
 
   for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
+    // Use default vertical margins for top-level items.
     views::MenuItemView* item =
         views::MenuModelAdapter::AppendMenuItemFromModel(
             menu_model, i, menu_, menu_model->GetCommandIdAt(i));
-    if (item) {
-      // Add margins between menu items if they exist:
-      // With icon size 16px per command ID/row, this results
-      // in rows that are 34px tall.
-      item->set_vertical_margin(9);
-    }
     // If the top-level item is a real submenu container, recursively append its
     // underlying child items (tabs) to ensure the menu tree is fully populated.
     if (item && menu_model->GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU) {
       ui::MenuModel* submodel = menu_model->GetSubmenuModelAt(i);
       CHECK(submodel);
       for (size_t j = 0; j < submodel->GetItemCount(); ++j) {
-        // Add margins between submenu items:
-        // With icon size 16px per command ID/row, this results
-        // in rows that are 34px tall.
-        views::MenuItemView* subitem =
-            views::MenuModelAdapter::AppendMenuItemFromModel(
-                submodel, j, item, submodel->GetCommandIdAt(j));
-        if (subitem) {
-          subitem->set_vertical_margin(9);
-        }
+        // Use default vertical margins for submenu items.
+        views::MenuModelAdapter::AppendMenuItemFromModel(
+            submodel, j, item, submodel->GetCommandIdAt(j));
       }
     }
   }
