@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/uuid.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/sessions/core/session_id.h"
@@ -36,7 +37,8 @@ class TabInterface;
 class ContextualTasksEphemeralButtonController
     : public contextual_tasks::ContextualTasksService::Observer,
       public SidePanelEntryObserver,
-      public content::WebContentsObserver {
+      public content::WebContentsObserver,
+      public PinnedToolbarActionsModel::Observer {
  public:
   DECLARE_USER_DATA(ContextualTasksEphemeralButtonController);
   explicit ContextualTasksEphemeralButtonController(
@@ -71,6 +73,9 @@ class ContextualTasksEphemeralButtonController
                        SidePanelEntryHideReason reason) override;
   void OnEntryHideCancelled(SidePanelEntry* entry) override;
   void OnEntryHidden(SidePanelEntry* entry) override;
+
+  // PinnedToolbarActionsModel::Observer override:
+  void OnActionsChanged() override;
 
   using ShouldUpdateVisibilityCallbackList =
       base::RepeatingCallbackList<void(bool)>;
@@ -110,6 +115,9 @@ class ContextualTasksEphemeralButtonController
   base::ScopedObservation<contextual_tasks::ContextualTasksService,
                           contextual_tasks::ContextualTasksService::Observer>
       contextual_task_observation_{this};
+  base::ScopedObservation<PinnedToolbarActionsModel,
+                          PinnedToolbarActionsModel::Observer>
+      pinned_toolbar_observation_{this};
   ShouldUpdateVisibilityCallbackList should_update_visibility_callbacks_;
 };
 

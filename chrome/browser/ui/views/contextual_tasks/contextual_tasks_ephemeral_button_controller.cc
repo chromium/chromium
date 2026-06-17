@@ -10,9 +10,11 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
@@ -70,6 +72,9 @@ ContextualTasksEphemeralButtonController::
                                     OnAimEligibilityResponseChanged,
                                 base::Unretained(this)));
   }
+  if (auto* pinned_model = PinnedToolbarActionsModel::Get(profile)) {
+    pinned_toolbar_observation_.Observe(pinned_model);
+  }
   UpdateActiveTabObservation();
 }
 
@@ -108,6 +113,7 @@ void ContextualTasksEphemeralButtonController::OnTaskRemoved(
 void ContextualTasksEphemeralButtonController::OnWillBeDestroyed() {
   should_update_visibility_callbacks_.Notify(false);
   contextual_task_observation_.Reset();
+  pinned_toolbar_observation_.Reset();
   tab_discard_subscription_ = base::CallbackListSubscription();
   Observe(nullptr);
 }
@@ -179,6 +185,10 @@ void ContextualTasksEphemeralButtonController::OnEntryHidden(
   }
 }
 
+void ContextualTasksEphemeralButtonController::OnActionsChanged() {
+  MaybeNotifyVisibilityShouldChange();
+}
+
 base::CallbackListSubscription
 ContextualTasksEphemeralButtonController::RegisterShouldUpdateButtonVisibility(
     ShouldUpdateVisibilityCallbackList::CallbackType callback) {
@@ -191,6 +201,11 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
       browser_window_interface_->GetActiveTabInterface();
 
   if (!tab_interface) {
+    return false;
+  }
+
+  if (contextual_tasks::GetEffectivePinState(
+          browser_window_interface_->GetProfile())) {
     return false;
   }
 
