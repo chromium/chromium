@@ -13,27 +13,42 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 
+import javax.annotation.concurrent.GuardedBy;
+
 @JNINamespace("android_webview")
 @NullMarked
 public class JsSandboxMessagePort {
-    private final long mNativeJsSandboxMessagePort;
+    private final Object mLock = new Object();
     private final MessagePortInternal mMessagePortInternal;
+
+    @GuardedBy("mLock")
+    private long mNativeJsSandboxMessagePort;
 
     @CalledByNative
     public static JsSandboxMessagePort create(
             MessagePortInternal messagePortInternal, long nativeSandboxMessagePort) {
         JsSandboxMessagePort jsSandboxMessagePort =
                 new JsSandboxMessagePort(messagePortInternal, nativeSandboxMessagePort);
+        // Setup the client after construction to avoid undefined behavior from leaking `this` to
+        // the MessagePortInternal, which could otherwise be invoked from another thread before all
+        // fields have been initialized.
+        jsSandboxMessagePort.setupClient();
         return jsSandboxMessagePort;
     }
 
     private JsSandboxMessagePort(
             MessagePortInternal messagePortInternal, long nativeJsSandboxMessagePort) {
-        mNativeJsSandboxMessagePort = nativeJsSandboxMessagePort;
+        mMessagePortInternal = messagePortInternal;
+        synchronized (mLock) {
+            mNativeJsSandboxMessagePort = nativeJsSandboxMessagePort;
+        }
+    }
+
+    private void setupClient() {
         // TODO(b/435619571):
         //  Memory allocation checks should ideally happen before arbitrary size data is received
         //  (via FDs), as this could easily exhaust memory before the MessagePortClient is invoked.
-        messagePortInternal.setClient(
+        mMessagePortInternal.setClient(
                 new MessagePortInternal.MessagePortClient() {
                     @Override
                     public void onString(String string) {
@@ -41,28 +56,36 @@ public class JsSandboxMessagePort {
                         // UTF-8, it may end up being more or less. As such, this is somewhat more
                         // of a best-effort estimate than a concrete value.
                         long size = (long) string.length() * Character.BYTES;
-                        if (!JsSandboxMessagePortJni.get()
-                                .tryAllocateMemoryBudget(mNativeJsSandboxMessagePort, size)) {
-                            return;
+                        synchronized (mLock) {
+                            if (mNativeJsSandboxMessagePort == 0) {
+                                return;
+                            }
+                            if (!JsSandboxMessagePortJni.get()
+                                    .tryAllocateMemoryBudget(mNativeJsSandboxMessagePort, size)) {
+                                return;
+                            }
+                            JsSandboxMessagePortJni.get()
+                                    .handleString(mNativeJsSandboxMessagePort, string, size);
                         }
-
-                        JsSandboxMessagePortJni.get()
-                                .handleString(mNativeJsSandboxMessagePort, string, size);
                     }
 
                     @Override
                     public void onArrayBuffer(byte[] arrayBuffer) {
                         long size = arrayBuffer.length;
-                        if (!JsSandboxMessagePortJni.get()
-                                .tryAllocateMemoryBudget(mNativeJsSandboxMessagePort, size)) {
-                            return;
+                        synchronized (mLock) {
+                            if (mNativeJsSandboxMessagePort == 0) {
+                                return;
+                            }
+                            if (!JsSandboxMessagePortJni.get()
+                                    .tryAllocateMemoryBudget(mNativeJsSandboxMessagePort, size)) {
+                                return;
+                            }
+                            JsSandboxMessagePortJni.get()
+                                    .handleArrayBuffer(
+                                            mNativeJsSandboxMessagePort, arrayBuffer, size);
                         }
-
-                        JsSandboxMessagePortJni.get()
-                                .handleArrayBuffer(mNativeJsSandboxMessagePort, arrayBuffer, size);
                     }
                 });
-        mMessagePortInternal = messagePortInternal;
     }
 
     // Called by isolate thread
@@ -80,6 +103,9 @@ public class JsSandboxMessagePort {
     // Called by isolate thread
     @CalledByNative
     void close() {
+        synchronized (mLock) {
+            mNativeJsSandboxMessagePort = 0;
+        }
         mMessagePortInternal.close();
     }
 
