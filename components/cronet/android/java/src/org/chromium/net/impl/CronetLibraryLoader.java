@@ -29,6 +29,9 @@ import org.chromium.net.NetLogCaptureMode;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.RegistrationPolicyAlwaysRegister;
 import org.chromium.net.httpflags.BaseFeature;
+import org.chromium.net.httpflags.ResolvedFlags;
+import org.chromium.net.httpflags.ResolvedFlags.Value;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -55,6 +58,10 @@ public class CronetLibraryLoader {
     // long-lived global singletons. This thread lives forever as things like
     // the global singleton NetworkChangeNotifier live on it and are never killed.
     private static final HandlerThread sInitThread = new HandlerThread("CronetInit");
+
+    // Flag containing a comma-separated list of UMA histogram name hashes allowed to be recorded.
+    // If empty or null, UMA recording is disabled. "*" allows all histograms.
+    static final String CRONET_UMA_ALLOWLIST_FLAG = "Cronet_CronetUmaAllowList";
     // Block calling native methods until this ConditionVariable opens to indicate loadLibrary()
     // is completed and native methods have been registered.
     private static final ConditionVariable sWaitForLibLoad = new ConditionVariable();
@@ -202,6 +209,18 @@ public class CronetLibraryLoader {
                     CommandLine.getInstance().switchToNativeImpl();
                     CronetLibraryLoaderJni.get()
                             .nativeInit(CronetManifest.shouldUsePerfetto(applicationContext));
+                }
+                try (var nativeUmaRecorderTraceEvent =
+                        ScopedSysTraceEvent.scoped(
+                                "CronetLibraryLoader#ensureInitialized calling "
+                                        + "CronetUmaRecorder#initialize")) {
+                    CronetSource source = NativeCronetEngineBuilderImpl.getCronetSource();
+                    ResolvedFlags flags = HttpFlagsForImpl.getHttpFlags(applicationContext, source);
+                    Value allowlistValue = flags.flags().get(CRONET_UMA_ALLOWLIST_FLAG);
+                    if (allowlistValue != null) {
+                        CronetUmaRecorder.initialize(
+                                applicationContext, allowlistValue.getStringValue(), source);
+                    }
                 }
                 String implVersion = ImplVersion.getCronetVersion();
                 if (!implVersion.equals(CronetLibraryLoaderJni.get().getCronetVersion())) {

@@ -109,6 +109,13 @@ public final class CronetStatsLog {
      */
     public static final int CRONET_ADAPTIVE_TRAFFIC_TERMINATED = 215001;
 
+    /**
+     * CronetUmaMetricReported cronet_uma_metric_reported<br>
+     * Usage: StatsLog.write(StatsLog.CRONET_UMA_METRIC_REPORTED, int uid, int source, long
+     * metric_hash, int metric_value);<br>
+     */
+    public static final int CRONET_UMA_METRIC_REPORTED = 215002;
+
     // Constants for enum values.
 
     // Values for CronetEngineCreated.source
@@ -529,6 +536,13 @@ public final class CronetStatsLog {
             CRONET_ADAPTIVE_TRAFFIC_TERMINATED__FALLBACK_STREAM_STATE__CRONET_REQUEST_STATE_CANCELLED =
                     5;
 
+    // Values for CronetUmaMetricReported.source
+    public static final int CRONET_UMA_METRIC_REPORTED__SOURCE__CRONET_SOURCE_UNSPECIFIED = 0;
+    public static final int CRONET_UMA_METRIC_REPORTED__SOURCE__CRONET_SOURCE_EMBEDDED_NATIVE = 1;
+    public static final int CRONET_UMA_METRIC_REPORTED__SOURCE__CRONET_SOURCE_GMSCORE_NATIVE = 2;
+    public static final int CRONET_UMA_METRIC_REPORTED__SOURCE__CRONET_SOURCE_EMBEDDED_JAVA = 3;
+    public static final int CRONET_UMA_METRIC_REPORTED__SOURCE__CRONET_SOURCE_HTTPENGINE_NATIVE = 4;
+
     // Annotation constants.
     @android.annotation.SuppressLint("InlinedApi")
     public static final byte ANNOTATION_ID_IS_UID = StatsLog.ANNOTATION_ID_IS_UID;
@@ -585,6 +599,21 @@ public final class CronetStatsLog {
         builder.writeLong(arg3);
         builder.writeBoolean(arg4);
         builder.writeBoolean(arg5);
+
+        builder.usePooledBuffer();
+        StatsLog.write(builder.build());
+    }
+
+    public static void write(int code, int arg1, int arg2, long arg3, int arg4) {
+        final StatsEvent.Builder builder = StatsEvent.newBuilder();
+        builder.setAtomId(code);
+        builder.writeInt(arg1);
+        if (CRONET_UMA_METRIC_REPORTED == code) {
+            builder.addBooleanAnnotation(ANNOTATION_ID_IS_UID, true);
+        }
+        builder.writeInt(arg2);
+        builder.writeLong(arg3);
+        builder.writeInt(arg4);
 
         builder.usePooledBuffer();
         StatsLog.write(builder.build());

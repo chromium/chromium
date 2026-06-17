@@ -151,6 +151,15 @@ public abstract class CronetLogger {
     public abstract void logCronetAdaptiveTrafficTerminated(
             CronetAdaptiveTrafficTerminatedInfo info);
 
+    /**
+     * Logs a Cronet UMA histogram sample.
+     *
+     * @param metricHash the hash of the histogram name, converted from unsigned 64-bit integer to
+     *     signed 64-bit integer with two's complement wraparound.
+     * @param value the sample value.
+     */
+    public abstract void logCronetUmaHistogram(long metricHash, int value, CronetSource source);
+
     // TODO(crbug.com/41494309): consider using AutoValue for this.
     public static final class CronetEngineBuilderInitializedInfo {
         public long cronetInitializationRef;

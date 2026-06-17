@@ -36,4 +36,7 @@ public final class NoOpLogger extends CronetLogger {
 
     @Override
     public void logCronetAdaptiveTrafficTerminated(CronetAdaptiveTrafficTerminatedInfo info) {}
+
+    @Override
+    public void logCronetUmaHistogram(long metricHash, int value, CronetSource source) {}
 }
