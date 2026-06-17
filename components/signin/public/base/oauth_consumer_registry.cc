@@ -96,6 +96,9 @@ constexpr char kExperimentsAndConfigsOAuth2Scope[] =
     "https://www.googleapis.com/auth/experimentsandconfigs";
 // OAuth 2 scope for the Discover feed.
 constexpr char kFeedOAuth2Scope[] = "https://www.googleapis.com/auth/googlenow";
+// OAuth2 scope for Footprints Service.
+constexpr char kFpopOAuth2Scope[] =
+    "https://www.googleapis.com/auth/webhistory";
 // OAuth2 scopes for access to GCM.
 constexpr char kGCMCheckinServerOAuth2Scope[] =
     "https://www.googleapis.com/auth/android_checkin";
@@ -211,6 +214,7 @@ constexpr char kYouTubeMusicOAuth2Scope[] =
 
 constexpr char kSyncName[] = "sync";
 constexpr char kSecureGatewayServiceName[] = "secure_gateway_service";
+constexpr char kFpopServiceName[] = "fpop_service";
 constexpr char kWallpaperGooglePhotosFetcherName[] =
     "wallpaper_google_photos_fetcher";
 constexpr char kWallpaperFetcherDelegateName[] = "wallpaper_fetcher_delegate";
@@ -786,6 +790,10 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kSyncPreviewName,
           /*scopes=*/{GaiaConstants::kChromeSyncPreviewOAuth2Scope});
+    case OAuthConsumerId::kFpopService:
+      return OAuthConsumer(
+          /*name=*/kFpopServiceName,
+          /*scopes=*/{kFpopOAuth2Scope});
   }
 }
 
