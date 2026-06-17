@@ -33,8 +33,8 @@ class ActorTaskListBubbleController : public views::WidgetObserver {
   DECLARE_USER_DATA(ActorTaskListBubbleController);
   static ActorTaskListBubbleController* From(BrowserWindowInterface* window);
 
-  void ShowBubble(views::View* anchor_view);
-  void OnStateUpdate();
+  void ShowBubble(views::View* anchor_view, bool is_start_notification = false);
+  void OnStateUpdate(bool is_start_notification);
 
   void OnWidgetDestroyed(views::Widget* widget) override;
 

@@ -125,11 +125,10 @@ std::unique_ptr<views::View> ActorTaskListBubble::CreateContentsView(
           actor::ui::ActorUiTaskIconError::kBubbleTaskDoesntExist);
       continue;
     }
-    glic::mojom::FeatureMode feature_mode =
-        actor_ui_state_manager->GetFeatureMode(task_id);
     row_priority_list.emplace_back(
-        GetPriorityForTaskState(task_state.value(), requires_processing,
-                                feature_mode),
+        GetPriorityForTaskState(
+            task_state.value(), requires_processing,
+            actor_ui_state_manager->GetFeatureMode(task_id)),
         task_id);
   }
 
@@ -143,12 +142,22 @@ std::unique_ptr<views::View> ActorTaskListBubble::CreateContentsView(
     bool requires_processing = task_list.at(task_id);
     CHECK(task_state.has_value() && task_title.has_value() &&
           task_tab.has_value());
+    bool has_tab = task_tab.value() != nullptr;
+
+    if (!has_tab && glic::GlicActorTaskIconManager::IsActiveExperimentalTask(
+                        task_state.value(),
+                        actor_ui_state_manager->GetFeatureMode(task_id))) {
+      // Treat experimental triggering tasks as having a tab even if they don't
+      // have one associated yet. This ensures they are clickable and can bring
+      // the window/tab to the foreground.
+      has_tab = true;
+    }
 
     std::unique_ptr<ActorTaskListBubbleRowButton> row =
         std::make_unique<ActorTaskListBubbleRowButton>(
             base::BindRepeating(on_row_clicked, task_id), task_state.value(),
             base::UTF8ToUTF16(task_title.value()), requires_processing,
-            task_tab.value() != nullptr);
+            has_tab);
 
     contents_view->AddChildView(std::move(row));
   }

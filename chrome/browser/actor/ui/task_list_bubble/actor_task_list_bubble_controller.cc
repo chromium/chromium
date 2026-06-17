@@ -36,27 +36,37 @@ ActorTaskListBubbleController::ActorTaskListBubbleController(
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
-  if (auto* manager = glic::GlicActorTaskIconManagerFactory::GetForProfile(
-          browser_->GetProfile())) {
-    bubble_state_change_callback_subscription_.push_back(
-        manager->RegisterTaskListBubbleStateChange(
-            base::BindRepeating(&ActorTaskListBubbleController::OnStateUpdate,
-                                base::Unretained(this))));
-  }
+  auto* manager = glic::GlicActorTaskIconManagerFactory::GetForProfile(
+      browser_->GetProfile());
+  DCHECK(manager);
+  bubble_state_change_callback_subscription_.push_back(
+      manager->RegisterTaskListBubbleStateChange(
+          base::BindRepeating(&ActorTaskListBubbleController::OnStateUpdate,
+                              base::Unretained(this))));
 }
 
 ActorTaskListBubbleController::~ActorTaskListBubbleController() = default;
 
-void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view) {
+void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view,
+                                               bool is_start_notification) {
+  auto* manager = glic::GlicActorTaskIconManagerFactory::GetForProfile(
+      browser_->GetProfile());
+  DCHECK(manager);
+
+  // If the browser is in the background, only show the bubble if this is a
+  // start notification for an experimentalTriggering task triggered while
+  // the Glic panel is visible on this window. We avoid popping up the bubble
+  // for subsequent background task status updates to avoid disturbing the user.
   if (!browser_->IsActive()) {
-    // Only show the bubble in the active window.
-    return;
+    auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+        browser_->GetProfile());
+    if (!is_start_notification || !glic_service ||
+        !glic_service->IsPanelShowingForBrowser(*browser_)) {
+      return;
+    }
   }
 
-  const auto& task_id_to_state =
-      glic::GlicActorTaskIconManagerFactory::GetForProfile(
-          browser_->GetProfile())
-          ->actor_task_list_bubble_rows();
+  const auto& task_id_to_state = manager->actor_task_list_bubble_rows();
   // Do not show bubble if there are no rows to show.
   if (task_id_to_state.empty()) {
     return;
@@ -81,23 +91,26 @@ void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view) {
   on_bubble_shown_callback_list.Notify();
 }
 
-void ActorTaskListBubbleController::OnStateUpdate() {
+void ActorTaskListBubbleController::OnStateUpdate(bool is_start_notification) {
   if (auto* browser_view = BrowserElementsViews::From(browser_)) {
     auto* vertical_tab_strip_state_controller =
         tabs::VerticalTabStripStateController::From(browser_);
     if (vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs()) {
       ToolbarView* toolbar_view =
           browser_view->GetViewAs<ToolbarView>(ToolbarView::kToolbarElementId);
-      if (toolbar_view && toolbar_view->GetIsShowingGlicActorTaskIconNudge()) {
-        ShowBubble(toolbar_view->glic_actor_task_icon());
+      if (toolbar_view && (toolbar_view->GetIsShowingGlicActorTaskIconNudge() ||
+                           is_start_notification)) {
+        ShowBubble(toolbar_view->glic_actor_task_icon(), is_start_notification);
       }
     } else {
       TabStripActionContainer* tab_strip_action_container =
           browser_view->GetViewAs<TabStripActionContainer>(
               kTabStripActionContainerElementId);
       if (tab_strip_action_container &&
-          tab_strip_action_container->GetIsShowingGlicActorTaskIconNudge()) {
-        ShowBubble(tab_strip_action_container->glic_actor_task_icon());
+          (tab_strip_action_container->GetIsShowingGlicActorTaskIconNudge() ||
+           is_start_notification)) {
+        ShowBubble(tab_strip_action_container->glic_actor_task_icon(),
+                   is_start_notification);
       }
     }
   }
