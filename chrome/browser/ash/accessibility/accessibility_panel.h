@@ -58,6 +58,8 @@ class AccessibilityPanel : public views::WidgetDelegate,
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
+  bool ShouldAllowRendererInitiatedCrossProcessNavigation(
+      bool is_outermost_main_frame_navigation) override;
 
   // Indirectly invoked by the component extension.
   void DidFirstVisuallyNonEmptyPaint();

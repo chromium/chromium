@@ -48,9 +48,16 @@ class ChromeVoxPanel::ChromeVoxPanelWebContentsObserver
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
+    // Only handle fragments for the ChromeVox extension origin.
+    GURL url = web_contents()->GetLastCommittedURL();
+    if (!url.SchemeIs(extensions::kExtensionScheme) ||
+        url.host() != extension_misc::kChromeVoxExtensionId) {
+      return;
+    }
+
     // The ChromeVox panel uses the URL fragment to communicate state
     // to this panel host.
-    std::string fragment = web_contents()->GetLastCommittedURL().GetRef();
+    std::string fragment = url.GetRef();
     if (fragment == kDisableSpokenFeedbackURLFragment)
       AccessibilityManager::Get()->EnableSpokenFeedback(false);
     else if (fragment == kFullscreenURLFragment)
