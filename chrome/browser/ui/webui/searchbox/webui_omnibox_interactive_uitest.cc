@@ -510,11 +510,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false));
 }
 
-// TODO(crbug.com/505548434): Flaky on Mac, Win Arm64 and ASAN, and Linux.
-#if BUILDFLAG(IS_MAC) ||                                         \
-    (BUILDFLAG(IS_WIN) &&                                        \
-     (defined(ARCH_CPU_ARM64) || defined(ADDRESS_SANITIZER))) || \
-    BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/505548434, crbug.com/517370516): Flaky on Mac, Win and Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ClassicContextMenuOpensDeepSearch \
   DISABLED_ClassicContextMenuOpensDeepSearch
 #else
