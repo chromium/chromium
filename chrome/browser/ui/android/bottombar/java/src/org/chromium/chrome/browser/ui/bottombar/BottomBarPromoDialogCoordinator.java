@@ -118,6 +118,7 @@ public class BottomBarPromoDialogCoordinator
                         .build();
 
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP, true);
+        BottomBarMetrics.recordPromoEvent(BottomBarMetrics.PromoEvent.SHOWN);
         return true;
     }
 
@@ -140,7 +141,10 @@ public class BottomBarPromoDialogCoordinator
         }
 
         if (mListener != null && dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+            BottomBarMetrics.recordPromoEvent(BottomBarMetrics.PromoEvent.ACCEPTED);
             mListener.onPromoDialogAccepted();
+        } else {
+            BottomBarMetrics.recordPromoEvent(BottomBarMetrics.PromoEvent.DISMISSED);
         }
     }
 }

@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.R;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -183,6 +184,10 @@ public class GlicActionCoordinator {
             TrackerFactory.getTrackerForProfile(currentTab.getProfile())
                     .notifyEvent(EventConstants.ANDROID_BOTTOM_BAR_GLIC_USED);
         }
+
+        BottomBarMetrics.recordGlicButtonState(
+                mStateController.getButtonState(), mStateController.isPanelOpen());
+
         List<ActorTask> tasks = mStateController.getActiveTasks();
 
         boolean isOnActingTab =
@@ -192,6 +197,7 @@ public class GlicActionCoordinator {
         // If there are no tasks, or we are already on the tab with the active task, just toggle
         // Glic.
         if (tasks == null || tasks.isEmpty() || isOnActingTab) {
+            BottomBarMetrics.recordGlicConvoResult(mStateController.isPanelOpen());
             mToggleGlicCallback.onClick(false, GlicInvocationSource.TOOLBAR_BUTTON);
             mStateController.updateButtonState();
             return;

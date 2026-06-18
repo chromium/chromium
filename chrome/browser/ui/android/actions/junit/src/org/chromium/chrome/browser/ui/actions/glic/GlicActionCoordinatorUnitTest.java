@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -31,6 +32,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -47,6 +49,7 @@ import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -75,6 +78,10 @@ public class GlicActionCoordinatorUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Tracker mTracker;
     @Mock private UserEducationHelper mUserEducationHelper;
+    @Mock private ChromeAndroidTask mTaskMock;
+
+    @Captor
+    private ArgumentCaptor<GlicKeyedService.GlobalShowHideObserver> mGlobalShowHideObserverCaptor;
 
     private ActionRegistry mActionRegistry;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
@@ -227,5 +234,58 @@ public class GlicActionCoordinatorUnitTest {
         Drawable done = mActionModel.get(GlicActionProperties.GLIC_DRAWABLE);
         assertNotNull(done);
         assertEquals(needsReview, done);
+    }
+
+    @Test
+    public void testClick_recordsMetrics() {
+        HistogramWatcher buttonStateWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Glic.ButtonStateOnClick",
+                                BottomBarMetrics.GlicButtonState.DEFAULT)
+                        .build();
+        HistogramWatcher convoResultWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Glic.ConvoResult",
+                                BottomBarMetrics.GlicConvoResult.OPENED_SHEET)
+                        .build();
+
+        Callback<View> callback = mActionModel.get(ActionProperties.ON_PRESS_CALLBACK);
+        callback.onResult(null);
+
+        buttonStateWatcher.assertExpected();
+        convoResultWatcher.assertExpected();
+    }
+
+    @Test
+    public void testClick_panelOpen_recordsMetrics() {
+        when(mTaskSupplier.get()).thenReturn(mTaskMock);
+        when(mTaskMock.getNativeBrowserWindowPtr(any(), any())).thenReturn(123L);
+        when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(true);
+
+        verify(mGlicKeyedService)
+                .addGlobalShowHideObserver(mGlobalShowHideObserverCaptor.capture());
+        GlicKeyedService.GlobalShowHideObserver observer = mGlobalShowHideObserverCaptor.getValue();
+        observer.onGlobalShowHide();
+
+        HistogramWatcher buttonStateWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Glic.ButtonStateOnClick",
+                                BottomBarMetrics.GlicButtonState.CHAT_ACTIVE)
+                        .build();
+        HistogramWatcher convoResultWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Glic.ConvoResult",
+                                BottomBarMetrics.GlicConvoResult.CLOSED_SHEET)
+                        .build();
+
+        Callback<View> callback = mActionModel.get(ActionProperties.ON_PRESS_CALLBACK);
+        callback.onResult(null);
+
+        buttonStateWatcher.assertExpected();
+        convoResultWatcher.assertExpected();
     }
 }

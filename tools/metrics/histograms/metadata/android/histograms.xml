@@ -1203,10 +1203,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BottomBar.Glic.ButtonStateOnClick"
+    enum="AndroidBottomBarGlicButtonState" expires_after="2027-05-26">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>polardz@google.com</owner>
+  <summary>
+    Records the visual state of the Glic button in the bottom bar at the moment
+    the user clicks it. Recorded only for the bottom bar entry point.
+  </summary>
+</histogram>
+
+<histogram name="Android.BottomBar.Glic.ConvoResult"
+    enum="AndroidBottomBarGlicConvoResult" expires_after="2027-05-26">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>polardz@google.com</owner>
+  <summary>
+    Recorded when the Glic button is clicked in the bottom bar and toggles the
+    panel. Tracks whether the panel was opened or closed. Recorded only for the
+    bottom bar entry point.
+  </summary>
+</histogram>
+
 <histogram name="Android.BottomBar.GlicTimeToAppearSinceBottomBarShown"
     units="ms" expires_after="2027-05-26">
   <owner>madhavpruthi@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
+  <owner>polardz@google.com</owner>
   <summary>
     Records the time elapsed from when the bottom bar becomes visible to when
     the GLIC button actually appears (transitions from hidden to visible).
@@ -1220,10 +1244,37 @@ chromium-metrics-reviews@google.com.
     expires_after="2027-05-26">
   <owner>madhavpruthi@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
+  <owner>polardz@google.com</owner>
   <summary>
     Records the time taken to decide whether to show the GLIC button in the
     bottom bar. This includes the time spent in GlicEnabling checks, which may
     involve JNI calls. Recorded every time GLIC visibility is checked.
+  </summary>
+</histogram>
+
+<histogram name="Android.BottomBar.IPH.{IPHType}.Event"
+    enum="AndroidBottomBarIphEvent" expires_after="2027-05-26">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>polardz@google.com</owner>
+  <summary>
+    Recorded when the {IPHType} In-Product Help (IPH) in the Android Bottom Bar
+    triggers (is shown or dismissed).
+  </summary>
+  <token key="IPHType">
+    <variant name="Glic" summary="Gemini button"/>
+    <variant name="NewTab" summary="New Tab button"/>
+  </token>
+</histogram>
+
+<histogram name="Android.BottomBar.Promo.Event"
+    enum="AndroidBottomBarPromoEvent" expires_after="2027-05-26">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>polardz@google.com</owner>
+  <summary>
+    Recorded when the introductory promo dialog for the Android Bottom Bar is
+    shown, accepted, or dismissed.
   </summary>
 </histogram>
 

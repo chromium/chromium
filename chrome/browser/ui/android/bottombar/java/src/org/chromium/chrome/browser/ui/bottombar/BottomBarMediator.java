@@ -10,7 +10,6 @@ import android.os.SystemClock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -56,11 +55,6 @@ public class BottomBarMediator
         /** Called when the background color of the bottom bar changes. */
         void onBackgroundColorChanged();
     }
-
-    private static final String GLIC_VISIBILITY_DECISION_TIME_HISTOGRAM =
-            "Android.BottomBar.GlicVisibilityDecisionTime";
-    private static final String GLIC_TIME_TO_APPEAR_HISTOGRAM =
-            "Android.BottomBar.GlicTimeToAppearSinceBottomBarShown";
 
     private final PropertyModel mModel;
     private final BottomBarButtonManager mButtonManager;
@@ -196,7 +190,7 @@ public class BottomBarMediator
         if (didBecomeVisible) {
             mBottomBarShownTimeMs = SystemClock.uptimeMillis();
             if (mGlicAppearedTimeMs != -1 && !mGlicTimeToAppearRecorded) {
-                RecordHistogram.recordLongTimesHistogram(GLIC_TIME_TO_APPEAR_HISTOGRAM, 0);
+                BottomBarMetrics.recordGlicTimeToAppear(0);
                 mGlicTimeToAppearRecorded = true;
             }
             maybeShowIphs();
@@ -235,15 +229,13 @@ public class BottomBarMediator
         boolean shouldBeVisible = GlicEnabling.isEnabledForProfile(originalProfile);
         long decisionDuration = SystemClock.uptimeMillis() - startTime;
 
-        RecordHistogram.recordTimesHistogram(
-                GLIC_VISIBILITY_DECISION_TIME_HISTOGRAM, decisionDuration);
+        BottomBarMetrics.recordGlicVisibilityDecisionTime(decisionDuration);
 
         if (shouldBeVisible && !mGlicWasVisible) {
             mGlicAppearedTimeMs = SystemClock.uptimeMillis();
             if (mBottomBarShownTimeMs != -1 && !mGlicTimeToAppearRecorded) {
                 long timeSinceShown = mGlicAppearedTimeMs - mBottomBarShownTimeMs;
-                RecordHistogram.recordLongTimesHistogram(
-                        GLIC_TIME_TO_APPEAR_HISTOGRAM, timeSinceShown);
+                BottomBarMetrics.recordGlicTimeToAppear(timeSinceShown);
                 mGlicTimeToAppearRecorded = true;
             }
         }
@@ -333,7 +325,18 @@ public class BottomBarMediator
                         .setStringResId(R.string.iph_android_bottom_bar_glic)
                         .setAccessibilityResId(R.string.iph_android_bottom_bar_glic)
                         .setHighlightParams(glicHighlightParams)
-                        .setOnDismissCallback(this::triggerNewTabIph)
+                        .setOnShowCallback(
+                                () ->
+                                        BottomBarMetrics.recordIphEvent(
+                                                BottomBarMetrics.IphEvent.SHOWN,
+                                                /* isNewTabIph= */ false))
+                        .setOnDismissCallback(
+                                () -> {
+                                    BottomBarMetrics.recordIphEvent(
+                                            BottomBarMetrics.IphEvent.DISMISSED,
+                                            /* isNewTabIph= */ false);
+                                    triggerNewTabIph();
+                                })
                         .build();
 
         glicModel.set(ActionProperties.IPH_INTENT, glicIph);
@@ -364,7 +367,19 @@ public class BottomBarMediator
             newTabHighlightParams.setCornerRadius(circleRadius);
         }
         newTabIphBuilder.setHighlightParams(newTabHighlightParams);
-        IphIntent newTabIph = newTabIphBuilder.build();
+        IphIntent newTabIph =
+                newTabIphBuilder
+                        .setOnShowCallback(
+                                () ->
+                                        BottomBarMetrics.recordIphEvent(
+                                                BottomBarMetrics.IphEvent.SHOWN,
+                                                /* isNewTabIph= */ true))
+                        .setOnDismissCallback(
+                                () ->
+                                        BottomBarMetrics.recordIphEvent(
+                                                BottomBarMetrics.IphEvent.DISMISSED,
+                                                /* isNewTabIph= */ true))
+                        .build();
         newTabModel.set(ActionProperties.IPH_INTENT, newTabIph);
         mNewTabIphIntent = newTabIph;
     }

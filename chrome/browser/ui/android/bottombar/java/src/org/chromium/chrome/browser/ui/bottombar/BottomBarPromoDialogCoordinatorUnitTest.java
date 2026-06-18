@@ -37,6 +37,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -95,7 +96,15 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
                 .thenReturn(true);
 
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Promo.Event", BottomBarMetrics.PromoEvent.SHOWN)
+                        .build();
+
         mCoordinator.maybeShowPromoDialog();
+
+        watcher.assertExpected();
 
         verify(mModalDialogManager)
                 .showDialog(
@@ -155,8 +164,18 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
         verify(mModalDialogManager)
                 .dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
 
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Promo.Event",
+                                BottomBarMetrics.PromoEvent.ACCEPTED)
+                        .build();
+
         // Perform dismiss
         mCoordinator.onDismiss(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+
+        watcher.assertExpected();
+
         verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG);
 
         // Check listener callback is invoked synchronously
@@ -177,8 +196,18 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
         verify(mModalDialogManager)
                 .dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
 
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.Promo.Event",
+                                BottomBarMetrics.PromoEvent.DISMISSED)
+                        .build();
+
         // Perform dismiss
         mCoordinator.onDismiss(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+
+        watcher.assertExpected();
+
         verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG);
 
         verify(mListener, never()).onPromoDialogAccepted();

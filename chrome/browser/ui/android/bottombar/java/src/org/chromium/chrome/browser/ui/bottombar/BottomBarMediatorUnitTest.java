@@ -593,14 +593,31 @@ public class BottomBarMediatorUnitTest {
         IphCommand command = commandCaptor.getValue();
         assertNotNull(command);
         assertEquals(FeatureConstants.ANDROID_BOTTOM_BAR_GLIC, command.featureName);
+        assertNotNull(command.onShowCallback);
         assertNotNull(command.onDismissCallback);
         assertNotNull(command.highlightParams);
         assertEquals(HighlightShape.RECTANGLE, command.highlightParams.getShape());
         assertTrue(command.highlightParams.getBoundsRespectPadding());
         assertEquals(20, command.highlightParams.getCornerRadius());
 
-        // Simulate dismissing the Glic IPH, which chains to the New Tab IPH.
+        // Verify GLIC IPH Shown metric
+        HistogramWatcher glicShownWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.IPH.Glic.Event", BottomBarMetrics.IphEvent.SHOWN)
+                        .build();
+        command.onShowCallback.run();
+        glicShownWatcher.assertExpected();
+
+        // Verify GLIC IPH Dismissed metric
+        HistogramWatcher glicDismissedWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.IPH.Glic.Event",
+                                BottomBarMetrics.IphEvent.DISMISSED)
+                        .build();
         command.onDismissCallback.run();
+        glicDismissedWatcher.assertExpected();
 
         IphIntent newTabIph = newTabModel.get(ActionProperties.IPH_INTENT);
         assertNotNull(newTabIph);
@@ -613,10 +630,32 @@ public class BottomBarMediatorUnitTest {
         IphCommand newTabCommand = newTabCommandCaptor.getAllValues().get(1);
         assertNotNull(newTabCommand);
         assertEquals(FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB, newTabCommand.featureName);
+        assertNotNull(newTabCommand.onShowCallback);
+        assertNotNull(newTabCommand.onDismissCallback);
         assertNotNull(newTabCommand.highlightParams);
         assertEquals(HighlightShape.RECTANGLE, newTabCommand.highlightParams.getShape());
         assertTrue(newTabCommand.highlightParams.getBoundsRespectPadding());
         assertEquals(20, newTabCommand.highlightParams.getCornerRadius());
+
+        // Verify New Tab IPH Shown metric
+        HistogramWatcher newTabShownWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.IPH.NewTab.Event",
+                                BottomBarMetrics.IphEvent.SHOWN)
+                        .build();
+        newTabCommand.onShowCallback.run();
+        newTabShownWatcher.assertExpected();
+
+        // Verify New Tab IPH Dismissed metric
+        HistogramWatcher newTabDismissedWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.BottomBar.IPH.NewTab.Event",
+                                BottomBarMetrics.IphEvent.DISMISSED)
+                        .build();
+        newTabCommand.onDismissCallback.run();
+        newTabDismissedWatcher.assertExpected();
     }
 
     @Test

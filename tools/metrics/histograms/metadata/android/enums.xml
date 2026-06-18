@@ -109,6 +109,46 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkAllTabsHandler.java:BookmarkAllTabsResult) -->
 
+<!-- LINT.IfChange(AndroidBottomBarGlicButtonState) -->
+
+<enum name="AndroidBottomBarGlicButtonState">
+  <int value="0" label="Default"/>
+  <int value="1" label="ChatActive"/>
+  <int value="2" label="TaskInProgress"/>
+  <int value="3" label="TaskNeedsReview"/>
+  <int value="4" label="Done"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:GlicButtonState) -->
+
+<!-- LINT.IfChange(AndroidBottomBarGlicConvoResult) -->
+
+<enum name="AndroidBottomBarGlicConvoResult">
+  <int value="0" label="OpenedSheet"/>
+  <int value="1" label="ClosedSheet"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:GlicConvoResult) -->
+
+<!-- LINT.IfChange(AndroidBottomBarIphEvent) -->
+
+<enum name="AndroidBottomBarIphEvent">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:IphEvent) -->
+
+<!-- LINT.IfChange(AndroidBottomBarPromoEvent) -->
+
+<enum name="AndroidBottomBarPromoEvent">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/bottombar/java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMetrics.java:PromoEvent) -->
+
 <enum name="AndroidChildProcessConnectionEvents">
   <int value="0" label="SCHEDULE_TIMEOUT_SANDBOXED"/>
   <int value="1" label="SCHEDULE_TIMEOUT_UNSANDBOXED"/>
