@@ -1104,16 +1104,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         // (e.g., when the composebox changes height).
         if (wasHidden && !this.isComposeboxHidden_()) {
           this.updateComplete.then(() => {
-            // Defer focus to the next message loop cycle using setTimeout(...,
-            // 0). While `this.updateComplete` guarantees the parent DOM is
-            // updated (removing the `hidden` attribute), the browser layout
-            // engine needs a layout pass to realize the nested child input is
-            // visible and interactive. setTimeout avoids a chain of
-            // updateComplete promises of all nested shadow DOM elements, and is
-            // simpler and cleaner.
-            setTimeout(() => {
-              this.composebox_?.focus();
-            }, 0);
+            this.composebox_?.tryFocus();
           });
         }
       } else {

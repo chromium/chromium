@@ -166,6 +166,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   accessor isLensOverlayShowing: boolean = false;
   accessor isOverlayOpenForAimVisualSearch: boolean = false;
   accessor inputEnabled: boolean = true;
+  private focusRetryCount_ = 0;
+  private focusAnimationFrameId_: number|null = null;
 
   protected accessor zeroStateSuggestions_: AutocompleteResult = {
     input: '',
@@ -617,6 +619,36 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
 
   get resizeObserverForTesting() {
     return this.resizeObserver_;
+  }
+
+  tryFocus() {
+    if (this.focusAnimationFrameId_ !== null) {
+      cancelAnimationFrame(this.focusAnimationFrameId_);
+      this.focusAnimationFrameId_ = null;
+    }
+    this.focusRetryCount_ = 0;
+    this.runFocusLoop_();
+  }
+
+  private runFocusLoop_() {
+    this.focus();
+    if (this.isInputFocused_()) {
+      this.focusAnimationFrameId_ = null;
+      this.fire('composebox-focused');
+    } else if (this.focusRetryCount_ < 10) {
+      this.focusRetryCount_++;
+      this.focusAnimationFrameId_ =
+          requestAnimationFrame(() => this.runFocusLoop_());
+    } else {
+      this.focusAnimationFrameId_ = null;
+    }
+  }
+
+  private isInputFocused_(): boolean {
+    const inputEl = this.$.composebox.getInputElement()?.inputElement;
+    return inputEl ?
+        (inputEl.getRootNode() as ShadowRoot).activeElement === inputEl :
+        false;
   }
 }
 
