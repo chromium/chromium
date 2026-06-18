@@ -12,6 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_extension_utils.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
@@ -203,6 +204,11 @@ LocalEligibility IndigoService::ComputeLocalEligibility() const {
       identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
   if (info.capabilities.can_use_model_execution_features() !=
       signin::Tribool::kTrue) {
+    return LocalEligibility::kMissingCapabilities;
+  }
+
+  if (features::kIndigoRequireGlicEnabling.Get() &&
+      !glic::GlicEnabling::IsEnabledForProfile(profile_)) {
     return LocalEligibility::kMissingCapabilities;
   }
 
