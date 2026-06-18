@@ -464,6 +464,14 @@ ContextualSearchboxHandler::~ContextualSearchboxHandler() {
     context_controller_->RemoveObserver(this);
   }
 
+  // The `drive_upload_click_callback_` might be non-null if the handler is
+  // destroyed (e.g. due to the user closing the window/tab) while the drive
+  // picker UI is open. The callback must be run with a default response to
+  // satisfy Mojo's response callback validation before destruction.
+  if (!drive_upload_click_callback_.is_null()) {
+    std::move(drive_upload_click_callback_)
+        .Run(searchbox::mojom::DriveUploadResponse::New());
+  }
   // Ensure any selected tabs are cleared when shutting down.
   if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
     if (auto* active_task_context_provider = GetActiveTaskContextProvider()) {
@@ -966,19 +974,23 @@ void ContextualSearchboxHandler::OnDriveUploadClicked(
       profile_->GetPrefs()));
 
   if (!drive_upload_click_callback_.is_null()) {
+    std::move(callback).Run(searchbox::mojom::DriveUploadResponse::New());
     return;
   }
-  drive_upload_click_callback_ = std::move(callback);
 
   if (drive_picker_result_handler_receiver_.is_bound()) {
+    std::move(callback).Run(searchbox::mojom::DriveUploadResponse::New());
     return;
   }
 
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);
   if (!browser_window_interface) {
+    std::move(callback).Run(searchbox::mojom::DriveUploadResponse::New());
     return;
   }
+
+  drive_upload_click_callback_ = std::move(callback);
 
   if (!drive_picker_controller_) {
     drive_picker_controller_ =
