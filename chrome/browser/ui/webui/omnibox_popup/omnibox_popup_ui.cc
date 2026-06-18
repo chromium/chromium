@@ -23,10 +23,12 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/omnibox_popup_resources.h"
 #include "chrome/grit/omnibox_popup_resources_map.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
@@ -195,6 +197,12 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                                   ? IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_FULL_HTML
                                   : IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_HTML);
   webui::EnableTrustedTypesCSP(source);
+
+  // Add a handler to provide pluralized strings.
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString("sharingTabs",
+                                            IDS_COMPOSE_SHARING_TABS);
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));
