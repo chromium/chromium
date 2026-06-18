@@ -6327,6 +6327,12 @@ inline constexpr char kEnableInputProtectionDescription[] =
     "prevents unintended events on security-sensitive UI that appears and "
     "activates unexpectedly.";
 
+inline constexpr char kForceDriveDisclaimerAcceptedName[] =
+    "Force Drive Disclaimer Accepted";
+inline constexpr char kForceDriveDisclaimerAcceptedDescription[] =
+    "Whether to force the Google Drive disclaimer to be accepted. This flag is "
+    "only used for testing purposes.";
+
 inline constexpr char kHeadlessCaptionEarlyStartName[] =
     "Headless Caption Early Start";
 inline constexpr char kHeadlessCaptionEarlyStartDescription[] =

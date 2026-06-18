@@ -6714,6 +6714,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceColorProfileDescription, kOsAll,
      MULTI_VALUE_TYPE(kForceColorProfileChoices)},
 
+    {"force-drive-disclaimer-accepted",
+     flag_descriptions::kForceDriveDisclaimerAcceptedName,
+     flag_descriptions::kForceDriveDisclaimerAcceptedDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kForceDriveDisclaimerAccepted)},
+
     {"forced-colors", flag_descriptions::kForcedColorsName,
      flag_descriptions::kForcedColorsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kForcedColors)},

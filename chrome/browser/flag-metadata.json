@@ -4889,7 +4889,12 @@
   {
     "name": "force-control-face-ae",
     "owners": [ "chromeos-camera-eng@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 160
+  },
+  {
+    "name": "force-drive-disclaimer-accepted",
+    "owners": [ "julietlevesque@google.com", "search-input-suggest-eng@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "force-enable-web-signin-loading-dialog",
