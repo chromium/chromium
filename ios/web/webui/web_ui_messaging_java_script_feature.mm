@@ -49,6 +49,13 @@ void WebUIMessagingJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
+  if (!script_message.security_origin().IsSameOriginWith(
+          url::Origin::Create(url.value()))) {
+    // Discard the message as the committed origin does not match the request
+    // URL
+    return;
+  }
+
   if (!script_message.body() || !script_message.body()->is_dict()) {
     return;
   }
