@@ -101,6 +101,8 @@ export function getHtml(this: OmniboxComposeboxElement) {
                     .applyContextButtonBackground="${this.applyContextButtonBackground}"
                     .isOblongShape="${this.isOblongShape}"
                     ?upload-button-disabled="${this.uploadButtonDisabled}"
+                    .sharedTabs="${this.getSharedTabs()}"
+                    .restoredTabs="${this.aimThreadRestoredTabs}"
                     ?show-context-menu-description="${this.showContextMenuDescription}">
                 </cr-composebox-contextual-entrypoint-button>
               ` : ''}
