@@ -1191,17 +1191,20 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     return;
   }
 
+  // TODO(crbug.com/519061643): Rely on central atMemory eligibility logic
+  // instead.
+  if (IsAtMemoryTriggerSource(trigger_source) &&
+      client().GetAccessibilityAnnotatorEnablementState() ==
+          accessibility_annotator::RemoteAnnotatorEnablementState::
+              kDisabledNotEligible) {
+    return;
+  }
+
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source,
                               /*update_datalist=*/true);
 
   if (IsAtMemoryTriggerSource(trigger_source)) {
-    // Do not show the pop up at all for non eligible profiles.
-    if (client().GetAccessibilityAnnotatorEnablementState() ==
-        accessibility_annotator::RemoteAnnotatorEnablementState::
-            kDisabledNotEligible) {
-      return;
-    }
     // Show empty suggestions with a search bar to start the flow.
     external_delegate_->OnSuggestionsReturned(field_id, {});
     return;
