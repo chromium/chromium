@@ -2478,20 +2478,6 @@ void SetBookmarkBarVisibilityState(
       bookmarks::prefs::kBookmarkBarVisibilityState, static_cast<int>(state));
 }
 
-void ToggleShowAppsShortcutInBookmarkBar(BrowserWindowInterface* browser) {
-  bool pref_enabled = browser->GetProfile()->GetPrefs()->GetBoolean(
-      bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
-  browser->GetProfile()->GetPrefs()->SetBoolean(
-      bookmarks::prefs::kShowAppsShortcutInBookmarkBar, !pref_enabled);
-}
-
-void ToggleShowTabGroupsInBookmarkBar(BrowserWindowInterface* browser) {
-  bool pref_enabled = browser->GetProfile()->GetPrefs()->GetBoolean(
-      bookmarks::prefs::kShowTabGroupsInBookmarkBar);
-  browser->GetProfile()->GetPrefs()->SetBoolean(
-      bookmarks::prefs::kShowTabGroupsInBookmarkBar, !pref_enabled);
-}
-
 void ToggleShowFullURLs(BrowserWindowInterface* browser) {
   bool pref_enabled = browser->GetProfile()->GetPrefs()->GetBoolean(
       omnibox::kPreventUrlElisionsInOmnibox);

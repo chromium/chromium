@@ -1982,9 +1982,6 @@ bool AppMenuModel::IsCommandIdChecked(int command_id) const {
   if (command_id == IDC_SHOW_BOOKMARK_BAR) {
     return prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar);
   }
-  if (command_id == IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS) {
-    return prefs->GetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar);
-  }
   if (command_id == IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW) {
     return prefs->GetInteger(bookmarks::prefs::kBookmarkBarVisibilityState) ==
            static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow);
@@ -1997,9 +1994,6 @@ bool AppMenuModel::IsCommandIdChecked(int command_id) const {
     return prefs->GetInteger(bookmarks::prefs::kBookmarkBarVisibilityState) ==
            static_cast<int>(
                bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp);
-  }
-  if (command_id == IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT) {
-    return prefs->GetBoolean(bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
   }
   if (command_id == IDC_PROFILING_ENABLED) {
     return content::Profiling::BeingProfiled();

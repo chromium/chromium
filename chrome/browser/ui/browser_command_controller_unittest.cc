@@ -667,26 +667,6 @@ TEST_F(BrowserCommandControllerWithBookmarksTest,
       profile()->GetPrefs()->GetInteger(
           bookmarks::prefs::kBookmarkBarVisibilityState),
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp));
-
-  // Test executing apps shortcut command updates the pref correctly.
-  bool initial_apps_shortcut = profile()->GetPrefs()->GetBoolean(
-      bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
-  command_controller.ExecuteCommand(
-      IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
-  EXPECT_EQ(profile()->GetPrefs()->GetBoolean(
-                bookmarks::prefs::kShowAppsShortcutInBookmarkBar),
-            !initial_apps_shortcut);
-
-  // Test executing tab groups command updates the pref correctly.
-  bool initial_tab_groups = profile()->GetPrefs()->GetBoolean(
-      bookmarks::prefs::kShowTabGroupsInBookmarkBar);
-  command_controller.ExecuteCommand(
-      IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
-  EXPECT_EQ(profile()->GetPrefs()->GetBoolean(
-                bookmarks::prefs::kShowTabGroupsInBookmarkBar),
-            !initial_tab_groups);
 }
 
 TEST_F(BrowserCommandControllerTest,

@@ -306,8 +306,6 @@ void OpenReportUnsafeSiteDialog(BrowserWindowInterface* browser);
 void ToggleBookmarkBar(BrowserWindowInterface* browser);
 void SetBookmarkBarVisibilityState(BrowserWindowInterface* browser,
                                    bookmarks::BookmarkBarVisibilityState state);
-void ToggleShowAppsShortcutInBookmarkBar(BrowserWindowInterface* browser);
-void ToggleShowTabGroupsInBookmarkBar(BrowserWindowInterface* browser);
 void ToggleShowFullURLs(BrowserWindowInterface* browser);
 void ToggleShowGoogleLensShortcut(BrowserWindowInterface* browser);
 void ToggleShowAiModeOmniboxButton(BrowserWindowInterface* browser);

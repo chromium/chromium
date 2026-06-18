@@ -11,14 +11,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/prefs/pref_service.h"
-#include "components/saved_tab_groups/public/features.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/ui_base_features.h"
@@ -63,19 +61,6 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
     bookmark_bar_sub_menu_model_->AddCheckItemWithStringId(
         IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP,
         IDS_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP);
-    bookmark_bar_sub_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-    if (chrome::IsAppsShortcutEnabled(browser->profile())) {
-      bookmark_bar_sub_menu_model_->AddCheckItemWithStringId(
-          IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
-          IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT);
-    }
-    if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
-            browser->profile()) &&
-        !tab_groups::IsProjectsPanelFeatureEnabled()) {
-      bookmark_bar_sub_menu_model_->AddCheckItemWithStringId(
-          IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS,
-          IDS_BOOKMARK_BAR_SHOW_TAB_GROUPS);
-    }
     AddSubMenuWithStringIdAndIcon(
         IDC_BOOKMARK_BAR_SUBMENU, IDS_BOOKMARK_BAR_SUBMENU_LABEL,
         bookmark_bar_sub_menu_model_.get(),
