@@ -817,6 +817,59 @@ suite('ComposeboxVoiceSearch', () => {
     await microtasksFinished();
   });
 
+  test('Does not stop voice search on pointerdown inside composebox', async () => {
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    composeboxElement = document.createElement('cr-composebox');
+    composeboxElement.showVoiceSearch = true;
+    document.body.appendChild(composeboxElement);
+    await microtasksFinished();
+
+    const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+    assertTrue(!!voiceSearchButton);
+    voiceSearchButton.click();
+    await microtasksFinished();
+
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    assertTrue(mockSpeechRecognition.voiceSearchInProgress);
+
+    await windowProxy.whenCalled('setTimeout');
+
+    const setTimeoutCalls = windowProxy.getArgs('setTimeout');
+    assertTrue(
+        setTimeoutCalls.length >= 2,
+        'setTimeout should be called at least twice');
+    const listenersCallback = setTimeoutCalls[1][0];
+    listenersCallback();  // Attach the pointerdown and blur listeners
+    await microtasksFinished();
+
+    let stoppedEventFired = false;
+    voiceSearchElement.addEventListener('recording-stopped', () => {
+      stoppedEventFired = true;
+    });
+
+    // Simulate clicking INSIDE the composebox (on the composebox element).
+    composeboxElement.dispatchEvent(new PointerEvent('pointerdown', {
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    // Verify the recording did NOT stop.
+    assertFalse(stoppedEventFired, 'Event should not fire on inside pointerdown');
+    assertTrue(
+        mockSpeechRecognition.voiceSearchInProgress, 'Engine should not stop');
+
+    // Cleanup.
+    const mockVoiceSearch =
+        voiceSearchElement as unknown as MockComposeboxVoiceSearch;
+    mockVoiceSearch.state_ = -1;
+    mockVoiceSearch.voiceRecognition_.abort();
+    await microtasksFinished();
+  });
+
   test('Stops voice search on window blur event', async () => {
     loadTimeData.overrideValues({
       voiceSearchCoherenceComposeboxesEnabled: true,

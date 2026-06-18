@@ -333,7 +333,10 @@ export class ComposeboxVoiceSearchElement extends
 
   private onOutsideInteraction_ = (e: Event) => {
     if (e.type === 'pointerdown') {
-      if (e.composedPath().includes(this)) {
+      const host = this.getRootNode() instanceof ShadowRoot ?
+          (this.getRootNode() as ShadowRoot).host : null;
+      if (e.composedPath().includes(this) ||
+          (host && e.composedPath().includes(host))) {
         return;
       }
       this.onStopClick_();
