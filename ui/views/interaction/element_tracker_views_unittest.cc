@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -36,6 +37,10 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 namespace views {
 
@@ -1086,6 +1091,12 @@ TEST_F(ElementTrackerViewsTest, MinimizeMaximizeWhileHiddenDoesNotSendEvents) {
 }
 
 TEST_F(ElementTrackerViewsTest, MinimizeMaximizeWhileShownDoesNotSendEvents) {
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSMajorVersion() <= 13) {
+    GTEST_SKIP()
+        << "Flaky on MacOS 13 builders; see https://crbug.com/507411988";
+  }
+#endif
   auto widget = CreateWidget();
   const auto context = ElementTrackerViews::GetContextForWidget(widget.get());
   UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, shown);
@@ -1128,6 +1139,12 @@ TEST_F(ElementTrackerViewsTest, MinimizeHideMaximizeSendsHideEvent) {
 }
 
 TEST_F(ElementTrackerViewsTest, MinimizeShowMaximizeSendsShowEvent) {
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSMajorVersion() <= 13) {
+    GTEST_SKIP()
+        << "Flaky on MacOS 13 builders; see https://crbug.com/507411988";
+  }
+#endif
   auto widget = CreateWidget();
   const auto context = ElementTrackerViews::GetContextForWidget(widget.get());
   UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, shown);
