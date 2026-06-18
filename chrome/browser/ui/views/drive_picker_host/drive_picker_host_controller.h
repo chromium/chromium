@@ -82,6 +82,8 @@ class DrivePickerHostController : public content::WebContentsObserver,
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
 
   // Whether the Drive Picker document has completed loading in the `WebView`.
   bool is_picker_document_loaded_ = false;
@@ -99,6 +101,8 @@ class DrivePickerHostController : public content::WebContentsObserver,
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       picker_widget_observation_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      browser_widget_observation_{this};
 
   base::WeakPtrFactory<DrivePickerHostController> weak_ptr_factory_{this};
 };

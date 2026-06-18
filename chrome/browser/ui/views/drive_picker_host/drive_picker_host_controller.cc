@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
@@ -21,6 +22,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -85,10 +87,20 @@ void DrivePickerHostController::ShowDrivePickerHost(
 
   picker_delegate_ = std::move(delegate);
 
-  picker_widget_ =
-      base::WrapUnique(constrained_window::CreateBrowserModalDialogViews(
-          picker_delegate_.get(),
-          browser_view->GetWidget()->GetNativeWindow()));
+  gfx::NativeWindow parent_window =
+      browser_view->GetWidget()->GetNativeWindow();
+  gfx::NativeView parent_view = platform_util::GetViewForWindow(parent_window);
+
+  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+      picker_delegate_.get(), gfx::NativeWindow(), parent_view);
+  widget->SetNativeWindowProperty(
+      views::kWidgetIdentifierKey,
+      const_cast<void*>(
+          constrained_window::kConstrainedWindowWidgetIdentifier));
+
+  picker_widget_ = base::WrapUnique(widget);
+
+  browser_widget_observation_.Observe(browser_view->GetWidget());
 
   if (auto* frame_view = picker_widget_->widget_delegate()
                              ->AsDialogDelegate()
@@ -99,6 +111,7 @@ void DrivePickerHostController::ShowDrivePickerHost(
   }
 
   picker_widget_->Show();
+  picker_widget_->CenterWindow(picker_view_->GetPreferredSize());
   picker_widget_observation_.Observe(picker_widget_.get());
 
   // Explicitly request focus on the newly shown picker view to immediately
@@ -138,6 +151,7 @@ void DrivePickerHostController::SendErrorToRequest(
 
 void DrivePickerHostController::ResetControllerState() {
   picker_widget_observation_.Reset();
+  browser_widget_observation_.Reset();
   if (picker_widget_) {
     picker_widget_->Close();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -163,6 +177,15 @@ void DrivePickerHostController::ResetControllerState() {
 void DrivePickerHostController::OnWidgetDestroying(views::Widget* widget) {
   if (widget == picker_widget_.get()) {
     ResetControllerState();
+  }
+}
+
+void DrivePickerHostController::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  if (widget != picker_widget_.get() && picker_widget_) {
+    picker_widget_->CenterWindow(
+        picker_widget_->GetContentsView()->GetPreferredSize({}));
   }
 }
 

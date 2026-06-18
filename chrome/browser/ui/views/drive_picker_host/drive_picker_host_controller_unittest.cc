@@ -14,6 +14,8 @@
 #include "components/web_modal/modal_dialog_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "url/gurl.h"
@@ -82,9 +84,11 @@ class DrivePickerHostControllerTest : public TestWithBrowserView {
 
   void SetUp() override {
     TestWithBrowserView::SetUp();
+
     // Ensure the browser window is visible and active, which is often required
     // for modal dialogs to be correctly parented and displayed in tests.
     browser_view()->GetWidget()->Show();
+    browser_view()->GetWidget()->SetBounds(gfx::Rect(0, 0, 600, 500));
 
     AddTab(browser(), GURL("about:blank"));
     controller_ = std::make_unique<DrivePickerHostController>(browser());
@@ -205,3 +209,5 @@ TEST_F(DrivePickerHostControllerTest, ResetControllerStateClearsView) {
   EXPECT_FALSE(picker_widget());
   EXPECT_FALSE(picker_view());
 }
+
+

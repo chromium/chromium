@@ -72,16 +72,7 @@ content::WebContents* DrivePickerHostView::GetWebContents() {
 
 gfx::Size DrivePickerHostView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  if (!browser_window_interface_ || !browser_window_interface_->GetWindow()) {
-    return gfx::Size();
-  }
-
-  constexpr int kDialogWidth = 830;
-  constexpr int kDialogHeight = 600;
-  gfx::Size window_size =
-      browser_window_interface_->GetWindow()->GetBounds().size();
-  return gfx::Size(std::min(kDialogWidth, window_size.width()),
-                   std::min(kDialogHeight, window_size.height()));
+  return gfx::Size(830, 600);
 }
 
 void DrivePickerHostView::RequestFocus() {
