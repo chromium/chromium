@@ -69,12 +69,12 @@ TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusAccepted) {
                   "chrome_desktop_disclaimer");
         ASSERT_EQ(request.setting_size(), 1);
         EXPECT_EQ(request.setting(0),
-                  contextual_search::kContextualSearchDriveDisclaimerAccepted);
+                  contextual_search::kPersonalContextSearchUsingWorkspace);
 
         footprints::oneplatform::GetFacsResponse response;
         auto* setting = response.add_facs_setting();
         setting->set_setting(
-            contextual_search::kContextualSearchDriveDisclaimerAccepted);
+            contextual_search::kPersonalContextSearchUsingWorkspace);
         setting->set_data_recording_enabled(true);
         std::move(callback).Run(true, response);
       });
@@ -112,12 +112,12 @@ TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusRestricted) {
                   "chrome_desktop_disclaimer");
         ASSERT_EQ(request.setting_size(), 1);
         EXPECT_EQ(request.setting(0),
-                  contextual_search::kContextualSearchDriveDisclaimerAccepted);
+                  contextual_search::kPersonalContextSearchUsingWorkspace);
 
         footprints::oneplatform::GetFacsResponse response;
         auto* setting = response.add_facs_setting();
         setting->set_setting(
-            contextual_search::kContextualSearchDriveDisclaimerAccepted);
+            contextual_search::kPersonalContextSearchUsingWorkspace);
         setting->mutable_recording_setting_info()
             ->add_user_setting_restricted_reason(
                 footprints::oneplatform::UserSettingRestrictedReason::
@@ -143,7 +143,7 @@ TEST_F(DriveDisclaimerControllerTest, CheckDisclaimerStatusGetFacsFailure) {
                   "chrome_desktop_disclaimer");
         ASSERT_EQ(request.setting_size(), 1);
         EXPECT_EQ(request.setting(0),
-                  contextual_search::kContextualSearchDriveDisclaimerAccepted);
+                  contextual_search::kPersonalContextSearchUsingWorkspace);
 
         footprints::oneplatform::GetFacsResponse response;
         std::move(callback).Run(false, response);
@@ -168,7 +168,7 @@ TEST_F(DriveDisclaimerControllerTest,
                   "chrome_desktop_disclaimer");
         ASSERT_EQ(request.setting_size(), 1);
         EXPECT_EQ(request.setting(0),
-                  contextual_search::kContextualSearchDriveDisclaimerAccepted);
+                  contextual_search::kPersonalContextSearchUsingWorkspace);
 
         footprints::oneplatform::GetFacsResponse response;
         // Success is true, but no settings are populated.
@@ -195,7 +195,7 @@ TEST_F(DriveDisclaimerControllerTest,
         ASSERT_EQ(request.setting_size(), 1);
         EXPECT_EQ(request.setting(0),
 
-                  contextual_search::kContextualSearchDriveDisclaimerAccepted);
+                  contextual_search::kPersonalContextSearchUsingWorkspace);
 
         footprints::oneplatform::GetFacsResponse response;
         auto* setting = response.add_facs_setting();

@@ -39,8 +39,7 @@ void DriveDisclaimerController::CheckDisclaimerStatusAsync(
   }
 
   footprints::oneplatform::GetFacsRequest request;
-  request.add_setting(
-      contextual_search::kContextualSearchDriveDisclaimerAccepted);
+  request.add_setting(contextual_search::kPersonalContextSearchUsingWorkspace);
   request.mutable_header()->set_application_id(kApplicationId);
 
   fpop_service_->GetFacs(
@@ -56,7 +55,7 @@ void DriveDisclaimerController::OnGetFacsResponse(
   if (success) {
     for (const auto& facs_setting : response.facs_setting()) {
       if (facs_setting.setting() ==
-          contextual_search::kContextualSearchDriveDisclaimerAccepted) {
+          contextual_search::kPersonalContextSearchUsingWorkspace) {
         if (facs_setting.recording_setting_info()
                 .user_setting_restricted_reason_size() > 0) {
           std::move(completion_callback).Run(DisclaimerStatus::kRestricted);
