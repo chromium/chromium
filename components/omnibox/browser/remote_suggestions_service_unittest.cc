@@ -1026,6 +1026,22 @@ TEST_F(
             {"vsrid", "vsrid"},
             {"gsessionid", "gsessionid"},
             {"azm", "2"}});
+
+  search_terms_args.input_state.active_tool =
+      omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      *google_template_url, search_terms_args, SearchTermsData());
+
+  // When active_tool is TOOL_MODE_DEEP_SEARCH, client=chrome-contextual is
+  // omitted, but vsrid, gsessionid, vit, gs_ps, and azm=1 (DEEP_SEARCH) are
+  // sent.
+  CheckUrl(endpoint_url, "https://www.google.com/suggest",
+           {{"q", "query"},
+            {"gs_ps", "1"},
+            {"vit", "vit"},
+            {"vsrid", "vsrid"},
+            {"gsessionid", "gsessionid"},
+            {"azm", "1"}});
 }
 
 TEST_F(
