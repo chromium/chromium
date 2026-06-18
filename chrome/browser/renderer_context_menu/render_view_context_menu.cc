@@ -2638,8 +2638,8 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
 }
 
 void RenderViewContextMenu::AppendPrintItem() {
-  const bool use_simplified_text_selection = ShouldUseSimplifiedTextSelection();
-  if (use_simplified_text_selection && IsPasswordField()) {
+  if (features::IsMenuSimplificationEnabled() && IsPasswordField() &&
+      (!params_.selection_text.empty() || params_.is_editable)) {
     return;
   }
 
@@ -2649,7 +2649,8 @@ void RenderViewContextMenu::AppendPrintItem() {
        params_.media_flags & ContextMenuData::kMediaCanPrint) &&
       params_.misspelled_word.empty()) {
     const std::u16string printable_selection_text = PrintableSelectionText();
-    if (use_simplified_text_selection && !printable_selection_text.empty()) {
+    if (ShouldUseSimplifiedTextSelection() &&
+        !printable_selection_text.empty()) {
       menu_model_.AddItem(IDC_PRINT, l10n_util::GetStringFUTF16(
                                          IDS_CONTENT_CONTEXT_PRINT_SELECTION,
                                          printable_selection_text));
@@ -5297,6 +5298,11 @@ void RenderViewContextMenu::MaybeAppendOpenGlicItem() {
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_GLICSHAREIMAGE) &&
       CanAppendGlicShareImageItem()) {
+    return;
+  }
+
+  if (features::IsMenuSimplificationEnabled() &&
+      !params_.selection_text.empty() && IsPasswordField()) {
     return;
   }
 

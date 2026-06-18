@@ -2326,6 +2326,50 @@ TEST_F(RenderViewContextMenuMenuSimplificationTest, PasswordFieldRestricted) {
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
 }
 
+#if BUILDFLAG(ENABLE_PRINTING)
+TEST_F(RenderViewContextMenuMenuSimplificationTest,
+       PasswordFieldWithSelectionRestricted) {
+  content::ContextMenuParams params =
+      CreateParams(MenuItem::SELECTION | MenuItem::EDITABLE);
+  params.form_control_type = blink::mojom::FormControlType::kInputPassword;
+  params.selection_text = u"secretpassword";
+
+  // Ensure printing is enabled.
+  profile()->GetPrefs()->SetBoolean(prefs::kPrintingEnabled, true);
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  ChromeTranslateClient::CreateForWebContents(web_contents());
+  menu.Init();
+
+  EXPECT_FALSE(menu.IsItemPresent(IDC_PRINT));
+}
+#endif  // BUILDFLAG(ENABLE_PRINTING)
+
+TEST_F(RenderViewContextMenuMenuSimplificationTest,
+       PasswordFieldWithSelectionGlicRestricted) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kGlicContextMenu);
+
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
+  content::ContextMenuParams params =
+      CreateParams(MenuItem::SELECTION | MenuItem::EDITABLE);
+  params.form_control_type = blink::mojom::FormControlType::kInputPassword;
+  params.selection_text = u"secretpassword";
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  ChromeTranslateClient::CreateForWebContents(web_contents());
+  menu.Init();
+
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+}
+
 TEST_F(RenderViewContextMenuMenuSimplificationTest, EmailFieldSearchHidden) {
   content::ContextMenuParams params;
   params.form_control_type = blink::mojom::FormControlType::kInputEmail;
