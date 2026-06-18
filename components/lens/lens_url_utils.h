@@ -80,6 +80,10 @@ std::string Base64EncodeRequestId(LensOverlayRequestId request_id);
 // Returns the vit query parameter value for the given mime type.
 std::string VitQueryParamValueForMimeType(MimeType mime_type);
 
+// Returns the vit query parameter value for the given mime type string.
+std::string VitQueryParamValueForMimeTypeString(
+    const std::string& mime_type_string);
+
 // Returns the vit query parameter value for the given media type.
 std::string VitQueryParamValueForMediaType(
     LensOverlayRequestId::MediaType media_type);

@@ -5800,6 +5800,72 @@ TEST_F(ComposeboxQueryControllerTest, AimSearch_SendsVitParamIfFlagEnabled) {
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       AimSearch_SendsVitParam_WithRawFileMediaTypes) {
+  // Arrange: Enable the flag and raw file media types.
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/false,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*attach_page_title_and_url_to_suggest_requests=*/false,
+      /*enable_send_vit_for_single_context_next_queries=*/true,
+      /*enable_send_raw_file_media_types=*/true);
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Act: Start the file upload flow with mime_type_string set.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kUnknown;
+  input_data->mime_type_string = "APPLICATION/PDF";
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kUnknown));
+  input_data->upload_type = lens::LensOverlayContextualInputUploadType::
+      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kUnknown);
+
+  // Verify it actually used MEDIA_TYPE_RAW_FILE.
+  auto* file_info = controller().GetFileInfoForTesting(file_token);
+  ASSERT_TRUE(file_info);
+  auto request_id = file_info->GetRequestIdForTesting();
+  ASSERT_TRUE(request_id.has_value());
+  EXPECT_EQ(request_id->media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE);
+
+  // Act: Create the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kAim;
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->file_tokens.push_back(file_token);
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
+
+  // Assert: Vit param is present and set to pdf.
+  std::string vit_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kVisualInputTypeQueryParameter, &vit_value));
+  EXPECT_EQ(vit_value, "pdf");
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        AimSearch_DoesNotSendVitParamIfFlagDisabled) {
   // Arrange: Disable the flag.
   CreateController(
@@ -7206,6 +7272,12 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(contextual_inputs.inputs(0).upload_type(),
             lens::LensOverlayContextualInputUploadType::
                 CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
+
+  // Verify that vit is also present and set to pdf.
+  std::string vit_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kVisualInputTypeQueryParameter, &vit_value));
+  EXPECT_EQ(vit_value, "pdf");
 }
 
 TEST_F(ComposeboxQueryControllerTest,

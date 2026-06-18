@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
@@ -169,6 +170,25 @@ std::string VitQueryParamValueForMimeType(MimeType mime_type) {
     case lens::MimeType::kJson:
       // These content types are not supported for the page content upload flow.
       NOTREACHED() << "Unsupported option in page content upload";
+  }
+  return vitValue;
+}
+
+std::string VitQueryParamValueForMimeTypeString(
+    const std::string& mime_type_string) {
+  // Default contextual visual input type.
+  std::string vitValue = kContextualVisualInputTypeQueryParameterValue;
+  if (base::StartsWith(mime_type_string, "application/pdf",
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    vitValue = kPdfVisualInputTypeQueryParameterValue;
+  } else if (base::StartsWith(mime_type_string, "text/html",
+                              base::CompareCase::INSENSITIVE_ASCII) ||
+             base::StartsWith(mime_type_string, "text/plain",
+                              base::CompareCase::INSENSITIVE_ASCII)) {
+    vitValue = kWebpageVisualInputTypeQueryParameterValue;
+  } else if (base::StartsWith(mime_type_string, "image/",
+                              base::CompareCase::INSENSITIVE_ASCII)) {
+    vitValue = kImageVisualInputTypeQueryParameterValue;
   }
   return vitValue;
 }

@@ -727,6 +727,9 @@ void ComposeboxQueryController::CreateSearchUrl(
       request_id_generator_.SetIsImplicitUpload(
           last_active_lens_file->is_implicit_upload ||
           (has_selection_type && has_image_crop));
+      auto context_media_type =
+          has_image_crop ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
+                         : last_active_lens_file->request_id->media_type();
       // Trigger the interaction request on the last file if needed.
       // TODO(crbug.com/462509148): Determine how to support interaction
       // requests for multi-context input flow.
@@ -734,10 +737,7 @@ void ComposeboxQueryController::CreateSearchUrl(
         request_id_generator_.SetContextId(
             last_active_lens_file->request_id->context_id());
         auto interaction_request_id = request_id_generator_.GetNextRequestId(
-            lens::RequestIdUpdateMode::kInteractionRequest,
-            has_image_crop
-                ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
-                : last_active_lens_file->request_id->media_type());
+            lens::RequestIdUpdateMode::kInteractionRequest, context_media_type);
         SendInteractionRequest(
             std::move(interaction_request_id),
             search_url_request_info->query_text,
@@ -758,21 +758,9 @@ void ComposeboxQueryController::CreateSearchUrl(
             kLnsModeQueryParameterValue;
       }
 
-      // Get the encoded visual search interaction log data.
-      bool should_send_lns_surface =
-          send_lns_surface_ &&
-          (!suppress_lns_surface_param_if_no_image_ || has_image_upload);
-      std::string lns_surface =
-          should_send_lns_surface ? kLnsSurfaceParameterValue : std::string();
-      if (contextual_inputs->inputs_size() == 1 && !send_upload_type) {
-        auto context_media_type =
-            search_url_request_info->image_crop.has_value()
-                ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
-                : last_active_lens_file->request_id->media_type();
-        bool is_raw_file = last_active_lens_file->request_id->media_type() ==
-                           lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE;
-        // If there is only contextual input, create a search url using the
-        // vsrid (single-context) parameter.
+      // If there is only one valid lens file, determine if we should send the
+      // vit parameter.
+      if (num_valid_lens_files == 1) {
         bool is_translate =
             search_url_request_info->lens_overlay_selection_type ==
             lens::TRANSLATE_CHIP;
@@ -781,12 +769,16 @@ void ComposeboxQueryController::CreateSearchUrl(
                  SearchUrlType::kStandard ||
              base::FeatureList::IsEnabled(
                  lens::features::kLensSendVitForSingleContextNextQueries))) {
-          // Single-context queries should send the vit parameter if it is a
-          // standard (non-AIM) query, or if the flag to send the vit parameter
-          // for single context next queries is enabled, and if the media type
-          // is not "img".
-          std::string vit_value =
-              lens::VitQueryParamValueForMediaType(context_media_type);
+          std::string vit_value;
+          if (context_media_type ==
+                  lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE &&
+              last_active_lens_file->mime_type_string.has_value()) {
+            vit_value = lens::VitQueryParamValueForMimeTypeString(
+                last_active_lens_file->mime_type_string.value());
+          } else {
+            vit_value =
+                lens::VitQueryParamValueForMediaType(context_media_type);
+          }
           if (context_media_type !=
                   lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE &&
               !vit_value.empty()) {
@@ -794,6 +786,20 @@ void ComposeboxQueryController::CreateSearchUrl(
                 {kVisualInputTypeQueryParameter, vit_value});
           }
         }
+      }
+
+      // Get the encoded visual search interaction log data.
+      bool should_send_lns_surface =
+          send_lns_surface_ &&
+          (!suppress_lns_surface_param_if_no_image_ || has_image_upload);
+      std::string lns_surface =
+          should_send_lns_surface ? kLnsSurfaceParameterValue : std::string();
+      if (contextual_inputs->inputs_size() == 1 && !send_upload_type) {
+        bool is_raw_file = last_active_lens_file->request_id->media_type() ==
+                           lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE;
+        bool is_translate =
+            search_url_request_info->lens_overlay_selection_type ==
+            lens::TRANSLATE_CHIP;
         std::unique_ptr<lens::LensOverlayRequestId> request_id = nullptr;
         if (!is_translate) {
           if (is_aim_search) {
