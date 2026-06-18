@@ -400,6 +400,66 @@ enum Attributes {
           // Verbatim match does not show for image context.
           assertStyle(matchEl, 'display', 'none');
         });
+
+        test(
+            'dropdown does not flash after clicking ZPS suggestion',
+            async () => {
+              loadTimeData.overrideValues(
+                  {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+              createComposeboxElement(testProxy);
+              await microtasksFinished();
+
+              testProxy.element.input = '';
+              testProxy.element.showZps = true;
+
+              const matches = [
+                createSearchMatchForTesting({
+                  contents: 'zps suggestion',
+                  destinationUrl: 'https://google.com/',
+                }),
+              ];
+              testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+                  createAutocompleteResultForTesting({
+                    input: '',
+                    matches: matches,
+                  }));
+              await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+              await microtasksFinished();
+              await testProxy.element.updateComplete;
+
+              const composeboxDropdown = testProxy.element.$.matches;
+              assertFalse(composeboxDropdown.hidden);
+              assertTrue(!!testProxy.element.result);
+
+              composeboxDropdown.dispatchEvent(new CustomEvent(
+                  'match-click',
+                  {detail: {ctrlKey: false, metaKey: false, shiftKey: false}}));
+              await microtasksFinished();
+              await testProxy.element.updateComplete;
+
+              assertTrue(composeboxDropdown.hidden);
+              assertEquals(null, testProxy.element.result);
+
+              // Simulate automatic focus restoration triggering input-focusin
+              const inputEl = testProxy.element.shadowRoot.querySelector(
+                  '#composeboxInput')!;
+              inputEl.dispatchEvent(new CustomEvent('input-focusin'));
+
+              // Simulate stale Mojo update arriving after click
+              testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+                  createAutocompleteResultForTesting({
+                    input: '',
+                    matches: matches,
+                  }));
+              await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+              await microtasksFinished();
+              await testProxy.element.updateComplete;
+
+              // clicking on a suggestion navigates to the AI mode, and thus the
+              // dropdown should not be opened.
+              assertTrue(composeboxDropdown.hidden);
+              assertEquals(null, testProxy.element.result);
+            });
       });
 
   suite(

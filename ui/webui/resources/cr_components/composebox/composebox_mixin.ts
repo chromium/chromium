@@ -74,6 +74,7 @@ export const ComposeboxEmbedderMixin =
               reflect: true,
               type: Boolean,
             },
+            submitting: {type: Boolean},
             showContextMenuDescription: {type: Boolean},
             smartTabSharingActive: {type: Boolean},
             smartTabSharingVisible: {type: Boolean},
@@ -177,6 +178,11 @@ export const ComposeboxEmbedderMixin =
         accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
         accessor disableCaretColorAnimation: boolean = false;
         accessor disableVoiceSearchAnimation: boolean = false;
+        // Blocks autocomplete updates after a query has been submitted or
+        // clicked. This prevents the dropdown from briefly flashing open due to
+        // late-arriving autocomplete updates or automatic focus restoration
+        // before navigation completes.
+        accessor submitting: boolean = false;
         accessor addedTabsIds: Map<number, UnguessableToken> = new Map();
         accessor aimThreadRestoredTabs: TabInfo[] = [];
         accessor isDraggingFile: boolean = false;
@@ -358,6 +364,17 @@ export const ComposeboxEmbedderMixin =
             this.eventTracker.add(inputElem, 'input', () => {
               this.submitEnabled = this.computeSubmitEnabled();
             });
+            // The following two event handlers are to re-enable the inputState
+            // update after the submission of a query when
+            // submitting is true.
+            // This occurs when the user quickly cancels the navigation and
+            // starts interacting with the input element again.
+            this.eventTracker.add(inputElem, 'mousedown', () => {
+              this.submitting = false;
+            });
+            this.eventTracker.add(inputElem, 'keydown', () => {
+              this.submitting = false;
+            });
           }
         }
 
@@ -438,7 +455,8 @@ export const ComposeboxEmbedderMixin =
             const oldInputState =
                 changedProperties.get('inputState') as InputState | undefined;
             if (oldInputState &&
-                this.inputState?.activeTool !== oldInputState.activeTool) {
+                this.inputState?.activeTool !== oldInputState.activeTool &&
+                !this.submitting) {
               this.focusInput();
               this.queryAutocomplete(/* clearMatches= */ true);
             }
@@ -597,6 +615,7 @@ export const ComposeboxEmbedderMixin =
           metaKey: boolean,
           shiftKey: boolean,
         }>) {
+          this.submitting = true;
           this.clearAutocompleteMatches();
           // We only close the composebox when opening in a new tab because
           // doing so in the current tab causes a visual jitter where the
@@ -635,8 +654,10 @@ export const ComposeboxEmbedderMixin =
         }
 
         onAutocompleteResultChanged(result: AutocompleteResult) {
-          if (this.lastQueriedInput === null ||
-              this.lastQueriedInput.trimStart() !== result.input) {
+          if (this.submitting) {
+            return;
+          }
+          if (this.lastQueriedInput.trimStart() !== result.input) {
             return;
           }
 
@@ -797,6 +818,9 @@ export const ComposeboxEmbedderMixin =
         }
 
         onInputFocusin() {
+          if (this.submitting) {
+            return;
+          }
           // if there's a last queried input, it's guaranteed that at least
           // the verbatim match will exist.
           if (this.lastQueriedInput) {
@@ -1675,6 +1699,7 @@ export const ComposeboxEmbedderMixin =
         }
 
         submitCleanup() {
+          this.submitting = true;
           this.clearAutocompleteMatches();
           this.resetSmartComposeStats();
           this.animationState = GlowAnimationState.SUBMITTING;
@@ -2383,6 +2408,7 @@ export const ComposeboxEmbedderMixin =
 
 export interface ComposeboxEmbedderMixinInterface extends
     I18nMixinLitInterface {
+  submitting: boolean;
   addedTabsIds: Map<number, UnguessableToken>;
   aimThreadRestoredTabs: TabInfo[];
   animationState: GlowAnimationState;
