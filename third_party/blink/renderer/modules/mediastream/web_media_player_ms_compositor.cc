@@ -644,6 +644,14 @@ void WebMediaPlayerMSCompositor::PutCurrentFrame() {
 
 base::TimeDelta WebMediaPlayerMSCompositor::GetPreferredRenderInterval() {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
+  base::AutoLock auto_lock(current_frame_lock_);
+  return GetPreferredRenderIntervalInternal();
+}
+
+base::TimeDelta
+WebMediaPlayerMSCompositor::GetPreferredRenderIntervalInternal() {
+  DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
+  current_frame_lock_.AssertAcquired();
   if (!rendering_frame_buffer_) {
     DCHECK_GE(last_render_length_, base::TimeDelta());
     return last_render_length_;
@@ -1049,7 +1057,7 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
       (expected_display_time.has_value() && !expected_display_time->is_null())
           ? *expected_display_time
           : now;
-  last_preferred_render_interval_ = GetPreferredRenderInterval();
+  last_preferred_render_interval_ = GetPreferredRenderIntervalInternal();
   ++presented_frames_;
 
   TRACE_EVENT_INSTANT("media", "SetCurrentFrame Timestamps",
@@ -1168,6 +1176,7 @@ void WebMediaPlayerMSCompositor::ReplaceCurrentFrameWithACopy() {
 
 void WebMediaPlayerMSCompositor::SetAlgorithmEnabledForTesting(
     bool algorithm_enabled) {
+  base::AutoLock auto_lock(current_frame_lock_);
   if (!algorithm_enabled) {
     rendering_frame_buffer_.reset();
     return;
@@ -1175,9 +1184,9 @@ void WebMediaPlayerMSCompositor::SetAlgorithmEnabledForTesting(
 
   if (!rendering_frame_buffer_) {
     rendering_frame_buffer_ = std::make_unique<VideoRendererAlgorithmWrapper>(
-        blink::BindRepeating(
+        ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
             &WebMediaPlayerMSCompositor::MapTimestampsToRenderTimeTicks,
-            Unretained(this)),
+            CrossThreadUnretained(this))),
         &media_log_);
   }
 }

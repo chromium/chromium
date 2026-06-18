@@ -115,6 +115,8 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   scoped_refptr<media::VideoFrame> GetCurrentFrame() override;
   void PutCurrentFrame() override;
   base::TimeDelta GetPreferredRenderInterval() override;
+  base::TimeDelta GetPreferredRenderIntervalInternal()
+      EXCLUSIVE_LOCKS_REQUIRED(current_frame_lock_);
   void OnFramePresented(base::TimeTicks display_time,
                         std::optional<base::TimeTicks> capture_begin_time,
                         std::optional<uint32_t> rtp_timestamp) override;
@@ -309,7 +311,8 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
 
   // |rendering_frame_buffer_| stores the incoming frames, and provides a frame
   // selection method which returns the best frame for the render interval.
-  std::unique_ptr<VideoRendererAlgorithmWrapper> rendering_frame_buffer_;
+  std::unique_ptr<VideoRendererAlgorithmWrapper> rendering_frame_buffer_
+      GUARDED_BY(current_frame_lock_);
 
   // |current_frame_rendered_| is updated on compositor thread only.
   // It's used to track whether |current_frame_| was painted for detecting
@@ -320,9 +323,9 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // Historical data about last rendering. These are for detecting whether
   // rendering is paused (one reason is that the tab is not in the front), in
   // which case we need to do background rendering.
-  base::TimeTicks last_deadline_max_;
-  base::TimeDelta last_render_length_;
-  base::TimeTicks last_deadline_min_;
+  base::TimeTicks last_deadline_max_ GUARDED_BY(current_frame_lock_);
+  base::TimeDelta last_render_length_ GUARDED_BY(current_frame_lock_);
+  base::TimeTicks last_deadline_min_ GUARDED_BY(current_frame_lock_);
 
   size_t total_frame_count_;
   size_t dropped_frame_count_;
