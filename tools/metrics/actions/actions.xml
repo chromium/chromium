@@ -7810,6 +7810,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="BookmarkBar_ContextMenu_AlwaysHide">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <description>
+    The user selected the &quot;Always Hide&quot; option for the bookmark bar
+    visibility using the context menu.
+  </description>
+</action>
+
+<action name="BookmarkBar_ContextMenu_AlwaysShow">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <description>
+    The user selected the &quot;Always Show&quot; option for the bookmark bar
+    visibility using context menu.
+  </description>
+</action>
+
 <action name="BookmarkBar_ContextMenu_Edit">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -7829,6 +7847,15 @@ should be able to be added at any place in this file.
 <action name="BookmarkBar_ContextMenu_NewFolder">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="BookmarkBar_ContextMenu_OnlyShowOnNtp">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <description>
+    The user selected the &quot;Only Show on NTP&quot; option for the bookmark
+    bar visibility using the context menu.
+  </description>
 </action>
 
 <action name="BookmarkBar_ContextMenu_Open">
