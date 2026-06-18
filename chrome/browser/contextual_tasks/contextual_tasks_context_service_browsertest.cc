@@ -12,6 +12,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_model_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
@@ -981,8 +982,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, TimedOut) {
       ContextDeterminationStatus::kTimedOut, 1);
 }
 
+// Flaky on windows: https://crbug.com/519755611.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TimedOutDuringTabScoring DISABLED_TimedOutDuringTabScoring
+#else
+#define MAYBE_TimedOutDuringTabScoring TimedOutDuringTabScoring
+#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
-                       TimedOutDuringTabScoring) {
+                       MAYBE_TimedOutDuringTabScoring) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::HistogramTester histogram_tester;
 
