@@ -13,14 +13,14 @@ import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_com
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 
 import {installMock} from './composebox_test_utils.js';
 
@@ -760,6 +760,34 @@ suite('ComposeboxTest', () => {
 
     assertEquals(1, handler.getCallCount('getSmartTabSharingActive'));
     assertTrue(newComposebox.smartTabSharingActive);
+  });
+
+  test(
+      'onOpenDriveUpload suppresses upload if disclaimer not accepted',
+      async () => {
+        searchboxHandler.setResultFor(
+            'getDriveDisclaimerStatus',
+            Promise.resolve({status: DriveDisclaimerStatus.kNotAccepted}));
+
+        await composebox.onOpenDriveUpload();
+
+        assertEquals(
+            1, searchboxHandler.getCallCount('getDriveDisclaimerStatus'));
+        assertEquals(0, searchboxHandler.getCallCount('onDriveUploadClicked'));
+      });
+
+  test('onOpenDriveUpload triggers upload if disclaimer accepted', async () => {
+    searchboxHandler.setResultFor(
+        'getDriveDisclaimerStatus',
+        Promise.resolve({status: DriveDisclaimerStatus.kAccepted}));
+    searchboxHandler.setResultFor(
+        'onDriveUploadClicked',
+        Promise.resolve({response: {files: [], error: null}}));
+
+    await composebox.onOpenDriveUpload();
+
+    assertEquals(1, searchboxHandler.getCallCount('getDriveDisclaimerStatus'));
+    assertEquals(1, searchboxHandler.getCallCount('onDriveUploadClicked'));
   });
 });
 

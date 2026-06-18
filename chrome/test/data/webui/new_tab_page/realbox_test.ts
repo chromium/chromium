@@ -13,6 +13,7 @@ import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/s
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
+import {DriveDisclaimerStatus} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {assertStyle, MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
@@ -235,6 +236,9 @@ suite('NewTabPageRealboxNextTest', () => {
   });
 
   test('selecting drive upload opens composebox', async () => {
+    testProxy.handler.setResultFor('getDriveDisclaimerStatus', Promise.resolve({
+      status: DriveDisclaimerStatus.kAccepted,
+    }));
     const sampleToken = {high: BigInt(123), low: BigInt(456)};
     testProxy.handler.setResultFor('onDriveUploadClicked', Promise.resolve({
       response: {
@@ -270,6 +274,9 @@ suite('NewTabPageRealboxNextTest', () => {
   });
 
   test('selecting drive upload opens composebox with error', async () => {
+    testProxy.handler.setResultFor('getDriveDisclaimerStatus', Promise.resolve({
+      status: DriveDisclaimerStatus.kAccepted,
+    }));
     testProxy.handler.setResultFor(
         'onDriveUploadClicked', Promise.resolve({
           response: {
@@ -757,6 +764,10 @@ suite('NewTabPageRealboxNextTest', () => {
 
     const metricName =
         'TestSource.AimEntrypoint.ClassicPopup.ContextualElement.Clicked';
+
+    testProxy.handler.setResultFor('getDriveDisclaimerStatus', Promise.resolve({
+      status: DriveDisclaimerStatus.kAccepted,
+    }));
 
     entrypointAndMenu.dispatchEvent(new CustomEvent('open-drive-upload', {
       bubbles: true,

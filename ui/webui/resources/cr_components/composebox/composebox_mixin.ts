@@ -13,7 +13,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, SmartComposeStats, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {DriveUploadError} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus, DriveUploadError} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -1064,6 +1064,16 @@ export const ComposeboxEmbedderMixin =
         async onOpenDriveUpload() {
           recordContextualElementClickedMetric(
               this.composeboxSource, 'AimPopup', ContextType.DRIVE);
+
+          // Check if the user has accepted the Drive disclaimer. This handles
+          // the edge case where a user sees the drive option in the menu, but
+          // then revokes Drive permissions.
+          const {status} =
+              await this.getSearchboxHandler().getDriveDisclaimerStatus();
+          if (status !== DriveDisclaimerStatus.kAccepted) {
+            return;
+          }
+
           const {response} =
               await this.getSearchboxHandler().onDriveUploadClicked();
           this.addDriveUploads(response.files, response.error ?? undefined);

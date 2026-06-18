@@ -13,7 +13,7 @@ import {isMac} from 'chrome://resources/js/platform.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {AutocompleteMatch} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus, RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {assertStyle, MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
@@ -2858,5 +2858,82 @@ suite('SearchboxTest', () => {
 
     // Assert that no navigation was triggered.
     assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+  });
+
+  test('onOpenDriveUpload_ handles accepted disclaimer', async () => {
+    testProxy.handler.setResultFor('getDriveDisclaimerStatus', Promise.resolve({
+      status: DriveDisclaimerStatus.kAccepted,
+    }));
+    testProxy.handler.setResultFor('onDriveUploadClicked', Promise.resolve({
+      response: {
+        files: [{
+          token: {high: 1n, low: 1n},
+          mimeType: 'image/png',
+          fileName: 'file.png',
+          thumbnailUrl: 'thumb',
+          iconUrl: {url: 'icon'},
+        }],
+        error: null,
+      },
+    }));
+
+    const whenOpenComposebox =
+        eventToPromise<CustomEvent>('open-composebox', realbox);
+
+    // Call the protected method.
+    await (realbox as unknown as {
+      onOpenDriveUpload_: () => Promise<void>,
+    }).onOpenDriveUpload_();
+
+    const event = await whenOpenComposebox;
+    assertEquals(1n, event.detail.files[0].token.high);
+    assertEquals(1n, event.detail.files[0].token.low);
+    assertEquals('image/png', event.detail.files[0].mimeType);
+    assertEquals('file.png', event.detail.files[0].fileName);
+    assertEquals('thumb', event.detail.files[0].thumbnailUrl);
+    assertEquals('icon', event.detail.files[0].iconUrl.url);
+    assertEquals(1, testProxy.handler.getCallCount('onDriveUploadClicked'));
+  });
+
+  test('onOpenDriveUpload_ handles restricted disclaimer', async () => {
+    testProxy.handler.setResultFor('getDriveDisclaimerStatus', Promise.resolve({
+      status: DriveDisclaimerStatus.kRestricted,
+    }));
+
+    // Call the protected method.
+    await (realbox as unknown as {
+      onOpenDriveUpload_: () => Promise<void>,
+    }).onOpenDriveUpload_();
+
+    await microtasksFinished();
+
+    assertEquals(0, testProxy.handler.getCallCount('onDriveUploadClicked'));
+  });
+
+  test('onOpenDriveUpload_ handles drive upload error', async () => {
+    testProxy.handler.setResultFor('getDriveDisclaimerStatus', Promise.resolve({
+      status: DriveDisclaimerStatus.kAccepted,
+    }));
+    testProxy.handler.setResultFor('onDriveUploadClicked', Promise.resolve({
+      response: {
+        files: [],
+        error: {
+          errorType: 1,  // kBrowserProcessingError or similar
+        },
+      },
+    }));
+
+    const whenOpenComposebox =
+        eventToPromise<CustomEvent>('open-composebox', realbox);
+
+    // Call the protected method.
+    await (realbox as unknown as {
+      onOpenDriveUpload_: () => Promise<void>,
+    }).onOpenDriveUpload_();
+
+    const event = await whenOpenComposebox;
+    assertEquals(0, event.detail.files.length);
+    assertEquals(1, event.detail.error.errorType);
+    assertEquals(1, testProxy.handler.getCallCount('onDriveUploadClicked'));
   });
 });

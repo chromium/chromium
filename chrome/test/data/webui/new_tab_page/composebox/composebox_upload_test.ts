@@ -9,6 +9,7 @@ import {ContextualSearchInputStateDeletionType} from 'chrome://resources/cr_comp
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {DriveDisclaimerStatus} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode as ComposeboxToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -632,6 +633,11 @@ import * as testSupport from './test_support.js';
               assertEquals(
                   testProxy.searchboxHandler.getCallCount('queryAutocomplete'),
                   1);
+
+              testProxy.searchboxHandler.setPromiseResolveFor(
+                  'getDriveDisclaimerStatus', {
+                    status: DriveDisclaimerStatus.kAccepted,
+                  });
 
               testProxy.searchboxHandler.setPromiseResolveFor(
                   'onDriveUploadClicked', {

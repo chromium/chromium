@@ -1250,8 +1250,26 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           it != input_type_for_command_id_.end()) {
         if (it->second == omnibox::InputType::INPUT_TYPE_DRIVE) {
           if (composebox_handler) {
-            composebox_handler->OnDriveUploadClicked(base::BindOnce(
-                &HandleDriveUploadResponse, is_aim_popup_open, web_contents_));
+            composebox_handler->GetDriveDisclaimerStatus(base::BindOnce(
+                [](base::WeakPtr<content::WebContents> web_contents,
+                   bool is_aim_popup_open,
+                   searchbox::mojom::DriveDisclaimerStatus status) {
+                  if (status !=
+                      searchbox::mojom::DriveDisclaimerStatus::kAccepted) {
+                    return;
+                  }
+                  auto* omnibox_popup_ui =
+                      GetOmniboxPopupUI(web_contents.get());
+                  auto* handler = omnibox_popup_ui
+                                      ? omnibox_popup_ui->composebox_handler()
+                                      : nullptr;
+                  if (handler) {
+                    handler->OnDriveUploadClicked(
+                        base::BindOnce(&HandleDriveUploadResponse,
+                                       is_aim_popup_open, web_contents));
+                  }
+                },
+                web_contents_, is_aim_popup_open));
           }
           RecordContextMenuItemSelection(sliced_prefix, id);
           return;

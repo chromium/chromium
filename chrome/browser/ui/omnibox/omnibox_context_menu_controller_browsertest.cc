@@ -310,6 +310,7 @@ class OmniboxContextMenuControllerPecBrowserTest : public InProcessBrowserTest {
            {omnibox::kShowToolsAndModels.name, "true"}}},
          {omnibox::internal::kWebUIOmniboxPopup, {}},
          {omnibox::kAimUsePecApi, {}},
+         {omnibox::kForceDriveDisclaimerAccepted, {}},
          {omnibox::kComposeboxDriveContextMenuOption, {}},
          {omnibox::kContextManagementInComposebox, {}},
          {omnibox::kContextManagementInOmnibox, {}}},
@@ -573,6 +574,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
 
   ASSERT_NE(command_id, -1) << "Drive option not found in menu";
   controller.ExecuteCommand(command_id, 0);
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(OmniboxPopupState::kAim,
             omnibox_controller->popup_state_manager()->popup_state());
@@ -646,6 +648,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
 
   ASSERT_NE(command_id, -1) << "Drive option not found in menu";
   controller.ExecuteCommand(command_id, 0);
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(OmniboxPopupState::kAim,
             omnibox_controller->popup_state_manager()->popup_state());
@@ -703,6 +706,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
 
   ASSERT_NE(command_id, -1) << "Drive option not found in menu";
   controller.ExecuteCommand(command_id, 0);
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(OmniboxPopupState::kClassic,
             omnibox_controller->popup_state_manager()->popup_state());
@@ -758,6 +762,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
 
   ASSERT_NE(command_id, -1) << "Drive option not found in menu";
   controller.ExecuteCommand(command_id, 0);
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(OmniboxPopupState::kAim,
             omnibox_controller->popup_state_manager()->popup_state());
