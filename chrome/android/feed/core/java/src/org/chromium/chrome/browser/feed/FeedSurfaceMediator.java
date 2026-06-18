@@ -297,6 +297,12 @@ public class FeedSurfaceMediator
                         assumeNonNull(mRecyclerViewAnimationFinishDetector)
                                 .runWhenAnimationComplete(this::onContentsChanged);
 
+        mStreamScrollListener = createScrollListener();
+        RecyclerView recyclerView = mCoordinator.getRecyclerView();
+        if (recyclerView != null) {
+            recyclerView.addOnScrollListener(mStreamScrollListener);
+        }
+
         initialize();
     }
 
@@ -322,6 +328,11 @@ public class FeedSurfaceMediator
         if (mOnLayoutChangeListener != null) {
             mCoordinator.getView().removeOnLayoutChangeListener(mOnLayoutChangeListener);
             mOnLayoutChangeListener = null;
+        }
+
+        if (mStreamScrollListener != null) {
+            mCoordinator.getRecyclerView().removeOnScrollListener(mStreamScrollListener);
+            mStreamScrollListener = null;
         }
 
         if (mSnapScrollHelper != null) {
@@ -468,73 +479,7 @@ public class FeedSurfaceMediator
         mSettingUpStreams = false;
 
         mStreamScrollAnimationFinishDetector = new RecyclerViewAnimationFinishDetector();
-        mStreamScrollListener =
-                new OnScrollListener() {
-                    @Override
-                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                        for (ScrollListener listener : mScrollListeners) {
-                            listener.onScrollStateChanged(newState);
-                        }
-                    }
-
-                    @Override
-                    public void onScrolled(RecyclerView v, int dx, int dy) {
-                        final Runnable callback =
-                                () -> {
-                                    if (mSnapScrollHelper != null) {
-                                        mSnapScrollHelper.handleScroll();
-                                    }
-                                    for (ScrollListener listener : mScrollListeners) {
-                                        listener.onScrolled(dx, dy);
-                                    }
-                                    // Null if the stream has not been binded yet.
-                                    if (GestureNavigationUtils.shouldAnimateBackForwardTransitions()
-                                            && mCoordinator.getHybridListRenderer() != null
-                                            && mCoordinator
-                                                            .getHybridListRenderer()
-                                                            .getListLayoutHelper()
-                                                    != null
-                                            && mPositionToRestore != RecyclerView.NO_POSITION
-                                            && Objects.equals(
-                                                    mGetRestoringStateSupplier.get(),
-                                                    RestoringState.WAITING_TO_RESTORE)) {
-                                        final boolean restored =
-                                                mCoordinator
-                                                                .getHybridListRenderer()
-                                                                .getListLayoutHelper()
-                                                                .findFirstVisibleItemPosition()
-                                                        >= mPositionToRestore;
-                                        if (restored) {
-                                            mPositionToRestore = RecyclerView.NO_POSITION;
-                                            final var originalAnimator =
-                                                    mCoordinator
-                                                            .getRecyclerView()
-                                                            .getItemAnimator();
-                                            mCoordinator
-                                                    .getRecyclerView()
-                                                    .setItemAnimator(
-                                                            new ItemAnimatorWithoutAnimation());
-                                            final Runnable onComplete =
-                                                    () -> {
-                                                        mGetRestoringStateSupplier.set(
-                                                                RestoringState.RESTORED);
-                                                        mCoordinator
-                                                                .getRecyclerView()
-                                                                .setItemAnimator(originalAnimator);
-                                                        assumeNonNull(
-                                                                        mStreamScrollAnimationFinishDetector)
-                                                                .runWhenAnimationComplete(null);
-                                                    };
-                                            assumeNonNull(mStreamScrollAnimationFinishDetector)
-                                                    .runWhenAnimationComplete(onComplete);
-                                        }
-                                    }
-                                };
-                        mCoordinator.getView().postOnAnimation(callback);
-                    }
-                };
         var view = mCoordinator.getRecyclerView();
-        view.addOnScrollListener(mStreamScrollListener);
 
         initStreamHeaderViews();
 
@@ -697,11 +642,6 @@ public class FeedSurfaceMediator
     /** Clear any dependencies related to the {@link Stream}. */
     @VisibleForTesting
     void destroyPropertiesForStream() {
-        if (mStreamScrollListener != null) {
-            mCoordinator.getRecyclerView().removeOnScrollListener(mStreamScrollListener);
-            mStreamScrollListener = null;
-        }
-
         if (mStreamScrollAnimationFinishDetector != null) {
             mStreamScrollAnimationFinishDetector.destroy();
             mStreamScrollAnimationFinishDetector = null;
@@ -1052,5 +992,70 @@ public class FeedSurfaceMediator
 
     public @ClosedReason int getClosedReason() {
         return mClosedReason;
+    }
+
+    private OnScrollListener createScrollListener() {
+        return new OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (!mFeedEnabled) return;
+
+                for (ScrollListener listener : mScrollListeners) {
+                    listener.onScrollStateChanged(newState);
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView v, int dx, int dy) {
+                final Runnable callback =
+                        () -> {
+                            if (mSnapScrollHelper != null) {
+                                mSnapScrollHelper.handleScroll();
+                            }
+                            if (!mFeedEnabled) return;
+
+                            for (ScrollListener listener : mScrollListeners) {
+                                listener.onScrolled(dx, dy);
+                            }
+                            // Null if the stream has not been binded yet.
+                            if (GestureNavigationUtils.shouldAnimateBackForwardTransitions()
+                                    && mCoordinator.getHybridListRenderer() != null
+                                    && mCoordinator.getHybridListRenderer().getListLayoutHelper()
+                                            != null
+                                    && mPositionToRestore != RecyclerView.NO_POSITION
+                                    && Objects.equals(
+                                            mGetRestoringStateSupplier.get(),
+                                            RestoringState.WAITING_TO_RESTORE)) {
+                                final boolean restored =
+                                        mCoordinator
+                                                        .getHybridListRenderer()
+                                                        .getListLayoutHelper()
+                                                        .findFirstVisibleItemPosition()
+                                                >= mPositionToRestore;
+                                if (restored) {
+                                    mPositionToRestore = RecyclerView.NO_POSITION;
+                                    final var originalAnimator =
+                                            mCoordinator.getRecyclerView().getItemAnimator();
+                                    mCoordinator
+                                            .getRecyclerView()
+                                            .setItemAnimator(new ItemAnimatorWithoutAnimation());
+                                    final Runnable onComplete =
+                                            () -> {
+                                                mGetRestoringStateSupplier.set(
+                                                        RestoringState.RESTORED);
+                                                mCoordinator
+                                                        .getRecyclerView()
+                                                        .setItemAnimator(originalAnimator);
+                                                assumeNonNull(mStreamScrollAnimationFinishDetector)
+                                                        .runWhenAnimationComplete(null);
+                                            };
+                                    assumeNonNull(mStreamScrollAnimationFinishDetector)
+                                            .runWhenAnimationComplete(onComplete);
+                                }
+                            }
+                        };
+                mCoordinator.getView().postOnAnimation(callback);
+            }
+        };
     }
 }
