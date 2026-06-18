@@ -642,6 +642,18 @@
   pointer-events: none;
 }
 
+/*
+ * The same style as the entry above, except for the inset value to avoid the
+ * double border issue at the corners.
+ */
+:host([animation-state='expanding'][energy-effect-animation-enabled][entrypoint-name='Realbox']) .background {
+  animation: none;
+  background-color: var(--cr-composebox-background-color, var(--color-search-animated-glow-background));
+  border-width: 0;
+  inset: 0;
+  pointer-events: none;
+}
+
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .background {
   z-index: var(--search-animated-glow-background-z-index, 3);
 }

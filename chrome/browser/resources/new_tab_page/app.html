@@ -85,6 +85,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
           </ntp-composebox>
         ` : html`
           <cr-composebox id="composebox"
+              entrypoint-name="Realbox"
               ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
               ?searchbox-next-enabled="${this.ntpRealboxNextEnabled_}"
               .submitButtonIconType="${this.ntpRealboxNextEnabled_ ? SubmitButtonIconType.FORWARD : SubmitButtonIconType.UPWARD}"
