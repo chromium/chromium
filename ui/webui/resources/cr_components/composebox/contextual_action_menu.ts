@@ -621,6 +621,7 @@ export class ContextualActionMenuElement extends
     this.scheduleCloseTimer_();
   }
 
+  // For entering the tab submenu through the tab button.
   protected onShareTabsRowKeydown_(e: KeyboardEvent) {
     if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') {
       if (!this.hasTabSuggestions_) {
@@ -641,6 +642,7 @@ export class ContextualActionMenuElement extends
     }
   }
 
+  // For navigating the tab submenu once in the submenu.
   protected onShareTabsFlyoutKeydown_(e: KeyboardEvent) {
     if (e.key === 'ArrowLeft' || e.key === 'Escape') {
       e.preventDefault();
@@ -652,6 +654,37 @@ export class ContextualActionMenuElement extends
       if (row) {
         row.focus();
       }
+      return;
+    }
+
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const flyout =
+          this.shadowRoot.querySelector<HTMLElement>('.share-tabs-flyout');
+      if (!flyout) {
+        return;
+      }
+      const items = Array.from(flyout.querySelectorAll<HTMLElement>(
+          'button.dropdown-item:not([disabled])'));
+      if (items.length === 0) {
+        return;
+      }
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      const focused = this.shadowRoot.activeElement as HTMLElement;
+      const index = items.indexOf(focused);
+
+      const next = e.key === 'ArrowDown';
+      const numOptions = items.length;
+      let nextIndex;
+      if (index === -1) {
+        nextIndex = next ? 0 : numOptions - 1;
+      } else {
+        const delta = next ? 1 : -1;
+        nextIndex = (numOptions + index + delta) % numOptions;
+      }
+      items[nextIndex]!.focus();
     }
   }
 

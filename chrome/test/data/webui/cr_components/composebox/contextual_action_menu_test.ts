@@ -19,6 +19,17 @@ import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.j
 
 import {MockInputState} from './composebox_test_utils.js';
 
+function triggerKeyDown(
+    element: HTMLElement, key: string, shiftKey: boolean = false) {
+  element.dispatchEvent(new KeyboardEvent('keydown', {
+    key,
+    code: key,
+    shiftKey,
+    bubbles: true,
+    composed: true,
+    cancelable: true,
+  }));
+}
 suite('ContextualActionMenu', () => {
   let actionMenu: ContextualActionMenuElement;
 
@@ -1050,6 +1061,188 @@ suite('ContextualActionMenu', () => {
         // dropdown arrow.
         assertTrue(!!shareTabsTrigger.querySelector('.share-tabs-arrow'));
       });
+
+
+  test('Share tabs flyout cycling keyboard navigation', async () => {
+    loadTimeData.overrideValues({
+      contextManagementInComposeboxEnabled: true,
+    });
+
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    const tab1: TabInfo = {
+      tabId: 1,
+      title: 'Tab 1',
+      url: {url: 'about:blank'},
+      lastActiveTime: {internalValue: 0n},
+      showInCurrentTabChip: false,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: 0n},
+    } as any;
+    const tab2: TabInfo = {
+      tabId: 2,
+      title: 'Tab 2',
+      url: {url: 'about:blank'},
+      lastActiveTime: {internalValue: 0n},
+      showInCurrentTabChip: false,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: 0n},
+    } as any;
+
+    actionMenu.tabSuggestions = [tab1, tab2];
+    actionMenu.inputState = new MockInputState({
+                              allowedInputTypes: [InputType.kBrowserTab],
+                            }) as any;
+    document.body.appendChild(actionMenu);
+    await microtasksFinished();
+
+    // Open the main contextual action menu.
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    // Get the trigger button and the flyout container.
+    const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+    const flyout = $$(actionMenu, '.share-tabs-flyout') as HTMLElement;
+    assertTrue(!!trigger);
+    assertTrue(!!flyout);
+
+    // Expand the flyout.
+    triggerKeyDown(trigger, 'ArrowRight');
+    await actionMenu.updateComplete;
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await microtasksFinished();
+
+    // Get the focusable items inside the flyout.
+    const items = Array.from(
+        flyout.querySelectorAll<HTMLElement>('button.dropdown-item'));
+    assertEquals(2, items.length);
+
+    const firstItem = items[0]!;
+    const secondItem = items[1]!;
+
+    // Focus the first item.
+    firstItem.focus();
+    assertEquals(firstItem, actionMenu.shadowRoot.activeElement);
+
+    // Press ArrowDown to navigate to the second item.
+    triggerKeyDown(firstItem, 'ArrowDown');
+    await actionMenu.updateComplete;
+    assertEquals(secondItem, actionMenu.shadowRoot.activeElement);
+
+    // Press ArrowDown to navigate back to the first item (cycles through).
+    triggerKeyDown(secondItem, 'ArrowDown');
+    await actionMenu.updateComplete;
+    assertEquals(firstItem, actionMenu.shadowRoot.activeElement);
+
+    // Press ArrowUp to navigate back to the last item (cycles through).
+    triggerKeyDown(firstItem, 'ArrowUp');
+    await actionMenu.updateComplete;
+    assertEquals(secondItem, actionMenu.shadowRoot.activeElement);
+  });
+
+  test('Share tabs flyout cycling skips disabled tabs', async () => {
+    loadTimeData.overrideValues({
+      contextManagementInComposeboxEnabled: true,
+    });
+
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    const tab1: TabInfo = {
+      tabId: 1,
+      title: 'Tab 1',
+      url: {url: 'about:blank'},
+      lastActiveTime: {internalValue: 0n},
+      showInCurrentTabChip: false,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: 0n},
+    } as any;
+    const tab2: TabInfo = {
+      tabId: 2,
+      title: 'Tab 2',
+      url: {url: 'about:blank'},
+      lastActiveTime: {internalValue: 0n},
+      showInCurrentTabChip: false,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: 0n},
+    } as any;
+    const tab3: TabInfo = {
+      tabId: 3,
+      title: 'Tab 3',
+      url: {url: 'about:blank'},
+      lastActiveTime: {internalValue: 0n},
+      showInCurrentTabChip: false,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: 0n},
+    } as any;
+    const tab4: TabInfo = {
+      tabId: 4,
+      title: 'Tab 4',
+      url: {url: 'about:blank'},
+      lastActiveTime: {internalValue: 0n},
+      showInCurrentTabChip: false,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: 0n},
+    } as any;
+
+    actionMenu.tabSuggestions = [tab1, tab2, tab3, tab4];
+    // Disabled tabs:
+    actionMenu.aimThreadRestoredTabs = [tab1, tab3];
+    actionMenu.inputState = new MockInputState({
+                              allowedInputTypes: [InputType.kBrowserTab],
+                            }) as any;
+    document.body.appendChild(actionMenu);
+    await microtasksFinished();
+
+    // Open the main contextual action menu.
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    // Get the trigger button and the flyout container.
+    const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+    const flyout = $$(actionMenu, '.share-tabs-flyout') as HTMLElement;
+    assertTrue(!!trigger);
+    assertTrue(!!flyout);
+
+    // Expand the flyout.
+    triggerKeyDown(trigger, 'ArrowRight');
+    await actionMenu.updateComplete;
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await microtasksFinished();
+
+    // Get all items inside the flyout.
+    const buttons = Array.from(
+        flyout.querySelectorAll<HTMLButtonElement>('button.dropdown-item'));
+    assertEquals(4, buttons.length);
+    assertTrue(buttons[0]!.disabled);   // tab1
+    assertFalse(buttons[1]!.disabled);  // tab2
+    assertTrue(buttons[2]!.disabled);   // tab3
+    assertFalse(buttons[3]!.disabled);  // tab4
+
+    const secondItem = buttons[1]!;
+    const fourthItem = buttons[3]!;
+
+    // Focus the first enabled item (tab2).
+    secondItem.focus();
+    assertEquals(secondItem, actionMenu.shadowRoot.activeElement);
+
+    // Press ArrowDown to navigate to the next enabled item (tab4), skipping
+    // tab3.
+    triggerKeyDown(secondItem, 'ArrowDown');
+    await actionMenu.updateComplete;
+    assertEquals(fourthItem, actionMenu.shadowRoot.activeElement);
+
+    // Press ArrowDown to navigate/cycle back to the first enabled item (tab2),
+    // skipping tab1.
+    triggerKeyDown(fourthItem, 'ArrowDown');
+    await actionMenu.updateComplete;
+    assertEquals(secondItem, actionMenu.shadowRoot.activeElement);
+
+    // Press ArrowUp to navigate/cycle back to the last enabled item (tab4),
+    // skipping tab1.
+    triggerKeyDown(secondItem, 'ArrowUp');
+    await actionMenu.updateComplete;
+    assertEquals(fourthItem, actionMenu.shadowRoot.activeElement);
+  });
 
   test('focuses Share Tabs when opening the + menu via keydown', async () => {
     loadTimeData.overrideValues({
