@@ -260,6 +260,10 @@ class ContextualSearchboxHandler
  protected:
   // SearchboxHandler:
   omnibox::InputState GetInputState() const override;
+  // Returns the current input state, re-initializing the underlying model if
+  // its weak pointer was invalidated after window startup. Use this instead of
+  // `GetInputState() const` when calling from non-const C++ operations.
+  omnibox::InputState GetValidInputState();
   std::string GetPreviousQuery() override;
 
   virtual void OpenUrl(GURL url, const WindowOpenDisposition disposition);

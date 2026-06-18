@@ -185,7 +185,7 @@ ContextualOmniboxClient::GetLensOverlaySuggestInputs() const {
 }
 
 int ContextualSearchboxHandler::GetContextMenuMaxTabSuggestions() {
-  omnibox::InputState input_state = GetInputState();
+  omnibox::InputState input_state = GetValidInputState();
   if (auto it = input_state.max_inputs_by_type.find(
           omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
       it != input_state.max_inputs_by_type.end()) {
@@ -504,6 +504,20 @@ omnibox::InputState ContextualSearchboxHandler::GetInputState() const {
   return omnibox::InputState();
 }
 
+// Returns the current input state. Unlike `GetInputState() const`, this method
+// ensures the underlying `InputStateModel` is cleanly re-initialized if its
+// weak pointer gets invalidated (e.g. when the window completes startup on Mac
+// and updates its active WebContents context).
+omnibox::InputState ContextualSearchboxHandler::GetValidInputState() {
+  if (!input_state_model_) {
+    InitializeInputStateModel();
+  }
+  if (input_state_model_) {
+    return input_state_model_->GetInputState();
+  }
+  return omnibox::InputState();
+}
+
 std::string ContextualSearchboxHandler::GetPreviousQuery() {
   auto* contextual_session_handle = GetContextualSessionHandle();
   return contextual_session_handle &&
@@ -652,7 +666,7 @@ void ContextualSearchboxHandler::AddFileContextFromBrowser(
 
   omnibox::InputType input_type = GetInputType(mime_type, image_mime_types);
 
-  omnibox::InputState input_state = GetInputState();
+  omnibox::InputState input_state = GetValidInputState();
 
   if (input_state.active_tool == omnibox::TOOL_MODE_DEEP_SEARCH) {
     std::move(callback).Run(
@@ -844,7 +858,7 @@ void ContextualSearchboxHandler::OnSelection(
   bool count_limit_hit = false;
   bool size_limit_hit = false;
   const size_t max_total_inputs =
-      static_cast<size_t>(GetInputState().max_total_inputs);
+      static_cast<size_t>(GetValidInputState().max_total_inputs);
   if (max_total_inputs == 0) {
     std::move(drive_upload_click_callback_).Run(std::move(response));
     CleanupDrivePicker();
