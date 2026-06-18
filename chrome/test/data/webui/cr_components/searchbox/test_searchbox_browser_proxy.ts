@@ -41,6 +41,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'getPlaceholderConfig',
       'getRecentTabs',
       'getTabPreview',
+      'waitForTabFaviconLoad',
       'notifySessionStarted',
       'notifySessionAbandoned',
       'addFileContext',
@@ -175,6 +176,11 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   getTabPreview(tabId: number) {
     this.methodCalled('getTabPreview', {tabId});
     return Promise.resolve({previewDataUrl: ''});
+  }
+
+  waitForTabFaviconLoad(tabId: number) {
+    this.methodCalled('waitForTabFaviconLoad', {tabId});
+    return Promise.resolve({faviconDataUrl: null});
   }
 
   getInputState() {

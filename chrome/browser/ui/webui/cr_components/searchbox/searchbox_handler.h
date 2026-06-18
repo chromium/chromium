@@ -151,6 +151,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void GetPlaceholderConfig(GetPlaceholderConfigCallback callback) override;
   void GetRecentTabs(GetRecentTabsCallback callback) override;
   void GetTabPreview(int32_t tab_id, GetTabPreviewCallback callback) override {}
+  void WaitForTabFaviconLoad(int32_t tab_id,
+                             WaitForTabFaviconLoadCallback callback) override;
   void GetInputState(GetInputStateCallback callback) override;
   void NotifySessionStarted() override {}
   void NotifySessionAbandoned() override {}

@@ -2181,6 +2181,23 @@ export const ComposeboxEmbedderMixin =
           e.detail.onPreviewFetched(previewDataUrl || '');
         }
 
+        async onWaitForTabLoad(e: CustomEvent<{
+          tabId: number,
+          onTabLoaded: (faviconDataUrl?: string) => void,
+        }>) {
+          e.stopPropagation();
+          try {
+            const {faviconDataUrl} =
+                await this.getSearchboxHandler().waitForTabFaviconLoad(
+                    e.detail.tabId);
+            const urlStr = (faviconDataUrl as unknown as {url?: string})?.url ||
+                (faviconDataUrl ? faviconDataUrl : undefined);
+            e.detail.onTabLoaded(urlStr);
+          } catch (error) {
+            e.detail.onTabLoaded(undefined);
+          }
+        }
+
         voiceSearchEndCleanup() {
           this.inVoiceSearchMode = false;
           this.animationState = GlowAnimationState.NONE;
@@ -2570,6 +2587,10 @@ export interface ComposeboxEmbedderMixinInterface extends
   onGetTabPreview(e: CustomEvent<{
     tabId: number,
     onPreviewFetched: (previewDataUrl: string) => void,
+  }>): Promise<void>;
+  onWaitForTabLoad(e: CustomEvent<{
+    tabId: number,
+    onTabLoaded: (faviconDataUrl?: string) => void,
   }>): Promise<void>;
   shouldShowDivider(): boolean;
   shouldShowSubmitButton(): boolean;

@@ -49,6 +49,7 @@
 #endif
 
 class Profile;
+class ContextualSearchboxTabFaviconHelper;
 class SkBitmap;
 class DrivePickerHostController;
 
@@ -148,6 +149,8 @@ class ContextualSearchboxHandler
                    bool is_voice_search) override;
   void GetRecentTabs(GetRecentTabsCallback callback) override;
   void GetTabPreview(int32_t tab_id, GetTabPreviewCallback callback) override;
+  void WaitForTabFaviconLoad(int32_t tab_id,
+                             WaitForTabFaviconLoadCallback callback) override;
   void GetInputState(GetInputStateCallback callback) override;
   void OpenAutocompleteMatch(uint8_t line,
                              const GURL& url,
@@ -398,6 +401,8 @@ class ContextualSearchboxHandler
 
   base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
       tab_list_observation_{this};
+
+  std::unique_ptr<ContextualSearchboxTabFaviconHelper> tab_favicon_helper_;
 
  protected:
   std::optional<bool> smart_tab_sharing_active_for_thread_;

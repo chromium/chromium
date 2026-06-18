@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_tab_favicon_helper.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
@@ -341,6 +342,12 @@ ContextualSearchboxHandler::CreateTabPreviewEncodingOptions(
                                     .max_width = max_width_pixels};
 }
 
+void ContextualSearchboxHandler::WaitForTabFaviconLoad(
+    int32_t tab_id,
+    WaitForTabFaviconLoadCallback callback) {
+  tab_favicon_helper_->WaitForTabFaviconLoad(tab_id, std::move(callback));
+}
+
 ContextualSearchboxHandler::ContextualSearchboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
@@ -356,6 +363,7 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
                        std::move(controller)),
       get_session_callback_(std::move(get_session_callback)) {
   InitializeInputStateModel();
+  tab_favicon_helper_ = std::make_unique<ContextualSearchboxTabFaviconHelper>();
 
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);

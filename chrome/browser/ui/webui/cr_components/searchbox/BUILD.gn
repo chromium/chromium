@@ -9,6 +9,7 @@ assert(!is_ios || enable_webui_ntp)
 source_set("searchbox") {
   sources = [
     "contextual_searchbox_handler.h",
+    "contextual_searchbox_tab_favicon_helper.h",
     "searchbox_handler.h",
     "searchbox_omnibox_client.h",
     "searchbox_utils.h",
@@ -47,6 +48,7 @@ source_set("searchbox") {
 source_set("searchbox_impl") {
   sources = [
     "contextual_searchbox_handler.cc",
+    "contextual_searchbox_tab_favicon_helper.cc",
     "searchbox_handler.cc",
     "searchbox_omnibox_client.cc",
     "searchbox_utils.cc",
@@ -82,6 +84,8 @@ source_set("searchbox_impl") {
     "//components/contextual_search:prefs",
     "//components/contextual_search:public",
     "//components/contextual_tasks/public:query_contextualizer",
+    "//components/favicon/content",
+    "//components/favicon/core",
     "//components/google/core/common",
     "//components/omnibox/browser:vector_icons",
     "//components/omnibox/common:features",

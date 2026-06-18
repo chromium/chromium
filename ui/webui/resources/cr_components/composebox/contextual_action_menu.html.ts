@@ -81,7 +81,8 @@ export function getHtml(this: ContextualActionMenuElement) {
                         ?disabled="${this.isTabDisabled_(tab)}"
                         ?hidden="${!this.shareTabsFlyoutOpen_}"
                         @click="${this.onTabClick_}">
-                    <cr-composebox-tab-favicon .url="${tab.url}">
+                    <cr-composebox-tab-favicon .url="${tab.url}"
+                        .tabId="${tab.tabId}">
                     </cr-composebox-tab-favicon>
                     <span class="tab-title-group">
                       <span class="tab-title">${tab.title}</span>
@@ -122,7 +123,8 @@ export function getHtml(this: ContextualActionMenuElement) {
                   ?disabled="${this.isTabDisabled_(tab)}"
                   @pointerenter="${this.onTabPointerenter_}"
                   @click="${this.onTabClick_}">
-                <cr-composebox-tab-favicon .url="${tab.url}">
+                <cr-composebox-tab-favicon .url="${tab.url}"
+                    .tabId="${tab.tabId}">
                 </cr-composebox-tab-favicon>
                 <span class="tab-title">${tab.title}</span>
                 ${this.enableMultiTabSelection_ ? html`

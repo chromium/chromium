@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,11 +14,14 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/display/display_switches.h"
 
@@ -130,4 +134,74 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
   handler_->ResetInputStateModel();
 
   EXPECT_FALSE(base_handler->input_state_model_);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
+                       WaitForTabFaviconLoad_Async) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/favicon/page_with_favicon.html");
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  int32_t tab_id = tab->GetHandle().raw_value();
+
+  base::test::TestFuture<const std::optional<GURL>&> future;
+  handler_->WaitForTabFaviconLoad(tab_id, future.GetCallback());
+  std::optional<GURL> data_url = future.Get();
+  ASSERT_TRUE(data_url.has_value());
+  EXPECT_TRUE(data_url->spec().starts_with("data:image/png;base64,"));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
+                       WaitForTabFaviconLoad_Cached) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/favicon/page_with_favicon.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  int32_t tab_id = tab->GetHandle().raw_value();
+
+  // Ensure the favicon is fully processed and valid in the browser.
+  {
+    base::test::TestFuture<const std::optional<GURL>&> future;
+    handler_->WaitForTabFaviconLoad(tab_id, future.GetCallback());
+    ASSERT_TRUE(future.Get().has_value());
+  }
+
+  // The cached favicon data URL should be returned immediately.
+  {
+    base::test::TestFuture<const std::optional<GURL>&> future;
+    handler_->WaitForTabFaviconLoad(tab_id, future.GetCallback());
+    std::optional<GURL> data_url = future.Get();
+    ASSERT_TRUE(data_url.has_value());
+    EXPECT_TRUE(data_url->spec().starts_with("data:image/png;base64,"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
+                       WaitForTabFaviconLoad_WebContentsDestroyed) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  int32_t tab_id = tab->GetHandle().raw_value();
+
+  base::test::TestFuture<const std::optional<GURL>&> future;
+  handler_->WaitForTabFaviconLoad(tab_id, future.GetCallback());
+
+  // Destroy the WebContents by closing the tab.
+  browser()->tab_strip_model()->CloseSelectedTabs();
+
+  std::optional<GURL> data_url = future.Get();
+  EXPECT_FALSE(data_url.has_value());
 }

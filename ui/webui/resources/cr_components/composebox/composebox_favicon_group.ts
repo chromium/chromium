@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getFaviconForPageURL} from '//resources/js/icon.js';
+import {getFaviconForPageURL, getUrlForCss} from '//resources/js/icon.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -36,6 +36,7 @@ export class ComposeboxFaviconGroupElement extends CrLitElement {
   accessor tabs: TabInfo[] = [];
   protected accessor visibleTabs_: TabInfo[] = [];
   protected accessor remainingCount_: number = 0;
+  private loadedFavicons_: Map<number, string> = new Map();
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -47,13 +48,37 @@ export class ComposeboxFaviconGroupElement extends CrLitElement {
   private onTabsChanged_() {
     this.visibleTabs_ = this.tabs.slice(0, MAX_DISPLAY_COUNT);
     this.remainingCount_ = Math.max(0, this.tabs.length - MAX_DISPLAY_COUNT);
+
+    // Subscribe to live favicon updates for visible browser tabs. Firing
+    // 'wait-for-tab-load' prompts the C++ backend to observe the active tab
+    // and return the fully loaded favicon URL once ready.
+    for (const tab of this.visibleTabs_) {
+      if (tab.tabId) {
+        this.fire('wait-for-tab-load', {
+          tabId: tab.tabId,
+          onTabLoaded: (faviconDataUrl?: string) => {
+            if (faviconDataUrl) {
+              const newMap = new Map(this.loadedFavicons_);
+              newMap.set(tab.tabId, getUrlForCss(faviconDataUrl));
+              this.loadedFavicons_ = newMap;
+              this.requestUpdate();
+            }
+          },
+        });
+      }
+    }
   }
 
-  protected getFaviconUrl_(url: string|{url: string}): string {
-    if (typeof url === 'object' && url !== null && 'url' in url) {
-      return getFaviconForPageURL(url.url, false);
+  protected getFaviconUrl_(tab: TabInfo|string|{url: string, tabId?: number}):
+      string {
+    if (typeof tab === 'object' && tab !== null) {
+      const tabObj = tab as {url: string | {url: string}, tabId?: number};
+      const urlStr =
+          typeof tabObj.url === 'string' ? tabObj.url : tabObj.url.url;
+      return (tabObj.tabId && this.loadedFavicons_.get(tabObj.tabId)) ||
+          getFaviconForPageURL(urlStr, false);
     }
-    return getFaviconForPageURL(url, false);
+    return getFaviconForPageURL(tab, false);
   }
 }
 
