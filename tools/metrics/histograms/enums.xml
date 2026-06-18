@@ -8575,6 +8575,7 @@ from previous Chrome versions.
   <int value="-1837137559" label="MediaAppImageMantisErase:enabled"/>
   <int value="-1836854634" label="CloseTabSuggestions:enabled"/>
   <int value="-1836834774" label="DiskCacheBackendExperiment:enabled"/>
+  <int value="-1836830225" label="ContextMenuToolTips:disabled"/>
   <int value="-1836511093"
       label="QueryTilesRemoveTrendingAfterInactivity:enabled"/>
   <int value="-1836412886" label="UseChimeAndroidSdk:disabled"/>
@@ -12640,6 +12641,7 @@ from previous Chrome versions.
   <int value="-518037829" label="ProjectorExcludeTranscript:disabled"/>
   <int value="-517913118" label="OmahaMinSdkVersionAndroid:enabled"/>
   <int value="-517231584" label="CameraAppPdfOcr:disabled"/>
+  <int value="-517037197" label="ContextMenuToolTips:enabled"/>
   <int value="-516845951" label="enable-embedded-extension-options"/>
   <int value="-516269317" label="HttpsFirstModeV2:enabled"/>
   <int value="-515913489" label="EphemeralTabUsingBottomSheet:disabled"/>

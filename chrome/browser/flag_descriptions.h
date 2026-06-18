@@ -1489,6 +1489,11 @@ inline constexpr char kContextManagementInOmniboxName[] =
 inline constexpr char kContextManagementInOmniboxDescription[] =
     "Enables context menu and favicon coins for omnibox";
 
+inline constexpr char kContextMenuToolTipsName[] =
+    "Composebox context menu tooltips";
+inline constexpr char kContextMenuToolTipsDescription[] =
+    "Enables tooltips in the Composebox context menu.";
+
 inline constexpr char kContextualCueingName[] = "Contextual cueing";
 inline constexpr char kContextualCueingDescription[] =
     "Enables the contextual cueing system to support showing actions.";

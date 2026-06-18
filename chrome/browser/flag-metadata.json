@@ -1926,11 +1926,13 @@
   },
   {
     "name": "context-menu-animation-limiting",
-    "owners": [
-      "dhruvkathpalia@google.com",
-      "rtatum@google.com"
-    ],
+    "owners": [ "dhruvkathpalia@google.com", "rtatum@google.com" ],
     "expiry_milestone": 155
+  },
+  {
+    "name": "context-menu-tool-tips",
+    "owners": [ "ananyaseelam@google.com", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "contextual-cueing",
