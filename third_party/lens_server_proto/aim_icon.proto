@@ -19,11 +19,12 @@ enum AimIconType {
   ICON_TYPE_FORMAT_QUOTE_FILLED = 79;
   ICON_TYPE_LINK = 83;
   ICON_TYPE_IMAGE = 84;
+  ICON_TYPE_FOLLOW_UP = 100;
   ICON_TYPE_DRIVE_PDF = 101;
   ICON_TYPE_INVERTED_FORMAT_QUOTE_FILLED = 186;
 
   // Reserved values are icon types that have been defined on the server but
   // have not yet been added to Chrome. Unreserve when adding a new icon type.
-  reserved 1 to 8, 10 to 29, 31 to 78, 80 to 82, 85 to 100, 102 to 185,
+  reserved 1 to 8, 10 to 29, 31 to 78, 80 to 82, 85 to 99, 102 to 185,
       187 to 205;
 }

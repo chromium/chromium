@@ -70,12 +70,14 @@ struct ComposeboxPosition {
   int32? margin_left;
 };
 
+// Keep in sync with AimIconType proto.
 enum IconType {
   kUnspecified = 0,
   kAdd = 9,
   kCheck = 30,
   kFormatQuoteFilled = 79,
   kImage = 84,
+  kFollowUp = 100,
   kDrivePdf = 101,
   kInvertedFormatQuoteFilled = 186,
 };

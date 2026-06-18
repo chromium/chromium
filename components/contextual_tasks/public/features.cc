@@ -354,8 +354,9 @@ const base::FeatureParam<bool> kForceGscInTabMode(
 // Version 2.4: Adds ability to hideInput/restoreInput
 // Version 2.5: Support for link click post messages and window.open calls from
 //              AIM.
+// Version 2.6: Add inverted quote and follow up injected input icons.
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
-    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.5"};
+    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.6"};
 
 const base::FeatureParam<std::string> kContextualTasksOAuthScopes{
     &kContextualTasksExtraOauthScopes, "ContextualTasksOAuthScopes", ""};

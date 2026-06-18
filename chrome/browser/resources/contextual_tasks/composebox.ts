@@ -37,6 +37,7 @@ const ICON_TYPE_TO_NAME: {[id: number]: string} = {
   [IconType.kAdd]: 'add',
   [IconType.kFormatQuoteFilled]: 'quoteFilled',
   [IconType.kImage]: 'image',
+  [IconType.kFollowUp]: 'followUp',
   [IconType.kDrivePdf]: 'drivePdf',
   [IconType.kCheck]: 'check',
   [IconType.kInvertedFormatQuoteFilled]: 'invertedQuoteFilled',
