@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/contextual_search_types.h"
@@ -245,10 +246,6 @@ InputStateModel::InputStateModel(
     }
     state_.input_type_configs.reserve(mutable_config.input_type_configs_size());
     for (const auto& input_type_config : mutable_config.input_type_configs()) {
-      if (input_type_config.input_type() == omnibox::INPUT_TYPE_DRIVE &&
-          !IsDriveSupported()) {
-        continue;
-      }
       state_.input_type_configs.push_back(input_type_config);
     }
     if (mutable_config.has_tools_section_config()) {
@@ -318,7 +315,8 @@ InputStateModel::InputStateModel(
       is_off_the_record_(new_input_state_model.is_off_the_record_),
       browser_identity_matches_aim_identity_(
           new_input_state_model.browser_identity_matches_aim_identity_),
-      current_url_(new_input_state_model.current_url_) {
+      current_url_(new_input_state_model.current_url_),
+      drive_consent_state_(new_input_state_model.drive_consent_state_) {
   state_ = new_input_state_model.state_;
   rule_set_ = new_input_state_model.rule_set_;
   pref_service_ = new_input_state_model.pref_service_;
@@ -366,6 +364,28 @@ void InputStateModel::Initialize() {
 void InputStateModel::SetPrefService(const PrefService* pref_service) {
   pref_service_ = pref_service;
   updateDisabledState();
+}
+
+void InputStateModel::SetDriveConsentState(DriveConsentState state) {
+  if (drive_consent_state_ == state) {
+    return;
+  }
+  drive_consent_state_ = state;
+
+  auto& allowed_types = state_.allowed_input_types;
+  auto it = std::find(allowed_types.begin(), allowed_types.end(),
+                      omnibox::INPUT_TYPE_DRIVE);
+  if (state == DriveConsentState::kConsent) {
+    if (it == allowed_types.end() && IsDriveSupported()) {
+      state_.allowed_input_types.push_back(omnibox::INPUT_TYPE_DRIVE);
+    }
+  } else {
+    if (it != allowed_types.end()) {
+      state_.allowed_input_types.erase(it);
+    }
+  }
+  updateDisabledState();
+  notifySubscribers();
 }
 
 base::CallbackListSubscription InputStateModel::subscribe(Subscriber callback) {
@@ -469,12 +489,13 @@ void InputStateModel::updateSelectedState(ToolMode tool, ModelMode model) {
 }
 
 bool InputStateModel::IsDriveSupported() const {
-  // Drive is only supported when the browser identity matches the aim identity,
-  // not in an off-the-record (incognito) session, and the feature flag is
-  // enabled.
-  return browser_identity_matches_aim_identity_ && !is_off_the_record_ &&
-         base::FeatureList::IsEnabled(
-             omnibox::kComposeboxDriveContextMenuOption);
+  bool identity_matches = browser_identity_matches_aim_identity_;
+  bool incognito = is_off_the_record_;
+  bool feature_enabled =
+      base::FeatureList::IsEnabled(omnibox::kComposeboxDriveContextMenuOption);
+  bool consented = drive_consent_state_ == DriveConsentState::kConsent;
+
+  return identity_matches && !incognito && feature_enabled && consented;
 }
 
 // Helper to check if search content sharing is enabled based on the

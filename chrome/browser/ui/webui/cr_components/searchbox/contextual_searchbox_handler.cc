@@ -84,6 +84,7 @@
 #include "ui/base/window_open_disposition_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
@@ -93,6 +94,7 @@
 #include "chrome/browser/ui/webui/drive_picker_host/drive_disclaimer_controller.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
 #include "components/contextual_search/footprints/public/fpop_service.h"
+#include "content/public/browser/storage_partition.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -1133,6 +1135,15 @@ void ContextualSearchboxHandler::InitializeInputStateModel() {
       base::BindRepeating(&ContextualSearchboxHandler::OnInputStateChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   input_state_model_->Initialize();
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          omnibox::kComposeboxDriveContextMenuOption)) {
+    GetDriveDisclaimerController()->CheckDisclaimerStatusAsync(
+        base::BindOnce(&ContextualSearchboxHandler::OnDriveDisclaimerChecked,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+#endif
 }
 
 void ContextualSearchboxHandler::RecordTabAddedMetric(
@@ -1406,15 +1417,7 @@ void ContextualSearchboxHandler::GetDriveDisclaimerStatus(
 #if BUILDFLAG(IS_ANDROID)
   std::move(callback).Run(searchbox::mojom::DriveDisclaimerStatus::kRestricted);
 #else
-  if (!drive_disclaimer_controller_) {
-    drive_disclaimer_controller_ =
-        std::make_unique<drive_picker::DriveDisclaimerController>(
-            contextual_search::FpopService::Create(
-                IdentityManagerFactory::GetForProfile(profile_),
-                profile_->GetURLLoaderFactory()));
-  }
-
-  drive_disclaimer_controller_->CheckDisclaimerStatusAsync(base::BindOnce(
+  GetDriveDisclaimerController()->CheckDisclaimerStatusAsync(base::BindOnce(
       [](GetDriveDisclaimerStatusCallback callback,
          drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
         switch (status) {
@@ -1845,3 +1848,44 @@ ContextualSearchboxHandler::GetActiveTaskContextProvider() {
                    browser_window_interface)
              : nullptr;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ContextualSearchboxHandler::OnDriveDisclaimerChecked(
+    drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
+  if (!input_state_model_) {
+    return;
+  }
+
+  contextual_search::DriveConsentState consent_state =
+      contextual_search::DriveConsentState::kNotReady;
+  switch (status) {
+    case drive_picker::DriveDisclaimerController::DisclaimerStatus::kAccepted:
+      consent_state = contextual_search::DriveConsentState::kConsent;
+      break;
+    case drive_picker::DriveDisclaimerController::DisclaimerStatus::
+        kNotAccepted:
+      consent_state = contextual_search::DriveConsentState::kNotConsent;
+      break;
+    case drive_picker::DriveDisclaimerController::DisclaimerStatus::kRestricted:
+      consent_state = contextual_search::DriveConsentState::kRestricted;
+      break;
+  }
+
+  input_state_model_->SetDriveConsentState(consent_state);
+}
+
+drive_picker::DriveDisclaimerController*
+ContextualSearchboxHandler::GetDriveDisclaimerController() {
+  if (!drive_disclaimer_controller_) {
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+    auto url_loader_factory = profile_->GetDefaultStoragePartition()
+                                  ->GetURLLoaderFactoryForBrowserProcess();
+    auto fpop_service = contextual_search::FpopService::Create(
+        identity_manager, std::move(url_loader_factory));
+    drive_disclaimer_controller_ =
+        std::make_unique<drive_picker::DriveDisclaimerController>(
+            std::move(fpop_service));
+  }
+  return drive_disclaimer_controller_.get();
+}
+#endif

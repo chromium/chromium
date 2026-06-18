@@ -28,6 +28,13 @@ using omnibox::ModelMode;
 using omnibox::SearchboxConfig;
 using omnibox::ToolMode;
 
+enum class DriveConsentState {
+  kNotReady = 0,
+  kRestricted = 1,
+  kConsent = 2,
+  kNotConsent = 3
+};
+
 // Manages the state of composebox inputs including tools, models, and
 // multimodal inputs.
 class InputStateModel {
@@ -77,6 +84,9 @@ class InputStateModel {
   // Sets the input types that should be forced to be disabled.
   void SetPermanentlyDisabledInputTypes(
       const std::vector<InputType>& input_types);
+
+  // Sets the checked Drive consent state.
+  void SetDriveConsentState(DriveConsentState state);
 
   // Gets additional query params for the current state.
   std::map<std::string, std::string> GetAdditionalQueryParams();
@@ -144,6 +154,8 @@ class InputStateModel {
   // Stores input_types that are permanently disabled by an external trigger and
   // must persist through state updates. Persists after Initialize() is called.
   std::vector<InputType> permanently_disabled_input_types_;
+
+  DriveConsentState drive_consent_state_ = DriveConsentState::kNotReady;
 
   base::WeakPtrFactory<InputStateModel> weak_ptr_factory_{this};
 };

@@ -430,6 +430,9 @@ class ContextualSearchboxHandler
 
 #if !BUILDFLAG(IS_ANDROID)
   void OnDrivePickerDisconnected();
+  void OnDriveDisclaimerChecked(
+      drive_picker::DriveDisclaimerController::DisclaimerStatus status);
+  drive_picker::DriveDisclaimerController* GetDriveDisclaimerController();
 
   mojo::Receiver<drive_picker_host::mojom::DrivePickerResultHandler>
       drive_picker_result_handler_receiver_{this};
