@@ -184,6 +184,9 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean(
       "energyEffectEnabled",
       base::FeatureList::IsEnabled(omnibox::kEnergyEffectInOmnibox));
+  source->AddBoolean(
+      "energyEffectAnimationEnabled",
+      base::FeatureList::IsEnabled(omnibox::kEnergyEffectInOmnibox));
   source->AddBoolean("contextButtonShapeIsOblong",
                      omnibox::kContextButtonShapeIsOblong.Get());
 
