@@ -1188,17 +1188,20 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     return;
   }
 
+  // TODO(crbug.com/519061643): Rely on central atMemory eligibility logic
+  // instead.
+  if (IsAtMemoryTriggerSource(trigger_source) &&
+      client().GetPersonalContextEnablementState() ==
+          personal_context::PersonalContextEnablementState::
+              kDisabledNotEligible) {
+    return;
+  }
+
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source,
                               /*update_datalist=*/true);
 
   if (IsAtMemoryTriggerSource(trigger_source)) {
-    // Do not show the pop up at all for non eligible profiles.
-    if (client().GetPersonalContextEnablementState() ==
-        personal_context::PersonalContextEnablementState::
-            kDisabledNotEligible) {
-      return;
-    }
     std::vector<Suggestion> suggestions;
     GetAtMemoryManager().MaybeAppendPersonalContextNotice(suggestions);
 
