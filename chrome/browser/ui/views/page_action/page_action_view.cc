@@ -280,6 +280,10 @@ void PageActionView::NotifyClick(const ui::Event& event) {
           .SetProperty(kPageActionTriggerKey,
                        static_cast<std::underlying_type_t<PageActionTrigger>>(
                            trigger_source))
+          .SetProperty(
+              kPageActionEntryPointKey,
+              static_cast<std::underlying_type_t<PageActionEntryPoint>>(
+                  PageActionEntryPoint::kSuggestionChip))
           .Build());
 }
 
@@ -471,6 +475,10 @@ void PageActionView::AnchoredMessageChipClick() {
           .SetProperty(kPageActionTriggerKey,
                        static_cast<std::underlying_type_t<PageActionTrigger>>(
                            PageActionTrigger::kMouse))
+          .SetProperty(
+              kPageActionEntryPointKey,
+              static_cast<std::underlying_type_t<PageActionEntryPoint>>(
+                  PageActionEntryPoint::kAnchoredMessage))
           .Build());
   anchored_message_close_callback_.Run();
 }

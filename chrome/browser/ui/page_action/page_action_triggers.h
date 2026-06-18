@@ -17,8 +17,19 @@ enum class PageActionTrigger {
 constexpr std::underlying_type_t<page_actions::PageActionTrigger>
     kInvalidPageActionTrigger = -1;
 
+enum class PageActionEntryPoint {
+  kSuggestionChip = 0,
+  kAnchoredMessage = 1,
+};
+
+constexpr std::underlying_type_t<page_actions::PageActionEntryPoint>
+    kInvalidPageActionEntryPoint = -1;
+
 extern const ui::ClassProperty<std::underlying_type_t<PageActionTrigger>>* const
     kPageActionTriggerKey;
+extern const ui::ClassProperty<
+    std::underlying_type_t<PageActionEntryPoint>>* const
+    kPageActionEntryPointKey;
 
 }  // namespace page_actions
 
