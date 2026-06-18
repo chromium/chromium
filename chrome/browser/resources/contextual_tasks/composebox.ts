@@ -491,6 +491,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     this.selectedMatchIndex_ = -1;
   }
 
+  override focus() {
+    this.$.composebox.focusInput();
+  }
+
   clearInputAndFocus(querySubmitted: boolean = false): void {
     const hadContent = this.$.composebox.input.trim().length > 0 ||
         this.$.composebox.hasFiles();

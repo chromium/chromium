@@ -31,7 +31,9 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/dns/mock_host_resolver.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/widget/widget_deletion_observer.h"
 
@@ -144,6 +146,27 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    url_loader_interceptor_ = std::make_unique<content::URLLoaderInterceptor>(
+        base::BindLambdaForTesting(
+            [&](content::URLLoaderInterceptor::RequestParams* params) {
+              const GURL& url = params->url_request.url;
+              LOG(INFO) << "URLLoaderInterceptor intercepted URL: "
+                        << url.spec();
+              if (url.host() == "www.google.com") {
+                content::URLLoaderInterceptor::WriteResponse(
+                    "chrome/test/data/mock_aim_page.html",
+                    params->client.get());
+                return true;
+              }
+              return false;
+            }));
+  }
+
+  void TearDownOnMainThread() override {
+    url_loader_interceptor_.reset();
+    InteractiveBrowserTest::TearDownOnMainThread();
   }
 
   ContextualTasksUI* GetContextualTasksUI() {
@@ -171,6 +194,7 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
 MATCHER(IsNullSuggestedTabContext, "is a null TabContextPtr") {
@@ -1027,6 +1051,137 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         if (deletion_observer && deletion_observer->IsWidgetAlive()) {
           dialog_widget->CloseNow();
         }
+      }));
+}
+
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExistsEvent);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFrameLoadedEvent);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kComposeboxFocusedEvent);
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+    DISABLED_ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden) {
+  SetUpTasks();
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+
+  StateChange contextual_tasks_app_exists;
+  contextual_tasks_app_exists.type = StateChange::Type::kExists;
+  contextual_tasks_app_exists.where = {"contextual-tasks-app"};
+  contextual_tasks_app_exists.event = kElementExistsEvent;
+
+  StateChange frame_loaded;
+  frame_loaded.type = StateChange::Type::kExistsAndConditionTrue;
+  frame_loaded.where = {"contextual-tasks-app"};
+  frame_loaded.test_function = "(app) => !app.isFrameLoading";
+  frame_loaded.event = kFrameLoadedEvent;
+
+  StateChange composebox_focused;
+  composebox_focused.type = StateChange::Type::kExistsAndConditionTrue;
+  composebox_focused.where = {"contextual-tasks-app"};
+  composebox_focused.test_function =
+      "(app) => app.shadowRoot.activeElement && "
+      "app.shadowRoot.activeElement.id === 'composebox'";
+  composebox_focused.event = kComposeboxFocusedEvent;
+
+  RunTestSequence(
+      Do([&]() {
+        coordinator->Show(
+            false, omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              kContextualTasksSidePanelWebViewElementId),
+      FocusWebContents(kSidePanelWebContentsId),
+      WaitForStateChange(kSidePanelWebContentsId, contextual_tasks_app_exists),
+      Do([&]() {
+        content::WebContents* side_panel_contents =
+            coordinator->GetActiveWebContents();
+        ASSERT_NE(side_panel_contents, nullptr);
+        // Use Object.defineProperty to mock the app's state properties. This
+        // freezes the values for the duration of the test and prevents
+        // asynchronous Mojo callbacks or page-load event handlers from
+        // overwriting them in the background, which would cause flakiness.
+        EXPECT_TRUE(content::ExecJs(
+            side_panel_contents,
+            "(() => {"
+            "  const app = document.querySelector('contextual-tasks-app');"
+            "  Object.defineProperty(app, 'isErrorDialogVisible_', {"
+            "    get() { return false; },"
+            "    set() {}"
+            "  });"
+            "  Object.defineProperty(app, 'isAimEligible_', {"
+            "    get() { return true; },"
+            "    set() {}"
+            "  });"
+            "  Object.defineProperty(app, 'isZeroState_', {"
+            "    get() { return false; },"
+            "    set() {}"
+            "  });"
+            "  Object.defineProperty(app, 'isAiPage_', {"
+            "    get() { return true; },"
+            "    set() {}"
+            "  });"
+            "  Object.defineProperty(app, 'enableComposeboxJumpFix_', {"
+            "    get() { return true; },"
+            "    set() {}"
+            "  });"
+            "  Object.defineProperty(app, 'isInputHidden_', {"
+            "    get() { return false; },"
+            "    set() {}"
+            "  });"
+            "  Object.defineProperty(app, 'enableBasicMode_', {"
+            "    get() { return false; },"
+            "    set() {}"
+            "  });"
+            "  Object.defineProperty(app, 'inNlm_', {"
+            "    get() { return false; },"
+            "    set() {}"
+            "  });"
+            "  app.forcedComposeboxBounds_ = null;"
+            "})()"));
+      }),
+      WaitForStateChange(kSidePanelWebContentsId, frame_loaded), Do([&]() {
+        content::WebContents* side_panel_contents =
+            coordinator->GetActiveWebContents();
+        ASSERT_NE(side_panel_contents, nullptr);
+        EXPECT_EQ(
+            true,
+            content::EvalJs(
+                side_panel_contents,
+                "(() => {"
+                "  const app = document.querySelector('contextual-tasks-app');"
+                "  return app.isComposeboxHidden_();"
+                "})()"));
+      }),
+      Do([&]() {
+        content::WebContents* side_panel_contents =
+            coordinator->GetActiveWebContents();
+        ASSERT_NE(side_panel_contents, nullptr);
+        EXPECT_TRUE(content::ExecJs(
+            side_panel_contents,
+            "(() => {"
+            "  const app = document.querySelector('contextual-tasks-app');"
+            "  const mockRect = {top: 10, left: 10, width: 200, height: "
+            "50, right: 210, bottom: 60};"
+            "  app.onInputPlateBoundsUpdateForTesting(mockRect, []);"
+            "})()"));
+      }),
+      WaitForStateChange(kSidePanelWebContentsId, composebox_focused),
+      Do([&]() {
+        content::WebContents* side_panel_contents =
+            coordinator->GetActiveWebContents();
+        ASSERT_NE(side_panel_contents, nullptr);
+        EXPECT_EQ(
+            false,
+            content::EvalJs(
+                side_panel_contents,
+                "(() => {"
+                "  const app = document.querySelector('contextual-tasks-app');"
+                "  return app.isComposeboxHidden_();"
+                "})()"));
       }));
 }
 

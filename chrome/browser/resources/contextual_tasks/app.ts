@@ -1092,12 +1092,30 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       // Since the height is controlled client side and the composebox grows
       // updwards, set the top of the rect to match the current height to avoid
       // miscalculations in the clip path.
+      const wasHidden = this.isComposeboxHidden_();
       if (this.shouldSetForceComposeboxBounds_()) {
         this.forcedComposeboxBounds_ = {
           ...inputRect,
           height: currentHeight,
           top: inputRect.bottom - currentHeight,
         };
+        // Only focus the input if the composebox transitions from hidden to
+        // visible. This prevents focus-stealing on subsequent bounds updates
+        // (e.g., when the composebox changes height).
+        if (wasHidden && !this.isComposeboxHidden_()) {
+          this.updateComplete.then(() => {
+            // Defer focus to the next message loop cycle using setTimeout(...,
+            // 0). While `this.updateComplete` guarantees the parent DOM is
+            // updated (removing the `hidden` attribute), the browser layout
+            // engine needs a layout pass to realize the nested child input is
+            // visible and interactive. setTimeout avoids a chain of
+            // updateComplete promises of all nested shadow DOM elements, and is
+            // simpler and cleaner.
+            setTimeout(() => {
+              this.composebox_?.focus();
+            }, 0);
+          });
+        }
       } else {
         this.forcedComposeboxBounds_ = null;
       }
@@ -1607,6 +1625,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
   setForcedComposeboxBoundsForTesting(bounds: Rect|null) {
     this.forcedComposeboxBounds_ = bounds;
+  }
+
+  onInputPlateBoundsUpdateForTesting(inputRect?: Rect, occluders?: Rect[]) {
+    this.onInputPlateBoundsUpdate_(inputRect, occluders);
   }
 
   getOccludersForTesting(): Rect[]|null {
