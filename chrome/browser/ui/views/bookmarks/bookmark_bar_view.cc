@@ -1379,6 +1379,7 @@ void BookmarkBarView::WriteDragDataForView(View* sender,
                                            const gfx::Point& press_pt,
                                            ui::OSExchangeData* data) {
   base::RecordAction(base::UserMetricsAction("BookmarkBar_DragButton"));
+  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->profile());
 
   const auto* node = GetNodeForSender(sender);
   ui::ImageModel icon;
@@ -1439,6 +1440,7 @@ void BookmarkBarView::AppsPageShortcutPressed(const ui::Event& event) {
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
   page_navigator_->OpenURL(params, /*navigation_handle_callback=*/{});
   RecordBookmarkAppsPageOpen(BookmarkLaunchLocation::kAttachedBar);
+  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->profile());
 }
 
 void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
@@ -1456,10 +1458,12 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
   RecordBookmarkLaunch(
       BookmarkLaunchLocation::kAttachedBar,
       profile_metrics::GetBrowserProfileType(browser_->profile()));
+  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->profile());
 }
 
 void BookmarkBarView::OnMenuButtonPressed(const BookmarkParentFolder& folder,
                                           const ui::Event& event) {
+  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->profile());
   // Clicking the middle mouse button or clicking with Control/Command key down
   // opens all bookmarks in the folder in new tabs.
   if ((event.flags() & ui::EF_MIDDLE_MOUSE_BUTTON) ||
@@ -2384,6 +2388,7 @@ void BookmarkBarView::PerformDrop(
   DCHECK_NE(index, static_cast<size_t>(-1));
 
   base::RecordAction(base::UserMetricsAction("BookmarkBar_DragEnd"));
+  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(browser_->profile());
   output_drag_op =
       BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
                                                &parent_folder)

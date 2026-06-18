@@ -23,12 +23,14 @@
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
+#include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/search/ntp_features.h"
 #include "components/search/search.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
@@ -199,6 +201,42 @@ void ToggleBookmarkBarWhenVisible(content::BrowserContext* browser_context) {
 
   // The user changed when the bookmark bar is shown, update the preferences.
   prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, always_show);
+}
+
+// Called upon direct user interaction with the Bookmarks Bar UI (e.g. clicking
+// a bookmark/folder, interacting with saved tab groups, or modifying items via
+// context menu/drag-and-drop).
+//
+// For users in the NTP Simplification transition period (`IsDefaultValue()` is
+// true), this explicitly sets `kBookmarkBarVisibilityState` to
+// `kOnlyShowOnNtp`. This establishes the user store as the controlling
+// preference store, transitioning the user out of the experiment's default
+// state and preventing future auto-hiding.
+//
+// Note: Users who had `kShowBookmarkBar` set to true prior to the experiment
+// are upgraded to `kAlwaysShow` at startup in `BookmarkBarController`, making
+// `IsDefaultValue()` false. Therefore, `IsDefaultValue()` is only true here for
+// users in the "off by default" / "only show on NTP" transition group.
+void UpdateBookmarkBarVisibilityPrefOnUserAction(Profile* profile) {
+  if (!profile || !profile->GetPrefs()) {
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          ntp_features::kNtpSimplificationBookmarkBar)) {
+    return;
+  }
+
+  PrefService* prefs = profile->GetPrefs();
+  const PrefService::Preference* state_pref =
+      prefs->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState);
+
+  if (state_pref && state_pref->IsDefaultValue()) {
+    prefs->SetInteger(
+        bookmarks::prefs::kBookmarkBarVisibilityState,
+        static_cast<int>(
+            bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp));
+  }
 }
 
 std::u16string FormatBookmarkURLForDisplay(const GURL& url) {

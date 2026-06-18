@@ -664,6 +664,30 @@ TEST_P(BookmarkContextMenuUpdateSubMenuStateTest, ManagedVisibilityState) {
       controller.IsCommandEnabled(IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP));
 }
 
+TEST_P(BookmarkContextMenuUpdateSubMenuStateTest,
+       UpdateBookmarkBarVisibilityOnUserAction) {
+  const BookmarkNode* bb_node = model_->bookmark_bar_node();
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
+      bb_node->children().front().get(),
+  };
+
+  BookmarkContextMenu controller(nullptr, nullptr, profile_.get(),
+                                 BookmarkLaunchLocation::kAttachedBar, nodes,
+                                 false, false);
+
+  EXPECT_TRUE(
+      profile_->GetPrefs()
+          ->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState)
+          ->IsDefaultValue());
+
+  controller.ExecuteCommand(IDC_BOOKMARK_BAR_REMOVE, 0);
+
+  EXPECT_FALSE(
+      profile_->GetPrefs()
+          ->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState)
+          ->IsDefaultValue());
+}
+
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(BookmarkContextMenuTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     BookmarkContextMenuUpdateSubMenuStateTest);

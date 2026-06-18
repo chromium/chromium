@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,7 +24,9 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/data_sharing/public/features.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -31,10 +34,12 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/search/ntp_features.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace tab_groups {
 
@@ -241,5 +246,121 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
                          SavedTabGroupBarBrowserTest,
                          testing::Bool());
+
+class SavedTabGroupBarNtpSimplificationBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  SavedTabGroupBarNtpSimplificationBrowserTest() {
+    features_.InitWithFeatures({data_sharing::features::kDataSharingFeature,
+                                ntp_features::kNtpSimplificationBookmarkBar},
+                               {data_sharing::features::kDataSharingJoinOnly,
+                                tab_groups::kProjectsPanel});
+  }
+  void Wait() {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupBarNtpSimplificationBrowserTest,
+                       UpdateBookmarkBarVisibilityOnEverythingButtonPressed) {
+  ASSERT_TRUE(SavedTabGroupUtils::IsEnabledForProfile(browser()->profile()));
+  SavedTabGroupBar* saved_tab_group_bar = const_cast<SavedTabGroupBar*>(
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->bookmark_bar()
+          ->saved_tab_group_bar());
+
+  base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+  SavedTabGroup group{
+      u"group_title", TabGroupColorId::kGrey, {}, 0, group_guid};
+  SavedTabGroupTab tab{GURL("https://www.google.com"), u"tab_title", group_guid,
+                       0};
+  group.AddTabFromSync(std::move(tab));
+
+  TabGroupSyncService* service =
+      TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
+  service->AddGroup(std::move(group));
+  Wait();
+
+  EXPECT_EQ(1, saved_tab_group_bar->GetNumberOfVisibleGroups());
+
+  const int overflow_preferred_width =
+      saved_tab_group_bar->everything_menu_button()
+          ->GetPreferredSize()
+          .width() +
+      SavedTabGroupBar::kBetweenElementSpacing;
+
+  saved_tab_group_bar->SetBounds(0, 0, overflow_preferred_width + 1, 100);
+  ASSERT_TRUE(saved_tab_group_bar->IsOverflowButtonVisible());
+
+  EXPECT_TRUE(
+      browser()
+          ->profile()
+          ->GetPrefs()
+          ->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState)
+          ->IsDefaultValue());
+
+  views::test::ButtonTestApi(views::AsViewClass<views::Button>(
+                                 saved_tab_group_bar->everything_menu_button()))
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), base::TimeTicks(),
+                                  ui::EF_LEFT_MOUSE_BUTTON, 0));
+
+  EXPECT_FALSE(
+      browser()
+          ->profile()
+          ->GetPrefs()
+          ->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState)
+          ->IsDefaultValue());
+}
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupBarNtpSimplificationBrowserTest,
+                       UpdateBookmarkBarVisibilityOnTabGroupButtonPressed) {
+  ASSERT_TRUE(SavedTabGroupUtils::IsEnabledForProfile(browser()->profile()));
+  SavedTabGroupBar* saved_tab_group_bar = const_cast<SavedTabGroupBar*>(
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->bookmark_bar()
+          ->saved_tab_group_bar());
+
+  base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+  SavedTabGroup group{
+      u"group_title", TabGroupColorId::kGrey, {}, 0, group_guid};
+  SavedTabGroupTab tab{GURL("https://www.google.com"), u"tab_title", group_guid,
+                       0};
+  group.AddTabFromSync(std::move(tab));
+
+  TabGroupSyncService* service =
+      TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
+  service->AddGroup(std::move(group));
+  Wait();
+
+  ASSERT_EQ(1, saved_tab_group_bar->GetNumberOfVisibleGroups());
+
+  EXPECT_TRUE(
+      browser()
+          ->profile()
+          ->GetPrefs()
+          ->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState)
+          ->IsDefaultValue());
+
+  views::test::ButtonTestApi(
+      views::AsViewClass<views::Button>(
+          saved_tab_group_bar->GetSavedTabGroupButtons()[0]))
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), base::TimeTicks(),
+                                  ui::EF_LEFT_MOUSE_BUTTON, 0));
+
+  EXPECT_FALSE(
+      browser()
+          ->profile()
+          ->GetPrefs()
+          ->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState)
+          ->IsDefaultValue());
+}
 
 }  // namespace tab_groups

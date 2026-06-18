@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -129,6 +130,7 @@ void BookmarkContextMenu::RemoveObserver(
 // BookmarkContextMenu, views::MenuDelegate implementation:
 
 void BookmarkContextMenu::ExecuteCommand(int command_id, int event_flags) {
+  chrome::UpdateBookmarkBarVisibilityPrefOnUserAction(controller_->profile());
   controller_->ExecuteCommand(command_id, event_flags);
 }
 

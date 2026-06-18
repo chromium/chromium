@@ -73,6 +73,7 @@ class BookmarkContextMenuController
   ~BookmarkContextMenuController() override;
 
   ui::SimpleMenuModel* menu_model() { return menu_model_.get(); }
+  Profile* profile() const { return profile_; }
 
   // Public for testing.
   // Returns the parent for newly created folders/bookmarks. If `selection` has
