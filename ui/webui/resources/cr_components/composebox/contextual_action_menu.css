@@ -216,7 +216,7 @@ composebox-favicon-group {
   border-radius: 16px;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
-  max-height: 344px;
+  max-height: var(--share-tabs-flyout-max-height, 344px);
   overflow-y: auto;
   overflow-x: hidden;
   padding: 8px 0;

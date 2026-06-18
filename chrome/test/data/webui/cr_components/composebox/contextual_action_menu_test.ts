@@ -8,6 +8,7 @@ import 'chrome://resources/cr_components/composebox/composebox_favicon_group.js'
 
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
+import {DEFAULT_FLYOUT_WIDTH_PX, MIN_MENU_HEIGHT_PX, SHARE_TABS_FLYOUT_GAP_PX, VIEWPORT_BUFFER_PX} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -790,9 +791,8 @@ suite('ContextualActionMenu', () => {
     assertTrue(!!flyout);
     assertFalse(flyout.hidden);
 
-    // 11 suggestions: 11 * 32px + 16px (padding) = 368px, which exceeds 344px
-    // max height.
-    actionMenu.tabSuggestions = Array(11).fill({
+    // 50 suggestions to ensure content height exceeds window height.
+    actionMenu.tabSuggestions = Array(50).fill({
       tabId: 1,
       title: 'Tab',
       url: {url: 'about:blank'},
@@ -803,8 +803,13 @@ suite('ContextualActionMenu', () => {
     });
     await microtasksFinished();
 
-    // Ensure flyout has max height even with many tab suggestions.
-    assertEquals(344, flyout.offsetHeight);
+    // Ensure flyout max height scales to align with normal menu and fits in
+    // viewport.
+    const expectedMaxHeight = Math.max(
+        MIN_MENU_HEIGHT_PX,
+        window.innerHeight - trigger.getBoundingClientRect().top -
+            VIEWPORT_BUFFER_PX);
+    assertEquals(expectedMaxHeight, flyout.offsetHeight);
   });
 
   test(
@@ -2193,5 +2198,163 @@ suite('ContextualActionMenu', () => {
       assertEquals(2, showAtCalls.length);
       assertEquals(AnchorAlignment.BEFORE_START, showAtCalls[1].anchorAlignmentY);
     });
+  });
+
+  suite('ShareTabsFlyoutViewportPositioning', () => {
+    let trigger: HTMLElement;
+    let flyout: HTMLElement;
+
+    const TRIGGER_WIDTH = 240;
+    const TRIGGER_HEIGHT = 32;
+
+    function createMockTriggerRect(left: number, top: number): DOMRect {
+      return {
+        left: left,
+        right: left + TRIGGER_WIDTH,
+        top: top,
+        bottom: top + TRIGGER_HEIGHT,
+        width: TRIGGER_WIDTH,
+        height: TRIGGER_HEIGHT,
+        x: left,
+        y: top,
+      } as DOMRect;
+    }
+
+    setup(async () => {
+      loadTimeData.overrideValues({
+        contextManagementInComposeboxEnabled: true,
+      });
+      actionMenu.remove();
+      actionMenu =
+          document.createElement('cr-composebox-contextual-action-menu');
+      // Provide enough suggestions so the unconstrained content height is tall.
+      actionMenu.tabSuggestions = Array(50).fill({
+        tabId: 1,
+        title: 'Tab',
+        url: {url: 'about:blank'},
+        lastActiveTime: {internalValue: 0n},
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: false,
+        lastActive: {internalValue: 0n},
+      });
+      actionMenu.inputState = new MockInputState({
+        allowedInputTypes: [InputType.kBrowserTab],
+      });
+      document.body.appendChild(actionMenu);
+      await microtasksFinished();
+
+      actionMenu.showAt(actionMenu);
+      await microtasksFinished();
+
+      trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+      flyout = $$(actionMenu, '.share-tabs-flyout') as HTMLElement;
+      assertTrue(!!trigger);
+      assertTrue(!!flyout);
+    });
+
+    test(
+        'Positions flyout on the right when viewport width allows',
+        async () => {
+          const triggerLeft = 100;
+          const triggerTop = 200;
+          const viewportWidth = 1000;
+          const viewportHeight = 800;
+
+          Object.defineProperty(
+              window, 'innerWidth', {value: viewportWidth, configurable: true});
+          Object.defineProperty(
+              window, 'innerHeight',
+              {value: viewportHeight, configurable: true});
+          Object.defineProperty(
+              flyout, 'offsetWidth',
+              {value: DEFAULT_FLYOUT_WIDTH_PX, configurable: true});
+
+          trigger.getBoundingClientRect = () =>
+              createMockTriggerRect(triggerLeft, triggerTop);
+
+          trigger.dispatchEvent(new PointerEvent('pointerenter'));
+          await microtasksFinished();
+
+          const expectedLeft =
+              `${triggerLeft + TRIGGER_WIDTH + SHARE_TABS_FLYOUT_GAP_PX}px`;
+          const expectedTop = `${triggerTop}px`;
+          const expectedMaxHeight =
+              `${viewportHeight - triggerTop - VIEWPORT_BUFFER_PX}px`;
+
+          assertEquals(expectedLeft, flyout.style.left);
+          assertEquals(expectedTop, flyout.style.top);
+          assertEquals(expectedMaxHeight, flyout.style.maxHeight);
+        });
+
+    test(
+        'Positions flyout to left when viewport is restricted on right',
+        async () => {
+          const triggerLeft = 350;
+          const triggerTop = 150;
+          const viewportWidth = 600;
+          const viewportHeight = 700;
+
+          Object.defineProperty(
+              window, 'innerWidth', {value: viewportWidth, configurable: true});
+          Object.defineProperty(
+              window, 'innerHeight',
+              {value: viewportHeight, configurable: true});
+          Object.defineProperty(
+              flyout, 'offsetWidth',
+              {value: DEFAULT_FLYOUT_WIDTH_PX, configurable: true});
+
+          trigger.getBoundingClientRect = () =>
+              createMockTriggerRect(triggerLeft, triggerTop);
+
+          trigger.dispatchEvent(new PointerEvent('pointerenter'));
+          await microtasksFinished();
+
+          const expectedLeft = `${
+              triggerLeft - DEFAULT_FLYOUT_WIDTH_PX -
+              SHARE_TABS_FLYOUT_GAP_PX}px`;
+          const expectedTop = `${triggerTop}px`;
+          const expectedMaxHeight =
+              `${viewportHeight - triggerTop - VIEWPORT_BUFFER_PX}px`;
+
+          assertEquals(expectedLeft, flyout.style.left);
+          assertEquals(expectedTop, flyout.style.top);
+          assertEquals(expectedMaxHeight, flyout.style.maxHeight);
+        });
+
+    test(
+        'Positions flyout to bottom when there is not enough viewport width',
+        async () => {
+          const triggerLeft = 100;
+          const triggerTop = 100;
+          const viewportWidth = 500;
+          const viewportHeight = 600;
+
+          Object.defineProperty(
+              window, 'innerWidth', {value: viewportWidth, configurable: true});
+          Object.defineProperty(
+              window, 'innerHeight',
+              {value: viewportHeight, configurable: true});
+          Object.defineProperty(
+              flyout, 'offsetWidth',
+              {value: DEFAULT_FLYOUT_WIDTH_PX, configurable: true});
+
+          trigger.getBoundingClientRect = () =>
+              createMockTriggerRect(triggerLeft, triggerTop);
+
+          trigger.dispatchEvent(new PointerEvent('pointerenter'));
+          await microtasksFinished();
+
+          const expectedLeft = `${triggerLeft}px`;
+          const expectedTop =
+              `${triggerTop + TRIGGER_HEIGHT + SHARE_TABS_FLYOUT_GAP_PX}px`;
+          const expectedMaxHeight = `${
+              viewportHeight -
+              (triggerTop + TRIGGER_HEIGHT + SHARE_TABS_FLYOUT_GAP_PX) -
+              VIEWPORT_BUFFER_PX}px`;
+
+          assertEquals(expectedLeft, flyout.style.left);
+          assertEquals(expectedTop, flyout.style.top);
+          assertEquals(expectedMaxHeight, flyout.style.maxHeight);
+        });
   });
 });

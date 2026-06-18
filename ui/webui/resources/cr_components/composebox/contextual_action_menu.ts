@@ -33,11 +33,12 @@ const MENU_WIDTH_PX = 190;
 
 const SHARE_TABS_MENU_WIDTH_PX = 240;
 const SHARE_TABS_FLYOUT_CLOSE_DELAY_MS = 300;
-const SHARE_TABS_FLYOUT_GAP_PX = 0;
+export const SHARE_TABS_FLYOUT_GAP_PX = 0;
+export const DEFAULT_FLYOUT_WIDTH_PX = 320;
 
 const ALIGNMENT_THRESHOLD_PX = 160;
-const VIEWPORT_BUFFER_PX = 16;
-const MIN_MENU_HEIGHT_PX = 100;
+export const VIEWPORT_BUFFER_PX = 16;
+export const MIN_MENU_HEIGHT_PX = 100;
 
 // Gap between tab shared menu and context menu in px.
 const MENU_GAP = 0;
@@ -213,6 +214,9 @@ export class ContextualActionMenuElement extends
     if (changedProperties.has('tabSuggestions') ||
         changedProperties.has('inputState')) {
       this.updateScrollable_();
+      if (this.shareTabsFlyoutOpen_) {
+        this.updateFlyoutPosition_();
+      }
     }
   }
   get open(): boolean {
@@ -699,30 +703,25 @@ export class ContextualActionMenuElement extends
       }
 
       const triggerRect = trigger.getBoundingClientRect();
-      const flyoutWidth = flyout.offsetWidth || 320;
+      const flyoutWidth = flyout.offsetWidth || DEFAULT_FLYOUT_WIDTH_PX;
       const viewportWidth = window.innerWidth;
 
-      flyout.style.top = `${triggerRect.top}px`;
-
-      // If the flyout fits in the window when on the right, put it on the
-      // right:
+      let flyoutTop: number;
       if (flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX <=
-            // Space remaining to right of right part of button:
           viewportWidth - triggerRect.right) {
-
         this.shareTabsFlyoutPosition_ = 'right';
         flyout.style.left = `${triggerRect.right + SHARE_TABS_FLYOUT_GAP_PX}px`;
         flyout.style.right = '';
+        flyoutTop = triggerRect.top;
       } else if (triggerRect.left >= flyoutWidth + SHARE_TABS_FLYOUT_GAP_PX) {
-        // Otherwise, if the space on the left (x=0 to the x=left edge of the
-        // button) is enough for the flyout and gap:
         this.shareTabsFlyoutPosition_ = 'left';
         flyout.style.left =
             `${triggerRect.left - flyoutWidth - SHARE_TABS_FLYOUT_GAP_PX}px`;
         flyout.style.right = '';
+        flyoutTop = triggerRect.top;
       } else {
         this.shareTabsFlyoutPosition_ = 'bottom';
-        flyout.style.top = `${triggerRect.bottom + SHARE_TABS_FLYOUT_GAP_PX}px`;
+        flyoutTop = triggerRect.bottom + SHARE_TABS_FLYOUT_GAP_PX;
         const rtl = getComputedStyle(this).direction === 'rtl';
         if (rtl) {
           flyout.style.left = `${triggerRect.right - flyoutWidth}px`;
@@ -730,6 +729,12 @@ export class ContextualActionMenuElement extends
           flyout.style.left = `${triggerRect.left}px`;
         }
       }
+      flyout.style.top = `${flyoutTop}px`;
+
+      const spaceBelow = window.innerHeight - flyoutTop;
+      const maxFlyoutHeight =
+          Math.max(MIN_MENU_HEIGHT_PX, spaceBelow - VIEWPORT_BUFFER_PX);
+      flyout.style.maxHeight = `${maxFlyoutHeight}px`;
     });
   }
 
@@ -756,6 +761,11 @@ export class ContextualActionMenuElement extends
     this.pointerOverTrigger_ = false;
     this.pointerOverFlyout_ = false;
     this.shareTabsFlyoutOpen_ = false;
+    const flyout =
+        this.shadowRoot.querySelector<HTMLElement>('.share-tabs-flyout');
+    if (flyout) {
+      flyout.style.maxHeight = '';
+    }
   }
 
   private updateScrollable_() {
