@@ -86,6 +86,7 @@ BASE_DECLARE_FEATURE(kNtpDoodleMurals);
 BASE_DECLARE_FEATURE(kLightningTakeoverEdition);
 BASE_DECLARE_FEATURE(kNtpShortcutsRedesign);
 BASE_DECLARE_FEATURE(kNtpSimplificationBookmarkBar);
+BASE_DECLARE_FEATURE(kBookmarkBarUpdatesForTesting);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.
@@ -334,6 +335,10 @@ int GetMaxMostVisitedTilesInExpandedState();
 
 // Returns the max number of enterprise shortcuts allowed.
 int GetMaxEnterpriseShortcuts();
+
+base::TimeDelta GetBookmarkBarMinStalenessTimeInterval();
+
+int GetBookmarkBarCountThreshold();
 
 }  // namespace ntp_features
 

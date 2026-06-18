@@ -96,6 +96,14 @@ BookmarkBarController::BookmarkBarController(BrowserWindowInterface& browser,
           static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
     }
 
+    // To test the auto-hiding locally all prefs must be cleared.
+    if (base::FeatureList::IsEnabled(
+            ntp_features::kBookmarkBarUpdatesForTesting)) {
+      prefs->ClearPref(bookmarks::prefs::kBookmarkBarVisibilityState);
+      prefs->ClearPref(prefs::kBookmarkBarPreviousInitialRenderOnNtpTime);
+      prefs->ClearPref(prefs::kBookmarkBarRenderedOnNtpCount);
+    }
+
     pref_change_registrar_.Add(
         bookmarks::prefs::kBookmarkBarVisibilityState,
         base::BindRepeating(
@@ -319,7 +327,7 @@ void BookmarkBarController::MaybeUpdateAutoRemovalPrefs() {
   base::Time last_shown_time =
       prefs->GetTime(prefs::kBookmarkBarPreviousInitialRenderOnNtpTime);
   if (base::Time::Now() - last_shown_time >
-      ntp_features::kBookmarkBarMinStalenessTimeInterval.Get()) {
+      ntp_features::GetBookmarkBarMinStalenessTimeInterval()) {
     prefs->SetTime(prefs::kBookmarkBarPreviousInitialRenderOnNtpTime,
                    base::Time::Now());
     prefs->SetInteger(
@@ -327,7 +335,7 @@ void BookmarkBarController::MaybeUpdateAutoRemovalPrefs() {
         prefs->GetInteger(prefs::kBookmarkBarRenderedOnNtpCount) + 1);
   }
   if (prefs->GetInteger(prefs::kBookmarkBarRenderedOnNtpCount) >
-      ntp_features::kBookmarkBarCountThreshold.Get()) {
+      ntp_features::GetBookmarkBarCountThreshold()) {
     prefs->SetInteger(
         bookmarks::prefs::kBookmarkBarVisibilityState,
         static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
