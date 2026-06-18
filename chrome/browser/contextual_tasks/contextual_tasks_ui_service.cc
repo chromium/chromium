@@ -1495,6 +1495,14 @@ bool ContextualTasksUiService::HandleNavigationImpl(
         << "ContextualTasks navigation trace: HandleNavigationImpl "
            "overriding url_params with stored params from CanCreateWindow";
   }
+  if (pending_tracker && !url_params.frame_tree_node_id.is_null()) {
+    pending_tracker->SetWebViewFrameTreeNodeId(url_params.frame_tree_node_id);
+    OMNIBOX_LOG("window_tracker")
+        << "Associated webview_frame_tree_node_id: "
+        << url_params.frame_tree_node_id.value() << " with tracker for task: "
+        << pending_tracker->task_id().value().AsLowercaseString();
+  }
+
   // Determine if this is a navigation to a new tab. Its considered new tab
   // if the disposition will be a new tab/window, or if there is a tracked
   // window for this navigation. The tracked window covers cases that go through
@@ -1515,6 +1523,43 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   // unless it is the embedded page.
   if ((is_from_embedded_page || is_forward_link_navigation) &&
       IsContextualTasksUrl(source_contents->GetLastCommittedURL())) {
+    // Check if this navigation is from a <webview> that was created as part of
+    // a window.open call. If so, and it has a actively open WebContents being
+    // tracked, forward the navigation to that window instead. This solves the
+    // flow of a user opening a window via window.open, and then changing its
+    // url via window.location.href.
+    if (!url_params.frame_tree_node_id.is_null()) {
+      ContextualTasksWindowTracker* tracker =
+          tracker_manager_
+              ? tracker_manager_->FindTrackerByWebViewFrameTreeNodeId(
+                    url_params.frame_tree_node_id)
+              : nullptr;
+      if (tracker) {
+        content::WebContents* tab_contents = tracker->GetTabWebContents();
+        if (tab_contents) {
+          OMNIBOX_LOG("window_tracker")
+              << "Redirecting webview navigation to tab. Task: "
+              << tracker->task_id().value().AsLowercaseString()
+              << ", URL: " << url_params.url.spec();
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  [](base::WeakPtr<content::WebContents> wc,
+                     content::OpenURLParams params) {
+                    if (!wc) {
+                      return;
+                    }
+                    content::NavigationController::LoadURLParams load_params(
+                        params);
+                    load_params.frame_tree_node_id = content::FrameTreeNodeId();
+                    wc->GetController().LoadURLWithParams(load_params);
+                  },
+                  tab_contents->GetWeakPtr(), std::move(url_params)));
+          return true;  // Cancel navigation in webview
+        }
+      }
+    }
+
     // If aim is telling the browser what to do with links, the share case
     // doesn't explicitly need to be handled. If aim doesn't communicate this,
     // handle share links specifically to avoid ambiguity with other special-
@@ -1645,6 +1690,14 @@ bool ContextualTasksUiService::HandleNavigationImpl(
                            weak_ptr_factory_.GetWeakPtr()));
         tracker->SetOpenURLParams(url_params);
         tracker->SetWindowFeatures(window_features);
+        if (!url_params.frame_tree_node_id.is_null()) {
+          tracker->SetWebViewFrameTreeNodeId(url_params.frame_tree_node_id);
+          OMNIBOX_LOG("window_tracker")
+              << "Associated webview_frame_tree_node_id: "
+              << url_params.frame_tree_node_id.value()
+              << " with tracker for task: "
+              << tracker->task_id().value().AsLowercaseString();
+        }
         OMNIBOX_LOG("window_tracker")
             << "Stored window features for URL " << url_params.url.spec()
             << ": bounds=[" << window_features.bounds.x() << ","

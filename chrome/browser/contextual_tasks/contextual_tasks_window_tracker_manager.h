@@ -15,6 +15,7 @@
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -89,6 +90,14 @@ class ContextualTasksWindowTrackerManager : public TabListInterfaceObserver,
   // Finds the tracker that corresponds to the given message proxy WebContents.
   ContextualTasksWindowTracker* FindTrackerByMessageProxy(
       content::WebContents* proxy_contents);
+
+  // Finds the tracker that corresponds to the given window ID.
+  ContextualTasksWindowTracker* FindTrackerByWindowId(
+      ContextualWindowId window_id);
+
+  // Finds the tracker that corresponds to the given webview FrameTreeNodeId.
+  ContextualTasksWindowTracker* FindTrackerByWebViewFrameTreeNodeId(
+      content::FrameTreeNodeId id) const;
 
   // For testing.
   const std::vector<std::unique_ptr<ContextualTasksWindowTracker>>&

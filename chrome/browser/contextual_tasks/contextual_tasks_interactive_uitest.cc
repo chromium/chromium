@@ -1922,7 +1922,11 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
                     EXPECT_TRUE(content::ExecJs(wc, setup_listener));
                   })),
 
-      // 2. Within the <webview>, inject and open a window.
+      // 2. Set up instrumenting the next tab BEFORE we trigger window.open to
+      // avoid race conditions.
+      InstrumentNextTab(kOpenedTab),
+
+      // 3. Within the <webview>, inject and open a window.
       WithElement(kInnerWebContentsId,
                   base::BindOnce(
                       [](GURL url, ui::TrackedElement* el) {
@@ -1930,18 +1934,14 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
                             AsInstrumentedWebContents(el)->web_contents();
                         std::string click_script = content::JsReplace(
                             R"(
-                (() => {
-                  window.open($1, '_blank');
-                })();
-              )",
+                  (() => {
+                    window.open($1, '_blank');
+                  })();
+                )",
                             url.spec());
                         EXPECT_TRUE(content::ExecJs(wc, click_script));
                       },
                       clicked_url)),
-
-      // 3. Verify the URL opens in a new tab in the tab strip and instrument
-      // it.
-      InstrumentNextTab(kOpenedTab),
 
       // 4. Wait for the opened tab to finish loading
       WaitForWebContentsNavigation(kOpenedTab, clicked_url),
@@ -2062,7 +2062,12 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
                     EXPECT_TRUE(content::ExecJs(wc, setup_listener));
                   })),
 
-      // 2. Within the guest view, call window.open with popup=yes
+      // 2. Set up instrumenting the next tab BEFORE we trigger window.open to
+      // avoid race conditions. We use AnyBrowser() to catch it if it opens in
+      // a new window.
+      InstrumentNextTab(kOpenedPopup, AnyBrowser()),
+
+      // 3. Within the guest view, call window.open with popup=yes
       WithElement(kInnerWebContentsId,
                   base::BindOnce(
                       [](GURL url, ui::TrackedElement* el) {
@@ -2070,18 +2075,14 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
                             AsInstrumentedWebContents(el)->web_contents();
                         std::string open_script = content::JsReplace(
                             R"(
-                (() => {
-                  window.open($1, '_blank', 'popup=yes,width=400,height=400');
-                })();
-              )",
+                  (() => {
+                    window.open($1, '_blank', 'popup=yes,width=400,height=400');
+                  })();
+                )",
                             url.spec());
                         EXPECT_TRUE(content::ExecJs(wc, open_script));
                       },
                       clicked_url)),
-
-      // 3. Verify the URL opens in a new window (popup) and instrument it!
-      // We use AnyBrowser() to catch it if it opens in a new window.
-      InstrumentNextTab(kOpenedPopup, AnyBrowser()),
 
       // 4. Wait for the opened popup to finish loading
       WaitForWebContentsNavigation(kOpenedPopup, clicked_url),
@@ -2418,6 +2419,93 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                                        /*expected_upload_image_count=*/0,
                                        /*expected_upload_file_count=*/0,
                                        /*expected_added_input_names=*/{}));
+}
+
+// CUJ covered by this test:
+// 1) Opens Contextual Tasks in a tab.
+// 2) Call window.open from the Contextual Tasks <webview>.
+// 3) The window opens in a new tab.
+// 4) In the <webview>, call location.href on the opened window.
+// 5) Verify the opened tab navigates to the new URL.
+// 6) Verify the original contextual tasks tab is still there.
+IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
+                       LocationHrefRedirectedToOpenedTab) {
+  if (!GetParam()) {
+    GTEST_SKIP()
+        << "Requires AimTriggeredThreadLinks (window tracking) enabled";
+  }
+
+  const GURL kActiveTabUrl =
+      https_server_.GetURL("myaccount.google.com", "/title1.html");
+  const GURL initial_url =
+      https_server_.GetURL("myaccount.google.com", "/title1.html#citation");
+  const GURL new_url =
+      https_server_.GetURL("myaccount.google.com", "/title2.html");
+  const GURL kInterceptionUrl =
+      https_server_.GetURL(kMockAimPageHost, "/search?udm=50");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOpenedTab);
+
+  // Step 1: Open Contextual Tasks in a Tab
+  auto sequence =
+      Steps(InstrumentTab(kPrimaryTab, 0), SelectTab(kTabStripElementId, 0),
+            OpenContextualTasksInCurrentTab(kInterceptionUrl),
+            InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0));
+
+  sequence = Steps(
+      std::move(sequence),
+      // 1. Set up instrumenting the next tab BEFORE we trigger window.open to
+      // avoid race conditions.
+      InstrumentNextTab(kOpenedTab),
+
+      // 2. Within the <webview>, open a window and store its reference.
+      WithElement(kInnerWebContentsId,
+                  base::BindOnce(
+                      [](GURL url, ui::TrackedElement* el) {
+                        auto* wc =
+                            AsInstrumentedWebContents(el)->web_contents();
+                        std::string open_script = content::JsReplace(
+                            R"(
+                  (() => {
+                    window.openedWindow = window.open($1, '_blank');
+                  })();
+                )",
+                            url.spec());
+                        EXPECT_TRUE(content::ExecJs(wc, open_script));
+                      },
+                      initial_url)),
+
+      // 3. Wait for the opened tab to finish loading the initial URL.
+      WaitForWebContentsNavigation(kOpenedTab, initial_url),
+
+      // 4. Within the <webview>, set location.href on the opened window.
+      WithElement(kInnerWebContentsId,
+                  base::BindOnce(
+                      [](GURL url, ui::TrackedElement* el) {
+                        auto* wc =
+                            AsInstrumentedWebContents(el)->web_contents();
+                        std::string navigate_script = content::JsReplace(
+                            R"(
+                  (() => {
+                    if (!window.openedWindow) {
+                      return "no opened window";
+                    }
+                    window.openedWindow.location.href = $1;
+                    return "ok";
+                  })();
+                )",
+                            url.spec());
+                        EXPECT_EQ("ok", content::EvalJs(wc, navigate_script));
+                      },
+                      new_url)),
+
+      // 5. Verify the opened tab navigates to the new URL.
+      WaitForWebContentsNavigation(kOpenedTab, new_url),
+
+      // 6. Switch back to the original tab and verify it's still there.
+      SelectTab(kTabStripElementId, 0), WaitForShow(kInnerWebContentsId));
+
+  RunTestSequence(std::move(sequence));
 }
 
 }  // namespace contextual_tasks

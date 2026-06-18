@@ -45,6 +45,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page_navigator.h"
@@ -1168,6 +1169,64 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_EQ(0U, service_for_nav_->window_trackers_for_testing().size());
 }
 
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_RedirectsSubsequentGuestNavigations) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      contextual_tasks::kContextualTasksWindowTracking);
+
+  GURL navigated_url(kTestUrl);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  ContextualTaskId task_id(base::Uuid::GenerateRandomV4());
+  GURL source_url =
+      net::AppendQueryParameter(host_web_content_url, kTaskQueryParam,
+                                task_id.value().AsLowercaseString());
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(source_url);
+
+  content::FrameTreeNodeId guest_frame_tree_node_id =
+      content::FrameTreeNodeId::FromUnsafeValue(42);
+  content::OpenURLParams open_params = CreateOpenUrlParams(navigated_url, true);
+  open_params.frame_tree_node_id = guest_frame_tree_node_id;
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      open_params, web_contents.get(),
+      /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/true,
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  const auto& trackers = service_for_nav_->window_trackers_for_testing();
+  ASSERT_EQ(1U, trackers.size());
+  ContextualTasksWindowTracker* tracker = trackers[0].get();
+  EXPECT_EQ(guest_frame_tree_node_id, tracker->GetWebViewFrameTreeNodeId());
+
+  auto tab_web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  tracker->SetTabWebContents(tab_web_contents.get());
+
+  GURL guest_nav_url("https://example.com/guest-nav");
+  content::OpenURLParams guest_nav_params =
+      CreateOpenUrlParams(guest_nav_url, true);
+  guest_nav_params.frame_tree_node_id = guest_frame_tree_node_id;
+  guest_nav_params.initiator_origin = url::Origin::Create(navigated_url);
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      guest_nav_params, web_contents.get(),
+      /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    content::NavigationEntry* entry =
+        tab_web_contents->GetController().GetPendingEntry();
+    return entry && entry->GetURL() == guest_nav_url;
+  }));
+}
 
 TEST_F(ContextualTasksUiServiceTest,
        HandleNavigation_NewTabAllowed_TracksWindow_TabListDestroyed) {
