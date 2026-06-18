@@ -639,4 +639,81 @@ TEST_F(X11WindowOzoneTest, DispatchUiEventGrabberFreedDuringGeometryFetch) {
   connection->DestroyWindow({new_parent});
 }
 
+// Verifies that X11Window::DispatchEvent() does not cause a use-after-free
+// if the window is synchronously deleted during MouseOnWindow().
+TEST_F(X11WindowOzoneTest, DispatchEventSelfFreedDuringMouseOnWindow) {
+  testing::NiceMock<MockPlatformWindowDelegate> delegate;
+  gfx::AcceleratedWidget widget;
+  constexpr gfx::Rect bounds(30, 80, 800, 600);
+  std::unique_ptr<PlatformWindow> window =
+      CreatePlatformWindow(&delegate, bounds, &widget, nullptr);
+
+  auto* connection = x11::Connection::Get();
+  auto xwindow = static_cast<x11::Window>(widget);
+
+  // Step 1: Force the X11Window's GeometryCache (and its parent chain) to
+  // become Ready and record last_notified_geometry_.
+  window->GetBoundsInPixels();
+
+  // Step 2: Create a real parent window at a non-zero offset so that after
+  // reparenting, only the absolute origin changes.
+  x11::Window new_parent = connection->GenerateId<x11::Window>();
+  connection->CreateWindow({
+      .wid = new_parent,
+      .parent = connection->default_root(),
+      .x = 200,
+      .y = 200,
+      .width = 1000,
+      .height = 1000,
+      .c_class = x11::WindowClass::InputOnly,
+      .override_redirect = x11::Bool32(true),
+  });
+
+  // Step 3: Synthesize the ReparentNotify WM reparent event.
+  x11::ReparentNotifyEvent reparent{};
+  reparent.event = xwindow;
+  reparent.window = xwindow;
+  reparent.parent = new_parent;
+  reparent.x = 0;
+  reparent.y = 0;
+  x11::Event reparent_event(/*send_event=*/false, std::move(reparent));
+  connection->DispatchEvent(reparent_event);
+
+  // Step 4: Mock delegate->OnCursorUpdate() to call
+  // window->GetBoundsInPixels(), modelling production
+  // WindowTreeHostPlatform::OnCursorUpdate() -> etc.
+  ON_CALL(delegate, OnCursorUpdate()).WillByDefault([&]() {
+    if (window) {
+      window->GetBoundsInPixels();
+    }
+  });
+
+  // Step 5: Arm the delegate so that the *next* synchronous OnBoundsChanged
+  // frees the X11Window.
+  bool armed = true;
+  bool freed = false;
+  EXPECT_CALL(delegate, OnBoundsChanged(_))
+      .WillRepeatedly([&](const PlatformWindowDelegate::BoundsChange&) {
+        if (armed) {
+          armed = false;
+          freed = true;
+          window.reset();
+        }
+      });
+
+  // Step 6: Prepare a located event (e.g. mouse press) targeting widget.
+  ScopedXI2Event xi_event;
+  xi_event.InitGenericButtonEvent(kPointerDeviceId, EventType::kMousePressed,
+                                  gfx::Point(100, 100), EF_NONE);
+
+  // Step 7: Dispatch the event to widget. This will trigger DispatchEvent.
+  DispatchXEvent(xi_event, widget);
+
+  // If we got here without ASAN/crash tripping, verify the window was indeed
+  // freed.
+  EXPECT_TRUE(freed) << "delegate was never invoked synchronously";
+
+  connection->DestroyWindow({new_parent});
+}
+
 }  // namespace ui

@@ -1420,7 +1420,11 @@ uint32_t X11Window::DispatchEvent(const PlatformEvent& event) {
   auto& current_xevent = *connection_->dispatching_event();
 
   if (event->IsMouseEvent()) {
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     X11WindowManager::GetInstance()->MouseOnWindow(this);
+    if (!weak_this) {
+      return POST_DISPATCH_STOP_PROPAGATION;
+    }
   }
 #if BUILDFLAG(USE_ATK)
   if (HandleAsAtkEvent(current_xevent)) {
