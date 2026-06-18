@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
@@ -292,6 +293,59 @@ TEST_F(ActorTaskListBubbleControllerTest,
       anchor_widget_->GetContentsView(), /*is_start_notification=*/true);
 
   // Bubble widget should be created and visible.
+  EXPECT_TRUE(actor_task_list_bubble_controller_->GetBubbleWidget());
+  EXPECT_TRUE(
+      actor_task_list_bubble_controller_->GetBubbleWidget()->IsVisible());
+}
+
+TEST_F(ActorTaskListBubbleControllerTest, ShowBubble_DelayedWhenIconHidden) {
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile_);
+  glic::GlicActorTaskIconManager* manager =
+      glic::GlicActorTaskIconManagerFactory::GetForProfile(profile_);
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
+  actor_service->GetTask(task_id)->Pause(true);
+  manager->UpdateTaskIconComponents(task_id);
+
+  // Set anchor view to hidden.
+  views::View* anchor_view = anchor_widget_->GetContentsView();
+  anchor_view->SetVisible(false);
+
+  actor_task_list_bubble_controller_->ShowBubble(
+      anchor_view, /*is_start_notification=*/true);
+
+  // Bubble widget should NOT be created immediately.
+  EXPECT_FALSE(actor_task_list_bubble_controller_->GetBubbleWidget());
+
+  // Fast forward by 250ms.
+  task_environment()->FastForwardBy(base::Milliseconds(250));
+
+  // Bubble widget should now be created and visible.
+  EXPECT_TRUE(actor_task_list_bubble_controller_->GetBubbleWidget());
+  EXPECT_TRUE(
+      actor_task_list_bubble_controller_->GetBubbleWidget()->IsVisible());
+}
+
+TEST_F(ActorTaskListBubbleControllerTest,
+       ShowBubble_NotDelayedWhenIconVisible) {
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile_);
+  glic::GlicActorTaskIconManager* manager =
+      glic::GlicActorTaskIconManagerFactory::GetForProfile(profile_);
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
+  actor_service->GetTask(task_id)->Pause(true);
+  manager->UpdateTaskIconComponents(task_id);
+
+  // Set anchor view to visible.
+  views::View* anchor_view = anchor_widget_->GetContentsView();
+  anchor_view->SetVisible(true);
+
+  actor_task_list_bubble_controller_->ShowBubble(
+      anchor_view, /*is_start_notification=*/true);
+
+  // Bubble widget should be created immediately.
   EXPECT_TRUE(actor_task_list_bubble_controller_->GetBubbleWidget());
   EXPECT_TRUE(
       actor_task_list_bubble_controller_->GetBubbleWidget()->IsVisible());

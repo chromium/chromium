@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
@@ -49,6 +50,25 @@ ActorTaskListBubbleController::~ActorTaskListBubbleController() = default;
 
 void ActorTaskListBubbleController::ShowBubble(views::View* anchor_view,
                                                bool is_start_notification) {
+  const bool is_icon_hidden = anchor_view && !anchor_view->GetVisible();
+  const bool should_delay = is_icon_hidden && is_start_notification &&
+                            base::FeatureList::IsEnabled(
+                                features::kGlicActorUiTaskListBubbleDelayShow);
+
+  if (should_delay) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ActorTaskListBubbleController::ShowBubbleImpl,
+                       weak_ptr_factory_.GetWeakPtr(), anchor_view,
+                       is_start_notification),
+        base::Milliseconds(features::kGlicActorUiTaskListBubbleDelayMs.Get()));
+  } else {
+    ShowBubbleImpl(anchor_view, is_start_notification);
+  }
+}
+
+void ActorTaskListBubbleController::ShowBubbleImpl(views::View* anchor_view,
+                                                   bool is_start_notification) {
   auto* manager = glic::GlicActorTaskIconManagerFactory::GetForProfile(
       browser_->GetProfile());
   DCHECK(manager);

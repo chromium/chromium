@@ -253,6 +253,14 @@ BASE_FEATURE(kActorUiThemed, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether UI bug fixes for the Task Icon are enabled.
 BASE_FEATURE(kGlicActorUiTaskIconUiFixes, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, delays showing the Actor task list bubble to allow layout
+// animations to settle.
+BASE_FEATURE(kGlicActorUiTaskListBubbleDelayShow,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kGlicActorUiTaskListBubbleDelayMs{
+    &kGlicActorUiTaskListBubbleDelayShow, "delay_ms", 250};
+
 // If enabled, post tasks in the window controller to fix re-entrancy crash.
 BASE_FEATURE(kGlicActorPostTaskUiUpdateEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);

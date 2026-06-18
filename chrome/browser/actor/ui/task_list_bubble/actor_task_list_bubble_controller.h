@@ -49,6 +49,7 @@ class ActorTaskListBubbleController : public views::WidgetObserver {
       base::RepeatingClosure callback);
 
  private:
+  void ShowBubbleImpl(views::View* anchor_view, bool is_start_notification);
   void OnTaskRowClicked(actor::TaskId task_id);
 
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
