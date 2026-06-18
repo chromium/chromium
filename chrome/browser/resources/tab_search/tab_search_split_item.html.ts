@@ -13,9 +13,9 @@ export function getHtml(this: TabSearchSplitItemElement) {
 <div id="iconContainer">
   <div class="split-favicons ${this.data.layout === SplitTabLayout.kStacked ?
       'stacked' : 'side-by-side'}">
-    ${this.data.tabUrls.slice(0, 2).map((url: string) => html`
+    ${this.data.tabUrls.slice(0, 2).map((url: string, index: number) => html`
       <div class="split-favicon"
-          .style="background-image: ${this.getFaviconUrl_(url)}"></div>
+          .style="background-image: ${this.getFaviconUrl_(url, index)}"></div>
     `)}
   </div>
 </div>

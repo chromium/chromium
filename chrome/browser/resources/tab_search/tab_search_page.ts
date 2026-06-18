@@ -330,12 +330,13 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         this.updateFilteredTabs_();
         foundTab = true;
       } else if (item instanceof SplitViewData && item.tabs) {
-        if (item.tabs[0].tabId === tab.tabId) {
-          item.tabs[0] = tab;
-          this.updateFilteredTabs_();
-          foundTab = true;
-        } else if (item.tabs[1].tabId === tab.tabId) {
-          item.tabs[1] = tab;
+        const tabIndex = item.tabs.findIndex(t => t.tabId === tab.tabId);
+        if (tabIndex !== -1) {
+          const tabs: [Tab, Tab] = [item.tabs[0], item.tabs[1]];
+          tabs[tabIndex] = tab;
+          const newSplitViewData = new SplitViewData({tabs});
+          newSplitViewData.inActiveWindow = item.inActiveWindow;
+          this.openTabs_[i] = newSplitViewData;
           this.updateFilteredTabs_();
           foundTab = true;
         }

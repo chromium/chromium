@@ -76,8 +76,12 @@ export class TabSearchSplitItemElement extends TabSearchSplitItemBase {
     return this.data.tabGroup ? 'block' : 'none';
   }
 
-  protected getFaviconUrl_(url: string): string {
-    return getFaviconForPageURL(url, false);
+  protected getFaviconUrl_(url: string, index: number): string {
+    const tab = this.data.tabs ? this.data.tabs[index] : null;
+    return tab && tab.faviconUrl ?
+        `url("${tab.faviconUrl}")` :
+        getFaviconForPageURL(
+            tab && tab.isDefaultFavicon ? 'chrome://newtab' : url, false);
   }
 
   get domainTexts_(): string[] {
