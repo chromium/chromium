@@ -1,0 +1,15 @@
+Tests WebMCP invokeTool command with cross-origin navigation.
+Enabling WebMCP Domain
+Enabling Page Domain
+
+--- Invoking navigate_tool ---
+invokeTool response: {
+    invocationId : <string 0>
+}
+toolResponded invocationId matches
+toolResponded event: {
+    errorText : Cannot return tool results after a cross-origin navigation
+    invocationId : <string 0>
+    status : Error
+}
+

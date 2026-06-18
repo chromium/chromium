@@ -11,7 +11,8 @@
 #include "content/browser/devtools/protocol/web_mcp.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -49,7 +50,8 @@ class CONTENT_EXPORT WebMCPHandler : public DevToolsDomainHandler,
  private:
   raw_ptr<RenderFrameHostImpl> host_;
   bool enabled_ = false;
-  absl::flat_hash_set<base::UnguessableToken> initiated_invocations_;
+  absl::flat_hash_map<base::UnguessableToken, url::Origin>
+      initiated_invocations_;
   std::unique_ptr<WebMCP::Frontend> frontend_;
 };
 

@@ -99,7 +99,7 @@ void WebMCPHandler::InvokeTool(const std::string& frame_id,
   }
 
   base::UnguessableToken invocation_token = base::UnguessableToken::Create();
-  initiated_invocations_.insert(invocation_token);
+  initiated_invocations_[invocation_token] = rfh->GetLastCommittedOrigin();
 
   rfh->GetAssociatedLocalFrame()->InvokeScriptToolForInspector(
       invocation_token, tool_name, input_arguments,
@@ -134,6 +134,23 @@ void WebMCPHandler::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
       navigation_handle->GetRenderFrameHost());
+
+  // Note: This differs from how the normal Web Platform API (Blink and
+  // //content) handles this case. The normal API only tells the invoker that an
+  // execution has been canceled/failed when the document hosting the tool is
+  // destroyed. Here (and in the //chrome Actor implementation), we cancel tool
+  // calls whenever a navigation has happened, regardless of the bf-cache status
+  // of the previous document. This means if a tool is invoked in DevTools and
+  // navigates cross-origin, DevTools receives an error immediately, rather than
+  // hanging until the document is destroyed.
+  if (!rfh->GetLastCommittedOrigin().IsSameOriginWith(it->second)) {
+    frontend_->ToolResponded(
+        invocation_id->ToString(), WebMCP::InvocationStatusEnum::Error, nullptr,
+        "Cannot return tool results after a cross-origin navigation");
+    initiated_invocations_.erase(it);
+    return;
+  }
+
   rfh->GetAssociatedLocalFrame()
       ->NotifyInspectorOfCrossDocumentScriptToolResult(*invocation_id);
   initiated_invocations_.erase(it);
