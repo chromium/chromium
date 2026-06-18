@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
@@ -27,6 +28,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/search/ntp_features.h"
@@ -339,5 +341,12 @@ void BookmarkBarController::MaybeUpdateAutoRemovalPrefs() {
     prefs->SetInteger(
         bookmarks::prefs::kBookmarkBarVisibilityState,
         static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
+    // Show the custom action promo (undo toast) when the bookmark bar is
+    // auto-hidden due to inactivity.
+    if (auto* user_education =
+            BrowserUserEducationInterface::From(base::to_address(browser_))) {
+      user_education->MaybeShowFeaturePromo(
+          feature_engagement::kIPHBookmarkBarSimplifiedFeature);
+    }
   }
 }

@@ -30,11 +30,13 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/search/ntp_features.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/user_education/test/mock_feature_promo_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -521,6 +523,13 @@ TEST_F(BookmarkTest, NtpSimplification_AutoHideAfterLimit) {
 
   BookmarkBarController controller(mock_browser_window_interface_,
                                    *tab_strip_model_);
+
+  // Verify that the IPH is shown when the bookmark bar is auto-hidden.
+  EXPECT_CALL(
+      *user_education_interface_,
+      MaybeShowFeaturePromo(user_education::test::MatchFeaturePromoParams(
+          feature_engagement::kIPHBookmarkBarSimplifiedFeature)))
+      .WillOnce(testing::Return(true));
 
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
