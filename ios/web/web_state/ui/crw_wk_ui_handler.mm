@@ -366,6 +366,10 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
     return NO;
   }
 
+  if (!self.webStateImpl->IsVisible()) {
+    return NO;
+  }
+
   if (isMainFrame && url::Origin::Create(self.webStateImpl->GetVisibleURL()) !=
                          url::Origin::Create(requestURL)) {
     // Dialog was requested by web page's main frame, but visible URL has
