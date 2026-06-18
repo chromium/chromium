@@ -58,6 +58,8 @@ chromium-metrics-reviews@google.com.
 
 <variants name="StartupType">
   <variant name="NewTabPage" summary="Chrome starts into the New Tab Page."/>
+  <variant name="NewTabPageWebUi"
+      summary="Chrome starts into the WebUI New Tab Page."/>
 </variants>
 
 <histogram name="Startup.AfterStartupTaskCount" units="units"
@@ -517,6 +519,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FirstDrawSurface">
     <variant name="NewTabPage"/>
+    <variant name="NewTabPageWebUi"/>
     <variant name="SearchActivity"/>
   </token>
 </histogram>

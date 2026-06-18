@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
@@ -52,6 +53,8 @@ public class StartupMetricsTracker {
     private static final long TIME_TO_DRAW_METRIC_RECORDING_DELAY_MS = 2500;
     private static final String NTP_COLD_START_HISTOGRAM =
             "Startup.Android.Cold.NewTabPage.TimeToFirstDraw";
+    private static final String NTP_WEBUI_COLD_START_HISTOGRAM =
+            "Startup.Android.Cold.NewTabPageWebUi.TimeToFirstDraw";
     private static final String TIME_TO_STARTUP_FCP_OR_PAINT_PREVIEW_HISTOGRAM =
             "Startup.Android.Cold.TimeToStartupFcpOrPaintPreview";
     private static final String COLD_START_TIME_TO_FIRST_FRAME =
@@ -116,7 +119,16 @@ public class StartupMetricsTracker {
         public void onShown(Tab tab, @TabSelectionType int type) {
             if (tab == null) return;
             if (tab.isNativePage()) destroy();
-            if (!UrlUtilities.isNtpUrl(tab.getUrl())) mShouldTrackTimeToFirstDraw = false;
+            if (!UrlUtilities.isNtpUrl(tab.getUrl())) {
+                mShouldTrackTimeToFirstDraw = false;
+            } else if (UrlOverrideUtils.isWebUiNtpOverrideEnabled()
+                    && mShouldTrackTimeToFirstDraw) {
+                View tabView = tab.getView();
+                if (tabView != null) {
+                    mShouldTrackTimeToFirstDraw = false;
+                    trackTimeToFirstDraw(tabView, NTP_WEBUI_COLD_START_HISTOGRAM);
+                }
+            }
         }
 
         @Override
@@ -327,6 +339,8 @@ public class StartupMetricsTracker {
                     long timeToFirstDrawMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
                     if (NTP_COLD_START_HISTOGRAM.equals(histogram)) {
                         recordBinderMetricsCold("NewTabPage");
+                    } else if (NTP_WEBUI_COLD_START_HISTOGRAM.equals(histogram)) {
+                        recordBinderMetricsCold("NewTabPageWebUi");
                     }
                     // During a cold start, first draw can be triggered while Chrome is in
                     // the background, leading to ablated draw times. This early in the startup
