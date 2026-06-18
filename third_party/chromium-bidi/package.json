@@ -59,7 +59,7 @@
     "@types/websocket": "1.0.10",
     "chai": "6.2.2",
     "chai-as-promised": "8.0.2",
-    "devtools-protocol": "0.0.1643702",
+    "devtools-protocol": "0.0.1647336",
     "eslint": "10.3.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-typescript": "4.4.4",
