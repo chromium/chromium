@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "url/gurl.h"
@@ -81,6 +82,12 @@ class ContextualTasksWindowTracker {
   }
 
   void SetWindowId(ContextualWindowId window_id) { window_id_ = window_id; }
+  void SetWebViewFrameTreeNodeId(content::FrameTreeNodeId id) {
+    webview_frame_tree_node_id_ = id;
+  }
+  content::FrameTreeNodeId GetWebViewFrameTreeNodeId() const {
+    return webview_frame_tree_node_id_;
+  }
   void SetOpenURLParams(const content::OpenURLParams& params);
   void SetWindowFeatures(const blink::mojom::WindowFeatures& features) {
     window_features_ = features;
@@ -101,6 +108,10 @@ class ContextualTasksWindowTracker {
   GURL expected_url_;
   // The unique ID assigned to the tracked window.
   std::optional<ContextualWindowId> window_id_;
+  // The FrameTreeNodeId of the mock webview guest created in response to a
+  // window.open() (which represents this window in WebUI), and not the guest
+  // that actually called window.open().
+  content::FrameTreeNodeId webview_frame_tree_node_id_;
   // The token of the RenderFrameHost that initiated the window opening.
   content::GlobalRenderFrameHostToken initiator_rfh_token_;
   // The tab being tracked.

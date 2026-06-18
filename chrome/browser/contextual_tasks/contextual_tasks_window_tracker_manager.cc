@@ -217,6 +217,34 @@ ContextualTasksWindowTrackerManager::FindTrackerByMessageProxy(
   return nullptr;
 }
 
+ContextualTasksWindowTracker*
+ContextualTasksWindowTrackerManager::FindTrackerByWindowId(
+    ContextualWindowId window_id) {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return nullptr;
+  }
+  for (const auto& tracker : window_trackers_) {
+    if (tracker->window_id() == window_id) {
+      return tracker.get();
+    }
+  }
+  return nullptr;
+}
+
+ContextualTasksWindowTracker*
+ContextualTasksWindowTrackerManager::FindTrackerByWebViewFrameTreeNodeId(
+    content::FrameTreeNodeId id) const {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return nullptr;
+  }
+  for (const auto& tracker : window_trackers_) {
+    if (tracker->GetWebViewFrameTreeNodeId() == id) {
+      return tracker.get();
+    }
+  }
+  return nullptr;
+}
+
 void ContextualTasksWindowTrackerManager::OnBrowserCreated(
     BrowserWindowInterface* browser) {
   if (!GetIsContextualTasksWindowTrackingEnabled()) {
