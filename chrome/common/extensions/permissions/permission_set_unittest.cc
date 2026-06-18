@@ -862,6 +862,7 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kCecPrivate);
   skip.insert(APIPermissionID::kChromeosInfoPrivate);
   skip.insert(APIPermissionID::kCommandLinePrivate);
+  skip.insert(APIPermissionID::kContextualTasksPrivate);
   skip.insert(APIPermissionID::kCrashReportPrivate);
   skip.insert(APIPermissionID::kDeveloperPrivate);
   skip.insert(APIPermissionID::kEchoPrivate);

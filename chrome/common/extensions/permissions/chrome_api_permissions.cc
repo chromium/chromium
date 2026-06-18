@@ -74,6 +74,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kContentSettings, "contentSettings"},
     {APIPermissionID::kContextMenus, "contextMenus",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kContextualTasksPrivate, "contextualTasksPrivate",
+     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kCookie, "cookies"},
     {APIPermissionID::kEnterpriseDeviceAttributes,
      "enterprise.deviceAttributes",

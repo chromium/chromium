@@ -292,6 +292,7 @@ enum APIPermissionID {
   kGlicPrivate = 265,
   kGlicPrivateInvoke = 266,
   kIndigoPrivate = 267,
+  kContextualTasksPrivate = 268,
 
   // Add new entries at the end of the enum and be sure to update the
   // "ExtensionPermission3" enum in

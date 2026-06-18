@@ -72,6 +72,9 @@ BASE_DECLARE_FEATURE(kApiUserScriptsMultipleWorlds);
 // Controls the availability of the odfsConfigPrivate API.
 BASE_DECLARE_FEATURE(kApiOdfsConfigPrivate);
 
+// Controls the availability of the contextualTasksPrivate API.
+BASE_DECLARE_FEATURE(kApiContextualTasksPrivate);
+
 // Controls the availability of the glicPrivate API.
 BASE_DECLARE_FEATURE(kApiGlicPrivate);
 

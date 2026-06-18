@@ -111,7 +111,10 @@ group("api_implementations") {
   }  # if (enable_extensions)
 
   if (!is_android) {
-    public_deps += [ "//chrome/browser/extensions/api/indigo_private" ]
+    public_deps += [
+      "//chrome/browser/extensions/api/contextual_tasks_private",
+      "//chrome/browser/extensions/api/indigo_private",
+    ]
   }
 }
 

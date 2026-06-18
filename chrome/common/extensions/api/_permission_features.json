@@ -197,6 +197,16 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
   },
+  "contextualTasksPrivate": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "location": "component",
+    "platforms": ["chromeos", "linux", "mac", "win"],
+    "feature_flag": "ApiContextualTasksPrivate",
+    "allowlist": [
+      "37358CF0945B962A2F3783C2F8DB929B169818A4" // Contextual Tasks Component Extension
+    ]
+  },
   "cookies": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]

@@ -30,6 +30,7 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kApiUserScriptsExecute,
     &extensions_features::kApiUserScriptsMultipleWorlds,
     &extensions_features::kApiGlicPrivate,
+    &extensions_features::kApiContextualTasksPrivate,
     &extensions_features::kApiOdfsConfigPrivate,
     &extensions_features::kApiProxyOverrideRulesPrivate,
     &extensions_features::kExperimentalOmniboxLabs,

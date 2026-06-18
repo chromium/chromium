@@ -102,6 +102,10 @@ if (enable_extensions) {
     schema_sources_ += [ "web_authentication_proxy.webidl" ]
   }
 
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    schema_sources_ += [ "contextual_tasks_private.webidl" ]
+  }
+
   if (is_chromeos) {
     schema_sources_ += [
       "accessibility_private.json",

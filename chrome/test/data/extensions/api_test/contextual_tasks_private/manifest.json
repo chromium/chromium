@@ -1,0 +1,11 @@
+{
+  "name": "contextualTasksPrivate test",
+  "version": "1.0",
+  "manifest_version": 3,
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoeztbMfT9qoGnGSD+VmoyVuZ0O50+r7Dw6rBH4G/hw9DSUME5pBKLVhHMcvE9YogjIrgb4ftx+Xxm/HOvQUVdGVOlAzTNknBPo4hy5M1xd8weTxxRNlAqtjeTWJ2qvX9I17fn2JfemavwhmP7I8AVbTuiPKbg0G25NNwor2mTVqRcKaxTErmwcGPjX2zoq4H4NjJnck0yCIUMuxmmTxnbhsCrWuYD2RR6vzrGzej3XbzlD5IPWmP9oNrfNan0EK7au3n+84/SNK40KKsaNonICIiht9zKIKRxvqyKBGEZLse5j2JJBiMtQZ/Ha8yrxDv3w3cZ9YoOGMBkGdNDHTErwIDAQAB",
+  "permissions": ["contextualTasksPrivate", "webNavigation", "tabs"],
+  "background": {
+    "service_worker": "test.js",
+    "type": "module"
+  }
+}

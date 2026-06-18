@@ -321,7 +321,7 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided URL is a Google search results page. This
   // method does not check for the validity of any parameters that
   // differentiate different modes or queries.
-  static bool IsSearchResultsUrl(const GURL& url);
+  virtual bool IsSearchResultsUrl(const GURL& url);
 
   // Returns whether the provided URL is a share URL.
   bool IsShareUrl(const GURL& url);

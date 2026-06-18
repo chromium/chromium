@@ -96,6 +96,11 @@
       "chrome://extensions/*"
     ]
   }],
+  "contextualTasksPrivate": {
+    "contexts": ["privileged_extension"],
+    "dependencies": ["permission:contextualTasksPrivate"],
+    "feature_flag": "ApiContextualTasksPrivate"
+  },
   "experimentalActor": {
     "contexts": ["privileged_extension"],
     "dependencies": ["permission:experimentalActor"]
