@@ -172,6 +172,24 @@ class SearchSuggestionParser {
                   bool should_prefetch,
                   bool should_prerender,
                   const std::u16string& input_text);
+    SuggestResult(
+        const std::u16string& suggestion,
+        AutocompleteMatchType::Type type,
+        omnibox::SuggestType suggest_type,
+        std::vector<int> subtypes,
+        const std::u16string& match_contents,
+        const std::u16string& match_contents_prefix,
+        const std::u16string& annotation,
+        omnibox::EntityInfo entity_info,
+        const std::string& deletion_url,
+        bool from_keyword,
+        omnibox::NavigationalIntent navigational_intent,
+        int relevance,
+        bool relevance_from_server,
+        bool should_prefetch,
+        bool should_prerender,
+        const std::u16string& input_text,
+        std::optional<omnibox::SuggestTemplateInfo> suggest_template_info);
     SuggestResult(const SuggestResult& result);
     ~SuggestResult() override;
 

@@ -252,14 +252,21 @@ std::u16string GetAnnotation(
   return u"";
 }
 
+bool SuggestTemplateInfoHasPrimaryText(
+    base::optional_ref<const omnibox::SuggestTemplateInfo>
+        suggest_template_info) {
+  return suggest_template_info.has_value() &&
+         suggest_template_info->has_primary_text() &&
+         !suggest_template_info->primary_text().text().empty();
+}
+
 // Update `match_contents` if there is any input that has a higher precedence.
 void MaybeUpdateMatchContents(
     const omnibox::EntityInfo& entity_info,
     base::optional_ref<const omnibox::SuggestTemplateInfo>
         suggest_template_info,
     std::u16string& match_contents) {
-  if (suggest_template_info.has_value() &&
-      !suggest_template_info->primary_text().text().empty()) {
+  if (SuggestTemplateInfoHasPrimaryText(suggest_template_info)) {
     match_contents =
         base::UTF8ToUTF16(suggest_template_info->primary_text().text());
     return;
@@ -368,6 +375,42 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
     bool should_prefetch,
     bool should_prerender,
     const std::u16string& input_text)
+    : SuggestResult(suggestion,
+                    type,
+                    suggest_type,
+                    std::move(subtypes),
+                    match_contents,
+                    match_contents_prefix,
+                    annotation,
+                    std::move(entity_info),
+                    deletion_url,
+                    from_keyword,
+                    navigational_intent,
+                    relevance,
+                    relevance_from_server,
+                    should_prefetch,
+                    should_prerender,
+                    input_text,
+                    std::nullopt) {}
+
+SearchSuggestionParser::SuggestResult::SuggestResult(
+    const std::u16string& suggestion,
+    AutocompleteMatchType::Type type,
+    omnibox::SuggestType suggest_type,
+    std::vector<int> subtypes,
+    const std::u16string& match_contents,
+    const std::u16string& match_contents_prefix,
+    const std::u16string& annotation,
+    omnibox::EntityInfo entity_info,
+    const std::string& deletion_url,
+    bool from_keyword,
+    omnibox::NavigationalIntent navigational_intent,
+    int relevance,
+    bool relevance_from_server,
+    bool should_prefetch,
+    bool should_prerender,
+    const std::u16string& input_text,
+    std::optional<omnibox::SuggestTemplateInfo> suggest_template_info)
     : Result(from_keyword,
              relevance,
              relevance_from_server,
@@ -379,10 +422,18 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
       suggestion_(suggestion),
       match_contents_prefix_(match_contents_prefix),
       entity_info_(std::move(entity_info)),
+      suggest_template_info_(std::move(suggest_template_info)),
       should_prefetch_(should_prefetch),
       should_prerender_(should_prerender) {
   annotation_ = annotation;
-  match_contents_ = base::CollapseWhitespace(match_contents, false);
+  // SUIT primary text is pre-formatted on the server. Do not collapse
+  // whitespace since it would invalidate fragment start indices.
+  if (SuggestTemplateInfoHasPrimaryText(suggest_template_info_) &&
+      suggest_template_info_->primary_text().fragments_size() > 0) {
+    match_contents_ = match_contents;
+  } else {
+    match_contents_ = base::CollapseWhitespace(match_contents, false);
+  }
   DCHECK(!match_contents_.empty());
   ClassifyMatchContents(true, input_text);
 }
@@ -400,6 +451,20 @@ void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
     const bool allow_bolding_all,
     const std::u16string& input_text) {
   DCHECK(!match_contents_.empty());
+
+  // Only use the server-provided template formatting if the template's primary
+  // text is non-empty. Otherwise, `match_contents_` was not updated in
+  // `MaybeUpdateMatchContents` to use the template text, and the template's
+  // fragment indices would be incorrect.
+  if (SuggestTemplateInfoHasPrimaryText(suggest_template_info_) &&
+      suggest_template_info_->primary_text().fragments_size() > 0) {
+    auto classifications =
+        ClassifyFormattedString(suggest_template_info_->primary_text());
+    if (!classifications.empty()) {
+      match_contents_class_ = std::move(classifications);
+      return;
+    }
+  }
 
   // In case of zero-suggest results, do not highlight matches.
   if (input_text.empty()) {
@@ -1018,23 +1083,21 @@ bool SearchSuggestionParser::ParseSuggestResults(
                                match_contents);
       const std::u16string annotation =
           GetAnnotation(entity_info, maybe_suggest_template_info);
-      results->suggest_results.push_back(
-          SuggestResult(suggestion, match_type, suggest_type, subtypes[index],
-                        match_contents, match_contents_prefix, annotation,
-                        std::move(entity_info), deletion_url, is_keyword_result,
-                        nav_intent, relevance, relevances != nullptr,
-                        should_prefetch, should_prerender, trimmed_input));
+      results->suggest_results.push_back(SuggestResult(
+          suggestion, match_type, suggest_type, subtypes[index], match_contents,
+          match_contents_prefix, annotation, std::move(entity_info),
+          deletion_url, is_keyword_result, nav_intent, relevance,
+          relevances != nullptr, should_prefetch, should_prerender,
+          trimmed_input,
+          has_suggest_template
+              ? std::make_optional(std::move(suggest_template_info))
+              : std::nullopt));
 
       if (answer_parsed_successfully) {
         // Ensure `answer_template` has an answer.
         DCHECK(answer_template.answers_size() > 0);
         results->suggest_results.back().SetAnswerType(answer_type);
         results->suggest_results.back().SetRichAnswerTemplate(answer_template);
-      }
-
-      if (has_suggest_template) {
-        results->suggest_results.back().SetSuggestTemplateInfo(
-            suggest_template_info);
       }
 
       if (suggestion_group_id) {
