@@ -37,6 +37,7 @@
 #include "chrome/browser/feature_engagement/non_iph_promo.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -88,7 +89,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_controller.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_sanitizer.h"
+#include "chrome/browser/ui/webui/drive_picker_host/drive_disclaimer_controller.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
+#include "components/contextual_search/footprints/public/fpop_service.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -926,6 +929,7 @@ void ContextualSearchboxHandler::CleanupDrivePicker() {
 #if !BUILDFLAG(IS_ANDROID)
   drive_picker_result_handler_receiver_.reset();
   drive_picker_controller_.reset();
+  drive_disclaimer_controller_.reset();
 #endif
 }
 
@@ -1365,11 +1369,40 @@ void ContextualSearchboxHandler::GetDriveDisclaimerStatus(
         searchbox::mojom::DriveDisclaimerStatus::kRestricted);
     return;
   }
-  bool accepted = profile_->GetPrefs()->GetBoolean(
-      contextual_search::kDriveDisclaimerAccepted);
-  std::move(callback).Run(
-      accepted ? searchbox::mojom::DriveDisclaimerStatus::kAccepted
-               : searchbox::mojom::DriveDisclaimerStatus::kNotAccepted);
+#if BUILDFLAG(IS_ANDROID)
+  std::move(callback).Run(searchbox::mojom::DriveDisclaimerStatus::kRestricted);
+#else
+  if (!drive_disclaimer_controller_) {
+    drive_disclaimer_controller_ =
+        std::make_unique<drive_picker::DriveDisclaimerController>(
+            contextual_search::FpopService::Create(
+                IdentityManagerFactory::GetForProfile(profile_),
+                profile_->GetURLLoaderFactory()));
+  }
+
+  drive_disclaimer_controller_->CheckDisclaimerStatusAsync(base::BindOnce(
+      [](GetDriveDisclaimerStatusCallback callback,
+         drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
+        switch (status) {
+          case drive_picker::DriveDisclaimerController::DisclaimerStatus::
+              kAccepted:
+            std::move(callback).Run(
+                searchbox::mojom::DriveDisclaimerStatus::kAccepted);
+            break;
+          case drive_picker::DriveDisclaimerController::DisclaimerStatus::
+              kNotAccepted:
+            std::move(callback).Run(
+                searchbox::mojom::DriveDisclaimerStatus::kNotAccepted);
+            break;
+          case drive_picker::DriveDisclaimerController::DisclaimerStatus::
+              kRestricted:
+            std::move(callback).Run(
+                searchbox::mojom::DriveDisclaimerStatus::kRestricted);
+            break;
+        }
+      },
+      std::move(callback)));
+#endif
 }
 
 void ContextualSearchboxHandler::OnDriveDisclaimerAccepted() {

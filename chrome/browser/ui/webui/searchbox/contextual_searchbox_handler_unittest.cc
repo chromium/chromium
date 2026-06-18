@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_controller.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_sanitizer.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
+#include "chrome/browser/ui/webui/drive_picker_host/drive_disclaimer_controller.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
@@ -49,6 +50,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_search/footprints/public/fpop_service.h"
+#include "components/contextual_search/footprints/public/proto/footprints_oneplatform.pb.h"
 #include "components/contextual_search/internal/test_composebox_query_controller.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/features.h"
@@ -179,6 +182,11 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
     drive_picker_controller_ = std::move(controller);
   }
 
+  void SetDriveDisclaimerController(
+      std::unique_ptr<drive_picker::DriveDisclaimerController> controller) {
+    drive_disclaimer_controller_ = std::move(controller);
+  }
+
   bool IsDrivePickerReceiverBound() const {
     return drive_picker_result_handler_receiver_.is_bound();
   }
@@ -201,6 +209,28 @@ class MockDrivePickerHostController : public DrivePickerHostController {
               ShowDrivePickerHost,
               (std::unique_ptr<drive_picker_host::DrivePickerHostRequest>),
               (override));
+};
+
+class MockFpopService : public contextual_search::FpopService {
+ public:
+  MOCK_METHOD(
+      void,
+      GetFacs,
+      (const footprints::oneplatform::GetFacsRequest& request,
+       base::OnceCallback<void(
+           bool success,
+           const footprints::oneplatform::GetFacsResponse& response)> callback),
+      (override));
+  MOCK_METHOD(
+      void,
+      UpdateActivityControlsSettings,
+      (const footprints::oneplatform::UpdateActivityControlsSettingsRequest&
+           request,
+       base::OnceCallback<void(
+           bool success,
+           const footprints::oneplatform::
+               UpdateActivityControlsSettingsResponse& response)> callback),
+      (override));
 };
 
 class MockContextualTasksContextService
@@ -324,6 +354,24 @@ class ContextualSearchboxHandlerTest
 
   FakeContextualSearchboxHandler& handler() { return *handler_; }
   MockQueryController& query_controller() { return *query_controller_; }
+
+  void SetUpMockFpopService(bool accepted) {
+    auto mock_fpop_service = std::make_unique<MockFpopService>();
+    EXPECT_CALL(*mock_fpop_service, GetFacs(testing::_, testing::_))
+        .WillOnce([accepted](const auto& request, auto callback) {
+          footprints::oneplatform::GetFacsResponse response;
+          if (accepted) {
+            auto* setting = response.add_facs_setting();
+            setting->set_setting(
+                contextual_search::kPersonalContextSearchUsingWorkspace);
+            setting->set_data_recording_enabled(true);
+          }
+          std::move(callback).Run(true, response);
+        });
+    handler().SetDriveDisclaimerController(
+        std::make_unique<drive_picker::DriveDisclaimerController>(
+            std::move(mock_fpop_service)));
+  }
 
   MockContextualSearchMetricsRecorder* GetMetricsRecorderPtr() {
     if (handler_) {
@@ -1615,6 +1663,8 @@ TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_NotAccepted) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
 
+  SetUpMockFpopService(/*accepted=*/false);
+
   base::test::TestFuture<searchbox::mojom::DriveDisclaimerStatus> future;
   handler().GetDriveDisclaimerStatus(future.GetCallback());
   EXPECT_EQ(searchbox::mojom::DriveDisclaimerStatus::kNotAccepted,
@@ -1625,7 +1675,7 @@ TEST_F(ContextualSearchboxHandlerTest, DriveDisclaimer_Accepted) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(omnibox::kComposeboxDriveContextMenuOption);
 
-  handler().OnDriveDisclaimerAccepted();
+  SetUpMockFpopService(/*accepted=*/true);
 
   base::test::TestFuture<searchbox::mojom::DriveDisclaimerStatus> future;
   handler().GetDriveDisclaimerStatus(future.GetCallback());

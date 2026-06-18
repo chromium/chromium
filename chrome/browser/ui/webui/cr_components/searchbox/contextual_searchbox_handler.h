@@ -45,6 +45,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
+#include "chrome/browser/ui/webui/drive_picker_host/drive_disclaimer_controller.h"
 #endif
 
 class Profile;
@@ -425,6 +426,9 @@ class ContextualSearchboxHandler
       drive_picker_result_handler_receiver_{this};
 
   std::unique_ptr<DrivePickerHostController> drive_picker_controller_;
+
+  std::unique_ptr<drive_picker::DriveDisclaimerController>
+      drive_disclaimer_controller_;
 #endif
 
   OnDriveUploadClickedCallback drive_upload_click_callback_;

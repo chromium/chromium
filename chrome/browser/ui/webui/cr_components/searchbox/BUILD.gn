@@ -37,7 +37,10 @@ source_set("searchbox") {
     "//ui/webui/resources/cr_components/composebox:mojo_bindings",
   ]
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/drive_picker_host:mojo_bindings" ]
+    deps += [
+      "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
+      "//chrome/browser/ui/webui/drive_picker_host",
+    ]
   }
 }
 
@@ -85,6 +88,7 @@ source_set("searchbox_impl") {
     "//components/search",
     "//components/sessions",
     "//components/vector_icons",
+    "//components/contextual_search/footprints/public",
   ]
   if (!is_android) {
     deps += [
@@ -93,7 +97,9 @@ source_set("searchbox_impl") {
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/views/drive_picker_host",
+      "//chrome/browser/ui/webui/drive_picker_host",
       "//chrome/browser/ui/webui/drive_picker_host:drive_picker_host_request",
+      "//components/contextual_search/footprints/internal",
     ]
   }
 }
