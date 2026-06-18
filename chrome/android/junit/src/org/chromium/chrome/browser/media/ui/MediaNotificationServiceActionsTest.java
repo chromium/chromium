@@ -10,7 +10,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 
 import android.content.Intent;
-import android.media.AudioManager;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -98,14 +97,6 @@ public class MediaNotificationServiceActionsTest extends MediaNotificationTestBa
 
         mService.getImpl().processIntent(new Intent(MediaNotificationController.ACTION_PAUSE));
         verify(getController()).onPause(MediaNotificationListener.ACTION_SOURCE_MEDIA_NOTIFICATION);
-    }
-
-    @Test
-    public void testProcessNotificationButtonAction_Noisy() {
-        setUpService();
-
-        mService.getImpl().processIntent(new Intent(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
-        verify(getController()).onPause(MediaNotificationListener.ACTION_SOURCE_HEADSET_UNPLUG);
     }
 
     @Test

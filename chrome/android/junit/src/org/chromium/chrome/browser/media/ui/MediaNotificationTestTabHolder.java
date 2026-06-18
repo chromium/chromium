@@ -56,7 +56,7 @@ public class MediaNotificationTestTabHolder {
         when(mWebContents.isIncognito()).thenReturn(false);
         when(mWebContents.getVisibility()).thenReturn(Visibility.VISIBLE);
 
-        MediaSessionHelper.sOverriddenMediaSession = mMediaSession;
+        MediaSessionHelper.setOverriddenMediaSessionForTesting(mMediaSession);
         mMediaSessionTabHelper = new MediaSessionTabHelper(mTab);
         mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver.mediaSessionCreated(
                 mMediaSession);

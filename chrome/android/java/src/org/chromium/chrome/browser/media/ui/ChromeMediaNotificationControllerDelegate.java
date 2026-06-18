@@ -7,11 +7,8 @@ package org.chromium.chrome.browser.media.ui;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.media.AudioManager;
 import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.SparseArray;
@@ -21,7 +18,6 @@ import androidx.mediarouter.media.MediaRouter;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SplitCompatService;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -148,55 +144,6 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
         public PlaybackListenerServiceImpl() {
             super(NOTIFICATION_ID);
         }
-
-        @Override
-        public void onCreate() {
-            super.onCreate();
-            IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-            ContextUtils.registerProtectedBroadcastReceiver(
-                    getService(), mAudioBecomingNoisyReceiver, filter);
-        }
-
-        @Override
-        public void onDestroy() {
-            getService().unregisterReceiver(mAudioBecomingNoisyReceiver);
-            super.onDestroy();
-        }
-
-        private final BroadcastReceiver mAudioBecomingNoisyReceiver =
-                new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        if (!AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
-                            return;
-                        }
-
-                        Intent i =
-                                new Intent(
-                                        getContext(),
-                                        ChromeMediaNotificationControllerServices
-                                                .PlaybackListenerService.class);
-                        i.setAction(intent.getAction());
-                        boolean succeeded = true;
-                        try {
-                            getContext().startService(i);
-                        } catch (RuntimeException e) {
-                            // This happens occasionally with "cannot start foreground service".
-                            // It's not at all clear what causes it; no combination of
-                            // multi-window / background
-                            // unplugging headphones has managed to repro it locally.  While it
-                            // might be possible to trampoline this through an activity like we do
-                            // elsewhere for notifications, that's a fairly invasive change
-                            // without a local repro.
-                            //  So,
-                            // for now, just log that this happened and move on.
-                            // https://crbug.com/40788370
-                            succeeded = false;
-                        }
-                        RecordHistogram.recordBooleanHistogram(
-                                "Media.Android.BecomingNoisy", succeeded);
-                    }
-                };
     }
 
     /**

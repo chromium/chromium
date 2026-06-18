@@ -708,23 +708,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Android.AudioBecomingNoisyPaused" enum="Boolean"
+    expires_after="2027-06-01">
+  <owner>philyan@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records whether playback is paused when a headset unplug event is received.
+    If the feature flag NoPauseMediaOnHeadphoneUnplug is enabled, this will
+    record false. Otherwise, it will record true. Only recorded when a headset
+    unplug event (AudioManager.ACTION_AUDIO_BECOMING_NOISY) is received while
+    the media notification is active and not already paused.
+  </summary>
+</histogram>
+
+<histogram name="Media.Android.AudioBecomingNoisyPaused.TimeToResume"
+    units="ms" expires_after="2027-06-01">
+  <owner>philyan@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the duration of time between when playback is paused due to a
+    headset unplug event (AudioBecomingNoisy) and when it is next resumed. Only
+    recorded when the user manually resumes playback after the auto-pause. Not
+    recorded if the user pauses manually before resuming, or if the notification
+    is cleared.
+  </summary>
+</histogram>
+
 <histogram name="Media.Android.AudioFocusRequestResult"
     enum="AudioFocusRequestResult" expires_after="2027-02-08">
   <owner>philyan@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>Records the result of the audio focus request on Android.</summary>
-</histogram>
-
-<histogram name="Media.Android.BecomingNoisy" enum="Boolean"
-    expires_after="2023-01-15">
-  <owner>liberato@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Android-specific metric. Occasionally, we cannot start a foreground service
-    when headphones are unplugged. This tracks how often that occurs, which is
-    one recorded boolean per &quot;user unplugs headphones while media is
-    playing&quot;. See https://crbug.com/1245017 for more details.
-  </summary>
 </histogram>
 
 <histogram name="Media.Android.GetColorSpaceError" enum="BooleanError"

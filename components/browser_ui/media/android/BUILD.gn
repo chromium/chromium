@@ -16,6 +16,7 @@ source_set("android") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/browser_ui/media/AudioBecomingNoisyReceiver.java",
     "java/src/org/chromium/components/browser_ui/media/MediaFeatureList.java",
     "java/src/org/chromium/components/browser_ui/media/MediaFeatureMap.java",
     "java/src/org/chromium/components/browser_ui/media/MediaImageCallback.java",

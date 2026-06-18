@@ -6795,6 +6795,14 @@
     "expiry_milestone": 165
   },
   {
+    "name": "no-pause-media-on-headphone-unplug",
+    "owners": [
+      "philyan@chromium.org",
+      "media-dev@chromium.org"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "notification-collision-management",
     "owners": [
       "gujen@google.com",

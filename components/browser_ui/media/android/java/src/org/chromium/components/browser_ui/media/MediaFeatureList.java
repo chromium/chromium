@@ -25,6 +25,7 @@ import java.util.List;
 public abstract class MediaFeatureList {
     public static final String PAUSE_MEDIA_ON_SYSTEM_SLEEP_ANDROID =
             "PauseMediaOnSystemSleepAndroid";
+    public static final String NO_PAUSE_MEDIA_ON_HEADPHONE_UNPLUG = "NoPauseMediaOnHeadphoneUnplug";
 
     public static final CachedFlag sPauseMediaOnSystemSleepAndroid =
             new CachedFlag(

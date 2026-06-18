@@ -16,6 +16,7 @@ namespace {
 // Array of features exposed through the Java MediaFeatureMap API.
 const base::Feature* const kFeaturesExposedToJava[] = {
     &media::kPauseMediaOnSystemSleepAndroid,
+    &media::kNoPauseMediaOnHeadphoneUnplug,
 };
 
 // static

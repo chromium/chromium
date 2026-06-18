@@ -5912,6 +5912,11 @@ inline constexpr char kNewTabPageCustomizationThemeSyncDescription[] =
     "Allows users to sync their New Tab page customizations settings "
     "(appearance).";
 
+inline constexpr char kNoPauseMediaOnHeadphoneUnplugName[] =
+    "Do not pause media on headphone unplug";
+inline constexpr char kNoPauseMediaOnHeadphoneUnplugDescription[] =
+    "When enabled, playback will not be paused when headphones are unplugged.";
+
 inline constexpr char kNotificationPermissionRationaleName[] =
     "Notification Permission Rationale UI";
 inline constexpr char kNotificationPermissionRationaleDescription[] =

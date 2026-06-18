@@ -7967,6 +7967,7 @@ from previous Chrome versions.
       label="enable-segmentation-internals-survey:enabled"/>
   <int value="-2030972455"
       label="AutofillSuggestServerCardInsteadOfLocalCard:enabled"/>
+  <int value="-2030590107" label="NoPauseMediaOnHeadphoneUnplug:disabled"/>
   <int value="-2030527780" label="CCTAdaptiveButtonTestSwitch:disabled"/>
   <int value="-2030255112" label="Bruschetta:disabled"/>
   <int value="-2030217301" label="password-export:disabled"/>
@@ -10365,6 +10366,7 @@ from previous Chrome versions.
   <int value="-1259809702" label="Enable16Desks:enabled"/>
   <int value="-1259250875" label="WebAppPredictableAppUpdating:disabled"/>
   <int value="-1258793847" label="MagicStackAndroid:disabled"/>
+  <int value="-1258503827" label="NoPauseMediaOnHeadphoneUnplug:enabled"/>
   <int value="-1258141852" label="ScrollUnification:enabled"/>
   <int value="-1257822114" label="ContextMenuPopupForAllScreenSizes:disabled"/>
   <int value="-1257077876" label="SendTabToSelfGesture:disabled"/>

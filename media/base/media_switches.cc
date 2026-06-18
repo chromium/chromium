@@ -1175,6 +1175,9 @@ BASE_FEATURE(kMediaDrmQueryInSeparateProcess, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPauseMediaOnSystemSleepAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, do not pause media when a headphone unplug event is received.
+BASE_FEATURE(kNoPauseMediaOnHeadphoneUnplug, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Playing media sessions will request audio focus from the
 // Android system.
 BASE_FEATURE(kRequestSystemAudioFocus, base::FEATURE_ENABLED_BY_DEFAULT);
