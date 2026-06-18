@@ -728,9 +728,20 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
     case IDC_BOOKMARK_BAR_ALWAYS_SHOW:
       return !prefs->IsManagedPreference(bookmarks::prefs::kShowBookmarkBar);
 
+    case IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW:
+    case IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE:
+    case IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP:
+      return !prefs->IsManagedPreference(
+                 bookmarks::prefs::kBookmarkBarVisibilityState) &&
+             !prefs->IsManagedPreference(bookmarks::prefs::kShowBookmarkBar);
+
     case IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT:
       return !prefs->IsManagedPreference(
           bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
+
+    case IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS:
+      return !prefs->IsManagedPreference(
+          bookmarks::prefs::kShowTabGroupsInBookmarkBar);
 
     case IDC_COPY:
     case IDC_CUT:
