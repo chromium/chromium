@@ -43,7 +43,8 @@ std::unique_ptr<Split> Split::FromTab(const Tab& tab) {
   auto split = std::make_unique<Split>();
   CHECK(tab.split_id.has_value());
   split->split_id = tab.split_id.value();
-  split->visual_data = tab.split_visual_data.value();
+  split->visual_data =
+      tab.split_visual_data.value_or(split_tabs::SplitTabVisualData());
   split->timestamp = tab.timestamp;
   return split;
 }
