@@ -570,6 +570,10 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
+        addFileContextForTesting(file: ComposeboxFile) {
+          this.onFileContextAdded(file);
+        }
+
         onTranscriptUpdate(e: CustomEvent<string>) {
           this.transcript = e.detail;
         }
@@ -2501,6 +2505,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   onVoiceSearchButtonClick(): void;
   onVoicePermissionChanged(e: CustomEvent<VoicePermissionPromptState>): void;
   onFileContextAdded(file: ComposeboxFile): void;
+  addFileContextForTesting(file: ComposeboxFile): void;
   voiceSearchEndCleanup(): void;
   onVoiceSearchFinalResult(e: CustomEvent<string>): void;
   onVoiceSearchCancel(e: CustomEvent<boolean>): void;

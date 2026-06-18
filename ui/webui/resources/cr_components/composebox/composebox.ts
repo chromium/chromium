@@ -897,10 +897,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     } as TabUpload);
   }
 
-  addFileContextForTesting(file: ComposeboxFile) {
-    this.onFileContextAdded(file);
-  }
-
   // TODO(crbug.com/486707842): Move this to contextual tasks composebox.
   setAutomaticActiveTabForTesting(file: ComposeboxFile) {
     this.automaticActiveTab_ = file;

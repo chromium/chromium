@@ -18,994 +18,1145 @@ enum Attributes {
   SELECTED = 'selected',
 }
 
-suite('NewTabPageComposeboxAutocompleteDropdownTest', () => {
-  const testProxy = setupComposeboxTest();
-
-  test('dropdown shows when suggestions enabled', async () => {
-    loadTimeData.overrideValues(
-        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    // Add zps input.
-    testProxy.element.getInputElement().inputElement.value = '';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
-    await microtasksFinished();
-
-    const composeboxDropdown =
-        testProxy.element.shadowRoot.querySelector<HTMLElement>('#matches');
-
-    // Composebox dropdown should not show for no matches.
-    assertTrue(composeboxDropdown!.hidden);
-
-    const matches = [
-      createSearchMatchForTesting(),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: matches,
-        }));
-    await microtasksFinished();
-
-    // Dropdown should show for when matches are available.
-    assertFalse(composeboxDropdown!.hidden);
-  });
-
-  test('dropdown does not show for multiline input', async () => {
-    loadTimeData.overrideValues(
-        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    // Add typed input.
-    testProxy.element.getInputElement().inputElement.value = 'Test';
-    testProxy.element.getInputElement().inputElement.style.height = '64px';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
-    await microtasksFinished();
-
-    const composeboxDropdown =
-        testProxy.element.shadowRoot.querySelector<HTMLElement>('#matches');
-
-    const matches = [
-      createSearchMatchForTesting(),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: matches,
-        }));
-    await microtasksFinished();
-
-    // Dropdown should show for when matches are not available.
-    assertTrue(composeboxDropdown!.hidden);
-
-    // Arrow down should do default action.
-    const arrowDownEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'ArrowDown',
-    });
-
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        arrowDownEvent);
-    await microtasksFinished();
-    assertFalse(arrowDownEvent.defaultPrevented);
-  });
-
-  test('dropdown does not show with multiple context files', async () => {
-    loadTimeData.overrideValues(
-        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    // Add zps input.
-    testProxy.element.getInputElement().inputElement.value = '';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
-    await microtasksFinished();
-
-    const composeboxDropdown =
-        testProxy.element.shadowRoot.querySelector<HTMLElement>('#matches');
-
-    // Add matches and verify dropdown shows.
-    const matches = [
-      createSearchMatchForTesting(),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: matches,
-        }));
-    await microtasksFinished();
-    assertFalse(composeboxDropdown!.hidden);
-
-    // If multiple context files are added, the dropdown should hide.
-    testProxy.element.addFileContextForTesting({
-      uuid: FAKE_TOKEN_STRING,
-      name: 'foo.jpg',
-      status: 0,
-      type: 'image/jpeg',
-      inputType: InputType.kLensFile,
-      isDeletable: true,
-      objectUrl: null,
-      dataUrl: null,
-      url: null,
-      tabId: null,
-      iconName: null,
-      supportsUnimodal: true,
-    });
-    testProxy.element.addFileContextForTesting({
-      uuid: FAKE_TOKEN_STRING + '2',
-      name: 'foo2.jpg',
-      status: 0,
-      type: 'image/jpeg',
-      inputType: InputType.kLensFile,
-      isDeletable: true,
-      objectUrl: null,
-      dataUrl: null,
-      url: null,
-      tabId: null,
-      iconName: null,
-      supportsUnimodal: true,
-    });
-    await microtasksFinished();
-    assertTrue(composeboxDropdown!.hidden);
-  });
-
-  test('dropdown does not show when no typed suggestions enabled', async () => {
-    loadTimeData.overrideValues(
-        {composeboxShowZps: true, composeboxShowTypedSuggest: false});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    // Add zps input.
-    testProxy.element.getInputElement().inputElement.value = '';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
-    await microtasksFinished();
-
-    const composeboxDropdown =
-        testProxy.element.shadowRoot.querySelector<HTMLElement>('#matches');
-
-    const matches = [
-      createSearchMatchForTesting(),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: matches,
-        }));
-    await microtasksFinished();
-
-    // Dropdown should show for when matches are available.
-    assertFalse(composeboxDropdown!.hidden);
-
-    testProxy.element.getInputElement().inputElement.value = 'Hello';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
-    await microtasksFinished();
-
-    // Dropdown should not show for typed input when typed suggest is
-    // disabled.
-    assertTrue(composeboxDropdown!.hidden);
-  });
-
-  test('dropdown does not show for typed suggest with context', async () => {
-    loadTimeData.overrideValues(
-        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    // Add typed input.
-    testProxy.element.getInputElement().inputElement.value = 'Test';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
-    await microtasksFinished();
-
-    const composeboxDropdown =
-        testProxy.element.shadowRoot.querySelector<HTMLElement>('#matches');
-
-    const matches = [
-      createSearchMatchForTesting(
-          {fillIntoEdit: 'hello world 1', allowedToBeDefaultMatch: true}),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 3'}),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 4'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: matches,
-          input: 'Test',
-        }));
-    await microtasksFinished();
-
-    // Dropdown should show for when matches are available.
-    assertFalse(composeboxDropdown!.hidden);
-
-    // If context files are added, the dropdown should no longer be visible.
-    testProxy.element.addFileContextForTesting({
-      uuid: FAKE_TOKEN_STRING,
-      name: 'foo.jpg',
-      status: 0,
-      type: 'image/jpeg',
-      inputType: InputType.kLensFile,
-      isDeletable: true,
-      objectUrl: null,
-      dataUrl: null,
-      url: null,
-      tabId: null,
-      iconName: null,
-      supportsUnimodal: true,
-    });
-    await microtasksFinished();
-    assertTrue(composeboxDropdown!.hidden);
-  });
-
-  test(
-      'dropdown does not show for typed suggest with verbatim match only',
-      async () => {
-        loadTimeData.overrideValues(
-            {composeboxShowZps: true, composeboxShowTypedSuggest: true});
-        createComposeboxElement(testProxy);
-        await microtasksFinished();
-
-        // Add typed input.
-        testProxy.element.getInputElement().inputElement.value = 'Test';
-        testProxy.element.getInputElement().inputElement.dispatchEvent(
-            new Event('input'));
-        await microtasksFinished();
-
-        const composeboxDropdown =
-            testProxy.element.shadowRoot.querySelector<HTMLElement>('#matches');
-
-        const matches = [
-          createSearchMatchForTesting(),
-        ];
-        testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
-              matches: matches,
-              input: 'Test',
-            }));
-        await microtasksFinished();
-
-        // Dropdown should not show when only the verbatim match is present.
-        assertTrue(composeboxDropdown!.hidden);
-      });
-
-  test('composebox does not show verbatim match', async () => {
-    loadTimeData.overrideValues(
-        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    // Add zps input.
-    testProxy.element.getInputElement().inputElement.value = '';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
-
-    const matches = [
-      createSearchMatchForTesting(),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: matches,
-        }));
-    assertTrue(await areMatchesShowing(
-        testProxy.element, testProxy.searchboxCallbackRouterRemote));
-
-    let matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
-        'cr-composebox-match');
-    assertEquals(2, matchEls.length);
-    let matchEl = matchEls[0];
-    assertTrue(!!matchEl);
-    // First match shows for zps.
-    assertStyle(matchEl, 'display', 'block');
-
-    // Add typed input
-    testProxy.element.getInputElement().inputElement.value = 'awesome';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
-    const typedMatches = [
-      createSearchMatchForTesting({allowedToBeDefaultMatch: true}),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: 'awesome',
-          matches: typedMatches,
-        }));
-    assertTrue(await areMatchesShowing(
-        testProxy.element, testProxy.searchboxCallbackRouterRemote));
-
-    matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
-        'cr-composebox-match');
-    assertEquals(2, matchEls.length);
-    matchEl = matchEls[0];
-    assertTrue(!!matchEl);
-    // Verbatim match does not show for typed suggest.
-    assertStyle(matchEl, 'display', 'none');
-  });
-
-  test('image verbatim match does not show', async () => {
-    loadTimeData.overrideValues(
-        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    // Add image context.
-    testProxy.element.addFileContextForTesting({
-      uuid: FAKE_TOKEN_STRING,
-      name: 'foo.jpg',
-      status: 0,
-      type: 'image/jpeg',
-      inputType: InputType.kLensFile,
-      isDeletable: true,
-      objectUrl: null,
-      dataUrl: null,
-      url: null,
-      tabId: null,
-      iconName: null,
-      supportsUnimodal: true,
-    });
-    await microtasksFinished();
-
-    const matches = [
-      createSearchMatchForTesting({allowedToBeDefaultMatch: true}),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: matches,
-        }));
-    assertTrue(await areMatchesShowing(
-        testProxy.element, testProxy.searchboxCallbackRouterRemote));
-
-    const matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
-        'cr-composebox-match');
-    assertEquals(2, matchEls.length);
-    const matchEl = matchEls[0];
-    assertTrue(!!matchEl);
-    // Verbatim match does not show for image context.
-    assertStyle(matchEl, 'display', 'none');
-  });
-});
-
-suite('NewTabPageComposeboxAutocompleteKeyboardNavigationTest', () => {
-  const testProxy = setupComposeboxTest();
-
-  test('escape key behavior with suggestions', async () => {
-    loadTimeData.overrideValues({composeboxShowZps: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    const matches = [
-      createSearchMatchForTesting(),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({matches}));
-    await microtasksFinished();
-    assertTrue(await areMatchesShowing(
-        testProxy.element, testProxy.searchboxCallbackRouterRemote));
-
-    // Case 1: closeOnEscape = false. Escape should clear the text when the
-    // composebox has content.
-    testProxy.element.closeOnEscape = false;
-    const closePromise = eventToPromise('close-composebox', testProxy.element);
-    let closed = false;
-    closePromise.then(() => closed = true);
-
-    testProxy.element.getInputElement().inputElement.value = 'test';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
-    await microtasksFinished();
-
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new KeyboardEvent(
-            'keydown', {key: 'Escape', bubbles: true, composed: true}));
-    await microtasksFinished();
-
-    assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 1);
-    assertFalse(closed);
-    assertEquals('', testProxy.element.getInputElement().inputElement.value);
-
-    // Case 2: closeOnEscape = true. Escape should close the composebox.
-    testProxy.element.closeOnEscape = true;
-    const whenCloseComposebox =
-        eventToPromise('close-composebox', testProxy.element);
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new KeyboardEvent(
-            'keydown', {key: 'Escape', bubbles: true, composed: true}));
-    await whenCloseComposebox;
-    assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 2);
-  });
-
-  test('arrow keys work for typed suggest', async () => {
-    loadTimeData.overrideValues(
-        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    // Add typed input.
-    testProxy.element.getInputElement().inputElement.value = 'Test';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
-    await microtasksFinished();
-
-    const composeboxDropdown =
-        testProxy.element.shadowRoot.querySelector<HTMLElement>('#matches');
-
-    const matches = [
-      createSearchMatchForTesting(
-          {fillIntoEdit: 'hello world 1', allowedToBeDefaultMatch: true}),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 3'}),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 4'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: matches,
-          input: 'Test',
-        }));
-    await microtasksFinished();
-
-    // Dropdown should show for when matches are available.
-    assertFalse(composeboxDropdown!.hidden);
-
-    const matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
-        'cr-composebox-match');
-    assertEquals(4, matchEls.length);
-    const matchEl = matchEls[0];
-    // Verbatim match does not show for typed suggest.
-    assertStyle(matchEl!, 'display', 'none');
-
-    // Arrow down should do default action.
-    const arrowDownEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'ArrowDown',
-    });
-
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        arrowDownEvent);
-    await microtasksFinished();
-    assertTrue(arrowDownEvent.defaultPrevented);
-
-    // First SHOWN match (second match) is selected.
-    assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
-    assertEquals(
-        'hello world 2',
-        testProxy.element.getInputElement().inputElement.value);
-
-    // Arrow down should do default action.
-    const arrowUpEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'ArrowUp',
-    });
-
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        arrowUpEvent);
-    await microtasksFinished();
-    assertTrue(arrowUpEvent.defaultPrevented);
-    // Last match gets selected when arrowing up from the first
-    // shown match.
-    assertTrue(matchEls[3]!.hasAttribute(Attributes.SELECTED));
-    assertEquals(
-        'hello world 4',
-        testProxy.element.getInputElement().inputElement.value);
-
-    // When arrowing up from last match, first SHOWN match should be selected.
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        arrowDownEvent);
-    await microtasksFinished();
-    assertTrue(arrowDownEvent.defaultPrevented);
-    assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
-    assertEquals(
-        'hello world 2',
-        testProxy.element.getInputElement().inputElement.value);
-  });
-
-  test('arrow up/down moves selection / focus', async () => {
-    loadTimeData.overrideValues({composeboxShowZps: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    // Add zps input.
-    testProxy.element.getInputElement().inputElement.value = '';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
-
-    const matches = [
-      createSearchMatchForTesting(),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: matches,
-        }));
-
-    assertTrue(await areMatchesShowing(
-        testProxy.element, testProxy.searchboxCallbackRouterRemote));
-
-    const matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
-        'cr-composebox-match');
-    assertEquals(2, matchEls.length);
-
-    const arrowDownEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'ArrowDown',
-    });
-
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        arrowDownEvent);
-    await microtasksFinished();
-    assertTrue(arrowDownEvent.defaultPrevented);
-
-    // First match is selected
-    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-    assertEquals(
-        'hello world', testProxy.element.getInputElement().inputElement.value);
-
-    // Move the focus to the second match.
-    matchEls[1]!.focus();
-    matchEls[1]!.dispatchEvent(new Event('focusin', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-    }));
-    await microtasksFinished();
-
-    // Second match is selected and has focus.
-    assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
-    assertEquals(
-        'hello world 2',
-        testProxy.element.getInputElement().inputElement.value);
-    assertEquals(
-        matchEls[1], testProxy.element.$.matches.shadowRoot.activeElement);
-
-    const arrowUpEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'ArrowUp',
-    });
-
-    matchEls[1]!.dispatchEvent(arrowUpEvent);
-    await microtasksFinished();
-    assertTrue(arrowUpEvent.defaultPrevented);
-
-    // First match gets selected and gets focus while focus is in the matches.
-    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-    assertEquals(
-        'hello world', testProxy.element.getInputElement().inputElement.value);
-    assertEquals(
-        matchEls[0], testProxy.element.$.matches.shadowRoot.activeElement);
-
-    // Restore.
-    loadTimeData.overrideValues({composeboxShowZps: false});
-  });
-
-  test(
-      'arrow up/down enables submit for suggestion with no query', async () => {
-        loadTimeData.overrideValues({composeboxShowZps: true});
-        createComposeboxElement(testProxy);
-        await microtasksFinished();
-
-        // Add zps input.
-        testProxy.element.getInputElement().inputElement.value = '';
-        testProxy.element.getInputElement().inputElement.dispatchEvent(
-            new Event('input'));
-
-        const matches = [
-          createSearchMatchForTesting({fillIntoEdit: ''}),
-        ];
-        testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-            createAutocompleteResultForTesting({
-              matches: matches,
-            }));
-
-        assertTrue(await areMatchesShowing(
-            testProxy.element, testProxy.searchboxCallbackRouterRemote));
-
-        const matchEls =
-            testProxy.element.$.matches.shadowRoot.querySelectorAll(
-                'cr-composebox-match');
-        assertEquals(1, matchEls.length);
-
-        const arrowDownEvent = new KeyboardEvent('keydown', {
-          bubbles: true,
-          cancelable: true,
-          composed: true,  // So it propagates across shadow DOM boundary.
-          key: 'ArrowDown',
+[true, false].forEach(useForked => {
+  suite(
+      `NewTabPageComposeboxAutocompleteDropdownTest (useNtpComposeboxFork = ${
+          useForked})`,
+      () => {
+        const testProxy = setupComposeboxTest();
+
+        setup(() => {
+          loadTimeData.overrideValues({
+            useNtpComposeboxFork: useForked,
+          });
         });
 
-        testProxy.element.getInputElement().inputElement.dispatchEvent(
-            arrowDownEvent);
-        await microtasksFinished();
-        assertTrue(arrowDownEvent.defaultPrevented);
+        test('dropdown shows when suggestions enabled', async () => {
+          loadTimeData.overrideValues(
+              {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
 
-        // First match is selected
-        assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-        assertEquals(
-            '', testProxy.element.getInputElement().inputElement.value);
+          // Add zps input.
+          testProxy.element.getInputElement().inputElement.value = '';
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          await microtasksFinished();
 
-        // Assert submit is enabled.
-        const submitButton = getSubmitIcon(testProxy);
-        assertFalse(submitButton.hasAttribute('disabled'));
+          const composeboxDropdown =
+              testProxy.element.shadowRoot.querySelector<HTMLElement>(
+                  '#matches');
 
-        // By pressing 'Enter' on the button.
-        const keydownEvent = (new KeyboardEvent('keydown', {
-          bubbles: true,
-          cancelable: true,
-          composed: true,
-          key: 'Enter',
-        }));
-        matchEls[0]!.dispatchEvent(keydownEvent);
-        assertTrue(keydownEvent.defaultPrevented);
+          // Composebox dropdown should not show for no matches.
+          assertTrue(composeboxDropdown!.hidden);
 
-        await microtasksFinished();
+          const matches = [
+            createSearchMatchForTesting(),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+          ];
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                matches: matches,
+              }));
+          await microtasksFinished();
 
-        // Assert call occurs.
-        assertEquals(
-            testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'),
-            1);
+          // Dropdown should show for when matches are available.
+          assertFalse(composeboxDropdown!.hidden);
+        });
 
-        // Restore.
-        loadTimeData.overrideValues({composeboxShowZps: false});
+        test('dropdown does not show for multiline input', async () => {
+          loadTimeData.overrideValues(
+              {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
+
+          // Add typed input.
+          testProxy.element.getInputElement().inputElement.value = 'Test';
+          testProxy.element.getInputElement().inputElement.style.height =
+              '64px';
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          await microtasksFinished();
+
+          const composeboxDropdown =
+              testProxy.element.shadowRoot.querySelector<HTMLElement>(
+                  '#matches');
+
+          const matches = [
+            createSearchMatchForTesting(),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+          ];
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                matches: matches,
+              }));
+          await microtasksFinished();
+
+          // Dropdown should show for when matches are not available.
+          assertTrue(composeboxDropdown!.hidden);
+
+          // Arrow down should do default action.
+          const arrowDownEvent = new KeyboardEvent('keydown', {
+            bubbles: true,
+            cancelable: true,
+            composed: true,  // So it propagates across shadow DOM boundary.
+            key: 'ArrowDown',
+          });
+
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              arrowDownEvent);
+          await microtasksFinished();
+          assertFalse(arrowDownEvent.defaultPrevented);
+        });
+
+        test('dropdown does not show with multiple context files', async () => {
+          loadTimeData.overrideValues(
+              {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
+
+          // Add zps input.
+          testProxy.element.getInputElement().inputElement.value = '';
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          await microtasksFinished();
+
+          const composeboxDropdown =
+              testProxy.element.shadowRoot.querySelector<HTMLElement>(
+                  '#matches');
+
+          // Add matches and verify dropdown shows.
+          const matches = [
+            createSearchMatchForTesting(),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+          ];
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                matches: matches,
+              }));
+          await microtasksFinished();
+          assertFalse(composeboxDropdown!.hidden);
+
+          // If multiple context files are added, the dropdown should hide.
+          testProxy.element.addFileContextForTesting({
+            uuid: FAKE_TOKEN_STRING,
+            name: 'foo.jpg',
+            status: 0,
+            type: 'image/jpeg',
+            inputType: InputType.kLensFile,
+            isDeletable: true,
+            objectUrl: null,
+            dataUrl: null,
+            url: null,
+            tabId: null,
+            iconName: null,
+            supportsUnimodal: true,
+          });
+          testProxy.element.addFileContextForTesting({
+            uuid: FAKE_TOKEN_STRING + '2',
+            name: 'foo2.jpg',
+            status: 0,
+            type: 'image/jpeg',
+            inputType: InputType.kLensFile,
+            isDeletable: true,
+            objectUrl: null,
+            dataUrl: null,
+            url: null,
+            tabId: null,
+            iconName: null,
+            supportsUnimodal: true,
+          });
+          await microtasksFinished();
+          assertTrue(composeboxDropdown!.hidden);
+        });
+
+        test(
+            'dropdown does not show when no typed suggestions enabled',
+            async () => {
+              loadTimeData.overrideValues(
+                  {composeboxShowZps: true, composeboxShowTypedSuggest: false});
+              createComposeboxElement(testProxy);
+              await microtasksFinished();
+
+              // Add zps input.
+              testProxy.element.getInputElement().inputElement.value = '';
+              testProxy.element.getInputElement().inputElement.dispatchEvent(
+                  new Event('input'));
+              await microtasksFinished();
+
+              const composeboxDropdown =
+                  testProxy.element.shadowRoot.querySelector<HTMLElement>(
+                      '#matches');
+
+              const matches = [
+                createSearchMatchForTesting(),
+                createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+              ];
+              testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+                  createAutocompleteResultForTesting({
+                    matches: matches,
+                  }));
+              await microtasksFinished();
+
+              // Dropdown should show for when matches are available.
+              assertFalse(composeboxDropdown!.hidden);
+
+              testProxy.element.getInputElement().inputElement.value = 'Hello';
+              testProxy.element.getInputElement().inputElement.dispatchEvent(
+                  new Event('input'));
+              await microtasksFinished();
+
+              // Dropdown should not show for typed input when typed suggest is
+              // disabled.
+              assertTrue(composeboxDropdown!.hidden);
+            });
+
+        test(
+            'dropdown does not show for typed suggest with context',
+            async () => {
+              loadTimeData.overrideValues(
+                  {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+              createComposeboxElement(testProxy);
+              await microtasksFinished();
+
+              // Add typed input.
+              testProxy.element.getInputElement().inputElement.value = 'Test';
+              testProxy.element.getInputElement().inputElement.dispatchEvent(
+                  new Event('input'));
+              await microtasksFinished();
+
+              const composeboxDropdown =
+                  testProxy.element.shadowRoot.querySelector<HTMLElement>(
+                      '#matches');
+
+              const matches = [
+                createSearchMatchForTesting({
+                  fillIntoEdit: 'hello world 1',
+                  allowedToBeDefaultMatch: true,
+                }),
+                createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+                createSearchMatchForTesting({fillIntoEdit: 'hello world 3'}),
+                createSearchMatchForTesting({fillIntoEdit: 'hello world 4'}),
+              ];
+              testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+                  createAutocompleteResultForTesting({
+                    matches: matches,
+                    input: 'Test',
+                  }));
+              await microtasksFinished();
+
+              // Dropdown should show for when matches are available.
+              assertFalse(composeboxDropdown!.hidden);
+
+              // If context files are added, the dropdown should no longer be
+              // visible.
+              testProxy.element.addFileContextForTesting({
+                uuid: FAKE_TOKEN_STRING,
+                name: 'foo.jpg',
+                status: 0,
+                type: 'image/jpeg',
+                inputType: InputType.kLensFile,
+                isDeletable: true,
+                objectUrl: null,
+                dataUrl: null,
+                url: null,
+                tabId: null,
+                iconName: null,
+                supportsUnimodal: true,
+              });
+              await microtasksFinished();
+              assertTrue(composeboxDropdown!.hidden);
+            });
+
+        test(
+            'dropdown does not show for typed suggest with verbatim match only',
+            async () => {
+              loadTimeData.overrideValues(
+                  {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+              createComposeboxElement(testProxy);
+              await microtasksFinished();
+
+              // Add typed input.
+              testProxy.element.getInputElement().inputElement.value = 'Test';
+              testProxy.element.getInputElement().inputElement.dispatchEvent(
+                  new Event('input'));
+              await microtasksFinished();
+
+              const composeboxDropdown =
+                  testProxy.element.shadowRoot.querySelector<HTMLElement>(
+                      '#matches');
+
+              const matches = [
+                createSearchMatchForTesting(),
+              ];
+              testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+                  createAutocompleteResultForTesting({
+                    matches: matches,
+                    input: 'Test',
+                  }));
+              await microtasksFinished();
+
+              // Dropdown should not show when only the verbatim match is
+              // present.
+              assertTrue(composeboxDropdown!.hidden);
+            });
+
+        test('composebox does not show verbatim match', async () => {
+          loadTimeData.overrideValues(
+              {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
+
+          // Add zps input.
+          testProxy.element.getInputElement().inputElement.value = '';
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+
+          const matches = [
+            createSearchMatchForTesting(),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+          ];
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                matches: matches,
+              }));
+          assertTrue(await areMatchesShowing(
+              testProxy.element, testProxy.searchboxCallbackRouterRemote));
+
+          let matchEls =
+              testProxy.element.$.matches.shadowRoot.querySelectorAll(
+                  'cr-composebox-match');
+          assertEquals(2, matchEls.length);
+          let matchEl = matchEls[0];
+          assertTrue(!!matchEl);
+          // First match shows for zps.
+          assertStyle(matchEl, 'display', 'block');
+
+          // Add typed input
+          testProxy.element.getInputElement().inputElement.value = 'awesome';
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          const typedMatches = [
+            createSearchMatchForTesting({allowedToBeDefaultMatch: true}),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+          ];
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                input: 'awesome',
+                matches: typedMatches,
+              }));
+          assertTrue(await areMatchesShowing(
+              testProxy.element, testProxy.searchboxCallbackRouterRemote));
+
+          matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
+              'cr-composebox-match');
+          assertEquals(2, matchEls.length);
+          matchEl = matchEls[0];
+          assertTrue(!!matchEl);
+          // Verbatim match does not show for typed suggest.
+          assertStyle(matchEl, 'display', 'none');
+        });
+
+        test('image verbatim match does not show', async () => {
+          loadTimeData.overrideValues(
+              {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
+
+          // Add image context.
+          testProxy.element.addFileContextForTesting({
+            uuid: FAKE_TOKEN_STRING,
+            name: 'foo.jpg',
+            status: 0,
+            type: 'image/jpeg',
+            inputType: InputType.kLensFile,
+            isDeletable: true,
+            objectUrl: null,
+            dataUrl: null,
+            url: null,
+            tabId: null,
+            iconName: null,
+            supportsUnimodal: true,
+          });
+          await microtasksFinished();
+
+          const matches = [
+            createSearchMatchForTesting({allowedToBeDefaultMatch: true}),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+          ];
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                matches: matches,
+              }));
+          assertTrue(await areMatchesShowing(
+              testProxy.element, testProxy.searchboxCallbackRouterRemote));
+
+          const matchEls =
+              testProxy.element.$.matches.shadowRoot.querySelectorAll(
+                  'cr-composebox-match');
+          assertEquals(2, matchEls.length);
+          const matchEl = matchEls[0];
+          assertTrue(!!matchEl);
+          // Verbatim match does not show for image context.
+          assertStyle(matchEl, 'display', 'none');
+        });
       });
-});
 
-suite('NewTabPageComposeboxAutocompleteMatchRemovalTest', () => {
-  const testProxy = setupComposeboxTest();
+  suite(
+      `NewTabPageComposeboxAutocompleteKeyboardNavigationTest (useNtpComposeboxFork = ${
+          useForked})`,
+      () => {
+        const testProxy = setupComposeboxTest();
 
-  test('Selection is restored after selected match is removed', async () => {
-    loadTimeData.overrideValues(
-        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
+        setup(() => {
+          loadTimeData.overrideValues({
+            useNtpComposeboxFork: useForked,
+          });
+        });
 
-    testProxy.element.getInputElement().inputElement.value = '';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new InputEvent('input'));
+        test('escape key behavior with suggestions', async () => {
+          loadTimeData.overrideValues({composeboxShowZps: true});
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
 
-    let matches = [
-      createSearchMatchForTesting({
-        supportsDeletion: true,
-      }),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: testProxy.element.getInputElement()
-                     .inputElement.value.trimStart(),
-          matches,
-        }));
-    await microtasksFinished();
-    assertTrue(await areMatchesShowing(
-        testProxy.element, testProxy.searchboxCallbackRouterRemote));
+          const matches = [
+            createSearchMatchForTesting(),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+          ];
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({matches}));
+          await microtasksFinished();
+          assertTrue(await areMatchesShowing(
+              testProxy.element, testProxy.searchboxCallbackRouterRemote));
 
-    let matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
-        'cr-composebox-match');
-    assertEquals(1, matchEls.length);
-    // First match is not selected.
-    assertFalse(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+          // Case 1: closeOnEscape = false. Escape should clear the text when
+          // the composebox has content.
+          testProxy.element.closeOnEscape = false;
+          const closePromise =
+              eventToPromise('close-composebox', testProxy.element);
+          let closed = false;
+          closePromise.then(() => closed = true);
 
-    // Remove the first match.
-    matchEls[0]!.$.remove.click();
-    const args =
-        await testProxy.searchboxHandler.whenCalled('deleteAutocompleteMatch');
-    assertEquals(0, args[0]);
-    assertEquals(
-        1, testProxy.searchboxHandler.getCallCount('deleteAutocompleteMatch'));
+          testProxy.element.getInputElement().inputElement.value = 'test';
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          await microtasksFinished();
 
-    testProxy.searchboxHandler.reset();
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new KeyboardEvent(
+                  'keydown', {key: 'Escape', bubbles: true, composed: true}));
+          await microtasksFinished();
 
-    matches = [
-      createSearchMatchForTesting({supportsDeletion: true}),
-      createSearchMatchForTesting({
-        supportsDeletion: true,
-        fillIntoEdit: 'hello world 2',
-      }),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: '',
-          matches: matches,
-        }));
-    assertTrue(await areMatchesShowing(
-        testProxy.element, testProxy.searchboxCallbackRouterRemote));
+          assertEquals(
+              testProxy.searchboxHandler.getCallCount('clearFiles'), 1);
+          assertFalse(closed);
+          assertEquals(
+              '', testProxy.element.getInputElement().inputElement.value);
 
-    matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
-        'cr-composebox-match');
-    assertEquals(2, matchEls.length);
+          // Case 2: closeOnEscape = true. Escape should close the composebox.
+          testProxy.element.closeOnEscape = true;
+          const whenCloseComposebox =
+              eventToPromise('close-composebox', testProxy.element);
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new KeyboardEvent(
+                  'keydown', {key: 'Escape', bubbles: true, composed: true}));
+          await whenCloseComposebox;
+          assertEquals(
+              testProxy.searchboxHandler.getCallCount('clearFiles'), 2);
+        });
 
-    // First match is not selected.
-    assertFalse(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+        test('arrow keys work for typed suggest', async () => {
+          loadTimeData.overrideValues(
+              {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
 
-    const arrowDownEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'ArrowDown',
-    });
+          // Add typed input.
+          testProxy.element.getInputElement().inputElement.value = 'Test';
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          await microtasksFinished();
 
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        arrowDownEvent);
-    await microtasksFinished();
-    assertTrue(arrowDownEvent.defaultPrevented);
+          const composeboxDropdown =
+              testProxy.element.shadowRoot.querySelector<HTMLElement>(
+                  '#matches');
 
-    // First match is selected
-    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-    assertEquals(
-        'hello world', testProxy.element.getInputElement().inputElement.value);
+          const matches = [
+            createSearchMatchForTesting(
+                {fillIntoEdit: 'hello world 1', allowedToBeDefaultMatch: true}),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 3'}),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 4'}),
+          ];
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                matches: matches,
+                input: 'Test',
+              }));
+          await microtasksFinished();
 
-    // By pressing 'Enter' on the button.
-    const keydownEvent = (new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-      key: 'Enter',
-    }));
-    matchEls[0]!.$.remove.dispatchEvent(keydownEvent);
-    assertTrue(keydownEvent.defaultPrevented);
-    const keydownArgs =
-        await testProxy.searchboxHandler.whenCalled('deleteAutocompleteMatch');
-    await microtasksFinished();
-    assertEquals(0, keydownArgs[0]);
-    assertEquals(
-        1, testProxy.searchboxHandler.getCallCount('deleteAutocompleteMatch'));
+          // Dropdown should show for when matches are available.
+          assertFalse(composeboxDropdown!.hidden);
 
-    matches = [createSearchMatchForTesting({
-      supportsDeletion: true,
-      fillIntoEdit: 'hello world 2',
-    })];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: '',
-          matches: matches,
-        }));
-    assertTrue(await areMatchesShowing(
-        testProxy.element, testProxy.searchboxCallbackRouterRemote));
+          const matchEls =
+              testProxy.element.$.matches.shadowRoot.querySelectorAll(
+                  'cr-composebox-match');
+          assertEquals(4, matchEls.length);
+          const matchEl = matchEls[0];
+          // Verbatim match does not show for typed suggest.
+          assertStyle(matchEl!, 'display', 'none');
 
-    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-    assertEquals(
-        'hello world 2',
-        testProxy.element.getInputElement().inputElement.value);
-  });
+          // Arrow down should do default action.
+          const arrowDownEvent = new KeyboardEvent('keydown', {
+            bubbles: true,
+            cancelable: true,
+            composed: true,  // So it propagates across shadow DOM boundary.
+            key: 'ArrowDown',
+          });
 
-  test('delete button removes match', async () => {
-    loadTimeData.overrideValues({composeboxShowZps: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              arrowDownEvent);
+          await microtasksFinished();
+          assertTrue(arrowDownEvent.defaultPrevented);
 
-    const matches = [
-      createSearchMatchForTesting(),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: '',
-          matches,
-          suggestionGroupsMap: {},
-        }));
+          // First SHOWN match (second match) is selected.
+          assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
+          assertEquals(
+              'hello world 2',
+              testProxy.element.getInputElement().inputElement.value);
 
-    assertTrue(await areMatchesShowing(
-        testProxy.element, testProxy.searchboxCallbackRouterRemote));
+          // Arrow down should do default action.
+          const arrowUpEvent = new KeyboardEvent('keydown', {
+            bubbles: true,
+            cancelable: true,
+            composed: true,  // So it propagates across shadow DOM boundary.
+            key: 'ArrowUp',
+          });
 
-    const matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
-        'cr-composebox-match');
-    assertEquals(2, matchEls.length);
-    const matchEl = matchEls[0];
-    assertTrue(!!matchEl);
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              arrowUpEvent);
+          await microtasksFinished();
+          assertTrue(arrowUpEvent.defaultPrevented);
+          // Last match gets selected when arrowing up from the first
+          // shown match.
+          assertTrue(matchEls[3]!.hasAttribute(Attributes.SELECTED));
+          assertEquals(
+              'hello world 4',
+              testProxy.element.getInputElement().inputElement.value);
 
-    const matchIndex = 0;
-    const destinationUrl = 'http://google.com';
-    matchEl.matchIndex = matchIndex;
-    matchEl.match.destinationUrl = destinationUrl;
+          // When arrowing up from last match, first SHOWN match should be
+          // selected.
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              arrowDownEvent);
+          await microtasksFinished();
+          assertTrue(arrowDownEvent.defaultPrevented);
+          assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
+          assertEquals(
+              'hello world 2',
+              testProxy.element.getInputElement().inputElement.value);
+        });
 
-    // By pressing 'Enter' on the button.
-    const keydownEvent = (new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-      key: 'Enter',
-    }));
-    assertTrue(!!matchEl.$.remove);
-    matchEl.$.remove.dispatchEvent(keydownEvent);
-    assertTrue(keydownEvent.defaultPrevented);
-    const keydownArgs =
-        await testProxy.searchboxHandler.whenCalled('deleteAutocompleteMatch');
-    await microtasksFinished();
-    assertEquals(matchIndex, keydownArgs[0]);
-    assertEquals(destinationUrl, keydownArgs[1]);
-    assertEquals(
-        1, testProxy.searchboxHandler.getCallCount('deleteAutocompleteMatch'));
-    // Pressing the 'Enter' button doesn't accidentally trigger navigation.
-    assertEquals(0, testProxy.searchboxHandler.getCallCount('submitQuery'));
-    testProxy.searchboxHandler.reset();
-    testProxy.handler.reset();
+        test('arrow up/down moves selection / focus', async () => {
+          loadTimeData.overrideValues({composeboxShowZps: true});
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
 
-    matchEl.$.remove.click();
-    const clickArgs =
-        await testProxy.searchboxHandler.whenCalled('deleteAutocompleteMatch');
-    await microtasksFinished();
-    assertEquals(matchIndex, clickArgs[0]);
-    assertEquals(destinationUrl, clickArgs[1]);
-    assertEquals(
-        1, testProxy.searchboxHandler.getCallCount('deleteAutocompleteMatch'));
-    // Clicking the button doesn't accidentally trigger navigation.
-    assertEquals(0, testProxy.searchboxHandler.getCallCount('submitQuery'));
-  });
-});
+          // Add zps input.
+          testProxy.element.getInputElement().inputElement.value = '';
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
 
-suite('NewTabPageComposeboxAutocompleteSmartComposeTest', () => {
-  const testProxy = setupComposeboxTest();
+          const matches = [
+            createSearchMatchForTesting(),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+          ];
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                matches: matches,
+              }));
 
-  test('smart compose response added', async () => {
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
+          assertTrue(await areMatchesShowing(
+              testProxy.element, testProxy.searchboxCallbackRouterRemote));
 
-    // Add input.
-    testProxy.element.getInputElement().inputElement.value = 'smart ';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
+          const matchEls =
+              testProxy.element.$.matches.shadowRoot.querySelectorAll(
+                  'cr-composebox-match');
+          assertEquals(2, matchEls.length);
 
-    testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: 'smart ',
-          matches: [],
-          smartComposeInlineHint: 'compose',
-        }));
-    await microtasksFinished();
+          const arrowDownEvent = new KeyboardEvent('keydown', {
+            bubbles: true,
+            cancelable: true,
+            composed: true,  // So it propagates across shadow DOM boundary.
+            key: 'ArrowDown',
+          });
 
-    assertEquals('compose', testProxy.element.smartComposeInlineHint);
-  });
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              arrowDownEvent);
+          await microtasksFinished();
+          assertTrue(arrowDownEvent.defaultPrevented);
 
-  test('tab adds smart compose to input', async () => {
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-    // Autocomplete queried once when composebox is opened.
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+          // First match is selected
+          assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+          assertEquals(
+              'hello world',
+              testProxy.element.getInputElement().inputElement.value);
 
-    // Add input.
-    testProxy.element.getInputElement().inputElement.value = 'smart ';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
+          // Move the focus to the second match.
+          matchEls[1]!.focus();
+          matchEls[1]!.dispatchEvent(new Event('focusin', {
+            bubbles: true,
+            cancelable: true,
+            composed: true,  // So it propagates across shadow DOM boundary.
+          }));
+          await microtasksFinished();
 
-    // Autocomplete queried on input.
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 2);
+          // Second match is selected and has focus.
+          assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
+          assertEquals(
+              'hello world 2',
+              testProxy.element.getInputElement().inputElement.value);
+          assertEquals(
+              matchEls[1],
+              testProxy.element.$.matches.shadowRoot.activeElement);
 
-    testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: 'smart ',
-          matches: [],
-          smartComposeInlineHint: 'compose',
-        }));
-    await microtasksFinished();
+          const arrowUpEvent = new KeyboardEvent('keydown', {
+            bubbles: true,
+            cancelable: true,
+            composed: true,  // So it propagates across shadow DOM boundary.
+            key: 'ArrowUp',
+          });
 
-    const tabEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'Tab',
-    });
+          matchEls[1]!.dispatchEvent(arrowUpEvent);
+          await microtasksFinished();
+          assertTrue(arrowUpEvent.defaultPrevented);
 
-    testProxy.element.getInputElement().inputElement.dispatchEvent(tabEvent);
-    await microtasksFinished();
-    assertTrue(tabEvent.defaultPrevented);
+          // First match gets selected and gets focus while focus is in the
+          // matches.
+          assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+          assertEquals(
+              'hello world',
+              testProxy.element.getInputElement().inputElement.value);
+          assertEquals(
+              matchEls[0],
+              testProxy.element.$.matches.shadowRoot.activeElement);
 
-    assertEquals(
-        'smart compose',
-        testProxy.element.getInputElement().inputElement.value);
-    // Autocomplete queried when smart compose accepted.
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 3);
-  });
+          // Restore.
+          loadTimeData.overrideValues({composeboxShowZps: false});
+        });
 
-  test('arrow up/down moves clears smart compose', async () => {
-    loadTimeData.overrideValues({composeboxShowTypedSuggest: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
+        test(
+            'arrow up/down enables submit for suggestion with no query',
+            async () => {
+              loadTimeData.overrideValues({composeboxShowZps: true});
+              createComposeboxElement(testProxy, {
+                searchboxNextEnabled: useForked,
+              });
+              await microtasksFinished();
 
-    const matches = [
-      createSearchMatchForTesting(),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-    ];
+              // Add zps input.
+              testProxy.element.getInputElement().inputElement.value = '';
+              testProxy.element.getInputElement().inputElement.dispatchEvent(
+                  new Event('input'));
 
-    // Add typed input
-    testProxy.element.getInputElement().inputElement.value = 'awesome';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
-    testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: 'awesome',
-          matches: matches,
-          smartComposeInlineHint: 'compose',
-        }));
-    assertTrue(await areMatchesShowing(
-        testProxy.element, testProxy.searchboxCallbackRouterRemote));
+              const matches = [
+                createSearchMatchForTesting({fillIntoEdit: ''}),
+              ];
+              testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+                  createAutocompleteResultForTesting({
+                    matches: matches,
+                  }));
 
-    const smartCompose =
-        $$<HTMLElement>(testProxy.element.getInputElement(), '#smartCompose');
-    assertTrue(!!smartCompose);
+              assertTrue(await areMatchesShowing(
+                  testProxy.element, testProxy.searchboxCallbackRouterRemote));
 
-    const arrowDownEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'ArrowDown',
-    });
+              const matchEls =
+                  testProxy.element.$.matches.shadowRoot.querySelectorAll(
+                      'cr-composebox-match');
+              assertEquals(1, matchEls.length);
 
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        arrowDownEvent);
-    await microtasksFinished();
-    assertTrue(arrowDownEvent.defaultPrevented);
+              const arrowDownEvent = new KeyboardEvent('keydown', {
+                bubbles: true,
+                cancelable: true,
+                composed: true,  // So it propagates across shadow DOM boundary.
+                key: 'ArrowDown',
+              });
 
-    assertFalse(!!$$<HTMLElement>(
-        testProxy.element.getInputElement(), '#smartCompose'));
-  });
-});
+              testProxy.element.getInputElement().inputElement.dispatchEvent(
+                  arrowDownEvent);
+              await microtasksFinished();
+              assertTrue(arrowDownEvent.defaultPrevented);
 
-suite('NewTabPageComposeboxAutocompleteQueryingTest', () => {
-  const testProxy = setupComposeboxTest();
+              // First match is selected
+              assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+              assertEquals(
+                  '', testProxy.element.getInputElement().inputElement.value);
 
-  test('composebox queries autocomplete on load', async () => {
-    loadTimeData.overrideValues({composeboxShowZps: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
+              // Assert submit is enabled.
+              const submitButton = getSubmitIcon(testProxy);
+              assertFalse(submitButton.hasAttribute('disabled'));
 
-    // Autocomplete should be queried when the composebox is created.
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+              // By pressing 'Enter' on the button.
+              const keydownEvent = (new KeyboardEvent('keydown', {
+                bubbles: true,
+                cancelable: true,
+                composed: true,
+                key: 'Enter',
+              }));
+              matchEls[0]!.dispatchEvent(keydownEvent);
+              assertTrue(keydownEvent.defaultPrevented);
 
-    // Restore.
-    loadTimeData.overrideValues({composeboxShowZps: false});
-  });
+              await microtasksFinished();
 
-  test('composebox stops autocomplete when clearing input', async () => {
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
+              // Assert call occurs.
+              assertEquals(
+                  testProxy.searchboxHandler.getCallCount(
+                      'openAutocompleteMatch'),
+                  1);
 
-    // Autocomplete should be queried when the composebox is created.
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('stopAutocomplete'), 0);
+              // Restore.
+              loadTimeData.overrideValues({composeboxShowZps: false});
+            });
+      });
 
-    // Autocomplete complete should be queried when input is typed.
-    testProxy.element.getInputElement().inputElement.value = 'T';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
-    await microtasksFinished();
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 2);
+  suite(
+      `NewTabPageComposeboxAutocompleteMatchRemovalTest (useNtpComposeboxFork = ${
+          useForked})`,
+      () => {
+        const testProxy = setupComposeboxTest();
 
-    // Deleting to empty input should stop autocomplete before querying it
-    // again.
-    testProxy.element.getInputElement().inputElement.value = '';
-    testProxy.element.getInputElement().inputElement.dispatchEvent(
-        new Event('input'));
-    await microtasksFinished();
+        setup(() => {
+          loadTimeData.overrideValues({
+            useNtpComposeboxFork: useForked,
+          });
+        });
 
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('stopAutocomplete'), 1);
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 3);
-  });
+        test(
+            'Selection is restored after selected match is removed',
+            async () => {
+              loadTimeData.overrideValues(
+                  {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+              createComposeboxElement(testProxy);
+              await microtasksFinished();
+
+              testProxy.element.getInputElement().inputElement.value = '';
+              testProxy.element.getInputElement().inputElement.dispatchEvent(
+                  new InputEvent('input'));
+
+              let matches = [
+                createSearchMatchForTesting({
+                  supportsDeletion: true,
+                }),
+              ];
+              testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+                  createAutocompleteResultForTesting({
+                    input: testProxy.element.getInputElement()
+                               .inputElement.value.trimStart(),
+                    matches,
+                  }));
+              await microtasksFinished();
+              assertTrue(await areMatchesShowing(
+                  testProxy.element, testProxy.searchboxCallbackRouterRemote));
+
+              let matchEls =
+                  testProxy.element.$.matches.shadowRoot.querySelectorAll(
+                      'cr-composebox-match');
+              assertEquals(1, matchEls.length);
+              // First match is not selected.
+              assertFalse(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+
+              // Remove the first match.
+              matchEls[0]!.$.remove.click();
+              const args = await testProxy.searchboxHandler.whenCalled(
+                  'deleteAutocompleteMatch');
+              assertEquals(0, args[0]);
+              assertEquals(
+                  1,
+                  testProxy.searchboxHandler.getCallCount(
+                      'deleteAutocompleteMatch'));
+
+              testProxy.searchboxHandler.reset();
+
+              matches = [
+                createSearchMatchForTesting({supportsDeletion: true}),
+                createSearchMatchForTesting({
+                  supportsDeletion: true,
+                  fillIntoEdit: 'hello world 2',
+                }),
+              ];
+              testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+                  createAutocompleteResultForTesting({
+                    input: '',
+                    matches: matches,
+                  }));
+              assertTrue(await areMatchesShowing(
+                  testProxy.element, testProxy.searchboxCallbackRouterRemote));
+
+              matchEls =
+                  testProxy.element.$.matches.shadowRoot.querySelectorAll(
+                      'cr-composebox-match');
+              assertEquals(2, matchEls.length);
+
+              // First match is not selected.
+              assertFalse(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+
+              const arrowDownEvent = new KeyboardEvent('keydown', {
+                bubbles: true,
+                cancelable: true,
+                composed: true,  // So it propagates across shadow DOM boundary.
+                key: 'ArrowDown',
+              });
+
+              testProxy.element.getInputElement().inputElement.dispatchEvent(
+                  arrowDownEvent);
+              await microtasksFinished();
+              assertTrue(arrowDownEvent.defaultPrevented);
+
+              // First match is selected
+              assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+              assertEquals(
+                  'hello world',
+                  testProxy.element.getInputElement().inputElement.value);
+
+              // By pressing 'Enter' on the button.
+              const keydownEvent = (new KeyboardEvent('keydown', {
+                bubbles: true,
+                cancelable: true,
+                composed: true,
+                key: 'Enter',
+              }));
+              matchEls[0]!.$.remove.dispatchEvent(keydownEvent);
+              assertTrue(keydownEvent.defaultPrevented);
+              const keydownArgs = await testProxy.searchboxHandler.whenCalled(
+                  'deleteAutocompleteMatch');
+              await microtasksFinished();
+              assertEquals(0, keydownArgs[0]);
+              assertEquals(
+                  1,
+                  testProxy.searchboxHandler.getCallCount(
+                      'deleteAutocompleteMatch'));
+
+              matches = [createSearchMatchForTesting({
+                supportsDeletion: true,
+                fillIntoEdit: 'hello world 2',
+              })];
+              testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+                  createAutocompleteResultForTesting({
+                    input: '',
+                    matches: matches,
+                  }));
+              assertTrue(await areMatchesShowing(
+                  testProxy.element, testProxy.searchboxCallbackRouterRemote));
+
+              assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+              assertEquals(
+                  'hello world 2',
+                  testProxy.element.getInputElement().inputElement.value);
+            });
+
+        test('delete button removes match', async () => {
+          loadTimeData.overrideValues({composeboxShowZps: true});
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
+
+          const matches = [
+            createSearchMatchForTesting(),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+          ];
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                input: '',
+                matches,
+                suggestionGroupsMap: {},
+              }));
+
+          assertTrue(await areMatchesShowing(
+              testProxy.element, testProxy.searchboxCallbackRouterRemote));
+
+          const matchEls =
+              testProxy.element.$.matches.shadowRoot.querySelectorAll(
+                  'cr-composebox-match');
+          assertEquals(2, matchEls.length);
+          const matchEl = matchEls[0];
+          assertTrue(!!matchEl);
+
+          const matchIndex = 0;
+          const destinationUrl = 'http://google.com';
+          matchEl.matchIndex = matchIndex;
+          matchEl.match.destinationUrl = destinationUrl;
+
+          // By pressing 'Enter' on the button.
+          const keydownEvent = (new KeyboardEvent('keydown', {
+            bubbles: true,
+            cancelable: true,
+            composed: true,
+            key: 'Enter',
+          }));
+          assertTrue(!!matchEl.$.remove);
+          matchEl.$.remove.dispatchEvent(keydownEvent);
+          assertTrue(keydownEvent.defaultPrevented);
+          const keydownArgs = await testProxy.searchboxHandler.whenCalled(
+              'deleteAutocompleteMatch');
+          await microtasksFinished();
+          assertEquals(matchIndex, keydownArgs[0]);
+          assertEquals(destinationUrl, keydownArgs[1]);
+          assertEquals(
+              1,
+              testProxy.searchboxHandler.getCallCount(
+                  'deleteAutocompleteMatch'));
+          // Pressing the 'Enter' button doesn't accidentally trigger
+          // navigation.
+          assertEquals(
+              0, testProxy.searchboxHandler.getCallCount('submitQuery'));
+          testProxy.searchboxHandler.reset();
+          testProxy.handler.reset();
+
+          matchEl.$.remove.click();
+          const clickArgs = await testProxy.searchboxHandler.whenCalled(
+              'deleteAutocompleteMatch');
+          await microtasksFinished();
+          assertEquals(matchIndex, clickArgs[0]);
+          assertEquals(destinationUrl, clickArgs[1]);
+          assertEquals(
+              1,
+              testProxy.searchboxHandler.getCallCount(
+                  'deleteAutocompleteMatch'));
+          // Clicking the button doesn't accidentally trigger navigation.
+          assertEquals(
+              0, testProxy.searchboxHandler.getCallCount('submitQuery'));
+        });
+      });
+
+  suite(
+      `NewTabPageComposeboxAutocompleteSmartComposeTest (useNtpComposeboxFork = ${
+          useForked})`,
+      () => {
+        const testProxy = setupComposeboxTest();
+
+        setup(() => {
+          loadTimeData.overrideValues({
+            useNtpComposeboxFork: useForked,
+          });
+        });
+
+        test('smart compose response added', async () => {
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
+
+          // Add input.
+          testProxy.element.getInputElement().inputElement.value = 'smart ';
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+
+          testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                input: 'smart ',
+                matches: [],
+                smartComposeInlineHint: 'compose',
+              }));
+          await microtasksFinished();
+
+          assertEquals('compose', testProxy.element.smartComposeInlineHint);
+        });
+
+        test('tab adds smart compose to input', async () => {
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
+          // Autocomplete queried once when composebox is opened.
+          assertEquals(
+              testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+
+          // Add input.
+          testProxy.element.getInputElement().inputElement.value = 'smart ';
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+
+          // Autocomplete queried on input.
+          assertEquals(
+              testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 2);
+
+          testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                input: 'smart ',
+                matches: [],
+                smartComposeInlineHint: 'compose',
+              }));
+          await microtasksFinished();
+
+          const tabEvent = new KeyboardEvent('keydown', {
+            bubbles: true,
+            cancelable: true,
+            composed: true,  // So it propagates across shadow DOM boundary.
+            key: 'Tab',
+          });
+
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              tabEvent);
+          await microtasksFinished();
+          assertTrue(tabEvent.defaultPrevented);
+
+          assertEquals(
+              'smart compose',
+              testProxy.element.getInputElement().inputElement.value);
+          // Autocomplete queried when smart compose accepted.
+          assertEquals(
+              testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 3);
+        });
+
+        test('arrow up/down moves clears smart compose', async () => {
+          loadTimeData.overrideValues({composeboxShowTypedSuggest: true});
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
+
+          const matches = [
+            createSearchMatchForTesting(),
+            createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+          ];
+
+          // Add typed input
+          testProxy.element.getInputElement().inputElement.value = 'awesome';
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                input: 'awesome',
+                matches: matches,
+                smartComposeInlineHint: 'compose',
+              }));
+          assertTrue(await areMatchesShowing(
+              testProxy.element, testProxy.searchboxCallbackRouterRemote));
+
+          const smartCompose = $$<HTMLElement>(
+              testProxy.element.getInputElement(), '#smartCompose');
+          assertTrue(!!smartCompose);
+
+          const arrowDownEvent = new KeyboardEvent('keydown', {
+            bubbles: true,
+            cancelable: true,
+            composed: true,  // So it propagates across shadow DOM boundary.
+            key: 'ArrowDown',
+          });
+
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              arrowDownEvent);
+          await microtasksFinished();
+          assertTrue(arrowDownEvent.defaultPrevented);
+
+          assertFalse(!!$$<HTMLElement>(
+              testProxy.element.getInputElement(), '#smartCompose'));
+        });
+      });
+
+  suite(
+      `NewTabPageComposeboxAutocompleteQueryingTest (useNtpComposeboxFork = ${
+          useForked})`,
+      () => {
+        const testProxy = setupComposeboxTest();
+
+        setup(() => {
+          loadTimeData.overrideValues({
+            useNtpComposeboxFork: useForked,
+          });
+        });
+
+        test('composebox queries autocomplete on load', async () => {
+          loadTimeData.overrideValues({composeboxShowZps: true});
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
+
+          // Autocomplete should be queried when the composebox is created.
+          assertEquals(
+              testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+
+          // Restore.
+          loadTimeData.overrideValues({composeboxShowZps: false});
+        });
+
+        test('composebox stops autocomplete when clearing input', async () => {
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
+
+          // Autocomplete should be queried when the composebox is created.
+          assertEquals(
+              testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+          assertEquals(
+              testProxy.searchboxHandler.getCallCount('stopAutocomplete'), 0);
+
+          // Autocomplete complete should be queried when input is typed.
+          testProxy.element.getInputElement().inputElement.value = 'T';
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          await microtasksFinished();
+          assertEquals(
+              testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 2);
+
+          // Deleting to empty input should stop autocomplete before querying it
+          // again.
+          testProxy.element.getInputElement().inputElement.value = '';
+          testProxy.element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          await microtasksFinished();
+
+          assertEquals(
+              testProxy.searchboxHandler.getCallCount('stopAutocomplete'), 1);
+          assertEquals(
+              testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 3);
+        });
+      });
+
+  suite(
+      `NewTabPageComposeboxAutocompleteVoiceSearchTest (useNtpComposeboxFork = ${
+          useForked})`,
+      () => {
+        const testProxy = setupComposeboxTest();
+
+        setup(() => {
+          loadTimeData.overrideValues({
+            useNtpComposeboxFork: useForked,
+          });
+        });
+        test(
+            'submits w/o querying autocomplete on voice search final result',
+            async () => {
+              // Set loadTimeData so that voice search does auto submit.
+              loadTimeData.overrideValues({
+                composeboxShowZps:
+                    true,  // For predictable queryAutocomplete count.
+              });
+              createComposeboxElement(testProxy, {showVoiceSearch: true});
+              await microtasksFinished();
+              testProxy.searchboxHandler.reset();
+
+              const voiceSearchActionPromise =
+                  eventToPromise<CustomEvent<{value: VoiceSearchAction}>>(
+                      'voice-search-action', testProxy.element);
+              const voiceQuery = 'hello';
+              const voiceSearchElement = $$<ComposeboxVoiceSearchElement>(
+                  testProxy.element, 'cr-composebox-voice-search');
+              assertTrue(!!voiceSearchElement);
+              voiceSearchElement.dispatchEvent(new CustomEvent(
+                  'voice-search-final-result',
+                  {detail: voiceQuery, bubbles: true, composed: true}));
+
+              // Assert event fired.
+              const voiceSearchActionEvent = await voiceSearchActionPromise;
+              assertEquals(
+                  VoiceSearchAction.QUERY_SUBMITTED,
+                  voiceSearchActionEvent.detail.value);
+              await microtasksFinished();
+
+              assertEquals(
+                  testProxy.searchboxHandler.getCallCount('queryAutocomplete'),
+                  0);
+              assertEquals(
+                  testProxy.searchboxHandler.getCallCount('submitQuery'), 1);
+              assertEquals(
+                  voiceQuery,
+                  testProxy.searchboxHandler.getArgs('submitQuery')[0][0]);
+            });
+      });
 });
 
 suite('NewTabPageComposeboxAutocompleteContextTest', () => {
@@ -1061,8 +1212,10 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
           },
           maxTotalInputs: 3,
         };
-        loadTimeData.overrideValues(
-            {composeboxShowZps: true, tabFaviconChipsToCoinsEnabled: false});
+        loadTimeData.overrideValues({
+          composeboxShowZps: true,
+          tabFaviconChipsToCoinsEnabled: false,
+        });
         createComposeboxElement(testProxy);
         testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
             testInputState);
@@ -1177,8 +1330,8 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
             null);
         await microtasksFinished();
 
-        // Autocomplete should not be queried again when there was no autochip
-        // to start, and an update comes with a null tab.
+        // Autocomplete should not be queried again when there was no
+        // autochip to start, and an update comes with a null tab.
         assertEquals(
             testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
         assertEquals(
@@ -1188,8 +1341,10 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
   test(
       'multiple auto active tab updates only adds one chip with latest title',
       async () => {
-        loadTimeData.overrideValues(
-            {composeboxShowZps: true, tabFaviconChipsToCoinsEnabled: false});
+        loadTimeData.overrideValues({
+          composeboxShowZps: true,
+          tabFaviconChipsToCoinsEnabled: false,
+        });
         createComposeboxElement(testProxy);
         await microtasksFinished();
 
@@ -1244,45 +1399,5 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
         assertEquals(
             'Tab 1 Updated Unique XYZ',
             testProxy.element.$.carousel.files[0]!.name);
-      });
-});
-
-suite('NewTabPageComposeboxAutocompleteVoiceSearchTest', () => {
-  const testProxy = setupComposeboxTest();
-  test(
-      'submits w/o querying autocomplete on voice search final result',
-      async () => {
-        // Set loadTimeData so that voice search does auto submit.
-        loadTimeData.overrideValues({
-          composeboxShowZps: true,  // For predictable queryAutocomplete count.
-        });
-        createComposeboxElement(testProxy, {showVoiceSearch: true});
-        await microtasksFinished();
-        testProxy.searchboxHandler.reset();
-
-        const voiceSearchActionPromise =
-            eventToPromise<CustomEvent<{value: VoiceSearchAction}>>(
-                'voice-search-action', testProxy.element);
-        const voiceQuery = 'hello';
-        const voiceSearchElement = $$<ComposeboxVoiceSearchElement>(
-            testProxy.element, 'cr-composebox-voice-search');
-        assertTrue(!!voiceSearchElement);
-        voiceSearchElement.dispatchEvent(new CustomEvent(
-            'voice-search-final-result',
-            {detail: voiceQuery, bubbles: true, composed: true}));
-
-        // Assert event fired.
-        const voiceSearchActionEvent = await voiceSearchActionPromise;
-        assertEquals(
-            VoiceSearchAction.QUERY_SUBMITTED,
-            voiceSearchActionEvent.detail.value);
-        await microtasksFinished();
-
-        assertEquals(
-            testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 0);
-        assertEquals(testProxy.searchboxHandler.getCallCount('submitQuery'), 1);
-        assertEquals(
-            voiceQuery,
-            testProxy.searchboxHandler.getArgs('submitQuery')[0][0]);
       });
 });
