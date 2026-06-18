@@ -4889,7 +4889,7 @@
   {
     "name": "force-control-face-ae",
     "owners": [ "chromeos-camera-eng@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 120
   },
   {
     "name": "force-drive-disclaimer-accepted",
