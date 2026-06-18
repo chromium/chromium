@@ -1888,7 +1888,14 @@ TEST_F(ComposeboxQueryControllerTest,
       ComposeboxQueryController::SearchUrlType::kStandard;
   search_url_request_info->query_start_time = kTestQueryStartTime;
   search_url_request_info->lens_overlay_selection_type =
-      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH;
+      lens::LensOverlaySelectionType::REGION_SEARCH;
+  search_url_request_info->image_crop = lens::ImageCrop();
+  search_url_request_info->image_crop->mutable_zoomed_crop()
+      ->mutable_crop()
+      ->set_coordinate_type(lens::CoordinateType::NORMALIZED);
+  search_url_request_info->image_crop->mutable_zoomed_crop()->set_zoom(1);
+  search_url_request_info->image_crop->mutable_zoomed_crop()->set_parent_height(
+      25);
   search_url_request_info->file_tokens.push_back(file_token);
   search_url_request_info->client_logs = lens::LensOverlayClientLogs();
 
@@ -3785,7 +3792,7 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 
 TEST_F(ComposeboxQueryControllerTest,
-       InteractionQuerySubmittedWithUploadedPdf) {
+       TextQuerySubmittedWithUploadedPdfNoInteraction) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
 
@@ -3813,21 +3820,14 @@ TEST_F(ComposeboxQueryControllerTest,
 
   search_url_request_info->client_logs = lens::LensOverlayClientLogs();
 
-  // Runloop for when the interaction request is sent.
-  base::RunLoop run_loop;
-  controller().AddEndpointFetcherCreatedCallback(
-      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
-
   base::test::TestFuture<GURL> url_future;
   controller().CreateSearchUrl(std::move(search_url_request_info),
                                url_future.GetCallback());
   GURL search_url = url_future.Take();
 
-  // Check that an interaction request was created.
-  run_loop.Run();
+  // Check that NO interaction request was created.
   auto interaction_request = controller().last_sent_interaction_request();
-  ASSERT_TRUE(interaction_request.has_value());
-  EXPECT_TRUE(interaction_request->has_interaction_request());
+  EXPECT_FALSE(interaction_request.has_value());
 
   // Verify that the vsint parameter is NOT present in the URL.
   std::string vsint_param;

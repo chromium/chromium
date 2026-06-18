@@ -733,7 +733,7 @@ void ComposeboxQueryController::CreateSearchUrl(
       // Trigger the interaction request on the last file if needed.
       // TODO(crbug.com/462509148): Determine how to support interaction
       // requests for multi-context input flow.
-      if (has_selection_type) {
+      if (has_selection_type && has_image_crop) {
         request_id_generator_.SetContextId(
             last_active_lens_file->request_id->context_id());
         auto interaction_request_id = request_id_generator_.GetNextRequestId(
