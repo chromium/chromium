@@ -336,6 +336,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
           tabs[tabIndex] = tab;
           const newSplitViewData = new SplitViewData({tabs});
           newSplitViewData.inActiveWindow = item.inActiveWindow;
+          this.updateSplitViewTabGroup_(newSplitViewData, this.tabGroupsMap_);
           this.openTabs_[i] = newSplitViewData;
           this.updateFilteredTabs_();
           foundTab = true;
@@ -371,6 +372,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         const idx0 = matchingIndices[0]!;
         const idx1 = matchingIndices[1]!;
         splitViewData.inActiveWindow = this.openTabs_[idx0]!.inActiveWindow;
+        this.updateSplitViewTabGroup_(splitViewData, this.tabGroupsMap_);
         this.openTabs_[idx0] = splitViewData;
         this.openTabs_.splice(idx1, 1);
         this.updateFilteredTabs_();
@@ -613,6 +615,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
             tabs: [tabs[0]!, tabs[1]!],
           });
           splitViewData.inActiveWindow = window.active;
+          this.updateSplitViewTabGroup_(splitViewData, this.tabGroupsMap_);
           openTabsList.push(splitViewData);
         } else {
           for (const tab of tabs) {
@@ -632,10 +635,11 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         loadTimeData.getBoolean('splitViewTabRestoreEnabled');
 
     const recentlyClosedSplitViews = splitViewTabRestoreEnabled ?
-        (profileData.recentlyClosedSplitViews ||
-         []).map(splitView => new SplitViewData({
-                   splitView,
-                 })) :
+        (profileData.recentlyClosedSplitViews || []).map(splitView => {
+          const splitViewData = new SplitViewData({splitView});
+          this.updateSplitViewTabGroup_(splitViewData, this.tabGroupsMap_);
+          return splitViewData;
+        }) :
         [];
 
     const recentlyClosedTabsFiltered = splitViewTabRestoreEnabled ?
@@ -796,6 +800,21 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
                                         'a11yRecentlyClosedTab');
 
     return tabData;
+  }
+
+  private updateSplitViewTabGroup_(
+      splitViewData: SplitViewData, tabGroupsMap: Map<string, TabGroup>) {
+    let groupId = null;
+    if (splitViewData.tabs) {
+      groupId = splitViewData.tabs[0].groupId || splitViewData.tabs[1].groupId;
+    } else if (splitViewData.splitView) {
+      groupId = splitViewData.splitView.groupId;
+    }
+    if (groupId) {
+      splitViewData.tabGroup = tabGroupsMap.get(tokenToString(groupId));
+    } else {
+      splitViewData.tabGroup = undefined;
+    }
   }
 
   private getRecentlyClosedItemLastActiveTime_(itemData: ItemData) {
