@@ -1946,9 +1946,9 @@ TEST_F(NewTabPageHandlerTest, RealboxContextMenuAnimation) {
     EXPECT_TRUE(future.Take());
 
     const base::DictValue& dict =
-        prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
-    EXPECT_EQ(std::nullopt, dict.FindInt("daily_count"));
-    EXPECT_EQ(std::nullopt, dict.FindInt("lifetime_count"));
+        prefs->GetDict(prefs::kContextMenuAnimationState);
+    EXPECT_EQ(std::nullopt, dict.FindInt("realbox_daily_count"));
+    EXPECT_EQ(std::nullopt, dict.FindInt("realbox_lifetime_count"));
   }
 
   // 2. Record 1st impression.
@@ -1956,9 +1956,9 @@ TEST_F(NewTabPageHandlerTest, RealboxContextMenuAnimation) {
     handler_->RecordRealboxContextMenuAnimationImpression();
 
     const base::DictValue& dict =
-        prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
-    EXPECT_THAT(dict.FindInt("daily_count"), testing::Optional(1));
-    EXPECT_THAT(dict.FindInt("lifetime_count"), testing::Optional(1));
+        prefs->GetDict(prefs::kContextMenuAnimationState);
+    EXPECT_THAT(dict.FindInt("realbox_daily_count"), testing::Optional(1));
+    EXPECT_THAT(dict.FindInt("realbox_lifetime_count"), testing::Optional(1));
   }
 
   // 3. Play 4 more times (total 5 daily impressions recorded).
@@ -1972,9 +1972,9 @@ TEST_F(NewTabPageHandlerTest, RealboxContextMenuAnimation) {
   // Verify counts are now 5 daily and 5 lifetime.
   {
     const base::DictValue& dict =
-        prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
-    EXPECT_THAT(dict.FindInt("daily_count"), testing::Optional(5));
-    EXPECT_THAT(dict.FindInt("lifetime_count"), testing::Optional(5));
+        prefs->GetDict(prefs::kContextMenuAnimationState);
+    EXPECT_THAT(dict.FindInt("realbox_daily_count"), testing::Optional(5));
+    EXPECT_THAT(dict.FindInt("realbox_lifetime_count"), testing::Optional(5));
   }
 
   // 4. The 6th time, it should not be allowed and record should do nothing.
@@ -1986,16 +1986,16 @@ TEST_F(NewTabPageHandlerTest, RealboxContextMenuAnimation) {
     handler_->RecordRealboxContextMenuAnimationImpression();
 
     const base::DictValue& dict =
-        prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
-    EXPECT_THAT(dict.FindInt("daily_count"), testing::Optional(5));
-    EXPECT_THAT(dict.FindInt("lifetime_count"), testing::Optional(5));
+        prefs->GetDict(prefs::kContextMenuAnimationState);
+    EXPECT_THAT(dict.FindInt("realbox_daily_count"), testing::Optional(5));
+    EXPECT_THAT(dict.FindInt("realbox_lifetime_count"), testing::Optional(5));
   }
 
   // 5. Simulate a new day (change the date string in prefs).
   {
     ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kRealboxContextMenuAnimationState);
-    update->Set("last_impression_time",
+                                prefs::kContextMenuAnimationState);
+    update->Set("realbox_last_impression_time",
                 base::TimeToValue(base::Time::Now() - base::Days(1)));
   }
 
@@ -2008,17 +2008,17 @@ TEST_F(NewTabPageHandlerTest, RealboxContextMenuAnimation) {
     handler_->RecordRealboxContextMenuAnimationImpression();
 
     const base::DictValue& dict =
-        prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
-    EXPECT_THAT(dict.FindInt("daily_count"), testing::Optional(1));
-    EXPECT_THAT(dict.FindInt("lifetime_count"), testing::Optional(6));
+        prefs->GetDict(prefs::kContextMenuAnimationState);
+    EXPECT_THAT(dict.FindInt("realbox_daily_count"), testing::Optional(1));
+    EXPECT_THAT(dict.FindInt("realbox_lifetime_count"), testing::Optional(6));
   }
 
   // 7. Bring lifetime count to 19 and verify it caps after 20.
   {
     ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kRealboxContextMenuAnimationState);
-    update->Set("lifetime_count", 19);
-    update->Set("daily_count",
+                                prefs::kContextMenuAnimationState);
+    update->Set("realbox_lifetime_count", 19);
+    update->Set("realbox_daily_count",
                 0);  // Reset daily for today so we don't hit daily cap.
   }
 
@@ -2031,9 +2031,9 @@ TEST_F(NewTabPageHandlerTest, RealboxContextMenuAnimation) {
     handler_->RecordRealboxContextMenuAnimationImpression();
 
     const base::DictValue& dict =
-        prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
-    EXPECT_THAT(dict.FindInt("daily_count"), testing::Optional(1));
-    EXPECT_THAT(dict.FindInt("lifetime_count"), testing::Optional(20));
+        prefs->GetDict(prefs::kContextMenuAnimationState);
+    EXPECT_THAT(dict.FindInt("realbox_daily_count"), testing::Optional(1));
+    EXPECT_THAT(dict.FindInt("realbox_lifetime_count"), testing::Optional(20));
   }
 
   // 21st lifetime impression should be blocked.
@@ -2045,8 +2045,8 @@ TEST_F(NewTabPageHandlerTest, RealboxContextMenuAnimation) {
     handler_->RecordRealboxContextMenuAnimationImpression();
 
     const base::DictValue& dict =
-        prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
-    EXPECT_THAT(dict.FindInt("daily_count"), testing::Optional(1));
-    EXPECT_THAT(dict.FindInt("lifetime_count"), testing::Optional(20));
+        prefs->GetDict(prefs::kContextMenuAnimationState);
+    EXPECT_THAT(dict.FindInt("realbox_daily_count"), testing::Optional(1));
+    EXPECT_THAT(dict.FindInt("realbox_lifetime_count"), testing::Optional(20));
   }
 }

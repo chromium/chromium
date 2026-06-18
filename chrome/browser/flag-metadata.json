@@ -1925,6 +1925,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "context-menu-animation-limiting",
+    "owners": [
+      "dhruvkathpalia@google.com",
+      "rtatum@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "contextual-cueing",
     "owners": [ "sophiechang@chromium.org","jeffreycohen@chromium.org"],
     "expiry_milestone": 160
@@ -8224,14 +8232,6 @@
     "name": "reader-mode-use-readability",
     "owners": ["wylieb@google.com", "chrome-reader-mode-team@google.com"],
     "expiry_milestone": 150
-  },
-  {
-    "name": "realbox-context-menu-animation-capping",
-    "owners": [
-      "dhruvkathpalia@google.com",
-      "rtatum@google.com"
-    ],
-    "expiry_milestone": 155
   },
   {
     "name": "record-web-app-debug-info",

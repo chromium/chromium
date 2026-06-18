@@ -458,8 +458,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('energyEffectAnimationEnabled');
   protected accessor isAndroid_: boolean =
       loadTimeData.getBoolean('isAndroid');
-  protected realboxContextMenuAnimationCappingEnabled_: boolean =
-      loadTimeData.getBoolean('realboxContextMenuAnimationCappingEnabled');
+  protected contextMenuAnimationLimitingEnabled_: boolean =
+      loadTimeData.getBoolean('contextMenuAnimationLimitingEnabled');
   private accessor selectedCustomizeDialogPage_: string|null = null;
   private accessor middleSlotPromoLoaded_: boolean = false;
   private accessor modulesLoadedStatus_: ModuleLoadStatus =
@@ -1470,7 +1470,7 @@ export class AppElement extends AppElementBase {
   private async initializeContextMenuAnimationState_() {
     if (this.ntpRealboxNextEnabled_) {
       let canShow = true;
-      if (this.realboxContextMenuAnimationCappingEnabled_) {
+      if (this.contextMenuAnimationLimitingEnabled_) {
         const {canShow: allowed} =
             await this.pageHandler_.canShowRealboxContextMenuAnimation();
         canShow = allowed;
@@ -1479,7 +1479,7 @@ export class AppElement extends AppElementBase {
       if (canShow) {
         if (this.energyEffectAnimationEnabled_) {
           this.contextMenuGlifAnimationState_ = GlifAnimationState.STARTED;
-          if (this.realboxContextMenuAnimationCappingEnabled_) {
+          if (this.contextMenuAnimationLimitingEnabled_) {
             this.pageHandler_.recordRealboxContextMenuAnimationImpression();
           }
         } else {
@@ -1528,7 +1528,7 @@ export class AppElement extends AppElementBase {
         this.contextMenuGlifAnimationState_ = GlifAnimationState.SPINNER_ONLY;
       } else if (state === ActionChipsRetrievalState.UPDATED) {
         this.contextMenuGlifAnimationState_ = GlifAnimationState.STARTED;
-        if (this.realboxContextMenuAnimationCappingEnabled_) {
+        if (this.contextMenuAnimationLimitingEnabled_) {
           this.pageHandler_.recordRealboxContextMenuAnimationImpression();
         }
       }

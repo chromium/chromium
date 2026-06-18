@@ -518,6 +518,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       contextual_tasks::GetIsContextualTasksNextboxContextMenuEnabled());
   source->AddBoolean("composeboxShowContextMenuDescription", false);
   source->AddBoolean(
+      "contextMenuAnimationLimitingEnabled",
+      base::FeatureList::IsEnabled(omnibox::kContextMenuAnimationLimiting));
+  source->AddBoolean(
       "enablePinButton",
       contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled());
   source->AddBoolean(

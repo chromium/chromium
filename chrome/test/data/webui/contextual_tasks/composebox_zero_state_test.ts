@@ -113,6 +113,8 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
     mockComposeboxPageHandler.setResultFor(
         'getSmartTabSharingActive', Promise.resolve({active: false}));
+    mockComposeboxPageHandler.setResultFor(
+        'canShowNextboxAnimation', Promise.resolve({canShow: true}));
     mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
     mockSearchboxPageHandler.setResultFor(
         'getPageClassification',
@@ -1068,4 +1070,40 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         assertTrue(appElement.hasAttribute('is-dom-content-loaded_'));
         assertEquals('visible', window.getComputedStyle(composebox).visibility);
       });
+
+  suite('NextboxAnimationLimiting', () => {
+    setup(() => {
+      loadTimeData.overrideValues({
+        contextMenuAnimationLimitingEnabled: true,
+      });
+      mockComposeboxPageHandler.setResultFor(
+          'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+    });
+
+    test('allow animation if canShow is true', async () => {
+      contextualTasksApp.$.composebox.isZeroState = true;
+      await microtasksFinished();
+
+      assertEquals(
+          1, mockComposeboxPageHandler.getCallCount('canShowNextboxAnimation'));
+      assertEquals(
+          1,
+          mockComposeboxPageHandler.getCallCount(
+              'recordNextboxAnimationImpression'));
+    });
+
+    test('block animation if canShow is false', async () => {
+      mockComposeboxPageHandler.setResultFor(
+          'canShowNextboxAnimation', Promise.resolve({canShow: false}));
+      contextualTasksApp.$.composebox.isZeroState = true;
+      await microtasksFinished();
+
+      assertEquals(
+          1, mockComposeboxPageHandler.getCallCount('canShowNextboxAnimation'));
+      assertEquals(
+          0,
+          mockComposeboxPageHandler.getCallCount(
+              'recordNextboxAnimationImpression'));
+    });
+  });
 });

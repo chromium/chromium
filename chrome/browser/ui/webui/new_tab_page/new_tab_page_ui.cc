@@ -261,9 +261,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddBoolean(
       "energyEffectAnimationEnabled",
       base::FeatureList::IsEnabled(ntp_features::kEnergyEffectAnimation));
-  source->AddBoolean("realboxContextMenuAnimationCappingEnabled",
-                     base::FeatureList::IsEnabled(
-                         ntp_features::kRealboxContextMenuAnimationCapping));
+  source->AddBoolean(
+      "contextMenuAnimationLimitingEnabled",
+      base::FeatureList::IsEnabled(omnibox::kContextMenuAnimationLimiting));
   source->AddBoolean(
       "ntpNextFeaturesEnabled",
       ntp_realbox::IsNtpRealboxNextEnabled(profile) &&
@@ -1043,7 +1043,7 @@ void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
   prefs->SetBoolean(ntp_prefs::kNtpDoodleMuralsEnabled, true);
   prefs->SetInt64(ntp_prefs::kNtpMostVisitedTileHoverCount, 0);
   prefs->SetInt64(ntp_prefs::kNtpMostVisitedTileNavigationCount, 0);
-  prefs->SetDict(prefs::kRealboxContextMenuAnimationState, base::DictValue());
+  prefs->SetDict(prefs::kContextMenuAnimationState, base::DictValue());
 }
 
 // static

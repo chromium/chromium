@@ -366,13 +366,26 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   // Must have `$` access in updated to avoid violating Lit contract since
   // `willUpdate` runs before `render`, which will cause `$` to not be
   // populated yet.
-  override updated(changedProperties: PropertyValues<this>) {
+  override async updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has('isZeroState')) {
       if (this.isZeroState) {
         // Opening zero state triggers animation.
         this.$.composebox.animationState = GlowAnimationState.SUBMITTING;
-        this.glifAnimationState_ = GlifAnimationState.STARTED;
+        const limitingEnabled =
+            loadTimeData.getBoolean('contextMenuAnimationLimitingEnabled');
+        if (limitingEnabled) {
+          const {canShow: allowed} =
+              await this.pageHandler_.canShowNextboxAnimation();
+          if (allowed) {
+            this.glifAnimationState_ = GlifAnimationState.STARTED;
+            this.pageHandler_.recordNextboxAnimationImpression();
+          } else {
+            this.glifAnimationState_ = GlifAnimationState.INELIGIBLE;
+          }
+        } else {
+          this.glifAnimationState_ = GlifAnimationState.STARTED;
+        }
       } else {
         this.glifAnimationState_ = GlifAnimationState.INELIGIBLE;
       }

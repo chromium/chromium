@@ -58,6 +58,10 @@ class LensComposeboxHandler : public composebox::mojom::PageHandler,
   void GetSmartTabSharingActive(
       GetSmartTabSharingActiveCallback callback) override;
   void NotifyComposeboxQuerySubmittedWithContext() override;
+  void CanShowNextboxAnimation(
+      CanShowNextboxAnimationCallback callback) override;
+  void RecordNextboxAnimationImpression() override;
+
   // searchbox::mojom::PageHandler:
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;
   void ExecuteAction(uint8_t line,

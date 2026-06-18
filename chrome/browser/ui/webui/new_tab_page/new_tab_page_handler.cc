@@ -1177,18 +1177,18 @@ void NewTabPageHandler::CanShowRealboxContextMenuAnimation(
     CanShowRealboxContextMenuAnimationCallback callback) {
   PrefService* prefs = profile_->GetPrefs();
   const base::DictValue& state_dict =
-      prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
+      prefs->GetDict(prefs::kContextMenuAnimationState);
 
-  int lifetime_count = state_dict.FindInt("lifetime_count").value_or(0);
+  int lifetime_count = state_dict.FindInt("realbox_lifetime_count").value_or(0);
   if (lifetime_count >= 20) {
     std::move(callback).Run(false);
     return;
   }
 
   base::Time last_impression_time =
-      base::ValueToTime(state_dict.Find("last_impression_time"))
+      base::ValueToTime(state_dict.Find("realbox_last_impression_time"))
           .value_or(base::Time());
-  int daily_count = state_dict.FindInt("daily_count").value_or(0);
+  int daily_count = state_dict.FindInt("realbox_daily_count").value_or(0);
 
   base::Time today_time = base::Time::Now().LocalMidnight();
 
@@ -1203,13 +1203,13 @@ void NewTabPageHandler::CanShowRealboxContextMenuAnimation(
 void NewTabPageHandler::RecordRealboxContextMenuAnimationImpression() {
   PrefService* prefs = profile_->GetPrefs();
   const base::DictValue& state_dict =
-      prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
+      prefs->GetDict(prefs::kContextMenuAnimationState);
 
   base::Time last_impression_time =
-      base::ValueToTime(state_dict.Find("last_impression_time"))
+      base::ValueToTime(state_dict.Find("realbox_last_impression_time"))
           .value_or(base::Time());
-  int daily_count = state_dict.FindInt("daily_count").value_or(0);
-  int lifetime_count = state_dict.FindInt("lifetime_count").value_or(0);
+  int daily_count = state_dict.FindInt("realbox_daily_count").value_or(0);
+  int lifetime_count = state_dict.FindInt("realbox_lifetime_count").value_or(0);
 
   base::Time today_time = base::Time::Now().LocalMidnight();
 
@@ -1222,10 +1222,10 @@ void NewTabPageHandler::RecordRealboxContextMenuAnimationImpression() {
     lifetime_count++;
 
     ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kRealboxContextMenuAnimationState);
-    update->Set("last_impression_time", base::TimeToValue(today_time));
-    update->Set("daily_count", daily_count);
-    update->Set("lifetime_count", lifetime_count);
+                                prefs::kContextMenuAnimationState);
+    update->Set("realbox_last_impression_time", base::TimeToValue(today_time));
+    update->Set("realbox_daily_count", daily_count);
+    update->Set("realbox_lifetime_count", lifetime_count);
   }
 }
 

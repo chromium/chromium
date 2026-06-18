@@ -25,6 +25,9 @@ BASE_DECLARE_FEATURE(kTabFaviconChipsToCoins);
 // Gates context menu and favicon coins for omnibox.
 BASE_DECLARE_FEATURE(kContextManagementInOmnibox);
 
+// If enabled, the impressions of the context menu animation will be capped.
+BASE_DECLARE_FEATURE(kContextMenuAnimationLimiting);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_COMPOSEBOX_FEATURES_H_
