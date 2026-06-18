@@ -445,6 +445,17 @@ gl::ScopedEGLImage EGLImageBacking::GenEGLImageSibling(
                         format_info.adjusted_format, format_info.gl_type, data);
   }
 
+  // The storage allocation of the sibling texture allocates undefined-content
+  // storage on a context without robust-resource-init. If the following upload
+  // upload failed (e.g. GL_OUT_OF_MEMORY) the storage is still uninitialized.
+  // Return an invalid image so that we don't call SetCleared() on the backing.
+  const GLenum error = api->glGetErrorFn();
+  if (error != GL_NO_ERROR) {
+    LOG(ERROR) << "EGLImageBacking: initial pixel upload failed (GL error 0x"
+               << std::hex << error << ")";
+    return gl::ScopedEGLImage();
+  }
+
   // Use service id of the texture as a source to create the EGLImage.
   const EGLint egl_attrib_list[] = {
       EGL_GL_TEXTURE_LEVEL_KHR, 0, EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE};
@@ -471,6 +482,12 @@ EGLImageBacking::GenEGLImageSiblings(base::span<const uint8_t> pixel_data) {
     AutoLock auto_lock(this);
     create_egl_images = egl_images_.empty();
     if (create_egl_images) {
+      // Drain any pre-existing GL errors so the post-allocation check below in
+      // GenEGLImageSibling is attributable to the storage call. Silently
+      // squelching these errors is unfortunate, but is done in order to mirror
+      // other allocation checks done in the command decoder.
+      while (api->glGetErrorFn() != GL_NO_ERROR) {
+      }
       for (int plane = 0; plane < num_planes; plane++) {
         gl::ScopedEGLImage egl_image =
             GenEGLImageSibling(pixel_data, service_ids, plane);

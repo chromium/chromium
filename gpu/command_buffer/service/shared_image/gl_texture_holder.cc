@@ -232,10 +232,12 @@ void GLTextureHolder::Initialize(
       // that it can be used in other ES2 contexts, and so we have to pass
       // gl_format as the internal format in the LevelInfo.
       // https://crbug.com/628064
-      texture_->SetLevelInfo(format_desc_.target, 0, format_desc_.data_format,
-                             size_.width(), size_.height(), /*depth=*/1, 0,
-                             format_desc_.data_format, format_desc_.data_type,
-                             /*cleared_rect=*/gfx::Rect());
+      const gfx::Rect cleared_rect =
+          !pixel_data.empty() ? gfx::Rect(size_) : gfx::Rect();
+      texture_->SetLevelInfo(
+          format_desc_.target, /*level=*/0, format_desc_.data_format,
+          size_.width(), size_.height(), /*depth=*/1, /*border=*/0,
+          format_desc_.data_format, format_desc_.data_type, cleared_rect);
       texture_->SetImmutable(true, format_info.supports_storage);
     } else {
       LOG(ERROR) << "GLTextureHolder: native storage allocation failed";

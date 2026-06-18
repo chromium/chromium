@@ -497,6 +497,14 @@ void GLTextureImageBacking::InitializeGLTexture(
     base::span<const uint8_t> pixel_data,
     gl::ProgressReporter* progress_reporter,
     bool framebuffer_attachment_angle) {
+  // Drain any pre-existing GL errors so the post-allocation check below is
+  // attributable to the storage call. Silently squelching these errors is
+  // unfortunate, but is done in order to mirror other allocation checks done in
+  // the command decoder.
+  gl::GLApi* const api = gl::g_current_gl_context;
+  while (api->glGetErrorFn() != GL_NO_ERROR) {
+  }
+
   const std::string debug_label =
       "GLSharedImage_" + SharedImageBacking::debug_label();
   int num_planes = format().NumberOfPlanes();
@@ -510,8 +518,23 @@ void GLTextureImageBacking::InitializeGLTexture(
                                 debug_label);
   }
 
-  if (!pixel_data.empty()) {
-    SetCleared();
+  // Update the cleared state for passthrough textures if the pixel data upload
+  // was successful. We don't need to update the cleared state for validating
+  // decoder textures because we track the cleared state in the decoder texture
+  // objects whose cleared state is set in TextureHolder::Initialize above.
+  if (is_passthrough_ && !pixel_data.empty()) {
+    // The storage allocation allocates undefined-content storage on a context
+    // without robust-resource-init. If the subsequent upload failed (e.g.
+    // GL_OUT_OF_MEMORY) the storage is still uninitialised; only mark the
+    // backing cleared if no GL error was raised.
+    GLenum error = api->glGetErrorFn();
+    if (error == GL_NO_ERROR) {
+      SetCleared();
+    } else {
+      LOG(ERROR)
+          << "GLTextureImageBacking: initial pixel upload failed (GL error 0x"
+          << std::hex << error << ")";
+    }
   }
 }
 
