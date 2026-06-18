@@ -340,8 +340,14 @@ class WallpaperSearchOptimizationGuideInteractiveTest
   base::CallbackListSubscription subscription_;
 };
 
+// TODO(crbug.com/524036564): Flaky on Win.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CustomizeButtonsWorkTogether DISABLED_CustomizeButtonsWorkTogether
+#else
+#define MAYBE_CustomizeButtonsWorkTogether CustomizeButtonsWorkTogether
+#endif
 IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
-                       CustomizeButtonsWorkTogether) {
+                       MAYBE_CustomizeButtonsWorkTogether) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReopenedCustomizeChromeElementId);
 
   const DeepQuery kCustomizeChromeButton = {"ntp-app", "ntp-customize-buttons",
