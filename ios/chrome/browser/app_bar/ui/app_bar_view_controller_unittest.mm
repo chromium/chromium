@@ -254,6 +254,7 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonHighlightState) {
   if (highlightView) {
     EXPECT_TRUE(highlightView.hidden);
   }
+  EXPECT_FALSE(button.accessibilityTraits & UIAccessibilityTraitSelected);
 
   // Highlighted.
   [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
@@ -267,6 +268,7 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonHighlightState) {
   highlightView = assistantHighlightView();
   ASSERT_NE(highlightView, nil);
   EXPECT_FALSE(highlightView.hidden);
+  EXPECT_TRUE(button.accessibilityTraits & UIAccessibilityTraitSelected);
 
   // Verify button background color is clearColor (we use customView instead).
   UIButtonConfiguration* config = button.configuration;
@@ -283,6 +285,7 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonHighlightState) {
   [button layoutIfNeeded];
 
   EXPECT_TRUE(highlightView.hidden);
+  EXPECT_FALSE(button.accessibilityTraits & UIAccessibilityTraitSelected);
 }
 
 // Tests that long-pressing a button temporarily unhides its title text when
@@ -489,6 +492,8 @@ TEST_F(AppBarViewControllerTestManual, TestIncognitoInitially) {
 
   UIButton* assistantButton = [vc valueForKey:@"assistantButton"];
   EXPECT_FALSE(assistantButton.enabled);
+  EXPECT_TRUE(assistantButton.accessibilityTraits &
+              UIAccessibilityTraitNotEnabled);
 }
 
 }  // namespace

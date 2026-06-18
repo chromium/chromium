@@ -746,6 +746,9 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
   _assistantButton.enabled =
       _buttonsEnabled && _assistantButtonEnabled && !_incognito;
+  // Force a configuration update to refresh accessibility traits.
+  [_assistantButton setNeedsUpdateConfiguration];
+  [_assistantButton layoutIfNeeded];
 }
 
 // Returns a new "Assistant" button.
@@ -809,10 +812,33 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
                                   bottomInset, kButtonHorizontalPadding);
 }
 
+// Updates the accessibility traits for the button based on its state.
+- (void)updateAccessibilityTraitsForButton:(UIButton*)button {
+  UIAccessibilityTraits accessibilityTraits = UIAccessibilityTraitButton;
+  if (!button.enabled) {
+    accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+  }
+
+  BOOL selected = NO;
+  if (button == _assistantButton) {
+    selected = _assistantButtonHighlighted;
+  } else if (button == _tabGridButton) {
+    selected = _isTabGridVisible;
+  }
+
+  if (selected) {
+    accessibilityTraits |= UIAccessibilityTraitSelected;
+  }
+
+  button.accessibilityTraits = accessibilityTraits;
+}
+
 // Updates the configuration for standard buttons.
 - (void)updateStandardButtonConfiguration:(UIButton*)button {
   UIButtonConfiguration* config = button.configuration;
   CGFloat highlightAlpha = ButtonHighlightAlpha(button);
+
+  [self updateAccessibilityTraitsForButton:button];
 
   BOOL isAssistantButtonHighlighted =
       (button == _assistantButton && _assistantButtonHighlighted);
@@ -850,6 +876,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   config.imageColorTransformer = ^UIColor*(UIColor* color) {
     return UIColor.clearColor;
   };
+
+  [self updateAccessibilityTraitsForButton:button];
 
   CGFloat highlightAlpha = ButtonHighlightAlpha(button);
 
@@ -974,7 +1002,6 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
       [UIButtonConfiguration plainButtonConfiguration];
   UIButton* button = [UIButton buttonWithConfiguration:configuration
                                          primaryAction:nil];
-  button.accessibilityTraits = UIAccessibilityTraitButton;
   configuration = button.configuration;
   configuration.imagePlacement = NSDirectionalRectEdgeTop;
   configuration.imagePadding = kButtonImagePadding;
@@ -1080,11 +1107,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   _tabGridButton.accessibilityLabel = l10n_util::GetNSString(
       shouldShowTabGroupSymbol ? IDS_IOS_TOOLBAR_SHOW_TAB_GROUP
                                : IDS_IOS_APP_BAR_ALL_TABS);
-  if (_isTabGridVisible) {
-    _tabGridButton.accessibilityTraits |= UIAccessibilityTraitSelected;
-  } else {
-    _tabGridButton.accessibilityTraits &= ~UIAccessibilityTraitSelected;
-  }
+  [self setNeedsUpdateConfiguration:_tabGridButton animationDuration:0];
   if (shouldShowTabGroupSymbol) {
     [NSLayoutConstraint
         deactivateConstraints:_tabGridButtonNormalStateConstraints];
