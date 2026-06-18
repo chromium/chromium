@@ -990,8 +990,8 @@ suite('NewTabPageComposeboxTest', () => {
       input.dispatchEvent(new KeyboardEvent('keydown', {key: 'a'}));
       await microtasksFinished();
 
-      // Verify hint is visible again.
-      assertTrue(!!inputElement.shadowRoot.querySelector('#smartCompose'));
+      // Verify hint is NOT visible again because it was cleared.
+      assertFalse(!!inputElement.shadowRoot.querySelector('#smartCompose'));
     });
 
     test(
@@ -1125,6 +1125,63 @@ suite('NewTabPageComposeboxTest', () => {
           // Verify hint is hidden.
           assertFalse(!!inputElement.shadowRoot.querySelector('#smartCompose'));
         });
+
+    test(
+        'Tab key does not accept Smart Compose when hidden by wrapping',
+        async () => {
+          // Enable Smart Compose.
+          loadTimeData.overrideValues({composeboxSmartComposeEnabled: true});
+          createComposeboxElement(testProxy);
+          const inputElement = testProxy.element.getInputElement();
+          const input = inputElement.$.input;
+
+          // Mock Canvas measureText and clientWidth to trigger wrapping.
+          const originalMeasureText =
+              CanvasRenderingContext2D.prototype.measureText;
+          CanvasRenderingContext2D.prototype.measureText = function(
+              text: string) {
+            if (text.includes('wrap')) {
+              return {width: 150} as TextMetrics;
+            }
+            return {width: 50} as TextMetrics;
+          };
+          Object.defineProperty(
+              input, 'clientWidth', {configurable: true, get: () => 100});
+
+          // Provide an input and a hint that wraps.
+          input.value = 'tes.';
+          input.dispatchEvent(new Event('input'));
+          const hint = 'wrap';
+
+          testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
+          testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                input: 'tes.',
+                smartComposeInlineHint: hint,
+              }));
+          await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          // Verify hint is hidden.
+          assertFalse(!!inputElement.shadowRoot.querySelector('#smartCompose'));
+
+          // Press Tab.
+          const tabEvent = new KeyboardEvent(
+              'keydown',
+              {key: 'Tab', bubbles: true, cancelable: true, composed: true});
+          input.dispatchEvent(tabEvent);
+          await microtasksFinished();
+
+          // Verify hint is NOT accepted (input remains unchanged) and default
+          // tab behavior is NOT prevented.
+          assertEquals('tes.', input.value);
+          assertFalse(tabEvent.defaultPrevented);
+          assertEquals('', testProxy.element.smartComposeInlineHint);
+
+          // Restore mock.
+          CanvasRenderingContext2D.prototype.measureText = originalMeasureText;
+        });
+
 
     test('onInputStateChanged updates inputState', async () => {
       createComposeboxElement(testProxy);

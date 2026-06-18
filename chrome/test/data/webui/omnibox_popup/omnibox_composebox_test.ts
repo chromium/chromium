@@ -1785,8 +1785,8 @@ suite('OmniboxComposeboxTest', () => {
       input.dispatchEvent(new KeyboardEvent('keydown', {key: 'a'}));
       await microtasksFinished();
 
-      // Verify hint is visible again.
-      assertTrue(!!inputElement.shadowRoot.querySelector('#smartCompose'));
+      // Verify hint is NOT visible again because it was cleared.
+      assertFalse(!!inputElement.shadowRoot.querySelector('#smartCompose'));
     });
 
     test(

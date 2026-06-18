@@ -58,7 +58,8 @@ export function getHtml(this: ComposeboxElement) {
             .cancelButtonTitle="${this.computeCancelButtonTitle()}"
             @input-input="${this.onInputInput}"
             @input-focusin="${this.onInputFocusin}"
-            @cancel-click="${this.onCancelClick}">
+            @cancel-click="${this.onCancelClick}"
+            @clear-smart-compose="${this.onClearSmartCompose}">
         </cr-composebox-input>
         <div id="context" part="context-entrypoint"
             class="${this.carouselOnTop_ && this.isCollapsible ? 'icon-fade' : ''}">

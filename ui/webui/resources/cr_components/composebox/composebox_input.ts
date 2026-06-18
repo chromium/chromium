@@ -132,6 +132,9 @@ export class ComposeboxInputElement extends I18nMixinLit
           this.smartComposeHeightUpdateFrame_ = null;
         }
         this.$.input.style.minHeight = '';
+        if (this.smartComposeInlineHint) {
+          this.dispatchEvent(new CustomEvent('clear-smart-compose'));
+        }
       }
     }
   }

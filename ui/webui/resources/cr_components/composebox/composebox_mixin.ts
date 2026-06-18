@@ -788,6 +788,10 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
+        onClearSmartCompose() {
+          this.smartComposeInlineHint = '';
+        }
+
         onInputFocusin() {
           // if there's a last queried input, it's guaranteed that at least
           // the verbatim match will exist.
@@ -2501,6 +2505,7 @@ export interface ComposeboxEmbedderMixinInterface extends
       token: UnguessableToken, status: ContextUploadStatus,
       errorType: ContextUploadErrorType|null): void;
   onInputInput(e: CustomEvent<Event>): void;
+  onClearSmartCompose(): void;
   onInputFocusin(): void;
   onRecordingStopped(e: CustomEvent<string>): void;
   onKeydown(e: KeyboardEvent): void;
