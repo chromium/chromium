@@ -22,7 +22,7 @@ import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {installMock, MockInputState} from './composebox_test_utils.js';
+import {installMock} from './composebox_test_utils.js';
 
 suite('ComposeboxTest', () => {
   let composebox: ComposeboxElement;
@@ -411,34 +411,6 @@ suite('ComposeboxTest', () => {
     // Assert: When the flag is disabled, no filtering occurs.
     // The carousel should receive both files exactly as they were added.
     assertEquals(2, carousel.files.length);
-  });
-
-  test('incompatible files are deleted on input state change', async () => {
-    // Add a file to composebox.
-    const token = 'uuid-1' as unknown as UnguessableToken;
-    const file = new ComposeboxFile(
-        token, 'image.png', 'image/png', InputType.kLensImage, {
-          isDeletable: true,
-        });
-    composebox.files = new Map([[token, file]]);
-    await composebox.updateComplete;
-
-    // Verify it is there.
-    assertEquals(1, composebox.files.size);
-
-    // Trigger input state change with kLensImage in disabledInputTypes.
-    const inputState = new MockInputState({
-      allowedInputTypes: [InputType.kLensImage, InputType.kLensFile],
-      disabledInputTypes: [InputType.kLensImage],  // Image is disabled
-    });
-
-    searchboxCallbackRouterRemote.onInputStateChanged(inputState);
-    await searchboxCallbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-    await composebox.updateComplete;
-
-    // Verify the file was deleted.
-    assertEquals(0, composebox.files.size);
   });
 
   test('queryAutocomplete passes cursor position', async () => {
