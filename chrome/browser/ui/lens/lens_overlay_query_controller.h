@@ -23,6 +23,7 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_request_id_generator.h"
+#include "components/lens/lens_upload_chunker.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -85,7 +86,7 @@ using UploadProgressCallback =
     base::RepeatingCallback<void(uint64_t position, uint64_t total)>;
 
 // Manages queries on behalf of a Lens overlay.
-class LensOverlayQueryController {
+class LensOverlayQueryController : public lens::LensUploadChunker::Delegate {
  public:
   LensOverlayQueryController(
       LensOverlayFullImageResponseCallback full_image_callback,
@@ -99,7 +100,7 @@ class LensOverlayQueryController {
       lens::LensOverlayInvocationSource invocation_source,
       bool use_dark_mode,
       lens::LensOverlayGen204Controller* gen204_controller);
-  virtual ~LensOverlayQueryController();
+  ~LensOverlayQueryController() override;
 
   // Starts a query flow by sending a request to Lens using the screenshot,
   // returning the response to the full image callback. Should be called
@@ -201,7 +202,8 @@ class LensOverlayQueryController {
 
   bool IsPageContentUploadInProgress() const {
     return page_content_request_in_progress_ ||
-           page_content_endpoint_fetcher_.get() != nullptr;
+           page_content_endpoint_fetcher_.get() != nullptr ||
+           upload_chunker_.get() != nullptr;
   }
 
   // Returns whether the query controller is off.
@@ -330,6 +332,21 @@ class LensOverlayQueryController {
   UploadProgressCallback page_content_upload_progress_callback_;
 
  private:
+  // lens::LensUploadChunker::Delegate:
+  void UploadChunk(
+      const lens::LensOverlayUploadChunkRequest& request,
+      base::RepeatingCallback<void(uint64_t position, uint64_t total)>
+          progress_callback,
+      base::OnceCallback<
+          void(std::unique_ptr<endpoint_fetcher::EndpointResponse>)>
+          completion_callback) override;
+  void OnPageContentPayloadReady(const lens::LensOverlayRequestId& request_id,
+                                 lens::Payload payload) override;
+  void OnChunkUploadError(
+      lens::LensUploadChunker::ErrorType error_type) override;
+  void OnUploadProgress(uint64_t position, uint64_t total) override;
+  lens::LensOverlayClientContext GetClientContext() override;
+
   enum class QueryControllerState {
     // StartQueryFlow has not been called and the query controller is
     // inactive.
@@ -460,29 +477,9 @@ class LensOverlayQueryController {
   // then sends the request.
   void PrepareAndFetchPageContentRequest();
 
-  // Creates chunk upload requests for the given chunks.
-  void PrepareAndFetchUploadChunkRequests(lens::LensOverlayRequestId request_id,
-                                          std::vector<std::string> chunks);
-
-  // Performs the chunk upload requests.
-  void PrepareAndFetchUploadChunkRequestsPart2(
-      std::vector<std::string> headers);
-
-  // Retries the upload chunks with the given ids.
-  void RetryUploadChunkRequests(
-      const google::protobuf::RepeatedField<int64_t>& chunk_ids,
-      std::vector<std::string> headers);
-
-  // Performs the chunk upload request with the given index.
-  void FetchUploadChunkRequest(size_t chunk_request_index);
-
-  // Handles the endpoint fetch response for chunk upload requests. When a
-  // response is received for the last chunk, initiates the page content
-  // request.
-  void UploadChunkResponseHandler(
-      lens::LensOverlayRequestId request_id,
-      size_t total_chunks,
-      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
+  // Starts the chunked upload flow after OAuth headers are fetched.
+  void StartChunkedUpload(lens::LensOverlayRequestId request_id,
+                          std::vector<std::string> headers);
 
   // Creates the PageContentRequest that is sent to the server and performs the
   // request. Prefer to use PrepareAndFetchPageContentRequest() directly since
@@ -517,11 +514,6 @@ class LensOverlayQueryController {
   // Handles the prgress of the page content upload request.
   void PageContentUploadProgressHandler(uint64_t position, uint64_t total);
 
-  // Handles the progress of chunk upload requests by calculating the total
-  // progress across all chunks.
-  void UploadChunkProgressHandler(size_t chunk_request_index,
-                                  uint64_t position,
-                                  uint64_t total);
 
   // Marks that the page content upload is no longer in progress and sends the
   // pending contextual query.
@@ -859,6 +851,8 @@ class LensOverlayQueryController {
   // The endpoint fetchers used for the chunk upload requests.
   std::vector<std::unique_ptr<endpoint_fetcher::EndpointFetcher>>
       chunk_upload_endpoint_fetchers_;
+  // Headers to be sent with each upload chunk request.
+  std::vector<std::string> pending_upload_chunk_headers_;
 
   // Task runner used to compress page content bytes on a separate thread.
   scoped_refptr<base::TaskRunner> compression_task_runner_;
@@ -874,30 +868,6 @@ class LensOverlayQueryController {
   // because it is assumed this request will finish, never need to be
   // cancelled, and all other tasks will wait on it if needed.
   std::unique_ptr<base::CancelableTaskTracker> encoding_task_tracker_;
-
-  // Upload chunk requests being sent.
-  std::vector<lens::LensOverlayUploadChunkRequest>
-      pending_upload_chunk_requests_;
-
-  // Headers to be sent with each upload chunk request.
-  std::vector<std::string> pending_upload_chunk_headers_;
-
-  // Number of upload chunk responses expected. Set to
-  // pending_upload_chunk_requests_.size() when starting to send requests, and
-  // decremented each time a request receives a response.
-  size_t remaining_upload_chunk_responses_;
-
-  // The sequence ID for the upload chunk requests that were last started. Used
-  // to verify that the responses received correspond to the latest upload.
-  int upload_chunk_sequence_id;
-
-  // A copy of the page content request being sent, in case it needs to be
-  // resent.
-  lens::LensOverlayServerRequest pending_page_content_request_;
-
-  // Number of times to retry after receiving a missing chunks error. If this
-  // happens when the value is zero, proceed without attempting to resend.
-  size_t remaining_chunk_retries;
 
   // The current suggest inputs. The fields in this proto are updated
   // whenever new data is available (i.e. after an objects or interaction
@@ -939,15 +909,8 @@ class LensOverlayQueryController {
   // Whether or not a page content upload request is in progress.
   bool page_content_request_in_progress_ = false;
 
-  // Whether or not the upload is being chunked.
-  bool chunk_upload_in_progress_ = false;
-
-  // True if a page content upload is being retried due to missing chunk errors.
-  bool retrying_page_content_upload_ = false;
-
-  // Stores the last reported upload progress position for each chunk, indexed
-  // by chunk id.
-  std::vector<size_t> chunk_progress;
+  // Chunker helper for uploading large page contents (like PDFs).
+  std::unique_ptr<lens::LensUploadChunker> upload_chunker_;
 
   // The sum of the last reported upload progress position of each chunk.
   size_t total_chunk_progress_ = 0;

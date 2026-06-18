@@ -41,12 +41,15 @@ static_library("lens") {
     "lens_request_construction.h",
     "lens_testing_utils.cc",
     "lens_testing_utils.h",
+    "lens_upload_chunker.cc",
+    "lens_upload_chunker.h",
     "ref_counted_lens_overlay_client_logs.cc",
     "ref_counted_lens_overlay_client_logs.h",
   ]
   deps = [
     "//base",
     "//components/base32",
+    "//components/endpoint_fetcher",
     "//components/lens:lens_mojo",
     "//components/lens/proto/v1:lens_latencies_metadata_proto",
     "//components/sessions",
@@ -144,6 +147,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "lens_overlay_request_id_generator_unittest.cc",
+    "lens_upload_chunker_unittest.cc",
     "lens_url_utils_unittest.cc",
   ]
 
@@ -152,6 +156,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/base32",
+    "//components/endpoint_fetcher",
+    "//google_apis/common",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/lens_server_proto:lens_overlay_proto",
