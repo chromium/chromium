@@ -6,6 +6,7 @@
 
 #include <ranges>
 
+#include "base/strings/strcat.h"
 #include "components/url_pattern/url_pattern_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -245,7 +246,12 @@ base::expected<String, String> CanonicalizePortInternal(const String& protocol,
     return base::ok(input);
   }
 
-  KURL dummy_url(kDummyUrl);
+  // Using the HTTPS dummy URL results in deletion of the default port number
+  // (443), use a dummy scheme to avoid this.
+  // TODO(crbug.com/520829534): This behavior is NOT spec-compliant as of June,
+  // 2026. Discuss the proper way and update the code.
+  constexpr const char kDummyNonSpecialScheme[] = "dummy";
+  KURL dummy_url(StrCat({kDummyNonSpecialScheme, kDummyUrlWithoutSchemeName}));
   if (!protocol.empty() && !dummy_url.SetProtocol(protocol)) {
     return base::unexpected(
         blink::StrCat({"Invalid protocol '", protocol, "'."}));
@@ -504,8 +510,13 @@ base::expected<std::string, absl::Status> IPv6HostnameEncodeCallback(
 
 base::expected<std::string, absl::Status> PortEncodeCallback(
     std::string_view input) {
-  return EncodeCallbackHelper(
+  base::expected<std::string, absl::Status> result = EncodeCallbackHelper(
       CanonicalizePortInternal(String(), String::FromUtf8(input)));
+  if (!input.empty() && result.has_value()) {
+    CHECK(!result.value().empty()) << "Non-empty string in port component "
+                                      "should also be non-empty after encoding";
+  }
+  return result;
 }
 
 base::expected<std::string, absl::Status> StandardPathnameEncodeCallback(

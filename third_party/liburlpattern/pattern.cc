@@ -141,6 +141,7 @@ std::string Pattern::GeneratePatternString() const {
     const Part* last_part = i > 0 ? &part_list_[i - 1] : nullptr;
     if (!needs_grouping && part.prefix.empty() && last_part &&
         last_part->type == PartType::kFixed) {
+      ABSL_ASSERT(!last_part->value.empty());
       needs_grouping = options_.prefix_list.find(last_part->value.back()) !=
                        std::string::npos;
     }
