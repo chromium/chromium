@@ -2978,4 +2978,41 @@ TEST_F(ContextualTasksUiServiceTest, SearchResultsLink_HandledAsThreadLink) {
   run_loop.Run();
 }
 
+TEST_F(ContextualTasksUiServiceTest, IsTrustedAiUrl) {
+  // Exact allowlist parameters should pass
+  GURL valid_url(
+      "https://google.com/"
+      "search?q=a&sxsrf=b&ei=c&iflsig=d&ved=e&uact=f&sclient=g&udm=h&fbs=i&aep="
+      "j&ntc=k&mstk=l&aioh=m&csuir=n&cs=o");
+  EXPECT_TRUE(service_for_nav_->IsTrustedAiUrl(valid_url));
+
+  // Extra parameters not in allowlist should fail
+  GURL invalid_extra_url(
+      "https://google.com/"
+      "search?q=a&sxsrf=b&ei=c&iflsig=d&ved=e&uact=f&sclient=g&udm=h&fbs=i&aep="
+      "j&ntc=k&mstk=l&aioh=m&csuir=n&cs=o&extra=p");
+  EXPECT_FALSE(service_for_nav_->IsTrustedAiUrl(invalid_extra_url));
+
+  // Missing one or more parameters should pass
+  GURL missing_params_url(
+      "https://google.com/"
+      "search?q=a&sxsrf=b&ei=c&iflsig=d&ved=e&uact=f&sclient=g&udm=h&fbs=i&aep="
+      "j&ntc=k&mstk=l&aioh=m&csuir=n");
+  EXPECT_TRUE(service_for_nav_->IsTrustedAiUrl(missing_params_url));
+
+  // Non google.com/search URLs should fail
+  GURL invalid_domain_url(
+      "https://example.com/"
+      "search?q=a&sxsrf=b&ei=c&iflsig=d&ved=e&uact=f&sclient=g&udm=h&fbs=i&aep="
+      "j&ntc=k&mstk=l&aioh=m&csuir=n&cs=o");
+  EXPECT_FALSE(service_for_nav_->IsTrustedAiUrl(invalid_domain_url));
+
+  GURL invalid_path_url(
+      "https://google.com/"
+      "other_path?q=a&sxsrf=b&ei=c&iflsig=d&ved=e&uact=f&sclient=g&udm=h&fbs=i&"
+      "aep="
+      "j&ntc=k&mstk=l&aioh=m&csuir=n&cs=o");
+  EXPECT_FALSE(service_for_nav_->IsTrustedAiUrl(invalid_path_url));
+}
+
 }  // namespace contextual_tasks

@@ -265,6 +265,20 @@ class ContextualTasksUiService : public KeyedService {
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
           session_handle);
 
+  // Opens the contextual tasks side panel and creates a new task with the given
+  // URL as its initial thread URL. Allows specifying whether the active tab's
+  // WebContents should be associated with the new task. If
+  // `associate_web_contents` is false, the task is started in the side panel
+  // but remains independent of the active tab. This allows the auto suggested
+  // tab chip/coin to appear immediately on open.
+  virtual void StartTaskUiInSidePanel(
+      BrowserWindowInterface* browser_window_interface,
+      tabs::TabInterface* tab_interface,
+      const GURL& url,
+      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+          session_handle,
+      bool associate_web_contents);
+
   // Opens the contextual tasks side panel showing a ghost loader while waiting
   // for the initial thread URL to be provided for that task. This creates an
   // empty task. If the panel is already open for a task, this is a no-op.
@@ -284,6 +298,11 @@ class ContextualTasksUiService : public KeyedService {
 
   // Returns whether the provided URL is to an AI page.
   virtual bool IsAiUrl(const GURL& url);
+
+  // Returns whether the provided URL is a trusted AI page (i.e. is an AI URL
+  // and contains the permitted subset of query parameters). This is used to
+  // validate URLs requested from the private extension API.
+  virtual bool IsTrustedAiUrl(const GURL& url);
 
   // Returns whether the provided task ID is for a task that should show the
   // error page on load.

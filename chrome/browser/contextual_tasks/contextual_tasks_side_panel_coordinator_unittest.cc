@@ -122,6 +122,10 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
           return std::make_unique<NiceMock<MockContextualTasksUiService>>(
               controller);
         }));
+    // Eagerly instantiate the MockContextualTasksUiService (as is done in
+    // production) so it exists when retrieved by the coordinator via
+    // GetForBrowserContextIfExists.
+    ContextualTasksUiServiceFactory::GetForBrowserContext(profile_.get());
 
     browser_window_ = std::make_unique<NiceMock<MockBrowserWindowInterface>>();
     ON_CALL(*browser_window_, GetProfile())

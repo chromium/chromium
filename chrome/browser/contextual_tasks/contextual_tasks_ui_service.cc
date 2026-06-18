@@ -241,6 +241,18 @@ EntrypointSource ConvertContextualSearchSourceToEntrypointSource(
   }
 }
 
+const std::set<std::string>& GetAllowedAiUrlParams() {
+  static const base::NoDestructor<std::set<std::string>> allowed_params([] {
+    std::vector<std::string> params = GetContextualTasksAiUrlAllowedParams();
+    std::set<std::string> set;
+    for (const auto& param : params) {
+      set.insert(base::ToLowerASCII(param));
+    }
+    return set;
+  }());
+  return *allowed_params;
+}
+
 }  // namespace
 
 ContextualTasksUiService::ContextualTasksUiService(
@@ -2324,6 +2336,18 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
     const GURL& url,
     std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
         session_handle) {
+  StartTaskUiInSidePanel(browser_window_interface, tab_interface, url,
+                         std::move(session_handle),
+                         /*associate_web_contents=*/true);
+}
+
+void ContextualTasksUiService::StartTaskUiInSidePanel(
+    BrowserWindowInterface* browser_window_interface,
+    tabs::TabInterface* tab_interface,
+    const GURL& url,
+    std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+        session_handle,
+    bool associate_web_contents) {
   CHECK(!url.is_empty());
   CHECK(contextual_tasks_service_);
 
@@ -2342,7 +2366,10 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
   if (!panel_contents || !controller->IsPanelOpenForContextualTask()) {
     ContextualTask task = contextual_tasks_service_->CreateTaskFromUrl(url);
     task_id_to_creation_url_[task.GetTaskId()] = url;
-    AssociateWebContentsToTask(tab_interface->GetContents(), task.GetTaskId());
+    if (associate_web_contents) {
+      AssociateWebContentsToTask(tab_interface->GetContents(),
+                                 task.GetTaskId());
+    }
     controller->Show();
 
     InitializeTaskInSidePanel(controller->GetActiveWebContents(),
@@ -2450,6 +2477,24 @@ bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
   }
 
   return aim_eligibility_service_->HasAimUrlParams(url);
+}
+
+bool ContextualTasksUiService::IsTrustedAiUrl(const GURL& url) {
+  if (!IsAiUrl(url)) {
+    return false;
+  }
+
+  const std::set<std::string>& allowed_params = GetAllowedAiUrlParams();
+  net::QueryIterator it(url);
+  while (!it.IsAtEnd()) {
+    std::string key = base::ToLowerASCII(it.GetKey());
+    if (!allowed_params.contains(key)) {
+      return false;
+    }
+    it.Advance();
+  }
+
+  return true;
 }
 
 bool ContextualTasksUiService::IsPendingErrorPage(const base::Uuid& task_id) {

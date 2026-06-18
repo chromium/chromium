@@ -116,6 +116,10 @@ BASE_DECLARE_FEATURE(kAimTriggeredThreadLinks);
 // Enables window tracking for Contextual Tasks.
 BASE_DECLARE_FEATURE(kContextualTasksWindowTracking);
 
+// When enabled, provides a list of query parameters that are required
+// for AI URLs being loaded from the contextual tasks extension API.
+BASE_DECLARE_FEATURE(kContextualTasksAiUrlAllowedParamsFilter);
+
 bool GetIsContextualTasksPdfCitationsEnabled();
 
 bool GetIsContextualTasksLazyFetchClusterInfoEnabled();
@@ -322,6 +326,9 @@ extern bool ShouldForceCountryCodeUS();
 
 // Returns the user agent suffix to use for requests.
 extern std::string GetContextualTasksUserAgentSuffix();
+
+// Returns the allowed query parameters for AI URLs.
+extern std::vector<std::string> GetContextualTasksAiUrlAllowedParams();
 
 // Returns the URL parameter name to check for NLM mode.
 extern std::string GetContextualTasksNlmUrlParam();

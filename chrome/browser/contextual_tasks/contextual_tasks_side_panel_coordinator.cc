@@ -203,8 +203,6 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
           browser_window->GetProfile())),
       contextual_search_service_(ContextualSearchServiceFactory::GetForProfile(
           browser_window->GetProfile())),
-      ui_service_(ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser_window->GetProfile())),
       pref_service_(browser_window->GetProfile()->GetPrefs()),
       active_task_context_provider_(active_task_context_provider),
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
@@ -231,6 +229,12 @@ ContextualTasksSidePanelCoordinator::~ContextualTasksSidePanelCoordinator() {
   contextual_tasks_panel_host_->RemoveObserver(this);
 
   RecordSessionEndMetrics();
+}
+
+ContextualTasksUiService* ContextualTasksSidePanelCoordinator::GetUiService()
+    const {
+  return ContextualTasksUiServiceFactory::GetForBrowserContextIfExists(
+      browser_window_->GetProfile());
 }
 
 // static
@@ -281,8 +285,10 @@ void ContextualTasksSidePanelCoordinator::Show(
     // If no task is found, create a new task and associate it with the active
     // tab.
     ContextualTask task = contextual_tasks_service_->CreateTask();
-    ui_service_->AssociateWebContentsToTask(active_tab_interface->GetContents(),
-                                            task.GetTaskId());
+    if (auto* ui_service = GetUiService()) {
+      ui_service->AssociateWebContentsToTask(
+          active_tab_interface->GetContents(), task.GetTaskId());
+    }
   }
 
   MaybeCreateCachedWebContents(entry_point);
@@ -368,11 +374,13 @@ void ContextualTasksSidePanelCoordinator::DidStartNavigation(
       (navigation_handle->GetNavigationEntry()->GetTransitionType() &
        ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK) &&
       !navigation_handle->IsRendererInitiated() &&
-      IsPanelOpenForContextualTask() &&
-      ui_service_->IsContextualTasksUrl(navigation_handle->GetURL())) {
-    RecordUserActionAndHistogram(
-        "ContextualTasks.BackButton.UserAction."
-        "NavigatedFromSidePanelToFullTab");
+      IsPanelOpenForContextualTask()) {
+    if (auto* ui_service = GetUiService();
+        ui_service->IsContextualTasksUrl(navigation_handle->GetURL())) {
+      RecordUserActionAndHistogram(
+          "ContextualTasks.BackButton.UserAction."
+          "NavigatedFromSidePanelToFullTab");
+    }
   }
 }
 
@@ -395,7 +403,8 @@ void ContextualTasksSidePanelCoordinator::PrimaryPageChanged(
     content::Page& page) {
   // Hide panel if contextual tasks pages is loaded on tab.
   GURL url = page.GetMainDocument().GetLastCommittedURL();
-  if (ui_service_->IsContextualTasksUrl(url) &&
+  if (auto* ui_service = GetUiService();
+      ui_service->IsContextualTasksUrl(url) &&
       !suppress_hide_on_contextual_tasks_url_for_testing_) {
     UpdateOpenState(/*is_open=*/false);
     Hide();
@@ -541,7 +550,9 @@ void ContextualTasksSidePanelCoordinator::OnTabAdded(TabListInterface& tab_list,
       contextual_tasks_service_->GetContextualTaskForTab(
           sessions::SessionTabHelper::IdForTab(opener->GetContents()));
   if (task) {
-    ui_service_->AssociateWebContentsToTask(content, task->GetTaskId());
+    if (auto* ui_service = GetUiService()) {
+      ui_service->AssociateWebContentsToTask(content, task->GetTaskId());
+    }
   }
 }
 
@@ -638,11 +649,12 @@ bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
     contextual_tasks_panel_host_->SetWebContents(web_contents);
   }
 
-  if (prev_web_contents != web_contents) {
+  bool contents_changed = prev_web_contents != web_contents;
+  if (contents_changed) {
     NotifyExpandToFullTabStateChanged();
   }
 
-  return prev_web_contents != web_contents;
+  return contents_changed;
 }
 
 void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
@@ -721,13 +733,15 @@ void ContextualTasksSidePanelCoordinator::MaybeCreateCachedWebContents(
   }
 
   // Create new WebContents for the task.
-  ui_service_->SetInitialEntryPointForTask(task_id, entry_point);
-  task_id_to_web_contents_cache_[task_id] =
-      std::make_unique<WebContentsCacheItem>(
-          CreateWebContents(
-              browser_window_,
-              ui_service_->GetContextualTaskUrlForTask(task->GetTaskId())),
-          /*is_open=*/true);
+  if (auto* ui_service = GetUiService()) {
+    ui_service->SetInitialEntryPointForTask(task_id, entry_point);
+    task_id_to_web_contents_cache_[task_id] =
+        std::make_unique<WebContentsCacheItem>(
+            CreateWebContents(
+                browser_window_,
+                ui_service->GetContextualTaskUrlForTask(task->GetTaskId())),
+            /*is_open=*/true);
+  }
 }
 
 void ContextualTasksSidePanelCoordinator::CreateCachedWebContentsForTesting(
@@ -736,11 +750,13 @@ void ContextualTasksSidePanelCoordinator::CreateCachedWebContentsForTesting(
   CHECK_IS_TEST();
   CHECK(!task_id_to_web_contents_cache_.contains(task_id));
 
-  task_id_to_web_contents_cache_[task_id] =
-      std::make_unique<WebContentsCacheItem>(
-          CreateWebContents(browser_window_,
-                            ui_service_->GetContextualTaskUrlForTask(task_id)),
-          is_open);
+  if (auto* ui_service = GetUiService()) {
+    task_id_to_web_contents_cache_[task_id] =
+        std::make_unique<WebContentsCacheItem>(
+            CreateWebContents(browser_window_,
+                              ui_service->GetContextualTaskUrlForTask(task_id)),
+            is_open);
+  }
 }
 
 void ContextualTasksSidePanelCoordinator::Hide() {
@@ -871,9 +887,12 @@ ContextualTasksSidePanelCoordinator::GetSessionHandleForActiveTabOrPanel() {
         TabListInterface::From(browser_window_)->GetActiveTab();
     if (active_tab_interface) {
       web_contents = active_tab_interface->GetContents();
-      if (web_contents &&
-          !ui_service_->IsContextualTasksUrl(web_contents->GetURL())) {
-        web_contents = nullptr;
+      auto* ui_service = GetUiService();
+      if (web_contents) {
+        if (!ui_service ||
+            !ui_service->IsContextualTasksUrl(web_contents->GetURL())) {
+          web_contents = nullptr;
+        }
       }
     }
   }
@@ -913,7 +932,9 @@ void ContextualTasksSidePanelCoordinator::OnSurfaceStateChanged(
 
   if (state == ContextualTasksPanelHost::SurfaceState::kClosed &&
       reason == ContextualTasksPanelHost::StateChangeReason::kUserAction) {
-    ui_service_->ShowUndoSnackbar(browser_window_);
+    if (auto* ui_service = GetUiService()) {
+      ui_service->ShowUndoSnackbar(browser_window_);
+    }
   }
 
   observers_.Notify(

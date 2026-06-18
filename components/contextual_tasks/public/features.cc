@@ -145,6 +145,9 @@ BASE_FEATURE(kAimTriggeredThreadLinks, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualTasksWindowTracking, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksAiUrlAllowedParamsFilter,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool GetIsContextualTasksPdfCitationsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksPdfCitations);
 }
@@ -590,6 +593,16 @@ bool GetEnableLensInContextualTasks() {
 
 std::string GetContextualTasksUserAgentSuffix() {
   return kContextualTasksUserAgentSuffix.Get();
+}
+
+const base::FeatureParam<std::string> kContextualTasksAiUrlAllowedParams{
+    &kContextualTasksAiUrlAllowedParamsFilter,
+    "contextual-tasks-ai-url-allowed-params",
+    "q,sxsrf,ei,iflsig,ved,uact,sclient,udm,fbs,aep,ntc,mstk,aioh,csuir,cs"};
+
+std::vector<std::string> GetContextualTasksAiUrlAllowedParams() {
+  return base::SplitString(kContextualTasksAiUrlAllowedParams.Get(), ",",
+                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
 
 bool ShouldLogContextualTasksContextQuality() {
