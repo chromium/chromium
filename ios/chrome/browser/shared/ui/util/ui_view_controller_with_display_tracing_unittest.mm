@@ -10,8 +10,11 @@
 
 #import "base/logging.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/tracing/trace_test_utils.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -87,6 +90,7 @@ class UIViewControllerWithDisplayTracingTest
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(kDisplayTracing);
     view_controller_ = [[TestUIViewControllerWithDisplayTracing alloc]
         initWithDisplayTracingOptions:
             UIViewControllerDisplayTracingOptionAllTraces];
@@ -112,6 +116,7 @@ class UIViewControllerWithDisplayTracingTest
 
   base::test::TracingEnvironment tracing_environment_;
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestUIViewControllerWithDisplayTracing* view_controller_;
 };
 
@@ -215,6 +220,7 @@ class UIViewControllerWithDisplayTracingGestureTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(kDisplayTracing);
     view_controller_ = [[TestUIViewControllerWithDisplayTracing alloc]
         initWithDisplayTracingOptions:
             UIViewControllerDisplayTracingOptionGesture];
@@ -226,6 +232,7 @@ class UIViewControllerWithDisplayTracingGestureTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestUIViewControllerWithDisplayTracing* view_controller_;
 };
 
@@ -405,6 +412,23 @@ TEST_F(UIViewControllerWithDisplayTracingGestureTest,
   [view_controller_ handlePanGesture:senderMock];
 
   EXPECT_EQ([view_controller_ currentGestureForTesting], nullptr);
+}
+
+using UIViewControllerWithDisplayTracingFeatureTest = PlatformTest;
+
+TEST_F(UIViewControllerWithDisplayTracingFeatureTest,
+       OptionsIgnoredWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kDisplayTracing);
+
+  TestUIViewControllerWithDisplayTracing* viewController =
+      [[TestUIViewControllerWithDisplayTracing alloc]
+          initWithDisplayTracingOptions:
+              UIViewControllerDisplayTracingOptionAllTraces];
+
+  NSUInteger options = [[viewController valueForKey:@"displayTracingOptions"]
+      unsignedIntegerValue];
+  EXPECT_EQ(options, UIViewControllerDisplayTracingOptionNone);
 }
 
 }  // namespace

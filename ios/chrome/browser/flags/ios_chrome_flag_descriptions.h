@@ -595,6 +595,11 @@ inline constexpr char kDisableShareButtonName[] =
 inline constexpr char kDisableShareButtonDescription[] =
     "Hides the share button in toolbar.";
 
+inline constexpr char kDisplayTracingName[] = "Display Tracing";
+inline constexpr char kDisplayTracingDescription[] =
+    "Enables display and input latency tracing instrumentation on view "
+    "controllers.";
+
 inline constexpr char kDownloadAutoDeletionClearFilesOnEveryStartupName[] =
     "Enable Download Auto-Deletion Testing Mode";
 inline constexpr char

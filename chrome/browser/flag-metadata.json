@@ -2573,6 +2573,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "display-tracing",
+    "owners": [ "junov@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "document-patching",
     "owners": [ "nrosenthal@chromium.org", "foolip@chromium.org" ],
     "expiry_milestone": 180

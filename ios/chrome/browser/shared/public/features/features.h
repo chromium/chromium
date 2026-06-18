@@ -894,6 +894,11 @@ BASE_DECLARE_FEATURE(kUseSceneViewController);
 // Returns true if the UseSceneViewController feature is enabled.
 bool IsUseSceneViewControllerEnabled();
 
+BASE_DECLARE_FEATURE(kDisplayTracing);
+
+// Returns true if the DisplayTracing feature is enabled.
+bool IsDisplayTracingEnabled();
+
 // Enables the DisableComposeboxFromAIMNTP feature.
 BASE_DECLARE_FEATURE(kDisableComposeboxFromAIMNTP);
 

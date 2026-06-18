@@ -8,12 +8,14 @@
 
 #import <string>
 
+#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/rand_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/trace_event/trace_event.h"
 #import "base/trace_event/typed_macros.h"
 #import "build/build_config.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace {
 enum class UIUpdatePhase {
@@ -92,7 +94,11 @@ enum class UIUpdatePhase {
           displayTracingOptions:
               (UIViewControllerDisplayTracingOptions)displayTracingOptions {
   if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
-    _displayTracingOptions = displayTracingOptions;
+    if (!IsDisplayTracingEnabled()) {
+      _displayTracingOptions = UIViewControllerDisplayTracingOptionNone;
+    } else {
+      _displayTracingOptions = displayTracingOptions;
+    }
     [self commonInit];
   }
   return self;
@@ -107,7 +113,11 @@ enum class UIUpdatePhase {
         displayTracingOptions:
             (UIViewControllerDisplayTracingOptions)displayTracingOptions {
   if ((self = [super initWithCoder:coder])) {
-    _displayTracingOptions = displayTracingOptions;
+    if (!IsDisplayTracingEnabled()) {
+      _displayTracingOptions = UIViewControllerDisplayTracingOptionNone;
+    } else {
+      _displayTracingOptions = displayTracingOptions;
+    }
     [self commonInit];
   }
   return self;

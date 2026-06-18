@@ -1120,6 +1120,12 @@ bool IsUseSceneViewControllerEnabled() {
   return base::FeatureList::IsEnabled(kUseSceneViewController);
 }
 
+BASE_FEATURE(kDisplayTracing, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsDisplayTracingEnabled() {
+  return base::FeatureList::IsEnabled(kDisplayTracing);
+}
+
 BASE_FEATURE(kDisableComposeboxFromAIMNTP, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsDisableComposeboxFromAIMNTPEnabled() {
