@@ -1038,9 +1038,12 @@ void BluetoothSocketMac::ReleaseChannel() {
   DCHECK(thread_checker_.CalledOnValidThread());
   channel_.reset();
 
-  // Closing the channel above prevents the callback delegate from being called
-  // so it is now safe to release all callback state.
-  connect_callbacks_.reset();
+  // Move connect_callbacks_ to a local variable to prevent synchronous
+  // destruction of 'this' if it holds the last reference to the socket.
+  // This keeps 'this' alive until the end of this method.
+  std::unique_ptr<ConnectCallbacks> temp_connect =
+      std::move(connect_callbacks_);
+
   receive_callbacks_.reset();
   empty_queue(receive_queue_);
   empty_queue(send_queue_);
