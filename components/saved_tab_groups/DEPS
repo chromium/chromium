@@ -27,4 +27,9 @@ include_rules = [
   # Allow inclusion of features.h from //components/data_sharing to be able to
   # check whether sharing functionality should be available.
   "+components/data_sharing/public/features.h",
+
+  # Allow inclusion of extensions headers to check for kExtensionScheme.
+  # These are guarded by BUILDFLAG(ENABLE_EXTENSIONS) in C++.
+  "+extensions/buildflags/buildflags.h",
+  "+extensions/common/constants.h",
 ]

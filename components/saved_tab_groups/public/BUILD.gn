@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
@@ -34,6 +36,7 @@ source_set("public") {
     "//components/sync",
     "//components/sync_device_info",
     "//components/tab_groups",
+    "//extensions/buildflags",
     "//google_apis",
     "//services/metrics/public/cpp:metrics_cpp",
     "//ui/gfx",
@@ -43,6 +46,9 @@ source_set("public") {
     ":features",
     ":prefs",
   ]
+  if (enable_extensions) {
+    deps += [ "//extensions/common:common_constants" ]
+  }
 }
 
 if (is_android) {

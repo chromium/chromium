@@ -9,6 +9,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "extensions/buildflags/buildflags.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"  // nogncheck
+#endif
 #include "components/data_sharing/public/data_sharing_utils.h"
 #include "components/data_sharing/public/features.h"
 #include "components/prefs/pref_service.h"
@@ -86,7 +90,11 @@ bool IsURLValidForSavedTabGroups(const GURL& gurl) {
 }
 
 bool IsURLValidForLocalTab(const GURL& gurl) {
-  return IsURLValidForSavedTabGroups(gurl) || gurl.SchemeIsFile();
+  return IsURLValidForSavedTabGroups(gurl) || gurl.SchemeIsFile()
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+         || gurl.SchemeIs(extensions::kExtensionScheme)
+#endif
+      ;
 }
 
 std::pair<GURL, std::u16string> GetDefaultUrlAndTitle() {

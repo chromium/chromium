@@ -455,6 +455,60 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithFileURL) {
   EXPECT_EQ(store_tab_2->specifics().tab().url(), "https://google.com/");
 }
 
+TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExtensionURL) {
+  EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
+
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {}, 0);
+  // tab_1 has a chrome-extension:// URL, which is not valid for sync.
+  SavedTabGroupTab tab_1(
+      GURL("chrome-extension://gbkeeggdxebwphjzgcxevjimijgnhkjj/"),
+      u"Extension Title", group.saved_guid(), /*position=*/std::nullopt);
+  // tab_2 has a valid HTTPS URL.
+  SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
+                         group.saved_guid(), /*position=*/std::nullopt);
+  group.AddTabLocally(tab_1).AddTabLocally(tab_2);
+
+  // Merge sync data containing the extension URL.
+  bridge_->MergeFullSyncData(
+      bridge_->CreateMetadataChangeList(),
+      CreateEntityChangeListFromGroup(
+          group, syncer::EntityChange::ChangeType::ACTION_ADD));
+
+  // Ensure the group was added.
+  EXPECT_TRUE(saved_tab_group_model_.Contains(group.saved_guid()));
+  const SavedTabGroup* group_from_model =
+      saved_tab_group_model_.Get(group.saved_guid());
+  EXPECT_EQ(group_from_model->saved_tabs().size(), 2u);
+
+  // tab_1 (extension) should be converted to NTP in the model.
+  const SavedTabGroupTab* model_tab_1 =
+      group_from_model->GetTab(tab_1.saved_tab_guid());
+  ASSERT_TRUE(model_tab_1);
+  auto [default_url, default_title] = GetDefaultUrlAndTitle();
+  EXPECT_EQ(model_tab_1->url(), default_url);
+  EXPECT_EQ(model_tab_1->title(), default_title);
+
+  // tab_2 (HTTPS) should remain unchanged in the model.
+  const SavedTabGroupTab* model_tab_2 =
+      group_from_model->GetTab(tab_2.saved_tab_guid());
+  ASSERT_TRUE(model_tab_2);
+  EXPECT_EQ(model_tab_2->url(), GURL("https://google.com"));
+
+  // Verify the store (local database).
+  // tab_1 (extension) should be stored as kChromeSavedTabGroupUnsupportedURL.
+  std::optional<proto::SavedTabGroupData> store_tab_1 =
+      ReadSavedTabGroupDataFromStore(tab_1.saved_tab_guid());
+  ASSERT_TRUE(store_tab_1.has_value());
+  EXPECT_EQ(store_tab_1->specifics().tab().url(),
+            kChromeSavedTabGroupUnsupportedURL);
+
+  // tab_2 (HTTPS) should be stored with its original URL.
+  std::optional<proto::SavedTabGroupData> store_tab_2 =
+      ReadSavedTabGroupDataFromStore(tab_2.saved_tab_guid());
+  ASSERT_TRUE(store_tab_2.has_value());
+  EXPECT_EQ(store_tab_2->specifics().tab().url(), "https://google.com/");
+}
+
 TEST_F(SavedTabGroupSyncBridgeTest, ConflictResolutionForTabGroup) {
   ASSERT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
