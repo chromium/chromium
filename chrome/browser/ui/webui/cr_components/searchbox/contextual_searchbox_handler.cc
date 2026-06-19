@@ -1431,6 +1431,10 @@ void ContextualSearchboxHandler::GetDriveDisclaimerStatus(
   controller->CheckDisclaimerStatusAsync(base::BindOnce(
       [](GetDriveDisclaimerStatusCallback callback,
          drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
+        DVLOG(1) << "ContextualSearchboxHandler::GetDriveDisclaimerStatus "
+                    "callback: disclaimer status is "
+                 << drive_picker::DriveDisclaimerController::
+                        DisclaimerStatusToString(status);
         switch (status) {
           case drive_picker::DriveDisclaimerController::DisclaimerStatus::
               kAccepted:
@@ -1863,6 +1867,9 @@ ContextualSearchboxHandler::GetActiveTaskContextProvider() {
 #if !BUILDFLAG(IS_ANDROID)
 void ContextualSearchboxHandler::OnDriveDisclaimerChecked(
     drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
+  DVLOG(1) << "ContextualSearchboxHandler::OnDriveDisclaimerChecked: status is "
+           << drive_picker::DriveDisclaimerController::DisclaimerStatusToString(
+                  status);
   if (!input_state_model_) {
     return;
   }

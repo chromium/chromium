@@ -21,6 +21,9 @@ class DriveDisclaimerController {
     kRestricted,
   };
 
+  // Converts a DisclaimerStatus to its string representation.
+  static std::string DisclaimerStatusToString(DisclaimerStatus status);
+
   explicit DriveDisclaimerController(
       std::unique_ptr<contextual_search::FpopService> fpop_service);
   ~DriveDisclaimerController();

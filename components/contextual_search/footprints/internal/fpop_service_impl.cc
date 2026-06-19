@@ -8,6 +8,8 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
+#include "components/contextual_search/footprints/public/constants.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -248,9 +250,22 @@ void FpopServiceImpl::SendRequest(
               status_code = loader->ResponseInfo()->headers->response_code();
             }
             std::string body_str = response_body.value_or(std::string());
-            bool success = loader->NetError() == net::OK &&
+            int net_error = loader->NetError();
+            bool success = net_error == net::OK &&
                            status_code == net::HTTP_OK &&
                            response_body.has_value();
+
+            if (success) {
+              DVLOG(1)
+                  << "FpopServiceImpl SendRequest: Request succeeded (HTTP "
+                     "200).";
+            } else {
+              LOG(ERROR) << "FpopServiceImpl SendRequest: Request failed. "
+                         << "NetError = " << net_error
+                         << ", HTTP Status = " << status_code
+                         << ", Response Body = "
+                         << (body_str.empty() ? "[empty]" : body_str);
+            }
 
             std::move(callback).Run(/*success=*/success, body_str);
           },
