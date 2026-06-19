@@ -63,6 +63,7 @@ source_set("push_notification_util") {
     "push_notification_util.mm",
   ]
   deps = [
+    ":constants",
     ":push_notification_client_id",
     "//base",
     "//components/prefs",
@@ -269,6 +270,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/sync_preferences:test_support",
     "//google_apis",
+    "//ios/chrome/app:change_profile_commands",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/affiliations/model",
@@ -287,6 +289,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/tips_notifications/model:utils",

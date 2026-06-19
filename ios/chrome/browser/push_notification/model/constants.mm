@@ -43,6 +43,12 @@ NSString* const kOriginatingProfileNameKey = @"originating_profile_name";
 
 NSString* const kOriginatingGaiaIDKey = @"SenderGaiaId";
 
+NSString* const kSerializedChimePayloadKey = @"$";
+
+NSString* const kChimeNotificationGaiaIDKey = @"u";
+
+NSString* const kChimeNotificationClientIdKey = @"n";
+
 std::string PushNotificationClientIdToString(
     PushNotificationClientId client_id) {
   switch (client_id) {

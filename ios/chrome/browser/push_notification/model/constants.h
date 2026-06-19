@@ -304,6 +304,15 @@ extern NSString* const kOriginatingProfileNameKey;
 // notifications to the correct Profile on the device.
 extern NSString* const kOriginatingGaiaIDKey;
 
+// Key for the pre-rendered payload from Chime.
+extern NSString* const kSerializedChimePayloadKey;
+
+// Key for the target user's Gaia ID inside the Chime payload.
+extern NSString* const kChimeNotificationGaiaIDKey;
+
+// Key for the client id in the Chime payload.
+extern NSString* const kChimeNotificationClientIdKey;
+
 // Returns the string representation of the given `client_id`. This string is
 // used to store the client's push notification permission settings in the pref
 // service, as a preference key on the push notification server, and for

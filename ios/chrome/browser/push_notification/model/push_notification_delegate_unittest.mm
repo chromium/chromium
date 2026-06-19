@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
 
 #import "base/run_loop.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_run_loop_timeout.h"
 #import "base/test/task_environment.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -20,8 +22,11 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "testing/platform_test.h"
@@ -30,6 +35,33 @@
 using base::test::ScopedRunLoopTimeout;
 
 @interface PushNotificationDelegate (Testing) <AppStateObserver>
+@end
+
+// Fake implementation of ChangeProfileCommands to intercept switch profile
+// requests.
+@interface FakeChangeProfileCommandHandler : NSObject <ChangeProfileCommands>
+@property(nonatomic, assign) BOOL changeProfileCalled;
+@property(nonatomic, assign) std::string lastProfileName;
+@property(nonatomic, strong) SceneState* lastSceneState;
+@property(nonatomic, assign) ChangeProfileReason lastReason;
+@end
+
+@implementation FakeChangeProfileCommandHandler
+- (void)changeProfile:(std::string_view)profileName
+             forScene:(SceneState*)sceneState
+               reason:(ChangeProfileReason)reason
+         continuation:(ChangeProfileContinuation)continuation {
+  self.changeProfileCalled = YES;
+  self.lastProfileName = std::string(profileName);
+  self.lastSceneState = sceneState;
+  self.lastReason = reason;
+  if (!continuation.is_null()) {
+    std::move(continuation).Run(sceneState, base::DoNothing());
+  }
+}
+
+- (void)deleteProfile:(std::string_view)profileName {
+}
 @end
 
 // Test fixture for PushNotificationDelegate.
@@ -187,4 +219,72 @@ TEST_F(PushNotificationDelegateTest, WillPresentNotification) {
   // Wait for the completion block to run.
   run_loop.Run();
   EXPECT_TRUE(completion_handler_called);
+}
+
+// Tests that when multi-profile push notification handling is enabled and the
+// notification response doesn't contain a direct profile name but contains a
+// Chime Gaia ID, the delegate maps it to the corresponding profile name and
+// calls the ChangeProfileCommands handler.
+TEST_F(PushNotificationDelegateTest,
+       HandleNotificationResponseWithChimeGaiaID) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kSeparateProfilesForManagedAccounts, kIOSPushNotificationMultiProfile,
+       kContentPushNotifications},
+      {});
+
+  // Assign Gaia ID "12345" to the test profile.
+  profile_manager_.GetProfileAttributesStorage()
+      ->UpdateAttributesForProfileWithName(
+          profile_->GetProfileName(),
+          base::BindOnce([](ProfileAttributesIOS& attr) {
+            ProfileAttributesIOS::GaiaIdSet gaia_ids;
+            gaia_ids.insert(GaiaId("12345"));
+            attr.SetAttachedGaiaIds(gaia_ids);
+          }));
+
+  // Setup the fake ChangeProfileCommands handler.
+  FakeChangeProfileCommandHandler* fake_handler =
+      [[FakeChangeProfileCommandHandler alloc] init];
+  [app_state_.appCommandDispatcher
+      startDispatchingToTarget:fake_handler
+                   forProtocol:@protocol(ChangeProfileCommands)];
+
+  // Create a mock UNNotificationResponse with nested Chime payload holding
+  // target user's Gaia ID.
+  UNMutableNotificationContent* content =
+      [[UNMutableNotificationContent alloc] init];
+  content.userInfo = @{@"$" : @{@"u" : @"12345"}};
+  UNNotificationRequest* request =
+      [UNNotificationRequest requestWithIdentifier:@"identifier"
+                                           content:content
+                                           trigger:nil];
+  id mock_response = OCMClassMock([UNNotificationResponse class]);
+  id mock_notification = OCMClassMock([UNNotification class]);
+  OCMStub([mock_response notification]).andReturn(mock_notification);
+  OCMStub([mock_notification request]).andReturn(request);
+
+  // Set the scene activation level to foreground active.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  CreateBrowser();
+  SimulateAppStateFinal();
+  SimulateProfileStateFinal();
+
+  // Stub foregroundActiveScene on the delegate to return our scene_state_.
+  id mock_delegate = OCMPartialMock(delegate_);
+  OCMStub([mock_delegate foregroundActiveScene]).andReturn(scene_state_);
+
+  // Trigger the delegate's didReceiveNotificationResponse method.
+  [mock_delegate userNotificationCenter:user_notification_center_
+         didReceiveNotificationResponse:mock_response
+                  withCompletionHandler:^{
+                  }];
+
+  // Verify that changeProfile was called on the fake handler with the mapped
+  // profile name.
+  EXPECT_TRUE(fake_handler.changeProfileCalled);
+  EXPECT_EQ(fake_handler.lastProfileName, profile_->GetProfileName());
+  EXPECT_EQ(fake_handler.lastSceneState, scene_state_);
+  EXPECT_EQ(fake_handler.lastReason,
+            ChangeProfileReason::kHandlePushNotification);
 }
