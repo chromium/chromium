@@ -31,6 +31,10 @@ BASE_DECLARE_FEATURE(kContextManagementInOmnibox);
 // If enabled, the impressions of the context menu animation will be capped.
 BASE_DECLARE_FEATURE(kContextMenuAnimationLimiting);
 
+// If enabled, the composebox context menu will stay open on selection for
+// realbox.
+BASE_DECLARE_FEATURE(kKeepMenuOpenOnTabSelectForRealbox);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_COMPOSEBOX_FEATURES_H_

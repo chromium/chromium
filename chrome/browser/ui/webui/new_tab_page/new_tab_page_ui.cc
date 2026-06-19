@@ -688,6 +688,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
                                IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD);
   }
 
+  source->AddBoolean("keepMenuOpenOnTabSelectForRealbox",
+                     base::FeatureList::IsEnabled(
+                         omnibox::kKeepMenuOpenOnTabSelectForRealbox));
   source->AddBoolean("composeboxShowContextMenu",
                      ntp_composebox::kShowContextMenu.Get());
   source->AddBoolean("composeboxShowContextMenuTabPreviews",
