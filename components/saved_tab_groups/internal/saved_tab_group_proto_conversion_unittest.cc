@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 
@@ -10,6 +11,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_sync_bridge.h"
+#include "components/saved_tab_groups/proto/saved_tab_group_data.pb.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
@@ -18,6 +20,7 @@
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace tab_groups {
 
@@ -198,6 +201,27 @@ TEST_F(SavedTabGroupConversionTest, DataToTabWithInvalidURLFallback) {
   auto [default_url, default_title] = GetDefaultUrlAndTitle();
   EXPECT_EQ(tab.url(), default_url);
   EXPECT_EQ(tab.title(), default_title);
+}
+
+TEST_F(SavedTabGroupConversionTest, DataToTabWithFileURL) {
+  proto::SavedTabGroupData pb_data;
+  sync_pb::SavedTabGroupSpecifics* pb_specific = pb_data.mutable_specifics();
+  pb_specific->set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+
+  int64_t time_in_micros = time_.ToDeltaSinceWindowsEpoch().InMicroseconds();
+  pb_specific->set_creation_time_windows_epoch_micros(time_in_micros);
+  pb_specific->set_update_time_windows_epoch_micros(time_in_micros);
+
+  sync_pb::SavedTabGroupTab* pb_tab = pb_specific->mutable_tab();
+  pb_tab->set_url("file:///tmp/test.html");
+  pb_tab->set_group_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  pb_tab->set_title("File URL Title");
+
+  SavedTabGroupTab tab =
+      SavedTabGroupSyncBridge::DataToSavedTabGroupTabForTest(pb_data);
+
+  EXPECT_EQ(tab.url(), GURL("file:///tmp/test.html"));
+  EXPECT_EQ(tab.title(), u"File URL Title");
 }
 
 TEST_F(SavedTabGroupConversionTest, DataToTabRetainsData) {

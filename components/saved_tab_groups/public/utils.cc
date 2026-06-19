@@ -85,6 +85,10 @@ bool IsURLValidForSavedTabGroups(const GURL& gurl) {
   return gurl.SchemeIsHTTPOrHTTPS() || gurl == GURL(kChromeUINewTabURL);
 }
 
+bool IsURLValidForLocalTab(const GURL& gurl) {
+  return IsURLValidForSavedTabGroups(gurl) || gurl.SchemeIsFile();
+}
+
 std::pair<GURL, std::u16string> GetDefaultUrlAndTitle() {
   return std::make_pair(GURL(kChromeUINewTabURL),
                         base::ASCIIToUTF16(kDefaultTitleOverride));

@@ -28,6 +28,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 namespace tab_groups {
 
@@ -344,7 +345,8 @@ void LocalTabGroupListener::OpenWebContentsFromSync(SavedTabGroupTab tab,
                                                     Browser* browser,
                                                     int index_in_tabstrip) {
   GURL url_to_open = tab.url();
-  if (!IsURLValidForSavedTabGroups(url_to_open)) {
+  // Open the NTP if the URL is not valid for local tabs.
+  if (!IsURLValidForLocalTab(url_to_open)) {
     url_to_open = GURL(chrome::kChromeUINewTabURL);
   }
 
