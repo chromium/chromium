@@ -25,6 +25,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -202,6 +203,11 @@ LocalEligibility IndigoService::ComputeLocalEligibility() const {
 
   AccountInfo info =
       identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
+  if (info.IsManaged() == signin::Tribool::kTrue &&
+      !gaia::IsGoogleInternalAccountEmail(info.email)) {
+    return LocalEligibility::kManagedDomain;
+  }
+
   if (info.capabilities.can_use_model_execution_features() !=
       signin::Tribool::kTrue) {
     return LocalEligibility::kMissingCapabilities;

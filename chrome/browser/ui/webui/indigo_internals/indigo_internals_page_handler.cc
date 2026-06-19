@@ -31,6 +31,8 @@ indigo_internals::mojom::LocalEligibility MapLocalEligibility(
       return indigo_internals::mojom::LocalEligibility::kDisabledByPolicy;
     case indigo::LocalEligibility::kMissingScript:
       return indigo_internals::mojom::LocalEligibility::kMissingScript;
+    case indigo::LocalEligibility::kManagedDomain:
+      return indigo_internals::mojom::LocalEligibility::kManagedDomain;
   }
 }
 

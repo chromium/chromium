@@ -221,6 +221,38 @@ TEST_F(IndigoServiceTest, PolicyChangeTriggersUpdate) {
   EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kDisabledByPolicy));
 }
 
+TEST_F(IndigoServiceTest, ManagedDomain) {
+  CreateService();
+
+  AccountInfo info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&info.capabilities);
+  mutator.set_can_use_model_execution_features(true);
+
+  AccountInfo::Builder builder(info);
+  builder.SetHostedDomain("example.com");
+  AccountInfo updated_info = builder.Build();
+  identity_test_env_.UpdateAccountInfoForAccount(updated_info);
+
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kManagedDomain));
+}
+
+TEST_F(IndigoServiceTest, GoogleInternalAccountNotManaged) {
+  CreateService();
+
+  AccountInfo info = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@google.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&info.capabilities);
+  mutator.set_can_use_model_execution_features(true);
+
+  AccountInfo::Builder builder(info);
+  builder.SetHostedDomain("google.com");
+  AccountInfo updated_info = builder.Build();
+  identity_test_env_.UpdateAccountInfoForAccount(updated_info);
+
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+}
+
 TEST_F(IndigoServiceTest, AnchoredMessageTrigger) {
 #if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with

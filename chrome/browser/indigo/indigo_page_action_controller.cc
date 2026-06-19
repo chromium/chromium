@@ -96,6 +96,9 @@ void RecordTransformationResultCannotGenerateImage(
       case LocalEligibility::kMissingScript:
         result = IndigoTransformationResult::kMissingScript;
         break;
+      case LocalEligibility::kManagedDomain:
+        result = IndigoTransformationResult::kManagedDomain;
+        break;
       case LocalEligibility::kEligible:
         NOTREACHED();
     }
