@@ -29,6 +29,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -185,6 +186,10 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
   void SetDriveDisclaimerController(
       std::unique_ptr<drive_picker::DriveDisclaimerController> controller) {
     drive_disclaimer_controller_ = std::move(controller);
+  }
+
+  drive_picker::DriveDisclaimerController* drive_disclaimer_controller() {
+    return drive_disclaimer_controller_.get();
   }
 
   bool IsDrivePickerReceiverBound() const {
@@ -413,6 +418,34 @@ class ContextualSearchboxHandlerTest
   raw_ptr<contextual_search::ContextualSearchService> service_;
   raw_ptr<MockContextualSearchMetricsRecorder> metrics_recorder_;
 };
+
+TEST_F(ContextualSearchboxHandlerTest,
+       DriveDisclaimerControllerDoesNotCrashForIncognito) {
+  // Use an incognito profile.
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(incognito_profile->IsOffTheRecord());
+
+  // IdentityManager is null for incognito profiles in this test setup.
+  ASSERT_EQ(nullptr, IdentityManagerFactory::GetForProfile(incognito_profile));
+
+  // Feature is enabled by default in SetUp().
+
+  // Create a handler for the incognito profile.
+  testing::NiceMock<MockSearchboxPage> incognito_mock_searchbox_page;
+  auto incognito_handler = std::make_unique<FakeContextualSearchboxHandler>(
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      incognito_mock_searchbox_page.BindAndGetRemote(), incognito_profile,
+      web_contents(),
+      std::make_unique<OmniboxController>(
+          std::make_unique<TestOmniboxClient>()),
+      base::BindLambdaForTesting(
+          [&]() { return contextual_session_handle_.get(); }));
+
+  // Without the fix, the constructor above would have crashed.
+  // With the fix, the disclaimer controller should be null.
+  EXPECT_EQ(nullptr, incognito_handler->drive_disclaimer_controller());
+}
 
 TEST_F(ContextualSearchboxHandlerTest, SessionStarted) {
   SessionState state_arg = SessionState::kNone;

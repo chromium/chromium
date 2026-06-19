@@ -1139,9 +1139,14 @@ void ContextualSearchboxHandler::InitializeInputStateModel() {
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           omnibox::kComposeboxDriveContextMenuOption)) {
-    GetDriveDisclaimerController()->CheckDisclaimerStatusAsync(
-        base::BindOnce(&ContextualSearchboxHandler::OnDriveDisclaimerChecked,
-                       weak_ptr_factory_.GetWeakPtr()));
+    if (auto* controller = GetDriveDisclaimerController()) {
+      controller->CheckDisclaimerStatusAsync(
+          base::BindOnce(&ContextualSearchboxHandler::OnDriveDisclaimerChecked,
+                         weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      OnDriveDisclaimerChecked(drive_picker::DriveDisclaimerController::
+                                   DisclaimerStatus::kRestricted);
+    }
   }
 #endif
 }
@@ -1417,7 +1422,13 @@ void ContextualSearchboxHandler::GetDriveDisclaimerStatus(
 #if BUILDFLAG(IS_ANDROID)
   std::move(callback).Run(searchbox::mojom::DriveDisclaimerStatus::kRestricted);
 #else
-  GetDriveDisclaimerController()->CheckDisclaimerStatusAsync(base::BindOnce(
+  auto* controller = GetDriveDisclaimerController();
+  if (!controller) {
+    std::move(callback).Run(
+        searchbox::mojom::DriveDisclaimerStatus::kRestricted);
+    return;
+  }
+  controller->CheckDisclaimerStatusAsync(base::BindOnce(
       [](GetDriveDisclaimerStatusCallback callback,
          drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
         switch (status) {
@@ -1878,6 +1889,9 @@ drive_picker::DriveDisclaimerController*
 ContextualSearchboxHandler::GetDriveDisclaimerController() {
   if (!drive_disclaimer_controller_) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+    if (!identity_manager) {
+      return nullptr;
+    }
     auto url_loader_factory = profile_->GetDefaultStoragePartition()
                                   ->GetURLLoaderFactoryForBrowserProcess();
     auto fpop_service = contextual_search::FpopService::Create(
