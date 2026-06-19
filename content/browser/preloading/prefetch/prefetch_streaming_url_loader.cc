@@ -16,6 +16,7 @@
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -95,7 +96,8 @@ PrefetchStreamingURLLoader::CreateAndStart(
     BrowserContext* browser_context_for_service_worker,
     OnServiceWorkerStateDeterminedCallback
         on_service_worker_state_determined_callback,
-    perfetto::Flow flow) {
+    perfetto::Flow flow,
+    bool is_constructed_from_pre_prefetch) {
   TRACE_EVENT("loading", "PrefetchStreamingURLLoader::CreateAndStart", flow);
 
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
@@ -116,7 +118,8 @@ PrefetchStreamingURLLoader::CreateAndStart(
       weak_streaming_loader->StartServiceWorkerInterceptor(
           browser_context_for_service_worker,
           std::move(network_url_loader_factory), request,
-          network_traffic_annotation, std::move(timeout_duration));
+          network_traffic_annotation, std::move(timeout_duration),
+          is_constructed_from_pre_prefetch);
       break;
     case PrefetchServiceWorkerState::kDisallowed:
       weak_streaming_loader->Start(PrefetchServiceWorkerState::kDisallowed,
@@ -341,11 +344,13 @@ void PrefetchStreamingURLLoader::StartServiceWorkerInterceptor(
     scoped_refptr<network::SharedURLLoaderFactory> network_url_loader_factory,
     const network::ResourceRequest& request,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-    base::TimeDelta timeout_duration) {
+    base::TimeDelta timeout_duration,
+    bool is_constructed_from_pre_prefetch) {
   auto callback = base::BindOnce(
       &PrefetchStreamingURLLoader::ServiceWorkerInterceptorLoaderCallback,
       GetWeakPtr(), network_url_loader_factory, request,
-      network_traffic_annotation, std::move(timeout_duration));
+      network_traffic_annotation, std::move(timeout_duration),
+      is_constructed_from_pre_prefetch);
 
   if (!browser_context) {
     // In tests, `browser_context` can be null. Emulate as if there are no
@@ -353,6 +358,24 @@ void PrefetchStreamingURLLoader::StartServiceWorkerInterceptor(
     CHECK_IS_TEST();
     std::move(callback).Run(std::nullopt);
     return;
+  }
+
+  if (is_constructed_from_pre_prefetch) {
+    CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
+
+    // If this is for a `PrefetchContainer` constructed from a PrePrefetch,
+    // the prefetch should fail when it finds a controlling ServiceWorker
+    // (see the comment in `ServiceWorkerInterceptorLoaderCallback()`), and even
+    // `network_url_loader_factory` shouldn't be used via ServiceWorker at all,
+    // so reset it here. `network_url_loader_factory` is plumbed only to
+    // `ServiceWorkerInterceptorLoaderCallback()` above and is used only in the
+    // non-ServiceWorker prefetch path (if no ServiceWorker is found).
+    //
+    // Anyway even when a controlling ServiceWorker is found,
+    // `network_url_loader_factory` shouldn't be used before
+    // `interceptor_result->single_request_factory` is triggered, so resetting
+    // it here shouldn't change the behavior.
+    network_url_loader_factory.reset();
   }
 
   // TODO(https://crbug.com/40947546): Set this FetchEvent's Client ID.
@@ -398,6 +421,7 @@ void PrefetchStreamingURLLoader::ServiceWorkerInterceptorLoaderCallback(
     const network::ResourceRequest& request,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     base::TimeDelta timeout_duration,
+    bool is_constructed_from_pre_prefetch,
     std::optional<NavigationLoaderInterceptor::Result> interceptor_result) {
   if (!interceptor_result) {
     // Controlling ServiceWorker is not found.
@@ -410,6 +434,26 @@ void PrefetchStreamingURLLoader::ServiceWorkerInterceptorLoaderCallback(
     Start(PrefetchServiceWorkerState::kDisallowed,
           std::move(network_url_loader_factory), request,
           network_traffic_annotation, std::move(timeout_duration));
+    return;
+  }
+
+  if (is_constructed_from_pre_prefetch) {
+    CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
+
+    // If this is for a `PrefetchContainer` constructed from a PrePrefetch,
+    // the prefetch should fail when it finds a controlling ServiceWorker,
+    // because:
+    // - The PrePrefetch request didn't go through a ServiceWorker, so using the
+    //   ServiceWorker here can cause inconsistencies.
+    // - `network_url_loader_factory` is actually backed by PrePrefetch, and
+    //   thus can't be used multiple times. Sending the request through a
+    //   ServiceWorker can use `network_url_loader_factory` multiple times e.g.
+    //   via navigation preload.
+    // Note that these requirements are mainly for the initial request (as the
+    // PrePrefetch request is also an initial request), but we don't explicitly
+    // care about redirects, because currently redirects are not allowed for
+    // ServiceWorker-controlled prefetch.
+    OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
     return;
   }
 

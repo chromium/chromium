@@ -205,7 +205,9 @@ base::WeakPtr<PrefetchStreamingURLLoader> CreateStreamingURLLoaderForTests(
       /*browser_context_for_service_worker=*/nullptr,
       base::BindOnce(&PrefetchContainer::OnServiceWorkerStateDetermined,
                      prefetch_container),
-      perfetto::Flow::ProcessScoped(0));
+      perfetto::Flow::ProcessScoped(0),
+      prefetch_container ? prefetch_container->IsConstructedFromPrePrefetch()
+                         : false);
 
   if (prefetch_container) {
     prefetch_container->SetStreamingURLLoader(streaming_loader);

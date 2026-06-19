@@ -1553,7 +1553,8 @@ void PrefetchService::SendPrefetchRequest(
       prefetch_container.service_worker_state(), browser_context_,
       base::BindOnce(&PrefetchContainer::OnServiceWorkerStateDetermined,
                      weak_prefetch_container),
-      prefetch_container.request().preload_pipeline_info().GetFlow());
+      prefetch_container.request().preload_pipeline_info().GetFlow(),
+      prefetch_container.IsConstructedFromPrePrefetch());
   prefetch_container.SetStreamingURLLoader(std::move(streaming_loader));
 
   DVLOG(1) << prefetch_container << ": PrefetchStreamingURLLoader is created.";
