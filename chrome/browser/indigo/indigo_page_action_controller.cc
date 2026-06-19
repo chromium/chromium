@@ -317,21 +317,46 @@ void IndigoPageActionController::ContinueInvoke(
         }
       }
 
+      options.wait_for_panel_open = true;
+      // We introduce a delay here to give the page some time to process the
+      // viewport size change after the side panel opens. Some sites can
+      // significantly alter the page on resize, removing and re-inserting new
+      // image elements in the process.
+      options.on_panel_opened = base::BindOnce(
+          &IndigoPageActionController::TriggerIndigoAgentWithDelay,
+          invoke_weak_ptr_factory_.GetWeakPtr());
+
       if (!prompt.empty()) {
         options.prompts.push_back(std::move(prompt));
         glic_keyed_service->InvokeWithAutoSubmit(
             glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
             std::move(options));
+        return;
       }
     }
   }
 
+  TriggerIndigoAgent();
+}
+
+void IndigoPageActionController::TriggerIndigoAgent() {
+  content::WebContents* web_contents = tab().GetContents();
+  if (!web_contents) {
+    return;
+  }
   if (IndigoAgentHost::GetOrCreateForPage(web_contents->GetPrimaryPage())
           ->Invoke()) {
     base::RecordAction(
         base::UserMetricsAction("Indigo.Transformation.Trigger"));
-    return;
   }
+}
+
+void IndigoPageActionController::TriggerIndigoAgentWithDelay() {
+  CHECK(base::FeatureList::IsEnabled(features::kIndigoOpenGlic));
+  delay_agent_invoke_timer_.Start(
+      FROM_HERE, features::kIndigoGlicTriggerDelay.Get(),
+      base::BindOnce(&IndigoPageActionController::TriggerIndigoAgent,
+                     invoke_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IndigoPageActionController::ShowOnboardingDialog(
@@ -370,6 +395,7 @@ void IndigoPageActionController::ShowOnboardingDialog(
 void IndigoPageActionController::Reset(ResetType reset_type) {
   DestroyToolbar();
   tracked_bounds_ = std::nullopt;
+  delay_agent_invoke_timer_.Stop();
 
   content::WebContents* web_contents = tab().GetContents();
   if (!web_contents) {

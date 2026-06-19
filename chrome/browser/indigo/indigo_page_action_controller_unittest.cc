@@ -346,7 +346,8 @@ class IndigoPageActionControllerTest : public testing::Test {
     EXPECT_TRUE(prompts_loaded_future.Wait());
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
 #if BUILDFLAG(IS_CHROMEOS)
   // Needed because TestWebContents ends up creating BTM classes which depend
@@ -1205,5 +1206,116 @@ TEST_F(IndigoPageActionControllerTest,
   controller_->InvokeAction(EntryPoint::kSuggestionChip);
 }
 
+TEST_F(IndigoPageActionControllerTest, DelayAgentInvokeUntilGlicPanelOpened) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigoOpenGlic, {{"indigo_glic_prompt", "test prompt"}});
+
+  glic::GlicInvokeOptions captured_options(
+      glic::mojom::InvocationSource::kIndigoPageAction);
+
+  EXPECT_CALL(*mock_glic_keyed_service_,
+              InvokeWithAutoSubmit(_, HasGlicPrompt("test prompt")))
+      .WillOnce([&](glic::InvokeWithAutoSubmitPasskey passkey,
+                    glic::GlicInvokeOptions options) {
+        captured_options = std::move(options);
+        return base::WeakPtr<glic::GlicInstance>();
+      });
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  base::UserActionTester user_action_tester;
+  controller_->InvokeAction(EntryPoint::kAnchoredMessage);
+
+  // The agent should not be triggered yet because we haven't executed
+  // on_panel_opened.
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
+            0);
+
+  // Now execute the panel opened callback.
+  ASSERT_FALSE(captured_options.on_panel_opened.is_null());
+  std::move(captured_options.on_panel_opened).Run();
+
+  // The agent should still not be triggered because of the 500ms delay.
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
+            0);
+
+  // Fast-forward time by 300ms.
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+
+  // The agent should now be triggered.
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
+            1);
+}
+
+TEST_F(IndigoPageActionControllerTest,
+       DelayAgentInvokeUntilGlicPanelOpenedWithCustomDelay) {
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeaturesAndParameters(
+      {{features::kIndigoOpenGlic,
+        {{"indigo_glic_prompt", "test prompt"},
+         {"indigo_glic_trigger_delay", "500ms"}}}},
+      {});
+
+  glic::GlicInvokeOptions captured_options(
+      glic::mojom::InvocationSource::kIndigoPageAction);
+
+  EXPECT_CALL(*mock_glic_keyed_service_,
+              InvokeWithAutoSubmit(_, HasGlicPrompt("test prompt")))
+      .WillOnce([&](glic::InvokeWithAutoSubmitPasskey passkey,
+                    glic::GlicInvokeOptions options) {
+        captured_options = std::move(options);
+        return base::WeakPtr<glic::GlicInstance>();
+      });
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  base::UserActionTester user_action_tester;
+  controller_->InvokeAction(EntryPoint::kAnchoredMessage);
+
+  // The agent should not be triggered yet because we haven't executed
+  // on_panel_opened.
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
+            0);
+
+  // Now execute the panel opened callback.
+  ASSERT_FALSE(captured_options.on_panel_opened.is_null());
+  std::move(captured_options.on_panel_opened).Run();
+
+  // The agent should still not be triggered.
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
+            0);
+
+  // Fast-forward time by 300ms. It should still NOT be triggered because delay
+  // is 500ms.
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
+            0);
+
+  // Fast-forward time by another 200ms (total 500ms).
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+
+  // The agent should now be triggered.
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Transformation.Trigger"),
+            1);
+}
 }  // namespace
 }  // namespace indigo

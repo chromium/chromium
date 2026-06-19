@@ -1248,6 +1248,8 @@ const base::FeatureParam<std::string> kIndigoGlicPromptKey{
     &kIndigoOpenGlic, "indigo_glic_prompt_key", ""};
 const base::FeatureParam<std::string> kIndigoGlicSkillId{
     &kIndigoOpenGlic, "indigo_glic_skill_id", ""};
+const base::FeatureParam<base::TimeDelta> kIndigoGlicTriggerDelay{
+    &kIndigoOpenGlic, "indigo_glic_trigger_delay", base::Milliseconds(300)};
 
 #if !BUILDFLAG(IS_ANDROID)
 // A feature that controls whether Instant uses a spare renderer.

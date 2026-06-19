@@ -223,6 +223,11 @@ void GlicInvokeHandler::Invoke() {
     tasks.push_back(std::make_unique<StabilizationTask>(tab_->GetContents()));
   }
 
+  if (options_.on_panel_opened) {
+    tasks.push_back(std::make_unique<PostCallbackTask>(
+        std::move(options_.on_panel_opened)));
+  }
+
   if (options_.additional_context.has_value() &&
       options_.additional_context->policy_check == PolicyCheck::kClipboard) {
     tasks.push_back(std::make_unique<PastePolicyCheckTask>(

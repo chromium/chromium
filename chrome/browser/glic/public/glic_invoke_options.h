@@ -257,6 +257,10 @@ struct GlicInvokeOptions {
   // triggered, this flag is ignored.
   bool wait_for_panel_open = false;
 
+  // Browser-specific callback for when the side panel is opened (and stabilized
+  // if wait_for_panel_open is true).
+  base::OnceClosure on_panel_opened;
+
   // Browser-specific callback for when the invocation successfully completes.
   // This is called asynchronously.
   base::OnceClosure on_success;
