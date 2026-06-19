@@ -487,7 +487,7 @@
 <translation id="2640733327287333451">युजरनेम छैन ••••••</translation>
 <translation id="264215785133931186">भर्खरै जाँच गरिएको</translation>
 <translation id="2647434099613338025">भाषा हाल्नुहोस्</translation>
-<translation id="2648812801228676606">तपाईं <ph name="NAME_OR_EMAIL" /> का रूपमा साइन इन अवस्थामा रहनुभयो</translation>
+<translation id="2648812801228676606">तपाईं पहिले नै <ph name="NAME_OR_EMAIL" /> का रूपमा साइन इन अवस्थामा हुनुहुन्छ</translation>
 <translation id="2649592894792404568">तपाईं Google पासवर्ड म्यानेजरमा भएको आफ्नो जानकारी मेटाउन लाग्दै हुनुहुन्छ</translation>
 <translation id="2652129567809778422">पासवर्ड चयन गर्नुहोस्</translation>
 <translation id="2658056020748144467">फाइल खोल्न सकिएन</translation>
@@ -1126,6 +1126,7 @@
 <translation id="4896467949657706481">ट्याबहरू बन्द गरिए; तपाईं साइन आउट हुनुभयो</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />, तपाईंलाई फेरि स्वागत छ!</translation>
 <translation id="4913626501929406101">तपाईं आफ्नो पारिवारिक समूहका कुनै पनि सदस्यसँग आफ्नो पासवर्डको कपी सुरक्षित तरिकाले सेयर गर्न सक्नुहुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="4916679969857390442">लेन्सहरू</translation>
 <translation id="4917025507570489430">तपाईंले <ph name="USER_EMAIL" /> मार्फत साइन इन गरेका बेला तपाईं हालका ब्राउजिङ डेटा प्रयोग गर्न सक्नुहुन्छ। तपाईंको सङ्गठनले यी डेटा हेर्न सक्ने सम्भावना हुन्छ।</translation>
 <translation id="4918086044614829423">स्वीकार्नुहोस्</translation>
 <translation id="4930714375720679147">अन गर्नुहोस्</translation>

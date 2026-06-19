@@ -187,6 +187,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> kabi (asli)</translation>
 <translation id="1125816658532547876"><ph name="DEVICE_TYPE" /> qurilmangizda parollaringizdan foydalaning</translation>
 <translation id="1125921926864945797">Fon rasmi va uslub</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 ta varaq ulashilmoqda}other{# ta varaq ulashilmoqda}}</translation>
 <translation id="1126696498560056882">Bu qurilmadagi hisoblarni boshqarish</translation>
 <translation id="1128591060186966949">Qidiruv tizimini o‘zgartirish</translation>
 <translation id="1129348283834595293">Kiberpank</translation>
@@ -11250,6 +11251,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="9173063514323762371">&amp;Bukmarklar panelini berkitish</translation>
 <translation id="917350715406657904">Ota-onangiz <ph name="APP_NAME" /> uchun belgilagan foydalanish vaqti tugadi. Ertaga yana <ph name="TIME_LIMIT" /> ishlata olasiz.</translation>
 <translation id="9174854240439014335">Ajratilgan rejimda oynaning chap yoki oʻng chetidan obyektlarni tortib tashlashga ruxsat berish</translation>
+<translation id="9174870712400134574">Faqat yangi varaq sahifasida chiqsin</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth qurilma ulandi</translation>
 <translation id="9177859716483578738">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> maʼlumotlaringizni (<ph name="FIELDS_STRING" />) bu saytga ulashadi. Bu saytning <ph name="BEGIN_LINK" />maxfiylik siyosati<ph name="END_LINK" /> bilan tanishing.</translation>
 <translation id="9178061802301856367">Kirish maʼlumotlarini oʻchirish</translation>
@@ -11262,7 +11264,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="918352324374649435">{COUNT,plural, =1{Ilova}other{# ta ilova}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administrator <ph name="APP0_NAME" /> orqali ekraningizni yozib olishi mumkin. Yozuv boshlanganda sizga xabar berilmaydi.}=2{Administrator <ph name="APP0_NAME" /> va <ph name="APP1_NAME" /> orqali ekraningizni yozib olishi mumkin. Yozuv boshlanganda sizga xabar berilmaydi.}=3{Administrator <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> va yana 1 ta ilova orqali ekraningizni yozib olishi mumkin. Yozuv boshlanganda sizga xabar berilmaydi.}other{Administrator <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> va yana # ta ilova orqali ekraningizni yozib olishi mumkin Yozuv boshlanganda sizga xabar berilmaydi.}}</translation>
 <translation id="9186963452600581158">Farzandingizning Google hisobi bilan kiring</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{1 ta varaq ulashilmoqda}other{# ta varaq ulashilmoqda}}</translation>
 <translation id="9187967020623675250">Kalitlar mos emas. <ph name="RESPONSE" /> uchun istalgan tugmani bosing.</translation>
 <translation id="9188142767272053574">Jarayonlar izolyatsiyasini yoqish</translation>
 <translation id="9192019773545828776">Oʻqib eshittirish orqali qurilmadan ekranga qaramay foydalanish mumkin. Ulangan qurilmada brayl aloqasi ishlaydi. ChromeVoxni yoqib oʻchirish uchun Ctrl+Alt+Z tugmalarini bosing. Yonga harakatlanish uchun Search+Chap strelka yoki Oʻng strelka tugmalarini bosing. Tanlash uchun Search+Boʻshliq (faollashtirish) tugmalarini bosing.</translation>

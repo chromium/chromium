@@ -1307,7 +1307,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3041584414879052436">Se cerró la lista de emisores de Compra ahora y paga después.</translation>
 <translation id="3041612393474885105">Información sobre el certificado</translation>
 <translation id="3045769629416806687">Deportes extremos</translation>
-<translation id="3047054686095898948">Guarda tu información en la <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> y completa tareas más rápido, como llenar formularios en los productos de Google. Puedes <ph name="BEGIN_LINK" />administrar tu información<ph name="END_LINK" /> en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> para <ph name="ACCOUNT" /></translation>
+<translation id="3047054686095898948">Guarda tu información en la <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> y completa tareas más rápido, como llenar formularios en los productos de Google. Puedes <ph name="BEGIN_LINK" />administrar tu información<ph name="END_LINK" /> en la <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> para <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">El historial del Escritorio remoto de Chrome, incluidas las marcas de tiempo, los hosts y las ID de sesión de los clientes</translation>
 <translation id="3052868890529250114">Por lo general, te conectas a sitios de forma segura, pero Chrome no pudo usar una conexión segura esta vez. Es posible que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> de descuento en <ph name="PRODUCT_NAME" /></translation>
@@ -1656,7 +1656,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3587725436724465984">Tu organización identificó <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> como un sitio que podría incumplir una política. <ph name="BEGIN_LEARN_MORE_LINK" />Obtén más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Medio</translation>
 <translation id="3589519427766620380">Preguntar a Google Lens acerca de esta página</translation>
-<translation id="3596918995172292499">Estado de la matrícula</translation>
+<translation id="3596918995172292499">Estado donde se emitió la matrícula</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Botón Administrar la configuración de privacidad de Google: actívalo para visitar la configuración de privacidad de tu Cuenta de Google</translation>
 <translation id="3603507503523709">El administrador bloqueó la aplicación</translation>
@@ -3077,7 +3077,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5820751560028604030">Se bloqueó la descarga local</translation>
 <translation id="5826507051599432481">Nombre común (CN)</translation>
 <translation id="5830698870816298009">uso y movimiento de la cámara</translation>
-<translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831217499016131155">Billetera de Google</translation>
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5832976493438355584">Bloqueado</translation>
 <translation id="5837220895135257862">Libera espacio en <ph name="CLOUD_PROVIDER" /> antes de volver a intentarlo</translation>

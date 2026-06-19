@@ -187,6 +187,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1125550662859510761">Megjelenés: <ph name="WIDTH" /> × <ph name="HEIGHT" /> (natív)</translation>
 <translation id="1125816658532547876">Használja jelszavait <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="1125921926864945797">Háttérkép és stílus</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 lap megosztva}other{# lap megosztva}}</translation>
 <translation id="1126696498560056882">Fiókok kezelése ezen az eszközön</translation>
 <translation id="1128591060186966949">Keresőmotor beállítása</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -11262,6 +11263,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="9173063514323762371">&amp;Könyvjelzősáv elrejtése</translation>
 <translation id="917350715406657904">Elérted a szülő által beállított időkorlátot a(z) <ph name="APP_NAME" /> alkalmazásban. Holnap újra használhatod a megadott ideig (<ph name="TIME_LIMIT" />).</translation>
 <translation id="9174854240439014335">Osztott nézetes húzás engedélyezése az ablak bal vagy jobb szélére</translation>
+<translation id="9174870712400134574">Csak az Új lap oldalon jelenjen meg</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth-eszköz csatlakoztatva</translation>
 <translation id="9177859716483578738">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja a következőket ezzel a webhellyel: <ph name="FIELDS_STRING" />. Olvassa el a webhely <ph name="BEGIN_LINK" />adatvédelmi irányelveit<ph name="END_LINK" />.</translation>
 <translation id="9178061802301856367">Bejelentkezési adatok törlése</translation>
@@ -11274,7 +11276,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="918352324374649435">{COUNT,plural, =1{Alkalmazás}other{# alkalmazás}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Az adminisztrátor rögzítheti a képernyőjét a(z) <ph name="APP0_NAME" /> segítségével. A rögzítés megkezdéséről nem kap értesítést.}=2{Az adminisztrátor rögzítheti a képernyőjét a(z) <ph name="APP0_NAME" /> és a(z) <ph name="APP1_NAME" /> segítségével. A rögzítés megkezdéséről nem kap értesítést.}=3{A rendszergazda rögzítheti a képernyőjét a(z) <ph name="APP0_NAME" />, a(z) <ph name="APP1_NAME" /> és 1 további alkalmazás segítségével. A rögzítés megkezdéséről nem kap értesítést.}other{Az adminisztrátor rögzítheti a képernyőjét a(z) <ph name="APP0_NAME" />, a(z) <ph name="APP1_NAME" /> és # további alkalmazás segítségével. A rögzítés megkezdéséről nem kap értesítést.}}</translation>
 <translation id="9186963452600581158">Bejelentkezés gyermek Google-fiókjával</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{1 lap megosztva}other{# lap megosztva}}</translation>
 <translation id="9187967020623675250">A billentyűk nem egyeznek. Nyomja le bármelyik billentyűt a következőhöz: <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Folyamatelszigetelés engedélyezése</translation>
 <translation id="9192019773545828776">Hangos visszajelzést kaphat, így anélkül használhatja eszközét, hogy a képernyőre kellene néznie. A Braille-visszajelzés csatlakoztatott eszközökön áll rendelkezésre. Használja a Ctrl + Alt + Z billentyűparancsot a ChromeVox be- vagy kikapcsolásához. A navigáláshoz használja a Keresés + balra vagy jobbra nyíl kombinációt. A kiválasztáshoz (aktiváláshoz) használja a Keresés + Szóköz billentyűparancsot.</translation>

@@ -370,7 +370,7 @@
 <translation id="4663373278480897665">已允许使用摄像头</translation>
 <translation id="4670064810192446073">虚拟现实</translation>
 <translation id="4672315773691449562">点按“浏览器应用”，然后点按“Chrome”</translation>
-<translation id="4676059169848868271">若要允许 <ph name="APP_NAME" /> 使用手部跟踪功能，您还需在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中开启手部跟踪功能。</translation>
+<translation id="4676059169848868271">若要允许 <ph name="APP_NAME" /> 使用手部追踪功能，您还需在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中开启手部追踪功能。</translation>
 <translation id="4688045258817337666">管理您的卡</translation>
 <translation id="4722332387043141878">网站通常会使用您设备的移动传感器和光传感器来实现虚拟现实或健身跟踪等功能</translation>
 <translation id="4755971844837804407">开启此设置后，网站可以向您展示任何广告。关闭此设置后，网站无法展示侵扰性或误导性广告。</translation>
@@ -462,7 +462,7 @@
 <translation id="5740126560802162366">网站可将数据保存在您的设备上</translation>
 <translation id="5743425052258407233">在您的所有设备上同步历史记录，以便您轻松继续未完成的操作</translation>
 <translation id="5749158352074143502">继续使用此标签页</translation>
-<translation id="5750869797196646528">手部跟踪</translation>
+<translation id="5750869797196646528">手部追踪</translation>
 <translation id="5753570386948603678">从下载记录中删除</translation>
 <translation id="5771720122942595109">已禁用“<ph name="PERMISSION_1" />”权限</translation>
 <translation id="5792627621688759634">使用触控板滑动浏览各个页面</translation>

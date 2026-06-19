@@ -187,6 +187,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1125550662859510761">Lyk soos <ph name="WIDTH" /> x <ph name="HEIGHT" /> (oorspronlik)</translation>
 <translation id="1125816658532547876">Gebruik jou wagwoorde op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Muurpapier en styl</translation>
+<translation id="1126475802377716263">{0,plural, =1{Deel tans 1 oortjie}other{Deel tans # oortjies}}</translation>
 <translation id="1126696498560056882">Bestuur rekeninge op hierdie toestel</translation>
 <translation id="1128591060186966949">Wysig soekenjin</translation>
 <translation id="1129348283834595293">Kuberpunk</translation>
@@ -11265,6 +11266,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9173063514323762371">&amp;Versteek boekmerkbalk</translation>
 <translation id="917350715406657904">Jy het die tydlimiet bereik wat jou ouer vir <ph name="APP_NAME" /> gestel het. Jy kan dit môre <ph name="TIME_LIMIT" /> lank gebruik.</translation>
 <translation id="9174854240439014335">Laat sleep en los vir verdeelde aansig toe aan die linker- of regterrand van die venster</translation>
+<translation id="9174870712400134574">Wys net op Nuwe Oortjie-bladsy</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth-toestel is gekoppel</translation>
 <translation id="9177859716483578738">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou <ph name="FIELDS_STRING" /> met hierdie werf deel. Sien hierdie werf se <ph name="BEGIN_LINK" />privaatheidsbeleid<ph name="END_LINK" />.</translation>
 <translation id="9178061802301856367">Vee aanmelddata uit</translation>
@@ -11277,7 +11279,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Jou administrateur kan jou skerm met <ph name="APP0_NAME" /> opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}=2{Jou administrateur kan jou skerm met <ph name="APP0_NAME" /> en <ph name="APP1_NAME" /> opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}=3{Jou administrateur kan jou skerm met <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> en 1 ander app opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}other{Jou administrateur kan jou skerm met <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> en # ander apps opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}}</translation>
 <translation id="9186963452600581158">Meld met jou kind se Google-rekening aan</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Deel tans 1 oortjie}other{Deel tans # oortjies}}</translation>
 <translation id="9187967020623675250">Sleutels stem nie ooreen nie. Druk enige sleutel en <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Aktiveer prosesisolasie</translation>
 <translation id="9192019773545828776">Hoor gesproke terugvoer sodat jy jou toestel kan gebruik sonder om na die skerm te kyk. Braille-terugvoer is beskikbaar met ’n gekoppelde toestel. Gebruik Ctrl + Alt + Z om ChromeVox aan en af te skakel. Gebruik Soek + linkspyl of regspyl om te navigeer. Gebruik Soek + spasiebalk om te kies (aktiveer).</translation>

@@ -187,6 +187,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1125550662859510761">Vyzerá ako <ph name="WIDTH" /> x <ph name="HEIGHT" /> (natívne)</translation>
 <translation id="1125816658532547876">Používajte heslá v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Tapeta a štýl</translation>
+<translation id="1126475802377716263">{0,plural, =1{Zdieľa sa 1 karta}few{Zdieľajú sa # karty}many{Sharing # tabs}other{Zdieľa sa # kariet}}</translation>
 <translation id="1126696498560056882">Spravovať účty v tomto zariadení</translation>
 <translation id="1128591060186966949">Úprava vyhľadávača</translation>
 <translation id="1129348283834595293">Kyberpunk</translation>
@@ -4600,7 +4601,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4298660926525614540">Názvy odstrániteľných úložísk</translation>
 <translation id="4299022904780065004">Nové okno &amp;inkognito</translation>
 <translation id="4300272766492248925">Otvoriť aplikáciu</translation>
-<translation id="4301231341924904092">Zmeniť pre mňa</translation>
+<translation id="4301231341924904092">Zmeniť</translation>
 <translation id="4301671483919369635">Táto stránka má povolené upravovať súbory</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# kontakt nie je k dispozícii. Ak s ním chcete použiť funkciu <ph name="FEATURE_NAME" />, pridajte e‑mailovú adresu spojenú s jeho účtom Google do svojich kontaktov.}few{# kontakty nie sú k dispozícii. Ak s nimi chcete použiť fuknciu <ph name="FEATURE_NAME" />, pridajte e‑mailové adresy spojené s ich účtami Google do svojich kontaktov.}many{# contacts are not available. To use <ph name="FEATURE_NAME" /> with them, add the email addresses associated with their Google Accounts to your contacts.}other{# kontaktov nie je k dispozícii. Ak s nimi chcete použiť fuknciu <ph name="FEATURE_NAME" />, pridajte e‑mailové adresy spojené s ich účtami Google do svojich kontaktov.}}</translation>
 <translation id="4303079906735388947">Nastavte pre svoj bezpečnostný kľúč nový kód PIN</translation>
@@ -4721,7 +4722,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{Toto rozšírenie bolo vypnuté, pretože už nie je podporované}few{Tieto rozšírenia boli vypnuté, pretože už nie sú podporované}many{These extensions were turned off because they're no longer supported}other{Tieto rozšírenia boli vypnuté, pretože už nie sú podporované}}</translation>
 <translation id="4386435410933281983">Nedá sa uložiť. Skúste to znova.</translation>
 <translation id="4386604394450371010">prehľad</translation>
-<translation id="4387890294700445764">Prelomené heslá</translation>
+<translation id="4387890294700445764">Odhalené heslá</translation>
 <translation id="4388650384344483842">Použite aspoň osem znakov</translation>
 <translation id="4388700905120039425">{COUNT,plural, =1{Heslo pre web <ph name="URL" />}few{Heslá pre web <ph name="URL" /> ({COUNT})}many{Passwords for <ph name="URL" /> ({COUNT})}other{Heslá pre web <ph name="URL" /> ({COUNT})}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a ďalšie (<ph name="NUMBER_OF_OTHER_SWITCHES" />) prepínače</translation>
@@ -7602,7 +7603,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6556866813142980365">Znova</translation>
 <translation id="6556903358015358733">Motív a tapeta</translation>
 <translation id="6557199166823345360">Ak chcete spresniť vyhľadávanie, pridajte ďalšie podrobnosti alebo položte otázku o výbere</translation>
-<translation id="6557290421156335491">Moje skratky</translation>
+<translation id="6557290421156335491">Moje odkazy</translation>
 <translation id="6560061709899140565">Zobraziť ďalšie relácie prenosu</translation>
 <translation id="656065428026159829">Zobraziť viac</translation>
 <translation id="6561726789132298588">enter</translation>
@@ -11253,6 +11254,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9173063514323762371">&amp;Skryť panel so záložkami</translation>
 <translation id="917350715406657904">Vypršal časový limit, ktorý tvoj rodič nastavil pre aplikáciu <ph name="APP_NAME" />. Zajtra ju môžeš používať <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174854240439014335">Povoliť presúvanie v rozdelenom zobrazení na ľavý alebo pravý okraj okna</translation>
+<translation id="9174870712400134574">Zobrazovať iba na stránke na novej karte</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bolo pripojené zariadenie Bluetooth</translation>
 <translation id="9177859716483578738">Ak chcete pokračovať, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s týmto webom zdieľať vaše <ph name="FIELDS_STRING" />. Pozrite si <ph name="BEGIN_LINK" />pravidlá ochrany súkromia<ph name="END_LINK" /> tohto webu.</translation>
 <translation id="9178061802301856367">Odstráňte prihlasovacie údaje</translation>
@@ -11265,7 +11267,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikácia}few{# aplikácie}many{# apps}other{# aplikácií}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Váš správca môže nahrať vašu obrazovku pomocou aplikácie <ph name="APP0_NAME" />. Po spustení nahrávania nedostanete upozornenie.}=2{Váš správca môže nahrať vašu obrazovku pomocou aplikácií <ph name="APP0_NAME" /> a <ph name="APP1_NAME" />. Po spustení nahrávania nedostanete upozornenie.}=3{Váš správca môže nahrať vašu obrazovku pomocou aplikácií <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a jednej ďalšej. Po spustení nahrávania nedostanete upozornenie.}few{Váš správca môže nahrať vašu obrazovku pomocou aplikácií <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # ďalších. Po spustení nahrávania nedostanete upozornenie.}many{Your administrator can record your screen with <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> and # other apps. You will not be notified when the recording starts.}other{Váš správca môže nahrať vašu obrazovku pomocou aplikácií <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # ďalších. Po spustení nahrávania nedostanete upozornenie.}}</translation>
 <translation id="9186963452600581158">Prihlásiť sa účtom Google dieťaťa</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Zdieľa sa 1 karta}few{Zdieľajú sa # karty}many{Sharing # tabs}other{Zdieľa sa # kariet}}</translation>
 <translation id="9187967020623675250">Klávesy sa nezhodujú. Ak chcete <ph name="RESPONSE" />, stlačte ľubovoľný kláves.</translation>
 <translation id="9188142767272053574">Povoliť izoláciu procesov</translation>
 <translation id="9192019773545828776">Počúvajte hovorenú spätnú väzbu a používajte zariadenie bez pozerania na obrazovku. Spätná väzba k Braillovmu písmu je k dispozícii pomocou pripojeného zariadenia. ChromeVox zapnete alebo vypnete klávesovou skratkou Ctrl + Alt + Z. Položkami prechádzajte stláčaním klávesov Hľadať + šípka doľava alebo doprava. Položky vyberajte (aktivujte) klávesovou skratkou Hľadať + medzerník.</translation>

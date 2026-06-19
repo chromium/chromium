@@ -2515,7 +2515,7 @@ PAC 樣式的字串：
 如要瞭解<ph name="PRIVATE_NETWORK_ACCESS" />限制，請前往 https://wicg.github.io/private-network-access/。</translation>
 <translation id="2600005880585324062">由 <ph name="PRODUCT_NAME" /> 決定哪些來源要與同網站的其他來源隔離。</translation>
 <translation id="26023406105317310">設定 Kerberos 帳戶</translation>
-<translation id="2603163741218691337">不限制刪除 <ph name="YOUTUBE_PRODUCT_NAME" /> Cookie</translation>
+<translation id="2603163741218691337">不對刪除 <ph name="YOUTUBE_PRODUCT_NAME" /> Cookie 設限</translation>
 <translation id="2603237557651009842">禁止這些網站使用 WebPrinting API</translation>
 <translation id="2603382859270873566">支援 PPB_VideoDecoder(Dev) API。</translation>
 <translation id="2604182581880595781">設定網路檔案共用區相關政策。</translation>
@@ -6603,7 +6603,7 @@ Attribution Reporting API 已淘汰，因此這項政策已在 <ph name="PRODUCT
       如果在 <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> 要求中定義了 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 屬性，系統會自動擷取所有螢幕的畫面，不必獲得使用者明確授權。
       如果不設定這項政策，則 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 不適用於任何網頁應用程式。
 為進一步保護隱私權，自 <ph name="PRODUCT_NAME" /> 116 版起，這項政策不再支援動態重新整理。因此，使用者可以確定如果在工作階段開始時沒有獲得許可，則在登入後也沒有其他網頁能擷取畫面。</translation>
-<translation id="5351894784463048975">這項政策已淘汰，請改用 <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> 和 <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />。如果設定 <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />、<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> 或 <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> 政策 (已淘汰)，系統會忽略這項政策。
+<translation id="5351894784463048975">這項政策已淘汰，請改用 <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> 和 <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />。如果設定了 <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />、<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> 或 (已淘汰) <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> 政策，系統會忽略這項政策。
 
       系統將強制啟用 Google 網頁搜尋的安全搜尋功能 (而且禁止使用者變更設定)，並在 <ph name="YOUTUBE_PRODUCT_NAME" /> 中強制執行中度嚴格篩選模式。
 
@@ -7374,7 +7374,7 @@ Microsoft SharePoint 和 OneDrive 資訊卡需要額外的管理員設定。想�
 
 如果設為停用或未設定，就能正常刪除 <ph name="YOUTUBE_PRODUCT_NAME" /> Cookie。
 
-注意：這項政策只會禁止使用者透過網站設定使用者介面手動刪除，但不會阻止 <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> 或 <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" /> 政策自動刪除資料。此外，如果啟用 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> 政策，使用者仍可透過「清除瀏覽資料」對話方塊清除所有 Cookie。</translation>
+注意：這項政策只會禁止使用者透過網站設定介面手動刪除，但不會阻止 <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> 或 <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" /> 政策自動刪除資料。此外，如果啟用 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> 政策，使用者仍可透過「清除瀏覽資料」對話方塊清除所有 Cookie。</translation>
 <translation id="5879014913445067283">控制能否透過 <ph name="NETBIOS_NAME" /> 搜尋網路檔案共用區</translation>
 <translation id="588135807064822874">啟用「輕觸搜尋」功能</translation>
 <translation id="5882345429632338713">在啟動替代瀏覽器前的延遲時間 (以毫秒為單位)</translation>
@@ -7616,7 +7616,7 @@ IP 位址空間覆寫有兩種形式：
 <translation id="6035597431797865964">允許受管理的訪客工作階段保留顯示屬性</translation>
 <translation id="6036459377708946958">每月應執行更新檢查的日期 [1-31] (根據裝置當地時區)，僅適用於「frequency」設為「MONTHLY」的情況。如果這個值大於指定月份的天數上限，系統會選擇當月的最後一天。</translation>
 <translation id="6036523166753287175">允許遠端存取主機穿越防火牆</translation>
-<translation id="6037328895573728112">限制刪除 <ph name="YOUTUBE_PRODUCT_NAME" /> Cookie</translation>
+<translation id="6037328895573728112">對刪除 <ph name="YOUTUBE_PRODUCT_NAME" /> Cookie 設限</translation>
 <translation id="603768430528561926">如果將這項政策設為啟用或不設定，企業裝置使用者可透過 <ph name="PRODUCT_OS_NAME" />註冊兌換優惠。
 
       如果將這項政策設為停用，使用者將無法兌換這類優惠。</translation>

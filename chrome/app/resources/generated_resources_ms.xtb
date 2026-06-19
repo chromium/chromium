@@ -187,6 +187,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1125550662859510761">Kelihatan seperti <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Asal)</translation>
 <translation id="1125816658532547876">Gunakan kata laluan anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="1125921926864945797">Hiasan latar dan gaya</translation>
+<translation id="1126475802377716263">{0,plural, =1{Berkongsi 1 tab}other{Berkongsi # tab}}</translation>
 <translation id="1126696498560056882">Urus akaun pada peranti ini</translation>
 <translation id="1128591060186966949">Edit enjin carian</translation>
 <translation id="1129348283834595293">Siberpunk</translation>
@@ -11266,6 +11267,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="9173063514323762371">&amp;Sembunyikan Bar Penanda Halaman</translation>
 <translation id="917350715406657904">Anda telah mencapai had masa yang telah ditetapkan oleh ibu/bapa anda untuk <ph name="APP_NAME" />. Anda boleh menggunakan aplikasi ini selama <ph name="TIME_LIMIT" /> esok.</translation>
 <translation id="9174854240439014335">Benarkan seret dan lepas paparan pisah pada sebelah kiri atau kanan tetingkap</translation>
+<translation id="9174870712400134574">Hanya tunjukkan pada halaman Tab Baharu</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Peranti Bluetooth disambungkan</translation>
 <translation id="9177859716483578738">Untuk meneruskan pendaftaran, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi <ph name="FIELDS_STRING" /> anda dengan laman ini. Lihat <ph name="BEGIN_LINK" />dasar privasi<ph name="END_LINK" /> laman ini.</translation>
 <translation id="9178061802301856367">Padamkan data log masuk</translation>
@@ -11278,7 +11280,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="918352324374649435">{COUNT,plural, =1{Apl}other{# apl}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Pentadbir anda boleh merakam skrin anda dengan <ph name="APP0_NAME" />. Anda tidak akan dimaklumi apabila rakaman bermula.}=2{Pentadbir anda boleh merakam skrin anda dengan <ph name="APP0_NAME" /> dan <ph name="APP1_NAME" />. Anda tidak akan dimaklumi apabila rakaman bermula.}=3{Pentadbir anda boleh merakam skrin anda dengan <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dan 1 apl lain. Anda tidak akan dimaklumi apabila rakaman bermula.}other{Pentadbir anda boleh merakam skrin anda dengan <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dan # apl lain. Anda tidak akan dimaklumi apabila rakaman bermula.}}</translation>
 <translation id="9186963452600581158">Log masuk menggunakan Google Account anak</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Berkongsi 1 tab}other{Berkongsi # tab}}</translation>
 <translation id="9187967020623675250">Kekunci tidak sepadan. Tekan mana-mana kekunci untuk <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Dayakan Pengasingan Proses</translation>
 <translation id="9192019773545828776">Dengar maklum balas yang dituturkan supaya anda boleh menggunakan peranti anda tanpa melihat skrin. Maklum balas Braille tersedia dengan peranti tersambung. Gunakan Ctrl + Alt + Z untuk menghidupkan dan mematikan ChromeVox. Gunakan Cari + Anak panah ke kiri atau Anak panah ke kanan untuk menavigasi. Gunakan Cari + Ruang untuk memilih (aktifkan).</translation>

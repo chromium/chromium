@@ -187,6 +187,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1125550662859510761">Wygląda na <ph name="WIDTH" /> × <ph name="HEIGHT" /> (natywna)</translation>
 <translation id="1125816658532547876">Używaj haseł na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Tapeta i styl</translation>
+<translation id="1126475802377716263">{0,plural, =1{Udostępniam 1 kartę}few{Udostępniam # karty}many{Udostępniam # kart}other{Udostępniam # karty}}</translation>
 <translation id="1126696498560056882">Zarządzaj kontami na tym urządzeniu</translation>
 <translation id="1128591060186966949">Edytuj wyszukiwarkę</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -11220,6 +11221,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="9173063514323762371">&amp;Ukryj pasek zakładek</translation>
 <translation id="917350715406657904">Upłynął ustawiony przez rodzica limit czasu korzystania z aplikacji <ph name="APP_NAME" />. Jutro możesz z niej korzystać przez <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174854240439014335">Zezwalaj na przeciąganie i upuszczanie w widoku podzielonym na lewej lub prawej krawędzi okna</translation>
+<translation id="9174870712400134574">Pokazuj tylko na stronie Nowa karta</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – połączono z urządzeniem Bluetooth</translation>
 <translation id="9177859716483578738">Aby można było kontynuować, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni tej witrynie Twoje <ph name="FIELDS_STRING" />. Zapoznaj się z jej <ph name="BEGIN_LINK" />polityką prywatności<ph name="END_LINK" />.</translation>
 <translation id="9178061802301856367">Usuń dane logowania</translation>
@@ -11232,7 +11234,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacja}few{# aplikacje}many{# aplikacji}other{# aplikacji}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}=2{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}=3{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze 1. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}few{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}many{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}other{Administrator może nagrywać Twój ekran za pomocą aplikacji <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i jeszcze #. Nie otrzymasz powiadomienia o rozpoczęciu nagrywania.}}</translation>
 <translation id="9186963452600581158">Zaloguj się na konto Google dziecka</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Udostępniam 1 kartę}few{Udostępniam # karty}many{Udostępniam # kart}other{Udostępniam # karty}}</translation>
 <translation id="9187967020623675250">Klawisze są niezgodne. Naciśnij dowolny klawisz, aby <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Włącz izolację procesów</translation>
 <translation id="9192019773545828776">Umożliwia odtwarzanie komunikatów głosowych, aby można było korzystać z urządzenia bez patrzenia na ekran. Komunikaty brajlowskie są dostępne na połączonych urządzeniach. Aby włączyć lub wyłączyć ChromeVoksa, naciśnij Ctrl + Alt + Z. Do nawigacji służą klawisze wyszukiwania + strzałka w lewo lub w prawo. Aby wybrać (aktywować) tę funkcję, naciśnij klawisz wyszukiwania + spację.</translation>

@@ -1126,6 +1126,7 @@
 <translation id="4896467949657706481">Tabs wurden geschlossen und du wurdest abgemeldet</translation>
 <translation id="4911042367886397055">Willkommen zurück, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Du kannst eine Kopie deines Passworts geschützt mit Personen in deiner Familiengruppe teilen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="4916679969857390442">Lupe</translation>
 <translation id="4917025507570489430">Du kannst vorhandene Browserdaten verwenden, wenn du als <ph name="USER_EMAIL" /> angemeldet bist. Deine Organisation kann diese Daten möglicherweise aufrufen.</translation>
 <translation id="4918086044614829423">Annehmen</translation>
 <translation id="4930714375720679147">Aktivieren</translation>
@@ -2308,7 +2309,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8813277370772331957">Später erinnern</translation>
 <translation id="8814308045751067027">Wenn du Gemini Live verwenden möchtest, musst du Chrome in den Einstellungen Zugriff auf dein Mikrofon gewähren</translation>
 <translation id="8814719628147284151">Weiter</translation>
-<translation id="881559332211266856">Redress-Nummer aktualisieren</translation>
+<translation id="881559332211266856">Redress Number aktualisieren</translation>
 <translation id="8817524703470045896">Du kannst Preise beobachten und dich benachrichtigen lassen, wenn der Preis auf einer Website sinkt</translation>
 <translation id="8819155700324279105">Du kannst dich durch zusätzliche Schutzmaßnahmen besser vor Onlinebedrohungen schützen lassen</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>

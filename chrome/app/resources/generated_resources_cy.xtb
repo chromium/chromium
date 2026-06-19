@@ -187,6 +187,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1125550662859510761">Yn edrych fel <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Brodorol)</translation>
 <translation id="1125816658532547876">Defnyddiwch eich cyfrineiriau ar eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Papur wal ac arddull</translation>
+<translation id="1126475802377716263">{0,plural, =1{Wrthi'n rhannu 1 tab}zero{Wrthi'n rhannu # tabiau}two{Wrthi'n rhannu # dab}few{Wrthi'n rhannu # thab}many{Wrthi'n rhannu # thab}other{Wrthi'n rhannu # tab}}</translation>
 <translation id="1126696498560056882">Rheoli cyfrifon ar y ddyfais hon</translation>
 <translation id="1128591060186966949">Golygu peiriant chwilio</translation>
 <translation id="1129348283834595293">Seiberpync</translation>
@@ -11271,6 +11272,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="9173063514323762371">&amp;Cuddio'r Bar Nodau Tudalen</translation>
 <translation id="917350715406657904">Gwnaethoch gyrraedd y terfyn amser a osodwyd gan eich rhiant ar gyfer <ph name="APP_NAME" />. Gallwch ei ddefnyddio am <ph name="TIME_LIMIT" /> yfory.</translation>
 <translation id="9174854240439014335">Caniatáu llusgo a gollwng gwedd hollt ar ymyl chwith neu dde'r ffenestr</translation>
+<translation id="9174870712400134574">Dangos ar dudalen Tab Newydd yn unig</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Mae dyfais Bluetooth wedi'i chysylltu</translation>
 <translation id="9177859716483578738">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu'ch <ph name="FIELDS_STRING" /> â'r wefan hon. Gweld <ph name="BEGIN_LINK" />polisi preifatrwydd<ph name="END_LINK" /> y wefan hon.</translation>
 <translation id="9178061802301856367">Dileu data mewngofnodi</translation>
@@ -11283,7 +11285,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="918352324374649435">{COUNT,plural, =1{Ap}zero{# ap}two{# ap}few{# ap}many{# ap}other{# ap}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Gall eich gweinyddwr recordio eich sgrîn gyda <ph name="APP0_NAME" />. Ni fyddwch yn cael gwybod pan fydd y recordiad yn dechrau.}=2{Gall eich gweinyddwr recordio eich sgrîn gyda <ph name="APP0_NAME" /> a <ph name="APP1_NAME" />. Ni fyddwch yn cael gwybod pan fydd y recordiad yn dechrau.}=3{Gall eich gweinyddwr recordio eich sgrin gyda <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ac 1 ap arall. Ni fyddwch yn cael gwybod pan fydd y recordiad yn dechrau.}zero{Gall eich gweinyddwr recordio eich sgrîn gyda <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # apiau eraill. Ni fyddwch yn cael gwybod pan fydd y recordiad yn dechrau.}many{Gall eich gweinyddwr recordio eich sgrîn gyda <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # ap arall. Ni fyddwch yn cael gwybod pan fydd y recordiad yn dechrau.}other{Gall eich gweinyddwr recordio eich sgrîn gyda <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # ap arall. Ni fyddwch yn cael gwybod pan fydd y recordiad yn dechrau.}}</translation>
 <translation id="9186963452600581158">Mewngofnodi gyda Chyfrif Google plentyn</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Wrthi'n rhannu 1 tab}zero{Wrthi'n rhannu # tabiau}two{Wrthi'n rhannu # dab}few{Wrthi'n rhannu # thab}many{Wrthi'n rhannu # thab}other{Wrthi'n rhannu # tab}}</translation>
 <translation id="9187967020623675250">Nid yw'r bysellau'n cyfateb. Pwyswch unrhyw fysell i <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Galluogi Ynysu Prosesau</translation>
 <translation id="9192019773545828776">Clywed adborth llafar fel y gallwch ddefnyddio'ch dyfais heb edrych ar y sgrîn. Mae adborth Braille ar gael gyda dyfais gysylltiedig. Defnyddiwch Ctrl + Alt + Z i droi ChromeVox ymlaen a'i ddiffodd. Defnyddiwch Search + Saeth chwith neu Saeth dde i lywio. Defnyddiwch Search + Space i ddewis (gweithredu).</translation>

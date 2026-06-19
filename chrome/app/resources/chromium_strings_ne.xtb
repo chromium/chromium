@@ -70,7 +70,7 @@
 <translation id="1749104137266986751">HTTPS उपलब्ध नहुँदा Chromium ले तपाईंलाई चेतावनी नदिइकनै असुरक्षित कनेक्सन प्रयोग गर्ने छ</translation>
 <translation id="1774152462503052664">क्रोमियम पृष्ठभूमिमा चलाउछन्</translation>
 <translation id="1779356040007214683">Chromium लाई अझ सुरक्षित बनाउनको लागि, हामीले <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मा सूचीकृत नगरिएका केही एक्स्टेन्सनहरूलाई अक्षम बनाएका छौँ र तपाईंलाई थाहा दिए बिना थपिएको हुन सक्छ।</translation>
-<translation id="1793486931176048546">Chromium तुरुन्तै चलाउनका लागि यसलाई आफ्नो टास्कबारमा पिन गर्न विन्डो को नोटिफिकेसनमा भएको <ph name="BEGIN_BOLD" />हो<ph name="END_BOLD" /> मा क्लिक गर्नुहोस्।</translation>
+<translation id="1793486931176048546">Chromium तुरुन्तै एक्सेस गर्न सकियोस् भन्नाका लागि यसलाई आफ्नो टास्कबारमा पिन गर्न Windows को नोटिफिकेसनमा देखिएको <ph name="BEGIN_BOLD" />अँ<ph name="END_BOLD" /> मा क्लिक गर्नुहोस्।</translation>
 <translation id="1808667845054772817">Chromium पुनर्स्थापित गर्नुहोस्</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> प्रयास गर्दै छ</translation>
 <translation id="183031085822326697">तपाईंले अर्को पटक आफ्नो <ph name="DEVICE_TYPE" /> मा Chromium खोल्दा तपाईंलाई Google पासवर्ड म्यानेजर प्रयोग गर्ने प्रम्प्ट देखाइने छ।</translation>

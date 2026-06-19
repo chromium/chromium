@@ -187,6 +187,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Lokal)</translation>
 <translation id="1125816658532547876">Parolları <ph name="DEVICE_TYPE" /> cihazında istifadə edin</translation>
 <translation id="1125921926864945797">Divar kağızı və üslub</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 tab paylaşılır}other{# tab paylaşılır}}</translation>
 <translation id="1126696498560056882">Bu cihazdakı hesabları idarə edin</translation>
 <translation id="1128591060186966949">Axtarış mühərrikinə düzəliş edin</translation>
 <translation id="1129348283834595293">Kiberpank</translation>
@@ -11250,6 +11251,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="9173063514323762371">&amp;Əlfəcin panelini gizlədin</translation>
 <translation id="917350715406657904">Valideyniniz tərəfindən <ph name="APP_NAME" /> üçün təyin edilən limitə çatdınız. Ondan sabah <ph name="TIME_LIMIT" /> müddətinə istifadə edə bilərsiniz.</translation>
 <translation id="9174854240439014335">Pəncərənin sol və ya sağ kənarında bölünmüş görünüşü sürüşdürüb buraxmağa icazə verin</translation>
+<translation id="9174870712400134574">Yalnız Yeni Tab səhifəsində göstərilsin</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth cihazı qoşuldu</translation>
 <translation id="9177859716483578738">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> kimi məlumatlarınızı bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK" />məxfilik siyasətinə<ph name="END_LINK" /> baxın.</translation>
 <translation id="9178061802301856367">Giriş datasını silin</translation>
@@ -11262,7 +11264,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="918352324374649435">{COUNT,plural, =1{Tətbiq}other{# tətbiq}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administratorunuz <ph name="APP0_NAME" /> ilə ekranı qeydə ala bilər. Qeydəalma başladıqda sizə xəbər verilməyəcək.}=2{Administratorunuz <ph name="APP0_NAME" /> və <ph name="APP1_NAME" /> ilə ekranı qeydə ala bilər. Qeydəalma başladıqda sizə xəbər verilməyəcək.}=3{Administratorunuz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> və 1 digər tətbiq ilə ekranı qeydə ala bilər. Qeydəalma başladıqda sizə xəbər verilməyəcək.}other{Administratorunuz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> və # digər tətbiq ilə ekranı qeydə ala bilər. Qeydəalma başladıqda sizə xəbər verilməyəcək.}}</translation>
 <translation id="9186963452600581158">Uşağın Google Hesabı ilə daxil olun</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{1 tab paylaşılır}other{# tab paylaşılır}}</translation>
 <translation id="9187967020623675250">Düymələr uyğun gəlmir. <ph name="RESPONSE" /> üçün istənilən düyməyə basın.</translation>
 <translation id="9188142767272053574">Proses İzolasiyasını aktivləşdirin</translation>
 <translation id="9192019773545828776">Səsli rəyi dinləyərək ekrana baxmadan cihazınızdan istifadə edə bilərsiniz. Brayl əlifbası qoşulmuş cihaz ilə əlçatandır. ChromeVox'u aktiv və deaktiv etmək üçün Ctrl + Alt + Z istifadə edin. Naviqasiya etmək üçün Axtarış + Sol ox və ya Sağ oxu istifadə edin. Seçmək (aktiv etmək) üçün Axtarış + Boşluq istifadə edin.</translation>

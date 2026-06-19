@@ -187,6 +187,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1125550662859510761">Auflösung <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativ)</translation>
 <translation id="1125816658532547876">Passwörter auf deinem <ph name="DEVICE_TYPE" /> verwenden</translation>
 <translation id="1125921926864945797">Hintergrund &amp; Stil</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 Tab wird geteilt}other{# Tabs werden geteilt}}</translation>
 <translation id="1126696498560056882">Konten auf diesem Gerät verwalten</translation>
 <translation id="1128591060186966949">Suchmaschine bearbeiten</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -4152,7 +4153,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3958088479270651626">Lesezeichen und Einstellungen importieren</translation>
 <translation id="3958110062351175311">Dürfen Anfragen in der Symbolleiste anzeigen</translation>
 <translation id="3958821725268247062"><ph name="APP_NAME" /> ist bereits installiert</translation>
-<translation id="3959969108528118741">Inhaber</translation>
+<translation id="3959969108528118741">Eigentümer</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Weitere Aktionen für „<ph name="IBAN_DESCRIPTION" />“</translation>
 <translation id="3961823084595287812"><ph name="HOST" /> immer erlauben, Kennungen zum Wiedergeben geschützter Inhalte zu verwenden</translation>
@@ -6877,7 +6878,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6013027779243312217">Untertitel für Audioinhalte und Videos</translation>
 <translation id="6014293228235665243">Ungelesen</translation>
 <translation id="6015776718598175635">Sterne</translation>
-<translation id="6015796118275082299">Jahr</translation>
+<translation id="6015796118275082299">Baujahr</translation>
 <translation id="6016178549409952427">Zu zusätzlichem Inhalt <ph name="CURRENT_ELEMENT" /> von <ph name="TOTAL_ELEMENTS" /> gehen</translation>
 <translation id="6016462059150340136">Jeder in meiner Nähe</translation>
 <translation id="6016972670657536680">Wähle die Sprache und die Taste aus. Die derzeit ausgewählte Sprache ist <ph name="LANGUAGE" />.</translation>
@@ -11242,6 +11243,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9173063514323762371">&amp;Lesezeichenleiste ausblenden</translation>
 <translation id="917350715406657904">Du hast das Zeitlimit erreicht, das deine Eltern für <ph name="APP_NAME" /> festgelegt haben. Morgen kannst du die App wieder <ph name="TIME_LIMIT" /> lang nutzen.</translation>
 <translation id="9174854240439014335">Drag-and-drop für geteilte Ansicht am linken oder rechten Fensterrand zulassen</translation>
+<translation id="9174870712400134574">Nur auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth-Gerät verbunden</translation>
 <translation id="9177859716483578738"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren <ph name="FIELDS_STRING" /> mit dieser Website. Lies die <ph name="BEGIN_LINK" />Datenschutzerklärung<ph name="END_LINK" /> dieser Website.</translation>
 <translation id="9178061802301856367">Anmeldedaten löschen</translation>
@@ -11254,7 +11256,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# Apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" /> aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}=2{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" /> und <ph name="APP1_NAME" /> aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}=3{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> und einer weiteren App aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}other{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> und # weiteren Apps aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}}</translation>
 <translation id="9186963452600581158">Mit dem Google-Konto eines Kindes anmelden</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{1 Tab wird geteilt}other{# Tabs werden geteilt}}</translation>
 <translation id="9187967020623675250">Die Tasten stimmen nicht überein. Drücke zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
 <translation id="9188142767272053574">Prozessisolierung aktivieren</translation>
 <translation id="9192019773545828776">Du erhältst gesprochenes Feedback, sodass du dein Gerät nutzen kannst, ohne auf das Display sehen zu müssen. Braille-Feedback ist auf einem verbundenen Gerät verfügbar. Verwende Strg + Alt + Z, um ChromeVox zu aktivieren oder zu deaktivieren. Mit der Suchtaste + Links- oder Rechtspfeil kannst du den Cursor bewegen. Drücke die Suchtaste + Leertaste, um ein Element auszuwählen (zu aktivieren).</translation>

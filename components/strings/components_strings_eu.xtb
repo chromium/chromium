@@ -483,7 +483,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1734878702283171397">Jarri sistemaren administratzailearekin harremanetan.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> datan iraungiko da</translation>
 <translation id="1736420071277903564">Ordenagailua</translation>
-<translation id="1739364174357629566">Eguneratu bidaiari ezagunaren zenbakia</translation>
+<translation id="1739364174357629566">Eguneratu fidagarritzat jotako bidaiariaren zenbakia</translation>
 <translation id="1740404923954980840">Pantaila osoko ikuspegitik irteteko, arrastatu goitik eta sakatu atzera egiteko botoia</translation>
 <translation id="1741474054575634405">Kudeatu fideltasun-txartelak…</translation>
 <translation id="1741613555002899862">Zehaztu egin behar da eta kateak baliozkoa izan behar du DnsOverHttpsMode gidalerroan <ph name="SECURE_DNS_MODE_SECURE" /> ezarrita dagoenean.</translation>
@@ -767,7 +767,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2191980191135734720">Desblokeatu pantaila hurrengo urratsean, normalean hatz-marka erabiliz. Bestela, <ph name="LINK_TEXT" /> dezakezu.</translation>
 <translation id="2194856509914051091">Kontuan hartu beharrekoak</translation>
 <translation id="2195729137168608510">Posta elektronikoaren babesa</translation>
-<translation id="2198183835992354675">Bidaiari ezagunaren zenbakia</translation>
+<translation id="2198183835992354675">Fidagarritzat jotako bidaiariaren zenbakia</translation>
 <translation id="2198215508485017216">Ustekabeko errore bat gertatu da. <ph name="BEGIN_LINK" />Lortu Drive-ko kargei buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Gustatu ez zaizula adierazteko botoia. Iradokizuna ez gustatzearen zergatia zehatz-mehatz azaltzeko inprimaki bat irekitzeko, sakatu Sartu.</translation>
 <translation id="2202627062836089804">txartelaren atzealdean</translation>
@@ -1195,7 +1195,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">pantailaren blokeoa pasahitzen eremuak betetzeko erabili behar du</translation>
 <translation id="2881276955470682203">Txartela gorde nahi duzu?</translation>
-<translation id="2882280148032777436">Ezabatu bidaiari ezagunaren zenbakia</translation>
+<translation id="2882280148032777436">Ezabatu fidagarritzat jotako bidaiariaren zenbakia</translation>
 <translation id="2882949212241984732">Leiho bikoitz erako tolestura</translation>
 <translation id="2891963978019740012">Chrome-n darabilzun bilatzailea</translation>
 <translation id="2893773853358652045">Laugarren arrabola</translation>
@@ -2079,7 +2079,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4230204356098880324">Kamera erabiltzea eta mugitzea eska dezake</translation>
 <translation id="4231448684371260244">8 × 13 in</translation>
 <translation id="4239799716689808527">Etiketak</translation>
-<translation id="424063167283213501">Gorde bidaiari ezagunaren zenbakia</translation>
+<translation id="424063167283213501">Gorde fidagarritzat jotako bidaiariaren zenbakia</translation>
 <translation id="4241830393007970744">Baliteke bisitatu nahi duzun webguneko erasotzaileak zu iruzurtzen saiatzea softwarea instala dezazun, edo informazioa eman dezazun, hala nola pasahitzak, telefono-zenbakia edo kreditu-txartelen zenbakiak.</translation>
 <translation id="4242380780309416996">Gutuna (astuna)</translation>
 <translation id="4242981939686657948">Arakatze-historian bilaketak egiteko modu ahaltsuago bat lortzeko, aktiba ezazu</translation>
@@ -4301,7 +4301,7 @@ Xehetasun gehiago:
 <translation id="7690647519407127574">Oufuku Hagaki postala (Japonia)</translation>
 <translation id="7693583928066320343">Jaso da orrien ordena</translation>
 <translation id="769424100851389104">Hasi eguneratzen</translation>
-<translation id="7696107855583699585">Editatu bidaiari ezagunaren zenbakia</translation>
+<translation id="7696107855583699585">Editatu fidagarritzat jotako bidaiariaren zenbakia</translation>
 <translation id="7697837508203274589">Zuzeneko kirol-gertaerak</translation>
 <translation id="7698864304447945242">EArako Google Play Services eguneratu nahi duzu?</translation>
 <translation id="7701040980221191251">Bat ere ez</translation>
@@ -5152,7 +5152,7 @@ Xehetasun gehiago:
 <translation id="9107199998619088551"><ph name="MANAGER" /> erabiltzaileak kudeatzen du zure profila</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> domeinuak kudeatzen du arakatzailea</translation>
 <translation id="91108059142052966">Administratzailearen gidalerroek <ph name="APPLICATION_TITLE" /> bidez pantaila partekatzea eragozten dute isilpeko edukia ikusgai dagoenean</translation>
-<translation id="9114101423898634479">Gehitu bidaiari ezagunaren zenbakia</translation>
+<translation id="9114101423898634479">Gehitu fidagarritzat jotako bidaiariaren zenbakia</translation>
 <translation id="9114524666733003316">Txartela berresten…</translation>
 <translation id="9114581008513152754">Arakatzailea ez du enpresa edo erakunde batek kudeatzen. Baliteke gailu honetako jarduerak Chrome-tik kanpo kudeatzea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, sakatu tabuladorea eta, ondoren, sakatu Sartu bidaiari berrekiteko eta Chrome-ko historiako jarduera egokiak ikusteko</translation>

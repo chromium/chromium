@@ -2004,7 +2004,7 @@
 <translation id="412601465078863288">अपलोड गर्ने समय सकिएको छ</translation>
 <translation id="4127317221386336246">कपडासम्बन्धी एक्सेसरी</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{अन्य १ वस्तु}other{अन्य # वस्तुहरू}}</translation>
-<translation id="4129810348470013900">केही चिज गडबड भयो। इन्टरनेट कनेक्सन जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="4129810348470013900">कुनै समस्या आयो। इन्टरनेट कनेक्सन जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4129992181550680635">शैक्षिक स्रोतसाधनहरू</translation>
 <translation id="4130226655945681476">नेटवर्कका केबलहरू, मोडेम र राउटरको जाँँच गर्नुहोस्</translation>
 <translation id="4132448310531350254">एपहरू "<ph name="POLICY_IDS_LIST" />" सँग सम्बन्धित file_extension "<ph name="FILE_EXTENSION" />" का नक्कली ह्यान्ड्लरहरू।</translation>

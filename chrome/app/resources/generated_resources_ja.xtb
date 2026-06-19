@@ -187,6 +187,7 @@
 <translation id="1125550662859510761">表示上のサイズ: <ph name="WIDTH" />x<ph name="HEIGHT" />（ネイティブ）</translation>
 <translation id="1125816658532547876"><ph name="DEVICE_TYPE" /> でパスワードを使用する</translation>
 <translation id="1125921926864945797">壁紙とスタイル</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 個のタブを共有中}other{# 個のタブを共有中}}</translation>
 <translation id="1126696498560056882">このデバイスのアカウントを管理</translation>
 <translation id="1128591060186966949">検索エンジンの編集</translation>
 <translation id="1129348283834595293">サイバーパンク</translation>
@@ -11233,6 +11234,7 @@
 <translation id="9173063514323762371">ブックマーク バーを非表示(&amp;H)</translation>
 <translation id="917350715406657904">保護者が設定した <ph name="APP_NAME" /> の利用時間の上限に達しました。明日は <ph name="TIME_LIMIT" />まで使えます。</translation>
 <translation id="9174854240439014335">ウィンドウの左端または右端で分割ビューのドラッグ＆ドロップを許可する</translation>
+<translation id="9174870712400134574">新しいタブページにのみ表示</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth デバイスに接続されています</translation>
 <translation id="9177859716483578738">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに <ph name="FIELDS_STRING" /> が共有されます。このサイトの<ph name="BEGIN_LINK" />プライバシー ポリシー<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="9178061802301856367">ログインデータの削除</translation>
@@ -11245,7 +11247,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{アプリ}other{# 件のアプリ}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{管理者は <ph name="APP0_NAME" /> を使用して、あなたの画面を録画できます。録画の開始時には通知されません。}=2{管理者は <ph name="APP0_NAME" /> と <ph name="APP1_NAME" /> を使用して、あなたの画面を録画できます。録画の開始時には通知されません。}=3{管理者は <ph name="APP0_NAME" />、<ph name="APP1_NAME" />、その他 1 個のアプリを使用して、あなたの画面を録画できます。録画の開始時には通知されません。}other{管理者は <ph name="APP0_NAME" />、<ph name="APP1_NAME" />、その他 # 個のアプリを使用して、あなたの画面を録画できます。録画の開始時には通知されません。}}</translation>
 <translation id="9186963452600581158">お子様の Google アカウントでログインする</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{1 個のタブを共有中}other{# 個のタブを共有中}}</translation>
 <translation id="9187967020623675250">キーが一致しません。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
 <translation id="9188142767272053574">プロセスの分離を有効にする</translation>
 <translation id="9192019773545828776">画面を見なくてもデバイスを使用できるように、音声フィードバックを読み上げます。点字によるフィードバックは接続されたデバイスで利用できます。ChromeVox のオンとオフを切り替えるには Ctrl+Alt+Z キーを使用します。移動するには検索+左矢印または右矢印キーを使用します。選択（有効化）するには検索+Space キーを使用します。</translation>

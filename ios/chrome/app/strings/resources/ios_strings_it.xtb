@@ -1126,6 +1126,7 @@
 <translation id="4896467949657706481">Le schede sono state chiuse; il tuo account è stato disconnesso</translation>
 <translation id="4911042367886397055">Siamo felici di rivederti, <ph name="USER_NAME" />.</translation>
 <translation id="4913626501929406101">Puoi condividere in sicurezza una copia della tua password con un membro del tuo gruppo Famiglia. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="4916679969857390442">Lente</translation>
 <translation id="4917025507570489430">Puoi usare i dati di navigazione esistenti quando hai eseguito l'accesso come <ph name="USER_EMAIL" />. La tua organizzazione potrebbe essere in grado di visualizzare questi dati.</translation>
 <translation id="4918086044614829423">Accetto</translation>
 <translation id="4930714375720679147">Attiva</translation>
@@ -2453,7 +2454,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="984275831282074731">Metodi di pagamento</translation>
 <translation id="985379595344853742">Chiudi tutte le schede Incognito</translation>
 <translation id="988141524645182168">Altri dispositivi</translation>
-<translation id="994184244350700431">Su Google Wallet per <ph name="USER_EMAIL" /></translation>
+<translation id="994184244350700431">In Google Wallet per <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{{count} passkey importata}other{{count} passkey importate}}</translation>
 <translation id="999768147936949692">Al momento puoi condividere le password solo con i membri del gruppo Famiglia. <ph name="BEGIN_LINK" />Invita membri del gruppo Famiglia<ph name="END_LINK" /> a unirsi al tuo gruppo e usa al meglio i tuoi prodotti e abbonamenti su Google.</translation>
 </translationbundle>

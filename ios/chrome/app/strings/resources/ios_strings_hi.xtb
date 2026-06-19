@@ -1126,6 +1126,7 @@
 <translation id="4896467949657706481">टैब बंद कर दिए गए थे. साथ ही, आपको साइन आउट कर दिया गया था</translation>
 <translation id="4911042367886397055">आपका फिर से स्वागत है, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">अपने फ़ैमिली ग्रुप के किसी सदस्य के साथ, पासवर्ड की कॉपी सुरक्षित तरीके से शेयर की जा सकती है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="4916679969857390442">लैंस</translation>
 <translation id="4917025507570489430"><ph name="USER_EMAIL" /> से साइन इन करने पर, मौजूदा ब्राउज़िंग डेटा का इस्तेमाल किया जा सकता है. ऐसा हो सकता है कि आपका संगठन इस डेटा को देख पाए.</translation>
 <translation id="4918086044614829423">स्वीकार करें</translation>
 <translation id="4930714375720679147">चालू करें</translation>
@@ -1154,7 +1155,7 @@
 <translation id="5009127379503001909">ब्राउज़ करना जारी रखें</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> को भेजें</translation>
-<translation id="5017529052065664584">पिछले 15 मिनट का</translation>
+<translation id="5017529052065664584">पिछले 15 मिनट</translation>
 <translation id="5020732097997376541">"Lens आइकॉन" पर टैप करें</translation>
 <translation id="5021500396464456616">जिस व्यक्ति ने यह लिंक भेजा है उससे संपर्क करें</translation>
 <translation id="5039804452771397117">अनुमति दें</translation>

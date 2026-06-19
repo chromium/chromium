@@ -1307,7 +1307,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3041584414879052436">La lista de emisores de pago aplazado está cerrada.</translation>
 <translation id="3041612393474885105">Datos del certificado</translation>
 <translation id="3045769629416806687">Deportes de riesgo</translation>
-<translation id="3047054686095898948">Guarda tu información en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> y realiza tareas más rápido, como rellenar formularios en los productos de Google. Puedes <ph name="BEGIN_LINK" />gestionar tu información<ph name="END_LINK" /> en el <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> de <ph name="ACCOUNT" />.</translation>
+<translation id="3047054686095898948">Guarda tu información en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> y agiliza tareas como rellenar formularios en los productos de Google. Puedes <ph name="BEGIN_LINK" />gestionar tu información<ph name="END_LINK" /> en el <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> de <ph name="ACCOUNT" />.</translation>
 <translation id="305162504811187366">Historial de Escritorio Remoto de Chrome, incluidas las marcas de tiempo, los hosts y los IDs de sesión del cliente</translation>
 <translation id="3052868890529250114">Sueles conectarte a sitios de forma segura, pero Chrome no ha podido usar una conexión segura esta vez. Puede que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Bajada de precio de <ph name="PRICE_DROP" /> en <ph name="PRODUCT_NAME" /></translation>
@@ -2742,7 +2742,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5305716236436927587">Publicidad y marketing</translation>
 <translation id="5306593769196050043">Ambas hojas</translation>
 <translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> ha cambiado el color del grupo</translation>
-<translation id="5307166000025436103">Hecho</translation>
+<translation id="5307166000025436103">Correcto</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5308689395849655368">Notificación de fallos inhabilitada</translation>
 <translation id="5314967030527622926">Creación de cuadernillo</translation>

@@ -187,6 +187,7 @@
 <translation id="1125550662859510761">有效分辨率：<ph name="WIDTH" /> x <ph name="HEIGHT" />（原生）</translation>
 <translation id="1125816658532547876">在 <ph name="DEVICE_TYPE" /> 上使用您的密码</translation>
 <translation id="1125921926864945797">壁纸与风格</translation>
+<translation id="1126475802377716263">{0,plural, =1{正在共享 1 个标签页}other{正在共享 # 个标签页}}</translation>
 <translation id="1126696498560056882">管理此设备上的账号</translation>
 <translation id="1128591060186966949">修改搜索引擎</translation>
 <translation id="1129348283834595293">赛博朋克</translation>
@@ -11238,6 +11239,7 @@
 <translation id="9173063514323762371">隐藏书签栏(&amp;H)</translation>
 <translation id="917350715406657904">您已达到您家长为“<ph name="APP_NAME" />”设定的使用时限。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="9174854240439014335">支持在窗口左右边缘触发拆分视图拖放操作</translation>
+<translation id="9174870712400134574">仅在“新标签页”页面上显示</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 已连接蓝牙设备</translation>
 <translation id="9177859716483578738">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。查看此网站的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" />。</translation>
 <translation id="9178061802301856367">删除登录数据</translation>
@@ -11250,7 +11252,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{应用}other{# 个应用}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{管理员可以使用“<ph name="APP0_NAME" />”录制您的屏幕。录制开始时，您不会收到通知。}=2{管理员可以使用“<ph name="APP0_NAME" />”和“<ph name="APP1_NAME" />”录制您的屏幕。录制开始时，您不会收到通知。}=3{管理员可以使用“<ph name="APP0_NAME" />”“<ph name="APP1_NAME" />”和另外 1 个应用录制您的屏幕。录制开始时，您不会收到通知。}other{管理员可以使用“<ph name="APP0_NAME" />”“<ph name="APP1_NAME" />”和另外 # 个应用录制您的屏幕。录制开始时，您不会收到通知。}}</translation>
 <translation id="9186963452600581158">使用孩子的 Google 账号登录</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{正在共享 1 个标签页}other{正在共享 # 个标签页}}</translation>
 <translation id="9187967020623675250">按的键不匹配。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="9188142767272053574">启用进程隔离</translation>
 <translation id="9192019773545828776">收听语音反馈，让您无需看屏幕即可使用设备。通过已连接的设备可以获得盲文反馈。使用 Ctrl + Alt + Z 可开启和关闭 ChromeVox。使用搜索键 + 向左键或向右键可进行导航。使用搜索键 + 空格键即可选择（启用）。</translation>

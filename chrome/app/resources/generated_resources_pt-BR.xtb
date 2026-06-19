@@ -187,6 +187,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1125550662859510761">Resolução: <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1125816658532547876">Use suas senhas no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Plano de fundo e estilo</translation>
+<translation id="1126475802377716263">{0,plural, =1{Compartilhando 1 guia}one{Compartilhando # guia}other{Compartilhando # guias}}</translation>
 <translation id="1126696498560056882">Gerenciar contas neste dispositivo</translation>
 <translation id="1128591060186966949">Editar mecanismo de pesquisa</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -11268,6 +11269,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9173063514323762371">Ocultar barra de favoritos</translation>
 <translation id="917350715406657904">Você atingiu o limite de tempo que seu familiar responsável definiu para o app <ph name="APP_NAME" />. Você poderá usá-lo amanhã por <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174854240439014335">Permitir arrastar e soltar na visualização dividida na borda esquerda ou direita da janela</translation>
+<translation id="9174870712400134574">Mostrar apenas na página Nova Guia</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Dispositivo Bluetooth conectado</translation>
 <translation id="9177859716483578738">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu <ph name="FIELDS_STRING" /> com este site. Consulte a <ph name="BEGIN_LINK" />Política de Privacidade<ph name="END_LINK" /> do site.</translation>
 <translation id="9178061802301856367">Excluir dados de login</translation>
@@ -11280,7 +11282,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="918352324374649435">{COUNT,plural, =1{App}one{# app}other{# apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{O administrador pode gravar sua tela com o app <ph name="APP0_NAME" />. Você não vai receber uma notificação quando a gravação começar.}=2{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Você não vai receber uma notificação quando a gravação começar.}=3{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais 1. Você não vai receber uma notificação quando a gravação começar.}one{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais #. Você não vai receber uma notificação quando a gravação começar.}other{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais #. Você não vai receber uma notificação quando a gravação começar.}}</translation>
 <translation id="9186963452600581158">Fazer login com a Conta do Google de uma criança</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Compartilhando 1 guia}one{Compartilhando # guia}other{Compartilhando # guias}}</translation>
 <translation id="9187967020623675250">As teclas não correspondem. Pressione qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Ativar isolamento de processos</translation>
 <translation id="9192019773545828776">Ouça uma resposta falada para que você possa usar o dispositivo sem olhar para a tela. O feedback em braille está disponível quando há um dispositivo conectado. Use Ctrl + Alt + Z para ativar e desativar o ChromeVox. Use Pesquisa + seta para a esquerda ou direita para navegar. Use as teclas Pesquisa + espaço para selecionar (ativar).</translation>

@@ -187,6 +187,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1125550662859510761">Izgleda da je u pitanju <ph name="WIDTH" />×<ph name="HEIGHT" /> (osnovno)</translation>
 <translation id="1125816658532547876">Koristite lozinke na: <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Pozadina i stil</translation>
+<translation id="1126475802377716263">{0,plural, =1{Deli se 1 kartica}one{Deli se # kartica}few{Dele se # kartice}other{Deli se # kartica}}</translation>
 <translation id="1126696498560056882">Upravljajte nalozima na ovom uređaju</translation>
 <translation id="1128591060186966949">Izmena pretraživača</translation>
 <translation id="1129348283834595293">Sajberpank</translation>
@@ -11251,6 +11252,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="9173063514323762371">Sakrij traku sa obeleživačima</translation>
 <translation id="917350715406657904">Dostigao/la si vremensko ograničenje koje je roditelj podesio za: <ph name="APP_NAME" />. Sutra imaš <ph name="TIME_LIMIT" /> na raspolaganju.</translation>
 <translation id="9174854240439014335">Dozvoli prevlačenje i otpuštanje u podeljenom prikazu na levoj ili desnoj ivici prozora</translation>
+<translation id="9174870712400134574">Prikazuj samo na stranici Nova kartica</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth uređaje je povezan</translation>
 <translation id="9177859716483578738">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će deliti <ph name="FIELDS_STRING" /> sa ovim sajtom. Pogledajte <ph name="BEGIN_LINK" />politiku privatnosti<ph name="END_LINK" /> ovog sajta.</translation>
 <translation id="9178061802301856367">Izbrišite podatke za prijavljivanje</translation>
@@ -11263,7 +11265,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacija}one{# aplikacija}few{# aplikacije}other{# aplikacija}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />. Obavestićemo vas kada počne snimanje.}=2{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" /> i <ph name="APP1_NAME" />. Obavestićemo vas kada počne snimanje.}=3{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još jednu aplikaciju. Nećete dobiti obaveštenje kada počne snimanje.}one{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikaciju. Obavestićemo vas kada počne snimanje.}few{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikacije. Obavestićemo vas kada počne snimanje.}other{Administrator može da snima vaš ekran uz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> i još # aplikacija. Obavestićemo vas kada počne snimanje.}}</translation>
 <translation id="9186963452600581158">Prijavite se pomoću Google naloga deteta</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Deli se 1 kartica}one{Deli se # kartica}few{Dele se # kartice}other{Deli se # kartica}}</translation>
 <translation id="9187967020623675250">Tasteri se ne podudaraju. Pritisnite bilo koji taster da biste <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Omogući izolaciju procesa</translation>
 <translation id="9192019773545828776">Slušajte govorne povratne informacije da biste mogli da koristite uređaj bez gledanja u ekran. Povratne informacije sa Brajevom azbukom dostupne su pomoću povezanog uređaja. Koristite Ctrl + Alt + Z da biste uključili ili isključili ChromeVox. Koristite taster za pretragu + strelicu nalevo ili strelicu nadesno da biste se kretali. Za izbor (aktiviranje) koristite taster za pretragu + taster za razmak.</translation>

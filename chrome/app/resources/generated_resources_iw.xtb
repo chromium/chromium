@@ -187,6 +187,7 @@
 <translation id="1125550662859510761">‏נראה כמו <ph name="WIDTH" /> x <ph name="HEIGHT" /> (במקור)</translation>
 <translation id="1125816658532547876">רוצה להשתמש בסיסמאות שלך ב-<ph name="DEVICE_TYPE" />?</translation>
 <translation id="1125921926864945797">טפט וסגנון</translation>
+<translation id="1126475802377716263">{0,plural, =1{כרטיסייה אחת משותפת}one{‫# כרטיסיות משותפות}two{‫# כרטיסיות משותפות}other{‫# כרטיסיות משותפות}}</translation>
 <translation id="1126696498560056882">ניהול החשבונות במכשיר הזה</translation>
 <translation id="1128591060186966949">עריכת מנוע חיפוש</translation>
 <translation id="1129348283834595293">סייברפאנק</translation>
@@ -3557,7 +3558,7 @@
     <ph name="BEGIN_PARAGRAPH2" />תמיד אפשר להעניק או לבטל את ההרשאה לשליחת הדוחות האלה בהגדרות מכשיר ChromeOS של הילד או הילדה שלך. מנהלי דומיין יכולים לשנות את ההגדרה הזו במסוף Admin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3558579881215044733">‏‫<ph name="WINDOW_TITLE" /> – Gemini עובד על המשימה…</translation>
 <translation id="3559079791149580653">הפסקת העברת המסך אל <ph name="DEVICE_NAME" /></translation>
-<translation id="3559533181353831840">הזמן הנותר: בערך <ph name="TIME_LEFT" /></translation>
+<translation id="3559533181353831840">הזמן שנשאר: בערך <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;בדיקת איות</translation>
 <translation id="3561201631376780358">פתיחת החלונית הצדדית להצגת כל הסימניות</translation>
 <translation id="3562655211539199254">‏הצגת כרטיסיות Chrome אחרונות בטלפון</translation>
@@ -11266,6 +11267,7 @@
 <translation id="9173063514323762371">הסתרת סרגל הסימניות</translation>
 <translation id="917350715406657904">הגעת למגבלת הזמן שנקבעה על ידי ההורה שלך לאפליקציה <ph name="APP_NAME" />. מחר אפשר יהיה להשתמש בה למשך <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174854240439014335">הפעלת האפשרות לגרור כרטיסיות או חלונות לצד שמאל או לצד ימין כדי לפצל את התצוגה</translation>
+<translation id="9174870712400134574">הצגה רק בדף "כרטיסייה חדשה"</translation>
 <translation id="9176611096776448349">‏<ph name="WINDOW_TITLE" /> - מכשיר Bluetooth מחובר</translation>
 <translation id="9177859716483578738">כדי להמשיך, הפרטים '<ph name="FIELDS_STRING" />' ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה. <ph name="BEGIN_LINK" />כאן מפורטת מדיניות הפרטיות<ph name="END_LINK" /> של האתר הזה.</translation>
 <translation id="9178061802301856367">מחיקת פרטי הכניסה</translation>
@@ -11278,7 +11280,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{אפליקציה}one{# אפליקציות}two{# אפליקציות}other{# אפליקציות}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{האדמין יכול להקליט את המסך שלך באמצעות <ph name="APP0_NAME" />. לא תישלח לך התראה כשההקלטה תתחיל.}=2{האדמין יכול להקליט את המסך שלך באמצעות <ph name="APP0_NAME" /> ו-<ph name="APP1_NAME" />. לא תישלח לך התראה כשההקלטה תתחיל.}=3{האדמין יכול להקליט את המסך שלך באמצעות <ph name="APP0_NAME" />, ‏ <ph name="APP1_NAME" /> ואפליקציה אחת נוספת. לא תישלח לך התראה כשההקלטה תתחיל.}one{האדמין יכול להקליט את המסך שלך באמצעות <ph name="APP0_NAME" />, ‏<ph name="APP1_NAME" /> ועוד # אפליקציות. לא תישלח לך התראה כשההקלטה תתחיל.}other{האדמין יכול להקליט את המסך שלך באמצעות <ph name="APP0_NAME" />, ‏<ph name="APP1_NAME" /> ועוד # אפליקציות. לא תישלח לך התראה כשההקלטה תתחיל.}}</translation>
 <translation id="9186963452600581158">‏כניסה באמצעות חשבון Google של ילד או ילדה</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{כרטיסייה אחת משותפת}one{‫# כרטיסיות משותפות}two{‫# כרטיסיות משותפות}other{‫# כרטיסיות משותפות}}</translation>
 <translation id="9187967020623675250">המקשים לא תואמים. צריך להקיש על מקש כלשהו כדי <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">הפעלת בידוד תהליכים</translation>
 <translation id="9192019773545828776">‏אפשר להאזין לקורא מסך קולי כדי להשתמש במכשיר בלי להסתכל במסך. ניתן לקבל משוב ברייל ממכשיר מחובר. כדי להפעיל או להשבית את ChromeVox, מקישים על Ctrl‏ + Alt‏ + Z. כדי לנווט, מקישים על מקש החיפוש + חץ שמאלה או חץ ימינה. כדי לבחור (להפעיל), מקישים על מקש החיפוש + מקש הרווח.</translation>

@@ -1126,6 +1126,7 @@
 <translation id="4896467949657706481">탭이 닫히고 로그아웃되었습니다.</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />님, 다시 방문해 주셔서 감사합니다</translation>
 <translation id="4913626501929406101">가족 그룹의 다른 사용자와 비밀번호 사본을 안전하게 공유할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="4916679969857390442">렌즈</translation>
 <translation id="4917025507570489430"><ph name="USER_EMAIL" /> 계정으로 로그인하면 기존 인터넷 사용 기록을 사용할 수 있습니다. 조직에서 이 데이터를 볼 수 있습니다</translation>
 <translation id="4918086044614829423">수락</translation>
 <translation id="4930714375720679147">사용 설정</translation>
@@ -1645,7 +1646,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, <ph name="THIRD_WEBSITE" />의 비밀번호가 삭제됩니다. 계정은 삭제되지 않습니다.</translation>
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6612912757320004438">탭 알림 허용…</translation>
-<translation id="6613372200395638275">Gemini는 맞춤형 지원을 제공하기 위해 사용자의 데이터 일부(예: 채팅 내용, 위치, 기타 관련 정보)를 지도, 항공편 검색과 같은 다른 Google 서비스와 공유합니다. 나중에 Gemini 앱 활동을 삭제하더라도 정보를 공유받은 서비스에서는 서비스 개선을 위해 이 정보를 사용할 수 있습니다. <ph name="BEGIN_LINK" />Gemini 앱 개인 정보 보호 허브<ph name="END_LINK" />에서 자세히 알아보세요.</translation>
+<translation id="6613372200395638275">Gemini는 맞춤형 지원을 제공하기 위해 사용자의 데이터 일부(예: 채팅의 일부, 위치, 기타 관련 정보)를 지도, 항공편 검색과 같은 다른 Google 서비스와 공유합니다. 나중에 Gemini 앱 활동을 삭제하더라도 이러한 서비스에서는 서비스 개선을 위해 이 정보를 사용할 수 있습니다. <ph name="BEGIN_LINK" />Gemini 앱 개인 정보 보호 허브<ph name="END_LINK" />에서 자세히 알아보세요.</translation>
 <translation id="6617761071025228250">텍스트 삭제</translation>
 <translation id="6619015782482868078">아쿠아 테마</translation>
 <translation id="6620279676667515405">취소</translation>
@@ -2262,7 +2263,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8672733398999596205">모두 사용</translation>
 <translation id="8674716540979958118">유출된 비밀번호가 있습니다.</translation>
 <translation id="8679900250380464358">읽기 목록에 추가</translation>
-<translation id="8680643216091361291"><ph name="BEGIN_LINK" />활동 기록 보관<ph name="END_LINK" /> 설정이 기본적으로 사용 중지되어 있습니다. 이 설정이 사용 중지되면 Google에서 3일 동안 채팅 내용을 저장합니다. Google은 이러한 정보를 사용하여 Gemini 앱이 제대로 작동하도록 하고, 앱의 보안을 유지하며, 사용자 의견을 반영하여 문제를 해결합니다. 활동 기록 보관을 사용 설정하여 모든 사용자를 위해 Google AI를 개선하는 데 도움을 줄 수 있습니다.</translation>
+<translation id="8680643216091361291"><ph name="BEGIN_LINK" />활동 기록 보관<ph name="END_LINK" /> 설정이 기본적으로 사용 중지되어 있습니다. 이 설정이 사용 중지되면 Google에서 3일 동안 대화 내용을 저장합니다. Google은 이러한 정보를 사용하여 Gemini 앱이 제대로 작동하도록 하고, 앱의 보안을 유지하며, 사용자 의견을 반영하여 문제를 해결합니다. 활동 기록 보관을 사용 설정하면 모두를 위해 Google AI를 개선하는 데 기여할 수 있습니다.</translation>
 <translation id="8680786875305615692">모든 웹 사용자를 위한 보안 개선에 참여</translation>
 <translation id="8680787084697685621">계정 로그인 세부정보의 유효기간이 만료되었습니다.</translation>
 <translation id="8690752723634292147">삭제 확인</translation>

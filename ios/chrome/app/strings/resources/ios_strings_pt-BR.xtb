@@ -337,7 +337,7 @@
 <translation id="2096716221239095980">Excluir todos os dados</translation>
 <translation id="2104436223719117661">Pesquisas em alta</translation>
 <translation id="21133533946938348">Fixar guia</translation>
-<translation id="2117650889962717098">Mantenha sua privacidade mudando para o modo de navegação anônima</translation>
+<translation id="2117650889962717098">Mude para o modo de navegação anônima e proteja sua privacidade</translation>
 <translation id="2119636449201577317">Abrir em…</translation>
 <translation id="2119962645034852864">Alguns serviços não estão disponíveis para sua conta</translation>
 <translation id="2120553909046681540">Sua organização desativou a navegação anônima.</translation>
@@ -454,7 +454,7 @@
 <translation id="2513103768503127042">Seus grupos de guias vão aparecer aqui</translation>
 <translation id="251837347827266434">Sua conta será desconectada, as guias serão fechadas e os dados de navegação serão excluídos</translation>
 <translation id="2520787026086861736">Para desativar, acesse <ph name="BEGIN_LINK" />Preenchimento automático e senhas<ph name="END_LINK" /></translation>
-<translation id="2523295204312809179">Quando você fecha um grupo de guias, ele é automaticamente salvo aqui</translation>
+<translation id="2523295204312809179">Grupos de guias fechados ficam salvos aqui automaticamente</translation>
 <translation id="2524699375503213836">Transfira seus dados do Safari</translation>
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2536991091671391962">Você pode usar as senhas salvas em qualquer dispositivo. Elas são armazenadas no Gerenciador de senhas do Google da conta <ph name="EMAIL" />.</translation>
@@ -739,7 +739,7 @@
 <translation id="3567168891086460374">Salvar de outra forma</translation>
 <translation id="3572503683475187385">A guia atual é compartilhada com o Gemini quando você inicia uma nova conversa. O conteúdo e o URL das guias que você compartilha com o Gemini são enviados ao Google. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na Conta do Google</translation>
-<translation id="3575234738189584619">Pesquisar com o Lens</translation>
+<translation id="3575234738189584619">Pesquise com o Lens</translation>
 <translation id="3575426792457739946">Esta lista contém todos os perfis carregados.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, gerenciado pela sua organização.</translation>
 <translation id="3580448612293054698">Atualizar <ph name="ENTITY_TYPE" />?</translation>
@@ -1106,7 +1106,7 @@
 <translation id="4854068532375923088">Permitir que o "Gemini" use sua câmera</translation>
 <translation id="4860895144060829044">Ligar</translation>
 <translation id="4861953997778766866">Todos os participantes podem fazer mudanças em grupos de guias compartilhados</translation>
-<translation id="4865063548323785458">Salve e preencha automaticamente suas senhas para fazer login em sites e apps rapidamente.</translation>
+<translation id="4865063548323785458">Salve e preencha automaticamente suas senhas para fazer login em sites e apps com facilidade.</translation>
 <translation id="4867608294647017606">Remover imagem da pesquisa</translation>
 <translation id="4869146460927742717">Posição da barra de endereço</translation>
 <translation id="4870911314065352661">Fechar todas as guias?</translation>
@@ -1126,6 +1126,7 @@
 <translation id="4896467949657706481">As guias foram fechadas e sua conta foi desconectada</translation>
 <translation id="4911042367886397055">Que bom ver você de novo, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Você pode compartilhar uma cópia da sua senha de forma segura com alguém do grupo familiar. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="4916679969857390442">Lupa</translation>
 <translation id="4917025507570489430">Você pode usar os dados de navegação atuais quando fizer login como <ph name="USER_EMAIL" />. Sua organização pode visualizar esses dados.</translation>
 <translation id="4918086044614829423">Aceitar</translation>
 <translation id="4930714375720679147">Ativar</translation>

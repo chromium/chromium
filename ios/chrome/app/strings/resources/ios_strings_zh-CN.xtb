@@ -337,7 +337,7 @@
 <translation id="2096716221239095980">删除所有数据</translation>
 <translation id="2104436223719117661">热搜</translation>
 <translation id="21133533946938348">固定标签页</translation>
-<translation id="2117650889962717098">切换到无痕模式，让浏览记录不留痕迹</translation>
+<translation id="2117650889962717098">切换到无痕模式，让浏览不留痕迹</translation>
 <translation id="2119636449201577317">打开方式…</translation>
 <translation id="2119962645034852864">您的账号无法使用部分服务</translation>
 <translation id="2120553909046681540">您的组织关闭了私密浏览功能。</translation>
@@ -1126,6 +1126,7 @@
 <translation id="4896467949657706481">标签页已关闭；您已退出账号</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />，欢迎回来！</translation>
 <translation id="4913626501929406101">您可以安全地与家人群组成员分享您的密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="4916679969857390442">镜头</translation>
 <translation id="4917025507570489430">以 <ph name="USER_EMAIL" /> 的身份登录后，即可使用现有的浏览数据。您的组织或许可以查看这些数据。</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4930714375720679147">开启</translation>
@@ -1425,7 +1426,7 @@
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5944869793365969636">扫描二维码</translation>
 <translation id="5948291296578561264">这样，您便可将照片保存到您的照片库中。</translation>
-<translation id="5948605885471592910">在这里轻松查看和管理所有已打开的页面</translation>
+<translation id="5948605885471592910">查看和管理所有已打开的页面</translation>
 <translation id="5952641243319721872">确定要舍弃您所做的选择吗？</translation>
 <translation id="5956112131836209882">标签页分组标签页。第 <ph name="NUMBER_OF_TABS_IN_GROUP" /> 个，共 <ph name="TAB_INDEX_IN_GROUP" /> 个。</translation>
 <translation id="595769230373966252">使用 <ph name="SEARCH_PROVIDER" /> 进行搜索</translation>

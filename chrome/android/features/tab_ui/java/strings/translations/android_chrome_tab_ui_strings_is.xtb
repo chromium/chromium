@@ -31,7 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> flipi flokkaður</translation>
 <translation id="1844381456014878100">Eftir sjö daga aðgerðaleysi</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flipi}one{<ph name="TABS_COUNT_MANY" /> flipi}other{<ph name="TABS_COUNT_MANY" /> flipar}}</translation>
-<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Bæta flipa við leslista}one{Bæta flipa við leslista}other{Bæta flipum við leslista}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Bæta flipa við leslista}one{Bæta flipum við leslista}other{Bæta flipum við leslista}}</translation>
 <translation id="1909810060368225529">Tilkynning: Allir geta séð breytingar sem gerðar eru á þessum sameiginlega flipahópi. Allir geta gert breytingar á sameiginlegum flipahópum</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Festa flipa}one{Festa flipa}other{Festa flipa}}</translation>
 <translation id="1982637982196732906">Færa yfir í óvirkan hluta</translation>

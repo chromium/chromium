@@ -187,6 +187,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1125550662859510761">A resolución parece de <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1125816658532547876">Usa os teus contrasinais no teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Fondo de pantalla e estilo</translation>
+<translation id="1126475802377716263">{0,plural, =1{Compartindo 1 pestana.}other{Compartindo # pestanas}}</translation>
 <translation id="1126696498560056882">Xestionar contas deste dispositivo</translation>
 <translation id="1128591060186966949">Editar motor de busca</translation>
 <translation id="1129348283834595293">Ciberpunk</translation>
@@ -7720,7 +7721,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6642720633335369752">Para ver todas as ventás abertas da aplicación, pasa o dedo cara arriba desde a parte inferior da pantalla e mantena premida.</translation>
 <translation id="664290675870910564">Selección de rede</translation>
 <translation id="6643016212128521049">Borrar</translation>
-<translation id="6644513150317163574">O formato do URL non é válido. O servidor debe especificarse como un nome de host cando se utilice a autenticación mediante inicio de sesión único (SSO).</translation>
+<translation id="6644513150317163574">O formato do URL non é válido. O servidor debe especificarse como un nome de host cando se utilice a autenticación mediante inicio de sesión único.</translation>
 <translation id="6644846457769259194">Actualizando o teu dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Desactivar Vinculación rápida</translation>
 <translation id="6646579314269804020">Comparte a configuración da wifi entre os dispositivos.</translation>
@@ -11250,6 +11251,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9173063514323762371">Ocultar barra de marcadores</translation>
 <translation id="917350715406657904">Chegaches ao límite que definiu teu pai ou túa nai para <ph name="APP_NAME" />. Mañá poderás utilizala durante <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174854240439014335">Permitir acción de arrastrar e soltar na vista dividida no bordo esquerdo ou dereito da ventá</translation>
+<translation id="9174870712400134574">Mostrar só na páxina Nova pestana</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" />: conectouse a un dispositivo Bluetooth</translation>
 <translation id="9177859716483578738">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá con este sitio os seguintes datos: <ph name="FIELDS_STRING" />. Consulta a <ph name="BEGIN_LINK" />política de privacidade<ph name="END_LINK" /> do sitio.</translation>
 <translation id="9178061802301856367">Elimina os datos de inicio de sesión</translation>
@@ -11262,7 +11264,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicación}other{# aplicacións}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />. Non te avisaremos cando se inicie a gravación.}=2{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Non te avisaremos cando se inicie a gravación.}=3{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e 1 aplicación máis. Non te avisaremos cando se inicie a gravación.}other{A persoa administradora pode gravar a túa pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e # aplicacións máis. Non te avisaremos cando se inicie a gravación.}}</translation>
 <translation id="9186963452600581158">Iniciar sesión cunha Conta de Google infantil</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Compartindo 1 pestana.}other{Compartindo # pestanas}}</translation>
 <translation id="9187967020623675250">As teclas non coinciden. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Activar illamento de procesos</translation>
 <translation id="9192019773545828776">Escoita comentarios de voz para poder utilizar o dispositivo sen mirar a pantalla. Os comentarios están dispoñibles en braille cun dispositivo conectado. Para activar e desactivar ChromeVox, utiliza a combinación Control + Alt + Z. Para navegar, preme Buscar + Frecha esquerda ou Frecha dereita. Para seleccionar (activar) a función, preme Buscar + Espazo.</translation>

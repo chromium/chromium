@@ -187,6 +187,7 @@
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> şeklinde görünür (Yerel)</translation>
 <translation id="1125816658532547876"><ph name="DEVICE_TYPE" /> cihazınızda şifrelerinizi kullanın</translation>
 <translation id="1125921926864945797">Duvar kağıdı ve stil</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 sekme paylaşılıyor}other{# sekme paylaşılıyor}}</translation>
 <translation id="1126696498560056882">Bu cihazdaki hesapları yönet</translation>
 <translation id="1128591060186966949">Arama motorunu düzenleyin</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -11247,6 +11248,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="9173063514323762371">Yer İşaretleri Çubuğunu &amp;Gizle</translation>
 <translation id="917350715406657904">Ebeveyninizin <ph name="APP_NAME" /> için belirlediği süre sınırına ulaştınız. Bu uygulamayı yarın <ph name="TIME_LIMIT" /> kullanabilirsiniz.</translation>
 <translation id="9174854240439014335">Pencerenin sol veya sağ kenarına bölünmüş ekran sürükleyip bırakmaya izin ver</translation>
+<translation id="9174870712400134574">Yalnızca Yeni Sekme sayfasında göster</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth cihaz bağlı</translation>
 <translation id="9177859716483578738"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, devam etmek için <ph name="FIELDS_STRING" /> bilgilerinizi bu siteyle paylaşacak. Bu sitenin <ph name="BEGIN_LINK" />Gizlilik Politikası<ph name="END_LINK" />'nı inceleyin.</translation>
 <translation id="9178061802301856367">Oturum açma verilerini silin</translation>
@@ -11259,7 +11261,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="918352324374649435">{COUNT,plural, =1{Uygulama}other{# uygulama}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Yöneticiniz, <ph name="APP0_NAME" /> ile ekranınızı kaydedebilir. Kayıt başladığında bilgilendirilmezsiniz.}=2{Yöneticiniz, <ph name="APP0_NAME" /> ve <ph name="APP1_NAME" /> ile ekranınızı kaydedebilir. Kayıt başladığında bilgilendirilmezsiniz.}=3{Yöneticiniz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ve diğer 1 uygulamayla ekranınızı kaydedebilir. Kayıt başladığında bilgilendirilmezsiniz.}other{Yöneticiniz <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ve diğer # uygulamayla ekranınızı kaydedebilir. Kayıt başladığında bilgilendirilmezsiniz.}}</translation>
 <translation id="9186963452600581158">Çocuğunuzun Google Hesabıyla oturum açın</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{1 sekme paylaşılıyor}other{# sekme paylaşılıyor}}</translation>
 <translation id="9187967020623675250">Tuşlar eşleşmiyor. <ph name="RESPONSE" /> için herhangi bir tuşa basın.</translation>
 <translation id="9188142767272053574">İşlem yalıtımını etkinleştir</translation>
 <translation id="9192019773545828776">Cihazınızı ekrana bakmadan kullanabilmek için sözlü geri bildirimleri dinleyin. Braille geri bildirimi, bağlı bir cihazla kullanılabilir. ChromeVox'u açmak ve kapatmak için Ctrl + Alt + Z tuşlarını kullanın. Gezinmek için Arama + Sol ok veya Sağ ok tuşlarını kullanın. Seçmek (etkinleştirmek) için Arama + Boşluk tuşlarını kullanın.</translation>

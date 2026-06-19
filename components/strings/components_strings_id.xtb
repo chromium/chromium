@@ -1655,7 +1655,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3587725436724465984">Organisasi Anda telah mengidentifikasi <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sebagai situs yang mungkin melanggar kebijakan. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut peringatan ini<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Tengah</translation>
 <translation id="3589519427766620380">Tanyakan Google Lens info tentang halaman ini</translation>
-<translation id="3596918995172292499">Status plat</translation>
+<translation id="3596918995172292499">Negara bagian penerbit pelat</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Tombol Kelola setelan Privasi Google, aktifkan untuk membuka setelan privasi Akun Google Anda</translation>
 <translation id="3603507503523709">Aplikasi diblokir oleh administrator Anda</translation>
@@ -3153,7 +3153,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5950901984834744590">Pisau Cukur &amp; Alat Cukur</translation>
 <translation id="5951495562196540101">Tidak dapat mendaftar dengan akun konsumen (tersedia paket lisensi).</translation>
 <translation id="5952076224478208938">Merek</translation>
-<translation id="5952196777020238475">Nomor Lisensi</translation>
+<translation id="5952196777020238475">Nomor SIM</translation>
 <translation id="5953516610448771166">Teks Otomatis tidak tersedia untuk media ini. Untuk mendapatkan teks, blokir <ph name="CONTENT_SETTINGS" /> untuk situs ini.</translation>
 <translation id="5960795367348889467">Verifikasi</translation>
 <translation id="5963413905009737549">Bagian</translation>

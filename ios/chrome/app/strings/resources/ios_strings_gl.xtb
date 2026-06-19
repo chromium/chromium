@@ -220,7 +220,7 @@
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1728549374069268714">Pegar e acceder</translation>
 <translation id="1732468323901456775">Activa as notificacións de <ph name="MODULE_NAME" /></translation>
-<translation id="1739364174357629566">Actualiza o número de viaxeiro coñecido</translation>
+<translation id="1739364174357629566">Actualiza o número de viaxeiro coñecido (KTN)</translation>
 <translation id="1740468249224277719">Toca dúas veces para instalar.</translation>
 <translation id="1740650426894359238">Cambiar a outro perfil</translation>
 <translation id="1741219894094057085">Reloxo intelixente</translation>
@@ -919,7 +919,7 @@
 <translation id="4231395118547300571">Activáronse as notificacións de Comprobación de seguranza</translation>
 <translation id="4232817129213135694">Configura as claves de acceso deste dispositivo</translation>
 <translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />Default Browser App<ph name="END_BOLD" /> (Aplicación de navegador predeterminada)</translation>
-<translation id="424063167283213501">Garda o número de viaxeiro coñecido</translation>
+<translation id="424063167283213501">Garda o número de viaxeiro coñecido (KTN)</translation>
 <translation id="4241893428331130998">Non hai ningún contrasinal nin clave de acceso gardados</translation>
 <translation id="4242533952199664413">Abrir configuración</translation>
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} pestanas}=1{Abrir {count} pestana}other{Abrir {count} pestanas}}</translation>
@@ -1126,6 +1126,7 @@
 <translation id="4896467949657706481">Pecháronse as pestanas e mais a túa sesión</translation>
 <translation id="4911042367886397055">Dámosche a benvida de novo, <ph name="USER_NAME" /></translation>
 <translation id="4913626501929406101">Podes compartir de maneira segura unha copia do teu contrasinal con calquera persoa do teu grupo familiar. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="4916679969857390442">Obxectivo</translation>
 <translation id="4917025507570489430">Poderás usar os datos de navegación actuais cando teñas a sesión iniciada como <ph name="USER_EMAIL" />. É posible que a túa organización poida ver estes datos.</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4930714375720679147">Activar</translation>

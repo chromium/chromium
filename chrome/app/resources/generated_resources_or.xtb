@@ -187,6 +187,7 @@
 <translation id="1125550662859510761">ଏପରି ଜଣାପଡ଼ୁଛି <ph name="WIDTH" /> x <ph name="HEIGHT" /> (ମୂଳ)</translation>
 <translation id="1125816658532547876">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1125921926864945797">ୱାଲପେପର ଏବଂ ଷ୍ଟାଇଲ</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 ଟାବ ସେୟାର କରାଯାଉଛି}other{# ଟାବ ସେୟାର କରାଯାଉଛି}}</translation>
 <translation id="1126696498560056882">ଏହି ଡିଭାଇସରେ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1128591060186966949">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ୍ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1129348283834595293">ସାଇବରପଙ୍କ</translation>
@@ -559,7 +560,7 @@
 <translation id="1402426911829176748">ଆପଣଙ୍କ ଡିଭାଇସ ସହ କନେକ୍ଟ କରାଯାଉଛି</translation>
 <translation id="1405779994569073824">କ୍ରାସ୍ ହୋଇଯାଇଛି।</translation>
 <translation id="1406500794671479665">ଯାଞ୍ଚ ହେଉଛି...</translation>
-<translation id="1407069428457324124">ଗାଢ଼ ଥିମ୍</translation>
+<translation id="1407069428457324124">ଡାର୍କ ଥିମ</translation>
 <translation id="1407135791313364759">ସବୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="140723521119632973">ସେଲ୍ୟୁଲାର୍ ସକ୍ରିୟକରଣ</translation>
 <translation id="1407970155431887387"><ph name="SEARCH_ENGINE_NAME" /> ପାଇଁ ଏଡିଟ ଡାଏଲଗ ଖୋଲିବାକୁ କ୍ଲିକ କରନ୍ତୁ</translation>
@@ -5273,7 +5274,7 @@
 <translation id="4808667324955055115">ପପ୍-ଅପ୍‌ଗୁଡିକ ଅବରୋଧ ହୋଇଛି:</translation>
 <translation id="4809447465126035330">ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="480990236307250886">ମୂଳପୃଷ୍ଠାଟି ଖୋଲନ୍ତୁ</translation>
-<translation id="4809927044794281115">ହାଲୁକା ଥିମ୍</translation>
+<translation id="4809927044794281115">ଲାଇଟ ଥିମ</translation>
 <translation id="4811212958317149293">ସ୍ଵିଚ୍ ଆକ୍ସେସ୍ କୀବୋର୍ଡ ସ୍ୱତଃ-ସ୍କାନ୍</translation>
 <translation id="4811503964269049987">ଚୟନିତ ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ</translation>
 <translation id="4812073856515324252"><ph name="APP_NAME" /> ପାଇଁ ଆପଣଙ୍କ ପାସକୀକୁ କେଉଁଠାରେ ସେଭ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
@@ -11246,6 +11247,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9173063514323762371">&amp;ବୁକମାର୍କ ବାରକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="917350715406657904"><ph name="APP_NAME" /> ପାଇଁ ଆପଣଙ୍କ ବାପାମା ସେଟ୍ କରିଥିବା ସମୟ ସୀମାରେ ଆପଣ ପହଞ୍ଚି ଯାଇଛନ୍ତି। ଆପଣ ଏହାକୁ ଆସନ୍ତାକାଲି <ph name="TIME_LIMIT" /> ପାଇଁ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="9174854240439014335">ୱିଣ୍ଡୋର ବାମ କିମ୍ବା ଡାହାଣ ଧାରରେ ସ୍ପ୍ଲିଟ ଭ୍ୟୁ ଡ୍ରାଗ-ଏବଂ-ଡ୍ରପ ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
+<translation id="9174870712400134574">କେବଳ ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - ବ୍ଲୁଟୁଥ୍‌ ଡିଭାଇସ୍‍ ସଂଯୋଗ ହୋ‍ଇଛି</translation>
 <translation id="9177859716483578738">ଜାରି ରଖିବା ପାଇଁ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ଏହି ସାଇଟ ସହ ଆପଣଙ୍କ <ph name="FIELDS_STRING" />କୁ ସେୟାର କରିବ। ଏହି ସାଇଟର <ph name="BEGIN_LINK" />ଗୋପନୀୟତା ନୀତି<ph name="END_LINK" />କୁ ଦେଖନ୍ତୁ।</translation>
 <translation id="9178061802301856367">ସାଇନ-ଇନ ଡାଟା ଡିଲିଟ କରନ୍ତୁ</translation>
@@ -11258,7 +11260,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="918352324374649435">{COUNT,plural, =1{ଆପ୍}other{#ଟି ଆପ୍}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP0_NAME" /> ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନ ରେକର୍ଡ କରିପାରିବେ। ରେକର୍ଡିଂ ଆରମ୍ଭ ହେଲେ ଆପଣଙ୍କୁ ସୂଚିତ କରାଯିବ ନାହିଁ।}=2{ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP0_NAME" /> ଏବଂ <ph name="APP1_NAME" /> ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ରେକର୍ଡ କରିପାରିବେ। ରେକର୍ଡିଂ ଆରମ୍ଭ ହେଲେ ଆପଣଙ୍କୁ ସୂଚିତ କରାଯିବ ନାହିଁ।}=3{ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ଏବଂ ଅନ୍ୟ 1 ଆପ ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନ ରେକର୍ଡ କରିପାରିବେ। ରେକର୍ଡିଂ ଆରମ୍ଭ ହେଲେ ଆପଣଙ୍କୁ ସୂଚିତ କରାଯିବ ନାହିଁ।}other{ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ଏବଂ ଅନ୍ୟ # ଆପ ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନ ରେକର୍ଡ କରିପାରିବେ। ରେକର୍ଡିଂ ଆରମ୍ଭ ହେଲେ ଆପଣଙ୍କୁ ସୂଚିତ କରାଯିବ ନାହିଁ।}}</translation>
 <translation id="9186963452600581158">ଗୋଟିଏ ପିଲାର Google ଆକାଉଣ୍ଟ ସହିତ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{1 ଟାବ ସେୟାର କରାଯାଉଛି}other{# ଟାବ ସେୟାର କରାଯାଉଛି}}</translation>
 <translation id="9187967020623675250">କୀଗୁଡ଼ିକ ମେଳ ହେଉନାହିଁ। <ph name="RESPONSE" /> ପାଇଁ ଯେ କୌଣସି କୀକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="9188142767272053574">ପ୍ରକ୍ରିୟା ଆଇସୋଲେସନକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="9192019773545828776">କଥିତ ମତାମତ ଶୁଣନ୍ତୁ ଯାହା ଫଳରେ ଆପଣ ସ୍କ୍ରିନକୁ ନଦେଖି ଆପଣଙ୍କ ଡିଭାଇସ ବ୍ୟବହାର କରିପାରିବେ। ଏକ କନେକ୍ଟ ହୋଇଥିବା ଡିଭାଇସରେ ବ୍ରେଲି ମତାମତ ଉପଲବ୍ଧ ଅଛି। ChromeVoxକୁ ଚାଲୁ ଏବଂ ବନ୍ଦ କରିବା ପାଇଁ Ctrl + Alt + Z ବ୍ୟବହାର କରନ୍ତୁ। ନାଭିଗେଟ କରିବାକୁ Search + ବାମ ତୀର କିମ୍ବା ଡାହାଣ ତୀର ବ୍ୟବହାର କରନ୍ତୁ। ଚୟନ (ସକ୍ରିୟ) କରିବାକୁ Search + Space ବ୍ୟବହାର କରନ୍ତୁ।</translation>

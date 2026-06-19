@@ -187,6 +187,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1125550662859510761">Duket si <ph name="WIDTH" /> x <ph name="HEIGHT" /> (origjinale)</translation>
 <translation id="1125816658532547876">Përdor fjalëkalimet e tua në <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Imazhi i sfondit dhe stili</translation>
+<translation id="1126475802377716263">{0,plural, =1{Po ndahet 1 skedë}other{Po ndahen # skeda}}</translation>
 <translation id="1126696498560056882">Menaxho llogaritë në këtë pajisje</translation>
 <translation id="1128591060186966949">Redakto motorin e kërkimit</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -11246,6 +11247,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9173063514323762371">&amp;Fshih shiritin e faqeshënuesve</translation>
 <translation id="917350715406657904">Ke arritur kufirin kohor që ka caktuar prindi yt për <ph name="APP_NAME" />. Mund ta përdorësh atë për <ph name="TIME_LIMIT" /> nesër.</translation>
 <translation id="9174854240439014335">Lejo zvarritjen dhe lëshimin e pamjes së ndarë në skajin e majtë ose të djathtë të dritares</translation>
+<translation id="9174870712400134574">Shfaq vetëm në faqen e "Skedës së re"</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - u lidh një pajisje Bluetooth</translation>
 <translation id="9177859716483578738">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë <ph name="FIELDS_STRING" /> me këtë sajt. Shiko <ph name="BEGIN_LINK" />politikën e privatësisë<ph name="END_LINK" /> të këtij sajti.</translation>
 <translation id="9178061802301856367">Fshi të dhënat e identifikimit</translation>
@@ -11258,7 +11260,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacion}other{# aplikacione}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />. Nuk do të njoftohesh kur të fillojë regjistrimi.}=2{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" /> dhe <ph name="APP1_NAME" />. Nuk do të njoftohesh kur të fillojë regjistrimi.}=3{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dhe 1 aplikacion tjetër. Nuk do të njoftohesh kur të fillojë regjistrimi.}other{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dhe # aplikacione të tjera. Nuk do të njoftohesh kur të fillojë regjistrimi.}}</translation>
 <translation id="9186963452600581158">Identifikohu me "Llogarinë e Google" të fëmijës tënd</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Po ndan 1 skedë}other{Po ndan # skeda}}</translation>
 <translation id="9187967020623675250">Tastet nuk përputhen. Shtyp një tast çfarëdo për veprimin "<ph name="RESPONSE" />".</translation>
 <translation id="9188142767272053574">Aktivizo izolimin e procesit</translation>
 <translation id="9192019773545828776">Dëgjo komentet me zë që të mund ta përdorësh pajisjen pa shikuar në ekran. Komentet në breil ofrohen me një pajisje të lidhur. Përdor Ctrl + Alt + Z për të aktivizuar dhe çaktivizuar ChromeVox. Përdor "Kërko" + shigjeta majtas ose shigjeta djathtas për të naviguar. Përdor "Kërko" + "Hapësirë" për të zgjedhur (për të aktivizuar).</translation>

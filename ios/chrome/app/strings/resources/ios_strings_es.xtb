@@ -1126,6 +1126,7 @@
 <translation id="4896467949657706481">Se han cerrado las pestañas y se ha cerrado tu sesión</translation>
 <translation id="4911042367886397055">¡Hola de nuevo, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Puedes compartir de forma segura una copia de tu contraseña con un miembro de tu grupo familiar. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="4916679969857390442">Lente</translation>
 <translation id="4917025507570489430">Puedes usar los datos de navegación actuales al iniciar sesión como <ph name="USER_EMAIL" />. Es posible que tu organización vea estos datos.</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4930714375720679147">Activar</translation>
@@ -2453,7 +2454,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="984275831282074731">Métodos de pago</translation>
 <translation id="985379595344853742">Cerrar todas las pestañas de Incógnito</translation>
 <translation id="988141524645182168">Otros dispositivos</translation>
-<translation id="994184244350700431">En Google Wallet de <ph name="USER_EMAIL" /></translation>
+<translation id="994184244350700431">En el Google Wallet de <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{{count} llave de acceso importada}other{{count} llaves de acceso importadas}}</translation>
 <translation id="999768147936949692">Por ahora, solo puedes compartir contraseñas con miembros de la familia. <ph name="BEGIN_LINK" />Invita a miembros de la familia<ph name="END_LINK" /> a unirse a tu grupo y saca más partido a tus productos y suscripciones de Google.</translation>
 </translationbundle>

@@ -187,6 +187,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1125550662859510761">Ser ut som <ph name="WIDTH" /> x <ph name="HEIGHT" /> (innebygd)</translation>
 <translation id="1125816658532547876">Bruk passordene dine på <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Bakgrunn og stil</translation>
+<translation id="1126475802377716263">{0,plural, =1{Deler 1 fane}other{Deler # faner}}</translation>
 <translation id="1126696498560056882">Administrer kontoer på denne enheten</translation>
 <translation id="1128591060186966949">Endre i søkemotoren</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -11254,6 +11255,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9173063514323762371">&amp;Skjul bokmerkeraden</translation>
 <translation id="917350715406657904">Du har nådd tidsgrensen som forelderen din har angitt for <ph name="APP_NAME" />. Du kan bruke appen i <ph name="TIME_LIMIT" /> i morgen.</translation>
 <translation id="9174854240439014335">Tillat dra-og-slipp for delt visning på venstre eller høyre kant av vinduet</translation>
+<translation id="9174870712400134574">Vis bare på Ny fane-siden</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – en Bluetooth-enhet er tilkoblet</translation>
 <translation id="9177859716483578738">Før du kan fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele <ph name="FIELDS_STRING" /> med dette nettstedet. Se nettstedets <ph name="BEGIN_LINK" />personvernregler<ph name="END_LINK" />.</translation>
 <translation id="9178061802301856367">Slett påloggingsinformasjon</translation>
@@ -11266,7 +11268,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apper}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administratoren din kan gjøre opptak av skjermen din med <ph name="APP0_NAME" />. Du varsles ikke når opptaket starter.}=2{Administratoren din kan gjøre opptak av skjermen din med <ph name="APP0_NAME" /> og <ph name="APP1_NAME" />. Du varsles ikke når opptaket starter.}=3{Administratoren din gjøre opptak av skjermen din med <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og 1 annen app. Du blir ikke varslet når opptaket starter.}other{Administratoren din kan gjøre opptak av skjermen din med <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og # andre apper. Du varsles ikke når opptaket starter.}}</translation>
 <translation id="9186963452600581158">Logg på med Google-kontoen til et barn</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Deler 1 fane}other{Deler # faner}}</translation>
 <translation id="9187967020623675250">Tastene stemmer ikke overens. Trykk på en tast for å <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Slå på prosessisolering</translation>
 <translation id="9192019773545828776">Hør taletilbakemeldinger, slik at du kan bruke enheten uten å se på skjermen. Tilbakemelding med punktskrift er tilgjengelig med en tilkoblet enhet. Bruk Ctrl + Alt + Z for å slå ChromeVox på og av. Bruk søketasten + venstrepil eller høyrepil for å navigere. Bruk Søk + mellomromstasten for å velge (aktivere).</translation>

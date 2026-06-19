@@ -384,7 +384,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="159274626729231974">Liên hoan phim</translation>
 <translation id="1593359183944365958">270 độ</translation>
 <translation id="1594030484168838125">Chọn</translation>
-<translation id="1595731774593926493">Xoá mã số xác nhận trùng tên</translation>
+<translation id="1595731774593926493">Xoá mã số Redress Number</translation>
 <translation id="1597307423671074806">Video WebM</translation>
 <translation id="159800670740560023">Đường liên kết đến Mẹo dùng Chrome, hãy nhấn phím Enter để mở <ph name="IPH_LINK_FOCUSED_LINK_TEXT" /></translation>
 <translation id="1599199147673445968">Bạn sử dụng thẻ mới? <ph name="BEGIN_LINK" />Nhập chi tiết thẻ<ph name="END_LINK" /></translation>
@@ -438,7 +438,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1664389769577564606">Khuôn in Flexo bằng Photopolymer</translation>
 <translation id="1667730174533834274">xác minh danh tính của bạn trước khi thay đổi chế độ cài đặt</translation>
 <translation id="1668071460721346172">Nhận email</translation>
-<translation id="1670861525135254448">Lưu thông tin về xe</translation>
+<translation id="1670861525135254448">Lưu thông tin xe</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> sang <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Cạnh ngắn trước</translation>
 <translation id="168693727862418163">Giá trị chính sách này không xác thực được dựa vào giản đồ và sẽ bị bỏ qua.</translation>
@@ -483,7 +483,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1734878702283171397">Thử liên hệ với quản trị viên hệ thống.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, hết hạn vào <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Máy tính</translation>
-<translation id="1739364174357629566">Cập nhật mã số hành khách đã biết</translation>
+<translation id="1739364174357629566">Cập nhật mã số Known Traveler Number</translation>
 <translation id="1740404923954980840">Để thoát khỏi chế độ toàn màn hình, hãy kéo từ trên xuống rồi nhấn vào nút quay lại</translation>
 <translation id="1741474054575634405">Quản lý thẻ khách hàng thân thiết...</translation>
 <translation id="1741613555002899862">Phải được chỉ định và là một chuỗi hợp lệ khi DnsOverHttpsMode là <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -745,7 +745,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2166049586286450108">Quyền truy cập quản trị đầy đủ</translation>
 <translation id="2166378884831602661">Trang web này không thể cung cấp kết nối an toàn</translation>
 <translation id="2168151236314517198">Chính sách của quản trị viên không cho phép in nội dung này</translation>
-<translation id="2171244127100824330">Trong <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> cho <ph name="ACCOUNT" /></translation>
+<translation id="2171244127100824330">Vào <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> cho <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Sửa chữa và bảo dưỡng xe</translation>
 <translation id="217231402430591139">Liên kết tài khoản của bạn</translation>
 <translation id="2173302385160625112">Kiểm tra đường kết nối Internet của bạn</translation>
@@ -767,7 +767,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2191980191135734720">Mở khoá màn hình ở bước tiếp theo, thường là bằng vân tay. Bạn cũng có thể <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Những yếu tố cần xem xét</translation>
 <translation id="2195729137168608510">Bảo vệ Email</translation>
-<translation id="2198183835992354675">Mã số hành khách đã biết</translation>
+<translation id="2198183835992354675">Mã số Known Traveler Number</translation>
 <translation id="2198215508485017216">Đã xảy ra lỗi không mong muốn. <ph name="BEGIN_LINK" />Tìm hiểu thêm về việc tải lên Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Nút Không thích, nhấn phím Enter để mở biểu mẫu gửi phản hồi chi tiết về lý do bạn không thích đề xuất này</translation>
 <translation id="2202627062836089804">mặt sau thẻ</translation>
@@ -800,7 +800,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2233745931693710080">Đĩa nén</translation>
 <translation id="2236949375853147973">Hoạt động của tôi</translation>
 <translation id="2239100178324503013">Gửi bây giờ</translation>
-<translation id="224130779555573777">Thêm mã số xác nhận trùng tên</translation>
+<translation id="224130779555573777">Thêm mã số Redress Number</translation>
 <translation id="2241693394036365668">Tải tệp xuống</translation>
 <translation id="2242389809734574253">Lưu IBAN đã đóng.</translation>
 <translation id="2246264294482514010">10 x 12 inch</translation>
@@ -1195,7 +1195,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">dùng phương thức khoá màn hình để điền mật khẩu</translation>
 <translation id="2881276955470682203">Lưu thẻ?</translation>
-<translation id="2882280148032777436">Xoá mã số hành khách đã biết</translation>
+<translation id="2882280148032777436">Xoá mã số Known Traveler Number</translation>
 <translation id="2882949212241984732">Gấp 2 cửa</translation>
 <translation id="2891963978019740012">Công cụ tìm kiếm của bạn trong Chrome</translation>
 <translation id="2893773853358652045">Cuộn thứ tư</translation>
@@ -1364,7 +1364,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3121994479408824897">Truy cập vào <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Hiện kết quả trong vòng 30 ngày qua</translation>
 <translation id="3126023634486644099">Nhãn (Cố định)</translation>
-<translation id="3132345256151444894">Lưu mã số xác nhận trùng tên</translation>
+<translation id="3132345256151444894">Lưu mã số Redress Number</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> hiện là công cụ tìm kiếm mặc định</translation>
 <translation id="3134859781443140237">Mạng cục bộ</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Tìm kiếm <ph name="KEYWORD_SHORT_NAME" /></translation>
@@ -1655,7 +1655,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3587725436724465984">Tổ chức của bạn đã xác định <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> là trang web có thể vi phạm chính sách. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm về cảnh báo này<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Ở giữa</translation>
 <translation id="3589519427766620380">Hỏi Google Ống kính về trang này</translation>
-<translation id="3596918995172292499">Tình trạng biển số xe</translation>
+<translation id="3596918995172292499">Tỉnh/bang cấp biển số xe</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Nút Quản lý chế độ cài đặt quyền riêng tư của Google, hãy nhấn nút này để vào phần cài đặt quyền riêng tư của Tài khoản Google</translation>
 <translation id="3603507503523709">Quản trị viên đã chặn ứng dụng</translation>
@@ -2083,7 +2083,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4230204356098880324">Trang web có thể yêu cầu dùng và di chuyển máy ảnh của bạn</translation>
 <translation id="4231448684371260244">8 x 13 inch</translation>
 <translation id="4239799716689808527">Nhãn</translation>
-<translation id="424063167283213501">Lưu mã số hành khách đã biết</translation>
+<translation id="424063167283213501">Lưu mã số Known Traveler Number</translation>
 <translation id="4241830393007970744">Những kẻ tấn công trên trang web bạn đã cố truy cập có thể lừa bạn cài đặt phần mềm hoặc tiết lộ các thông tin như mật khẩu, số điện thoại hoặc số thẻ tín dụng.</translation>
 <translation id="4242380780309416996">Phong bì (Nặng)</translation>
 <translation id="4242981939686657948">Để tìm thông tin trong nhật ký duyệt web theo cách hiệu quả hơn, hãy bật</translation>
@@ -3247,7 +3247,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6091691259076781835">Để thanh toán nhanh hơn, hãy lưu CVC này trên thiết bị của bạn</translation>
 <translation id="6093599771645355227">Vàng 1</translation>
 <translation id="6093795393556121384">Thẻ của bạn đã được xác minh</translation>
-<translation id="6094253940069566294">Chỉnh sửa thông tin về xe</translation>
+<translation id="6094253940069566294">Chỉnh sửa thông tin xe</translation>
 <translation id="6094290315941448991">Theo chính sách của quản trị viên, khi màn hình có nội dung bí mật, tính năng ghi màn hình sẽ bị tắt.</translation>
 <translation id="6096326118418049043">Tên X.500</translation>
 <translation id="6097297436119286254">Xác minh danh tính của bạn để điền thông tin thanh toán</translation>
@@ -3343,7 +3343,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6236290670123303279">Quản lý chế độ cài đặt</translation>
 <translation id="623825323736974198">Quản lý các trang web sẽ luôn hoạt động và không bị lấy lại bộ nhớ</translation>
 <translation id="6240447795304464094">Biểu trưng của Google Pay</translation>
-<translation id="6240553182907836376">Cập nhật thẻ căn cước</translation>
+<translation id="6240553182907836376">Cập nhật thông tin thẻ căn cước</translation>
 <translation id="6240601837375010619">Lưu thông tin hộ chiếu</translation>
 <translation id="6240964651812394252">Để sử dụng Trình quản lý mật khẩu của Google trên hệ điều hành của bạn, hãy chạy lại Chrome và cho phép truy cập vào trình quản lý mật khẩu trên máy tính. Các thẻ sẽ mở lại sau khi bạn chạy lại Chrome.</translation>
 <translation id="624499991300733384">Dịch vụ bộ sắp xếp bản in</translation>
@@ -3768,7 +3768,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6900702165119149418">Bạn đã đăng xuất</translation>
 <translation id="6907458757809079309">Thể dục</translation>
 <translation id="691024665142758461">Tải xuống nhiều tệp</translation>
-<translation id="691046363691324218">Mã số xác nhận trùng tên</translation>
+<translation id="691046363691324218">Mã số Redress Number</translation>
 <translation id="6915804003454593391">Người dùng:</translation>
 <translation id="6916193791494646625">Cung cấp lý do tải tệp xuống (bắt buộc)</translation>
 <translation id="6917795328362592458">Mật khẩu bạn vừa sử dụng đã bị lộ trong một sự cố rò rỉ dữ liệu. Để bảo mật tài khoản của bạn, Trình quản lý mật khẩu khuyên bạn nên kiểm tra các mật khẩu đã lưu.</translation>
@@ -4122,7 +4122,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7444176988908839653">{COUNT,plural, =0{Hôm nay, cookie sẽ bị chặn trở lại}=1{Ngày mai, cookie sẽ bị chặn trở lại}other{Cookie sẽ bị chặn trở lại sau # ngày nữa}}</translation>
 <translation id="7447234474237738389">Dịch vụ trang phục</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
-<translation id="7450486349221991286">Cập nhật thông tin về xe</translation>
+<translation id="7450486349221991286">Cập nhật thông tin xe</translation>
 <translation id="7450577240311017924">Nút Quản lý dữ liệu đồng bộ hoá, hãy nhấn nút này để quản lý loại thông tin bạn đồng bộ hoá trong phần cài đặt của Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /> về sự cố này.</translation>
 <translation id="745208957946308667">Trò chơi khủng long, nhấn dấu cách để chơi trò chơi này</translation>
@@ -4307,7 +4307,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7690647519407127574">Bưu thiếp Oufuku Hagaki</translation>
 <translation id="7693583928066320343">Thứ tự trang đã nhận</translation>
 <translation id="769424100851389104">Bắt đầu cập nhật ngay</translation>
-<translation id="7696107855583699585">Chỉnh sửa mã số hành khách đã biết</translation>
+<translation id="7696107855583699585">Chỉnh sửa mã số Known Traveler Number</translation>
 <translation id="7697837508203274589">Sự kiện thể thao trực tiếp</translation>
 <translation id="7698864304447945242">Cập nhật Dịch vụ Google Play cho Thực tế tăng cường?</translation>
 <translation id="7701040980221191251">Không có</translation>
@@ -4778,7 +4778,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8456775115498700722">Giờ đây, bạn có thể tự động điền thẻ <ph name="CARD_ISSUER_NAME" /> vì tài khoản <ph name="CARD_ISSUER_NAME" /> của bạn liên kết với Google Pay.</translation>
 <translation id="8457125768502047971">Vô thời hạn</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8461289985785035071">Chỉnh sửa mã số xác nhận trùng tên</translation>
+<translation id="8461289985785035071">Chỉnh sửa mã số Redress Number</translation>
 <translation id="8461694314515752532">Mã hóa dữ liệu đã đồng bộ hóa bằng cụm mật khẩu đồng bộ hóa của riêng bạn</translation>
 <translation id="8461973047386722744">Không tìm thấy mật khẩu nào</translation>
 <translation id="8467494337615822642">Chuyển đến trang kiểm tra an toàn trên Chrome trong phần cài đặt</translation>
@@ -4905,7 +4905,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8687429322371626002">Thiết bị và tài khoản của bạn do <ph name="MANAGER" /> quản lý.</translation>
 <translation id="8688672835843460752">Có sẵn</translation>
 <translation id="868922510921656628">Số trang mỗi tập</translation>
-<translation id="8694684557210599098">Thêm thông tin về xe</translation>
+<translation id="8694684557210599098">Thêm thông tin xe</translation>
 <translation id="8698428283892912525">Chrome tích hợp sẵn các tính năng an toàn nhằm bảo vệ bạn khi bạn duyệt web, chẳng hạn như Duyệt web An toàn của Google – tính năng vừa <ph name="BEGIN_LINK" />phát hiện thấy phần mềm độc hại<ph name="END_LINK" /> trên trang web bạn đã cố truy cập.</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8699041776323235191">Thiết bị HID</translation>
@@ -4982,7 +4982,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8811725516933141693">Nhập @gemini để trò chuyện với Gemini</translation>
 <translation id="8813277370772331957">Nhắc tôi sau</translation>
 <translation id="8814707942599948500">Phong bì C8</translation>
-<translation id="881559332211266856">Cập nhật mã số xác nhận trùng tên</translation>
+<translation id="881559332211266856">Cập nhật mã số Redress Number</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn Enter để cập nhật Chrome trong phần cài đặt của Chrome</translation>
 <translation id="8819155700324279105">Bổ sung một lớp bảo vệ trước các mối đe doạ trên mạng</translation>
 <translation id="8819855907485254989">Lưu vé đi phương tiện công cộng vào Wallet</translation>
@@ -5159,7 +5159,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9107199998619088551"><ph name="MANAGER" /> quản lý hồ sơ của bạn</translation>
 <translation id="9107467864910557787">Trình duyệt của bạn do <ph name="MANAGER" /> quản lý</translation>
 <translation id="91108059142052966">Tính năng chia sẻ màn hình với <ph name="APPLICATION_TITLE" /> khi hiển thị nội dung bí mật bị vô hiệu hóa theo chính sách của quản trị viên</translation>
-<translation id="9114101423898634479">Thêm mã số hành khách đã biết</translation>
+<translation id="9114101423898634479">Thêm mã số Known Traveler Number</translation>
 <translation id="9114524666733003316">Đang xác nhận thẻ...</translation>
 <translation id="9114581008513152754">Không có công ty hay tổ chức nào quản lý trình duyệt này. Hoạt động trên thiết bị này có thể được quản lý ở bên ngoài Chrome. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn Enter để tiếp tục hành trình và xem hoạt động liên quan trong nhật ký duyệt web trên Chrome</translation>

@@ -187,6 +187,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1125550662859510761">Risoluzione di <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1125816658532547876">Usa le tue password sul tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Sfondo e stile</translation>
+<translation id="1126475802377716263">{0,plural, =1{Condivisione di 1 scheda}other{Condivisione di # schede}}</translation>
 <translation id="1126696498560056882">Gestisci gli account su questo dispositivo</translation>
 <translation id="1128591060186966949">Modifica motore di ricerca</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -11247,6 +11248,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9173063514323762371">&amp;Nascondi barra dei preferiti</translation>
 <translation id="917350715406657904">Hai raggiunto il tempo massimo impostato dal genitore per <ph name="APP_NAME" />. Domani potrai utilizzare l'app per <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174854240439014335">Consenti il trascinamento della visualizzazione divisa sul bordo sinistro o destro della finestra</translation>
+<translation id="9174870712400134574">Mostra solo nella pagina Nuova scheda</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Dispositivo Bluetooth connesso</translation>
 <translation id="9177859716483578738">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo <ph name="FIELDS_STRING" /> con questo sito. Leggi le <ph name="BEGIN_LINK" />norme sulla privacy<ph name="END_LINK" /> del sito.</translation>
 <translation id="9178061802301856367">Elimina dati di accesso</translation>
@@ -11259,7 +11261,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# app}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />. Non riceverai una notifica all'inizio della registrazione.}=2{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Non riceverai una notifica all'inizio della registrazione.}=3{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e un'altra app. Non riceverai una notifica all'inizio della registrazione.}other{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e altre # app. Non riceverai una notifica all'inizio della registrazione.}}</translation>
 <translation id="9186963452600581158">Accedi con l'Account Google di un bambino</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Condivisione di 1 scheda in corso…}other{Condivisione di # schede in corso…}}</translation>
 <translation id="9187967020623675250">I tasti non corrispondono. Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Attiva l'isolamento dei processi</translation>
 <translation id="9192019773545828776">Attiva la funzione di lettura vocale per usare il dispositivo senza dover guardare lo schermo. Il feedback braille è disponibile con un dispositivo connesso. Premi Ctrl + Alt + Z per attivare e disattivare ChromeVox. Utilizza il tasto per la ricerca + Freccia sinistra o Freccia destra per spostarti. Utilizza il tasto per la ricerca + Barra spaziatrice per selezionare (attivare).</translation>

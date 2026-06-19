@@ -187,6 +187,7 @@
 <translation id="1125550662859510761">Näyttää olevan <ph name="WIDTH" /> x <ph name="HEIGHT" /> (natiivi)</translation>
 <translation id="1125816658532547876">Käytä salasanojasi laitteella (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="1125921926864945797">Taustakuva ja tyyli</translation>
+<translation id="1126475802377716263">{0,plural, =1{Jaetaan 1 välilehteä}other{Jaetaan # välilehteä}}</translation>
 <translation id="1126696498560056882">Hallinnoi tämän laitteen tilejä</translation>
 <translation id="1128591060186966949">Muokkaa hakukonetta</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -11261,6 +11262,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="9173063514323762371">&amp;Piilota kirjanmerkkipalkki</translation>
 <translation id="917350715406657904">Vanhempasi asettama aikaraja (<ph name="APP_NAME" />) tuli täyteen. Huomenna voit käyttää sovellusta <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174854240439014335">Salli jaetun näkymän vetäminen ja pudottaminen ikkunan vasempaan tai oikeaan reunaan</translation>
+<translation id="9174870712400134574">Näytä vain Uusi välilehti ‑sivulla</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth-laite yhdistetty</translation>
 <translation id="9177859716483578738">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa <ph name="FIELDS_STRING" /> tälle sivustolle. Tutustu sivuston <ph name="BEGIN_LINK" />tietosuojakäytäntöön<ph name="END_LINK" />.</translation>
 <translation id="9178061802301856367">Poista kirjautumisdata</translation>
@@ -11273,7 +11275,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="918352324374649435">{COUNT,plural, =1{Sovellus}other{# sovellusta}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Järjestelmänvalvoja voi tallentaa näyttöäsi, kun <ph name="APP0_NAME" /> on käytössä. Et saa ilmoitusta, kun tallennus alkaa.}=2{Järjestelmänvalvoja voi tallentaa näyttöäsi, kun <ph name="APP0_NAME" /> ja <ph name="APP1_NAME" /> ovat käytössä. Et saa ilmoitusta, kun tallennus alkaa.}=3{Järjestelmänvalvoja voi tallentaa näyttösi milloin tahansa, kun <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ja yksi muu sovellus ovat käytössä. Et saa ilmoitusta, kun tallennus alkaa.}other{Järjestelmänvalvoja voi tallentaa näyttöäsi, kun <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> ja # muuta sovellusta ovat käytössä. Et saa ilmoitusta, kun tallennus alkaa.}}</translation>
 <translation id="9186963452600581158">Kirjaudu sisään lapsen Google-tilillä</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Jaetaan 1 välilehteä}other{Jaetaan # välilehteä}}</translation>
 <translation id="9187967020623675250">Näppäimet eivät täsmää. <ph name="RESPONSE" /> painamalla mitä tahansa näppäintä.</translation>
 <translation id="9188142767272053574">Ota prosessin eristäminen käyttöön</translation>
 <translation id="9192019773545828776">Kuule äänipalautetta, jonka avulla voit käyttää laitetta näyttöä katsomatta. Pistekirjoituspalaute on käytettävissä verkkoon yhdistettävillä laitteilla. Laita ChromeVox päälle tai pois päältä painamalla Ctrl + Alt + Z. Siirry painamalla Haku + vasen nuoli tai oikea nuoli. Valitse (aktivoi) kohta painamalla Haku + välilyönti.</translation>

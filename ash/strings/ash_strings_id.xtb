@@ -1081,8 +1081,8 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="412298498316631026">jendela</translation>
 <translation id="4123259114412175274">Untuk membuka kunci Chromebook, pastikan Bluetooth ponsel Anda aktif</translation>
 <translation id="4123868835475902435">Itulah dasar-dasarnya. Lanjutkan di Jelajahi, aplikasi bawaan kami untuk mendapatkan tips dan bantuan. Anda akan menemukan tips untuk memulai, penawaran spesial, dan fitur <ph name="PRODUCT_NAME" /> terbaru.</translation>
-<translation id="4124779003103520737">{0,plural, =1{<ph name="DEVICE_TYPE" /> Anda akan secara otomatis terkunci dalam # detik.
-        <ph name="DOMAIN" /> mengharuskan Anda tetap memasang kartu smart.}other{<ph name="DEVICE_TYPE" /> Anda akan secara otomatis terkunci dalam # detik.
+<translation id="4124779003103520737">{0,plural, =1{<ph name="DEVICE_TYPE" /> Anda akan otomatis terkunci dalam # detik.
+        <ph name="DOMAIN" /> mengharuskan Anda tetap memasang kartu smart.}other{<ph name="DEVICE_TYPE" /> Anda akan otomatis terkunci dalam # detik.
         <ph name="DOMAIN" /> mengharuskan Anda tetap memasang kartu smart.}}</translation>
 <translation id="4125970834901680537">Mode tablet tidak mendukung streaming aplikasi. Coba lagi dengan mode laptop.</translation>
 <translation id="4131973331381812765">Suhu: <ph name="TEMPERATURE" />°C - Kecepatan saat ini: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
@@ -1787,8 +1787,8 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Anda akan dikeluarkan secara otomatis dalam <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6068258534237496331">Kontrol Panggilan Video</translation>
-<translation id="6070081109266557120">{0,plural, =1{Anda akan secara otomatis logout dalam # detik.
-        <ph name="DOMAIN" /> mengharuskan Anda tetap memasang kartu smart.}other{Anda akan secara otomatis logout dalam # detik.
+<translation id="6070081109266557120">{0,plural, =1{Anda akan otomatis logout dalam # detik.
+        <ph name="DOMAIN" /> mengharuskan Anda tetap memasang kartu smart.}other{Anda akan otomatis logout dalam # detik.
         <ph name="DOMAIN" /> mengharuskan Anda tetap memasang kartu smart.}}</translation>
 <translation id="6071576563962215370">Sistem gagal membuat kunci atribut waktu penginstalan perangkat.</translation>
 <translation id="6072442788591997866"><ph name="APP_NAME" /> tidak diizinkan di perangkat ini. Hubungi administrator Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
@@ -2139,7 +2139,7 @@ Baru diinstal</translation>
 <translation id="7076878155205969899">Mematikan suara</translation>
 <translation id="7083848064787091821">Fokus</translation>
 <translation id="7084678090004350185">Tombol hotspot. Hotspot aktif, <ph name="DEVICECOUNT" /> perangkat terhubung.</translation>
-<translation id="7086438436964931440">Anda akan secara otomatis logout sekarang.
+<translation id="7086438436964931440">Anda akan otomatis logout sekarang.
         <ph name="DOMAIN" /> mengharuskan Anda tetap memasang kartu smart.</translation>
 <translation id="7086931198345821656">Update ini mengharuskan Anda melakukan powerwash <ph name="DEVICE_TYPE" />. Semua data akan dihapus. Pelajari update <ph name="SYSTEM_APP_NAME" /> terbaru lebih lanjut.</translation>
 <translation id="7088960765736518739">Tombol Akses</translation>

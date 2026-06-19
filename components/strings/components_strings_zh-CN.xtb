@@ -2845,7 +2845,7 @@
 <translation id="5466818462212249084">支付应用</translation>
 <translation id="5470861586879999274">恢复修改(&amp;R)</translation>
 <translation id="5471158297908124590">请验证您的身份，以修改支付方式</translation>
-<translation id="5472588168895083535">已屏蔽手部跟踪</translation>
+<translation id="5472588168895083535">已屏蔽手部追踪</translation>
 <translation id="5477756102936130143">允许重定向到支持的支付应用</translation>
 <translation id="5479505548832623900">可能已被扩展程序忽略。</translation>
 <translation id="547963486735802022">尝试重新传输文件</translation>
@@ -3031,7 +3031,7 @@
 <translation id="574392208103952083">中等</translation>
 <translation id="5745586894920491759">Chrome 会在云端处理网页标题和网址</translation>
 <translation id="5745733273847572235">可以询问能否获取您的位置信息</translation>
-<translation id="5750869797196646528">手部跟踪</translation>
+<translation id="5750869797196646528">手部追踪</translation>
 <translation id="5752327398324808817">请输入一到两个字词</translation>
 <translation id="5752519522101347518">正在加载银行验证网站</translation>
 <translation id="5753570386948603678">从下载记录中删除</translation>
@@ -3577,7 +3577,7 @@
 <translation id="6597665340361269064">90 度</translation>
 <translation id="6598976221101665070">剧情片</translation>
 <translation id="6599642189720630047">跟踪的商品</translation>
-<translation id="6613742613135780554">手部跟踪</translation>
+<translation id="6613742613135780554">手部追踪</translation>
 <translation id="6613866251791999074">详细了解 Chrome 中的搜索引擎</translation>
 <translation id="6615297766614333076">堆叠出纸器 2</translation>
 <translation id="6619496928666593220">IBAN 未填充</translation>
@@ -3724,7 +3724,7 @@
 <translation id="6841864657731852591">凹版滚筒</translation>
 <translation id="6842196666980060516">184 x 260 毫米</translation>
 <translation id="6844746916504777213">一律不分享这些网站</translation>
-<translation id="6844998850832008753">这次允许使用手部跟踪</translation>
+<translation id="6844998850832008753">这次允许使用手部追踪</translation>
 <translation id="6849023911358004088">“管理安全设置”按钮，激活它即可在 Chrome 设置中管理您的安全浏览设置和其他设置</translation>
 <translation id="6850286078059909152">文字颜色</translation>
 <translation id="6852204201400771460">要重新加载应用吗？</translation>
@@ -4112,7 +4112,7 @@
 <translation id="7437289804838430631">添加联系信息</translation>
 <translation id="7441627299479586546">策略主题有误</translation>
 <translation id="7441864845853794192">美食和特色食品</translation>
-<translation id="7442389976360981500">允许手部跟踪？</translation>
+<translation id="7442389976360981500">允许手部追踪？</translation>
 <translation id="7442725080345379071">浅橙色</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{Cookie 将于今天再次屏蔽}=1{Cookie 将于明天再次屏蔽}other{Cookie 将于 # 天后再次屏蔽}}</translation>
 <translation id="7447234474237738389">衣着服务</translation>
@@ -4851,7 +4851,7 @@
 <translation id="8586082901536468629">壁球和短柄壁球装备</translation>
 <translation id="858637041960032120">添加电话号码
 </translation>
-<translation id="8587100480629037893">不允许使用手部跟踪</translation>
+<translation id="8587100480629037893">不允许使用手部追踪</translation>
 <translation id="8589282312594195231">Buganizer 问题</translation>
 <translation id="8589998999637048520">最佳的质量</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> 及其他</translation>
@@ -5121,7 +5121,7 @@
 <translation id="9051072642122229460">咖啡机和浓缩咖啡机</translation>
 <translation id="9053955920216300738">您访问的网址</translation>
 <translation id="90542379288189611">车牌号</translation>
-<translation id="9054288282721240609">已允许手部跟踪</translation>
+<translation id="9054288282721240609">已允许手部追踪</translation>
 <translation id="9056953843249698117">网上应用店</translation>
 <translation id="9062620674789239642">该文件可能已被移至别处、修改或删除。</translation>
 <translation id="9063398205799684336">Kaku 2 信封</translation>

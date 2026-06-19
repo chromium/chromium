@@ -187,6 +187,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1125550662859510761">Ser ut som <ph name="WIDTH" /> × <ph name="HEIGHT" /> (fast)</translation>
 <translation id="1125816658532547876">Använd dina lösenord på <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Bakgrund och stil</translation>
+<translation id="1126475802377716263">{0,plural, =1{Delar 1 flik}other{Delar # flikar}}</translation>
 <translation id="1126696498560056882">Hantera konton på den här enheten</translation>
 <translation id="1128591060186966949">Redigera sökmotor</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -11265,6 +11266,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9173063514323762371">Dölj bokmärkesfältet</translation>
 <translation id="917350715406657904">Du har nått gränsen som din förälder har ställt in för <ph name="APP_NAME" />. Du kan använda den i <ph name="TIME_LIMIT" /> i morgon.</translation>
 <translation id="9174854240439014335">Tillåt dra och släpp i delad vy på vänster eller höger fönsterkant</translation>
+<translation id="9174870712400134574">Visa endast på sidan Ny flik</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – Bluetooth-enhet ansluten</translation>
 <translation id="9177859716483578738"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar <ph name="FIELDS_STRING" /> med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK" />integritetspolicy<ph name="END_LINK" />.</translation>
 <translation id="9178061802301856367">Radera inloggningsuppgifter</translation>
@@ -11277,7 +11279,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# appar}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administratören kan spela in din skärm med <ph name="APP0_NAME" />. Du får ingen avisering när inspelningen startar.}=2{Administratören kan spela in din skärm med <ph name="APP0_NAME" /> och <ph name="APP1_NAME" />. Du får ingen avisering när inspelningen startar.}=3{Administratören kan spela in din skärm med <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> och en annan app. Du får ingen avisering när inspelningen startar.}other{Administratören kan spela in skärmen med <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> och # andra appar. Du får ingen avisering när inspelningen startar.}}</translation>
 <translation id="9186963452600581158">Logga in med ett barns Google-konto</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Delar 1 flik.}other{Delar # flikar}}</translation>
 <translation id="9187967020623675250">Tangenterna matchar inte. Tryck på valfri tangent för att <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Aktivera processisolering</translation>
 <translation id="9192019773545828776">Få talad feedback så att du kan använda enheten utan att titta på skärmen. Punktskriftsfeedback är tillgängligt med en ansluten enhet. Aktivera och inaktivera ChromeVox med Ctrl + Alt + Z. Använd Sök + vänsterpil eller högerpil för att navigera. Välj (aktivera) med Sök + mellanslagstangenten.</translation>

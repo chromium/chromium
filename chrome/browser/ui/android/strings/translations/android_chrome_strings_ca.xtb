@@ -358,6 +358,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="253498598929009420">El lloc web podrà veure el contingut de la teva pantalla</translation>
 <translation id="2535807170289627159">Totes les pestanyes</translation>
 <translation id="2536728043171574184">S'està mostrant una còpia sense connexió d'aquesta pàgina</translation>
+<translation id="2537574774089209541">Algunes eines s'han mogut per donar-te accés fàcil a Gemini mentre navegues</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, pestanya d'incògnit silenciada i fixada seleccionada</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, pestanya</translation>
@@ -406,6 +407,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2751271371269891762">Per obtenir les teves adreces d'interès i altres dades en tots els dispositius, inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM/AA</translation>
 <translation id="2762000892062317888">ara mateix</translation>
+<translation id="276378135349383280">Mostra Gemini a la barra d'eines inferior</translation>
 <translation id="276969039800130567">Inici de sessió com a <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">Queden <ph name="SECONDS" /> segons</translation>
 <translation id="2779651927720337254">ha fallat</translation>
@@ -606,6 +608,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3602290021589620013">Previsualitza</translation>
 <translation id="3614126103057878858">Estadístiques de preus</translation>
 <translation id="3616113530831147358">Àudio</translation>
+<translation id="3616798734782988169">Assegura't que confies en <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="3619255692378312441">Gestiona l'accés</translation>
 <translation id="3622349720008044802">Gestiona les finestres</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 lloc web}other{+ # llocs web}}</translation>
@@ -636,6 +639,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3738139272394829648">Toca per cercar</translation>
 <translation id="3739455665973395693">No hi ha cap contrasenya en perill al teu Compte de Google</translation>
 <translation id="3739899004075612870">Afegit a les adreces de: <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Assegura't que confies en aquest lloc web</translation>
 <translation id="3740525748616366977">La cerca per veu no està disponible en aquest dispositiu</translation>
 <translation id="3763110477555836428">S'utilitzarà un número de targeta virtual per a l'emplenament quan tramitis una compra amb aquesta targeta a fi de protegir les teves dades reals. Gestiona-ho a Google Wallet. <ph name="BEGIN_LINK1" />Més informació sobre les targetes virtuals<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Encara no s\u2019han desat algunes dades</translation>
@@ -1535,6 +1539,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7291910923717764901">S'han afegit les descripcions de la imatge per a aquesta pàgina</translation>
 <translation id="7293429513719260019">Selecciona l'idioma</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, pestanya de compartició fixada seleccionada</translation>
+<translation id="7304003340539141201">Demana a Gemini que t'ajudi amb les pestanyes i les tasques</translation>
 <translation id="7311244614769792472">No s'ha trobat cap resultat</translation>
 <translation id="7314734791127433392">No es poden comprovar les contrasenyes</translation>
 <translation id="7324354302972299151">Envia una sol·licitud Do Not Track</translation>
@@ -1881,6 +1886,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8696297579102085705">Envia al teu dispositiu</translation>
 <translation id="8697753151306746444">Comparteix la finestra o la pantalla</translation>
 <translation id="8699120352855309748">No proposis traduir aquests idiomes</translation>
+<translation id="8700565880437506364">Presentem Gemini a Chrome</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8715286883001906001">Reforça les contrasenyes al teu Compte de Google</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> es tancarà</translation>
@@ -1948,6 +1954,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8996847606757455498">Tria un altre proveïdor</translation>
 <translation id="8998837250940831980">No s'ha pogut minimitzar la pestanya. Torna-ho a provar més tard.</translation>
 <translation id="9001604755921395912">Obre en una pestanya d'incògnit</translation>
+<translation id="9010094279589497751">Obre Gemini ràpidament quan el necessitis</translation>
 <translation id="9012585441087414258">Protegeix contra llocs web, baixades i extensions que se sap que són perillosos. Si una pàgina fa res sospitós, els URL i els fragments de contingut de les pàgines s'envien a Navegació segura de Google.</translation>
 <translation id="9019199799064251516">Vols continuar sense un bloqueig de perfil del cotxe?</translation>
 <translation id="9022774213089566801">Visitats amb freqüència</translation>
@@ -2005,6 +2012,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="9190355771000652811">A la barra d'adreces, utilitza aquesta tecla de drecera amb les dreceres dels motors de cerca i de les cerques en llocs web</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, pestanya d'incògnit seleccionada fixada</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{S'ha comprovat fa 1 minut}other{S'ha comprovat fa # minuts}}</translation>
+<translation id="9202894533863490414">Vols baixar contingut d'aquest lloc web?</translation>
 <translation id="9204836675896933765">Queda 1 fitxer</translation>
 <translation id="9205933215779845960">No es troba aquesta pàgina. Comprova'n l'ortografia o prova de fer una cerca a <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

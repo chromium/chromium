@@ -187,6 +187,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1125550662859510761">Ziet eruit als <ph name="WIDTH" /> x <ph name="HEIGHT" /> (systeemeigen resolutie)</translation>
 <translation id="1125816658532547876">Gebruik je wachtwoorden op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Achtergrond en stijl</translation>
+<translation id="1126475802377716263">{0,plural, =1{1 tabblad delen}other{# tabbladen delen}}</translation>
 <translation id="1126696498560056882">Accounts op dit apparaat beheren</translation>
 <translation id="1128591060186966949">Zoekmachine bewerken</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -11244,6 +11245,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9173063514323762371">&amp;Bookmarkbalk verbergen</translation>
 <translation id="917350715406657904">Je hebt de tijdslimiet bereikt die je ouder heeft ingesteld voor <ph name="APP_NAME" />. Je kunt de app morgen <ph name="TIME_LIMIT" /> gebruiken.</translation>
 <translation id="9174854240439014335">Slepen en neerzetten voor gesplitst scherm toestaan aan de linker- of rechterrand van het venster</translation>
+<translation id="9174870712400134574">Alleen tonen op de pagina Nieuw tabblad</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" />: Bluetooth-apparaat verbonden</translation>
 <translation id="9177859716483578738"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je <ph name="FIELDS_STRING" /> met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK" />privacybeleid<ph name="END_LINK" /> van deze site.</translation>
 <translation id="9178061802301856367">Inloggegevens verwijderen</translation>
@@ -11256,7 +11258,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Je beheerder kan je scherm opnemen met <ph name="APP0_NAME" />. Je krijgt geen melding als de opname begint.}=2{Je beheerder kan je scherm opnemen met <ph name="APP0_NAME" /> en <ph name="APP1_NAME" />. Je krijgt geen melding als de opname begint.}=3{Je beheerder kan je scherm opnemen met <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> en 1 andere app. Je krijgt geen melding als de opname begint.}other{Je beheerder kan je scherm opnemen met <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> en # andere apps. Je krijgt geen melding als de opname begint.}}</translation>
 <translation id="9186963452600581158">Inloggen met het Google-account van een kind</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{1 tabblad delen}other{# tabbladen delen}}</translation>
 <translation id="9187967020623675250">Toetsen komen niet overeen. Druk op een willekeurige toets om te <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Procesisolatie aanzetten</translation>
 <translation id="9192019773545828776">Krijg gesproken feedback zodat je je apparaat kunt gebruiken zonder naar het scherm te kijken. Braillefeedback is beschikbaar met een verbonden apparaat. Gebruik Ctrl + Alt + Z om ChromeVox aan en uit te zetten. Gebruik Zoeken + pijl-links of pijl-rechts om te navigeren. Gebruik Zoeken + spatiebalk om te selecteren (activeren).</translation>

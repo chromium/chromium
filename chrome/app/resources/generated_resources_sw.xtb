@@ -187,6 +187,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1125550662859510761">Inaonekana kama <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Ya asili)</translation>
 <translation id="1125816658532547876">Tumia manenosiri yako kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="1125921926864945797">Mandhari na muundo</translation>
+<translation id="1126475802377716263">{0,plural, =1{Umeruhusu kichupo 1 kifikiwe}other{Umeruhusu vichupo # vifikiwe}}</translation>
 <translation id="1126696498560056882">Dhibiti akaunti kwenye kifaa hiki</translation>
 <translation id="1128591060186966949">Badilisha mtambo wa kutafuta</translation>
 <translation id="1129348283834595293">Sayansi dhahania</translation>
@@ -11260,6 +11261,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="9173063514323762371">Ficha Sehemu ya Alamisho</translation>
 <translation id="917350715406657904">Umefikisha kikomo cha muda uliowekwa na mzazi wako katika <ph name="APP_NAME" />. Utaweza kuitumia kwa <ph name="TIME_LIMIT" /> kesho.</translation>
 <translation id="9174854240439014335">Ruhusu mipangilio ya kuburuta na kudondosha mwonekano wa madirisha yaliyogawanywa katika ukingo wa kushoto au wa kulia wa dirisha</translation>
+<translation id="9174870712400134574">Onyesha tu kwenye ukurasa wa Kichupo Kipya</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Kifaa cha Bluetooth kimeunganishwa</translation>
 <translation id="9177859716483578738">Ili uendelee, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> itatuma <ph name="FIELDS_STRING" /> kwenye tovuti hii. Angalia <ph name="BEGIN_LINK" />sera ya faragha<ph name="END_LINK" /> ya tovuti hii.</translation>
 <translation id="9178061802301856367">Futa data ya kuingia katika akaunti</translation>
@@ -11272,7 +11274,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="918352324374649435">{COUNT,plural, =1{Programu}other{Programu #}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Msimamizi wako anaweza kurekodi skrini yako akitumia <ph name="APP0_NAME" />. Hutaarifiwa anapoanza kurekodi.}=2{Msimamizi wako anaweza kurekodi skrini yako akitumia <ph name="APP0_NAME" /> na <ph name="APP1_NAME" />. Hutaarifiwa anapoanza kurekodi.}=3{Msimamizi wako anaweza kurekodi skrini yako akitumia <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> na programu nyingine 1. Hutaarifiwa anapoanza kurekodi.}other{Msimamizi wako anaweza kurekodi skrini yako akitumia <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> na programu nyingine #. Hutaarifiwa anapoanza kurekodi.}}</translation>
 <translation id="9186963452600581158">Ingia ukitumia Akaunti ya Google ya mtoto</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Umeruhusu ufikiaji wa kichupo 1}other{Umeruhusu ufikiaji wa vichupo #}}</translation>
 <translation id="9187967020623675250">Vitufe havilingani. Bonyeza kitufe chochote ili <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Washa kipengele cha Kutenga Mchakato</translation>
 <translation id="9192019773545828776">Sikiliza maelezo yanayotamkwa ili uweze kutumia kifaa chako bila kuangalia kwenye skrini. Maelezo ya nukta nundu yanapatikana katika kifaa kilichounganishwa. Bonyeza kitufe cha Ctrl kisha Alt na Z kwa wakati mmoja ili uwashe au uzime ChromeVox. Bonyeza kitufe cha Tafuta kisha kishale cha kushoto au kishale cha kulia kwa wakati mmoja ili usogeze. Bonyeza kitufe cha Tafuta kisha Nafasi kwa wakati mmoja ili uchague (washa).</translation>

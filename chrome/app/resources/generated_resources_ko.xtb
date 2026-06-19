@@ -187,6 +187,7 @@
 <translation id="1125550662859510761"><ph name="WIDTH" />x<ph name="HEIGHT" />(기본)처럼 보입니다.</translation>
 <translation id="1125816658532547876"><ph name="DEVICE_TYPE" />에서 비밀번호를 사용하세요</translation>
 <translation id="1125921926864945797">배경화면 및 스타일</translation>
+<translation id="1126475802377716263">{0,plural, =1{탭 1개 공유 중}other{탭 #개 공유 중}}</translation>
 <translation id="1126696498560056882">이 기기에서 계정 관리</translation>
 <translation id="1128591060186966949">검색엔진 수정</translation>
 <translation id="1129348283834595293">사이버펑크</translation>
@@ -2918,7 +2919,7 @@
 <translation id="3060987956645097882">휴대전화와 연결을 설정할 수 없습니다. 휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="3061302636956643119">처리를 위해 텍스트가 Google로 전송됩니다.</translation>
 <translation id="306166624240243643">이름 및 URL 업데이트 검토</translation>
-<translation id="3062037978804523418"><ph name="TASK_TITLE" />: 곧 응답하지 않으면 배터리 절약을 위해 Gemini가 이 작업을 중지합니다.</translation>
+<translation id="3062037978804523418"><ph name="TASK_TITLE" />: 빠르게 응답하지 않으면 배터리 절약을 위해 Gemini가 이 작업을 중지합니다.</translation>
 <translation id="3064871050034234884">사이트에서 소리를 재생할 수 있음</translation>
 <translation id="3065041951436100775">탭 사용 중지 관련 피드백</translation>
 <translation id="3065522099314259755">키보드 반복 지연 시간</translation>
@@ -3711,7 +3712,7 @@
 <translation id="3662207097851752847">휴대전화에서 Google 계정 확인하기</translation>
 <translation id="3663417513679360795">표준 미리 로드 사용 설정에 관한 추가 정보</translation>
 <translation id="3664511988987167893">확장 프로그램 아이콘</translation>
-<translation id="366484203224589850"><ph name="TASK_TITLE" />: Gemini가 이 작업을 오랫동안 진행해 왔으며 배터리 절약을 위해 작업을 곧 중지합니다.</translation>
+<translation id="366484203224589850"><ph name="TASK_TITLE" />: Gemini가 이 작업을 오랫동안 진행해 왔으며, 배터리 절약을 위해 작업을 곧 중지합니다.</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" />님이 있는 탭 그룹에 참여}=1{<ph name="OWNER_FIRST_NAME" />님 외 1명이 있는 탭 그룹에 참여}other{<ph name="OWNER_FIRST_NAME" />님 외 #명이 있는 탭 그룹에 참여}}</translation>
 <translation id="3665301845536101715">측면 패널에서 열기</translation>
 <translation id="3665589677786828986">Chrome에서 다른 프로그램이 브라우저 설정을 일부 손상시키고 원래 기본값으로 재설정했음을 감지했습니다.</translation>
@@ -11264,6 +11265,7 @@
 <translation id="9173063514323762371">북마크바 숨기기</translation>
 <translation id="917350715406657904">부모님이 설정한 <ph name="APP_NAME" /> 사용 제한 시간에 도달했습니다. 내일 <ph name="TIME_LIMIT" /> 동안 다시 사용할 수 있습니다.</translation>
 <translation id="9174854240439014335">창 왼쪽 또는 오른쪽 가장자리에서 분할 보기 드래그 앤 드롭 허용</translation>
+<translation id="9174870712400134574">새 탭 페이지에만 표시</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 블루투스 기기 연결됨</translation>
 <translation id="9177859716483578738">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" />을(를) 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />을 확인하세요.</translation>
 <translation id="9178061802301856367">로그인 데이터 삭제</translation>
@@ -11276,7 +11278,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{앱}other{앱 #개}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{관리자가 <ph name="APP0_NAME" /> 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}=2{관리자가 <ph name="APP0_NAME" /> 및 <ph name="APP1_NAME" /> 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}=3{관리자가 <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> 외 1개 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}other{관리자가 <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> 외 #개 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}}</translation>
 <translation id="9186963452600581158">자녀의 Google 계정으로 로그인</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{탭 1개 공유 중}other{탭 #개 공유 중}}</translation>
 <translation id="9187967020623675250">키가 일치하지 않습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="9188142767272053574">프로세스 격리 사용 설정</translation>
 <translation id="9192019773545828776">음성 피드백이 제공되어 화면을 보지 않고도 기기를 사용할 수 있습니다. 연결된 기기로 점자 피드백을 사용할 수 있습니다. ChromeVox를 사용 설정 또는 중지하려면 Ctrl + Alt + Z를 사용하세요. 이동하려면 검색 + 왼쪽 화살표 또는 오른쪽 화살표를 사용하세요. 선택(활성화)하려면 검색 + 스페이스 바를 사용하세요.</translation>

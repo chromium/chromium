@@ -407,7 +407,7 @@
 <translation id="2751271371269891762">برای دریافت نشانک‌ها و موارد دیگر در همه دستگاه‌هایتان، با <ph name="EMAIL" /> به سیستم وارد شوید</translation>
 <translation id="2760805590727089264">ماه/سال</translation>
 <translation id="2762000892062317888">هم‌اکنون</translation>
-<translation id="276378135349383280">‏نمایش Gemini در نوارابزار پایین</translation>
+<translation id="276378135349383280">‏نشان دادن Gemini در نوارابزار پایین</translation>
 <translation id="276969039800130567">با <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شد.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> ثانیه باقی‌مانده است</translation>
 <translation id="2779651927720337254">ناموفق</translation>
@@ -608,7 +608,7 @@
 <translation id="3602290021589620013">پیش‌نمایش</translation>
 <translation id="3614126103057878858">اطلاعات آماری قیمت</translation>
 <translation id="3616113530831147358">صوتی</translation>
-<translation id="3616798734782988169">مطمئن شوید به <ph name="DOWNLOAD_DOMAIN" /> اعتماد دارید</translation>
+<translation id="3616798734782988169">مطمئن شوید که به <ph name="DOWNLOAD_DOMAIN" /> اعتماد دارید</translation>
 <translation id="3619255692378312441">مدیریت دسترسی</translation>
 <translation id="3622349720008044802">مدیریت پنجره‌ها</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ یک سایت}one{+ # سایت}other{+ # سایت}}</translation>
@@ -639,7 +639,7 @@
 <translation id="3738139272394829648">لمس کردن برای جستجو</translation>
 <translation id="3739455665973395693">‏گذرواژه لورفته‌ای در «حساب Google» شما نیست</translation>
 <translation id="3739899004075612870">در <ph name="PRODUCT_NAME" /> نشانک‌گذاری شد</translation>
-<translation id="3740290940447881599">مطمئن شوید به این سایت اعتماد دارید</translation>
+<translation id="3740290940447881599">مطمئن شوید که به این سایت اعتماد دارید</translation>
 <translation id="3740525748616366977">جستجوی گفتاری در این دستگاه دردسترس نیست</translation>
 <translation id="3763110477555836428">‏وقتی با این کارت تسویه‌حساب می‌کنید، شماره کارت مجازی تکمیل می‌شود تا از جزئیات واقعی‌تان محافظت شود. در «کیف پول Google» مدیریت کنید. <ph name="BEGIN_LINK1" />درباره کارت‌های مجازی بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">برخی‌از داده‌ها هنوز ذخیره نشده است</translation>
@@ -1120,7 +1120,7 @@
 <translation id="5763514718066511291">برای کپی کردن نشانی وب این برنامه تک‌ضرب بزنید</translation>
 <translation id="5765517223145864268">درباره تجربه‌تان به ما بگویید. یا <ph name="BEGIN_LINK" />تنظیماتتان را تغییر دهید<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">داده‌های غیرمهم</translation>
-<translation id="5788665823391532892">گزارش کردن مشکل...</translation>
+<translation id="5788665823391532892">گزارش کردن مشکل…</translation>
 <translation id="5793665092639000975">درحال استفاده از <ph name="SPACE_USED" /> از <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">موضوع مسدود‌شده</translation>
 <translation id="580893287573699959">مدیریت موضوعات و سایت‌های موردعلاقه</translation>
@@ -1213,7 +1213,7 @@
 <translation id="6140948187512243695">نمایش جزئیات</translation>
 <translation id="6142183503755612900">هرزمان بخواهید می‌توانید موتور جستجوی پیش‌فرض را در تنظیمات تغییر دهید</translation>
 <translation id="6146563240635539929">ویدیو</translation>
-<translation id="614890671148262506">همیشه اجازه داشتن اعلان‌های این سایت</translation>
+<translation id="614890671148262506">همیشه اجازه دادن به اعلان‌های این سایت</translation>
 <translation id="6150320133806434356">نشانک ذخیره شد</translation>
 <translation id="6150706324143004339">‏برای ذخیره و استفاده کردن از داده‌های Chrome در «حساب Google» خود، Chrome را به‌روزرسانی کنید</translation>
 <translation id="6154478581116148741">برای صادر کردن گذرواژه‌ها از این دستگاه، قفل صفحه را در تنظیمات روشن کنید.</translation>

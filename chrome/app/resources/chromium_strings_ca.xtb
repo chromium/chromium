@@ -382,6 +382,7 @@
 <translation id="5294316920224716406">Quan naveguis en mode d'incògnit, Chromium t'avisarà abans de carregar un lloc web amb una connexió no segura</translation>
 <translation id="5313228254328109263">Servei intern de l'actualitzador de Chromium</translation>
 <translation id="5346389065299425353">Aprofundeix en la cerca afegint diverses pestanyes, fitxers i eines</translation>
+<translation id="5348677704241861105">Obtén una visió general ràpida d'aquest document i fes preguntes amb Gemini a Chromium</translation>
 <translation id="5352264705793813212">Chromium ha trobat algunes recomanacions de seguretat que hauries de revisar</translation>
 <translation id="5352361688875342522">Altres perfils de Chromium</translation>
 <translation id="535243042947607642">ChromiumOS no ha pogut desar les dades de Chromium al teu Compte de Google perquè els detalls d'inici de sessió del compte no estan actualitzats</translation>
@@ -490,6 +491,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6390800440335263989">Per continuar, inicia la sessió a Chromium com a <ph name="EMAIL" />. D'aquesta manera, podem garantir que s'apliquen les polítiques de la teva organització.</translation>
 <translation id="6400112897226594999">Logotip de Chromium a l'interior d'una pantalla d'ordinador.</translation>
 <translation id="6403826409255603130">Chromium és un navegador web que executa les pàgines web i les aplicacions a gran velocitat. És ràpid, estable i fàcil d'utilitzar. Navegueu per Internet amb més seguretat amb protecció inserida a Chromium contra el programari maliciós i contra la pesca de credencials.</translation>
+<translation id="6414624068245092115">Per assegurar-te que puguis fer servir i desar sempre les dades de Chromium al teu Compte de Google, verifica la teva identitat</translation>
 <translation id="642132557830635295">Chromium s'executa més ràpidament i les funcions que utilitzen JavaScript haurien de funcionar tal com es van dissenyar</translation>
 <translation id="6436260184216827876">La cerca d'imatges no està disponible. Torna-ho a provar més tard.</translation>
 <translation id="6442900851116057561">Reinicia Chromium OS</translation>

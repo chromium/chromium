@@ -187,6 +187,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1125550662859510761">Vypadá jako <ph name="WIDTH" /> × <ph name="HEIGHT" /> (nativní)</translation>
 <translation id="1125816658532547876">Používejte svá hesla na zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Tapeta a styl</translation>
+<translation id="1126475802377716263">{0,plural, =1{Sdílí se 1 karta}few{Sdílí se # karty}many{Sdílí se # karty}other{Sdílí se # karet}}</translation>
 <translation id="1126696498560056882">Spravovat účty v tomto zařízení</translation>
 <translation id="1128591060186966949">Úprava vyhledávače</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -11246,6 +11247,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9173063514323762371">&amp;Skrýt lištu záložek</translation>
 <translation id="917350715406657904">Byl vyčerpán časový limit, který pro aplikaci <ph name="APP_NAME" /> nastavili rodiče. Zítra ji budeš moci používat <ph name="TIME_LIMIT" />.</translation>
 <translation id="9174854240439014335">Povolit aktivaci rozděleného zobrazení přetažením na levý nebo pravý okraj okna</translation>
+<translation id="9174870712400134574">Zobrazovat jen na stránce Nová karta</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – je připojeno zařízení Bluetooth</translation>
 <translation id="9177859716483578738">Aby bylo možné pokračovat, bude <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> s tímto webem sdílet tyto vaše údaje: <ph name="FIELDS_STRING" />. Přečtěte si <ph name="BEGIN_LINK" />zásady ochrany soukromí<ph name="END_LINK" /> tohoto webu.</translation>
 <translation id="9178061802301856367">Smazání přihlašovacích údajů</translation>
@@ -11258,7 +11260,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikace}few{# aplikace}many{# aplikace}other{# aplikací}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Váš administrátor může pomocí aplikace <ph name="APP0_NAME" /> nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}=2{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" /> a <ph name="APP1_NAME" /> nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}=3{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a 1 další nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}few{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # dalších nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}many{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # další nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}other{Váš administrátor může pomocí aplikací <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> a # dalších nahrávat vaši obrazovku. O zahájení nahrávání nebudete informováni.}}</translation>
 <translation id="9186963452600581158">Přihlásit se pomocí účtu Google dítěte</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Sdílí se 1 karta}few{Sdílí se # karty}many{Sdílí se # karty}other{Sdílí se # karet}}</translation>
 <translation id="9187967020623675250">Klávesy se neshodují. Pokud chcete <ph name="RESPONSE" />, stiskněte libovolnou klávesu.</translation>
 <translation id="9188142767272053574">Povolit izolaci procesů</translation>
 <translation id="9192019773545828776">Poslouchejte hlasovou odezvu, abyste zařízení mohli používat bez sledování obrazovky. U připojeného zařízení je k dispozici braillská odezva. ChromeVox zapnete nebo vypnete stisknutím kláves Ctrl + Alt + Z. K procházení použijte klávesy Hledat + šipka vlevo nebo šipka vpravo. Výběr (aktivaci) provedete stisknutím klávesy Hledat + mezerníku.</translation>

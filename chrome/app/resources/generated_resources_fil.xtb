@@ -187,6 +187,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1125550662859510761">Mukhang <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Native)</translation>
 <translation id="1125816658532547876">Gamitin ang iyong mga password sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="1125921926864945797">Wallpaper at istilo</translation>
+<translation id="1126475802377716263">{0,plural, =1{Nagse-share ng 1 tab}one{Nagse-share ng # tab}other{Nagse-share ng # na tab}}</translation>
 <translation id="1126696498560056882">Pamahalaan ang mga account sa device na ito</translation>
 <translation id="1128591060186966949">I-edit ang search engine</translation>
 <translation id="1129348283834595293">Cyberpunk</translation>
@@ -11269,6 +11270,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="9173063514323762371">&amp;Itago ang Bookmarks Bar</translation>
 <translation id="917350715406657904">Naabot mo na ang limitasyon sa oras na itinakda ng iyong magulang para sa <ph name="APP_NAME" />. Puwede mo itong magamit nang <ph name="TIME_LIMIT" /> bukas.</translation>
 <translation id="9174854240439014335">Payagan ang pag-drag at pag-drop sa kaliwa o kanang gilid ng window sa split view</translation>
+<translation id="9174870712400134574">Ipakita lang sa page na Bagong Tab</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - May nakakonektang bluetooth device</translation>
 <translation id="9177859716483578738">Para magpatuloy, ishe-share ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong <ph name="FIELDS_STRING" /> sa site na ito. Tingnan ang <ph name="BEGIN_LINK" />patakaran sa privacy<ph name="END_LINK" /> ng site na ito.</translation>
 <translation id="9178061802301856367">I-delete ang data sa pag-sign in</translation>
@@ -11281,7 +11283,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="918352324374649435">{COUNT,plural, =1{App}one{# app}other{# na app}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Puwedeng i-record ng iyong administrator ang screen mo gamit ang <ph name="APP0_NAME" />. Hindi ka aabisuhan kapag nagsimula na ang pag-record.}=2{Puwedeng i-record ng iyong administrator ang screen mo gamit ang <ph name="APP0_NAME" /> at <ph name="APP1_NAME" />. Hindi ka aabisuhan kapag nagsimula na ang pag-record.}=3{Puwedeng i-record ng iyong administrator ang screen mo gamit ang <ph name="APP0_NAME" />, <ph name="APP1_NAME" />, at 1 pang app. Hindi ka aabisuhan kapag nagsimula na ang pag-record.}one{Puwedeng i-record ng iyong administrator ang screen mo gamit ang <ph name="APP0_NAME" />, <ph name="APP1_NAME" />, at # pang app. Hindi ka aabisuhan kapag nagsimula na ang pag-record.}other{Puwedeng i-record ng iyong administrator ang screen mo gamit ang <ph name="APP0_NAME" />, <ph name="APP1_NAME" />, at # pang app. Hindi ka aabisuhan kapag nagsimula na ang pag-record.}}</translation>
 <translation id="9186963452600581158">Mag-sign in gamit ang Google Account ng isang bata</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Nagse-share ng 1 tab}one{Nagse-share ng # tab}other{Nagse-share ng # na tab}}</translation>
 <translation id="9187967020623675250">Hindi magkatugma ang mga key. Pumindot ng anumang key para <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">I-enable ang Pag-isolate ng Proseso</translation>
 <translation id="9192019773545828776">Makarinig ng pasalitang feedback para magamit mo ang iyong device nang hindi tumitingin sa screen. Available ang braille na feedback gamit ang isang nakakonektang device. Gamitin ang Ctrl + Alt + Z para i-on at i-off ang ChromeVox. Gamitin ang Search + Pakaliwang arrow o Pakanang arrow para mag-navigate. Gamitin ang Search + Space para pumili (mag-activate).</translation>

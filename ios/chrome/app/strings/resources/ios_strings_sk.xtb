@@ -628,7 +628,7 @@
 <translation id="3157387275655328056">Pridať do čitateľského zoznamu</translation>
 <translation id="315778507796115851">História</translation>
 <translation id="31652791196570636">Zavrieť</translation>
-<translation id="3167868116600277716">Kanál Objaviť</translation>
+<translation id="3167868116600277716">Feed Objaviť</translation>
 <translation id="3169472444629675720">Objaviť</translation>
 <translation id="3172755898799085680">Gemini nie je na tejto stránke k dispozícii</translation>
 <translation id="3174662312949010067">Uložené heslá môžete používať aj v iných zariadeniach.</translation>
@@ -1126,6 +1126,7 @@
 <translation id="4896467949657706481">Karty boli zatvorené a systém vás odhlásil</translation>
 <translation id="4911042367886397055">Vitajte späť, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Kópiu svojho hesla môžete bezpečne zdieľať s členom svojej rodinnej skupiny. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="4916679969857390442">Lupa</translation>
 <translation id="4917025507570489430">Existujúce dáta prehliadania môžete používať, keď sa prihlásite ako <ph name="USER_EMAIL" />. Vaša organizácia si môže tieto údaje zobraziť.</translation>
 <translation id="4918086044614829423">Prijať</translation>
 <translation id="4930714375720679147">Zapnúť</translation>
@@ -2124,7 +2125,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="8233237502828137700">Zavrieť promo banner</translation>
 <translation id="823339794112333264">Zapnúť mikrofón</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
-<translation id="8258734532103758067">Moje údaje boli exportované</translation>
+<translation id="8258734532103758067">Moje dáta boli exportované</translation>
 <translation id="8258999165172757081">Pridané</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
 <translation id="82619448491672958">Zobraziť iné karty</translation>
