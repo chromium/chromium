@@ -73,11 +73,13 @@ void InvokeAction(actions::ActionId id, actions::ActionItem* scope) {
 // Returns the current browser window, regardless of whether this instance is
 // tab-scoped or window-scoped.
 BrowserWindowInterface* GetBrowserWindowInterface(
-    std::variant<BrowserWindowInterface*, tabs::TabInterface*> interface) {
-  if (std::holds_alternative<BrowserWindowInterface*>(interface)) {
-    return std::get<BrowserWindowInterface*>(interface);
+    std::variant<raw_ptr<BrowserWindowInterface>, raw_ptr<tabs::TabInterface>>
+        interface) {
+  if (std::holds_alternative<raw_ptr<BrowserWindowInterface>>(interface)) {
+    return std::get<raw_ptr<BrowserWindowInterface>>(interface);
   }
-  return std::get<tabs::TabInterface*>(interface)->GetBrowserWindowInterface();
+  return std::get<raw_ptr<tabs::TabInterface>>(interface)
+      ->GetBrowserWindowInterface();
 }
 
 class HistoryClustersSidePanelContextMenu
@@ -85,7 +87,8 @@ class HistoryClustersSidePanelContextMenu
       public ui::SimpleMenuModel::Delegate {
  public:
   HistoryClustersSidePanelContextMenu(
-      std::variant<BrowserWindowInterface*, tabs::TabInterface*> interface,
+      std::variant<raw_ptr<BrowserWindowInterface>, raw_ptr<tabs::TabInterface>>
+          interface,
       GURL url)
       : ui::SimpleMenuModel(this), interface_(interface), url_(std::move(url)) {
     AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
@@ -100,7 +103,8 @@ class HistoryClustersSidePanelContextMenu
                         IDS_HISTORY_CLUSTERS_COPY_LINK);
   }
   HistoryClustersSidePanelContextMenu(
-      std::variant<BrowserWindowInterface*, tabs::TabInterface*> interface,
+      std::variant<raw_ptr<BrowserWindowInterface>, raw_ptr<tabs::TabInterface>>
+          interface,
       std::string query)
       : ui::SimpleMenuModel(this), interface_(interface), query_(query) {
     AddItemWithStringId(IDC_CUT, IDS_HISTORY_CLUSTERS_CUT);
@@ -177,7 +181,8 @@ class HistoryClustersSidePanelContextMenu
  private:
   // Exactly one of `browser_window_interface_` and `tab_interface_` will be
   // non-nullptr.
-  std::variant<BrowserWindowInterface*, tabs::TabInterface*> interface_;
+  std::variant<raw_ptr<BrowserWindowInterface>, raw_ptr<tabs::TabInterface>>
+      interface_;
   std::string query_;
   GURL url_;
 };
