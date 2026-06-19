@@ -669,15 +669,21 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, InvokeActionClickRecordsMetrics) {
           page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
 
       PressButton(kIndigoPageActionIconElementId),
+      WaitForShow(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      PressButton(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
       WaitForShow(IndigoToolbar::kToolbarElementId),
 
+      // Once for anchored message on first tab, then second tab click
+      // suggestion chip and anchored message.
       Check([&]() {
         return user_action_tester.GetActionCount("Indigo.PageAction.Click") ==
-               2;
+               3;
       }),
       Check([&]() {
         return user_action_tester.GetActionCount(
-                   "Indigo.PageAction.AnchoredMessage.Click") == 1;
+                   "Indigo.PageAction.AnchoredMessage.Click") == 2;
       }),
       Check([&]() {
         return user_action_tester.GetActionCount(
@@ -708,6 +714,28 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToastRetryClickRecordsMetrics) {
                            user_action_tester.GetActionCount(
                                "Indigo.PageAction.Click") == 0;
                   }));
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, SuggestionChipClickFlow) {
+  IndigoService* service =
+      IndigoServiceFactory::GetForProfile(browser()->profile());
+  // Set anchored message as already shown so the suggestion chip shows
+  // automatically instead of the anchored message.
+  service->AnchoredMessageShown();
+  const GURL main_tab_url = embedded_test_server()->GetURL("/image.html");
+  RunTestSequence(
+      InstrumentTab(kWebContentsId),
+      NavigateWebContents(kWebContentsId, main_tab_url),
+      WaitForWebContentsReady(kWebContentsId, main_tab_url),
+      WaitForShow(kIndigoPageActionIconElementId),
+      // Verify that anchored message is NOT shown initially.
+      EnsureNotPresent(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageBubbleId),
+      // Click the suggestion chip (which is kIndigoPageActionIconElementId).
+      PressButton(kIndigoPageActionIconElementId),
+      // Wait for anchored message bubble to show.
+      WaitForShow(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageBubbleId));
 }
 
 }  // namespace

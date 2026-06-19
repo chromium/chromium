@@ -208,9 +208,24 @@ void IndigoPageActionController::InvokeAction(EntryPoint entry_point) {
     return;
   }
 
-  indigo_service_->GetCombinedEligibility(
-      base::BindOnce(&IndigoPageActionController::CheckEligibilityForOnboarding,
-                     invoke_weak_ptr_factory_.GetWeakPtr()));
+  switch (entry_point) {
+    case EntryPoint::kErrorToast:
+    case EntryPoint::kAnchoredMessage:
+      indigo_service_->GetCombinedEligibility(base::BindOnce(
+          &IndigoPageActionController::CheckEligibilityForOnboarding,
+          invoke_weak_ptr_factory_.GetWeakPtr()));
+      return;
+    case EntryPoint::kSuggestionChip:
+      if (glic::GlicSidePanelCoordinator::IsShowing(&tab())) {
+        indigo_service_->GetCombinedEligibility(base::BindOnce(
+            &IndigoPageActionController::CheckEligibilityForOnboarding,
+            invoke_weak_ptr_factory_.GetWeakPtr()));
+        return;
+      }
+      ShowAnchoredMessage(
+          page_actions::PageActionPriorityCategory::kUserInteraction);
+      return;
+  }
 }
 
 void IndigoPageActionController::CheckEligibilityForOnboarding(
@@ -260,7 +275,8 @@ void IndigoPageActionController::ContinueInvoke(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kIndigoOpenGlic)) {
+  if (base::FeatureList::IsEnabled(features::kIndigoOpenGlic) &&
+      !glic::GlicSidePanelCoordinator::IsShowing(&tab())) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     if (auto* glic_keyed_service = glic::GlicKeyedService::Get(profile)) {
@@ -514,20 +530,10 @@ void IndigoPageActionController::UpdateEntryPointsState() {
 
   if (should_show) {
     page_action_controller_->Show(kActionIndigo);
-    if (indigo_service_->CanShowAnchoredMessage()) {
-      page_action_controller_->SetAnchoredMessageText(
-          kActionIndigo, l10n_util::GetStringUTF16(
-                             IDS_INDIGO_ENTRYPOINT_ANCHORED_MESSAGE_TEXT));
-      gfx::ImageSkia* icon =
-          ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              IDR_GLIC_BUTTON_ALT_ICON);
-      page_action_controller_->SetAnchoredMessageIcon(
-          kActionIndigo,
-          icon ? ui::ImageModel::FromImageSkia(*icon) : ui::ImageModel());
-      page_action_controller_->ShowAnchoredMessage(
-          kActionIndigo,
-          {.priority =
-               page_actions::PageActionPriorityCategory::kContextualCue});
+    if (indigo_service_->CanShowAnchoredMessage() &&
+        !glic::GlicSidePanelCoordinator::IsShowing(&tab())) {
+      ShowAnchoredMessage(
+          page_actions::PageActionPriorityCategory::kContextualCue);
     } else {
       page_action_controller_->ShowSuggestionChip(kActionIndigo);
     }
@@ -615,6 +621,21 @@ views::View* IndigoPageActionController::GetIndigoOverlayView() const {
   CHECK(contents_container);
 
   return contents_container->indigo_overlay_view();
+}
+
+void IndigoPageActionController::ShowAnchoredMessage(
+    page_actions::PageActionPriorityCategory priority) {
+  page_action_controller_->SetAnchoredMessageText(
+      kActionIndigo,
+      l10n_util::GetStringUTF16(IDS_INDIGO_ENTRYPOINT_ANCHORED_MESSAGE_TEXT));
+  gfx::ImageSkia* icon =
+      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_GLIC_BUTTON_ALT_ICON);
+  page_action_controller_->SetAnchoredMessageIcon(
+      kActionIndigo,
+      icon ? ui::ImageModel::FromImageSkia(*icon) : ui::ImageModel());
+  page_action_controller_->ShowAnchoredMessage(kActionIndigo,
+                                               {.priority = priority});
 }
 
 void IndigoPageActionController::DestroyToolbar() {
