@@ -29,7 +29,7 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   ~BrowserViewLayoutImpl() override;
 
   // BrowserViewLayout:
-  void Layout(views::View* host) override;
+  void Layout(views::View* host) final;
 
  protected:
   using WindowState = BrowserViewLayoutDelegate::WindowState;
@@ -163,6 +163,11 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   virtual void DoPostLayoutCleanup();
 
  private:
+  // Does the actual layout. If the top container bounds are changed, may need
+  // to exit early, recalculate parameters, and do a second pass without the top
+  // container.
+  void DoLayout(views::View* host, bool include_top_container);
+
   // Retrieve dimensions of modal dialogs.
 
   // Gets the top of the dialog anchoring area, in local coordinates.
