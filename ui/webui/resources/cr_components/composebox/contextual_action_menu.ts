@@ -37,12 +37,41 @@ export const SHARE_TABS_FLYOUT_GAP_PX = 0;
 export const DEFAULT_FLYOUT_WIDTH_PX = 320;
 
 const ALIGNMENT_THRESHOLD_PX = 160;
+const ANCHOR_RIGHT_THRESHOLD_PX = 362;
 export const VIEWPORT_BUFFER_PX = 16;
 export const MIN_MENU_HEIGHT_PX = 100;
 export const SHARE_TABS_FLYOUT_MAX_HEIGHT_PX = 344;
 
 // Gap between tab shared menu and context menu in px.
 const MENU_GAP = 0;
+
+interface ShowAtConfig {
+  top?: number;
+  left?: number;
+  width?: number;
+  height?: number;
+  anchorAlignmentX?: AnchorAlignment;
+  anchorAlignmentY?: AnchorAlignment;
+  noOffset?: boolean;
+}
+
+function querySelectorAllShadows(root: Node, selector: string): HTMLElement[] {
+  const results: HTMLElement[] = [];
+
+  if (root instanceof HTMLElement && root.matches(selector)) {
+    results.push(root);
+  }
+
+  if (root instanceof Element && root.shadowRoot) {
+    results.push(...querySelectorAllShadows(root.shadowRoot, selector));
+  }
+
+  root.childNodes.forEach(child => {
+    results.push(...querySelectorAllShadows(child, selector));
+  });
+
+  return results;
+}
 
 export interface ContextualActionMenuElement {
   $: {
@@ -234,50 +263,110 @@ export class ContextualActionMenuElement extends
 
   private onWindowBlur_ = this.close.bind(this);
 
+  private computeMenuWidth_(): number {
+    return this.contextManagementInComposeboxEnabled_ ?
+        SHARE_TABS_MENU_WIDTH_PX :
+        MENU_WIDTH_PX;
+  }
+
+  private constrainMenuHeight_(maxHeight: number) {
+    const menuHeight = this.$.menu.getDialog().offsetHeight;
+    if (menuHeight > maxHeight) {
+      const constrainedHeight = Math.max(MIN_MENU_HEIGHT_PX, maxHeight);
+      this.$.menu.style.setProperty(
+          '--contextual-menu-max-height', `${constrainedHeight}px`);
+    } else {
+      this.$.menu.style.removeProperty('--contextual-menu-max-height');
+    }
+  }
+
+  private computeHorizontalLimit_(iconRect: DOMRect): number {
+    let limitX = window.innerWidth;
+    const obstacleButtons = querySelectorAllShadows(
+        document.body,
+        '#voiceSearchButton, .voice-icon, #voiceSearch, #lensSearchButton, #lensIcon, .lens-icon');
+
+    for (const btn of obstacleButtons) {
+      const btnRect = btn.getBoundingClientRect();
+      if (btnRect.width > 0 && btnRect.height > 0) {
+        // Only consider obstacles that are in the same rough horizontal row/band as the anchor
+        if (btnRect.bottom > iconRect.top - 20 &&
+            btnRect.top < iconRect.bottom + 20) {
+          if (btnRect.left > iconRect.left) {
+            limitX = Math.min(limitX, btnRect.left);
+          }
+        }
+      }
+    }
+    return limitX;
+  }
+
   showAt(anchor: HTMLElement) {
+    const menuWidth = this.computeMenuWidth_();
     // Show the menu initially to render it and measure its natural height.
     this.$.menu.showAt(anchor, {
-      width: this.contextManagementInComposeboxEnabled_ ?
-          SHARE_TABS_MENU_WIDTH_PX :
-          MENU_WIDTH_PX,
+      width: menuWidth,
       anchorAlignmentX: AnchorAlignment.AFTER_START,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
       noOffset: true,
     });
 
     const rect = anchor.getBoundingClientRect();
-    const menuHeight = this.$.menu.getDialog().offsetHeight;
+    const iconElement = anchor.querySelector('#entrypointIcon') || anchor;
+    const iconRect = iconElement.getBoundingClientRect();
+
     const spaceBelow = window.innerHeight - rect.bottom;
     const spaceAbove = rect.top;
 
-    // Decide alignment strictly based on the threshold.
-    const anchorAlignmentY = spaceBelow >= ALIGNMENT_THRESHOLD_PX ?
-        AnchorAlignment.AFTER_END :
-        AnchorAlignment.BEFORE_START;
+    // Decide whether to anchor to the right of the plus button.
+    let shouldAnchorRight = spaceBelow < ANCHOR_RIGHT_THRESHOLD_PX &&
+        spaceAbove < ANCHOR_RIGHT_THRESHOLD_PX;
 
-    // Calculate max height based on the chosen alignment.
-    const availableSpace = anchorAlignmentY === AnchorAlignment.AFTER_END ?
-        spaceBelow :
-        spaceAbove;
-    const maxHeight = availableSpace - VIEWPORT_BUFFER_PX;
+    if (shouldAnchorRight) {
+      const limitX = this.computeHorizontalLimit_(iconRect);
+      const menuRight = iconRect.right + menuWidth;
+      if (menuRight > limitX - VIEWPORT_BUFFER_PX) {
+        shouldAnchorRight = false;
+      }
+    }
 
-    // Constrain height if the menu is taller than available space.
-    if (menuHeight > maxHeight) {
-      const constrainedHeight = Math.max(MIN_MENU_HEIGHT_PX, maxHeight);
-      this.$.menu.style.setProperty('--contextual-menu-max-height', `${constrainedHeight}px`);
+    let config: ShowAtConfig = {
+      width: menuWidth,
+      noOffset: true,
+    };
+
+    if (shouldAnchorRight) {
+      this.constrainMenuHeight_(window.innerHeight - VIEWPORT_BUFFER_PX * 2);
+
+      // Override the anchor dimensions to match the icon's dimensions.
+      config = {
+        ...config,
+        top: iconRect.top,
+        left: iconRect.left,
+        width: iconRect.width,
+        height: iconRect.height,
+        anchorAlignmentX: AnchorAlignment.AFTER_END,
+        anchorAlignmentY: AnchorAlignment.AFTER_START,
+      };
     } else {
-      this.$.menu.style.removeProperty('--contextual-menu-max-height');
+      const anchorAlignmentY = spaceBelow >= ALIGNMENT_THRESHOLD_PX ?
+          AnchorAlignment.AFTER_END :
+          AnchorAlignment.BEFORE_START;
+
+      const availableSpace = anchorAlignmentY === AnchorAlignment.AFTER_END ?
+          spaceBelow :
+          spaceAbove;
+      this.constrainMenuHeight_(availableSpace - VIEWPORT_BUFFER_PX);
+
+      config = {
+        ...config,
+        anchorAlignmentX: AnchorAlignment.AFTER_START,
+        anchorAlignmentY,
+      };
     }
 
     // Position the menu using the finalized alignment.
-    this.$.menu.showAt(anchor, {
-      width: this.contextManagementInComposeboxEnabled_ ?
-          SHARE_TABS_MENU_WIDTH_PX :
-          MENU_WIDTH_PX,
-      anchorAlignmentX: AnchorAlignment.AFTER_START,
-      anchorAlignmentY: anchorAlignmentY,
-      noOffset: true,
-    });
+    this.$.menu.showAt(anchor, config);
     window.addEventListener('blur', this.onWindowBlur_);
 
     if (this.contextManagementInComposeboxEnabled_) {

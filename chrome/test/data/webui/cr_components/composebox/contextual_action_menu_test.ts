@@ -2200,6 +2200,152 @@ suite('ContextualActionMenu', () => {
       assertEquals(2, showAtCalls.length);
       assertEquals(AnchorAlignment.BEFORE_START, showAtCalls[1].anchorAlignmentY);
     });
+
+    test(
+        'Anchors to the right if space above and below are both < 362px',
+        async () => {
+          Object.defineProperty(window, 'innerHeight', {
+            value: 500,
+            configurable: true,
+          });
+          Object.defineProperty(window, 'innerWidth', {
+            value: 1000,
+            configurable: true,
+          });
+
+          anchor.getBoundingClientRect = () => {
+            return {
+              bottom: 300,
+              top: 250,
+              left: 100,
+              right: 200,
+              width: 100,
+              height: 50,
+              x: 100,
+              y: 250,
+            } as DOMRect;
+          };
+
+          actionMenu.showAt(anchor);
+          await microtasksFinished();
+
+          assertEquals(2, showAtCalls.length);
+          assertEquals(
+              AnchorAlignment.AFTER_END, showAtCalls[1].anchorAlignmentX);
+          assertEquals(
+              AnchorAlignment.AFTER_START, showAtCalls[1].anchorAlignmentY);
+        });
+
+    test(
+        'Anchors to the right of the icon even when favicon coins are present',
+        async () => {
+          Object.defineProperty(window, 'innerHeight', {
+            value: 500,
+            configurable: true,
+          });
+          Object.defineProperty(window, 'innerWidth', {
+            value: 1000,
+            configurable: true,
+          });
+
+          const mockIcon = document.createElement('div');
+          mockIcon.id = 'entrypointIcon';
+          mockIcon.getBoundingClientRect = () => {
+            return {
+              bottom: 290,
+              top: 260,
+              left: 100,
+              right: 130,
+              width: 30,
+              height: 30,
+              x: 100,
+              y: 260,
+            } as DOMRect;
+          };
+          anchor.appendChild(mockIcon);
+
+          anchor.getBoundingClientRect = () => {
+            return {
+              bottom: 300,
+              top: 250,
+              left: 100,
+              right: 250,
+              width: 150,
+              height: 50,
+              x: 100,
+              y: 250,
+            } as DOMRect;
+          };
+
+          actionMenu.showAt(anchor);
+          await microtasksFinished();
+
+          assertEquals(2, showAtCalls.length);
+          assertEquals(
+              AnchorAlignment.AFTER_END, showAtCalls[1].anchorAlignmentX);
+          assertEquals(
+              AnchorAlignment.AFTER_START, showAtCalls[1].anchorAlignmentY);
+          assertEquals(100, showAtCalls[1].left);
+          assertEquals(30, showAtCalls[1].width);
+
+          mockIcon.remove();
+        });
+
+    test(
+        'Does not anchor to the right if obstructed by voice/lens buttons',
+        async () => {
+          const mockSearchbox = document.createElement('ntp-searchbox') as any;
+          const shadowRoot = mockSearchbox.attachShadow({mode: 'open'});
+
+          const mockVoiceButton = document.createElement('button');
+          mockVoiceButton.id = 'voiceSearchButton';
+          mockVoiceButton.getBoundingClientRect = () => {
+            return {
+              left: 350,
+              width: 40,
+              height: 40,
+              top: 255,
+              bottom: 295,
+            } as DOMRect;
+          };
+          shadowRoot.appendChild(mockVoiceButton);
+
+          shadowRoot.appendChild(anchor);
+          document.body.appendChild(mockSearchbox);
+
+          Object.defineProperty(window, 'innerHeight', {
+            value: 500,
+            configurable: true,
+          });
+          Object.defineProperty(window, 'innerWidth', {
+            value: 1000,
+            configurable: true,
+          });
+
+          anchor.getBoundingClientRect = () => {
+            return {
+              bottom: 300,
+              top: 250,
+              left: 100,
+              right: 200,
+              width: 100,
+              height: 50,
+              x: 100,
+              y: 250,
+            } as DOMRect;
+          };
+
+          actionMenu.showAt(anchor);
+          await microtasksFinished();
+
+          mockSearchbox.remove();
+
+          assertEquals(2, showAtCalls.length);
+          assertEquals(
+              AnchorAlignment.AFTER_START, showAtCalls[1].anchorAlignmentX);
+          assertEquals(
+              AnchorAlignment.AFTER_END, showAtCalls[1].anchorAlignmentY);
+        });
   });
 
   suite('ShareTabsFlyoutViewportPositioning', () => {
