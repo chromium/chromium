@@ -546,6 +546,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="34" label="SWH_BAD_WORKER_THREAD_ID"/>
   <int value="35" label="ER_INVALID_EXTENSION_ID_FOR_PROCESS"/>
   <int value="36" label="CEFH_INVALID_EXTENSION_ID_FOR_SCRIPT_INJECT_REQUEST"/>
+  <int value="37" label="EMF_INVALID_MESSAGE_FROM_SANDBOXED_PROCESS"/>
 </enum>
 
 <enum name="BadMessageReasonGuestView">
