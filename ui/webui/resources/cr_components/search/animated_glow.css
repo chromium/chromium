@@ -87,6 +87,12 @@
   border-radius: inherit;
 
   display: contents;
+
+  --glow-animation-delay: 0ms;
+}
+
+:host([animation-state='expanding'][energy-effect-animation-enabled]) {
+  --glow-animation-delay: 150ms;
 }
 
 .audio-animation {
@@ -224,6 +230,7 @@
 
 :host([animation-state='dragging'][energy-effect-animation-enabled]),
 :host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]),
+:host([animation-state='expanding'][energy-effect-animation-enabled][entrypoint-name='Realbox']),
 :host([animation-state='submitting'][energy-effect-animation-enabled]) {
   --dragging-glow-gradient: conic-gradient(
     #3186ff 34%,
@@ -257,6 +264,8 @@
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before,
 :host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper .gradient::before,
 :host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper .double-gradient::before,
+:host([animation-state='expanding'][energy-effect-animation-enabled][entrypoint-name='Realbox']) .gradient-blur-wrapper .gradient::before,
+:host([animation-state='expanding'][energy-effect-animation-enabled][entrypoint-name='Realbox']) .gradient-sharp-wrapper .double-gradient::before,
 :host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient::before,
 :host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before {
   animation: none;
@@ -475,6 +484,7 @@
 
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper,
 :host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper,
+:host([animation-state='expanding'][energy-effect-animation-enabled][entrypoint-name='Realbox']) .gradient-blur-wrapper,
 :host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-blur-wrapper {
   border-radius: inherit;
   display: block;
@@ -485,12 +495,13 @@
 }
 
 :host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper,
+:host([animation-state='expanding'][energy-effect-animation-enabled][entrypoint-name='Realbox']) .gradient-blur-wrapper,
 :host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-blur-wrapper {
   animation:
-    animateOpacity var(--gradient-burst-duration) both,
+    animateOpacity var(--gradient-burst-duration) var(--glow-animation-delay) both,
     animateAngles var(--gradient-burst-duration)
-      var(--standard-decelerate-curve) both,
-    animateBlur var(--gradient-burst-duration) linear both;
+      var(--standard-decelerate-curve) var(--glow-animation-delay) both,
+    animateBlur var(--gradient-burst-duration) linear var(--glow-animation-delay) both;
 }
 
 @keyframes animateOpacity {
@@ -541,6 +552,7 @@
 
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper,
 :host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper,
+:host([animation-state='expanding'][energy-effect-animation-enabled][entrypoint-name='Realbox']) .gradient-sharp-wrapper,
 :host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-sharp-wrapper {
   border-radius: inherit;
   display: block;
@@ -551,15 +563,17 @@
 }
 
 :host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper,
+:host([animation-state='expanding'][energy-effect-animation-enabled][entrypoint-name='Realbox']) .gradient-sharp-wrapper,
 :host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-sharp-wrapper {
   animation:
-    animateOpacity var(--gradient-burst-duration) both,
+    animateOpacity var(--gradient-burst-duration) var(--glow-animation-delay) both,
     animateAngles var(--gradient-burst-duration)
-      var(--standard-decelerate-curve) both;
+      var(--standard-decelerate-curve) var(--glow-animation-delay) both;
 }
 
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient,
 :host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper .gradient,
+:host([animation-state='expanding'][energy-effect-animation-enabled][entrypoint-name='Realbox']) .gradient-blur-wrapper .gradient,
 :host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient {
   scale: 7 1.5;
   -webkit-mask-image: conic-gradient(
@@ -584,6 +598,7 @@
 
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .double-gradient,
 :host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .double-gradient,
+:host([animation-state='expanding'][energy-effect-animation-enabled][entrypoint-name='Realbox']) .double-gradient,
 :host([animation-state='submitting'][energy-effect-animation-enabled]) .double-gradient {
   scale: 7 1.5;
   -webkit-mask-image: conic-gradient(
@@ -608,6 +623,7 @@
 
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before,
 :host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper .double-gradient::before,
+:host([animation-state='expanding'][energy-effect-animation-enabled][entrypoint-name='Realbox']) .gradient-sharp-wrapper .double-gradient::before,
 :host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before {
   animation: none;
   background: var(--dragging-glow-gradient);
@@ -630,6 +646,7 @@
 
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .background,
 :host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .background,
+:host([animation-state='expanding'][energy-effect-animation-enabled][entrypoint-name='Realbox']) .background,
 :host([animation-state='submitting'][energy-effect-animation-enabled]) .background {
   /*
   * Remove transparent border and inset by 2px so background covers

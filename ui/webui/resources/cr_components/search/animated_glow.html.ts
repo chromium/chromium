@@ -44,7 +44,7 @@ export function getHtml(this: SearchAnimatedGlowElement) {
     ${this.energyEffectAnimationEnabled &&
       (this.animationState === GlowAnimationState.DRAGGING ||
        this.animationState === GlowAnimationState.SUBMITTING ||
-       this.isZeroState) ? html`
+      this.isZeroState || this.entrypointName === 'Realbox') ? html`
       <div class="gradient-blur-wrapper">
         <div class="gradient"></div>
       </div>

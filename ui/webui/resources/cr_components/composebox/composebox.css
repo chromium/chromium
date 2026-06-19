@@ -256,15 +256,12 @@ search-animated-glow {
     box-shadow: var(--box-shadow-energy-effect);
     animation-timing-function: var(--standard-decelerate-curve);
   }
-  9.8% {
+  25% {
     box-shadow: var(--box-shadow-energy-effect-no-alpha);
   }
-  19.7% {
+  50% {
     animation-timing-function: var(--emphasized-accelerate-curve);
     box-shadow: var(--box-shadow-energy-effect-no-alpha);
-  }
-  39.4% {
-    box-shadow: var(--box-shadow-energy-effect);
   }
   100% {
     box-shadow: var(--box-shadow-energy-effect);
@@ -272,11 +269,13 @@ search-animated-glow {
 }
 
 :host([energy-effect-animation-enabled][animation-state='expanding'])::after {
-  animation: animateBorder var(--box-shadow-animation-duration) both;
+  animation: animateBorder var(--box-shadow-animation-duration) linear both;
+  opacity: 0;
 }
 
 :host([energy-effect-animation-enabled][animation-state='submitting'])::after {
-  animation: animateBorderSubmitting var(--box-shadow-animation-duration) both;
+  animation: animateBorderSubmitting var(--box-shadow-animation-duration) linear both;
+  opacity: 0;
 }
 
 :host([energy-effect-animation-enabled][animation-state='dragging'])::after {
@@ -288,15 +287,12 @@ search-animated-glow {
     opacity: 1;
     animation-timing-function: var(--standard-decelerate-curve);
   }
-  9.8% {
+  25% {
     opacity: 0;
   }
-  19.7% {
+  50% {
+    opacity: 0;
     animation-timing-function: var(--emphasized-accelerate-curve);
-    opacity: 0;
-  }
-  39.4% {
-    opacity: 1;
   }
   100% {
     opacity: 1;
