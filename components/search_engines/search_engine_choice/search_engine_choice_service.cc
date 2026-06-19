@@ -878,10 +878,18 @@ void SearchEngineChoiceService::RecordChoiceMade(
   ClearSearchEngineChoiceInvalidation(*profile_prefs_);
 
   if (should_keep_existing_choice_record) {
+#if BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
     // There is an existing record AND we should keep it. In this case, being
     // called from a choice screen is not expected.
+    //
+    // This check is skipped on non-chrome choice platforms, as on Android we
+    // use the `kChoiceScreen` value for choices imported from the OS, where we
+    // don't have control on reprompts and other ways of a choice to be
+    // re-imported. As we observed hits there, we suppress the check for now to
+    // limit useless crash reports.
     CHECK_NE(choice_location, ChoiceMadeLocation::kChoiceScreen,
              base::NotFatalUntil::M153);
+#endif  // BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
     return;
   }
 
