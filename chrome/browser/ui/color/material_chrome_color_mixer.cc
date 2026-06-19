@@ -142,6 +142,13 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // Extension manager WebUI colors.
   mixer[kColorExtensionManagerHighlightText] = {ui::kColorSysPrimary};
 
+  // Settings columned header colors.
+  mixer[kColorSettingsColumnedSectionDescriptionHeader] = {
+      ui::kColorSysPrimary};
+
+  // Settings info card colors.
+  mixer[kColorSettingsInfoCardBackground] = {ui::kColorSysBaseContainer};
+
   // Lens overlay colors.
   mixer[kColorLensOverlayToastBackground] = {ui::kColorSysInverseSurface};
   mixer[kColorLensOverlayToastButtonBorder] = {ui::kColorSysInverseOnSurface};
@@ -435,13 +442,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysBaseContainerElevated};
   mixer[kColorOmniboxChipOnSystemBlockedActivityIndicatorForeground] = {
       ui::kColorSysError};
-
-  // Settings columned header colors.
-  mixer[kColorSettingsColumnedSectionDescriptionHeader] = {
-      ui::kColorSysPrimary};
-
-  // Settings info card colors.
-  mixer[kColorSettingsInfoCardBackground] = {ui::kColorSysBaseContainer};
 
   // Tabstrip tab alert colors.
   mixer[kColorTabAlertAudioPlayingActiveFrameActive] = {
