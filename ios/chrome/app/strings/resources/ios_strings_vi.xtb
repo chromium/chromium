@@ -201,7 +201,7 @@
 <translation id="16554782717487656">Phát hiện đơn vị</translation>
 <translation id="1657011748321897393">Không thể chia sẻ do bạn không kết nối với mạng.</translation>
 <translation id="1668001730617725852">Mở trong Nhóm thẻ mới</translation>
-<translation id="1670861525135254448">Lưu thông tin về xe</translation>
+<translation id="1670861525135254448">Lưu thông tin xe</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> sang <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Theo các chính sách của tổ chức bạn, tệp này có thể chứa thông tin nhạy cảm</translation>
 <translation id="168389590065701766">Giờ đây, bạn có thể mở Google Ống kính ngay trên thanh địa chỉ và tìm kiếm mọi thứ bạn thấy</translation>
@@ -216,7 +216,7 @@
 <translation id="1718835860248848330">1 giờ qua</translation>
 <translation id="1728549374069268714">Dán và truy cập</translation>
 <translation id="1732468323901456775">Bật thông báo cho <ph name="MODULE_NAME" /></translation>
-<translation id="1739364174357629566">Cập nhật mã số hành khách đã biết</translation>
+<translation id="1739364174357629566">Cập nhật mã số Known Traveler Number</translation>
 <translation id="1740468249224277719">Nhấn đúp để cài đặt.</translation>
 <translation id="1740650426894359238">Chuyển sang một hồ sơ khác</translation>
 <translation id="1741219894094057085">Đồng hồ thông minh</translation>
@@ -604,7 +604,7 @@
 <translation id="3119874402040566234">Hệ thống sẽ đăng xuất bạn và xoá dữ liệu duyệt web</translation>
 <translation id="3124568093781685165">Chia sẻ mật khẩu với gia đình</translation>
 <translation id="3130863904455712965">Nhật ký và nhiều nội dung khác</translation>
-<translation id="3132345256151444894">Lưu mã số xác nhận trùng tên</translation>
+<translation id="3132345256151444894">Lưu mã số Redress Number</translation>
 <translation id="3132584647087998639">Nhập dữ liệu của bạn</translation>
 <translation id="313283613037595347">Tạo thẻ Ẩn danh mới.</translation>
 <translation id="3136739222562075778">Thẻ này cho thấy mức giảm giá của các sản phẩm trong các thẻ mà bạn đang mở</translation>
@@ -908,7 +908,7 @@
 <translation id="4231395118547300571">Đã bật thông báo của tính năng Kiểm tra an toàn</translation>
 <translation id="4232817129213135694">Thiết lập khoá truy cập cho thiết bị này</translation>
 <translation id="4237377247299956313">Nhấn vào <ph name="BEGIN_BOLD" />Ứng dụng trình duyệt mặc định<ph name="END_BOLD" /></translation>
-<translation id="424063167283213501">Lưu mã số hành khách đã biết</translation>
+<translation id="424063167283213501">Lưu mã số Known Traveler Number</translation>
 <translation id="4241893428331130998">Chưa lưu mật khẩu hoặc khoá truy cập nào</translation>
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
 <translation id="4250432749243022864">{count,plural, =0{Mở {count} thẻ}=1{Mở {count} thẻ}other{Mở {count} thẻ}}</translation>
@@ -1500,7 +1500,7 @@
 <translation id="6232329973559504466">Tìm kiếm ẩn danh</translation>
 <translation id="6234310016144827337">Hãy kiểm tra kết nối của bạn và thử lại</translation>
 <translation id="6236952928980352967">Khôi phục cảnh báo</translation>
-<translation id="6240553182907836376">Cập nhật thẻ căn cước</translation>
+<translation id="6240553182907836376">Cập nhật thông tin thẻ căn cước</translation>
 <translation id="6240601837375010619">Lưu thông tin hộ chiếu</translation>
 <translation id="6241132809279377987">Trải nghiệm thêm nhiều tính năng trên iPhone khi có các ứng dụng của Google</translation>
 <translation id="6247557882553405851">Trình quản lý mật khẩu</translation>
@@ -1847,7 +1847,7 @@
 <translation id="7437712592381799950">Bạn có thể vuốt lên để xem thêm nội dung phù hợp với mình.</translation>
 <translation id="7438473148803748807">Mọi người sẽ ngay lập tức mất quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và tất cả đường liên kết của lời mời đều sẽ bị vô hiệu hoá</translation>
 <translation id="7445682342344043969">Đã chặn cửa sổ bật lên</translation>
-<translation id="7450486349221991286">Cập nhật thông tin về xe</translation>
+<translation id="7450486349221991286">Cập nhật thông tin xe</translation>
 <translation id="7451023311965289370">{count,plural, =1{Đã lưu dấu trang vào "{title}"}other{Đã lưu các dấu trang vào "{title}"}}</translation>
 <translation id="7451404862887877229">Nhấn vào "Quyền riêng tư và bảo mật" rồi nhấn vào "Duyệt web an toàn"</translation>
 <translation id="7452393099119876789">Bạn chỉ phải thực hiện thao tác này một lần.</translation>
@@ -2265,7 +2265,7 @@
 <translation id="8803639129939845298">Bảo mật</translation>
 <translation id="8813277370772331957">Nhắc tôi sau</translation>
 <translation id="8814719628147284151">Tiếp tục</translation>
-<translation id="881559332211266856">Cập nhật mã số xác nhận trùng tên</translation>
+<translation id="881559332211266856">Cập nhật mã số Redress Number</translation>
 <translation id="8817524703470045896">Theo dõi giá và nhận thông báo khi có chương trình giảm giá trên bất cứ trang web nào</translation>
 <translation id="8819155700324279105">Bổ sung một lớp bảo vệ trước các mối đe doạ trên mạng</translation>
 <translation id="8820817407110198400">Dấu trang</translation>

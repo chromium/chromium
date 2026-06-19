@@ -488,7 +488,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1734878702283171397">Tenta poñerte en contacto coa persoa que administra o sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />; data de caducidade: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Ordenador</translation>
-<translation id="1739364174357629566">Actualiza o número de viaxeiro coñecido</translation>
+<translation id="1739364174357629566">Actualiza o número de viaxeiro coñecido (KTN)</translation>
 <translation id="1740404923954980840">Para saír da pantalla completa, arrastra o cursor desde a parte superior e toca o botón para volver</translation>
 <translation id="1741474054575634405">Xestiona as tarxetas de fidelidade...</translation>
 <translation id="1741613555002899862">Debe especificarse e ser unha cadea válida cando DnsOverHttpsMode é <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -774,7 +774,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2191980191135734720">Desbloquea a pantalla no seguinte paso, normalmente coa túa impresión dixital. Tamén podes <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
 <translation id="2195729137168608510">Protección de correo electrónico</translation>
-<translation id="2198183835992354675">Número de viaxeiro coñecido</translation>
+<translation id="2198183835992354675">Número de viaxeiro coñecido (KTN)</translation>
 <translation id="2198215508485017216">Produciuse un erro inesperado. <ph name="BEGIN_LINK" />Máis información sobre as cargas de Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Botón Non me gusta. Preme Introducir para abrir un formulario e enviar comentarios detallados sobre o motivo polo que non che gusta esta suxestión</translation>
 <translation id="2202627062836089804">reverso da tarxeta</translation>
@@ -1201,7 +1201,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2879233115503670140">Válido ata o <ph name="DATE" />.</translation>
 <translation id="2879694782644540289">usar o bloqueo de pantalla para completar contrasinais</translation>
 <translation id="2881276955470682203">Queres gardar a tarxeta?</translation>
-<translation id="2882280148032777436">Eliminar o número de viaxeiro coñecido</translation>
+<translation id="2882280148032777436">Eliminar o número de viaxeiro coñecido (KTN)</translation>
 <translation id="2882949212241984732">Dobrez en ventá dobre</translation>
 <translation id="2891963978019740012">O teu buscador en Chrome</translation>
 <translation id="2893773853358652045">Cuarto rolo</translation>
@@ -2098,7 +2098,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4231448684371260244">8x13 in</translation>
 <translation id="4235360514405112390">Válido</translation>
 <translation id="4239799716689808527">Etiquetas</translation>
-<translation id="424063167283213501">Garda o número de viaxeiro coñecido</translation>
+<translation id="424063167283213501">Garda o número de viaxeiro coñecido (KTN)</translation>
 <translation id="4241830393007970744">Os atacantes do sitio que tentaches visitar poderían enganarte para que instales software ou reveles información como os teus contrasinais, números de teléfono ou tarxetas de crédito.</translation>
 <translation id="4242380780309416996">Sobre (alta gramaxe)</translation>
 <translation id="4242981939686657948">Para desfrutar dunha maneira máis potente de facer buscas no historial de navegación, activa</translation>
@@ -4342,7 +4342,7 @@ Detalles adicionais:
 <translation id="7690647519407127574">Oufuku Hagaki (postal)</translation>
 <translation id="7693583928066320343">Recibiuse a orde das páxinas</translation>
 <translation id="769424100851389104">Iniciar actualización agora</translation>
-<translation id="7696107855583699585">Editar o número de viaxeiro coñecido</translation>
+<translation id="7696107855583699585">Editar o número de viaxeiro coñecido (KTN)</translation>
 <translation id="7697837508203274589">Eventos deportivos en directo</translation>
 <translation id="7698864304447945242">Queres actualizar Servizos de Google Play para realidade aumentada?</translation>
 <translation id="7701040980221191251">Ningunha</translation>
@@ -5198,7 +5198,7 @@ Detalles adicionais:
 <translation id="9107199998619088551"><ph name="MANAGER" /> xestiona o teu perfil</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> xestiona o teu navegador</translation>
 <translation id="91108059142052966">A política do administrador desactiva a pantalla compartida con <ph name="APPLICATION_TITLE" /> cando hai contido confidencial á vista</translation>
-<translation id="9114101423898634479">Engadir o número de viaxeiro coñecido</translation>
+<translation id="9114101423898634479">Engadir o número de viaxeiro coñecido (KTN)</translation>
 <translation id="9114524666733003316">Confirmando tarxeta…</translation>
 <translation id="9114581008513152754">Ningunha compañía ou organización xestiona este navegador. A actividade deste dispositivo pódese xestionar fóra de Chrome. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />; para retomar o percorrido e ver a actividade relevante do teu historial de Chrome, preme Tabulador e, despois, Introducir</translation>

@@ -1376,7 +1376,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5819208479324046259">Administrado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
-<translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831217499016131155">Billetera de Google</translation>
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5838430324585198889">Desbloquea más funciones para tu iPad con las apps de Google</translation>
 <translation id="583923961930319521">Usa contraseñas en todos tus dispositivos</translation>
@@ -2411,7 +2411,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="984275831282074731">Formas de pago</translation>
 <translation id="985379595344853742">Cerrar todas las pestañas de incógnito</translation>
 <translation id="988141524645182168">Otros dispositivos</translation>
-<translation id="994184244350700431">En la Billetera de Google para <ph name="USER_EMAIL" /></translation>
+<translation id="994184244350700431">En la Billetera de Google de <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{Se importó {count} llave de acceso}other{Se importaron {count} llaves de acceso}}</translation>
 <translation id="999768147936949692">Por el momento, solo puedes compartir contraseñas con miembros de la familia. <ph name="BEGIN_LINK" />Invita a miembros de la familia<ph name="END_LINK" /> a unirse a tu grupo y aprovecha al máximo tus productos y suscripciones en Google.</translation>
 </translationbundle>

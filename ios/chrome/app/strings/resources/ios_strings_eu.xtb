@@ -216,7 +216,7 @@
 <translation id="1718835860248848330">Azken ordukoak</translation>
 <translation id="1728549374069268714">Itsatsi eta listo</translation>
 <translation id="1732468323901456775">Aktibatu <ph name="MODULE_NAME" /> aukeraren jakinarazpenak</translation>
-<translation id="1739364174357629566">Eguneratu bidaiari ezagunaren zenbakia</translation>
+<translation id="1739364174357629566">Eguneratu fidagarritzat jotako bidaiariaren zenbakia</translation>
 <translation id="1740468249224277719">Instalatzeko, sakatu birritan.</translation>
 <translation id="1740650426894359238">Aldatu beste profil batera</translation>
 <translation id="1741219894094057085">Erloju adimenduna</translation>
@@ -908,7 +908,7 @@
 <translation id="4231395118547300571">Aktibatu dira segurtasun-egiaztapenaren jakinarazpenak</translation>
 <translation id="4232817129213135694">Konfiguratu sarbide-gakoak gailu honetarako</translation>
 <translation id="4237377247299956313">Sakatu <ph name="BEGIN_BOLD" />Arakatzaile lehenetsia<ph name="END_BOLD" />.</translation>
-<translation id="424063167283213501">Gorde bidaiari ezagunaren zenbakia</translation>
+<translation id="424063167283213501">Gorde fidagarritzat jotako bidaiariaren zenbakia</translation>
 <translation id="4241893428331130998">Ez dago pasahitzik edo sarbide-gakorik gordeta</translation>
 <translation id="4242533952199664413">Ireki ezarpenak</translation>
 <translation id="4250432749243022864">{count,plural, =0{Ireki {count} fitxa}=1{Ireki {count} fitxa}other{Ireki {count} fitxa}}</translation>

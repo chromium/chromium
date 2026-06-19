@@ -4359,7 +4359,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3958088479270651626">Lesezeichen und Einstellungen importieren</translation>
 <translation id="3958110062351175311">Dürfen Anfragen in der Symbolleiste anzeigen</translation>
 <translation id="3958821725268247062"><ph name="APP_NAME" /> ist bereits installiert</translation>
-<translation id="3959969108528118741">Inhaber</translation>
+<translation id="3959969108528118741">Eigentümer</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Weitere Aktionen für „<ph name="IBAN_DESCRIPTION" />“</translation>
 <translation id="3961823084595287812"><ph name="HOST" /> immer erlauben, Kennungen zum Wiedergeben geschützter Inhalte zu verwenden</translation>
@@ -7243,7 +7243,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6013027779243312217">Untertitel für Audioinhalte und Videos</translation>
 <translation id="6014293228235665243">Ungelesen</translation>
 <translation id="6015776718598175635">Sterne</translation>
-<translation id="6015796118275082299">Jahr</translation>
+<translation id="6015796118275082299">Baujahr</translation>
 <translation id="6016178549409952427">Zu zusätzlichem Inhalt <ph name="CURRENT_ELEMENT" /> von <ph name="TOTAL_ELEMENTS" /> gehen</translation>
 <translation id="6016462059150340136">Jeder in meiner Nähe</translation>
 <translation id="6016551720757758985">Powerwash und Zurücksetzen auf vorherige Version bestätigen</translation>

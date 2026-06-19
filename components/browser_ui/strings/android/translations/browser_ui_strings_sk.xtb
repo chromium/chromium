@@ -222,7 +222,7 @@
 <translation id="3143754809889689516">Prehrať od začiatku</translation>
 <translation id="3164169438034704658">Presnú polohu môžete zapnúť v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Povoľte webu používať súbory cookie tretej strany</translation>
-<translation id="3167868116600277716">Kanál Objaviť</translation>
+<translation id="3167868116600277716">Feed Objaviť</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> uložených dát</translation>
 <translation id="3199078925536734975">Momentálne povolená • Približná</translation>
 <translation id="3208584281581115441">Skontrolovať</translation>
@@ -545,7 +545,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Sú blokované povolenia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalšie}few{Sú blokované povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalšie}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more blocked}other{Sú blokované povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalších}}</translation>
 <translation id="6554732001434021288">Naposledy navštívené pred <ph name="NUM_DAYS" /> dňami</translation>
 <translation id="6556866813142980365">Znova</translation>
-<translation id="6557290421156335491">Moje skratky</translation>
+<translation id="6557290421156335491">Moje odkazy</translation>
 <translation id="656065428026159829">Zobraziť viac</translation>
 <translation id="6561560012278703671">Používať tichší režim (blokovať rušivé výzvy na odber upozornení)</translation>
 <translation id="6565144332292237355">Weby môžu pomocou tejto funkcie vyhľadávať zariadenia vo vašej miestnej sieti a pripájať sa k nim</translation>

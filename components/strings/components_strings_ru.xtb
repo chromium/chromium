@@ -20,7 +20,7 @@
 <translation id="1035509598913574970">Бирюзовый 3</translation>
 <translation id="1035709686865413354">Фильтры для воды и водоочистители</translation>
 <translation id="1036348656032585052">Отключить</translation>
-<translation id="1036436692654972538">На устройстве будет сохранена следующая информация:</translation>
+<translation id="1036436692654972538">На устройстве</translation>
 <translation id="1036881361735705143">Конверт C4</translation>
 <translation id="1038106730571050514">Показать подсказки</translation>
 <translation id="1038168778161626396">Только расшифровка</translation>
@@ -389,7 +389,7 @@
 <translation id="159274626729231974">Кинофестивали</translation>
 <translation id="1593359183944365958">270 градусов</translation>
 <translation id="1594030484168838125">Выбрать</translation>
-<translation id="1595731774593926493">Удалить идентификатор Redress Number</translation>
+<translation id="1595731774593926493">Удалить данные Redress Number</translation>
 <translation id="1597307423671074806">Видео в формате WebM</translation>
 <translation id="159800670740560023">Ссылка на совет Chrome. Чтобы открыть страницу <ph name="IPH_LINK_FOCUSED_LINK_TEXT" />, нажмите Ввод.</translation>
 <translation id="1599079390582151174">Отправлено. Откройте Chrome на другом устройстве.</translation>
@@ -488,7 +488,7 @@
 <translation id="1734878702283171397">Обратитесь за помощью к системному администратору.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, действительна до <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Компьютер</translation>
-<translation id="1739364174357629566">Обновить личный номер пассажира, присвоенный TSA?</translation>
+<translation id="1739364174357629566">Обновить номер Known Traveler Number?</translation>
 <translation id="1740404923954980840">Чтобы выйти из полноэкранного режима, проведите по экрану сверху вниз и нажмите кнопку "Назад".</translation>
 <translation id="1741474054575634405">Перейти к картам постоянного клиента</translation>
 <translation id="1741613555002899862">Необходимо указать значение и ввести действительную строку, если для правила DnsOverHttpsMode выбрано значение <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -753,7 +753,7 @@
 <translation id="2166049586286450108">Доступ администратора ко всем данным</translation>
 <translation id="2166378884831602661">Этот сайт не может обеспечить безопасное подключение</translation>
 <translation id="2168151236314517198">Администратор запретил печатать этот контент.</translation>
-<translation id="2171244127100824330">Информация будет сохранена в сервисе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для аккаунта <ph name="ACCOUNT" />.</translation>
+<translation id="2171244127100824330">В сервисе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="2172089022819052306">Ремонт и обслуживание транспортных средств</translation>
 <translation id="2173302385160625112">Проверьте подключение к интернету.</translation>
 <translation id="2174875517416416684">Не удалось завершить транзакцию. Средства списаны не были.</translation>
@@ -774,7 +774,7 @@
 <translation id="2191980191135734720">На следующем шаге разблокируйте экран, например с помощью отпечатка пальца. Вы также можете <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Важная информация</translation>
 <translation id="2195729137168608510">Защита электронной почты</translation>
-<translation id="2198183835992354675">Личный номер пассажира, присвоенный TSA</translation>
+<translation id="2198183835992354675">Номер Known Traveler Number</translation>
 <translation id="2198215508485017216">Возникла непредвиденная проблема. Подробнее <ph name="BEGIN_LINK" />о загрузке файлов на Диск<ph name="END_LINK" />…</translation>
 <translation id="2200678913752027654">Кнопка "Не нравится". Нажмите Ввод, чтобы открыть форму и подробно описать, почему вам не нравится эта подсказка.</translation>
 <translation id="2202627062836089804">с обратной стороны карты</translation>
@@ -806,7 +806,7 @@
 <translation id="2233745931693710080">Компакт-диск</translation>
 <translation id="2236949375853147973">Мои действия</translation>
 <translation id="2239100178324503013">Отправить</translation>
-<translation id="224130779555573777">Добавить идентификатор Redress Number</translation>
+<translation id="224130779555573777">Добавить данные Redress Number</translation>
 <translation id="2241693394036365668">Скачан файл</translation>
 <translation id="2242389809734574253">Экран для ввода кода IBAN закрыт.</translation>
 <translation id="2246264294482514010">10 x 12 дюймов</translation>
@@ -1201,7 +1201,7 @@
 <translation id="2879233115503670140">Действует до <ph name="DATE" /></translation>
 <translation id="2879694782644540289">использовать блокировку экрана для ввода паролей</translation>
 <translation id="2881276955470682203">Сохранить карту?</translation>
-<translation id="2882280148032777436">Удаление личного номера пассажира, присвоенного TSA</translation>
+<translation id="2882280148032777436">Удаление номера Known Traveler Number</translation>
 <translation id="2882949212241984732">Фальцовка калиткой в три сгиба</translation>
 <translation id="2891963978019740012">Поисковая система в Chrome</translation>
 <translation id="2893773853358652045">Четвертый рулон</translation>
@@ -2097,7 +2097,7 @@
 <translation id="4231448684371260244">8 x 13 дюймов</translation>
 <translation id="4235360514405112390">Действительный</translation>
 <translation id="4239799716689808527">Этикетки</translation>
-<translation id="424063167283213501">Сохранить личный номер пассажира (KTN)?</translation>
+<translation id="424063167283213501">Сохранить номер Known Traveler Number?</translation>
 <translation id="4241830393007970744">На этом сайте злоумышленники могут обманом заставить вас установить ПО или раскрыть личную информацию, например пароль, номер телефона или данные кредитной карты.</translation>
 <translation id="4242380780309416996">Конверт (плотный)</translation>
 <translation id="4242981939686657948">Чтобы ещё эффективнее искать информацию в истории браузера, включите параметр</translation>
@@ -2650,7 +2650,7 @@
 <translation id="5123063207673082822">До выходных</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
 <translation id="5124797626438336458">Экран с ошибкой покупки в рассрочку открыт наполовину.</translation>
-<translation id="5125575917473813637">Изменить информацию об удостоверении личности</translation>
+<translation id="5125575917473813637">Обновить информацию об удостоверении личности</translation>
 <translation id="5125751979347152379">Недопустимый URL.</translation>
 <translation id="512592033764059484">Футбол</translation>
 <translation id="512670116361803001">Если размер приложения "<ph name="APP_NAME" />" изменить, оно может работать некорректно. Чтобы избежать проблем, используйте стандартные размеры.</translation>
@@ -2960,7 +2960,7 @@
 <translation id="5573641252776268565">Редактировать паспортные данные</translation>
 <translation id="5578606540385219379">Поставщики услуг</translation>
 <translation id="5580958916614886209">Проверьте месяц в сроке действия карты и повторите попытку</translation>
-<translation id="5582453333200265572">Изменить информацию об удостоверении личности?</translation>
+<translation id="5582453333200265572">Обновить информацию об удостоверении личности?</translation>
 <translation id="5583442610070676234">Ещё действия с таблицей "<ph name="COMPARE_SET_NAME" />"</translation>
 <translation id="55841966151154662">Не удалось сохранить код IBAN в Google Кошельке. Он был сохранен в Chrome на этом устройстве.</translation>
 <translation id="558420943003240152">Управление паролями и ключами доступа</translation>
@@ -3369,7 +3369,7 @@
 <translation id="6236290670123303279">Настройки</translation>
 <translation id="623825323736974198">Настройте список сайтов, которые всегда будут активными. Выделенная для них память не будет освобождаться.</translation>
 <translation id="6240447795304464094">Логотип Google Pay</translation>
-<translation id="6240553182907836376">Изменить информацию об удостоверении личности?</translation>
+<translation id="6240553182907836376">Обновить информацию об удостоверении личности?</translation>
 <translation id="6240601837375010619">Сохранить паспортные данные?</translation>
 <translation id="6240964651812394252">Чтобы использовать Google Менеджер паролей с вашей операционной системой, перезапустите Chrome и предоставьте доступ к менеджеру паролей на компьютере. После перезапуска вкладки будут снова открыты.</translation>
 <translation id="6241121617266208201">Скрыть варианты заполнения</translation>
@@ -3799,7 +3799,7 @@
 <translation id="6900702165119149418">Вход в аккаунт не выполнен</translation>
 <translation id="6907458757809079309">Фитнес</translation>
 <translation id="691024665142758461">скачивание нескольких файлов</translation>
-<translation id="691046363691324218">Идентификатор Redress Number</translation>
+<translation id="691046363691324218">Данные Redress Number</translation>
 <translation id="6915804003454593391">Пользователь:</translation>
 <translation id="6916193791494646625">Укажите, зачем вы хотите скачать файл (обязательно)</translation>
 <translation id="6917795328362592458">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в Менеджере паролей.</translation>
@@ -4342,7 +4342,7 @@
 <translation id="7690647519407127574">Oufuku Hagaki (открытка)</translation>
 <translation id="7693583928066320343">Порядок страниц получен</translation>
 <translation id="769424100851389104">Обновить сейчас</translation>
-<translation id="7696107855583699585">Изменение личного номера пассажира, присвоенного TSA</translation>
+<translation id="7696107855583699585">Изменение номера Known Traveler Number</translation>
 <translation id="7697837508203274589">Спортивные события</translation>
 <translation id="7698864304447945242">Обновить Сервисы Google Play для AR?</translation>
 <translation id="7701040980221191251">Нет</translation>
@@ -4817,7 +4817,7 @@
 <translation id="8456775115498700722">Теперь вы можете использовать для автозаполнения карты сервиса "<ph name="CARD_ISSUER_NAME" />", потому что ваш аккаунт (<ph name="CARD_ISSUER_NAME" />) связан с Google Pay.</translation>
 <translation id="8457125768502047971">Бессрочно</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8461289985785035071">Редактировать идентификатор Redress Number</translation>
+<translation id="8461289985785035071">Изменить данные Redress Number</translation>
 <translation id="8461694314515752532">Задать кодовую фразу для шифрования синхронизированных данных</translation>
 <translation id="8461973047386722744">Пароли не найдены.</translation>
 <translation id="8467494337615822642">Перейти на страницу проверки безопасности Chrome в настройках</translation>
@@ -5022,7 +5022,7 @@
 <translation id="8811725516933141693">Чтобы начать чат с Gemini, введите "@gemini"</translation>
 <translation id="8813277370772331957">Напомнить позже</translation>
 <translation id="8814707942599948500">Конверт C8</translation>
-<translation id="881559332211266856">Обновить идентификатор Redress Number?</translation>
+<translation id="881559332211266856">Обновить данные Redress Number?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы обновить Chrome.</translation>
 <translation id="8819855907485254989">Сохраните транспортный билет в Кошельке</translation>
 <translation id="8820817407110198400">Закладки</translation>
@@ -5198,7 +5198,7 @@
 <translation id="9107199998619088551">Организация "<ph name="MANAGER" />" управляет вашим профилем.</translation>
 <translation id="9107467864910557787">Вашим браузером управляет <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Администратор запретил демонстрацию экрана для приложения <ph name="APPLICATION_TITLE" />, когда видны конфиденциальные данные.</translation>
-<translation id="9114101423898634479">Добавление личного номера пассажира, присвоенного TSA</translation>
+<translation id="9114101423898634479">Добавление номера Known Traveler Number</translation>
 <translation id="9114524666733003316">Подтверждение карты...</translation>
 <translation id="9114581008513152754">Компания или организация не управляет этим браузером. Действиями на этом устройстве можно управлять вне браузера Chrome. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы посмотреть похожие запросы в истории Chrome.</translation>

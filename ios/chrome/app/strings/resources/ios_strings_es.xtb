@@ -2411,7 +2411,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="984275831282074731">Métodos de pago</translation>
 <translation id="985379595344853742">Cerrar todas las pestañas de Incógnito</translation>
 <translation id="988141524645182168">Otros dispositivos</translation>
-<translation id="994184244350700431">En Google Wallet de <ph name="USER_EMAIL" /></translation>
+<translation id="994184244350700431">En el Google Wallet de <ph name="USER_EMAIL" /></translation>
 <translation id="995174784802614337">{count,plural, =1{{count} llave de acceso importada}other{{count} llaves de acceso importadas}}</translation>
 <translation id="999768147936949692">Por ahora, solo puedes compartir contraseñas con miembros de la familia. <ph name="BEGIN_LINK" />Invita a miembros de la familia<ph name="END_LINK" /> a unirse a tu grupo y saca más partido a tus productos y suscripciones de Google.</translation>
 </translationbundle>

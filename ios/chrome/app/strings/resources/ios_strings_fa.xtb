@@ -201,7 +201,7 @@
 <translation id="16554782717487656">شناسایی واحدها</translation>
 <translation id="1657011748321897393">اشتراک‌گذاری انجام نشد چون به شبکه وصل نیستید.</translation>
 <translation id="1668001730617725852">باز کردن در گروه زبانه جدید</translation>
-<translation id="1670861525135254448">ذخیره وسیله نقلیه</translation>
+<translation id="1670861525135254448">ذخیره کردن وسیله نقلیه</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> به<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">براساس خط‌مشی‌های سازمانتان، این فایل ممکن است حاوی اطلاعات حساس باشد</translation>
 <translation id="168389590065701766">‏اکنون می‌توانید «لنز Google» را از نوار نشانی باز کنید و هر آنچه را که می‌بینید جستجو کنید</translation>
@@ -216,7 +216,7 @@
 <translation id="1718835860248848330">ساعت قبل</translation>
 <translation id="1728549374069268714">جای‌گذاری کردن و رفتن</translation>
 <translation id="1732468323901456775">روشن کردن اعلان‌های <ph name="MODULE_NAME" /></translation>
-<translation id="1739364174357629566">به‌روزرسانی «شماره مسافر شناخته‌شده»</translation>
+<translation id="1739364174357629566">به‌روز کردن شناسه مسافر شناخته‌شده</translation>
 <translation id="1740468249224277719">برای نصب دو ضربه سریع بزنید.</translation>
 <translation id="1740650426894359238">رفتن به نمایه‌ای دیگر</translation>
 <translation id="1741219894094057085">ساعت هوشمند</translation>
@@ -600,11 +600,11 @@
 <translation id="3106690631878101882">‏پنهان کردن «ترجمه Google»</translation>
 <translation id="310900540163454140">گذرواژه مربوط به <ph name="WEBSITE" /> حذف شود؟</translation>
 <translation id="3112556859945124369">علامت‌گذاری...</translation>
-<translation id="3116695032231023709">ذخیره کارت شناسایی</translation>
+<translation id="3116695032231023709">ذخیره کردن کارت شناسایی</translation>
 <translation id="3119874402040566234">از سیستم خارج خواهید شد و داده‌های مرور حذف خواهد شد</translation>
 <translation id="3124568093781685165">گذرواژه‌هایتان را با خانواده‌تان هم‌رسانی کنید</translation>
 <translation id="3130863904455712965">سابقه و موارد بیشتر</translation>
-<translation id="3132345256151444894">ذخیره شماره جبران خسارت</translation>
+<translation id="3132345256151444894">ذخیره کردن شناسه جبران خطای تطبیق</translation>
 <translation id="3132584647087998639">وارد کردن داده‌ها</translation>
 <translation id="313283613037595347">ایجاد «زبانه ناشناس» جدید</translation>
 <translation id="3136739222562075778">این کارت کاهش قیمت محصولات در برگه‌های باز شما را نشان می‌دهد</translation>
@@ -908,7 +908,7 @@
 <translation id="4231395118547300571">اعلان‌های «بررسی ایمنی» روشن شد</translation>
 <translation id="4232817129213135694">راه‌اندازی گذرکلیدها برای این دستگاه</translation>
 <translation id="4237377247299956313">روی <ph name="BEGIN_BOLD" />برنامه مرور پیش‌فرض<ph name="END_BOLD" /> تک‌ضرب بزنید</translation>
-<translation id="424063167283213501">ذخیره «شماره مسافر شناخته‌شده»</translation>
+<translation id="424063167283213501">ذخیره کردن شناسه مسافر شناخته‌شده</translation>
 <translation id="4241893428331130998">هیچ گذرواژه یا گذرکلید ذخیره‌شده‌ای وجود ندارد</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4250432749243022864">{count,plural, =0{باز کردن {count} زبانه}=1{باز کردن {count} زبانه}one{باز کردن {count} زبانه}other{باز کردن {count} زبانه}}</translation>
@@ -1040,7 +1040,7 @@
 <translation id="4682496302933121474">صفحه ترجمه شود؟</translation>
 <translation id="4682686630151240767">‏۱. iPhone Settings (تنظیمات iPhone) را باز کنید</translation>
 <translation id="4697240968720007067">‏با یک تک‌ضرب، بهترین برنامه‌های Google را دریافت کنید</translation>
-<translation id="4698308118265482293">به‌روزرسانی گذرنامه</translation>
+<translation id="4698308118265482293">به‌روز کردن گذرنامه</translation>
 <translation id="4699172675775169585">تصاویر و فایل‌های ذخیره‌شده در حافظه نهان</translation>
 <translation id="4709570498586527752">مربوط‌ترین ویژگی‌ها برای شما در زمان‌های مختلف</translation>
 <translation id="4717844083556844785">صفحه وب کنونی در حالت «ناشناس» است</translation>
@@ -1500,8 +1500,8 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6232329973559504466">جستجوی ناشناس</translation>
 <translation id="6234310016144827337">اتصالتان را بررسی و دوباره امتحان کنید</translation>
 <translation id="6236952928980352967">بازیابی هشدار</translation>
-<translation id="6240553182907836376">به‌روزرسانی کارت شناسایی</translation>
-<translation id="6240601837375010619">ذخیره گذرنامه</translation>
+<translation id="6240553182907836376">به‌روز کردن کارت شناسایی</translation>
+<translation id="6240601837375010619">ذخیره کردن گذرنامه</translation>
 <translation id="6241132809279377987">‏با برنامه‌های Google، به ویژگی‌های بیشتری برای iPhone دسترسی پیدا کنید</translation>
 <translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
 <translation id="6251835855431997163">تکمیل خودکار <ph name="VALUE" /></translation>
@@ -1681,7 +1681,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6806550742467879742">ابزارهای صفحه</translation>
 <translation id="6807287147325542056">گذرواژه‌ها در برنامه‌های دیگر</translation>
 <translation id="681368974849482173">مورد ایجاد شد</translation>
-<translation id="681631578600400068">ذخیره گواهینامه رانندگی</translation>
+<translation id="681631578600400068">ذخیره کردن گواهینامه رانندگی</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏نشانک در «حساب Google» شما ({email}) ذخیره شد}one{‏‫{count} نشانک در «حساب Google» شما ({email}) ذخیره شد}other{‏‫{count} نشانک در «حساب Google» شما ({email}) ذخیره شد}}</translation>
 <translation id="6826004672264649705">درحال‌حاضر این محصول را پیگیری می‌کنید. برای دیدن سابقه قیمت باز کنید</translation>
@@ -1772,7 +1772,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7138678301420049075">غیره</translation>
 <translation id="7141960840225504692">برگه‌هایتان بسته خواهد شد و داده‌های مرور حذف خواهد شد</translation>
 <translation id="714291438898585119">ستاره‌دار</translation>
-<translation id="7145337554745942724">به‌روزرسانی گواهینامه رانندگی</translation>
+<translation id="7145337554745942724">به‌روز کردن گواهینامه رانندگی</translation>
 <translation id="7146301801400584641">فایل تقویم دردسترس است</translation>
 <translation id="7149893636342594995">۲۴ ساعت گذشته</translation>
 <translation id="7154417656353909837">برداشتن نشانی‌ها</translation>
@@ -1847,7 +1847,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7437712592381799950">برای دیدن محتوای بیشتری که مناسب با سلیقه شما است، می‌توانید تند به بالا بکشید.</translation>
 <translation id="7438473148803748807">همه دسترسی به گروه زبانه‌های «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و همه پیوندهای دعوت غیرفعال می‌شود</translation>
 <translation id="7445682342344043969">پنجره‌های بازشو مسدود هستند</translation>
-<translation id="7450486349221991286">به‌روزرسانی وسیله نقلیه</translation>
+<translation id="7450486349221991286">به‌روز کردن وسیله نقلیه</translation>
 <translation id="7451023311965289370">{count,plural, =1{نشانک در «{title}» ذخیره شد}one{نشانک در «{title}» ذخیره شد}other{نشانک‌ها در «{title}» ذخیره شد}}</translation>
 <translation id="7451404862887877229">روی «حریم خصوصی و امنیت» و سپس «مرور ایمن» تک‌ضرب بزنید</translation>
 <translation id="7452393099119876789">کافی است فقط یک‌بار این کار را انجام دهید.</translation>
@@ -2265,7 +2265,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8803639129939845298">ایمن</translation>
 <translation id="8813277370772331957">بعداً به من یادآوری شود</translation>
 <translation id="8814719628147284151">ادامه</translation>
-<translation id="881559332211266856">به‌روزرسانی شماره جبران خسارت</translation>
+<translation id="881559332211266856">به‌روز کردن شناسه جبران خطای تطبیق</translation>
 <translation id="8817524703470045896">قیمت‌ها را ردگیری کنید و برای کاهش قیمت در هر سایتی هشدار دریافت کنید</translation>
 <translation id="8819155700324279105">اضافه شدن لایه محافظتی بیشتر دربرابر تهدیدهای آنلاین</translation>
 <translation id="8820817407110198400">نشانک‌ها</translation>
