@@ -364,6 +364,9 @@ def destination_files_for_channel(import_channel):
       "METADATA",
       "MODULE_LICENSE_BSD",
 
+      # TODO(https://crbug.com/524980724): remove this once the directory is
+      # removed on the Android side. If we try to do it before, we will hit
+      # https://crbug.com/387975197.
       "third_party/zlib/**",
       # TODO: https://crbug.com/387975197 - we shouldn't have to manually
       # maintain this list; ideally Copybara should handle this automatically

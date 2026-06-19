@@ -2983,6 +2983,12 @@ def set_module_include_dirs(module, cflags, include_dirs):
         d for d in module.include_dirs if d not in include_dirs_denylist
     ]
 
+    # If we end up including Cronet's root, then also include the Android-side
+    # unversioned include override directory, with higher precedence.
+    if f"external/cronet/{IMPORT_CHANNEL}/" in module.include_dirs:
+        module.include_dirs.insert(0, "external/cronet/include/")
+
+
 
 def create_aidl_module(bp_module_name, target, blueprint):
     module = Module("aidl_interface", bp_module_name, target.name)
