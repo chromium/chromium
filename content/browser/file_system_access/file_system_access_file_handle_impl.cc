@@ -44,8 +44,9 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/hash/sha1.h"
 #include "base/path_service.h"
-#include "base/strings/escape.h"
+#include "base/strings/string_number_conversions.h"
 #include "content/public/common/content_paths.h"
 #endif
 
@@ -643,11 +644,15 @@ void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
     //  copy back to the original content-URI when done.
     storage::FileSystemURL swap_url;
     if (url().path().IsContentUri()) {
-      // We must escape 'content://com.android...' to use it as the file name.
-      std::string file_name = base::EscapeAllExceptUnreserved(
-          url().path().DirName().Append(*opt_swap_name).value());
+      // Use SHA1 hash instead of escape to avoid exceeding filename length
+      // limits.
+      std::string file_name =
+          base::HexEncode(base::SHA1HashString(url().path().value()));
+      if (count > 0) {
+        file_name += base::StringPrintf(".%d", count);
+      }
       swap_url = manager()->CreateFileSystemURLFromPath(
-          PathInfo(swap_dir_.Append(file_name)));
+          PathInfo(swap_dir_.Append(file_name).AddExtension(".crswap")));
     } else {
       swap_url = url().CreateSibling(*opt_swap_name);
     }

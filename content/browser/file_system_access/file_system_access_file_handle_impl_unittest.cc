@@ -61,7 +61,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
 #include "base/android/path_utils.h"
-#include "base/strings/escape.h"
+#include "base/hash/sha1.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/android/content_uri_test_utils.h"
 #endif
 
@@ -603,11 +604,59 @@ TEST_F(FileSystemAccessAccessHandleContentUriTest, CreateFileWriter) {
   // Swap file should be created in cache dir.
   base::FilePath cache_dir;
   EXPECT_TRUE(base::android::GetCacheDirectory(&cache_dir));
-  auto escaped = base::EscapeAllExceptUnreserved(test_file_url_.path().value());
+  auto hex_encoded_hash =
+      base::HexEncode(base::SHA1HashString(test_file_url_.path().value()));
   base::FilePath swap = cache_dir.Append("FileSystemAPISwap")
-                            .Append(escaped)
+                            .Append(hex_encoded_hash)
                             .AddExtension(".crswap");
   EXPECT_TRUE(base::PathExists(swap));
+}
+
+TEST_F(FileSystemAccessAccessHandleContentUriTest,
+       CreateFileWriterWithLongContentUri) {
+  // Create a very long virtual path (e.g., > 255 chars) to test regression of
+  // filename length limit issues (crbug.com/516978919).
+  std::string long_name(300, 'a');
+  base::FilePath long_file_path(long_name);
+
+  // Create a new handle with this long content URI
+  base::FilePath parent =
+      *base::test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(
+          dir_.GetPath());
+  base::FilePath content_uri = base::ContentUriGetChildDocumentOrQuery(
+      parent, long_file_path.value(), "text/plain",
+      /*is_directory=*/false,
+      /*create=*/true);
+
+  auto test_long_file_url = file_system_context_->CreateCrackedFileSystemURL(
+      test_src_storage_key_, storage::kFileSystemTypeLocal, content_uri);
+
+  auto long_handle = std::make_unique<FileSystemAccessFileHandleImpl>(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(
+          test_src_storage_key_, test_src_url_,
+          web_contents_->GetPrimaryMainFrame()->GetGlobalId()),
+      test_long_file_url, long_name,
+      FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                     allow_grant_));
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      future;
+  long_handle->CreateFileWriter(
+      /*keep_existing_data=*/false,
+      /*auto_close=*/false,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode::kSiloed,
+      future.GetCallback());
+  blink::mojom::FileSystemAccessErrorPtr result;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> writer_remote;
+  std::tie(result, writer_remote) = future.Take();
+
+  // This must succeed even if the original content URI is extremely long,
+  // because the swap file is created using a SHA1 hash of the URI.
+  EXPECT_EQ(result->status, FileSystemAccessStatus::kOk);
+  EXPECT_TRUE(writer_remote.is_valid());
 }
 #endif
 
