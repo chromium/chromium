@@ -640,6 +640,10 @@ ui::EventDispatchDetails WindowEventDispatcher::PostDispatchEvent(
 ////////////////////////////////////////////////////////////////////////////////
 // WindowEventDispatcher, ui::GestureEventHelper implementation:
 
+base::WeakPtr<ui::GestureEventHelper> WindowEventDispatcher::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool WindowEventDispatcher::CanDispatchToConsumer(
     ui::GestureConsumer* consumer) {
   Window* consumer_window = ConsumerToWindow(consumer);

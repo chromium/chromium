@@ -236,6 +236,7 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
                                              const ui::Event& event) override;
 
   // Overridden from ui::GestureEventHelper.
+  base::WeakPtr<ui::GestureEventHelper> GetWeakPtr() override;
   bool CanDispatchToConsumer(ui::GestureConsumer* consumer) override;
   void DispatchGestureEvent(ui::GestureConsumer* raw_input_consumer,
                             ui::GestureEvent* event) override;
@@ -358,6 +359,8 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
 
   // Used to schedule DispatchHeldEvents() when |move_hold_count_| goes to 0.
   base::WeakPtrFactory<WindowEventDispatcher> held_event_factory_{this};
+
+  base::WeakPtrFactory<WindowEventDispatcher> weak_ptr_factory_{this};
 };
 
 }  // namespace aura

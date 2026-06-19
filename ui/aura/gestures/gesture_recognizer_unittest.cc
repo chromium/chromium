@@ -1963,7 +1963,11 @@ TEST_F(GestureRecognizerTest, DestroyGestureProviderAuraBeforeAck) {
   auto* gesture_recognizer = static_cast<ui::GestureRecognizerImpl*>(
       aura::Env::GetInstance()->gesture_recognizer());
   const auto& consumers = gesture_recognizer->consumers_;
-  EXPECT_NE(consumers.cend(), consumers.find(window1.get()));
+  EXPECT_NE(consumers.end(), std::find_if(consumers.begin(), consumers.end(),
+                                          [&window1](const auto& weak_ptr) {
+                                            return weak_ptr.get() ==
+                                                   window1.get();
+                                          }));
 
   // Create a second window for handling touch events.
   std::unique_ptr<QueueTouchEventDelegate> delegate2(
@@ -1983,7 +1987,11 @@ TEST_F(GestureRecognizerTest, DestroyGestureProviderAuraBeforeAck) {
       /*time_stamp=*/tes.Now(),
       ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId2));
   DispatchEventUsingWindowDispatcher(&press2);
-  EXPECT_NE(consumers.cend(), consumers.find(window2.get()));
+  EXPECT_NE(consumers.end(), std::find_if(consumers.begin(), consumers.end(),
+                                          [&window2](const auto& weak_ptr) {
+                                            return weak_ptr.get() ==
+                                                   window2.get();
+                                          }));
 
   // Verify that `press2` is associated with a gesture provider raw pointer.
   const auto& event_provider_mappings =
