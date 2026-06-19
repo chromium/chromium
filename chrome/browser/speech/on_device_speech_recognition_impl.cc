@@ -214,15 +214,15 @@ void OnDeviceSpeechRecognitionImpl::Install(
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     std::set<std::string> pending_languages;
-    if (!speech::SodaInstaller::GetInstance()->IsSodaBinaryInstalled()) {
-      pending_languages.insert("");
-    }
 
+    const bool binary_installed =
+        speech::SodaInstaller::GetInstance()->IsSodaBinaryInstalled();
     const std::set<speech::LanguageCode> installed_languages =
         speech::SodaInstaller::GetInstance()->InstalledLanguages();
 
     for (std::string_view language : language_names_key) {
-      if (!installed_languages.contains(speech::GetLanguageCode(language))) {
+      if (!binary_installed ||
+          !installed_languages.contains(speech::GetLanguageCode(language))) {
         pending_languages.insert(std::string(language));
       }
     }
