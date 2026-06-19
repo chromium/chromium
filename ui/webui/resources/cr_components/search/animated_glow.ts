@@ -58,7 +58,14 @@ export class SearchAnimatedGlowElement extends CrLitElement {
 
   static override get properties() {
     return {
-      coloredTicTacVoiceAnimationEnabled: {type: Boolean},
+      coloredTicTacVoiceAnimationEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
+      showingOnlyCarouselOnTop: {
+        type: Boolean,
+        reflect: true,
+      },
       animationState: {
         type: String,
         reflect: true,
@@ -104,6 +111,7 @@ export class SearchAnimatedGlowElement extends CrLitElement {
   // Source of truth for voice search (as not every parent has
   // `animationState`).
   accessor coloredTicTacVoiceAnimationEnabled: boolean = false;
+  accessor showingOnlyCarouselOnTop: boolean = false;
   accessor isListening: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;
   accessor isZeroState: boolean = false;

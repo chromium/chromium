@@ -49,6 +49,15 @@
    */
   --glow-stroke-width_: var(--animated-glow-stroke-width, 2px);
 
+  /* Gradient burst duration */
+  --gradient-burst-duration: 650ms;
+
+  /* Gradient burst rotation angles. */
+  --gradient-angle-start: 170deg;
+  --gradient-angle-end: 225deg;
+  --mask-angle-start: -90deg;
+  --mask-angle-end: 200deg;
+
   --search-animated-glow-background-z-index: 103;
   --search-animated-glow-drag-drop-placeholder-z-index: 104;
   --search-animated-glow-gradient-after-z-index: 101;
@@ -74,16 +83,10 @@
   --start-angle-expand_: 90deg;
   --start-angle-submit_: 200deg;
   --start-angle-listen_: 35deg;
+
   border-radius: inherit;
 
-  /* Gradient burst duration */
-  --gradient-burst-duration: 650ms;
-
-  /* Gradient burst rotation angles. */
-  --gradient-angle-start: 170deg;
-  --gradient-angle-end: 225deg;
-  --mask-angle-start: -90deg;
-  --mask-angle-end: 200deg;
+  display: contents;
 }
 
 .audio-animation {
@@ -727,15 +730,46 @@
   pointer-events: none;
 }
 
+#recordingWave {
+  block-size: 48px;
+  order: 1;  /* Always middle item. */
+}
+
 /* Overlay that goes over any of the above effects
- * (background, etc.) */
+ * (background, etc.). Hide during non listening mode. Flex-display otherwise.
+ */
 #fullContainerOverlay {
-  display: flex;
+  align-items: flex-start;
+  display: none;
+  flex-direction: column;
+  justify-content: flex-start;
   /* Since ':host' has no size or position, this is sized and
    * positioned relative to their nearest positioned ancestor, which
    * is from the parent 'composebox' or 'searchbox'.
    */
   inset: 0;
-  /* Ensure it does not take up space in composebox/searchbox layout. */
-  position: absolute;
+  padding-top: 6px;
+  padding-bottom: var(--animated-search-padding-bottom, 10px);
+  pointer-events: auto;
+  /* Ensure it does not take up space in composebox/searchbox layout,
+   * but takes height and width from closest relative parent, which is
+   * from composebox component.
+   */
+}
+
+:host([is-listening]) #fullContainerOverlay {
+  display: flex;
+  min-block-size: 112px;
+  position: relative;
+  width: 100%;
+}
+
+/* Only when the file carousel is above the recording wave,
+ * and only the file carousel is showing, is the recording wave
+ * overlapping with the submit/stop button. To avoid that, add
+ * padding bottom only in this mode.
+ */
+:host([showing-only-carousel-on-top]) #fullContainerOverlay {
+  padding-bottom: calc(var(--voice-bottom-actions-height, 40px) +
+      var(--voice-bottom-actions-bottom, 12px));
 }

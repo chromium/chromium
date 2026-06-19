@@ -11,6 +11,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --animated-search-padding-bottom: var(--cr-composebox-padding-bottom, 10px);
   --color-composebox-submit-button-hover: var(--color-searchbox-results-background-hovered);
   --composebox-cancel-button-top: var(--cr-composebox-cancel-button-top, 12px);
   --cr-composebox-outline-hcm: solid var(--color-composebox-outline-hcm);
