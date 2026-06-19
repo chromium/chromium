@@ -2192,7 +2192,8 @@ void MainThreadSchedulerImpl::DidCommitProvisionalLoad(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "MainThreadSchedulerImpl::DidCommitProvisionalLoad");
   main_thread_only().has_navigated = true;
-  if (base::FeatureList::IsEnabled(kBusyLoopOnRendererMain) &&
+  if (::features::IsEligibleForThrottleMainFrameTo60Hz() &&
+      base::FeatureList::IsEnabled(kBusyLoopOnRendererMain) &&
       base::FeatureList::IsEnabled(kBusyLoopAggressiveAfterCommittedLoad)) {
     main_thread_only().last_committed_load_time = NowTicks();
     // This will go back to the normal factor in the future.
