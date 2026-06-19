@@ -101,7 +101,7 @@ XRWebGLStaticSwapChain::XRWebGLStaticSwapChain(
     bool webgl2)
     : XRWebGLSwapChain(context, descriptor, webgl2) {}
 
-XRWebGLStaticSwapChain::~XRWebGLStaticSwapChain() {
+void XRWebGLStaticSwapChain::Dispose() {
   if (owned_texture_) {
     gpu::gles2::GLES2Interface* gl = context()->ContextGL();
     if (!gl) {

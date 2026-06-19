@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_WEBGL_CUBEMAP_SWAP_CHAIN_H_
 
 #include "third_party/blink/renderer/modules/xr/xr_webgl_swap_chain.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 
 namespace blink {
 
@@ -17,9 +18,13 @@ namespace blink {
 // swapchains directly, but not all drivers support cubemap buffers. See
 // crbug.com/459811463.
 class XRWebGLCubemapSwapChain final : public XRWebGLSwapChain {
+  USING_PRE_FINALIZER(XRWebGLCubemapSwapChain, Dispose);
+
  public:
   explicit XRWebGLCubemapSwapChain(XRWebGLSwapChain* wrapped_swapchain);
-  ~XRWebGLCubemapSwapChain() override;
+  ~XRWebGLCubemapSwapChain() override = default;
+
+  void Dispose();
 
   bool IsCube() const override { return true; }
   WebGLUnownedTexture* ProduceTexture() override;

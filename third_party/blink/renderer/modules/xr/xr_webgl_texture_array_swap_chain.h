@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_WEBGL_TEXTURE_ARRAY_SWAP_CHAIN_H_
 
 #include "third_party/blink/renderer/modules/xr/xr_webgl_swap_chain.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 
 namespace blink {
 
@@ -17,10 +18,14 @@ namespace blink {
 // isn't possible until we add texture array support to SharedImages.
 // TODO(crbug.com/359418629): Remove once array SharedImages are available.
 class XRWebGLTextureArraySwapChain final : public XRWebGLSwapChain {
+  USING_PRE_FINALIZER(XRWebGLTextureArraySwapChain, Dispose);
+
  public:
   XRWebGLTextureArraySwapChain(XRWebGLSwapChain* wrapped_swap_chain,
                                uint32_t layers);
-  ~XRWebGLTextureArraySwapChain() override;
+  ~XRWebGLTextureArraySwapChain() override = default;
+
+  void Dispose();
 
   WebGLUnownedTexture* ProduceTexture() override;
 

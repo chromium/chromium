@@ -118,7 +118,7 @@ XRWebGLCubemapSwapChain::XRWebGLCubemapSwapChain(
                        wrapped_swapchain->webgl2()),
       wrapped_swapchain_(wrapped_swapchain) {}
 
-XRWebGLCubemapSwapChain::~XRWebGLCubemapSwapChain() {
+void XRWebGLCubemapSwapChain::Dispose() {
   gpu::gles2::GLES2Interface* gl = context()->ContextGL();
   if (!gl) {
     return;
