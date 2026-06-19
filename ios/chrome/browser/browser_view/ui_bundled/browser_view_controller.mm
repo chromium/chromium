@@ -2642,11 +2642,16 @@ bool IsFullscreenNextIAEnabled() {
     }
   }
 
-  if (IsChromeNextIaEnabled() && isNTP && _isOffTheRecord) {
-    insets.bottom = [self secondaryToolbarHeightWithInset];
-    insets.top = [self expandedTopToolbarHeight];
-    if (self.layoutState.appBarPosition == AppBarPosition::kBottom) {
-      insets.bottom += kAppBarHeight;
+  if (isNTP && _isOffTheRecord) {
+    if (IsChromeNextIaEnabled()) {
+      insets.bottom = [self secondaryToolbarHeightWithInset];
+      insets.top = [self expandedTopToolbarHeight];
+      if (self.layoutState.appBarPosition == AppBarPosition::kBottom) {
+        insets.bottom += kAppBarHeight;
+      }
+    } else {
+      insets.top = [self expandedTopToolbarHeight];
+      insets.bottom = [self secondaryToolbarHeightWithInset];
     }
   }
   CGRect frameInView = UIEdgeInsetsInsetRect(self.view.bounds, insets);
@@ -2714,8 +2719,6 @@ bool IsFullscreenNextIAEnabled() {
 
   if (IsFullscreenRefactoringEnabled()) {
     newPage.frame = [self foregroundTabAnimationViewFrameForWebState:webState];
-  } else {
-    newPage.frame = [self newPageFrameForWebState:webState];
   }
 
   if (isNTP && !isIncognito && !CanShowTabStrip(self)) {
@@ -2766,7 +2769,7 @@ bool IsFullscreenNextIAEnabled() {
   if (IsChromeNextIaEnabled()) {
     animatedView.appBarPosition = self.layoutState.appBarPosition;
   }
-  if (IsFullscreenRefactoringEnabled() && isNTP) {
+  if (isNTP) {
     animatedView.backgroundView =
         [self.contentArea resizableSnapshotViewFromRect:frame
                                      afterScreenUpdates:NO
