@@ -353,6 +353,27 @@ suite('ContextualTasksAppTest', function() {
     assertEquals('12345', currentUrl.searchParams.get('chrome_task_id'));
   });
 
+  test('aim url updates webui url fragment', async () => {
+    const {proxy} = await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+
+    const taskId = {value: '12345'};
+    const aimUrl = `${fixtureUrl}/search?q=123#my-fragment`;
+    proxy.callbackRouterRemote.setTaskDetails(taskId, aimUrl, true);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+
+    let currentUrl = new URL(window.location.href);
+    assertEquals('123', currentUrl.searchParams.get('q'));
+    assertEquals('#my-fragment', currentUrl.hash);
+
+    // Ensure fragment is removed if no longer present on the aim URL.
+    const updatedAimUrl = `${fixtureUrl}/search?q=123`;
+    proxy.callbackRouterRemote.setTaskDetails(taskId, updatedAimUrl, true);
+    await proxy.callbackRouterRemote.$.flushForTesting();
+
+    currentUrl = new URL(window.location.href);
+    assertEquals('', currentUrl.hash);
+  });
+
   // Disabled: crbug.com/507859340
   test.skip('cs param updates dark mode only on commit', async () => {
     const {appElement} =

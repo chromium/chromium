@@ -2650,6 +2650,14 @@ GURL ContextualTasksUiService::CopyParamsFromWebUIUrl(const GURL& base_url,
     it.Advance();
   }
 
+  if (webui_url.has_ref()) {
+    aim_url = net::AppendOrReplaceRef(aim_url, webui_url.ref());
+  } else {
+    GURL::Replacements replacements;
+    replacements.ClearRef();
+    aim_url = aim_url.ReplaceComponents(replacements);
+  }
+
   return aim_url;
 }
 

@@ -2235,6 +2235,33 @@ TEST_F(ContextualTasksUiServiceTest,
       ContextualTasksUiService::CopyParamsFromWebUIUrl(base_url, webui_url));
 }
 
+TEST_F(ContextualTasksUiServiceTest, CopyParamsFromWebUIUrl_WithFragment) {
+  GURL base_url("https://google.com/search");
+  GURL webui_url("chrome://contextual-tasks?param1=1#fragment_value");
+
+  EXPECT_EQ(
+      GURL("https://google.com/search?param1=1#fragment_value"),
+      ContextualTasksUiService::CopyParamsFromWebUIUrl(base_url, webui_url));
+}
+
+TEST_F(ContextualTasksUiServiceTest, CopyParamsFromWebUIUrl_ReplaceFragment) {
+  GURL base_url("https://google.com/search#old_fragment");
+  GURL webui_url("chrome://contextual-tasks?param1=1#new_fragment");
+
+  EXPECT_EQ(
+      GURL("https://google.com/search?param1=1#new_fragment"),
+      ContextualTasksUiService::CopyParamsFromWebUIUrl(base_url, webui_url));
+}
+
+TEST_F(ContextualTasksUiServiceTest, CopyParamsFromWebUIUrl_RemoveFragment) {
+  GURL base_url("https://google.com/search#old_fragment");
+  GURL webui_url("chrome://contextual-tasks?param1=1");
+
+  EXPECT_EQ(
+      GURL("https://google.com/search?param1=1"),
+      ContextualTasksUiService::CopyParamsFromWebUIUrl(base_url, webui_url));
+}
+
 TEST_F(ContextualTasksUiServiceTest, GetAiUrlFromWebUIUrl) {
   GURL base_url("https://google.com/search");
   GURL webui_url("chrome://contextual-tasks?param1=1&param2=2");
