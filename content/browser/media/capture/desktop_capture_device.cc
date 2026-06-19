@@ -215,23 +215,41 @@ class ScopedHighResolutionTimer {
 class ScopedWebrtcDebugLogging {
  public:
   explicit ScopedWebrtcDebugLogging(DesktopCaptureDevice::Client* client) {
-    g_client_ = client;
+    {
+      base::AutoLock auto_lock(GetClientLock());
+      g_client_ = client;
+    }
     webrtc::InitDiagnosticLoggingDelegateFunction(
         &ScopedWebrtcDebugLogging::OnLog);
   }
 
   static void OnLog(const std::string& s) {
-    CHECK(g_client_);
-    g_client_->OnLog(s);
+    base::AutoLock auto_lock(GetClientLock());
+    // g_client_ may be nullptr here because this is
+    // called via RTC_LOG macro by some background thread,
+    // which didn't set up ScopedWebrtcDebugLogging.
+    if (g_client_) {
+      g_client_->OnLog(s);
+    }
   }
 
   ~ScopedWebrtcDebugLogging() {
-    g_client_ = nullptr;
+    {
+      base::AutoLock auto_lock(GetClientLock());
+      g_client_ = nullptr;
+    }
     webrtc::ResetDiagnosticLoggingDelegateFunction();
   }
 
  private:
   static DesktopCaptureDevice::Client* g_client_;
+
+  // Need to lock access to g_client_ because there might be some
+  // other thread already running capture and it may also invoke RTC_LOG macro.
+  static base::Lock& GetClientLock() {
+    static base::NoDestructor<base::Lock> lock;
+    return *lock;
+  }
 };
 
 DesktopCaptureDevice::Client* ScopedWebrtcDebugLogging::g_client_ = nullptr;
