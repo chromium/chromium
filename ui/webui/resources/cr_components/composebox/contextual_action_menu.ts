@@ -39,6 +39,7 @@ export const DEFAULT_FLYOUT_WIDTH_PX = 320;
 const ALIGNMENT_THRESHOLD_PX = 160;
 export const VIEWPORT_BUFFER_PX = 16;
 export const MIN_MENU_HEIGHT_PX = 100;
+export const SHARE_TABS_FLYOUT_MAX_HEIGHT_PX = 344;
 
 // Gap between tab shared menu and context menu in px.
 const MENU_GAP = 0;
@@ -732,8 +733,11 @@ export class ContextualActionMenuElement extends
       flyout.style.top = `${flyoutTop}px`;
 
       const spaceBelow = window.innerHeight - flyoutTop;
-      const maxFlyoutHeight =
-          Math.max(MIN_MENU_HEIGHT_PX, spaceBelow - VIEWPORT_BUFFER_PX);
+      const maxFlyoutHeight = Math.max(
+          MIN_MENU_HEIGHT_PX,
+          Math.min(
+              SHARE_TABS_FLYOUT_MAX_HEIGHT_PX,
+              spaceBelow - VIEWPORT_BUFFER_PX));
       flyout.style.maxHeight = `${maxFlyoutHeight}px`;
     });
   }

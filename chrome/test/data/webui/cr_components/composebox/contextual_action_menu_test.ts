@@ -8,7 +8,7 @@ import 'chrome://resources/cr_components/composebox/composebox_favicon_group.js'
 
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
-import {DEFAULT_FLYOUT_WIDTH_PX, MIN_MENU_HEIGHT_PX, SHARE_TABS_FLYOUT_GAP_PX, VIEWPORT_BUFFER_PX} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
+import {DEFAULT_FLYOUT_WIDTH_PX, MIN_MENU_HEIGHT_PX, SHARE_TABS_FLYOUT_GAP_PX, SHARE_TABS_FLYOUT_MAX_HEIGHT_PX, VIEWPORT_BUFFER_PX} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -807,8 +807,10 @@ suite('ContextualActionMenu', () => {
     // viewport.
     const expectedMaxHeight = Math.max(
         MIN_MENU_HEIGHT_PX,
-        window.innerHeight - trigger.getBoundingClientRect().top -
-            VIEWPORT_BUFFER_PX);
+        Math.min(
+            SHARE_TABS_FLYOUT_MAX_HEIGHT_PX,
+            window.innerHeight - trigger.getBoundingClientRect().top -
+                VIEWPORT_BUFFER_PX));
     assertEquals(expectedMaxHeight, flyout.offsetHeight);
   });
 
@@ -2278,8 +2280,12 @@ suite('ContextualActionMenu', () => {
           const expectedLeft =
               `${triggerLeft + TRIGGER_WIDTH + SHARE_TABS_FLYOUT_GAP_PX}px`;
           const expectedTop = `${triggerTop}px`;
-          const expectedMaxHeight =
-              `${viewportHeight - triggerTop - VIEWPORT_BUFFER_PX}px`;
+          const expectedMaxHeight = `${
+              Math.max(
+                  MIN_MENU_HEIGHT_PX,
+                  Math.min(
+                      SHARE_TABS_FLYOUT_MAX_HEIGHT_PX,
+                      viewportHeight - triggerTop - VIEWPORT_BUFFER_PX))}px`;
 
           assertEquals(expectedLeft, flyout.style.left);
           assertEquals(expectedTop, flyout.style.top);
@@ -2313,8 +2319,12 @@ suite('ContextualActionMenu', () => {
               triggerLeft - DEFAULT_FLYOUT_WIDTH_PX -
               SHARE_TABS_FLYOUT_GAP_PX}px`;
           const expectedTop = `${triggerTop}px`;
-          const expectedMaxHeight =
-              `${viewportHeight - triggerTop - VIEWPORT_BUFFER_PX}px`;
+          const expectedMaxHeight = `${
+              Math.max(
+                  MIN_MENU_HEIGHT_PX,
+                  Math.min(
+                      SHARE_TABS_FLYOUT_MAX_HEIGHT_PX,
+                      viewportHeight - triggerTop - VIEWPORT_BUFFER_PX))}px`;
 
           assertEquals(expectedLeft, flyout.style.left);
           assertEquals(expectedTop, flyout.style.top);
@@ -2348,9 +2358,14 @@ suite('ContextualActionMenu', () => {
           const expectedTop =
               `${triggerTop + TRIGGER_HEIGHT + SHARE_TABS_FLYOUT_GAP_PX}px`;
           const expectedMaxHeight = `${
-              viewportHeight -
-              (triggerTop + TRIGGER_HEIGHT + SHARE_TABS_FLYOUT_GAP_PX) -
-              VIEWPORT_BUFFER_PX}px`;
+              Math.max(
+                  MIN_MENU_HEIGHT_PX,
+                  Math.min(
+                      SHARE_TABS_FLYOUT_MAX_HEIGHT_PX,
+                      viewportHeight -
+                          (triggerTop + TRIGGER_HEIGHT +
+                           SHARE_TABS_FLYOUT_GAP_PX) -
+                          VIEWPORT_BUFFER_PX))}px`;
 
           assertEquals(expectedLeft, flyout.style.left);
           assertEquals(expectedTop, flyout.style.top);
