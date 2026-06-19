@@ -5502,6 +5502,55 @@ TEST_P(WaylandWindowTest, WaylandBubbleSetBoundsUaf) {
   wayland_bubble->SetBoundsInDIP(gfx::Rect(15, 15, 60, 60));
 }
 
+TEST_P(WaylandWindowTest, WaylandBubbleActivateBubbleUaf) {
+  MockWaylandPlatformWindowDelegate bubble_delegate(connection_.get());
+  gfx::Rect bubble_bounds(10, 10, 50, 50);
+  auto wayland_bubble =
+      CreateWaylandWindowWithParams(PlatformWindowType::kBubble, bubble_bounds,
+                                    &bubble_delegate, window_->GetWidget());
+  ASSERT_TRUE(wayland_bubble);
+
+  EXPECT_CALL(delegate_, OnActivationChanged(::testing::_))
+      .Times(::testing::AnyNumber());
+
+  EXPECT_CALL(delegate_, OnActivationChanged(false))
+      .WillOnce(::testing::InvokeWithoutArgs([&]() {
+        wayland_bubble.reset();
+        window_.reset();
+      }));
+
+  // This should not crash and should return safely.
+  window_->ActivateBubble(wayland_bubble->AsWaylandBubble());
+}
+
+TEST_P(WaylandWindowTest, WaylandBubbleRemoveBubbleUaf) {
+  auto active = MakeStateArray({XDG_TOPLEVEL_STATE_ACTIVATED});
+  SendConfigureEvent(surface_id_, {0, 0}, active);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  VerifyAndClearExpectations();
+
+  MockWaylandPlatformWindowDelegate bubble_delegate(connection_.get());
+  gfx::Rect bubble_bounds(10, 10, 50, 50);
+  auto wayland_bubble =
+      CreateWaylandWindowWithParams(PlatformWindowType::kBubble, bubble_bounds,
+                                    &bubble_delegate, window_->GetWidget());
+  ASSERT_TRUE(wayland_bubble);
+
+  window_->ActivateBubble(wayland_bubble->AsWaylandBubble());
+
+  EXPECT_CALL(delegate_, OnActivationChanged(::testing::_))
+      .Times(::testing::AnyNumber());
+
+  EXPECT_CALL(delegate_, OnActivationChanged(true))
+      .WillOnce(::testing::InvokeWithoutArgs([&]() {
+        wayland_bubble.reset();
+        window_.reset();
+      }));
+
+  // This should not crash and should return safely.
+  window_->RemoveBubble(wayland_bubble->AsWaylandBubble());
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
                          Values(wl::ServerConfig{}));
