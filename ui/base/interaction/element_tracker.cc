@@ -93,7 +93,8 @@ class ElementTracker::ElementData {
     return custom_event_callbacks_.Add(callback);
   }
 
-  void NotifyElementShown(raw_ptr<TrackedElement, CtnExperimental>& element) {
+  void NotifyElementShown(
+      const raw_ptr<TrackedElement, CtnExperimental>& element) {
     DCHECK(element);
     DCHECK_EQ(identifier(), element->identifier());
     // Zero context data is the "all contexts" entry and doesn't actually store
@@ -109,13 +110,14 @@ class ElementTracker::ElementData {
   }
 
   void NotifyElementActivated(
-      raw_ptr<TrackedElement, CtnExperimental>& element) {
+      const raw_ptr<TrackedElement, CtnExperimental>& element) {
     // Note: "All contexts" does not require the element to be present here.
     DCHECK(!context_ || base::Contains(element_lookup_, element));
     activated_callbacks_.Notify(element);
   }
 
-  void NotifyElementHidden(TrackedElement* element) {
+  void NotifyElementHidden(
+      const raw_ptr<TrackedElement, CtnExperimental>& element) {
     if (context_) {
       const auto it = element_lookup_.find(element);
       CHECK(it != element_lookup_.end());
@@ -125,7 +127,8 @@ class ElementTracker::ElementData {
     hidden_callbacks_.Notify(element);
   }
 
-  void NotifyCustomEvent(TrackedElement* element) {
+  void NotifyCustomEvent(
+      const raw_ptr<TrackedElement, CtnExperimental>& element) {
     custom_event_callbacks_.Notify(element);
   }
 
