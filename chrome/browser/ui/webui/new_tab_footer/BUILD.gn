@@ -54,6 +54,7 @@ source_set("impl") {
     "//components/search",
     "//content/public/browser",
     "//ui/base",
+    "//url",
   ]
 }
 
@@ -82,6 +83,7 @@ source_set("browser_tests") {
     ":test_support",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/top_chrome:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
   ]
 }
 
