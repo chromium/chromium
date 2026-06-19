@@ -66,7 +66,7 @@ const char kHtmlBody[] = R"(
 <html><body>
 <img id="target_image"
      src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-     style="width:100px; height:100px; position:absolute; left:50px; top:50px;">
+     style="width:200px; height:200px; position:absolute; left:50px; top:50px;">
 </body></html>)";
 
 const char kScrollHtmlBody[] = R"(
@@ -83,7 +83,7 @@ const char kTransformHtmlBody[] = R"(
 <html><body>
 <img id="target_image"
      src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-     style="width:100px; height:100px; position:absolute; left:50px; top:100px; transform: rotate(45deg);">
+     style="width:200px; height:200px; position:absolute; left:50px; top:100px; transform: rotate(45deg);">
 </body></html>)";
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
@@ -292,7 +292,7 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioning) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   raw_ptr<views::View> toolbar_view = nullptr;
-  gfx::Rect image_bounds{50, 50, 100, 100};
+  gfx::Rect image_bounds{50, 50, 200, 200};
 
   RunTestSequence(
       InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
@@ -374,7 +374,7 @@ class IndigoHighDsfBrowserTest : public IndigoBrowserTest {
 IN_PROC_BROWSER_TEST_F(IndigoHighDsfBrowserTest, ToolbarPositioning) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   raw_ptr<views::View> toolbar_view = nullptr;
-  gfx::Rect image_bounds{50, 50, 100, 100};
+  gfx::Rect image_bounds{50, 50, 200, 200};
 
   RunTestSequence(
       InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningScroll) {
 IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningTransform) {
   const GURL url = embedded_test_server()->GetURL("/transform.html");
   raw_ptr<views::View> toolbar_view = nullptr;
-  gfx::Rect image_bounds{29, 79, 141, 141};
+  gfx::Rect image_bounds{9, 59, 283, 283};
 
   RunTestSequence(
       InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),

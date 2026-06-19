@@ -124,6 +124,8 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
       content::NavigationHandle* navigation_handle) override;
   void RenderViewHostChanged(content::RenderViewHost* old_host,
                              content::RenderViewHost* new_host) override;
+  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
+                        const gfx::Size& frame_size) override;
 
   // content::TrackedElementObserver:
   void OnTrackedElementRectsChanged(const viz::TrackedElementRects& rects,

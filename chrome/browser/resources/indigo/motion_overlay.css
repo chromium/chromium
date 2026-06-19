@@ -247,3 +247,9 @@
   offset-path: ellipse(60% 20% at 50% 115%);
   offset-rotate: 0deg;
 }
+
+@media (max-width: 170px) {
+  indigo-text-overlay {
+    display: none;
+  }
+}

@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
+#include "chrome/browser/indigo/indigo_image_replacement.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/indigo_service.h"
@@ -51,6 +52,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -66,6 +68,10 @@ namespace indigo {
 namespace {
 const char kForceIndigoSwitch[] = "force-indigo";
 const char kForceIndigoOnboardingSwitch[] = "force-indigo-onboarding";
+
+// The minimum width of the primary image frame in DIPs below which
+// the transformation will fail.
+constexpr int kMinPrimaryImageWidthDips = 170;
 
 void RecordTransformationResultCannotGenerateImage(
     const CombinedEligibility& eligibility) {
@@ -651,6 +657,44 @@ void IndigoPageActionController::RenderViewHostChanged(
   content::RenderWidgetHost* new_widget =
       new_host ? new_host->GetWidget() : nullptr;
   RegisterObserverWithHost(new_widget);
+}
+
+void IndigoPageActionController::FrameSizeChanged(
+    content::RenderFrameHost* render_frame_host,
+    const gfx::Size& frame_size) {
+  if (!render_frame_host) {
+    return;
+  }
+  content::WebContents* web_contents = tab().GetContents();
+  if (!web_contents) {
+    return;
+  }
+  auto* manager =
+      IndigoImageReplacementManager::GetForPage(web_contents->GetPrimaryPage());
+  if (!manager) {
+    return;
+  }
+  IndigoImageReplacement* replacement =
+      manager->GetImageReplacementForFrame(*render_frame_host);
+  if (!replacement || !replacement->is_primary()) {
+    return;
+  }
+
+  if (frame_size.IsEmpty()) {
+    Reset(ResetType::kResetReplacementsAndContentScript);
+    ShowInvocationErrorToast();
+    return;
+  }
+
+  float device_scale_factor = 1.0f;
+  if (auto* view = web_contents->GetRenderWidgetHostView()) {
+    device_scale_factor = view->GetDeviceScaleFactor();
+  }
+  float width_dips = frame_size.width() / device_scale_factor;
+  if (width_dips < kMinPrimaryImageWidthDips) {
+    Reset(ResetType::kResetReplacementsAndContentScript);
+    ShowInvocationErrorToast();
+  }
 }
 
 void IndigoPageActionController::RegisterObserverWithHost(
