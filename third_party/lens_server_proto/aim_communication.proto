@@ -42,8 +42,8 @@ enum FeatureCapability {
   // lockInput() method
   LOCK_INPUT = 26;
 
-  // notifyLinkClicked() method
-  NOTIFY_LINK_CLICKED = 31;
+  // openLinkInSidePanelMode() method
+  OPEN_LINK_IN_SIDE_PANEL_MODE = 31;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -147,11 +147,6 @@ message AimToClientMessage {
   }
 }
 
-// Message AIM sends to clients notifying them a link in a response was clicked.
-message OpenLinkInSidePanelMode {
-  string url = 1;
-}
-
 // Message AIM sends to clients to unlock the input plate.
 message UnlockInput {}
 
@@ -201,6 +196,9 @@ message Context {
     Pdf pdf = 3;
     Webpage webpage = 4;
   }
+
+  // True if the context/media is derived from a Chrome tab.
+  bool has_chrome_tab_data = 23;
 }
 
 message Image {
@@ -242,4 +240,9 @@ message InjectInput {
 message RemoveInjectedInput {
   // The ID of the input to remove.
   string id = 1;
+}
+
+// Message AIM sends to clients to notify to open a link in the side panel.
+message OpenLinkInSidePanelMode {
+  string url = 1;
 }
