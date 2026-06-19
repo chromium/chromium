@@ -35,9 +35,14 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/mapping/metrics_mapping_features.h"
 #include "components/metrics/mapping/metrics_name_mapping.pb.h"
+#include "components/ukm/gmock_matchers.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/viz/common/features.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -45,6 +50,7 @@
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -354,6 +360,185 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest, RecordPageLoadUKM) {
   // 5) Verify UKM recording.
   auto entries = ukm_recorder().GetEntriesByName(PageLoad::kEntryName);
   EXPECT_FALSE(entries.empty());
+}
+
+class InitialWebUINavigationTimelineBrowserTest : public InProcessBrowserTest {
+ public:
+  InitialWebUINavigationTimelineBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> features = {
+        {features::kInitialWebUI, {{"use_separate_process", "true"}}},
+        {features::kWebUIReloadButton, {{"prewarm_webui", "false"}}},
+        {features::kInitialWebUIMetrics, {}},
+        {features::kSkipIPCChannelPausingForNonGuests, {}},
+        {features::kWebUIInProcessResourceLoadingV2, {}},
+        {features::kInitialWebUISyncNavStartToCommit, {}}};
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        features, {features::kSpareRendererForSitePerProcess});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        switches::kForceNavigationTimelineUkmRecordingForTesting);
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
+ protected:
+  ukm::TestAutoSetUkmRecorder& ukm_recorder() { return *ukm_recorder_; }
+
+  std::unique_ptr<content::WebContents>
+  CreateAndNavigateWebContentsWithoutPrecreatedSiteInstance(
+      const GURL& url,
+      WebUIControllerInitalizer* initializer) {
+    content::BrowserContext* browser_context = browser()
+                                                   ->tab_strip_model()
+                                                   ->GetActiveWebContents()
+                                                   ->GetBrowserContext();
+    content::WebContents::CreateParams new_contents_params(browser_context);
+    std::unique_ptr<content::WebContents> new_web_contents(
+        content::WebContents::Create(new_contents_params));
+    if (initializer) {
+      initializer->Watch(new_web_contents.get());
+    }
+    webui::SetBrowserWindowInterface(new_web_contents.get(), browser());
+    InitializePageLoadMetricsForWebContents(new_web_contents.get());
+
+    // Clean up any spare renderers to force a new process creation.
+    content::SpareRenderProcessHostManager::Get().CleanupSparesForTesting();
+
+    // Navigate to `url`.
+    content::NavigationController& controller =
+        new_web_contents->GetController();
+    content::TestNavigationObserver navigation_observer(url);
+    navigation_observer.WatchExistingWebContents();
+
+    controller.LoadURLWithParams(
+        content::NavigationController::LoadURLParams(url));
+    navigation_observer.Wait();
+
+    return new_web_contents;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+};
+
+// Verifies that UKM NavigationTimeline metrics are correctly recorded for an
+// Initial WebUI navigation. This test checks that the NavigationTimeline UKM
+// event is recorded and contains the RendererCommitToDidCommitDuration,
+// RendererProcessCreated, and RendererProcessLaunched metrics.
+IN_PROC_BROWSER_TEST_F(InitialWebUINavigationTimelineBrowserTest,
+                       RecordNavigationTimelineUKM) {
+  using NavigationTimeline = ukm::builders::NavigationTimeline;
+
+  // 1) Navigate to initial WebUI.
+  GURL url(chrome::kChromeUIWebUIToolbarURL);
+  WebUIToolbarInitializer initializer(browser());
+
+  // 2) Set up a RunLoop to wait for the UKM entry.
+  base::RunLoop ukm_loop;
+  ukm_recorder().SetOnAddEntryCallback(NavigationTimeline::kEntryName,
+                                       ukm_loop.QuitClosure());
+
+  // Use the helper that does not pre-create SiteInstance to ensure the process
+  // is created after navigation starts.
+  std::unique_ptr<content::WebContents> initial_webui_web_contents =
+      CreateAndNavigateWebContentsWithoutPrecreatedSiteInstance(url,
+                                                                &initializer);
+
+  // 3) Wait for the UKM entry to be recorded.
+  if (ukm_recorder().GetEntriesByName(NavigationTimeline::kEntryName).empty()) {
+    ukm_loop.Run();
+  }
+
+  // 4) Verify UKM recording using matchers.
+  auto entries =
+      ukm_recorder().GetEntriesByName(NavigationTimeline::kEntryName);
+  EXPECT_THAT(entries,
+              testing::ElementsAre(testing::AllOf(
+                  ukm::testing::HasMetric("RendererCommitToDidCommitDuration"),
+                  ukm::testing::HasMetric("RendererProcessCreated"),
+                  ukm::testing::HasMetric("RendererProcessLaunched"))));
+}
+
+class PrewarmedWebUINavigationTimelineBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  PrewarmedWebUINavigationTimelineBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> features = {
+        {features::kInitialWebUI, {{"use_separate_process", "true"}}},
+        {features::kWebUIReloadButton, {{"prewarm_webui", "true"}}},
+        {features::kInitialWebUIMetrics, {}},
+        {features::kSkipIPCChannelPausingForNonGuests, {}},
+        {features::kWebUIInProcessResourceLoadingV2, {}},
+        {features::kInitialWebUISyncNavStartToCommit, {}}};
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        features, {features::kSpareRendererForSitePerProcess});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        switches::kForceNavigationTimelineUkmRecordingForTesting);
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
+ protected:
+  ukm::TestAutoSetUkmRecorder& ukm_recorder() { return *ukm_recorder_; }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+};
+
+// Verifies that UKM NavigationTimeline metrics are correctly recorded (as 0)
+// when the pre-warmed WebUI navigation reuses an existing process.
+//
+// Since the test harness already created the first browser window (and thus
+// initialized the toolbar WebUI process), creating a second browser window
+// here will trigger pre-warming but it will reuse the existing process.
+// This reuse results in process creation/launch times that are in the past
+// relative to the new navigation start, leading to negative durations.
+// We verify that these are clamped to 0 and correctly recorded.
+IN_PROC_BROWSER_TEST_F(PrewarmedWebUINavigationTimelineBrowserTest,
+                       RecordNavigationTimelineUKMPrewarmedProcessReused) {
+  using NavigationTimeline = ukm::builders::NavigationTimeline;
+
+  // 1) Set up a RunLoop to wait for the UKM entry.
+  base::RunLoop ukm_loop;
+  ukm_recorder().SetOnAddEntryCallback(NavigationTimeline::kEntryName,
+                                       ukm_loop.QuitClosure());
+
+  // 2) Create a new browser window. This should trigger pre-warming of the
+  // toolbar WebUI.
+  Browser::CreateParams params(browser()->profile(), true);
+  Browser::Create(params);
+
+  // Wait for the navigation to commit and record UKM.
+  if (ukm_recorder().GetEntriesByName(NavigationTimeline::kEntryName).empty()) {
+    ukm_loop.Run();
+  }
+
+  // 3) Verify UKM recording.
+  auto entries =
+      ukm_recorder().GetEntriesByName(NavigationTimeline::kEntryName);
+  ASSERT_FALSE(entries.empty());
+
+  EXPECT_THAT(
+      entries,
+      testing::ElementsAre(testing::AllOf(
+          ukm::testing::HasMetric("RendererCommitToDidCommitDuration"),
+          ukm::testing::HasMetricWithValue("RendererProcessCreated", 0),
+          ukm::testing::HasMetricWithValue("RendererProcessLaunched", 0))));
 }
 
 // Verifies that when a new browser window is created while another window
