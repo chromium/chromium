@@ -8879,7 +8879,7 @@
   {
     "name": "stylus-handwriting-win",
     "owners": [ "johna@microsoft.com", "gerchiko@microsoft.com", "flackr@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "submenus-in-app-menu",
