@@ -17,6 +17,10 @@ ImeEventGuard::ImeEventGuard(base::WeakPtr<WidgetBase> widget)
   widget_->OnImeEventGuardStart(this);
 }
 
+bool ImeEventGuard::IsValid() const {
+  return !!widget_;
+}
+
 ImeEventGuard::~ImeEventGuard() {
   if (widget_)
     widget_->OnImeEventGuardFinish(this);
