@@ -285,6 +285,7 @@ export class DndManager {
   private autoExpander_: AutoExpander|null;
   private timerProxy_: TimerProxy;
   private lastPointerWasTouch_: boolean;
+  private dragStarted_: boolean = false;
 
   constructor() {
     this.dragInfo_ = null;
@@ -327,6 +328,11 @@ export class DndManager {
   // DragEvent handlers:
 
   private onDragStart_(e: Event) {
+    if (this.dragStarted_) {
+      e.preventDefault();
+      return;
+    }
+
     const dragElement = getDragElement(e.composedPath());
     if (!dragElement) {
       return;
@@ -364,6 +370,8 @@ export class DndManager {
 
     const dragNodeIndex = draggedNodes.indexOf(dragElement.itemId);
     assert(dragNodeIndex !== -1);
+
+    this.dragStarted_ = true;
 
     BookmarkManagerApiProxyImpl.getInstance().startDrag(
         draggedNodes, dragNodeIndex, this.lastPointerWasTouch_,
@@ -441,10 +449,12 @@ export class DndManager {
 
   private onMouseDown_() {
     this.lastPointerWasTouch_ = false;
+    this.dragStarted_ = false;
   }
 
   private onTouchStart_() {
     this.lastPointerWasTouch_ = true;
+    this.dragStarted_ = false;
   }
 
   private handleChromeDragEnter_(dragData: DragData) {
@@ -455,6 +465,7 @@ export class DndManager {
   // Helper methods:
 
   private clearDragData_() {
+    this.dragStarted_ = false;
     this.autoExpander_!.reset();
 
     // Defer the clearing of the data so that the bookmark manager API's drop
