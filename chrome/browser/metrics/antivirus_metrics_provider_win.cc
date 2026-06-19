@@ -59,11 +59,9 @@ void AntiVirusMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
     remote_util_win_.reset_on_idle_timeout(base::Seconds(5));
   }
 
-  // The usage of base::Unretained(this) is safe here because
-  // |remote_util_win_|, which owns the callback, will be destroyed once this
-  // instance goes away.
-  auto callback = base::BindOnce(
-      &AntiVirusMetricsProvider::GotAntiVirusProducts, base::Unretained(this));
+  auto callback =
+      base::BindOnce(&AntiVirusMetricsProvider::GotAntiVirusProducts,
+                     weak_ptr_factory_.GetWeakPtr());
 
   if (base::FeatureList::IsEnabled(kReportEmptyAVMetricsOnFailure)) {
     remote_util_win_->GetAntiVirusProducts(

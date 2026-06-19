@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
@@ -66,6 +67,8 @@ class AntiVirusMetricsProvider : public metrics::MetricsProvider {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<AntiVirusMetricsProvider> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_METRICS_ANTIVIRUS_METRICS_PROVIDER_WIN_H_
