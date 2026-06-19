@@ -18,8 +18,11 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -359,5 +362,36 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
       CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"));
 }
 
+class BookmarkBarSimplifiedIPHInteractiveTest
+    : public InteractiveFeaturePromoTest {
+ public:
+  BookmarkBarSimplifiedIPHInteractiveTest()
+      : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHBookmarkBarSimplifiedFeature})) {}
+  ~BookmarkBarSimplifiedIPHInteractiveTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
+    // Simulate the state where the bookmark bar has been auto-hidden
+    // due to inactivity.
+    browser()->profile()->GetPrefs()->SetInteger(
+        bookmarks::prefs::kBookmarkBarVisibilityState,
+        static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
+  }
+};
 
 }  // namespace
+
+IN_PROC_BROWSER_TEST_F(BookmarkBarSimplifiedIPHInteractiveTest,
+                       UndoChangesVisibilityStateToOnlyShowOnNtp) {
+  RunTestSequence(
+      MaybeShowPromo(feature_engagement::kIPHBookmarkBarSimplifiedFeature),
+      PressNonDefaultPromoButton(),
+      CheckResult(
+          [this]() {
+            return browser()->profile()->GetPrefs()->GetInteger(
+                bookmarks::prefs::kBookmarkBarVisibilityState);
+          },
+          static_cast<int>(
+              bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp)));
+}
