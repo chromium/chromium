@@ -327,7 +327,7 @@
 <translation id="2096716221239095980">删除所有数据</translation>
 <translation id="2104436223719117661">热搜</translation>
 <translation id="21133533946938348">固定标签页</translation>
-<translation id="2117650889962717098">切换到无痕模式，让浏览记录不留痕迹</translation>
+<translation id="2117650889962717098">切换到无痕模式，让浏览不留痕迹</translation>
 <translation id="2119636449201577317">打开方式…</translation>
 <translation id="2119962645034852864">您的账号无法使用部分服务</translation>
 <translation id="2120553909046681540">您的组织关闭了私密浏览功能。</translation>
@@ -1399,7 +1399,7 @@
 <translation id="5938160824633642847">您设备上的存储空间即将用尽，请释放空间并重试。</translation>
 <translation id="5944869793365969636">扫描二维码</translation>
 <translation id="5948291296578561264">这样，您便可将照片保存到您的照片库中。</translation>
-<translation id="5948605885471592910">在这里轻松查看和管理所有已打开的页面</translation>
+<translation id="5948605885471592910">查看和管理所有已打开的页面</translation>
 <translation id="5952641243319721872">确定要舍弃您所做的选择吗？</translation>
 <translation id="5956112131836209882">标签页分组标签页。第 <ph name="NUMBER_OF_TABS_IN_GROUP" /> 个，共 <ph name="TAB_INDEX_IN_GROUP" /> 个。</translation>
 <translation id="595769230373966252">使用 <ph name="SEARCH_PROVIDER" /> 进行搜索</translation>

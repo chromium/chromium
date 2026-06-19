@@ -399,10 +399,10 @@
 <translation id="1256588359404100567">تنظیم از دستگاه قبلی‌تان همگام‌سازی شده است.</translation>
 <translation id="1257336506558170607">صادر کردن گواهینامه انتخاب‌شده</translation>
 <translation id="1258491128795710625">ویژگی‌های جدید</translation>
-<translation id="1260451001046713751">همیشه اجازه داشتن پنجره‌های بازشو و هدایت‌ها از <ph name="HOST" /></translation>
+<translation id="1260451001046713751">همیشه اجازه دادن پنجره‌های بازشو و هدایت‌ها از <ph name="HOST" /></translation>
 <translation id="1261380933454402672">متوسط</translation>
 <translation id="126156426083987769">مشکلی در رابطه با مجوزهای حالت نمایشی دستگاه پیش آمد.</translation>
-<translation id="1262395978737369974">همیشه اجازه استفاده از بهینه‌سازی جاوا اسکریپت داده شود</translation>
+<translation id="1262395978737369974">همیشه اجازه داشتن برای استفاده از بهینه‌سازی جاوا اسکریپت</translation>
 <translation id="1262564987698748643">سایت‌ها می‌توانند برای ملغی کردن ورودی صفحه‌کلید درخواست دهند</translation>
 <translation id="1263231323834454256">فهرست خواندن</translation>
 <translation id="1263733306853729545">استفاده از کلیدهای <ph name="MINUS" /> و <ph name="EQUAL" /> برای پی‌جویی فهرست کاندیداها</translation>
@@ -2484,7 +2484,7 @@
 <translation id="2674764818721168631">خاموش</translation>
 <translation id="2676084251379299915">‏این افزونه توسط خط‌مشی سازمان غیرفعال شده است چون دیگر در «نت‌بازار Chrome» دردسترس نیست.</translation>
 <translation id="2677748264148917807">خروج</translation>
-<translation id="2678063897982469759">فعال کردن مجدد</translation>
+<translation id="2678063897982469759">بازفعال‌سازی</translation>
 <translation id="267829273183481634">{NUM_GROUPS,plural, =1{گروه زبانه نگه داشته شود؟}one{گروه زبانه نگه داشته شود؟}other{گروه‌های زبانه نگه داشته شود؟}}</translation>
 <translation id="2678801466438589151">‏دکمه «لنز Google» را انتخاب کنید</translation>
 <translation id="268053382412112343">&amp;سابقه</translation>
@@ -3557,7 +3557,7 @@
 <translation id="3437072258256045988">‏مدیریت «فعالیت برنامه‌های Gemini»</translation>
 <translation id="3437397693214267762">‏دیدن Outlook Calendar و SharePoint و فایل‌های OneDrive</translation>
 <translation id="3438633801274389918">نینجا</translation>
-<translation id="3439153939049640737">دسترسی <ph name="HOST" /> به میکروفون شما همیشه اجازه داشتن باشد</translation>
+<translation id="3439153939049640737">همیشه اجازه دادن به <ph name="HOST" /> برای دسترسی به میکروفون شما</translation>
 <translation id="3439970425423980614">‏در حال باز کردن PDF در پیشنمایش</translation>
 <translation id="3440478087746699229">داخلی</translation>
 <translation id="3440663250074896476">کنش‌های بیشتر برای <ph name="BOOKMARK_NAME" /></translation>
@@ -3915,7 +3915,7 @@
 <translation id="3683524264665795342">درخواست هم‌رسانی صفحه‌نمایش <ph name="APP_NAME" /></translation>
 <translation id="3685598397738512288">‏اولویت‌های USB در Linux</translation>
 <translation id="3686108296937784939">میان‌برهای سازمان من</translation>
-<translation id="3687598459967813435">همیشه اجازه داشتن اعلان‌ها از <ph name="WEBSITE" /></translation>
+<translation id="3687598459967813435">همیشه اجازه دادن اعلان‌ها از <ph name="WEBSITE" /></translation>
 <translation id="3688507211863392146">نوشتن بر روی فایل‌ها و پوشه‌هایی که در برنامه باز می‌کنید</translation>
 <translation id="3688526734140524629">تغییر کانال</translation>
 <translation id="3688578402379768763">به‌روز</translation>
@@ -4362,7 +4362,7 @@
 <translation id="3959969108528118741">مالک</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">کنش‌های بیشتر برای <ph name="IBAN_DESCRIPTION" /></translation>
-<translation id="3961823084595287812">همیشه اجازه داشتن <ph name="HOST" /> برای استفاده از شناسه‌ها برای پخش محتوای محافظت‌شده</translation>
+<translation id="3961823084595287812">همیشه اجازه دادن <ph name="HOST" /> برای استفاده از شناسه‌ها برای پخش محتوای محافظت‌شده</translation>
 <translation id="3964480518399667971">خاموش کردن شبکه تلفن همراه</translation>
 <translation id="3965467402665811906">سایت‌ها می‌توانند درخواست کنند از اطلاعاتی که درباره شما ذخیره کرده‌اند استفاده کنند</translation>
 <translation id="3965965397408324205">خارج شدن از <ph name="PROFILE_NAME" /></translation>
@@ -4687,7 +4687,7 @@
 <translation id="4207144975205749656">درخواست‌های پیمایش را رمزگذاری می‌کند تا مهاجمان در همان شبکه نتوانند ترافیک شما را ببینند</translation>
 <translation id="4207932031282227921">‏درخواست اجازه ارائه شده است؛ برای پاسخ دادن، کلید F6 را فشار دهید</translation>
 <translation id="4209092469652827314">بزرگ</translation>
-<translation id="4209247656298167054">به‌روزرسانی دردسترس نیست</translation>
+<translation id="4209247656298167054">به‌روزرسانی ندارید</translation>
 <translation id="4209251085232852247">خاموش</translation>
 <translation id="4210048056321123003">درحال بارگیری دستگاه مجازی</translation>
 <translation id="4210380525132844778">دلیل: <ph name="RULE" /> در فهرست «<ph name="LIST_NAME" />» پیدا شد.</translation>
@@ -5242,7 +5242,7 @@
 <translation id="4601095002996233687">اسکن‌های عمیق برای شناسایی بارگیری‌های مشکوک.</translation>
 <translation id="4601426376352205922">علامت‌گذاری به‌عنوان خوانده‌نشده</translation>
 <translation id="460190672235687855">مشاهده گذرواژه‌ها</translation>
-<translation id="4602466770786743961">همیشه به <ph name="HOST" /> اجازه دسترسی به دوربین و میکروفونتان را می‌دهید</translation>
+<translation id="4602466770786743961">همیشه اجازه دادن به <ph name="HOST" /> برای دسترسی به دوربین و میکروفون شما</translation>
 <translation id="4602776638371779614">این زبانه به‌طور فعال درحال اسکن کردن دستگاه‌های بلوتوث است</translation>
 <translation id="4605026046465576953">این برنامه باز نمی‌شود چون اجازه ندارید برنامه‌های وب مجزا را اجرا کنید</translation>
 <translation id="4606551464649945562">به سایت‌ها اجازه داده نشود نقشه سه‌بعدی از محیط ایجاد کنند یا موقعیت دوربین را ردیابی کنند</translation>
@@ -6205,7 +6205,7 @@
 <translation id="5275338516105640560">دکمه گروه زبانه ذخیره‌شده</translation>
 <translation id="5275352920323889391">سگ</translation>
 <translation id="527605719918376753">صامت کردن برگه</translation>
-<translation id="527605982717517565">همیشه اجازه داشتن جاوا اسکریپت در <ph name="HOST" /></translation>
+<translation id="527605982717517565">همیشه اجازه دادن به جاوا اسکریپت در <ph name="HOST" /></translation>
 <translation id="5276357196618041410">ابتدا باید به سیستم وارد شوید تا بتوانید پیکربندی را ذخیره کنید</translation>
 <translation id="5277127016695466621">نمایش پانل کناری</translation>
 <translation id="5278823018825269962">شناسه وضعیت</translation>
@@ -6425,7 +6425,7 @@
 <translation id="543338862236136125">ویرایش گذرواژه</translation>
 <translation id="5433865420958136693">درصورت امکان از شتاب گرافیکی استفاده شود</translation>
 <translation id="5435274640623994081">فعال کردن گزارش‌گیری از نماد شنیداری</translation>
-<translation id="5435779377906857208">همیشه اجازه داشتن <ph name="HOST" /> برای دسترسی به مکان شما</translation>
+<translation id="5435779377906857208">همیشه اجازه دادن <ph name="HOST" /> برای دسترسی به مکان شما</translation>
 <translation id="5436211819997237281">صفحه زبانه جدید شما را افزونه فعلی مدیریت می‌کند</translation>
 <translation id="5436492226391861498">منتظر تونل پراکسی...</translation>
 <translation id="5436510242972373446">جستجوی <ph name="SITE_NAME" />:</translation>
@@ -7353,7 +7353,7 @@
 <translation id="6097600385983390082">جستجوی گفتاری بسته شد</translation>
 <translation id="609892108553214365">‏از این کارت در iPhone استفاده کنید</translation>
 <translation id="609942571968311933">نوشتار از <ph name="DEVICE_NAME" /> کپی شده است</translation>
-<translation id="6099766472403716061">‏همیشه اجازه داشتن <ph name="HOST" /> برای کنترل و برنامه‌ریزی مجدد دستگاه‌های MIDI</translation>
+<translation id="6099766472403716061">‏همیشه اجازه دادن <ph name="HOST" /> برای کنترل و برنامه‌ریزی مجدد دستگاه‌های MIDI</translation>
 <translation id="6100736666660498114">منوی شروع</translation>
 <translation id="6101226222197207147">برنامه جدید اضافه شده (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">این فایل توسط «محافظت پیشرفته» مسدود شده است.</translation>
@@ -7415,7 +7415,7 @@
 <translation id="6147020289383635445">پیش‌نمای چاپ کار نمی‌کند.</translation>
 <translation id="6147253937684562370">برای باز کردن قفل نمایه، با ایمیل حساب اصلی‌تان به سیستم وارد شوید: <ph name="EMAIL" /></translation>
 <translation id="6148576794665275391">اکنون باز است</translation>
-<translation id="614890671148262506">همیشه اجازه داشتن اعلان‌های این سایت</translation>
+<translation id="614890671148262506">همیشه اجازه دادن به اعلان‌های این سایت</translation>
 <translation id="6149015141270619212">اتصال به اینترنت ممکن نیست</translation>
 <translation id="6149061208933997199">استفاده از گذرواژه</translation>
 <translation id="6149791593592044995">استفاده از جای‌گذاری علامت لحن مدرن</translation>
@@ -7887,7 +7887,7 @@
 <translation id="6478849105642611893">‏کلید «درج سریع» در زیر کلید جهش Tab قرار دارد</translation>
 <translation id="6479881432656947268">‏رفتن به «نت‌بازار Chrome»</translation>
 <translation id="6480327114083866287">تحت مدیریت <ph name="MANAGER" /></translation>
-<translation id="6480532238409319936">عملیات به‌روزرسانی انجام نشد</translation>
+<translation id="6480532238409319936">عملیات به‌روزرسانی ناموفق بود</translation>
 <translation id="6481749622989211463">هم‌رسانی فایل‌ها و محتوای دیگر با دستگاه‌های اطراف. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="648204537326351595">به <ph name="SPECIFIC_NAME" /> اجازه داده شود به میکروفون شما دسترسی داشته باشد</translation>
 <translation id="6482559668224714696">ذره‌بین تمام‌صفحه</translation>
@@ -7954,7 +7954,7 @@
 <translation id="6533315466883598769">‏استفاده از «ترجمه Google»</translation>
 <translation id="65334502113648172">برای کوچک یا بزرگ کردن ناحیه نمایش، کلیدهای جهت‌نما را فشار دهید. برای حرکت دادن ناحیه نمایش به اطراف، کلید تبدیل و + را فشار دهید، سپس از کلیدهای جهت‌نما استفاده کنید.</translation>
 <translation id="6534018044332449019">هیچ برنامه‌ای نصب نشده است.</translation>
-<translation id="6535331821390304775"><ph name="ORIGIN" /> همیشه اجازه داشتن باشد این نوع پیوندها را در برنامه مرتبط باز کند</translation>
+<translation id="6535331821390304775"><ph name="ORIGIN" /> همیشه اجازه دادن باشد این نوع پیوندها را در برنامه مرتبط باز کند</translation>
 <translation id="653659894138286600">اسکن کردن اسناد و تصاویر</translation>
 <translation id="6538036594527795020">زبان <ph name="APP" /> تغییر می‌کند. زبان فعلی <ph name="LANGUAGE" /> است.</translation>
 <translation id="6538098297809675636">خطای شناسایی کد</translation>
@@ -9806,7 +9806,7 @@
 <translation id="7806659658565827531">تهیه گزارمان از گره اصلی</translation>
 <translation id="7806722269368320106">یک برنامه، درحال نصب</translation>
 <translation id="7807067443225230855">جستجو و دستیار</translation>
-<translation id="7807711621188256451">دسترسی <ph name="HOST" /> به دوربین شما همیشه اجازه داشتن باشد</translation>
+<translation id="7807711621188256451">همیشه اجازه دادن به <ph name="HOST" /> برای دسترسی به دوربین شما</translation>
 <translation id="7810202088502699111">پنجره‌های بازشو در این صفحه مسدود شده‌اند.</translation>
 <translation id="7810367892333449285">‏ورودی باید در قالب <ph name="LPA_0" />$<ph name="LPA_1" />SM-‏DP+ نشانی<ph name="LPA_2" />$<ph name="LPA_3" />شناسه انطباق اختیاری<ph name="LPA_4" /> باشد</translation>
 <translation id="7811263553491007091">دوباره امتحان کنید یا یکی از مضمون‌های قبلاً تولیدشده را در زیر انتخاب کنید.</translation>
@@ -10094,7 +10094,7 @@
 <translation id="8004092996156083991">اگر گذرواژه‌هایتان لو برود، به شما اطلاع خواهیم داد.</translation>
 <translation id="8004507136466386272">کلمه‌ها</translation>
 <translation id="8004582292198964060">مرورگر</translation>
-<translation id="8005600846065423578"><ph name="HOST" /> همیشه اجازه داشتن باشد به بریده‌دان دسترسی پیدا کند</translation>
+<translation id="8005600846065423578"><ph name="HOST" /> همیشه اجازه دادن باشد به بریده‌دان دسترسی پیدا کند</translation>
 <translation id="8006630792898017994">فضا یا زبانه</translation>
 <translation id="8006906484704059308">‏این سایت همچنان مسدود شود تا نتواند دستگاه‌های MIDI شما را کنترل و مجدداً برنامه‌ریزی کند</translation>
 <translation id="8008704580256716350">فایل مشکوک مسدود شد</translation>
@@ -10438,7 +10438,7 @@
 <translation id="8243948765190375130">ممکن است کیفیت رسانه کاهش پیدا کند</translation>
 <translation id="8244201515061746038">‏دکمه اطلاعات بیشتر درباره تصحیح خودکار. به صفحه تنظیمات تصحیح خودکار می‌روید. برای فعال کردن، کلید Enter و برای رد کردن، کلید «گریز» را فشار دهید.</translation>
 <translation id="8244514732452879619">به‌زودی وقت خواب است</translation>
-<translation id="8244724656154470844">بررسی به‌روزرسانی انجام نشد.</translation>
+<translation id="8244724656154470844">بررسی به‌روزرسانی ناموفق بود.</translation>
 <translation id="8246776524656196770">محافظت از کلید امنیتی بااستفاده از پین (شماره شناسایی شخصی)</translation>
 <translation id="824713170151383793">‏با DevTools</translation>
 <translation id="8247210755024677100">درحال ورود به سیستم ...</translation>
@@ -10515,7 +10515,7 @@
 <translation id="8293206222192510085">افزودن نشانک</translation>
 <translation id="8293957715257389063">می‌توانید به‌طور عمیق در زبانه جستجو کنید</translation>
 <translation id="8294431847097064396">منبع</translation>
-<translation id="8295449579927246485">ترجمه زنده</translation>
+<translation id="8295449579927246485">ترجمه سریع</translation>
 <translation id="8295450130892483256">‏نصب Microsoft 365</translation>
 <translation id="8297292446125062288">تنظیمات دستگاه میانای انسانی</translation>
 <translation id="8298429963694909221">‏ازاین‌پس می‌توانید اعلان‌های تلفنتان را در <ph name="DEVICE_TYPE" /> دریافت کنید. با رد کردن اعلان‌ها در <ph name="DEVICE_TYPE" />، آن‌ها در تلفنتان نیز رد می‌شوند. مطمئن شوید تلفنتان نزدیک باشد و بلوتوث و Wi-Fi در آن روشن باشد.</translation>
@@ -10819,7 +10819,7 @@
 <translation id="8509177919508253835">بازنشانی کلیدهای امنیتی و ایجاد پین</translation>
 <translation id="8509646642152301857">بارگیری واژه‌نامه بررسی املا انجام نشد.</translation>
 <translation id="8512476990829870887">پایان دادن به فرایند</translation>
-<translation id="851263357009351303">همیشه اجازه داشتن <ph name="HOST" /> برای نشان دادن تصاویر</translation>
+<translation id="851263357009351303">همیشه اجازه دادن به <ph name="HOST" /> برای نشان دادن تصاویر</translation>
 <translation id="8513108775083588393">چرخش خودکار</translation>
 <translation id="8513357934662532537">‏برای وارد کردن گذرواژه‌های <ph name="USER_EMAIL" /> به <ph name="BRAND" />، فایل CSV موردنظر را انتخاب کنید.</translation>
 <translation id="8514746246728959655">کلید امنیتی دیگری را امتحان کنید</translation>

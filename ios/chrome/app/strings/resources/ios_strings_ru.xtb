@@ -11,7 +11,7 @@
 <translation id="1030376737535466765">Открыть Менеджер паролей</translation>
 <translation id="1035980983510608210">Будут также закрыты закрепленные вкладки.</translation>
 <translation id="1036348656032585052">Отключить</translation>
-<translation id="1036436692654972538">На устройстве будет сохранена следующая информация:</translation>
+<translation id="1036436692654972538">На устройстве</translation>
 <translation id="1041322626941363065">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="104491362976654916">Офлайн-версия страницы</translation>
 <translation id="1046742265332833834">Синяя тема</translation>
@@ -213,7 +213,7 @@
 <translation id="1718835860248848330">Последний час</translation>
 <translation id="1728549374069268714">Вставить и перейти</translation>
 <translation id="1732468323901456775">Включить уведомления "<ph name="MODULE_NAME" />"</translation>
-<translation id="1739364174357629566">Обновить личный номер пассажира, присвоенный TSA?</translation>
+<translation id="1739364174357629566">Обновить номер Known Traveler Number?</translation>
 <translation id="1740468249224277719">Нажмите дважды, чтобы установить</translation>
 <translation id="1740650426894359238">Сменить профиль</translation>
 <translation id="1741219894094057085">Умные часы</translation>
@@ -900,7 +900,7 @@
 <translation id="4231395118547300571">Уведомления проверки безопасности включены</translation>
 <translation id="4232817129213135694">Настройка ключей доступа на этом устройстве</translation>
 <translation id="4237377247299956313">Нажмите <ph name="BEGIN_BOLD" />Приложение браузера по умолчанию<ph name="END_BOLD" />.</translation>
-<translation id="424063167283213501">Сохранить личный номер пассажира (KTN)?</translation>
+<translation id="424063167283213501">Сохранить номер Known Traveler Number?</translation>
 <translation id="4241893428331130998">Нет сохраненных паролей или ключей доступа</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
 <translation id="4250432749243022864">{count,plural, =0{Открыть {count} вкладок}=1{Открыть {count} вкладку}one{Открыть {count} вкладку}few{Открыть {count} вкладки}many{Открыть {count} вкладок}other{Открыть {count} вкладки}}</translation>
@@ -1492,7 +1492,7 @@
 <translation id="6232329973559504466">Поиск в режиме инкогнито</translation>
 <translation id="6234310016144827337">Проверьте подключение и повторите попытку.</translation>
 <translation id="6236952928980352967">Восстановить предупреждение</translation>
-<translation id="6240553182907836376">Изменить информацию об удостоверении личности?</translation>
+<translation id="6240553182907836376">Обновить информацию об удостоверении личности?</translation>
 <translation id="6240601837375010619">Сохранить паспортные данные?</translation>
 <translation id="6241132809279377987">Пользуйтесь приложениями Google на iPhone</translation>
 <translation id="6247557882553405851">Google Менеджер паролей</translation>
@@ -2250,7 +2250,7 @@
 <translation id="8803639129939845298">Защищено</translation>
 <translation id="8813277370772331957">Напомнить позже</translation>
 <translation id="8814719628147284151">Продолжить</translation>
-<translation id="881559332211266856">Обновить идентификатор Redress Number?</translation>
+<translation id="881559332211266856">Обновить данные Redress Number?</translation>
 <translation id="8817524703470045896">Отслеживайте цены и получайте оповещения о скидках на любых сайтах.</translation>
 <translation id="8819155700324279105">Добавьте дополнительный уровень защиты от онлайн-угроз.</translation>
 <translation id="8820817407110198400">Закладки</translation>

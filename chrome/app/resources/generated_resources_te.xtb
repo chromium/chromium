@@ -2937,7 +2937,7 @@
 <translation id="2988328607561082373">మీరు ఏ పాస్‌వర్డ్‌లను మళ్లీ ఉపయోగించడం లేదు</translation>
 <translation id="2989123969927553766">మౌస్ స్క్రోల్ యాక్సిలరేషన్</translation>
 <translation id="2989177286941477290">{NUM_OF_FILES,plural, =1{ఈ ఫైల్‌ను తరలించడానికి <ph name="CLOUD_PROVIDER" />లో స్పేస్‌ను ఖాళీ చేయండి}other{ఈ ఫైల్స్‌ను తరలించడానికి <ph name="CLOUD_PROVIDER" />లో స్పేస్‌ను ఖాళీ చేయండి}}</translation>
-<translation id="2989474696604907455">జోడించబడలేదు</translation>
+<translation id="2989474696604907455">అటాచ్ కాలేదు</translation>
 <translation id="2989786307324390836">DER-ఎన్‌కోడ్ చేసిన బైనరీ, ఒక సర్టిఫికెట్</translation>
 <translation id="2989805286512600854">కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="2990313168615879645">Google ఖాతాను జోడించండి</translation>
@@ -3742,7 +3742,7 @@
 <translation id="3564848315152754834">USB భద్రతా కీ</translation>
 <translation id="3566211766752891194">ట్యాబ్ మెమరీ వినియోగాన్ని చూడండి</translation>
 <translation id="3566325075220776093">ఈ పరికరం నుండి</translation>
-<translation id="3566721612727112615">సైట్‌లు ఏవీ జోడించబడలేదు</translation>
+<translation id="3566721612727112615">సైట్‌లు ఏవీ యాడ్ కాలేదు</translation>
 <translation id="3567168891086460374">మరోలా సేవ్ చేయండి</translation>
 <translation id="3567284462585300767">మీ చుట్టూ ఉన్న వ్యక్తులతో ఫైళ్లను అందుకోవడానికి, ఇంకా అంగీకరించడానికి, మీ పరికరం కనిపించేలా సెట్ చేయండి</translation>
 <translation id="356738834800832239">మీ పాస్‌వర్డ్ సేవ్ అయింది</translation>
@@ -3984,7 +3984,7 @@
 <translation id="3727144509609414201">అందుబాటులో ఉన్న Wi-Fi నెట్‌వర్క్‌లు</translation>
 <translation id="3727187387656390258">పాప్‌అప్‌ను పర్యవేక్షించు</translation>
 <translation id="372722114124766626">ఒకసారి మాత్రమే</translation>
-<translation id="3727332897090187514">గమనిక ఏదీ జోడించబడలేదు</translation>
+<translation id="3727332897090187514">గమనిక ఏదీ యాడ్ కాలేదు</translation>
 <translation id="3727473233247516571">వెనుకకు-ముందుకు కాష్ సబ్‌ఫ్రేమ్: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="3727558469988088200">పాస్-కీలను పొందండి</translation>
 <translation id="3727843212509629024">పిన్ తప్పు. మళ్లీ ట్రై చేయండి</translation>
@@ -7455,7 +7455,7 @@
 <translation id="6170675927290506430">నోటిఫికేషన్ సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="6171779718418683144">ప్రతి సందర్శనలో అడగండి</translation>
 <translation id="6172020488605056255">చదవడంలో సహాయం చేయాడాన్ని ఉపయోగించడానికి రైట్‌-క్లిక్ చేయండి</translation>
-<translation id="617213288191670920">భాషలు ఏవీ జోడించబడలేదు</translation>
+<translation id="617213288191670920">భాషలు ఏవీ యాడ్ కాలేదు</translation>
 <translation id="6173623053897475761">మీ పిన్‌ని మళ్లీ టైప్ చేయండి</translation>
 <translation id="6174909075810107548">మౌస్ బటన్‌ను నొక్కడానికి “5”ను వినియోగించండి</translation>
 <translation id="6175314957787328458">Microsoft డొమైన్ GUID</translation>
@@ -9230,7 +9230,7 @@
 <translation id="7416362041876611053">తెలియని నెట్‌వర్క్ ఎర్రర్.</translation>
 <translation id="7417435070053325657"><ph name="APPS_LIST_SIZE" />లో <ph name="BLOCKED_APPS_SIZE" /> యాప్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="741906494724992817">ఈ యాప్‌న‌కు ప్రత్యేక అనుమతులు ఏవీ అవసరం లేదు.</translation>
-<translation id="7419142833919893307">యూజర్‌నేమ్ ఏదీ జోడించబడలేదు</translation>
+<translation id="7419142833919893307">యూజర్‌నేమ్ ఏదీ యాడ్ కాలేదు</translation>
 <translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{PIN తప్పు. 1 ప్రయత్నం మిగిలి ఉంది.}other{PIN తప్పు. # ప్రయత్నాలు మిగిలి ఉన్నాయి.}}</translation>
 <translation id="7419565702166471774">ఎల్లప్పుడూ సురక్షిత కనెక్షన్‌లను ఉపయోగించండి</translation>
 <translation id="7421293530411019405">ట్యాబ్ గ్రూప్ నుండి నిష్క్రమించాలా?</translation>

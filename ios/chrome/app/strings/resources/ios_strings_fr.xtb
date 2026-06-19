@@ -198,7 +198,7 @@
 <translation id="16554782717487656">Détecter les unités</translation>
 <translation id="1657011748321897393">Échec du partage, car vous n'êtes pas connecté au réseau.</translation>
 <translation id="1668001730617725852">Ouvrir dans un nouveau groupe d'onglets</translation>
-<translation id="1670861525135254448">Enregistrez le véhicule</translation>
+<translation id="1670861525135254448">Enregistrer le véhicule</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> vers <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Conformément aux règles de votre organisation, ce fichier peut contenir des informations sensibles</translation>
 <translation id="168389590065701766">Vous pouvez désormais ouvrir Google Lens depuis la barre d'adresse et effectuer une recherche sur tout ce que vous voyez</translation>
@@ -449,7 +449,7 @@
 <translation id="2529021024822217800">Tout ouvrir</translation>
 <translation id="2536991091671391962">Vous pouvez utiliser les mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le Gestionnaire de mots de passe de Google pour <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Masqué, mot de passe</translation>
-<translation id="2538705697765638552">Enregistrez vos informations pour gagner du temps, par exemple en remplissant des formulaires dans les produits Google. Vous pouvez gérer vos informations dans Google Wallet pour <ph name="USER_EMAIL" />.</translation>
+<translation id="2538705697765638552">Enregistrez vos informations pour gagner du temps, par exemple lorsque vous remplissez des formulaires dans les produits Google. Vous pouvez gérer vos informations dans Google Wallet pour <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Activer la protection renforcée…</translation>
 <translation id="2540111494300686866">Supprimer boîtes de dial.</translation>
 <translation id="2542268842667970959">Masquer "Contrôle de sécurité"</translation>
@@ -596,11 +596,11 @@
 <translation id="3106690631878101882">Masquer "Traduire"</translation>
 <translation id="310900540163454140">Supprimer le mot de passe pour <ph name="WEBSITE" /> ?</translation>
 <translation id="3112556859945124369">Marquer…</translation>
-<translation id="3116695032231023709">Enregistrez la carte d'identité</translation>
+<translation id="3116695032231023709">Enregistrer la carte d'identité</translation>
 <translation id="3119874402040566234">Vous allez être déconnecté et vos données de navigation seront supprimées</translation>
 <translation id="3124568093781685165">Partagez vos mots de passe avec votre famille</translation>
 <translation id="3130863904455712965">Historique et plus</translation>
-<translation id="3132345256151444894">Enregistrez le numéro de recours</translation>
+<translation id="3132345256151444894">Enregistrer le numéro de recours</translation>
 <translation id="3132584647087998639">Importer vos données</translation>
 <translation id="313283613037595347">Créer un onglet de navigation privée</translation>
 <translation id="3136739222562075778">Cette carte présente les baisses de prix pour les produits dans vos onglets ouverts</translation>
@@ -720,7 +720,7 @@
 <translation id="3567168891086460374">Enregistrer autrement</translation>
 <translation id="3572503683475187385">L'onglet actuel est partagé avec Gemini lorsque vous démarrez une nouvelle discussion. Lorsque vous partagez un onglet avec Gemini, son contenu et son URL sont envoyés à Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Dans votre compte Google</translation>
-<translation id="3575234738189584619">Rechercher avec Lens</translation>
+<translation id="3575234738189584619">Recherchez avec Lens</translation>
 <translation id="3575426792457739946">Cette liste contient tous les profils chargés.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, géré par votre organisation.</translation>
 <translation id="3580448612293054698">Mettre à jour l'information "<ph name="ENTITY_TYPE" />" ?</translation>
@@ -900,7 +900,7 @@
 <translation id="4231395118547300571">Notifications du contrôle de sécurité activées</translation>
 <translation id="4232817129213135694">Configurer des clés d'accès pour cet appareil</translation>
 <translation id="4237377247299956313">Appuyez sur <ph name="BEGIN_BOLD" />Navigateur par défaut<ph name="END_BOLD" /></translation>
-<translation id="424063167283213501">Enregistrez le Known Traveler Number</translation>
+<translation id="424063167283213501">Enregistrer le Known Traveler Number</translation>
 <translation id="4241893428331130998">Pas de clés d'accès ni de mots de passe enregistrés</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4250432749243022864">{count,plural, =0{Ouvrir {count} onglet}=1{Ouvrir {count} onglet}one{Ouvrir {count} onglet}other{Ouvrir {count} onglets}}</translation>
@@ -1493,7 +1493,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6234310016144827337">Vérifiez la connexion, puis réessayez</translation>
 <translation id="6236952928980352967">Restaurer l'avertissement</translation>
 <translation id="6240553182907836376">Mettez à jour la carte d'identité</translation>
-<translation id="6240601837375010619">Enregistrez le passeport</translation>
+<translation id="6240601837375010619">Enregistrer le passeport</translation>
 <translation id="6241132809279377987">Profitez de plus de fonctionnalités sur votre iPhone avec les applis Google</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
 <translation id="6251835855431997163">Saisir automatiquement <ph name="VALUE" /></translation>
@@ -1671,7 +1671,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6806550742467879742">Outils de page</translation>
 <translation id="6807287147325542056">Mots de passe dans d'autres applis</translation>
 <translation id="681368974849482173">Élément créé</translation>
-<translation id="681631578600400068">Enregistrez le permis de conduire</translation>
+<translation id="681631578600400068">Enregistrer le permis de conduire</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Favori enregistré dans votre compte Google {email}}one{{count} favori enregistré dans votre compte Google {email}}other{{count} favoris enregistrés dans votre compte Google {email}}}</translation>
 <translation id="6826004672264649705">Vous suivez actuellement ce produit. Ouvrir pour voir l'historique des prix.</translation>

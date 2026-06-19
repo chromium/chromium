@@ -4815,7 +4815,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4298660926525614540">Názvy odstrániteľných úložísk</translation>
 <translation id="4299022904780065004">Nové okno &amp;inkognito</translation>
 <translation id="4300272766492248925">Otvoriť aplikáciu</translation>
-<translation id="4301231341924904092">Zmeniť pre mňa</translation>
+<translation id="4301231341924904092">Zmeniť</translation>
 <translation id="4301671483919369635">Táto stránka má povolené upravovať súbory</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# kontakt nie je k dispozícii. Ak s ním chcete použiť funkciu <ph name="FEATURE_NAME" />, pridajte e‑mailovú adresu spojenú s jeho účtom Google do svojich kontaktov.}few{# kontakty nie sú k dispozícii. Ak s nimi chcete použiť fuknciu <ph name="FEATURE_NAME" />, pridajte e‑mailové adresy spojené s ich účtami Google do svojich kontaktov.}many{# contacts are not available. To use <ph name="FEATURE_NAME" /> with them, add the email addresses associated with their Google Accounts to your contacts.}other{# kontaktov nie je k dispozícii. Ak s nimi chcete použiť fuknciu <ph name="FEATURE_NAME" />, pridajte e‑mailové adresy spojené s ich účtami Google do svojich kontaktov.}}</translation>
 <translation id="4303079906735388947">Nastavte pre svoj bezpečnostný kľúč nový kód PIN</translation>
@@ -4939,7 +4939,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{Toto rozšírenie bolo vypnuté, pretože už nie je podporované}few{Tieto rozšírenia boli vypnuté, pretože už nie sú podporované}many{These extensions were turned off because they're no longer supported}other{Tieto rozšírenia boli vypnuté, pretože už nie sú podporované}}</translation>
 <translation id="4386435410933281983">Nedá sa uložiť. Skúste to znova.</translation>
 <translation id="4386604394450371010">prehľad</translation>
-<translation id="4387890294700445764">Prelomené heslá</translation>
+<translation id="4387890294700445764">Odhalené heslá</translation>
 <translation id="4388650384344483842">Použite aspoň osem znakov</translation>
 <translation id="4388700905120039425">{COUNT,plural, =1{Heslo pre web <ph name="URL" />}few{Heslá pre web <ph name="URL" /> ({COUNT})}many{Passwords for <ph name="URL" /> ({COUNT})}other{Heslá pre web <ph name="URL" /> ({COUNT})}}</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a ďalšie (<ph name="NUMBER_OF_OTHER_SWITCHES" />) prepínače</translation>
@@ -7981,7 +7981,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6556866813142980365">Znova</translation>
 <translation id="6556903358015358733">Motív a tapeta</translation>
 <translation id="6557199166823345360">Ak chcete spresniť vyhľadávanie, pridajte ďalšie podrobnosti alebo položte otázku o výbere</translation>
-<translation id="6557290421156335491">Moje skratky</translation>
+<translation id="6557290421156335491">Moje odkazy</translation>
 <translation id="6560061709899140565">Zobraziť ďalšie relácie prenosu</translation>
 <translation id="6560151649238390891">Návrh bol vložený</translation>
 <translation id="656065428026159829">Zobraziť viac</translation>

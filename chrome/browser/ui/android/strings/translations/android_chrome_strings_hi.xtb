@@ -309,7 +309,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="2332515770639153015">बेहतर सुरक्षित ब्राउज़िंग की सुविधा चालू है</translation>
 <translation id="233375395665273385">मिटाएं और साइन आउट करें</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> को इंस्टॉल नहीं किया जा सका.</translation>
-<translation id="2349710944427398404">Chrome द्वारा उपयोग किया गया कुल डेटा, जिसमें खाते, बुकमार्क और सहेजी गईं सेटिंग शामिल हैं</translation>
+<translation id="2349710944427398404">Chrome में अलग-अलग खाते, बुकमार्क, सेव की गई सेटिंग वगैरह के लिए इस्तेमाल हुआ कुल स्टोरेज स्पेस</translation>
 <translation id="235789365079050412">Google निजता नीति</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> के तौर पर साइन इन किया गया. <ph name="USER_EMAIL" />. इस बटन से सेटिंग खुलती है.</translation>
@@ -968,7 +968,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5012016139642806466">अपने सभी डिवाइसों पर पासवर्ड वगैरह ऐक्सेस करें</translation>
 <translation id="5012253429094023177"><ph name="BEGIN_BOLD1" /><ph name="PROVIDER1" /><ph name="END_BOLD1" /> और <ph name="BEGIN_BOLD2" /><ph name="PROVIDER2" /><ph name="END_BOLD2" /> मिलते-जुलते लगते हैं. अपना पासवर्ड इस्तेमाल करने से पहले, पक्का करें कि आपको <ph name="BEGIN_BOLD3" /><ph name="PROVIDER2" /><ph name="END_BOLD3" /> पर भरोसा है.</translation>
 <translation id="5016205925109358554">Serif</translation>
-<translation id="5017529052065664584">पिछले 15 मिनट का</translation>
+<translation id="5017529052065664584">पिछले 15 मिनट</translation>
 <translation id="5032430150487044192">क्यूआर कोड नहीं बनाया जा सकता</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> से ज़्यादा जानकारी पाने के लिए, नीचे मौजूद "ज़्यादा जानकारी" चुनें.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टैब - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> टैब - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> टैब - <ph name="URL_LIST" />}}</translation>

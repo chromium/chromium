@@ -1886,7 +1886,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="3953505489397572035">Dieser Preis entspricht dem Normalpreis</translation>
 <translation id="3958057596965527988">4 × 4 Zoll</translation>
-<translation id="3959969108528118741">Inhaber</translation>
+<translation id="3959969108528118741">Eigentümer</translation>
 <translation id="3961148744525529027">Das Dokument zur Zahlungsabwicklung ist zur Hälfte geöffnet</translation>
 <translation id="3962859241508114581">Vorheriger Titel</translation>
 <translation id="3963721102035795474">Lesemodus</translation>
@@ -2604,7 +2604,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5087580092889165836">Karte hinzufügen</translation>
 <translation id="5088142053160410913">Nachricht an den Bediener</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 mit RSA-Verschlüsselung</translation>
-<translation id="5089810972385038852">Bundesstaat</translation>
+<translation id="5089810972385038852">Bundesstaat/-land</translation>
 <translation id="5093232627742069661">Z-Faltung</translation>
 <translation id="5093417502834168387">Anmeldeprobleme? Andere Option wählen</translation>
 <translation id="5094747076828555589">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird von Chromium als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
@@ -3163,7 +3163,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5950901984834744590">Rasierer</translation>
 <translation id="5951495562196540101">Registrierung mit Kundenkonto nicht möglich (Paketlizenz verfügbar).</translation>
 <translation id="5952076224478208938">Marke</translation>
-<translation id="5952196777020238475">Lizenznummer</translation>
+<translation id="5952196777020238475">Führerscheinnummer</translation>
 <translation id="5953516610448771166">Die Funktion „Automatische Untertitel“ ist für diesen Inhalt nicht verfügbar. Wenn du Untertitel nutzen möchtest, blockiere <ph name="CONTENT_SETTINGS" /> für diese Website.</translation>
 <translation id="5960795367348889467">Bestätigung</translation>
 <translation id="5963413905009737549">Section-Element</translation>
@@ -3200,7 +3200,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Passwörter prüfen</translation>
 <translation id="6014851866995737824">Ignoriert, da die „enable“- oder „disable“-Liste fehlt.</translation>
-<translation id="6015796118275082299">Jahr</translation>
+<translation id="6015796118275082299">Baujahr</translation>
 <translation id="6017028474478839719">Amtlichen Ausweis speichern?</translation>
 <translation id="6017514345406065928">Grün</translation>
 <translation id="6018650639991193045">In den Chrome-Einstellungen Browserverlauf, Cookies und andere Daten löschen sowie Cache leeren</translation>
@@ -3777,7 +3777,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6900702165119149418">Du bist abgemeldet</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="691024665142758461">Mehrere Dateien herunterladen</translation>
-<translation id="691046363691324218">Redress-Nummer</translation>
+<translation id="691046363691324218">Redress Number</translation>
 <translation id="6915804003454593391">Nutzer: </translation>
 <translation id="6916193791494646625">Gib den Grund für das Herunterladen an (erforderlich)</translation>
 <translation id="6917795328362592458">Das eingegebene Passwort wurde in einer Datenpanne gefunden. Zum besseren Schutz deiner Konten empfiehlt der Passwortmanager, deine gespeicherten Passwörter zu prüfen.</translation>
@@ -5000,7 +5000,7 @@ Weitere Details:
 <translation id="8811725516933141693">Gib @gemini ein, um mit Gemini zu chatten</translation>
 <translation id="8813277370772331957">Später erinnern</translation>
 <translation id="8814707942599948500">Umschlag C8</translation>
-<translation id="881559332211266856">Redress-Nummer aktualisieren</translation>
+<translation id="881559332211266856">Redress Number aktualisieren</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um Chrome über die Chrome-Einstellungen zu aktualisieren</translation>
 <translation id="8819855907485254989">Fahrkarte in Wallet speichern</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>

@@ -439,7 +439,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1664389769577564606">Photopolymère pour flexographie</translation>
 <translation id="1667730174533834274">valider votre identité avant que ne vous ne modifiiez les paramètres</translation>
 <translation id="1668071460721346172">Recevoir un e-mail</translation>
-<translation id="1670861525135254448">Enregistrez le véhicule</translation>
+<translation id="1670861525135254448">Enregistrer le véhicule</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> vers <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Bord court en premier</translation>
 <translation id="168693727862418163">La valeur de la règle n'a pas été validée par rapport à son schéma et sera ignorée.</translation>
@@ -1304,7 +1304,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3041584414879052436">La liste des émetteurs Acheter maintenant, payer plus tard est fermée.</translation>
 <translation id="3041612393474885105">Informations relatives au certificat</translation>
 <translation id="3045769629416806687">Sports extrêmes</translation>
-<translation id="3047054686095898948">Enregistrez vos informations dans <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> pour gagner du temps, par exemple en remplissant des formulaires dans les produits Google. Vous pouvez <ph name="BEGIN_LINK" />gérer vos informations<ph name="END_LINK" /> dans <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> pour <ph name="ACCOUNT" />.</translation>
+<translation id="3047054686095898948">Enregistrez vos informations dans <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> pour gagner du temps, par exemple pour remplir des formulaires dans les produits Google. Vous pouvez <ph name="BEGIN_LINK" />gérer vos informations<ph name="END_LINK" /> dans <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> pour <ph name="ACCOUNT" />.</translation>
 <translation id="305162504811187366">Historique du Bureau à distance Chrome, y compris les horodatages, les hôtes et les ID de sessions client</translation>
 <translation id="3052868890529250114">La connexion aux sites est généralement sécurisée, mais Chrome n'a pas pu utiliser de connexion sécurisée cette fois-ci. Il est possible qu'un pirate informatique tente d'espionner vos activités en ligne ou de modifier votre connexion réseau. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> : prix en baisse (-<ph name="PRICE_DROP" />)</translation>
@@ -1352,7 +1352,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3115363211799416195">{0,plural, =1{Télécharger le fichier confidentiel ?}one{Télécharger le fichier confidentiel ?}other{Télécharger les fichiers confidentiels ?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> vous demande de sauvegarder vos données et de retourner ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Plastifier</translation>
-<translation id="3116695032231023709">Enregistrez la carte d'identité</translation>
+<translation id="3116695032231023709">Enregistrer la carte d'identité</translation>
 <translation id="3119689199889622589">Aliments bio et naturels</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Essayez d'exécuter les diagnostics de connectivité<ph name="END_LINK" />.</translation>
@@ -1360,7 +1360,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3121994479408824897">Accéder à <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Afficher les résultats des 30 derniers jours</translation>
 <translation id="3126023634486644099">Étiquettes (permanentes)</translation>
-<translation id="3132345256151444894">Enregistrez le numéro de recours</translation>
+<translation id="3132345256151444894">Enregistrer le numéro de recours</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> est désormais votre moteur de recherche par défaut</translation>
 <translation id="3134859781443140237">Réseau local</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Rechercher dans <ph name="KEYWORD_SHORT_NAME" /></translation>
@@ -1655,7 +1655,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3587725436724465984">Votre organisation a identifié <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> comme un site susceptible de ne pas respecter une règle. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Milieu</translation>
 <translation id="3589519427766620380">Poser une question à Google Lens concernant cette page</translation>
-<translation id="3596918995172292499">État de la plaque</translation>
+<translation id="3596918995172292499">État</translation>
 <translation id="3600246354004376029">"<ph name="TITLE" />", <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Bouton "Gérer les paramètres de confidentialité du compte Google" à activer pour accéder aux paramètres de confidentialité de votre compte Google</translation>
 <translation id="3603507503523709">Application bloquée par votre administrateur</translation>
@@ -2083,7 +2083,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4231448684371260244">8 x 13 pouces</translation>
 <translation id="4235360514405112390">Valide</translation>
 <translation id="4239799716689808527">Étiquettes</translation>
-<translation id="424063167283213501">Enregistrez le Known Traveler Number</translation>
+<translation id="424063167283213501">Enregistrer le Known Traveler Number</translation>
 <translation id="4241830393007970744">Des pirates informatiques sur le site que vous avez essayé de consulter peuvent vous inciter à installer des logiciels ou à révéler des infos, comme vos mots de passe, ou vos numéro de téléphone ou de carte de crédit.</translation>
 <translation id="4242380780309416996">Enveloppe (haute densité)</translation>
 <translation id="4242981939686657948">Pour rechercher plus efficacement dans votre historique de navigation, activez la</translation>
@@ -3165,7 +3165,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5950901984834744590">Rasoirs</translation>
 <translation id="5951495562196540101">Impossible d'enregistrer votre appareil avec un compte personnel (licence associée disponible).</translation>
 <translation id="5952076224478208938">Marque</translation>
-<translation id="5952196777020238475">Numéro de licence</translation>
+<translation id="5952196777020238475">Numéro de permis</translation>
 <translation id="5953516610448771166">Les sous-titres instantanés ne sont pas disponibles pour ce contenu multimédia. Pour obtenir des sous-titres, bloquez <ph name="CONTENT_SETTINGS" /> pour ce site.</translation>
 <translation id="5960795367348889467">Validation</translation>
 <translation id="5963413905009737549">Section</translation>
@@ -3354,7 +3354,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="623825323736974198">Gérez les sites qui resteront toujours actifs et pour lesquels la mémoire ne sera pas libérée</translation>
 <translation id="6240447795304464094">Logo Google Pay</translation>
 <translation id="6240553182907836376">Mettez à jour la carte d'identité</translation>
-<translation id="6240601837375010619">Enregistrez le passeport</translation>
+<translation id="6240601837375010619">Enregistrer le passeport</translation>
 <translation id="6240964651812394252">Pour utiliser le Gestionnaire de mots de passe de Google avec votre système d'exploitation, relancez Chrome et autorisez l'accès au gestionnaire de mots de passe de votre ordinateur. Vos onglets s'ouvriront alors de nouveau.</translation>
 <translation id="6241121617266208201">Masquer les suggestions</translation>
 <translation id="624499991300733384">Service de composition d'impression</translation>
@@ -3726,7 +3726,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="681021252041861472">Champ obligatoire</translation>
 <translation id="6810899417690483278">ID de la personnalisation</translation>
 <translation id="6816109178681043245">Articles de sport</translation>
-<translation id="681631578600400068">Enregistrez le permis de conduire</translation>
+<translation id="681631578600400068">Enregistrer le permis de conduire</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">ports série</translation>
 <translation id="6820686453637990663">CVC</translation>
