@@ -134,6 +134,8 @@ suite('ContextualTasksComposeboxTest', () => {
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
     mockComposeboxPageHandler.setResultFor(
         'getSmartTabSharingActive', Promise.resolve({active: false}));
+    mockComposeboxPageHandler.setResultFor(
+        'canShowNextboxAnimation', Promise.resolve({canShow: true}));
     mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
     mockSearchboxPageHandler.setResultFor(
         'getRecentTabs', Promise.resolve({tabs: []}));
