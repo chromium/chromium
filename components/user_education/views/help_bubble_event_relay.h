@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -59,6 +60,8 @@ class HelpBubbleEventRelay {
   raw_ptr<HelpBubbleView> help_bubble_ = nullptr;
   raw_ptr<views::Button> hovered_button_ = nullptr;
   bool sent_click_ = false;
+
+  base::WeakPtrFactory<HelpBubbleEventRelay> weak_ptr_factory_{this};
 };
 
 namespace internal {
