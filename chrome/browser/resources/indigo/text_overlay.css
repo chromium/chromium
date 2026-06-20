@@ -17,6 +17,10 @@
   --indigo-entry-icon-pulse-size:
       calc(var(--indigo-entry-icon-base-size) * 1.8);
   --indigo-icon-transition-duration: 300ms;
+  --indigo-text-transition-duration: 300ms;
+  --indigo-text-transition-delay: 100ms;
+  --indigo-wipe-in-start: inset(0 100% 0 0);
+  --indigo-wipe-out-end: inset(0 0 0 100%);
 
   align-items: flex-start;
   display: flex;
@@ -28,6 +32,11 @@
   left: 0;
   justify-content: center;
   position: absolute;
+}
+
+:host-context([dir='rtl']) {
+  --indigo-wipe-in-start: inset(0 0 0 100%);
+  --indigo-wipe-out-end: inset(0 100% 0 0);
 }
 
 #container {
@@ -90,9 +99,33 @@
 
 #steps {
   color: rgb(11, 87, 208);
+  display: grid;
   font-size: var(--indigo-steps-font-size);
   font-weight: 500;
-  animation: fade-in 0.3s ease-out forwards;
+  justify-items: center;
+}
+
+#steps > div {
+  grid-area: 1 / 1;
+}
+
+#steps > div.hidden {
+  opacity: 0;
+}
+
+#steps > div.wipe-in {
+  animation: wipe-in var(--indigo-text-transition-duration) ease-out both;
+}
+
+#steps > div.wipe-out {
+  animation: wipe-out var(--indigo-text-transition-duration) ease-out both;
+}
+
+/* Each step wipe-in animation will be delayed to allow time for the previous
+ * step to complete its wipe-out animation. This does not apply to the very
+ * first string. */
+#steps > div.wipe-in:not(:first-child) {
+  animation-delay: var(--indigo-text-transition-delay);
 }
 
 #disclaimer {
@@ -100,14 +133,40 @@
   font-size: var(--indigo-disclaimer-font-size);
   font-weight: 400;
   margin-top: var(--indigo-disclaimer-margin-top);
-  animation: fade-in 0.3s ease-out forwards;
+  animation: fade-in var(--indigo-text-transition-duration) ease-out forwards;
 }
+
 @keyframes fade-in {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
+  }
+}
+
+@keyframes wipe-in {
+  from {
+    clip-path: var(--indigo-wipe-in-start);
+    opacity: 0;
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+@keyframes wipe-out {
+  from {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+
+  to {
+    clip-path: var(--indigo-wipe-out-end);
+    opacity: 0;
   }
 }
 

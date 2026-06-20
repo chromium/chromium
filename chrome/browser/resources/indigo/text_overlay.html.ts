@@ -13,9 +13,9 @@ export function getHtml(this: IndigoTextOverlayElement) {
   ${this.showIcon_ ? html`<div id="icon"></div>` : ''}
   ${this.currentStep_ !== 0 ? html`
     <div id="steps">
-      ${this.currentStep_ === 1 ? html`<div>$i18n{textLayerStep1}</div>` : ''}
-      ${this.currentStep_ === 2 ? html`<div>$i18n{textLayerStep2}</div>` : ''}
-      ${this.currentStep_ === 3 ? html`<div>$i18n{textLayerStep3}</div>` : ''}
+      <div class="${this.getStepClass_(1)}">$i18n{textLayerStep1}</div>
+      <div class="${this.getStepClass_(2)}">$i18n{textLayerStep2}</div>
+      <div class="${this.getStepClass_(3)}">$i18n{textLayerStep3}</div>
     </div>
     <div id="disclaimer">
       $i18n{disclaimerLine1}<br>

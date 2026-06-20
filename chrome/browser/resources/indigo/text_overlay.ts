@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './text_overlay.css.js';
@@ -53,7 +54,7 @@ export class IndigoTextOverlayElement extends CrLitElement {
       this.entryTimeout_ = null;
 
       this.stepTimer_ = window.setInterval(() => {
-        if (this.currentStep_ < TOTAL_STEPS) {
+        if (this.currentStep_ < TOTAL_STEPS + 1) {
           this.currentStep_++;
         } else {
           this.clearStepTimer_();
@@ -77,6 +78,18 @@ export class IndigoTextOverlayElement extends CrLitElement {
       window.clearInterval(this.stepTimer_);
       this.stepTimer_ = null;
     }
+  }
+
+  protected getStepClass_(step: number): string {
+    assert(step > 0);
+    const previousStep = this.currentStep_ - 1;
+    if (step === previousStep) {
+      return 'wipe-out';
+    }
+    if (step === this.currentStep_) {
+      return 'wipe-in';
+    }
+    return 'hidden';
   }
 }
 
