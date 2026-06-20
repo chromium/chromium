@@ -2339,6 +2339,50 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, DropUrlOnToolbar) {
                          ->GetLastCommittedURL());
 }
 
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       DropJavaScriptUrlOnToolbar) {
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  // Navigate the active tab to a safe starting page.
+  GURL start_url("chrome://version/");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::u16string original_title = active_contents->GetTitle();
+
+  GURL js_url("javascript:document.title='PWNED'");
+  content::TestNavigationObserver navigation_observer(active_contents);
+
+  EXPECT_TRUE(
+      content::ExecJs(web_contents, base::StringPrintf(R"(
+    const toolbarApp = document.querySelector('toolbar-app');
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/uri-list', "%s");
+    const dropEvent = new DragEvent('drop', {
+      bubbles: true,
+      cancelable: true,
+      dataTransfer: dataTransfer
+    });
+    toolbarApp.dispatchEvent(dropEvent);
+  )",
+                                                       js_url.spec().c_str())));
+
+  navigation_observer.Wait();
+
+  // The navigation should be blocked and redirected to about:blank#blocked.
+  EXPECT_EQ(GURL("about:blank#blocked"),
+            active_contents->GetLastCommittedURL());
+  // The javascript must not execute, so the title should not be modified to the
+  // injected string.
+  EXPECT_NE(u"PWNED", active_contents->GetTitle());
+}
+
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, DropFileOnToolbar) {
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* webui_toolbar_view = nullptr;
