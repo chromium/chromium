@@ -4072,10 +4072,12 @@ error::Error GLES2DecoderPassthroughImpl::DoGenVertexArraysOES(
 error::Error GLES2DecoderPassthroughImpl::DoDeleteVertexArraysOES(
     GLsizei n,
     const volatile GLuint* arrays) {
-  return DeleteHelper(n, arrays, &vertex_array_id_map_,
-                      [this](GLsizei n, GLuint* arrays) {
-                        api()->glDeleteVertexArraysOESFn(n, arrays);
-                      });
+  error::Error err = DeleteHelper(n, arrays, &vertex_array_id_map_,
+                                  [this](GLsizei n, GLuint* arrays) {
+                                    api()->glDeleteVertexArraysOESFn(n, arrays);
+                                  });
+  bound_element_array_buffer_dirty_ = true;
+  return err;
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoIsVertexArrayOES(GLuint array,
