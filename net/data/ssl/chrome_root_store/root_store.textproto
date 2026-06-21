@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 33
+version_major: 34
 
 # When allocating new crs_root_id values, always start from the value in
 # NEXT_UNUSED_CRS_ROOT_ID.txt (which may not exist in the Chromium repository),
@@ -64,12 +64,6 @@ trust_anchors {
   sha256_hex: "5c58468d55f58e497e743982d2b50010b6d165374acf83a7d4a32db768c4408e"
   crs_root_id: 8
   ev_policy_oids: "2.23.140.1.1"
-}
-
-# C=DE, O=Atos, CN=Atos TrustedRoot 2011
-trust_anchors {
-  sha256_hex: "f356bea244b7a91eb35d53ca9ad7864ace018e2d35d5f8f96ddf68a6f41aa474"
-  crs_root_id: 9
 }
 
 # CN=Autoridad de Certificacion Firmaprofesional CIF A62634068, C=ES
@@ -133,33 +127,49 @@ trust_anchors {
 }
 
 # CN=D-TRUST Root Class 3 CA 2 2009, O=D-Trust GmbH, C=DE
+# Constraint date: Thurs, May 28, 2026, 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "49e7a442acf0ea6287050054b52564b650e4f49e42e348d6aa38e039e957b1c1"
   crs_root_id: 16
+  constraints: {
+    sct_not_after_sec: 1780012799
+  }
 }
 
 # CN=D-TRUST Root Class 3 CA 2 EV 2009, O=D-Trust GmbH, C=DE
 # https://certdemo-ev-valid.ssl.d-trust.net/
+# Constraint date: Thurs, May 28, 2026, 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "eec5496b988ce98625b934092eec2908bed0b0f316c2d4730c84eaf1f3d34881"
   crs_root_id: 17
   # TODO(cclements,hchao): remove non-CABF OID once it is not used anymore.
   ev_policy_oids: "1.3.6.1.4.1.4788.2.202.1"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1780012799
+  }
 }
 
 # CN=T-TeleSec GlobalRoot Class 2, OU=T-Systems Trust Center, O=T-Systems Enterprise Services GmbH, C=DE
+# Constraint date: Thurs, May 28, 2026, 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "91e2f5788d5810eba7ba58737de1548a8ecacd014598bc0b143e041b17052552"
   crs_root_id: 18
+  constraints: {
+    sct_not_after_sec: 1780012799
+  }
 }
 
 # CN=T-TeleSec GlobalRoot Class 3, OU=T-Systems Trust Center, O=T-Systems Enterprise Services GmbH, C=DE
 # http://www.telesec.de/ / https://root-class3.test.telesec.de/
+# Constraint date: Thurs, May 28, 2026, 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "fd73dad31c644ff1b43bef0ccdda96710b9cd9875eca7e31707af3e96d522bbd"
   crs_root_id: 19
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1780012799
+  }
 }
 
 # CN=Certigna Root CA, OU=0002 48146308100036, O=Dhimyotis, C=FR
@@ -179,33 +189,6 @@ trust_anchors {
   crs_root_id: 21
   ev_policy_oids: "2.23.140.1.1"
   trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0a"  # 52580.200109.1.10
-}
-
-# CN=DigiCert Trusted Root G4, OU=www.digicert.com, O=DigiCert Inc, C=US
-# https://trusted-root-g4.chain-demos.digicert.com/
-trust_anchors {
-  sha256_hex: "552f7bdcf1a7af9e6ce672017f4f12abf77240c78e761ac203d1d9d20ac89988"
-  crs_root_id: 22
-  ev_policy_oids: "2.23.140.1.1"
-  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0b"  # 52580.200109.1.11
-}
-
-# CN=DigiCert Assured ID Root G2, OU=www.digicert.com, O=DigiCert Inc, C=US
-# https://assured-id-root-g2.chain-demos.digicert.com/
-trust_anchors {
-  sha256_hex: "7d05ebb682339f8c9451ee094eebfefa7953a114edb2f44949452fab7d2fc185"
-  crs_root_id: 23
-  ev_policy_oids: "2.23.140.1.1"
-  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0c"  # 52580.200109.1.12
-}
-
-# CN=DigiCert Assured ID Root G3, OU=www.digicert.com, O=DigiCert Inc, C=US
-# https://assured-id-root-g3.chain-demos.digicert.com/
-trust_anchors {
-  sha256_hex: "7e37cb8b4c47090cab36551ba6f45db840680fba166a952db100717f43053fc2"
-  crs_root_id: 24
-  ev_policy_oids: "2.23.140.1.1"
-  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0d"  # 52580.200109.1.13
 }
 
 # CN=DigiCert Global Root G2, OU=www.digicert.com, O=DigiCert Inc, C=US
@@ -458,14 +441,6 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
 }
 
-# CN=COMODO Certification Authority, O=COMODO CA Limited, L=Salford, ST=Greater Manchester, C=GB
-# https://secure.comodo.com/
-trust_anchors {
-  sha256_hex: "1a0d20445de5ba1862d19ef880858cbce50102b36e8f0a040c3c69e74522fe6e"
-  crs_root_id: 58
-  ev_policy_oids: "2.23.140.1.1"
-}
-
 # CN=COMODO ECC Certification Authority, O=COMODO CA Limited, L=Salford, ST=Greater Manchester, C=GB
 # https://comodoecccertificationauthority-ev.comodoca.com/
 trust_anchors {
@@ -585,15 +560,23 @@ trust_anchors {
 }
 
 # CN=D-TRUST BR Root CA 1 2020, O=D-Trust GmbH, C=DE
+# Constraint date: Mon, Sept 14, 2027, 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "e59aaa816009c22bff5b25bad37df306f049797c1f81d85ab089e657bd8f0044"
   crs_root_id: 72
+  constraints: {
+    sct_not_after_sec: 1820966399
+  }
 }
 
 # CN=D-TRUST EV Root CA 1 2020, O=D-Trust GmbH, C=DE
+# Constraint date: Mon, Aug 30, 2027 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "08170d1aa36453901a2f959245e347db0c8d37abaabc56b81aa100dc958970db"
   crs_root_id: 73
+  constraints: {
+    sct_not_after_sec: 1819670399
+  }
 }
 
 # CN=GlobalSign Root E46, O=GlobalSign nv-sa, C=BE
@@ -809,12 +792,12 @@ trust_anchors {
 }
 
 # CN=D-TRUST BR Root CA 2 2023, O=D-Trust GmbH, C=DE
-# Constraint date: Mon, Aug 30, 2027 23:59:59 GMT+0000
+# Constraint date: Mon, Sept 14, 2027, 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "0552e6f83fdf65e8fa9670e666df28a4e21340b510cbe52566f97c4fb94b2bd1"
   crs_root_id: 102
   constraints: {
-    sct_not_after_sec: 1819670399
+    sct_not_after_sec: 1820966399
   }
 }
 
@@ -862,6 +845,22 @@ mtc_anchors {
   log_id: "\x82\xda\x4b\x30\x08"  # 44363.48.8
   crs_root_id: 107
   tls_trust_anchor: true
+}
+
+# CN=OISTE Server Root ECC G1, O=OISTE Foundation, C=CH
+# https://eccg1validssl.hightrusted.com/
+trust_anchors {
+  sha256_hex: "eec997c0c30f216f7e3b8b307d2bae42412d753fc8219dafd1520b2572850f49"
+  crs_root_id: 108
+  ev_policy_oids: "2.23.140.1.1"
+}
+
+# CN=OISTE Server Root RSA G1, O=OISTE Foundation, C=CH
+# https://rsag1validssl.hightrusted.com/
+trust_anchors {
+  sha256_hex: "9ae36232a5189ffddb353dfd26520c015395d22777dac59db57b98c089a651e6"
+  crs_root_id: 109
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # BEGIN additional certs:

@@ -1,7 +1,7 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
 # Chrome Root Store
-Version: 33
+Version: 34
 
 [TOC]
 
@@ -14,18 +14,10 @@ SHA 256 Hash | Subject | NotBefore | NotAfter
 8ecde6884f3d87b1125ba31ac3fcb13d7016de7f57cc904fe1cb97c6ae98196e | CN=Amazon Root CA 1,O=Amazon,C=US | 2015-05-26 | 2038-01-17
 e35d28419ed02025cfa69038cd623962458da5c695fbdea3c22b0bfb25897092 | CN=Amazon Root CA 4,O=Amazon,C=US | 2015-05-26 | 2040-05-26
 5c58468d55f58e497e743982d2b50010b6d165374acf83a7d4a32db768c4408e | CN=Certum Trusted Network CA,OU=Certum Certification Authority,O=Unizeto Technologies S.A.,C=PL | 2008-10-22 | 2029-12-31
-f356bea244b7a91eb35d53ca9ad7864ace018e2d35d5f8f96ddf68a6f41aa474 | CN=Atos TrustedRoot 2011,O=Atos,C=DE | 2011-07-07 | 2030-12-31
 57de0583efd2b26e0361da99da9df4648def7ee8441c3b728afa9bcde0f9b26a | CN=Autoridad de Certificacion Firmaprofesional CIF A62634068,C=ES | 2014-09-23 | 2036-05-05
 657cfe2fa73faa38462571f332a2363a46fce7020951710702cdfbb6eeda3305 | OU=certSIGN ROOT CA G2,O=CERTSIGN SA,C=RO | 2017-02-06 | 2042-02-06
 5cc3d78e4e1d5e45547a04e6873e64f90cf9536d1ccc2ef800f355c4c5fd70fd | CN=CFCA EV ROOT,O=China Financial Certification Authority,C=CN | 2012-08-08 | 2029-12-31
-49e7a442acf0ea6287050054b52564b650e4f49e42e348d6aa38e039e957b1c1 | CN=D-TRUST Root Class 3 CA 2 2009,O=D-Trust GmbH,C=DE | 2009-11-05 | 2029-11-05
-eec5496b988ce98625b934092eec2908bed0b0f316c2d4730c84eaf1f3d34881 | CN=D-TRUST Root Class 3 CA 2 EV 2009,O=D-Trust GmbH,C=DE | 2009-11-05 | 2029-11-05
-91e2f5788d5810eba7ba58737de1548a8ecacd014598bc0b143e041b17052552 | CN=T-TeleSec GlobalRoot Class 2,OU=T-Systems Trust Center,O=T-Systems Enterprise Services GmbH,C=DE | 2008-10-01 | 2033-10-01
-fd73dad31c644ff1b43bef0ccdda96710b9cd9875eca7e31707af3e96d522bbd | CN=T-TeleSec GlobalRoot Class 3,OU=T-Systems Trust Center,O=T-Systems Enterprise Services GmbH,C=DE | 2008-10-01 | 2033-10-01
 31ad6648f8104138c738f39ea4320133393e3a18cc02296ef97c2ac9ef6731d0 | CN=DigiCert Global Root G3,OU=www.digicert.com,O=DigiCert Inc,C=US | 2013-08-01 | 2038-01-15
-552f7bdcf1a7af9e6ce672017f4f12abf77240c78e761ac203d1d9d20ac89988 | CN=DigiCert Trusted Root G4,OU=www.digicert.com,O=DigiCert Inc,C=US | 2013-08-01 | 2038-01-15
-7d05ebb682339f8c9451ee094eebfefa7953a114edb2f44949452fab7d2fc185 | CN=DigiCert Assured ID Root G2,OU=www.digicert.com,O=DigiCert Inc,C=US | 2013-08-01 | 2038-01-15
-7e37cb8b4c47090cab36551ba6f45db840680fba166a952db100717f43053fc2 | CN=DigiCert Assured ID Root G3,OU=www.digicert.com,O=DigiCert Inc,C=US | 2013-08-01 | 2038-01-15
 cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f | CN=DigiCert Global Root G2,OU=www.digicert.com,O=DigiCert Inc,C=US | 2013-08-01 | 2038-01-15
 e23d4a036d7b70e9f595b1422079d2b91edfbb1fb651a0633eaa8a9dc5f80703 | CN=CA Disig Root R2,O=Disig a.s.,L=Bratislava,C=SK | 2012-07-19 | 2042-07-19
 40f6af0346a99aa1cd1d555a4e9cce62c7f9634603ee406615833dc8c8d00367 | CN=emSign Root CA - G1,OU=emSign PKI,O=eMudhra Technologies Limited,C=IN | 2018-02-18 | 2043-02-18
@@ -48,8 +40,8 @@ ebc5570c29018c4d67b1aa127baf12f703b4611ebc17b7dab5573894179b93fa | OU=AC RAIZ FN
 5d56499be4d2e08bcfcad08a3e38723d50503bde706948e42f55603019e528ae | CN=IdenTrust Commercial Root CA 1,O=IdenTrust,C=US | 2014-01-16 | 2034-01-16
 96bcec06264976f37460779acf28c5a7cfe8a3c0aae11a8ffcee05c0bddf08c6 | CN=ISRG Root X1,O=Internet Security Research Group,C=US | 2015-06-04 | 2035-06-04
 a1339d33281a0b56e557d3d32b1ce7f9367eb094bd5fa72a7e5004c8ded7cafe | CN=SZAFIR ROOT CA2,O=Krajowa Izba Rozliczeniowa S.A.,C=PL | 2015-10-19 | 2035-10-19
-3c5f81fea5fab82c64bfa2eaecafcde8e077fc8620a7cae537163df36edbf378 | CN=Microsec e-Szigno Root CA 2009,O=Microsec Ltd.,L=Budapest,C=HU,1.2.840.113549.1.9.1=#0c10696e666f40652d737a69676e6f2e6875 | 2009-06-16 | 2029-12-30
-beb00b30839b9bc32c32e4447905950641f26421b15ed089198b518ae2ea1b99 | CN=e-Szigno Root CA 2017,O=Microsec Ltd.,L=Budapest,C=HU,2.5.4.97=#130e56415448552d3233353834343937 | 2017-08-22 | 2042-08-22
+3c5f81fea5fab82c64bfa2eaecafcde8e077fc8620a7cae537163df36edbf378 | CN=Microsec e-Szigno Root CA 2009,O=Microsec Ltd.,L=Budapest,C=HU,1.2.840.113549.1.9.1=info@e-szigno.hu | 2009-06-16 | 2029-12-30
+beb00b30839b9bc32c32e4447905950641f26421b15ed089198b518ae2ea1b99 | CN=e-Szigno Root CA 2017,O=Microsec Ltd.,L=Budapest,C=HU,2.5.4.97=VATHU-23584497 | 2017-08-22 | 2042-08-22
 358df39d764af9e1b766e9c972df352ee15cfac227af6ad1d70e8e4a6edcba02 | CN=Microsoft ECC Root Certificate Authority 2017,O=Microsoft Corporation,C=US | 2019-12-18 | 2042-07-18
 c741f70f4b2a8d88bf2e71c14122ef53ef10eba0cfa5e64cfa20f418853073e0 | CN=Microsoft RSA Root Certificate Authority 2017,O=Microsoft Corporation,C=US | 2019-12-18 | 2042-07-18
 6b9c08e86eb0f767cfad65cd98b62149e5494a67f5845e7bd1ed019f27b86bd6 | CN=OISTE WISeKey Global Root GB CA,OU=OISTE Foundation Endorsed,O=WISeKey,C=CH | 2014-12-01 | 2039-12-01
@@ -57,7 +49,6 @@ c741f70f4b2a8d88bf2e71c14122ef53ef10eba0cfa5e64cfa20f418853073e0 | CN=Microsoft 
 88ef81de202eb018452e43f864725cea5fbd1fc2d9d205730709c5d8b8690f46 | CN=QuoVadis Root CA 3 G3,O=QuoVadis Limited,C=BM | 2012-01-12 | 2042-01-12
 8fe4fb0af93a4d0d67db0bebb23e37c71bf325dcbcdd240ea04daf58b47e1840 | CN=QuoVadis Root CA 2 G3,O=QuoVadis Limited,C=BM | 2012-01-12 | 2042-01-12
 513b2cecb810d4cde5dd85391adfc6c2dd60d87bb736d2b521484aa47a0ebef6 | OU=Security Communication RootCA2,O=SECOM Trust Systems CO.\,LTD.,C=JP | 2009-05-29 | 2029-05-29
-1a0d20445de5ba1862d19ef880858cbce50102b36e8f0a040c3c69e74522fe6e | CN=COMODO Certification Authority,O=COMODO CA Limited,L=Salford,ST=Greater Manchester,C=GB | 2011-01-01 | 2030-12-31
 1793927a0614549789adce2f8f34f7f0b66d0f3ae3a3b84d21ec15dbba4fadc7 | CN=COMODO ECC Certification Authority,O=COMODO CA Limited,L=Salford,ST=Greater Manchester,C=GB | 2008-03-06 | 2038-01-18
 4ff460d54b9c86dabfbcfc5712e0400d2bed3fbc4d4fbdaa86e06adcd2a9ad7a | CN=USERTrust ECC Certification Authority,O=The USERTRUST Network,L=Jersey City,ST=New Jersey,C=US | 2010-02-01 | 2038-01-18
 52f0e1c4e58ec629291b60317f074671b85d7ea80d5b07273463534b32b40234 | CN=COMODO RSA Certification Authority,O=COMODO CA Limited,L=Salford,ST=Greater Manchester,C=GB | 2010-01-19 | 2038-01-18
@@ -66,8 +57,6 @@ e793c9b02fd8aa13e21c31228accb08119643b749c898964b1746d46c3d4cbd2 | CN=USERTrust 
 d43af9b35473755c9684fc06d7d8cb70ee5c28e773fb294eb41ee71722924d24 | CN=UCA Extended Validation Root,O=UniTrust,C=CN | 2015-03-13 | 2038-12-31
 6b328085625318aa50d173c98d8bda09d57e27413d114cf787a0f5d06c030cf6 | CN=Certum EC-384 CA,OU=Certum Certification Authority,O=Asseco Data Systems S.A.,C=PL | 2018-03-26 | 2043-03-26
 fe7696573855773e37a95e7ad4d9cc96c30157c15d31765ba9b15704e1ae78fd | CN=Certum Trusted Root CA,OU=Certum Certification Authority,O=Asseco Data Systems S.A.,C=PL | 2018-03-16 | 2043-03-16
-e59aaa816009c22bff5b25bad37df306f049797c1f81d85ab089e657bd8f0044 | CN=D-TRUST BR Root CA 1 2020,O=D-Trust GmbH,C=DE | 2020-02-11 | 2035-02-11
-08170d1aa36453901a2f959245e347db0c8d37abaabc56b81aa100dc958970db | CN=D-TRUST EV Root CA 1 2020,O=D-Trust GmbH,C=DE | 2020-02-11 | 2035-02-11
 cbb9c44d84b8043e1050ea31a69f514955d7bfd2e2c6b49301019ad61d9f5058 | CN=GlobalSign Root E46,O=GlobalSign nv-sa,C=BE | 2019-03-20 | 2046-03-20
 4fa3126d8d3a11d1c4855a4f807cbad6cf919d3a5a88b03bea2c6372d93c40c9 | CN=GlobalSign Root R46,O=GlobalSign nv-sa,C=BE | 2019-03-20 | 2046-03-20
 3f99cc474acfce4dfed58794665e478d1547739f2e780f1bb4ca9b133097d401 | CN=HARICA TLS ECC Root CA 2021,O=Hellenic Academic and Research Institutions CA,C=GR | 2021-02-19 | 2045-02-13
@@ -79,7 +68,7 @@ d95d0e8eda79525bf9beb11b14d2100d3294985f0c62d9fabd9cd999eccb7b1d | CN=HARICA TLS
 371a00dc0533b3721a7eeb40e8419e70799d2b0a0f2c1d80693165f7cec4ad75 | CN=DigiCert TLS RSA4096 Root G5,O=DigiCert\, Inc.,C=US | 2021-01-15 | 2046-01-14
 b4585f22e4ac756a4e8612a1361c5d9d031a93fd84febb778fa3068b0fc42dc2 | CN=Certainly Root E1,O=Certainly,C=US | 2021-04-01 | 2046-04-01
 77b82cd8644c4305f7acc5cb156b45675004033d51c60c6202a8e0c33467d3a0 | CN=Certainly Root R1,O=Certainly,C=US | 2021-04-01 | 2046-04-01
-554153b13d2cf9ddb753bfbe1a4e0ae08d0aa4187058fe60a2b862b2e4b87bcb | CN=AC RAIZ FNMT-RCM SERVIDORES SEGUROS,OU=Ceres,O=FNMT-RCM,C=ES,2.5.4.97=#130f56415445532d51323832363030344a | 2018-12-20 | 2043-12-20
+554153b13d2cf9ddb753bfbe1a4e0ae08d0aa4187058fe60a2b862b2e4b87bcb | CN=AC RAIZ FNMT-RCM SERVIDORES SEGUROS,OU=Ceres,O=FNMT-RCM,C=ES,2.5.4.97=VATES-Q2826004J | 2018-12-20 | 2043-12-20
 fb8fec759169b9106b1e511644c618c51304373f6c0643088d8beffd1b997599 | SERIALNUMBER=G63287510,CN=ANF Secure Server Root CA,OU=ANF CA Raiz,O=ANF Autoridad de Certificacion,C=ES | 2019-09-04 | 2039-08-30
 e74fbda55bd564c473a36b441aa799c8a68e077440e8288b9fa1e50e4bbaca11 | CN=Security Communication ECC RootCA1,O=SECOM Trust Systems CO.\,LTD.,C=JP | 2016-06-16 | 2038-01-18
 2e44102ab58cb85419451c8e19d9acf3662cafbc614b6a53960a30f7d0e2eb41 | CN=TunTrust Root CA,O=Agence Nationale de Certification Electronique,C=TN | 2019-04-26 | 2044-04-26
@@ -94,7 +83,9 @@ c32ffd9f46f936d16c3673990959434b9ad60aafbb9e7cf33654f144cc1ba143 | CN=SSL.com TL
 3f63bb2814be174ec8b6439cf08d6d56f0b7c405883a5648a334424d6b3ec558 | CN=TWCA CYBER Root CA,OU=Root CA,O=TAIWAN-CA,C=TW | 2022-11-22 | 2047-11-22
 c0076b9ef0531fb1a656d67c4ebe97cd5dbaa41ef44598acc2489878c92d8711 | CN=TrustAsia TLS ECC Root CA,O=TrustAsia Technologies\, Inc.,C=CN | 2024-05-15 | 2044-05-15
 06c08d7dafd876971eb1124fe67f847ec0c7a158d3ea53cbe940e2ea9791f4c3 | CN=TrustAsia TLS RSA Root CA,O=TrustAsia Technologies\, Inc.,C=CN | 2024-05-15 | 2044-05-15
-b49141502d00663d740f2e7ec340c52800962666121a36d09cf7dd2b90384fb4 | CN=e-Szigno TLS Root CA 2023,O=Microsec Ltd.,L=Budapest,C=HU,2.5.4.97=#130e56415448552d3233353834343937 | 2023-07-17 | 2038-07-17
+b49141502d00663d740f2e7ec340c52800962666121a36d09cf7dd2b90384fb4 | CN=e-Szigno TLS Root CA 2023,O=Microsec Ltd.,L=Budapest,C=HU,2.5.4.97=VATHU-23584497 | 2023-07-17 | 2038-07-17
+eec997c0c30f216f7e3b8b307d2bae42412d753fc8219dafd1520b2572850f49 | CN=OISTE Server Root ECC G1,O=OISTE Foundation,C=CH | 2023-05-31 | 2048-05-24
+9ae36232a5189ffddb353dfd26520c015395d22777dac59db57b98c089a651e6 | CN=OISTE Server Root RSA G1,O=OISTE Foundation,C=CH | 2023-05-31 | 2048-05-24
 ## Constrained Roots
 To learn more about constraints applied to certificates included in the Chrome Root Store, click [here](https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/chrome_root_store/faq.md).
 
@@ -103,6 +94,10 @@ SHA 256 Hash | Subject | NotBefore | NotAfter
 9a114025197c5bb95d94e63d55cd43790847b646b23cdf11ada4a00eff15fb48 | CN=Buypass Class 2 Root CA,O=Buypass AS-983163327,C=NO | 2010-10-26 | 2040-10-26
 edf7ebbca27a2a384d387b7d4010c666e2edb4843e4c29b4ae1d5b9332e6b24d | CN=Buypass Class 3 Root CA,O=Buypass AS-983163327,C=NO | 2010-10-26 | 2040-10-26
 c0a6f4dc63a24bfdcf54ef2a6a082a0a72de35803e2ff5ff527ae5d87206dfd5 | OU=ePKI Root Certification Authority,O=Chunghwa Telecom Co.\, Ltd.,C=TW | 2004-12-20 | 2034-12-20
+49e7a442acf0ea6287050054b52564b650e4f49e42e348d6aa38e039e957b1c1 | CN=D-TRUST Root Class 3 CA 2 2009,O=D-Trust GmbH,C=DE | 2009-11-05 | 2029-11-05
+eec5496b988ce98625b934092eec2908bed0b0f316c2d4730c84eaf1f3d34881 | CN=D-TRUST Root Class 3 CA 2 EV 2009,O=D-Trust GmbH,C=DE | 2009-11-05 | 2029-11-05
+91e2f5788d5810eba7ba58737de1548a8ecacd014598bc0b143e041b17052552 | CN=T-TeleSec GlobalRoot Class 2,OU=T-Systems Trust Center,O=T-Systems Enterprise Services GmbH,C=DE | 2008-10-01 | 2033-10-01
+fd73dad31c644ff1b43bef0ccdda96710b9cd9875eca7e31707af3e96d522bbd | CN=T-TeleSec GlobalRoot Class 3,OU=T-Systems Trust Center,O=T-Systems Enterprise Services GmbH,C=DE | 2008-10-01 | 2033-10-01
 d48d3d23eedb50a459e55197601c27774b9d7b18c94d5a059511a10250b93168 | CN=Certigna Root CA,OU=0002 48146308100036,O=Dhimyotis,C=FR | 2013-10-01 | 2033-10-01
 2530cc8e98321502bad96f9b1fba1b099e2d299e0f4548bb914f363bc0d4531f | CN=Izenpe.com,O=IZENPE S.A.,C=ES | 2007-12-13 | 2037-12-13
 6c61dac3a2def031506be036d2a6fe401994fbd13df9c8d466599274c446ec98 | CN=NetLock Arany (Class Gold) Főtanúsítvány,OU=Tanúsítványkiadók (Certification Services),O=NetLock Kft.,L=Budapest,C=HU | 2008-12-11 | 2028-12-06
@@ -111,6 +106,8 @@ d48d3d23eedb50a459e55197601c27774b9d7b18c94d5a059511a10250b93168 | CN=Certigna R
 3417bb06cc6007da1b961c920b8ab4ce3fad820e4aa30b9acbc4a74ebdcebc65 | CN=SSL.com Root Certification Authority ECC,O=SSL Corporation,L=Houston,ST=Texas,C=US | 2016-02-12 | 2041-02-12
 85666a562ee0be5ce925c1d8890a6f76a87ec16d4d7d5f29ea7419cf20123b69 | CN=SSL.com Root Certification Authority RSA,O=SSL Corporation,L=Houston,ST=Texas,C=US | 2016-02-12 | 2041-02-12
 59769007f7685d0fcd50872f9f95d5755a5b2b457d81f3692b610a98672f0e1b | CN=TWCA Global Root CA,OU=Root CA,O=TAIWAN-CA,C=TW | 2012-06-27 | 2030-12-31
+e59aaa816009c22bff5b25bad37df306f049797c1f81d85ab089e657bd8f0044 | CN=D-TRUST BR Root CA 1 2020,O=D-Trust GmbH,C=DE | 2020-02-11 | 2035-02-11
+08170d1aa36453901a2f959245e347db0c8d37abaabc56b81aa100dc958970db | CN=D-TRUST EV Root CA 1 2020,O=D-Trust GmbH,C=DE | 2020-02-11 | 2035-02-11
 f015ce3cc239bfef064be9f1d2c417e1a0264a0a94be1f0c8d121864eb6949cc | CN=HiPKI Root CA - G1,O=Chunghwa Telecom Co.\, Ltd.,C=TW | 2019-02-22 | 2037-12-31
 193144f431e0fddb740717d4de926a571133884b4360d30e272913cbe660ce41 | CN=SwissSign RSA TLS Root CA 2022 - 1,O=SwissSign AG,C=CH | 2022-06-08 | 2047-06-08
 0552e6f83fdf65e8fa9670e666df28a4e21340b510cbe52566f97c4fb94b2bd1 | CN=D-TRUST BR Root CA 2 2023,O=D-Trust GmbH,C=DE | 2023-05-09 | 2038-05-09
