@@ -114,10 +114,13 @@ autofill::PasswordFormFillData CreatePasswordFillData(
 
 }  // namespace
 
-// Expose the internal disconnect function for testing purposes
+// Expose internal functions for testing purposes.
 @interface CredentialSuggestionBottomSheetMediator ()
 
 - (void)disconnect;
+- (void)selectSuggestion:(FormSuggestion*)suggestion
+                 atIndex:(NSInteger)index
+              completion:(ProceduralBlock)completion;
 
 @end
 
@@ -735,4 +738,38 @@ TEST_F(CredentialSuggestionBottomSheetMediatorTest,
   EXPECT_OCMOCK_VERIFY(consumer_);
 
   [mockController stopMocking];
+}
+
+// Tests that selecting a suggestion and synchronously deallocating the mediator
+// inside the completion block does not cause a use-after-free crash.
+TEST_F(CredentialSuggestionBottomSheetMediatorTest,
+       SelectSuggestionDeallocatesMediatorSynchronously) {
+  suggestion_providers_ =
+      @[ [CredentialSuggestionBottomSheetMediatorTestSuggestionProvider
+          providerWithSuggestions] ];
+  CreateMediator();
+
+  ASSERT_TRUE(mediator_);
+
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@"foo"
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kPasswordEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:NO];
+
+  __block CredentialSuggestionBottomSheetMediator* localMediator = mediator_;
+  mediator_ = nil;
+
+  __block BOOL completionCalled = NO;
+  ProceduralBlock completion = ^{
+    completionCalled = YES;
+    localMediator = nil;
+  };
+
+  [localMediator selectSuggestion:suggestion atIndex:0 completion:completion];
+
+  EXPECT_TRUE(completionCalled);
+  EXPECT_EQ(localMediator, nil);
 }

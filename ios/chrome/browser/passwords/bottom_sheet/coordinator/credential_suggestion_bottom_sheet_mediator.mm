@@ -560,6 +560,10 @@ NSArray<FormSuggestion*>* FilterDuplicateSuggestions(
   _suggestionsProviderWrapper = nil;
 }
 
+- (void)dealloc {
+  CHECK(!_suggestionsProviderWrapper, base::NotFatalUntil::M155);
+}
+
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                     atIndex:(NSInteger)index
                  completion:(ProceduralBlock)completion {
@@ -619,18 +623,22 @@ NSArray<FormSuggestion*>* FilterDuplicateSuggestions(
   default_browser::NotifyPasswordAutofillSuggestionUsed(_engagementTracker);
 
   if (web::WebState* activeWebState = [self activeWebState]) {
-    if ([_suggestionsProviderWrapper type] == SuggestionProviderTypePassword) {
-      [_suggestionsProviderWrapper didSelectSuggestion:suggestion
-                                               atIndex:index
-                                              webState:activeWebState
-                                     completionHandler:completion];
+    BottomSheetFormSuggestionProviderWrapper* providerWrapper =
+        _suggestionsProviderWrapper;
+
+    [self disconnect];
+
+    if ([providerWrapper type] == SuggestionProviderTypePassword) {
+      [providerWrapper didSelectSuggestion:suggestion
+                                   atIndex:index
+                                  webState:activeWebState
+                         completionHandler:completion];
       // Do not run completion here as its ownership was transferred to
       // -didSelectSuggestion.
       completion = nil;
     } else {
       [self logExitReason:kBadProvider];
     }
-    [self disconnect];
   }
 
   if (completion) {
