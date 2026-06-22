@@ -1000,6 +1000,34 @@ TEST_F(UserPolicySigninServiceTest, SignOutThenSignInAgain) {
                                      0);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(UserPolicySigninServiceTest, CanApplyPoliciesMetricOnSignIn) {
+  UserPolicySigninService* signin_service =
+      UserPolicySigninServiceFactory::GetForProfile(profile_.get());
+
+  // Disable testing override.
+  signin_service->set_profile_can_be_managed_for_testing(false);
+
+  // Seed the account as managed.
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable(kTestUser);
+  AccountInfo::Builder builder(account_info);
+  builder.SetHostedDomain("test.com");
+  identity_test_env()->UpdateAccountInfoForAccount(builder.Build());
+
+  base::HistogramTester tester;
+
+  // Sign in. This should trigger OnPrimaryAccountChanged -> CanApplyPolicies.
+  identity_test_env()->SetPrimaryAccount(kTestUser,
+                                         signin::ConsentLevel::kSignin);
+
+  // Since ProfileCanBeManaged will return false (no profile manager or not set
+  // up), we expect the metric to be logged as false.
+  tester.ExpectUniqueSample(
+      "Enterprise.CloudPolicy.ProfileCanBeManagedForManagedUser", false, 1);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 }  // namespace policy

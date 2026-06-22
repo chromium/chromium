@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -42,6 +43,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "content/public/browser/storage_partition.h"
@@ -130,6 +132,8 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
     return;
   }
 
+  has_logged_profile_can_be_managed_metric_ = false;
+
   if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
     // `ProfileManager` may be null in tests.
     UpdateProfileAttributesWhenSignout(profile_, profile_manager);
@@ -178,6 +182,7 @@ void UserPolicySigninService::OnProfileAttributesStorageDestroying() {
 
 void UserPolicySigninService::OnProfileUserManagementAcceptanceChanged(
     const base::FilePath& profile_path) {
+  has_logged_profile_can_be_managed_metric_ = false;
   VLOG_POLICY(1, POLICY_FETCHING)
       << "UserPolicySigninService::OnProfileUserManagementAcceptanceChanged - "
          "CanApplyPolicies: "
@@ -260,6 +265,25 @@ bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
   VLOG_POLICY(1, POLICY_FETCHING)
       << "UserPolicySigninService::CanApplyPolicies - for profile: "
       << profile_can_be_managed;
+
+  if (!has_logged_profile_can_be_managed_metric_) {
+    CoreAccountInfo primary_account_info =
+        identity_manager()->GetPrimaryAccountInfo(consent_level());
+    AccountInfo account_info =
+        identity_manager()->FindExtendedAccountInfo(primary_account_info);
+    signin::Tribool is_managed = account_info.IsManaged();
+    if (is_managed == signin::Tribool::kTrue) {
+      base::UmaHistogramBoolean(
+          "Enterprise.CloudPolicy.ProfileCanBeManagedForManagedUser",
+          profile_can_be_managed);
+      has_logged_profile_can_be_managed_metric_ = true;
+    } else if (is_managed == signin::Tribool::kFalse) {
+      has_logged_profile_can_be_managed_metric_ = true;
+    } else {
+      has_logged_profile_can_be_managed_metric_ = false;
+    }
+  }
+
   return profile_can_be_managed;
 }
 

@@ -719,6 +719,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.CloudPolicy.ProfileCanBeManagedForManagedUser"
+    enum="Boolean" expires_after="2027-06-01">
+  <owner>morez@google.com</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    Recorded when a user is managed but profile cannot be managed. This
+    generally indicates a bug in sign-in which has caused a bad state, where
+    policies should be applied but are not.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.CloudReportingBasicRequestSize" units="KB"
     expires_after="2026-12-01">
   <owner>zmin@chromium.org</owner>

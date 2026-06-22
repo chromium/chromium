@@ -121,6 +121,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   // from the test fixture. This is used to bypass the check on the profile
   // attributes entry.
   bool profile_can_be_managed_for_testing_ = false;
+  bool has_logged_profile_can_be_managed_metric_ = false;
 
   // Observer bridge for profile added events.
   ProfileManagerObserverBridge profile_manager_observer_bridge_{this};
