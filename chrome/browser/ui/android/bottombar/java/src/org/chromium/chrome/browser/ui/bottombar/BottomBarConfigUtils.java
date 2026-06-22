@@ -35,6 +35,11 @@ public class BottomBarConfigUtils {
         return !ChromeFeatureList.sAndroidBottomBarKeepAppMenuInToolbar.getValue();
     }
 
+    /** Whether to show the update badge in the bottom bar app menu button. */
+    public static boolean shouldShowAppMenuUpdateBadge() {
+        return ChromeFeatureList.sAndroidBottomBarShowUpdateBadge.getValue();
+    }
+
     /** Whether to show the bottom bar on GTS if the flag is enabled. */
     public static boolean shouldShowOnGts() {
         return ChromeFeatureList.sAndroidBottomBarShowBottomBarOnGts.getValue();

@@ -31,17 +31,24 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
+import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.bottombar.BottomBar;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
@@ -67,6 +74,8 @@ public class BottomBarContainerCoordinatorUnitTest {
     @Mock private ActionRegistry mActionRegistry;
     @Mock private Profile mProfile;
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private UpdateMenuItemHelper mUpdateMenuItemHelper;
+    @Mock private GlicKeyedService mGlicKeyedService;
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
@@ -86,6 +95,12 @@ public class BottomBarContainerCoordinatorUnitTest {
     public void setUp() {
         mTabSupplier.set(null);
         when(mActionRegistry.get(anyInt())).thenReturn(mActionSupplier);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        UpdateMenuItemHelper.setInstanceForTesting(mUpdateMenuItemHelper);
+        when(mUpdateMenuItemHelper.getUiState()).thenReturn(new MenuUiState());
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+        GlicEnabling.setEnabledForTesting(false);
+
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -107,7 +122,8 @@ public class BottomBarContainerCoordinatorUnitTest {
                                             mHomepageEnabledSupplier,
                                             mProfileSupplier,
                                             mOmniboxFocusStateSupplier,
-                                            mModalDialogManagerSupplier);
+                                            mModalDialogManagerSupplier,
+                                            new OneshotSupplierImpl<AppMenuCoordinator>());
                         });
     }
 

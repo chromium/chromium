@@ -1593,6 +1593,8 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "disable_on_ntp", true);
     public static final BooleanCachedFeatureParam sAndroidBottomBarKeepAppMenuInToolbar =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "keep_app_menu_in_toolbar", false);
+    public static final BooleanCachedFeatureParam sAndroidBottomBarShowUpdateBadge =
+            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_update_badge", true);
     public static final BooleanCachedFeatureParam sAndroidBottomBarKeepHomeButtonInToolbar =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "keep_home_button_in_toolbar", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarNtpScrollOffEnabled =
@@ -1951,6 +1953,7 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomBarKeepHomeButtonInToolbar,
                     sAndroidBottomBarNtpScrollOffEnabled,
                     sAndroidBottomBarShowBottomBarOnGts,
+                    sAndroidBottomBarShowUpdateBadge,
                     sAndroidThemeModuleForceDependencies,
                     sAndroidThemeResourceProviderForceLight,
                     sAndroidTipsNotificationsAlwaysShowOptInPromo,
