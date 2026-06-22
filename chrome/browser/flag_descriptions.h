@@ -6167,6 +6167,11 @@ inline constexpr char kTabClosureMethodRefactorDescription[] =
     "Enables the refactored changes for tab closure methods where existing "
     "methods usages are switched off and newly introduced are made active.";
 
+inline constexpr char kTabStripHeightTransitionGlitchFixName[] =
+    "Tab strip height transition glitch fix";
+inline constexpr char kTabStripHeightTransitionGlitchFixDescription[] =
+    "Flag guard for the tab strip height transition glitch fix.";
+
 inline constexpr char kThreeDotMenuBackButtonName[] =
     "Three Dot Menu Back Button";
 inline constexpr char kThreeDotMenuBackButtonDescription[] =

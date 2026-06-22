@@ -831,6 +831,37 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_HEIGHT_TRANSITION_GLITCH_FIX)
+    public void appHeaderStateChanged_HeightTransitionPending_TriggeredOnNextStateChanged() {
+        // Set the height/width as if the first measure pass hasn't happened yet.
+        doReturn(0).when(mSpyControlContainer).getHeight();
+        doReturn(0).when(mSpyControlContainer).getWidth();
+
+        // Create the transition coordinator for a desktop window.
+        setUpTabStripTransitionCoordinator(
+                /* isInDesktopWindow= */ true, LARGE_DESKTOP_WINDOW_WIDTH);
+        assertEquals(
+                "Height request should be ignored if control container hasn't been measured.",
+                NOTHING_OBSERVED,
+                mTestHandler.heightRequested);
+
+        // Simulate control container being measured.
+        doReturn(TEST_TOOLBAR_HEIGHT + TEST_TAB_STRIP_HEIGHT)
+                .when(mSpyControlContainer)
+                .getHeight();
+        doReturn(LARGE_DESKTOP_WINDOW_WIDTH).when(mSpyControlContainer).getWidth();
+
+        // Trigger onAppHeaderStateChanged again. Since the control container is now measured,
+        // the pending height transition should be triggered.
+        mCoordinator.onAppHeaderStateChanged(mAppHeaderState);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        assertEquals(
+                "Height transition should update the strip top padding.",
+                TEST_TAB_STRIP_HEIGHT + mReservedTopPadding,
+                mTestHandler.heightRequested);
+    }
+
+    @Test
     @EnableFeatures({
         ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
                 + ":adjust_tab_strip_on_startup/true"
