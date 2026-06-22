@@ -12,6 +12,7 @@
 #include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_ask_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
@@ -42,6 +43,15 @@ EmbeddedPermissionPrompt::EmbeddedPermissionPrompt(
     permissions::PermissionPrompt::Delegate* delegate)
     : PermissionPromptDesktop(browser, web_contents, delegate),
       delegate_(delegate) {
+  if (browser) {
+    if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser)) {
+      if (auto* focus_manager = browser_view->GetFocusManager()) {
+        previously_focused_view_tracker_.SetView(
+            focus_manager->GetFocusedView());
+      }
+    }
+  }
+
   prompt_model_ =
       std::make_unique<permissions::EmbeddedPermissionPromptFlowModel>(
           web_contents, delegate);
@@ -449,14 +459,26 @@ void EmbeddedPermissionPrompt::CloseViewAndScrim() {
 }
 
 void EmbeddedPermissionPrompt::FocusThenClose() {
-  // Focus must be restored to the browser before the prompt widget is destroyed
-  // to ensure the OS properly targets the browser tab when the prompt closes
-  // instead of a random window. This is a particular bug related to how native
-  // Windows handles focus after an ambiguous focus release.
-  if (web_contents()) {
+  // The native Browser UI (the Omnibox) does not have web contents like web
+  // pages do. If OS restores focus to the WebContents when the prompt closes,
+  // it steals focus from the Omnibox, which triggers `OnKillFocus`
+  // and incorrectly collapses the omnibox popup and therefore voice search.
+  views::View* previously_focused_view =
+      previously_focused_view_tracker_.view();
+  // Only restore focus if the view still exists, is still drawn on screen,
+  // and is still capable of receiving focus.
+  if (previously_focused_view && previously_focused_view->IsDrawn() &&
+      previously_focused_view->IsFocusable()) {
+    previously_focused_view->RequestFocus();
+  } else if (web_contents()) {
+    // Focus must be restored to the browser before the prompt widget is
+    // destroyed to ensure the OS properly targets the browser window when the
+    // prompt closes instead of an available window (which, with status race
+    // conditions caused by the prompt, does not include Chrome sometimes). This
+    // is a particular bug related to how native Windows handles focus after an
+    // ambiguous focus release.
     web_contents()->Focus();
   }
-
   CloseViewAndScrim();
 }
 
