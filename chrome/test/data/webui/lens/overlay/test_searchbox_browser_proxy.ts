@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
-import type {OmniboxPopupSelection, PageHandlerInterface, PageRemote, PlaceholderConfig, SelectedFileInfo, SmartComposeStats} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {OmniboxPopupSelection, PageHandlerInterface, PageRemote, PlaceholderConfig, SelectedFileInfo, SmartComposeStats, SuggestInventory} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {DriveDisclaimerStatus} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
@@ -33,6 +33,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'onThumbnailRemoved',
       'openAutocompleteMatch',
       'queryAutocomplete',
+      'queryAutocompleteWithSuggestInventory',
       'stopAutocomplete',
       'toggleSuggestionGroupIdVisibility',
       'onFocusChanged',
@@ -136,8 +137,20 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
     this.methodCalled('onThumbnailRemoved', {});
   }
 
-  queryAutocomplete(input: String16, preventInlineAutocomplete: boolean) {
-    this.methodCalled('queryAutocomplete', {input, preventInlineAutocomplete});
+  queryAutocomplete(
+      input: String16, preventInlineAutocomplete: boolean,
+      cursorPosition: number) {
+    this.methodCalled(
+        'queryAutocomplete',
+        {input, preventInlineAutocomplete, cursorPosition});
+  }
+
+  queryAutocompleteWithSuggestInventory(
+      input: String16, preventInlineAutocomplete: boolean,
+      cursorPosition: number, suggestInventory: SuggestInventory) {
+    this.methodCalled(
+        'queryAutocompleteWithSuggestInventory',
+        {input, preventInlineAutocomplete, cursorPosition, suggestInventory});
   }
 
   stopAutocomplete(clearResult: boolean) {

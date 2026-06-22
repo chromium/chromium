@@ -1081,10 +1081,6 @@ fuzzer_test("search_suggestion_parser_fuzzer") {
 
 mojom("mojo_bindings") {
   sources = [ "omnibox.mojom" ]
-  if (!is_ios) {
-    sources += [ "searchbox.mojom" ]
-  }
-
   webui_module_path = "chrome://resources/mojo/components/omnibox/browser"
 
   public_deps = [
@@ -1094,4 +1090,23 @@ mojom("mojo_bindings") {
     "//ui/gfx/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
+
+  cpp_typemaps = []
+
+  if (!is_ios) {
+    sources += [ "searchbox.mojom" ]
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "searchbox.mojom.SuggestInventory"
+            cpp = "::omnibox::SuggestInventory"
+          },
+        ]
+        traits_headers = [ "searchbox_mojom_traits.h" ]
+        traits_sources = [ "searchbox_mojom_traits.cc" ]
+        traits_deps = [ "//third_party/omnibox_proto" ]
+      },
+    ]
+  }
 }

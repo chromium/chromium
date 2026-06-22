@@ -343,7 +343,7 @@ suite('OmniboxComposeboxTest', () => {
     await microtasksFinished();
 
     const initialCallCount =
-        testProxy.handler.getCallCount('queryAutocomplete');
+        testProxy.handler.getCallCount('queryAutocompleteWithSuggestInventory');
 
     const context = {
       input: 'hello world',
@@ -360,7 +360,8 @@ suite('OmniboxComposeboxTest', () => {
     // Autocomplete should be queried.
     assertEquals(
         initialCallCount + 1,
-        testProxy.handler.getCallCount('queryAutocomplete'));
+        testProxy.handler.getCallCount(
+            'queryAutocompleteWithSuggestInventory'));
   });
 
   test(

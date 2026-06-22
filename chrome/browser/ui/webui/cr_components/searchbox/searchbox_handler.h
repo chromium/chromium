@@ -114,6 +114,11 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void QueryAutocomplete(const std::u16string& input,
                          bool prevent_inline_autocomplete,
                          uint32_t cursor_position) override;
+  void QueryAutocompleteWithSuggestInventory(
+      const std::u16string& input,
+      bool prevent_inline_autocomplete,
+      uint32_t cursor_position,
+      omnibox::SuggestInventory suggest_inventory) override;
   void StopAutocomplete(bool clear_result) override;
   void OpenAutocompleteMatch(uint8_t line,
                              const GURL& url,
@@ -187,6 +192,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);
+  FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest,
+                           AutocompleteController_StartWithSuggestInventory);
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, RealboxUpdatesEditModelInput);
   FRIEND_TEST_ALL_PREFIXES(LensSearchboxHandlerTest,
                            Lens_AutocompleteController_Start);

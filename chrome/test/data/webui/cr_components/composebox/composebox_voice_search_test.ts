@@ -1135,24 +1135,25 @@ suite('ComposeboxVoiceSearch', () => {
 
   test('Submits the voice transcript accurately after stop click', async () => {
     const voiceTranscript = 'voice query';
-    searchboxHandler.setResultMapperFor('queryAutocomplete', () => {
-      return Promise.resolve({
-        result: {
-          input: voiceTranscript,
-          matches: [
-            createAutocompleteMatch({
-              contents: voiceTranscript,
-              fillIntoEdit: voiceTranscript,
-              allowedToBeDefaultMatch: true,
-              destinationUrl: 'about:blank',
-            }),
-          ],
-          suggestionGroupsMap: {},
-          smartComposeInlineHint: '',
-          sequenceId: 0,
-        },
-      });
-    });
+    searchboxHandler.setResultMapperFor(
+        'queryAutocompleteWithSuggestInventory', () => {
+          return Promise.resolve({
+            result: {
+              input: voiceTranscript,
+              matches: [
+                createAutocompleteMatch({
+                  contents: voiceTranscript,
+                  fillIntoEdit: voiceTranscript,
+                  allowedToBeDefaultMatch: true,
+                  destinationUrl: 'about:blank',
+                }),
+              ],
+              suggestionGroupsMap: {},
+              smartComposeInlineHint: '',
+              sequenceId: 0,
+            },
+          });
+        });
 
     loadTimeData.overrideValues({
       voiceSearchCoherenceComposeboxesEnabled: true,
@@ -1176,14 +1177,14 @@ suite('ComposeboxVoiceSearch', () => {
     mockSpeechRecognition.onresult!(result);
     await microtasksFinished();
 
-    searchboxHandler.resetResolver('queryAutocomplete');
+    searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
 
     const stopButton =
         voiceSearchElement.shadowRoot.querySelector<HTMLElement>('#stopButton');
     assertTrue(!!stopButton);
     stopButton.click();
 
-    await searchboxHandler.whenCalled('queryAutocomplete');
+    await searchboxHandler.whenCalled('queryAutocompleteWithSuggestInventory');
     await microtasksFinished();
 
     searchboxHandler.resetResolver('submitQuery');
@@ -1211,7 +1212,7 @@ suite('ComposeboxVoiceSearch', () => {
       'Queries autocomplete to update suggestions after stop click',
       async () => {
         // Reset handler calls to ensure a clean slate.
-        searchboxHandler.resetResolver('queryAutocomplete');
+        searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
 
         loadTimeData.overrideValues({
           voiceSearchCoherenceComposeboxesEnabled: true,
@@ -1246,13 +1247,17 @@ suite('ComposeboxVoiceSearch', () => {
         stopButton.click();
         await microtasksFinished();
 
-        // Verify queryAutocomplete was explicitly called to update suggestions.
-        assertEquals(1, searchboxHandler.getCallCount('queryAutocomplete'));
+        // Verify queryAutocompleteWithSuggestInventory was explicitly called to
+        // update suggestions.
+        assertEquals(
+            1,
+            searchboxHandler.getCallCount(
+                'queryAutocompleteWithSuggestInventory'));
 
-        const queryArgs =
-            await searchboxHandler.whenCalled('queryAutocomplete');
+        const queryArgs = await searchboxHandler.whenCalled(
+            'queryAutocompleteWithSuggestInventory');
         assertEquals('refresh suggestions', queryArgs[0]);
-        assertFalse(queryArgs[1]);  // verify clearMatches is false
+        assertFalse(queryArgs[1]);  // verify preventInlineAutocomplete is false
       });
 
   test(

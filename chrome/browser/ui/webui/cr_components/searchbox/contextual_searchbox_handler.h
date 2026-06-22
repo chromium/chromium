@@ -168,6 +168,11 @@ class ContextualSearchboxHandler
   void QueryAutocomplete(const std::u16string& input,
                          bool prevent_inline_autocomplete,
                          uint32_t cursor_position) override;
+  void QueryAutocompleteWithSuggestInventory(
+      const std::u16string& input,
+      bool prevent_inline_autocomplete,
+      uint32_t cursor_position,
+      omnibox::SuggestInventory suggest_inventory) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // drive_picker_host::mojom::DrivePickerResultHandler:

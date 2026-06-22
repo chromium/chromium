@@ -455,7 +455,8 @@ suite('ContextualTasksComposeboxTest', () => {
 
     // Wait for the component to actually request autocomplete
     // before we mock the response, otherwise the response is ignored.
-    await mockSearchboxPageHandler.whenCalled('queryAutocomplete');
+    await mockSearchboxPageHandler.whenCalled(
+        'queryAutocompleteWithSuggestInventory');
 
     // 2. Mock Autocomplete Results.
     await setupAutocompleteResults(searchboxCallbackRouterRemote, TEST_QUERY,
@@ -622,7 +623,10 @@ suite('ContextualTasksComposeboxTest', () => {
     testProxy.callbackRouterRemote.onZeroStateChange(true);
     await testProxy.callbackRouterRemote.$.flushForTesting();
 
-    assertEquals(1, mockSearchboxPageHandler.getCallCount('queryAutocomplete'));
+    assertEquals(
+        1,
+        mockSearchboxPageHandler.getCallCount(
+            'queryAutocompleteWithSuggestInventory'));
   });
 
   test(
@@ -667,7 +671,9 @@ suite('ContextualTasksComposeboxTest', () => {
         testProxy.callbackRouterRemote.onZeroStateChange(false);
 
         assertEquals(
-            0, mockSearchboxPageHandler.getCallCount('queryAutocomplete'));
+            0,
+            mockSearchboxPageHandler.getCallCount(
+                'queryAutocompleteWithSuggestInventory'));
       });
 
   test('inputEnabled attribute reflected on composebox', async () => {
@@ -820,7 +826,10 @@ suite('ContextualTasksComposeboxTest', () => {
     assertFalse(
         contextualTasksApp.isLoadErrorForTesting, 'Should be online initially');
     assertTrue(isVisible(composebox), 'Composebox should be visible initially');
-    assertEquals(1, mockSearchboxPageHandler.getCallCount('queryAutocomplete'));
+    assertEquals(
+        1,
+        mockSearchboxPageHandler.getCallCount(
+            'queryAutocompleteWithSuggestInventory'));
 
     // 2. Go offline.
     Object.defineProperty(window.navigator, 'onLine', {

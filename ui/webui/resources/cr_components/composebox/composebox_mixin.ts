@@ -13,7 +13,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, SmartComposeStats, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {DriveDisclaimerStatus, DriveUploadError} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus, DriveUploadError, SuggestInventory} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -280,6 +280,7 @@ export const ComposeboxEmbedderMixin =
           shownLength: 0,
         };
         accessor state: ComposeboxState|null = null;
+        accessor suggestInventory: SuggestInventory|null = null;
         accessor submitEnabled: boolean = false;
         accessor tabSuggestions: TabInfo[] = [];
         accessor transcript: string = '';
@@ -327,7 +328,8 @@ export const ComposeboxEmbedderMixin =
           }
 
           // For "next" searchboxes (Realbox Next, Omnibox Next, etc.), the zps
-          // autocomplete query is triggered after the state has been initialized.
+          // autocomplete query is triggered after the state has been
+          // initialized.
           if (this.queryZpsOnLoad && !this.searchboxNextEnabled) {
             this.queryAutocomplete(/* clearMatches= */ false);
           }
@@ -389,8 +391,8 @@ export const ComposeboxEmbedderMixin =
               changedPrivateProperties.has('files') ||
               changedPrivateProperties.has('errorMessage')) {
             this.showFileCarousel = this.tabFaviconChipsToCoinsEnabled ?
-              this.getFilteredCarouselFiles().length > 0 :
-              this.files.size > 0;
+                this.getFilteredCarouselFiles().length > 0 :
+                this.files.size > 0;
             this.showDropdown = this.computeShowDropdown();
           }
 
@@ -1139,14 +1141,15 @@ export const ComposeboxEmbedderMixin =
 
         shouldShowSuggestionActivityLink(): boolean {
           const showActivityLink = this.result && this.showDropdown &&
-              this.result.matches.some((match) => match.isNoncannedAimSuggestion);
+              this.result.matches.some(
+                  (match) => match.isNoncannedAimSuggestion);
           this.fire('show-suggestion-activity-link', showActivityLink);
           return !!showActivityLink;
         }
 
         onLinkClicked(e: CustomEvent<{event: Event}>) {
-          // Manually handle navigation to support WebView environments where default
-          // link clicks may be ignored.
+          // Manually handle navigation to support WebView environments where
+          // default link clicks may be ignored.
           e.detail.event.preventDefault();
           const href = (e.detail.event.currentTarget as HTMLAnchorElement).href;
           if (href) {
@@ -1212,6 +1215,8 @@ export const ComposeboxEmbedderMixin =
               this.inputState = inputStateResponse.state;
             }
           }
+
+          this.suggestInventory = state.suggestInventory ?? null;
 
           const text = state.text || '';
           const files = state.files || [];
@@ -1363,15 +1368,17 @@ export const ComposeboxEmbedderMixin =
         }
 
         onDeleteFile(
-            e: CustomEvent<{uuid: UnguessableToken, fromUserAction?: boolean}>) {
+            e: CustomEvent<
+                {uuid: UnguessableToken, fromUserAction?: boolean}>) {
           this.deleteFile(e.detail.uuid, e.detail.fromUserAction);
         }
 
         onCancelClick() {
           if (this.hasContent()) {
             this.resetModes();
-            this.clearAllInputs(/* querySubmitted= */ false,
-                                /* shouldBlockAutoSuggestedTabs= */ true);
+            this.clearAllInputs(
+                /* querySubmitted= */ false,
+                /* shouldBlockAutoSuggestedTabs= */ true);
             this.focusInput();
             this.queryAutocomplete(/* clearMatches= */ true);
 
@@ -1427,7 +1434,7 @@ export const ComposeboxEmbedderMixin =
 
         deleteFile(
             uuidToDelete: UnguessableToken, fromUserAction?: boolean,
-            fromAutoSuggestedChip: boolean = false): ComposeboxFile | null {
+            fromAutoSuggestedChip: boolean = false): ComposeboxFile|null {
           const file = uuidToDelete ? this.files.get(uuidToDelete) : null;
 
           if (!file) {
@@ -1659,8 +1666,9 @@ export const ComposeboxEmbedderMixin =
         handleEscapeKeyLogic() {
           if (!this.closeOnEscape && this.hasContent()) {
             this.resetModes();
-            this.clearAllInputs(/* querySubmitted= */ false,
-                                /* shouldBlockAutoSuggestedTabs= */ false);
+            this.clearAllInputs(
+                /* querySubmitted= */ false,
+                /* shouldBlockAutoSuggestedTabs= */ false);
             this.focusInput();
             this.queryAutocomplete(/* clearMatches= */ true);
           } else {
@@ -1729,8 +1737,9 @@ export const ComposeboxEmbedderMixin =
           }
           // Standard behavior: clear inputs if flag is enabled
           if (this.clearAllInputsWhenSubmittingQuery) {
-            this.clearAllInputs(/* querySubmitted= */ true,
-                                /* shouldBlockAutoSuggestedTabs= */ false);
+            this.clearAllInputs(
+                /* querySubmitted= */ true,
+                /* shouldBlockAutoSuggestedTabs= */ false);
           }
           this.fire('composebox-submit');
         }
@@ -1779,8 +1788,9 @@ export const ComposeboxEmbedderMixin =
               this.getInputElement().inputElement.value === this.input ?
               this.getInputElement().inputElement.selectionStart || 0 :
               this.input.length;
-          this.getSearchboxHandler().queryAutocomplete(
-              this.input, false, cursorPosition);
+          this.getSearchboxHandler().queryAutocompleteWithSuggestInventory(
+              this.input, false, cursorPosition,
+              this.suggestInventory ?? SuggestInventory.kDefault);
         }
 
         clearAutocompleteMatches() {
@@ -2501,7 +2511,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   // TODO(crbug.com/486705728): Remove fromAutoSuggestedChip usages.
   deleteFile(
       uuidToDelete: UnguessableToken, fromUserAction?: boolean,
-      fromAutoSuggestedChip?: boolean): ComposeboxFile | null;
+      fromAutoSuggestedChip?: boolean): ComposeboxFile|null;
   deleteFileContext(
       uuidToDelete: UnguessableToken, fromAutoSuggestedChip?: boolean): void;
   closeMenu(): void;
@@ -2518,7 +2528,8 @@ export interface ComposeboxEmbedderMixinInterface extends
       |ContextualEntrypointAndMenuElement|null;
   addTabContextHandleCallback(
       tabUpload: TabUpload, replaceAutoActiveTabToken?: boolean,
-      onBeforeUpdateFiles?: (attachment: ComposeboxFile) => void): Promise<ComposeboxFile|null>;
+      onBeforeUpdateFiles?: (attachment: ComposeboxFile) => void):
+      Promise<ComposeboxFile|null>;
   getFilteredCarouselFiles(): ComposeboxFile[];
   getSharedTabs(): TabInfo[];
   shouldShowSuggestionActivityLink(): boolean;

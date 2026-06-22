@@ -13,7 +13,7 @@ import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_com
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DriveDisclaimerStatus, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -422,12 +422,13 @@ suite('ComposeboxTest', () => {
     inputElement.inputElement.selectionStart = 3;
     inputElement.inputElement.selectionEnd = 3;
 
-    // Clear the `queryAutocomplete` called for ZPS.
-    searchboxHandler.resetResolver('queryAutocomplete');
+    // Clear the `queryAutocompleteWithSuggestInventory` called for ZPS.
+    searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
     composebox.queryAutocomplete(/*clearMatches=*/ false);
 
-    const args = await searchboxHandler.whenCalled('queryAutocomplete');
-    assertDeepEquals(args, ['hello', false, 3]);
+    const args = await searchboxHandler.whenCalled(
+        'queryAutocompleteWithSuggestInventory');
+    assertDeepEquals(args, ['hello', false, 3, SuggestInventory.kDefault]);
   });
 
   test(
@@ -446,12 +447,14 @@ suite('ComposeboxTest', () => {
         // reflected in the DOM.
         composebox.input = 'hello world';
 
-        // Clear the `queryAutocomplete` called for ZPS.
-        searchboxHandler.resetResolver('queryAutocomplete');
+        // Clear the `queryAutocompleteWithSuggestInventory` called for ZPS.
+        searchboxHandler.resetResolver('queryAutocompleteWithSuggestInventory');
         composebox.queryAutocomplete(/*clearMatches=*/ false);
 
-        const args = await searchboxHandler.whenCalled('queryAutocomplete');
-        assertDeepEquals(args, ['hello world', false, 11]);
+        const args = await searchboxHandler.whenCalled(
+            'queryAutocompleteWithSuggestInventory');
+        assertDeepEquals(
+            args, ['hello world', false, 11, SuggestInventory.kDefault]);
       });
 
   test('clears selected tabs on submit', async () => {

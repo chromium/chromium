@@ -198,7 +198,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     mockTimer.tick(300);
 
-    await mockSearchboxPageHandler.whenCalled('queryAutocomplete');
+    await mockSearchboxPageHandler.whenCalled(
+        'queryAutocompleteWithSuggestInventory');
 
     await setupAutocompleteResults(
         searchboxCallbackRouterRemote, TEST_QUERY, mockTimer);

@@ -270,6 +270,15 @@ enum DriveDisclaimerStatus {
   kRestricted = 2,
 };
 
+// This enum is mapped to third_party/omnibox_proto/suggest_inventory.proto.
+enum SuggestInventory {
+  kDefault = 0,
+  kTravel = 1,
+  kAimTakeover = 2,
+  kImageGenTakeover = 3,
+  kConversationStarters = 4,
+};
+
 // Information about a successfully processed Drive file.
 struct DriveFile {
   // The UnguessableToken acts as a secure, cross-process identifier. The WebUI
@@ -313,6 +322,12 @@ interface PageHandler {
   QueryAutocomplete(mojo_base.mojom.String16 input,
                     bool prevent_inline_autocomplete,
                     uint32 cursor_position);
+
+  // Queries autocomplete matches from the browser with preferred SuggestInventory.
+  QueryAutocompleteWithSuggestInventory(mojo_base.mojom.String16 input,
+                                        bool prevent_inline_autocomplete,
+                                        uint32 cursor_position,
+                                        SuggestInventory suggest_inventory);
 
   // Cancels the current autocomplete query. Clears the result set if
   // |clear_result| is true.

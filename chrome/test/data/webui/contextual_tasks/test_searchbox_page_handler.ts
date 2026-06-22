@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PageHandler as SearchboxPageHandler} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {PageHandler as SearchboxPageHandler, SuggestInventory} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -11,12 +11,28 @@ export class TestSearchboxPageHandler extends TestBrowserProxy implements
   constructor() {
     super([
       'queryAutocomplete',
+      'queryAutocompleteWithSuggestInventory',
       'openAutocompleteMatch',
     ]);
   }
 
-  queryAutocomplete(input: string, preventInlineAutocomplete: boolean) {
-    this.methodCalled('queryAutocomplete', [input, preventInlineAutocomplete]);
+  queryAutocomplete(
+      input: string, preventInlineAutocomplete: boolean,
+      cursorPosition: number) {
+    this.methodCalled(
+        'queryAutocomplete',
+        [input, preventInlineAutocomplete, cursorPosition]);
+  }
+
+  queryAutocompleteWithSuggestInventory(
+      input: string, preventInlineAutocomplete: boolean, cursorPosition: number,
+      suggestInventory: SuggestInventory) {
+    this.methodCalled('queryAutocompleteWithSuggestInventory', [
+      input,
+      preventInlineAutocomplete,
+      cursorPosition,
+      suggestInventory,
+    ]);
   }
 
   openAutocompleteMatch(

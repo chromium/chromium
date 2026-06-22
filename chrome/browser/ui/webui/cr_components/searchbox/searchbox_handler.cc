@@ -1089,6 +1089,16 @@ void SearchboxHandler::OnFocusChanged(bool focused) {
 void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
                                          bool prevent_inline_autocomplete,
                                          uint32_t cursor_position) {
+  QueryAutocompleteWithSuggestInventory(
+      input, prevent_inline_autocomplete, cursor_position,
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT);
+}
+
+void SearchboxHandler::QueryAutocompleteWithSuggestInventory(
+    const std::u16string& input,
+    bool prevent_inline_autocomplete,
+    uint32_t cursor_position,
+    omnibox::SuggestInventory suggest_inventory) {
   // This shouldn't happen, but, e.g., users may do unintended actions in the
   // developer console and crashing with a `CHECK()` doesn't seem warranted.
   cursor_position =
@@ -1142,8 +1152,7 @@ void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
 
   autocomplete_input.set_input_state(GetInputState());
   autocomplete_input.set_previous_query(GetPreviousQuery());
-  autocomplete_input.set_suggest_inventory(
-      omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT);
+  autocomplete_input.set_suggest_inventory(suggest_inventory);
 
   edit_model()->SetAutocompleteInput(autocomplete_input);
   omnibox_controller()->StartAutocomplete(autocomplete_input);
