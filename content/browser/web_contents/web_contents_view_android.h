@@ -206,6 +206,12 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
   void OnDragEnded();
   virtual void OnSystemDragEnded(RenderWidgetHost* source_rwh);
 
+  // Clears internal and system drag-and-drop state when a drag attempt fails to
+  // start (e.g. due to drag failures from system/OS errors during
+  // initiation). Unlike `OnDragEnded`, this does not dispatch a final `dragend`
+  // event since the drag never officially started
+  void ClearDragStateOnStartFailure(RenderWidgetHost* source_rwh);
+
   SelectPopup* GetSelectPopup();
 
   // Returns the current `SelectionPopupController` from the current
