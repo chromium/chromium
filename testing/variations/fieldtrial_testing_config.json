@@ -6790,6 +6790,24 @@
             ]
         }
     ],
+    "ComposeboxDriveContextMenuOptionDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ComposeboxDriveContextMenuOption"
+                    ]
+                }
+            ]
+        }
+    ],
     "ComposeboxUrlInput": [
         {
             "platforms": [
