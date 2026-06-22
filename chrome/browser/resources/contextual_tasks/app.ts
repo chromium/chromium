@@ -242,6 +242,10 @@ export class ContextualTasksAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      isDomContentLoaded_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -310,6 +314,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       loadTimeData.getString('friendlyZeroStateSubtitle');
   protected accessor friendlyZeroStateTitle: string =
       loadTimeData.getString('friendlyZeroStateTitle');
+  protected accessor isDomContentLoaded_: boolean = false;
   // Tracks whether the frame is currently loading. Needed to avoid race
   // condition while awaiting isAiPage.
   private isFrameLoading: boolean = false;
@@ -540,6 +545,15 @@ export class ContextualTasksAppElement extends CrLitElement {
         'loadcommit', this.onThreadFrameLoadCommit.bind(this));
     this.$.threadFrame.addEventListener(
         'contentload', this.onThreadFrameContentLoad.bind(this));
+    this.eventTracker_.add(window, 'message', (event: MessageEvent) => {
+      if (event.data === 'domContentLoaded') {
+        this.isDomContentLoaded_ = true;
+        // Play the zero state animations, unhide the composebox and header.
+        if (this.isZeroState_) {
+          this.playZeroStateAnimations_();
+        }
+      }
+    });
 
     // Setup the webview request overrides before loading the first URL.
     this.setupWebviewRequestOverrides();
@@ -611,6 +625,12 @@ export class ContextualTasksAppElement extends CrLitElement {
 
     this.inNlm_ = this.checkInNlm_(threadUrlAsUrl);
 
+    // Add this fallback: If the DOM already loaded while we were awaiting, play
+    // it now!
+    if (this.isZeroState_ && this.isDomContentLoaded_) {
+      this.playZeroStateAnimations_();
+    }
+
     // The thread URL is considered pending (not loaded immediately in the
     // webview) until oauth tokens are received from the WebUI controller. This
     // prevents situations where the user is technically signed out of the
@@ -637,9 +657,6 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (!composebox) {
       return;
     }
-
-    this.postMessageHandler_.setInputPlateBoundsUpdateCallback(
-        this.onInputPlateBoundsUpdate_.bind(this));
 
     this.postMessageHandler_.setInputPlateBoundsUpdateCallback(
         this.onInputPlateBoundsUpdate_.bind(this));
@@ -704,27 +721,16 @@ export class ContextualTasksAppElement extends CrLitElement {
     // </if>
   }
 
-  private async playZeroStateAnimations_() {
-    await this.updateComplete;
-    const restartAnimations = (element: HTMLElement) => {
-      element.getAnimations().forEach(animation => {
-        animation.cancel();
-        animation.play();
-      });
-    };
+  private playZeroStateAnimations_() {
+    this.clearZeroStateAnimations_();
+    this.classList.add('play-zero-state');
+    this.composebox_?.classList.add('play-zero-state');
+    this.composebox_?.startExpandAnimation();
+  }
 
-    const composebox = this.composebox_;
-    if (composebox) {
-      restartAnimations(composebox);
-      // Restart the composebox glow animation.
-      composebox.startExpandAnimation();
-    }
-    restartAnimations(this.$.composeboxHeaderWrapper);
-
-    const nameShimmer = this.shadowRoot.getElementById('nameShimmer');
-    if (nameShimmer) {
-      restartAnimations(nameShimmer);
-    }
+  private clearZeroStateAnimations_() {
+    this.classList.remove('play-zero-state');
+    this.composebox_?.classList.remove('play-zero-state');
   }
 
   private setStyleVariable(variable: string, value: string) {
@@ -1218,6 +1224,37 @@ export class ContextualTasksAppElement extends CrLitElement {
       const userAgentSuffix = loadTimeData.getString('userAgentSuffix');
       this.$.threadFrame.setUserAgentOverride(
           `${userAgent} ${userAgentSuffix}`);
+
+      // Inject a script to notify the embedder when the DOM has loaded so the
+      // app knows when to show the header and composebox.
+      this.$.threadFrame.addContentScripts([{
+        name: 'contextualTasksDomContentLoaded',
+        matches: ['<all_urls>'],
+        js: {
+          code: `
+            (() => {
+              let messageSent = false;
+              let embedderSource = null;
+
+              const send = () => {
+                if (messageSent || !embedderSource) return;
+                if (document.readyState === 'loading') return;
+                embedderSource.postMessage('domContentLoaded', '*');
+                messageSent = true;
+              };
+
+              document.addEventListener('DOMContentLoaded', send);
+
+              window.addEventListener('message', (e) => {
+                if (messageSent || !e.source || e.source === window) return;
+                embedderSource = e.source;
+                send();
+              });
+            })();
+          `,
+        },
+        run_at: 'document_start',
+      }]);
     }
   }
 

@@ -545,7 +545,6 @@ error-page {
 :host([is-zero-state_]) #flexCenterContainer {
   align-self: start;
   align-items: center;
-  animation: zero-state-slide-up 500ms var(--emphasized-decelerate-curve) both;
   display: flex;
   flex-direction: column;
   gap: 36px;
@@ -781,8 +780,6 @@ error-page {
 
 :host([is-zero-state_]) #composeboxHeaderWrapper {
   display: flex;
-  animation: var(--composebox-header-wrapper-zero-state-animation);
-  opacity: 0;
 }
 
 @keyframes zero-state-header-text {
@@ -875,8 +872,6 @@ error-page {
   background-clip: text;
   background-size: auto 700%;
   position: relative;
-  animation: textShimmerAnimation 1s
-    var(--standard-accelerate-curve) 100ms both;
   padding-inline-end: 2px;
 }
 
@@ -905,7 +900,6 @@ error-page {
   background-clip: text;
   background-size: auto 700%;
   position: relative;
-  animation: textShimmerAnimation 1s var(--standard-accelerate-curve) 100ms both;
 }
 
 @keyframes textShimmerAnimation {
@@ -915,4 +909,24 @@ error-page {
   100% {
     background-position: 50% 100%;
   }
+}
+
+:host(:not([is-dom-content-loaded_])) #composebox,
+:host(:not([is-dom-content-loaded_])) #composeboxHeaderWrapper {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+:host(.play-zero-state) .name-shimmer {
+  animation: textShimmerAnimation 1s
+    var(--standard-accelerate-curve) 100ms both;
+}
+
+:host(.play-zero-state) #flexCenterContainer {
+  animation: zero-state-slide-up 500ms var(--emphasized-decelerate-curve) both;
+}
+
+:host(.play-zero-state) #composeboxHeaderWrapper {
+  animation: var(--composebox-header-wrapper-zero-state-animation);
+  opacity: 0;
 }
