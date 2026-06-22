@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -169,6 +170,18 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
     case SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent: {
       prefs_->SetSelectedTypeForAccount(
           type, is_type_on, delegate_->GetSyncAccountInfoForPrefs().gaia);
+#if BUILDFLAG(IS_CHROMEOS)
+      // TODO(crbug.com/524514663): This is for the possible migration of users
+      // from kSignedInWithoutSyncConsent to kSyncing. Remove upon migrating all
+      // users.
+      if (IsReplaceSyncPromosWithSignInPromosEnabled()) {
+        base::AutoReset<bool> auto_reset(&suppress_notifications_, true);
+        prefs_->SetSelectedTypesForSyncingUser(
+            /*keep_everything_synced=*/false, GetRegisteredSelectableTypes(),
+            is_type_on ? base::Union(GetSelectedTypes(), {type})
+                       : base::Difference(GetSelectedTypes(), {type}));
+      }
+#endif  // BUILDFLAG(IS_CHROMEOS)
       break;
     }
     case SyncPrefs::SyncAccountState::kSyncing: {
@@ -464,6 +477,9 @@ void SyncUserSettingsImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
 }
 
 void SyncUserSettingsImpl::OnSelectedTypesPrefChange() {
+  if (suppress_notifications_) {
+    return;
+  }
   delegate_->OnSelectedTypesChanged();
 }
 

@@ -88,12 +88,16 @@ class SingleClientStandaloneTransportSyncTest : public SyncTest {
   SingleClientStandaloneTransportSyncTest() : SyncTest(SINGLE_CLIENT) {
     override_features_.InitWithFeatures(
         /*enabled_features=*/
-        {syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
-         switches::kSyncEnableBookmarksInTransportMode,
+        {
+            syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
+            switches::kSyncEnableBookmarksInTransportMode,
 #if !BUILDFLAG(IS_ANDROID)
-         syncer::kReadingListEnableSyncTransportModeUponSignIn,
+            syncer::kReadingListEnableSyncTransportModeUponSignIn,
 #endif  // !BUILDFLAG(IS_ANDROID)
-         syncer::kReplaceSyncPromosWithSignInPromos},
+            syncer::kReplaceSyncPromosWithSignInPromos,
+            syncer::kSeparateLocalAndAccountSearchEngines,
+            syncer::kSeparateLocalAndAccountThemes,
+        },
         /*disabled_features=*/{});
   }
 
@@ -659,5 +663,70 @@ IN_PROC_BROWSER_TEST_F(SyncSetupIncompleteMigrationSyncTest,
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests that on ChromeOS, when `kReplaceSyncPromosWithSignInPromos` is enabled,
+// changing a preference in transport mode (signin-only) also updates the
+// syncing-user preference, so that it is preserved when the user is migrated
+// to kSync.
+IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
+                       PreservesSelectedTypesWhenPromotingToSync) {
+  // 1. Sign in. This starts sync in transport mode.
+  ASSERT_TRUE(SignIn());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+
+  syncer::SyncUserSettings* user_settings =
+      GetSyncService(0)->GetUserSettings();
+
+  // 2. Verify that all preferred types are enabled by default in transport
+  // mode.
+  ASSERT_TRUE(user_settings->IsSyncEverythingEnabled());
+  ASSERT_EQ(user_settings->GetSelectedTypes(),
+            user_settings->GetRegisteredSelectableTypes());
+
+  // 3. Disable Bookmarks in transport mode.
+  user_settings->SetSelectedType(syncer::UserSelectableType::kBookmarks, false);
+  ASSERT_FALSE(user_settings->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kBookmarks));
+
+  // 4. Promote to full sync (Sync-the-feature).
+  ASSERT_TRUE(SetupSyncWithMode(SyncTest::SetupSyncMode::kSyncTheFeature));
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+
+  // 5. Verify that Bookmarks remain DISABLED after promoting to full sync.
+  EXPECT_FALSE(user_settings->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kBookmarks));
+}
+
+// Tests that on ChromeOS, when `kReplaceSyncPromosWithSignInPromos` is enabled,
+// if the user doesn't change any preferences in transport mode (signin-only),
+// all default preferences remain enabled when the user is migrated to kSync.
+IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
+                       PreservesDefaultSelectedTypesWhenPromotingToSync) {
+  // 1. Sign in. This starts sync in transport mode.
+  ASSERT_TRUE(SignIn());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+
+  syncer::SyncUserSettings* user_settings =
+      GetSyncService(0)->GetUserSettings();
+
+  // 2. Verify that all preferred types are enabled by default in transport
+  // mode.
+  ASSERT_TRUE(user_settings->IsSyncEverythingEnabled());
+  ASSERT_EQ(user_settings->GetSelectedTypes(),
+            user_settings->GetRegisteredSelectableTypes());
+
+  // 3. Promote to full sync (Sync-the-feature) without changing anything.
+  ASSERT_TRUE(SetupSyncWithMode(SyncTest::SetupSyncMode::kSyncTheFeature));
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+
+  // 4. Verify that all preferred types remain enabled after promoting to sync.
+  EXPECT_TRUE(user_settings->IsSyncEverythingEnabled());
+  EXPECT_EQ(user_settings->GetSelectedTypes(),
+            user_settings->GetRegisteredSelectableTypes());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

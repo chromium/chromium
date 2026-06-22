@@ -125,6 +125,8 @@ class SyncUserSettingsImpl : public SyncUserSettings, public SyncPrefObserver {
   const raw_ptr<SyncPrefs> prefs_;
   const DataTypeSet registered_data_types_;
   base::ScopedObservation<SyncPrefs, SyncPrefObserver> prefs_observation_{this};
+
+  bool suppress_notifications_ = false;
 };
 
 }  // namespace syncer
