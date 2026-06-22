@@ -83,6 +83,9 @@ struct UrlResource {
   // The unique context ID for this resource.
   std::optional<int64_t> context_id;
 
+  // True if the context/media is derived from a Chrome tab.
+  bool has_chrome_tab_data = false;
+
   // The type of resource.
   ResourceType resource_type = ResourceType::kUnknown;
 };

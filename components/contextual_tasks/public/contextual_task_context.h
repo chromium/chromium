@@ -89,6 +89,8 @@ struct UrlAttachment {
   gfx::Image GetFavicon() const;
   // The tab SessionID of the tab that was the source of this attachment.
   SessionID GetTabSessionId() const;
+  // True if the context/media is derived from a Chrome tab.
+  bool HasChromeTabData() const;
   // The type of resource.
   ResourceType GetResourceType() const;
 
@@ -114,6 +116,9 @@ struct UrlAttachment {
 
   // The tab SessionID, if available from the ContextualTask directly.
   std::optional<SessionID> tab_session_id_;
+
+  // True if the context/media is derived from a Chrome tab.
+  bool has_chrome_tab_data_ = false;
 
   // A data block that can be populated by decorators with additional metadata
   // about the URL.

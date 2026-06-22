@@ -36,6 +36,7 @@ struct TabContext {
   url.mojom.Url url;
   string title;
   int32 tab_id;
+  bool has_chrome_tab_data;
 };
 
 // Represents the the visual information needed to display a single context row

@@ -42,6 +42,7 @@ std::vector<UrlResource> ConvertAiModeContextToUrlResources(
                            ResourceType::kWebpage);
       url_resource->context_id = context.context_id();
       url_resource->title = context.webpage().title();
+      url_resource->has_chrome_tab_data = context.has_chrome_tab_data();
     } else if (context.has_pdf()) {
       url_resource.emplace(GURL(context.pdf().url()), ResourceType::kPdf);
       url_resource->context_id = context.context_id();

@@ -113,13 +113,17 @@ MergeUrlResourcesResult MergeUrlResources(
       if (!incoming_res.context_id.has_value()) {
         incoming_res.context_id = existing_res.context_id;
       }
+      incoming_res.has_chrome_tab_data =
+          incoming_res.has_chrome_tab_data || existing_res.has_chrome_tab_data;
 
       // Check if anything changed.
       if (incoming_res.url_id != existing_res.url_id ||
           incoming_res.url != existing_res.url ||
           incoming_res.tab_id != existing_res.tab_id ||
           incoming_res.title != existing_res.title ||
-          incoming_res.context_id != existing_res.context_id) {
+          incoming_res.context_id != existing_res.context_id ||
+          incoming_res.has_chrome_tab_data !=
+              existing_res.has_chrome_tab_data) {
         result.has_changes = true;
         result.added_or_updated_resources.push_back(incoming_res);
       }

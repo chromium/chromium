@@ -104,6 +104,7 @@ PopulateContextualResources(contextual_tasks::ContextualTaskContext* context) {
         tab_context->title = title;
         tab_context->url = url;
         tab_context->tab_id = attachment.GetTabSessionId().id();
+        tab_context->has_chrome_tab_data = attachment.HasChromeTabData();
         context_items.push_back(contextual_tasks::mojom::ContextInfo::NewTab(
             std::move(tab_context)));
         break;
@@ -680,7 +681,7 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
 
                 std::vector<searchbox::mojom::TabInfoPtr> tabs;
                 for (const auto& item : context_items) {
-                  if (item->is_tab()) {
+                  if (item->is_tab() && item->get_tab()->has_chrome_tab_data) {
                     auto tab_info = searchbox::mojom::TabInfo::New();
                     tab_info->url = item->get_tab()->url;
                     tab_info->title = item->get_tab()->title;

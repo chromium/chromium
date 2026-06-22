@@ -21,6 +21,7 @@ TEST(AiModeContextLibraryConverterTest,
   auto* webpage = context->mutable_webpage();
   webpage->set_url("https://example.com/page1");
   webpage->set_title("Example Page 1");
+  context->set_has_chrome_tab_data(true);
 
   std::vector<contextual_search::FileInfo> local_contexts;
   contextual_search::FileInfo file_info;
@@ -40,6 +41,7 @@ TEST(AiModeContextLibraryConverterTest,
   EXPECT_TRUE(url_resources[0].tab_id.has_value());
   EXPECT_EQ(url_resources[0].tab_id->id(), 10);
   EXPECT_EQ(url_resources[0].context_id, 123u);
+  EXPECT_TRUE(url_resources[0].has_chrome_tab_data);
 }
 
 TEST(AiModeContextLibraryConverterTest,
@@ -50,6 +52,7 @@ TEST(AiModeContextLibraryConverterTest,
   auto* webpage = context->mutable_webpage();
   webpage->set_url("https://example.com/page2");
   webpage->set_title("Example Page 2");
+  context->set_has_chrome_tab_data(true);
 
   std::vector<contextual_search::FileInfo> local_contexts;
   // Empty local contexts or mismatching IDs
@@ -66,6 +69,34 @@ TEST(AiModeContextLibraryConverterTest,
   EXPECT_EQ(url_resources[0].title, "Example Page 2");
   EXPECT_FALSE(url_resources[0].tab_id.has_value());
   EXPECT_EQ(url_resources[0].context_id, 456u);
+  EXPECT_TRUE(url_resources[0].has_chrome_tab_data);
+}
+
+TEST(AiModeContextLibraryConverterTest, ConvertWebpageWithoutChromeTabData) {
+  lens::UpdateThreadContextLibrary message;
+  auto* context = message.add_contexts();
+  context->set_context_id(777);
+  auto* webpage = context->mutable_webpage();
+  webpage->set_url("https://example.com/page3");
+  webpage->set_title("Example Page 3");
+  context->set_has_chrome_tab_data(false);
+
+  std::vector<contextual_search::FileInfo> local_contexts;
+  contextual_search::FileInfo file_info;
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(777);
+  file_info.tab_url = GURL("https://example.com/page3");
+  file_info.tab_title = "Local Title 3";
+  file_info.tab_session_id = SessionID::FromSerializedValue(11);
+  local_contexts.push_back(file_info);
+
+  std::vector<UrlResource> url_resources =
+      ConvertAiModeContextToUrlResources(message, local_contexts);
+
+  ASSERT_EQ(url_resources.size(), 1u);
+  EXPECT_EQ(url_resources[0].url, GURL("https://example.com/page3"));
+  EXPECT_EQ(url_resources[0].title, "Example Page 3");
+  EXPECT_FALSE(url_resources[0].has_chrome_tab_data);
 }
 
 TEST(AiModeContextLibraryConverterTest, ConvertPdfContext) {
@@ -145,6 +176,7 @@ TEST(AiModeContextLibraryConverterTest, ConvertMixedContexts) {
   c1->set_context_id(1);
   c1->mutable_webpage()->set_url("http://web.com");
   c1->mutable_webpage()->set_title("Webpage");
+  c1->set_has_chrome_tab_data(true);
 
   // 2. PDF
   auto* c2 = message.add_contexts();
@@ -193,6 +225,7 @@ TEST(AiModeContextLibraryConverterTest, ConvertMixedContexts) {
   EXPECT_EQ(result[0].title, "Webpage");
   EXPECT_TRUE(result[0].tab_id.has_value());
   EXPECT_EQ(result[0].tab_id->id(), 50);
+  EXPECT_TRUE(result[0].has_chrome_tab_data);
 
   // Check PDF
   EXPECT_EQ(result[1].context_id, 2u);

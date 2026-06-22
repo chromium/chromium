@@ -117,6 +117,7 @@ suite('TopToolbarTest', () => {
         tab: {
           title: 'Tab 1',
           url: 'https://example.com',
+          hasChromeTabData: false,
           tabId: 1,
         },
       }];
@@ -132,6 +133,7 @@ suite('TopToolbarTest', () => {
       const tab = {
         title: 'Tab 1',
         url: 'https://example.com',
+        hasChromeTabData: false,
         tabId: 1,
       };
       topToolbar.contextInfos = [{tab: tab}];
@@ -268,6 +270,7 @@ suite('TopToolbarTest', () => {
           tab: {
             title: 'Tab 1',
             url: 'https://example.com/1',
+            hasChromeTabData: false,
             tabId: 1,
           },
         },
@@ -275,6 +278,7 @@ suite('TopToolbarTest', () => {
           tab: {
             title: 'Tab 2',
             url: 'https://example.com/2',
+            hasChromeTabData: false,
             tabId: 2,
           },
         },
@@ -282,6 +286,7 @@ suite('TopToolbarTest', () => {
           tab: {
             title: 'Tab 3',
             url: 'https://example.com/3',
+            hasChromeTabData: false,
             tabId: 3,
           },
         },
@@ -305,6 +310,7 @@ suite('TopToolbarTest', () => {
           tab: {
             title: 'Tab 1',
             url: 'https://example.com/1',
+            hasChromeTabData: false,
             tabId: 1,
           },
         },
@@ -312,6 +318,7 @@ suite('TopToolbarTest', () => {
           tab: {
             title: 'Tab 2',
             url: 'https://example.com/2',
+            hasChromeTabData: false,
             tabId: 2,
           },
         },
@@ -319,6 +326,7 @@ suite('TopToolbarTest', () => {
           tab: {
             title: 'Tab 3',
             url: 'https://example.com/3',
+            hasChromeTabData: false,
             tabId: 3,
           },
         },
@@ -326,6 +334,7 @@ suite('TopToolbarTest', () => {
           tab: {
             title: 'Tab 4',
             url: 'https://example.com/4',
+            hasChromeTabData: false,
             tabId: 4,
           },
         },
@@ -558,6 +567,7 @@ suite('TopToolbarTest', () => {
         tab: {
           title: 'Tab 1',
           url: 'https://example.com/1',
+          hasChromeTabData: false,
           tabId: 1,
         },
       },
@@ -577,6 +587,7 @@ suite('TopToolbarTest', () => {
         tab: {
           title: 'Tab 2',
           url: 'https://example.com/2',
+          hasChromeTabData: false,
           tabId: 2,
         },
       },

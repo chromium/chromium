@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <utility>
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -64,6 +65,10 @@ SessionID UrlAttachment::GetTabSessionId() const {
   return decorator_data_.contextual_search_context_data.tab_session_id;
 }
 
+bool UrlAttachment::HasChromeTabData() const {
+  return has_chrome_tab_data_;
+}
+
 ResourceType UrlAttachment::GetResourceType() const {
   return resource_type;
 }
@@ -86,6 +91,7 @@ ContextualTaskContext::ContextualTaskContext(const ContextualTask& task)
     if (url_resource.tab_id.has_value()) {
       attachment.tab_session_id_ = url_resource.tab_id.value();
     }
+    attachment.has_chrome_tab_data_ = url_resource.has_chrome_tab_data;
     urls_.push_back(std::move(attachment));
   }
 }
@@ -119,7 +125,7 @@ std::vector<UrlAttachment> ContextualTaskContext::GetUniqueUrlAttachments()
       deduplication_helper =
           contextual_tasks::CreateURLDeduplicationHelperForContextualTask();
   std::vector<UrlAttachment> unique_attachments;
-  std::set<visited_url_ranking::URLMergeKey> seen_keys;
+  std::set<std::pair<visited_url_ranking::URLMergeKey, bool>> seen_keys;
 
   for (const auto& attachment : urls_) {
     visited_url_ranking::URLMergeKey merge_key;
@@ -133,8 +139,9 @@ std::vector<UrlAttachment> ContextualTaskContext::GetUniqueUrlAttachments()
       merge_key = base::UTF16ToUTF8(attachment.GetTitle());
     }
 
-    if (seen_keys.find(merge_key) == seen_keys.end()) {
-      seen_keys.insert(merge_key);
+    auto key = std::make_pair(merge_key, attachment.HasChromeTabData());
+    if (seen_keys.find(key) == seen_keys.end()) {
+      seen_keys.insert(key);
       unique_attachments.push_back(attachment);
     }
   }
