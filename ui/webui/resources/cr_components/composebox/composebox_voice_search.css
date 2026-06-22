@@ -13,7 +13,6 @@
   from these; else negative default. */
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;
-  --cr-composebox-submit-default-container-size: 40px;
   --cr-composebox-submit-default-icon-size: 16px;
   --submit-timing-and-function: 300ms ease-in-out;
   --voice-search-fade-transition: opacity var(--submit-timing-and-function);
@@ -29,6 +28,7 @@
   inset: 0;
   padding: 7px 0;
   position: absolute;
+  pointer-events: none;
   z-index: 4;
 }
 
@@ -71,6 +71,7 @@
   /* 11px + container padding = 18 px. Parent can set var if needed. */
   padding: var(--composebox-voice-search-top-padding, 11px)
       40px 0 20px;
+  pointer-events: auto;
   width: 100%;
 }
 
@@ -86,6 +87,7 @@
   --cr-icon-button-size: 36px;
   inset-inline-end: 12px;
   margin-inline-start: 16px;
+  pointer-events: auto;
   position: absolute;
   top: var(--composebox-cancel-button-top, 12px);
   /* Uses the same transitions as the submit button from
@@ -98,9 +100,10 @@
   align-items: center;
   bottom: 12px;
   display: flex;
-  gap: 8px;
-  inset-inline-end: 12px;
+  gap: var(--voice-bottom-actions-gap, 8px);
+  inset-inline-end: var(--voice-bottom-actions-inset-inline-end, 12px);
   opacity: 1;
+  pointer-events: auto;
   position: absolute;
   transition: var(--voice-search-fade-transition);
 }
@@ -112,10 +115,15 @@
   --cr-icon-button-size: 36px;
   background-color: #E1E3E1;
   border-radius: var(--cr-composebox-submit-border-radius, 50%);
-  height: var(--cr-composebox-submit-height, var(--cr-composebox-submit-default-container-size));
+  /* Has same height/width as submit button. */
+  height: var(--cr-composebox-button-height,
+      var(--cr-composebox-submit-height,
+      var(--voice-search-submit-default-container-size)));
   margin: 0;
   transition: var(--submit-enabled-transition, 255ms);
-  width: var(--cr-composebox-submit-width, var(--cr-composebox-submit-default-container-size));
+  width: var(--cr-composebox-button-width,
+      var(--cr-composebox-submit-width,
+      var(--voice-search-submit-default-container-size)));
 }
 
 @media (prefers-color-scheme: dark) {

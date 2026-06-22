@@ -62,7 +62,7 @@ export class SearchAnimatedGlowElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-      showingOnlyCarouselOnTop: {
+      showingOnlyCarouselOnTopOfInput: {
         type: Boolean,
         reflect: true,
       },
@@ -111,7 +111,7 @@ export class SearchAnimatedGlowElement extends CrLitElement {
   // Source of truth for voice search (as not every parent has
   // `animationState`).
   accessor coloredTicTacVoiceAnimationEnabled: boolean = false;
-  accessor showingOnlyCarouselOnTop: boolean = false;
+  accessor showingOnlyCarouselOnTopOfInput: boolean = false;
   accessor isListening: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;
   accessor isZeroState: boolean = false;

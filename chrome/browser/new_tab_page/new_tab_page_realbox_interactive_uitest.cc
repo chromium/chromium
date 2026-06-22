@@ -603,8 +603,9 @@ INSTANTIATE_TEST_SUITE_P(
         },
     }));
 
+// TODO(crbug.com/524803939): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(NtpRealboxUploadInteractiveTest,
-                       ContextualEntrypointUploadTriggersComposebox) {
+                       DISABLED_ContextualEntrypointUploadTriggersComposebox) {
   base::FilePath test_data_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
   base::FilePath file_path = test_data_dir.AppendASCII(GetParam().file_name);

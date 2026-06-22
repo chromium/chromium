@@ -448,8 +448,8 @@ suite('ComposeboxVoiceSearch', () => {
             loadTimeData.getString('networkError'),
             voiceSearchElement['errorMessage_']);
 
-        assertStyle(composeboxElement.$.composebox, 'opacity', '0');
-        assertStyle(voiceSearchElement, 'display', 'inline');
+        assertStyle(composeboxElement.$.composebox, 'display', 'none');
+        assertStyle(voiceSearchElement, 'display', 'block');
 
         assertEquals(
             1,
@@ -1272,9 +1272,9 @@ suite('ComposeboxVoiceSearch', () => {
 
         // Clicking the voice search button should start speech recognition.
         assertTrue(mockSpeechRecognition.voiceSearchInProgress);
-        assertStyle(composeboxElement.$.composebox, 'opacity', '0');
+        assertStyle(composeboxElement.$.composebox, 'display', 'none');
         assertStyle(
-            getVoiceSearchElement(composeboxElement), 'display', 'inline');
+            getVoiceSearchElement(composeboxElement), 'display', 'block');
         assertEquals(
             composeboxElement.animationState, GlowAnimationState.LISTENING);
       });
@@ -1653,8 +1653,8 @@ suite('ComposeboxVoiceSearch', () => {
         assertStyle(inputElement!, 'opacity', '0');
 
         // Assert: The UI should remain open (not display: none).
-        assertStyle(composeboxElement.$.composebox, 'opacity', '0');
-        assertStyle(voiceSearchElement, 'display', 'inline');
+        assertStyle(composeboxElement.$.composebox, 'display', 'none');
+        assertStyle(voiceSearchElement, 'display', 'block');
 
         // Assert: The error message is populated directly from loadTimeData.
         assertEquals(

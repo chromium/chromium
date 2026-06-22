@@ -11,6 +11,9 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  /* Voice carousel/chip styles, etc. are defined in
+   * 'composebox_shared_style.css'.
+   */
   --animated-search-padding-bottom: var(--cr-composebox-padding-bottom, 10px);
   --color-composebox-submit-button-hover: var(--color-searchbox-results-background-hovered);
   --composebox-cancel-button-top: var(--cr-composebox-cancel-button-top, 12px);
@@ -408,15 +411,20 @@ search-animated-glow {
   --text-input-max-height: 130px;
 }
 
-#carousel {
-  box-sizing: border-box;
-  margin-bottom: var(--context-non-top-carousel-bottom-margin, 8px);
-  margin-top: var(--context-non-top-carousel-top-margin, 4px);
-  /* Prefer using margin, but from legacy var name, we should be using inset. */
-  inset-inline-start: var(--context-carousel-inline-start-spacing, 50px);
-  position: relative;
-  width: calc(100% - var(--context-carousel-inline-start-spacing, 50px) -
-      var(--context-carousel-inline-end-spacing, 50px));
+/* Only nextbox (cobrowsing) has 'top' class. */
+#voiceCarouselContainer:has(#voiceSearchCarousel.top) {
+  --context-carousel-inline-start-spacing: 12px;
+  /* Spec has -8px bottom margin, but the item under has 6px top-padding
+   * so net distance between the two is -2px.
+   */
+  --context-top-carousel-bottom-margin: -2px;
+  /* This + parent's padding = 12px space above. */
+  --context-top-carousel-top-margin: 6px;
+
+  /* Render above the recording wave, which is order 1,
+   * if carousel should be on top.
+   */
+  order: 0;
 }
 
 #carousel.top {
@@ -424,6 +432,13 @@ search-animated-glow {
   margin-top: var(--context-top-carousel-top-margin, 0);
   position: absolute;
   top: var(--context-carousel-top-position, 14px);
+  width: auto;
+}
+
+/* Contextual tasks specific formatting for voice carousel. */
+#voiceSearchCarousel.top {
+  margin-bottom: var(--context-top-carousel-bottom-margin, 0);
+  margin-top: var(--context-top-carousel-top-margin, 0);
   width: auto;
 }
 
@@ -438,7 +453,8 @@ search-animated-glow {
    */
 }
 
-#toolChipsContainer {
+#toolChipsContainer,
+#voiceToolChipsContainer {
   padding-bottom: 4px;
   padding-inline-start: 16px;
   padding-top: 14px;
@@ -517,8 +533,14 @@ search-animated-glow {
   top: 10px;
 }
 
-:host([searchbox-next-enabled][searchbox-layout-mode='Compact']) #carouselContainer,
-:host([searchbox-next-enabled][searchbox-layout-mode='TallBottomContext']) #carouselContainer {
+:host([searchbox-next-enabled][searchbox-layout-mode='Compact'])
+    #carouselContainer,
+:host([searchbox-next-enabled][searchbox-layout-mode='Compact'])
+    #voiceCarouselContainer,
+:host([searchbox-next-enabled][searchbox-layout-mode='TallBottomContext'])
+    #carouselContainer,
+:host([searchbox-next-enabled][searchbox-layout-mode='TallBottomContext'])
+    #voiceCarouselContainer {
   align-items: flex-end;
   display: flex;
   flex-direction: row;
@@ -574,48 +596,18 @@ search-animated-glow {
   --cr-icon-button-icon-size: 20px;
 }
 
-:host([searchbox-next-enabled]) #carousel {
+:host([searchbox-next-enabled]) #carousel,
+:host([searchbox-next-enabled]) #voiceSearchCarousel {
   --context-non-top-carousel-bottom-margin: 12px;
   --context-non-top-carousel-top-margin: 6px;
 }
 
-:host([is-omnibox-in-compact-mode_]) #carousel {
+:host([is-omnibox-in-compact-mode_]) #carousel,
+:host([is-omnibox-in-compact-mode_]) #voiceSearchCarousel {
   --context-non-top-carousel-bottom-margin: 12px;
   margin-top: 12px !important;
 }
 
 :host([in-voice-search-mode]) #suggestionActivity {
   display: none;
-}
-
-:host([in-voice-search-mode]) #composebox {
-  block-size: fit-content;
-  min-block-size: 112px;
-  opacity: 0;
-  /* CANNOT be display: None since :host depends on its height.
-   * This must be invisible to hide the lens button.
-   */
-  visibility: hidden;
-}
-
-:host([in-voice-search-mode]) #inputContainer {
-  /* Ensure that the suggestions' height do not affect
-   * size of composebox, and thus voice container (which inherits
-   * from composebox). This must be invisible to hide the input/suggestions.
-   */
-  display: none;
-}
-
-cr-composebox-voice-search {
-  z-index: 2;
-}
-
-:host(:not([in-voice-search-mode])) cr-composebox-voice-search {
-  display: none;
-}
-
-.carousel-container-inner {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
 }

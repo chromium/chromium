@@ -82,3 +82,141 @@
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-size: 36px;
 }
+
+#carousel,
+#voiceSearchCarousel {
+  box-sizing: border-box;
+  margin-bottom: var(--context-non-top-carousel-bottom-margin, 8px);
+  margin-top: var(--context-non-top-carousel-top-margin, 4px);
+  /* Prefer using margin, but from legacy var name, we should be using inset. */
+  inset-inline-start: var(--context-carousel-inline-start-spacing, 50px);
+  position: relative;
+  width: calc(100% - var(--context-carousel-inline-start-spacing, 50px) -
+      var(--context-carousel-inline-end-spacing, 50px));
+}
+
+#voiceCarouselContainer {
+  /* Ensure that it takes up as much room as possible. */
+  align-self: stretch;
+  /* Render below the recording wave, which is order 1.
+   * Above the tool chips, which are order 3. */
+  order: 2;
+}
+
+/* Both top and bottom inner wrappers should participate in the normal flow. */
+.carousel-container-inner,
+#voiceCarouselContainerInner {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+}
+
+/* Shows on the bottom: */
+#voiceSearchCarousel {
+  /* Width is 100% - right padding - left padding - gap.
+   * Gap: used to add space between carousel and bottom action buttons.
+   * Right padding: defined as either the bottom action buttons
+   * in voice search's width/gap/inset-end, or the right padding hard coded
+   * into carousel, whichever is larger).
+   */
+  width: calc(100% - var(--context-carousel-inline-start-spacing, 50px) -
+      max(var(--bottom-actions-width-and-spacing),
+          var(--context-carousel-inline-end-spacing, 50px)) -
+          var(--voice-bottom-actions-gap));  /* Stop button/carousel gap. */
+
+  /* Space between voice recording wave and the file carousel
+   * (below the recording wave) set by
+   * '--context-non-top-carousel-top-margin' in '#carousel'.
+   */
+}
+
+/* Controls toolchips in voice search. */
+#voiceToolChipsContainer {
+  order: 3; /* Stays below the carousel/the recording wave. */
+  /* Space between voice recording wave and the tool chip
+   * (below recording wave); matches Google3.
+   */
+  padding-top: 14px;
+  /* 10px of padding from outer container + this = 14px of space
+   * below toolchip.
+   */
+  padding-bottom: 4px;
+}
+
+
+:host,
+#voiceCarouselContainer {
+  --voice-bottom-actions-gap: 8px;
+  --voice-bottom-actions-inset-inline-end: 12px;
+  --voice-search-submit-default-container-size: 40px;
+  --voice-search-button-height: var(--cr-composebox-submit-height,
+      var(--voice-search-submit-default-container-size));
+  --voice-search-button-width: var(--cr-composebox-submit-width,
+      var(--voice-search-submit-default-container-size));
+  --bottom-actions-width-and-spacing: calc(2 * var(--voice-search-button-width)
+      + var(--voice-bottom-actions-inset-inline-end)
+      + var(--voice-bottom-actions-gap));
+  --voice-bottom-actions-height: var(--cr-composebox-button-height,
+      var(--voice-search-submit-default-container-size));
+  --voice-bottom-actions-bottom: 12px;
+}
+
+/* Make it relative so it pushes the voice animation
+ * down if it is on top.
+ */
+#voiceSearchCarousel.top {
+  /* Space between voice recording wave and the file carousel
+   * (above the recording wave) set by
+   * '--context-non-top-carousel-bottom-margin' in '#carousel'.
+   */
+  position: relative;
+  top: 0;
+}
+
+/* Ensure error scrim does not interfere with clicks when not in use. */
+#errorScrim[hidden] {
+  display: none;
+  pointer-events: none;
+}
+
+/* Position absolute: make sure error scrim shows over voice search
+ * animation and voice search component since composebox is hidden
+ * in voice search mode. 'Absolute' is needed for scrim because
+ * absolutely-positioned voice search/animation are first before the
+ * scrim in the DOM. This means 'non-static' voice search would push the
+ * scrim too far down if it were static.
+ */
+:host([in-voice-search-mode]) #errorScrim {
+  inset: 0;
+  position: absolute;
+   /* To show above voice search now that it is not static. */
+  z-index: 3;
+}
+
+/* Completely hide composebox and let animated_glow.css determine
+ * the size of the voice search container and overlay
+ * composebox_voice_search.css handles the stop/submit buttons only.
+ */
+:host([in-voice-search-mode]) #composebox {
+  block-size: fit-content;
+  display: none;
+}
+
+/* This shows over search animation, but make it not clickable.
+ * Its submit/stop button children override 'pointer-events' to 'auto'.
+ */
+cr-composebox-voice-search {
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Takes height from parent, which gets it from 'animated_glow'. */
+:host([in-voice-search-mode]) cr-composebox-voice-search {
+  inset: 0;
+  position: absolute;
+}
+
+:host(:not([in-voice-search-mode])) cr-composebox-voice-search {
+  display: none;
+}

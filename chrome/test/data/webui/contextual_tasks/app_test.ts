@@ -694,6 +694,7 @@ suite('ContextualTasksAppTest', function() {
     // 4. Transition out of zero state.
     proxy.callbackRouterRemote.onZeroStateChange(false);
     await proxy.callbackRouterRemote.$.flushForTesting();
+    await new Promise(resolve => requestAnimationFrame(resolve));
     await microtasksFinished();
 
     // 5. Bounds should now be updatable.
@@ -701,6 +702,7 @@ suite('ContextualTasksAppTest', function() {
       data: message,
       origin: new URL(fixtureUrl).origin,
     }));
+    await new Promise(resolve => requestAnimationFrame(resolve));
     await microtasksFinished();
 
     assertDeepEquals(
@@ -1025,6 +1027,7 @@ suite('ContextualTasksAppTest', function() {
 
         // Wait for any composebox height updates to process.
         await appElement.updateComplete;
+        await new Promise(resolve => requestAnimationFrame(resolve));
         await microtasksFinished();
         const boundsBeforeNav = appElement.getForcedComposeboxBoundsForTesting();
 

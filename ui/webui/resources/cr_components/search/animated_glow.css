@@ -786,7 +786,7 @@
  * overlapping with the submit/stop button. To avoid that, add
  * padding bottom only in this mode.
  */
-:host([showing-only-carousel-on-top]) #fullContainerOverlay {
+:host([showing-only-carousel-on-top-of-input]) #fullContainerOverlay {
   padding-bottom: calc(var(--voice-bottom-actions-height, 40px) +
       var(--voice-bottom-actions-bottom, 12px));
 }

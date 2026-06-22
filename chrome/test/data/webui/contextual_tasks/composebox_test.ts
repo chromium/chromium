@@ -70,7 +70,8 @@ suite('ContextualTasksComposeboxTest', () => {
       }] :
                                                [],
     });
-    await microtasksFinished();
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await composebox.updateComplete;
   }
   class MockResizeObserver {
     static instances: MockResizeObserver[] = [];
@@ -401,7 +402,9 @@ suite('ContextualTasksComposeboxTest', () => {
     const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
 
     const getChip = () => {
-      const toolChip = $$(innerComposebox, 'cr-composebox-tool-chip');
+      const toolChip = $$(
+          innerComposebox,
+          '.context-menu-container:not(#voiceToolChipsContainer) cr-composebox-tool-chip');
       return toolChip ? $$(toolChip, '#toolEnabledButton') : null;
     };
 
@@ -1057,7 +1060,9 @@ suite('ContextualTasksComposeboxTest', () => {
     const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
 
     const getChip = () => {
-      const toolChip = $$(innerComposebox, 'cr-composebox-tool-chip');
+      const toolChip = $$(
+          innerComposebox,
+          '.context-menu-container:not(#voiceToolChipsContainer) cr-composebox-tool-chip');
       return toolChip ? $$(toolChip, '#toolEnabledButton') : null;
     };
 
