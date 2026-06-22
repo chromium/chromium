@@ -1407,6 +1407,11 @@ const ComputedStyle* StyleResolver::ResolveStyle(
                                   styles_animated, 1);
     StyleAdjuster::AdjustComputedStyle(
         state, IsForPseudoElement(*element, style_request) ? nullptr : element);
+    StyleAdjuster::RunUncacheableStyleAdjustment(
+        state.StyleBuilder(), *element,
+        IsForPseudoElement(*element, style_request) ? state.GetPseudoElement()
+                                                    : element,
+        state.GetStyledElement());
   }
 
   ApplyAnchorData(state);
@@ -2031,6 +2036,11 @@ void StyleResolver::ApplyBaseStyle(
 
     StyleAdjuster::AdjustComputedStyle(
         state, IsForPseudoElement(*element, style_request) ? nullptr : element);
+    StyleAdjuster::RunUncacheableStyleAdjustment(
+        state.StyleBuilder(), *element,
+        IsForPseudoElement(*element, style_request) ? state.GetPseudoElement()
+                                                    : element,
+        state.GetStyledElement());
 
     // Normally done by StyleResolver::MaybeAddToMatchedPropertiesCache(),
     // when applying the cascade. Note that this is probably redundant
