@@ -523,7 +523,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         // we are not in zero state anymore, or not in an AIM URL. In
         // both thread/AIM cases for zero state, we clear input.
         if (isZeroState) {
-          this.composebox_?.clearInputAndFocus();
+          this.forceComposeboxFocus();
           // Reset the forced composebox bounds since the zero state position
           if (!this.shouldSetForceComposeboxBounds_()) {
             this.forcedComposeboxBounds_ = null;
@@ -621,9 +621,11 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     this.eventTracker_.add(window, 'message', (event: MessageEvent) => {
       if (event.data === 'domContentLoaded') {
         this.isDomContentLoaded_ = true;
-        // Play the zero state animations, unhide the composebox and header.
+        // Play the zero state animations, unhide the composebox/header,
+        // and focus the composebox.
         if (this.isZeroState_) {
           this.playZeroStateAnimations_();
+          this.forceComposeboxFocus();
         }
       }
     });
@@ -653,7 +655,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     } else {
       const {url} = await this.browserProxy_.handler.getThreadUrl();
       threadUrl = url;
-      this.composebox_?.clearInputAndFocus();
     }
 
     const threadUrlAsUrl = new URL(threadUrl);
@@ -704,6 +705,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     // it now!
     if (this.isZeroState_ && this.isDomContentLoaded_) {
       this.playZeroStateAnimations_();
+      this.forceComposeboxFocus();
     }
 
     // The thread URL is considered pending (not loaded immediately in the
@@ -1173,6 +1175,14 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
     // In all other cases, show the composebox.
     return false;
+  }
+
+  // Helper to focus the composebox, even if it is transitioning from hidden.
+  private forceComposeboxFocus() {
+    this.composebox_?.clearInputAndFocus();
+    this.updateComplete.then(() => {
+      this.composebox_?.tryFocus();
+    });
   }
 
   protected isComposeboxHeaderWrapperHidden_(): boolean {

@@ -2422,6 +2422,35 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
 }
 
 // CUJ covered by this test:
+// 1) User navigates to google search contextual tasks trigger URL (udm=50)
+// 2) The tab should navigate to chrome://contextual-tasks
+// 3) The composebox becomes visible and the input field is focused
+IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
+                       FocusComposeboxOnInitialLoad) {
+  const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
+
+  StateChange composebox_focused;
+  composebox_focused.type = StateChange::Type::kExistsAndConditionTrue;
+  composebox_focused.where = {"contextual-tasks-app"};
+  composebox_focused.test_function =
+      "function(app) {"
+      "  const cb = app?.shadowRoot?.querySelector('#composebox');"
+      "  const crCb = cb?.shadowRoot?.querySelector('#composebox');"
+      "  const inputSuite = "
+      "crCb?.shadowRoot?.querySelector('#composeboxInput');"
+      "  const input = inputSuite?.shadowRoot?.querySelector('#input');"
+      "  return !app.isComposeboxHidden_() && input && "
+      "         input.getRootNode().activeElement === input;"
+      "}";
+  composebox_focused.event = kElementExistsEvent;
+
+  RunTestSequence(InstrumentTab(kPrimaryTab, 0),
+                  SelectTab(kTabStripElementId, 0),
+                  OpenContextualTasksInCurrentTab(kInterceptionUrl),
+                  WaitForStateChange(kPrimaryTab, composebox_focused));
+}
+
+// CUJ covered by this test:
 // 1) Opens Contextual Tasks in a tab.
 // 2) Call window.open from the Contextual Tasks <webview>.
 // 3) The window opens in a new tab.
