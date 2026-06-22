@@ -310,6 +310,13 @@ class ChannelFuchsia : public Channel,
     do {
       buffer_capacity = next_read_size;
       char* buffer = GetReadBuffer(&buffer_capacity);
+      // A null buffer means the size computation for the new buffer overflowed
+      // so mark the connection as broken and bail.
+      if (!buffer) {
+        read_error = true;
+        validation_error = true;
+        break;
+      }
       DCHECK_GT(buffer_capacity, 0u);
 
       uint32_t bytes_read = 0;

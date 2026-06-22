@@ -291,6 +291,13 @@ void ChannelPosix::OnFdReadable(int fd) {
   do {
     buffer_capacity = next_read_size;
     char* buffer = GetReadBuffer(&buffer_capacity);
+    // A null buffer means that computing the read size overflowed, which means
+    // we received a malformed message; bail.
+    if (!buffer) {
+      read_error = true;
+      validation_error = true;
+      break;
+    }
     DCHECK_GT(buffer_capacity, 0u);
 
     std::vector<base::ScopedFD> incoming_fds;
