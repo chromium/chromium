@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import android.graphics.Rect;
-import android.view.Display;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -39,27 +38,16 @@ public class TabbedWindowStateTracker implements ChromeAndroidTaskFeature {
     public void onAddedToTask(InitInfo initInfo) {
         // Save initial window state.
         ChromeMultiInstancePersistentStore.writeIsVisible(mWindowId, initInfo.isVisible);
-        saveWindowBounds(initInfo.displayId, initInfo.boundsInPx);
     }
 
     @Override
     public void onFeatureRemoved() {}
 
     @Override
-    public void onTaskBoundsChanged(int displayId, Rect newBoundsInDp, Rect newBoundsInPx) {
-        saveWindowBounds(displayId, newBoundsInPx);
-    }
+    public void onTaskBoundsChanged(int displayId, Rect newBoundsInDp, Rect newBoundsInPx) {}
 
     @Override
     public void onTaskVisibilityChanged(boolean isVisible) {
         ChromeMultiInstancePersistentStore.writeIsVisible(mWindowId, isVisible);
-    }
-
-    private void saveWindowBounds(int displayId, Rect boundsInPx) {
-        // Only persist bounds if the task is on the primary display. This is to avoid the persisted
-        // bounds from being incorrectly used to start an activity in a different non-primary
-        // display than the display on which the bounds for the task were originally captured.
-        Rect bounds = displayId == Display.DEFAULT_DISPLAY ? boundsInPx : new Rect();
-        ChromeMultiInstancePersistentStore.writeBounds(mWindowId, bounds);
     }
 }

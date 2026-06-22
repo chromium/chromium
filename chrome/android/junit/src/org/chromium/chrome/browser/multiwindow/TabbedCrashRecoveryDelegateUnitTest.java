@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityManager.RecentTaskInfo;
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -174,31 +173,21 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         // Verify.
         ArgumentCaptor<Intent> intentCaptor1 = ArgumentCaptor.forClass(Intent.class);
         ArgumentCaptor<Intent> intentCaptor2 = ArgumentCaptor.forClass(Intent.class);
-        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
 
         InOrder inOrderVerifier = inOrder(mHostActivity);
 
-        // Verify: Window from default display is restored with cached bounds.
-        inOrderVerifier
-                .verify(mHostActivity)
-                .startActivity(intentCaptor1.capture(), bundleCaptor.capture());
+        // Verify: Window from default display is restored.
+        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor1.capture());
         Intent intent1 = intentCaptor1.getValue();
         assertNotNull(intent1);
         assertEquals(1, intent1.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
         assertEquals(
                 NewWindowAppSource.CRASH_RECOVERY,
                 intent1.getIntExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, -1));
-        Bundle bundle = bundleCaptor.getValue();
-        assertNotNull(bundle);
-        // For windowId=1, setupOtherCrashedWindows assigns left=10, top=10,
-        // right=10+TEST_WINDOW_WIDTH, bottom=10+TEST_WINDOW_HEIGHT.
-        assertEquals(
-                new Rect(10, 10, 10 + TEST_WINDOW_WIDTH, 10 + TEST_WINDOW_HEIGHT),
-                ActivityOptions.fromBundle(bundle).getLaunchBounds());
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
 
-        // Verify: Window from non-default display is restored without launch bounds.
-        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor2.capture(), eq(null));
+        // Verify: Window from non-default display is restored.
+        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor2.capture());
         Intent intent2 = intentCaptor2.getValue();
         assertNotNull(intent2);
         assertEquals(2, intent2.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
@@ -228,9 +217,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         verify(liveTask).finishAndRemoveTask();
 
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
-        verify(mHostActivity, times(2))
-                .startActivity(intentCaptor.capture(), bundleCaptor.capture());
+        verify(mHostActivity, times(2)).startActivity(intentCaptor.capture());
 
         List<Intent> intents = intentCaptor.getAllValues();
         assertNotNull(intents.get(0));
@@ -244,98 +231,8 @@ public class TabbedCrashRecoveryDelegateUnitTest {
                 NewWindowAppSource.CRASH_RECOVERY,
                 intents.get(1).getIntExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, -1));
 
-        List<Bundle> bundles = bundleCaptor.getAllValues();
-        assertNotNull(bundles.get(0));
-        // For windowId=1, setupOtherCrashedWindows assigns left=10, top=10,
-        // right=10+TEST_WINDOW_WIDTH, bottom=10+TEST_WINDOW_HEIGHT.
-        assertEquals(
-                new Rect(10, 10, 10 + TEST_WINDOW_WIDTH, 10 + TEST_WINDOW_HEIGHT),
-                ActivityOptions.fromBundle(bundles.get(0)).getLaunchBounds());
-        assertNotNull(bundles.get(1));
-        // For windowId=2, setupOtherCrashedWindows assigns left=20, top=20,
-        // right=20+TEST_WINDOW_WIDTH, bottom=20+TEST_WINDOW_HEIGHT.
-        assertEquals(
-                new Rect(20, 20, 20 + TEST_WINDOW_WIDTH, 20 + TEST_WINDOW_HEIGHT),
-                ActivityOptions.fromBundle(bundles.get(1)).getLaunchBounds());
-
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
-    }
-
-    @Test
-    @Config(sdk = 30)
-    public void testRestoreWindows_skipsCachedBoundsMatchingHostBounds() {
-        // Setup: One other visible window (windowId=1).
-        setupOtherCrashedWindows(
-                /* numNonVisibleWindows= */ 0,
-                /* numDefaultDisplayWindows= */ 1,
-                /* numNonDefaultDisplayWindows= */ 0);
-        // Set cached bounds for windowId=1 to match HOST_BOUNDS.
-        mCrashedWindows.set(1, new CrashRecoveryWindowInfo(1, HOST_BOUNDS, /* isVisible= */ true));
-
-        setupPreRecoveryAppTasks(HOST_WINDOW_ID);
-        mDelegate.initiateCrashRecovery(
-                mModalDialogManagerSupplier, mHostActivity, mCrashedWindows);
-
-        // Mock host activity bounds.
-        var windowManager = mock(android.view.WindowManager.class);
-        var windowMetrics = mock(android.view.WindowMetrics.class);
-        when(mHostActivity.getWindowManager()).thenReturn(windowManager);
-        when(windowManager.getCurrentWindowMetrics()).thenReturn(windowMetrics);
-        when(windowMetrics.getBounds()).thenReturn(HOST_BOUNDS);
-
-        // Act.
-        mDelegate.restoreWindows(mHostActivity);
-
-        // Verify: Window is restored WITHOUT launch bounds because its cached bounds match the
-        // host window's bounds.
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mHostActivity).startActivity(intentCaptor.capture(), eq(null));
-        Intent intent = intentCaptor.getValue();
-        assertNotNull(intent);
-        assertEquals(1, intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
-    }
-
-    @Test
-    @Config(sdk = 30)
-    public void testRestoreWindows_usesCachedBoundsDifferentFromHostBounds() {
-        // Setup: One other visible window (windowId=1).
-        setupOtherCrashedWindows(
-                /* numNonVisibleWindows= */ 0,
-                /* numDefaultDisplayWindows= */ 1,
-                /* numNonDefaultDisplayWindows= */ 0);
-        // Set cached bounds for windowId=1 to be different from HOST_BOUNDS.
-        Rect differentBounds =
-                new Rect(
-                        HOST_BOUNDS.left + 5,
-                        HOST_BOUNDS.top + 5,
-                        HOST_BOUNDS.right + 5,
-                        HOST_BOUNDS.bottom + 5);
-        mCrashedWindows.set(
-                1, new CrashRecoveryWindowInfo(1, differentBounds, /* isVisible= */ true));
-
-        setupPreRecoveryAppTasks(HOST_WINDOW_ID);
-        mDelegate.initiateCrashRecovery(
-                mModalDialogManagerSupplier, mHostActivity, mCrashedWindows);
-
-        // Mock host activity bounds.
-        var windowManager = mock(android.view.WindowManager.class);
-        var windowMetrics = mock(android.view.WindowMetrics.class);
-        when(mHostActivity.getWindowManager()).thenReturn(windowManager);
-        when(windowManager.getCurrentWindowMetrics()).thenReturn(windowMetrics);
-        when(windowMetrics.getBounds()).thenReturn(HOST_BOUNDS);
-
-        // Act.
-        mDelegate.restoreWindows(mHostActivity);
-
-        // Verify: Window is restored WITH launch bounds because its cached bounds are different
-        // from the host window's bounds (strict equality).
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
-        verify(mHostActivity).startActivity(intentCaptor.capture(), bundleCaptor.capture());
-        Bundle bundle = bundleCaptor.getValue();
-        assertNotNull(bundle);
-        assertEquals(differentBounds, ActivityOptions.fromBundle(bundle).getLaunchBounds());
     }
 
     @Test
@@ -369,7 +266,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
 
         // Verify: Visible window is restored with bundle.
-        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor2.capture(), any());
+        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor2.capture());
         Intent intent2 = intentCaptor2.getValue();
         assertNotNull(intent2);
         assertEquals(2, intent2.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
@@ -402,10 +299,8 @@ public class TabbedCrashRecoveryDelegateUnitTest {
 
         // Verify: Only the visible window (windowId=2) should be started.
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mHostActivity).startActivity(intentCaptor.capture(), any());
+        verify(mHostActivity).startActivity(intentCaptor.capture());
         mDelegate.registerRecovery(2);
-        // Verify: No single-arg startActivity was called for the non-visible window.
-        verify(mHostActivity, never()).startActivity(any());
 
         Intent intent = intentCaptor.getValue();
         assertNotNull(intent);
@@ -545,7 +440,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         controller.onClick(model, ModalDialogProperties.ButtonType.POSITIVE);
 
         // Verify: Windows are restored.
-        verify(mHostActivity).startActivity(any(Intent.class), any(Bundle.class));
+        verify(mHostActivity).startActivity(any(Intent.class));
         assertTrue(
                 userActionTester.getActions().contains("Android.MultiWindow.CrashRecoveryOptIn"));
         verify(mModalDialogManager)

@@ -6,12 +6,8 @@ package org.chromium.chrome.browser.multiwindow;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
-import android.os.Build;
-import android.os.Bundle;
 import android.util.SparseIntArray;
 
 import androidx.annotation.VisibleForTesting;
@@ -254,14 +250,6 @@ public class TabbedCrashRecoveryDelegate {
         mRecoveryStartTime = TimeUtils.elapsedRealtimeMillis();
         RecordUserAction.record("Android.MultiWindow.CrashRecoveryInitiated");
 
-        Rect hostBounds = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            var windowManager = hostActivity.getWindowManager();
-            if (windowManager != null) {
-                hostBounds = windowManager.getCurrentWindowMetrics().getBounds();
-            }
-        }
-
         boolean isInMultiWindowMode = hostActivity.isInMultiWindowMode();
         for (CrashRecoveryWindowInfo nonVisibleWindow : mNonVisibleWindows) {
             int windowId = nonVisibleWindow.windowId;
@@ -270,11 +258,7 @@ public class TabbedCrashRecoveryDelegate {
 
         for (CrashRecoveryWindowInfo visibleWindow : mVisibleWindows) {
             int windowId = visibleWindow.windowId;
-            Rect bounds = visibleWindow.bounds;
-            if (bounds != null && bounds.equals(hostBounds)) {
-                bounds = null;
-            }
-            restoreVisibleWindow(hostActivity, windowId, bounds, isInMultiWindowMode);
+            restoreVisibleWindow(hostActivity, windowId, isInMultiWindowMode);
         }
 
         mCrashRecoveryInProgress = false;
@@ -303,17 +287,7 @@ public class TabbedCrashRecoveryDelegate {
     }
 
     private void restoreVisibleWindow(
-            ChromeTabbedActivity hostActivity,
-            int windowId,
-            @Nullable Rect bounds,
-            boolean openAdjacently) {
-        ActivityOptions options = null;
-        if (bounds != null && !bounds.isEmpty()) {
-            options = ActivityOptions.makeBasic();
-            options.setLaunchBounds(bounds);
-        }
-        Bundle bundle = (options != null) ? options.toBundle() : null;
-
+            ChromeTabbedActivity hostActivity, int windowId, boolean openAdjacently) {
         // Clear crash recovery state for instance.
         ChromeMultiInstancePersistentStore.writeIsRecoverable(windowId, /* isRecoverable= */ false);
 
@@ -330,7 +304,7 @@ public class TabbedCrashRecoveryDelegate {
                         /* preferNew= */ false,
                         openAdjacently,
                         NewWindowAppSource.CRASH_RECOVERY);
-        hostActivity.startActivity(intent, bundle);
+        hostActivity.startActivity(intent);
     }
 
     @VisibleForTesting

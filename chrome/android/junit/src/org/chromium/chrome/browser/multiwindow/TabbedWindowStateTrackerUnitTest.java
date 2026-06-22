@@ -70,7 +70,6 @@ public class TabbedWindowStateTrackerUnitTest {
         assertEquals(1, infoList.size());
         assertEquals(WINDOW_ID_0, infoList.get(0).windowId);
         assertTrue(infoList.get(0).isVisible);
-        assertEquals(WINDOW_BOUNDS_1, infoList.get(0).bounds);
     }
 
     @Test
@@ -93,7 +92,6 @@ public class TabbedWindowStateTrackerUnitTest {
         assertEquals(1, infoList.size());
         assertEquals(WINDOW_ID_0, infoList.get(0).windowId);
         assertTrue(infoList.get(0).isVisible);
-        assertEquals(new Rect(), infoList.get(0).bounds);
     }
 
     @Test
@@ -126,38 +124,5 @@ public class TabbedWindowStateTrackerUnitTest {
         assertEquals(1, infoList.size());
         assertEquals(WINDOW_ID_0, infoList.get(0).windowId);
         assertFalse(infoList.get(0).isVisible);
-    }
-
-    @Test
-    public void testOnTaskBoundsChanged_savesWindowBoundsOnDefaultDisplay() {
-        // Setup.
-        ChromeMultiInstancePersistentStore.writeIsRecoverable(WINDOW_ID_0, true);
-
-        // Act.
-        mTracker.onTaskBoundsChanged(Display.DEFAULT_DISPLAY, WINDOW_BOUNDS_2, WINDOW_BOUNDS_2);
-
-        // Verify.
-        List<CrashRecoveryWindowInfo> infoList =
-                ChromeMultiInstancePersistentStore.readCrashRecoveryData();
-        assertEquals(1, infoList.size());
-        assertEquals(WINDOW_ID_0, infoList.get(0).windowId);
-        assertEquals(WINDOW_BOUNDS_2, infoList.get(0).bounds);
-    }
-
-    @Test
-    public void testOnTaskBoundsChanged_savesWindowBoundsOnNonDefaultDisplay() {
-        // Setup.
-        ChromeMultiInstancePersistentStore.writeIsRecoverable(WINDOW_ID_0, true);
-
-        // Act.
-        mTracker.onTaskBoundsChanged(Display.DEFAULT_DISPLAY, WINDOW_BOUNDS_1, WINDOW_BOUNDS_1);
-        mTracker.onTaskBoundsChanged(/* displayId= */ 5, WINDOW_BOUNDS_2, WINDOW_BOUNDS_2);
-
-        // Verify.
-        List<CrashRecoveryWindowInfo> infoList =
-                ChromeMultiInstancePersistentStore.readCrashRecoveryData();
-        assertEquals(1, infoList.size());
-        assertEquals(WINDOW_ID_0, infoList.get(0).windowId);
-        assertEquals(new Rect(), infoList.get(0).bounds);
     }
 }
