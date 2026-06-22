@@ -55,9 +55,9 @@
 #glowAnimationWrapper {
   --anim-duration: 2s;
   --glif-angle-start: 99deg;
-  --glif-angle-range: 245deg;
+  --glif-angle-range: 318.5deg;
   --mask-angle-start: -150deg;
-  --mask-angle-range: 355deg;
+  --mask-angle-range: 360deg;
 
   --acceleration: cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -227,7 +227,7 @@
   transform-origin: center;
   translate: 0 -50%;
   top: 50%;
-  scale: 1.1 0.6;
+  scale: 1.43 0.78;
   border-radius: 50%;
   aspect-ratio: 1/1;
 }
@@ -320,16 +320,16 @@
     rgba(49, 134, 255, 0.73) 73%,
     rgba(49, 134, 255, 0) 95%
   );
-  --gradient-angle-end: 225deg;
-  --gradient-angle-start: 170deg;
+  --gradient-angle-end: 233.5deg;
+  --gradient-angle-start: 160deg;
   --gradient-burst-duration: 1000ms;
   --gradient-opacity: 0.6;
   --gradient-width: 1px;
   --hover-fade-duration: 400ms;
   --hover-inner-glow-duration: 1000ms;
   --intro-duration: 2000ms;
-  --mask-angle-end: 200deg;
-  --mask-angle-start: -90deg;
+  --mask-angle-end: 267deg;
+  --mask-angle-start: -110deg;
   --standard-accelerate-curve: cubic-bezier(0.3, 0, 1, 1);
   --standard-curve: cubic-bezier(0.2, 0, 0, 1);
   --standard-decelerate-curve: cubic-bezier(0, 0, 0, 1);
@@ -378,8 +378,8 @@
 }
 
 :host([energy-effect-animation-enabled]) .gradient-blur-wrapper:not(.sharp-tip) {
-  filter: blur(3px);
-  inset: -3px;
+  filter: blur(4px);
+  inset: -4px;
 }
 
 :host([energy-effect-animation-enabled]) .sharp-tip.gradient-blur-wrapper {
@@ -393,39 +393,41 @@
   -webkit-mask-image: conic-gradient(
     from var(--mask-angle, 0deg),
     transparent 0%,
-    transparent 50%,
-    black 68%,
-    black 75%,
-    transparent 89%,
+    transparent 44%,
+    black 62%,
+    black 81%,
+    transparent 95%,
     transparent 100%
   );
   mask-image: conic-gradient(
     from var(--mask-angle, 0deg),
     transparent 0%,
-    transparent 50%,
-    black 68%,
-    black 75%,
-    transparent 89%,
+    transparent 44%,
+    black 62%,
+    black 81%,
+    transparent 95%,
     transparent 100%
   );
-  scale: 4 1.5;
+  scale: 5.2 1.95;
 }
 
 :host([energy-effect-animation-enabled]) .sharp-tip .gradient-mask {
   -webkit-mask-image: conic-gradient(
     from var(--mask-angle, 0deg),
     transparent 0%,
-    transparent 62%,
-    black 82%,
-    transparent 89%,
+    transparent 58%,
+    black 78%,
+    black 85%,
+    transparent 93%,
     transparent 100%
   );
   mask-image: conic-gradient(
     from var(--mask-angle, 0deg),
     transparent 0%,
-    transparent 62%,
-    black 82%,
-    transparent 89%,
+    transparent 58%,
+    black 78%,
+    black 85%,
+    transparent 93%,
     transparent 100%
   );
 }
