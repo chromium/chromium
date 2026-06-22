@@ -64,9 +64,10 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
                         /* mergeTabsOnStartup= */ false,
                         /* tabMergingEnabled= */ false,
                         ObservableSuppliers.createNonNull(false));
-        HeadlessTabCreator tabCreator = new HeadlessTabCreator(profile);
-        HeadlessTabCreator incogTabCreator = new HeadlessTabCreator(profile);
-        TabCreatorManager tabCreatorManager = (incog) -> incog ? tabCreator : incogTabCreator;
+        HeadlessTabCreator tabCreator = new HeadlessTabCreator(profile, /* isIncognito= */ false);
+        HeadlessTabCreator incogTabCreator =
+                new HeadlessTabCreator(profile, /* isIncognito= */ true);
+        TabCreatorManager tabCreatorManager = (incog) -> incog ? incogTabCreator : tabCreator;
         RecordingTabCreatorManager recordingTabCreatorManager =
                 new RecordingTabCreatorManager(tabCreatorManager);
 
@@ -128,8 +129,12 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
         mTabPersistentStore.onNativeLibraryReady();
         if (mShadowTabPersistentStore != null) mShadowTabPersistentStore.onNativeLibraryReady();
 
+        // Ignore incognito files since we don't support incognito.
+        // 1. We don't have a valid CipherFactory to decrypt from.
+        // 2. The purpose of headless is primarily for history/sync features which don't work on
+        // incognito.
         mTabPersistentStore.loadState(
-                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+                /* ignoreIncognitoFiles= */ true, /* ignoreRegularFiles= */ false);
         mTabPersistentStore.restoreTabs(/* setActiveTab= */ true);
 
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
