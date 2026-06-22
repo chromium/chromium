@@ -164,15 +164,13 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate(
 void GlicSidePanelCoordinatorAndroid::OnTabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason detach_reason) {
-  // If the tab was deleted, set the state to backgrounded in case the
-  // deletion is undone.
-  // This can happen if the user closes the tab in the tab switcher, causing the
-  // bottom sheet to appear for the next active tab.
-  if (detach_reason == tabs::TabInterface::DetachReason::kDelete) {
-    if (state_ != State::kClosed) {
-      SetState(State::kBackgrounded);
-      tab_bottom_sheet_bridge_->Close(/* animate= */ false);
-    }
+  // Set the state to backgrounded and close the bottom sheet bridge when
+  // detaching, so that Glic is correctly deactivated. This handles cases where
+  // the tab is being deleted, or moved to another window (such as during a
+  // foldable fold/unfold).
+  if (state_ != State::kClosed) {
+    SetState(State::kBackgrounded);
+    tab_bottom_sheet_bridge_->Close(/* animate= */ false);
   }
 }
 
