@@ -42,10 +42,8 @@ namespace {
 
 GURL GetEmbeddingOrigin(content::RenderFrameHost* const render_frame_host,
                         const GURL& requesting_origin) {
-  content::WebContents* const web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
   return PermissionsClient::Get()
-      ->GetEmbeddingOriginOverride(requesting_origin, web_contents)
+      ->GetEmbeddingOriginOverride(requesting_origin, render_frame_host)
       .value_or(PermissionUtil::GetLastCommittedOriginAsURL(
           render_frame_host->GetMainFrame()));
 }

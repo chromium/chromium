@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPermissionDelegationBrowserTest,
   GURL requesting_origin("https://example.com");
   std::optional<GURL> override_origin =
       ChromePermissionsClient::GetInstance()->GetEmbeddingOriginOverride(
-          requesting_origin, inner_web_contents);
+          requesting_origin, inner_web_contents->GetPrimaryMainFrame());
 
   ASSERT_TRUE(override_origin.has_value());
   EXPECT_EQ(contextual_tasks_url, *override_origin);
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerPermissionEmbeddingBrowserTest,
       extension_frame->GetLastCommittedOrigin().GetURL();
   std::optional<GURL> embedding_origin_override =
       ChromePermissionsClient::GetInstance()->GetEmbeddingOriginOverride(
-          extension_origin, GetActiveWebContents());
+          extension_origin, extension_frame);
 
   ASSERT_TRUE(embedding_origin_override.has_value());
   EXPECT_EQ(extension_origin, *embedding_origin_override);
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerPermissionEmbeddingBrowserTest,
   const GURL child_origin = child_frame->GetLastCommittedOrigin().GetURL();
   std::optional<GURL> embedding_origin_override =
       ChromePermissionsClient::GetInstance()->GetEmbeddingOriginOverride(
-          child_origin, GetActiveWebContents());
+          child_origin, child_frame);
 
   ASSERT_TRUE(embedding_origin_override.has_value());
   EXPECT_EQ(extension_origin, *embedding_origin_override);
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerPermissionEmbeddingBrowserTest,
   const GURL outer_origin = outer_url.DeprecatedGetOriginAsURL();
   std::optional<GURL> embedding_origin_override =
       ChromePermissionsClient::GetInstance()->GetEmbeddingOriginOverride(
-          outer_origin, web_contents);
+          outer_origin, web_contents->GetPrimaryMainFrame());
 
   EXPECT_FALSE(embedding_origin_override.has_value())
       << "got override " << embedding_origin_override.value_or(GURL());

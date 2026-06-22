@@ -758,7 +758,9 @@ std::optional<GURL> ChromePermissionsClient::GetCanonicalOriginOverride(
 
 std::optional<GURL> ChromePermissionsClient::GetEmbeddingOriginOverride(
     const GURL& requesting_origin,
-    content::WebContents* web_contents) {
+    content::RenderFrameHost* render_frame_host) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
   GURL embedding_origin =
       web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   // This check is needed in cases where the requesting origin is embedded in a
@@ -796,7 +798,7 @@ std::optional<GURL> ChromePermissionsClient::GetEmbeddingOriginOverride(
   // are attributed to the extension that produced the streamed content,
   // not the navigation host that triggered it.
   //
-  // The override applies only when `requesting_origin` lies inside the
+  // The override applies only when the requesting frame lies inside the
   // extension OOPIF subtree. Without this scoping, a top-level page
   // (e.g. evil.com) that embeds an invisible PDF in an iframe would
   // have its own permission prompts (e.g. camera) attributed to the
@@ -805,36 +807,15 @@ std::optional<GURL> ChromePermissionsClient::GetEmbeddingOriginOverride(
   // intercepted -- not only when the extension itself is the requester.
   // Inside the extension subtree the override applies to every
   // descendant -- including cross-origin children -- because those
-  // frames only exist because the extension embedded them. When two
-  // frames share `requesting_origin` (e.g. the host site is also
-  // iframed by the extension), BFS picks the first match; this is
-  // best-effort because the API receives only the origin, not the
-  // specific RenderFrameHost.
+  // frames only exist because the extension embedded them.
   if (auto* manager =
           extensions::mime_handler::MimeHandlerStreamManager::FromWebContents(
               web_contents)) {
-    GURL extension_origin;
-    web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
-        [&](content::RenderFrameHost* rfh) {
-          if (rfh->GetLastCommittedOrigin().GetURL() != requesting_origin) {
-            return content::RenderFrameHost::FrameIterationAction::kContinue;
-          }
-          // The candidate frame's origin matches the requester. Walk
-          // its ancestors (including itself) and return the nearest
-          // MIME handler extension OOPIF if one is present. If none
-          // is, the requester lives outside any extension subtree --
-          // do not override.
-          for (content::RenderFrameHost* ancestor = rfh; ancestor;
-               ancestor = ancestor->GetParent()) {
-            if (manager->IsExtensionHost(ancestor)) {
-              extension_origin = ancestor->GetLastCommittedOrigin().GetURL();
-              return content::RenderFrameHost::FrameIterationAction::kStop;
-            }
-          }
-          return content::RenderFrameHost::FrameIterationAction::kContinue;
-        });
-    if (!extension_origin.is_empty()) {
-      return extension_origin;
+    for (content::RenderFrameHost* ancestor = render_frame_host; ancestor;
+         ancestor = ancestor->GetParent()) {
+      if (manager->IsExtensionHost(ancestor)) {
+        return ancestor->GetLastCommittedOrigin().GetURL();
+      }
     }
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)

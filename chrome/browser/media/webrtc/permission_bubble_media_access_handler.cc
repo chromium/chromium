@@ -93,7 +93,8 @@ void UpdatePageSpecificContentSettings(
 
   GURL embedding_origin =
       permissions::PermissionsClient::Get()
-          ->GetEmbeddingOriginOverride(request.security_origin, web_contents)
+          ->GetEmbeddingOriginOverride(request.security_origin,
+                                       render_frame_host)
           .value_or(permissions::PermissionUtil::GetLastCommittedOriginAsURL(
               render_frame_host->GetMainFrame()));
 

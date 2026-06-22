@@ -153,7 +153,7 @@ std::optional<GURL> PermissionsClient::GetCanonicalOriginOverride(
 
 std::optional<GURL> PermissionsClient::GetEmbeddingOriginOverride(
     const GURL& requesting_origin,
-    content::WebContents* web_contents) {
+    content::RenderFrameHost* render_frame_host) {
   return std::nullopt;
 }
 

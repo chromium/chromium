@@ -33,6 +33,7 @@ class HostContentSettingsMap;
 
 namespace content {
 class BrowserContext;
+class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
@@ -230,13 +231,17 @@ class PermissionsClient {
       const GURL& requesting_origin,
       const GURL& embedding_origin);
 
-  // Returns the WebContents' GetLastCommittedURL() to use as the embedding
-  // origin when special handling is needed, or std::nullopt to use the default
-  // main frame origin. Less strict ID checks than `GetCanonicalOriginOverride`
-  // since `WebContents` does not follow the new tab -> new tab page hierarchy.
+  // Returns the GURL to use as the embedding origin when special handling is
+  // needed, or std::nullopt to use the default main frame origin. Less strict
+  // ID checks than `GetCanonicalOriginOverride` since the embedding origin
+  // does not follow the new tab -> new tab page hierarchy.
+  // `render_frame_host` is the frame that issued the permission request;
+  // embedders that key the embedding origin on frame-tree position (e.g. a
+  // MIME handler OOPIF subtree) must consult it directly rather than inferring
+  // the frame from `requesting_origin`, which two distinct frames can share.
   virtual std::optional<GURL> GetEmbeddingOriginOverride(
       const GURL& requesting_origin,
-      content::WebContents* web_contents);
+      content::RenderFrameHost* render_frame_host);
 
   // Only verifies that WebUI is internal (chrome://) and trusted enough to skip
   // tab interface usage and use embedded permission prompt. Its identity is

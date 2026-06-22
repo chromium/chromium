@@ -41,6 +41,7 @@
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
+#include "chrome/browser/permissions/chrome_permissions_client.h"
 #include "chrome/browser/plugins/plugin_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
@@ -65,6 +66,8 @@
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/pdf/common/constants.h"
 #include "components/pdf/common/pdf_util.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -108,11 +111,13 @@
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/stream_container.h"
+#include "extensions/common/constants.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/pdf_features.h"
+#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -4492,6 +4497,113 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
           "window.getComputedStyle(document.body).getPropertyValue('margin')")
           .ExtractString();
   EXPECT_EQ("0px", embedder_margin);
+}
+
+// Regression test for crbug.com/519078527: when an outer page embeds a
+// same-origin PDF, a permission request from the outer page must not be
+// attributed to the PDF Viewer extension, while a request from inside the
+// extension subtree must be.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
+                       OuterPageSameOriginPdfDoesNotInheritExtensionOrigin) {
+  // Outer a.com page embeds a same-origin a.com PDF.
+  const GURL outer_url =
+      embedded_test_server()->GetURL("a.com", "/pdf/test-iframe.html");
+  ASSERT_TRUE(LoadPdfInFirstChild(outer_url));
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  content::RenderFrameHost* extension_host =
+      pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
+  ASSERT_TRUE(extension_host);
+  content::RenderFrameHost* content_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  ASSERT_TRUE(content_frame);
+
+  // The PDF content frame commits to the original URL, so it shares the outer
+  // page's origin while living inside the extension OOPIF subtree.
+  content::RenderFrameHost* outer_frame = web_contents->GetPrimaryMainFrame();
+  EXPECT_EQ(outer_frame->GetLastCommittedOrigin(),
+            content_frame->GetLastCommittedOrigin());
+  EXPECT_EQ(extensions::kExtensionScheme,
+            extension_host->GetLastCommittedOrigin().scheme());
+
+  // The outer top-level frame is not a descendant of the extension OOPIF, so
+  // it keeps its own embedding origin (no override).
+  std::optional<GURL> outer_override =
+      ChromePermissionsClient::GetInstance()->GetEmbeddingOriginOverride(
+          outer_frame->GetLastCommittedOrigin().GetURL(), outer_frame);
+  EXPECT_FALSE(outer_override.has_value());
+
+  // A requester inside the subtree (the content frame) is attributed to the
+  // extension, even though it shares the outer page's origin.
+  std::optional<GURL> inner_override =
+      ChromePermissionsClient::GetInstance()->GetEmbeddingOriginOverride(
+          content_frame->GetLastCommittedOrigin().GetURL(), content_frame);
+  ASSERT_TRUE(inner_override.has_value());
+  EXPECT_EQ(extension_host->GetLastCommittedOrigin().GetURL(),
+            inner_override.value());
+}
+
+// End-to-end reproduction for crbug.com/519078527: an outer page that embeds
+// a same-origin PDF can have a delegated permission decision attributed to
+// the built-in PDF Viewer extension. A second, unrelated web origin that
+// reproduces the same frame shape then inherits the grant without a prompt.
+//
+// Geolocation is a delegated permission that requires a secure context;
+// 127.0.0.1 and localhost are distinct origins that are both potentially
+// trustworthy, mirroring the two-site reproduction over plain http.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
+                       SameOriginPdfDoesNotLeakGeolocationAcrossOrigins) {
+  static constexpr char kRequestGeolocation[] = R"(
+    new Promise(resolve => {
+      navigator.geolocation.getCurrentPosition(
+          () => resolve('granted'),
+          e => resolve('error:' + e.code));
+    });
+  )";
+  static constexpr char kQueryGeolocation[] = R"(
+    navigator.permissions.query({name: 'geolocation'}).then(r => r.state);
+  )";
+
+  device::ScopedGeolocationOverrider geolocation_overrider(
+      /*latitude=*/0, /*longitude=*/0);
+
+  // Site A embeds a same-origin PDF and asks for geolocation once. The user
+  // allows it.
+  ASSERT_TRUE(LoadPdfInFirstChild(
+      embedded_test_server()->GetURL("127.0.0.1", "/pdf/test-iframe.html")));
+  content::WebContents* web_contents = GetActiveWebContents();
+  content::RenderFrameHost* site_a_main = web_contents->GetPrimaryMainFrame();
+
+  permissions::MockPermissionPromptFactory prompt_factory(
+      permissions::PermissionRequestManager::FromWebContents(web_contents));
+  prompt_factory.set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  // Exploit precondition: the PDF's content frame commits to the original URL,
+  // so it shares Site A's origin while living inside the extension OOPIF
+  // subtree. Without this the test would pass vacuously.
+  ASSERT_TRUE(pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents));
+  content::RenderFrameHost* content_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  ASSERT_TRUE(content_frame);
+  ASSERT_EQ(site_a_main->GetLastCommittedOrigin(),
+            content_frame->GetLastCommittedOrigin());
+
+  EXPECT_EQ("granted", content::EvalJs(site_a_main, kRequestGeolocation));
+  EXPECT_EQ(1, prompt_factory.TotalRequestCount());
+
+  // Site B is a different web origin with the same same-origin-PDF frame
+  // shape.
+  ASSERT_TRUE(LoadPdfInFirstChild(
+      embedded_test_server()->GetURL("localhost", "/pdf/test-iframe.html")));
+  content::RenderFrameHost* site_b_main =
+      GetActiveWebContents()->GetPrimaryMainFrame();
+
+  // Site B must not inherit Site A's decision: a different web origin gets
+  // its own state and its own prompt.
+  EXPECT_EQ("prompt", content::EvalJs(site_b_main, kQueryGeolocation));
+  EXPECT_EQ("granted", content::EvalJs(site_b_main, kRequestGeolocation));
+  EXPECT_EQ(2, prompt_factory.TotalRequestCount());
 }
 
 class PDFExtensionOopifBlockPdfFrameNavigationTest
