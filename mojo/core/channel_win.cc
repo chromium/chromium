@@ -306,6 +306,12 @@ class ChannelWin : public Channel,
 
     size_t buffer_capacity = next_read_size_hint;
     char* buffer = GetReadBuffer(&buffer_capacity);
+    // A null buffer means the size computation for the buffer overflowed;
+    // break the connection.
+    if (!buffer) {
+      OnError(Error::kDisconnected);
+      return;
+    }
     DCHECK_GT(buffer_capacity, 0u);
 
     BOOL ok =
