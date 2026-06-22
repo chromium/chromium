@@ -877,8 +877,16 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
 };
 
 // TODO(crbug.com/500717050): Parameterize this test suite on the feature flag.
+// TODO(crbug.com/524797987): Re-enable this test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AddAndRemovePdfChipFromComposebox \
+  DISABLED_AddAndRemovePdfChipFromComposebox
+#else
+#define MAYBE_AddAndRemovePdfChipFromComposebox \
+  AddAndRemovePdfChipFromComposebox
+#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
-                       AddAndRemovePdfChipFromComposebox) {
+                       MAYBE_AddAndRemovePdfChipFromComposebox) {
   const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
 
   base::FilePath test_data_dir;
@@ -925,8 +933,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                   WaitForComposeboxFilesCount(0));
 }
 
+// TODO(crbug.com/524797987): Re-enable this test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AddAndRemoveImageChipFromComposebox \
+  DISABLED_AddAndRemoveImageChipFromComposebox
+#else
+#define MAYBE_AddAndRemoveImageChipFromComposebox \
+  AddAndRemoveImageChipFromComposebox
+#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
-                       AddAndRemoveImageChipFromComposebox) {
+                       MAYBE_AddAndRemoveImageChipFromComposebox) {
   const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
 
   base::FilePath test_data_dir;
@@ -963,8 +979,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                   WaitForComposeboxFilesCount(0));
 }
 
+// TODO(crbug.com/524797987): Re-enable this test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AddAndRemoveTabFromComposebox \
+  DISABLED_AddAndRemoveTabFromComposebox
+#else
+#define MAYBE_AddAndRemoveTabFromComposebox AddAndRemoveTabFromComposebox
+#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
-                       AddAndRemoveTabFromComposebox) {
+                       MAYBE_AddAndRemoveTabFromComposebox) {
   const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
   const GURL kGenericPageUrl = embedded_test_server()->GetURL("/title1.html");
 
