@@ -550,17 +550,22 @@ void WaylandEventSource::OnPointerFrameEvent() {
 
   last_pointer_frame_time_ = now;
 
-  auto* target = window_manager_->GetCurrentPointerFocusedWindow();
-  if (!target) {
+  auto* target_window = window_manager_->GetCurrentPointerFocusedWindow();
+  if (!target_window) {
     return;
   }
+  // Dispatching an event may synchronously destroy the focused window (e.g. a
+  // popup closing on click), so hold a WeakPtr and re-check on each iteration.
+  base::WeakPtr<WaylandWindow> target = target_window->AsWeakPtr();
 
   while (!pointer_frames_.empty()) {
     // It is safe to pop the first queued event for processing.
     auto pointer_frame = std::move(pointer_frames_.front());
     pointer_frames_.pop_front();
 
-    SetTargetAndDispatchEvent(pointer_frame->event.get(), target);
+    if (target) {
+      SetTargetAndDispatchEvent(pointer_frame->event.get(), target.get());
+    }
     if (!pointer_frame->completion_cb.is_null()) {
       std::move(pointer_frame->completion_cb).Run();
     }
@@ -739,6 +744,7 @@ void WaylandEventSource::OnTouchReleaseInternal(PointerId id) {
 
 void WaylandEventSource::SetTargetAndDispatchEvent(Event* event,
                                                    EventTarget* target) {
+  CHECK(target);
   Event::DispatcherApi(event).set_target(target);
   if (event->IsLocatedEvent()) {
     auto* located_event = event->AsLocatedEvent();

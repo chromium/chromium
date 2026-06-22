@@ -721,6 +721,41 @@ TEST_F(WaylandPointerTest, FlingVelocityWithoutLeadingAxis) {
   EXPECT_EQ(0.0f, scroll_event->y_offset_ordinal());
 }
 
+TEST_F(WaylandPointerTest, FrameTargetUseAfterFreeOnSyncWindowClose) {
+  SendEnter(50, 50);
+
+  // Frame 1: axis_stop -> FlingStart is queued and drained (1 event). This
+  // sets is_fling_active_=true so the next finger-scroll frame will queue 2
+  // events (FlingCancel + Scroll).
+  SendAxisStopEvents();
+
+  // Simulate a popup widget closing from inside its own event handler.
+  bool destroyed = false;
+  EXPECT_CALL(delegate_, DispatchEvent(_))
+      .WillRepeatedly([this, &destroyed](Event* event) {
+        if (!destroyed) {
+          destroyed = true;
+          window_.reset();
+        }
+      });
+
+  // Frame 2: finger axis -> ProcessPointerScrollData() pushes 2 events
+  // [FlingCancel, Scroll] into pointer_frames_, then OnPointerFrameEvent()
+  // drains both against the cached `target`. The first dispatch frees
+  // `target`; the second dispatch should be dismissed.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const pointer = server->seat()->pointer()->resource();
+    SendAxisEvents(pointer, server->GetNextTime(),
+                   WL_POINTER_AXIS_SOURCE_FINGER,
+                   WL_POINTER_AXIS_VERTICAL_SCROLL, 10);
+  });
+
+  EXPECT_TRUE(destroyed);
+
+  // The test fixture's window has been torn down mid-test.
+  DisableSyncOnTearDown();
+}
+
 TEST_F(WaylandPointerTest, FlingVelocityWithSingleLeadingAxis) {
   SendEnter(50, 75);
 
