@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.menu_button;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.actions.appmenu.MenuButtonState;
 
 /**
  * The UI state required to properly decorate the main menu. This may include the button decorations
@@ -19,8 +20,8 @@ public class MenuUiState {
     public @Nullable MenuItemState itemState;
 
     /**
-     * The optional UI state for decorating the menu button itself.  If {@code null} no
-     * decoration should be applied to the menu button.
+     * The optional UI state for decorating the menu button itself. If {@code null} no decoration
+     * should be applied to the menu button.
      */
     public @Nullable MenuButtonState buttonState;
 }

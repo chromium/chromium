@@ -12,6 +12,7 @@ android_resources("java_resources") {
     "java/res/drawable-night/bottom_bar_promo_illustration.xml",
     "java/res/drawable/bottom_bar_new_tab_background.xml",
     "java/res/drawable/bottom_bar_promo_illustration.xml",
+    "java/res/layout/bottom_bar_app_menu_template.xml",
     "java/res/layout/bottom_bar_generic_template.xml",
     "java/res/layout/bottom_bar_layout.xml",
     "java/res/layout/bottom_bar_list_menu_template.xml",
@@ -52,7 +53,9 @@ android_library("metrics_java") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/bottombar/AppMenuActionButtonBinder.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBar.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarAppMenu.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonContainer.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonManager.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarCoordinator.java",
@@ -106,6 +109,7 @@ android_library("java") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/bottombar/AppMenuActionButtonBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonContainerUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonManagerUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarConfigUtilsUnitTest.java",

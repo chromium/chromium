@@ -35,6 +35,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.ui.actions.appmenu.MenuButtonState;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
@@ -172,6 +173,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
 
     /**
      * Set the supplier of menu button state.
+     *
      * @param supplier Supplier of menu button state.
      */
     void setStateSupplier(Supplier<MenuButtonState> supplier) {

@@ -18,6 +18,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/actions/HomeActionProperties.java",
     "java/src/org/chromium/chrome/browser/ui/actions/ResourceTextResolver.java",
     "java/src/org/chromium/chrome/browser/ui/actions/TintedActionView.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/appmenu/AppMenuActionProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/appmenu/MenuButtonState.java",
     "java/src/org/chromium/chrome/browser/ui/actions/button/ActionButtonData.java",
     "java/src/org/chromium/chrome/browser/ui/actions/button/ButtonState.java",
     "java/src/org/chromium/chrome/browser/ui/actions/button/DelegateButtonData.java",

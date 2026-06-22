@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar.menu_button;
+package org.chromium.chrome.browser.ui.actions.appmenu;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
@@ -19,14 +19,14 @@ public class MenuButtonState {
     public @StringRes int menuContentDescription;
 
     /**
-     * An icon resource for the dark badge for the menu button.  Always set (not {@code 0}) if
-     * this object is not {@code null}.
+     * An icon resource for the dark badge for the menu button. Always set (not {@code 0}) if this
+     * object is not {@code null}.
      */
     public @DrawableRes int darkBadgeIcon;
 
     /**
-     * An icon resource for the light badge for the menu button.  Always set (not {@code 0}) if
-     * this object is not {@code null}.
+     * An icon resource for the light badge for the menu button. Always set (not {@code 0}) if this
+     * object is not {@code null}.
      */
     public @DrawableRes int lightBadgeIcon;
 

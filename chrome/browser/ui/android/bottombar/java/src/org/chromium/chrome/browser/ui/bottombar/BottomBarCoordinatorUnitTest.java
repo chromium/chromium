@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -195,6 +196,20 @@ public class BottomBarCoordinatorUnitTest {
         View menuButton = mCoordinator.getView().findViewById(R.id.app_menu_button);
         assertNotNull(menuButton);
         assertEquals(true, menuButton.getTag(R.id.is_bottom_bar_menu_anchor));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/false",
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_update_badge/true"
+    })
+    public void testInitialization_withAppMenuAndBadge_accessibilityClassName() {
+        verify(mActionRegistry, times(1)).get(ActionId.APP_MENU);
+
+        View menuButton = mCoordinator.getView().findViewById(R.id.app_menu_button);
+        assertNotNull(menuButton);
+        assertTrue(menuButton instanceof BottomBarAppMenu);
+        assertEquals(Button.class.getName(), menuButton.getAccessibilityClassName().toString());
     }
 
     @Test

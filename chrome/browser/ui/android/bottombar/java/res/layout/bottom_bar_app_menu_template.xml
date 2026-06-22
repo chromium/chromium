@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.ui.bottombar.BottomBarAppMenu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/BottomToolbarButton"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--
+    The content description is bound to the parent BottomBarAppMenu,
+    so the inner image button is marked as not important for accessibility.
+    -->
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/menu_button"
+        android:background="@null"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        android:duplicateParentState="true"
+        android:scaleType="center"
+        android:importantForAccessibility="no" />
+
+    <ImageView
+        android:id="@+id/menu_badge"
+        android:background="@null"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        android:duplicateParentState="true"
+        android:scaleType="center"
+        android:importantForAccessibility="no"
+        android:visibility="invisible" />
+
+</org.chromium.chrome.browser.ui.bottombar.BottomBarAppMenu>

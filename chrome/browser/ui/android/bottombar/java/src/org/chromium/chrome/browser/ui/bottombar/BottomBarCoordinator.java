@@ -152,16 +152,16 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
         if (BottomBarConfigUtils.shouldIncludeAppMenuButton()) {
             BottomBarButtonContainer menuContainer = view.getContainerForAction(ActionId.APP_MENU);
             assert menuContainer != null : "App menu container not found";
+            menuContainer.setStubLayoutResource(R.layout.bottom_bar_app_menu_template);
             menuContainer.inflateStub();
             View targetView = menuContainer.getTargetView();
-            View innerButton = targetView.findViewById(R.id.menu_button);
-            BottomBarUtils.setAppMenuAnchor(innerButton != null ? innerButton : targetView);
+            BottomBarUtils.setAppMenuAnchor(targetView);
             menuContainer.setVisibility(View.VISIBLE);
             configs.add(
                     new ActionConfig(
                             ActionId.APP_MENU,
                             menuContainer,
-                            ActionButtonBinder::bind,
+                            AppMenuActionButtonBinder::bind,
                             BottomBarProperties.IS_APP_MENU_BUTTON_VISIBLE));
         }
 
