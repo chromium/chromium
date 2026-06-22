@@ -283,6 +283,90 @@ class FakeX11ExtensionDelegateForSize : public X11ExtensionDelegate {
   gfx::Rect guessed_size_px_;
 };
 
+// Verifies that SetBoundsInPixels() is safe against the X11Window being
+// synchronously destroyed during the GetBoundsInPixels() call. This can happen
+// if GeometryCache::GetBoundsPx() processes synchronous X server replies and
+// dispatches an OnBoundsChanged event that closes the widget (e.g., as in
+// crbug.com/1068755).
+TEST_F(X11WindowOzoneTest, SetBoundsInPixelsUseAfterFreeViaGeometryCache) {
+  testing::NiceMock<MockPlatformWindowDelegate> delegate;
+  gfx::AcceleratedWidget widget;
+  constexpr gfx::Rect bounds(30, 80, 800, 600);
+  std::unique_ptr<PlatformWindow> window =
+      CreatePlatformWindow(&delegate, bounds, &widget, nullptr);
+
+  auto* connection = x11::Connection::Get();
+  auto xwindow = static_cast<x11::Window>(widget);
+
+  // Step 1: Force the X11Window's GeometryCache (and its parent chain) to
+  // become Ready and record last_notified_geometry_. This goes through the
+  // synchronous DispatchNow() path. The resulting X11Window::OnBoundsChanged
+  // sees a size change and only posts a delayed-resize task, so the delegate
+  // is not called synchronously here.
+  window->GetBoundsInPixels();
+
+  // Step 2: Create a real parent window at a non-zero offset so that after
+  // reparenting, only the absolute origin of |xwindow| changes (size stays
+  // 800x600). override_redirect avoids any WM interference.
+  x11::Window new_parent = connection->GenerateId<x11::Window>();
+  connection->CreateWindow({
+      .wid = new_parent,
+      .parent = connection->default_root(),
+      .x = 200,
+      .y = 200,
+      .width = 1000,
+      .height = 1000,
+      .c_class = x11::WindowClass::InputOnly,
+      .override_redirect = x11::Bool32(true),
+  });
+
+  // Step 3: Synthesize the ReparentNotify the X server would send for a WM
+  // reparent. GeometryCache::OnEvent replaces parent_ with a fresh un-Ready
+  // GeometryCache for |new_parent|, leaving the leaf cache's chain not Ready.
+  x11::ReparentNotifyEvent reparent{};
+  reparent.event = xwindow;
+  reparent.window = xwindow;
+  reparent.parent = new_parent;
+  reparent.x = 0;
+  reparent.y = 0;
+  x11::Event reparent_event(/*send_event=*/false, std::move(reparent));
+  connection->DispatchEvent(reparent_event);
+
+  // Step 4: Arm the delegate so that the *next* synchronous OnBoundsChanged
+  // (which will fire from inside SetBoundsInPixels → GetBoundsInPixels →
+  // GetBoundsPx → DispatchNow → OnBoundsChanged → NotifyBoundsChanged) frees
+  // the X11Window — modelling Widget::CloseNow → SetPlatformWindow(nullptr).
+  bool armed = true;
+  bool freed = false;
+  EXPECT_CALL(delegate, OnBoundsChanged(_))
+      .WillRepeatedly([&](const PlatformWindowDelegate::BoundsChange&) {
+        if (armed) {
+          armed = false;
+          freed = true;
+          // ~X11Window → PrepareForShutdown → Close → CloseXWindow →
+          // geometry_cache_.reset(). All GeometryCache weak_ptrs are
+          // invalidated, so every GetBoundsPx() frame on the stack will
+          // return {}, and SetBoundsInPixels() should guard against this
+          // deletion.
+          window.reset();
+        }
+      });
+
+  // Step 5: Call SetBoundsInPixels(). Inside, GetBoundsInPixels() recurses
+  // into the un-Ready parent cache, which processes replies synchronously via
+  // DispatchNow(). The resulting OnBoundsChanged event triggers the observer,
+  // which destroys the window. X11Window must safely return early instead
+  // of accessing freed members or the destroyed delegate.
+  PlatformWindow* raw = window.get();
+  raw->SetBoundsInPixels(gfx::Rect(40, 90, 800, 600));
+
+  // If we got here without ASAN tripping, the synchronous-free path was not
+  // exercised; surface that as a test failure rather than a silent pass.
+  EXPECT_TRUE(freed) << "delegate was never invoked synchronously";
+
+  connection->DestroyWindow({new_parent});
+}
+
 // Verifies X11Window sets fullscreen bounds in pixels when going to fullscreen.
 TEST_F(X11WindowOzoneTest, SetFullscreen) {
   constexpr gfx::Rect screen_bounds_in_px(640, 480, 1280, 720);
