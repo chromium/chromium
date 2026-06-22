@@ -94,7 +94,7 @@
   font-family: inherit;
   font-size: var(--cr-composebox-font-size, inherit);
   line-height: 24px;
-  padding-block: var(--text-input-top-spacing) 0;
+  padding-block: var(--text-input-top-spacing) 4px;
   padding-inline: 12px var(--text-input-inline-end-spacing);
   width: 100%;
 }
@@ -128,7 +128,6 @@
   border: none;
   color: var(--color-composebox-font-light);
   field-sizing: content;
-  padding-bottom: 4px;
   outline: none;
   position: relative;
   resize: none;

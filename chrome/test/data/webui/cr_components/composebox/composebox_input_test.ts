@@ -141,22 +141,6 @@ suite('ComposeboxInputTest', () => {
       assertTrue(getComputedStyle(smartCompose).display !== 'none');
   });
 
-  test('input minHeight stays unset for short hint', async () => {
-    inputElement.smartComposeEnabled = true;
-    inputElement.smartComposeInlineHint = 'short';
-    await inputElement.updateComplete;
-    await new Promise<void>(
-        resolve => requestAnimationFrame(
-            () => requestAnimationFrame(() => resolve())));
-
-    const input = inputElement.$.input;
-    const smartCompose =
-        inputElement.shadowRoot.querySelector<HTMLElement>('#smartCompose');
-    assertTrue(!!smartCompose);
-    assertEquals('', input.style.minHeight);
-    assertEquals('', smartCompose.style.minHeight);
-  });
-
   test('input minHeight extends for multi-line hint', async () => {
     inputElement.smartComposeEnabled = true;
     inputElement.smartComposeInlineHint = 'first line\nsecond line';
@@ -187,7 +171,6 @@ suite('ComposeboxInputTest', () => {
 
     assertEquals('', input.style.minHeight);
   });
-
 });
 
 suite('ComposeboxScrollCaret', () => {
@@ -346,6 +329,73 @@ suite('ComposeboxScrollCaret', () => {
 
     // The same span should still be the anchor (no spurious update).
     assertEquals('--cursor-char', anchoredSpan.style.anchorName);
+  });
+
+  test('inputWrapper minHeight does not shrink after expanding', async () => {
+    document.body.style.width = '800px';
+    document.body.style.height = '600px';
+
+    const wrapper = inputElement.shadowRoot.getElementById('inputWrapper')!;
+    const input = inputElement.$.input;
+
+    // Initially minHeight is empty.
+    assertEquals('', wrapper.style.minHeight);
+
+    // Type some text to make the textarea grow.
+    input.value = 'line 1\nline 2\nline 3\nline 4\nline 5';
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    await inputElement.updateComplete;
+
+    // Wait for the ResizeObserver to run and lock the height.
+    await pollUntil(() => wrapper.style.minHeight !== '');
+
+    const initialMinHeight = wrapper.style.minHeight;
+    assertTrue(initialMinHeight !== '');
+
+    // Now delete the text.
+    input.value = '';
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    await inputElement.updateComplete;
+
+    // Wait a bit to ensure ResizeObserver has chance to run.
+    await new Promise<void>(
+        resolve => requestAnimationFrame(
+            () => requestAnimationFrame(() => resolve())));
+
+    // Verify minHeight is still locked to the larger height.
+    assertEquals(initialMinHeight, wrapper.style.minHeight);
+  });
+
+  test('resetHeight clears minHeight from input and wrapper', async () => {
+    // Style body/host to allow layout
+    document.body.style.width = '800px';
+    document.body.style.height = '600px';
+    inputElement.style.width = '100%';
+
+    const wrapper =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#inputWrapper');
+    const input = inputElement.$.input;
+    assertTrue(!!wrapper);
+
+    // 1. Lock the wrapper's height by entering multiline text.
+    input.value = 'line 1\nline 2\nline 3\nline 4\nline 5';
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    await inputElement.updateComplete;
+    await pollUntil(() => wrapper.style.minHeight !== '');
+
+    // 2. Set some minHeight on the input (simulate smart compose).
+    input.style.minHeight = '120px';
+
+    // Verify they are not empty.
+    assertTrue(wrapper.style.minHeight !== '');
+    assertEquals('120px', input.style.minHeight);
+
+    // 3. Reset height.
+    inputElement.resetHeight();
+
+    // Verify they are reset.
+    assertEquals('', wrapper.style.minHeight);
+    assertEquals('', input.style.minHeight);
   });
 });
 

@@ -856,6 +856,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.automaticActiveTab_ = null;
     this.pendingAutomaticActiveTabUrl_ = '';
     this.pendingAutomaticActiveTabTitle_ = '';
+    this.$.composeboxInput.resetHeight();
     super.clearAllInputs(querySubmitted, shouldBlockAutoSuggestedTabs);
   }
 
