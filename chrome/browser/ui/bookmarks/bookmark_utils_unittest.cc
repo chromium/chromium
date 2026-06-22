@@ -344,4 +344,43 @@ TEST_F(BookmarkUtilsTest,
           bookmarks::prefs::kBookmarkBarVisibilityState),
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
 }
+
+TEST_F(BookmarkUtilsTest, ToggleBookmarkBarWhenVisible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ntp_features::kNtpSimplificationBookmarkBar);
+
+  TestingProfile profile;
+  profile.GetPrefs()->SetBoolean(bookmarks::prefs::kShowBookmarkBar, false);
+
+  chrome::ToggleBookmarkBarWhenVisible(&profile);
+  EXPECT_TRUE(
+      profile.GetPrefs()->GetBoolean(bookmarks::prefs::kShowBookmarkBar));
+
+  chrome::ToggleBookmarkBarWhenVisible(&profile);
+  EXPECT_FALSE(
+      profile.GetPrefs()->GetBoolean(bookmarks::prefs::kShowBookmarkBar));
+}
+
+TEST_F(BookmarkUtilsTest, NtpSimplification_ToggleBookmarkBarWhenVisible) {
+  base::test::ScopedFeatureList feature_list(
+      ntp_features::kNtpSimplificationBookmarkBar);
+
+  TestingProfile profile;
+  profile.GetPrefs()->SetInteger(
+      bookmarks::prefs::kBookmarkBarVisibilityState,
+      static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
+
+  chrome::ToggleBookmarkBarWhenVisible(&profile);
+  EXPECT_EQ(
+      profile.GetPrefs()->GetInteger(
+          bookmarks::prefs::kBookmarkBarVisibilityState),
+      static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
+
+  chrome::ToggleBookmarkBarWhenVisible(&profile);
+  EXPECT_EQ(
+      profile.GetPrefs()->GetInteger(
+          bookmarks::prefs::kBookmarkBarVisibilityState),
+      static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
+}
 }  // namespace

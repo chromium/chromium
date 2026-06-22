@@ -196,11 +196,25 @@ bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
 
 void ToggleBookmarkBarWhenVisible(content::BrowserContext* browser_context) {
   PrefService* prefs = user_prefs::UserPrefs::Get(browser_context);
-  const bool always_show =
-      !prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar);
-
   // The user changed when the bookmark bar is shown, update the preferences.
-  prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, always_show);
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpSimplificationBookmarkBar)) {
+    auto current_state = static_cast<bookmarks::BookmarkBarVisibilityState>(
+        prefs->GetInteger(bookmarks::prefs::kBookmarkBarVisibilityState));
+    if (current_state == bookmarks::BookmarkBarVisibilityState::kAlwaysShow) {
+      prefs->SetInteger(
+          bookmarks::prefs::kBookmarkBarVisibilityState,
+          static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
+    } else {
+      prefs->SetInteger(
+          bookmarks::prefs::kBookmarkBarVisibilityState,
+          static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
+    }
+  } else {
+    const bool always_show =
+        !prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar);
+    prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, always_show);
+  }
 }
 
 // Called upon direct user interaction with the Bookmarks Bar UI (e.g. clicking
