@@ -2438,6 +2438,33 @@ TEST_F(QuotaManagerImplTest, GetDiskAvailabilityAndTempPoolSize_Incognito) {
   EXPECT_EQ(kDefaultPoolSize, std::get<2>(quota_internals_result));
 }
 
+// Regression test for crbug.com/520534362.
+TEST_F(QuotaManagerImplTest,
+       GetDiskAvailabilityAndTempPoolSize_AvailableExceedsTotal) {
+  ResetQuotaManagerImpl(/*is_incognito=*/false);
+
+  constexpr int kDiskSize = 1024;
+  SetGetVolumeInfoFn(
+      [](const base::FilePath&) -> std::optional<base::SysInfo::DiskSpaceInfo> {
+        // Intentionally inconsistent: simulate Android `statvfs()` returning
+        // `f_bavail > f_blocks`.
+        constexpr base::ByteSize kSmallTotal(uint64_t{kDiskSize});
+        constexpr base::ByteSize kLargeAvailable(uint64_t{4096});
+        return base::SysInfo::DiskSpaceInfo{.total = kSmallTotal,
+                                            .available = kLargeAvailable};
+      });
+
+  base::test::TestFuture<int64_t, int64_t, int64_t> quota_internals_future;
+  quota_manager_impl()->GetDiskAvailabilityAndTempPoolSize(
+      quota_internals_future.GetCallback());
+  std::tuple quota_internals_result = quota_internals_future.Take();
+
+  // The available space must be clamped to the total space.
+  EXPECT_EQ(kDiskSize, std::get<0>(quota_internals_result));
+  EXPECT_EQ(kDiskSize, std::get<1>(quota_internals_result));
+  EXPECT_EQ(kDefaultPoolSize, std::get<2>(quota_internals_result));
+}
+
 TEST_F(QuotaManagerImplTest, NotifyAndLRUBucket) {
   static const ClientBucketData kData[] = {
       {"http://a.com/", kDefaultBucketName, 0},

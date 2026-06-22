@@ -1604,7 +1604,6 @@ void QuotaManagerImpl::FinallySendDiskAvailabilityAndTempPoolSize(
     GetDiskAvailabilityAndTempPoolSizeCallback callback,
     std::unique_ptr<AccumulateQuotaInternalsInfo> info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_GE(info->total_space, info->available_space, base::NotFatalUntil::M151);
   CHECK_GE(info->temp_pool_size, 0);
   std::move(callback).Run(static_cast<int64_t>(info->total_space.InBytes()),
                           static_cast<int64_t>(info->available_space.InBytes()),
@@ -2986,6 +2985,13 @@ base::SysInfo::DiskSpaceInfo QuotaManagerImpl::CallGetVolumeInfo(
   if (!disk_space) {
     LOG(WARNING) << "Unable to get volume info: " << path.value();
     return {};
+  }
+
+  if (disk_space->available > disk_space->total) {
+    // On Android, `statvfs()` may return `f_bavail > f_blocks`, producing
+    // `available > total`. The root cause is unknown. See crbug.com/501709109
+    // and crbug.com/520534362.
+    disk_space->available = disk_space->total;
   }
 
   base::UmaHistogramMemoryMB("Quota.TotalDiskSpace", disk_space->total);
