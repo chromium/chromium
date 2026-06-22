@@ -48,6 +48,15 @@
   margin-bottom: 12px;
 }
 
+.drive-state-header {
+  border-top: 1px solid var(--cr-separator-color);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  padding-top: 20px;
+}
+
 .check-value {
   font-size: 16px;
   font-weight: 500;

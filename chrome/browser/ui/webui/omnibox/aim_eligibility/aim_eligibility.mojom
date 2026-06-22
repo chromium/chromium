@@ -6,6 +6,33 @@ module aim_eligibility.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 
+// The status of the Google Drive disclaimer.
+enum DisclaimerState {
+  kAccepted,
+  kNotAccepted,
+  kRestricted,
+};
+
+// The status of Google Drive support.
+struct DriveStatus {
+  // Whether Drive is supported.
+  bool is_drive_supported;
+  // Whether Drive is eligible by server PEC API response.
+  bool is_pec_eligible;
+  // Whether the browser identity matches the AIM identity.
+  bool is_identity_match;
+  // Whether the profile is off-the-record.
+  bool is_incognito;
+  // Whether the kComposeboxDriveContextMenuOption feature flag is enabled.
+  bool is_feature_flag_enabled;
+  // Whether the kForceDriveDisclaimerAccepted feature flag is enabled.
+  bool is_force_drive_disclaimer_accepted;
+  // Whether search content sharing is enabled by policy.
+  bool is_search_content_sharing_enabled;
+  // The status of the Drive disclaimer.
+  DisclaimerState disclaimer_state;
+};
+
 // The AIM eligibility state.
 struct EligibilityState {
   // Whether AIM is eligible. Combines local and server eligibility, if enabled.
@@ -29,6 +56,8 @@ struct EligibilityState {
   // Base64url encoded searchbox config proto. Populated if server
   // eligibility checking is enabled.
   string searchbox_config_base64_url_encoded;
+  // The status of Google Drive support. Populated asynchronously.
+  DriveStatus? drive_status;
   // Last updated time.
   mojo_base.mojom.JSTime last_updated;
 };
@@ -37,6 +66,10 @@ struct EligibilityState {
 interface Page {
   // Called when eligibility state changes.
   OnEligibilityStateChanged(EligibilityState state);
+  // Called when only Drive status changes. This is needed because Drive status
+  // is checked asynchronously and may not be available when eligibility state is
+  // queried initially.
+  OnDriveStatusChanged(DriveStatus status);
 };
 
 // Browser side handler for receiving calls from the page.

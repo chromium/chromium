@@ -23,10 +23,19 @@ static_library("aim_eligibility") {
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/omnibox:resources",
+    "//chrome/browser/signin",
     "//chrome/common",
+    "//components/contextual_search:prefs",
+    "//components/contextual_search/footprints/public",
     "//components/omnibox/browser",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//ui/webui",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/webui/drive_picker_host" ]
+  }
 }
