@@ -666,6 +666,17 @@ bool MaybeShowManagedTermsOfService(Profile* profile) {
   return true;
 }
 
+signin::ConsentLevel GetExpectedConsentLevel(
+    signin::IdentityManager* identity_manager) {
+  return !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+                 base::FeatureList::IsEnabled(
+                     syncer::kReplaceSyncPromosWithSignInPromos) &&
+                 base::FeatureList::IsEnabled(
+                     ::switches::kChromeOsUseConsentLevelSigninForNewUsers)
+             ? signin::ConsentLevel::kSignin
+             : signin::ConsentLevel::kSync;
+}
+
 }  // namespace
 
 // static
@@ -1608,13 +1619,7 @@ void UserSessionManager::InitProfilePreferences(
     }
 
     const signin::ConsentLevel consent_level =
-        !identity_manager->HasPrimaryAccount(ConsentLevel::kSync) &&
-                base::FeatureList::IsEnabled(
-                    syncer::kReplaceSyncPromosWithSignInPromos) &&
-                base::FeatureList::IsEnabled(
-                    ::switches::kChromeOsUseConsentLevelSigninForNewUsers)
-            ? ConsentLevel::kSignin
-            : ConsentLevel::kSync;
+        GetExpectedConsentLevel(identity_manager);
 
     const signin::PrimaryAccountMutator::PrimaryAccountError
         set_account_result =
@@ -2122,8 +2127,49 @@ void UserSessionManager::RestoreAuthSessionImpl(
   login_manager->RestoreSession(user_context_.GetAccessToken());
 }
 
+void UserSessionManager::MaybeMigrateConsentLevelToSync(Profile* profile) {
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (!user || !user->HasGaiaAccount()) {
+    return;
+  }
+
+  CHECK(!profile->IsOffTheRecord());
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  // Only enforce consent level if the user is already signed in.
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+
+  // The migration is a one-way upgrade from kSignin to kSync; we never
+  // downgrade. In particular, users who are already at the kSync consent level
+  // are never migrated to kSignin and remain unaffected.
+  //
+  // On ChromeOS, only new users get the kSignin consent level if the
+  // `kChromeOsUseConsentLevelSigninForNewUsers` flag is enabled. When that
+  // flag is disabled (or if we revert back to the default behavior), we migrate
+  // those kSignin users to kSync.
+  if (GetExpectedConsentLevel(identity_manager) ==
+          signin::ConsentLevel::kSync &&
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    const signin::PrimaryAccountMutator::PrimaryAccountError
+        set_account_result =
+            identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+                identity_manager->GetPrimaryAccountId(
+                    signin::ConsentLevel::kSignin),
+                signin::ConsentLevel::kSync,
+                signin_metrics::AccessPoint::kAshUserSessionManager);
+    CHECK_EQ(set_account_result,
+             signin::PrimaryAccountMutator::PrimaryAccountError::kNoError);
+  }
+}
+
 void UserSessionManager::OnUserProfileLoaded(Profile* profile,
                                              const user_manager::User* user) {
+  MaybeMigrateConsentLevelToSync(profile);
+
   session_manager::SessionManager::Get()->NotifyUserProfileLoaded(
       user->GetAccountId());
 

@@ -48,6 +48,10 @@
 #include "services/network/test/test_utils.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/sync/base/features.h"
+#endif
+
 namespace glic {
 
 namespace {
@@ -71,7 +75,13 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
         {{features::kGlicRollout, {}},
          {features::kGlicUserStatusCheck,
           {{features::kGlicUserStatusRequestDelay.name, "200ms"},
-           {features::kGlicUserStatusRequestDelayJitter.name, "0"}}}},
+           {features::kGlicUserStatusRequestDelayJitter.name, "0"}}}
+#if BUILDFLAG(IS_CHROMEOS)
+         ,
+         { syncer::kReplaceSyncPromosWithSignInPromos,
+           {} }
+#endif
+        },
         {/* disabled_features */});
 
     RegisterGeminiSettingsPrefs(pref_service_.registry());

@@ -61,6 +61,10 @@
 #include "ui/views/test/mock_activation_controller.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/sync/base/features.h"
+#endif
+
 namespace glic {
 
 #if BUILDFLAG(IS_ANDROID)
@@ -146,6 +150,9 @@ class GlicBrowserTestMixin : public T {
       : T(std::forward<Args>(args)...) {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlicMultiInstance, {}},
+#if BUILDFLAG(IS_CHROMEOS)
+        {syncer::kReplaceSyncPromosWithSignInPromos, {}},
+#endif
 #if BUILDFLAG(IS_ANDROID)
         {chrome::android::kBrowserWindowInterfaceMobile, {}},
         {chrome::android::kTabBottomSheet, {}},

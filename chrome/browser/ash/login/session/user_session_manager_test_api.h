@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 
+class Profile;
+
 namespace ash {
 namespace test {
 
@@ -40,6 +42,9 @@ class UserSessionManagerTestApi {
   // Proxy to `UserSessionManager::InitializeDeviceId()`.
   void InitializeDeviceId(bool is_ephemeral_user,
                           user_manager::KnownUser& known_user);
+
+  // Proxy to `UserSessionManager::MaybeMigrateConsentLevelToSync()`.
+  void MaybeMigrateConsentLevelToSync(Profile* profile);
 
   // Sets the function which is used to request a chrome restart.
   void SetAttemptRestartClosureInTests(

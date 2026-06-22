@@ -18,6 +18,7 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -27,7 +28,11 @@
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
@@ -115,6 +120,23 @@ class UserSessionManagerTest : public testing::Test {
     // TODO(http://b/310599489): We are logging a Gaia type user as a Public
     // Session user here. This is inconsistent.
     test_user_ = fake_user_manager_->AddPublicAccountUser(account_id);
+
+    auto prefs =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    RegisterUserProfilePrefs(prefs->registry());
+    TestingProfile* profile = profile_manager_->CreateTestingProfile(
+        account_id.GetUserEmail(), std::move(prefs), u"Test profile",
+        /*avatar_id=*/1, TestingProfile::TestingFactories());
+
+    fake_user_manager_->LoginUser(account_id);
+    return profile;
+  }
+
+  // Creates a dummy Gaia user with a testing profile and logs in.
+  TestingProfile* LoginGaiaTestUser() {
+    const AccountId account_id(
+        AccountId::FromUserEmailGaiaId("demo@test.com", GaiaId("demo_user")));
+    test_user_ = fake_user_manager_->AddUser(account_id);
 
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -338,6 +360,72 @@ TEST_F(UserSessionManagerTest, InitializeDeviceIdForExistingUsers) {
   EXPECT_THAT(stored_device_id, Eq(device_id));
   EXPECT_THAT(stored_device_id,
               Eq(user_session_manager_->user_context().GetDeviceId()));
+}
+
+TEST_F(UserSessionManagerTest,
+       MaybeMigrateConsentLevelToSync_UpgradeToSyncWhenFlagDisabled) {
+  base::test::ScopedFeatureList features;
+  // Enable ReplaceSyncPromosWithSignInPromos but DISABLE
+  // ChromeOsUseConsentLevelSigninForNewUsers.
+  features.InitWithFeatures(
+      /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
+      /*disabled_features=*/{
+          ::switches::kChromeOsUseConsentLevelSigninForNewUsers});
+
+  TestingProfile* profile = LoginGaiaTestUser();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  ASSERT_TRUE(identity_manager);
+
+  // Sign in the user at kSignin consent level.
+  signin::MakePrimaryAccountAvailable(identity_manager, "demo@test.com",
+                                      signin::ConsentLevel::kSignin);
+  ASSERT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+
+  // Call MaybeMigrateConsentLevelToSync.
+  test::UserSessionManagerTestApi test_api(user_session_manager_.get());
+  test_api.MaybeMigrateConsentLevelToSync(profile);
+
+  // Since the flag is disabled, the user should be upgraded to kSync.
+  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+}
+
+TEST_F(UserSessionManagerTest,
+       MaybeMigrateConsentLevelToSync_KeepSigninWhenFlagEnabled) {
+  base::test::ScopedFeatureList features;
+  // Enable BOTH features.
+  features.InitWithFeatures(
+      /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
+                            ::switches::
+                                kChromeOsUseConsentLevelSigninForNewUsers},
+      /*disabled_features=*/{});
+
+  TestingProfile* profile = LoginGaiaTestUser();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  ASSERT_TRUE(identity_manager);
+
+  // Sign in the user at kSignin consent level.
+  signin::MakePrimaryAccountAvailable(identity_manager, "demo@test.com",
+                                      signin::ConsentLevel::kSignin);
+  ASSERT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+
+  // Call MaybeMigrateConsentLevelToSync.
+  test::UserSessionManagerTestApi test_api(user_session_manager_.get());
+  test_api.MaybeMigrateConsentLevelToSync(profile);
+
+  // Since the flag is enabled, the user should remain at kSignin (not
+  // upgraded).
+  EXPECT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 }  // namespace

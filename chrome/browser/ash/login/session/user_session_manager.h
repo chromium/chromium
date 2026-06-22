@@ -434,6 +434,10 @@ class UserSessionManager
   // Finalized profile preparation.
   void FinalizePrepareProfile(Profile* profile);
 
+  // Checks and enforces the correct primary account consent level based on the
+  // active feature flags.
+  void MaybeMigrateConsentLevelToSync(Profile* profile);
+
   // Launch browser or proceed to alternative login flow. Should be called after
   // profile is ready.
   void InitializeBrowser(Profile* profile);

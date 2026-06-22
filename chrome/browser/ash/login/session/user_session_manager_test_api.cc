@@ -46,6 +46,11 @@ void UserSessionManagerTestApi::InitializeDeviceId(
       known_user);
 }
 
+void UserSessionManagerTestApi::MaybeMigrateConsentLevelToSync(
+    Profile* profile) {
+  session_manager_->MaybeMigrateConsentLevelToSync(profile);
+}
+
 void UserSessionManagerTestApi::SetAttemptRestartClosureInTests(
     const base::RepeatingClosure& attempt_restart_closure) {
   session_manager_->SetAttemptRestartClosureInTests(attempt_restart_closure);

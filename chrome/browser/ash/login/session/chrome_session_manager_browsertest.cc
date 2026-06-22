@@ -11,22 +11,34 @@
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "rlz/buildflags/buildflags.h"
@@ -482,5 +494,81 @@ INSTANTIATE_TEST_SUITE_P(GuestSessionRlzTest,
                          ::testing::Values(false, true));
 
 #endif  // BUILDFLAG(ENABLE_RLZ)
+
+class ChromeSessionManagerConsentLevelMigrationTest
+    : public MixinBasedInProcessBrowserTest {
+ public:
+  ChromeSessionManagerConsentLevelMigrationTest() {
+    login_manager_.set_session_restore_enabled();
+
+    std::string test_name =
+        ::testing::UnitTest::GetInstance()->current_test_info()->name();
+    if (base::StartsWith(test_name, "PRE_")) {
+      // In the PRE_ test, we want to set up a profile with kSignin consent.
+      // Enabling kChromeOsUseConsentLevelSigninForNewUsers ensures that the
+      // initial login signs the user in at kSignin.
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
+                                ::switches::
+                                    kChromeOsUseConsentLevelSigninForNewUsers},
+          /*disabled_features=*/{});
+    } else {
+      // In the main test (restore), we want to test the migration to kSync.
+      // Disabling kChromeOsUseConsentLevelSigninForNewUsers should trigger the
+      // migration of the existing kSignin profile to kSync.
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
+          /*disabled_features=*/{
+              ::switches::kChromeOsUseConsentLevelSigninForNewUsers});
+    }
+  }
+
+ protected:
+  const LoginManagerMixin::TestUserInfo test_user_{
+      AccountId::FromUserEmailGaiaId("demo@gmail.com", GaiaId("demo_user"))};
+  FakeGaiaMixin gaia_mixin_{&mixin_host_};
+  LoginManagerMixin login_manager_{&mixin_host_, {test_user_}, &gaia_mixin_};
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeSessionManagerConsentLevelMigrationTest,
+                       PRE_MigrationOnRestore) {
+  // 1. Log in using the mixin. Because
+  // kChromeOsUseConsentLevelSigninForNewUsers is enabled, this should
+  // automatically sign the user in at kSignin level.
+  login_manager_.LoginWithDefaultContext(test_user_);
+  login_manager_.WaitForActiveSession();
+
+  // 2. Verify that they are indeed signed in at kSignin (and NOT kSync).
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          test_user_.account_id));
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  EXPECT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeSessionManagerConsentLevelMigrationTest,
+                       MigrationOnRestore) {
+  // 1. The LoginManagerTest harness should automatically restore the session
+  // of the user logged in during the PRE_ test. We just wait for it to
+  // complete.
+  login_manager_.WaitForActiveSession();
+
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          test_user_.account_id));
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  // 2. Verify that the session restore flow automatically migrated the user
+  // to kSync because kChromeOsUseConsentLevelSigninForNewUsers is now disabled.
+  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+}
 
 }  // namespace ash
