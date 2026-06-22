@@ -147,6 +147,7 @@ source_set("impl") {
     "//chrome/browser/permissions",
     "//chrome/browser/update_client",
     "//chrome/common",
+    "//chrome/common/platform_runtime",
     "//components/certificate_transparency",
     "//components/certificate_transparency:proto_gen",
     "//components/commerce/core:commerce_heuristics_data",

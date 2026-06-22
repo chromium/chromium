@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("platform_runtime") {
+  defines = [ "IS_PLATFORM_RUNTIME_IMPL" ]
+  sources = [
+    "platform_runtime_impl.cc",
+    "platform_runtime_impl.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "platform_runtime_impl_unittest.cc" ]
+  deps = [
+    ":platform_runtime",
+    "//base",
+    "//testing/gtest",
+  ]
+  data_deps = [ ":platform_runtime_test_lib" ]
+}
+
+shared_library("platform_runtime_test_lib") {
+  testonly = true
+  sources = [ "platform_runtime_test_lib.cc" ]
+}

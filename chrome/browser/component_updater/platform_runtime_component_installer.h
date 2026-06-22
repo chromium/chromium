@@ -12,11 +12,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 
 namespace component_updater {
+
+BASE_DECLARE_FEATURE(kEnablePlatformRuntimeComponent);
 
 class ComponentUpdateService;
 
@@ -48,7 +51,7 @@ class PlatformRuntimeComponentInstallerPolicy
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 };
 
-void RegisterPlatformRuntimeComponent(ComponentUpdateService* cus);
+void MaybeRegisterPlatformRuntimeComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 

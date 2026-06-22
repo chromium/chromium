@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -19,6 +20,9 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
+#include "chrome/common/platform_runtime/platform_runtime_impl.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "crypto/sha2.h"
 
@@ -40,28 +44,12 @@ base::FilePath GetBinaryPath(const base::FilePath& install_dir) {
       base::GetNativeLibraryName("chrome_platform_runtime"));
 }
 
-void LoadBinaryFromDisk(const base::FilePath& binary_path) {
-  if (binary_path.empty()) {
-    return;
-  }
-
-  VLOG(1) << "Loading Platform Runtime binary from: " << binary_path.value();
-  base::NativeLibraryLoadError error = base::NativeLibraryLoadError();
-  base::NativeLibrary library = base::LoadNativeLibrary(binary_path, &error);
-  if (!library) {
-    VLOG(1) << "Failed loading from " << binary_path.value()
-            << ", error: " << error.ToString();
-    return;
-  }
-  // The binary is now loaded in the browser process.
-  // TODO(crbug.com/51319386): Handle the case where the component is updated
-  // while Chrome is running which might load multiple versions of the binary
-  // into the process memory.
-}
-
 }  // namespace
 
 namespace component_updater {
+
+BASE_FEATURE(kEnablePlatformRuntimeComponent,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool PlatformRuntimeComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
@@ -95,9 +83,16 @@ void PlatformRuntimeComponentInstallerPolicy::ComponentReady(
   VLOG(1) << "Platform Runtime component ready, version " << version.GetString()
           << " in " << install_dir.value();
 
+  // Load the library in the Browser Process (where Component Updater runs).
+  // Post it to a background thread because loading a DLL involves blocking I/O.
   base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadBinaryFromDisk, GetBinaryPath(install_dir)));
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(
+          [](const base::FilePath& path) {
+            platform_runtime::PlatformRuntimeImpl::GetInstance()
+                ->UpdatePlatformRuntimeLibrary(path);
+          },
+          GetBinaryPath(install_dir)));
 }
 
 base::FilePath PlatformRuntimeComponentInstallerPolicy::GetRelativeInstallDir()
@@ -120,11 +115,15 @@ PlatformRuntimeComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-void RegisterPlatformRuntimeComponent(ComponentUpdateService* cus) {
-  VLOG(1) << "Registering Platform Runtime component.";
-  auto installer = base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<PlatformRuntimeComponentInstallerPolicy>());
-  installer->Register(cus, base::OnceClosure());
+void MaybeRegisterPlatformRuntimeComponent(ComponentUpdateService* cus) {
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (base::FeatureList::IsEnabled(kEnablePlatformRuntimeComponent)) {
+    VLOG(1) << "Registering Platform Runtime component.";
+    auto installer = base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<PlatformRuntimeComponentInstallerPolicy>());
+    installer->Register(cus, base::OnceClosure());
+  }
+#endif
 }
 
 }  // namespace component_updater
