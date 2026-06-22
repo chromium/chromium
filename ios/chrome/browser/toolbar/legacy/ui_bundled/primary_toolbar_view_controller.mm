@@ -108,7 +108,7 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   [super setScrollProgressForTabletOmnibox:progress];
 
   // Sometimes an NTP may make a delegate call when it's no longer visible.
-  if (!self.isNTP) {
+  if (!self.isNTP || (!IsComposeboxIpadEnabled() && self.locationBarFocused)) {
     progress = 1;
   }
 
@@ -227,6 +227,17 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   // This is hiding/showing and positionning the omnibox. This is only needed
   // if the omnibox should be hidden when there is only one toolbar.
   [self setScrollProgressForTabletOmnibox:(isNTP ? 0 : 1)];
+}
+
+- (void)setLocationBarFocused:(BOOL)locationBarFocused {
+  if (self.locationBarFocused == locationBarFocused) {
+    return;
+  }
+  [super setLocationBarFocused:locationBarFocused];
+
+  if (!IsComposeboxIpadEnabled()) {
+    [self setScrollProgressForTabletOmnibox:self.isNTP ? 0 : 1];
+  }
 }
 
 - (BOOL)locationBarIsExpanded {
