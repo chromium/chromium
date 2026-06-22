@@ -250,6 +250,7 @@ export class ActionChipsElement extends CrLitElement {
       text: chip.suggestion,
       files: contextFiles,
       mode: chip.suggestTemplateInfo.preselectedTool,
+      suggestInventory: chip.suggestTemplateInfo.preferredInventory,
     });
   }
 

@@ -4,6 +4,7 @@
 
 module action_chips.mojom;
 
+import "components/omnibox/browser/searchbox.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
@@ -63,7 +64,8 @@ struct SuggestTemplateInfo {
   IconType type_icon;
   FormattedString? primary_text;
   FormattedString? secondary_text;
-  ToolMode preselected_tool;
+  ToolMode? preselected_tool;
+  searchbox.mojom.SuggestInventory? preferred_inventory;
 };
 
 // The information representing a single action chip.

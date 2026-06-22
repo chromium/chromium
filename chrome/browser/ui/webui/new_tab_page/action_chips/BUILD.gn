@@ -11,6 +11,7 @@ mojom("mojo_bindings") {
   sources = [ "action_chips.mojom" ]
   webui_module_path = "/"
   public_deps = [
+    "//components/omnibox/browser:mojo_bindings",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]

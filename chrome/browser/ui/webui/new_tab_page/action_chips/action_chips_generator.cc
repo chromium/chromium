@@ -79,6 +79,12 @@ void AssignMojoField(const ProtoEnum& source, MojoEnum& dest) {
   dest = static_cast<MojoEnum>(source);
 }
 
+template <typename ProtoEnum, typename MojoEnum>
+  requires std::is_enum_v<ProtoEnum> && std::is_enum_v<MojoEnum>
+void AssignMojoField(const ProtoEnum& source, std::optional<MojoEnum>& dest) {
+  dest = static_cast<MojoEnum>(source);
+}
+
 template <typename Proto, typename MojoPtr>
 void SyncProtoToMojo(const Proto& a, MojoPtr& b);
 
@@ -136,10 +142,12 @@ void SyncProtoToMojo<omnibox::SuggestTemplateInfo,
   if (a.has_secondary_text()) {
     AssignMojoField(a.secondary_text(), b->secondary_text);
   }
-  if (a.has_fusebox_action()) {
+  if (a.has_fusebox_action() && a.fusebox_action().has_preselected_tool()) {
     AssignMojoField(a.fusebox_action().preselected_tool(), b->preselected_tool);
-  } else {
-    b->preselected_tool = ToolMode::kUnspecified;
+  }
+  if (a.has_fusebox_action() && a.fusebox_action().has_preferred_inventory()) {
+    AssignMojoField(a.fusebox_action().preferred_inventory(),
+                    b->preferred_inventory);
   }
 }
 

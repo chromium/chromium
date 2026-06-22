@@ -8,7 +8,7 @@ import {ActionChipsHandlerRemote, IconType, PageCallbackRouter, ToolMode} from '
 import type {ActionChip, PageRemote, TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import {ActionChipsApiProxyImpl, ActionChipsRetrievalState} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
-import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {SuggestInventory, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -25,6 +25,7 @@ type ActionChipClickEvent = CustomEvent<{
   text: string,
   files: TabUpload[],
   mode?: ToolMode,
+  suggestInventory?: SuggestInventory,
 }>;
 
 suite('NewTabPageActionChipsTest', () => {
@@ -39,6 +40,7 @@ suite('NewTabPageActionChipsTest', () => {
         primaryText: {text: 'Example Tab', a11yText: null},
         secondaryText: {text: 'Subtitle for recent tab', a11yText: null},
         preselectedTool: ToolMode.kUnspecified,
+        preferredInventory: null,
       },
       suggestion: 'Suggestion for recent tab',
       tab: {
@@ -54,6 +56,7 @@ suite('NewTabPageActionChipsTest', () => {
         primaryText: {text: 'Nano Banana', a11yText: null},
         secondaryText: {text: 'Subtitle for image', a11yText: null},
         preselectedTool: ToolMode.kImageGen,
+        preferredInventory: null,
       },
       suggestion: 'Suggestion for image',
       tab: null,
@@ -64,6 +67,7 @@ suite('NewTabPageActionChipsTest', () => {
         primaryText: {text: 'Deep Search', a11yText: null},
         secondaryText: {text: 'Subtitle for deep search', a11yText: null},
         preselectedTool: ToolMode.kDeepSearch,
+        preferredInventory: null,
       },
       suggestion: 'Suggestion for deep search',
       tab: null,
@@ -151,6 +155,7 @@ suite('NewTabPageActionChipsTest', () => {
             primaryText: {text: 'Example Tab', a11yText: null},
             secondaryText: {text: 'Subtitle for recent tab', a11yText: null},
             preselectedTool: ToolMode.kUnspecified,
+            preferredInventory: null,
           },
           suggestion: 'Suggestion for recent tab',
           tab: fakeTab,
@@ -187,6 +192,7 @@ suite('NewTabPageActionChipsTest', () => {
           primaryText: {text: 'Example Tab', a11yText: null},
           secondaryText: {text: 'Subtitle for recent tab', a11yText: null},
           preselectedTool: ToolMode.kUnspecified,
+          preferredInventory: null,
         },
         suggestion: 'Suggestion for recent tab',
         tab: {
@@ -211,6 +217,7 @@ suite('NewTabPageActionChipsTest', () => {
           primaryText: null,
           secondaryText: {text: 'Subtitle for deep dive', a11yText: null},
           preselectedTool: ToolMode.kUnspecified,
+          preferredInventory: null,
         },
         suggestion: 'Suggestion for deep dive',
         tab: {
@@ -304,6 +311,7 @@ suite('NewTabPageActionChipsTest', () => {
             primaryText: {text: 'Example Tab', a11yText: null},
             secondaryText: {text: 'Subtitle for deep dive', a11yText: null},
             preselectedTool: ToolMode.kUnspecified,
+            preferredInventory: null,
           },
           suggestion: 'Suggestion for deep dive',
           tab: {
@@ -344,6 +352,7 @@ suite('NewTabPageActionChipsTest', () => {
             primaryText: {text: 'Canvas', a11yText: null},
             secondaryText: {text: 'Subtitle for canvas', a11yText: null},
             preselectedTool: ToolMode.kCanvas,
+            preferredInventory: null,
           },
           suggestion: 'Suggestion for canvas',
           tab: null,
@@ -367,6 +376,46 @@ suite('NewTabPageActionChipsTest', () => {
       assertEquals(
           1,
           metrics.count('NewTabPage.ActionChips.Click2', IconType.kDraftSpark));
+    });
+
+    test('conversation starter chip triggers chip click event', async () => {
+      // Setup.
+      await initializeChips({
+        actionChips: [{
+          suggestTemplateInfo: {
+            typeIcon: IconType.kSearchLoopWithSparkle,
+            primaryText: {text: 'Conversation Starter', a11yText: null},
+            secondaryText: {text: 'Subtitle for conversation', a11yText: null},
+            preselectedTool: null,
+            preferredInventory: SuggestInventory.kConversationStarters,
+          },
+          suggestion: '',
+          tab: null,
+        }],
+      });
+      const canvasChip = chips.shadowRoot.querySelector<HTMLDivElement>(
+          '.icon-type-search-spark');
+      assertTrue(!!canvasChip);
+
+      const whenActionChipClicked = eventToPromise<ActionChipClickEvent>(
+          'action-chip-click', document.body);
+
+      // Act.
+      canvasChip.click();
+
+      // Assert.
+      const event = await whenActionChipClicked;
+
+      assertEquals('', event.detail.text);
+      assertEquals(
+          SuggestInventory.kConversationStarters,
+          event.detail.suggestInventory);
+      assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.ActionChips.Click2',
+              IconType.kSearchLoopWithSparkle));
     });
   });
 
@@ -538,6 +587,7 @@ suite('NewTabPageActionChipsTest', () => {
                 secondaryText:
                     {text: 'Subtitle for deep search', a11yText: null},
                 preselectedTool: ToolMode.kDeepSearch,
+                preferredInventory: null,
               },
               suggestion: '',
               tab: null,
@@ -565,6 +615,7 @@ suite('NewTabPageActionChipsTest', () => {
                 primaryText: {text: 'Deep Search', a11yText: null},
                 secondaryText: {text: '', a11yText: null},
                 preselectedTool: ToolMode.kDeepSearch,
+                preferredInventory: null,
               },
               suggestion: '',
               tab: null,
@@ -689,6 +740,7 @@ suite('NewTabPageActionChipsTest', () => {
                   primaryText: {text: 'Nano Banana', a11yText: null},
                   secondaryText: {text: 'Subtitle for image', a11yText: null},
                   preselectedTool: ToolMode.kImageGen,
+                  preferredInventory: null,
                 },
                 suggestion: 'Suggestion for image',
                 tab: null,
@@ -723,6 +775,7 @@ suite('NewTabPageActionChipsTest', () => {
             primaryText: {text: 'Example Tab', a11yText: 'A11y Title'},
             secondaryText: {text: 'Subtitle', a11yText: 'A11y Subtitle'},
             preselectedTool: ToolMode.kUnspecified,
+            preferredInventory: null,
           },
           suggestion: 'Suggestion',
           tab: null,
@@ -744,6 +797,7 @@ suite('NewTabPageActionChipsTest', () => {
                 primaryText: {text: 'Example Tab', a11yText: null},
                 secondaryText: {text: 'Subtitle', a11yText: null},
                 preselectedTool: ToolMode.kUnspecified,
+                preferredInventory: null,
               },
               suggestion: 'Suggestion',
               tab: null,
@@ -765,6 +819,7 @@ suite('NewTabPageActionChipsTest', () => {
                 primaryText: {text: 'Example Tab', a11yText: null},
                 secondaryText: {text: 'Subtitle', a11yText: 'A11y Subtitle'},
                 preselectedTool: ToolMode.kUnspecified,
+                preferredInventory: null,
               },
               suggestion: 'Suggestion',
               tab: null,

@@ -34,6 +34,7 @@
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/search/ntp_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
@@ -45,6 +46,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/groups.pb.h"
+#include "third_party/omnibox_proto/suggest_inventory.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -62,6 +64,7 @@ using ::action_chips::mojom::SuggestTemplateInfo;
 using ::action_chips::mojom::TabInfo;
 using ::action_chips::mojom::TabInfoPtr;
 using ::action_chips::mojom::ToolMode;
+using ::searchbox::mojom::SuggestInventory;
 using ::sync_preferences::TestingPrefServiceSyncable;
 using ::tabs::TabInterface;
 using ::testing::_;
@@ -91,6 +94,8 @@ struct CreateSuggestionOptions {
   std::u16string suggestion;
   omnibox::SuggestType suggest_type = omnibox::SuggestType::TYPE_FUSEBOX_ACTION;
   omnibox::ToolMode preselected_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+  omnibox::SuggestInventory preferred_inventory =
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT;
 };
 
 SearchSuggestionParser::SuggestResult CreateSuggestion(
@@ -126,6 +131,11 @@ SearchSuggestionParser::SuggestResult CreateSuggestion(
     if (options.preselected_tool) {
       suggest_template_info.mutable_fusebox_action()->set_preselected_tool(
           options.preselected_tool);
+    }
+    if (options.preferred_inventory !=
+        omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT) {
+      suggest_template_info.mutable_fusebox_action()->set_preferred_inventory(
+          options.preferred_inventory);
     }
     result.SetSuggestTemplateInfo(std::move(suggest_template_info));
   }
@@ -190,7 +200,7 @@ ActionChipPtr CreateStaticRecentTabChip(TabInfoPtr tab) {
       "",
       SuggestTemplateInfo::New(IconType::kFavicon, CreateFormattedString(title),
                                CreateFormattedString(subtitle),
-                               ToolMode::kUnspecified),
+                               ToolMode::kUnspecified, std::nullopt),
       std::move(tab));
 }
 
@@ -200,7 +210,7 @@ const ActionChipPtr& GetStaticDeepSearchChip() {
       SuggestTemplateInfo::New(
           IconType::kGlobeWithSearchLoop, CreateFormattedString("Deep Search"),
           CreateFormattedString("Dive deep into something new"),
-          ToolMode::kDeepSearch),
+          ToolMode::kDeepSearch, std::nullopt),
       /*tab=*/nullptr));
   return *kInstance;
 }
@@ -211,7 +221,7 @@ const ActionChipPtr& GetStaticImageGenerationChip() {
       SuggestTemplateInfo::New(
           IconType::kBanana, CreateFormattedString("Create images"),
           CreateFormattedString("Add an image and reimagine it"),
-          ToolMode::kImageGen),
+          ToolMode::kImageGen, std::nullopt),
       /*tab=*/nullptr));
   return *kInstance;
 }
@@ -224,7 +234,7 @@ const ActionChipPtr& GetStaticCanvasChip() {
                                    IDS_NTP_ACTION_CHIP_CANVAS_HEADING)),
                                CreateFormattedString(l10n_util::GetStringUTF8(
                                    IDS_NTP_ACTION_CHIP_CANVAS_BODY)),
-                               ToolMode::kCanvas),
+                               ToolMode::kCanvas, std::nullopt),
       /*tab=*/nullptr));
   return *kInstance;
 }
@@ -630,22 +640,24 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpoint) {
   TabInfoPtr tab_info = CreateTabInfo(&tab_fixture.mock_tab());
   ActionChipPtr chip0 = CreateActionChip(
       base::UTF16ToUTF8(recent_tab_suggestion),
-      SuggestTemplateInfo::New(
-          IconType::kFavicon, CreateFormattedString(recent_tab_title),
-          CreateFormattedString(recent_tab_subtitle), ToolMode::kUnspecified),
+      SuggestTemplateInfo::New(IconType::kFavicon,
+                               CreateFormattedString(recent_tab_title),
+                               CreateFormattedString(recent_tab_subtitle),
+                               std::nullopt, std::nullopt),
       tab_info->Clone());
   ActionChipPtr chip1 = CreateActionChip(
       base::UTF16ToUTF8(deep_search_suggestion),
       SuggestTemplateInfo::New(IconType::kGlobeWithSearchLoop,
                                CreateFormattedString(deep_search_title),
                                CreateFormattedString(deep_search_subtitle),
-                               ToolMode::kDeepSearch),
+                               ToolMode::kDeepSearch, std::nullopt),
       nullptr);
   ActionChipPtr chip2 = CreateActionChip(
       base::UTF16ToUTF8(image_gen_suggestion),
-      SuggestTemplateInfo::New(
-          IconType::kBanana, CreateFormattedString(image_gen_title),
-          CreateFormattedString(image_gen_subtitle), ToolMode::kImageGen),
+      SuggestTemplateInfo::New(IconType::kBanana,
+                               CreateFormattedString(image_gen_title),
+                               CreateFormattedString(image_gen_subtitle),
+                               ToolMode::kImageGen, std::nullopt),
       nullptr);
 
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(chip0)), Eq(std::cref(chip1)),
@@ -713,13 +725,14 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpointAndNoTab) {
       SuggestTemplateInfo::New(IconType::kGlobeWithSearchLoop,
                                CreateFormattedString(deep_search_title),
                                CreateFormattedString(deep_search_subtitle),
-                               ToolMode::kDeepSearch),
+                               ToolMode::kDeepSearch, std::nullopt),
       nullptr);
   ActionChipPtr chip1 = CreateActionChip(
       base::UTF16ToUTF8(image_gen_suggestion),
-      SuggestTemplateInfo::New(
-          IconType::kBanana, CreateFormattedString(image_gen_title),
-          CreateFormattedString(image_gen_subtitle), ToolMode::kImageGen),
+      SuggestTemplateInfo::New(IconType::kBanana,
+                               CreateFormattedString(image_gen_title),
+                               CreateFormattedString(image_gen_subtitle),
+                               ToolMode::kImageGen, std::nullopt),
       nullptr);
 
   std::vector<Matcher<const ActionChipPtr&>> expected;
@@ -779,6 +792,9 @@ TEST(ActionChipGeneratorTest, NewEndpointOptOutReturnsEndpointChips) {
   TabFixture tab_fixture(page_url, page_title);
   GeneratorFixture generator_fixture;
 
+  const std::string conversation_starter_title = "Do more with AI Mode";
+  const std::string conversation_starter_subtitle = "Create, plan, summarize";
+  const std::string conversation_starter_suggestion = "";
   const std::string deep_search_title = "Research a topic";
   const std::string deep_search_subtitle = "Subtitle for deep search";
   const std::string deep_search_suggestion = "Interior design courses";
@@ -799,6 +815,16 @@ TEST(ActionChipGeneratorTest, NewEndpointOptOutReturnsEndpointChips) {
                                           ActionChipSuggestionsResult&&)>
                   callback) {
             std::move(callback).Run(SearchSuggestionParser::SuggestResults{
+                CreateSuggestion(
+                    {.group_id = omnibox::GROUP_STEADY_STATE_ACTION,
+                     .icon_type =
+                         omnibox::SuggestTemplateInfo::SEARCH_LOOP_WITH_SPARKLE,
+                     .match_contents = conversation_starter_title,
+                     .annotation = conversation_starter_subtitle,
+                     .suggestion =
+                         base::UTF8ToUTF16(conversation_starter_suggestion),
+                     .preferred_inventory = omnibox::SuggestInventory::
+                         SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS}),
                 CreateSuggestion(
                     {.group_id = omnibox::GROUP_AI_MODE_DEEP_SEARCH_ACTION,
                      .icon_type =
@@ -832,19 +858,30 @@ TEST(ActionChipGeneratorTest, NewEndpointOptOutReturnsEndpointChips) {
 
   // Expect endpoint chips.
   ActionChipPtr chip0 = CreateActionChip(
+      conversation_starter_suggestion,
+      SuggestTemplateInfo::New(
+          IconType::kSearchLoopWithSparkle,
+          CreateFormattedString(conversation_starter_title),
+          CreateFormattedString(conversation_starter_subtitle), std::nullopt,
+          omnibox::SuggestInventory::
+              SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS),
+      nullptr);
+  ActionChipPtr chip1 = CreateActionChip(
       deep_search_suggestion,
       SuggestTemplateInfo::New(IconType::kGlobeWithSearchLoop,
                                CreateFormattedString(deep_search_title),
                                CreateFormattedString(deep_search_subtitle),
-                               ToolMode::kDeepSearch),
+                               ToolMode::kDeepSearch, std::nullopt),
       nullptr);
-  ActionChipPtr chip1 = CreateActionChip(
+  ActionChipPtr chip2 = CreateActionChip(
       image_gen_suggestion,
-      SuggestTemplateInfo::New(
-          IconType::kBanana, CreateFormattedString(image_gen_title),
-          CreateFormattedString(image_gen_subtitle), ToolMode::kImageGen),
+      SuggestTemplateInfo::New(IconType::kBanana,
+                               CreateFormattedString(image_gen_title),
+                               CreateFormattedString(image_gen_subtitle),
+                               ToolMode::kImageGen, std::nullopt),
       nullptr);
-  EXPECT_THAT(actual, ElementsAre(Eq(std::cref(chip0)), Eq(std::cref(chip1))));
+  EXPECT_THAT(actual, ElementsAre(Eq(std::cref(chip0)), Eq(std::cref(chip1)),
+                                  Eq(std::cref(chip2))));
 }
 
 TEST(ActionChipGeneratorTest, NewEndpointOptOutFallsBackToStaticOnFailure) {
@@ -1083,7 +1120,8 @@ TEST(ActionChipGeneratorTest, NewEndpointFiltersInvalidSuggestions) {
       CreateFormattedString("Valid Title", "Primary A11y Text");
   valid_chip->suggest_template_info->secondary_text =
       CreateFormattedString("Valid Annotation", "Secondary A11y Text");
-  valid_chip->suggest_template_info->preselected_tool = ToolMode::kUnspecified;
+  valid_chip->suggest_template_info->preselected_tool = std::nullopt;
+  valid_chip->suggest_template_info->preferred_inventory = std::nullopt;
 
   // Expect only the valid chip.
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(valid_chip))));

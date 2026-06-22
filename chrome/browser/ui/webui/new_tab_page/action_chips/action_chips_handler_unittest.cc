@@ -134,7 +134,8 @@ struct ActionChipFields {
   std::string primary_text;
   std::string secondary_text;
   std::optional<TabInfoFields> tab;
-  ToolMode preselected_tool = ToolMode::kUnspecified;
+  std::optional<ToolMode> preselected_tool = std::nullopt;
+  std::optional<omnibox::SuggestInventory> preferred_inventory = std::nullopt;
 };
 
 base::Time GetTimeAt(const size_t index) {
@@ -151,10 +152,10 @@ ActionChipPtr MakeActionChip(const ActionChipFields& fields) {
   }
   return ActionChip::New(
       fields.suggestion,
-      SuggestTemplateInfo::New(fields.icon_type,
-                               CreateFormattedString(fields.primary_text),
-                               CreateFormattedString(fields.secondary_text),
-                               fields.preselected_tool),
+      SuggestTemplateInfo::New(
+          fields.icon_type, CreateFormattedString(fields.primary_text),
+          CreateFormattedString(fields.secondary_text), fields.preselected_tool,
+          fields.preferred_inventory),
       std::move(tab));
 }
 
@@ -500,14 +501,14 @@ TEST_F(
               SuggestTemplateInfo::New(IconType::kIconTypeUnspecified,
                                        CreateFormattedString("title1"),
                                        CreateFormattedString("subtitle1"),
-                                       ToolMode::kUnspecified),
+                                       std::nullopt, std::nullopt),
               nullptr),
           ActionChip::New(
               "suggention2",
               SuggestTemplateInfo::New(IconType::kIconTypeUnspecified,
                                        CreateFormattedString("title2"),
                                        CreateFormattedString("subtitle2"),
-                                       ToolMode::kUnspecified),
+                                       std::nullopt, std::nullopt),
               nullptr))));
 
   // Act
