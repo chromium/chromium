@@ -60,7 +60,8 @@ enum class IndigoTransformationResult {
   kGenerateImageError = 10,
   kRefreshTokenInPersistentErrorState = 11,
   kManagedDomain = 12,
-  kMaxValue = kManagedDomain,
+  kGlicDisabledForProfile = 13,
+  kMaxValue = kGlicDisabledForProfile,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTransformationResult)

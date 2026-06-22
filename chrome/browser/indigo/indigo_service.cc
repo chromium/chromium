@@ -215,7 +215,7 @@ LocalEligibility IndigoService::ComputeLocalEligibility() const {
 
   if (features::kIndigoRequireGlicEnabling.Get() &&
       !glic::GlicEnabling::IsEnabledForProfile(profile_)) {
-    return LocalEligibility::kMissingCapabilities;
+    return LocalEligibility::kGlicDisabledForProfile;
   }
 
   if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(

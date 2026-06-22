@@ -39,6 +39,7 @@ enum class LocalEligibility {
   kDisabledByPolicy,
   kMissingScript,
   kManagedDomain,
+  kGlicDisabledForProfile,
 };
 
 // Combined eligibility status including local constraints (features, profile

@@ -99,6 +99,9 @@ void RecordTransformationResultCannotGenerateImage(
       case LocalEligibility::kManagedDomain:
         result = IndigoTransformationResult::kManagedDomain;
         break;
+      case LocalEligibility::kGlicDisabledForProfile:
+        result = IndigoTransformationResult::kGlicDisabledForProfile;
+        break;
       case LocalEligibility::kEligible:
         NOTREACHED();
     }
