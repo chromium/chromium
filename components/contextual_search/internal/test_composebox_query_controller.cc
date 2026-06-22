@@ -84,7 +84,11 @@ TestComposeboxQueryController::CreateEndpointFetcher(
   bool disable_response = false;
 
   bool is_cluster_info_request =
-      fetch_url == GURL(lens::features::GetLensOverlayClusterInfoEndpointUrl());
+      fetch_url.path() ==
+      GURL(lens::features::GetLensOverlayClusterInfoEndpointUrl()).path();
+  bool is_chunk_upload_request =
+      fetch_url.path() ==
+      GURL(lens::features::GetLensOverlayUploadChunkEndpointURL()).path();
 
   if (is_cluster_info_request) {
     // Cluster info request.
@@ -96,6 +100,18 @@ TestComposeboxQueryController::CreateEndpointFetcher(
       fake_server_response_string =
           fake_cluster_info_response_.SerializeAsString();
     }
+  } else if (is_chunk_upload_request) {
+    num_chunk_upload_requests_sent_++;
+    last_sent_fetch_url_ = fetch_url;
+    if (next_file_upload_request_should_return_error_) {
+      fake_server_response_code =
+          google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR;
+    } else {
+      fake_server_response_string = "";
+    }
+    lens::LensOverlayUploadChunkRequest sent_chunk_request;
+    sent_chunk_request.ParseFromString(request_string);
+    sent_chunk_upload_requests_.push_back(sent_chunk_request);
   } else {
     num_file_upload_requests_sent_++;
     last_sent_fetch_url_ = fetch_url;
@@ -115,7 +131,7 @@ TestComposeboxQueryController::CreateEndpointFetcher(
           fake_interaction_response_.SerializeAsString();
       sent_interaction_requests_.push_back(sent_request);
     } else {
-    sent_upload_requests_.push_back(sent_request);
+      sent_upload_requests_.push_back(sent_request);
     }
   }
 

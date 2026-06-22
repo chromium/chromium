@@ -120,11 +120,16 @@ BASE_DECLARE_FEATURE(kContextualTasksWindowTracking);
 // for AI URLs being loaded from the contextual tasks extension API.
 BASE_DECLARE_FEATURE(kContextualTasksAiUrlAllowedParamsFilter);
 
+// Enables upload chunking for Contextual Tasks.
+BASE_DECLARE_FEATURE(kContextualTasksUploadChunking);
+
 bool GetIsContextualTasksPdfCitationsEnabled();
 
 bool GetIsContextualTasksLazyFetchClusterInfoEnabled();
 
 bool GetIsContextualTasksWindowTrackingEnabled();
+
+bool GetIsContextualTasksUploadChunkingEnabled();
 
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {

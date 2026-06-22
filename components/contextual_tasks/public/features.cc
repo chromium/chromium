@@ -148,6 +148,8 @@ BASE_FEATURE(kContextualTasksWindowTracking, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualTasksAiUrlAllowedParamsFilter,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksUploadChunking, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool GetIsContextualTasksPdfCitationsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksPdfCitations);
 }
@@ -158,6 +160,10 @@ bool GetIsContextualTasksLazyFetchClusterInfoEnabled() {
 
 bool GetIsContextualTasksWindowTrackingEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksWindowTracking);
+}
+
+bool GetIsContextualTasksUploadChunkingEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksUploadChunking);
 }
 
 const base::FeatureParam<bool> kContextualTasksLockAndUnlockInputCapability(
