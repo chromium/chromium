@@ -6183,7 +6183,7 @@
       // selection focus is inside the element, revealing the full text content.
       // See https://crbug.com/40731275
       name: "TextOverflowClipWithSelection",
-      status: "stable",
+      status: "test",
     },
     {
       // https://crbug.com/41492459
