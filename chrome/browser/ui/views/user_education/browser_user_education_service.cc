@@ -1622,6 +1622,8 @@ void MaybeRegisterChromeFeaturePromos(
                 if (!browser) {
                   return;
                 }
+                base::RecordAction(
+                    base::UserMetricsAction("BookmarkBar_Simplified_IPH_Undo"));
                 browser->profile()->GetPrefs()->SetInteger(
                     bookmarks::prefs::kBookmarkBarVisibilityState,
                     static_cast<int>(

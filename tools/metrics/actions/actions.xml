@@ -8005,6 +8005,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="BookmarkBar_Simplified_IPH_Undo">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <description>
+    The user clicked the &quot;Undo&quot; button on the educational toast (IPH)
+    that appeared when the bookmark bar was auto-hidden after inactivity.
+  </description>
+</action>
+
 <action name="BookmarkBarFolder_CtxMenu">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
