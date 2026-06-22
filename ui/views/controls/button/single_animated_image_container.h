@@ -46,10 +46,18 @@ class VIEWS_EXPORT SingleAnimatedImageContainer : public SingleImageContainer,
     SkColor color;
   };
 
+  struct AnimationBoundary {
+    float start_offset;
+    float end_offset;
+  };
+
   // Defines the configuration of the animation to play.
   struct AnimationConfig {
     AnimationDirection direction;
     AnimationEndBehavior end_behavior;
+    std::optional<AnimationBoundary> boundary;
+    gfx::Tween::Type tween = gfx::Tween::LINEAR;
+    base::TimeDelta duration = base::Milliseconds(0);
   };
 
   explicit SingleAnimatedImageContainer(LabelButton* button);
@@ -60,10 +68,10 @@ class VIEWS_EXPORT SingleAnimatedImageContainer : public SingleImageContainer,
 
   bool IsShowingAnimation() const;
   bool HasAnimatedImage(int resource_id) const;
+  std::optional<float> animation_progress() const;
 
   // Play the animation based on the provided definition and the configuration.
-  void PlayAnimation(AnimationDefinition definition,
-                     AnimationConfig config = AnimationConfig());
+  void PlayAnimation(AnimationDefinition definition, AnimationConfig config);
 
   // Stops the animation and resets it back to using static images.
   void ResetAnimation();
@@ -83,13 +91,18 @@ class VIEWS_EXPORT SingleAnimatedImageContainer : public SingleImageContainer,
 
   struct AnimationState {
     AnimationDefinition definition;
-    AnimationEndBehavior end_behavior;
+    AnimationConfig config;
+    float start_offset = 0.0f;
+    float end_offset = 1.0f;
   };
 
   raw_ptr<LabelButton> button_;
   gfx::SlideAnimation slide_animation_;
   std::optional<AnimationState> playing_animation_;
   base::flat_map<int, std::unique_ptr<lottie::Animation>> animated_images_;
+
+ private:
+  void ValidateConfig(const AnimationConfig& config) const;
 };
 
 }  // namespace views

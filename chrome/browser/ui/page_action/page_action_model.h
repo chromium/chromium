@@ -71,7 +71,7 @@ class PageActionModelInterface {
       PageActionPassKey pass_key,
       const std::optional<ui::ImageModel>& override_image,
       PageActionColorSource color_source,
-      std::optional<int> animation_resource_id) = 0;
+      std::optional<PageActionAnimationParams> animation_parameters) = 0;
   virtual void SetOverrideTooltip(
       PageActionPassKey pass_key,
       const std::optional<std::u16string>& override_tooltip) = 0;
@@ -110,7 +110,8 @@ class PageActionModelInterface {
   virtual bool ShouldShowAnchoredMessage() const = 0;
   virtual bool IsAnchoredMessageShowing() const = 0;
   virtual const ui::ImageModel& GetImage() const = 0;
-  virtual int GetImageAnimationResourceId() const = 0;
+  virtual std::optional<PageActionAnimationParams> GetImageAnimationParameters()
+      const = 0;
   virtual const std::u16string& GetText() const = 0;
   virtual const std::u16string& GetTooltipText() const = 0;
   virtual const std::u16string& GetAccessibleName() const = 0;
@@ -166,11 +167,11 @@ class PageActionModel : public PageActionModelInterface {
       PageActionPassKey pass_key,
       const std::optional<std::u16string>& override_accessible_name) override;
 
-  void SetOverrideImage(PageActionPassKey pass_key,
-                        const std::optional<ui::ImageModel>& override_image,
-                        PageActionColorSource color_source,
-                        std::optional<int> animation_resource_id) override;
-
+  void SetOverrideImage(
+      PageActionPassKey pass_key,
+      const std::optional<ui::ImageModel>& override_image,
+      PageActionColorSource color_source,
+      std::optional<PageActionAnimationParams> animation_parameters) override;
   void SetOverrideTooltip(
       PageActionPassKey pass_key,
       const std::optional<std::u16string>& override_tooltip) override;
@@ -220,7 +221,8 @@ class PageActionModel : public PageActionModelInterface {
   bool IsAnchoredMessageShowing() const override;
 
   const ui::ImageModel& GetImage() const override;
-  int GetImageAnimationResourceId() const override;
+  std::optional<PageActionAnimationParams> GetImageAnimationParameters()
+      const override;
   const std::u16string& GetText() const override;
   const std::u16string& GetAccessibleName() const override;
   const std::u16string& GetAnchoredMessageText() const override;
@@ -325,7 +327,7 @@ class PageActionModel : public PageActionModelInterface {
   // When set, it will always take precedence over `action_item_image_`.
   std::optional<ui::ImageModel> override_image_;
   std::optional<PageActionColorSource> color_source_;
-  std::optional<int> image_animation_resource_id_;
+  std::optional<PageActionAnimationParams> image_animation_parameters_;
 
   // When set, it will always take precedence over `text_`.
   std::optional<std::u16string> override_text_;

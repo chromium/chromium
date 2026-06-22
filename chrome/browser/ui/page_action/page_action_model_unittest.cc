@@ -181,13 +181,15 @@ TEST_F(PageActionModelTest, OverrideImage) {
       ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/32));
   constexpr int kImageAnimationResourceId = 10;
 
+  page_actions::PageActionAnimationParams params{.resource_id =
+                                                     kImageAnimationResourceId};
+
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
   model_.SetOverrideImage(PassKey(), kOverrideImage,
-                          PageActionColorSource::kForeground,
-                          kImageAnimationResourceId);
+                          PageActionColorSource::kForeground, params);
   EXPECT_EQ(model_.GetImage(), kOverrideImage);
   EXPECT_TRUE(model_.GetShouldAnimateImage());
-  EXPECT_EQ(model_.GetImageAnimationResourceId(), kImageAnimationResourceId);
+  EXPECT_EQ(model_.GetImageAnimationParameters(), params);
 
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
   model_.SetOverrideImage(PassKey(), std::nullopt,
@@ -197,8 +199,7 @@ TEST_F(PageActionModelTest, OverrideImage) {
 
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
   model_.SetOverrideImage(PassKey(), kOverrideImage,
-                          PageActionColorSource::kForeground,
-                          kImageAnimationResourceId);
+                          PageActionColorSource::kForeground, params);
   model_.SetDidAnimateImage(PassKey());
   EXPECT_FALSE(model_.GetShouldAnimateImage());
 }

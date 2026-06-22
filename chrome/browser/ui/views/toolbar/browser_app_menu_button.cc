@@ -28,6 +28,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/throb_animation.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -113,9 +114,15 @@ void BrowserAppMenuButton::OnMenuClosed() {
         .direction =
             views::SingleAnimatedImageContainer::AnimationDirection::kForward,
         .end_behavior =
-            views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+            views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset,
+        .boundary =
+            views::SingleAnimatedImageContainer::AnimationBoundary{
+                .start_offset = 0.5f, .end_offset = 0.75f},
+        .tween = gfx::Tween::FAST_OUT_SLOW_IN_3,
+        .duration = base::Milliseconds(250)};
+
     animated_image_container().PlayAnimation(
-        {IDR_CHROME_TO_DOTS_LOTTIE, GetForegroundColor(GetState())}, config);
+        {IDR_APP_MENU_LOTTIE, GetForegroundColor(GetState())}, config);
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   AppMenuButton::OnMenuClosed();
@@ -265,9 +272,15 @@ void BrowserAppMenuButton::ButtonPressed(const ui::Event& event) {
         .direction =
             views::SingleAnimatedImageContainer::AnimationDirection::kForward,
         .end_behavior =
-            views::SingleAnimatedImageContainer::AnimationEndBehavior::kPause};
+            views::SingleAnimatedImageContainer::AnimationEndBehavior::kPause,
+        .boundary =
+            views::SingleAnimatedImageContainer::AnimationBoundary{
+                .start_offset = 0.0f, .end_offset = 0.25f},
+        .tween = gfx::Tween::FAST_OUT_SLOW_IN_3,
+        .duration = base::Milliseconds(250)};
+
     animated_image_container().PlayAnimation(
-        {IDR_DOTS_TO_CHROME_LOTTIE, GetForegroundColor(GetState())}, config);
+        {IDR_APP_MENU_LOTTIE, GetForegroundColor(GetState())}, config);
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

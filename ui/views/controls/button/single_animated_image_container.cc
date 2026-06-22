@@ -59,11 +59,7 @@ class LottieIconSource : public gfx::CanvasImageSource {
 namespace views {
 
 SingleAnimatedImageContainer::SingleAnimatedImageContainer(LabelButton* button)
-    : button_(button), slide_animation_(this) {
-  // Lottie animations have easing function embedded into them,
-  // so we use a linear tween for the slide animation.
-  slide_animation_.SetTweenType(gfx::Tween::LINEAR);
-}
+    : button_(button), slide_animation_(this) {}
 
 SingleAnimatedImageContainer::~SingleAnimatedImageContainer() {
   // The image in the image_view may still contain a reference to the
@@ -108,6 +104,18 @@ bool SingleAnimatedImageContainer::HasAnimatedImage(int resource_id) const {
   return animated_images_.contains(resource_id);
 }
 
+std::optional<float> SingleAnimatedImageContainer::animation_progress() const {
+  if (playing_animation_.has_value()) {
+    float start = playing_animation_->start_offset;
+    float end = playing_animation_->end_offset;
+
+    CHECK(start <= end);
+    return gfx::Tween::FloatValueBetween(slide_animation_.GetCurrentValue(),
+                                         start, end);
+  }
+  return std::nullopt;
+}
+
 bool SingleAnimatedImageContainer::IsShowingAnimation() const {
   // Showing animation state includes paused state at the end of a forward
   // animation.
@@ -121,23 +129,38 @@ void SingleAnimatedImageContainer::PlayAnimation(AnimationDefinition definition,
     return;
   }
 
+  ValidateConfig(config);
+  slide_animation_.SetTweenType(config.tween);
+
   if (config.direction == AnimationDirection::kForward) {
     slide_animation_.Reset(0.0f);
     AddAnimatedImage(definition.resource_id);
-    slide_animation_.SetSlideDuration(
-        animated_images_[definition.resource_id]->GetAnimationDuration());
     playing_animation_ =
-        std::make_optional<AnimationState>({definition, config.end_behavior});
+        std::make_optional<AnimationState>({definition, config});
+    if (config.boundary.has_value()) {
+      playing_animation_->start_offset = config.boundary->start_offset;
+      playing_animation_->end_offset = config.boundary->end_offset;
+    }
+    slide_animation_.SetSlideDuration(
+        config.duration.is_zero()
+            ? animated_images_[definition.resource_id]->GetAnimationDuration()
+            : config.duration);
     slide_animation_.Show();
   } else {
     CHECK(config.direction == AnimationDirection::kBackward);
     CHECK(config.end_behavior == AnimationEndBehavior::kReset);
     slide_animation_.Reset(1.0f);
     AddAnimatedImage(definition.resource_id);
-    slide_animation_.SetSlideDuration(
-        animated_images_[definition.resource_id]->GetAnimationDuration());
     playing_animation_ =
-        std::make_optional<AnimationState>({definition, config.end_behavior});
+        std::make_optional<AnimationState>({definition, config});
+    if (config.boundary.has_value()) {
+      playing_animation_->start_offset = config.boundary->start_offset;
+      playing_animation_->end_offset = config.boundary->end_offset;
+    }
+    slide_animation_.SetSlideDuration(
+        config.duration.is_zero()
+            ? animated_images_[definition.resource_id]->GetAnimationDuration()
+            : config.duration);
     slide_animation_.Hide();
   }
 }
@@ -157,11 +180,13 @@ void SingleAnimatedImageContainer::AnimationProgressed(
     return;
   }
   const gfx::Size& size = image_view->size();
+  std::optional<float> progress = animation_progress();
+  CHECK(progress.has_value());
 
   ui::ImageModel model = ui::ImageModel::FromImageSkia(
       gfx::CanvasImageSource::MakeImageSkia<LottieIconSource>(
           animated_images_[playing_animation_->definition.resource_id].get(),
-          slide_animation_.GetCurrentValue(), size.width(),
+          progress.value(), size.width(),
           playing_animation_->definition.color));
 
   image_view->SetImage(model);
@@ -171,12 +196,23 @@ void SingleAnimatedImageContainer::AnimationEnded(
     const gfx::Animation* animation) {
   CHECK(playing_animation_);
 
-  if (playing_animation_->end_behavior == AnimationEndBehavior::kReset) {
+  if (playing_animation_->config.end_behavior == AnimationEndBehavior::kReset) {
     ResetAnimation();
     UpdateImage(button_);
   }
 
   playing_animation_.reset();
+}
+
+void SingleAnimatedImageContainer::ValidateConfig(
+    const AnimationConfig& config) const {
+  if (config.boundary.has_value()) {
+    CHECK_GE(config.boundary->start_offset, 0.0f);
+    CHECK_LE(config.boundary->start_offset, 1.0f);
+    CHECK_GE(config.boundary->end_offset, 0.0f);
+    CHECK_LE(config.boundary->end_offset, 1.0f);
+    CHECK_LE(config.boundary->start_offset, config.boundary->end_offset);
+  }
 }
 
 }  // namespace views

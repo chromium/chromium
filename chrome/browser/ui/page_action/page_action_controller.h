@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/page_action/page_action_metrics_recorder_interface.h"
@@ -27,6 +28,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/animation/tween.h"
 
 namespace actions {
 class ActionItem;
@@ -70,6 +72,16 @@ enum class PageActionPriorityCategory {
   kPrivacySecurity,
   kUserInteraction,  // This priority is only used for Anchored Messages.
   kMaxValue = kUserInteraction,
+};
+
+struct PageActionAnimationParams {
+  int resource_id;
+  float start_offset = 0.0f;
+  float end_offset = 1.0f;
+  gfx::Tween::Type tween = gfx::Tween::LINEAR;
+  base::TimeDelta duration = base::Milliseconds(300);
+
+  bool operator==(const PageActionAnimationParams&) const = default;
 };
 
 // Indicates possible anchored message action icons (right side of anchored
@@ -237,17 +249,18 @@ class PageActionController {
   // provide a custom image to use for the page action for a specific context
   // (tab). The source of the icon's color can be controlled with
   // `color_source`, which defaults to using foreground color. Optionally, also
-  // plays an lottie animation specified by `animation_resource_id`
+  // plays an lottie animation specified by `animation_parameters`
   // when setting the new override image.
   virtual void OverrideImage(actions::ActionId action_id,
                              const ui::ImageModel& override_image) = 0;
   virtual void OverrideImage(actions::ActionId action_id,
                              const ui::ImageModel& override_image,
                              PageActionColorSource color_source) = 0;
-  virtual void OverrideImage(actions::ActionId action_id,
-                             const ui::ImageModel& override_image,
-                             PageActionColorSource color_source,
-                             std::optional<int> animation_resource_id) = 0;
+  virtual void OverrideImage(
+      actions::ActionId action_id,
+      const ui::ImageModel& override_image,
+      PageActionColorSource color_source,
+      std::optional<PageActionAnimationParams> animation_parameters) = 0;
 
   virtual void ClearOverrideImage(actions::ActionId action_id) = 0;
 
@@ -367,10 +380,11 @@ class PageActionControllerImpl : public PageActionController,
   void OverrideImage(actions::ActionId action_id,
                      const ui::ImageModel& override_image,
                      PageActionColorSource color_source) override;
-  void OverrideImage(actions::ActionId action_id,
-                     const ui::ImageModel& override_image,
-                     PageActionColorSource color_source,
-                     std::optional<int> animation_resource_id) override;
+  void OverrideImage(
+      actions::ActionId action_id,
+      const ui::ImageModel& override_image,
+      PageActionColorSource color_source,
+      std::optional<PageActionAnimationParams> animation_parameters) override;
   void ClearOverrideImage(actions::ActionId action_id) override;
   void OverrideTooltip(actions::ActionId action_id,
                        const std::u16string& override_tooltip) override;

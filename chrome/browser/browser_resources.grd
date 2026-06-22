@@ -63,17 +63,14 @@
         <structure type="lottie" name="IDR_WALLET_PASS_SAVE_TRANSPORT_TICKET_LOTTIE" file="resources/wallet/wallet_save_transport_ticket.json" compress="brotli" />
 
         <!-- Toolbar Lottie resources -->
-        <structure type="lottie" name="IDR_PAGE_INFO_OPEN_LOTTIE" file="resources/toolbar/page_info_open.json" compress="brotli" />
-        <structure type="lottie" name="IDR_PAGE_INFO_CLOSE_LOTTIE" file="resources/toolbar/page_info_close.json" compress="brotli" />
+        <structure type="lottie" name="IDR_PAGE_INFO_LOTTIE" file="resources/toolbar/page_info.json" compress="brotli" />
         <structure type="lottie" name="IDR_RELOAD_TO_STOP_LOTTIE" file="resources/toolbar/reload_to_stop.json" compress="brotli" />
         <structure type="lottie" name="IDR_STOP_TO_RELOAD_LOTTIE" file="resources/toolbar/stop_to_reload.json" compress="brotli" />
         <structure type="lottie" name="IDR_BACK_ARROW_LOTTIE" file="resources/toolbar/back_arrow.json" compress="brotli" />
         <structure type="lottie" name="IDR_FORWARD_ARROW_LOTTIE" file="resources/toolbar/forward_arrow.json" compress="brotli" />
-        <structure type="lottie" name="IDR_UNSTAR_TO_STAR_LOTTIE" file="resources/toolbar/unstar_to_star.json" compress="brotli" />
-        <structure type="lottie" name="IDR_STAR_TO_UNSTAR_LOTTIE" file="resources/toolbar/star_to_unstar.json" compress="brotli" />
+        <structure type="lottie" name="IDR_STAR_LOTTIE" file="resources/toolbar/star.json" compress="brotli" />
         <if expr="_google_chrome">
-          <structure type="lottie" name="IDR_DOTS_TO_CHROME_LOTTIE" file="resources/toolbar/dots_to_chrome.json" compress="brotli" />
-          <structure type="lottie" name="IDR_CHROME_TO_DOTS_LOTTIE" file="resources/toolbar/chrome_to_dots.json" compress="brotli" />
+          <structure type="lottie" name="IDR_APP_MENU_LOTTIE" file="resources/toolbar/app_menu.json" compress="brotli" />
         </if>
 
         <!-- Search AI Mode Lottie resources -->

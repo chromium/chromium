@@ -364,9 +364,9 @@ void PageActionControllerImpl::OverrideImage(
     actions::ActionId action_id,
     const ui::ImageModel& override_image,
     PageActionColorSource color_source,
-    std::optional<int> animation_resource_id) {
+    std::optional<PageActionAnimationParams> animation_parameters) {
   FindPageActionModel(action_id).SetOverrideImage(
-      PageActionPassKey(), override_image, color_source, animation_resource_id);
+      PageActionPassKey(), override_image, color_source, animation_parameters);
 }
 
 void PageActionControllerImpl::ClearOverrideImage(actions::ActionId action_id) {
@@ -374,7 +374,7 @@ void PageActionControllerImpl::ClearOverrideImage(actions::ActionId action_id) {
   model.SetOverrideImage(PageActionPassKey(),
                          /*override_image=*/std::nullopt,
                          model.GetColorSource(),
-                         /*animation_resource_id=*/std::nullopt);
+                         /*animation_parameters=*/std::nullopt);
 }
 
 void PageActionControllerImpl::OverrideTooltip(

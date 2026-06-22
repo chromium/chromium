@@ -30,6 +30,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/gfx/animation/tween.h"
 
 namespace {
 
@@ -153,7 +154,12 @@ void BookmarkPageActionController::SetStarred(bool starred) {
       starred ? page_actions::PageActionColorSource::kCascadingAccent
               : page_actions::PageActionColorSource::kForeground,
       features::IsToolbarGlowUpEnabled()
-          ? std::make_optional<int>(starred ? IDR_UNSTAR_TO_STAR_LOTTIE
-                                            : IDR_STAR_TO_UNSTAR_LOTTIE)
+          ? std::make_optional<page_actions::PageActionAnimationParams>(
+                {.resource_id = IDR_STAR_LOTTIE,
+                 .start_offset = starred ? 0.0f : 0.5f,
+                 .end_offset = starred ? 0.25f : 0.75f,
+                 .tween = gfx::Tween::FAST_OUT_SLOW_IN_3,
+                 .duration = starred ? base::Milliseconds(400)
+                                     : base::Milliseconds(250)})
           : std::nullopt);
 }

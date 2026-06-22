@@ -135,7 +135,7 @@ bool PageActionModel::GetShouldAnimateChipIn() const {
 }
 
 bool PageActionModel::GetShouldAnimateImage() const {
-  return image_animation_resource_id_.has_value() && !did_animate_image_;
+  return image_animation_parameters_.has_value() && !did_animate_image_;
 }
 
 bool PageActionModel::GetShouldAnnounceChip() const {
@@ -147,9 +147,9 @@ const ui::ImageModel& PageActionModel::GetImage() const {
                                      : action_item_image_;
 }
 
-int PageActionModel::GetImageAnimationResourceId() const {
-  CHECK(image_animation_resource_id_.has_value());
-  return image_animation_resource_id_.value();
+std::optional<PageActionAnimationParams>
+PageActionModel::GetImageAnimationParameters() const {
+  return image_animation_parameters_;
 }
 
 const std::u16string& PageActionModel::GetText() const {
@@ -203,14 +203,14 @@ void PageActionModel::SetOverrideImage(
     PageActionPassKey,
     const std::optional<ui::ImageModel>& override_image,
     PageActionColorSource color_source,
-    std::optional<int> animation_resource_id) {
+    std::optional<PageActionAnimationParams> animation_parameters) {
   if (override_image_ == override_image && color_source == color_source_ &&
-      image_animation_resource_id_ == animation_resource_id) {
+      image_animation_parameters_ == animation_parameters) {
     return;
   }
   override_image_ = override_image;
   color_source_ = color_source;
-  image_animation_resource_id_ = animation_resource_id;
+  image_animation_parameters_ = animation_parameters;
   did_animate_image_ = false;
   NotifyChange(Property::kOverrideImage);
 }

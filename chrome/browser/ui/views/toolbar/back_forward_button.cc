@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 
 #include "base/metrics/user_metrics.h"
+#include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -23,6 +24,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
 
@@ -156,7 +158,12 @@ bool BackForwardButton::OnMousePressed(const ui::MouseEvent& event) {
         .direction =
             views::SingleAnimatedImageContainer::AnimationDirection::kForward,
         .end_behavior =
-            views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+            views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset,
+        .boundary =
+            views::SingleAnimatedImageContainer::AnimationBoundary{
+                .start_offset = 0.0f, .end_offset = 0.5f},
+        .tween = gfx::Tween::FAST_OUT_SLOW_IN_3,
+        .duration = base::Milliseconds(300)};
     animated_image_container().PlayAnimation(
         {direction_ == Direction::kBack ? IDR_BACK_ARROW_LOTTIE
                                         : IDR_FORWARD_ARROW_LOTTIE,

@@ -134,7 +134,8 @@ class PageActionView : public IconLabelBubbleView,
   // update the image size if needed.
   void UpdateIconImage();
 
-  void AnimateImage(int resource_id, SkColor icon_color);
+  void AnimateImage(const page_actions::PageActionAnimationParams& params,
+                    SkColor icon_color);
 
   const gfx::Insets GetInsetsForNonVectorIcon() const;
 

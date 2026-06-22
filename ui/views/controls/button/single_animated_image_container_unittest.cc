@@ -80,6 +80,7 @@ TEST_F(SingleAnimatedImageContainerTest, InitializationState) {
   EXPECT_FALSE(container_->slide_animation().is_animating());
   EXPECT_EQ(container_->slide_animation().GetCurrentValue(), 0.0f);
   EXPECT_FALSE(container_->IsShowingAnimation());
+  EXPECT_EQ(container_->animation_progress(), std::nullopt);
 }
 
 TEST_F(SingleAnimatedImageContainerTest, PlayAnimationForward) {
@@ -177,6 +178,61 @@ TEST_F(SingleAnimatedImageContainerTest, ResetAnimation) {
   container_->ResetAnimation();
   EXPECT_EQ(container_->slide_animation().GetCurrentValue(), 0.0f);
   EXPECT_FALSE(container_->IsShowingAnimation());
+}
+
+TEST_F(SingleAnimatedImageContainerTest, AnimationBoundaryOffsets) {
+  SingleAnimatedImageContainer::AnimationDefinition def{/*resource_id=*/100,
+                                                        /*color=*/SK_ColorRED};
+  SingleAnimatedImageContainer::AnimationConfig config;
+  config.direction = SingleAnimatedImageContainer::AnimationDirection::kForward;
+  config.end_behavior =
+      SingleAnimatedImageContainer::AnimationEndBehavior::kReset;
+  config.boundary = SingleAnimatedImageContainer::AnimationBoundary{
+      .start_offset = 0.25f, .end_offset = 0.75f};
+
+  container_->PlayAnimation(def, config);
+
+  // At the start of forward animation, current value of slide animation is
+  // 0.0f. animation_progress() should be mapped to start_offset (0.25f).
+  EXPECT_EQ(container_->animation_progress(), 0.25f);
+
+  // Set the slide animation value directly to 0.5f (midway).
+  // animation_progress() should be midway between 0.25f and 0.75f, which is
+  // 0.5f.
+  container_->slide_animation().Reset(0.5f);
+  EXPECT_EQ(container_->animation_progress(), 0.5f);
+
+  // Set the slide animation value directly to 1.0f (end).
+  // animation_progress() should be end_offset (0.75f).
+  container_->slide_animation().Reset(1.0f);
+  EXPECT_EQ(container_->animation_progress(), 0.75f);
+}
+
+TEST_F(SingleAnimatedImageContainerTest, AnimationBoundaryOffsetsBackward) {
+  SingleAnimatedImageContainer::AnimationDefinition def{/*resource_id=*/100,
+                                                        /*color=*/SK_ColorRED};
+  SingleAnimatedImageContainer::AnimationConfig config;
+  config.direction =
+      SingleAnimatedImageContainer::AnimationDirection::kBackward;
+  config.end_behavior =
+      SingleAnimatedImageContainer::AnimationEndBehavior::kReset;
+  config.boundary = SingleAnimatedImageContainer::AnimationBoundary{
+      .start_offset = 0.25f, .end_offset = 0.75f};
+
+  container_->PlayAnimation(def, config);
+
+  // For backward animation, slide animation starts at 1.0f and goes to 0.0f.
+  // At the start (1.0f), progress is end_offset (0.75f).
+  EXPECT_EQ(container_->slide_animation().GetCurrentValue(), 1.0f);
+  EXPECT_EQ(container_->animation_progress(), 0.75f);
+
+  // Midway (0.5f), progress is 0.5f.
+  container_->slide_animation().Reset(0.5f);
+  EXPECT_EQ(container_->animation_progress(), 0.5f);
+
+  // At the end (0.0f), progress is start_offset (0.25f).
+  container_->slide_animation().Reset(0.0f);
+  EXPECT_EQ(container_->animation_progress(), 0.25f);
 }
 
 }  // namespace views

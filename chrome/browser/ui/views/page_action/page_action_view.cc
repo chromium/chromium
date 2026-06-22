@@ -305,8 +305,10 @@ void PageActionView::UpdateIconImage() {
                                  : views::GetCascadingAccentColor(this);
 
   if (observation_.GetSource()->GetShouldAnimateImage()) {
-    int resource_id = observation_.GetSource()->GetImageAnimationResourceId();
-    AnimateImage(resource_id, icon_color);
+    std::optional<page_actions::PageActionAnimationParams> params =
+        observation_.GetSource()->GetImageAnimationParameters();
+    CHECK(params.has_value());
+    AnimateImage(params.value(), icon_color);
   }
 
   // If image does not have a vector icon, set it directly.
@@ -322,14 +324,24 @@ void PageActionView::UpdateIconImage() {
   }
 }
 
-void PageActionView::AnimateImage(int resource_id, SkColor icon_color) {
+void PageActionView::AnimateImage(
+    const page_actions::PageActionAnimationParams& params,
+    SkColor icon_color) {
   views::SingleAnimatedImageContainer::AnimationConfig config{
       .direction =
           views::SingleAnimatedImageContainer::AnimationDirection::kForward,
       .end_behavior =
-          views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+          views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset,
+      .tween = params.tween,
+      .duration = params.duration};
 
-  animated_image_container().PlayAnimation({resource_id, icon_color}, config);
+  if (params.start_offset != 0.0f || params.end_offset != 1.0f) {
+    config.boundary = views::SingleAnimatedImageContainer::AnimationBoundary{
+        .start_offset = params.start_offset, .end_offset = params.end_offset};
+  }
+
+  animated_image_container().PlayAnimation({params.resource_id, icon_color},
+                                           config);
   image_animation_started_callback_.Run();
 }
 

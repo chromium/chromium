@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -39,6 +40,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -151,18 +153,25 @@ void StarView::OnActiveStateChanged() {
     return;
   }
 
-  views::SingleAnimatedImageContainer::AnimationConfig config{
-      .direction =
-          views::SingleAnimatedImageContainer::AnimationDirection::kForward,
-      .end_behavior =
-          views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+  views::SingleAnimatedImageContainer::AnimationConfig config;
+  config.direction =
+      views::SingleAnimatedImageContainer::AnimationDirection::kForward;
+  config.end_behavior =
+      views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset;
+  config.tween = gfx::Tween::FAST_OUT_SLOW_IN_3;
 
   if (GetActive()) {
+    config.duration = base::Milliseconds(400);
+    config.boundary = views::SingleAnimatedImageContainer::AnimationBoundary{
+        .start_offset = 0.0f, .end_offset = 0.25f};
     animated_image_container().PlayAnimation(
-        {IDR_UNSTAR_TO_STAR_LOTTIE, GetForegroundColor()}, config);
+        {IDR_STAR_LOTTIE, GetForegroundColor()}, config);
   } else {
+    config.duration = base::Milliseconds(250);
+    config.boundary = views::SingleAnimatedImageContainer::AnimationBoundary{
+        .start_offset = 0.5f, .end_offset = 0.75f};
     animated_image_container().PlayAnimation(
-        {IDR_STAR_TO_UNSTAR_LOTTIE, GetForegroundColor()}, config);
+        {IDR_STAR_LOTTIE, GetForegroundColor()}, config);
   }
 }
 
