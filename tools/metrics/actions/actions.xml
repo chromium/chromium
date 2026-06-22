@@ -56348,6 +56348,24 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="WrenchMenu_Bookmarks_AlwaysHideBookmarkBar">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <description>
+    The user selected the &quot;Always Hide&quot; option for the bookmark bar
+    visibility from the three-dot app menu.
+  </description>
+</action>
+
+<action name="WrenchMenu_Bookmarks_AlwaysShowBookmarkBar">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <description>
+    The user selected the &quot;Always Show&quot; option for the bookmark bar
+    visibility from the three-dot app menu.
+  </description>
+</action>
+
 <action name="WrenchMenu_Bookmarks_ContextMenu_OpenAll">
   <owner>dfried@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -56416,6 +56434,15 @@ should be able to be added at any place in this file.
 
     This user action is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
+<action name="WrenchMenu_Bookmarks_OnlyShowBookmarkBarOnNtp">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <description>
+    The user selected the &quot;Only Show on NTP&quot; option for the bookmark
+    bar visibility from the three-dot app menu.
   </description>
 </action>
 

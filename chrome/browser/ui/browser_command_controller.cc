@@ -1120,14 +1120,20 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ToggleBookmarkBar(browser_);
       break;
     case IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW:
+      base::RecordAction(base::UserMetricsAction(
+          "WrenchMenu_Bookmarks_AlwaysShowBookmarkBar"));
       SetBookmarkBarVisibilityState(
           browser_, bookmarks::BookmarkBarVisibilityState::kAlwaysShow);
       break;
     case IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE:
+      base::RecordAction(base::UserMetricsAction(
+          "WrenchMenu_Bookmarks_AlwaysHideBookmarkBar"));
       SetBookmarkBarVisibilityState(
           browser_, bookmarks::BookmarkBarVisibilityState::kAlwaysHide);
       break;
     case IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP:
+      base::RecordAction(base::UserMetricsAction(
+          "WrenchMenu_Bookmarks_OnlyShowBookmarkBarOnNtp"));
       SetBookmarkBarVisibilityState(
           browser_, bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp);
       break;

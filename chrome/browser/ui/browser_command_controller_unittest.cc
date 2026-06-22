@@ -643,7 +643,11 @@ TEST_F(BrowserCommandControllerWithBookmarksTest,
   EXPECT_TRUE(command_controller.IsCommandEnabled(
       IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP));
 
+  base::UserActionTester user_action_tester;
+
   // Test executing visibility commands updates the pref correctly.
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "WrenchMenu_Bookmarks_AlwaysShowBookmarkBar"));
   command_controller.ExecuteCommand(
       IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW,
       blink::WebInputEvent::GetStaticTimeStampForTests());
@@ -651,7 +655,11 @@ TEST_F(BrowserCommandControllerWithBookmarksTest,
       profile()->GetPrefs()->GetInteger(
           bookmarks::prefs::kBookmarkBarVisibilityState),
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "WrenchMenu_Bookmarks_AlwaysShowBookmarkBar"));
 
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "WrenchMenu_Bookmarks_AlwaysHideBookmarkBar"));
   command_controller.ExecuteCommand(
       IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE,
       blink::WebInputEvent::GetStaticTimeStampForTests());
@@ -659,7 +667,11 @@ TEST_F(BrowserCommandControllerWithBookmarksTest,
       profile()->GetPrefs()->GetInteger(
           bookmarks::prefs::kBookmarkBarVisibilityState),
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "WrenchMenu_Bookmarks_AlwaysHideBookmarkBar"));
 
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "WrenchMenu_Bookmarks_OnlyShowBookmarkBarOnNtp"));
   command_controller.ExecuteCommand(
       IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP,
       blink::WebInputEvent::GetStaticTimeStampForTests());
@@ -667,6 +679,8 @@ TEST_F(BrowserCommandControllerWithBookmarksTest,
       profile()->GetPrefs()->GetInteger(
           bookmarks::prefs::kBookmarkBarVisibilityState),
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "WrenchMenu_Bookmarks_OnlyShowBookmarkBarOnNtp"));
 }
 
 TEST_F(BrowserCommandControllerTest,
