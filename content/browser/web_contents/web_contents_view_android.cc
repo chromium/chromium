@@ -474,22 +474,20 @@ void WebContentsViewAndroid::StartDragging(
       static_cast<RenderWidgetHostImpl*>(source_rfh.GetRenderWidgetHost());
   current_source_rwh_for_drag_ = source_rwh->GetWeakPtr();
   if (!IsDragEnabledForDropData(drop_data)) {
-    // Need to clear drag and drop state in blink.
-    OnSystemDragEnded(source_rwh);
+    ClearDragStateOnStartFailure(source_rwh);
     return;
   }
 
   gfx::NativeView native_view = GetNativeView();
   if (!native_view) {
-    // Need to clear drag and drop state in blink.
-    OnSystemDragEnded(source_rwh);
+    ClearDragStateOnStartFailure(source_rwh);
     return;
   }
 
   ClipboardEndpoint source_endpoint = CreateClipboardEndpoint(source_rfh);
 
   if (!IsDragAllowedByDataControlPolicy(source_endpoint, drop_data)) {
-    OnSystemDragEnded(source_rwh);
+    ClearDragStateOnStartFailure(source_rwh);
     return;
   }
   drag_security_info_.OnDragInitiated(source_rwh, drop_data);
@@ -514,8 +512,7 @@ void WebContentsViewAndroid::StartDragging(
   if (!native_view->StartDragAndDrop(
           gfx::ConvertToJavaBitmap(*bitmap), jdrop_data, cursor_offset.x(),
           cursor_offset.y(), drag_obj_rect.width(), drag_obj_rect.height())) {
-    // Need to clear drag and drop state in blink.
-    OnSystemDragEnded(source_rwh);
+    ClearDragStateOnStartFailure(source_rwh);
     return;
   }
 
@@ -768,6 +765,16 @@ void WebContentsViewAndroid::OnSystemDragEnded(RenderWidgetHost* source_rwh) {
       rwhva->SetTextHandlesTemporarilyHidden(false);
     }
   }
+}
+
+void WebContentsViewAndroid::ClearDragStateOnStartFailure(
+    RenderWidgetHost* source_rwh) {
+  // Notify Blink to end the drag session. Since the system/OS drag was never
+  // actually initiated, this resets renderer state without sending any DOM
+  // events.
+  OnSystemDragEnded(source_rwh);
+  current_source_rwh_for_drag_.reset();
+  drag_security_info_.OnDragEnded();
 }
 
 void WebContentsViewAndroid::OnDragEnded() {
