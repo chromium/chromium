@@ -238,7 +238,14 @@ blink::mojom::DragDataPtr DropDataToDragData(
     items.push_back(
         blink::mojom::DragItem::NewFileSystemFile(std::move(file_system_file)));
   }
-  if (!drop_data.file_contents.empty()) {
+  // A genuine file drag (a JS-constructed File round-trip or a Chromium
+  // file-promise) carries a source URL or a Content-Disposition. A plain <img>
+  // drag populates `file_contents` on macOS (kept for browser-side consumers
+  // such as Glic) but carries neither signal, so it must not surface as a File
+  // in the renderer's DataTransfer.files.
+  if (!drop_data.file_contents.empty() &&
+      (drop_data.file_contents_source_url.is_valid() ||
+       !drop_data.file_contents_content_disposition.empty())) {
     blink::mojom::DragItemBinaryPtr item = blink::mojom::DragItemBinary::New();
     item->data = mojo_base::BigBuffer(drop_data.file_contents);
     item->is_image_accessible = drop_data.file_contents_image_accessible;
