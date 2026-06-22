@@ -45,6 +45,10 @@ export const SHARE_TABS_FLYOUT_MAX_HEIGHT_PX = 344;
 // Gap between tab shared menu and context menu in px.
 const MENU_GAP = 0;
 
+// Time in MS to associate 'PointerLeave' events with
+// adding first tab.
+const FIRST_TAB_DELAY = 1000;
+
 interface ShowAtConfig {
   top?: number;
   left?: number;
@@ -117,7 +121,7 @@ export class ContextualActionMenuElement extends
         type: Boolean,
         attribute: 'context-management-enabled',
       },
-      shareTabsFlyoutOpen_: {type: Boolean},
+      shareTabsFlyoutOpen: {type: Boolean},
       shareTabsFlyoutPosition_: {type: String},
       sharingTabsText_: {type: String},
       uploadButtonDisabled: {type: Boolean},
@@ -137,6 +141,12 @@ export class ContextualActionMenuElement extends
   accessor disableAutoReposition: boolean = false;
   accessor uploadButtonDisabled: boolean = false;
   accessor isSidePanel: boolean = false;
+  accessor shareTabsFlyoutOpen: boolean = false;
+
+  private setShareTabsFlyoutOpen_(open: boolean) {
+    this.shareTabsFlyoutOpen = open;
+    this.fire('share-tabs-flyout-open-changed', {open});
+  }
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
@@ -150,13 +160,15 @@ export class ContextualActionMenuElement extends
       loadTimeData.getBoolean('ShowContextMenuHeaders');
   protected accessor contextManagementInComposeboxEnabled_: boolean =
       getLoadTimeBoolean('contextManagementInComposeboxEnabled', false);
-  protected accessor shareTabsFlyoutOpen_: boolean = false;
   protected accessor shareTabsFlyoutPosition_: string = 'right';
   protected accessor sharingTabsText_: string = '';
+  protected closeMenuOnSelect: boolean =
+      !getLoadTimeBoolean('keepMenuOpenOnTabSelectForRealbox', false);
 
   private closeTimer_: number|null = null;
   private pointerOverTrigger_: boolean = false;
   private pointerOverFlyout_: boolean = false;
+  private firstTabBeingAdded_: boolean = false;
 
   protected get supportedTools_(): Map<ToolMode, {
     icon: string,
@@ -244,7 +256,7 @@ export class ContextualActionMenuElement extends
     if (changedProperties.has('tabSuggestions') ||
         changedProperties.has('inputState')) {
       this.updateScrollable_();
-      if (this.shareTabsFlyoutOpen_) {
+      if (this.shareTabsFlyoutOpen) {
         this.updateFlyoutPosition_();
       }
     }
@@ -257,11 +269,11 @@ export class ContextualActionMenuElement extends
     this.$.menu.close();
   }
 
+  private onWindowBlur_ = this.close.bind(this);
+
   getDialog(): HTMLDialogElement {
     return this.$.menu.getDialog();
   }
-
-  private onWindowBlur_ = this.close.bind(this);
 
   private computeMenuWidth_(): number {
     return this.contextManagementInComposeboxEnabled_ ?
@@ -371,6 +383,9 @@ export class ContextualActionMenuElement extends
 
     if (this.contextManagementInComposeboxEnabled_) {
       this.updateSharingTabsText_();
+      if (this.shareTabsFlyoutOpen) {
+        this.updateFlyoutPosition_();
+      }
     }
     this.updateScrollable_();
   }
@@ -644,6 +659,14 @@ export class ContextualActionMenuElement extends
 
     assert(tabInfo);
 
+    // First tab takes ~1000ms to be added. During this time, ignore
+    // `pointerLeave` events caused by adding the first tab.
+    this.firstTabBeingAdded_ = true;
+    WindowProxy.getInstance().setTimeout(() => {
+      this.firstTabBeingAdded_ = false;
+    }, FIRST_TAB_DELAY);
+
+
     if (this.enableMultiTabSelection_ && this.isTabSelected_(tabInfo.tabId)) {
       this.deleteTabContext_(this.disabledTabIds.get(tabInfo.tabId)!);
       return;
@@ -653,13 +676,17 @@ export class ContextualActionMenuElement extends
         ComposeboxContextAddedMethod.CONTEXT_MENU, this.metricsSource_);
   }
 
-  protected deleteTabContext_(uuid: UnguessableToken) {
-    this.fire('delete-tab-context', {uuid: uuid, fromUserAction: true});
+  protected maybeCloseMenuBasedOnEntrypoint_() {
     if (!this.enableMultiTabSelection_ ||
-        this.metricsSource_ === 'NewTabPage' ||
+        (this.closeMenuOnSelect && this.metricsSource_ === 'NewTabPage') ||
         this.metricsSource_ === 'Omnibox') {
       this.$.menu.close();
     }
+  }
+
+  protected deleteTabContext_(uuid: UnguessableToken) {
+    this.fire('delete-tab-context', {uuid: uuid, fromUserAction: true});
+    this.maybeCloseMenuBasedOnEntrypoint_();
   }
 
   protected addTabContext_(tabInfo: TabInfo) {
@@ -670,11 +697,7 @@ export class ContextualActionMenuElement extends
       delayUpload: false,
       origin: TabUploadOrigin.CONTEXT_MENU,
     });
-    if (!this.enableMultiTabSelection_ ||
-        this.metricsSource_ === 'NewTabPage' ||
-        this.metricsSource_ === 'Omnibox') {
-      this.$.menu.close();
-    }
+    this.maybeCloseMenuBasedOnEntrypoint_();
   }
 
   private get hasTabSuggestions_(): boolean {
@@ -687,12 +710,15 @@ export class ContextualActionMenuElement extends
     }
     this.pointerOverTrigger_ = true;
     this.cancelCloseTimer_();
-    this.shareTabsFlyoutOpen_ = true;
+    this.setShareTabsFlyoutOpen_(true);
     this.updateFlyoutPosition_();
   }
 
   protected onShareTabsRowPointerleave_() {
     if (!this.hasTabSuggestions_) {
+      return;
+    }
+    if (this.firstTabBeingAdded_) {
       return;
     }
     this.pointerOverTrigger_ = false;
@@ -703,6 +729,7 @@ export class ContextualActionMenuElement extends
     if (!this.hasTabSuggestions_) {
       return;
     }
+    this.firstTabBeingAdded_ = false;
     this.pointerOverFlyout_ = true;
     this.cancelCloseTimer_();
   }
@@ -711,11 +738,13 @@ export class ContextualActionMenuElement extends
     if (!this.hasTabSuggestions_) {
       return;
     }
+    if (this.firstTabBeingAdded_) {
+      return;
+    }
     this.pointerOverFlyout_ = false;
     this.scheduleCloseTimer_();
   }
 
-  // For entering the tab submenu through the tab button.
   protected onShareTabsRowKeydown_(e: KeyboardEvent) {
     if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') {
       if (!this.hasTabSuggestions_) {
@@ -723,12 +752,12 @@ export class ContextualActionMenuElement extends
       }
       e.preventDefault();
       e.stopPropagation();
-      this.shareTabsFlyoutOpen_ = true;
+      this.setShareTabsFlyoutOpen_(true);
       this.updateFlyoutPosition_();
 
       this.updateComplete.then(() => {
         const firstTabItem = this.shadowRoot.querySelector<HTMLElement>(
-            '.share-tabs-flyout button.dropdown-item:not([disabled])');
+            '.share-tabs-flyout button.dropdown-item');
         if (firstTabItem) {
           firstTabItem.focus();
         }
@@ -741,7 +770,8 @@ export class ContextualActionMenuElement extends
     if (e.key === 'ArrowLeft' || e.key === 'Escape') {
       e.preventDefault();
       e.stopPropagation();
-      this.shareTabsFlyoutOpen_ = false;
+      this.setShareTabsFlyoutOpen_(false);
+
 
       const row =
           this.shadowRoot.querySelector<HTMLElement>('#shareTabsTrigger');
@@ -837,7 +867,7 @@ export class ContextualActionMenuElement extends
     this.closeTimer_ = WindowProxy.getInstance().setTimeout(() => {
       this.closeTimer_ = null;
       if (!this.pointerOverTrigger_ && !this.pointerOverFlyout_) {
-        this.shareTabsFlyoutOpen_ = false;
+        this.setShareTabsFlyoutOpen_(false);
       }
     }, SHARE_TABS_FLYOUT_CLOSE_DELAY_MS);
   }
@@ -853,7 +883,8 @@ export class ContextualActionMenuElement extends
     this.cancelCloseTimer_();
     this.pointerOverTrigger_ = false;
     this.pointerOverFlyout_ = false;
-    this.shareTabsFlyoutOpen_ = false;
+    this.setShareTabsFlyoutOpen_(false);
+
     const flyout =
         this.shadowRoot.querySelector<HTMLElement>('.share-tabs-flyout');
     if (flyout) {

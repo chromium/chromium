@@ -111,6 +111,7 @@ export const ComposeboxEmbedderMixin =
             maxSuggestions: {type: Number},
             receivedSpeech: {type: Boolean},
             result: {type: Object},
+            shareTabsFlyoutOpen: {type: Boolean},
             searchboxLayoutMode: {
               type: String,
               reflect: true,
@@ -227,6 +228,8 @@ export const ComposeboxEmbedderMixin =
         queryZpsOnLoad: boolean =
             getLoadTimeBoolean('queryZpsOnLoad', /*defaultValue=*/ true);
         contextMenuOpened: boolean = false;
+        keepMenuOpenOnTabSelectForRealbox: boolean =
+            getLoadTimeBoolean('keepMenuOpenOnTabSelectForRealbox', false);
         eventTracker: EventTracker = new EventTracker();
 
         accessor canSubmitFilesAndInput: boolean = true;
@@ -253,6 +256,11 @@ export const ComposeboxEmbedderMixin =
         accessor maxSuggestions: number|null = null;
         accessor receivedSpeech: boolean = false;
         accessor result: AutocompleteResult|null = null;
+        // Keeps track of whether the "Share Tabs" submenu/flyout in the context
+        // menu is open. This state is owned by the mixin so that it can be
+        // reset when the context menu is closed, and passed down to keep the
+        // child menu's rendering in sync.
+        accessor shareTabsFlyoutOpen: boolean = false;
         accessor searchboxLayoutMode: string = '';
         accessor searchboxNextEnabled: boolean = false;
         selectedMatch: AutocompleteMatch|null = null;
@@ -1114,13 +1122,15 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
-        onDeleteTabContext(
+        async onDeleteTabContext(
             e: CustomEvent<
                 {uuid: UnguessableToken, fromUserAction?: boolean}>) {
           this.deleteFile(e.detail.uuid, e.detail.fromUserAction);
+          await this.updateComplete;
+          this.keepMenuOpenForMultiSelection();
         }
 
-        onAddTabContext(e: CustomEvent<{
+        async onAddTabContext(e: CustomEvent<{
           id: number,
           title: string,
           url: Url,
@@ -1132,13 +1142,22 @@ export const ComposeboxEmbedderMixin =
                 this.composeboxSource, 'AimPopup', ContextType.TAB);
             this.browserTabContextAdded = true;
           }
-          this.addTabContextHandleCallback({
+          await this.addTabContextHandleCallback({
             tabId: e.detail.id,
             title: e.detail.title,
             url: e.detail.url,
             delayUpload: e.detail.delayUpload,
             origin: e.detail.origin,
           });
+          await this.updateComplete;
+          // Only keep menu open if it was from menu and not recent tab.
+          if (e.detail.origin === TabUploadOrigin.CONTEXT_MENU) {
+            this.keepMenuOpenForMultiSelection();
+          }
+        }
+
+        onShareTabsFlyoutOpenChanged(e: CustomEvent<{open: boolean}>) {
+          this.shareTabsFlyoutOpen = e.detail.open;
         }
 
         shouldShowSuggestionActivityLink(): boolean {
@@ -1198,6 +1217,11 @@ export const ComposeboxEmbedderMixin =
         }
 
         keepMenuOpenForMultiSelection() {
+          if ((this.composeboxSource === 'NewTabPage' &&
+               !this.keepMenuOpenOnTabSelectForRealbox) ||
+              (this.composeboxSource === 'Omnibox')) {
+            return;
+          }
           const entrypointAndMenu = this.getContextEntrypointElement();
           if (entrypointAndMenu) {
             (entrypointAndMenu as ContextualEntrypointAndMenuElement)
@@ -1276,6 +1300,9 @@ export const ComposeboxEmbedderMixin =
 
         async onContextMenuClosed() {
           this.contextMenuOpened = false;
+          // Force reset of the flyout open state so that the flyout is closed
+          // when the main context menu is reopened.
+          this.shareTabsFlyoutOpen = false;
 
           await this.updateComplete;
           this.focusInput();
@@ -2477,6 +2504,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   maxSuggestions: number|null;
   receivedSpeech: boolean;
   result: AutocompleteResult|null;
+  shareTabsFlyoutOpen: boolean;
   searchboxLayoutMode: string;
   isOblongShape: boolean;
   webuiOmniboxSimplificationEnabled: boolean;
@@ -2509,6 +2537,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   voiceSearchCoherenceEnabled: boolean;
   energyEffectEnabled: boolean;
   energyEffectAnimationEnabled: boolean;
+  updateComplete: Promise<boolean>;
 
   // Embedder-provided methods for DOM and Mojo access
   updateInputPlaceholder(): void;
@@ -2544,6 +2573,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   onContextMenuContainerClick(e: MouseEvent): void;
   onDeleteTabContext(
       e: CustomEvent<{uuid: UnguessableToken, fromUserAction?: boolean}>): void;
+  onShareTabsFlyoutOpenChanged(e: CustomEvent<{open: boolean}>): void;
   onAddTabContext(e: CustomEvent<{
     id: number,
     title: string,

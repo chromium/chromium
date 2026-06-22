@@ -37,6 +37,7 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
         .smartTabSharingVisible="${this.smartTabSharingVisible}"
         .disableAutoReposition="${this.disableAutoReposition}"
         .uploadButtonDisabled="${this.uploadButtonDisabled}"
+        .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"
         @close="${this.onMenuClose_}">
     </cr-composebox-contextual-action-menu>
   <!--_html_template_end_-->`;

@@ -28,6 +28,8 @@ export function getHtml(this: NtpComposeboxElement) {
       @open-file-upload="${this.onOpenFileUpload}"
       @open-drive-upload="${this.onOpenDriveUpload}"
       @smart-tab-sharing-active-changed="${this.onSmartTabSharingActiveChanged}"
+      @share-tabs-flyout-open-changed="${this.onShareTabsFlyoutOpenChanged}"
+      .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"
       .inputState="${this.inputState}"
       .usePecApi="${this.usePecApi}"
       .smartTabSharingActive="${this.smartTabSharingActive}"

@@ -32,7 +32,7 @@ export function getHtml(this: ContextualActionMenuElement) {
               <button id="shareTabsTrigger" class="dropdown-item"
                   role="menuitem"
                   aria-haspopup="menu"
-                  aria-expanded="${this.shareTabsFlyoutOpen_}"
+                  aria-expanded="${this.shareTabsFlyoutOpen}"
                   @pointerenter="${this.onShareTabsRowPointerenter_}"
                   @pointerleave="${this.onShareTabsRowPointerleave_}"
                   @keydown="${this.onShareTabsRowKeydown_}">
@@ -49,7 +49,7 @@ export function getHtml(this: ContextualActionMenuElement) {
               ${(this.tabSuggestions &&
                   this.tabSuggestions.length > 0) ? html`
               <div class="share-tabs-flyout" role="menu"
-                  ?hidden="${!this.shareTabsFlyoutOpen_}"
+                  ?hidden="${!this.shareTabsFlyoutOpen}"
                   data-position="${this.shareTabsFlyoutPosition_}"
                   @pointerenter="${this.onShareTabsFlyoutPointerenter_}"
                   @pointerleave="${this.onShareTabsFlyoutPointerleave_}"
@@ -59,7 +59,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                       id="smartTabSharingItemFlyout"
                       role="menuitemcheckbox"
                       aria-checked="false"
-                      ?hidden="${!this.shareTabsFlyoutOpen_}"
+                      ?hidden="${!this.shareTabsFlyoutOpen}"
                       @click="${this.onSmartTabSharingItemClick_}">
                     <span class="tab-title">
                       ${this.i18n('stsMegaplusShareRelevantOpenTabs')}</span>
@@ -79,7 +79,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                           ${this.getInputTypeLabel_(InputType.kBrowserTab)}
                           : ${tab.title}"
                         ?disabled="${this.isTabDisabled_(tab)}"
-                        ?hidden="${!this.shareTabsFlyoutOpen_}"
+                        ?hidden="${!this.shareTabsFlyoutOpen}"
                         @click="${this.onTabClick_}">
                     <cr-composebox-tab-favicon .url="${tab.url}"
                         .tabId="${tab.tabId}">

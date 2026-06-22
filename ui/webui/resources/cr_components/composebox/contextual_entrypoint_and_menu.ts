@@ -72,6 +72,7 @@ export class ContextualEntrypointAndMenuElement extends
       energyEffectAnimationEnabled: {type: Boolean, reflect: true},
       disableFallbackGlifAnimation: {type: Boolean},
       recentTabId: {type: Number},
+      shareTabsFlyoutOpen: {type: Boolean},
 
       // =========================================================================
       // Protected properties
@@ -97,6 +98,7 @@ export class ContextualEntrypointAndMenuElement extends
   accessor uploadButtonDisabled: boolean = false;
   accessor sharedTabs: TabInfo[] = [];
   accessor recentTabId: number|null = null;
+  accessor shareTabsFlyoutOpen: boolean = false;
 
   accessor hasImageFiles: boolean = false;
   accessor searchboxLayoutMode: string = '';

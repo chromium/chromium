@@ -35,10 +35,12 @@ export function getHtml(this: ComposeboxElement) {
         @open-drive-upload="${this.onOpenDriveUpload}"
         @smart-tab-sharing-active-changed="${
             this.onSmartTabSharingActiveChanged}"
+        @share-tabs-flyout-open-changed="${this.onShareTabsFlyoutOpenChanged}"
         .inputState="${this.inputState}"
         .usePecApi="${this.usePecApi}"
         .smartTabSharingActive="${this.smartTabSharingActive}"
         .smartTabSharingVisible="${this.smartTabSharingVisible}"
+        .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions}"
         .recentTabId="${this.recentTabId}"
