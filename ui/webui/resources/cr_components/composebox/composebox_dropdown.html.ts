@@ -10,7 +10,7 @@ export function getHtml(this: ComposeboxDropdownElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
     ${this.result?.matches.map((item, index) => html`
-      <div part="match-wrapper">
+      <div part="match-wrapper" style="--match-wrapper-index: ${index};">
         <cr-composebox-match
             id="match${index}"
             aria-label="${this.computeAriaLabel_(item)}"
