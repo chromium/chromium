@@ -153,11 +153,6 @@ export class TopToolbarElement extends CrLitElement {
 
   protected onPinClick_() {
     this.isPinned = !this.isPinned;
-    if (this.isPinned) {
-      this.browserProxy_.handler.pinSidePanel();
-    } else {
-      this.browserProxy_.handler.unpinSidePanel();
-    }
   }
 
   protected onCloseButtonClick_() {
@@ -175,6 +170,7 @@ export class TopToolbarElement extends CrLitElement {
   }
 
   protected onOverflowMenuButtonClick_(e: Event) {
+    recordAction('ContextualTasks.WebUI.UserAction.OpenOverflowMenu');
     this.$.overflowMenu.get().showAt(e.target as HTMLElement);
   }
 

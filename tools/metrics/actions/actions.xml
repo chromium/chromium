@@ -11435,12 +11435,17 @@ should be able to be added at any place in this file.
     <variant name=".OpenMyActivity"
         summary="The user opened the My Activity page."/>
     <variant name=".OpenNewThread" summary="The user opened a new thread."/>
+    <variant name=".OpenOverflowMenu"
+        summary="The user opened the overflow menu."/>
     <variant name=".OpenSourcesMenu"
         summary="The user opened the sources menu."/>
     <variant name=".OpenThreadHistory"
         summary="The user opened the thread history."/>
+    <variant name=".PinSidePanel" summary="The user pinned the side panel."/>
     <variant name=".TabFromSourcesMenuClicked"
         summary="The user clicked on a tab from the sources menu."/>
+    <variant name=".UnpinSidePanel"
+        summary="The user unpinned the side panel."/>
   </token>
 </action>
 

@@ -8,6 +8,8 @@ import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_brows
 import type {OverflowMenuElement} from 'chrome://contextual-tasks/overflow_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
@@ -106,6 +108,72 @@ suite('OverflowMenuTest', () => {
 
       helpButton.click();
       await proxy.handler.whenCalled('openFeedbackUi');
+    });
+  });
+
+  suite('PinButton', () => {
+    let metrics: MetricsTracker;
+
+    setup(async () => {
+      metrics = fakeMetricsPrivate();
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      loadTimeData.resetForTesting({
+        isSmallDeviceFormFactor: false,
+        isSidePanelPinned: false,
+        enablePinButton: true,
+        isAiPage: true,
+        isUserFeedbackAllowed: true,
+        pinTooltip: 'Pin',
+        unpinTooltip: 'Unpin',
+      });
+      overflowMenu = document.createElement('contextual-tasks-overflow-menu');
+      document.body.appendChild(overflowMenu);
+      await microtasksFinished();
+    });
+
+    test('records metrics on pin click', async () => {
+      const pinButton =
+          overflowMenu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertTrue(!!pinButton);
+
+      overflowMenu.isPinned = false;
+      await microtasksFinished();
+
+      pinButton.click();
+      await proxy.handler.whenCalled('pinSidePanel');
+
+      // Both recordUserAction and recordBoolean map to the same metric name in
+      // the fake metrics tracker, resulting in a count of 2.
+      assertEquals(
+          2, metrics.count('ContextualTasks.WebUI.UserAction.PinSidePanel'));
+      assertEquals(
+          1,
+          metrics.count('ContextualTasks.WebUI.UserAction.PinSidePanel', true));
+      assertEquals(
+          0, metrics.count('ContextualTasks.WebUI.UserAction.UnpinSidePanel'));
+    });
+
+    test('records metrics on unpin click', async () => {
+      const pinButton =
+          overflowMenu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertTrue(!!pinButton);
+
+      overflowMenu.isPinned = true;
+      await microtasksFinished();
+
+      pinButton.click();
+      await proxy.handler.whenCalled('unpinSidePanel');
+
+      // Both recordUserAction and recordBoolean map to the same metric name in
+      // the fake metrics tracker, resulting in a count of 2.
+      assertEquals(
+          2, metrics.count('ContextualTasks.WebUI.UserAction.UnpinSidePanel'));
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualTasks.WebUI.UserAction.UnpinSidePanel', true));
+      assertEquals(
+          0, metrics.count('ContextualTasks.WebUI.UserAction.PinSidePanel'));
     });
   });
 });
