@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 
 /** Interface representing the bottom bar. */
@@ -27,4 +28,16 @@ public interface BottomBar {
      * @param host The new host of the bottom bar.
      */
     void setParent(@Host int host);
+
+    /** Evaluates whether to show the introductory promo dialog and shows it if eligible. */
+    boolean maybeShowPromoDialog(Profile profile);
+
+    /**
+     * Notifies the bottom bar that the startup promo flow has finished.
+     *
+     * @param promoShown True if any startup promo (or required prompt) was shown to the user during
+     *     the startup flow. If true, the bottom bar should suppress showing its own in-product help
+     *     (IPH) immediately to avoid overwhelming the user.
+     */
+    void onStartupPromoFlowFinished(boolean promoShown);
 }

@@ -35,10 +35,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
-import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicEnablingJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -62,12 +63,12 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private BottomBarPromoDialogCoordinator.BottomBarPromoDialogListener mListener;
+    @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
 
     @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
 
     private Context mContext;
     private Activity mActivity;
-    private SettableNullableObservableSupplier<Profile> mProfileSupplier;
     private SettableNonNullObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private BottomBarPromoDialogCoordinator mCoordinator;
 
@@ -75,14 +76,13 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
-        mProfileSupplier = ObservableSuppliers.createNullable();
-        mProfileSupplier.set(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         mModalDialogManagerSupplier = ObservableSuppliers.createNonNull(mModalDialogManager);
         TrackerFactory.setTrackerForTests(mTracker);
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
 
-        mCoordinator =
-                new BottomBarPromoDialogCoordinator(
-                        mActivity, mModalDialogManagerSupplier, mProfileSupplier);
+        mCoordinator = new BottomBarPromoDialogCoordinator(mActivity, mModalDialogManagerSupplier);
         mCoordinator.setListener(mListener);
     }
 
@@ -102,7 +102,7 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
                                 "Android.BottomBar.Promo.Event", BottomBarMetrics.PromoEvent.SHOWN)
                         .build();
 
-        mCoordinator.maybeShowPromoDialog();
+        mCoordinator.maybeShowPromoDialog(mProfile);
 
         watcher.assertExpected();
 
@@ -123,16 +123,14 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
                 .thenReturn(false);
 
-        mCoordinator.maybeShowPromoDialog();
+        mCoordinator.maybeShowPromoDialog(mProfile);
 
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
     }
 
     @Test
     public void testMaybeShowPromoDialog_NullProfile() {
-        mProfileSupplier.set(null);
-
-        mCoordinator.maybeShowPromoDialog();
+        mCoordinator.maybeShowPromoDialog(null);
 
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
     }
@@ -142,11 +140,11 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
                 .thenReturn(true);
 
-        mCoordinator.maybeShowPromoDialog();
+        mCoordinator.maybeShowPromoDialog(mProfile);
         verify(mModalDialogManager, times(1)).showDialog(any(), anyInt(), anyBoolean());
 
         // Second call should be a no-op because dialog is already showing
-        mCoordinator.maybeShowPromoDialog();
+        mCoordinator.maybeShowPromoDialog(mProfile);
         verify(mModalDialogManager, times(1)).showDialog(any(), anyInt(), anyBoolean());
     }
 
@@ -155,7 +153,7 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
                 .thenReturn(true);
 
-        mCoordinator.maybeShowPromoDialog();
+        mCoordinator.maybeShowPromoDialog(mProfile);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), anyInt(), anyBoolean());
         PropertyModel model = mModelCaptor.getValue();
 
@@ -187,7 +185,7 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
                 .thenReturn(true);
 
-        mCoordinator.maybeShowPromoDialog();
+        mCoordinator.maybeShowPromoDialog(mProfile);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), anyInt(), anyBoolean());
         PropertyModel model = mModelCaptor.getValue();
 
@@ -218,7 +216,7 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
                 .thenReturn(true);
 
-        mCoordinator.maybeShowPromoDialog();
+        mCoordinator.maybeShowPromoDialog(mProfile);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), anyInt(), anyBoolean());
         PropertyModel model = mModelCaptor.getValue();
 
@@ -229,5 +227,16 @@ public class BottomBarPromoDialogCoordinatorUnitTest {
         verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG);
 
         verify(mListener, never()).onPromoDialogAccepted();
+    }
+
+    @Test
+    public void testMaybeShowPromoDialog_GlicDisabled() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
+                .thenReturn(true);
+
+        mCoordinator.maybeShowPromoDialog(mProfile);
+
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
     }
 }

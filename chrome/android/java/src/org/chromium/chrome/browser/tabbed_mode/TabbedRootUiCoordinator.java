@@ -1500,6 +1500,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         || RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
                                 profile, mMessageDispatcher, mActivity);
 
+        if (mBottomBarHostManager != null) {
+            mBottomBarHostManager.onStartupPromoFlowFinished(didTriggerPromo);
+        }
+
         if (didTriggerPromo) {
             TrackerFactory.getTrackerForProfile(profile)
                     .notifyEvent(EventConstants.ANDROID_STARTUP_PROMO_SHOWN);
@@ -2372,6 +2376,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // at the front of the list of promotions.
         if (PwaRestorePromoUtils.launchPromoIfNeeded(profile, mWindowAndroid)) {
             UserEducationUtils.recordOptionalPromoType(OptionalPromoType.PWA_RESTORE_PROMO);
+            return true;
+        }
+
+        if (mBottomBarHostManager != null && mBottomBarHostManager.maybeShowPromoDialog(profile)) {
             return true;
         }
         if (FullscreenSigninPromoLauncher.launchPromoIfNeeded(
