@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.fragment.app.Fragment;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ApplicationStatus;
@@ -49,12 +51,22 @@ public class GlicNavigationUtils {
 
     /** Opens the GLIC settings page. */
     @CalledByNative
-    private static void showGlicSettings() {
+    static void showGlicSettings(@GlicSettingsPage int settingsPage) {
         Context context = ContextUtils.getApplicationContext();
 
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
-        settingsNavigation.startSettings(context, GlicSettings.class);
+        Class<? extends Fragment> fragmentClass;
+        switch (settingsPage) {
+            case GlicSettingsPage.ACTOR_LOGIN_PERMISSIONS:
+                fragmentClass = GlicActorLoginPermissionsFragment.class;
+                break;
+            case GlicSettingsPage.MAIN:
+            default:
+                fragmentClass = GlicSettings.class;
+                break;
+        }
+        settingsNavigation.startSettings(context, fragmentClass);
     }
 
     /**

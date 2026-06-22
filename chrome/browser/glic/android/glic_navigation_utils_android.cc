@@ -13,9 +13,9 @@
 
 namespace glic {
 
-void ShowGlicSettings() {
+void ShowGlicSettings(GlicSettingsPage settings_page) {
   Java_GlicNavigationUtils_showGlicSettings(
-      base::android::AttachCurrentThread());
+      base::android::AttachCurrentThread(), static_cast<int>(settings_page));
 }
 
 void ShowSignIn(Profile* profile, content::WebContents* web_contents) {

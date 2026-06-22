@@ -554,6 +554,7 @@ source_set("impl") {
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_ui_provider",
       "//chrome/browser/ui/side_panel/android",
+      "//components/password_manager/core/browser/features:password_features",
       "//ui/android",
     ]
   }

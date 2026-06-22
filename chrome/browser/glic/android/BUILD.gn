@@ -18,6 +18,10 @@ generate_jni("jni_headers") {
   ]
 }
 
+java_cpp_enum("glic_settings_enums_srcjar") {
+  sources = [ "glic_navigation_utils_android.h" ]
+}
+
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/glic_menu_dot.xml",
@@ -123,6 +127,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/glic/GlicUtils.java",
   ]
   resources_package = "org.chromium.chrome.browser.glic"
+  srcjar_deps = [ ":glic_settings_enums_srcjar" ]
 
   deps = [
     ":common_java",
