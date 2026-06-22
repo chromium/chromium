@@ -43743,6 +43743,33 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings_BookmarkBar_AlwaysHide">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <description>
+    The user selected the &quot;Always Hide&quot; option for the bookmark bar
+    visibility setting in the Settings appearance page.
+  </description>
+</action>
+
+<action name="Settings_BookmarkBar_AlwaysShow">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <description>
+    The user selected the &quot;Always Show&quot; option for the bookmark bar
+    visibility setting in the Settings appearance page.
+  </description>
+</action>
+
+<action name="Settings_BookmarkBar_OnlyShowOnNtp">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <description>
+    The user selected the &quot;Only Show on NTP&quot; option for the bookmark
+    bar visibility setting in the Settings appearance page.
+  </description>
+</action>
+
 <action name="SettingsAppMonitor.AppFocused">
   <owner>grt@chromium.org</owner>
   <description>The Windows Settings app became focused.</description>

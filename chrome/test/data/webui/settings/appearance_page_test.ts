@@ -18,9 +18,11 @@ let appearanceBrowserProxy: TestAppearanceBrowserProxy;
 let colorSchemeHandler: TestMock<CustomizeColorSchemeModeHandlerRemote>&
     CustomizeColorSchemeModeHandlerRemote;
 let colorSchemeCallbackRouter: CustomizeColorSchemeModeClientRemote;
+let metricsBrowserProxy: TestMetricsBrowserProxy;
 
 function createAppearancePage() {
   appearanceBrowserProxy.reset();
+  metricsBrowserProxy.reset();
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
   colorSchemeHandler =
@@ -145,6 +147,9 @@ suite('AppearancePage', function() {
 
     appearanceBrowserProxy = new TestAppearanceBrowserProxy();
     AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
+
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     createAppearancePage();
   });
@@ -544,6 +549,11 @@ suite('AppearancePage', function() {
             1, appearancePage.getPref('bookmark_bar.visibility_state').value);
         assertEquals('1', selectElement.value);
 
+        let action = await metricsBrowserProxy.whenCalled('recordAction');
+        assertEquals('Settings_BookmarkBar_OnlyShowOnNtp', action);
+
+        metricsBrowserProxy.resetResolver('recordAction');
+
         selectElement.value = '2';
         selectElement.dispatchEvent(new Event('change'));
         await microtasksFinished();
@@ -551,6 +561,22 @@ suite('AppearancePage', function() {
         assertEquals(
             2, appearancePage.getPref('bookmark_bar.visibility_state').value);
         assertEquals('2', selectElement.value);
+
+        action = await metricsBrowserProxy.whenCalled('recordAction');
+        assertEquals('Settings_BookmarkBar_AlwaysHide', action);
+
+        metricsBrowserProxy.resetResolver('recordAction');
+
+        selectElement.value = '0';
+        selectElement.dispatchEvent(new Event('change'));
+        await microtasksFinished();
+
+        assertEquals(
+            0, appearancePage.getPref('bookmark_bar.visibility_state').value);
+        assertEquals('0', selectElement.value);
+
+        action = await metricsBrowserProxy.whenCalled('recordAction');
+        assertEquals('Settings_BookmarkBar_AlwaysShow', action);
       });
 });
 

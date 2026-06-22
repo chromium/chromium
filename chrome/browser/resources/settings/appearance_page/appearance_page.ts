@@ -22,7 +22,7 @@ import {CustomizeColorSchemeModeBrowserProxy} from 'chrome://resources/cr_compon
 import type {CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerInterface} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 import {ColorSchemeMode} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
@@ -620,6 +620,32 @@ export class SettingsAppearancePageElement extends
     this.metricsBrowserProxy_.recordAction(
         event.detail ? 'TabStripComboButton.EverythingMenu.Pinned' :
                        'TabStripComboButton.EverythingMenu.Unpinned');
+  }
+
+  private onBookmarksBarVisibilitySettingChange_(event: Event) {
+    const dropdown = event.target as SettingsDropdownMenuElement;
+    const value = Number.parseInt(dropdown.getSelectedValue(), 10);
+    // These values map to the BookmarkBarVisibilityState enum in
+    // components/bookmarks/common/bookmark_bar_visibility_state.h.
+    switch (value) {
+      // Equivalent to `BookmarkBarVisibilityState::kAlwaysShow`.
+      case 0:
+        this.metricsBrowserProxy_.recordAction(
+            'Settings_BookmarkBar_AlwaysShow');
+        break;
+      // Equivalent to `BookmarkBarVisibilityState::kOnlyShowOnNtp`.
+      case 1:
+        this.metricsBrowserProxy_.recordAction(
+            'Settings_BookmarkBar_OnlyShowOnNtp');
+        break;
+      // Equivalent to `BookmarkBarVisibilityState::kAlwaysHide`.
+      case 2:
+        this.metricsBrowserProxy_.recordAction(
+            'Settings_BookmarkBar_AlwaysHide');
+        break;
+      default:
+        assertNotReached();
+    }
   }
 
   private onHoverCardImagesToggleChange_(event: Event) {

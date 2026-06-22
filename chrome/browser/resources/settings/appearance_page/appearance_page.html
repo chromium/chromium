@@ -182,7 +182,9 @@
             <settings-dropdown-menu id="bookmarksBarVisibilityDropdown"
                 label="$i18n{bookmarksBar}"
                 pref="{{prefs.bookmark_bar.visibility_state}}"
-                menu-options="[[bookmarksBarOptions_]]">
+                menu-options="[[bookmarksBarOptions_]]"
+                on-settings-control-change=
+                    "onBookmarksBarVisibilitySettingChange_">
             </settings-dropdown-menu>
           </div>
         </template>
