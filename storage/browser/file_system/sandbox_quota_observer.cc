@@ -148,6 +148,10 @@ base::FileErrorOr<base::FilePath> SandboxQuotaObserver::GetUsageCachePath(
 }
 
 void SandboxQuotaObserver::ApplyPendingUsageUpdate() {
+  base::AutoLock lock(is_disabled_lock_);
+  if (is_disabled_) {
+    return;
+  }
   delayed_cache_update_helper_.Stop();
   for (const auto& path_delta_pair : pending_update_notification_)
     UpdateUsageCacheFile(path_delta_pair.first, path_delta_pair.second);
