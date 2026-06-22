@@ -252,7 +252,9 @@ class SyncConsentTest : public OobeBaseTest {
     return base::FeatureList::IsEnabled(
                syncer::kReplaceSyncPromosWithSignInPromos) &&
            base::FeatureList::IsEnabled(
-               ::switches::kChromeOsUseConsentLevelSigninForNewUsers);
+               ::switches::kChromeOsUseConsentLevelSigninForNewUsers) &&
+           !base::FeatureList::IsEnabled(
+               ::switches::kUndoChromeOsUseConsentLevelSignin);
   }
 
   std::optional<SyncConsentScreen::Result> screen_result_;

@@ -137,10 +137,10 @@ void SyncConsentScreen::MaybeLaunchSyncConsentSettings(Profile* profile) {
                   ::prefs::kShowSyncSettingsOnSessionStart);
               chrome::ShowSettingsSubPageForProfile(
                   profile,
-                  (base::FeatureList::IsEnabled(
-                       syncer::kReplaceSyncPromosWithSignInPromos) &&
+                  (!IdentityManagerFactory::GetForProfile(profile)
+                        ->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
                    base::FeatureList::IsEnabled(
-                       ::switches::kChromeOsUseConsentLevelSigninForNewUsers))
+                       syncer::kReplaceSyncPromosWithSignInPromos))
                       ? ash::chrome_urls::kAccountSubPage
                       : ash::chrome_urls::kSyncSetupSubPage);
             },
@@ -176,7 +176,9 @@ void SyncConsentScreen::Finish(Result result) {
   // Record whether the dialog was shown, skipped, etc.
   base::UmaHistogramEnumeration("OOBE.SyncConsentScreen.Behavior", behavior_);
   if (!base::FeatureList::IsEnabled(
-          ::switches::kChromeOsUseConsentLevelSigninForNewUsers)) {
+          syncer::kReplaceSyncPromosWithSignInPromos) ||
+      IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+          signin::ConsentLevel::kSync)) {
     // Record the final state of the sync service.
     syncer::SyncService* service = GetSyncService(profile_);
     bool sync_enabled = service && service->IsSyncFeatureEnabled() &&

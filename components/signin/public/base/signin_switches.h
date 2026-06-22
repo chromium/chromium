@@ -682,6 +682,13 @@ BASE_DECLARE_FEATURE(kSyncEnableBookmarksInTransportMode);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kBookmarksMigrateUiChanges);
 
+#if BUILDFLAG(IS_CHROMEOS)
+// If enabled, undoes the effect of kChromeOsUseConsentLevelSigninForNewUsers
+// by reverting the consent level to kSync.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kUndoChromeOsUseConsentLevelSignin);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // If enabled, buttons for sign-in promos / intercepts will use consistent
 // primary - tonal button class pattern.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

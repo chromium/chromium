@@ -173,14 +173,23 @@ void UpsertStubUserToAccountManager(Profile* user_profile,
       user->GetAccountId().GetGaiaId(), user->GetDisplayEmail());
 
   // 3. Set it as the Primary Account.
-  const signin::ConsentLevel consent_level =
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-              base::FeatureList::IsEnabled(
-                  syncer::kReplaceSyncPromosWithSignInPromos) &&
-              base::FeatureList::IsEnabled(
-                  ::switches::kChromeOsUseConsentLevelSigninForNewUsers)
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync;
+  const signin::ConsentLevel consent_level = [&]() {
+    if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
+        !base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos) ||
+        base::FeatureList::IsEnabled(
+            ::switches::kUndoChromeOsUseConsentLevelSignin)) {
+      return signin::ConsentLevel::kSync;
+    }
+
+    if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+        base::FeatureList::IsEnabled(
+            ::switches::kChromeOsUseConsentLevelSigninForNewUsers)) {
+      return signin::ConsentLevel::kSignin;
+    }
+
+    return signin::ConsentLevel::kSync;
+  }();
 
   identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id, consent_level,

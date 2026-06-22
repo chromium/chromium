@@ -668,13 +668,23 @@ bool MaybeShowManagedTermsOfService(Profile* profile) {
 
 signin::ConsentLevel GetExpectedConsentLevel(
     signin::IdentityManager* identity_manager) {
-  return !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-                 base::FeatureList::IsEnabled(
-                     syncer::kReplaceSyncPromosWithSignInPromos) &&
-                 base::FeatureList::IsEnabled(
-                     ::switches::kChromeOsUseConsentLevelSigninForNewUsers)
-             ? signin::ConsentLevel::kSignin
-             : signin::ConsentLevel::kSync;
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
+      !base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) ||
+      base::FeatureList::IsEnabled(
+          ::switches::kUndoChromeOsUseConsentLevelSignin)) {
+    return signin::ConsentLevel::kSync;
+  }
+
+  // If the user already has kSignin, keep it (do not migrate to kSync) unless
+  // kUndoChromeOsUseConsentLevelSignin is enabled above.
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+      base::FeatureList::IsEnabled(
+          ::switches::kChromeOsUseConsentLevelSigninForNewUsers)) {
+    return signin::ConsentLevel::kSignin;
+  }
+
+  return signin::ConsentLevel::kSync;
 }
 
 }  // namespace

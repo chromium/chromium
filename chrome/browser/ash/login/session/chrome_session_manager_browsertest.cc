@@ -514,10 +514,12 @@ class ChromeSessionManagerConsentLevelMigrationTest
           /*disabled_features=*/{});
     } else {
       // In the main test (restore), we want to test the migration to kSync.
-      // Disabling kChromeOsUseConsentLevelSigninForNewUsers should trigger the
-      // migration of the existing kSignin profile to kSync.
+      // Enabling kUndoChromeOsUseConsentLevelSignin should trigger
+      // the migration of the existing kSignin profile to kSync.
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
+          /*enabled_features=*/
+          {syncer::kReplaceSyncPromosWithSignInPromos,
+           ::switches::kUndoChromeOsUseConsentLevelSignin},
           /*disabled_features=*/{
               ::switches::kChromeOsUseConsentLevelSigninForNewUsers});
     }
