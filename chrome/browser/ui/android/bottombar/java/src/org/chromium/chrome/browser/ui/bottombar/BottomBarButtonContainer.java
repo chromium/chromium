@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.bottombar;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
@@ -17,9 +15,10 @@ import android.widget.ImageView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ui.actions.ActionId;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.ui.actions.DelegatingActionView;
 import org.chromium.chrome.browser.ui.actions.TintedActionView;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 import java.util.Objects;
 
@@ -34,6 +33,7 @@ public class BottomBarButtonContainer extends FrameLayout
     private @Nullable ColorStateList mIconTint;
     private @Nullable View mTargetView;
     private @Nullable Drawable mTargetBackground;
+    private @Nullable @BrandedColorScheme Integer mColorScheme;
 
     public BottomBarButtonContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -58,10 +58,16 @@ public class BottomBarButtonContainer extends FrameLayout
         return mTargetView;
     }
 
-    /*package*/ void inflateStub(@ActionId int actionId) {
-        inflateStub();
-        if (actionId == ActionId.APP_MENU) {
-            assumeNonNull(mTargetView).setTag(R.id.is_bottom_bar_menu_anchor, true);
+    /**
+     * Sets a custom layout resource for the ViewStub before it is inflated.
+     *
+     * @param layoutResource The layout resource to inflate.
+     */
+    /*package*/ void setStubLayoutResource(int layoutResource) {
+        assert mTargetView == null : "Stub already inflated.";
+        View child = getChildAt(0);
+        if (child instanceof ViewStub stub) {
+            stub.setLayoutResource(layoutResource);
         }
     }
 
@@ -70,30 +76,39 @@ public class BottomBarButtonContainer extends FrameLayout
         View child = getChildAt(0);
         if (child instanceof ViewStub stub) {
             mTargetView = stub.inflate();
-            if (mTargetView instanceof ImageView imageView && mIconTint != null) {
-                imageView.setImageTintList(mIconTint);
+            ColorStateList oldTint = null;
+            if (mTargetView instanceof ImageView imageView) {
+                oldTint = imageView.getImageTintList();
             }
-            if (mTargetBackground != null) {
-                mTargetView.setBackground(mTargetBackground);
-            }
+            applyColorScheme(mIconTint, oldTint);
+            applyTargetBackground();
         }
         assert mTargetView != null : "Stub inflation failed.";
     }
 
     /**
-     * Sets the tint for the icon in the target view, if it is an ImageView.
+     * Sets the color scheme and tint for the target view.
      *
      * @param tint The color state list to apply.
+     * @param colorScheme The {@link BrandedColorScheme} to apply.
      */
-    /*package*/ void setIconTint(ColorStateList tint) {
+    /*package*/ void setColorScheme(ColorStateList tint, @BrandedColorScheme int colorScheme) {
         ColorStateList oldTint = mIconTint;
         mIconTint = tint;
-        if (mTargetView instanceof ImageView imageView) {
+        mColorScheme = colorScheme;
+        applyColorScheme(mIconTint, oldTint);
+    }
+
+    private void applyColorScheme(
+            @Nullable ColorStateList newTint, @Nullable ColorStateList oldTint) {
+        if (mTargetView instanceof TintObserver observer && mColorScheme != null) {
+            observer.onTintChanged(newTint, null, mColorScheme);
+        } else if (mTargetView instanceof ImageView imageView) {
             // Only apply the new themed tint if the ImageView is currently using the old
             // themed tint. If the ImageView has a custom tint list (an active override),
             // we preserve it to prevent clobbering.
-            if (Objects.equals(imageView.getImageTintList(), oldTint)) {
-                imageView.setImageTintList(tint);
+            if (newTint != null && Objects.equals(imageView.getImageTintList(), oldTint)) {
+                imageView.setImageTintList(newTint);
             }
         }
     }
@@ -115,8 +130,11 @@ public class BottomBarButtonContainer extends FrameLayout
      */
     /*package*/ void setTargetBackground(Drawable drawable) {
         mTargetBackground = drawable;
-        if (mTargetView != null) {
-            mTargetView.setBackground(drawable);
-        }
+        applyTargetBackground();
+    }
+
+    private void applyTargetBackground() {
+        if (mTargetView == null || mTargetBackground == null) return;
+        mTargetView.setBackground(mTargetBackground);
     }
 }

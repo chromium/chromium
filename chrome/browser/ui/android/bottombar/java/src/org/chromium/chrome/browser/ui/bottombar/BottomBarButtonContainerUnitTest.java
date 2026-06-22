@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link BottomBarButtonContainer}. */
@@ -103,7 +104,7 @@ public class BottomBarButtonContainerUnitTest {
         mContainer.onFinishInflate();
 
         ColorStateList tint = ColorStateList.valueOf(Color.BLUE);
-        mContainer.setIconTint(tint);
+        mContainer.setColorScheme(tint, BrandedColorScheme.APP_DEFAULT);
 
         assertEquals(tint, mContainer.getIconTint());
         assertEquals(tint, imageView.getImageTintList());
@@ -116,7 +117,7 @@ public class BottomBarButtonContainerUnitTest {
         mContainer.onFinishInflate();
 
         ColorStateList defaultTint1 = ColorStateList.valueOf(Color.BLUE);
-        mContainer.setIconTint(defaultTint1);
+        mContainer.setColorScheme(defaultTint1, BrandedColorScheme.APP_DEFAULT);
 
         // 1. Apply an override tint directly to the ImageView (simulating ActionButtonBinder).
         ColorStateList overrideTint = ColorStateList.valueOf(Color.GREEN);
@@ -125,7 +126,7 @@ public class BottomBarButtonContainerUnitTest {
         // 2. Update the container's default tint -> should NOT apply to ImageView because it has an
         // override.
         ColorStateList defaultTint2 = ColorStateList.valueOf(Color.RED);
-        mContainer.setIconTint(defaultTint2);
+        mContainer.setColorScheme(defaultTint2, BrandedColorScheme.APP_DEFAULT);
 
         // The stored tint should be updated to the new default.
         assertEquals(defaultTint2, mContainer.getIconTint());
