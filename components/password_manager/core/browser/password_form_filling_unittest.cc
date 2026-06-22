@@ -999,4 +999,51 @@ TEST(PasswordFormFillDataTest, TestGroupedAffiliation) {
   EXPECT_TRUE(result.preferred_login.is_grouped_affiliation);
 }
 
+// Tests that `MaybeClearPasswordValues` clears the passwords of non-exact
+// matches (such as grouped credentials) when page-load filling is allowed, and
+// clears all passwords when `wait_for_username` is true.
+TEST(PasswordFormFillDataTest, MaybeClearPasswordValues) {
+  using autofill::PasswordAndMetadata;
+
+  // Create a PasswordFormFillData simulating:
+  // - preferred_login: exact match (has password)
+  // - additional_logins:
+  //   - exact match (realm is empty, has password)
+  //   - grouped match (realm is non-empty, has password)
+  PasswordFormFillData data;
+  data.preferred_login.password_value = u"preferred_password";
+  data.password_element_renderer_id =
+      FieldRendererId(123);  // Non-fallback form
+
+  PasswordAndMetadata exact_additional;
+  exact_additional.realm = "";
+  exact_additional.password_value = u"exact_password";
+  data.additional_logins.push_back(exact_additional);
+
+  PasswordAndMetadata grouped_additional;
+  grouped_additional.realm = "https://grouped.com";
+  grouped_additional.password_value = u"grouped_password";
+  data.additional_logins.push_back(grouped_additional);
+
+  // Scenario 1: wait_for_username = false (allow auto-fill on page load)
+  {
+    data.wait_for_username = false;
+    PasswordFormFillData result = autofill::MaybeClearPasswordValues(data);
+
+    EXPECT_EQ(u"preferred_password", result.preferred_login.password_value);
+    EXPECT_EQ(result.additional_logins[0].password_value, u"exact_password");
+    EXPECT_TRUE(result.additional_logins[1].password_value.empty());
+  }
+
+  // Scenario 2: wait_for_username = true (wait for user interaction)
+  {
+    data.wait_for_username = true;
+    PasswordFormFillData result = autofill::MaybeClearPasswordValues(data);
+
+    EXPECT_TRUE(result.preferred_login.password_value.empty());
+    EXPECT_TRUE(result.additional_logins[0].password_value.empty());
+    EXPECT_TRUE(result.additional_logins[1].password_value.empty());
+  }
+}
+
 }  // namespace password_manager
