@@ -23,6 +23,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//testing/gtest",
   ]
+  frameworks = [ "UniformTypeIdentifiers.framework" ]
 }
 
 source_set("web") {

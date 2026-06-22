@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 
 #import <UIKit/UIKit.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
@@ -31,6 +32,42 @@ NSData* CreateTestImageData(CGSize size) {
   return UIImagePNGRepresentation(image);
 }
 
+// Creates a test JPEG image with the given size and EXIF orientation.
+NSData* CreateTestImageDataWithOrientation(
+    CGSize size,
+    CGImagePropertyOrientation orientation) {
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.scale = 1.0;
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:size format:format];
+  UIImage* image =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+        [[UIColor blackColor] setFill];
+        [context fillRect:CGRectMake(0, 0, size.width, size.height)];
+      }];
+
+  NSMutableData* data = [NSMutableData data];
+  CGImageDestinationRef destination = CGImageDestinationCreateWithData(
+      (__bridge CFMutableDataRef)data,
+      (__bridge CFStringRef)UTTypeJPEG.identifier, 1, nil);
+  if (!destination) {
+    return nil;
+  }
+
+  NSDictionary* properties =
+      @{(__bridge id)kCGImagePropertyOrientation : @(orientation)};
+
+  CGImageDestinationAddImage(destination, image.CGImage,
+                             (__bridge CFDictionaryRef)properties);
+  if (!CGImageDestinationFinalize(destination)) {
+    CFRelease(destination);
+    return nil;
+  }
+  CFRelease(destination);
+  return data;
+}
+
 using ImageUtilTest = PlatformTest;
 
 // Tests ImageSizeFromData with valid, nil, and invalid inputs.
@@ -52,6 +89,19 @@ TEST_F(ImageUtilTest, ImageSizeFromData) {
       [@"not an image" dataUsingEncoding:NSUTF8StringEncoding]);
   EXPECT_EQ(0, size.width);
   EXPECT_EQ(0, size.height);
+}
+
+// Tests that ImageSizeFromData respects EXIF orientation and swaps dimensions
+// if needed.
+TEST_F(ImageUtilTest, ImageSizeFromDataWithOrientation) {
+  // Create a landscape image (200x100) but set orientation to Right (6),
+  // which means it should be displayed as portrait (100x200).
+  NSData* data = CreateTestImageDataWithOrientation(
+      CGSizeMake(200, 100), kCGImagePropertyOrientationRight);
+  ASSERT_TRUE(data);
+  CGSize size = ImageSizeFromData(data);
+  EXPECT_EQ(100, size.width);
+  EXPECT_EQ(200, size.height);
 }
 
 // Tests DownsampledImageFromData with normal, scaled, and larger-target cases.
