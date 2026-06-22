@@ -12,7 +12,7 @@ import {ToolMode} from 'chrome://resources/cr_components/composebox/composebox_q
 import type {ComposeboxToolChipElement} from 'chrome://resources/cr_components/composebox/composebox_tool_chip.js';
 import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
@@ -676,6 +676,31 @@ suite('ContextualTasksComposeboxTest', () => {
                 'queryAutocompleteWithSuggestInventory'));
       });
 
+  test('typing clears suggestInventory', async () => {
+    const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
+    const inputElement = innerComposebox.getInputElement().$.input;
+
+    // Set some non-default suggest inventory.
+    innerComposebox.suggestInventory = SuggestInventory.kTravel;
+    assertEquals(SuggestInventory.kTravel, innerComposebox.suggestInventory);
+
+    // Simulate typing.
+    simulateUserInput(inputElement, 'new query');
+    mockTimer.tick(300);  // Trigger debounced query.
+
+    // Verify suggestInventory is cleared.
+    assertEquals(null, innerComposebox.suggestInventory);
+
+    // Verify that the query call passed the default inventory.
+    await mockSearchboxPageHandler.whenCalled(
+        'queryAutocompleteWithSuggestInventory');
+    const calls = mockSearchboxPageHandler.getArgs(
+        'queryAutocompleteWithSuggestInventory');
+    const lastCall = calls[calls.length - 1];
+    assertEquals('new query', lastCall[0]);
+    assertEquals(SuggestInventory.kDefault, lastCall[3]);
+  });
+
   test('inputEnabled attribute reflected on composebox', async () => {
     const contextualComposebox = contextualTasksApp.$.composebox;
 
@@ -763,7 +788,7 @@ suite('ContextualTasksComposeboxTest', () => {
           matches: matches,
         });
 
-    await contextualComposebox.updateComplete;
+    innerComposebox.suggestInventory = SuggestInventory.kTravel;
 
     // Simulate Tab focus (match-focusin).
     dropdown.dispatchEvent(new CustomEvent('match-focusin', {
@@ -773,6 +798,8 @@ suite('ContextualTasksComposeboxTest', () => {
     }));
 
     await innerComposebox.updateComplete;
+    // Focusing on a suggestion should not clear suggestInventory.
+    assertEquals(SuggestInventory.kTravel, innerComposebox.suggestInventory);
 
     // Simulate pressing Enter to submit.
     dropdown.dispatchEvent(new KeyboardEvent('keydown', {

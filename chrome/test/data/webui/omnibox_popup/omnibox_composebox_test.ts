@@ -18,6 +18,7 @@ import {GlowAnimationState} from 'chrome://resources/cr_components/search/consta
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -862,6 +863,9 @@ suite('OmniboxComposeboxTest', () => {
     omniboxComposebox.files.clear();
     omniboxComposebox.files = new Map(omniboxComposebox.files);
     await microtasksFinished();
+    omniboxComposebox.suggestInventory = SuggestInventory.kTravel;
+    assertEquals(SuggestInventory.kTravel, omniboxComposebox.suggestInventory);
+
     let closeEventFired = false;
     omniboxComposebox.addEventListener('close-composebox', () => {
       closeEventFired = true;
@@ -875,6 +879,7 @@ suite('OmniboxComposeboxTest', () => {
 
     assertTrue(closeEventFired);
     assertEquals(1, testProxy.handler.getCallCount('clearFiles'));
+    assertEquals(null, omniboxComposebox.suggestInventory);
   });
 
   test('Cancel button clears input text when there is text', async () => {

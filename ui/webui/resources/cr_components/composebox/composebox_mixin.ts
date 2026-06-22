@@ -786,6 +786,8 @@ export const ComposeboxEmbedderMixin =
         }
 
         onInputInput(_e: CustomEvent<Event>) {
+          // Clear suggestInventory when the user edits query.
+          this.suggestInventory = null;
           const newInput = this.getInputElement().input;
           if (this.smartComposeEnabled && this.smartComposeInlineHint) {
             if (newInput === this.input + this.smartComposeInlineHint[0]) {
@@ -1660,6 +1662,7 @@ export const ComposeboxEmbedderMixin =
           this.getSearchboxHandler().clearFiles(
               /*shouldBlockAutoSuggestedTabs=*/ false);
           this.resetToolsAndModels();
+          this.suggestInventory = null;
           this.fire('close-composebox', {composeboxText: this.input});
         }
 
@@ -2428,6 +2431,7 @@ export const ComposeboxEmbedderMixin =
 
 export interface ComposeboxEmbedderMixinInterface extends
     I18nMixinLitInterface {
+  suggestInventory: SuggestInventory|null;
   submitting: boolean;
   addedTabsIds: Map<number, UnguessableToken>;
   aimThreadRestoredTabs: TabInfo[];

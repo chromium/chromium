@@ -10,6 +10,7 @@ import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_com
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -378,6 +379,9 @@ suite('NewTabPageComposeboxTest', () => {
     assertFalse(!!$$<HTMLElement>(testProxy.element, '#carousel'));
 
     // Close composebox.
+    testProxy.element.suggestInventory = SuggestInventory.kTravel;
+    assertEquals(SuggestInventory.kTravel, testProxy.element.suggestInventory);
+
     const whenCloseComposebox =
         eventToPromise<CustomEvent<{composeboxText: string}>>(
             'close-composebox', testProxy.element);
@@ -385,6 +389,7 @@ suite('NewTabPageComposeboxTest', () => {
         testProxy.element.getInputElement(), '#cancelIcon')!.click();
     await whenCloseComposebox;
     assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 2);
+    assertEquals(null, testProxy.element.suggestInventory);
   });
 });
 
@@ -912,6 +917,10 @@ suite('NewTabPageComposeboxTest', () => {
 
       await microtasksFinished();
 
+      testProxy.element.suggestInventory = SuggestInventory.kTravel;
+      assertEquals(
+          SuggestInventory.kTravel, testProxy.element.suggestInventory);
+
       // Close composebox.
       const whenCloseComposebox =
           eventToPromise<CustomEvent<{composeboxText: string}>>(
@@ -922,6 +931,7 @@ suite('NewTabPageComposeboxTest', () => {
       const event = await whenCloseComposebox;
       assertEquals(event.detail.composeboxText, '');
       assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 1);
+      assertEquals(null, testProxy.element.suggestInventory);
     });
 
     test('NotifySessionStarted called on composebox created', () => {
@@ -1488,6 +1498,10 @@ suite('NewTabPageComposeboxTest', () => {
           new Event('input'));
       await microtasksFinished();
 
+      testProxy.element.suggestInventory = SuggestInventory.kTravel;
+      assertEquals(
+          SuggestInventory.kTravel, testProxy.element.suggestInventory);
+
       const whenCloseComposebox =
           eventToPromise<CustomEvent<{composeboxText: string}>>(
               'close-composebox', testProxy.element);
@@ -1499,6 +1513,7 @@ suite('NewTabPageComposeboxTest', () => {
       const event = await whenCloseComposebox;
       assertEquals(event.detail.composeboxText, 'test');
       assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 1);
+      assertEquals(null, testProxy.element.suggestInventory);
     });
 
     test(
