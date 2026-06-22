@@ -965,14 +965,13 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
   // `GetLiveVersion()` and resurrect it with a new `scoped_refptr`.
   live_versions_.erase(it);
 
-  if (version->running_status() != blink::EmbeddedWorkerStatus::kStopped) {
-    // Notify all observers that this live version is stopped.
+  const bool notify_stopped =
+      version->running_status() != blink::EmbeddedWorkerStatus::kStopped;
+
+  // Notify all observers that this live version is stopped.
+  if (notify_stopped) {
     observer_list_->Notify(FROM_HERE,
                            &ServiceWorkerContextCoreObserver::OnStopped, id);
-    for (auto& observer : sync_observer_list_->observers) {
-      observer.OnStoppedSync(id, version->scope(),
-                             *version->start_worker_token());
-    }
   }
 
   // Send any final reports and allow the reporting configuration to be
@@ -985,6 +984,22 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
 
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnLiveVersionDestroyed, id);
+
+  // The synchronous observers are notified last: their callbacks can destroy
+  // the `ServiceWorkerContextWrapper`, which owns `this`, so nothing should
+  // touch `this` after the loop.
+  if (notify_stopped) {
+    std::optional<blink::ServiceWorkerToken> start_worker_token =
+        version->start_worker_token();
+    if (start_worker_token.has_value()) {
+      // Protect `sync_observer_list_` from being destroyed during the loop.
+      scoped_refptr<ServiceWorkerContextSynchronousObserverList>
+          safe_sync_observer_list = sync_observer_list_;
+      for (auto& observer : safe_sync_observer_list->observers) {
+        observer.OnStoppedSync(id, version->scope(), *start_worker_token);
+      }
+    }
+  }
 }
 
 std::vector<ServiceWorkerRegistrationInfo>
