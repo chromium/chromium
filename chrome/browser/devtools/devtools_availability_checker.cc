@@ -161,6 +161,22 @@ bool IsInspectionAllowed(Profile* profile, content::WebContents* web_contents) {
   web_contents->ForEachRenderFrameHostWithAction(
       [&](content::RenderFrameHost* frame) {
         if (!IsInspectionAllowed(profile, frame->GetLastCommittedURL())) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+          // If the disallowed URL is the PDF viewer, and it's not the primary
+          // main frame of this WebContents (i.e. it is embedded), we don't
+          // block the whole page. The PDF viewer is implemented as a component
+          // extension. Blocking inspection of the embedding page would render
+          // DevTools unusable for normal pages just because they embed a PDF.
+          // Standalone PDF viewer pages (where it is the main frame) will still
+          // be blocked if policy dictates.
+          if (frame->GetLastCommittedURL().SchemeIs(
+                  extensions::kExtensionScheme) &&
+              frame->GetLastCommittedURL().host() ==
+                  extension_misc::kPdfExtensionId &&
+              frame != web_contents->GetPrimaryMainFrame()) {
+            return content::RenderFrameHost::FrameIterationAction::kContinue;
+          }
+#endif
           is_blocked = true;
           return content::RenderFrameHost::FrameIterationAction::kStop;
         }
