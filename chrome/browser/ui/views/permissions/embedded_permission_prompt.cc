@@ -465,6 +465,9 @@ void EmbeddedPermissionPrompt::FocusThenClose() {
   // and incorrectly collapses the omnibox popup and therefore voice search.
   views::View* previously_focused_view =
       previously_focused_view_tracker_.view();
+  // Reset to avoid reuse and any re-entrancy.
+  previously_focused_view_tracker_.SetView(nullptr);
+
   // Only restore focus if the view still exists, is still drawn on screen,
   // and is still capable of receiving focus.
   if (previously_focused_view && previously_focused_view->IsDrawn() &&
@@ -479,6 +482,7 @@ void EmbeddedPermissionPrompt::FocusThenClose() {
     // ambiguous focus release.
     web_contents()->Focus();
   }
+
   CloseViewAndScrim();
 }
 
