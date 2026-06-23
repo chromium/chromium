@@ -6,9 +6,14 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -29,6 +34,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -82,30 +88,50 @@ const char kGoodStartupManifest[] =
 
 const char kBadManifest[] = "{\"version\": \"1\"}";
 
-const char kGoodServicesManifest[] =
-    "{"
-    "  \"version\": \"1.0\","
-    "  \"default_apps\": [\n"
-    "    \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n"
-    "    {\n"
-    "      \"id\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n"
-    "      \"do_not_install_for_enterprise\": true\n"
-    "    }\n"
-    "  ],\n"
-    "  \"localized_content\": {\n"
-    "    \"en-US\": {\n"
-    "      \"default_apps_folder_name\": \"EN-US OEM Name\"\n"
-    "    },\n"
-    "    \"en\": {\n"
-    "      \"default_apps_folder_name\": \"EN OEM Name\"\n"
-    "    },\n"
-    "    \"default\": {\n"
-    "      \"default_apps_folder_name\": \"Default OEM Name\"\n"
-    "    }\n"
-    "  }\n"
-    "}";
+// A manifest with a bad external_update_url.
+const char kBadServicesManifest[] = R"(
+    {
+      "version": "1.0",
+      "default_apps": [
+        {
+          "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "external_update_url": "http://evil.com/"
+        }
+      ]
+    })";
 
 const char kDummyCustomizationID[] = "test-dummy";
+
+// Returns a good services manifest. One app provides a valid (webstore) update
+// URL.
+std::string GetGoodServicesManifest() {
+  const char kGoodServicesManifest[] = R"(
+    {
+      "version": "1.0",
+      "default_apps": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        {
+          "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "do_not_install_for_enterprise": true,
+          "external_update_url": "%s"
+        }
+      ],
+      "localized_content": {
+        "en-US": {
+          "default_apps_folder_name": "EN-US OEM Name"
+        },
+        "en": {
+          "default_apps_folder_name": "EN OEM Name"
+        },
+        "default": {
+          "default_apps_folder_name": "Default OEM Name"
+        }
+      }
+    })";
+  return base::StringPrintf(
+      kGoodServicesManifest,
+      extension_urls::GetWebstoreUpdateUrl().spec().c_str());
+}
 
 }  // anonymous namespace
 
@@ -276,7 +302,7 @@ class ServicesCustomizationDocumentTest : public testing::Test {
 
 TEST_F(ServicesCustomizationDocumentTest, Basic) {
   AddCustomizationIdToVp(kDummyCustomizationID);
-  AddExpectedManifest(kDummyCustomizationID, kGoodServicesManifest);
+  AddExpectedManifest(kDummyCustomizationID, GetGoodServicesManifest());
 
   ServicesCustomizationDocument* doc =
       ServicesCustomizationDocument::GetInstance();
@@ -352,7 +378,7 @@ TEST_F(ServicesCustomizationDocumentTest, NoCustomizationIdInVpd) {
 
 TEST_F(ServicesCustomizationDocumentTest, DefaultApps) {
   AddCustomizationIdToVp(kDummyCustomizationID);
-  AddExpectedManifest(kDummyCustomizationID, kGoodServicesManifest);
+  AddExpectedManifest(kDummyCustomizationID, GetGoodServicesManifest());
 
   ServicesCustomizationDocument* doc =
       ServicesCustomizationDocument::GetInstance();
@@ -437,6 +463,62 @@ TEST_F(ServicesCustomizationDocumentTest, CustomizationManifestNotFound) {
 
   RunUntilIdle();
   EXPECT_TRUE(doc->IsReady());
+}
+
+// When `kOemAppsMustUpdateFromWebstore` is enabled (default), the bad update
+// URL in `kBadServicesManifest` causes an assertion failure. This test is
+// unlike the others (not a TEST_F) as the test suite helper objects interfere
+// with EXPECT_NOTREACHED_DEATH.
+TEST(ServicesCustomizationDocumentDeathTest, ExternalUpdateUrl_Default) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ash::features::kOemAppsMustUpdateFromWebstore);
+
+  // Manually parse the manifest to avoid the async reader.
+  std::optional<base::Value> manifest_json =
+      base::JSONReader::Read(kBadServicesManifest, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(manifest_json.has_value());
+  ASSERT_TRUE(manifest_json->is_dict());
+  const base::DictValue& manifest_dict = manifest_json->GetDict();
+
+  // Provide the manifest directly to ServicesCustomizationDocument.
+  ServicesCustomizationDocument* doc =
+      ServicesCustomizationDocument::GetInstance();
+  doc->set_root_for_test(
+      std::make_unique<base::DictValue>(manifest_dict.Clone()));
+  EXPECT_TRUE(doc->IsReady());
+
+  // Requesting the list of apps triggers an assertion failure.
+  EXPECT_DEATH(doc->GetDefaultApps(), "");
+}
+
+// When `kOemAppsMustUpdateFromWebstore` is disabled (kill switch), the bad
+// update URL in `kBadServicesManifest` is permitted.
+TEST_F(ServicesCustomizationDocumentTest, ExternalUpdateUrl_Legacy) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ash::features::kOemAppsMustUpdateFromWebstore);
+
+  AddCustomizationIdToVp(kDummyCustomizationID);
+  AddExpectedManifest(kDummyCustomizationID, kBadServicesManifest);
+
+  ServicesCustomizationDocument* doc =
+      ServicesCustomizationDocument::GetInstance();
+  EXPECT_FALSE(doc->IsReady());
+
+  doc->StartFetching();
+  RunUntilIdle();
+  EXPECT_TRUE(doc->IsReady());
+
+  auto default_apps = doc->GetDefaultApps();
+  ASSERT_TRUE(default_apps);
+  const base::DictValue* app_entry =
+      default_apps->FindDict("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+  ASSERT_TRUE(app_entry);
+  const std::string* url = app_entry->FindString(
+      extensions::ExternalProviderImpl::kExternalUpdateUrl);
+  ASSERT_TRUE(url);
+  EXPECT_EQ(*url, "http://evil.com/");
 }
 
 }  // namespace ash
