@@ -216,6 +216,16 @@ float GetScreenScale(const QScreen* screen) {
   return scale > 0 ? scale : 1.0;
 }
 
+bool IsValidIconThemeName(const QString& theme) {
+  if (theme.isEmpty() || theme == "." || theme == "..") {
+    return false;
+  }
+  if (theme.contains('/') || theme.contains('\\') || theme.contains("..")) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 QtShim::QtShim(QtInterface::Delegate* delegate, int* argc, char** argv)
@@ -275,6 +285,10 @@ FontDescription QtShim::GetFontDescription() const {
 
 Image QtShim::GetIconForContentType(const String& content_type,
                                     int size) const {
+  if (!IsValidIconThemeName(QIcon::themeName())) {
+    QIcon::setThemeName("hicolor");
+  }
+
   QMimeDatabase db;
   for (const char* mime : {content_type.c_str(), "application/octet-stream"}) {
     auto mt = db.mimeTypeForName(mime);
