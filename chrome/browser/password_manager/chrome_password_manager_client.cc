@@ -1952,7 +1952,7 @@ void ChromePasswordManagerClient::OnNonPasswordLoginDetected() {
           ? ChromePasswordManagerClient::FromWebContents(opener_web_contents)
           : nullptr;
   if (opener_client) {
-    opener_client->OnNonPasswordLoginDetected();
+    opener_client->password_manager_.OnNonPasswordLoginDetected();
     return;
   }
 
