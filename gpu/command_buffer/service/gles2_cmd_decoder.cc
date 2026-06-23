@@ -12427,11 +12427,16 @@ bool GLES2DecoderImpl::ClearLevelUsingGL(Texture* texture,
     result = true;
   }
   RestoreClearState();
-  api()->glDeleteFramebuffersEXTFn(1, &fb);
+  // Restore the previous framebuffer binding *before* deleting the temporary
+  // FBO. Some Imagination/PowerVR drivers retain an internal reference to the
+  // previously-bound FBO across bind transitions; deleting it while bound and
+  // then rebinding can dereference freed driver state. See the
+  // ensure_previous_framebuffer_not_deleted workaround.
   Framebuffer* framebuffer = GetFramebufferInfoForTarget(fb_target);
   GLuint fb_service_id =
       framebuffer ? framebuffer->service_id() : GetBackbufferServiceId();
   BindFramebuffer(fb_target, fb_service_id);
+  api()->glDeleteFramebuffersEXTFn(1, &fb);
   return result;
 }
 

@@ -543,6 +543,7 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
   }
 
  protected:
+  virtual void SetupMockGLBehaviors();
   static const int kBackBufferWidth = 128;
   static const int kBackBufferHeight = 64;
 
@@ -787,7 +788,6 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
     GLuint bound_vertex_array_object_;
   };  // class MockGLStates
 
-  void SetupMockGLBehaviors();
 
   GpuPreferences gpu_preferences_;
   ShaderTranslatorCache shader_translator_cache_;
