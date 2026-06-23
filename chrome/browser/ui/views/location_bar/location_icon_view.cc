@@ -222,26 +222,29 @@ void LocationIconView::MaybeAnimateIcon(bool open) {
       return;
     }
 
+    views::SingleAnimatedImageContainer::AnimationDefinition definition;
+    definition.resource_id = IDR_PAGE_INFO_LOTTIE;
+    definition.color = GetForegroundColor();
+
     views::SingleAnimatedImageContainer::AnimationConfig config;
-    config.tween = gfx::Tween::FAST_OUT_SLOW_IN_3,
+    config.tween = gfx::Tween::FAST_OUT_SLOW_IN_3;
     config.duration = base::Milliseconds(150);
     config.boundary = views::SingleAnimatedImageContainer::AnimationBoundary{
         .start_offset = 0.33f, .end_offset = 0.66f};
 
     if (open) {
-      config.direction =
+      definition.direction =
           views::SingleAnimatedImageContainer::AnimationDirection::kForward;
-      config.end_behavior =
+      definition.end_behavior =
           views::SingleAnimatedImageContainer::AnimationEndBehavior::kPause;
     } else {
-      config.direction =
+      definition.direction =
           views::SingleAnimatedImageContainer::AnimationDirection::kBackward;
-      config.end_behavior =
+      definition.end_behavior =
           views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset;
     }
 
-    animated_image_container().PlayAnimation(
-        {IDR_PAGE_INFO_LOTTIE, GetForegroundColor()}, config);
+    animated_image_container().PlayAnimation(definition, config);
   }
 }
 

@@ -154,10 +154,6 @@ void StarView::OnActiveStateChanged() {
   }
 
   views::SingleAnimatedImageContainer::AnimationConfig config;
-  config.direction =
-      views::SingleAnimatedImageContainer::AnimationDirection::kForward;
-  config.end_behavior =
-      views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset;
   config.tween = gfx::Tween::FAST_OUT_SLOW_IN_3;
 
   if (GetActive()) {
@@ -165,13 +161,19 @@ void StarView::OnActiveStateChanged() {
     config.boundary = views::SingleAnimatedImageContainer::AnimationBoundary{
         .start_offset = 0.0f, .end_offset = 0.25f};
     animated_image_container().PlayAnimation(
-        {IDR_STAR_LOTTIE, GetForegroundColor()}, config);
+        {IDR_STAR_LOTTIE, GetForegroundColor(),
+         views::SingleAnimatedImageContainer::AnimationDirection::kForward,
+         views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset},
+        config);
   } else {
     config.duration = base::Milliseconds(250);
     config.boundary = views::SingleAnimatedImageContainer::AnimationBoundary{
         .start_offset = 0.5f, .end_offset = 0.75f};
     animated_image_container().PlayAnimation(
-        {IDR_STAR_LOTTIE, GetForegroundColor()}, config);
+        {IDR_STAR_LOTTIE, GetForegroundColor(),
+         views::SingleAnimatedImageContainer::AnimationDirection::kForward,
+         views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset},
+        config);
   }
 }
 

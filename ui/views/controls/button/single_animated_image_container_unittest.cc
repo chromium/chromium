@@ -18,7 +18,7 @@
 
 namespace views {
 
-// Test sub-class of animated image for testing.
+// Test sub-class of animated image container for testing.
 class TestSingleAnimatedImageContainer : public SingleAnimatedImageContainer {
  public:
   using SingleAnimatedImageContainer::SingleAnimatedImageContainer;
@@ -32,6 +32,10 @@ class TestSingleAnimatedImageContainer : public SingleAnimatedImageContainer {
   gfx::SlideAnimation& slide_animation() { return slide_animation_; }
 
   int GetAnimatedImagesCount() const { return animated_images_.size(); }
+
+  void AnimationEnded(const gfx::Animation* animation) override {
+    SingleAnimatedImageContainer::AnimationEnded(animation);
+  }
 
  protected:
   std::unique_ptr<lottie::Animation> LoadAnimatedImage(
@@ -84,11 +88,12 @@ TEST_F(SingleAnimatedImageContainerTest, InitializationState) {
 }
 
 TEST_F(SingleAnimatedImageContainerTest, PlayAnimationForward) {
-  SingleAnimatedImageContainer::AnimationDefinition def{/*resource_id=*/100,
-                                                        /*color=*/SK_ColorRED};
-  SingleAnimatedImageContainer::AnimationConfig config{
+  SingleAnimatedImageContainer::AnimationDefinition def{
+      /*resource_id=*/100,
+      /*color=*/SK_ColorRED,
       SingleAnimatedImageContainer::AnimationDirection::kForward,
       SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+  SingleAnimatedImageContainer::AnimationConfig config;
 
   container_->PlayAnimation(def, config);
 
@@ -106,11 +111,12 @@ TEST_F(SingleAnimatedImageContainerTest, PlayAnimationForward) {
 }
 
 TEST_F(SingleAnimatedImageContainerTest, PlayAnimationBackward) {
-  SingleAnimatedImageContainer::AnimationDefinition def{/*resource_id=*/102,
-                                                        /*color=*/SK_ColorBLUE};
-  SingleAnimatedImageContainer::AnimationConfig config{
+  SingleAnimatedImageContainer::AnimationDefinition def{
+      /*resource_id=*/102,
+      /*color=*/SK_ColorBLUE,
       SingleAnimatedImageContainer::AnimationDirection::kBackward,
       SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+  SingleAnimatedImageContainer::AnimationConfig config;
 
   container_->PlayAnimation(def, config);
 
@@ -128,10 +134,10 @@ TEST_F(SingleAnimatedImageContainerTest, PlayAnimationBackward) {
 TEST_F(SingleAnimatedImageContainerTest, ClearAnimatedImages) {
   SingleAnimatedImageContainer::AnimationDefinition def{
       /*resource_id=*/103,
-      /*color=*/SK_ColorYELLOW};
-  SingleAnimatedImageContainer::AnimationConfig config{
+      /*color=*/SK_ColorYELLOW,
       SingleAnimatedImageContainer::AnimationDirection::kForward,
       SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+  SingleAnimatedImageContainer::AnimationConfig config;
 
   container_->PlayAnimation(def, config);
   EXPECT_EQ(container_->GetAnimatedImagesCount(), 1);
@@ -144,12 +150,12 @@ TEST_F(SingleAnimatedImageContainerTest, ClearAnimatedImages) {
 TEST_F(SingleAnimatedImageContainerTest, PauseAnimationAtEnd) {
   SingleAnimatedImageContainer::AnimationDefinition def{
       /*resource_id=*/101,
-      /*color=*/SK_ColorGREEN};
-  // Use kPause so the container freezes on the last frame instead of
-  // auto-resetting.
-  SingleAnimatedImageContainer::AnimationConfig config{
+      /*color=*/SK_ColorGREEN,
       SingleAnimatedImageContainer::AnimationDirection::kForward,
       SingleAnimatedImageContainer::AnimationEndBehavior::kPause};
+  // Use kPause so the container freezes on the last frame instead of
+  // auto-resetting.
+  SingleAnimatedImageContainer::AnimationConfig config;
 
   container_->PlayAnimation(def, config);
   EXPECT_TRUE(container_->slide_animation().is_animating());
@@ -163,11 +169,12 @@ TEST_F(SingleAnimatedImageContainerTest, PauseAnimationAtEnd) {
 }
 
 TEST_F(SingleAnimatedImageContainerTest, ResetAnimation) {
-  SingleAnimatedImageContainer::AnimationDefinition def{/*resource_id=*/102,
-                                                        /*color=*/SK_ColorBLUE};
-  SingleAnimatedImageContainer::AnimationConfig config{
+  SingleAnimatedImageContainer::AnimationDefinition def{
+      /*resource_id=*/102,
+      /*color=*/SK_ColorBLUE,
       SingleAnimatedImageContainer::AnimationDirection::kBackward,
       SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+  SingleAnimatedImageContainer::AnimationConfig config;
 
   container_->PlayAnimation(def, config);
 
@@ -181,12 +188,12 @@ TEST_F(SingleAnimatedImageContainerTest, ResetAnimation) {
 }
 
 TEST_F(SingleAnimatedImageContainerTest, AnimationBoundaryOffsets) {
-  SingleAnimatedImageContainer::AnimationDefinition def{/*resource_id=*/100,
-                                                        /*color=*/SK_ColorRED};
+  SingleAnimatedImageContainer::AnimationDefinition def{
+      /*resource_id=*/100,
+      /*color=*/SK_ColorRED,
+      SingleAnimatedImageContainer::AnimationDirection::kForward,
+      SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
   SingleAnimatedImageContainer::AnimationConfig config;
-  config.direction = SingleAnimatedImageContainer::AnimationDirection::kForward;
-  config.end_behavior =
-      SingleAnimatedImageContainer::AnimationEndBehavior::kReset;
   config.boundary = SingleAnimatedImageContainer::AnimationBoundary{
       .start_offset = 0.25f, .end_offset = 0.75f};
 
@@ -209,13 +216,12 @@ TEST_F(SingleAnimatedImageContainerTest, AnimationBoundaryOffsets) {
 }
 
 TEST_F(SingleAnimatedImageContainerTest, AnimationBoundaryOffsetsBackward) {
-  SingleAnimatedImageContainer::AnimationDefinition def{/*resource_id=*/100,
-                                                        /*color=*/SK_ColorRED};
+  SingleAnimatedImageContainer::AnimationDefinition def{
+      /*resource_id=*/100,
+      /*color=*/SK_ColorRED,
+      SingleAnimatedImageContainer::AnimationDirection::kBackward,
+      SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
   SingleAnimatedImageContainer::AnimationConfig config;
-  config.direction =
-      SingleAnimatedImageContainer::AnimationDirection::kBackward;
-  config.end_behavior =
-      SingleAnimatedImageContainer::AnimationEndBehavior::kReset;
   config.boundary = SingleAnimatedImageContainer::AnimationBoundary{
       .start_offset = 0.25f, .end_offset = 0.75f};
 
@@ -233,6 +239,88 @@ TEST_F(SingleAnimatedImageContainerTest, AnimationBoundaryOffsetsBackward) {
   // At the end (0.0f), progress is start_offset (0.25f).
   container_->slide_animation().Reset(0.0f);
   EXPECT_EQ(container_->animation_progress(), 0.25f);
+}
+
+TEST_F(SingleAnimatedImageContainerTest, PlayAnimationSequenceValidation) {
+  // 1. Forward validation success
+  {
+    SingleAnimatedImageContainer::AnimationDefinition def{
+        /*resource_id=*/105,
+        /*color=*/SK_ColorGREEN,
+        SingleAnimatedImageContainer::AnimationDirection::kForward,
+        SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+
+    SingleAnimatedImageContainer::AnimationConfig config1;
+    config1.boundary = SingleAnimatedImageContainer::AnimationBoundary{
+        .start_offset = 0.1f, .end_offset = 0.3f};
+
+    SingleAnimatedImageContainer::AnimationConfig config2;
+    config2.boundary = SingleAnimatedImageContainer::AnimationBoundary{
+        .start_offset = 0.3f, .end_offset = 0.5f};
+
+    // Should not crash.
+    container_->PlayAnimation(def, {config1, config2});
+  }
+
+  // 2. Backward validation success
+  {
+    SingleAnimatedImageContainer::AnimationDefinition def{
+        /*resource_id=*/105,
+        /*color=*/SK_ColorGREEN,
+        SingleAnimatedImageContainer::AnimationDirection::kBackward,
+        SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+
+    SingleAnimatedImageContainer::AnimationConfig config1;
+    config1.boundary = SingleAnimatedImageContainer::AnimationBoundary{
+        .start_offset = 0.5f, .end_offset = 0.7f};
+
+    SingleAnimatedImageContainer::AnimationConfig config2;
+    config2.boundary = SingleAnimatedImageContainer::AnimationBoundary{
+        .start_offset = 0.2f, .end_offset = 0.4f};
+
+    // Should not crash.
+    container_->PlayAnimation(def, {config1, config2});
+  }
+}
+
+TEST_F(SingleAnimatedImageContainerTest,
+       PlayAnimationSequenceValidationFailureForward) {
+  SingleAnimatedImageContainer::AnimationDefinition def{
+      /*resource_id=*/105,
+      /*color=*/SK_ColorGREEN,
+      SingleAnimatedImageContainer::AnimationDirection::kForward,
+      SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+
+  SingleAnimatedImageContainer::AnimationConfig config1;
+  config1.boundary = SingleAnimatedImageContainer::AnimationBoundary{
+      .start_offset = 0.1f, .end_offset = 0.3f};
+
+  // This cycle starts earlier than the previous cycle
+  SingleAnimatedImageContainer::AnimationConfig config2;
+  config2.boundary = SingleAnimatedImageContainer::AnimationBoundary{
+      .start_offset = 0.2f, .end_offset = 0.5f};
+
+  EXPECT_DEATH(container_->PlayAnimation(def, {config1, config2}), "");
+}
+
+TEST_F(SingleAnimatedImageContainerTest,
+       PlayAnimationSequenceValidationFailureBackward) {
+  SingleAnimatedImageContainer::AnimationDefinition def{
+      /*resource_id=*/105,
+      /*color=*/SK_ColorGREEN,
+      SingleAnimatedImageContainer::AnimationDirection::kBackward,
+      SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+
+  SingleAnimatedImageContainer::AnimationConfig config1;
+  config1.boundary = SingleAnimatedImageContainer::AnimationBoundary{
+      .start_offset = 0.5f, .end_offset = 0.7f};
+
+  // This cycle ends later than the previous cycle's start
+  SingleAnimatedImageContainer::AnimationConfig config2;
+  config2.boundary = SingleAnimatedImageContainer::AnimationBoundary{
+      .start_offset = 0.6f, .end_offset = 0.8f};
+
+  EXPECT_DEATH(container_->PlayAnimation(def, {config1, config2}), "");
 }
 
 }  // namespace views

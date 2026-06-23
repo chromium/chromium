@@ -328,10 +328,6 @@ void PageActionView::AnimateImage(
     const page_actions::PageActionAnimationParams& params,
     SkColor icon_color) {
   views::SingleAnimatedImageContainer::AnimationConfig config{
-      .direction =
-          views::SingleAnimatedImageContainer::AnimationDirection::kForward,
-      .end_behavior =
-          views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset,
       .tween = params.tween,
       .duration = params.duration};
 
@@ -340,8 +336,11 @@ void PageActionView::AnimateImage(
         .start_offset = params.start_offset, .end_offset = params.end_offset};
   }
 
-  animated_image_container().PlayAnimation({params.resource_id, icon_color},
-                                           config);
+  animated_image_container().PlayAnimation(
+      {params.resource_id, icon_color,
+       views::SingleAnimatedImageContainer::AnimationDirection::kForward,
+       views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset},
+      config);
   image_animation_started_callback_.Run();
 }
 

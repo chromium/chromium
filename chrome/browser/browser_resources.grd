@@ -64,8 +64,7 @@
 
         <!-- Toolbar Lottie resources -->
         <structure type="lottie" name="IDR_PAGE_INFO_LOTTIE" file="resources/toolbar/page_info.json" compress="brotli" />
-        <structure type="lottie" name="IDR_RELOAD_TO_STOP_LOTTIE" file="resources/toolbar/reload_to_stop.json" compress="brotli" />
-        <structure type="lottie" name="IDR_STOP_TO_RELOAD_LOTTIE" file="resources/toolbar/stop_to_reload.json" compress="brotli" />
+        <structure type="lottie" name="IDR_RELOAD_LOTTIE" file="resources/toolbar/reload.json" compress="brotli" />
         <structure type="lottie" name="IDR_BACK_ARROW_LOTTIE" file="resources/toolbar/back_arrow.json" compress="brotli" />
         <structure type="lottie" name="IDR_FORWARD_ARROW_LOTTIE" file="resources/toolbar/forward_arrow.json" compress="brotli" />
         <structure type="lottie" name="IDR_STAR_LOTTIE" file="resources/toolbar/star.json" compress="brotli" />

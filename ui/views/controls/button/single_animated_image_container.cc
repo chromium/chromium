@@ -125,42 +125,53 @@ bool SingleAnimatedImageContainer::IsShowingAnimation() const {
 
 void SingleAnimatedImageContainer::PlayAnimation(AnimationDefinition definition,
                                                  AnimationConfig config) {
+  PlayAnimation(definition, std::vector<AnimationConfig>{config});
+}
+
+void SingleAnimatedImageContainer::PlayAnimation(
+    AnimationDefinition definition,
+    const std::vector<AnimationConfig>& config_cycles) {
   if (!gfx::Animation::ShouldRenderRichAnimation()) {
     return;
   }
 
-  ValidateConfig(config);
+  ValidateSequence(definition, config_cycles);
+
+  AddAnimatedImage(definition.resource_id);
+  playing_animation_ = AnimationState{
+      .definition = definition, .config = config_cycles, .cycle_index = 0};
+
+  PlayNextAnimationCycle();
+}
+
+void SingleAnimatedImageContainer::PlayNextAnimationCycle() {
+  CHECK(playing_animation_);
+  const size_t index = playing_animation_->cycle_index;
+  CHECK_LT(index, playing_animation_->config.size());
+
+  const AnimationConfig& config = playing_animation_->config[index];
   slide_animation_.SetTweenType(config.tween);
 
-  if (config.direction == AnimationDirection::kForward) {
+  playing_animation_->start_offset =
+      config.boundary.has_value() ? config.boundary->start_offset : 0.0f;
+  playing_animation_->end_offset =
+      config.boundary.has_value() ? config.boundary->end_offset : 1.0f;
+  slide_animation_.SetSlideDuration(
+      config.duration.is_zero()
+          ? animated_images_[playing_animation_->definition.resource_id]
+                ->GetAnimationDuration()
+          : config.duration);
+
+  if (playing_animation_->definition.direction ==
+      AnimationDirection::kForward) {
     slide_animation_.Reset(0.0f);
-    AddAnimatedImage(definition.resource_id);
-    playing_animation_ =
-        std::make_optional<AnimationState>({definition, config});
-    if (config.boundary.has_value()) {
-      playing_animation_->start_offset = config.boundary->start_offset;
-      playing_animation_->end_offset = config.boundary->end_offset;
-    }
-    slide_animation_.SetSlideDuration(
-        config.duration.is_zero()
-            ? animated_images_[definition.resource_id]->GetAnimationDuration()
-            : config.duration);
     slide_animation_.Show();
   } else {
-    CHECK(config.direction == AnimationDirection::kBackward);
-    CHECK(config.end_behavior == AnimationEndBehavior::kReset);
+    CHECK(playing_animation_->definition.direction ==
+          AnimationDirection::kBackward);
+    CHECK(playing_animation_->definition.end_behavior ==
+          AnimationEndBehavior::kReset);
     slide_animation_.Reset(1.0f);
-    AddAnimatedImage(definition.resource_id);
-    playing_animation_ =
-        std::make_optional<AnimationState>({definition, config});
-    if (config.boundary.has_value()) {
-      playing_animation_->start_offset = config.boundary->start_offset;
-      playing_animation_->end_offset = config.boundary->end_offset;
-    }
-    slide_animation_.SetSlideDuration(
-        config.duration.is_zero()
-            ? animated_images_[definition.resource_id]->GetAnimationDuration()
-            : config.duration);
     slide_animation_.Hide();
   }
 }
@@ -196,7 +207,15 @@ void SingleAnimatedImageContainer::AnimationEnded(
     const gfx::Animation* animation) {
   CHECK(playing_animation_);
 
-  if (playing_animation_->config.end_behavior == AnimationEndBehavior::kReset) {
+  if (playing_animation_->cycle_index + 1 < playing_animation_->config.size()) {
+    ++playing_animation_->cycle_index;
+    PlayNextAnimationCycle();
+    return;
+  }
+
+  // Process the end behavior on the last cycle.
+  if (playing_animation_->definition.end_behavior ==
+      AnimationEndBehavior::kReset) {
     ResetAnimation();
     UpdateImage(button_);
   }
@@ -204,14 +223,32 @@ void SingleAnimatedImageContainer::AnimationEnded(
   playing_animation_.reset();
 }
 
-void SingleAnimatedImageContainer::ValidateConfig(
-    const AnimationConfig& config) const {
-  if (config.boundary.has_value()) {
-    CHECK_GE(config.boundary->start_offset, 0.0f);
-    CHECK_LE(config.boundary->start_offset, 1.0f);
-    CHECK_GE(config.boundary->end_offset, 0.0f);
-    CHECK_LE(config.boundary->end_offset, 1.0f);
-    CHECK_LE(config.boundary->start_offset, config.boundary->end_offset);
+void SingleAnimatedImageContainer::ValidateSequence(
+    const AnimationDefinition& definition,
+    const std::vector<AnimationConfig>& config_cycles) const {
+  for (size_t i = 0; i < config_cycles.size(); ++i) {
+    const float current_start = config_cycles[i].boundary.has_value()
+                                    ? config_cycles[i].boundary->start_offset
+                                    : 0.0f;
+    const float current_end = config_cycles[i].boundary.has_value()
+                                  ? config_cycles[i].boundary->end_offset
+                                  : 1.0f;
+    CHECK_GE(current_start, 0.0f);
+    CHECK_LE(current_end, 1.0f);
+    CHECK_LE(current_start, current_end);
+    if (i > 0) {
+      const float prev_start = config_cycles[i - 1].boundary.has_value()
+                                   ? config_cycles[i - 1].boundary->start_offset
+                                   : 0.0f;
+      const float prev_end = config_cycles[i - 1].boundary.has_value()
+                                 ? config_cycles[i - 1].boundary->end_offset
+                                 : 1.0f;
+      if (definition.direction == AnimationDirection::kForward) {
+        CHECK_GE(current_start, prev_end);
+      } else {
+        CHECK_GE(prev_start, current_end);
+      }
+    }
   }
 }
 
