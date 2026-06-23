@@ -243,6 +243,7 @@ class OnDemandUpdater {
   friend class CrOSComponentInstaller;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   friend class IwaKeyDistributionComponentInstallerPolicy;
+  friend class PlatformRuntimeComponentInstallerPolicy;
 
   // Triggers an update check for a component. |id| is a value
   // returned by GetCrxComponentID(). If an update for this component is already

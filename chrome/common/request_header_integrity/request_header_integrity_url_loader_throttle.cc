@@ -4,16 +4,21 @@
 
 #include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"
 
+#include <algorithm>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/hash/sha1.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/platform_runtime/platform_runtime_impl.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/google/core/common/google_util.h"
 #include "google_apis/google_api_keys.h"
@@ -21,6 +26,7 @@
 #include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/common/request_header_integrity/internal/build_derived_values.h"
@@ -104,6 +110,51 @@ void AddRequestIntegrityHeaderNamesToVector(std::vector<std::string>* vector) {
   vector->push_back(COPYRIGHT_HEADER_NAME);
 }
 
+void SetHeader(void* headers, const char* name, const char* value) {
+  if (!name || !value) {
+    return;
+  }
+  static_cast<net::HttpRequestHeaders*>(headers)->SetHeader(name, value);
+}
+
+bool GetHeader(void* headers,
+               const char* name,
+               char* value_buf,
+               size_t value_buf_size) {
+  if (!name || !value_buf || value_buf_size == 0) {
+    return false;
+  }
+  auto* req_headers = static_cast<net::HttpRequestHeaders*>(headers);
+  std::optional<std::string> value = req_headers->GetHeader(name);
+  if (!value) {
+    return false;
+  }
+  // SAFETY: This is a callback implementing the C-style GetHeaderFunction API.
+  // We wrap the raw pointer and size in a base::span and use bounds-safe
+  // operations for all copying.
+  auto value_span = UNSAFE_BUFFERS(base::span(value_buf, value_buf_size));
+  size_t copy_len = std::min(value->length(), value_buf_size - 1);
+  value_span.first(copy_len).copy_from(base::span(*value).first(copy_len));
+  value_span[copy_len] = '\0';
+  return true;
+}
+
+void ProcessRequestHeaders(net::HttpRequestHeaders* headers, const GURL& url) {
+  platform_runtime::PlatformRuntimeImpl* runtime =
+      platform_runtime::PlatformRuntimeImpl::GetInstance();
+  if (!runtime) {
+    return;
+  }
+  scoped_refptr<platform_runtime::PlatformRuntimeLibrary> loaded_lib =
+      runtime->GetLoadedLibrary();
+  if (!loaded_lib) {
+    return;
+  }
+
+  loaded_lib->ProcessRequestHeaders(headers, GetHeader, SetHeader,
+                                    url.spec().c_str());
+}
+
 }  // namespace
 
 RequestHeaderIntegrityURLLoaderThrottle::
@@ -117,11 +168,10 @@ void RequestHeaderIntegrityURLLoaderThrottle::DetachFromCurrentSequence() {}
 void RequestHeaderIntegrityURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
-  if (!google_util::IsGoogleAssociatedDomainUrl(request->url)) {
-    return;
+  if (google_util::IsGoogleAssociatedDomainUrl(request->url)) {
+    AddRequestIntegrityHeaders(&(request->cors_exempt_headers));
   }
-
-  AddRequestIntegrityHeaders(&(request->cors_exempt_headers));
+  ProcessRequestHeaders(&(request->cors_exempt_headers), request->url);
 }
 
 void RequestHeaderIntegrityURLLoaderThrottle::WillRedirectRequest(
@@ -136,6 +186,8 @@ void RequestHeaderIntegrityURLLoaderThrottle::WillRedirectRequest(
     AddRequestIntegrityHeaderNamesToVector(
         &headers_update_params->removed_headers);
   }
+  ProcessRequestHeaders(&headers_update_params->modified_cors_exempt_headers,
+                        redirect_info->new_url);
 }
 
 // static
@@ -161,6 +213,7 @@ void RequestHeaderIntegrityURLLoaderThrottle::
   } else {
     AddRequestIntegrityHeaderNamesToVector(&removed_headers);
   }
+  ProcessRequestHeaders(&cors_exempt_headers, url);
 }
 
 }  // namespace request_header_integrity

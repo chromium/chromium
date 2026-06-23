@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -20,7 +21,32 @@ namespace platform_runtime {
 PlatformRuntimeLibrary::PlatformRuntimeLibrary(
     base::ScopedNativeLibrary library)
     : library_(std::move(library)) {
-  // TODO(crbug.com/513193869): Retrieve and store function pointers here.
+  if (library_.is_valid()) {
+    get_library_name_ = reinterpret_cast<GetLibraryNameFunction>(
+        library_.GetFunctionPointer("GetLibraryName"));
+    process_request_headers_ = reinterpret_cast<ProcessRequestHeadersFunction>(
+        library_.GetFunctionPointer("ProcessRequestHeaders"));
+  }
+}
+
+DISABLE_CFI_DLSYM
+const char* PlatformRuntimeLibrary::GetLibraryName() {
+  if (get_library_name_) {
+    return get_library_name_();
+  }
+  return nullptr;
+}
+
+DISABLE_CFI_DLSYM
+bool PlatformRuntimeLibrary::ProcessRequestHeaders(
+    net::HttpRequestHeaders* headers,
+    GetHeaderFunction get_header,
+    SetHeaderFunction set_header,
+    const char* url) {
+  if (!process_request_headers_) {
+    return false;
+  }
+  return process_request_headers_(headers, get_header, set_header, url);
 }
 
 PlatformRuntimeLibrary::~PlatformRuntimeLibrary() = default;
@@ -43,6 +69,8 @@ void PlatformRuntimeImpl::UpdatePlatformRuntimeLibrary(
   }
 
   base::NativeLibraryLoadError error;
+  // This function must be called from a thread that allows blocking, as
+  // loading a native library involves disk I/O.
   base::NativeLibrary native_lib =
       base::LoadNativeLibrary(library_path, &error);
   if (!native_lib) {

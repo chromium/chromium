@@ -8,7 +8,10 @@ component("platform_runtime") {
     "platform_runtime_impl.cc",
     "platform_runtime_impl.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//net",
+  ]
 }
 
 source_set("unit_tests") {
@@ -22,7 +25,17 @@ source_set("unit_tests") {
   data_deps = [ ":platform_runtime_test_lib" ]
 }
 
-shared_library("platform_runtime_test_lib") {
+# TODO(crbug.com/526955821): Use loadble_module everywhere & change
+# GetNativeLibraryName() to GetLoadableModuleName().
+
+if (is_mac || is_ios) {
+  _target_type = "shared_library"
+} else {
+  _target_type = "loadable_module"
+}
+
+target(_target_type, "platform_runtime_test_lib") {
   testonly = true
   sources = [ "platform_runtime_test_lib.cc" ]
+  deps = [ "//base:compiler_specific" ]
 }

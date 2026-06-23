@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/component_updater/chrome_component_updater_configurator.h"
+#include "chrome/browser/component_updater/platform_runtime_component_installer.h"
 #include "chrome/browser/component_updater/wasm_tts_engine_component_installer.h"
 #include "chrome/common/buildflags.h"
 #include "components/component_updater/component_updater_service.h"
@@ -18,6 +19,7 @@ namespace component_updater {
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
   RegisterComponentUpdateServicePrefs(registry);
+  PlatformRuntimeComponentInstallerPolicy::RegisterPrefs(registry);
   WasmTtsEngineComponentInstallerPolicy::RegisterPrefs(registry);
 }
 

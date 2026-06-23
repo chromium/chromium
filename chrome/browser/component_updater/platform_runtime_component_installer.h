@@ -14,14 +14,28 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
+#include "components/component_updater/component_updater_service.h"
+
+class PrefRegistrySimple;
+class PrefService;
+
+namespace base {
+class Version;
+}  // namespace base
 
 namespace component_updater {
 
-BASE_DECLARE_FEATURE(kEnablePlatformRuntimeComponent);
+class PlatformRuntimeComponentInstallerTest;
 
-class ComponentUpdateService;
+inline constexpr char kPlatformRuntimeLastInstallTime[] =
+    "platform_runtime.last_install_time";
+inline constexpr char kPlatformRuntimeLastInstalledVersion[] =
+    "platform_runtime.last_installed_version";
+
+BASE_DECLARE_FEATURE(kEnablePlatformRuntimeComponent);
 
 class PlatformRuntimeComponentInstallerPolicy
     : public ComponentInstallerPolicy {
@@ -31,6 +45,22 @@ class PlatformRuntimeComponentInstallerPolicy
       const PlatformRuntimeComponentInstallerPolicy&) = delete;
   PlatformRuntimeComponentInstallerPolicy& operator=(
       const PlatformRuntimeComponentInstallerPolicy&) = delete;
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  static void UpdateOnDemand(ComponentUpdateService* cus,
+                             const std::string& id,
+                             OnDemandUpdater::Priority priority);
+
+  static bool ShouldTriggerInstallOrUpdate(ComponentUpdateService* cus,
+                                           PrefService* local_state,
+                                           const std::string& crx_id);
+
+  void ComponentReadyForTesting(const base::Version& version,
+                                const base::FilePath& install_dir,
+                                base::DictValue manifest) {
+    ComponentReady(version, install_dir, std::move(manifest));
+  }
 
  private:
   // ComponentInstallerPolicy overrides:

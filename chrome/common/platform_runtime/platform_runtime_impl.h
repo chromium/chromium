@@ -12,6 +12,7 @@
 #include "base/scoped_native_library.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "net/http/http_request_headers.h"
 
 namespace base {
 class FilePath;
@@ -27,11 +28,35 @@ class COMPONENT_EXPORT(PLATFORM_RUNTIME) PlatformRuntimeLibrary
  public:
   explicit PlatformRuntimeLibrary(base::ScopedNativeLibrary library);
 
-  // TODO(crbug.com/513193869): Add function pointers here.
+  // Returns the name of the library. Return value can be null.
+  const char* GetLibraryName();
+
+  using GetHeaderFunction = bool (*)(void* ctx,
+                                     const char* name,
+                                     char* value_buf,
+                                     size_t value_buf_size);
+  using SetHeaderFunction = void (*)(void* ctx,
+                                     const char* name,
+                                     const char* value);
+
+  // Processes the request headers for the given URL.
+  bool ProcessRequestHeaders(net::HttpRequestHeaders* headers,
+                             GetHeaderFunction get_header,
+                             SetHeaderFunction set_header,
+                             const char* url);
 
  private:
   friend class base::RefCountedThreadSafe<PlatformRuntimeLibrary>;
   ~PlatformRuntimeLibrary();
+
+  // Function pointers.
+  using GetLibraryNameFunction = const char* (*)();
+  using ProcessRequestHeadersFunction = bool (*)(void*,
+                                                 GetHeaderFunction,
+                                                 SetHeaderFunction,
+                                                 const char*);
+  GetLibraryNameFunction get_library_name_ = nullptr;
+  ProcessRequestHeadersFunction process_request_headers_ = nullptr;
 
   base::ScopedNativeLibrary library_;
 };
