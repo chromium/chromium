@@ -45,6 +45,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
@@ -86,6 +87,7 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
 
   WebUIToolbarLayoutCssHelper::SetAsRequestFilter(source);
 
+  source->AddBoolean("roundedIconsEnabled", features::IsRoundedIconsEnabled());
   source->AddBoolean("enableReloadButton",
                      features::IsWebUIReloadButtonEnabled());
   source->AddBoolean("enableHomeButton", features::IsWebUIHomeButtonEnabled());

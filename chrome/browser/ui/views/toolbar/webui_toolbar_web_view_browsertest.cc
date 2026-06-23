@@ -3234,31 +3234,35 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, RouteMediaIcons) {
 
   toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
       toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia;
-  const bool rounded_icons = features::IsRoundedIconsEnabled();
 
-  const auto kRouteMediaIcons = std::to_array<Test>({
-      {base::raw_ref(features::IsRoundedIconsEnabled()
-                         ? vector_icons::kCastIcon
-                         : vector_icons::kMediaRouterIdleChromeRefreshOldIcon),
-       std::string_view("pinned-toolbar-action:RouteMediaIdle")},
-      {base::raw_ref(
-           features::IsRoundedIconsEnabled()
-               ? vector_icons::kCastWarningIcon
-               : vector_icons::kMediaRouterWarningChromeRefreshOldIcon),
-       std::string_view("pinned-toolbar-action:RouteMediaWarning")},
-      {base::raw_ref(features::IsRoundedIconsEnabled()
-                         ? vector_icons::kCastPauseIcon
-                         : vector_icons::kMediaRouterPausedOldIcon),
-       std::string_view("pinned-toolbar-action:RouteMediaPaused")},
-      {base::raw_ref(
-           features::IsRoundedIconsEnabled()
-               ? vector_icons::kCastConnectedIcon
-               : vector_icons::kMediaRouterActiveChromeRefreshOldIcon),
-       std::string_view("pinned-toolbar-action:RouteMediaActive")},
-      {base::raw_ref(rounded_icons ? kCastIcon : kCastChromeRefreshOldIcon),
-       rounded_icons ? std::string_view("webui-toolbar:cast")
-                     : std::string_view("pinned-toolbar-action:RouteMedia")},
-  });
+  const auto kRouteMediaIcons =
+      features::IsRoundedIconsEnabled()
+          ? std::vector<Test>(
+                {{base::raw_ref(vector_icons::kCastIcon),
+                  std::string_view("webui-toolbar:cast")},
+                 {base::raw_ref(vector_icons::kCastWarningIcon),
+                  std::string_view("webui-toolbar:cast_warning")},
+                 {base::raw_ref(vector_icons::kCastPauseIcon),
+                  std::string_view("webui-toolbar:cast_pause")},
+                 {base::raw_ref(vector_icons::kCastConnectedIcon),
+                  std::string_view("webui-toolbar:cast_connected")}})
+          : std::vector<Test>(
+                {{base::raw_ref(
+                      vector_icons::kMediaRouterIdleChromeRefreshOldIcon),
+                  std::string_view(
+                      "webui-toolbar:media_router_idle_chrome_refresh_old")},
+                 {base::raw_ref(
+                      vector_icons::kMediaRouterWarningChromeRefreshOldIcon),
+                  std::string_view(
+                      "webui-toolbar:media_router_warning_chrome_refresh_old")},
+                 {base::raw_ref(vector_icons::kMediaRouterPausedOldIcon),
+                  std::string_view("webui-toolbar:media_router_paused_old")},
+                 {base::raw_ref(
+                      vector_icons::kMediaRouterActiveChromeRefreshOldIcon),
+                  std::string_view(
+                      "webui-toolbar:media_router_active_chrome_refresh_old")},
+                 {base::raw_ref(kCastChromeRefreshOldIcon),
+                  std::string_view("webui-toolbar:cast_chrome_refresh_old")}});
 
   for (const auto& test : kRouteMediaIcons) {
     SCOPED_TRACE(test.expected_icon);
@@ -3294,19 +3298,14 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   PinAction(
       kActionShowPasswordsBubbleOrPage,
       toolbar_ui_api::mojom::PinnedToolbarAction::kShowPasswordsBubbleOrPage);
-  // This one gets handled via style.
-  EXPECT_EQ("(null)", EvalJsOnPinnedButton(
-                          web_contents,
-                          toolbar_ui_api::mojom::PinnedToolbarAction::
-                              kShowPasswordsBubbleOrPage,
-                          "return btn?.getAttribute('iron-icon') || '(null)'"));
-  EXPECT_EQ(
-      "--cr-icon-image: url(rhs_icons/password_manager.svg);"
-      "--cr-icon-button-fill-color: rgba(255, 255, 0, 1.00);",
-      EvalJsOnPinnedButton(web_contents,
-                           toolbar_ui_api::mojom::PinnedToolbarAction::
-                               kShowPasswordsBubbleOrPage,
-                           "return btn?.getAttribute('style') || '(null)'"));
+  EXPECT_EQ(features::IsRoundedIconsEnabled()
+                ? "webui-toolbar:password_manager"
+                : "webui-toolbar:password_manager_old",
+            EvalJsOnPinnedButton(
+                web_contents,
+                toolbar_ui_api::mojom::PinnedToolbarAction::
+                    kShowPasswordsBubbleOrPage,
+                "return btn?.getAttribute('iron-icon') || '(null)'"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, SidePanelToggle) {
@@ -3869,7 +3868,9 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   expected_icon = "internal-icons:page_insights";
 #else
-  expected_icon = "pinned-toolbar-action:SidePanelShowAboutThisSite";
+  expected_icon = features::IsRoundedIconsEnabled()
+                      ? "webui-toolbar:info"
+                      : "webui-toolbar:info_chrome_refresh_old";
 #endif
 
   // Verify iron-icon attribute in WebUI.
@@ -3899,8 +3900,8 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   expected_icon = "internal-icons:google_lens_monochrome_logo";
 #else
   expected_icon = features::IsRoundedIconsEnabled()
-                      ? "webui-toolbar:vector_icons_search"
-                      : "pinned-toolbar-action:SidePanelShowLensOverlayResults";
+                      ? "webui-toolbar:search"
+                      : "webui-toolbar:search_chrome_refresh_old_icon";
 #endif
 
   // Verify iron-icon attribute in WebUI.

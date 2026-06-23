@@ -13,15 +13,6 @@ build_webui("build") {
   static_files = [
     "browser_controls_icons/home_20.svg",
     "browser_controls_icons/home_24.svg",
-    "lhs_icons/business_chrome_refresh.svg",
-    "lhs_icons/dangerous_chrome_refresh.svg",
-    "lhs_icons/http_chrome_refresh.svg",
-    "lhs_icons/no_encryption.svg",
-    "lhs_icons/not_secure_warning_chrome_refresh_16.svg",
-    "lhs_icons/not_secure_warning_chrome_refresh_20.svg",
-    "lhs_icons/page_chrome_refresh_icon.svg",
-    "lhs_icons/product_chrome_refresh_icon.svg",
-    "lhs_icons/secure_page_info_chrome_refresh.svg",
 
     "rhs_icons/ads_chrome_refresh.svg",
     "rhs_icons/ads_off_chrome_refresh.svg",
@@ -111,7 +102,6 @@ build_webui("build") {
     "permission_dashboard.ts",
     "pinned_toolbar_action.html.ts",
     "pinned_toolbar_action.ts",
-    "pinned_toolbar_action_icons.html.ts",
     "pinned_toolbar_actions.html.ts",
     "pinned_toolbar_actions.ts",
     "pointer_proxy.ts",

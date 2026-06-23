@@ -48,16 +48,16 @@ class IconTableTest : public testing::Test, public IconTable::Delegate {
 TEST_F(IconTableTest, BasicOperation) {
   // Assuming this icon isn't mapped.
   std::optional<toolbar_ui_api::IconHandle> maybe_i0 =
-      icon_table_.RegisterVectorIcon(vector_icons::kVrHeadsetOldIcon);
+      icon_table_.RegisterVectorIcon(vector_icons::kCardboardFilledIcon);
   ASSERT_FALSE(maybe_i0.has_value());
 
   std::optional<toolbar_ui_api::IconHandle> maybe_i1 =
-      icon_table_.RegisterVectorIcon(vector_icons::kPasswordManagerOldIcon);
+      icon_table_.RegisterVectorIcon(vector_icons::kPasswordManagerIcon);
   ASSERT_TRUE(maybe_i1.has_value());
   auto i1 = std::move(maybe_i1.value());
 
   auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
-      1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
+      1u, "webui-toolbar:password_manager", IconType::kIconSet,
       /*color=*/std::nullopt);
 
   // Binding i1 in both full state and pending updates.
@@ -82,14 +82,12 @@ TEST_F(IconTableTest, BasicOperation) {
       1u, std::nullopt, IconType::kMaskUrl, /*color=*/std::nullopt);
 
   std::optional<toolbar_ui_api::IconHandle> maybe_i2 =
-      icon_table_.RegisterVectorIcon(
-          vector_icons::kHistoryChromeRefreshOldIcon);
+      icon_table_.RegisterVectorIcon(vector_icons::kHistoryIcon);
   ASSERT_TRUE(maybe_i2.has_value());
   auto i2 = maybe_i2.value();
 
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
-      2u, "pinned-toolbar-action:SidePanelShowHistoryCluster",
-      IconType::kIconSet, /*color=*/std::nullopt);
+      2u, "webui-toolbar:history", IconType::kIconSet, /*color=*/std::nullopt);
 
   // Updates has delete of i1, and addition of i2; full state just i2.
   EXPECT_THAT(icon_table_.TakePendingUpdates(),
@@ -102,12 +100,12 @@ TEST_F(IconTableTest, BasicOperation) {
 
   // Now also add i3.
   std::optional<toolbar_ui_api::IconHandle> maybe_i3 =
-      icon_table_.RegisterVectorIcon(kMenuBookChromeRefreshOldIcon);
+      icon_table_.RegisterVectorIcon(kMenuBookIcon);
   ASSERT_TRUE(maybe_i3.has_value());
   auto i3 = maybe_i3.value();
 
   auto expected_i3 = toolbar_ui_api::mojom::IconUpdate::New(
-      3u, "pinned-toolbar-action:SidePanelShowReadAnything", IconType::kIconSet,
+      3u, "webui-toolbar:menu_book", IconType::kIconSet,
       /*color=*/std::nullopt);
 
   // Update has addition of i3; full state i2 + i3.
@@ -127,11 +125,11 @@ TEST_F(IconTableTest, MakeIconTableFetcher) {
   auto icon_table_fetcher = icon_table->MakeIconTableFetcher();
 
   std::optional<toolbar_ui_api::IconHandle> maybe_i1 =
-      icon_table->RegisterVectorIcon(vector_icons::kPasswordManagerOldIcon);
+      icon_table->RegisterVectorIcon(vector_icons::kPasswordManagerIcon);
   ASSERT_TRUE(maybe_i1.has_value());
   auto i1 = maybe_i1.value();
   auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
-      1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
+      1u, "webui-toolbar:password_manager", IconType::kIconSet,
       /*color=*/std::nullopt);
 
   // Binding i1 in both full state and pending updates.
@@ -144,14 +142,12 @@ TEST_F(IconTableTest, MakeIconTableFetcher) {
 
   // Now add i2.
   std::optional<toolbar_ui_api::IconHandle> maybe_i2 =
-      icon_table->RegisterVectorIcon(
-          vector_icons::kHistoryChromeRefreshOldIcon);
+      icon_table->RegisterVectorIcon(vector_icons::kHistoryIcon);
   ASSERT_TRUE(maybe_i2.has_value());
   auto i2 = maybe_i2.value();
 
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
-      2u, "pinned-toolbar-action:SidePanelShowHistoryCluster",
-      IconType::kIconSet, /*color=*/std::nullopt);
+      2u, "webui-toolbar:history", IconType::kIconSet, /*color=*/std::nullopt);
 
   // Pending has i2, full state has both.
   EXPECT_THAT(
@@ -171,22 +167,22 @@ TEST_F(IconTableTest, MakeIconTableFetcher) {
 
 TEST_F(IconTableTest, RegisterImageModel) {
   std::optional<toolbar_ui_api::IconHandle> maybe_i0 =
-      icon_table_.RegisterVectorIcon(vector_icons::kVrHeadsetOldIcon);
+      icon_table_.RegisterVectorIcon(vector_icons::kCardboardFilledIcon);
   ASSERT_FALSE(maybe_i0.has_value())
-      << "This test assumes the kVrHeadsetOldIcon isn't mapped";
+      << "This test assumes the kCardboardFilledIcon isn't mapped";
 
   // Despite the icon not being mapped, we can bind; it'll end up a
   // data: PNG.
   toolbar_ui_api::IconHandle i1 = icon_table_.RegisterImageModel(
-      ui::ImageModel::FromVectorIcon(vector_icons::kVrHeadsetOldIcon));
+      ui::ImageModel::FromVectorIcon(vector_icons::kCardboardFilledIcon));
   ASSERT_FALSE(i1.is_null());
 
   toolbar_ui_api::IconHandle i2 = icon_table_.RegisterImageModel(
-      ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerOldIcon));
+      ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerIcon));
   ASSERT_FALSE(i2.is_null());
   // kColorMenuIcon is default, and we set it to green.
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
-      2u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
+      2u, "webui-toolbar:password_manager", IconType::kIconSet,
       /*color=*/SK_ColorGREEN);
 
   EXPECT_THAT(
@@ -209,36 +205,35 @@ TEST_F(IconTableTest, RegisterColorUrl) {
 
 TEST_F(IconTableTest, RegisterImageModelTryReuse) {
   std::optional<toolbar_ui_api::IconHandle> maybe_i0 =
-      icon_table_.RegisterVectorIcon(vector_icons::kVrHeadsetOldIcon);
+      icon_table_.RegisterVectorIcon(vector_icons::kCardboardFilledIcon);
   ASSERT_FALSE(maybe_i0.has_value())
-      << "This test assumes the kVrHeadsetOldIcon isn't mapped";
+      << "This test assumes the kCardboardFilledIcon isn't mapped";
 
   // Start from an empty previous value.
   toolbar_ui_api::IconHandle i1 = icon_table_.RegisterImageModelTryReuse(
-      ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerOldIcon),
+      ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerIcon),
       toolbar_ui_api::IconHandle());
   ASSERT_FALSE(i1.is_null());
   auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
-      1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
+      1u, "webui-toolbar:password_manager", IconType::kIconSet,
       /*color=*/SK_ColorGREEN);
 
   // Now try to create the same one.
   toolbar_ui_api::IconHandle i2 = icon_table_.RegisterImageModelTryReuse(
-      ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerOldIcon),
-      i1);
+      ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerIcon), i1);
   ASSERT_FALSE(i2.is_null());
   // Should get the same handle.
   EXPECT_EQ(i1, i2);
 
   // Now a different one...
   toolbar_ui_api::IconHandle i3 = icon_table_.RegisterImageModelTryReuse(
-      ui::ImageModel::FromVectorIcon(vector_icons::kVrHeadsetOldIcon), i2);
+      ui::ImageModel::FromVectorIcon(vector_icons::kCardboardFilledIcon), i2);
   ASSERT_FALSE(i3.is_null());
   EXPECT_NE(i2, i3);
 
   // And can reuse though it's rasterized.
   toolbar_ui_api::IconHandle i4 = icon_table_.RegisterImageModelTryReuse(
-      ui::ImageModel::FromVectorIcon(vector_icons::kVrHeadsetOldIcon), i3);
+      ui::ImageModel::FromVectorIcon(vector_icons::kCardboardFilledIcon), i3);
   ASSERT_FALSE(i4.is_null());
   EXPECT_EQ(i3, i4);
 
@@ -250,20 +245,20 @@ TEST_F(IconTableTest, RegisterImageModelTryReuse) {
 
 TEST_F(IconTableTest, ScaleFactorChange) {
   std::optional<toolbar_ui_api::IconHandle> maybe_i0 =
-      icon_table_.RegisterVectorIcon(vector_icons::kVrHeadsetOldIcon);
+      icon_table_.RegisterVectorIcon(vector_icons::kCardboardFilledIcon);
   ASSERT_FALSE(maybe_i0.has_value())
-      << "This test assumes the kVrHeadsetOldIcon isn't mapped";
+      << "This test assumes the kCardboardFilledIcon isn't mapped";
 
   toolbar_ui_api::IconHandle i1 = icon_table_.RegisterImageModel(
-      ui::ImageModel::FromVectorIcon(vector_icons::kVrHeadsetOldIcon));
+      ui::ImageModel::FromVectorIcon(vector_icons::kCardboardFilledIcon));
   ASSERT_FALSE(i1.is_null());
 
   std::optional<toolbar_ui_api::IconHandle> maybe_i2 =
-      icon_table_.RegisterVectorIcon(vector_icons::kPasswordManagerOldIcon);
+      icon_table_.RegisterVectorIcon(vector_icons::kPasswordManagerIcon);
   ASSERT_TRUE(maybe_i2.has_value());
   auto i2 = maybe_i2.value();
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
-      2u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
+      2u, "webui-toolbar:password_manager", IconType::kIconSet,
       /*color=*/std::nullopt);
 
   EXPECT_THAT(
@@ -280,7 +275,7 @@ TEST_F(IconTableTest, ScaleFactorChange) {
 
   // Changing scale factor should not re-upload new things twice.
   toolbar_ui_api::IconHandle i3 = icon_table_.RegisterImageModel(
-      ui::ImageModel::FromVectorIcon(vector_icons::kVrHeadsetOldIcon));
+      ui::ImageModel::FromVectorIcon(vector_icons::kCardboardFilledIcon));
   ASSERT_FALSE(i3.is_null());
 
   scale_factor_ = 3.0f;
@@ -292,18 +287,18 @@ TEST_F(IconTableTest, ScaleFactorChange) {
 TEST_F(IconTableTest, Colors) {
   toolbar_ui_api::IconHandle i1 =
       icon_table_.RegisterImageModel(ui::ImageModel::FromVectorIcon(
-          vector_icons::kPasswordManagerOldIcon, ui::kColorIcon));
+          vector_icons::kPasswordManagerIcon, ui::kColorIcon));
   ASSERT_FALSE(i1.is_null());
   auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
-      1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
+      1u, "webui-toolbar:password_manager", IconType::kIconSet,
       /*color=*/SK_ColorBLUE);
 
   toolbar_ui_api::IconHandle i2 =
       icon_table_.RegisterImageModel(ui::ImageModel::FromVectorIcon(
-          vector_icons::kPasswordManagerOldIcon, ui::kColorMenuIcon));
+          vector_icons::kPasswordManagerIcon, ui::kColorMenuIcon));
   ASSERT_FALSE(i2.is_null());
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
-      2u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
+      2u, "webui-toolbar:password_manager", IconType::kIconSet,
       /*color=*/SK_ColorGREEN);
 
   EXPECT_THAT(

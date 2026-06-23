@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import './pinned_toolbar_action_icons.html.js';
 // <if expr="_google_chrome">
 import './internal/icons.html.js';
 // </if>

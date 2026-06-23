@@ -178,8 +178,8 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, LocationIcon) {
   ASSERT_TRUE(omnibox);
   EXPECT_EQ("about:blank", base::UTF16ToUTF8(omnibox->GetText()));
 
-  if (features::IsRoundedIconsEnabled()) {
-    const char kGetIcon[] = R"(
+  bool rounded = features::IsRoundedIconsEnabled();
+  const char kGetIcon[] = R"(
       document.querySelector('toolbar-app')?.
         shadowRoot?.querySelector('location-bar')?.
         shadowRoot?.querySelector('location-icon')?.
@@ -188,35 +188,17 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, LocationIcon) {
         icon;
     )";
 
-    EXPECT_EQ("webui-toolbar:omnibox_info",
-              content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
+  EXPECT_EQ(
+      rounded ? "webui-toolbar:info" : "webui-toolbar:http_chrome_refresh_old",
+      content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
 
-    ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
-    EXPECT_EQ("chrome://version", base::UTF16ToUTF8(omnibox->GetText()));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+  EXPECT_EQ("chrome://version", base::UTF16ToUTF8(omnibox->GetText()));
 
-    EXPECT_EQ("webui-toolbar:omnibox_chrome_product",
-              content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
-  } else {
-    const char kGetIcon[] = R"(
-      document.querySelector('toolbar-app')?.
-        shadowRoot?.querySelector('location-bar')?.
-        shadowRoot?.querySelector('location-icon')?.
-        shadowRoot?.querySelector('icon-from-table')?.
-        shadowRoot?.querySelector('#maskIconContainer')?.
-        getAttribute('style');
-    )";
-
-    EXPECT_EQ("mask-image: url(lhs_icons/http_chrome_refresh.svg);",
-              content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
-
-    ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
-    EXPECT_EQ("chrome://version", base::UTF16ToUTF8(omnibox->GetText()));
-
-    EXPECT_EQ("mask-image: url(lhs_icons/product_chrome_refresh_icon.svg);",
-              content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
-  }
+  EXPECT_EQ(rounded ? "webui-toolbar:chrome_product"
+                    : "webui-toolbar:product_chrome_refresh_old",
+            content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
 }
 
 }  // namespace
