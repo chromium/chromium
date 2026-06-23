@@ -227,9 +227,9 @@ void ReloadButton::SetVisibleMode(Mode mode) {
   metrics_recorder_->OnChangeVisibleMode(ToRecorderButtonMode(visible_mode_),
                                          ToRecorderButtonMode(mode),
                                          base::TimeTicks::Now());
-  const bool play_animation = features::IsToolbarGlowUpEnabled() &&
-                              visible_mode_ != mode &&
-                              !ui::TouchUiController::Get()->touch_ui();
+  const bool play_animation =
+      features::IsToolbarGlowUpEnabled() && visible_mode_ != mode &&
+      !ui::TouchUiController::Get()->touch_ui() && animate_transitions_;
 
   visible_mode_ = mode;
   switch (mode) {
@@ -244,6 +244,7 @@ void ReloadButton::SetVisibleMode(Mode mode) {
             {IDR_STOP_TO_RELOAD_LOTTIE, GetForegroundColor(GetState())},
             config);
       }
+      animate_transitions_ = false;
       SetVectorIcons(*reload_icon_, *reload_touch_icon_);
       break;
     case Mode::kStop:
@@ -293,6 +294,7 @@ void ReloadButton::ButtonPressed(const ui::Event& event) {
     }
     // The user has clicked, so we can feel free to update the button, even if
     // the mouse is still hovering.
+    animate_transitions_ = true;
     ChangeMode(Mode::kReload, true);
     return;
   }
@@ -317,6 +319,7 @@ void ReloadButton::ButtonPressed(const ui::Event& event) {
     // browser to execute the reload command).
     double_click_timer_.Start(FROM_HERE, double_click_timer_delay_, this,
                               &ReloadButton::OnDoubleClickTimer);
+    animate_transitions_ = true;
 
     ExecuteBrowserCommand(command, flags);
     metrics_recorder_->DidExecuteReloadCommand(base::TimeTicks::Now());

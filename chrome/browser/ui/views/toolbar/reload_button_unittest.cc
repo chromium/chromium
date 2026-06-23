@@ -49,6 +49,7 @@ class ReloadButtonTestBase {
     reload_button()->testing_mouse_hovered_ = hovered;
   }
   int reload_count() { return reload_button()->testing_reload_count_; }
+  bool animate_transitions() { return reload_button()->animate_transitions_; }
 
  protected:
   virtual ReloadButton* reload_button() = 0;
@@ -582,4 +583,33 @@ TEST_F(ReloadButtonMetricsTest, LogInputCountMetric) {
       WaapUIMetricsRecorder::ReloadButtonInputType::kKeyPress, 0);
 
   // TODO(crbug.com/448794588): Test or remove key input event.
+}
+
+TEST_F(ReloadButtonTest, AnimateTransitionsOnButtonPress) {
+  // We only animate the reload button on button press.
+  EXPECT_FALSE(animate_transitions());
+  EXPECT_EQ(ReloadButton::Mode::kReload, reload_button()->GetVisibleMode());
+
+  reload_button()->ChangeMode(ReloadButton::Mode::kStop, true);
+  EXPECT_FALSE(animate_transitions());
+
+  reload_button()->ChangeMode(ReloadButton::Mode::kReload, true);
+  EXPECT_FALSE(animate_transitions());
+
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(reload_button());
+  test_api.NotifyClick(click_event);
+
+  // After a click on the Reload button, we animate the first transition
+  // from reload to stop and then the following transition from stop to reload.
+  EXPECT_TRUE(animate_transitions());
+
+  reload_button()->ChangeMode(ReloadButton::Mode::kStop, true);
+  EXPECT_TRUE(animate_transitions());
+  EXPECT_EQ(ReloadButton::Mode::kStop, reload_button()->GetVisibleMode());
+  test_api.NotifyClick(click_event);
+
+  EXPECT_FALSE(animate_transitions());
+  EXPECT_EQ(ReloadButton::Mode::kReload, reload_button()->GetVisibleMode());
 }
