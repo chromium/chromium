@@ -405,12 +405,21 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   if (![self canPresentBubble]) {
     return;
   }
-  BubbleArrowDirection arrowDirection = [self isGuideAtBottom:kToolsMenuGuide]
-                                            ? BubbleArrowDirectionDown
-                                            : BubbleArrowDirectionUp;
-  BubbleAlignment alignment = [self isGuideAtLeading:kToolsMenuGuide]
-                                  ? BubbleAlignmentTopOrLeading
-                                  : BubbleAlignmentBottomOrTrailing;
+  BubbleArrowDirection arrowDirection;
+  BubbleAlignment alignment;
+  if (IsChromeNextIaEnabled()) {
+    arrowDirection = [self isGuideAtBottom:kToolsMenuGuide]
+                         ? BubbleArrowDirectionDown
+                         : BubbleArrowDirectionUp;
+    alignment = [self isGuideAtLeading:kToolsMenuGuide]
+                    ? BubbleAlignmentTopOrLeading
+                    : BubbleAlignmentBottomOrTrailing;
+  } else {
+    arrowDirection = IsSplitToolbarMode(self.rootViewController)
+                         ? BubbleArrowDirectionDown
+                         : BubbleArrowDirectionUp;
+    alignment = BubbleAlignmentBottomOrTrailing;
+  }
   NSString* text = l10n_util::GetNSString(IDS_IOS_WHATS_NEW_IPH_TEXT);
   CGPoint toolsMenuAnchor = [self anchorPointToGuide:kToolsMenuGuide
                                            direction:arrowDirection];
@@ -534,12 +543,21 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
     return;
   }
 
-  BubbleArrowDirection arrowDirection = [self isGuideAtBottom:kToolsMenuGuide]
-                                            ? BubbleArrowDirectionDown
-                                            : BubbleArrowDirectionUp;
-  BubbleAlignment alignment = [self isGuideAtLeading:kToolsMenuGuide]
-                                  ? BubbleAlignmentTopOrLeading
-                                  : BubbleAlignmentBottomOrTrailing;
+  BubbleArrowDirection arrowDirection;
+  BubbleAlignment alignment;
+  if (IsChromeNextIaEnabled()) {
+    arrowDirection = [self isGuideAtBottom:kToolsMenuGuide]
+                         ? BubbleArrowDirectionDown
+                         : BubbleArrowDirectionUp;
+    alignment = [self isGuideAtLeading:kToolsMenuGuide]
+                    ? BubbleAlignmentTopOrLeading
+                    : BubbleAlignmentBottomOrTrailing;
+  } else {
+    arrowDirection = IsSplitToolbarMode(self.rootViewController)
+                         ? BubbleArrowDirectionDown
+                         : BubbleArrowDirectionUp;
+    alignment = BubbleAlignmentBottomOrTrailing;
+  }
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_IN_OVERFLOW_MENU_IPH_TEXT);
 
