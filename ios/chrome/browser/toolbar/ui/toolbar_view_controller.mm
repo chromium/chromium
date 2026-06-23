@@ -497,19 +497,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   [self loadViewIfNeeded];
   [self updateToolbarElementsVisibility];
   [self updateTabGroupIndicatorAvailability];
-
-  if (_visible) {
-    [self.layoutGuideCenter referenceView:_toolsMenuButton
-                                underName:kToolsMenuGuide];
-    [self.layoutGuideCenter referenceView:_backButton
-                                underName:kBackButtonGuide];
-    [self.layoutGuideCenter referenceView:_forwardButton
-                                underName:kForwardButtonGuide];
-    [self.layoutGuideCenter referenceView:_shareButton
-                                underName:kShareButtonGuide];
-
-    [self updateTabSwitcherGuide];
-  }
+  [self updateLayoutGuides];
 }
 
 - (void)setNTPVisible:(BOOL)NTPVisible {
@@ -1457,17 +1445,27 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   [self.sceneHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
 }
 
+// Returns whether the toolbar should be hidden. The toolbar is typically hidden
+// on the regular NTP when scrolled to the top, unless a tab strip is visible.
+- (BOOL)shouldHideToolbar {
+  BOOL alwaysShowToolbar = CanShowTabStrip(self) && _topPosition;
+  if (alwaysShowToolbar) {
+    return NO;
+  }
+  return _NTPVisible && !_incognito && !CanShowTabStrip(self) &&
+         _NTPScrollProgress == 0.0;
+}
+
 // Updates the visibility of the toolbar.
 - (void)updateToolbarVisibility {
-  BOOL hideToolbar;
+  BOOL hideToolbar = [self shouldHideToolbar];
+
   BOOL alwaysShowToolbar = CanShowTabStrip(self) && _topPosition;
   if (alwaysShowToolbar) {
     self.view.alpha = 1.0;
-    hideToolbar = NO;
-  } else {
-    hideToolbar = _NTPVisible && !_incognito && !CanShowTabStrip(self) &&
-                  _NTPScrollProgress == 0.0;
   }
+
+  [self updateLayoutGuides];
 
   BOOL visibilityChanged = hideToolbar != self.view.isHidden;
 
@@ -1595,6 +1593,37 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
     _bannerPromoBackgroundHeightConstraint.constant = [self
         bannerPromoBackgroundHeightForFullscreenProgress:_fullscreenProgress];
   }
+}
+
+// Safely updates a layout guide by either referencing `view` or unreferencing
+// it if `hide` is YES and the guide is currently owned by `view`.
+- (void)updateGuide:(GuideName*)guide withView:(UIView*)view hide:(BOOL)hide {
+  if (hide) {
+    if ([self.layoutGuideCenter referencedViewUnderName:guide] == view) {
+      [self.layoutGuideCenter referenceView:nil underName:guide];
+    }
+  } else {
+    [self.layoutGuideCenter referenceView:view underName:guide];
+  }
+}
+
+// Updates the layout guides to point to the buttons in this toolbar.
+// This should be called when this toolbar becomes the active visible toolbar.
+- (void)updateLayoutGuides {
+  if (!_visible) {
+    return;
+  }
+
+  BOOL hideToolbar = [self shouldHideToolbar];
+
+  [self updateGuide:kToolsMenuGuide withView:_toolsMenuButton hide:hideToolbar];
+  [self updateGuide:kBackButtonGuide withView:_backButton hide:hideToolbar];
+  [self updateGuide:kForwardButtonGuide
+           withView:_forwardButton
+               hide:hideToolbar];
+  [self updateGuide:kShareButtonGuide withView:_shareButton hide:hideToolbar];
+
+  [self updateTabSwitcherGuide];
 }
 
 // Conditionally registers the Tab Switcher layout guide.

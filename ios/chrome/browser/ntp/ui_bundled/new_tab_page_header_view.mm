@@ -2334,6 +2334,13 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     }
 
     [self.toolbarDelegate setScrollProgressForTabletOmnibox:progress];
+
+    if (IsChromeNextIaEnabled()) {
+      if (progress == 0.0 && _toolsMenuButton) {
+        [self.layoutGuideCenter referenceView:_toolsMenuButton
+                                    underName:kToolsMenuGuide];
+      }
+    }
   }
 
   if (animateScrollAnimation) {

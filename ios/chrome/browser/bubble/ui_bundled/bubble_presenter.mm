@@ -97,6 +97,9 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
 // Returns whether the guide is in the bottom half of the root view.
 - (BOOL)isGuideAtBottom:(GuideName*)guideName;
 
+// Returns whether the guide is in the leading half of the root view.
+- (BOOL)isGuideAtLeading:(GuideName*)guideName;
+
 @end
 
 @implementation BubblePresenter {
@@ -402,9 +405,12 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   if (![self canPresentBubble]) {
     return;
   }
-  BubbleArrowDirection arrowDirection =
-      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
-                                                  : BubbleArrowDirectionUp;
+  BubbleArrowDirection arrowDirection = [self isGuideAtBottom:kToolsMenuGuide]
+                                            ? BubbleArrowDirectionDown
+                                            : BubbleArrowDirectionUp;
+  BubbleAlignment alignment = [self isGuideAtLeading:kToolsMenuGuide]
+                                  ? BubbleAlignmentTopOrLeading
+                                  : BubbleAlignmentBottomOrTrailing;
   NSString* text = l10n_util::GetNSString(IDS_IOS_WHATS_NEW_IPH_TEXT);
   CGPoint toolsMenuAnchor = [self anchorPointToGuide:kToolsMenuGuide
                                            direction:arrowDirection];
@@ -415,7 +421,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHWhatsNewFeature
                     direction:arrowDirection
-                    alignment:BubbleAlignmentBottomOrTrailing
+                    alignment:alignment
                          text:text
         voiceOverAnnouncement:l10n_util::GetNSString(IDS_IOS_WHATS_NEW_IPH_TEXT)
                   anchorPoint:toolsMenuAnchor];
@@ -528,9 +534,12 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
     return;
   }
 
-  BubbleArrowDirection arrowDirection =
-      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
-                                                  : BubbleArrowDirectionUp;
+  BubbleArrowDirection arrowDirection = [self isGuideAtBottom:kToolsMenuGuide]
+                                            ? BubbleArrowDirectionDown
+                                            : BubbleArrowDirectionUp;
+  BubbleAlignment alignment = [self isGuideAtLeading:kToolsMenuGuide]
+                                  ? BubbleAlignmentTopOrLeading
+                                  : BubbleAlignmentBottomOrTrailing;
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_IN_OVERFLOW_MENU_IPH_TEXT);
 
@@ -544,7 +553,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
       [self presentBubbleForFeature:
                 feature_engagement::kIPHiOSSettingsInOverflowMenuBubbleFeature
                           direction:arrowDirection
-                          alignment:BubbleAlignmentBottomOrTrailing
+                          alignment:alignment
                                text:text
               voiceOverAnnouncement:text
                         anchorPoint:toolsMenuAnchor];
@@ -1132,7 +1141,21 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   CGRect frameInView = [self.rootViewController.view convertRect:frameInWindow
                                                         fromView:nil];
   CGFloat viewHeight = self.rootViewController.view.bounds.size.height;
-  return frameInView.origin.y > viewHeight / 2;
+  return CGRectGetMidY(frameInView) > viewHeight / 2;
+}
+
+// Returns whether the guide is in the leading half of the root view.
+- (BOOL)isGuideAtLeading:(GuideName*)guideName {
+  CGRect frameInWindow = [self anchorViewFrameForGuide:guideName];
+  if (CGRectIsEmpty(frameInWindow)) {
+    return NO;
+  }
+  CGRect frameInView = [self.rootViewController.view convertRect:frameInWindow
+                                                        fromView:nil];
+  CGFloat viewWidth = self.rootViewController.view.bounds.size.width;
+  bool isRTL = base::i18n::IsRTL();
+  return isRTL ? (CGRectGetMidX(frameInView) > viewWidth / 2)
+               : (CGRectGetMidX(frameInView) < viewWidth / 2);
 }
 
 // Returns the anchor point for a bubble with an `arrowDirection` pointing to a
