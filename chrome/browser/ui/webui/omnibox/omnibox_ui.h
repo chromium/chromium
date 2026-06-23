@@ -31,6 +31,9 @@ class OmniboxUIConfig : public content::DefaultInternalWebUIConfig<OmniboxUI> {
  public:
   OmniboxUIConfig()
       : DefaultInternalWebUIConfig(chrome::kChromeUIOmniboxHost) {}
+
+  // content::WebUIConfig:
+  bool SupportsInProcessResourceLoadingV2() const override;
 };
 
 // The UI for chrome://omnibox/

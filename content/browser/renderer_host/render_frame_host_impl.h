@@ -1821,6 +1821,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return broker_holder_->broker_receiver();
   }
   bool has_broker_holder_for_testing() { return broker_holder_.has_value(); }
+  const blink::mojom::LocalResourceLoaderConfigPtr&
+  local_resource_loader_config_for_testing() const {
+    return local_resource_loader_config_;
+  }
   void SetKeepAliveTimeoutForTesting(base::TimeDelta timeout);
 
   network::mojom::WebSandboxFlags active_sandbox_flags();

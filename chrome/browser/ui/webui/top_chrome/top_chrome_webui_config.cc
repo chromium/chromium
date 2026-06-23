@@ -32,6 +32,10 @@ TopChromeWebUIConfig::~TopChromeWebUIConfig() {
   GetTopChromeWebUIConfigSet().erase(this);
 }
 
+bool TopChromeWebUIConfig::SupportsInProcessResourceLoadingV2() const {
+  return true;
+}
+
 // static
 TopChromeWebUIConfig* TopChromeWebUIConfig::From(
     content::BrowserContext* browser_context,

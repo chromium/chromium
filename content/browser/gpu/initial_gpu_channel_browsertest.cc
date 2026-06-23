@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -18,6 +19,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_controller_factory.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/test/browser_test.h"
@@ -334,6 +337,14 @@ class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
 
 }  // namespace
 
+class TestWebUIV2EnabledConfig : public DefaultWebUIConfig<WebUIController> {
+ public:
+  TestWebUIV2EnabledConfig(std::string_view scheme, std::string_view host)
+      : DefaultWebUIConfig(scheme, host) {}
+
+  bool SupportsInProcessResourceLoadingV2() const override { return true; }
+};
+
 class InitialGpuChannelForTopChromeWebUIOnlyBrowserTest
     : public ContentBrowserTest {
  public:
@@ -375,6 +386,14 @@ IN_PROC_BROWSER_TEST_F(InitialGpuChannelForTopChromeWebUIOnlyBrowserTest,
 IN_PROC_BROWSER_TEST_F(InitialGpuChannelForTopChromeWebUIOnlyBrowserTest,
                        UsesEarlyChannelForInitialWebUI) {
   GURL url("chrome://foo");
+
+  auto& config_map = WebUIConfigMap::GetInstance();
+  config_map.AddWebUIConfig(
+      std::make_unique<TestWebUIV2EnabledConfig>("chrome", "foo"));
+  base::ScopedClosureRunner cleanup_configs(base::BindLambdaForTesting([&]() {
+    WebUIConfigMap::GetInstance().RemoveConfig(GURL("chrome://foo"));
+  }));
+
   InitialWebUIOverrideContentBrowserClient content_browser_client(url);
 
   // Create a new WebContents to ensure it is the very first navigation,

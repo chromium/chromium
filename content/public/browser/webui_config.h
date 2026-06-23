@@ -61,6 +61,14 @@ class CONTENT_EXPORT WebUIConfig {
   // non-empty paint. This config option is an optimization for that.
   virtual bool ShouldKeepVisibleUntilFirstVisuallyNonEmptyPaint();
 
+  // Returns whether the WebUI supports in-process resource loading V2.
+  // Defaults to false.
+  // WARNING: WebUIs that opt-in to V2 MUST NOT dynamically update their
+  // WebUIDataSource (e.g. via WebUIDataSource::Update() or ManagedUIHandler)
+  // after the first navigation commits. Doing so will trigger a safety CHECK
+  // crash, because V2 serializes and freezes resources during commit.
+  virtual bool SupportsInProcessResourceLoadingV2() const;
+
   // Returns a WebUIController for WebUI and GURL.
   //
   // URLDataSource is usually created in the constructor of WebUIController. The

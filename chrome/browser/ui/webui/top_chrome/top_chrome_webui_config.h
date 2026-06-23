@@ -27,6 +27,9 @@ class TopChromeWebUIConfig : public content::WebUIConfig {
   TopChromeWebUIConfig(std::string_view scheme, std::string_view host);
   ~TopChromeWebUIConfig() override;
 
+  // Overridden from content::WebUIConfig:
+  bool SupportsInProcessResourceLoadingV2() const override;
+
   // Returns the config given its URL under a browser context.
   // Returns nullptr if `url` is not a top-chrome WebUI, or if it is
   // disabled by IsWebUIEnabled().

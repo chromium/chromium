@@ -157,6 +157,8 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
 
   // Supported scheme if not one of the default supported schemes.
   std::optional<std::string> supported_scheme_;
+
+  mutable bool resources_frozen_ = false;
 };
 
 }  // namespace content

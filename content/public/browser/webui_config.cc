@@ -29,4 +29,8 @@ bool WebUIConfig::ShouldKeepVisibleUntilFirstVisuallyNonEmptyPaint() {
   return false;
 }
 
+bool WebUIConfig::SupportsInProcessResourceLoadingV2() const {
+  return false;
+}
+
 }  // namespace content
