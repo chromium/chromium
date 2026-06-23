@@ -82,6 +82,51 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
 
           assertFalse(!!contextMenuButton);
       });
+
+    test(
+        'context menu is rendered when contextMenuEnabled is true, ' +
+            'regardless of tabs',
+        async () => {
+          createComposeboxElement(testProxy);
+
+          // Verify with tabs
+          testProxy.element.hasTabs = () => true;
+          testProxy.element.contextMenuEnabled = true;
+          await microtasksFinished();
+          await testProxy.element.updateComplete;
+
+          let contextMenus = testProxy.element.shadowRoot.querySelectorAll(
+              '#contextMenuContainer');
+          assertEquals(1, contextMenus.length);  // Not 2 of them; only 1.
+
+          testProxy.element.contextMenuEnabled = false;
+          await microtasksFinished();
+          await testProxy.element.updateComplete;
+
+          contextMenus = testProxy.element.shadowRoot.querySelectorAll(
+              '#contextMenuContainer');
+          assertEquals(0, contextMenus.length);
+
+          // Verify without tabs
+          testProxy.element.hasTabs = () => false;
+          testProxy.element.contextMenuEnabled = true;
+          await microtasksFinished();
+          await testProxy.element.updateComplete;
+
+          // When there are no tabs, the context menu is now unconditionally
+          // rendered if contextMenuEnabled is true.
+          contextMenus = testProxy.element.shadowRoot.querySelectorAll(
+              '#contextMenuContainer');
+          assertEquals(1, contextMenus.length);
+
+          testProxy.element.contextMenuEnabled = false;
+          await microtasksFinished();
+          await testProxy.element.updateComplete;
+
+          contextMenus = testProxy.element.shadowRoot.querySelectorAll(
+              '#contextMenuContainer');
+          assertEquals(0, contextMenus.length);
+        });
   });
 
   suite('Context menu mouse events', () => {

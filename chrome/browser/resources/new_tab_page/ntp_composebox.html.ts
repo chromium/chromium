@@ -93,9 +93,6 @@ export function getHtml(this: NtpComposeboxElement) {
           <cr-composebox-file-inputs id="fileInputs"
               @file-change="${this.onFileChange}"
               .disableFileInputs="${this.shouldDisableFileInputs()}">
-            ${this.contextMenuEnabled ? html`
-                ${getContextMenuHtml.bind(this)()}
-            ` : ''}
             <div id="carouselContainer" part="carousel-container">
               <div class="carousel-container-inner">
                 ${this.showFileCarousel ? html`
@@ -106,7 +103,9 @@ export function getHtml(this: NtpComposeboxElement) {
                     .files="${this.getFilteredCarouselFiles()}"
                     @delete-file="${this.onDeleteFile}">
                   </cr-composebox-file-carousel> ` : ''}
-
+                  ${this.contextMenuEnabled ? html`
+                      ${getContextMenuHtml.bind(this)()}
+                  ` : ''}
                   ${this.inToolMode ? html`
                   <div class="context-menu-container" id="toolChipsContainer"
                       part="tool-chips-container">
