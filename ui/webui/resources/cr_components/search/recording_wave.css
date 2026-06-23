@@ -27,7 +27,11 @@
                               black 20%,
                               black 90%,
                               transparent 100%);
-  overflow: visible;
+  /* Do not let tic tacs rapidly change width of this component, as its parent
+   * will resize and affect others in its context. Cut the edge tic tacs
+   * off with this.
+   */
+  overflow-x: hidden;
   padding-block-start: 10px;
   position: relative;
 }

@@ -10,7 +10,8 @@ import {VoiceSearchError} from './composebox_voice_search.js';
 export function getHtml(this: ComposeboxVoiceSearchElement) {
   // clang-format off
   return html`
-    <div id="container">
+    <div id="container"
+        class="${this.shouldShowErrorScrim_() ? 'has-error' : ''}">
       <div id="error-container" ?hidden="${!this.shouldShowErrorScrim_()}">
         <span id="error-message">${this.errorMessage_}</span>
         ${this.detailedError_ === VoiceSearchError.NO_MATCH ?

@@ -411,7 +411,8 @@ search-animated-glow {
   --text-input-max-height: 130px;
 }
 
-/* Only nextbox (cobrowsing) has 'top' class. */
+/* Only nextbox (cobrowsing) has 'top' class. General voice styling
+ * should be in composebox shared styles. */
 #voiceCarouselContainer:has(#voiceSearchCarousel.top) {
   --context-carousel-inline-start-spacing: 12px;
   /* Spec has -8px bottom margin, but the item under has 6px top-padding

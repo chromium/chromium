@@ -14,8 +14,9 @@
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;
   --cr-composebox-submit-default-icon-size: 16px;
-  --submit-timing-and-function: 300ms ease-in-out;
+  --submit-timing-and-function: 100ms ease-in-out;
   --voice-search-fade-transition: opacity var(--submit-timing-and-function);
+  --voice-search-minimum-height: 121px;
 }
 
 #container {
@@ -25,11 +26,23 @@
   /* Transparent so background from animated-glow shows. */
   background-color: transparent;
   display: flex;
-  inset: 0;
+  height: 100%;
+  min-height: var(--voice-search-minimum-height);
   padding: 7px 0;
-  position: absolute;
   pointer-events: none;
+  width: 100%;
   z-index: 4;
+}
+
+/* Must be positioned absolute in voice recording mode
+ * (no error, no permission prompt open). This is so stop/submit buttons
+ * can overlay the animation's container div.
+ * Must have static positioning otherwise so the error and placeholder
+ * voice search text change the height of voice_search and thus composebox.
+ */
+:host(:not([is-permission-prompt-open_])) #container:not(.has-error) {
+  inset: 0;
+  position: absolute;
 }
 
 :host-context([energy-effect-enabled]) #container {
@@ -73,6 +86,15 @@
       40px 0 20px;
   pointer-events: auto;
   width: 100%;
+}
+
+#error-container {
+ display: none;
+}
+
+#error-container:not([hidden]) {
+  display: block;
+  position: absolute;
 }
 
 #error-container a {
