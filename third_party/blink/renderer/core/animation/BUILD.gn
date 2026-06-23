@@ -37,6 +37,7 @@ blink_core_sources("animation") {
     "animation_trigger.h",
     "animation_utils.cc",
     "animation_utils.h",
+    "base_interpolable_color.cc",
     "base_interpolable_color.h",
     "basic_shape_interpolation_functions.cc",
     "basic_shape_interpolation_functions.h",
