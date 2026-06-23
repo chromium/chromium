@@ -108,7 +108,9 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   [super setScrollProgressForTabletOmnibox:progress];
 
   // Sometimes an NTP may make a delegate call when it's no longer visible.
-  if (!self.isNTP || (!IsComposeboxIpadEnabled() && self.locationBarFocused)) {
+  if (!self.isNTP ||
+      (!IsComposeboxIpadEnabled() &&
+       (!self.shouldHideOmniboxOnNTP || self.locationBarFocused))) {
     progress = 1;
   }
 
@@ -236,7 +238,10 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   [super setLocationBarFocused:locationBarFocused];
 
   if (!IsComposeboxIpadEnabled()) {
-    [self setScrollProgressForTabletOmnibox:self.isNTP ? 0 : 1];
+    [self setScrollProgressForTabletOmnibox:(self.isNTP &&
+                                             self.shouldHideOmniboxOnNTP)
+                                                ? 0
+                                                : 1];
   }
 }
 
