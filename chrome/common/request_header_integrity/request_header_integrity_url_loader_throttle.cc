@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/hash/sha1.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -61,6 +62,18 @@
 namespace request_header_integrity {
 
 namespace {
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// These values are persisted to UMA logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PlatformRuntimeIntegrityResult {
+  kComponentUnavailable = 0,
+  kLibraryUnavailable = 1,
+  kSuccess = 2,
+  kFailure = 3,
+  kMaxValue = kFailure,
+};
+#endif
 
 BASE_FEATURE(kRequestHeaderIntegrity, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -143,16 +156,35 @@ void ProcessRequestHeaders(net::HttpRequestHeaders* headers, const GURL& url) {
   platform_runtime::PlatformRuntimeImpl* runtime =
       platform_runtime::PlatformRuntimeImpl::GetInstance();
   if (!runtime) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    base::UmaHistogramEnumeration(
+        "ComponentUpdater.PlatformRuntime.RequestHeaderIntegrityResult",
+        PlatformRuntimeIntegrityResult::kComponentUnavailable);
+#endif
     return;
   }
   scoped_refptr<platform_runtime::PlatformRuntimeLibrary> loaded_lib =
       runtime->GetLoadedLibrary();
   if (!loaded_lib) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    base::UmaHistogramEnumeration(
+        "ComponentUpdater.PlatformRuntime.RequestHeaderIntegrityResult",
+        PlatformRuntimeIntegrityResult::kLibraryUnavailable);
+#endif
     return;
   }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  bool result = loaded_lib->ProcessRequestHeaders(headers, GetHeader, SetHeader,
+                                                  url.spec().c_str());
+  base::UmaHistogramEnumeration(
+      "ComponentUpdater.PlatformRuntime.RequestHeaderIntegrityResult",
+      result ? PlatformRuntimeIntegrityResult::kSuccess
+             : PlatformRuntimeIntegrityResult::kFailure);
+#else
   loaded_lib->ProcessRequestHeaders(headers, GetHeader, SetHeader,
                                     url.spec().c_str());
+#endif
 }
 
 }  // namespace

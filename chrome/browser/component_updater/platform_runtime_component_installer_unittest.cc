@@ -10,6 +10,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -178,13 +179,13 @@ TEST_F(PlatformRuntimeComponentInstallerTest, ShouldTriggerInstallOrUpdate) {
   auto* local_state =
       TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
   const std::string crx_id = "test_crx_id";
+  PlatformRuntimeComponentInstallerPolicy policy;
 
   // GetComponentDetails returns false (not installed).
   EXPECT_CALL(*service, GetComponentDetails(crx_id, _))
       .WillOnce(testing::Return(false));
   EXPECT_TRUE(
-      PlatformRuntimeComponentInstallerPolicy::ShouldTriggerInstallOrUpdate(
-          service.get(), local_state, crx_id));
+      policy.ShouldTriggerInstallOrUpdate(service.get(), local_state, crx_id));
 
   // GetComponentDetails returns true, but item component is not set.
   EXPECT_CALL(*service, GetComponentDetails(crx_id, _))
@@ -193,8 +194,7 @@ TEST_F(PlatformRuntimeComponentInstallerTest, ShouldTriggerInstallOrUpdate) {
         return true;
       });
   EXPECT_TRUE(
-      PlatformRuntimeComponentInstallerPolicy::ShouldTriggerInstallOrUpdate(
-          service.get(), local_state, crx_id));
+      policy.ShouldTriggerInstallOrUpdate(service.get(), local_state, crx_id));
 
   // GetComponentDetails returns true, component is set, but version is invalid.
   EXPECT_CALL(*service, GetComponentDetails(crx_id, _))
@@ -204,8 +204,7 @@ TEST_F(PlatformRuntimeComponentInstallerTest, ShouldTriggerInstallOrUpdate) {
         return true;
       });
   EXPECT_TRUE(
-      PlatformRuntimeComponentInstallerPolicy::ShouldTriggerInstallOrUpdate(
-          service.get(), local_state, crx_id));
+      policy.ShouldTriggerInstallOrUpdate(service.get(), local_state, crx_id));
 
   // GetComponentDetails returns true, component version is kNullVersion.
   EXPECT_CALL(*service, GetComponentDetails(crx_id, _))
@@ -215,8 +214,7 @@ TEST_F(PlatformRuntimeComponentInstallerTest, ShouldTriggerInstallOrUpdate) {
         return true;
       });
   EXPECT_TRUE(
-      PlatformRuntimeComponentInstallerPolicy::ShouldTriggerInstallOrUpdate(
-          service.get(), local_state, crx_id));
+      policy.ShouldTriggerInstallOrUpdate(service.get(), local_state, crx_id));
 
   // For the remaining cases, component is installed & valid.
   auto set_installed_mock = [&](MockComponentUpdateService* mock_service) {
@@ -232,32 +230,28 @@ TEST_F(PlatformRuntimeComponentInstallerTest, ShouldTriggerInstallOrUpdate) {
   // Installed, valid version, but local_state is null.
   set_installed_mock(service.get());
   EXPECT_FALSE(
-      PlatformRuntimeComponentInstallerPolicy::ShouldTriggerInstallOrUpdate(
-          service.get(), nullptr, crx_id));
+      policy.ShouldTriggerInstallOrUpdate(service.get(), nullptr, crx_id));
 
   // Installed, valid version, local_state is valid but last install
   // time is null (not set).
   local_state->ClearPref(kPlatformRuntimeLastInstallTime);
   set_installed_mock(service.get());
   EXPECT_TRUE(
-      PlatformRuntimeComponentInstallerPolicy::ShouldTriggerInstallOrUpdate(
-          service.get(), local_state, crx_id));
+      policy.ShouldTriggerInstallOrUpdate(service.get(), local_state, crx_id));
 
   // Installed, valid version, local_state has last install time > 7 days ago.
   local_state->SetTime(kPlatformRuntimeLastInstallTime,
                        base::Time::Now() - base::Days(8));
   set_installed_mock(service.get());
   EXPECT_TRUE(
-      PlatformRuntimeComponentInstallerPolicy::ShouldTriggerInstallOrUpdate(
-          service.get(), local_state, crx_id));
+      policy.ShouldTriggerInstallOrUpdate(service.get(), local_state, crx_id));
 
   // Installed, valid version, local_state has last install time < 7 days ago.
   local_state->SetTime(kPlatformRuntimeLastInstallTime,
                        base::Time::Now() - base::Days(6));
   set_installed_mock(service.get());
   EXPECT_FALSE(
-      PlatformRuntimeComponentInstallerPolicy::ShouldTriggerInstallOrUpdate(
-          service.get(), local_state, crx_id));
+      policy.ShouldTriggerInstallOrUpdate(service.get(), local_state, crx_id));
 }
 
 TEST_F(PlatformRuntimeComponentInstallerTest, ComponentReady_VersionChanged) {
@@ -269,6 +263,7 @@ TEST_F(PlatformRuntimeComponentInstallerTest, ComponentReady_VersionChanged) {
   local_state->SetTime(kPlatformRuntimeLastInstallTime, old_time);
 
   PlatformRuntimeComponentInstallerPolicy policy;
+  base::HistogramTester histogram_tester;
 
   // Simulate a background update to a new version.
   policy.ComponentReadyForTesting(base::Version("1.0.0.1"),
@@ -279,6 +274,10 @@ TEST_F(PlatformRuntimeComponentInstallerTest, ComponentReady_VersionChanged) {
   EXPECT_EQ(local_state->GetString(kPlatformRuntimeLastInstalledVersion),
             "1.0.0.1");
   EXPECT_GT(local_state->GetTime(kPlatformRuntimeLastInstallTime), old_time);
+
+  histogram_tester.ExpectUniqueSample(
+      "ComponentUpdater.PlatformRuntime.InstallTrigger",
+      PlatformRuntimeInstallTrigger::kBackground, 1);
 }
 
 TEST_F(PlatformRuntimeComponentInstallerTest, ComponentReady_VersionSame) {
@@ -290,6 +289,7 @@ TEST_F(PlatformRuntimeComponentInstallerTest, ComponentReady_VersionSame) {
   local_state->SetTime(kPlatformRuntimeLastInstallTime, old_time);
 
   PlatformRuntimeComponentInstallerPolicy policy;
+  base::HistogramTester histogram_tester;
 
   // Simulate startup or check where version hasn't changed.
   policy.ComponentReadyForTesting(base::Version("1.0.0.0"),
@@ -300,6 +300,10 @@ TEST_F(PlatformRuntimeComponentInstallerTest, ComponentReady_VersionSame) {
   EXPECT_EQ(local_state->GetString(kPlatformRuntimeLastInstalledVersion),
             "1.0.0.0");
   EXPECT_EQ(local_state->GetTime(kPlatformRuntimeLastInstallTime), old_time);
+
+  // Since version didn't change, no install should register.
+  histogram_tester.ExpectTotalCount(
+      "ComponentUpdater.PlatformRuntime.InstallTrigger", 0);
 }
 
 TEST_F(PlatformRuntimeComponentInstallerTest, ComponentReady_VersionInvalid) {
@@ -311,6 +315,8 @@ TEST_F(PlatformRuntimeComponentInstallerTest, ComponentReady_VersionInvalid) {
   local_state->SetTime(kPlatformRuntimeLastInstallTime, old_time);
 
   PlatformRuntimeComponentInstallerPolicy policy;
+  policy.SetInstallTrigger(PlatformRuntimeInstallTrigger::kMissing);
+  base::HistogramTester histogram_tester;
 
   base::Time current_time = base::Time::Now();
   // Simulate first install or bootstrapping.
@@ -323,6 +329,62 @@ TEST_F(PlatformRuntimeComponentInstallerTest, ComponentReady_VersionInvalid) {
             "1.0.0.0");
   EXPECT_GT(local_state->GetTime(kPlatformRuntimeLastInstallTime),
             current_time);
+
+  histogram_tester.ExpectUniqueSample(
+      "ComponentUpdater.PlatformRuntime.InstallTrigger",
+      PlatformRuntimeInstallTrigger::kMissing, 1);
+}
+
+TEST_F(PlatformRuntimeComponentInstallerTest,
+       ShouldTriggerInstallOrUpdate_SetsTrigger) {
+  auto service =
+      std::make_unique<component_updater::MockComponentUpdateService>();
+  auto* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  const std::string crx_id = "test_crx_id";
+
+  // Case: Missing trigger.
+  EXPECT_CALL(*service, GetComponentDetails(crx_id, _))
+      .WillOnce(testing::Return(false));
+
+  PlatformRuntimeComponentInstallerPolicy policy1;
+  base::HistogramTester histogram_tester1;
+
+  EXPECT_TRUE(
+      policy1.ShouldTriggerInstallOrUpdate(service.get(), local_state, crx_id));
+
+  // Triggering ComponentReady logs kMissing.
+  policy1.ComponentReadyForTesting(base::Version("1.0.0.0"),
+                                   component_install_dir_.GetPath(),
+                                   base::DictValue());
+  histogram_tester1.ExpectUniqueSample(
+      "ComponentUpdater.PlatformRuntime.InstallTrigger",
+      PlatformRuntimeInstallTrigger::kMissing, 1);
+
+  // Case: Stale trigger.
+  EXPECT_CALL(*service, GetComponentDetails(crx_id, _))
+      .WillOnce([](const std::string& id, update_client::CrxUpdateItem* item) {
+        item->component = update_client::CrxComponent();
+        item->component->version = base::Version("1.0.0.0");
+        return true;
+      });
+  local_state->SetTime(kPlatformRuntimeLastInstallTime,
+                       base::Time::Now() - base::Days(10));
+  local_state->SetString(kPlatformRuntimeLastInstalledVersion, "1.0.0.0");
+
+  PlatformRuntimeComponentInstallerPolicy policy2;
+  base::HistogramTester histogram_tester2;
+
+  EXPECT_TRUE(
+      policy2.ShouldTriggerInstallOrUpdate(service.get(), local_state, crx_id));
+
+  // Triggering ComponentReady with a new version logs kStale.
+  policy2.ComponentReadyForTesting(base::Version("1.0.0.1"),
+                                   component_install_dir_.GetPath(),
+                                   base::DictValue());
+  histogram_tester2.ExpectUniqueSample(
+      "ComponentUpdater.PlatformRuntime.InstallTrigger",
+      PlatformRuntimeInstallTrigger::kStale, 1);
 }
 
 }  // namespace component_updater

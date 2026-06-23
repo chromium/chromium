@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
@@ -101,6 +102,11 @@ void PlatformRuntimeComponentInstallerPolicy::ComponentReady(
       local_state->SetString(kPlatformRuntimeLastInstalledVersion,
                              version.GetString());
       local_state->SetTime(kPlatformRuntimeLastInstallTime, base::Time::Now());
+
+      base::UmaHistogramEnumeration(
+          "ComponentUpdater.PlatformRuntime.InstallTrigger", install_trigger_);
+      // Reset trigger to background for any future updates.
+      install_trigger_ = PlatformRuntimeInstallTrigger::kBackground;
     }
   }
 
@@ -160,7 +166,6 @@ void PlatformRuntimeComponentInstallerPolicy::UpdateOnDemand(
       }));
 }
 
-// static
 bool PlatformRuntimeComponentInstallerPolicy::ShouldTriggerInstallOrUpdate(
     ComponentUpdateService* cus,
     PrefService* local_state,
@@ -172,6 +177,7 @@ bool PlatformRuntimeComponentInstallerPolicy::ShouldTriggerInstallOrUpdate(
                       item.component->version != base::Version(kNullVersion);
 
   if (!is_installed) {
+    SetInstallTrigger(PlatformRuntimeInstallTrigger::kMissing);
     return true;
   }
 
@@ -181,6 +187,7 @@ bool PlatformRuntimeComponentInstallerPolicy::ShouldTriggerInstallOrUpdate(
     if (last_on_demand_time.is_null() ||
         (base::Time::Now() - last_on_demand_time) >
             kPlatformRuntimeStalenessThreshold) {
+      SetInstallTrigger(PlatformRuntimeInstallTrigger::kStale);
       return true;
     }
   }
@@ -194,28 +201,35 @@ void MaybeRegisterPlatformRuntimeComponent(ComponentUpdateService* cus) {
     return;
   }
 
-  std::unique_ptr<ComponentInstallerPolicy> policy =
+  std::unique_ptr<PlatformRuntimeComponentInstallerPolicy> policy =
       std::make_unique<PlatformRuntimeComponentInstallerPolicy>();
+  PlatformRuntimeComponentInstallerPolicy* policy_ptr = policy.get();
   std::vector<uint8_t> public_key_hash;
   policy->GetHash(&public_key_hash);
   const std::string crx_id =
       crx_file::id_util::GenerateIdFromHash(public_key_hash);
   auto installer = base::MakeRefCounted<ComponentInstaller>(std::move(policy));
 
+  // The lifecycle of `policy_ptr` is managed by `installer` which owns the
+  // policy. Since the callback is executed during the registration of the
+  // ref-counted `installer` (which is kept alive during registration and
+  // retained by the ComponentUpdateService afterward), the policy is
+  // guaranteed to outlive the callback.
   installer->Register(
       cus,
       base::BindOnce(
-          [](const std::string& crx_id, ComponentUpdateService* cus) {
+          [](PlatformRuntimeComponentInstallerPolicy* policy,
+             const std::string& crx_id, ComponentUpdateService* cus) {
             PrefService* local_state = g_browser_process->local_state();
-            if (PlatformRuntimeComponentInstallerPolicy::
-                    ShouldTriggerInstallOrUpdate(cus, local_state, crx_id)) {
+            if (policy->ShouldTriggerInstallOrUpdate(cus, local_state,
+                                                     crx_id)) {
               VLOG(1) << "Platform Runtime component not installed or stale "
                          "locally. Triggering on-demand install.";
               PlatformRuntimeComponentInstallerPolicy::UpdateOnDemand(
                   cus, crx_id, OnDemandUpdater::Priority::FOREGROUND);
             }
           },
-          crx_id, cus));
+          base::Unretained(policy_ptr), crx_id, cus));
 #endif
 }
 

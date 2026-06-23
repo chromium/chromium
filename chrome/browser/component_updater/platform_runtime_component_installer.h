@@ -35,6 +35,15 @@ inline constexpr char kPlatformRuntimeLastInstallTime[] =
 inline constexpr char kPlatformRuntimeLastInstalledVersion[] =
     "platform_runtime.last_installed_version";
 
+// These values are persisted to UMA logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PlatformRuntimeInstallTrigger {
+  kMissing = 0,
+  kStale = 1,
+  kBackground = 2,
+  kMaxValue = kBackground,
+};
+
 BASE_DECLARE_FEATURE(kEnablePlatformRuntimeComponent);
 
 class PlatformRuntimeComponentInstallerPolicy
@@ -52,15 +61,22 @@ class PlatformRuntimeComponentInstallerPolicy
                              const std::string& id,
                              OnDemandUpdater::Priority priority);
 
-  static bool ShouldTriggerInstallOrUpdate(ComponentUpdateService* cus,
-                                           PrefService* local_state,
-                                           const std::string& crx_id);
+  bool ShouldTriggerInstallOrUpdate(ComponentUpdateService* cus,
+                                    PrefService* local_state,
+                                    const std::string& crx_id);
 
   void ComponentReadyForTesting(const base::Version& version,
                                 const base::FilePath& install_dir,
                                 base::DictValue manifest) {
     ComponentReady(version, install_dir, std::move(manifest));
   }
+
+  void SetInstallTrigger(PlatformRuntimeInstallTrigger trigger) {
+    install_trigger_ = trigger;
+  }
+
+  // ComponentInstallerPolicy overrides:
+  void GetHash(std::vector<uint8_t>* hash) const override;
 
  private:
   // ComponentInstallerPolicy overrides:
@@ -76,9 +92,11 @@ class PlatformRuntimeComponentInstallerPolicy
                       const base::FilePath& install_dir,
                       base::DictValue manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
-  void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
+
+  PlatformRuntimeInstallTrigger install_trigger_ =
+      PlatformRuntimeInstallTrigger::kBackground;
 };
 
 void MaybeRegisterPlatformRuntimeComponent(ComponentUpdateService* cus);

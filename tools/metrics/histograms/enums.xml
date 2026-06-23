@@ -23009,6 +23009,27 @@ Called by update_net_error_codes.py.-->
   <int value="16" label="I/O"/>
 </enum>
 
+<enum name="PlatformRuntimeInstallTrigger">
+  <summary>
+    The trigger/reason that led to the platform runtime component installation
+    or update.
+  </summary>
+  <int value="0" label="On startup due to being missing"/>
+  <int value="1" label="On startup due to being stale"/>
+  <int value="2" label="Via the background updater process"/>
+</enum>
+
+<enum name="PlatformRuntimeIntegrityResult">
+  <summary>
+    The outcome status when attempting to process request headers for integrity
+    checks.
+  </summary>
+  <int value="0" label="Component unavailable"/>
+  <int value="1" label="Library unavailable"/>
+  <int value="2" label="Success"/>
+  <int value="3" label="Failure"/>
+</enum>
+
 <enum name="PlusAddressCountBucket">
   <int value="0" label="No plus address"/>
   <int value="1" label="1-3 plus addresses"/>

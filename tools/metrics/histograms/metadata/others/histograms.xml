@@ -2888,6 +2888,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ComponentUpdater.PlatformRuntime.InstallTrigger"
+    enum="PlatformRuntimeInstallTrigger" expires_after="2026-09-16">
+  <owner>marwant@google.com</owner>
+  <owner>src/chrome/browser/component_updater/OWNERS</owner>
+  <summary>
+    Counts the different reasons/ways the platform runtime component got
+    installed: either on startup due to being missing, or on startup due to
+    being stale, or via the background updater process.
+  </summary>
+</histogram>
+
+<histogram name="ComponentUpdater.PlatformRuntime.RequestHeaderIntegrityResult"
+    enum="PlatformRuntimeIntegrityResult" expires_after="2026-09-16">
+  <owner>quarz@chromium.org</owner>
+  <owner>src/chrome/common/platform_runtime/OWNERS</owner>
+  <summary>
+    Counts the different outcomes when processing request headers for integrity
+    checks.
+  </summary>
+</histogram>
+
 <histogram name="ComponentUpdater.TranslateKit.LanguagePack.UpdateError"
     enum="UpdateClientErrors" expires_after="2026-12-31">
   <owner>paugomez@chromium.org</owner>
