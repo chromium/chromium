@@ -20,7 +20,7 @@
 }
 
 :host{
-  --cr-hover-background-color:#FFF;
+  --cr-hover-background-color: #F3F5F6;
   --cr-button-height: 32px;
   flex-shrink: 0;
 }
