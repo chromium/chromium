@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +22,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.After;
 import org.junit.Before;
@@ -41,6 +44,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtilsJni;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
@@ -128,6 +132,8 @@ public class NewTabPageCoordinatorUnitTest {
     @Mock private SigninManager mSigninManager;
     @Mock private SyncService mSyncService;
     @Mock private BackPressManager mBackPressManager;
+    @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    @Mock private RecyclerView mRecyclerView;
 
     private Activity mActivity;
     private NewTabPageLayout mNewTabPageLayout;
@@ -374,5 +380,63 @@ public class NewTabPageCoordinatorUnitTest {
         View composeplateView = layout.findViewById(R.id.composeplate_view);
         assertNotNull(composeplateView);
         assertEquals(maxSearchBoxWidthPx, composeplateView.getLayoutParams().width);
+    }
+
+    @Test
+    public void testNtpScrollListener_hidesControls_whenNotLoading() {
+        when(mBrowserControlsVisibilityManager.getBottomControlsHeight()).thenReturn(100);
+        when(mTab.isLoading()).thenReturn(false);
+
+        NewTabPage.NtpScrollListener listener =
+                new NewTabPage.NtpScrollListener(
+                        mBrowserControlsVisibilityManager, mActivity, mTab);
+
+        // Scroll past the threshold (20dp * 1.0 = 20px). Scroll down by 25px:
+        listener.onScrolled(mRecyclerView, 0, 25);
+        verify(mBrowserControlsVisibilityManager).hideAndroidControls(true);
+    }
+
+    @Test
+    public void testNtpScrollListener_doesNotHideControls_whenLoading() {
+        when(mBrowserControlsVisibilityManager.getBottomControlsHeight()).thenReturn(100);
+        when(mTab.isLoading()).thenReturn(true);
+
+        NewTabPage.NtpScrollListener listener =
+                new NewTabPage.NtpScrollListener(
+                        mBrowserControlsVisibilityManager, mActivity, mTab);
+
+        // Scroll past the threshold.
+        listener.onScrolled(mRecyclerView, 0, 25);
+        verify(mBrowserControlsVisibilityManager, never()).hideAndroidControls(true);
+    }
+
+    @Test
+    public void testNtpScrollListener_showsControls_whenNotLoading() {
+        when(mBrowserControlsVisibilityManager.getBottomControlsHeight()).thenReturn(100);
+        when(mBrowserControlsVisibilityManager.getBottomControlHiddenRatio()).thenReturn(1.0f);
+        when(mTab.isLoading()).thenReturn(false);
+
+        NewTabPage.NtpScrollListener listener =
+                new NewTabPage.NtpScrollListener(
+                        mBrowserControlsVisibilityManager, mActivity, mTab);
+
+        // Scroll up past the threshold.
+        listener.onScrolled(mRecyclerView, 0, -25);
+        verify(mBrowserControlsVisibilityManager).showAndroidControls(true);
+    }
+
+    @Test
+    public void testNtpScrollListener_doesNotShowControls_whenLoading() {
+        when(mBrowserControlsVisibilityManager.getBottomControlsHeight()).thenReturn(100);
+        when(mBrowserControlsVisibilityManager.getBottomControlHiddenRatio()).thenReturn(1.0f);
+        when(mTab.isLoading()).thenReturn(true);
+
+        NewTabPage.NtpScrollListener listener =
+                new NewTabPage.NtpScrollListener(
+                        mBrowserControlsVisibilityManager, mActivity, mTab);
+
+        // Scroll up past the threshold.
+        listener.onScrolled(mRecyclerView, 0, -25);
+        verify(mBrowserControlsVisibilityManager, never()).showAndroidControls(true);
     }
 }

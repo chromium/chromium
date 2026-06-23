@@ -1295,7 +1295,8 @@ public class NewTabPage
         }
 
         if (attach && mNtpScrollListener == null) {
-            mNtpScrollListener = new NtpScrollListener(mBrowserControlsStateProvider, mContext);
+            mNtpScrollListener =
+                    new NtpScrollListener(mBrowserControlsStateProvider, mContext, mTab);
             recyclerView.addOnScrollListener(mNtpScrollListener);
         } else if (!attach && mNtpScrollListener != null) {
             recyclerView.removeOnScrollListener(mNtpScrollListener);
@@ -1303,17 +1304,19 @@ public class NewTabPage
         }
     }
 
-    private static class NtpScrollListener extends RecyclerView.OnScrollListener {
+    /* package */ static class NtpScrollListener extends RecyclerView.OnScrollListener {
         private static final int SCROLL_THRESHOLD_DP = 20;
 
         private final WeakReference<BrowserControlsStateProvider> mControlsProviderRef;
         private final WeakReference<Context> mContextRef;
+        private final WeakReference<Tab> mTabRef;
 
         private int mAccumulatedScrollY;
 
-        NtpScrollListener(BrowserControlsStateProvider controlsProvider, Context context) {
+        NtpScrollListener(BrowserControlsStateProvider controlsProvider, Context context, Tab tab) {
             mControlsProviderRef = new WeakReference<>(controlsProvider);
             mContextRef = new WeakReference<>(context);
+            mTabRef = new WeakReference<>(tab);
         }
 
         @Override
@@ -1327,7 +1330,9 @@ public class NewTabPage
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             BrowserControlsStateProvider provider = mControlsProviderRef.get();
             Context context = mContextRef.get();
-            if (provider == null || context == null) return;
+            Tab tab = mTabRef.get();
+            if (provider == null || context == null || tab == null) return;
+            if (tab.isLoading()) return;
             if (!(provider instanceof BrowserControlsVisibilityManager)) return;
 
             BrowserControlsVisibilityManager manager = (BrowserControlsVisibilityManager) provider;
