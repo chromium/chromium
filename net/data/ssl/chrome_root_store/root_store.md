@@ -1,7 +1,7 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
 # Chrome Root Store
-Version: 34
+Version: 35
 
 [TOC]
 
@@ -114,3 +114,6 @@ f015ce3cc239bfef064be9f1d2c417e1a0264a0a94be1f0c8d121864eb6949cc | CN=HiPKI Root
 8e8221b2e7d4007836a1672f0dcc299c33bc07d316f132fa1a206d587150f1ce | CN=D-TRUST EV Root CA 2 2023,O=D-Trust GmbH,C=DE | 2023-05-09 | 2038-05-09
 578af4ded0853f4e5998db4aeaf9cbea8d945f60b620a38d1a3c13b2bc7ba8e1 | CN=Telekom Security TLS ECC Root 2020,O=Deutsche Telekom Security GmbH,C=DE | 2020-08-25 | 2045-08-25
 efc65cadbb59adb6efe84da22311b35624b71b3b1ea0da8b6655174ec8978646 | CN=Telekom Security TLS RSA Root 2023,O=Deutsche Telekom Security GmbH,C=DE | 2023-03-28 | 2048-03-27
+552f7bdcf1a7af9e6ce672017f4f12abf77240c78e761ac203d1d9d20ac89988 | CN=DigiCert Trusted Root G4,OU=www.digicert.com,O=DigiCert Inc,C=US | 2013-08-01 | 2038-01-15
+7d05ebb682339f8c9451ee094eebfefa7953a114edb2f44949452fab7d2fc185 | CN=DigiCert Assured ID Root G2,OU=www.digicert.com,O=DigiCert Inc,C=US | 2013-08-01 | 2038-01-15
+7e37cb8b4c47090cab36551ba6f45db840680fba166a952db100717f43053fc2 | CN=DigiCert Assured ID Root G3,OU=www.digicert.com,O=DigiCert Inc,C=US | 2013-08-01 | 2038-01-15
