@@ -296,11 +296,13 @@ class GlicProfileManagerPreloadingTest
           /*enabled_features=*/{{features::kGlicWarming,
                                  {{features::kGlicWarmingDelayMs.name,
                                    delay_ms},
-                                  {features::kGlicWarmingJitterMs.name, "0"}}}},
+                                  {features::kGlicWarmingJitterMs.name, "0"}}},
+                                {features::kGlicAnchorEntryPointForOnboardedUsers,
+                                 {}}},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
+          /*enabled_features=*/{features::kGlicAnchorEntryPointForOnboardedUsers},
           /*disabled_features=*/{features::kGlicWarming});
     }
 
@@ -374,7 +376,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
   GlicProfileManager::ForceProfileForLaunchForTesting(std::nullopt);
   SetGlicCapability(browser()->profile(), false);
   EXPECT_EQ(WaitForShouldPreload(),
-            GlicPrewarmingChecksResult::kProfileNotEligible);
+            GlicPrewarmingChecksResult::kProfileNotEligibleAccountCapabilities);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,

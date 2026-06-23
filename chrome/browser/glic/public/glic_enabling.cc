@@ -474,6 +474,12 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
       result.primary_account_is_capable =
           (capability_value == signin::Tribool::kTrue);
 
+      if (!result.primary_account_is_capable && result.fre_is_consented &&
+          base::FeatureList::IsEnabled(
+              features::kGlicAnchorEntryPointForOnboardedUsers)) {
+        result.anchor_entrypoint_override_active = true;
+      }
+
       // If the feature is overridden by a field trial, and the user's
       // eligibility is known and different for the two capabilities, add them
       // to a synthetic trial.
