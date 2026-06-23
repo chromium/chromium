@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -173,7 +174,7 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
     void DestroyTask();
 
     base::queue<std::unique_ptr<JobRecord>> input_job_queue_;
-    base::queue<std::unique_ptr<JobRecord>> running_job_queue_;
+    base::circular_deque<std::unique_ptr<JobRecord>> running_job_queue_;
 
    private:
     // Combined the encoded data from |output_frame| with the JFIF/EXIF data.
