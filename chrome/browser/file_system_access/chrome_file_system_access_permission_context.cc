@@ -986,9 +986,13 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     }
 
     // Drop fullscreen mode so that the user sees the URL bar.
-    base::ScopedClosureRunner fullscreen_block =
-        web_contents->ForSecurityDropFullscreen(
-            /*display_id=*/display::kInvalidDisplayId);
+    auto blocker = web_contents->ForSecurityDropFullscreen(
+        /*display_id=*/display::kInvalidDisplayId);
+    if (!blocker) {
+      RunCallbackAndRecordPermissionRequestOutcome(
+          std::move(callback), PermissionRequestOutcome::kRequestAborted);
+      return;
+    }
 
     if (context_->IsEligibleToUpgradePermissionRequestToRestorePrompt(
             origin_, path_info_.path, handle_type_, user_action_, type_)) {
@@ -1000,7 +1004,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
            origin_, request_data_list},
           base::BindOnce(&PermissionGrantImpl::OnRestorePermissionRequestResult,
                          this, std::move(callback)),
-          std::move(fullscreen_block));
+          std::move(*blocker));
       return;
     }
 
@@ -1018,7 +1022,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
          {file_request_data}},
         base::BindOnce(&PermissionGrantImpl::OnPermissionRequestResult, this,
                        std::move(callback)),
-        std::move(fullscreen_block));
+        std::move(*blocker));
   }
 
   const url::Origin& origin() const {

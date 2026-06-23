@@ -116,6 +116,8 @@ class MediaRouterDialogControllerViews
 
   bool hide_media_button_for_testing_ = false;
 
+  base::ScopedClosureRunner fullscreen_blocker_;
+
   base::WeakPtrFactory<MediaRouterDialogControllerViews> weak_ptr_factory_{
       this};
 

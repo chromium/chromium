@@ -5821,7 +5821,9 @@ WebContents* WebContentsImpl::ShowCreatedWindow(
   // Only drop fullscreen on the specific destination display, if it is known.
   // This supports sites using cross-screen window management capabilities to
   // retain fullscreen and open a window on another screen.
-  ForSecurityDropFullscreen(display_id).RunAndReset();
+  if (!ForSecurityDropFullscreen(display_id)) {
+    return nullptr;
+  }
 
   // The delegate can be null in tests.
   if (!delegate) {
@@ -7389,10 +7391,12 @@ void WebContentsImpl::ExitFullscreen(bool will_cause_resize) {
   ExitFullscreenMode(will_cause_resize);
 }
 
-base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
-    int64_t display_id) {
+std::optional<base::ScopedClosureRunner>
+WebContentsImpl::ForSecurityDropFullscreen(int64_t display_id) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ForSecurityDropFullscreen",
                         "display_id", display_id);
+  base::WeakPtr<WebContentsImpl> weak_this = weak_factory_.GetWeakPtr();
+
   // Make WebContentses "related" to this instance exit HTML element fullscreen,
   // ignoring browser fullscreen and fullscreen-within-tab modes. This needs to
   // be done with two passes, because it is simple to walk _up_ the chain of
@@ -7420,6 +7424,9 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
   }
 
   for (auto& fullscreen_contents : fullscreen_contents_list) {
+    if (!weak_this) {
+      return std::nullopt;
+    }
     if (!fullscreen_contents) {
       continue;
     }
@@ -7430,6 +7437,10 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
         fullscreen_contents->ExitFullscreen(true);
       }
     }
+  }
+
+  if (!weak_this) {
+    return std::nullopt;
   }
 
   // Second, walk upstream from this WebContents, and drop the fullscreen of
@@ -7446,6 +7457,9 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
   }
 
   for (auto& opener : openers) {
+    if (!weak_this) {
+      return std::nullopt;
+    }
     if (!opener) {
       continue;
     }
@@ -8244,11 +8258,9 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
 
   // Any new WebContents opened while this WebContents is in fullscreen can be
   // used to confuse the user, so drop fullscreen.
-  base::ScopedClosureRunner fullscreen_block =
-      ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
-  // The new view source contents will be independent of this contents, so
-  // release the fullscreen block.
-  fullscreen_block.RunAndReset();
+  if (!ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId)) {
+    return;
+  }
 
   // We intentionally don't share the SiteInstance with the original frame so
   // that view source has a consistent process model and always ends up in a new
@@ -8500,9 +8512,12 @@ void WebContentsImpl::EnumerateDirectory(
 
   // Any explicit focusing of another window while this WebContents is in
   // fullscreen can be used to confuse the user, so drop fullscreen.
-  base::ScopedClosureRunner fullscreen_block =
+  auto blocker =
       ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
-  listener->SetFullscreenBlock(std::move(fullscreen_block));
+  if (!blocker) {
+    return;
+  }
+  listener->SetFullscreenBlock(std::move(*blocker));
 
   if (delegate_) {
     active_file_chooser_ = std::move(file_chooser);
@@ -9077,14 +9092,17 @@ void WebContentsImpl::RunJavaScriptDialog(
 
   // Running a dialog causes an exit to webpage-initiated fullscreen.
   // http://crbug.com/728276
-  base::ScopedClosureRunner fullscreen_block =
+  auto blocker =
       ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
+  if (!blocker) {
+    return;
+  }
 
   auto callback = base::BindOnce(
       &WebContentsImpl::OnDialogClosed, weak_factory_.GetWeakPtr(),
       render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID(), std::move(response_callback),
-      std::move(fullscreen_block));
+      std::move(*blocker));
 
   std::vector<protocol::PageHandler*> page_handlers =
       protocol::PageHandler::EnabledForWebContents(this);
@@ -9210,14 +9228,17 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
 
   // Running a dialog causes an exit to webpage-initiated fullscreen.
   // http://crbug.com/728276
-  base::ScopedClosureRunner fullscreen_block =
+  auto blocker =
       ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
+  if (!blocker) {
+    return;
+  }
 
   auto callback = base::BindOnce(
       &WebContentsImpl::OnDialogClosed, weak_factory_.GetWeakPtr(),
       render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID(), std::move(response_callback),
-      std::move(fullscreen_block));
+      std::move(*blocker));
 
   std::vector<protocol::PageHandler*> page_handlers =
       protocol::PageHandler::EnabledForWebContents(this);
@@ -9314,9 +9335,12 @@ void WebContentsImpl::RunFileChooser(
 
   // Any explicit focusing of another window while this WebContents is in
   // fullscreen can be used to confuse the user, so drop fullscreen.
-  base::ScopedClosureRunner fullscreen_block =
+  auto blocker =
       ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
-  listener->SetFullscreenBlock(std::move(fullscreen_block));
+  if (!blocker) {
+    return;
+  }
+  listener->SetFullscreenBlock(std::move(*blocker));
 
   if (delegate_) {
     active_file_chooser_ = std::move(file_chooser);
@@ -9720,7 +9744,9 @@ void WebContentsImpl::SetWindowRect(const gfx::Rect& new_bounds) {
   // Only drop fullscreen on the specific destination display, which is known.
   // This supports sites using cross-screen window management capabilities to
   // retain fullscreen and place a window on another screen.
-  ForSecurityDropFullscreen(display_id).RunAndReset();
+  if (!ForSecurityDropFullscreen(display_id)) {
+    return;
+  }
 
   delegate_->SetContentsBounds(this, bounds);
 }
@@ -10426,11 +10452,9 @@ void WebContentsImpl::DidCallFocus() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DidCallFocus");
   // Any explicit focusing of another window while this WebContents is in
   // fullscreen can be used to confuse the user, so drop fullscreen.
-  base::ScopedClosureRunner fullscreen_block =
-      ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
-  // The other contents is independent of this contents, so release the
-  // fullscreen block.
-  fullscreen_block.RunAndReset();
+  if (!ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId)) {
+    return;
+  }
 }
 
 void WebContentsImpl::OnAdvanceFocus(RenderFrameHostImpl* source_rfh) {
