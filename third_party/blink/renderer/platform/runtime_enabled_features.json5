@@ -5286,8 +5286,9 @@
     {
       // Aligns the implementation of the <selectedcontent> element with the
       // HTML spec. https://issues.chromium.org/issues/458113204
+      // Enabled in M151, safe to remove in M153.
       name: "SelectedcontentSpec",
-      status: "experimental",
+      status: "stable",
     },
     {
       // See https://crbug.com/40664519
