@@ -11,6 +11,8 @@
 
 namespace blink {
 
+struct InterpolationValue;
+
 class CORE_EXPORT BaseInterpolableColor : public InterpolableValue {
  public:
   virtual void Composite(const BaseInterpolableColor& other,
@@ -27,6 +29,9 @@ class CORE_EXPORT BaseInterpolableColor : public InterpolableValue {
                         const Color& link_color,
                         const Color& text_color,
                         mojom::blink::ColorScheme color_scheme) const = 0;
+
+  static void EnsureCompatible(InterpolationValue& start,
+                               InterpolationValue& end);
 };
 
 template <>
