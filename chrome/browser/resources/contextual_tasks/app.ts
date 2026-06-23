@@ -991,6 +991,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     this.forcedComposeboxBounds_ = null;
     this.occluders_ = null;
     this.isInputHidden_ = false;
+    this.isDomContentLoaded_ = false;
 
     // Set frame loading to true initially to avoid race conditions.
     this.isFrameLoading = true;
@@ -1012,7 +1013,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
     if (isAiPage && isZeroState) {
       this.isZeroState_ = true;
-      if (!this.isInitialFrameLoad_) {
+      if (!this.isInitialFrameLoad_ && this.isDomContentLoaded_) {
         this.playZeroStateAnimations_();
       }
     }

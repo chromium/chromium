@@ -406,6 +406,69 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
             'Companion expand animation track should be triggered');
       });
 
+  test(
+      'zero state animation on subsequent navigation only plays once',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        contextualTasksApp = document.createElement('contextual-tasks-app');
+        await customElements.whenDefined('contextual-tasks-app');
+        document.body.appendChild(contextualTasksApp);
+        await contextualTasksApp.updateComplete;
+        await microtasksFinished();
+
+        // 1. Finish initial load.
+        window.dispatchEvent(new MessageEvent('message', {
+          data: 'domContentLoaded',
+        }));
+        await contextualTasksApp.updateComplete;
+        await microtasksFinished();
+
+        // Now, isInitialFrameLoad_ is false, so it's a subsequent navigation.
+        contextualTasksApp['isInitialFrameLoad_'] = false;
+
+        // Spy on playZeroStateAnimations_
+        let playCount = 0;
+        contextualTasksApp['playZeroStateAnimations_'] = () => {
+          playCount++;
+        };
+
+        // 2. Simulate subsequent top level navigation to zero-state AI page.
+        const mockEvent = {
+          url: 'https://google.com/?gsc=2',
+          isTopLevel: true,
+        } as unknown as chrome.webviewTag.LoadStartEvent;
+
+        // Set up the browser proxy handler to return zero state and AI page.
+        testProxy.handler.setIsAiPage(true);
+        testProxy.handler.setIsZeroState(true);
+
+        // Trigger top-level navigation (which is async and awaits isAiPage/isZeroState).
+        const navPromise =
+            contextualTasksApp['onThreadFrameTopLevelNavigation'](mockEvent);
+
+        // Before the navigation async IPCs resolve, check:
+        // isDomContentLoaded_ should be reset to false.
+        assertFalse(contextualTasksApp['isDomContentLoaded_']);
+
+        // Wait for the navigation handler to complete.
+        await navPromise;
+        await microtasksFinished();
+
+        // Since isDomContentLoaded_ was reset to false, playZeroStateAnimations_
+        // should NOT have been called yet.
+        assertEquals(0, playCount);
+
+        // 3. Now send the domContentLoaded event when the frame finishes loading.
+        window.dispatchEvent(new MessageEvent('message', {
+          data: 'domContentLoaded',
+        }));
+        await contextualTasksApp.updateComplete;
+        await microtasksFinished();
+
+        // The animation should have been triggered exactly once.
+        assertEquals(1, playCount);
+      });
+
   test('SuggestionsHiddenWhenDropdownNotShown', async () => {
     loadTimeData.overrideValues({
       enableNativeZeroStateSuggestions: true,
