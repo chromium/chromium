@@ -62,6 +62,8 @@
 
   [_guidedTourCoordinator stop];
   _guidedTourCoordinator = nil;
+
+  [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
 }
 
 #pragma mark - Property Implementation.

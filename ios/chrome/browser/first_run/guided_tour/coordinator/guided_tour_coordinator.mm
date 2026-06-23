@@ -73,7 +73,7 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 }
 
 - (void)stop {
-  [_presenter dismiss];
+  [_presenter dismissWithoutCallback];
   _presenter = nil;
 }
 

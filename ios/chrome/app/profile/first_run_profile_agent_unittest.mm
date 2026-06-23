@@ -264,3 +264,20 @@ TEST_F(FirstRunProfileAgentTest, SyncedSetUpDoesNotTriggerInIncognito) {
       static_cast<int>(SyncedSetUpTriggerSource::kPostFirstRun), 0);
   histogram_tester.ExpectTotalCount("IOS.SyncedSetUp.TriggerSource", 0);
 }
+
+// Validates that stopGuidedTour does not crash when the command dispatcher
+// is not dispatching for GuidedTourCommands or SceneCommands.
+TEST_F(FirstRunProfileAgentTest, StopGuidedTourWithoutHandlers) {
+  enabled_feature_list_.InitAndEnableFeatureWithParameters(
+      kBestOfAppFRE, {{kWelcomeBackParam, "4"}});
+
+  InitializeActiveSceneState();
+  InitializeTestBrowser();
+  [profile_agent_ profileState:profile_state_
+      firstSceneHasInitializedUI:scene_state_];
+
+  [profile_agent_ startGuidedTour];
+
+  // This should not crash even if handlers are missing.
+  [profile_agent_ stopGuidedTour];
+}

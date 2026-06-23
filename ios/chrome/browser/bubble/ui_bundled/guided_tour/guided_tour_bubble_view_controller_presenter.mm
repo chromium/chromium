@@ -92,14 +92,11 @@ BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
 }
 
 - (void)dismiss {
-  if (!self.presenting) {
-    return;
-  }
-  [_parentViewController dismissViewControllerAnimated:YES completion:nil];
-  self.presenting = NO;
-  if (_completionCallback) {
-    _completionCallback();
-  }
+  [self dismissAndCallCallback:YES];
+}
+
+- (void)dismissWithoutCallback {
+  [self dismissAndCallCallback:NO];
 }
 
 #pragma mark - BubbleViewControllerPresenter
@@ -162,6 +159,21 @@ BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
                                                        toView:self.parentView];
   return [self frameForBubbleInRect:self.parentView.bounds
                       atAnchorPoint:_anchorPointInParent];
+}
+
+#pragma mark - Private
+
+// Dismisses the bubble. The `_completionCallback` will be called if
+// `callCallback` is YES.
+- (void)dismissAndCallCallback:(BOOL)callCallback {
+  if (!self.presenting) {
+    return;
+  }
+  [_parentViewController dismissViewControllerAnimated:YES completion:nil];
+  self.presenting = NO;
+  if (callCallback && _completionCallback) {
+    _completionCallback();
+  }
 }
 
 @end

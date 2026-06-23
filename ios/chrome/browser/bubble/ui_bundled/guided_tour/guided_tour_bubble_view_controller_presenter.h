@@ -73,7 +73,11 @@ enum class GuidedTourStep;
                     anchorPoint:(CGPoint)anchorPoint
                      anchorView:(UIView*)anchorView;
 
+// Dismisses the bubble.
 - (void)dismiss;
+
+// Dismisses the bubble and don't call the `dismissalCallback`.
+- (void)dismissWithoutCallback;
 
 @property(nonatomic, weak) id<GuidedTourBubbleViewControllerPresenterDelegate>
     delegate;
