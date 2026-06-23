@@ -660,6 +660,10 @@ BASE_FEATURE(kServiceWorkerStaticRouterStartServiceWorker,
 BASE_FEATURE(kServiceWorkerClientUrlIsCreationUrl,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for crbug.com/499449324.
+BASE_FEATURE(kServiceWorkerOptionalTimeoutIterator,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Handles blocking the file picker when a visible but inactive tab in a split
 // triggers it. This serves as a kill switch for crbug.com/444653104.
 BASE_FEATURE(kSideBySideFilePickerCancelling, base::FEATURE_ENABLED_BY_DEFAULT);
