@@ -458,6 +458,9 @@ void SandboxFileSystemBackendDelegate::AddFileAccessObserver(
 
 const UpdateObserverList* SandboxFileSystemBackendDelegate::GetUpdateObservers(
     FileSystemType type) const {
+#if DCHECK_IS_ON()
+  DCHECK(!is_filesystem_opened_ || io_thread_checker_.CalledOnValidThread());
+#endif
   auto iter = update_observers_.find(type);
   if (iter == update_observers_.end())
     return nullptr;
@@ -466,6 +469,9 @@ const UpdateObserverList* SandboxFileSystemBackendDelegate::GetUpdateObservers(
 
 const ChangeObserverList* SandboxFileSystemBackendDelegate::GetChangeObservers(
     FileSystemType type) const {
+#if DCHECK_IS_ON()
+  DCHECK(!is_filesystem_opened_ || io_thread_checker_.CalledOnValidThread());
+#endif
   auto iter = change_observers_.find(type);
   if (iter == change_observers_.end())
     return nullptr;
@@ -474,6 +480,9 @@ const ChangeObserverList* SandboxFileSystemBackendDelegate::GetChangeObservers(
 
 const AccessObserverList* SandboxFileSystemBackendDelegate::GetAccessObservers(
     FileSystemType type) const {
+#if DCHECK_IS_ON()
+  DCHECK(!is_filesystem_opened_ || io_thread_checker_.CalledOnValidThread());
+#endif
   auto iter = access_observers_.find(type);
   if (iter == access_observers_.end())
     return nullptr;
