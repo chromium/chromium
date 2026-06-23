@@ -43,6 +43,7 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
     private @Nullable PropertyModel mDialogModel;
     private @Nullable ClickableSpan mClickableSpan;
     private final Handler mDialogHandler;
+    private boolean mDismissedByNative;
 
     @CalledByNative
     static AdsBlockedDialog create(long nativeDialog, WindowAndroid windowAndroid) {
@@ -135,7 +136,15 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
 
     @CalledByNative
     void dismiss() {
-        mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+        mDismissedByNative = true;
+        if (mDialogModel != null) {
+            mModalDialogManager.dismissDialog(
+                    mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+        }
+        if (mNativeDialog != 0) {
+            mDialogHandler.removeCallbacksAndMessages(null);
+            mNativeDialog = 0;
+        }
     }
 
     // Returns link-formatted message text for the ads blocked dialog.
@@ -167,7 +176,9 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
         mDialogHandler.removeCallbacksAndMessages(null);
-        AdsBlockedDialogJni.get().onDismissed(mNativeDialog);
+        if (!mDismissedByNative && mNativeDialog != 0) {
+            AdsBlockedDialogJni.get().onDismissed(mNativeDialog);
+        }
         mNativeDialog = 0;
     }
 
