@@ -174,12 +174,6 @@
   top: 0;
 }
 
-/* Ensure error scrim does not interfere with clicks when not in use. */
-#errorScrim[hidden] {
-  display: none;
-  pointer-events: none;
-}
-
 /* Position absolute: make sure error scrim shows over voice search
  * animation and voice search component since composebox is hidden
  * in voice search mode. 'Absolute' is needed for scrim because

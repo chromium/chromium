@@ -51,18 +51,19 @@ cr-composebox-tool-chip {
   padding-inline-start: 8px;
 }
 
-#carousel {
-  margin-bottom: var(--context-non-top-carousel-bottom-margin, 8px);
-  margin-top: var(--context-non-top-carousel-top-margin, 4px);
-  inset-inline-start: var(--context-carousel-inline-start-spacing, 50px);
-  width: calc(100% - var(--context-carousel-inline-start-spacing, 50px) -
-      var(--context-carousel-inline-end-spacing, 50px));
-}
-
 .carousel-container-inner {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+/* Overrides regular carousel CSS (above) for voice. */
+#voiceCarouselContainerInner {
+  align-items: flex-start;
+  /* This is already in shared CSS, but to make it clear
+   * that it is 'flex-direction: column' and not 'row':
+   */
+  flex-direction: column;
 }
 
 :host([searchbox-next-enabled]) #carousel {
@@ -103,23 +104,4 @@ cr-composebox-tool-chip {
   position: absolute;
   inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 12px);
   top: 10px;
-}
-
-:host([in-voice-search-mode]) #composebox {
-  block-size: fit-content;
-  min-block-size: 112px;
-  opacity: 0;
-  visibility: hidden;
-}
-
-:host([in-voice-search-mode]) #inputContainer {
-  display: none;
-}
-
-cr-composebox-voice-search {
-  z-index: 2;
-}
-
-:host(:not([in-voice-search-mode])) cr-composebox-voice-search {
-  display: none;
 }

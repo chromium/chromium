@@ -443,8 +443,7 @@ suite('OmniboxComposeboxTest', () => {
 
   test('Render Error Scrim on validation error', async () => {
     let scrim = omniboxComposebox.shadowRoot.querySelector('ntp-error-scrim');
-    assertTrue(!!scrim);
-    assertEquals('', scrim.errorMessage);
+    assertFalse(!!scrim);
     const composebox =
         omniboxComposebox.shadowRoot.querySelector('#composebox');
     assertFalse(composebox!.hasAttribute('inert'));
@@ -455,6 +454,7 @@ suite('OmniboxComposeboxTest', () => {
     // Scrim should be visible.
     scrim = omniboxComposebox.shadowRoot.querySelector('ntp-error-scrim');
     assertTrue(!!scrim);
+    assertEquals('File size exceeds 100 MiB', scrim.errorMessage);
     assertTrue(composebox!.hasAttribute('inert'));
 
     // Dismiss error scrim.
@@ -464,6 +464,8 @@ suite('OmniboxComposeboxTest', () => {
 
     // Error cleared.
     assertEquals('', omniboxComposebox.errorMessage);
+    scrim = omniboxComposebox.shadowRoot.querySelector('ntp-error-scrim');
+    assertFalse(!!scrim);
     assertFalse(composebox!.hasAttribute('inert'));
   });
 
