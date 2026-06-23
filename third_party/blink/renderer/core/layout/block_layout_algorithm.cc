@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/layout/column_spanner_path.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/early_break.h"
 #include "third_party/blink/renderer/core/layout/floats_utils.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
@@ -672,6 +673,8 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
         text_fit.Type() == TextFitType::kShrink &&
         text_fit.Target() == TextFitTarget::kConsistent;
     if (grow_consistent || shrink_consistent) {
+      DisableLayoutSideEffectsScope no_side_effects;
+
       // Compute the paragraph scaling factor with a cloned
       // BlockLayoutAlgorithm.
       // TODO(crbug.com/417306102): This approach is an inefficient because it
