@@ -61,6 +61,7 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   UIEdgeInsets insets() const { return insets_; }
   UIEdgeInsets min_insets() const { return min_insets_; }
   UIEdgeInsets max_insets() const { return max_insets_; }
+  CGFloat keyboard_obscured_inset() const { return keyboard_obscured_inset_; }
 
   // Accessors for the progress in entering or exiting fullscreen.
   // 1.0 indicates browser UI is fully visible, 0.0 indicates browser UI is
