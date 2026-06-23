@@ -15,6 +15,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -26,6 +27,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -42,6 +44,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Manages web application launch configurations based on client mode. Provides methods to process
@@ -115,6 +118,39 @@ public class WebAppLaunchHandler extends WebContentsObserver {
         mActivity = activity;
     }
 
+    private boolean isValidFileHandlingData(FileHandlingData fileHandlingData) {
+        String packageName = ContextUtils.getApplicationContext().getPackageName();
+        for (Uri uri : fileHandlingData.uris) {
+            if (!isValidLaunchUri(uri, packageName)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isValidLaunchUri(Uri uri, String packageName) {
+        if (uri == null) return false;
+
+        // Only content URIs are allowed. Legitimate file launching on Android should
+        // use Content URIs.
+        if (!ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
+            return false;
+        }
+
+        // Block Chrome's own Content URIs.
+        String authority = uri.getAuthority();
+        if (authority != null) {
+            String chromeAuthorityPrefix = packageName + ".";
+            if (authority
+                    .toLowerCase(Locale.US)
+                    .startsWith(chromeAuthorityPrefix.toLowerCase(Locale.US))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Generates WebAppLaunchParams based on the AndroidX representation of the client mode.
      *
@@ -130,17 +166,19 @@ public class WebAppLaunchHandler extends WebContentsObserver {
             String packageName,
             @Nullable FileHandlingData fileHandlingData) {
         List<Uri> fileUris = null;
-        if (fileHandlingData != null && !fileHandlingData.uris.isEmpty()) {
-            if (fileHandlingData.uris.size() == 1) {
-                WebAppLaunchHandlerHistogram.logFileHandling(FileHandlingAction.SINGLE_FILE);
-            } else {
-                WebAppLaunchHandlerHistogram.logFileHandling(FileHandlingAction.MULTIPLE_FILES);
-            }
+        @FileHandlingAction int action = FileHandlingAction.NO_FILES;
+
+        if (fileHandlingData != null
+                && !fileHandlingData.uris.isEmpty()
+                && isValidFileHandlingData(fileHandlingData)) {
             fileUris = fileHandlingData.uris;
-        } else {
-            WebAppLaunchHandlerHistogram.logFileHandling(FileHandlingAction.NO_FILES);
+            action =
+                    fileUris.size() == 1
+                            ? FileHandlingAction.SINGLE_FILE
+                            : FileHandlingAction.MULTIPLE_FILES;
         }
 
+        WebAppLaunchHandlerHistogram.logFileHandling(action);
         return new WebAppLaunchParams(newNavigationStarted, targetUrl, packageName, fileUris);
     }
 

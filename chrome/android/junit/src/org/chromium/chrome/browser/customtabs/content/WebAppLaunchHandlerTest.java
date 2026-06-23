@@ -39,6 +39,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -276,8 +277,8 @@ public class WebAppLaunchHandlerTest {
 
     @Test
     public void multipleFilePaths() {
-        final String secondUri = "second_uri.com";
-        final String thirdUri = "third_uri.com";
+        final String secondUri = "content://com.a.b.c/second";
+        final String thirdUri = "content://com.a.b.c/third";
         mFileHandlingData =
                 new FileHandlingData(
                         Arrays.asList(
@@ -292,6 +293,87 @@ public class WebAppLaunchHandlerTest {
                 LaunchHandlerClientMode.AUTO,
                 OTHER_URL,
                 /* expectedLoadUrl= */ true,
+                /* expectedNotifyQueue= */ true);
+    }
+
+    @Test
+    public void filePath_invalidScheme() {
+        mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse("file:///foo/bar")));
+        mExpectedFileList = new String[0]; // Expect empty because file:// is invalid
+        doTestHandleIntent(
+                LaunchHandlerClientMode.AUTO,
+                INITIAL_URL,
+                /* expectedLoadUrl= */ false,
+                /* expectedNotifyQueue= */ true);
+    }
+
+    @Test
+    public void filePath_chromePrivateData() {
+        String packageName = ContextUtils.getApplicationContext().getPackageName();
+        Uri privateUri = Uri.parse("content://" + packageName + ".FileProvider/foo");
+        mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse(CONTENT_URI), privateUri));
+        mExpectedFileList = new String[0]; // Expect empty because one is Chrome private
+        doTestHandleIntent(
+                LaunchHandlerClientMode.AUTO,
+                INITIAL_URL,
+                /* expectedLoadUrl= */ false,
+                /* expectedNotifyQueue= */ true);
+    }
+
+    @Test
+    public void filePath_emptyPath() {
+        mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse("")));
+        mExpectedFileList = new String[0];
+        doTestHandleIntent(
+                LaunchHandlerClientMode.AUTO,
+                INITIAL_URL,
+                /* expectedLoadUrl= */ false,
+                /* expectedNotifyQueue= */ true);
+    }
+
+    @Test
+    public void filePath_absolutePath() {
+        mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse("/absolute/path")));
+        mExpectedFileList = new String[0];
+        doTestHandleIntent(
+                LaunchHandlerClientMode.AUTO,
+                INITIAL_URL,
+                /* expectedLoadUrl= */ false,
+                /* expectedNotifyQueue= */ true);
+    }
+
+    @Test
+    public void filePath_parentReference() {
+        mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse("relative/../path")));
+        mExpectedFileList = new String[0];
+        doTestHandleIntent(
+                LaunchHandlerClientMode.AUTO,
+                INITIAL_URL,
+                /* expectedLoadUrl= */ false,
+                /* expectedNotifyQueue= */ true);
+    }
+
+    @Test
+    public void filePath_relativePath() {
+        mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse("relative/path")));
+        mExpectedFileList = new String[0];
+        doTestHandleIntent(
+                LaunchHandlerClientMode.AUTO,
+                INITIAL_URL,
+                /* expectedLoadUrl= */ false,
+                /* expectedNotifyQueue= */ true);
+    }
+
+    @Test
+    public void filePath_sensitiveRelativePath() {
+        mFileHandlingData =
+                new FileHandlingData(
+                        Arrays.asList(Uri.parse("data/data/com.android.chrome/cookies")));
+        mExpectedFileList = new String[0];
+        doTestHandleIntent(
+                LaunchHandlerClientMode.AUTO,
+                INITIAL_URL,
+                /* expectedLoadUrl= */ false,
                 /* expectedNotifyQueue= */ true);
     }
 
