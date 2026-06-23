@@ -107,18 +107,21 @@ public class TabbedCrashRecoveryDelegate {
                 crashedWindows.size(),
                 TabWindowManager.MAX_SELECTORS_1000 + 1);
 
-        if (crashedWindows.size() == 1) {
+        if (crashedWindows.size() == 1
+                && crashedWindows.get(0).windowId == hostActivity.getWindowId()) {
             // If there is only one window to recover (assumed to be the current window), do not
             // show the crash recovery prompt.
             return;
         }
 
         mPreRecoveryAppTasks = getAppTasksById(hostActivity);
+        int nonHostCrashedWindowCount = 0;
         int crashedWindowTaskCount = 0;
         for (CrashRecoveryWindowInfo windowInfo : crashedWindows) {
             int windowId = windowInfo.windowId;
             // Exclude host activity from crash recovery task.
             if (hostActivity.getWindowId() == windowInfo.windowId) continue;
+            nonHostCrashedWindowCount++;
             int persistedTaskId = ChromeMultiInstancePersistentStore.readTaskId(windowId);
             if (mPreRecoveryAppTasks.containsKey(persistedTaskId)) {
                 crashedWindowTaskCount++;
@@ -129,7 +132,7 @@ public class TabbedCrashRecoveryDelegate {
             else mVisibleWindows.add(windowInfo);
         }
 
-        if (crashedWindowTaskCount == crashedWindows.size() - 1) {
+        if (crashedWindowTaskCount == nonHostCrashedWindowCount) {
             // If all crashed windows (other than the current window) have live tasks already, do
             // not show the crash recovery prompt.
             for (CrashRecoveryWindowInfo windowInfo : crashedWindows) {

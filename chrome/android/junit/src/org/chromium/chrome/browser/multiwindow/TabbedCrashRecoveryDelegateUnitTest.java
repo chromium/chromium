@@ -133,6 +133,28 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     }
 
     @Test
+    public void testInitiateCrashRecovery_singleWindowNotHost_showsRecoveryPrompt() {
+        // Setup.
+        mCrashedWindows = new ArrayList<>();
+        // Add a single crashed window that is different from the host window.
+        mCrashedWindows.add(
+                new CrashRecoveryWindowInfo(
+                        HOST_WINDOW_ID + 1, HOST_BOUNDS, /* isVisible= */ true));
+        var initWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.MultiWindow.CrashRecoveryWindowCount", 1)
+                        .build();
+
+        // Act.
+        mDelegate.initiateCrashRecovery(
+                mModalDialogManagerSupplier, mHostActivity, mCrashedWindows);
+
+        // Verify.
+        verify(mModalDialogManager).showDialog(any(), anyInt());
+        initWatcher.assertExpected();
+    }
+
+    @Test
     public void testInitiateCrashRecovery_allOtherWindowsHaveLiveTasks_skipsRecoveryPrompt() {
         // Setup.
         setupOtherCrashedWindows(
