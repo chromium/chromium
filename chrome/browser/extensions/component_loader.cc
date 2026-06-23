@@ -401,6 +401,14 @@ void ComponentLoader::AddGlicExtension() {
   }
 }
 
+void ComponentLoader::AddContextualTasksExtension() {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kApiContextualTasksPrivate)) {
+    Add(IDR_CONTEXTUAL_TASKS_EXTENSION_MANIFEST,
+        base::FilePath(FILE_PATH_LITERAL("contextual_tasks_extension")));
+  }
+}
+
 void ComponentLoader::AddWithNameAndDescription(
     int manifest_resource_id,
     const base::FilePath& root_directory,
@@ -616,6 +624,7 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
   }
 
   AddGlicExtension();
+  AddContextualTasksExtension();
 
 // http://crbug.com/41070702
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)

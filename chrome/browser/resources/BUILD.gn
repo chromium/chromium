@@ -250,7 +250,10 @@ if (enable_extensions_core) {
 
     # Some resources within component_extension_resources.grd are generated at
     # build time so we include them as explicit dependencies here
-    deps = [ "//chrome/browser/resources/glic/extension:build_ts" ]
+    deps = [
+      "//chrome/browser/resources/contextual_tasks/extension:build_ts",
+      "//chrome/browser/resources/glic/extension:build_ts",
+    ]
 
     if (is_chromeos) {
       deps += [

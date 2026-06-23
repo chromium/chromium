@@ -1914,8 +1914,10 @@ source_set("platform_browser_tests") {
         "//components/feed:feature_list",
       ]
     } else {
-      sources +=
-          [ "../browser/extensions/api/contextual_tasks_private/contextual_tasks_private_apitest.cc" ]
+      sources += [
+        "../browser/extensions/api/contextual_tasks_private/contextual_tasks_messaging_browsertest.cc",
+        "../browser/extensions/api/contextual_tasks_private/contextual_tasks_private_apitest.cc"
+      ]
 
       deps += [
         "//chrome/browser/contextual_tasks:test_support",

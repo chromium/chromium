@@ -84,6 +84,17 @@ inline constexpr char kGlicPublicKey[] =
     "YVUWJKu8V5ZyGWRJTtyo0tQiyNOx/kf3/"
     "f43CtsAKtsbFqJy9i9ux7JmF+KoORP1fjBJs0zpOGXWHbqIQIDAQAB";
 
+// The extension ID of the Contextual Tasks extension.
+inline constexpr char kContextualTasksExtensionId[] =
+    "glbjnfimcajjenihimblfaponejbkoph";
+
+// The public key of the Contextual Tasks extension.
+inline constexpr char kContextualTasksPublicKey[] =
+    "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8ZtnRT6hXtjtG5XM7TcKakx9J+"
+    "37WuK1g1cx2IOh9enerA5VlQBcoHSpGOx5xzebQLxzUtURmNQXSrhOac/"
+    "z9SVUhHrXrtnBS4ftIUfagTDroowh1b23pIusQaLKprhkS8iFr0nw887BV+"
+    "yh9LQ7J90qDNzukXn0ss6ZVMxgcaQIDAQAB";
+
 // The extension id of the Gemini testing extension.
 inline constexpr char kGlicTestExtensionId[] =
     "oljbkhokcbpaencibijkoolhipplkeoc";

@@ -24,6 +24,8 @@
 
       <include name="IDR_GLIC_EXTENSION_MANIFEST" file="glic/extension/manifest.json" resource_path="glic_extension/manifest.json" type="BINDATA" />
       <include name="IDR_GLIC_EXTENSION_BACKGROUND_JS" file="${root_gen_dir}/chrome/browser/resources/glic/extension/tsc/background.js" use_base_dir="false" resource_path="glic_extension/background.js" type="BINDATA" />
+      <include name="IDR_CONTEXTUAL_TASKS_EXTENSION_MANIFEST" file="contextual_tasks/extension/manifest.json" resource_path="contextual_tasks_extension/manifest.json" type="BINDATA" />
+      <include name="IDR_CONTEXTUAL_TASKS_EXTENSION_BACKGROUND_JS" file="${root_gen_dir}/chrome/browser/resources/contextual_tasks/extension/tsc/background.js" use_base_dir="false" resource_path="contextual_tasks_extension/background.js" type="BINDATA" />
 
       <!-- Hangout Services extension, included in Google Chrome builds only. -->
       <if expr="_google_chrome or enable_hangout_services_extension">
