@@ -70,6 +70,9 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
     case 'actuation_disabled':
       tests_runActuationDisabled(documentId);
       return;
+    case 'ineligible_account':
+      tests_runIneligibleAccount(documentId);
+      return;
     case 'account_mismatch':
       tests_runAccountMismatch(documentId);
       return;
@@ -412,4 +415,27 @@ function tests_runActuationDisabled(documentId) {
       chrome.test.succeed();
     },
   ]);
+}
+
+function tests_runIneligibleAccount(documentId) {
+  chrome.test.runTests([async function getState() {
+    const state = await chrome.glicPrivate.getState(documentId);
+    chrome.test.assertNoLastError();
+    chrome.test.assertTrue(!!state);
+
+    chrome.test.assertFalse(state.isEnabled, 'isEnabled should be false');
+    chrome.test.assertFalse(
+        state.isEnabledAndConsented, 'isEnabledAndConsented should be false');
+    chrome.test.assertEq(
+        'ineligible-account', state.readyState,
+        'readyState should be INELIGIBLE_ACCOUNT');
+
+    chrome.test.assertFalse(state.liveAllowed, 'liveAllowed should be false');
+    chrome.test.assertFalse(
+        state.shareImageAllowed, 'shareImageAllowed should be false');
+    chrome.test.assertFalse(
+        state.userEnableActuationOnWeb,
+        'userEnableActuationOnWeb should be false');
+    chrome.test.succeed();
+  }]);
 }

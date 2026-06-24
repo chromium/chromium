@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -38,6 +40,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
 #include "components/sync/base/features.h"
 #endif
 
@@ -47,17 +50,22 @@ class GlicPrivateApiTest : public GlicPrivateApiTestBase {
  public:
   GlicPrivateApiTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
         {{extensions_features::kApiGlicPrivate, {}},
          {extensions_features::kApiGlicAccessFromGoogleWebpage, {}},
          {extensions_features::kApiGlicAccessFromPromotionPage, {}},
+         {features::kGlicAnchorEntryPointForOnboardedUsers, {}},
          {features::kGlicActor,
           {{"glic_actor_policy_control_exemption", "true"}}}
 #if BUILDFLAG(IS_CHROMEOS)
          ,
-         {syncer::kReplaceSyncPromosWithSignInPromos, {}}
+         {syncer::kReplaceSyncPromosWithSignInPromos, {}},
+         {chromeos::features::kFeatureManagementGlic, {}}
 #endif
         },
-        {{features::kGlicShowForSignedOut}});
+        /*disabled_features=*/{features::kGlicShowForSignedOut,
+                               features::kGlicCountryFiltering,
+                               features::kGlicLocaleFiltering});
   }
 
  private:
@@ -100,6 +108,45 @@ IN_PROC_BROWSER_TEST_F(GlicPrivateApiDisabledTest, GetState) {
       kGlicPrivateTestExtensionId);
   EXPECT_TRUE(RunExtensionTest(
       "glic_private", {.extension_url = "test.html", .custom_arg = "disabled"},
+      {.load_as_component = true}))
+      << message_;
+}
+
+class GlicPrivateApiIneligibleAccountTest
+    : public glic::GlicBrowserTestMixin<GlicPrivateApiTest> {
+ public:
+  void SetUpOnMainThread() override {
+    GlicPrivateApiTest::SetUpOnMainThread();
+
+    profile()->GetPrefs()->SetInteger(
+        ::glic::prefs::kGlicCompletedFre,
+        static_cast<int>(::glic::prefs::FreStatus::kCompleted));
+
+    Profile* test_profile = profile();
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(test_profile);
+
+    CoreAccountInfo primary_account =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    ASSERT_FALSE(primary_account.IsEmpty());
+
+    AccountInfo account_info =
+        identity_manager->FindExtendedAccountInfoByAccountId(
+            primary_account.account_id);
+
+    AccountCapabilitiesTestMutator mutator(&account_info);
+    mutator.set_can_use_gemini_in_chrome(false);
+    mutator.set_can_use_model_execution_features(false);
+    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiIneligibleAccountTest, GetState) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
+      kGlicPrivateTestExtensionId);
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "ineligible_account"},
       {.load_as_component = true}))
       << message_;
 }

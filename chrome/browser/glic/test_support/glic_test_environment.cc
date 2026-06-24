@@ -187,6 +187,11 @@ std::vector<base::test::FeatureRef> GetDefaultEnabledGlicTestFeatures() {
           // Live mode is disabled by default on Linux, but we still want to
           // test it.
           features::kGlicLiveMode,
+          // The anchor entry point is disabled by default globally, but we want
+          // all glic tests to run with the intended future behavior. Explicit
+          // enabling is required here because some tests instantiate their own
+          // ScopedFeatureList which can clobber the field trial testing config.
+          features::kGlicAnchorEntryPointForOnboardedUsers,
 #if BUILDFLAG(IS_CHROMEOS)
           chromeos::features::kFeatureManagementGlic
 #endif  // BUILDFLAG(IS_CHROMEOS)
