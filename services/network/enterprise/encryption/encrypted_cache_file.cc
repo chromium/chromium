@@ -101,9 +101,18 @@ std::optional<size_t> EncryptedCacheFile::Read(int64_t offset,
   uint32_t end_chunk_index = GetChunkIndex(offset + data.size() - 1);
   size_t bytes_read = 0;
 
+  const int64_t file_length = file_->GetLength();
+
   // Decrypt all chunks intersecting with the read range.
   for (uint32_t chunk_index = start_chunk_index; chunk_index <= end_chunk_index;
        ++chunk_index) {
+    // Stop reading if we've reached the physical end of the file. This prevents
+    // large read buffers (e.g. from CacheFile iterators) from overshooting the
+    // physical file length and triggering decryption failures.
+    if (GetPhysicalOffset(chunk_index) >= file_length) {
+      break;
+    }
+
     auto result = ReadAndDecryptChunk(chunk_index, DecryptionSource::kRead);
     if (!result.has_value()) {
       RecordReadResult(EncryptionError::kDecryptionFailed);
@@ -133,6 +142,10 @@ std::optional<size_t> EncryptedCacheFile::Read(int64_t offset,
       break;
     }
   }
+  if (bytes_read == 0) {
+    return 0;
+  }
+
   RecordReadResult(EncryptionError::kSuccess);
   return bytes_read;
 }

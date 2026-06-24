@@ -582,18 +582,34 @@ TEST_F(EncryptedCacheFileTest, ReadPastEofFar) {
 
   base::HistogramTester histogram_tester;
   std::vector<uint8_t> buffer(10);
-  // Read far past EOF (offset in next chunk).
+  // Read far past EOF (offset in next chunk) returns 0 bytes read.
   auto read_res =
       encrypted_file->Read(kChunkDataSize + 100, base::span(buffer));
-  EXPECT_FALSE(read_res.has_value());
+  ASSERT_TRUE(read_res.has_value());
+  EXPECT_EQ(0u, read_res.value());
 
-  histogram_tester.ExpectBucketCount("Enterprise.EncryptedCache.Read.Result",
-                                     EncryptionError::kDecryptionFailed, 1);
-  histogram_tester.ExpectBucketCount(
-      "Enterprise.EncryptedCache.Read.DecryptionFailureReason",
-      DecryptionFailureReason::kReadPastEof, 1);
-  histogram_tester.ExpectBucketCount(
-      "Enterprise.EncryptedCache.Read.DecryptionFailureChunkIndex", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.EncryptedCache.Read.DecryptionFailureReason", 0);
+}
+
+TEST_F(EncryptedCacheFileTest, OverreadPastEofReturnsShortRead) {
+  auto encrypted_file = CreateEncryptedFile();
+  // File size is 5000 bytes (chunk 0 and part of chunk 1).
+  std::vector<uint8_t> data(5000, 'X');
+  ASSERT_TRUE(encrypted_file->Write(0, base::span(data)).has_value());
+
+  base::HistogramTester histogram_tester;
+  // Request a 64KB read buffer to simulate the kInitialHeaderRead buffer during
+  // cache iteration.
+  std::vector<uint8_t> buffer(64 * 1024);
+  auto read_res = encrypted_file->Read(0, base::span(buffer));
+
+  // It should not fail on chunk 2 due to clamping.
+  ASSERT_TRUE(read_res.has_value());
+  EXPECT_EQ(5000u, read_res.value());
+
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.EncryptedCache.Read.DecryptionFailureReason", 0);
 }
 
 TEST_F(EncryptedCacheFileTest, CiphertextTooShort) {
