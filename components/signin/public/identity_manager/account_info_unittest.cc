@@ -141,7 +141,7 @@ TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
           .SetLastAuthenticationAccessPoint(
               signin_metrics::AccessPoint::kSettings)
           .Build();
-  AccountCapabilitiesTestMutator mutator(&other.capabilities);
+  AccountCapabilitiesTestMutator mutator(&other);
   mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
       true);
 
@@ -192,8 +192,8 @@ TEST_F(AccountInfoTest, UpdateWithDefaultValuesNoOverride) {
           .SetHostedDomain("test_domain")
           .SetAvatarUrl("test_url")
           .Build();
-  AccountCapabilitiesTestMutator(&info.capabilities)
-      .set_is_subject_to_enterprise_features(true);
+  AccountCapabilitiesTestMutator(&info).set_is_subject_to_enterprise_features(
+      true);
 
   AccountInfo other =
       AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
