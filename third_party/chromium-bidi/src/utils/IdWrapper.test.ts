@@ -16,7 +16,7 @@
  */
 
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {IdWrapper} from './IdWrapper.js';
 
@@ -25,9 +25,9 @@ describe('IdWrapper', () => {
     const wrapper1 = new IdWrapper();
     const wrapper2 = new IdWrapper();
 
-    expect(wrapper1.id).to.be.an('number');
-    expect(wrapper2.id).to.be.an('number');
+    assert.typeOf(wrapper1.id, 'number');
+    assert.typeOf(wrapper2.id, 'number');
 
-    expect(wrapper2.id).to.be.greaterThan(wrapper1.id);
+    assert.isAbove(wrapper2.id, wrapper1.id);
   });
 });

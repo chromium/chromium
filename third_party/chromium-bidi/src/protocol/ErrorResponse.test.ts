@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import * as exceptionClasses from './ErrorResponse.js';
 import {ErrorCode} from './generated/webdriver-bidi.js';
@@ -66,14 +66,14 @@ describe('Exception', () => {
       .join('')}Exception`;
 
     it(`should have an exception class for ErrorCode.${exceptionClassName}`, () => {
-      expect(exceptionClasses).to.have.property(exceptionClassName);
+      assert.property(exceptionClasses, exceptionClassName);
       const ExceptionClass = (exceptionClasses as any)[exceptionClassName];
-      expect(ExceptionClass.name.endsWith('Exception')).to.be.true;
+      assert.isTrue(ExceptionClass.name.endsWith('Exception'));
 
       const instance = new ExceptionClass('my message', 'my stacktrace');
-      expect(instance).to.have.property('error', errorCode);
-      expect(instance).to.have.property('message', 'my message');
-      expect(instance).to.have.property('stacktrace', 'my stacktrace');
+      assert.propertyVal(instance, 'error', errorCode);
+      assert.propertyVal(instance, 'message', 'my message');
+      assert.propertyVal(instance, 'stacktrace', 'my stacktrace');
     });
   });
 });

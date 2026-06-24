@@ -16,7 +16,7 @@
  */
 
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {isSingleComplexGrapheme, isSingleGrapheme} from './graphemeTools.js';
 
@@ -24,55 +24,55 @@ describe('GraphemeTools', () => {
   describe('isSingleGrapheme', () => {
     describe('should return true for a single grapheme', () => {
       it('"a", a single char', () => {
-        expect(isSingleGrapheme('a')).to.be.true;
+        assert.isTrue(isSingleGrapheme('a'));
       });
 
       it('"😄", a single surrogate codepoint', () => {
-        expect(isSingleGrapheme('\ud83d\ude04')).to.be.true;
+        assert.isTrue(isSingleGrapheme('\ud83d\ude04'));
       });
 
       it('"நி", a grapheme containing several chars', () => {
-        expect(isSingleGrapheme('\u0BA8\u0BBF')).to.be.true;
+        assert.isTrue(isSingleGrapheme('\u0BA8\u0BBF'));
       });
 
       it('"각", a grapheme containing several chars', () => {
-        expect(isSingleGrapheme('\u1100\u1161\u11A8')).to.be.true;
+        assert.isTrue(isSingleGrapheme('\u1100\u1161\u11A8'));
       });
 
       it('"❤️", a grapheme containing several codepoints', () => {
-        expect(isSingleGrapheme('\u2764\ufe0f')).to.be.true;
+        assert.isTrue(isSingleGrapheme('\u2764\ufe0f'));
       });
     });
 
     describe('should return false for multiple graphemes', () => {
       it('2 symbols', () => {
-        expect(isSingleGrapheme('fa')).to.be.false;
+        assert.isFalse(isSingleGrapheme('fa'));
       });
 
       it('"😄a" a codepoint with a symbol', () => {
-        expect(isSingleGrapheme('\ud83d\ude04a')).to.be.false;
+        assert.isFalse(isSingleGrapheme('\ud83d\ude04a'));
       });
 
       it('"நிa" a grapheme with a symbol', () => {
-        expect(isSingleGrapheme('\u0BA8\u0BBFa')).to.be.false;
+        assert.isFalse(isSingleGrapheme('\u0BA8\u0BBFa'));
       });
 
       it('"각a" a grapheme with a symbol', () => {
-        expect(isSingleGrapheme('\u1100\u1161\u11A8a')).to.be.false;
+        assert.isFalse(isSingleGrapheme('\u1100\u1161\u11A8a'));
       });
 
       it('"❤️a" a grapheme with a symbol', () => {
-        expect(isSingleGrapheme('\u2764\ufe0fa')).to.be.false;
+        assert.isFalse(isSingleGrapheme('\u2764\ufe0fa'));
       });
 
       it('"😄😍" 2 graphemes', () => {
-        expect(isSingleGrapheme('\ud83d\ude04\ud83d\ude0d')).to.be.false;
+        assert.isFalse(isSingleGrapheme('\ud83d\ude04\ud83d\ude0d'));
       });
 
       it('"ch" 2 graphemes', () => {
         // https://www.unicode.org/reports/tr29/#Grapheme_Cluster_Boundaries
         // Spec says it's a single grapheme in slovak locale. We support only `en` locale.
-        expect(isSingleGrapheme('\ud83d\ude04\ud83d\ude0d')).to.be.false;
+        assert.isFalse(isSingleGrapheme('\ud83d\ude04\ud83d\ude0d'));
       });
     });
   });
@@ -80,37 +80,37 @@ describe('GraphemeTools', () => {
   describe('isSingleComplexGrapheme', () => {
     describe('should return true', () => {
       it('"😄", a single surrogate codepoint', () => {
-        expect(isSingleComplexGrapheme('\ud83d\ude04')).to.be.true;
+        assert.isTrue(isSingleComplexGrapheme('\ud83d\ude04'));
       });
 
       it('"நி", a grapheme containing several chars', () => {
-        expect(isSingleComplexGrapheme('\u0BA8\u0BBF')).to.be.true;
+        assert.isTrue(isSingleComplexGrapheme('\u0BA8\u0BBF'));
       });
 
       it('"각", a grapheme containing several chars', () => {
-        expect(isSingleComplexGrapheme('\u1100\u1161\u11A8')).to.be.true;
+        assert.isTrue(isSingleComplexGrapheme('\u1100\u1161\u11A8'));
       });
 
       it('"❤️", a grapheme containing several codepoints', () => {
-        expect(isSingleComplexGrapheme('\u2764\ufe0f')).to.be.true;
+        assert.isTrue(isSingleComplexGrapheme('\u2764\ufe0f'));
       });
     });
 
     describe('should return false', () => {
       it('"AB", 2 symbols', () => {
-        expect(isSingleComplexGrapheme('AB')).to.be.false;
+        assert.isFalse(isSingleComplexGrapheme('AB'));
       });
 
       it('"A", a single simple symbol', () => {
-        expect(isSingleComplexGrapheme('A')).to.be.false;
+        assert.isFalse(isSingleComplexGrapheme('A'));
       });
 
       it('"1", a single simple symbol', () => {
-        expect(isSingleComplexGrapheme('1')).to.be.false;
+        assert.isFalse(isSingleComplexGrapheme('1'));
       });
 
       it('empty string', () => {
-        expect(isSingleComplexGrapheme('')).to.be.false;
+        assert.isFalse(isSingleComplexGrapheme(''));
       });
     });
   });

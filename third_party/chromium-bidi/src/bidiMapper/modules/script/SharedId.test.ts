@@ -16,7 +16,7 @@
  */
 
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {getSharedId, parseSharedId} from './SharedId.js';
 
@@ -30,23 +30,24 @@ describe('SharedId', () => {
 
   describe('parseSharedId', () => {
     it('should parse proper formatted string', () => {
-      expect(parseSharedId(SHARED_ID)).to.deep.equal(PARSED_SHARED_ID);
+      assert.deepEqual(parseSharedId(SHARED_ID), PARSED_SHARED_ID);
     });
 
     it('should not parse incorrectly formatted string', () => {
-      expect(parseSharedId('some_incorrectly_formatted_string')).to.be.null;
+      assert.isNull(parseSharedId('some_incorrectly_formatted_string'));
     });
   });
 
   describe('getSharedId', () => {
     it('should generate', () => {
-      expect(
+      assert.equal(
         getSharedId(
           PARSED_SHARED_ID.frameId,
           PARSED_SHARED_ID.documentId,
           PARSED_SHARED_ID.backendNodeId,
         ),
-      ).to.equal(SHARED_ID);
+        SHARED_ID,
+      );
     });
   });
 });

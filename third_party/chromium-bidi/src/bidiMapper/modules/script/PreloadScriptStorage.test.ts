@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import {describe, it, beforeEach, afterEach} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {CdpTarget} from '../cdp/CdpTarget.js';
@@ -53,12 +53,12 @@ describe('PreloadScriptStorage', () => {
   });
 
   it('initial state', () => {
-    expect(preloadScriptStorage.find()).to.be.empty;
-    expect(
+    assert.isEmpty(preloadScriptStorage.find());
+    assert.isEmpty(
       preloadScriptStorage.find({
         targetId: '',
       }),
-    ).to.be.empty;
+    );
   });
 
   it(`add preload scripts`, () => {
@@ -68,7 +68,7 @@ describe('PreloadScriptStorage', () => {
     preloadScriptStorage.add(preloadScript1);
     preloadScriptStorage.add(preloadScript2);
 
-    expect(preloadScriptStorage.find()).to.deep.equal([
+    assert.deepEqual(preloadScriptStorage.find(), [
       preloadScript1,
       preloadScript2,
     ]);
@@ -78,7 +78,7 @@ describe('PreloadScriptStorage', () => {
     const preloadScript1 = createPreloadScript(MOCKED_UUID_1);
     preloadScriptStorage.add(preloadScript1);
 
-    expect(preloadScriptStorage.find({targetId: CDP_TARGET_ID})).to.deep.equal([
+    assert.deepEqual(preloadScriptStorage.find({targetId: CDP_TARGET_ID}), [
       preloadScript1,
     ]);
   });
@@ -87,15 +87,17 @@ describe('PreloadScriptStorage', () => {
     const preloadScript1 = createPreloadScript(MOCKED_UUID_1, [CDP_TARGET_ID]);
     preloadScriptStorage.add(preloadScript1);
 
-    expect(
+    assert.deepEqual(
       preloadScriptStorage.find({
         targetId: CDP_TARGET_ID,
       }),
-    ).to.deep.equal([preloadScript1]);
-    expect(
+      [preloadScript1],
+    );
+    assert.deepEqual(
       preloadScriptStorage.find({
         targetId: CDP_TARGET_ID,
       }),
-    ).to.deep.equal([preloadScript1]);
+      [preloadScript1],
+    );
   });
 });

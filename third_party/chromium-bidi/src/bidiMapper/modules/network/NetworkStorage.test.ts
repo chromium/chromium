@@ -16,7 +16,7 @@
  *
  */
 import {describe, it, beforeEach} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {ChromiumBidi, Network} from '../../../protocol/protocol.js';
@@ -120,11 +120,11 @@ describe('NetworkStorage', () => {
 
       request.requestWillBeSent();
       let event = await getEvent('network.beforeRequestSent');
-      expect(event).to.not.exist;
+      assert.notExists(event);
 
       request.requestWillBeSentExtraInfo();
       event = await getEvent('network.beforeRequestSent');
-      expect(event).to.exist;
+      assert.exists(event);
     });
 
     it('should work for reverse order', async () => {
@@ -132,11 +132,11 @@ describe('NetworkStorage', () => {
 
       request.requestWillBeSentExtraInfo();
       let event = await getEvent('network.beforeRequestSent');
-      expect(event).to.not.exist;
+      assert.notExists(event);
 
       request.requestWillBeSent();
       event = await getEvent('network.beforeRequestSent');
-      expect(event).to.exist;
+      assert.exists(event);
     });
 
     it('should work interception', async () => {
@@ -150,11 +150,11 @@ describe('NetworkStorage', () => {
 
       request.requestWillBeSent();
       let event = await getEvent('network.beforeRequestSent');
-      expect(event).to.not.exist;
+      assert.notExists(event);
 
       request.requestPaused();
       event = await getEvent('network.beforeRequestSent');
-      expect(event).to.deep.include({
+      assert.deepInclude(event, {
         isBlocked: true,
         intercepts: [interception],
       });
@@ -171,11 +171,11 @@ describe('NetworkStorage', () => {
 
       request.requestPaused();
       let event = await getEvent('network.beforeRequestSent');
-      expect(event).to.not.exist;
+      assert.notExists(event);
 
       request.requestWillBeSent();
       event = await getEvent('network.beforeRequestSent');
-      expect(event).to.deep.include({
+      assert.deepInclude(event, {
         isBlocked: true,
         intercepts: [interception],
       });
@@ -193,11 +193,11 @@ describe('NetworkStorage', () => {
       request.requestWillBeSent();
       request.requestPaused();
       let event = await getEvent('network.beforeRequestSent');
-      expect(event).to.not.exist;
+      assert.notExists(event);
 
       request.requestWillBeSentExtraInfo();
       event = await getEvent('network.beforeRequestSent');
-      expect(event).to.deep.include({
+      assert.deepInclude(event, {
         isBlocked: false,
       });
     });
@@ -214,11 +214,11 @@ describe('NetworkStorage', () => {
       request.requestWillBeSent();
       request.requestPaused();
       let event = await getEvent('network.beforeRequestSent');
-      expect(event).to.not.exist;
+      assert.notExists(event);
 
       request.loadingFailed();
       event = await getEvent('network.beforeRequestSent');
-      expect(event).to.deep.include({
+      assert.deepInclude(event, {
         isBlocked: false,
       });
     });
@@ -230,7 +230,7 @@ describe('NetworkStorage', () => {
 
       request.requestWillBeSent();
       const event = await getEvent('network.beforeRequestSent');
-      expect(event).to.exist;
+      assert.exists(event);
     });
 
     it('should work with data url and global interception', async () => {
@@ -244,7 +244,7 @@ describe('NetworkStorage', () => {
 
       request.requestWillBeSent();
       const event = await getEvent('network.beforeRequestSent');
-      expect(event).to.exist;
+      assert.exists(event);
     });
 
     it('should report right context for preflight requests', async () => {
@@ -265,8 +265,9 @@ describe('NetworkStorage', () => {
       preflightRrequest.requestWillBeSentExtraInfo();
 
       const event = await getEvent('network.beforeRequestSent');
-      expect(event).to.exist;
-      expect((event as Network.BeforeRequestSentParameters).context).to.equal(
+      assert.exists(event);
+      assert.equal(
+        (event as Network.BeforeRequestSentParameters).context,
         MockCdpNetworkEvents.defaultFrameId,
       );
     });
@@ -280,7 +281,7 @@ describe('NetworkStorage', () => {
       request.requestWillBeSentExtraInfo();
       request.responseReceived();
       const event = await getEvent('network.responseStarted');
-      expect(event).to.exist;
+      assert.exists(event);
     });
 
     it('should work for normal order no extraInfo', async () => {
@@ -290,7 +291,7 @@ describe('NetworkStorage', () => {
       request.requestWillBeSentExtraInfo();
       request.responseReceived(false);
       const event = await getEvent('network.responseStarted');
-      expect(event).to.exist;
+      assert.exists(event);
     });
 
     it('should work for reverse order', async () => {
@@ -301,11 +302,11 @@ describe('NetworkStorage', () => {
 
       request.responseReceivedExtraInfo();
       let event = await getEvent('network.responseStarted');
-      expect(event).to.not.exist;
+      assert.notExists(event);
       request.responseReceived();
 
       event = await getEvent('network.responseStarted');
-      expect(event).to.exist;
+      assert.exists(event);
     });
 
     it('should work interception', async () => {
@@ -321,12 +322,12 @@ describe('NetworkStorage', () => {
       request.requestWillBeSentExtraInfo();
 
       let event = await getEvent('network.responseStarted');
-      expect(event).to.not.exist;
+      assert.notExists(event);
       request.responsePaused();
 
       event = await getEvent('network.responseStarted');
 
-      expect(event).to.deep.include({
+      assert.deepInclude(event, {
         isBlocked: true,
         intercepts: [interception],
       });
@@ -345,17 +346,17 @@ describe('NetworkStorage', () => {
       request.requestWillBeSentExtraInfo();
 
       let event = await getEvent('network.responseStarted');
-      expect(event).to.not.exist;
+      assert.notExists(event);
 
       request.responsePaused();
       event = await getEvent('network.responseStarted');
-      expect(event).to.not.exist;
+      assert.notExists(event);
 
       request.responseReceived();
       request.responseReceivedExtraInfo();
 
       event = await getEvent('network.responseStarted');
-      expect(event).to.deep.include({
+      assert.deepInclude(event, {
         isBlocked: false,
       });
     });
@@ -368,7 +369,7 @@ describe('NetworkStorage', () => {
       request.requestWillBeSent();
       request.responseReceived();
       const event = await getEvent('network.responseStarted');
-      expect(event).to.exist;
+      assert.exists(event);
     });
   });
 
@@ -380,7 +381,7 @@ describe('NetworkStorage', () => {
       request.requestWillBeSentExtraInfo();
       request.authRequired();
       const event = await getEvent('network.authRequired');
-      expect(event).to.deep.nested.include({
+      assert.deepNestedInclude(event, {
         'request.request': request.requestId,
         'request.method': 'GET',
       });
@@ -391,7 +392,7 @@ describe('NetworkStorage', () => {
 
       request.authRequired();
       const event = await getEvent('network.authRequired');
-      expect(event).to.deep.nested.include({
+      assert.deepNestedInclude(event, {
         'request.request': request.fetchId,
         'request.method': 'GET',
       });
@@ -402,10 +403,10 @@ describe('NetworkStorage', () => {
 
       request.authRequired();
       let events = await getEvents('network.authRequired');
-      expect(events).to.have.length(1);
+      assert.lengthOf(events, 1);
       request.authRequired();
       events = await getEvents('network.authRequired');
-      expect(events).to.have.length(2);
+      assert.lengthOf(events, 2);
     });
 
     it('should emit beforeRequestSent before authRequired', async () => {
@@ -422,10 +423,10 @@ describe('NetworkStorage', () => {
       request.authRequired();
 
       const event = await getEvent('network.beforeRequestSent');
-      expect(event).to.exist;
+      assert.exists(event);
 
       const authEvent = await getEvent('network.authRequired');
-      expect(authEvent).to.exist;
+      assert.exists(authEvent);
 
       const beforeRequestSentIndex = processedEvents.findIndex(
         ([method]) => method === 'network.beforeRequestSent',
@@ -434,7 +435,7 @@ describe('NetworkStorage', () => {
         ([method]) => method === 'network.authRequired',
       );
 
-      expect(beforeRequestSentIndex).to.be.lessThan(authRequiredIndex);
+      assert.isBelow(beforeRequestSentIndex, authRequiredIndex);
     });
   });
 
@@ -448,7 +449,7 @@ describe('NetworkStorage', () => {
       request.responseReceived();
       request.loadingFinished();
       const event = await getEvent('network.responseCompleted');
-      expect(event).to.exist;
+      assert.exists(event);
     });
 
     it('should work with redirect', async () => {
@@ -459,7 +460,7 @@ describe('NetworkStorage', () => {
       request.requestWillBeSent();
       request.requestWillBeSentRedirect();
       const event = await getEvent('network.responseCompleted');
-      expect(event).to.exist;
+      assert.exists(event);
     });
   });
 
@@ -476,7 +477,7 @@ describe('NetworkStorage', () => {
 
       const event = await getEvent('network.responseCompleted');
 
-      expect(event).to.deep.nested.include({
+      assert.deepNestedInclude(event, {
         'response.status': 200,
       });
     });
@@ -505,7 +506,7 @@ describe('NetworkStorage', () => {
 
       const event = await getEvent('network.responseCompleted');
 
-      expect(event).to.deep.nested.include({
+      assert.deepNestedInclude(event, {
         'response.url': overrideUrl,
       });
     });

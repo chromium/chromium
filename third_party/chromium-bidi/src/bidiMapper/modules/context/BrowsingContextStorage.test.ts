@@ -16,7 +16,7 @@
  */
 
 import {describe, it, beforeEach} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {BrowsingContextStorage} from './BrowsingContextStorage.js';
 
@@ -28,13 +28,13 @@ describe('BrowsingContextStorage', () => {
   });
 
   it('initial state', () => {
-    expect(browsingContextStorage.getAllContexts()).to.be.empty;
-    expect(browsingContextStorage.getTopLevelContexts()).to.be.empty;
+    assert.isEmpty(browsingContextStorage.getAllContexts());
+    assert.isEmpty(browsingContextStorage.getTopLevelContexts());
   });
 
   describe('find top-level context ID', () => {
     it('top-level context', () => {
-      expect(browsingContextStorage.findTopLevelContextId(null)).to.be.null;
+      assert.isNull(browsingContextStorage.findTopLevelContextId(null));
     });
   });
 });

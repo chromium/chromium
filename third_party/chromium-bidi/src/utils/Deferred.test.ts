@@ -16,13 +16,9 @@
  */
 
 import {describe, it} from 'node:test';
-import * as chai from 'chai';
-import {expect} from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import {assert} from 'chai';
 
 import {Deferred} from './Deferred.js';
-
-chai.use(chaiAsPromised);
 
 describe('Deferred', () => {
   describe('isFinished', () => {
@@ -33,12 +29,12 @@ describe('Deferred', () => {
         throw e;
       });
 
-      expect(deferred.isFinished).to.be.false;
+      assert.isFalse(deferred.isFinished);
 
       deferred.resolve('done');
-      expect(deferred.isFinished).to.be.true;
+      assert.isTrue(deferred.isFinished);
 
-      await expect(deferredThen).to.eventually.equal('done');
+      assert.equal(await deferredThen, 'done');
     });
 
     it('reject', async () => {
@@ -46,18 +42,16 @@ describe('Deferred', () => {
       const deferredThen = deferred.then((v) => v);
       const deferredCatch = deferred.catch((e) => e);
 
-      expect(deferred.isFinished).to.be.false;
+      assert.isFalse(deferred.isFinished);
 
       deferred.reject(new Error('some error'));
-      expect(deferred.isFinished).to.be.true;
+      assert.isTrue(deferred.isFinished);
 
-      await expect(deferredThen).to.eventually.be.rejectedWith('some error');
+      const error = await deferredThen.catch((e: Error) => e);
+      assert.propertyVal(error, 'message', 'some error');
       await deferredCatch;
-      await expect(deferredCatch).to.eventually.be.an.instanceOf(Error);
-      await expect(deferredCatch).to.eventually.have.property(
-        'message',
-        'some error',
-      );
+      assert.instanceOf(await deferredCatch, Error);
+      assert.propertyVal(await deferredCatch, 'message', 'some error');
     });
 
     it('finally', async () => {
@@ -66,26 +60,26 @@ describe('Deferred', () => {
         // Intentionally empty.
       });
 
-      expect(deferred.isFinished).to.be.false;
+      assert.isFalse(deferred.isFinished);
 
       deferred.resolve('done');
-      expect(deferred.isFinished).to.be.true;
+      assert.isTrue(deferred.isFinished);
 
-      await expect(deferredFinally).to.eventually.equal('done');
+      assert.equal(await deferredFinally, 'done');
     });
 
     describe('result', () => {
       it('should throw if not finished', () => {
         const deferred = new Deferred<string>();
-        expect(() => {
+        assert.throws(() => {
           deferred.result;
-        }).to.throw('Deferred is not finished yet');
+        }, 'Deferred is not finished yet');
       });
 
       it('should return when finished', () => {
         const deferred = new Deferred<string>();
         deferred.resolve('done');
-        expect(deferred.result).to.equal('done');
+        assert.equal(deferred.result, 'done');
       });
     });
   });

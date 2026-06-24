@@ -16,7 +16,7 @@
  */
 
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {Deferred} from './Deferred.js';
@@ -58,7 +58,7 @@ describe('ProcessingQueue', () => {
     await wait(1);
 
     const processedValues = processor.getCalls().map((c) => c.firstArg);
-    expect(processedValues).to.deep.equal([1, 2, 3]);
+    assert.deepEqual(processedValues, [1, 2, 3]);
   });
 
   it('rejects should not stop processing with rejects from processor', async () => {
@@ -84,7 +84,7 @@ describe('ProcessingQueue', () => {
       .getCalls()
       .filter((c) => c.args[0] === 'Event was not processed:')
       .map((c) => c.args[1]);
-    expect(loggerErrorValues).to.deep.equal([error.message]);
+    assert.deepEqual(loggerErrorValues, [error.message]);
   });
 
   it('rejects should not stop processing with rejects from queue', async () => {
@@ -113,7 +113,7 @@ describe('ProcessingQueue', () => {
       .getCalls()
       .filter((c) => c.args[0] === 'Event was not processed:')
       .map((c) => c.args[1]);
-    expect(loggerErrorValues).to.deep.equal([error.message]);
+    assert.deepEqual(loggerErrorValues, [error.message]);
   });
 
   it('rejects should not stop processing for queue events with result errors', async () => {
@@ -145,7 +145,7 @@ describe('ProcessingQueue', () => {
       .getCalls()
       .filter((c) => c.args[0] === 'Event threw before sending:')
       .map((c) => c.args[1]);
-    expect(loggerErrorValues).to.deep.equal([error.message]);
+    assert.deepEqual(loggerErrorValues, [error.message]);
   });
 
   it('processing starts over when new values are added', async () => {
@@ -174,7 +174,7 @@ describe('ProcessingQueue', () => {
     sinon.assert.calledOnceWithExactly(processor, 2);
 
     const processedValues = processor.getCalls().map((c) => c.firstArg);
-    expect(processedValues).to.deep.equal([2]);
+    assert.deepEqual(processedValues, [2]);
   });
 
   it('processing log name when starting to process new values', async () => {
@@ -208,7 +208,7 @@ describe('ProcessingQueue', () => {
       .getCalls()
       .filter((c) => c.args[0] === 'Processing event:')
       .map((c) => c.args[1]);
-    expect(processedValues).to.deep.equal(eventNames);
+    assert.deepEqual(processedValues, eventNames as any);
   });
 });
 

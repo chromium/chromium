@@ -16,7 +16,7 @@
  */
 
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {
   InvalidArgumentException,
@@ -30,12 +30,12 @@ import {getProxyStr} from './BrowserProcessor.js';
 describe('BrowserProcessor:getProxyStr', () => {
   it('should return undefined for "direct" proxyType', () => {
     const proxyConfig: Session.ProxyConfiguration = {proxyType: 'direct'};
-    expect(getProxyStr(proxyConfig)).to.be.undefined;
+    assert.isUndefined(getProxyStr(proxyConfig));
   });
 
   it('should return undefined for "system" proxyType', () => {
     const proxyConfig: Session.ProxyConfiguration = {proxyType: 'system'};
-    expect(getProxyStr(proxyConfig)).to.be.undefined;
+    assert.isUndefined(getProxyStr(proxyConfig));
   });
 
   it('should throw UnsupportedOperationException for "pac" proxyType', () => {
@@ -43,14 +43,16 @@ describe('BrowserProcessor:getProxyStr', () => {
       proxyType: 'pac',
       proxyAutoconfigUrl: 'some_url',
     };
-    expect(() => getProxyStr(proxyConfig)).to.throw(
+    assert.throws(
+      () => getProxyStr(proxyConfig),
       UnsupportedOperationException,
     );
   });
 
   it('should throw UnsupportedOperationException for "autodetect" proxyType', () => {
     const proxyConfig: Session.ProxyConfiguration = {proxyType: 'autodetect'};
-    expect(() => getProxyStr(proxyConfig)).to.throw(
+    assert.throws(
+      () => getProxyStr(proxyConfig),
       UnsupportedOperationException,
     );
   });
@@ -58,7 +60,7 @@ describe('BrowserProcessor:getProxyStr', () => {
   describe('manual proxyType', () => {
     it('should return undefined if no specific proxies are provided', () => {
       const proxyConfig: Session.ProxyConfiguration = {proxyType: 'manual'};
-      expect(getProxyStr(proxyConfig)).to.be.undefined;
+      assert.isUndefined(getProxyStr(proxyConfig));
     });
 
     it('should correctly format httpProxy', () => {
@@ -66,7 +68,7 @@ describe('BrowserProcessor:getProxyStr', () => {
         proxyType: 'manual',
         httpProxy: 'localhost:8080',
       };
-      expect(getProxyStr(proxyConfig)).to.equal('http=localhost:8080');
+      assert.equal(getProxyStr(proxyConfig), 'http=localhost:8080');
     });
 
     it('should correctly format sslProxy', () => {
@@ -74,7 +76,7 @@ describe('BrowserProcessor:getProxyStr', () => {
         proxyType: 'manual',
         sslProxy: 'secure.proxy:443',
       };
-      expect(getProxyStr(proxyConfig)).to.equal('https=secure.proxy:443');
+      assert.equal(getProxyStr(proxyConfig), 'https=secure.proxy:443');
     });
 
     describe('socksProxy', () => {
@@ -84,7 +86,8 @@ describe('BrowserProcessor:getProxyStr', () => {
           socksProxy: 'socks.server:1080',
           socksVersion: 5,
         };
-        expect(getProxyStr(proxyConfig)).to.equal(
+        assert.equal(
+          getProxyStr(proxyConfig),
           'socks=socks5://socks.server:1080',
         );
       });
@@ -95,7 +98,8 @@ describe('BrowserProcessor:getProxyStr', () => {
           socksProxy: 'socks.server:1080',
           socksVersion: 0,
         };
-        expect(getProxyStr(proxyConfig)).to.equal(
+        assert.equal(
+          getProxyStr(proxyConfig),
           'socks=socks0://socks.server:1080',
         );
       });
@@ -105,9 +109,7 @@ describe('BrowserProcessor:getProxyStr', () => {
           proxyType: 'manual',
           socksVersion: 5,
         };
-        expect(() => getProxyStr(proxyConfig)).to.throw(
-          InvalidArgumentException,
-        );
+        assert.throws(() => getProxyStr(proxyConfig), InvalidArgumentException);
       });
 
       it('should throw InvalidArgumentException if socksVersion is undefined', () => {
@@ -115,9 +117,7 @@ describe('BrowserProcessor:getProxyStr', () => {
           proxyType: 'manual',
           socksProxy: 'socks.server:1080',
         };
-        expect(() => getProxyStr(proxyConfig)).to.throw(
-          InvalidArgumentException,
-        );
+        assert.throws(() => getProxyStr(proxyConfig), InvalidArgumentException);
       });
 
       it('should throw InvalidArgumentException if socksVersion is not a number', () => {
@@ -126,9 +126,7 @@ describe('BrowserProcessor:getProxyStr', () => {
           socksProxy: 'socks.server:1080',
           socksVersion: '5' as any, // Force incorrect type
         };
-        expect(() => getProxyStr(proxyConfig)).to.throw(
-          InvalidArgumentException,
-        );
+        assert.throws(() => getProxyStr(proxyConfig), InvalidArgumentException);
       });
 
       it('should throw InvalidArgumentException if socksVersion is not an integer', () => {
@@ -137,9 +135,7 @@ describe('BrowserProcessor:getProxyStr', () => {
           socksProxy: 'socks.server:1080',
           socksVersion: 5.5,
         };
-        expect(() => getProxyStr(proxyConfig)).to.throw(
-          InvalidArgumentException,
-        );
+        assert.throws(() => getProxyStr(proxyConfig), InvalidArgumentException);
       });
 
       it('should throw InvalidArgumentException if socksVersion is less than 0', () => {
@@ -148,9 +144,7 @@ describe('BrowserProcessor:getProxyStr', () => {
           socksProxy: 'socks.server:1080',
           socksVersion: -1,
         };
-        expect(() => getProxyStr(proxyConfig)).to.throw(
-          InvalidArgumentException,
-        );
+        assert.throws(() => getProxyStr(proxyConfig), InvalidArgumentException);
       });
 
       it('should throw InvalidArgumentException if socksVersion is greater than 255', () => {
@@ -159,9 +153,7 @@ describe('BrowserProcessor:getProxyStr', () => {
           socksProxy: 'socks.server:1080',
           socksVersion: 256,
         };
-        expect(() => getProxyStr(proxyConfig)).to.throw(
-          InvalidArgumentException,
-        );
+        assert.throws(() => getProxyStr(proxyConfig), InvalidArgumentException);
       });
     });
 
@@ -175,7 +167,7 @@ describe('BrowserProcessor:getProxyStr', () => {
       };
       const expected =
         'http=http.proxy:80;https=https.proxy:443;socks=socks4://socks.proxy:1080';
-      expect(getProxyStr(proxyConfig)).to.equal(expected);
+      assert.equal(getProxyStr(proxyConfig), expected);
     });
 
     it('should correctly format multiple proxies in different order', () => {
@@ -187,7 +179,7 @@ describe('BrowserProcessor:getProxyStr', () => {
       };
       // Order of servers in the output string is defined by the function's implementation
       const expected = 'http=http.proxy:80;socks=socks5://socks.proxy:1080';
-      expect(getProxyStr(proxyConfig)).to.equal(expected);
+      assert.equal(getProxyStr(proxyConfig), expected);
     });
   });
 
@@ -195,6 +187,6 @@ describe('BrowserProcessor:getProxyStr', () => {
     const proxyConfig: Session.ProxyConfiguration = {
       proxyType: 'unknown_type' as any,
     };
-    expect(() => getProxyStr(proxyConfig)).to.throw(UnknownErrorException);
+    assert.throws(() => getProxyStr(proxyConfig), UnknownErrorException);
   });
 });

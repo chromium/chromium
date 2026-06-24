@@ -16,11 +16,9 @@
  */
 
 import {describe, it} from 'node:test';
-import * as chai from 'chai';
+import {assert} from 'chai';
 
 import {DefaultMap} from './DefaultMap.js';
-
-const expect = chai.expect;
 
 describe('DefaultMap', () => {
   it('returns the default value when key does not exist', () => {
@@ -31,20 +29,20 @@ describe('DefaultMap', () => {
       [['dog', 100]],
     );
 
-    expect(cutenessMap.get('dog')).to.deep.equal(100);
-    expect(cutenessMap.get('cat')).to.deep.equal(defaultValue);
+    assert.deepEqual(cutenessMap.get('dog'), 100);
+    assert.deepEqual(cutenessMap.get('cat'), defaultValue);
 
-    expect(Array.from(cutenessMap.keys())).to.deep.equal(['dog', 'cat']);
-    expect(Array.from(cutenessMap.values())).to.deep.equal([100, defaultValue]);
+    assert.deepEqual(Array.from(cutenessMap.keys()), ['dog', 'cat']);
+    assert.deepEqual(Array.from(cutenessMap.values()), [100, defaultValue]);
   });
 
   it('sets and gets properly', () => {
     const cutenessMap = new DefaultMap<string, number>(() => 0);
 
     cutenessMap.set('cat', 50);
-    expect(cutenessMap.get('cat')).to.deep.equal(50);
+    assert.deepEqual(cutenessMap.get('cat'), 50);
 
-    expect(Array.from(cutenessMap.keys())).to.deep.equal(['cat']);
-    expect(Array.from(cutenessMap.values())).to.deep.equal([50]);
+    assert.deepEqual(Array.from(cutenessMap.keys()), ['cat']);
+    assert.deepEqual(Array.from(cutenessMap.values()), [50]);
   });
 });

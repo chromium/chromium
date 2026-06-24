@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {getTimestamp} from './time.js';
 
 describe('getTimestamp', () => {
   it('should return a number', () => {
     const timestamp = getTimestamp();
-    expect(timestamp).to.be.a('number');
+    assert.typeOf(timestamp, 'number');
   });
 
   it(`should return a timestamp between '2020-01-01 00:00:00' and '2100-01-01 00:00:00'`, () => {
     const timestamp = getTimestamp();
     // Using a large delta to account for execution time and clock drift.
     // In a real test, consider mocking the underlying time source.
-    expect(timestamp).to.be.within(1577833200000, 4102441200000);
+    assert.isAtLeast(timestamp, 1577833200000);
+    assert.isAtMost(timestamp, 4102441200000);
   });
 });

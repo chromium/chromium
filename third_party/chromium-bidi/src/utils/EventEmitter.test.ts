@@ -16,7 +16,7 @@
  */
 
 import {describe, it, beforeEach} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {EventEmitter} from './EventEmitter.js';
@@ -37,7 +37,7 @@ describe('EventEmitter', () => {
       const listener = sinon.spy();
       emitter.on('foo', listener);
       emitter.emit('foo', undefined);
-      expect(listener.callCount).to.equal(1);
+      assert.equal(listener.callCount, 1);
     });
 
     it(`sends the event data to the handler`, () => {
@@ -45,14 +45,14 @@ describe('EventEmitter', () => {
       const data = 'data';
       emitter.on('bar', listener);
       emitter.emit('bar', data);
-      expect(listener.callCount).to.equal(1);
-      expect(listener.firstCall.args[0]).to.equal(data);
+      assert.equal(listener.callCount, 1);
+      assert.equal(listener.firstCall.args[0], data);
     });
 
     it(`supports chaining`, () => {
       const listener = sinon.spy();
       const returnValue = emitter.on('foo', listener);
-      expect(returnValue).to.equal(emitter);
+      assert.equal(returnValue, emitter);
     });
   });
 
@@ -61,17 +61,17 @@ describe('EventEmitter', () => {
       const listener = sinon.spy();
       emitter.on('foo', listener);
       emitter.emit('foo', undefined);
-      expect(listener.callCount).to.equal(1);
+      assert.equal(listener.callCount, 1);
       emitter.off('foo', listener);
       emitter.emit('foo', undefined);
-      expect(listener.callCount).to.equal(1);
+      assert.equal(listener.callCount, 1);
     });
 
     it(`supports chaining`, () => {
       const listener = sinon.spy();
       emitter.on('foo', listener);
       const returnValue = emitter.off('foo', listener);
-      expect(returnValue).to.equal(emitter);
+      assert.equal(returnValue, emitter);
     });
   });
 
@@ -80,15 +80,15 @@ describe('EventEmitter', () => {
       const listener = sinon.spy();
       emitter.once('foo', listener);
       emitter.emit('foo', undefined);
-      expect(listener.callCount).to.equal(1);
+      assert.equal(listener.callCount, 1);
       emitter.emit('foo', undefined);
-      expect(listener.callCount).to.equal(1);
+      assert.equal(listener.callCount, 1);
     });
 
     it('supports chaining', () => {
       const listener = sinon.spy();
       const returnValue = emitter.once('foo', listener);
-      expect(returnValue).to.equal(emitter);
+      assert.equal(returnValue, emitter);
     });
   });
 
@@ -101,9 +101,9 @@ describe('EventEmitter', () => {
 
       emitter.emit('foo', undefined);
 
-      expect(listener1.callCount).to.equal(1);
-      expect(listener2.callCount).to.equal(1);
-      expect(listener3.callCount).to.equal(0);
+      assert.equal(listener1.callCount, 1);
+      assert.equal(listener2.callCount, 1);
+      assert.equal(listener3.callCount, 0);
     });
 
     it('passes data through to the listener', () => {
@@ -112,8 +112,8 @@ describe('EventEmitter', () => {
       const data = undefined;
 
       emitter.emit('foo', data);
-      expect(listener.callCount).to.equal(1);
-      expect(listener.firstCall.args[0]).to.equal(data);
+      assert.equal(listener.callCount, 1);
+      assert.equal(listener.firstCall.args[0], data);
     });
   });
 
@@ -126,9 +126,9 @@ describe('EventEmitter', () => {
       emitter.removeAllListeners();
 
       emitter.emit('foo', undefined);
-      expect(listener1.callCount).to.equal(0);
-      expect(listener2.callCount).to.equal(0);
-      expect(listener3.callCount).to.equal(0);
+      assert.equal(listener1.callCount, 0);
+      assert.equal(listener2.callCount, 0);
+      assert.equal(listener3.callCount, 0);
     });
 
     it('for a single event', () => {
@@ -139,9 +139,9 @@ describe('EventEmitter', () => {
       emitter.removeAllListeners('bar');
 
       emitter.emit('foo', undefined);
-      expect(listener1.callCount).to.equal(1);
-      expect(listener2.callCount).to.equal(1);
-      expect(listener3.callCount).to.equal(0);
+      assert.equal(listener1.callCount, 1);
+      assert.equal(listener2.callCount, 1);
+      assert.equal(listener3.callCount, 0);
     });
   });
 });

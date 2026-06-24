@@ -16,7 +16,7 @@
  *
  */
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 import type {Protocol} from 'devtools-protocol';
 
 import type {Network} from '../../../protocol/protocol.js';
@@ -30,7 +30,7 @@ describe('NetworkUtils', () => {
       const headers: Network.Header[] = [];
       const responseHeadersSize = networkUtils.computeHeadersSize(headers);
 
-      expect(responseHeadersSize).to.equal(0);
+      assert.equal(responseHeadersSize, 0);
     });
 
     it('non-empty', () => {
@@ -52,7 +52,7 @@ describe('NetworkUtils', () => {
       ];
       const responseHeadersSize = networkUtils.computeHeadersSize(headers);
 
-      expect(responseHeadersSize).to.equal(46);
+      assert.equal(responseHeadersSize, 46);
     });
   });
 
@@ -62,7 +62,7 @@ describe('NetworkUtils', () => {
       const bidiNetworkHeaders =
         networkUtils.bidiNetworkHeadersFromCdpNetworkHeaders(cdpNetworkHeaders);
 
-      expect(bidiNetworkHeaders).to.deep.equal([]);
+      assert.deepEqual(bidiNetworkHeaders, []);
     });
 
     it('non-empty', () => {
@@ -73,7 +73,7 @@ describe('NetworkUtils', () => {
       const bidiNetworkHeaders =
         networkUtils.bidiNetworkHeadersFromCdpNetworkHeaders(cdpNetworkHeaders);
 
-      expect(bidiNetworkHeaders).to.deep.equal([
+      assert.deepEqual(bidiNetworkHeaders, [
         {
           name: 'Content-Type',
           value: {
@@ -97,7 +97,7 @@ describe('NetworkUtils', () => {
       const cdpNetworkHeaders =
         networkUtils.cdpNetworkHeadersFromBidiNetworkHeaders(undefined);
 
-      expect(cdpNetworkHeaders).to.equal(undefined);
+      assert.equal(cdpNetworkHeaders, undefined);
     });
 
     it('empty', () => {
@@ -107,7 +107,7 @@ describe('NetworkUtils', () => {
           bidiNetworkHeaders,
         );
 
-      expect(cdpNetworkHeaders).to.deep.equal({});
+      assert.deepEqual(cdpNetworkHeaders, {});
     });
 
     it('non-empty', () => {
@@ -132,7 +132,7 @@ describe('NetworkUtils', () => {
           bidiNetworkHeaders,
         );
 
-      expect(cdpNetworkHeaders).to.deep.equal({
+      assert.deepEqual(cdpNetworkHeaders, {
         'Content-Type': 'text/html',
         'Content-Length': '123',
       });
@@ -147,7 +147,7 @@ describe('NetworkUtils', () => {
           cdpFetchHeaderEntryArray,
         );
 
-      expect(bidiNetworkHeaders).to.deep.equal([]);
+      assert.deepEqual(bidiNetworkHeaders, []);
     });
 
     it('non-empty', () => {
@@ -166,7 +166,7 @@ describe('NetworkUtils', () => {
           cdpFetchHeaderEntryArray,
         );
 
-      expect(bidiNetworkHeaders).to.deep.equal([
+      assert.deepEqual(bidiNetworkHeaders, [
         {
           name: 'Content-Type',
           value: {
@@ -190,7 +190,7 @@ describe('NetworkUtils', () => {
       const cdpFetchHeaderEntryArray =
         networkUtils.cdpFetchHeadersFromBidiNetworkHeaders(undefined);
 
-      expect(cdpFetchHeaderEntryArray).to.equal(undefined);
+      assert.equal(cdpFetchHeaderEntryArray, undefined);
     });
 
     it('empty', () => {
@@ -198,7 +198,7 @@ describe('NetworkUtils', () => {
       const cdpFetchHeaderEntryArray =
         networkUtils.cdpFetchHeadersFromBidiNetworkHeaders(bidiNetworkHeaders);
 
-      expect(cdpFetchHeaderEntryArray).to.deep.equal([]);
+      assert.deepEqual(cdpFetchHeaderEntryArray, []);
     });
 
     it('non-empty', () => {
@@ -221,7 +221,7 @@ describe('NetworkUtils', () => {
       const cdpFetchHeaderEntryArray =
         networkUtils.cdpFetchHeadersFromBidiNetworkHeaders(bidiNetworkHeaders);
 
-      expect(cdpFetchHeaderEntryArray).to.deep.equal([
+      assert.deepEqual(cdpFetchHeaderEntryArray, [
         {
           name: 'Content-Type',
           value: 'text/html',
@@ -236,15 +236,15 @@ describe('NetworkUtils', () => {
 
   describe('getTimings', () => {
     it('should work with undefined', () => {
-      expect(networkUtils.getTiming(undefined)).to.equal(0);
+      assert.equal(networkUtils.getTiming(undefined), 0);
     });
 
     it('should work with negative numbers', () => {
-      expect(networkUtils.getTiming(-1)).to.equal(0);
+      assert.equal(networkUtils.getTiming(-1), 0);
     });
 
     it('should work with ints', () => {
-      expect(networkUtils.getTiming(1)).to.equal(1);
+      assert.equal(networkUtils.getTiming(1), 1);
     });
   });
 
@@ -254,7 +254,7 @@ describe('NetworkUtils', () => {
     }
 
     it('should not match urls', () => {
-      expect(
+      assert.equal(
         networkUtils.matchUrlPattern(
           createPattern({
             type: 'string',
@@ -262,9 +262,10 @@ describe('NetworkUtils', () => {
           }),
           'https://example2.test/test?query',
         ),
-      ).to.equal(false);
+        false,
+      );
 
-      expect(
+      assert.equal(
         networkUtils.matchUrlPattern(
           createPattern({
             type: 'string',
@@ -272,18 +273,20 @@ describe('NetworkUtils', () => {
           }),
           'https://example.test:444',
         ),
-      ).to.equal(false);
+        false,
+      );
 
-      expect(
+      assert.equal(
         networkUtils.matchUrlPattern(
           createPattern({search: '', type: 'pattern'}),
           'https://web-platform.test/?search',
         ),
-      ).to.equal(false);
+        false,
+      );
     });
 
     it('should match urls against string patterns', () => {
-      expect(
+      assert.equal(
         networkUtils.matchUrlPattern(
           createPattern({
             type: 'string',
@@ -291,9 +294,10 @@ describe('NetworkUtils', () => {
           }),
           'https://example.test/test?query',
         ),
-      ).to.equal(true);
+        true,
+      );
 
-      expect(
+      assert.equal(
         networkUtils.matchUrlPattern(
           createPattern({
             type: 'string',
@@ -301,9 +305,10 @@ describe('NetworkUtils', () => {
           }),
           'https://www.example.com/',
         ),
-      ).to.equal(true);
+        true,
+      );
 
-      expect(
+      assert.equal(
         networkUtils.matchUrlPattern(
           createPattern({
             type: 'string',
@@ -311,11 +316,12 @@ describe('NetworkUtils', () => {
           }),
           'https://example.test:333',
         ),
-      ).to.equal(true);
+        true,
+      );
     });
 
     it('should match urls against object patterns', () => {
-      expect(
+      assert.equal(
         networkUtils.matchUrlPattern(
           createPattern({
             type: 'pattern',
@@ -327,9 +333,10 @@ describe('NetworkUtils', () => {
           }),
           'https://example.test:333/test?query',
         ),
-      ).to.equal(true);
+        true,
+      );
 
-      expect(
+      assert.equal(
         networkUtils.matchUrlPattern(
           createPattern({
             type: 'pattern',
@@ -337,16 +344,18 @@ describe('NetworkUtils', () => {
           }),
           'https://example.test:333/test?query',
         ),
-      ).to.equal(true);
+        true,
+      );
 
-      expect(
+      assert.equal(
         networkUtils.matchUrlPattern(
           createPattern({hostname: 'WEB-PLATFORM.TEST', type: 'pattern'}),
           'https://web-platform.test/',
         ),
-      ).to.equal(true);
+        true,
+      );
 
-      expect(
+      assert.equal(
         networkUtils.matchUrlPattern(
           createPattern({
             type: 'pattern',
@@ -358,9 +367,10 @@ describe('NetworkUtils', () => {
           }),
           'https://example.test:333/test?query+another',
         ),
-      ).to.equal(true);
+        true,
+      );
 
-      expect(
+      assert.equal(
         networkUtils.matchUrlPattern(
           createPattern({
             type: 'pattern',
@@ -370,7 +380,8 @@ describe('NetworkUtils', () => {
           }),
           'https://www.example.com/',
         ),
-      ).to.equal(true);
+        true,
+      );
     });
   });
 });

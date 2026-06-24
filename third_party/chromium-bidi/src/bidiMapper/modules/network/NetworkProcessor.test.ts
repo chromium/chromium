@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {
   InvalidArgumentException,
@@ -28,42 +28,48 @@ import {NetworkProcessor, parseBiDiHeaders} from './NetworkProcessor.js';
 describe('NetworkProcessor', () => {
   describe('parse url string', () => {
     it('invalid string', () => {
-      expect(() => NetworkProcessor.parseUrlString('invalid.url%%')).to.throw(
+      assert.throws(
+        () => NetworkProcessor.parseUrlString('invalid.url%%'),
         `Invalid URL 'invalid.url%%'`,
       );
     });
 
     it('valid string', () => {
-      expect(NetworkProcessor.parseUrlString('https://example.com/')).not.to
-        .throw;
+      assert.doesNotThrow(() =>
+        NetworkProcessor.parseUrlString('https://example.com/'),
+      );
     });
   });
 
   describe('parse url patterns', () => {
     it('invalid string', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'string',
-            pattern: 'invalid.url%%',
-          },
-        ]),
-      ).to.throw(`Invalid URL 'invalid.url%%'`);
+      assert.throws(
+        () =>
+          NetworkProcessor.parseUrlPatterns([
+            {
+              type: 'string',
+              pattern: 'invalid.url%%',
+            },
+          ]),
+        `Invalid URL 'invalid.url%%'`,
+      );
     });
 
     it('invalid hostname', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            hostname: 'abc/com/',
-          },
-        ]),
-      ).to.throw(`'/', '?', '#' are forbidden in hostname`);
+      assert.throws(
+        () =>
+          NetworkProcessor.parseUrlPatterns([
+            {
+              type: 'pattern',
+              hostname: 'abc/com/',
+            },
+          ]),
+        `'/', '?', '#' are forbidden in hostname`,
+      );
     });
 
     it('valid string', () => {
-      expect(
+      assert.deepEqual(
         NetworkProcessor.parseUrlPatterns([
           {
             type: 'string',
@@ -74,98 +80,111 @@ describe('NetworkProcessor', () => {
             pattern: 'https://example.org/\\*',
           },
         ]),
-      ).to.deep.equal([
-        {
-          hostname: 'example.com',
-          pathname: '/',
-          port: '',
-          protocol: 'https',
-          search: '',
-        },
-        {
-          hostname: 'example.org',
-          pathname: '/*',
-          port: '',
-          protocol: 'https',
-          search: '',
-        },
-      ]);
+        [
+          {
+            hostname: 'example.com',
+            pathname: '/',
+            port: '',
+            protocol: 'https',
+            search: '',
+          },
+          {
+            hostname: 'example.org',
+            pathname: '/*',
+            port: '',
+            protocol: 'https',
+            search: '',
+          },
+        ],
+      );
     });
 
     it('invalid pattern missing protocol', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            protocol: '',
-            hostname: 'example.com',
-          },
-        ]),
-      ).to.throw('URL pattern must specify a protocol');
+      assert.throws(
+        () =>
+          NetworkProcessor.parseUrlPatterns([
+            {
+              type: 'pattern',
+              protocol: '',
+              hostname: 'example.com',
+            },
+          ]),
+        'URL pattern must specify a protocol',
+      );
     });
 
     it('invalid pattern missing hostname', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            protocol: 'https',
-            hostname: '',
-          },
-        ]),
-      ).to.throw('URL pattern must specify a hostname');
+      assert.throws(
+        () =>
+          NetworkProcessor.parseUrlPatterns([
+            {
+              type: 'pattern',
+              protocol: 'https',
+              hostname: '',
+            },
+          ]),
+        'URL pattern must specify a hostname',
+      );
     });
 
     it('invalid pattern protocol cannot be a file', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            protocol: 'file',
-            hostname: 'doc.txt',
-          },
-        ]),
-      ).to.throw(`URL pattern protocol cannot be 'file'`);
+      assert.throws(
+        () =>
+          NetworkProcessor.parseUrlPatterns([
+            {
+              type: 'pattern',
+              protocol: 'file',
+              hostname: 'doc.txt',
+            },
+          ]),
+        `URL pattern protocol cannot be 'file'`,
+      );
     });
 
     it('invalid pattern hostname cannot contain a colon', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            protocol: 'https',
-            hostname: 'a:b',
-          },
-        ]),
-      ).to.throw(`':' is only allowed inside brackets in hostname`);
+      assert.throws(
+        () =>
+          NetworkProcessor.parseUrlPatterns([
+            {
+              type: 'pattern',
+              protocol: 'https',
+              hostname: 'a:b',
+            },
+          ]),
+        `':' is only allowed inside brackets in hostname`,
+      );
     });
 
     it('invalid pattern missing port', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            protocol: 'https',
-            hostname: 'example.com',
-            port: '',
-          },
-        ]),
-      ).to.throw('URL pattern must specify a port');
+      assert.throws(
+        () =>
+          NetworkProcessor.parseUrlPatterns([
+            {
+              type: 'pattern',
+              protocol: 'https',
+              hostname: 'example.com',
+              port: '',
+            },
+          ]),
+        'URL pattern must specify a port',
+      );
     });
 
     it('invalid pattern URL', () => {
-      expect(() =>
-        NetworkProcessor.parseUrlPatterns([
-          {
-            type: 'pattern',
-            protocol: '%',
-          },
-        ]),
-      ).to.throw(/Forbidden characters/);
+      assert.throws(
+        () =>
+          NetworkProcessor.parseUrlPatterns([
+            {
+              type: 'pattern',
+              protocol: '%',
+            },
+          ]),
+        /Forbidden characters/,
+      );
     });
 
     it('valid pattern', () => {
-      expect(
+      assert.deepEqual(
         NetworkProcessor.parseUrlPatterns([
           {
             type: 'pattern',
@@ -176,21 +195,20 @@ describe('NetworkProcessor', () => {
             search: '?q=search',
           },
         ]),
-      ).to.deep.equal([
-        {
-          protocol: 'https',
-          hostname: 'example.com',
-          pathname: '/',
-          port: '',
-          search: '?q=search',
-        },
-      ]);
+        [
+          {
+            protocol: 'https',
+            hostname: 'example.com',
+            pathname: '/',
+            port: '',
+            search: '?q=search',
+          },
+        ],
+      );
     });
 
     it('valid pattern empty', () => {
-      expect(
-        NetworkProcessor.parseUrlPatterns([{type: 'pattern'}]),
-      ).to.deep.equal([
+      assert.deepEqual(NetworkProcessor.parseUrlPatterns([{type: 'pattern'}]), [
         {
           protocol: undefined,
           hostname: undefined,
@@ -204,16 +222,16 @@ describe('NetworkProcessor', () => {
 
   describe('isMethodValid', () => {
     it('validates method according to the HTTP spec', () => {
-      expect(NetworkProcessor.isMethodValid('GET')).to.be.true;
-      expect(NetworkProcessor.isMethodValid('DELETE')).to.be.true;
-      expect(NetworkProcessor.isMethodValid('1PUT')).to.be.true;
-      expect(NetworkProcessor.isMethodValid('*')).to.be.true;
-      expect(NetworkProcessor.isMethodValid('-')).to.be.true;
-      expect(NetworkProcessor.isMethodValid('{')).to.be.false;
-      expect(NetworkProcessor.isMethodValid('GET{')).to.be.false;
-      expect(NetworkProcessor.isMethodValid('\\')).to.be.false;
-      expect(NetworkProcessor.isMethodValid('"')).to.be.false;
-      expect(NetworkProcessor.isMethodValid('')).to.be.false;
+      assert.isTrue(NetworkProcessor.isMethodValid('GET'));
+      assert.isTrue(NetworkProcessor.isMethodValid('DELETE'));
+      assert.isTrue(NetworkProcessor.isMethodValid('1PUT'));
+      assert.isTrue(NetworkProcessor.isMethodValid('*'));
+      assert.isTrue(NetworkProcessor.isMethodValid('-'));
+      assert.isFalse(NetworkProcessor.isMethodValid('{'));
+      assert.isFalse(NetworkProcessor.isMethodValid('GET{'));
+      assert.isFalse(NetworkProcessor.isMethodValid('\\'));
+      assert.isFalse(NetworkProcessor.isMethodValid('"'));
+      assert.isFalse(NetworkProcessor.isMethodValid(''));
     });
   });
   describe('parseBiDiHeaders', () => {
@@ -224,7 +242,7 @@ describe('NetworkProcessor', () => {
 
     it('should return an empty object for an empty array', () => {
       const result = parseBiDiHeaders([]);
-      expect(result).to.deep.equal({});
+      assert.deepEqual(result, {});
     });
 
     it('should parse a single header', () => {
@@ -235,7 +253,7 @@ describe('NetworkProcessor', () => {
         },
       ];
       const result = parseBiDiHeaders(headers);
-      expect(result).to.deep.equal({
+      assert.deepEqual(result, {
         [SOME_HEADER_NAME]: SOME_HEADER_VALUE,
       });
     });
@@ -252,7 +270,7 @@ describe('NetworkProcessor', () => {
         },
       ];
       const result = parseBiDiHeaders(headers);
-      expect(result).to.deep.equal({
+      assert.deepEqual(result, {
         [SOME_HEADER_NAME]: SOME_HEADER_VALUE,
         [ANOTHER_HEADER_NAME]: ANOTHER_HEADER_VALUE,
       });
@@ -274,7 +292,7 @@ describe('NetworkProcessor', () => {
         },
       ];
       const result = parseBiDiHeaders(headers);
-      expect(result).to.deep.equal({
+      assert.deepEqual(result, {
         [SOME_HEADER_NAME]: 'THE LAST VALUE',
       });
     });
@@ -286,7 +304,8 @@ describe('NetworkProcessor', () => {
           value: {type: 'base64', value: '...'},
         },
       ];
-      expect(() => parseBiDiHeaders(headers)).to.throw(
+      assert.throws(
+        () => parseBiDiHeaders(headers),
         UnsupportedOperationException,
         'Only string headers values are supported',
       );
@@ -304,7 +323,7 @@ describe('NetworkProcessor', () => {
         },
       ];
       const result = parseBiDiHeaders(headers);
-      expect(result).to.deep.equal({
+      assert.deepEqual(result, {
         ['SOME_HEADER_NAME']: 'SOME VALUE',
         some_header_name: 'some value',
       });
@@ -320,9 +339,7 @@ describe('NetworkProcessor', () => {
           value: {type: 'string', value: 'some value'},
         },
       ];
-      expect(() => parseBiDiHeaders(headers)).to.throw(
-        InvalidArgumentException,
-      );
+      assert.throws(() => parseBiDiHeaders(headers), InvalidArgumentException);
     });
 
     it('should throw for invalid header value', () => {
@@ -336,9 +353,7 @@ describe('NetworkProcessor', () => {
           value: {type: 'string', value: 'invalid value\n'},
         },
       ];
-      expect(() => parseBiDiHeaders(headers)).to.throw(
-        InvalidArgumentException,
-      );
+      assert.throws(() => parseBiDiHeaders(headers), InvalidArgumentException);
     });
   });
 });

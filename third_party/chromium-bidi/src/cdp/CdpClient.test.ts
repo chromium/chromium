@@ -16,17 +16,14 @@
  */
 
 import {describe, it} from 'node:test';
-import * as chai from 'chai';
-import {expect} from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {StubTransport} from '../utils/transportStub.test.js';
 
 import type {CdpClient} from './CdpClient.js';
 import {MapperCdpConnection} from './CdpConnection.js';
-
-chai.use(chaiAsPromised);
 
 const TEST_TARGET_ID = 'TargetA';
 const ANOTHER_TARGET_ID = 'TargetB';
@@ -86,7 +83,7 @@ describe('CdpClient', () => {
     await mockCdpServer.emulateIncomingMessage({id: 0, result: {}});
 
     // Assert 'cdpClient' resolved message promise.
-    await expect(commandPromise).to.eventually.deep.equal({});
+    assert.deepEqual(await commandPromise, {} as any);
   });
 
   it(`when some command is called 2 times and it's done each command promise is resolved with proper results`, async () => {
@@ -123,8 +120,8 @@ describe('CdpClient', () => {
     // Assert first message promise is resolved.
     const actualResult1 = await commandPromise1;
 
-    expect(actualResult1).to.deep.equal(expectedResult1);
-    expect(actualResult2).to.deep.equal(expectedResult2);
+    assert.deepEqual(actualResult1, expectedResult1 as any);
+    assert.deepEqual(actualResult2, expectedResult2 as any);
   });
 
   it('gets event callbacks when events are received from CDP', async () => {
@@ -191,9 +188,9 @@ describe('CdpClient', () => {
       });
 
       // Assert sendCommand resolved message promise.
-      await expect(commandPromise).to.eventually.deep.equal({
+      assert.deepEqual(await commandPromise, {
         targetId: TEST_TARGET_ID,
-      });
+      } as any);
     });
 
     it('sends raw CDP messages and returns a promise that will reject on error', async () => {
@@ -223,7 +220,7 @@ describe('CdpClient', () => {
       });
 
       // Assert sendCommand rejects with error.
-      await expect(resultOrError).to.eventually.deep.equal(expectedError);
+      assert.deepEqual(await resultOrError, expectedError);
     });
   });
 });

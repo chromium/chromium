@@ -16,7 +16,7 @@
  */
 
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {Buffer} from './Buffer.js';
@@ -24,13 +24,13 @@ import {Buffer} from './Buffer.js';
 describe('Buffer', () => {
   it('should keep values', () => {
     const buffer = new Buffer<number>(2);
-    expect(buffer.get()).to.deep.equal([]);
+    assert.deepEqual(buffer.get(), []);
     buffer.add(1);
-    expect(buffer.get()).to.deep.equal([1]);
+    assert.deepEqual(buffer.get(), [1]);
     buffer.add(2);
-    expect(buffer.get()).to.deep.equal([1, 2]);
+    assert.deepEqual(buffer.get(), [1, 2]);
     buffer.add(3);
-    expect(buffer.get()).to.deep.equal([2, 3]);
+    assert.deepEqual(buffer.get(), [2, 3]);
   });
 
   it('should call `onItemRemoved`', () => {

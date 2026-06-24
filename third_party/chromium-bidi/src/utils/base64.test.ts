@@ -16,13 +16,14 @@
  */
 
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {base64ToString} from './base64.js';
 
 describe('base64ToString', () => {
   it('should decode', () => {
-    expect(base64ToString('c29tZV9iYXNlNjRfc3RyaW5n')).to.equal(
+    assert.equal(
+      base64ToString('c29tZV9iYXNlNjRfc3RyaW5n'),
       'some_base64_string',
     );
   });

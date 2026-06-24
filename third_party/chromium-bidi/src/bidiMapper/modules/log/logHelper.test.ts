@@ -16,7 +16,7 @@
  */
 
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import type {Script} from '../../../protocol/protocol.js';
 
@@ -292,7 +292,7 @@ function testPattern(
     argument as Script.RemoteValue,
   ] satisfies Script.RemoteValue[];
   const result = logMessageFormatter(inputArgs);
-  expect(result).to.equal(expected);
+  assert.equal(result, expected);
 }
 
 describe('logHelper', () => {
@@ -302,7 +302,7 @@ describe('logHelper', () => {
         {type: 'string', value: 'line 1'},
       ] satisfies Script.RemoteValue[];
       const outputString = 'line 1';
-      expect(getRemoteValuesText(inputArgs, false)).to.equal(outputString);
+      assert.equal(getRemoteValuesText(inputArgs, false), outputString);
     });
 
     it('multiple line input test', () => {
@@ -311,13 +311,13 @@ describe('logHelper', () => {
         {type: 'string', value: 'line 2'},
       ] satisfies Script.RemoteValue[];
       const outputString = 'line 1\u0020line 2';
-      expect(getRemoteValuesText(inputArgs, false)).to.equal(outputString);
+      assert.equal(getRemoteValuesText(inputArgs, false), outputString);
     });
 
     it('no input test', () => {
       const inputArgs = [] satisfies Script.RemoteValue[];
       const outputString = '';
-      expect(getRemoteValuesText(inputArgs, false)).to.equal(outputString);
+      assert.equal(getRemoteValuesText(inputArgs, false), outputString);
     });
   });
 
@@ -383,7 +383,8 @@ describe('logHelper', () => {
         {type: 'number', value: 2},
       ] satisfies Script.RemoteValue[];
 
-      expect(logMessageFormatter.bind(undefined, inputArgs)).to.throw(
+      assert.throws(
+        logMessageFormatter.bind(undefined, inputArgs),
         'More value is provided: "test string %i string test 1 2"',
       );
     });
@@ -396,7 +397,8 @@ describe('logHelper', () => {
       const outputString =
         'Less value is provided: "test string %i %i string test 1"';
 
-      expect(logMessageFormatter.bind(undefined, inputArgs)).to.throw(
+      assert.throws(
+        logMessageFormatter.bind(undefined, inputArgs),
         outputString,
       );
     });

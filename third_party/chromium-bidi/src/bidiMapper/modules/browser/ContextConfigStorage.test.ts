@@ -16,7 +16,7 @@
  */
 
 import {describe, it, beforeEach} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {ContextConfig} from './ContextConfig.js';
 import {ContextConfigStorage} from './ContextConfigStorage.js';
@@ -156,7 +156,7 @@ describe('ContextConfigStorage', () => {
         const expectedConfig = new ContextConfig();
         Object.assign(expectedConfig, expected);
 
-        expect(activeConfig).to.deep.equal(expectedConfig);
+        assert.deepEqual(activeConfig, expectedConfig);
       });
     });
   });

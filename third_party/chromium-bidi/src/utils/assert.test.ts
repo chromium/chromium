@@ -15,29 +15,30 @@
  * limitations under the License.
  */
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert as chaiAssert} from 'chai';
 
 import {assert} from './assert.js';
 
 describe('assert', () => {
   it('should not throw an error when the predicate is truthy', () => {
-    expect(() => assert(true)).to.not.throw(Error);
-    expect(() => assert(1)).to.not.throw(Error);
-    expect(() => assert('hello')).to.not.throw(Error);
+    chaiAssert.doesNotThrow(() => assert(true), Error);
+    chaiAssert.doesNotThrow(() => assert(1), Error);
+    chaiAssert.doesNotThrow(() => assert('hello'), Error);
   });
 
   it('should throw an error when the predicate is falsy', () => {
-    expect(() => assert(false)).to.throw(Error, 'Internal assertion failed.');
-    expect(() => assert(0)).to.throw(Error, 'Internal assertion failed.');
-    expect(() => assert('')).to.throw(Error, 'Internal assertion failed.');
-    expect(() => assert(null)).to.throw(Error, 'Internal assertion failed.');
+    chaiAssert.throws(() => assert(false), Error, 'Internal assertion failed.');
+    chaiAssert.throws(() => assert(0), Error, 'Internal assertion failed.');
+    chaiAssert.throws(() => assert(''), Error, 'Internal assertion failed.');
+    chaiAssert.throws(() => assert(null), Error, 'Internal assertion failed.');
   });
 
   it('should throw an error when the predicate is undefined or null', () => {
-    expect(() => assert(undefined)).to.throw(
+    chaiAssert.throws(
+      () => assert(undefined),
       Error,
       'Internal assertion failed.',
     );
-    expect(() => assert(null)).to.throw(Error, 'Internal assertion failed.');
+    chaiAssert.throws(() => assert(null), Error, 'Internal assertion failed.');
   });
 });

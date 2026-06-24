@@ -17,7 +17,7 @@
  */
 
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {Mutex} from './Mutex.js';
 
@@ -43,10 +43,10 @@ describe('Mutex', () => {
     const lock2 = mutex.acquire();
     const release = await lock1;
     // lock2 should not be resolved set.
-    expect(await Promise.race([lock2, notAcquired()])).equals('not acquired');
+    assert.equal(await Promise.race([lock2, notAcquired()]), 'not acquired');
     release();
     await triggerMicroTaskQueue();
-    expect(await lock2).instanceOf(Function);
+    assert.instanceOf(await lock2, Function);
   });
 
   it('should work for two async functions accessing shared state', async () => {
@@ -86,7 +86,7 @@ describe('Mutex', () => {
     action2Resolver();
     action1Resolver();
     await promises;
-    expect(shared[0]).to.eq('action1');
-    expect(shared[1]).to.eq('action2');
+    assert.equal(shared[0], 'action1');
+    assert.equal(shared[1], 'action2');
   });
 });

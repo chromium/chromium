@@ -16,7 +16,7 @@
  */
 
 import {describe, it, beforeEach} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 import {
@@ -114,29 +114,32 @@ describe('SubscriptionManager', () => {
       );
 
       // `SOME_EVENT` was fist subscribed in `SOME_GOOG_CHANNEL`.
-      expect(
+      assert.deepEqual(
         subscriptionManager.getGoogChannelsSubscribedToEvent(
           SOME_EVENT,
           SOME_CONTEXT,
         ),
-      ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
+        [SOME_CHANNEL, ANOTHER_CHANNEL],
+      );
 
       // `ANOTHER_EVENT` was fist subscribed in `ANOTHER_CHANNEL`.
-      expect(
+      assert.deepEqual(
         subscriptionManager.getGoogChannelsSubscribedToEvent(
           ANOTHER_EVENT,
           SOME_CONTEXT,
         ),
-      ).to.deep.equal([ANOTHER_CHANNEL, SOME_CHANNEL]);
+        [ANOTHER_CHANNEL, SOME_CHANNEL],
+      );
 
       // `YET_ANOTHER_EVENT` was first subscribed in `SOME_CHANNEL` via
       // `ALL_EVENTS`.
-      expect(
+      assert.deepEqual(
         subscriptionManager.getGoogChannelsSubscribedToEvent(
           YET_ANOTHER_EVENT,
           SOME_CONTEXT,
         ),
-      ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
+        [SOME_CHANNEL, ANOTHER_CHANNEL],
+      );
     });
 
     it('should re-subscribe in proper order', () => {
@@ -144,12 +147,13 @@ describe('SubscriptionManager', () => {
       subscriptionManager.subscribe([SOME_EVENT], [], [], ANOTHER_CHANNEL);
       subscriptionManager.unsubscribe([SOME_EVENT], SOME_CHANNEL);
       subscriptionManager.subscribe([SOME_EVENT], [], [], SOME_CHANNEL);
-      expect(
+      assert.deepEqual(
         subscriptionManager.getGoogChannelsSubscribedToEvent(
           SOME_EVENT,
           SOME_CONTEXT,
         ),
-      ).to.deep.equal([ANOTHER_CHANNEL, SOME_CHANNEL]);
+        [ANOTHER_CHANNEL, SOME_CHANNEL],
+      );
     });
 
     it('should subscribe global and specific context in proper order', () => {
@@ -161,12 +165,13 @@ describe('SubscriptionManager', () => {
         [],
         SOME_CHANNEL,
       );
-      expect(
+      assert.deepEqual(
         subscriptionManager.getGoogChannelsSubscribedToEvent(
           SOME_EVENT,
           SOME_CONTEXT,
         ),
-      ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
+        [SOME_CHANNEL, ANOTHER_CHANNEL],
+      );
     });
 
     it('should subscribe specific context and global in proper order', () => {
@@ -178,12 +183,13 @@ describe('SubscriptionManager', () => {
       );
       subscriptionManager.subscribe([SOME_EVENT], [], [], ANOTHER_CHANNEL);
       subscriptionManager.subscribe([SOME_EVENT], [], [], SOME_CHANNEL);
-      expect(
+      assert.deepEqual(
         subscriptionManager.getGoogChannelsSubscribedToEvent(
           SOME_EVENT,
           SOME_CONTEXT,
         ),
-      ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
+        [SOME_CHANNEL, ANOTHER_CHANNEL],
+      );
     });
 
     it('should subscribe contexts in proper order', () => {
@@ -199,12 +205,13 @@ describe('SubscriptionManager', () => {
         [],
         ANOTHER_CHANNEL,
       );
-      expect(
+      assert.deepEqual(
         subscriptionManager.getGoogChannelsSubscribedToEvent(
           SOME_EVENT,
           SOME_CONTEXT,
         ),
-      ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
+        [SOME_CHANNEL, ANOTHER_CHANNEL],
+      );
     });
 
     it('should re-subscribe contexts in proper order', () => {
@@ -227,12 +234,13 @@ describe('SubscriptionManager', () => {
         [],
         SOME_CHANNEL,
       );
-      expect(
+      assert.deepEqual(
         subscriptionManager.getGoogChannelsSubscribedToEvent(
           SOME_EVENT,
           SOME_CONTEXT,
         ),
-      ).to.deep.equal([ANOTHER_CHANNEL, SOME_CHANNEL]);
+        [ANOTHER_CHANNEL, SOME_CHANNEL],
+      );
     });
   });
 
@@ -244,12 +252,14 @@ describe('SubscriptionManager', () => {
         [SOME_USER_CONTEXT],
         SOME_CHANNEL,
       );
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
-      expect(
+        true,
+      );
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, ANOTHER_CONTEXT),
-      ).to.equal(false);
+        false,
+      );
     });
 
     it('should not unsubscribe by attributes', () => {
@@ -259,12 +269,13 @@ describe('SubscriptionManager', () => {
         [SOME_USER_CONTEXT],
         SOME_CHANNEL,
       );
-      expect(() => {
+      assert.throws(() => {
         subscriptionManager.unsubscribe([SOME_EVENT], SOME_CHANNEL);
-      }).to.throw('No subscription found');
-      expect(
+      }, 'No subscription found');
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
+        true,
+      );
     });
 
     it('should unsubscribe by id', () => {
@@ -275,29 +286,33 @@ describe('SubscriptionManager', () => {
         SOME_CHANNEL,
       );
       subscriptionManager.unsubscribeById([id]);
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
+        false,
+      );
     });
   });
 
   describe('global subscription', () => {
     it('should subscribe to a global event', () => {
       subscriptionManager.subscribe([SOME_EVENT], [], [], SOME_CHANNEL);
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
-      expect(
+        true,
+      );
+      assert.equal(
         subscriptionManager.isSubscribedTo(ANOTHER_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
+        false,
+      );
     });
 
     it('should unsubscribe', () => {
       subscriptionManager.subscribe([SOME_EVENT], [], [], SOME_CHANNEL);
       subscriptionManager.unsubscribe([SOME_EVENT], SOME_CHANNEL);
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
+        false,
+      );
     });
 
     it('should unsubscribe by id', () => {
@@ -308,22 +323,26 @@ describe('SubscriptionManager', () => {
         SOME_CHANNEL,
       );
       subscriptionManager.unsubscribeById([id]);
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
+        false,
+      );
     });
 
     it('should not unsubscribe on error', () => {
       subscriptionManager.subscribe([SOME_EVENT], [], [], SOME_CHANNEL);
-      expect(() =>
-        subscriptionManager.unsubscribe(
-          [SOME_EVENT, ANOTHER_EVENT],
-          SOME_CHANNEL,
-        ),
-      ).to.throw('No subscription found');
-      expect(
+      assert.throws(
+        () =>
+          subscriptionManager.unsubscribe(
+            [SOME_EVENT, ANOTHER_EVENT],
+            SOME_CHANNEL,
+          ),
+        'No subscription found',
+      );
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
+        true,
+      );
     });
 
     it('should unsubscribe from multiple subscriptions completely', () => {
@@ -333,12 +352,14 @@ describe('SubscriptionManager', () => {
         [SOME_EVENT, ANOTHER_EVENT],
         SOME_CHANNEL,
       );
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
-      expect(
+        false,
+      );
+      assert.equal(
         subscriptionManager.isSubscribedTo(ANOTHER_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
+        false,
+      );
     });
 
     it('should unsubscribe from multiple subscriptions partially', () => {
@@ -355,15 +376,18 @@ describe('SubscriptionManager', () => {
         SOME_CHANNEL,
       );
       subscriptionManager.unsubscribe([SOME_EVENT], SOME_CHANNEL);
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
-      expect(
+        false,
+      );
+      assert.equal(
         subscriptionManager.isSubscribedTo(ANOTHER_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
-      expect(
+        true,
+      );
+      assert.equal(
         subscriptionManager.isSubscribedTo(YET_ANOTHER_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
+        true,
+      );
     });
 
     it('should unsubscribe from one subscription partially', () => {
@@ -374,18 +398,20 @@ describe('SubscriptionManager', () => {
         SOME_CHANNEL,
       );
       subscriptionManager.unsubscribe([SOME_EVENT], SOME_CHANNEL);
-      expect(() => {
+      assert.throws(() => {
         subscriptionManager.unsubscribe(
           [SOME_EVENT, ANOTHER_EVENT],
           SOME_CHANNEL,
         );
-      }).to.throw('No subscription found');
-      expect(
+      }, 'No subscription found');
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
-      expect(
+        false,
+      );
+      assert.equal(
         subscriptionManager.isSubscribedTo(ANOTHER_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
+        true,
+      );
     });
 
     it('should not unsubscribe context subscriptions', () => {
@@ -397,9 +423,10 @@ describe('SubscriptionManager', () => {
       );
       subscriptionManager.subscribe([SOME_EVENT], [], [], SOME_CHANNEL);
       subscriptionManager.unsubscribe([SOME_EVENT], SOME_CHANNEL);
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
+        true,
+      );
     });
   });
 
@@ -411,12 +438,14 @@ describe('SubscriptionManager', () => {
         [],
         SOME_CHANNEL,
       );
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
-      expect(
+        true,
+      );
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, ANOTHER_CONTEXT),
-      ).to.equal(false);
+        false,
+      );
     });
 
     it('should unsubscribe by id', () => {
@@ -427,9 +456,10 @@ describe('SubscriptionManager', () => {
         SOME_CHANNEL,
       );
       subscriptionManager.unsubscribeById([id]);
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
+        false,
+      );
     });
 
     it('should unsubscribe a module', () => {
@@ -440,9 +470,10 @@ describe('SubscriptionManager', () => {
         SOME_CHANNEL,
       );
       subscriptionManager.unsubscribeById([subscription.id]);
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
+        false,
+      );
     });
 
     it('should not unsubscribe global subscription', () => {
@@ -454,9 +485,10 @@ describe('SubscriptionManager', () => {
         SOME_CHANNEL,
       );
       subscriptionManager.unsubscribe([SOME_EVENT], SOME_CHANNEL);
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
+        true,
+      );
     });
 
     it('should subscribe to top-level context when subscribed to nested context', () => {
@@ -466,9 +498,10 @@ describe('SubscriptionManager', () => {
         [],
         SOME_CHANNEL,
       );
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
+        true,
+      );
     });
 
     it('should not subscribe to top-level context when subscribed to nested context of another context', () => {
@@ -478,9 +511,10 @@ describe('SubscriptionManager', () => {
         [],
         SOME_CHANNEL,
       );
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
+        false,
+      );
     });
 
     it('should unsubscribe from top-level context when unsubscribed from nested context', () => {
@@ -491,9 +525,10 @@ describe('SubscriptionManager', () => {
         SOME_CHANNEL,
       );
       subscriptionManager.unsubscribeById([subscription.id]);
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
+        false,
+      );
     });
 
     it('should not unsubscribe from top-level context when unsubscribed from nested context in different channel', () => {
@@ -503,12 +538,13 @@ describe('SubscriptionManager', () => {
         [],
         SOME_CHANNEL,
       );
-      expect(() => {
+      assert.throws(() => {
         subscriptionManager.unsubscribe([SOME_EVENT], ANOTHER_CHANNEL);
-      }).to.throw('No subscription found');
-      expect(
+      }, 'No subscription found');
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
+        true,
+      );
     });
   });
 
@@ -520,21 +556,23 @@ describe('SubscriptionManager', () => {
         [],
         SOME_CHANNEL,
       );
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
-      expect(() => {
+        true,
+      );
+      assert.throws(() => {
         subscriptionManager.unsubscribeById([id, 'wrong']);
-      }).to.throw('No subscription found');
-      expect(
+      }, 'No subscription found');
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
+        true,
+      );
     });
 
     it('should throw an error if an ID is not know', () => {
-      expect(() => {
+      assert.throws(() => {
         subscriptionManager.unsubscribeById(['wrong']);
-      }).to.throw('No subscription found');
+      }, 'No subscription found');
     });
 
     it('should throw an error if a subscription is used multiple times', () => {
@@ -544,31 +582,32 @@ describe('SubscriptionManager', () => {
         [],
         SOME_CHANNEL,
       );
-      expect(
+      assert.equal(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(true);
+        true,
+      );
       subscriptionManager.unsubscribeById([id]);
-      expect(() => {
+      assert.throws(() => {
         subscriptionManager.unsubscribeById([id]);
-      }).to.throw('No subscription found');
+      }, 'No subscription found');
     });
   });
 
   describe('cartesian product', () => {
     it('should return empty array for empty array', () => {
-      expect(cartesianProduct([], [])).to.deep.equal([]);
+      assert.deepEqual(cartesianProduct([], []), []);
     });
 
     it('works with a single input', () => {
-      expect(cartesianProduct([1n, 2n])).to.deep.equal([1n, 2n]);
+      assert.deepEqual(cartesianProduct([1n, 2n]), [1n, 2n]);
     });
 
     it('works with multiple inputs', () => {
-      expect(cartesianProduct([1], [2], [3])).to.deep.equal([[1, 2, 3]]);
+      assert.deepEqual(cartesianProduct([1], [2], [3]), [[1, 2, 3]]);
     });
 
     it('happy path', () => {
-      expect(cartesianProduct([1, 2], ['A', 'B'])).to.deep.equal([
+      assert.deepEqual(cartesianProduct([1, 2], ['A', 'B']), [
         [1, 'A'],
         [1, 'B'],
         [2, 'A'],
@@ -583,73 +622,78 @@ describe('SubscriptionManager', () => {
     }
 
     it('all Browsing Context events', () => {
-      expect(
+      assert.sameMembers(
         unrollEventsToArray([ChromiumBidi.BiDiModule.BrowsingContext]),
-      ).to.have.members([
-        ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
-        ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
-        ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
-        ChromiumBidi.BrowsingContext.EventNames.DownloadEnd,
-        ChromiumBidi.BrowsingContext.EventNames.DownloadWillBegin,
-        ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-        ChromiumBidi.BrowsingContext.EventNames.HistoryUpdated,
-        ChromiumBidi.BrowsingContext.EventNames.Load,
-        ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
-        ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
-        ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
-        ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
-        ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
-        ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
-      ]);
+        [
+          ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+          ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
+          ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
+          ChromiumBidi.BrowsingContext.EventNames.DownloadEnd,
+          ChromiumBidi.BrowsingContext.EventNames.DownloadWillBegin,
+          ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+          ChromiumBidi.BrowsingContext.EventNames.HistoryUpdated,
+          ChromiumBidi.BrowsingContext.EventNames.Load,
+          ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+          ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+          ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+          ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+          ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
+          ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
+        ],
+      );
     });
 
     it('all Log events', () => {
-      expect(
-        unrollEventsToArray([ChromiumBidi.BiDiModule.Log]),
-      ).to.have.members([ChromiumBidi.Log.EventNames.LogEntryAdded]);
-    });
-
-    it('all Network events', () => {
-      expect(
-        unrollEventsToArray([ChromiumBidi.BiDiModule.Network]),
-      ).to.have.members([
-        ChromiumBidi.Network.EventNames.AuthRequired,
-        ChromiumBidi.Network.EventNames.BeforeRequestSent,
-        ChromiumBidi.Network.EventNames.FetchError,
-        ChromiumBidi.Network.EventNames.ResponseCompleted,
-        ChromiumBidi.Network.EventNames.ResponseStarted,
-      ]);
-    });
-
-    it('all Script events', () => {
-      expect(
-        unrollEventsToArray([ChromiumBidi.BiDiModule.Script]),
-      ).to.have.members([
-        ChromiumBidi.Script.EventNames.Message,
-        ChromiumBidi.Script.EventNames.RealmCreated,
-        ChromiumBidi.Script.EventNames.RealmDestroyed,
-      ]);
-    });
-
-    it('discrete events', () => {
-      expect(
-        unrollEventsToArray([
-          ChromiumBidi.Script.EventNames.RealmCreated,
-          ChromiumBidi.Log.EventNames.LogEntryAdded,
-        ]),
-      ).to.have.members([
-        ChromiumBidi.Script.EventNames.RealmCreated,
+      assert.sameMembers(unrollEventsToArray([ChromiumBidi.BiDiModule.Log]), [
         ChromiumBidi.Log.EventNames.LogEntryAdded,
       ]);
     });
 
+    it('all Network events', () => {
+      assert.sameMembers(
+        unrollEventsToArray([ChromiumBidi.BiDiModule.Network]),
+        [
+          ChromiumBidi.Network.EventNames.AuthRequired,
+          ChromiumBidi.Network.EventNames.BeforeRequestSent,
+          ChromiumBidi.Network.EventNames.FetchError,
+          ChromiumBidi.Network.EventNames.ResponseCompleted,
+          ChromiumBidi.Network.EventNames.ResponseStarted,
+        ],
+      );
+    });
+
+    it('all Script events', () => {
+      assert.sameMembers(
+        unrollEventsToArray([ChromiumBidi.BiDiModule.Script]),
+        [
+          ChromiumBidi.Script.EventNames.Message,
+          ChromiumBidi.Script.EventNames.RealmCreated,
+          ChromiumBidi.Script.EventNames.RealmDestroyed,
+        ],
+      );
+    });
+
+    it('discrete events', () => {
+      assert.sameMembers(
+        unrollEventsToArray([
+          ChromiumBidi.Script.EventNames.RealmCreated,
+          ChromiumBidi.Log.EventNames.LogEntryAdded,
+        ]),
+        [
+          ChromiumBidi.Script.EventNames.RealmCreated,
+          ChromiumBidi.Log.EventNames.LogEntryAdded,
+        ],
+      );
+    });
+
     it('all and discrete events', () => {
-      expect(
+      assert.sameMembers(
         unrollEventsToArray([
           ChromiumBidi.BiDiModule.Log,
           ChromiumBidi.Log.EventNames.LogEntryAdded,
         ]),
-      ).to.have.members([ChromiumBidi.Log.EventNames.LogEntryAdded]);
+        [ChromiumBidi.Log.EventNames.LogEntryAdded],
+      );
     });
   });
 });

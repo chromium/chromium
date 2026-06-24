@@ -16,13 +16,13 @@
  */
 
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {inchesFromCm} from './unitConversions.js';
 
 describe('unit conversions', () => {
   it('inches from cm', () => {
-    expect(inchesFromCm(2.54)).to.equal(1);
-    expect(inchesFromCm(27.94)).to.equal(11);
+    assert.equal(inchesFromCm(2.54), 1);
+    assert.equal(inchesFromCm(27.94), 11);
   });
 });

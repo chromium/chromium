@@ -16,7 +16,7 @@
  */
 
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {urlMatchesAboutBlank} from './urlHelpers.js';
 
@@ -24,66 +24,65 @@ describe('BrowsingContextStorage', () => {
   describe('urlMatchesAboutBlank', () => {
     describe('should return true for matching urls', () => {
       it('"about:blank"', () => {
-        expect(urlMatchesAboutBlank('about:blank')).to.be.true;
+        assert.isTrue(urlMatchesAboutBlank('about:blank'));
       });
 
       it('"about:blank?foo=bar"', () => {
-        expect(urlMatchesAboutBlank('about:blank?foo=bar')).to.be.true;
+        assert.isTrue(urlMatchesAboutBlank('about:blank?foo=bar'));
       });
 
       it('"about:blank#foo"', () => {
-        expect(urlMatchesAboutBlank('about:blank#foo')).to.be.true;
+        assert.isTrue(urlMatchesAboutBlank('about:blank#foo'));
       });
 
       it('"about:Blank"', () => {
-        expect(urlMatchesAboutBlank('about:Blank')).to.be.true;
+        assert.isTrue(urlMatchesAboutBlank('about:Blank'));
       });
 
       it('empty string', () => {
-        expect(urlMatchesAboutBlank('')).to.be.true;
+        assert.isTrue(urlMatchesAboutBlank(''));
       });
     });
 
     describe('should return false for not matching urls', () => {
       it('"http://example.com"', () => {
-        expect(urlMatchesAboutBlank('http://example.com')).to.be.false;
+        assert.isFalse(urlMatchesAboutBlank('http://example.com'));
       });
 
       it('"about:blanka"', () => {
-        expect(urlMatchesAboutBlank('about:blanka')).to.be.false;
+        assert.isFalse(urlMatchesAboutBlank('about:blanka'));
       });
 
       it('"about:blank/foo"', () => {
-        expect(urlMatchesAboutBlank('about:blank/foo')).to.be.false;
+        assert.isFalse(urlMatchesAboutBlank('about:blank/foo'));
       });
 
       it('"about://blank"', () => {
-        expect(urlMatchesAboutBlank('about://blank')).to.be.false;
+        assert.isFalse(urlMatchesAboutBlank('about://blank'));
       });
 
       it('"about: blank"', () => {
-        expect(urlMatchesAboutBlank('about: blank')).to.be.false;
+        assert.isFalse(urlMatchesAboutBlank('about: blank'));
       });
 
       it('username and password', () => {
-        expect(urlMatchesAboutBlank('about:username:password@blank')).to.be
-          .false;
+        assert.isFalse(urlMatchesAboutBlank('about:username:password@blank'));
       });
 
       it('null', () => {
-        expect(urlMatchesAboutBlank(null as any)).to.be.false;
+        assert.isFalse(urlMatchesAboutBlank(null as any));
       });
 
       it('undefined', () => {
-        expect(urlMatchesAboutBlank(undefined as any)).to.be.false;
+        assert.isFalse(urlMatchesAboutBlank(undefined as any));
       });
 
       it('"blob:http://example.com"', () => {
-        expect(urlMatchesAboutBlank('blob:http://example.com')).to.be.false;
+        assert.isFalse(urlMatchesAboutBlank('blob:http://example.com'));
       });
 
       it('"about:srcdoc"', () => {
-        expect(urlMatchesAboutBlank('about:srcdoc')).to.be.false;
+        assert.isFalse(urlMatchesAboutBlank('about:srcdoc'));
       });
     });
   });

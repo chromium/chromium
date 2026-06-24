@@ -17,7 +17,7 @@
  */
 
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {
   isTimeZoneOffsetString,
@@ -102,8 +102,7 @@ describe('EmulationProcessor helper functions', () => {
 
     invalidLocales.forEach((locale) => {
       it(`should return false for invalid locale: "${locale}"`, () => {
-        expect(isValidLocale(locale), `"${locale}" should be invalid`).to.be
-          .false;
+        assert.isFalse(isValidLocale(locale), `"${locale}" should be invalid`);
       });
     });
 
@@ -154,7 +153,7 @@ describe('EmulationProcessor helper functions', () => {
 
     validLocales.forEach((locale) => {
       it(`should return true for valid locale: "${locale}"`, () => {
-        expect(isValidLocale(locale), `"${locale}" should be valid`).to.be.true;
+        assert.isTrue(isValidLocale(locale), `"${locale}" should be valid`);
       });
     });
   });
@@ -257,16 +256,20 @@ describe('EmulationProcessor helper functions', () => {
     [...VALID_TIMEZONE_IDENTIFIERS, ...VALID_TIMEZONE_OFFSETS].forEach(
       (timezone) => {
         it(`should return true for valid timezone: "${timezone}"`, () => {
-          expect(isValidTimezone(timezone), `"${timezone}" should be valid`).to
-            .be.true;
+          assert.isTrue(
+            isValidTimezone(timezone),
+            `"${timezone}" should be valid`,
+          );
         });
       },
     );
 
     INVALID_TIMEZONE_IDENTIFIERS.forEach((timezone) => {
       it(`should return false for invalid timezone: "${timezone}"`, () => {
-        expect(isValidTimezone(timezone), `"${timezone}" should be invalid`).to
-          .be.false;
+        assert.isFalse(
+          isValidTimezone(timezone),
+          `"${timezone}" should be invalid`,
+        );
       });
     });
   });
@@ -274,18 +277,20 @@ describe('EmulationProcessor helper functions', () => {
   describe('EmulationProcessor.isTimeZoneOffsetString', () => {
     VALID_TIMEZONE_OFFSETS.forEach((offset) => {
       it(`should return true for valid offset: "${offset}"`, () => {
-        expect(isTimeZoneOffsetString(offset), `"${offset}" should be valid`).to
-          .be.true;
+        assert.isTrue(
+          isTimeZoneOffsetString(offset),
+          `"${offset}" should be valid`,
+        );
       });
     });
 
     [...INVALID_TIMEZONE_OFFSETS, ...VALID_TIMEZONE_IDENTIFIERS].forEach(
       (offset) => {
         it(`should return false for invalid offset: "${offset}"`, () => {
-          expect(
+          assert.isFalse(
             isTimeZoneOffsetString(offset),
             `"${offset}" should be invalid`,
-          ).to.be.false;
+          );
         });
       },
     );

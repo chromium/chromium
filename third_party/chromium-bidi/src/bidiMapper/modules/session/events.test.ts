@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {ChromiumBidi} from '../../../protocol/protocol.js';
 
@@ -32,31 +32,31 @@ describe('event', () => {
   describe('isCdpEvent', () => {
     for (const cdpEvent of CDP_EVENTS) {
       it(`should return true for CDP event '${cdpEvent}'`, () => {
-        expect(isCdpEvent(cdpEvent)).to.be.true;
+        assert.isTrue(isCdpEvent(cdpEvent));
       });
     }
 
     for (const nonCdpEvent of NON_CDP_EVENTS) {
       it(`should return false for non-CDP event '${nonCdpEvent}'`, () => {
-        expect(isCdpEvent(nonCdpEvent)).to.be.false;
+        assert.isFalse(isCdpEvent(nonCdpEvent));
       });
     }
   });
 
   describe('assertSupportedEvent', () => {
     it('should throw for unknown events', () => {
-      expect(() => {
+      assert.throws(() => {
         assertSupportedEvent('unknown');
         assertSupportedEvent('cdp.Debugger.breakpointResolved');
         assertSupportedEvent(ChromiumBidi.Log.EventNames.LogEntryAdded);
-      }).to.throw('Unknown event: unknown');
+      }, 'Unknown event: unknown');
     });
 
     it('should not throw for known CDP events', () => {
-      expect(() => {
+      assert.doesNotThrow(() => {
         assertSupportedEvent('goog:cdp.Debugger.breakpointResolved');
         assertSupportedEvent(ChromiumBidi.Log.EventNames.LogEntryAdded);
-      }).to.not.throw();
+      });
     });
   });
 });

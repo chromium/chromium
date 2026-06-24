@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 import {describe, it} from 'node:test';
-import {expect} from 'chai';
+import {assert} from 'chai';
 
 import {uuidv4} from './uuid.js';
 
 // These tests do not run in the browser, therefore their value is limited.
 describe('uuidv4', () => {
   it('should generate an UUID in the correct format', () => {
-    expect(uuidv4()).match(
+    assert.match(
+      uuidv4(),
       /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i,
     );
   });
@@ -30,6 +31,6 @@ describe('uuidv4', () => {
   it('subsequent calls should yield different UUIDs', () => {
     const id1 = uuidv4();
     const id2 = uuidv4();
-    expect(id1).to.not.equal(id2);
+    assert.notEqual(id1, id2);
   });
 });
