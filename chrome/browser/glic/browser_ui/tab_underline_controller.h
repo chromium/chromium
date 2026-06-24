@@ -47,8 +47,7 @@ class TabUnderlineController
   TabUnderlineController& operator=(const TabUnderlineController&) = delete;
   ~TabUnderlineController() override;
 
-  void Initialize(UiDelegate* ui_delegate,
-                  BrowserWindowInterface* browser_window_interface);
+  void Initialize(UiDelegate* ui_delegate);
   void OnUiReady();
 
   // contextual_tasks::ActiveTaskContextProvider::Observer overrides:
@@ -161,9 +160,7 @@ class TabUnderlineController
   raw_ptr<UiDelegate> ui_delegate_;
   tabs::TabHandle tab_handle_;
 
-  // The pointer to the browser in which the underline view lives. Outlives the
-  // underline view.
-  raw_ptr<BrowserWindowInterface> browser_window_interface_;
+  BrowserWindowInterface* GetBrowserWindowInterface();
 
   // The Glic keyed service. This is only assigned if
   // ShouldUseSignalsForGlicUnderlines() returns true. Otherwise, it will stay

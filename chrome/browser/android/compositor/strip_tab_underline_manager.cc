@@ -85,8 +85,7 @@ void StripTabUnderlineManager::RegisterTab(
       std::make_unique<glic::TabUnderlineController>(tab_android->GetHandle());
   auto delegate = std::make_unique<UiDelegateImpl>(this, tab_id);
 
-  controller->Initialize(delegate.get(),
-                         tab_android->GetBrowserWindowInterface());
+  controller->Initialize(delegate.get());
 
   // Call OnUiReady() so it starts observing
   controller->OnUiReady();
