@@ -347,17 +347,27 @@ void VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
         state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
   }
 
+  base::WeakPtr<VirtualCardEnrollmentManager> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  VirtualCardEnrollmentSource source =
+      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source;
+
   // Relay the response to the server card editor page. This also destroys the
-  // payments delegate if the editor was already closed.
+  // payments delegate if the editor was already closed. Running this callback
+  // may synchronously delete `this`, so no further accesses to `this` are
+  // allowed.
   if (virtual_card_enrollment_update_response_callback_.has_value()) {
     std::move(virtual_card_enrollment_update_response_callback_.value())
         .Run(result);
   }
 
   LogUpdateVirtualCardEnrollmentRequestResult(
-      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
-      type, result == PaymentsRpcResult::kSuccess);
-  Reset();
+      source, type, result == PaymentsRpcResult::kSuccess);
+
+  // Guard `Reset()` to prevent UAF if the object was deleted synchronously.
+  if (weak_this) {
+    Reset();
+  }
 }
 
 void VirtualCardEnrollmentManager::OnVirtualCardEnrollCompleted(
