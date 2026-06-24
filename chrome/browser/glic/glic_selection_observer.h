@@ -99,6 +99,7 @@ class GlicSelectionObserver
  private:
   void ProcessPendingSelection();
   void ResetPendingSelection();
+  void ProcessInputEvent(std::unique_ptr<blink::WebInputEvent> event);
 
   void OnGlobalPanelShowHide();
 
