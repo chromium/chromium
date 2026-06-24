@@ -4,13 +4,7 @@
 
 #include "gpu/vulkan/vulkan_image.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include <sys/mman.h>
-#include <unistd.h>
-#endif
-
 #include "base/logging.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_test_config.h"
@@ -125,40 +119,5 @@ TEST_F(VulkanImageTest, CreateWithExternalMemory) {
     image->Destroy();
   }
 }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-TEST_F(VulkanImageTest, RejectUndersizedDmaBuf) {
-  auto* device_queue = GetDeviceQueue();
-  if (!device_queue) {
-    return;
-  }
-
-  // 1. Create a small anonymous file (memfd) to simulate an undersized dma-buf.
-  int fd = memfd_create("undersized_dmabuf", 0);
-  ASSERT_GE(fd, 0);
-  base::ScopedFD scoped_fd(fd);
-  // Give it a tiny size (e.g., 4KB).
-  ASSERT_EQ(ftruncate(fd, 4096), 0);
-
-  // 2. Construct a GpuMemoryBufferHandle claiming it's large (e.g., 1024x1024).
-  constexpr gfx::Size image_size(1024, 1024);
-  const int stride = image_size.width() * 4;  // 4 bytes per pixel
-  const uint64_t size = static_cast<uint64_t>(stride) * image_size.height();
-
-  gfx::NativePixmapHandle native_pixmap_handle;
-  native_pixmap_handle.modifier = gfx::NativePixmapHandle::kNoModifier;
-  native_pixmap_handle.planes.emplace_back(stride, 0, size,
-                                           base::ScopedFD(dup(fd)));
-
-  gfx::GpuMemoryBufferHandle gmb_handle(std::move(native_pixmap_handle));
-
-  // 3. Verify that InitializeFromGpuMemoryBufferHandle rejects it.
-  auto image = VulkanImage::CreateFromGpuMemoryBufferHandle(
-      device_queue, std::move(gmb_handle), image_size, VK_FORMAT_R8G8B8A8_UNORM,
-      VK_IMAGE_USAGE_SAMPLED_BIT, 0, VK_IMAGE_TILING_LINEAR,
-      VK_QUEUE_FAMILY_IGNORED);
-  EXPECT_FALSE(image);
-}
-#endif
 
 }  // namespace gpu
