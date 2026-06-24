@@ -176,6 +176,11 @@ void ProcessingInstruction::Process(const String& href, const String& charset) {
                                                    final_url, true);
       loading_ = false;
     }
+
+    // crbug.com/496271580: Clear the resource to prevent late-arriving
+    // network responses from being processed if the stylesheet has
+    // switched to a local source.
+    ClearResource();
     return;
   }
 

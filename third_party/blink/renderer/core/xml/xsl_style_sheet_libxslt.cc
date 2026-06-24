@@ -201,6 +201,12 @@ void XSLStyleSheet::LoadChildSheets() {
             xsltGetNsProp(curr, (const xmlChar*)"href", XSLT_NAMESPACE);
         LoadChildSheet(String::FromUTF8((const char*)uri_ref));
         xmlFree(uri_ref);
+
+        // crbug.com/496271580: LoadChildSheet() can trigger synchronous
+        // destruction of the stylesheet's xmlDoc. Bail out to avoid UAF.
+        if (stylesheet_doc_taken_) {
+          return;
+        }
       } else {
         break;
       }
@@ -215,6 +221,12 @@ void XSLStyleSheet::LoadChildSheets() {
             xsltGetNsProp(curr, (const xmlChar*)"href", XSLT_NAMESPACE);
         LoadChildSheet(String::FromUTF8((const char*)uri_ref));
         xmlFree(uri_ref);
+
+        // crbug.com/496271580: LoadChildSheet() can trigger synchronous
+        // destruction of the stylesheet's xmlDoc. Bail out to avoid UAF.
+        if (stylesheet_doc_taken_) {
+          return;
+        }
       }
       curr = curr->next;
     }
