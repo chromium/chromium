@@ -72,7 +72,7 @@ class D3D12VideoEncodeH264DelegateTest
             return E_INVALIDARG;
           }
           picture_control->PictureSupport.pH264Support->MaxLongTermReferences =
-              1;
+              15;
           picture_control->PictureSupport.pH264Support->MaxDPBCapacity = 16;
           return S_OK;
         });
