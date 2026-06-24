@@ -532,4 +532,7 @@ struct NavigationControlsState {
   // This is incremented every time a settings change may change the layout
   // constants.
   int32 layout_constants_version = 0;
+
+  // This is true if we're in touch mode.
+  bool touch_ui = false;
 };

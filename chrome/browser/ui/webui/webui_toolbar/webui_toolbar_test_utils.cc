@@ -67,7 +67,8 @@ CreateValidNavigationControlsState() {
               /*permission_dashboard=*/nullptr),
           toolbar_ui_api::mojom::SelectedKeywordStatePtr()),
       std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>(),
-      /*layout_constants_version=*/0);
+      /*layout_constants_version=*/0,
+      /*touch_ui=*/false);
 }
 
 MockCommandUpdater::MockCommandUpdater() = default;

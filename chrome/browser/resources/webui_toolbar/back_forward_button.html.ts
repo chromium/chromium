@@ -9,8 +9,7 @@ import type {BackForwardButtonElement} from './back_forward_button.js';
 export function getHtml(this: BackForwardButtonElement) {
   return html`<!--_html_template_start_-->
 <cr-icon-button
-    iron-icon="${
-      this.direction === 'back' ? 'cr:arrow-back' : 'cr:arrow-forward'}"
+    iron-icon="${this.getIronIcon_()}"
     ?disabled="${!this.state.enabled}"
     aria-label="${this.getAriaLabel_()}"
     title="${this.getTooltip_()}"
