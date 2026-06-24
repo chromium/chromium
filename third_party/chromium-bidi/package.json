@@ -23,7 +23,7 @@
     "prepare": "npm run build",
     "server": "npm run build && tools/run-bidi-server.mjs",
     "test": "npm run unit && npm run e2e && npm run wpt",
-    "unit": "npm run build && node --test out/Default/gen/src/**/*.test.js",
+    "unit": "npm run build && node --test 'out/Default/gen/src/**/*.test.js'",
     "wpt": "npm run build && tools/run-wpt.mjs",
     "wpt:all": "npm run build && tools/run-wpt-all.mjs",
     "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
