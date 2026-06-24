@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dropdowns are inline-block even with animations</title>
+    <link rel="help" href="https://crbug.com/525309813">
+    <link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#the-select-element-2">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+      /* Ensure there is an active animation. The actual animated property
+         isn't important. */
+      @keyframes test {
+        from { border-color: red; }
+        to { border-color: green; }
+      }
+      select {
+        animation: test linear 1000s;
+        border-color: yellow;
+        display: initial;  /* Should be overridden. */
+      }
+    </style>
+  </head>
+  <body>
+    <select id="target">
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+    </select>
+    <script>
+  test(() => {
+    let target = document.getElementById('target');
+
+    // The used value should be overridden by the StyleAdjuster as per spec
+    // (the element is “expected to render as inline-block”). In Blink,
+    // that value also leaks into the _computed_ style, which is not per spec
+    // but let us write this test more easily.
+    assert_equals(getComputedStyle(target).display, 'inline-block');
+  });
+    </script>
+  </body>
+</script>
