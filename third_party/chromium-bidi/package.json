@@ -21,9 +21,10 @@
     "format:prettier": "prettier --cache --write .",
     "format:py": "(command -v ruff >/dev/null && ruff check --fix . && ruff format .) || (pipenv run ruff check --fix . && pipenv run ruff format .)",
     "prepare": "npm run build",
+    "rdb-unit": "rdb stream -new -realm chromium:public -- npm run unit",
     "server": "npm run build && tools/run-bidi-server.mjs",
     "test": "npm run unit && npm run e2e && npm run wpt",
-    "unit": "npm run build && node --test 'out/Default/gen/src/**/*.test.js'",
+    "unit": "npm run build && node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=./tools/unit-resultsink-reporter.mjs --test-reporter-destination=stdout 'out/Default/gen/src/**/*.test.js'",
     "wpt": "npm run build && tools/run-wpt.mjs",
     "wpt:all": "npm run build && tools/run-wpt-all.mjs",
     "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"

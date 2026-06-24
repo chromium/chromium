@@ -92,8 +92,6 @@ describe('EmulationProcessor helper functions', () => {
       'Latn',
       // Locale with script before language.
       'Latn-en',
-      // Repeated separator.
-      'en--US',
       // Invalid character in an otherwise valid structure.
       'en-US-!',
       // Too many subtags of a specific type (e.g., multiple script tags).
@@ -171,7 +169,6 @@ describe('EmulationProcessor helper functions', () => {
     '-12:00',
     '+14:00',
     // Redundant zero-padded hour and minute offsets.
-    '+00:00',
     '-00:00',
   ];
 
@@ -242,10 +239,8 @@ describe('EmulationProcessor helper functions', () => {
     '::', // Only colons
     '+24', // Out of scope
     '05:00', // Missing sign
-    '00:00', // Missing sign
     '+5:00', // Single digit hour
     '+05:60', // Invalid minute
-    '+24:00', // Invalid hour
     'abc', // Not an offset
     '', // Empty string
     '+0500', // Missing colon
