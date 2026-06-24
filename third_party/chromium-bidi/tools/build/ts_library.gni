@@ -17,7 +17,7 @@
 
 template("ts_library") {
   action(target_name) {
-    script = "//tools/build/scripts/compile_ts.py"
+    script = "../tools/build/scripts/compile_ts.py"
 
     forward_variables_from(invoker, [
       "sources",
@@ -31,8 +31,8 @@ template("ts_library") {
       inputs = []
     }
     inputs += [
-      "//tsconfig.base.json",
-      "//node_modules/typescript/lib/tsc.js",
+      "../tsconfig.base.json",
+      "../node_modules/typescript/lib/tsc.js",
     ]
 
     if (defined(deps)) {
@@ -50,7 +50,7 @@ template("ts_library") {
     _tsconfig_output = "$target_gen_dir/$target_name-tsconfig.json"
 
     args = [
-      "--tsconfig_template", rebase_path("//tsconfig.base.json", root_build_dir),
+      "--tsconfig_template", rebase_path("../tsconfig.base.json", root_build_dir),
       "--tsconfig_output", rebase_path(_tsconfig_output, root_build_dir),
       "--output_dir", rebase_path(target_gen_dir, root_build_dir),
       "--root_dir", rebase_path(".", root_build_dir),

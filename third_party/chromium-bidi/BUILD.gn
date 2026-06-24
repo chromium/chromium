@@ -18,6 +18,6 @@
 group("default") {
   testonly = true
   deps = [
-    "//src:all",
+    "src:all",
   ]
 }

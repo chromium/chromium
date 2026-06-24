@@ -15,7 +15,7 @@
 
 # Custom modular build templates wrapping our standalone ts_library template.
 
-import("//tools/build/ts_library.gni")
+import("ts_library.gni")
 
 # A foundation module that compiles TS files and runs dual type-checking:
 # 1. A browser check (validating DOM, DOM.iterable, and standard ES2023 APIs).
@@ -63,7 +63,7 @@ template("bidi_foundation_module") {
 # Bundler template wrapping Rollup.
 template("bidi_bundle") {
   action(target_name) {
-    script = "//tools/build/scripts/rollup.py"
+    script = "../tools/build/scripts/rollup.py"
     
     forward_variables_from(invoker, [
       "entrypoint",
@@ -72,7 +72,7 @@ template("bidi_bundle") {
     ])
     
     inputs = [
-      "//rollup.config.mjs",
+      "../rollup.config.mjs",
       entrypoint,
     ]
     
@@ -81,7 +81,7 @@ template("bidi_bundle") {
     ]
     
     args = [
-      "--config", rebase_path("//rollup.config.mjs", root_build_dir),
+      "--config", rebase_path("../rollup.config.mjs", root_build_dir),
       "--entrypoint", rebase_path(entrypoint, root_build_dir),
       "--output", rebase_path(output_file, root_build_dir),
       "--gen-dir", rebase_path(root_out_dir, "//"),

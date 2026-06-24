@@ -51,6 +51,9 @@ def main():
         os.path.abspath(args.root_dir) if args.root_dir else repo_root
     )
     config["files"] = abs_sources
+    config["compilerOptions"]["typeRoots"] = [
+        os.path.join(repo_root, "node_modules", "@types")
+    ]
 
     if args.es_target:
         config["compilerOptions"]["target"] = args.es_target

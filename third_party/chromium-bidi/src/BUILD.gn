@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//tools/build/bidi_module.gni")
+import("../tools/build/bidi_module.gni")
 
 bidi_foundation_module("utils") {
   sources = [
