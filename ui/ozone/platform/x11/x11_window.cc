@@ -264,6 +264,10 @@ X11Window::~X11Window() {
   Close();
 }
 
+base::WeakPtr<X11Window> X11Window::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void X11Window::Initialize(PlatformWindowInitProperties properties) {
   CreateXWindow(properties);
 
@@ -1450,6 +1454,8 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
   auto* located_events_grabber = window_manager->located_events_grabber();
   if (event->IsLocatedEvent() && located_events_grabber &&
       located_events_grabber != this) {
+    base::WeakPtr<X11Window> weak_grabber =
+        located_events_grabber->GetWeakPtr();
     if (event->IsMouseEvent() ||
         (event->IsTouchEvent() &&
          event->type() == ui::EventType::kTouchPressed)) {
@@ -1457,17 +1463,23 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
       // event's location and dispatch to the other.
       const gfx::Point target_origin =
           located_events_grabber->GetBoundsInPixels().origin();
-      if (!weak_this) {
+      if (!weak_this || !weak_grabber ||
+          window_manager->located_events_grabber() != weak_grabber.get()) {
         return;
       }
       const gfx::Point current_origin = GetBoundsInPixels().origin();
-      if (!weak_this) {
+      if (!weak_this || !weak_grabber ||
+          window_manager->located_events_grabber() != weak_grabber.get()) {
         return;
       }
       ConvertEventLocationToTargetWindowLocation(target_origin, current_origin,
                                                  event->AsLocatedEvent());
     }
-    return located_events_grabber->DispatchUiEvent(event, xev);
+    if (weak_grabber &&
+        window_manager->located_events_grabber() == weak_grabber.get()) {
+      weak_grabber->DispatchUiEvent(event, xev);
+    }
+    return;
   }
 
   // If after CoalescePendingMotionEvents the type of xev is resolved to
