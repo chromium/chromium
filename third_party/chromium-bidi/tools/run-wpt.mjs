@@ -226,8 +226,8 @@ if (RUN_TESTS === 'true') {
       `--webdriver-arg=--bidi-mapper-path=${join(
         'out',
         'Default',
-        'lib',
-        'iife',
+        'gen',
+        'src',
         'mapperTab.js',
       )}`,
       `--webdriver-arg=--log-path=${chromeDriverLogs}`,

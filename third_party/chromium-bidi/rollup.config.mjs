@@ -27,7 +27,7 @@ const mapperTabConfig = {
   input: 'lib/bidiTab/bidiTab.js',
   output: {
     name: 'mapperTab',
-    file: `${genDir}/lib/iife/mapperTab.js`,
+    file: `${genDir}/mapperTab.js`,
     sourcemap: true,
     format: 'iife',
   },

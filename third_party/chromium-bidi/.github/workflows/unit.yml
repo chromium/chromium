@@ -36,6 +36,6 @@ jobs:
       - name: Install and build npm dependencies
         run: npm ci
       - name: Verify mapper size
-        run: du -sh out/Default/lib/iife/mapperTab.js
+        run: du -sh out/Default/gen/src/mapperTab.js
       - name: Run unit tests
         run: npm run unit

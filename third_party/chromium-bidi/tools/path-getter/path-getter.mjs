@@ -91,7 +91,7 @@ export function installAndGetChromeDriverPath() {
  * @return {string}
  */
 export function getBidiMapperPath() {
-  return join('out', 'Default', 'lib', 'iife', 'mapperTab.js');
+  return join('out', 'Default', 'gen', 'src', 'mapperTab.js');
 }
 
 function getChannel() {

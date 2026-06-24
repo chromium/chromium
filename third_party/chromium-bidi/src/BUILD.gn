@@ -157,7 +157,7 @@ bidi_foundation_module("bidi_tab") {
 
 bidi_bundle("mapper_bundle") {
   entrypoint = "$target_gen_dir/bidiTab/bidiTab.js"
-  output_file = "$root_out_dir/lib/iife/mapperTab.js"
+  output_file = "$target_gen_dir/mapperTab.js"
   deps = [
     ":bidi_tab",
   ]
