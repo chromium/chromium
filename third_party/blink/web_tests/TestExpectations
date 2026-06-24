@@ -2556,6 +2556,26 @@ crbug.com/480103606 [ Android ] external/wpt/visual-viewport/viewport-read-size-
 crbug.com/480103606 [ Android ] external/wpt/visual-viewport/viewport-unscaled-scroll-iframe.html [ Failure ]
 crbug.com/480103606 [ Android ] external/wpt/visual-viewport/viewport-unscaled-scroll.html [ Failure ]
 
+# Failures since branch. Most are due to regressions from upgrading from macOS
+# 15 to macOS 26 (https://crbug.com/527178869#comment6).
+[ Mac14 ] virtual/dark-mode-default/dark-mode/images/country-flags.html [ Failure ]
+[ Mac14 ] virtual/gpu/fast/canvas/canvas-composite-transformclip.html [ Failure ]
+[ Mac15-arm64 ] fast/forms/placeholder-position.html [ Failure ]
+[ Mac15-arm64 ] fast/forms/datetimelocal/datetimelocal-appearance-l10n.html [ Failure ]
+[ Mac15-arm64 ] fast/ruby/ruby-position-modern-japanese-fonts.html [ Failure ]
+[ Mac15-arm64 ] inspector-protocol/layout-fonts/lang-fallback.js [ Failure ]
+[ Mac15-arm64 ] media/track/track-cue-rendering-ruby.html [ Failure ]
+[ Mac15-arm64 ] media/track/track-cue-rendering-vertical.html [ Failure ]
+[ Mac15-arm64 ] svg/W3C-SVG-1.1/text-fonts-01-t.svg [ Failure ]
+[ Mac15-arm64 ] svg/text/text-selection-fonts-01-t.svg [ Failure ]
+[ Mac15-arm64 ] virtual/text-antialias/justify-ideograph-complex.html [ Failure ]
+[ Mac15-arm64 ] virtual/text-antialias/justify-ideograph-simple.html [ Failure ]
+[ Mac15-arm64 ] virtual/text-antialias/justify-ideograph-vertical.html [ Failure ]
+[ Mac15-arm64 ] virtual/text-antialias/mac-fallback-font-for-character.html [ Failure ]
+[ Mac15-arm64 ] virtual/text-antialias/international/lang-glyph-cache-separation.html [ Failure ]
+[ Mac ] external/wpt/webaudio/the-audio-api/the-convolvernode-interface/realtime-conv.html [ Failure ]
+[ Mac ] webaudio/Analyser/realtimeanalyser-freq-data.html [ Failure ]
+
 # ====== Test expectations added to unblock wpt-importer ======
 crbug.com/437034328 external/wpt/html/semantics/embedded-content/the-img-element/animated-webp-update.tentative.html [ Failure ]
 crbug.com/431542979 virtual/speech-with-unified-autoplay/external/wpt/speech-api/idlharness.window.html [ Failure ]
