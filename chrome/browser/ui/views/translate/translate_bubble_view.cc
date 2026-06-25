@@ -688,6 +688,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateView() {
             ui::kColorIcon, 16)));
     choose_language_button->SetProperty(views::kElementIdentifierKey,
                                         kChangeTargetLanguage);
+    choose_language_button->SetProperty(views::kMarginsKey,
+                                        gfx::Insets::TLBR(7, 0, 0, 0));
     view->AddChildView(std::move(choose_language_button));
   }
 
