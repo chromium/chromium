@@ -2750,7 +2750,9 @@ void NavigationRequest::OnPrerenderingActivationChecksComplete(
               perfetto::Flow::FromPointer(this));
   // Prerendered page activation must run CommitDeferringConditions before
   // StartRequest().
-  CHECK_LT(state_, WILL_START_NAVIGATION);
+  // TODO(524554855): CHECK-exclusion: Convert to a CHECK once we are confident
+  // it won't be triggered.
+  DCHECK_LT(state_, WILL_START_NAVIGATION);
 
   CHECK(candidate_prerender_host_id.has_value());
   CHECK(!activating_prerender_host_id_.has_value());
@@ -9827,8 +9829,8 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForActivation() {
 
   CHECK_EQ(params->post_id, -1);
   params->navigation_token = commit_params().navigation_token;
-  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
-  // we are sure this isn't hit.
+  // TODO(524700727): CHECK-exclusion: Convert to a CHECK once we are confident
+  // it won't be triggered.
   DCHECK_EQ(params->url, common_params().url);
   params->should_update_history = true;
   // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
