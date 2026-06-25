@@ -230,4 +230,108 @@ TEST_F(DiversionFileManagerTest, Writes) {
   EXPECT_TRUE(on_explicit_finish_called);
 }
 
+// Regression / UAF demonstration: Worker::ReadOrWrite binds raw buf->data()
+// (char*) into a threadpool transform without retaining a
+// scoped_refptr<net::IOBuffer>. Worker::Cancel() returns net::OK without
+// dequeuing the Op, and ~Worker() does not clear Entry::pending_ops_.
+//
+// In production this is reachable from a compromised renderer on ChromeOS via
+// blink.mojom.FileSystemManager::Write ->
+// FileSystemCancellableOperation::Cancel against a kFileSystemTypeProvided
+// (FSP) mount with an active .crswap diversion. FileWriterDelegate::Cancel
+// calls Worker::Cancel (returns net::OK synchronously), then synchronously runs
+// write_callback_ with FILE_ERROR_ABORT, which causes
+// FileSystemOperationRunner::FinishOperation to destroy the FileWriterDelegate
+// and its 32 KiB io_buffer_ while the pwrite/pread transform is still queued on
+// Entry::pending_ops_.
+//
+// Under ASAN this test produces:
+//   ERROR: AddressSanitizer: heap-use-after-free on address ...
+//   READ of size N at ... thread T<pool>
+//     #0 ... pwrite
+//     #1 ... DiversionFileManager::Worker::ReadOrWrite::transform
+//   freed by thread T0 here:
+//     #0 ... operator delete[]
+//     #1 ... base::HeapArray<unsigned char>::~HeapArray
+//     #2 ... net::IOBufferWithSize::~IOBufferWithSize
+TEST_F(DiversionFileManagerTest, IOBufferUseAfterFreeOnCancel) {
+  ASSERT_TRUE(
+      ::content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
+
+  scoped_refptr<DiversionFileManager> dfm =
+      base::MakeRefCounted<DiversionFileManager>();
+  storage::FileSystemURL url = storage::FileSystemURL::CreateForTest(
+      GURL("filesystem:chrome-extension://abc/external/p/q/target.crswap"));
+
+  base::FilePath temp_dir;
+  ASSERT_TRUE(base::GetTempDir(&temp_dir));
+  dfm->OverrideTmpfileDirForTesting(temp_dir);
+
+  // StartDiverting synchronously sets Entry::is_running_an_op_ = true and
+  // posts the open(O_TMPFILE) transform to the threadpool. The reply
+  // (Entry::OnRunComplete) is bound to the IO thread, so it cannot run until
+  // we pump the message loop below — guaranteeing that any subsequent
+  // Enqueue() lands in pending_ops_.
+  ASSERT_EQ(StartDivertingResult::kOK,
+            dfm->StartDiverting(url, base::Seconds(60),
+                                DiversionFileManager::Callback()));
+
+  std::unique_ptr<storage::FileStreamWriter> writer =
+      dfm->CreateDivertedFileStreamWriter(url, 0);
+  ASSERT_TRUE(writer);
+
+  // 32 KiB buffer — same allocation class as FileWriterDelegate::io_buffer_
+  // (kReadBufSize = 32768, backed by base::HeapArray<uint8_t>).
+  constexpr int kBufLen = 32768;
+  scoped_refptr<net::IOBufferWithSize> buf =
+      base::MakeRefCounted<net::IOBufferWithSize>(kBufLen);
+  std::ranges::fill(buf->span(), 0x41);
+
+  // Worker::Write -> ReadOrWrite -> Entry::Enqueue. is_running_an_op_ is true,
+  // so an Op binding the raw `buf->data()` char* is pushed onto
+  // Entry::pending_ops_. No scoped_refptr<IOBuffer> is retained.
+  int rv = writer->Write(
+      buf.get(), kBufLen,
+      base::BindOnce([](int) { /* never reached: weak_ptr invalidated */ }));
+  ASSERT_EQ(net::ERR_IO_PENDING, rv);
+
+  // --- Simulate FileWriterDelegate::Cancel + ~FileWriterDelegate ---
+
+  // (a) file_stream_writer_->Cancel(). Worker::Cancel returns net::OK
+  //     synchronously and does NOT dequeue the pending Op.
+  int cancel_rv = writer->Cancel(base::BindOnce([](int) {}));
+  EXPECT_EQ(net::OK, cancel_rv);
+
+  // (b) Because Cancel returned != ERR_IO_PENDING, FileWriterDelegate::Cancel
+  //     synchronously runs write_callback_ -> FileSystemOperationImpl::DidWrite
+  //     -> FileSystemOperationRunner::FinishOperation -> operations_.erase ->
+  //     ~FileSystemOperationImpl -> ~FileWriterDelegate. The 32 KiB io_buffer_
+  //     is freed while the transform is still queued. Model that here:
+  buf = nullptr;  // IOBufferWithSize::storage_ (HeapArray<uint8_t>) freed.
+
+  // (c) ~FileWriterDelegate also destroys file_stream_writer_ (the Worker).
+  //     Worker::~Worker only calls Entry::OnWorkerDestroyed, which increments
+  //     a counter — pending_ops_ is NOT cleared. The Entry itself survives,
+  //     held by DiversionFileManager::entries_ and by the in-flight reply
+  //     task's scoped_refptr<Entry>.
+  writer.reset();
+
+  // --- Trigger the dangling pwrite ---
+  //
+  // Pump the IO thread + threadpool:
+  //   1. open(O_TMPFILE) transform completes on the pool.
+  //   2. Reply Entry::OnRunComplete runs on IO thread, pops
+  //      pending_ops_.front() and calls Entry::Run on the Write Op.
+  //   3. Threadpool runs the transform lambda:
+  //        pwrite(fd, /*dangling*/ data_ptr, 32768, 0)
+  //      reading 32 KiB from the freed HeapArray slot in the browser process.
+  //
+  // ASAN: heap-use-after-free (READ of size N inside pwrite) here.
+  task_environment_.RunUntilIdle();
+
+  // Cleanup (not reached under ASAN once the UAF fires).
+  dfm->FinishDiverting(url, DiversionFileManager::Callback());
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace ash
