@@ -1001,8 +1001,10 @@ class SignedExchangeRequestHandlerRealCertVerifierBrowserTest
 // If this fails with ERR_CERT_DATE_INVALID, try to regenerate test data
 // by running generate-test-certs.sh and generate-test-sxgs.sh in
 // src/content/test/data/sxg. See https://crbug.com/1279652.
+//
+// Disabled as it's failing on 10s of builder. https://crbug.com/526396467
 IN_PROC_BROWSER_TEST_F(SignedExchangeRequestHandlerRealCertVerifierBrowserTest,
-                       Basic) {
+                       DISABLED_Basic) {
   InstallUrlInterceptor(
       GURL("https://cert.example.org/cert.msg"),
       "content/test/data/sxg/test.example.org-long-validity.public.pem.cbor");
