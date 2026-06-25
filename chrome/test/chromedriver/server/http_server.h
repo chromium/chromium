@@ -8,12 +8,14 @@
 #include "base/json/json_reader.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/test/chromedriver/server/http_handler.h"
+#include "net/base/ip_address.h"
 #include "net/base/url_util.h"
 #include "net/server/http_server.h"
 #include "net/server/http_server_request_info.h"
 #include "net/server/http_server_response_info.h"
 #include "net/socket/tcp_server_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "url/gurl.h"
 
 typedef base::RepeatingCallback<void(const net::HttpServerRequestInfo&,
                                      const HttpResponseSenderFunc&)>
@@ -93,5 +95,19 @@ class HttpServer : public net::HttpServer::Delegate,
   net::IPEndPoint local_address_;
   base::WeakPtrFactory<HttpServer> weak_factory_{this};  // Should be last.
 };
+
+namespace internal {
+
+bool HostIsSafeToServe(GURL host_url,
+                       std::string host_header_value,
+                       const std::vector<net::IPAddress>& whitelisted_ips,
+                       const std::vector<std::string>& allowed_origins);
+
+bool RequestIsSafeToServe(const net::HttpServerRequestInfo& info,
+                          bool allow_remote,
+                          const std::vector<net::IPAddress>& whitelisted_ips,
+                          const std::vector<std::string>& allowed_origins);
+
+}  // namespace internal
 
 #endif  // CHROME_TEST_CHROMEDRIVER_SERVER_HTTP_SERVER_H_

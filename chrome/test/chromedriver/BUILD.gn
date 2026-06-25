@@ -601,6 +601,7 @@ test("chromedriver_unittests") {
     "performance_logger_unittest.cc",
     "prompt_behavior_unittest.cc",
     "server/http_handler_unittest.cc",
+    "server/http_server_unittest.cc",
     "session_commands_unittest.cc",
     "session_unittest.cc",
     "util_unittest.cc",
