@@ -265,7 +265,14 @@ const base::FeatureParam<std::string> kCrossDeviceSigninUrl{&kCrossDeviceSignin,
 BASE_FEATURE(kDisableU18FeedbackDesktop, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+// Enables fetching sync preview data from the server for accounts with refresh
+// tokens.
 BASE_FEATURE(kEnableAccountPreviewData, base::FEATURE_DISABLED_BY_DEFAULT);
+// Controls whether fetching entity preview data is enabled (via a specific api
+// method). This flag has no effect if `kEnableAccountPreviewData` is not
+// enabled.
+BASE_FEATURE(kEnableAccountPreviewEntityPreviews,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // Whether activityless sign-in should be used for all entry points.

@@ -35,15 +35,19 @@ using FetchState = AccountPreviewDataFetcher::FetchState;
 
 class AccountPreviewDataFetcherTest : public testing::Test {
  public:
-  AccountPreviewDataFetcherTest() = default;
+  AccountPreviewDataFetcherTest() {
+    feature_list_.InitWithFeatures(
+        {switches::kEnableAccountPreviewData,
+         switches::kEnableAccountPreviewEntityPreviews},
+        {});
+  }
 
   void SetUp() override {
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kEnableAccountPreviewData};
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   IdentityTestEnvironment identity_test_env_{&test_url_loader_factory_};
@@ -86,6 +90,48 @@ TEST_F(AccountPreviewDataFetcherTest, Success) {
   histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
                                       FetchState::kCompletedWithResults, 1);
   histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 4);
+}
+
+TEST_F(AccountPreviewDataFetcherTest, SuccessWithPreviewsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kEnableAccountPreviewEntityPreviews);
+
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  MockSuccessfulStatsFetch(
+      &test_url_loader_factory_,
+      {.bookmark_count = 10, .password_count = 20, .history_count = 30});
+  // We do NOT mock previews fetch.
+
+  base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
+      future;
+  auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
+      account_info.gaia, identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
+
+  auto [gaia_id, result_data] = future.Take();
+  EXPECT_EQ(account_info.gaia, gaia_id);
+  ASSERT_TRUE(result_data.has_value());
+  EXPECT_EQ(10U, result_data->counts[syncer::BOOKMARKS]);
+  EXPECT_EQ(20U, result_data->counts[syncer::PASSWORDS]);
+  EXPECT_EQ(30U, result_data->counts[syncer::HISTORY]);
+  EXPECT_TRUE(result_data->password_domains.empty());
+
+  // Verify that no previews request was even initiated (0 pending requests).
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kRequested, 1);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kStatisticsHasResult, 1);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kEntityPreviewHasResult, 0);
+  histogram_tester_.ExpectBucketCount(kFetchStateHistogram,
+                                      FetchState::kCompletedWithResults, 1);
+  histogram_tester_.ExpectTotalCount(kFetchStateHistogram, 3);
 }
 
 TEST_F(AccountPreviewDataFetcherTest, SuccessEmpty) {

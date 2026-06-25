@@ -239,6 +239,8 @@ BASE_DECLARE_FEATURE(kDisableU18FeedbackDesktop);
 // Enables fetching and storing preview data for signed-in accounts.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewData);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableAccountPreviewEntityPreviews);
 
 #if BUILDFLAG(IS_ANDROID)
 // Whether activityless sign-in should be used for all entry points.

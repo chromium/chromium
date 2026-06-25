@@ -35,7 +35,12 @@ namespace signin {
 class AccountPreviewDataServiceTest : public testing::Test {
  public:
   AccountPreviewDataServiceTest()
-      : identity_test_env_(&test_url_loader_factory_) {}
+      : identity_test_env_(&test_url_loader_factory_) {
+    feature_list_.InitWithFeatures(
+        {switches::kEnableAccountPreviewData,
+         switches::kEnableAccountPreviewEntityPreviews},
+        {});
+  }
 
   void SetUp() override {
     AccountPreviewDataService::RegisterProfilePrefs(prefs_.registry());
@@ -55,8 +60,7 @@ class AccountPreviewDataServiceTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kEnableAccountPreviewData};
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network::TestURLLoaderFactory test_url_loader_factory_;
