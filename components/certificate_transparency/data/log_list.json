@@ -1,6 +1,6 @@
 {
-  "version": "86.4",
-  "log_list_timestamp": "2026-06-23T13:36:44Z",
+  "version": "87.0",
+  "log_list_timestamp": "2026-06-25T13:38:33Z",
   "operators": [
     {
       "name": "Google",
@@ -646,23 +646,6 @@
       ],
       "tiled_logs": [
         {
-          "description": "Let's Encrypt 'Sycamore2026h1'",
-          "log_id": "pcl4kl1XRheChw3YiWYLXFVki30AQPLsB2hR0YhpGfc=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfEEe0JZknA91/c6eNl1aexgeKzuGQUMvRCXPXg9L227O5I4Pi++Abcpq6qxlVUKPYafAJelAnMfGzv3lHCc8gA==",
-          "submission_url": "https://log.sycamore.ct.letsencrypt.org/2026h1/",
-          "monitoring_url": "https://mon.sycamore.ct.letsencrypt.org/2026h1/",
-          "mmd": 60,
-          "state": {
-            "usable": {
-              "timestamp": "2025-11-27T03:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2025-12-18T00:00:00Z",
-            "end_exclusive": "2026-06-18T00:00:00Z"
-          }
-        },
-        {
           "description": "Let's Encrypt 'Sycamore2026h2'",
           "log_id": "bP5QGUOoXqkWvFLRM+TcyR7xQRx9JYQg0XOAnhgY6zo=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEwR1FtiiMbpvxR+sIeiZ5JSCIDIdTAPh7OrpdchcrCcyNVDvNUq358pqJx2qdyrOI+EjGxZ7UiPcN3bL3Q99FqA==",
@@ -711,23 +694,6 @@
           "temporal_interval": {
             "start_inclusive": "2027-06-18T00:00:00Z",
             "end_exclusive": "2027-12-16T00:00:00Z"
-          }
-        },
-        {
-          "description": "Let's Encrypt 'Willow2026h1'",
-          "log_id": "4yON8o2iiOCq4Kzw+pDJhfC2v/XSpSewAfwcRFjEtug=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEtpFyulwgy1+u+wYQ37lbV+HsPFNYoi4sy6dZP662N/Z/usdNi4+Q3RLES1RY2PNk7zL/7VPSn3JERMPu/s4e4A==",
-          "submission_url": "https://log.willow.ct.letsencrypt.org/2026h1/",
-          "monitoring_url": "https://mon.willow.ct.letsencrypt.org/2026h1/",
-          "mmd": 60,
-          "state": {
-            "usable": {
-              "timestamp": "2025-11-27T03:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2025-12-17T00:00:00Z",
-            "end_exclusive": "2026-06-17T00:00:00Z"
           }
         },
         {
