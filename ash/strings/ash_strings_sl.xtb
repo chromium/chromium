@@ -170,7 +170,7 @@
 <translation id="142655739075382478">Aplikacija <ph name="APP_NAME" /> je blokirana</translation>
 <translation id="142765311413773645">Licenca za aplikacijo <ph name="APP_NAME" /> je potekla</translation>
 <translation id="1435537621343861112">Nareka ni mogoče začeti. Mikrofon je izklopljen.</translation>
-<translation id="1445031758921122223">Datoteke za upravljanje obraza so bile prenesene</translation>
+<translation id="1445031758921122223">Datoteke za upravljanje z obrazom so bile prenesene</translation>
 <translation id="1447907279406111651">Zdaj ⋅ Konča se ob <ph name="END_TIME" /></translation>
 <translation id="1455242230282523554">Pokaži jezikovne nastavitve</translation>
 <translation id="1459693405370120464">Vreme</translation>
@@ -1365,7 +1365,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4881323000405981760">Učinki niso podprti v aplikacijah za Linux</translation>
 <translation id="4881695831933465202">Odpri</translation>
 <translation id="4890408602550914571">Preverite, ali imate telefon v bližini in ima vklopljeno povezavo Bluetooth.</translation>
-<translation id="4892981359753171125">Upravljanje obraza</translation>
+<translation id="4892981359753171125">Upravljanje z obrazom</translation>
 <translation id="4895488851634969361">Akumulator je poln.</translation>
 <translation id="4902797682482387055">Predlagano opravilo za osredotočanje</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % energije akumulatorja</translation>
@@ -1546,7 +1546,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="5363109466694494651">Izvedi Powerwash in povrni</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pomik na ta zavihek</translation>
 <translation id="5364693579536176785">prostor za shranjevanje</translation>
-<translation id="5369573834963677938">Upravljanje obraza bo na voljo tudi drugim uporabnikom v napravi</translation>
+<translation id="5369573834963677938">Upravljanje z obrazom bo na voljo tudi drugim uporabnikom v napravi</translation>
 <translation id="5369694795837229225">Nastavitev razvojnega okolja Linux</translation>
 <translation id="5369717264580061086">Predogled datoteke v aplikaciji Datoteke</translation>
 <translation id="5377367976106153749">Želite vklopiti dostop do kamere?</translation>
@@ -1767,7 +1767,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6022924867608035986">Izbris besedila v iskalnem polju</translation>
 <translation id="6023643151125006053">To napravo (serijska številka: <ph name="SERIAL_NUMBER" />) je zaklenil skrbnik domene <ph name="SAML_DOMAIN" />.</translation>
 <translation id="602472752137106327">Prikaz oken na vseh namizjih, izbran je izbirni gumb</translation>
-<translation id="6024768346262692989">Datotek za upravljanje obraza ni bilo mogoče prenesti</translation>
+<translation id="6024768346262692989">Datotek za upravljanje z obrazom ni bilo mogoče prenesti</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
 <translation id="6027518778343897451">Na ta dan ni dogodkov: <ph name="CURRENT_MONTH_DAY" />. Pritisnite Enter, če želite odpreti Google Koledar v brskalniku.</translation>
 <translation id="6030495522958826102">Meni je bil premaknjen v spodnji levi kot zaslona.</translation>

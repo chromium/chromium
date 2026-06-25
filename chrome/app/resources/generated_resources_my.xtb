@@ -4193,7 +4193,7 @@
 <translation id="3976108569178263973">ရနိုင်သော ပုံနှိပ်စက်များ မရှိပါ။</translation>
 <translation id="397703832102027365">အဆုံးသတ်နေ...</translation>
 <translation id="3977886311744775419">ဤကွန်ရက်အမျိုးအစားတွင် အလိုအလျောက် အပ်ဒိတ်များကို ဒေါင်းလုဒ်မလုပ်သော်လည်း အပ်ဒိတ်များကို ကိုယ်တိုင်စစ်ဆေးနိုင်သည်။</translation>
-<translation id="3978325380690188371">ChromeVox ဖွင့်ထားစဉ် ကပ်ခွာကီးများ မရနိုင်ပါ</translation>
+<translation id="3978325380690188371">ChromeVox ဖွင့်ထားစဉ် ခလုတ်တွဲကီးများ မရနိုင်ပါ</translation>
 <translation id="3978732922947854545">Chrome သည် PDF များကို ပိုကောင်းစေသည်</translation>
 <translation id="3979093622823535817"><ph name="MEETING_TITLE" /> အစည်းအဝေးတက်ရန်</translation>
 <translation id="3979395879372752341">အိတ်စတန်းရှင်း အသစ် ထပ်ထည့်ပြီး (<ph name="EXTENSION_NAME" />)</translation>
@@ -6425,7 +6425,7 @@
 <translation id="5641608986289282154"><ph name="DEVICE_OS" /> စတင် အသုံးပြုခြင်း</translation>
 <translation id="5641715878999557094">‘ပင်မခလုတ်’ ကို နှိပ်သောအခါ မြင်ရမည့် စာမျက်နှာကို “<ph name="EXTENSION_NAME" />” က ပြောင်းလိုက်သည်။</translation>
 <translation id="5643191124441701136">သင့်ကတ်ရှေ့ခြမ်းတွင် လုံခြုံရေးကုဒ်ရှိသည်</translation>
-<translation id="5643321261065707929">အခမဲ့မဟုတ်သော ကွန်ရက်</translation>
+<translation id="5643321261065707929">အခပေး ကွန်ရက်</translation>
 <translation id="5646376287012673985">တည်နေရာ</translation>
 <translation id="5646558797914161501">စီးပွားရေးလုပ်ငန်းရှင်</translation>
 <translation id="5647989922796038257">အသံထွက်မည့် ကိရိယာအားလုံးကိုလည်း မျှဝေသည်</translation>
@@ -10555,7 +10555,7 @@
 <translation id="8681886425883659911">ကြားဖြတ်သော (သို့) အထင်မှားစေသော ကြော်ငြာများပြသည့် ဝဘ်ဆိုက်များတွင် ကြော်ငြာများကို ပိတ်ထားသည်</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> ကို ချိတ်ဆက်ထားပြီး အဆင်သင့်ဖြစ်ပါပြီ</translation>
 <translation id="8683720831806477407">အပ်ဒိတ်လုပ်စနစ် အတိုင်းအတာ</translation>
-<translation id="8684471948980641888">အခမဲ့မဟုတ်သော ကွန်ရက်များတွင် စင့်ခ်လုပ်ခြင်းကို ခွင့်ပြုရန်</translation>
+<translation id="8684471948980641888">အခပေး ကွန်ရက်များတွင် စင့်ခ်လုပ်ခြင်းကို ခွင့်ပြုရန်</translation>
 <translation id="8685540043423825702">သင်၏ Chrome ပရိုဖိုင်</translation>
 <translation id="8685882652128627032">‘ဝဘ်ဆိုက်ရှာဖွေမှု ထည့်ရန်’ ဒိုင်ယာလော့ကို ဖွင့်ရန် နှိပ်ပါ</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်</translation>

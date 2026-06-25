@@ -8303,7 +8303,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7034692021407794547">En administratör med behörigheten Fakturahantering måste först godkänna användarvillkoren för Google Meet-hårdvara i avsnittet Google Meet-hårdvara i administratörskonsolen.</translation>
 <translation id="70356134210715500">Skaffa dina nycklar</translation>
 <translation id="7036550011779986598"><ph name="RP_ID" /> har precis skapat en nyckel för ditt konto. Nycklar är ett snabbare och säkrare sätt att logga in och sparas i Google Lösenordshantering för <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
-<translation id="7036833812387983071">Visa i Verktyg för programmerare</translation>
+<translation id="7036833812387983071">Visa i DevTools</translation>
 <translation id="7037157058268992880">Glömt pinkoden</translation>
 <translation id="7037509989619051237">Text för förhandsgranskning</translation>
 <translation id="7037633074390821254">DNS- eller CIDR-begränsning</translation>
@@ -9955,7 +9955,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8244514732452879619">Dags att sluta snart</translation>
 <translation id="8244724656154470844">Det gick inte att söka efter uppdateringar.</translation>
 <translation id="8246776524656196770">Skydda säkerhetsnyckeln med en pinkod (personligt identifieringsnummer)</translation>
-<translation id="824713170151383793">med Verktyg för programmerare</translation>
+<translation id="824713170151383793">med DevTools</translation>
 <translation id="8247210755024677100">Loggar in …</translation>
 <translation id="8247795734638043885">Ladda ned osäker fil</translation>
 <translation id="8248050856337841185">K&amp;listra in</translation>
@@ -10771,7 +10771,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8831769650322069887">Öppna <ph name="FILE_NAME" /></translation>
 <translation id="8834039744648160717">Nätverkskonfiguration styrs av <ph name="USER_EMAIL" />.</translation>
 <translation id="8834894991122882949">{NUM_SITES,plural, =1{Behörigheter har tagits bort från 1 webbplats}other{Behörigheter har tagits bort från {NUM_SITES} webbplatser}}</translation>
-<translation id="8835005853697140186">Vill du låta Verktyg för programmerare redigera filer?</translation>
+<translation id="8835005853697140186">Vill du låta DevTools redigera filer?</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" /> inom en vecka. <ph name="LINK_BEGIN" />Mer information<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Lämna gruppen}other{Lämna grupperna}}</translation>
 <translation id="8836782447513334597">fortsätta</translation>

@@ -8652,7 +8652,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7324297612904500502">Fòrum per a la versió beta</translation>
 <translation id="7325209047678309347">El paper s'ha encallat</translation>
 <translation id="7325953439504232954">Vols canviar de perfil?</translation>
-<translation id="7326004502692201767">Configura aquest dispositiu <ph name="DEVICE_TYPE" /> per a un nen</translation>
+<translation id="7326004502692201767">Configura aquest dispositiu <ph name="DEVICE_TYPE" /> per a un nen o nena</translation>
 <translation id="732659786514229249">Vols inscriure el dispositiu a la teva organització?</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 adreça d'interès s'ha desat només en aquest dispositiu. Per utilitzar-la als altres dispositius que fas servir, desa-la al teu Compte de Google.}other{{BOOKMARK_COUNT} adreces d'interès s'han desat només en aquest dispositiu. Per utilitzar-les als altres dispositius que fas servir, desa-les al teu Compte de Google.}}</translation>

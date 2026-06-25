@@ -1571,7 +1571,7 @@
 <translation id="5460938382730614333">ညွှန်မှတ် ဖွင့်ထားသည်။</translation>
 <translation id="5463129623250377817">ရွေးထားသော အကြောင်းအရာကို ကလစ်ဘုတ်သို့ ဖြတ်ထည့်ရန်</translation>
 <translation id="5465662442746197494">အကူအညီ လိုပါသလား?</translation>
-<translation id="5474859849784484111"><ph name="MANAGER" /> က Wi-Fi သို့ ယခုချိတ်ဆက်ပြီး အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်စေလိုသည်။ သို့မဟုတ် အခမဲ့ မဟုတ်သော ချိတ်ဆက်မှုမှ ဒေါင်းလုဒ်လုပ်ပါ (ဒေတာသုံးစွဲခ ကျသင့်နိုင်သည်)။</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> က Wi-Fi သို့ ယခုချိတ်ဆက်ပြီး အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်စေလိုသည်။ သို့မဟုတ် အခပေး ချိတ်ဆက်မှုမှ ဒေါင်းလုဒ်လုပ်ပါ (ဒေတာသုံးစွဲခ ကျသင့်နိုင်သည်)။</translation>
 <translation id="547979256943495781">စင်ကို ညာဘက် ရွှေ့လိုက်ပါပြီ</translation>
 <translation id="5482873136202102190">၊ +</translation>
 <translation id="5491186829646618080">ဖာမ်းဝဲအပ်ဒိတ်များ ရနိုင်ပါပြီ</translation>
@@ -1705,7 +1705,7 @@
 <translation id="5858490737742085133">စက်</translation>
 <translation id="5860033963881614850">ပိတ်ထား</translation>
 <translation id="5860491529813859533">ဖွင့်ရန်</translation>
-<translation id="5864195618110239517">အခမဲ့ မဟုတ်သော ချိတ်ဆက်မှု အသုံးပြုရန်</translation>
+<translation id="5864195618110239517">အခပေး ချိတ်ဆက်မှု အသုံးပြုရန်</translation>
 <translation id="5864691701242730005">‘အမြန် မျှဝေပါ’ ဆက်တင်များကို ပြပါ။ <ph name="VISIBILITY" /> မြင်နိုင်မှု ရွေးထားသည်</translation>
 <translation id="5864748620896638071">ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> သည် မကြာမီ ခဏရပ်ပါမည်</translation>
