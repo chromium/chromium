@@ -949,10 +949,13 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
   auto it = live_versions_.find(id);
   CHECK(it != live_versions_.end());
   ServiceWorkerVersion* version = it->second;
+  // Erase from the map before notifying observers to prevent re-entrancy:
+  // synchronous observers could otherwise look up this version via
+  // `GetLiveVersion()` and resurrect it with a new `scoped_refptr`.
+  live_versions_.erase(it);
 
   if (version->running_status() != blink::EmbeddedWorkerStatus::kStopped) {
-    // Notify all observers that this live version is stopped, as it will
-    // be removed from |live_versions_|.
+    // Notify all observers that this live version is stopped.
     observer_list_->Notify(FROM_HERE,
                            &ServiceWorkerContextCoreObserver::OnStopped, id);
     for (auto& observer : sync_observer_list_->observers) {
@@ -971,8 +974,6 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
 
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnLiveVersionDestroyed, id);
-
-  live_versions_.erase(it);
 }
 
 std::vector<ServiceWorkerRegistrationInfo>
