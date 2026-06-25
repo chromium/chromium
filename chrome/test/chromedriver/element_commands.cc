@@ -332,6 +332,16 @@ Status ExecuteClickElement(Session* session,
                   "frame was destroyed before click completion"};
   }
 
+  // `containing_web_view` may be a child OOPIF WebViewImpl owned by the
+  // page's FrameTracker. The outer ExecuteWindowCommand holder only locks the
+  // page-level view and its ancestors, so the inner WebViewImplHolder created
+  // by each CallFunctionWithTimeout below would be the *first* lock on the
+  // child and could free it in its destructor if the target detaches
+  // mid-call, leaving this raw pointer dangling. Hold it explicitly for the
+  // remainder of this function.
+  std::unique_ptr<WebViewHolder> containing_holder =
+      containing_web_view->GetHolder();
+
   WebPoint relative_location;
   status = GetElementClickableLocation(session, containing_web_view, element_id,
                                        &relative_location);
