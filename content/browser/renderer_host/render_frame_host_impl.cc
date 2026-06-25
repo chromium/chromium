@@ -13290,8 +13290,10 @@ void RenderFrameHostImpl::FailedNavigation(
   // navigations too.
 
   has_committed_any_navigation_ = true;
-  CHECK(navigation_request && navigation_request->IsNavigationStarted() &&
-        navigation_request->DidEncounterError());
+  // TODO(526397675): CHECK-exclusion: Convert to a CHECK once we are confident
+  // it won't be triggered.
+  DCHECK(navigation_request && navigation_request->IsNavigationStarted() &&
+         navigation_request->DidEncounterError());
 }
 
 void RenderFrameHostImpl::AddResourceTimingEntryForFailedSubframeNavigation(
