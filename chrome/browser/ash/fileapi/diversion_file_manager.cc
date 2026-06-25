@@ -426,9 +426,17 @@ void DiversionFileManager::Worker::ReadOrWrite(
     net::IOBuffer* buf,
     int buf_len,
     net::CompletionOnceCallback callback) {
+  // The transform lambda is queued on Entry::pending_ops_ and later posted to
+  // a BEST_EFFORT threadpool. It can outlive both this Worker (Cancel() is a
+  // no-op and ~Worker does not dequeue) and the caller's IOBuffer reference
+  // (e.g. FileWriterDelegate frees its io_buffer_ synchronously when
+  // Worker::Cancel returns net::OK). Per net/base/io_buffer.h's cancellation
+  // contract, retain a scoped_refptr so the buffer survives until the
+  // pread/pwrite completes.
   static constexpr auto transform =
-      [](Role role, char* data_ptr, int data_len, int64_t offset,
-         Tmpfile tmpfile) -> std::pair<Tmpfile, int> {
+      [](Role role, scoped_refptr<net::IOBuffer> buf, int data_len,
+         int64_t offset, Tmpfile tmpfile) -> std::pair<Tmpfile, int> {
+    char* data_ptr = buf->data();
     if (tmpfile.net_error != net::OK) {
       return std::make_pair(std::move(tmpfile), 0);
     } else if (!tmpfile.scoped_fd.is_valid()) {
@@ -470,7 +478,8 @@ void DiversionFileManager::Worker::ReadOrWrite(
   };
 
   entry_->Enqueue(
-      {base::BindOnce(transform, role_, buf->data(), buf_len, offset_),
+      {base::BindOnce(transform, role_, base::WrapRefCounted(buf), buf_len,
+                      offset_),
        base::BindOnce(&DiversionFileManager::Worker::OnReadOrWrite,
                       weak_ptr_factory_.GetWeakPtr(), std::move(callback))});
 }
