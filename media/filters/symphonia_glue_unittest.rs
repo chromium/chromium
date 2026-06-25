@@ -240,6 +240,119 @@ fn test_decoder_init_failure() {
     }
 }
 
+// Verify that FLAC decoder initialization succeeds even if the "fLaC" marker
+// is present in the extra data.
+#[gtest(SymphoniaGlueTest, FlacInitWithMarker)]
+fn test_flac_init_with_marker() {
+    let mut extra_data = vec![
+        102, 76, 97, 67, // "fLaC"
+        0, 0, 0, 34, // STREAMINFO header
+        // STREAMINFO data (34 bytes)
+        18, 0, 18, 0, 0, 0, 186, 0, 5, 57, 11, 184, 0, 240, 0, 3, 169, 128, 148, 172, 171, 223, 193,
+        198, 120, 195, 117, 49, 236, 130, 87, 47, 118, 114,
+    ];
+
+    let config = ffi::SymphoniaDecoderConfig {
+        codec: ffi::SymphoniaAudioCodec::Flac,
+        extra_data: &extra_data,
+        bytes_per_sample: 2,
+        channel_mask: 1, // Mono
+        max_frames_per_packet: 0,
+        sample_rate: 48000,
+    };
+
+    let result = init_symphonia_decoder(&config);
+    expect_eq!(result.status, ffi::SymphoniaInitStatus::Ok);
+
+    // Also verify that it handles trailing data.
+    extra_data.extend_from_slice(&[0xAA, 0xBB, 0xCC]);
+    let config_trailing = ffi::SymphoniaDecoderConfig {
+        codec: ffi::SymphoniaAudioCodec::Flac,
+        extra_data: &extra_data,
+        bytes_per_sample: 2,
+        channel_mask: 1, // Mono
+        max_frames_per_packet: 0,
+        sample_rate: 48000,
+    };
+    let result_trailing = init_symphonia_decoder(&config_trailing);
+    expect_eq!(result_trailing.status, ffi::SymphoniaInitStatus::Ok);
+}
+
+// Verify that FLAC decoder initialization succeeds with 38-byte extra data
+// (Header + STREAMINFO).
+#[gtest(SymphoniaGlueTest, FlacInitWithHeaderOnly)]
+fn test_flac_init_with_header_only() {
+    let extra_data = vec![
+        0, 0, 0, 34, // STREAMINFO header
+        // STREAMINFO data (34 bytes)
+        18, 0, 18, 0, 0, 0, 186, 0, 5, 57, 11, 184, 0, 240, 0, 3, 169, 128, 148, 172, 171, 223, 193,
+        198, 120, 195, 117, 49, 236, 130, 87, 47, 118, 114,
+    ];
+
+    let config = ffi::SymphoniaDecoderConfig {
+        codec: ffi::SymphoniaAudioCodec::Flac,
+        extra_data: &extra_data,
+        bytes_per_sample: 2,
+        channel_mask: 1, // Mono
+        max_frames_per_packet: 0,
+        sample_rate: 48000,
+    };
+
+    let result = init_symphonia_decoder(&config);
+    expect_eq!(result.status, ffi::SymphoniaInitStatus::Ok);
+}
+
+// Verify that FLAC decoder initialization fails as expected when only the
+// marker and invalid data are provided. The marker should be stripped, but
+// the resulting data will still fail validation in Symphonia.
+#[gtest(SymphoniaGlueTest, FlacInitWithMarkerOnly)]
+fn test_flac_init_with_marker_only() {
+    let extra_data = vec![
+        102, 76, 97, 67, // "fLaC"
+        0xFF, 0xFF, 0xFF, 0xFF, // Invalid data
+    ];
+
+    let config = ffi::SymphoniaDecoderConfig {
+        codec: ffi::SymphoniaAudioCodec::Flac,
+        extra_data: &extra_data,
+        bytes_per_sample: 2,
+        channel_mask: 1, // Mono
+        max_frames_per_packet: 0,
+        sample_rate: 48000,
+    };
+
+    let result = init_symphonia_decoder(&config);
+    // It should fail because the data after "fLaC" isn't a valid STREAMINFO.
+    expect_ne!(result.status, ffi::SymphoniaInitStatus::Ok);
+}
+
+// Verify that FLAC decoder initialization fails as expected when a
+// non-STREAMINFO metadata block is provided. The marker should be stripped, but
+// the block will fail validation in Symphonia which expects STREAMINFO first.
+#[gtest(SymphoniaGlueTest, FlacInitWithOtherBlock)]
+fn test_flac_init_with_other_block() {
+    let extra_data = vec![
+        102, 76, 97, 67, // "fLaC"
+        1,  // APPLICATION block type (bit 7 is 0, type is 1)
+        0, 0, 4, // Length 4
+        0x11, 0x22, 0x33, 0x44, // Some application data
+    ];
+
+    let config = ffi::SymphoniaDecoderConfig {
+        codec: ffi::SymphoniaAudioCodec::Flac,
+        extra_data: &extra_data,
+        bytes_per_sample: 2,
+        channel_mask: 1, // Mono
+        max_frames_per_packet: 0,
+        sample_rate: 48000,
+    };
+
+    let result = init_symphonia_decoder(&config);
+    // It should fail because Symphonia's FLAC decoder initialization expects
+    // STREAMINFO.
+    expect_ne!(result.status, ffi::SymphoniaInitStatus::Ok);
+}
+
 // Verify that stereo data is correctly interleaved.
 #[gtest(SymphoniaGlueTest, StereoInterleaving)]
 fn test_stereo_interleaving() {

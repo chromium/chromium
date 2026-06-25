@@ -510,6 +510,53 @@ pub fn unpack_xiph_vorbis_extradata(extradata: &[u8]) -> Result<Vec<u8>, String>
     Ok(unpacked)
 }
 
+/// Trims FLAC extradata that may contain a "fLaC" marker and/or a metadata
+/// block header for the STREAMINFO block. Symphonia's FLAC decoder expects only
+/// the raw 34-byte STREAMINFO block for initialization.
+///
+/// This function takes a given `extradata`, and:
+/// 1. Always strips the "fLaC" container marker if present.
+/// 2. If the remaining data identifies a valid FLAC STREAMINFO block at the
+///    start, it strips the metadata header and returns just the 34-byte
+///    payload.
+/// 3. Otherwise, it returns the marker-stripped data as-is.
+///
+/// See https://www.ietf.org/archive/id/draft-ietf-cellar-flac-12.html#name-file-level-metadata
+pub fn get_streaminfo_payload(extradata: &[u8]) -> &[u8] {
+    const MARKER: &[u8; 4] = b"fLaC";
+    const HEADER_SIZE: usize = 4;
+    const STREAMINFO_SIZE: usize = 34;
+
+    // Always skip the "fLaC" marker if it's there. This is container-level framing
+    // and is never part of a metadata block. Note that a valid STREAMINFO block
+    // can never start with these bytes because it would violate the requirement
+    // that max_block_size >= min_block_size.
+    let stripped = extradata.strip_prefix(MARKER).unwrap_or(extradata);
+
+    // If skipping the marker revealed the raw payload, return it.
+    if stripped.len() == STREAMINFO_SIZE {
+        return stripped;
+    }
+
+    // If the data (after optional marker) starts with a STREAMINFO metadata block
+    // header, extract its payload.
+    if stripped.len() >= HEADER_SIZE + STREAMINFO_SIZE {
+        // The first bit indicates if this is the last block, the next 7 indicate block
+        // type. https://www.ietf.org/archive/id/draft-ietf-cellar-flac-12.html#section-8.1
+        let block_type = stripped[0] & 0x7f;
+        if block_type == 0 {
+            let block_len = u32::from_be_bytes([0, stripped[1], stripped[2], stripped[3]]) as usize;
+            if block_len == STREAMINFO_SIZE {
+                return &stripped[HEADER_SIZE..HEADER_SIZE + STREAMINFO_SIZE];
+            }
+        }
+    }
+
+    // We didn't find a definitive STREAMINFO payload to extract, but we've
+    // already peeled off any container-level markers.
+    stripped
+}
+
 /// Detailed status code indicating the result of a decoder initialization
 /// attempt.
 #[derive(Debug, Clone)]
@@ -543,35 +590,65 @@ fn to_symphonia_init_status(err: &Error) -> ffi::SymphoniaInitStatus {
     }
 }
 
+/// Processes raw extradata into a codec-specific boxed slice.
+///
+/// This function acts as a bridge between Chromium's demuxers (or WebCodecs)
+/// and Symphonia's decoders. Different codecs have different requirements for
+/// initialization:
+///
+/// * **Vorbis**: Unpacks Xiph-laced extradata into raw identification and setup
+///   headers.
+/// * **FLAC**: Extracts the verified STREAMINFO payload from potentially
+///   wrapped or marker-prefixed data.
+/// * **Others**: Returns a simple copy of the non-empty raw data.
+///
+/// Returns `Ok(Some(Box<[u8]>))` if valid initialization data was found or
+/// extracted, `Ok(None)` if the input was empty, or an error if extraction
+/// failed for a recognized format.
+fn get_extra_data(
+    codec: ffi::SymphoniaAudioCodec,
+    raw_extra_data: &[u8],
+) -> Result<Option<Box<[u8]>>, SymphoniaInitError> {
+    match codec {
+        // Chromium's demuxers often pack Vorbis extradata using the Xiph format, which
+        // is a byproduct of using FFmpeg. We unpack the Xiph format here if we detect it, dropping
+        // the comment header, as Symphonia expects only the raw identification and setup
+        // headers.
+        ffi::SymphoniaAudioCodec::Vorbis => match unpack_xiph_vorbis_extradata(raw_extra_data) {
+            Ok(unpacked) => Ok(Some(unpacked.into_boxed_slice())),
+            Err(err) => {
+                // It could be that this stream is not Xiph packed at all (which is fine,
+                // Symphonia might handle it natively if it's already unwrapped). We only log
+                // an error if we actually attempted to parse it as Xiph but failed.
+                if !raw_extra_data.is_empty() && raw_extra_data[0] == VORBIS_NUM_LACED_HEADERS {
+                    return Err(SymphoniaInitError::XiphVorbisUnpackError(format!(
+                        "failed to unpack xiph vorbis extradata: {}",
+                        err
+                    )));
+                }
+                Ok((!raw_extra_data.is_empty()).then(|| Box::from(raw_extra_data)))
+            }
+        },
+
+        // Depending on what demuxer implementation was used (and in the case of WebCodecs we may
+        // have no idea), the extra data may need to be stripped of the FLAC magic marker
+        // and / or the metadata block header.
+        ffi::SymphoniaAudioCodec::Flac => {
+            let payload = get_streaminfo_payload(raw_extra_data);
+            Ok((!payload.is_empty()).then(|| Box::from(payload)))
+        }
+        _ => Ok((!raw_extra_data.is_empty()).then(|| Box::from(raw_extra_data))),
+    }
+}
+
 /// Converts an FFI `SymphoniaDecoderConfig` to Symphonia `CodecParameters`.
 impl<'a> TryFrom<&ffi::SymphoniaDecoderConfig<'a>> for AudioCodecParameters {
     type Error = SymphoniaInitError;
 
     fn try_from(value: &ffi::SymphoniaDecoderConfig<'a>) -> Result<Self, Self::Error> {
         let bits_per_sample: u32 = (value.bytes_per_sample as u32) * u8::BITS;
-        let mut extra_data = value.extra_data.to_vec();
 
-        // Chromium's demuxers often pack Vorbis extradata using the Xiph format, which
-        // is a byproduct of using FFmpeg.
-        //
-        // We unpack the Xiph format here if we detect it, dropping the comment
-        // header, as Symphonia expects only the raw identification and setup headers.
-        if value.codec == ffi::SymphoniaAudioCodec::Vorbis {
-            match unpack_xiph_vorbis_extradata(&extra_data) {
-                Ok(unpacked) => extra_data = unpacked,
-                Err(err) => {
-                    // It could be that this stream is not Xiph packed at all (which is fine,
-                    // Symphonia might handle it natively if it's already unwrapped). We only log
-                    // an error if we actually attempted to parse it as Xiph but failed.
-                    if !extra_data.is_empty() && extra_data[0] == VORBIS_NUM_LACED_HEADERS {
-                        return Err(SymphoniaInitError::XiphVorbisUnpackError(format!(
-                            "failed to unpack xiph vorbis extradata: {}",
-                            err
-                        )));
-                    }
-                }
-            }
-        }
+        let extra_data = get_extra_data(value.codec, value.extra_data)?;
 
         let mut params = AudioCodecParameters::new();
         params
@@ -584,8 +661,8 @@ impl<'a> TryFrom<&ffi::SymphoniaDecoderConfig<'a>> for AudioCodecParameters {
             )))
             .with_sample_rate(value.sample_rate);
 
-        if !extra_data.is_empty() {
-            params.with_extra_data(extra_data.into_boxed_slice());
+        if let Some(extra_data) = extra_data {
+            params.with_extra_data(extra_data);
         }
 
         if value.max_frames_per_packet > 0 {
