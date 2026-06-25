@@ -1451,7 +1451,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6090760257419195752">Advertiments ignorats</translation>
 <translation id="6094325891006032858">Activa Navegació segura millorada</translation>
 <translation id="6096965253650248286">S'han trobat <ph name="COUNT" /></translation>
-<translation id="6099466082815574659">Aquest iPad està configurat per a un infant</translation>
+<translation id="6099466082815574659">Aquest iPad està configurat per a un nen o nena</translation>
 <translation id="6100617279104942061">Has iniciat la sessió com a <ph name="USER_EMAIL" />. Obre la configuració.</translation>
 <translation id="6100676328067737810">Les teves dades es desaran al teu Compte de Google, <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Obtén respostes rellevants basades en el contingut de la pàgina en què et trobes</translation>
@@ -1987,7 +1987,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7888562068293422208">Tancar-ho tot?</translation>
 <translation id="7889910613639381518">Accés fàcil i segur amb el widget del gestor de contrasenyes de Google.</translation>
 <translation id="7899199123054742721">Marca-ho tot com a no llegit</translation>
-<translation id="7909005666376403847">Aquest iPhone està configurat per a un infant</translation>
+<translation id="7909005666376403847">Aquest iPhone està configurat per a un nen o nena</translation>
 <translation id="7911190106180361398">La teva organització no et permet sincronitzar-ho tot.</translation>
 <translation id="7918999344502274923">Amaga els detalls de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="7921559948846049514">Tria un tema, un color o més per al fons</translation>

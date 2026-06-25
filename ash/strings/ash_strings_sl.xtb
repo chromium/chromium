@@ -148,7 +148,7 @@
 <translation id="1421166164855200062">Predlagana skupina</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1435537621343861112">Nareka ni mogoče začeti. Mikrofon je izklopljen.</translation>
-<translation id="1445031758921122223">Datoteke za upravljanje obraza so bile prenesene</translation>
+<translation id="1445031758921122223">Datoteke za upravljanje z obrazom so bile prenesene</translation>
 <translation id="1447907279406111651">Zdaj ⋅ Konča se ob <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Dostopne točke naprav</translation>
 <translation id="1455242230282523554">Pokaži jezikovne nastavitve</translation>
@@ -1273,7 +1273,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4889868803215848840">Navedite izbirne povratne informacije za izboljšanje predlogov:</translation>
 <translation id="4890187583552566966">Skrbnik je onemogočil Pomočnika Google.</translation>
 <translation id="4890408602550914571">Preverite, ali imate telefon v bližini in ima vklopljeno povezavo Bluetooth.</translation>
-<translation id="4892981359753171125">Upravljanje obraza</translation>
+<translation id="4892981359753171125">Upravljanje z obrazom</translation>
 <translation id="4895488851634969361">Akumulator je poln.</translation>
 <translation id="4902797682482387055">Predlagano opravilo za osredotočanje</translation>
 <translation id="490375751687810070">Navpično</translation>
@@ -1438,7 +1438,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="5361524080961918551">Datoteke za govor v jeziku <ph name="LANGUAGE" /> so delno prenesene</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pomik na ta zavihek</translation>
 <translation id="5364693579536176785">prostor za shranjevanje</translation>
-<translation id="5369573834963677938">Upravljanje obraza bo na voljo tudi drugim uporabnikom v napravi</translation>
+<translation id="5369573834963677938">Upravljanje z obrazom bo na voljo tudi drugim uporabnikom v napravi</translation>
 <translation id="5369717264580061086">Predogled datoteke v aplikaciji Datoteke</translation>
 <translation id="5377367976106153749">Želite vklopiti dostop do kamere?</translation>
 <translation id="5378450298115733949">Več</translation>
@@ -1657,7 +1657,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6020147141355393792">Nastavitev ogleda obvestil in aplikacij telefona</translation>
 <translation id="6022924867608035986">Izbris besedila v iskalnem polju</translation>
 <translation id="602472752137106327">Prikaz oken na vseh namizjih, izbran je izbirni gumb</translation>
-<translation id="6024768346262692989">Datotek za upravljanje obraza ni bilo mogoče prenesti</translation>
+<translation id="6024768346262692989">Datotek za upravljanje z obrazom ni bilo mogoče prenesti</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
 <translation id="6027518778343897451">Na ta dan ni dogodkov: <ph name="CURRENT_MONTH_DAY" />. Pritisnite Enter, če želite odpreti Google Koledar v brskalniku.</translation>
 <translation id="6030495522958826102">Meni je bil premaknjen v spodnji levi kot zaslona.</translation>

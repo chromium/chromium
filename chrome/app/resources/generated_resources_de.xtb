@@ -6626,7 +6626,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5568069709869097550">Anmeldung nicht möglich</translation>
 <translation id="5568525251731145240">Websitedaten und Berechtigungen für <ph name="SITE_NAME" />, alle ihr untergeordneten Websites und auf ihr installierten Apps löschen?</translation>
 <translation id="5568602038816065197">Websites können erweiterte Funktionen über jeden für dein Gerät zugänglichen Drucker nutzen, ohne die standardmäßige Druckaufforderung zu verwenden</translation>
-<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{Passwörter}=1{Passwort ({SELECTED_ITEMS})}other{Passwörter ({SELECTED_ITEMS})}}</translation>
+<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{Passwörter}=1{Passwörter ({SELECTED_ITEMS})}other{Passwörter ({SELECTED_ITEMS})}}</translation>
 <translation id="5571066253365925590">Bluetooth aktiviert</translation>
 <translation id="5571092938913434726">Globale Mediensteuerelemente</translation>
 <translation id="5571832155627049070">Profil anpassen</translation>
