@@ -241,7 +241,10 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     // Whenever chromevox is running together with dictation, we want to
     // announce the hints provided by the Dictation feature in a different voice
     // to differentiate them from regular UI text.
-    if (node.className === 'DictationHintView') {
+    // We also check that the node is not in a web area to prevent web content
+    // from spoofing this voice by setting class="DictationHintView".
+    if (node.className === 'DictationHintView' && node.root &&
+        node.root.role !== RoleType.ROOT_WEB_AREA) {
       output.withInitialSpeechProperties(Personality.DICTATION_HINT);
     }
     output.withSpeechCategory(TtsCategory.LIVE)

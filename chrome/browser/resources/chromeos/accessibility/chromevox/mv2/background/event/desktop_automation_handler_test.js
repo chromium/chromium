@@ -510,3 +510,51 @@ TEST_F(
             .replay();
       });
     });
+
+AX_TEST_F(
+    'ChromeVoxMV2DesktopAutomationHandlerTest',
+    'WebPageCannotTriggerDictationHintVoice', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site =
+          `<div role="alert" class="DictationHintView">test text</div>`;
+      const root = await this.runWithLoadedTree(site);
+      const alert = root.find({role: RoleType.ALERT});
+      assertTrue(Boolean(alert));
+      assertEquals('DictationHintView', alert.className);
+
+      const event = new CustomAutomationEvent(EventType.ALERT, alert);
+      mockFeedback.call(() => DesktopAutomationHandler.MIN_ALERT_DELAY_MS = -1)
+          .call(() => this.handler_.onAlert_(event))
+          // Verify that the web-based alert does not trigger the trusted
+          // DICTATION_HINT personality (which would have relativePitch: 0.3).
+          .expectSpeech((candidate) => {
+            const props = candidate.properties || {};
+            return /test text/.test(candidate.text) &&
+                props.relativePitch !== 0.3;
+          });
+      await mockFeedback.replay();
+    });
+
+AX_TEST_F(
+    'ChromeVoxMV2DesktopAutomationHandlerTest',
+    'NativeDictationHintTriggersVoiceProperties', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site =
+          `<div role="alert" class="DictationHintView">hint text</div>`;
+      const root = await this.runWithLoadedTree(site);
+      const alert = root.find({role: RoleType.ALERT});
+      assertTrue(Boolean(alert));
+      assertEquals('DictationHintView', alert.className);
+
+      // Mock the root to simulate a native UI node (not in a web area).
+      const fakeRoot = {role: RoleType.DESKTOP};
+      Object.defineProperty(alert, 'root', {get: () => fakeRoot});
+
+      const event = new CustomAutomationEvent(EventType.ALERT, alert);
+      mockFeedback.call(() => DesktopAutomationHandler.MIN_ALERT_DELAY_MS = -1)
+          .call(() => this.handler_.onAlert_(event))
+          // Verify that the native alert triggers the trusted voice properties
+          // (relativePitch: 0.3).
+          .expectSpeechWithProperties({relativePitch: 0.3}, /hint text/);
+      await mockFeedback.replay();
+    });
