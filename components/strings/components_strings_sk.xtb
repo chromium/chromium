@@ -896,7 +896,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2383455408879745299">Prispôsobiť nástroje dostupnosti v nastaveniach Chromu</translation>
 <translation id="2384307209577226199">Predvolené nastavenie na podnikovej úrovni</translation>
 <translation id="238459632961158867">Web</translation>
-<translation id="2384823392576123225">Vyhľadať záložky</translation>
+<translation id="2384823392576123225">Hľadať v záložkách</translation>
 <translation id="2385809941344967209">Aktualizovať Chrome v jeho nastaveniach</translation>
 <translation id="2386255080630008482">Certifikát servera bol zrušený.</translation>
 <translation id="2388828676877700238">Príprava a plánovanie daní</translation>
@@ -3318,7 +3318,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6177531123306197852">Obálka C2</translation>
 <translation id="6180316780098470077">Interval opakovania pokusov</translation>
 <translation id="6182972682129119950">A4×5</translation>
-<translation id="6184099524311454384">Vyhľadajte karty</translation>
+<translation id="6184099524311454384">Prehľadávať karty</translation>
 <translation id="6189351761800074311">Váš text a obsah stránky sa odosielajú Googlu, ale nebude sa pomocou nich zlepšovať umelá inteligencia.
     <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Prepísať niektoré klávesy na klávesnici, napríklad Esc</translation>
@@ -3768,7 +3768,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6893057134494550310">Laminovacia fólia</translation>
 <translation id="6893204630281237373">Ak chcete vypnúť platobnú aplikáciu v Chrome, prejdite do <ph name="BEGIN_LINK1" />nastavení platieb<ph name="END_LINK1" /></translation>
 <translation id="6895330447102777224">Vaša karta je overená</translation>
-<translation id="6896758677409633944">Kopírovať</translation>
+<translation id="6896758677409633944">Skopírovať</translation>
 <translation id="6897140037006041989">Používateľský agent</translation>
 <translation id="6898699227549475383">Organizácia (O)</translation>
 <translation id="6900702165119149418">Odhlásili ste sa</translation>

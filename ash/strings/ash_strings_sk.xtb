@@ -754,7 +754,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="3409584356742878290">Zobrazenie alebo skrytie kontroly nástrojov pre vývojárov</translation>
 <translation id="3410336247007142655">Zobraziť nastavenia tmavého motívu</translation>
 <translation id="3413817803639110246">Zatiaľ nie je čo zobraziť</translation>
-<translation id="3417835166382867856">Vyhľadávanie kariet</translation>
+<translation id="3417835166382867856">Prehľadávať karty</translation>
 <translation id="3426253816581969877">Pridržte <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> a klepte na <ph name="KEY" />, kým sa nezobrazí okno, ktoré chcete otvoriť. Potom kláves uvoľnite.</translation>
 <translation id="3428447136709161042">Odpojiť od siete <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Vrátite sa potiahnutím sprava</translation>
@@ -1956,7 +1956,7 @@ Nová inštalácia</translation>
 <translation id="6884665277231944629">Prejsť späť na dnešok</translation>
 <translation id="6886172995547742638">Vaše zariadenie <ph name="DEVICE_TYPE" /> môže mať nižší výkon. Používajte nabíjačku s portom USB-C, ktorá má certifikovaný výkon minimálne <ph name="PREFERRED_MINIMUM_POWER" /> W</translation>
 <translation id="688631446150864480">Ak chcete prepnúť okná, stlačte kláves so šípkou nadol</translation>
-<translation id="6896758677409633944">Kopírovať</translation>
+<translation id="6896758677409633944">Skopírovať</translation>
 <translation id="6912841030378044227">Označenie panela s adresou</translation>
 <translation id="6912901278692845878">Rýchla prehliadka</translation>
 <translation id="6917259695595127329">Úlohy boli naposledy aktualizované o <ph name="TIME" />.</translation>
@@ -2432,7 +2432,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8433977262951327081">Klávesová skratka na zobrazenie bubliny s možnosťami vstupu na poličke sa zmenila. Namiesto skratky <ph name="OLD_SHORTCUT" /> použite skratku <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">Otvorenie nástroja na odoslanie spätnej väzby</translation>
 <translation id="8440630305826533614">Aplikácie pre Linux</translation>
-<translation id="8443879455002739353">Kopírovať</translation>
+<translation id="8443879455002739353">Skopírovať</translation>
 <translation id="8444246603146515890">Bola aktivovaná plocha <ph name="DESK_TITILE" /></translation>
 <translation id="8446884382197647889">Ďalšie informácie</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>

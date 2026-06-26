@@ -562,7 +562,7 @@
 <translation id="3384347053049321195">Zdieľať obrázok</translation>
 <translation id="3387650086002190359">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu chýb systému súborov.</translation>
 <translation id="3414952576877147120">Veľkosť:</translation>
-<translation id="3417835166382867856">Vyhľadávanie kariet</translation>
+<translation id="3417835166382867856">Prehľadávať karty</translation>
 <translation id="3430670036890315772">Vypnutím zámky profilu odstránite uložené informácie</translation>
 <translation id="3435465986463792564">Máte veľa okien? Tu ich môžete spravovať.</translation>
 <translation id="3435575784518354875">Ak si chcete zachovať prístup k svojim heslám, exportujte ich, aktualizujte Služby Google Play a potom ich importujte späť do Správcu hesiel Google. <ph name="BEGIN_LINK" />Zobraziť úplné pokyny<ph name="END_LINK" /></translation>
@@ -699,7 +699,7 @@
 <translation id="397650873162244514"><ph name="TAB_TITLE" />, pripnutá karta</translation>
 <translation id="3985022125189960801">Ak chcete, aby bol web v skupine webov, ktoré dokážu určiť, čo sa vám páči, pridajte ho späť</translation>
 <translation id="3985215325736559418">Chcete znova stiahnuť súbor <ph name="FILE_NAME" />?</translation>
-<translation id="3987993985790029246">Kopírovať odkaz</translation>
+<translation id="3987993985790029246">Skopírovať odkaz</translation>
 <translation id="3994236846568425219">Zapnúť tmavý motív, keď je v zariadení zapnutý tmavý motív</translation>
 <translation id="399788104667917863">Pripnúť na panel s nástrojmi</translation>
 <translation id="4000212216660919741">Offline domov</translation>
@@ -1327,7 +1327,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6473086018775716761">Zoznam možností zdieľania je otvorený na polovičnú výšku.</translation>
 <translation id="6475951671322991020">Stiahnuť video</translation>
 <translation id="6477928892249167417">Tieto weby zrejme považujete za dôležité:</translation>
-<translation id="6479881432656947268">Navštíviť Internetový obchod Chrome</translation>
+<translation id="6479881432656947268">Internetový obchod Chrome</translation>
 <translation id="6481963882741794338">Prepojte Chrome a ďalšie služby Googlu na prispôsobenie a ďalšie účely</translation>
 <translation id="6482749332252372425">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu nedostatku voľného miesta v úložisku.</translation>
 <translation id="6486420406192123355">Tento súbor PDF pochádza z webu s nezabezpečeným pripojením</translation>
@@ -1446,7 +1446,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Bol zrušený odber 1 webu}few{Bol zrušený odber # webov}many{Unsubscribed from # sites}other{Bol zrušený odber # webov}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 heslo}few{# heslá}many{# passwords}other{# hesiel}}</translation>
 <translation id="688730033107341407">Po odhlásení budú záložky, heslá a ďalšie položky vo vašom účte Google odstránené z tohto zariadenia.</translation>
-<translation id="6896758677409633944">Kopírovať</translation>
+<translation id="6896758677409633944">Skopírovať</translation>
 <translation id="6898797562238201317">Šifrovať všetky údaje Chromu vo vašom účte Google pomocou vlastnej prístupovej frázy</translation>
 <translation id="6900532703269623216">Rozšírená ochrana</translation>
 <translation id="6900654715912436255">Naozaj chcete odstrániť tento vyhľadávač?</translation>
