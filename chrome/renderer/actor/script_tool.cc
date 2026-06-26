@@ -112,8 +112,14 @@ void ScriptTool::Cancel() {
   if (!execution_id_.has_value()) {
     return;
   }
+  // CancelScriptTool() synchronously dispatches DOM events that might destroy
+  // the owning frame and this tool. Use a weak pointer to detect if `this` is
+  // still valid.
+  base::WeakPtr<ScriptTool> weak_this = weak_ptr_factory_.GetWeakPtr();
   frame_->GetWebFrame()->GetDocument().CancelScriptTool(execution_id_.value());
-  execution_id_.reset();
+  if (weak_this) {
+    execution_id_.reset();
+  }
 }
 
 std::string ScriptTool::DebugString() const {

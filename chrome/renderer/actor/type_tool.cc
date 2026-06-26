@@ -501,13 +501,22 @@ void TypeTool::Cancel() {
   // Clicking is completed before key dispatching, so there shouldn't be both.
   CHECK(!(click_dispatcher_ && key_dispatcher_));
 
+  // click_dispatcher_->Cancel() or key_dispatcher_->Cancel() synchronously
+  // dispatches DOM events that might destroy the owning frame and this tool.
+  // Use a weak pointer to detect if `this` is still valid.
+  base::WeakPtr<TypeTool> weak_this = weak_ptr_factory_.GetWeakPtr();
+
   if (click_dispatcher_) {
     click_dispatcher_->Cancel();
-    click_dispatcher_.reset();
+    if (weak_this) {
+      click_dispatcher_.reset();
+    }
   }
   if (key_dispatcher_) {
     key_dispatcher_->Cancel();
-    key_dispatcher_.reset();
+    if (weak_this) {
+      key_dispatcher_.reset();
+    }
   }
 }
 
