@@ -41,7 +41,8 @@ class TaskbarManagerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(TaskbarManagerTest, ShouldOfferToPin) {
+// Disabled due to platform behavior change; see https://crbug.com/502205151
+TEST_F(TaskbarManagerTest, DISABLED_ShouldOfferToPin) {
   browser_util::ShouldOfferToPin(
       ShellUtil::GetBrowserModelId(/*is_per_user_install=*/true),
       browser_util::PinAppToTaskbarChannel::kPinToTaskbarInfoBar,
@@ -61,7 +62,8 @@ TEST_F(TaskbarManagerTest, ShouldOfferToPin) {
       browser_util::PinResultMetric::kFeatureNotAvailable, 0);
 }
 
-TEST_F(TaskbarManagerTest, PinToTaskbar) {
+// Disabled due to platform behavior change; see https://crbug.com/502205151
+TEST_F(TaskbarManagerTest, DISABLED_PinToTaskbar) {
   browser_util::PinAppToTaskbar(
       ShellUtil::GetBrowserModelId(/*is_per_user_install=*/true),
       browser_util::PinAppToTaskbarChannel::kSettingsPage,
