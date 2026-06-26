@@ -76,7 +76,7 @@
 <translation id="133801305381959373">Žiadne ďalšie upraviteľné textové pole</translation>
 <translation id="1342835525016946179">článok</translation>
 <translation id="1346059596910821859">Tip</translation>
-<translation id="1354356357730355833">kopírovať</translation>
+<translation id="1354356357730355833">skopírovať</translation>
 <translation id="1360699455582016846">Kliknite na položku pod smerovacím klávesom <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1365650529628379165">Zdvihnite obočie</translation>
 <translation id="1376703628032300005">prejsť na ďalší znak</translation>
@@ -897,7 +897,7 @@
 <translation id="6873188295213080042">Tip: Prechádzajte pridržaním klávesa vyhľadávania a stláčaním šípok.</translation>
 <translation id="6889949222685321250">.input {$$COUNT :number} .match $$COUNT 1{{+{$$COUNT}}} *{{+{$$COUNT}}}</translation>
 <translation id="6894148351896207544">Prečítať nahlas aktuálny čas a dátum</translation>
-<translation id="6896758677409633944">Kopírovať</translation>
+<translation id="6896758677409633944">Skopírovať</translation>
 <translation id="6897341342232909480">Posunúť doľava</translation>
 <translation id="6901540140423170855">dátum</translation>
 <translation id="6910211073230771657">Odstránené</translation>

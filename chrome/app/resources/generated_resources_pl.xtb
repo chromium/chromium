@@ -6286,7 +6286,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5568069709869097550">Nie można się zalogować</translation>
 <translation id="5568525251731145240">Czy chcesz usunąć dane i uprawnienia witryny <ph name="SITE_NAME" /> i jej witryn podrzędnych oraz zainstalowanych z niej aplikacji?</translation>
 <translation id="5568602038816065197">Witryny mogą korzystać z zaawansowanych funkcji dowolnej drukarki dostępnej dla Twojego urządzenia bez wysyłania standardowego powiadomienia o drukowaniu.</translation>
-<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{Hasła}=1{Hasło ({SELECTED_ITEMS})}few{Hasła ({SELECTED_ITEMS})}many{Hasła ({SELECTED_ITEMS})}other{Hasła ({SELECTED_ITEMS})}}</translation>
+<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{Hasła}=1{Hasła ({SELECTED_ITEMS})}few{Hasła ({SELECTED_ITEMS})}many{Hasła ({SELECTED_ITEMS})}other{Hasła ({SELECTED_ITEMS})}}</translation>
 <translation id="5571066253365925590">Bluetooth włączony</translation>
 <translation id="5571092938913434726">Global Media Controls</translation>
 <translation id="5572166921642484567">Wybierz tryb schematu kolorów</translation>
