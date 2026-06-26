@@ -26,7 +26,7 @@ found in the LICENSE file.
     <dimen name="actor_gts_glow_strong_spread">2dp</dimen>
 
     <!-- Actor Overlay Button Dimensions -->
-    <dimen name="actor_overlay_button_margin_bottom">16dp</dimen>
+    <dimen name="actor_overlay_button_margin_top">16dp</dimen>
     <dimen name="actor_overlay_button_padding_vertical">16dp</dimen>
     <dimen name="actor_overlay_button_padding_horizontal">24dp</dimen>
     <dimen name="actor_overlay_button_icon_size">24dp</dimen>

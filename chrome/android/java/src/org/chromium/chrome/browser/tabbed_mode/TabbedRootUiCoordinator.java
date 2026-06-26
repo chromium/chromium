@@ -1232,7 +1232,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mBackPressManager,
                             mLayoutManagerSupplier,
                             actorOverlayStub,
-                            assertNonNull(getBottomSheetController()),
                             mActivityLifecycleDispatcher,
                             mSideUiStateProviderSupplier.get());
         }

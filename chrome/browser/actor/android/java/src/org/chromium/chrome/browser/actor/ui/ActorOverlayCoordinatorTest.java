@@ -61,8 +61,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -82,7 +80,6 @@ public class ActorOverlayCoordinatorTest {
     @Mock private LayoutManager mLayoutManager;
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
-    @Mock private BottomSheetController mBottomSheetController;
     @Mock private SideUiStateProvider mSideUiStateProvider;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<ActorKeyedService.Observer> mActorObserverCaptor;
@@ -134,7 +131,6 @@ public class ActorOverlayCoordinatorTest {
         mProfileSupplier = ObservableSuppliers.createMonotonic();
         mProfileSupplier.set(mProfile);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
-        Mockito.when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HIDDEN);
 
         mCoordinator =
                 new ActorOverlayCoordinator(
@@ -146,7 +142,6 @@ public class ActorOverlayCoordinatorTest {
                         mBackPressHandlerRegistry,
                         mLayoutManagerSupplier,
                         mProfileSupplier,
-                        mBottomSheetController,
                         mSideUiStateProvider);
         mLayoutManagerSupplier.set(mLayoutManager);
     }
@@ -161,7 +156,6 @@ public class ActorOverlayCoordinatorTest {
         verify(mLayoutManager).addObserver(any());
         verify(mBackPressHandlerRegistry)
                 .addHandler(any(), eq(BackPressHandler.Type.ACTOR_OVERLAY));
-        verify(mBottomSheetController).addObserver(any());
     }
 
     @Test
@@ -659,12 +653,9 @@ public class ActorOverlayCoordinatorTest {
         Assert.assertNotNull(button);
         Assert.assertEquals(View.GONE, button.getVisibility());
 
-        ActorOverlayMediator mediator = mCoordinator.getMediator();
         mCurrentTabSupplier.set(mTab);
 
-        // State 1: bottom sheet is hidden, handoff button is active
-        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HIDDEN);
-
+        // State 1: handoff button is active
         UiTabState stateWithActiveHandoff =
                 new UiTabState(
                         TAB_ID,
@@ -681,29 +672,7 @@ public class ActorOverlayCoordinatorTest {
                         .get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
         Assert.assertEquals(View.VISIBLE, button.getVisibility());
 
-        // State 2: bottom sheet becomes peek, handoff button is active
-        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.PEEK);
-        mediator.onSheetStateChanged(SheetState.PEEK, 0);
-
-        // The button should be hidden
-        Assert.assertFalse(
-                mCoordinator
-                        .getModelForTesting()
-                        .get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
-        Assert.assertEquals(View.GONE, button.getVisibility());
-
-        // State 3: bottom sheet becomes hidden again, handoff button is active
-        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HIDDEN);
-        mediator.onSheetStateChanged(SheetState.HIDDEN, 0);
-
-        // The button should be visible again
-        Assert.assertTrue(
-                mCoordinator
-                        .getModelForTesting()
-                        .get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
-        Assert.assertEquals(View.VISIBLE, button.getVisibility());
-
-        // State 4: bottom sheet is hidden, but handoff button becomes inactive
+        // State 2: handoff button becomes inactive
         UiTabState stateWithInactiveHandoff =
                 new UiTabState(
                         TAB_ID,
@@ -773,7 +742,6 @@ public class ActorOverlayCoordinatorTest {
                         mBackPressHandlerRegistry,
                         mLayoutManagerSupplier,
                         mProfileSupplier,
-                        mBottomSheetController,
                         /* sideUiStateProvider= */ null);
 
         PropertyModel model = coordinator.getModelForTesting();
@@ -787,7 +755,6 @@ public class ActorOverlayCoordinatorTest {
         verify(mBackPressHandlerRegistry).removeHandler(any());
         verify(mTab).removeObserver(any(TabObserver.class));
         verify(mBrowserControlsVisibilityManager).removeObserver(any());
-        verify(mBottomSheetController).removeObserver(any());
         verify(mSideUiStateProvider).removeObserver(any());
         Assert.assertFalse(mCurrentTabSupplier.hasObservers());
     }

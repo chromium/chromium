@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 
 /**
@@ -56,7 +55,6 @@ public class GlicUiCoordinator implements Destroyable {
      * @param backPressHandlerRegistry Registry for back press handlers.
      * @param layoutManagerSupplier Supplier for the {@link LayoutManager}.
      * @param overlayStub The {@link ViewStub} to inflate the overlay into.
-     * @param bottomSheetController Controller for bottom sheets.
      * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events.
      * @param sideUiStateProvider The {@link SideUiStateProvider} providing state on the side UI.
      */
@@ -72,7 +70,6 @@ public class GlicUiCoordinator implements Destroyable {
             BackPressHandlerRegistry backPressHandlerRegistry,
             MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
             ViewStub overlayStub,
-            BottomSheetController bottomSheetController,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @Nullable SideUiStateProvider sideUiStateProvider) {
         mActivity = activity;
@@ -105,7 +102,6 @@ public class GlicUiCoordinator implements Destroyable {
                         backPressHandlerRegistry,
                         layoutManagerSupplier,
                         profileSupplier,
-                        bottomSheetController,
                         sideUiStateProvider);
 
         mActorTaskHelper =
