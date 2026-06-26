@@ -15,9 +15,12 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
+#include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_widget_scheduler.h"
 #include "third_party/blink/renderer/platform/widget/compositing/test/stub_widget_base_client.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
+#include "ui/display/screen_infos.h"
 
 namespace blink {
 
@@ -28,6 +31,15 @@ class MockWidgetBaseClient : public StubWidgetBaseClient {
               (const WebCoalescedInputEvent&),
               (override));
   MOCK_METHOD(WebInputEventResult, DispatchBufferedTouchEvents, (), (override));
+  MOCK_METHOD(void,
+              WillHandleGestureEvent,
+              (const WebGestureEvent&, bool*),
+              (override));
+  MOCK_METHOD(void, WillHandleMouseEvent, (const WebMouseEvent&), (override));
+  const display::ScreenInfos& GetOriginalScreenInfos() override {
+    return screen_infos_;
+  }
+  display::ScreenInfos screen_infos_{display::ScreenInfo()};
 };
 
 class WidgetBaseInputHandlerTest : public testing::Test {
@@ -52,12 +64,19 @@ class WidgetBaseInputHandlerTest : public testing::Test {
         /*hidden=*/false, /*never_composited=*/false,
         /*is_embedded=*/false,
         /*is_for_scalable_page=*/false);
+
+    page_scheduler_ = scheduler::CreateDummyPageScheduler();
+    display::ScreenInfo screen_info;
+    display::ScreenInfos screen_infos(screen_info);
+    widget_base_->InitializeCompositing(*page_scheduler_, screen_infos, nullptr,
+                                        nullptr, nullptr);
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   MockWidgetBaseClient client_;
   scoped_refptr<scheduler::FakeWidgetScheduler> widget_scheduler_;
+  std::unique_ptr<PageScheduler> page_scheduler_;
   std::unique_ptr<WidgetBase> widget_base_;
 };
 
@@ -83,6 +102,61 @@ TEST_F(WidgetBaseInputHandlerTest, TouchEventDestroysWidget) {
   // We call HandleTouchEvent directly to avoid the
   // LatencyInfoSwapPromiseMonitor which requires a full LayerTreeHost setup.
   widget_base_->input_handler().HandleTouchEvent(coalesced_event);
+}
+
+TEST_F(WidgetBaseInputHandlerTest, GestureEventDestroysWidget) {
+  WebGestureEvent gesture_event(WebInputEvent::Type::kGestureScrollBegin,
+                                WebInputEvent::kNoModifiers,
+                                WebInputEvent::GetStaticTimeStampForTests(),
+                                WebGestureDevice::kTouchscreen);
+  WebCoalescedInputEvent coalesced_event(gesture_event, ui::LatencyInfo());
+
+  EXPECT_CALL(client_, WillHandleGestureEvent(testing::_, testing::_))
+      .WillOnce([&](const WebGestureEvent&, bool*) {
+        widget_base_->Shutdown(false);
+        widget_base_.reset();
+      });
+
+  bool callback_run = false;
+  widget_base_->input_handler().HandleInputEvent(
+      coalesced_event, nullptr,
+      base::BindOnce(
+          [](bool* callback_run, mojom::InputEventResultState ack_state,
+             const ui::LatencyInfo& latency_info,
+             std::unique_ptr<InputHandlerProxy::DidOverscrollParams> overscroll,
+             std::optional<WebTouchAction> touch_action) {
+            *callback_run = true;
+          },
+          &callback_run));
+
+  EXPECT_TRUE(callback_run);
+}
+
+TEST_F(WidgetBaseInputHandlerTest, MouseEventDestroysWidget) {
+  WebMouseEvent mouse_event(WebInputEvent::Type::kMouseMove,
+                            WebInputEvent::kNoModifiers,
+                            WebInputEvent::GetStaticTimeStampForTests());
+  WebCoalescedInputEvent coalesced_event(mouse_event, ui::LatencyInfo());
+
+  EXPECT_CALL(client_, WillHandleMouseEvent(testing::_))
+      .WillOnce([&](const WebMouseEvent&) {
+        widget_base_->Shutdown(false);
+        widget_base_.reset();
+      });
+
+  bool callback_run = false;
+  widget_base_->input_handler().HandleInputEvent(
+      coalesced_event, nullptr,
+      base::BindOnce(
+          [](bool* callback_run, mojom::InputEventResultState ack_state,
+             const ui::LatencyInfo& latency_info,
+             std::unique_ptr<InputHandlerProxy::DidOverscrollParams> overscroll,
+             std::optional<WebTouchAction> touch_action) {
+            *callback_run = true;
+          },
+          &callback_run));
+
+  EXPECT_TRUE(callback_run);
 }
 
 }  // namespace blink
