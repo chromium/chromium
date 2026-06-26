@@ -9369,14 +9369,16 @@ NavigationRequest::GetOriginForURLLoaderFactoryAfterResponse() {
   //   policy of the process being used. This is because the content is loaded
   //   from the MHTML archive within the process. There are no data loaded from
   //   the network.
+  //
+  // Note: This is a security-critical check that needs to be a CHECK rather
+  // than a DCHECK, and it should never be reverted, even if there are crashes
+  // in the wild.
   if (HasRenderFrameHost() &&
       !GetRenderFrameHost()->ShouldBypassSecurityChecksForErrorPage(this) &&
       !IsForMhtmlSubframe()) {
     int process_id = GetRenderFrameHost()->GetProcess()->GetDeprecatedID();
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-    // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
-    // we are sure this isn't hit.
-    DCHECK(policy->CanAccessOrigin(
+    CHECK(policy->CanAccessOrigin(
         process_id, origin,
         ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin));
   }
