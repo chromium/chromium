@@ -77,6 +77,7 @@ class ResizeToggleMenu : public views::WidgetObserver,
   ~ResizeToggleMenu() override;
 
   // views::WidgetObserver:
+  void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
 
@@ -88,12 +89,11 @@ class ResizeToggleMenu : public views::WidgetObserver,
 
   bool IsBubbleShown() const;
 
+ protected:
+  virtual  void UpdateSelectedButton();
+
  private:
   friend class ResizeToggleMenuTest;
-
-  void OnBubbleWidgetClosing(views::Widget::ClosedReason reason);
-
-  void UpdateSelectedButton();
 
   void ApplyResizeCompatMode(ash::ResizeCompatMode mode);
 
@@ -112,8 +112,8 @@ class ResizeToggleMenu : public views::WidgetObserver,
 
   raw_ptr<ArcResizeLockPrefDelegate> pref_delegate_;
 
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      widget_observation_{this};
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      widget_observations_{this};
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
 

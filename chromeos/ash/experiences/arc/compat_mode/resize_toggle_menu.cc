@@ -194,11 +194,10 @@ ResizeToggleMenu::ResizeToggleMenu(
       widget_, GetAnchorRect(),
       base::BindRepeating(&ResizeToggleMenu::ApplyResizeCompatMode,
                           base::Unretained(this)));
-  bubble_widget_ = views::BubbleDialogDelegate::CreateBubble(
-      bubble_delegate_.get(),
-      base::BindOnce(&ResizeToggleMenu::OnBubbleWidgetClosing,
-                     weak_ptr_factory_.GetWeakPtr()));
-  widget_observation_.Observe(widget_.get());
+  bubble_widget_ =
+      views::BubbleDialogDelegate::CreateBubble(bubble_delegate_.get());
+  widget_observations_.AddObservation(widget_.get());
+  widget_observations_.AddObservation(bubble_widget_.get());
   OverlayDialog::Show(widget_->GetNativeWindow(),
                       base::BindOnce(&ResizeToggleMenu::CloseBubble,
                                      weak_ptr_factory_.GetWeakPtr()),
@@ -210,16 +209,13 @@ ResizeToggleMenu::~ResizeToggleMenu() {
   CloseBubble();
 }
 
-void ResizeToggleMenu::OnBubbleWidgetClosing(
-    views::Widget::ClosedReason reason) {
-  if (on_bubble_widget_closing_callback_) {
+void ResizeToggleMenu::OnWidgetClosing(views::Widget* widget) {
+  if (widget == bubble_widget_.get() && on_bubble_widget_closing_callback_) {
     std::move(on_bubble_widget_closing_callback_).Run();
   }
 
-  bubble_widget_.reset();
-
   OverlayDialog::CloseIfAny(widget_->GetNativeWindow());
-  widget_observation_.Reset();
+  widget_observations_.RemoveAllObservations();
   widget_ = nullptr;
 }
 
@@ -361,7 +357,7 @@ void ResizeToggleMenu::ApplyResizeCompatMode(ash::ResizeCompatMode mode) {
 }
 
 bool ResizeToggleMenu::IsBubbleShown() const {
-  return bubble_widget_ && !bubble_widget_->IsClosed();
+  return bubble_delegate_ && bubble_delegate_->GetWidget();
 }
 
 void ResizeToggleMenu::CloseBubble() {
