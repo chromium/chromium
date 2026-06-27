@@ -5936,7 +5936,7 @@
 <translation id="5101683448725092498">备份您的资料</translation>
 <translation id="5101839224773798795">光标停止时自动点击</translation>
 <translation id="5102244391872941183">具有位置信息权限的应用和网站以及系统服务可以使用您的位置信息</translation>
-<translation id="510258712519612658">精选推荐技能</translation>
+<translation id="510258712519612658">精选推荐</translation>
 <translation id="5103311607312269661">调高显示屏亮度</translation>
 <translation id="5105228265654873067">{NUM_GROUPS,plural, =1{删除分组}other{删除分组}}</translation>
 <translation id="5106350808162641062">移除</translation>
@@ -7477,7 +7477,7 @@
 <translation id="6206199626856438589">您将从显示的网站（包括已打开的标签页中的网站）退出账号</translation>
 <translation id="6206311232642889873">复制图片(&amp;Y)</translation>
 <translation id="6207200176136643843">重置为默认缩放级别</translation>
-<translation id="6207795130974856324">正在等待您处理</translation>
+<translation id="6207795130974856324">正在等待你处理</translation>
 <translation id="6207937957461833379">国家/地区</translation>
 <translation id="6208521041562685716">正在激活移动数据</translation>
 <translation id="6208725777148613371">未能保存到“<ph name="WEB_DRIVE" />”- <ph name="INTERRUPT_REASON" /></translation>
