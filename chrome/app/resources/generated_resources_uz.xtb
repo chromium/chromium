@@ -1254,7 +1254,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1850508293116537636">Soat mili yo‘nalishida burish</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_OS" /> qurilmaga egalik qilishi uchun roʻyxatdan oʻtishdan oldin TPM tozalanishi kerak.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Bundan tashqari, TPM qurilmasini butunlay oʻchirib qoʻyishingiz mumkin. Maʼlumotlaringiz dasturiy shifrlash yordamida xavfsiz saqlanadi, lekin ayrim xavfsizlik funksiyalari, masalan, qurilma bilan ishlaydigan sertifikatlar oʻchiriladi. <ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Qayta ishga tushirish va BIOS/UEFI tizim sozlamalariga kirish orqali TPM sozlamalarini oʻzgartirish mumkin. Bosqichlar qurilma modeliga qarab oʻzgaradi. Batafsil axborot olish uchun qayta ishga tushirishdan oldin boshqa qurilmada <ph name="DEVICE_OS" /> dhujjatlarini oching: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH3" />Qayta ishga tushirish va BIOS/UEFI tizim sozlamalariga kirish orqali TPM sozlamalarini oʻzgartirish mumkin. Bosqichlar qurilma modeliga qarab oʻzgaradi. Batafsil axborot olish uchun qayta ishga tushirishdan oldin boshqa qurilmada <ph name="DEVICE_OS" /> hujjatlarini oching: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1851551847729706116"><ph name="TAB_NAME" /> shu varaqda namoyish etilmoqda</translation>
 <translation id="1854180393107901205">Translatsiyani to‘xtatish</translation>
 <translation id="1856715684130786728">Jild qo‘shish...</translation>
