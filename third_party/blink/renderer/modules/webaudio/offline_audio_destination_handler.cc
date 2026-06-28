@@ -363,6 +363,15 @@ void OfflineAudioDestinationHandler::PrepareTaskRunnerForRendering() {
   DCHECK(render_thread_task_runner_);
 }
 
+void OfflineAudioDestinationHandler::PrepareTaskRunnerForWorklet() {
+  CHECK(IsMainThread());
+
+  // Updates the render task runner to the AudioWorklet backing thread when a
+  // worklet becomes ready while the context is suspended, ensuring that
+  // rendering resumes on the correct thread.
+  PrepareTaskRunnerForRendering();
+}
+
 void OfflineAudioDestinationHandler::RestartRendering() {
   DCHECK(IsMainThread());
 
