@@ -26,6 +26,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -40,7 +42,10 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/test/test_sync_service.h"
+#include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
@@ -64,8 +69,30 @@ class GlicExperimentalOptInTest
  public:
   using BaseClass = GlicBrowserTestMixin<MixinBasedInProcessBrowserTest>;
   using MixinBasedInProcessBrowserTest::browser;
-  GlicExperimentalOptInTest() = default;
+  GlicExperimentalOptInTest() {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &GlicExperimentalOptInTest::OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
   ~GlicExperimentalOptInTest() override = default;
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    DeviceInfoSyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          auto service = std::make_unique<syncer::FakeDeviceInfoSyncService>();
+          service->GetLocalDeviceInfoProvider()->UpdateClientName(
+              "My Test Device");
+          return service;
+        }));
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<syncer::TestSyncService>();
+        }));
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     BaseClass::SetUpCommandLine(command_line);
@@ -214,6 +241,7 @@ class GlicExperimentalOptInTest
   net::EmbeddedTestServer opt_in_test_server_;
   guest_view::TestGuestViewManagerFactory guest_view_manager_factory_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, OpensDialog) {
@@ -235,6 +263,16 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, OpensDialog) {
       content::PAGE_TYPE_NORMAL);
   EXPECT_EQ(dialog_contents->GetLastCommittedURL(),
             GURL(chrome::kChromeUIGlicExperimentalOptInURL));
+
+  content::WebContents* guest_contents = WaitForGuestContents();
+  ASSERT_TRUE(guest_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(guest_contents));
+
+  GURL webview_url = guest_contents->GetLastCommittedURL();
+  std::string device_name_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(webview_url, "device_name",
+                                         &device_name_param));
+  EXPECT_EQ(device_name_param, "My Test Device");
 
   service()->opt_in_controller().CloseDialog(false);
 }
