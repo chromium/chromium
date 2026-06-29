@@ -60,8 +60,11 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
@@ -209,8 +212,15 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
       const BaseAutofillContextMenuManagerTest&) = delete;
 
   void SetUpOnMainThread() override {
-    ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL("http://test.com")));
+    // Map all hosts to 127.0.0.1 so that we can use hostnames like "a.com" and
+    // "b.com" with EmbeddedTestServer. This is necessary to force cross-site
+    // navigations during tests.
+    host_resolver()->AddRule("*", "127.0.0.1");
+    if (!embedded_test_server()->Started()) {
+      ASSERT_TRUE(embedded_test_server()->Start());
+    }
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("a.com", "/empty.html")));
 
     menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
     render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
@@ -772,9 +782,14 @@ class PasswordsFallbackWithGuestProfileTest : public PasswordsFallbackTestBase {
   }
 #else
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
     guest_browser_ = CreateGuestBrowser();
-    ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(guest_browser_, GURL("http://test.com")));
+    if (!embedded_test_server()->Started()) {
+      ASSERT_TRUE(embedded_test_server()->Start());
+    }
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        guest_browser_,
+        embedded_test_server()->GetURL("a.com", "/empty.html")));
     PasswordsFallbackTestBase::SetUpOnMainThread();
   }
 
@@ -821,6 +836,14 @@ class SelectPasswordFallbackMetricsTest
           SelectPasswordFallbackMetricsTestParams> {
  public:
   void SetUpOnMainThread() override {
+    // Disable BackForwardCache because the manual fallback metrics are emitted
+    // in the destructor of `PasswordManualFallbackMetricsRecorder` (owned by
+    // `PasswordAutofillManager` which is tied to the RFH lifecycle). If
+    // BackForwardCache is enabled, navigating away from the page will cache it
+    // instead of destroying the RFH, delaying metrics emission until after the
+    // test has finished.
+    content::DisableBackForwardCacheForTesting(
+        web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
     BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
     // Add a saved password so the manual fallback option shows.
     password_manager::PasswordStoreInterface* password_store =
@@ -870,8 +893,8 @@ IN_PROC_BROWSER_TEST_P(SelectPasswordFallbackMetricsTest,
   // Trigger navigation so that metrics are emitted. On navigation, the
   // `PasswordAutofillManager` destroys the passwords metrics recorder. The
   // destructors of the metrics recorder emit metrics.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("http://navigation.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("b.com", "/empty.html")));
 
   histogram_tester.ExpectUniqueSample(GetExplicitlyTriggeredMetricName(),
                                       params.option_accepted, 1);
