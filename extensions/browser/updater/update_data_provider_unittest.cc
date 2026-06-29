@@ -24,7 +24,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_test.h"
-#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/browser/updater/extension_installer.h"
 #include "extensions/common/extension_builder.h"
@@ -559,40 +558,6 @@ TEST_F(UpdateDataProviderTest, GetData_Pending_Version) {
 
   ASSERT_EQ(1UL, data.size());
   EXPECT_EQ(pending_version, data[0]->version.GetString());
-}
-
-TEST_F(UpdateDataProviderTest,
-       GetData_PendingExtension_FromSync_AlwaysZeroVersion) {
-  scoped_refptr<UpdateDataProvider> data_provider =
-      base::MakeRefCounted<UpdateDataProvider>(browser_context());
-
-  constexpr std::string_view pending_version = "1.2.3.4";
-  PendingExtensionManager* pending_manager =
-      PendingExtensionManager::Get(browser_context());
-  ASSERT_TRUE(pending_manager);
-
-  EXPECT_TRUE(pending_manager->AddFromSync(
-      kExtensionId1, GURL("https://clients2.google.com/service/update2/crx"),
-      base::Version(pending_version),
-      [](const Extension*, content::BrowserContext*) { return true; },
-      /*remote_install=*/false));
-  EXPECT_TRUE(pending_manager->IsIdPending(kExtensionId1));
-
-  ExtensionUpdateDataMap update_data;
-  update_data[kExtensionId1] = {};
-
-  std::vector<std::optional<update_client::CrxComponent>> data;
-  data_provider->GetData(
-      false /*install_immediately*/, update_data, {kExtensionId1},
-      base::BindLambdaForTesting(
-          [&](const std::vector<std::optional<update_client::CrxComponent>>&
-                  output) { data = output; }));
-
-  ASSERT_EQ(1UL, data.size());
-  ASSERT_NE(std::nullopt, data[0]);
-  // Even though the pending extension info states the synced version
-  // is 1.2.3.4, we must always report 0.0.0.0 for a pending extension.
-  EXPECT_EQ("0.0.0.0", data[0]->version.GetString());
 }
 
 }  // namespace extensions

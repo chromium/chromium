@@ -36,7 +36,6 @@
 #include "chrome/browser/extensions/shared_module_service_factory.h"
 #include "chrome/browser/extensions/sync/extension_sync_data.h"
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
-#include "chrome/browser/extensions/updater/chrome_update_client_config.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/policy/extension_policy_test_base.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -47,7 +46,6 @@
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "components/crx_file/crx_verifier.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/policy_constants.h"
 #include "components/sync/model/sync_change.h"
@@ -557,23 +555,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallBlocklistWildcard) {
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                        ExtensionInstallBlocklistSharedModules) {
   // Verifies that shared_modules are not affected by the blocklist.
-  auto disable_cup =
-      extensions::ChromeUpdateClientConfig::ScopedDisableCupSigningForTests();
-  auto disable_publisher_key =
-      extensions::DisablePublisherKeyVerificationForTests();
 
   base::FilePath base_path;
   GetTestDataDirectory(&base_path);
-  base::FilePath update_json_template_path =
+  base::FilePath update_xml_template_path =
       base_path.Append(kTestExtensionsDir)
           .AppendASCII("policy_shared_module")
-          .AppendASCII("update_template.json");
+          .AppendASCII("update_template.xml");
 
-  std::string update_json_path =
+  std::string update_xml_path =
       "/" + base::FilePath(kTestExtensionsDir).MaybeAsASCII() +
-      "/policy_shared_module/gen_update.json";
-  RegisterURLReplacingHandler(embedded_test_server(), update_json_path,
-                              update_json_template_path);
+      "/policy_shared_module/gen_update.xml";
+  RegisterURLReplacingHandler(embedded_test_server(), update_xml_path,
+                              update_xml_template_path);
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const char kImporterId[] = "pchakhniekfaeoddkifplhnfbffomabh";
@@ -592,16 +586,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 
   // Mock the webstore update URL. This is where the shared module extension
   // will be installed from.
-  GURL update_json_url = embedded_test_server()->GetURL(update_json_path);
-  extension_test_util::SetGalleryUpdateURL(update_json_url);
-  NavigateToURL(update_json_url);
+  GURL update_xml_url = embedded_test_server()->GetURL(update_xml_path);
+  extension_test_util::SetGalleryUpdateURL(update_xml_url);
+  NavigateToURL(update_xml_url);
 
   // Blocklist "*" but force-install the importer extension. The shared module
   // should be automatically installed too.
   base::ListValue blocklist;
   blocklist.Append("*");
   PolicyMap policies;
-  AddExtensionToForceList(&policies, kImporterId, update_json_url);
+  AddExtensionToForceList(&policies, kImporterId, update_xml_url);
   policies.Set(key::kExtensionInstallBlocklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(std::move(blocklist)), nullptr);
@@ -694,13 +688,6 @@ class ExtensionRequestInterceptor {
         params->url_request.url.GetPath() == "/service/update2/crx") {
       content::URLLoaderInterceptor::WriteResponse(
           "chrome/test/data/extensions/good2_update_manifest.xml",
-          params->client.get());
-      return true;
-    }
-
-    if (params->url_request.url.GetPath() == "/service/update2/json") {
-      content::URLLoaderInterceptor::WriteResponse(
-          "chrome/test/data/extensions/good2_update_manifest.json",
           params->client.get());
       return true;
     }
@@ -1883,10 +1870,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                        ExtensionInstallForcelist_DefaultedUpdateUrl) {
   // Verifies the ExtensionInstallForcelist policy with an empty (defaulted)
   // "update" URL.
-  auto disable_cup =
-      extensions::ChromeUpdateClientConfig::ScopedDisableCupSigningForTests();
-  auto disable_publisher_key =
-      extensions::DisablePublisherKeyVerificationForTests();
+
   ExtensionRequestInterceptor interceptor;
 
   extensions::ExtensionRegistry* registry = extension_registry();

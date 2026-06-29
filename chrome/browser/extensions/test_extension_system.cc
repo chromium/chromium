@@ -27,7 +27,6 @@
 #include "components/value_store/testing_value_store.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/blocklist.h"
-#include "extensions/browser/crx_installer.h"
 #include "extensions/browser/cws_info_service.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
@@ -272,15 +271,7 @@ void TestExtensionSystem::InstallUpdate(
     const base::FilePath& temp_dir,
     bool install_immediately,
     InstallUpdateCallback install_update_callback) {
-  if (!extension_service()) {
-    std::move(install_update_callback).Run(std::nullopt);
-    return;
-  }
-  scoped_refptr<CrxInstaller> installer = CrxInstaller::CreateSilent(profile_);
-  installer->set_delete_source(true);
-  installer->AddInstallerCallback(std::move(install_update_callback));
-  installer->set_install_immediately(install_immediately);
-  installer->UpdateExtensionFromUnpackedCrx(extension_id, public_key, temp_dir);
+  NOTREACHED();
 }
 
 void TestExtensionSystem::PerformActionBasedOnOmahaAttributes(
