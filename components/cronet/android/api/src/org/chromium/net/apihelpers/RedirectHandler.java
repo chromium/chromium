@@ -13,7 +13,7 @@ public interface RedirectHandler {
      *
      * @param info the response info of the redirect response
      * @param newLocationUrl the redirect location
-     * @return whether Cronet should follow teh redirect or not
+     * @return whether Cronet should follow the redirect or not
      */
     boolean shouldFollowRedirect(UrlResponseInfo info, String newLocationUrl) throws Exception;
 }
