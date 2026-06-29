@@ -11,6 +11,12 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+@interface CRWWebViewContentView (Testing)
+@property(nonatomic, assign) WebViewResizingType webViewResizingType;
+- (void)setMinimumViewportInset:(UIEdgeInsets)minInset
+           maximumViewportInset:(UIEdgeInsets)maxInset;
+@end
+
 namespace {
 
 using CRWWebViewContentViewTest = PlatformTest;
@@ -35,6 +41,49 @@ TEST_F(CRWWebViewContentViewTest, ContentInsetWithInsetForPadding) {
   contentView.contentInset = contentInset;
   EXPECT_TRUE(
       UIEdgeInsetsEqualToEdgeInsets(contentInset, scrollView.contentInset));
+}
+
+// Tests that viewport insets are not applied to the web view if its frame is
+// too small, and that they are applied once the frame is expanded.
+TEST_F(CRWWebViewContentViewTest, ViewportInsetsDeferredWhenFrameTooSmall) {
+  CRWWebView* webView = [[CRWWebView alloc] initWithFrame:CGRectZero];
+  webView.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  [webView addSubview:scrollView];
+  id mockWebView = OCMPartialMock(webView);
+
+  CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
+      initWithWebView:webView
+           scrollView:scrollView
+      fullscreenState:CrFullscreenState::kNotInFullScreen];
+
+  contentView.webViewResizingType = WebViewResizingType::kContentInset;
+
+  UIWindow* window = [[UIWindow alloc] init];
+  [window addSubview:contentView];
+  [contentView layoutIfNeeded];
+
+  UIEdgeInsets minInset = UIEdgeInsetsZero;
+  UIEdgeInsets maxInset = UIEdgeInsetsMake(100, 0, 300, 0);
+
+  // Frame is CGRectZero (width 0, height 0).
+  // The inset requested is much larger. Verify it is safely caught and NOT
+  // passed through to the WKWebView.
+  __block int insetCallCount = 0;
+  [[[mockWebView stub] andDo:^(NSInvocation* invocation) {
+    insetCallCount++;
+  }] setMinimumViewportInset:minInset maximumViewportInset:maxInset];
+
+  [contentView setMinimumViewportInset:minInset maximumViewportInset:maxInset];
+  EXPECT_EQ(0, insetCallCount);
+
+  // Expand the frame to be large enough (e.g. 800x1000).
+  // Expect the pending inset to finally be passed through during
+  // layoutSubviews.
+  contentView.bounds = CGRectMake(0, 0, 800, 1000);
+  [contentView layoutSubviews];
+  EXPECT_EQ(1, insetCallCount);
 }
 
 }  // namespace
