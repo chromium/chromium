@@ -64,6 +64,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -892,9 +893,13 @@ IN_PROC_BROWSER_TEST_P(SelectPasswordFallbackMetricsTest,
   base::HistogramTester histogram_tester;
   // Trigger navigation so that metrics are emitted. On navigation, the
   // `PasswordAutofillManager` destroys the passwords metrics recorder. The
-  // destructors of the metrics recorder emit metrics.
+  // destructors of the metrics recorder emit metrics. We wait for the old
+  // render frame host to be deleted to ensure that the metrics have been
+  // emitted.
+  content::RenderFrameHostWrapper rfh_wrapper(main_rfh());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("b.com", "/empty.html")));
+  ASSERT_TRUE(rfh_wrapper.WaitUntilRenderFrameDeleted());
 
   histogram_tester.ExpectUniqueSample(GetExplicitlyTriggeredMetricName(),
                                       params.option_accepted, 1);
