@@ -107,7 +107,7 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
          * implementation.
          *
          * @param builderDelegate delegate that provides the actual implementation.
-         *     <p>{@hide}
+         * @hide
          */
         public Builder(ICronetEngineBuilder builderDelegate) {
             super(builderDelegate);

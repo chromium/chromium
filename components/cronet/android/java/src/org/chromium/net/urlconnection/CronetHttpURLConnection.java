@@ -34,9 +34,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * An implementation of {@link HttpURLConnection} that uses Cronet to send
- * requests and receive responses.
- * {@hide}
+ * An implementation of {@link HttpURLConnection} that uses Cronet to send requests and receive
+ * responses.
+ *
+ * @hide
  */
 public class CronetHttpURLConnection extends HttpURLConnection {
     private static final String TAG = CronetHttpURLConnection.class.getSimpleName();
