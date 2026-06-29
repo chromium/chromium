@@ -825,6 +825,9 @@ Chromium is unable to recover your settings.
         <message name="IDS_PDF_GLIC_SUMMARIZE_IPH_TEXT" desc="Text of the In Product Help message shown for the button to summarize PDF.">
           Get a quick overview of this document and ask questions with Gemini in Chromium
         </message>
+        <message name="IDS_PDF_GLIC_SUMMARIZE_IPH_TEXT_NEW" desc="Text of the In Product Help message shown for the button to summarize PDF." translateable="false">
+          Share this document with Gemini in Chromium to get a quick overview and ask follow-up questions
+        </message>
       </if>
       <!-- Download Bubble Items -->
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_UNKNOWN_SOURCE"
