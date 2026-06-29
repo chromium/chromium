@@ -1,0 +1,4 @@
+Race IndexedDB requestData() with navigation using a large dataset.
+Round 0 completed without a crash.
+Round 1 completed without a crash.
+
