@@ -10,7 +10,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
@@ -128,7 +127,6 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
 
    private:
     THREAD_CHECKER(thread_checker_);
-    std::optional<base::AutoReset<bool>> publisher_verification_override_;
   };
 
   // Creates a SandboxedUnpacker that will do work to unpack an extension,

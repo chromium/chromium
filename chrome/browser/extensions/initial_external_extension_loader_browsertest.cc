@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -20,14 +19,12 @@
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/external_testing_loader.h"
-#include "chrome/browser/extensions/updater/chrome_update_client_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
-#include "crypto/sha2.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
@@ -35,7 +32,6 @@
 #include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
-#include "extensions/common/verifier_formats.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace extensions {
@@ -147,17 +143,8 @@ class InitialExternalExtensionLoaderRestartBrowserTest
                                &manifest_template));
     const GURL crx_url = embedded_test_server()->GetURL(
         base::StrCat({"/", kAutoupdateDir, "/", crx_name}));
-    const base::FilePath crx =
-        temp_dir.AppendASCII(kAutoupdateDir).AppendASCII(crx_name);
-    std::string contents;
-    ASSERT_TRUE(base::ReadFileToString(crx, &contents));
-    const std::string hash =
-        base::HexEncode(crypto::SHA256HashString(contents));
-    std::optional<int64_t> size = GetFileSize(crx);
-    ASSERT_TRUE(size);
     const std::string manifest = base::ReplaceStringPlaceholders(
-        manifest_template, {crx_url.spec(), hash, base::NumberToString(*size)},
-        /*offsets=*/nullptr);
+        manifest_template, {crx_url.spec()}, /*offsets=*/nullptr);
 
     ASSERT_TRUE(base::CreateDirectory(temp_dir.AppendASCII(kAutoupdateDir)));
     ASSERT_TRUE(base::WriteFile(
@@ -202,7 +189,7 @@ class InitialExternalExtensionLoaderRestartBrowserTest
         temp_dir_.GetPath(), /*source_dir_name=*/"v2", /*crx_name=*/"v2.crx"));
     ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
         temp_dir_.GetPath(), /*crx_name=*/"v2.crx",
-        /*manifest_template_name=*/"manifest_v2.json.template"));
+        /*manifest_template_name=*/"manifest_v2.xml.template"));
   }
 
  protected:
@@ -210,11 +197,6 @@ class InitialExternalExtensionLoaderRestartBrowserTest
       features::kInitialExternalExtensions};
   FeatureSwitch::ScopedOverride feature_override{
       FeatureSwitch::prompt_for_external_extensions(), true};
-  base::AutoReset<bool> disable_publisher_key_verification_ =
-      extensions::DisablePublisherKeyVerificationForTests();
-  base::AutoReset<bool> disable_cup_ =
-      extensions::ChromeUpdateClientConfig::ScopedDisableCupSigningForTests();
-
   base::ScopedTempDir temp_dir_;
 };
 
