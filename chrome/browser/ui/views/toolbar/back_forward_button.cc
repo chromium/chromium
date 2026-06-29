@@ -149,7 +149,7 @@ void BackForwardButton::OnMouseEntered(const ui::MouseEvent& event) {
 }
 
 bool BackForwardButton::OnMousePressed(const ui::MouseEvent& event) {
-  const bool play_animation = features::IsToolbarGlowUpEnabled() &&
+  const bool play_animation = features::IsToolbarGlowUpBackForwardEnabled() &&
                               !ui::TouchUiController::Get()->touch_ui() &&
                               event.IsLeftMouseButton();
 

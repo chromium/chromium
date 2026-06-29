@@ -236,7 +236,7 @@ void ReloadButton::SetVisibleMode(Mode mode) {
   metrics_recorder_->OnChangeVisibleMode(ToRecorderButtonMode(visible_mode_),
                                          ToRecorderButtonMode(mode),
                                          base::TimeTicks::Now());
-  const bool play_animation = features::IsToolbarGlowUpEnabled() &&
+  const bool play_animation = features::IsToolbarGlowUpReloadEnabled() &&
                               !ui::TouchUiController::Get()->touch_ui() &&
                               animate_transitions_;
 

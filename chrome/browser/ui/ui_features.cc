@@ -53,6 +53,16 @@ BASE_FEATURE(kInfoBarInlineLinks, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripDeclutter, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kToolbarGlowUp, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kToolbarGlowUpReloadEnabled,
+                   &kToolbarGlowUp,
+                   "reload",
+                   true);
+BASE_FEATURE_PARAM(bool,
+                   kToolbarGlowUpBackForwardEnabled,
+                   &kToolbarGlowUp,
+                   "back-forward",
+                   true);
 BASE_FEATURE(kMenuSimplification, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabGroupColorRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebuiRefresh2026, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -65,6 +75,14 @@ bool IsTabStripDeclutterEnabled() {
 bool IsToolbarGlowUpEnabled() {
   return base::FeatureList::IsEnabled(kDesktopGlowUp) ||
          base::FeatureList::IsEnabled(kToolbarGlowUp);
+}
+
+bool IsToolbarGlowUpReloadEnabled() {
+  return IsToolbarGlowUpEnabled() && kToolbarGlowUpReloadEnabled.Get();
+}
+
+bool IsToolbarGlowUpBackForwardEnabled() {
+  return IsToolbarGlowUpEnabled() && kToolbarGlowUpBackForwardEnabled.Get();
 }
 
 bool IsMenuSimplificationEnabled() {
