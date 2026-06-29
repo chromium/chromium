@@ -948,7 +948,8 @@ IN_PROC_BROWSER_TEST_F(
 // Test a scenario which prefetch fails when a search related url in the
 // redirect chain.
 // TODO(crbug.com/479511794): disabled due to flakiness.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/517929772): disabled due to flakiness.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_PrefetchingRedirectToSearchSite \
   DISABLED_PrefetchingRedirectToSearchSite
 #else
