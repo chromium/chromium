@@ -9,6 +9,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/contextual_tasks/public/account_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -51,9 +52,25 @@ ContextualTasksWebContentsUserData::GetOrCreateInputStateModel(
                                GetForBrowserContext(profile)
                          : nullptr;
   GURL url = web_contents->GetLastCommittedURL();
-  bool browser_identity_matches_aim_identity =
-      ui_service && ui_service->IsSignedInToBrowserWithValidCredentials() &&
-      ui_service->IsUrlForPrimaryAccount(url);
+  bool browser_identity_matches_aim_identity = false;
+  if (ui_service) {
+    browser_identity_matches_aim_identity =
+        ui_service->IsSignedInToBrowserWithValidCredentials() &&
+        ui_service->IsUrlForPrimaryAccount(url);
+  } else if (profile) {
+    if (auto* identity_manager =
+            IdentityManagerFactory::GetForProfile(profile)) {
+      if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+        CoreAccountId account_id = identity_manager->GetPrimaryAccountId(
+            signin::ConsentLevel::kSignin);
+        if (!identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+                account_id)) {
+          browser_identity_matches_aim_identity =
+              contextual_tasks::IsUrlForPrimaryAccount(identity_manager, url);
+        }
+      }
+    }
+  }
 
   bool is_off_the_record = profile->IsOffTheRecord();
 
