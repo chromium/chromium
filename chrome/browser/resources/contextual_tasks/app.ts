@@ -278,6 +278,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         type: Boolean,
         reflect: true,
       },
+      isInitialFrameLoad_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -351,6 +355,9 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   protected accessor friendlyZeroStateTitle: string =
       loadTimeData.getString('friendlyZeroStateTitle');
   protected accessor isDomContentLoaded_: boolean = false;
+  // Tracks whether the frame is loading for the very first time to prevent
+  // double animations.
+  protected accessor isInitialFrameLoad_: boolean = true;
   // Tracks whether the frame is currently loading. Needed to avoid race
   // condition while awaiting isAiPage.
   private isFrameLoading: boolean = false;
@@ -391,9 +398,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   // even if the load is aborted and the frame therefore never changes.
   private lastThreadFrameLoadStartEvent_: chrome.webviewTag.LoadStartEvent|
       LoadEvent|null = null;
-  // Tracks whether the frame is loading for the very first time to prevent
-  // double animations.
-  private isInitialFrameLoad_: boolean = true;
   private contextManagementInComposeboxEnabled_: boolean =
       loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
 
@@ -1621,6 +1625,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
   setIsZeroStateForTesting(isZeroState: boolean|undefined) {
     this.isZeroState_ = isZeroState;
+  }
+
+  setIsInitialFrameLoadForTesting(isInitialFrameLoad: boolean) {
+    this.isInitialFrameLoad_ = isInitialFrameLoad;
   }
 
   setInNlmForTesting(inNlm: boolean) {

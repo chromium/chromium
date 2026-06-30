@@ -587,6 +587,116 @@ suite('ContextualTasksComposeboxTest', () => {
         'Composebox should be visible when isZeroState is false');
   });
 
+  test(
+      'composebox remains visible during results-to-results navigation',
+      async () => {
+        // Setup: Start in a loaded results state (not initial load, not zero state).
+        contextualTasksApp.setIsInitialFrameLoadForTesting(false);
+        contextualTasksApp.setIsZeroStateForTesting(false);
+        window.dispatchEvent(new MessageEvent('message', {
+          data: 'domContentLoaded',
+        }));
+        await contextualTasksApp.updateComplete;
+
+        const composebox =
+            contextualTasksApp.shadowRoot.querySelector('#composebox');
+        assertTrue(!!composebox);
+        assertEquals('visible', window.getComputedStyle(composebox).visibility);
+
+        const mockEvent = {
+          url: 'https://google.com/?q=results2',
+          isTopLevel: true,
+        } as unknown as chrome.webviewTag.LoadStartEvent;
+
+        testProxy.handler.setIsAiPage(true);
+        testProxy.handler.setIsZeroState(false);
+
+        let resolver: () => void;
+        const navFinished = new Promise<void>(resolve => {
+          resolver = resolve;
+        });
+        contextualTasksApp.setOnLoadStartFinishedCallbackForTesting(() => {
+          resolver();
+        });
+
+        // Trigger navigation flow.
+        contextualTasksApp.onThreadFrameLoadStartForTesting(mockEvent);
+        contextualTasksApp.onThreadFrameLoadCommitForTesting(mockEvent);
+
+        // Wait for navigation to finish.
+        await navFinished;
+        await contextualTasksApp.updateComplete;
+
+        // After check resolves (still results):
+        assertEquals(
+            'visible', window.getComputedStyle(composebox).visibility);
+
+        // Simulate DOM load.
+        window.dispatchEvent(new MessageEvent('message', {
+          data: 'domContentLoaded',
+        }));
+        await contextualTasksApp.updateComplete;
+        await microtasksFinished();
+
+        assertEquals(
+            'visible', window.getComputedStyle(composebox).visibility);
+      });
+
+  test(
+      'composebox is hidden during subsequent navigation to zero-state until DOM loads',
+      async () => {
+        // Setup: Start in a loaded results state (not initial load, not zero state).
+        contextualTasksApp.setIsInitialFrameLoadForTesting(false);
+        contextualTasksApp.setIsZeroStateForTesting(false);
+        window.dispatchEvent(new MessageEvent('message', {
+          data: 'domContentLoaded',
+        }));
+        await contextualTasksApp.updateComplete;
+
+        const composebox =
+            contextualTasksApp.shadowRoot.querySelector('#composebox');
+        assertTrue(!!composebox);
+        assertEquals('visible', window.getComputedStyle(composebox).visibility);
+
+        const mockEvent = {
+          url: 'https://google.com/?gsc=2',
+          isTopLevel: true,
+        } as unknown as chrome.webviewTag.LoadStartEvent;
+
+        testProxy.handler.setIsAiPage(true);
+        testProxy.handler.setIsZeroState(true);
+
+        let resolver: () => void;
+        const navFinished = new Promise<void>(resolve => {
+          resolver = resolve;
+        });
+        contextualTasksApp.setOnLoadStartFinishedCallbackForTesting(() => {
+          resolver();
+        });
+
+        // Trigger navigation flow.
+        contextualTasksApp.onThreadFrameLoadStartForTesting(mockEvent);
+        contextualTasksApp.onThreadFrameLoadCommitForTesting(mockEvent);
+
+        // Wait for navigation to finish.
+        await navFinished;
+        await contextualTasksApp.updateComplete;
+
+        // Hidden after check resolves to zero-state.
+        assertEquals(
+            'hidden', window.getComputedStyle(composebox).visibility);
+
+        // Simulate DOM load.
+        window.dispatchEvent(new MessageEvent('message', {
+          data: 'domContentLoaded',
+        }));
+        await contextualTasksApp.updateComplete;
+        await microtasksFinished();
+
+        assertEquals(
+            'visible', window.getComputedStyle(composebox).visibility);
+      });
+
   test('queries autocomplete on load when isZeroState is true', async () => {
     // Clear the body and reset the mock to test a fresh instance.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
