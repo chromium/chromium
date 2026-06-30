@@ -77,7 +77,7 @@ class RangeInputType final : public InputType, public InputTypeView {
   void DidSetValue(const String&, bool value_changed) override;
   String SanitizeValue(const String& proposed_value) const override;
   bool ShouldRespectListAttribute() override;
-  void DisabledAttributeChanged() override;
+  void DisabledAttributeChanged(DisabledChangedReason) override;
   void ListAttributeTargetChanged() override;
   Decimal FindClosestTickMarkValue(const Decimal&) override;
 

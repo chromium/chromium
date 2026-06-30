@@ -2271,6 +2271,17 @@
       status: "experimental",
     },
     {
+      // Prevents the change event from being fired within
+      // HTMLFieldSetElement::ChildrenChanged because we aren't supposed to
+      // fire events during mutations like that.
+      // https://issues.chromium.org/issues/523756329
+      // https://issues.chromium.org/issues/523748081
+      // https://issues.chromium.org/issues/523737685
+      // Enabled in 151, safe to remove in 153.
+      name: "DisableFormControlChangeEventDuringMutation",
+      status: "stable",
+    },
+    {
       name: "DisableReduceAcceptLanguage",
       origin_trial_feature_name: "DisableReduceAcceptLanguage",
       origin_trial_type: "deprecation",

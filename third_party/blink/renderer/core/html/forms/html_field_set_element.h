@@ -49,8 +49,8 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
   void UpdateMenuItemCheckableExclusivity(HTMLMenuItemElement*);
 
  protected:
-  void DisabledAttributeChanged() override;
-  void AncestorDisabledStateWasChanged() override;
+  void DisabledAttributeChanged(DisabledChangedReason) override;
+  void AncestorDisabledStateWasChanged(DisabledChangedReason) override;
   void DidMoveToNewDocument(Document& old_document) override;
 
  private:
@@ -70,7 +70,9 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
   bool MatchesEnabledPseudoClass() const final;
   bool MatchesDisabledPseudoClass() const final;
 
-  Element* InvalidateDescendantDisabledStateAndFindFocusedOne(Element& base);
+  Element* InvalidateDescendantDisabledStateAndFindFocusedOne(
+      Element& base,
+      DisabledChangedReason);
 };
 
 }  // namespace blink

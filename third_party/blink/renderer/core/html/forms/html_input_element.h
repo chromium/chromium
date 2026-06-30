@@ -486,7 +486,7 @@ class CORE_EXPORT HTMLInputElement
   bool IsRequiredFormControl() const final;
   bool RecalcWillValidate() const final;
   void RequiredAttributeChanged() final;
-  void DisabledAttributeChanged() final;
+  void DisabledAttributeChanged(DisabledChangedReason) final;
 
   void InitializeTypeInParsing();
   void UpdateType(const AtomicString&);

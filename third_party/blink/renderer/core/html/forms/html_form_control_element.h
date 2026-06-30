@@ -165,7 +165,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   void AttributeChanged(const AttributeModificationParams&) override;
   void ParseAttribute(const AttributeModificationParams&) override;
   virtual void RequiredAttributeChanged();
-  void DisabledAttributeChanged() override;
+  void DisabledAttributeChanged(DisabledChangedReason) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
   void WillChangeForm() override;

@@ -1950,9 +1950,9 @@ void HTMLInputElement::RequiredAttributeChanged() {
   input_type_view_->RequiredAttributeChanged();
 }
 
-void HTMLInputElement::DisabledAttributeChanged() {
-  TextControlElement::DisabledAttributeChanged();
-  input_type_view_->DisabledAttributeChanged();
+void HTMLInputElement::DisabledAttributeChanged(DisabledChangedReason reason) {
+  TextControlElement::DisabledAttributeChanged(reason);
+  input_type_view_->DisabledAttributeChanged(reason);
 }
 
 void HTMLInputElement::SelectColorInColorChooser(const Color& color) {

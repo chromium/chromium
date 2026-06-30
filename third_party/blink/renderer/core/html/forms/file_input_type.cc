@@ -418,7 +418,7 @@ Node* FileInputType::FileStatusElement() const {
   return GetElement().EnsureShadowSubtree()->lastChild();
 }
 
-void FileInputType::DisabledAttributeChanged() {
+void FileInputType::DisabledAttributeChanged(DisabledChangedReason reason) {
   if (Element* button = UploadButton()) {
     button->SetBooleanAttribute(html_names::kDisabledAttr,
                                 GetElement().IsDisabledFormControl());

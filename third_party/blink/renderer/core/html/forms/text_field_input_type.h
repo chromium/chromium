@@ -59,7 +59,7 @@ class TextFieldInputType : public InputType,
   void CreateShadowSubtree() override;
   void DestroyShadowSubtree() override;
   void ValueAttributeChanged() override;
-  void DisabledAttributeChanged() override;
+  void DisabledAttributeChanged(DisabledChangedReason) override;
   void ReadonlyAttributeChanged() override;
   bool SupportsReadOnly() const override;
   void ForwardEvent(Event&) override;
@@ -106,7 +106,7 @@ class TextFieldInputType : public InputType,
   void SpinButtonDidReleaseMouseCapture(SpinButtonElement::EventDispatch) final;
 
   SpinButtonElement* GetSpinButtonElement() const;
-  void DisabledOrReadonlyAttributeChanged();
+  void DisabledOrReadonlyAttributeChanged(DisabledChangedReason);
 
   // Applies the :filtered pseudo-class to the options of the corresponding
   // datalist or filterable select this input is linked to, if there is one.

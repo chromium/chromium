@@ -841,7 +841,8 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
   if (params.name == html_names::kDisabledAttr &&
       IsFormAssociatedCustomElement() &&
       params.old_value.IsNull() != params.new_value.IsNull()) {
-    EnsureElementInternals().DisabledAttributeChanged();
+    EnsureElementInternals().DisabledAttributeChanged(
+        DisabledChangedReason::kAttributeChanged);
     if (params.reason == AttributeModificationReason::kDirectly &&
         IsDisabledFormControl() && AdjustedFocusedElementInTreeScope() == this)
       blur();
