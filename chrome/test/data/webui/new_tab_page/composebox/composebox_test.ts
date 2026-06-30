@@ -1219,6 +1219,34 @@ suite('NewTabPageComposeboxTest', () => {
       assertDeepEquals(testProxy.element.inputState, inputState);
     });
 
+    test(
+        'clears suggestInventory when properties change and has content',
+        async () => {
+          createComposeboxElement(testProxy);
+          testProxy.element.suggestInventory = SuggestInventory.kTravel;
+          assertEquals(
+              SuggestInventory.kTravel, testProxy.element.suggestInventory);
+
+          // If hasContent() is false, suggestInventory is not cleared.
+          const emptyInputState = new MockInputState({
+            activeTool: ToolMode.kUnspecified,
+          });
+          testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+              emptyInputState);
+          await microtasksFinished();
+          assertEquals(
+              SuggestInventory.kTravel, testProxy.element.suggestInventory);
+
+          // If hasContent() is true, suggestInventory is cleared.
+          const toolInputState = new MockInputState({
+            activeTool: ToolMode.kDeepSearch,
+          });
+          testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+              toolInputState);
+          await microtasksFinished();
+          assertEquals(null, testProxy.element.suggestInventory);
+        });
+
     test('setDefaultModel uses activeModel from backend', async () => {
       createComposeboxElement(testProxy);
 

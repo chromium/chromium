@@ -442,6 +442,11 @@ export const ComposeboxEmbedderMixin =
           if (changedPrivateProperties.has('files') ||
               changedPrivateProperties.has('inputState') ||
               changedPrivateProperties.has('inputState.activeTool')) {
+            // Non-default Suggest Inventory should not be shown when context
+            // or tools are present.
+            if (this.hasContent()) {
+              this.suggestInventory = null;
+            }
             this.updateInputPlaceholder();
           }
 

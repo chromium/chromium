@@ -157,12 +157,15 @@ class ZeroSuggestProviderTest : public testing::Test,
       metrics::OmniboxFocusType focus_type,
       const std::string& page_url,
       TemplateURLRef::RequestSource request_source =
-          TemplateURLRef::RequestSource::SEARCHBOX) {
+          TemplateURLRef::RequestSource::SEARCHBOX,
+      omnibox::SuggestInventory suggest_inventory =
+          omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT) {
     TemplateURLRef::SearchTermsArgs search_terms_args;
     search_terms_args.page_classification = page_classification;
     search_terms_args.focus_type = focus_type;
     search_terms_args.current_page_url = page_url;
     search_terms_args.request_source = request_source;
+    search_terms_args.suggest_inventory = suggest_inventory;
 
     TemplateURLService* template_url_service = client_->GetTemplateURLService();
     return RemoteSuggestionsService::EndpointUrl(
@@ -2375,6 +2378,59 @@ TEST_F(ZeroSuggestProviderTest,
       2);
 
   // Verify storage isolated correctly!
+  EXPECT_EQ(json_response,
+            prefs->GetString(omnibox::kZeroSuggestCachedResults));
+  EXPECT_EQ(json_response,
+            prefs->GetString(omnibox::kZeroSuggestCachedResultsComposebox));
+}
+
+TEST_F(ZeroSuggestProviderTest, TestComposeboxPrefetchWithSuggestInventory) {
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(omnibox::kZeroSuggestPrefetchingForComposebox);
+
+  PrefService* prefs = client_->GetPrefs();
+
+  MockAimEligibilityService aim_service(
+      *client_->GetPrefs(), client_->GetTemplateURLService(), nullptr, nullptr);
+  EXPECT_CALL(aim_service, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+  client_->set_aim_eligibility_service(&aim_service);
+
+  // Start a prefetch request with non-default suggest inventory.
+  AutocompleteInput input = ZeroPrefixInputForNTP(/*is_prefetch = */ true);
+  input.set_suggest_inventory(
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_TRAVEL);
+  provider_->StartPrefetch(input);
+  EXPECT_TRUE(provider_->done());
+
+  GURL ntp_suggest_url =
+      GetSuggestURL(metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
+                    metrics::OmniboxFocusType::INTERACTION_FOCUS, "");
+  GURL composebox_suggest_url =
+      GetSuggestURL(metrics::OmniboxEventProto::NTP_COMPOSEBOX_PREFETCH,
+                    metrics::OmniboxFocusType::INTERACTION_FOCUS, "",
+                    TemplateURLRef::RequestSource::NTP_COMPOSEBOX,
+                    omnibox::SuggestInventory::SUGGEST_INVENTORY_TRAVEL);
+
+  EXPECT_TRUE(test_loader_factory()->IsPending(ntp_suggest_url.spec()));
+  EXPECT_TRUE(test_loader_factory()->IsPending(composebox_suggest_url.spec()));
+
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300}])");
+
+  test_loader_factory()->AddResponse(ntp_suggest_url.spec(), json_response);
+  test_loader_factory()->AddResponse(composebox_suggest_url.spec(),
+                                     json_response);
+
+  EXPECT_TRUE(base::test::RunUntil([&] { return provider_->done(); }));
+
+  // Both NTP cache and Composebox cache should be populated. The composebox
+  // input for prefetching always uses default suggest inventory.
   EXPECT_EQ(json_response,
             prefs->GetString(omnibox::kZeroSuggestCachedResults));
   EXPECT_EQ(json_response,

@@ -157,13 +157,15 @@ bool ShouldCacheResultTypeInContext(const ResultType result_type,
         return !has_contextual_input;
       }
       // Composebox requests can't have contextual inputs and must not have any
-      // tools enabled to use stored response.
+      // tools or suggest inventory enabled to use stored response.
       if (omnibox::IsNTPComposebox(page_class)) {
         return base::FeatureList::IsEnabled(
                    omnibox::kZeroSuggestPrefetchingForComposebox) &&
                !has_contextual_input &&
                input_state.active_tool ==
-                   omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+                   omnibox::ToolMode::TOOL_MODE_UNSPECIFIED &&
+               input.suggest_inventory() ==
+                   omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT;
       }
       // All other composebox's should not be using cached zps results.
       return !(omnibox::IsLensSearchbox(page_class) ||
@@ -640,6 +642,7 @@ void ZeroSuggestProvider::RunComposeboxPrefetch(
   search_terms_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
   search_terms_args.input_state = input.input_state();
+  search_terms_args.suggest_inventory = input.suggest_inventory();
 
   AutocompleteInput composebox_input(
       input.text(), metrics::OmniboxEventProto::NTP_COMPOSEBOX_PREFETCH,
