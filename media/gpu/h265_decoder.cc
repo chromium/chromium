@@ -1169,6 +1169,15 @@ bool H265Decoder::PerformDpbOperations(const H265SPS* sps) {
     return false;
   }
 
+  // Non-decodable RASL frames are not stored in the DPB because the picture
+  // is not actually decoded so it doesn't make sense to store it.
+  if (curr_pic_->no_rasl_output_flag_ &&
+      (curr_pic_->nal_unit_type_ == H265NALU::RASL_N ||
+       curr_pic_->nal_unit_type_ == H265NALU::RASL_R)) {
+    DVLOG(1) << "Skipping storing non-decodable RASL frame in DPB";
+    return true;
+  }
+
   // Put the current pic in the DPB.
   dpb_.StorePicture(curr_pic_, H265Picture::kShortTermFoll);
   return true;
