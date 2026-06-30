@@ -100,6 +100,8 @@ class ExtensionSyncService : public syncer::SyncableService,
   void OnExtensionInstalled(content::BrowserContext* browser_context,
                             const extensions::Extension* extension,
                             bool is_update) override;
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const extensions::Extension* extension) override;
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override;
