@@ -37,6 +37,7 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
       bool is_locally_eligible,
       bool is_server_eligible,
       bool server_eligibility_enabled,
+      bool is_cobrowse_eligible,
       PrefService& pref_service,
       TemplateURLService* template_url_service)
       : ChromeAimEligibilityService(pref_service,
@@ -46,7 +47,8 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
                                     /*configuration=*/{}),
         is_locally_eligible_(is_locally_eligible),
         is_server_eligible_(is_server_eligible),
-        server_eligibility_enabled_(server_eligibility_enabled) {}
+        server_eligibility_enabled_(server_eligibility_enabled),
+        is_cobrowse_eligible_(is_cobrowse_eligible) {}
 
   variations::VariationsService* GetVariationsService() const override {
     return nullptr;
@@ -67,11 +69,13 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
     }
     return true;
   }
+  bool IsCobrowseEligible() const override { return is_cobrowse_eligible_; }
 
  private:
   bool is_locally_eligible_;
   bool is_server_eligible_;
   bool server_eligibility_enabled_;
+  bool is_cobrowse_eligible_;
 };
 
 class LensSearchFeatureFlagsUtilsBrowserTestBase : public InProcessBrowserTest {
@@ -89,17 +93,20 @@ class LensSearchFeatureFlagsUtilsBrowserTestBase : public InProcessBrowserTest {
  protected:
   void SetUpAimEligibilityService(bool is_locally_eligible,
                                   bool is_server_eligible,
-                                  bool server_eligibility_enabled) {
+                                  bool server_eligibility_enabled,
+                                  bool is_cobrowse_eligible = false) {
     AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
         base::BindLambdaForTesting(
             [is_locally_eligible, is_server_eligible,
-             server_eligibility_enabled](content::BrowserContext* context) {
+             server_eligibility_enabled,
+             is_cobrowse_eligible](content::BrowserContext* context) {
               Profile* profile = Profile::FromBrowserContext(context);
               return static_cast<std::unique_ptr<KeyedService>>(
                   std::make_unique<TestingAimEligibilityService>(
                       is_locally_eligible, is_server_eligible,
-                      server_eligibility_enabled, *profile->GetPrefs(),
+                      server_eligibility_enabled, is_cobrowse_eligible,
+                      *profile->GetPrefs(),
                       TemplateURLServiceFactory::GetForProfile(profile)));
             }));
   }
@@ -120,17 +127,28 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnabledTest,
                        TestIsAimM3Enabled_IsTrue) {
   SetUpAimEligibilityService(/*is_locally_eligible=*/true,
                              /*is_server_eligible=*/true,
-                             /*server_eligibility_enabled=*/true);
+                             /*server_eligibility_enabled=*/true,
+                             /*is_cobrowse_eligible=*/true);
   EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
 
   // Returns true when server eligibility checking is disabled as long as the
   // local eligibility check passes.
   SetUpAimEligibilityService(/*is_locally_eligible=*/true,
                              /*is_server_eligible=*/false,
-                             /*server_eligibility_enabled=*/false);
+                             /*server_eligibility_enabled=*/false,
+                             /*is_cobrowse_eligible=*/true);
   EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
 }
 
+IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnabledTest,
+                       TestIsAimM3Enabled_CobrowseIneligible_IsFalse) {
+  // Returns false if cobrowse is ineligible, even if AIM is eligible.
+  SetUpAimEligibilityService(/*is_locally_eligible=*/true,
+                             /*is_server_eligible=*/true,
+                             /*server_eligibility_enabled=*/true,
+                             /*is_cobrowse_eligible=*/false);
+  EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
+}
 
 // Test fixture with kLensSearchAimM3 feature disabled.
 class LensSearchFeatureFlagsUtilsAimM3DisabledTest
@@ -178,7 +196,8 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnUsEnabledTest,
   // enabled, and locale is en-US.
   SetUpAimEligibilityService(/*is_locally_eligible=*/true,
                              /*is_server_eligible=*/false,
-                             /*server_eligibility_enabled=*/false);
+                             /*server_eligibility_enabled=*/false,
+                             /*is_cobrowse_eligible=*/true);
   EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
 }
 
@@ -247,14 +266,16 @@ IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3EnUsUsesEligibilityTest,
   // true.
   SetUpAimEligibilityService(/*is_locally_eligible=*/true,
                              /*is_server_eligible=*/true,
-                             /*server_eligibility_enabled=*/true);
+                             /*server_eligibility_enabled=*/true,
+                             /*is_cobrowse_eligible=*/true);
   EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
 
   // When the eligibility service returns ineligible, IsAimM3Enabled should be
   // false.
   SetUpAimEligibilityService(/*is_locally_eligible=*/false,
                              /*is_server_eligible=*/false,
-                             /*server_eligibility_enabled=*/false);
+                             /*server_eligibility_enabled=*/false,
+                             /*is_cobrowse_eligible=*/true);
   EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
 }
 
@@ -297,21 +318,24 @@ IN_PROC_BROWSER_TEST_P(
     // true.
     SetUpAimEligibilityService(/*is_locally_eligible=*/true,
                                /*is_server_eligible=*/true,
-                               /*server_eligibility_enabled=*/true);
+                               /*server_eligibility_enabled=*/true,
+                               /*is_cobrowse_eligible=*/true);
     EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
 
     // When the eligibility service returns ineligible, IsAimM3Enabled should be
     // false.
     SetUpAimEligibilityService(/*is_locally_eligible=*/false,
                                /*is_server_eligible=*/false,
-                               /*server_eligibility_enabled=*/false);
+                               /*server_eligibility_enabled=*/false,
+                               /*is_cobrowse_eligible=*/true);
     EXPECT_FALSE(lens::IsAimM3Enabled(browser()->profile()));
   } else {
     // If not using the AIM service, the result depends on kLensSearchAimM3. In
     // this test fixture, we have it enabled.
     SetUpAimEligibilityService(/*is_locally_eligible=*/true,
                                /*is_server_eligible=*/false,
-                               /*server_eligibility_enabled=*/false);
+                               /*server_eligibility_enabled=*/false,
+                               /*is_cobrowse_eligible=*/true);
     EXPECT_TRUE(lens::IsAimM3Enabled(browser()->profile()));
   }
 }
@@ -433,4 +457,109 @@ IN_PROC_BROWSER_TEST_F(
 
   // Expect true since the interval has passed.
   EXPECT_TRUE(lens::ShouldShowLensOverlayEduActionChip(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LensSearchFeatureFlagsUtilsBrowserTestBase,
+    TestIsLensOverlayContextualSearchboxEnabled_AimIneligible) {
+  // If AIM is ineligible, it should return false regardless of cobrowse.
+  SetUpAimEligibilityService(/*is_locally_eligible=*/false,
+                             /*is_server_eligible=*/false,
+                             /*server_eligibility_enabled=*/false,
+                             /*is_cobrowse_eligible=*/true);
+  EXPECT_FALSE(
+      lens::IsLensOverlayContextualSearchboxEnabled(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LensSearchFeatureFlagsUtilsBrowserTestBase,
+    TestIsLensOverlayContextualSearchboxEnabled_CobrowseEligible) {
+  // If AIM is eligible and cobrowse is eligible, it should return true.
+  SetUpAimEligibilityService(/*is_locally_eligible=*/true,
+                             /*is_server_eligible=*/true,
+                             /*server_eligibility_enabled=*/true,
+                             /*is_cobrowse_eligible=*/true);
+  EXPECT_TRUE(
+      lens::IsLensOverlayContextualSearchboxEnabled(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LensSearchFeatureFlagsUtilsBrowserTestBase,
+    TestIsLensOverlayContextualSearchboxEnabled_CobrowseIneligible) {
+  // If AIM is eligible but cobrowse is ineligible, it should return false.
+  SetUpAimEligibilityService(/*is_locally_eligible=*/true,
+                             /*is_server_eligible=*/true,
+                             /*server_eligibility_enabled=*/true,
+                             /*is_cobrowse_eligible=*/false);
+  EXPECT_FALSE(
+      lens::IsLensOverlayContextualSearchboxEnabled(browser()->profile()));
+}
+
+// Test fixture with kLensOverlayContextualSearchbox feature enabled.
+class LensSearchFeatureFlagsUtilsContextualSearchboxEnabledTest
+    : public LensSearchFeatureFlagsUtilsBrowserTestBase {
+ public:
+  LensSearchFeatureFlagsUtilsContextualSearchboxEnabledTest() {
+    feature_list_.InitAndEnableFeature(
+        lens::features::kLensOverlayContextualSearchbox);
+  }
+  ~LensSearchFeatureFlagsUtilsContextualSearchboxEnabledTest() override =
+      default;
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    LensSearchFeatureFlagsUtilsContextualSearchboxEnabledTest,
+    TestIsLensOverlayContextualSearchboxEnabled_FeatureOverriddenEnabled_ButCobrowseIneligible) {
+  // If feature is overridden to enabled, it should still return false if
+  // cobrowse is ineligible.
+  SetUpAimEligibilityService(/*is_locally_eligible=*/true,
+                             /*is_server_eligible=*/true,
+                             /*server_eligibility_enabled=*/true,
+                             /*is_cobrowse_eligible=*/false);
+  EXPECT_FALSE(
+      lens::IsLensOverlayContextualSearchboxEnabled(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LensSearchFeatureFlagsUtilsContextualSearchboxEnabledTest,
+    TestIsLensOverlayContextualSearchboxEnabled_FeatureOverriddenEnabled_AndCobrowseEligible) {
+  // If feature is overridden to enabled, it should return true if cobrowse
+  // is eligible.
+  SetUpAimEligibilityService(/*is_locally_eligible=*/true,
+                             /*is_server_eligible=*/true,
+                             /*server_eligibility_enabled=*/true,
+                             /*is_cobrowse_eligible=*/true);
+  EXPECT_TRUE(
+      lens::IsLensOverlayContextualSearchboxEnabled(browser()->profile()));
+}
+
+// Test fixture with kLensOverlayContextualSearchbox feature disabled.
+class LensSearchFeatureFlagsUtilsContextualSearchboxDisabledTest
+    : public LensSearchFeatureFlagsUtilsBrowserTestBase {
+ public:
+  LensSearchFeatureFlagsUtilsContextualSearchboxDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        lens::features::kLensOverlayContextualSearchbox);
+  }
+  ~LensSearchFeatureFlagsUtilsContextualSearchboxDisabledTest() override =
+      default;
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    LensSearchFeatureFlagsUtilsContextualSearchboxDisabledTest,
+    TestIsLensOverlayContextualSearchboxEnabled_FeatureOverriddenDisabled) {
+  // If feature is overridden to disabled, it should return false even if
+  // cobrowse is eligible.
+  SetUpAimEligibilityService(/*is_locally_eligible=*/true,
+                             /*is_server_eligible=*/true,
+                             /*server_eligibility_enabled=*/true,
+                             /*is_cobrowse_eligible=*/true);
+  EXPECT_FALSE(
+      lens::IsLensOverlayContextualSearchboxEnabled(browser()->profile()));
 }
