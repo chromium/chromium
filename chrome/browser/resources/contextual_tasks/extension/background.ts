@@ -42,12 +42,19 @@ chrome.runtime.onMessageExternal.addListener(
         if (!details.targetUrl || !URL.parse(details.targetUrl)) {
           throw new Error('Invalid targetUrl');
         }
-        if (!details.aimUrl || !URL.parse(details.aimUrl)) {
-          throw new Error('Invalid aimUrl');
-        }
+        const aimParams = details.aimParams || {};
         return await chrome.contextualTasksPrivate.launchPanelInNewTab({
+          aimParams: {
+            ntc: aimParams.ntc ?? '',
+            mstk: aimParams.mstk ?? '',
+            aioh: aimParams.aioh ?? '',
+            csuir: aimParams.csuir ?? '',
+            ved: aimParams.ved ?? '',
+            cs: aimParams.cs ?? '',
+            sxsrf: aimParams.sxsrf ?? '',
+            ei: aimParams.ei ?? '',
+          },
           targetUrl: details.targetUrl,
-          aimUrl: details.aimUrl,
           documentId: sender.documentId,
         });
       }

@@ -65,9 +65,6 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
       case 'launch_panel_invalid_target_url':
         tests_runLaunchPanelInNewTabInvalidTargetUrl(documentId);
         return;
-      case 'launch_panel_invalid_aim_url':
-        tests_runLaunchPanelInNewTabInvalidAimUrl(documentId);
-        return;
       case 'launch_panel_popup_window':
         tests_runLaunchPanelInNewTabPopupWindow(documentId);
         return;
@@ -106,8 +103,17 @@ function tests_runLaunchPanelInNewTabIneligible(documentId) {
   chrome.test.runTests([
     async function testLaunchPanelInNewTabIneligible() {
       const details = {
+        aimParams: {
+          ntc: '',
+          mstk: '',
+          aioh: '',
+          csuir: '',
+          ved: '',
+          cs: '',
+          sxsrf: '',
+          ei: '',
+        },
         targetUrl: 'https://example.com',
-        aimUrl: 'https://google.com/aim',
         documentId: documentId,
       };
       await chrome.test.assertPromiseRejects(
@@ -122,8 +128,19 @@ function tests_runLaunchPanelInNewTabEligible(documentId) {
   chrome.test.runTests([
     async function testLaunchPanelInNewTabEligible() {
       const details = {
+        // Note: contextual_tasks_private_apitest.cc will verify that these
+        // parameters are correctly passed on.
+        aimParams: {
+          ntc: '1',
+          mstk: 'abc',
+          aioh: '1',
+          csuir: '1',
+          ved: '123',
+          cs: '1',
+          sxsrf: 'xyz',
+          ei: '456',
+        },
         targetUrl: 'https://example.com',
-        aimUrl: 'https://google.com/aim',
         documentId: documentId,
       };
       await chrome.contextualTasksPrivate.launchPanelInNewTab(details);
@@ -136,8 +153,17 @@ function tests_runLaunchPanelInNewTabInvalidTargetUrl(documentId) {
   chrome.test.runTests([
     async function testLaunchPanelInNewTabInvalidTargetUrl() {
       const details = {
+        aimParams: {
+          ntc: '',
+          mstk: '',
+          aioh: '',
+          csuir: '',
+          ved: '',
+          cs: '',
+          sxsrf: '',
+          ei: '',
+        },
         targetUrl: 'http://example.com',
-        aimUrl: 'https://google.com/aim',
         documentId: documentId,
       };
       await chrome.test.assertPromiseRejects(
@@ -148,21 +174,7 @@ function tests_runLaunchPanelInNewTabInvalidTargetUrl(documentId) {
   ]);
 }
 
-function tests_runLaunchPanelInNewTabInvalidAimUrl(documentId) {
-  chrome.test.runTests([
-    async function testLaunchPanelInNewTabInvalidAimUrl() {
-      const details = {
-        targetUrl: 'https://example.com',
-        aimUrl: 'https://google.com/search',
-        documentId: documentId,
-      };
-      await chrome.test.assertPromiseRejects(
-          chrome.contextualTasksPrivate.launchPanelInNewTab(details),
-          'Error: Invalid AI URL');
-      chrome.test.succeed();
-    },
-  ]);
-}
+
 
 function tests_runLaunchPanelInNewTabPopupWindow(documentId) {
   const expectedError =
@@ -170,8 +182,17 @@ function tests_runLaunchPanelInNewTabPopupWindow(documentId) {
   chrome.test.runTests([
     async function testLaunchPanelInNewTabPopupWindow() {
       const details = {
+        aimParams: {
+          ntc: '',
+          mstk: '',
+          aioh: '',
+          csuir: '',
+          ved: '',
+          cs: '',
+          sxsrf: '',
+          ei: '',
+        },
         targetUrl: 'https://example.com',
-        aimUrl: 'https://google.com/aim',
         documentId: documentId,
       };
       await chrome.test.assertPromiseRejects(

@@ -299,11 +299,6 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided URL is to an AI page.
   virtual bool IsAiUrl(const GURL& url);
 
-  // Returns whether the provided URL is a trusted AI page (i.e. is an AI URL
-  // and contains the permitted subset of query parameters). This is used to
-  // validate URLs requested from the private extension API.
-  virtual bool IsTrustedAiUrl(const GURL& url);
-
   // Returns whether the provided task ID is for a task that should show the
   // error page on load.
   virtual bool IsPendingErrorPage(const base::Uuid& task_id);

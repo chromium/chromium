@@ -69,6 +69,12 @@ class ContextualTasksPanelController {
   // Called when there is an AI interaction in the panel.
   virtual void OnAiInteraction() = 0;
 
+  // Sets a task to be used once the side panel opens. Used to open a specific
+  // task without associating a web contents (which would inherently get added
+  // as context).
+  virtual void SetPendingTaskForTab(tabs::TabInterface* tab,
+                                    const base::Uuid& task_id) = 0;
+
   // WebContents & session management.
   // Returns the currently active WebContents, or NULL if there is none.
   virtual content::WebContents* GetActiveWebContents() const = 0;

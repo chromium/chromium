@@ -19,9 +19,20 @@ declare namespace chrome {
       isEligible: boolean;
     }
 
+    export interface AimParams {
+      ntc?: string;
+      mstk?: string;
+      aioh?: string;
+      csuir?: string;
+      ved?: string;
+      cs?: string;
+      sxsrf?: string;
+      ei?: string;
+    }
+
     export interface LaunchPanelInNewTabDetails {
+      aimParams: AimParams;
       targetUrl: string;
-      aimUrl: string;
       documentId: string;
     }
 

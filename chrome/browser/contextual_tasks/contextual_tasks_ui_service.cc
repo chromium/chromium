@@ -241,18 +241,6 @@ EntrypointSource ConvertContextualSearchSourceToEntrypointSource(
   }
 }
 
-const std::set<std::string>& GetAllowedAiUrlParams() {
-  static const base::NoDestructor<std::set<std::string>> allowed_params([] {
-    std::vector<std::string> params = GetContextualTasksAiUrlAllowedParams();
-    std::set<std::string> set;
-    for (const auto& param : params) {
-      set.insert(base::ToLowerASCII(param));
-    }
-    return set;
-  }());
-  return *allowed_params;
-}
-
 }  // namespace
 
 ContextualTasksUiService::ContextualTasksUiService(
@@ -2422,6 +2410,12 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
     if (associate_web_contents) {
       AssociateWebContentsToTask(tab_interface->GetContents(),
                                  task.GetTaskId());
+    } else {
+      // Associating the WebContents is used for two things, 1) to know which
+      // task to open next to the given WebContents and 2) add the WebContents
+      // as context implicitly. We don't want to do the latter, so set the
+      // pending task so the former still happens.
+      controller->SetPendingTaskForTab(tab_interface, task.GetTaskId());
     }
     controller->Show();
 
@@ -2530,24 +2524,6 @@ bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
   }
 
   return aim_eligibility_service_->HasAimUrlParams(url);
-}
-
-bool ContextualTasksUiService::IsTrustedAiUrl(const GURL& url) {
-  if (!IsAiUrl(url)) {
-    return false;
-  }
-
-  const std::set<std::string>& allowed_params = GetAllowedAiUrlParams();
-  net::QueryIterator it(url);
-  while (!it.IsAtEnd()) {
-    std::string key = base::ToLowerASCII(it.GetKey());
-    if (!allowed_params.contains(key)) {
-      return false;
-    }
-    it.Advance();
-  }
-
-  return true;
 }
 
 bool ContextualTasksUiService::IsPendingErrorPage(const base::Uuid& task_id) {

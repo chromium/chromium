@@ -7,14 +7,49 @@ dictionary ProfileState {
   required boolean isEligible;
 };
 
+dictionary AimParams {
+  // Whether the link click came from a Nitrogen tab. Used for metrics.
+  DOMString ntc;
+
+  // Magi State Token which contains an opaque encrypted and encoded event ID to
+  // keep track of in scope state. Used to restore the AIO response as an AIM
+  // thread.
+  DOMString mstk;
+
+  // Param to indicate how to handle the AIM handover.
+  //  * "1" indicates that this is an AIO handover request to AIM.
+  //  * "2" indicates that this is a SRP to AIM desktop direct handover
+  //    request.
+  //  * "3" indicates that this request is part of a session for which we have
+  //    previously performed a handover from SRP to AIM.
+  DOMString aioh;
+
+  // Param to indicate where to restore the AIM thread from:
+  //  * 1 - restore a previous conversation turn
+  //  * 2 - restore as a follow up from a SRP request
+  //  * 3 - restore as a Magi response from Memory (server)
+  DOMString csuir;
+
+  // Visual element data in Base64 proto or text split by ':' and ','. Used for
+  // click tracking.
+  DOMString ved;
+
+  // Query param indicating dark mode (=1) or light mode (=0).
+  DOMString cs;
+
+  // XSRF token for search requests. See go/gws-xsleaks-proposal.
+  DOMString sxsrf;
+
+  // Event ID for the query. Used for logging.
+  DOMString ei;
+};
+
 dictionary LaunchPanelInNewTabDetails {
-  // The URL to load in the tab.
+  // The query parameters to construct the AIM URL.
+  required AimParams aimParams;
+
+  // The URL to load in the new tab.
   required DOMString targetUrl;
-
-  // The AIM URL to load in the Contextual Tasks side panel.
-  required DOMString aimUrl;
-
-  // The RenderFrameHost Document ID of the caller webpage.
   required DOMString documentId;
 };
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/contextual_tasks_private/contextual_tasks_private_api.h"
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/extensions/api/contextual_tasks_private.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -20,6 +23,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "net/base/url_util.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -43,6 +47,27 @@ bool IsContextualTasksEnabledForProfile(Profile* profile) {
           profile);
   return ui_service && ui_service->GetEligibilityManager() &&
          ui_service->GetEligibilityManager()->IsEligible();
+}
+
+GURL AppendAimUrlParams(
+    const GURL& base_url,
+    const api::contextual_tasks_private::AimParams& aim_params) {
+  GURL url = base_url;
+  const struct {
+    const char* name;
+    std::optional<std::string> value;
+  } kParams[] = {
+      {"ntc", aim_params.ntc},     {"mstk", aim_params.mstk},
+      {"aioh", aim_params.aioh},   {"csuir", aim_params.csuir},
+      {"ved", aim_params.ved},     {"cs", aim_params.cs},
+      {"sxsrf", aim_params.sxsrf}, {"ei", aim_params.ei},
+  };
+  for (const auto& param : kParams) {
+    if (param.value && !param.value->empty()) {
+      url = net::AppendQueryParameter(url, param.name, *param.value);
+    }
+  }
+  return url;
 }
 
 }  // namespace
@@ -99,19 +124,14 @@ ContextualTasksPrivateLaunchPanelInNewTabFunction::Run() {
   }
 
   GURL target_url(params->details.target_url);
-  GURL aim_url(params->details.aim_url);
 
-  if (!target_url.is_valid() || !target_url.SchemeIs(url::kHttpsScheme) ||
-      !aim_url.is_valid() || !aim_url.SchemeIs(url::kHttpsScheme)) {
+  if (!target_url.is_valid() || !target_url.SchemeIs(url::kHttpsScheme)) {
     return RespondNow(Error("URLs must be valid and use HTTPS"));
   }
 
   contextual_tasks::ContextualTasksUiService* ui_service =
       contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
           profile);
-  if (!ui_service->IsTrustedAiUrl(aim_url)) {
-    return RespondNow(Error("Invalid AI URL"));
-  }
 
   content::RenderFrameHost* rfh =
       GetRfhForDocumentId(params->details.document_id);
@@ -126,6 +146,25 @@ ContextualTasksPrivateLaunchPanelInNewTabFunction::Run() {
   if (!ui_service->IsSearchResultsUrl(rfh->GetLastCommittedURL())) {
     return RespondNow(
         Error("Contextual Tasks are only supported on Search Results pages."));
+  }
+
+  // Determine the target host: use the forced embedded page host if set;
+  // otherwise, default to the host/origin of the one the request came from.
+  std::string host = contextual_tasks::GetForcedEmbeddedPageHost();
+  if (host.empty()) {
+    host = rfh->GetLastCommittedURL().host();
+  }
+
+  GURL default_ai_url = ui_service->GetDefaultAiPageUrl();
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(url::kHttpsScheme);
+  replacements.SetHostStr(host);
+  GURL base_aim_url = default_ai_url.ReplaceComponents(replacements);
+
+  GURL aim_url = AppendAimUrlParams(base_aim_url, params->details.aim_params);
+
+  if (!aim_url.is_valid() || !aim_url.SchemeIs(url::kHttpsScheme)) {
+    return RespondNow(Error("Generated AI URL is invalid or not HTTPS"));
   }
 
   content::WebContents* initiator_web_contents =

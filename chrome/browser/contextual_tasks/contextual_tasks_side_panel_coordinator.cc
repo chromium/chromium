@@ -30,6 +30,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
@@ -492,6 +493,20 @@ void ContextualTasksSidePanelCoordinator::OnAiInteraction() {
   in_cobrowsing_session_ = true;
 }
 
+void ContextualTasksSidePanelCoordinator::SetPendingTaskForTab(
+    tabs::TabInterface* tab,
+    const base::Uuid& task_id) {
+  if (tab && tab->GetContents()) {
+    ContextualTasksWebContentsUserData::CreateForWebContents(
+        tab->GetContents());
+    auto* user_data =
+        ContextualTasksWebContentsUserData::FromWebContents(tab->GetContents());
+    if (user_data) {
+      user_data->set_pending_task_id(task_id);
+    }
+  }
+}
+
 contextual_search::ContextualSearchSessionHandle*
 ContextualTasksSidePanelCoordinator::
     GetContextualSearchSessionHandleForPanel() {
@@ -577,6 +592,24 @@ ContextualTasksSidePanelCoordinator::GetCurrentTask() {
       TabListInterface::From(browser_window_)->GetActiveTab();
   if (!active_tab_interface) {
     return std::nullopt;
+  }
+
+  if (active_tab_interface->GetContents()) {
+    auto* user_data = ContextualTasksWebContentsUserData::FromWebContents(
+        active_tab_interface->GetContents());
+    if (user_data && user_data->pending_task_id().has_value()) {
+      base::Uuid task_id = *user_data->pending_task_id();
+      SessionID session_id = sessions::SessionTabHelper::IdForTab(
+          active_tab_interface->GetContents());
+      if (session_id.is_valid()) {
+        if (auto* ui_service = GetUiService()) {
+          ui_service->AssociateWebContentsToTask(
+              active_tab_interface->GetContents(), task_id);
+          user_data->set_pending_task_id(std::nullopt);
+        }
+      }
+      return ContextualTask(task_id, /*is_ephemeral=*/true);
+    }
   }
 
   return contextual_tasks_service_->GetContextualTaskForTab(

@@ -82,10 +82,10 @@ class ContextualTasksPrivateApiTest : public ExtensionApiTest {
                       });
                   ON_CALL(*mock_ui_service, IsAiUrl(testing::_))
                       .WillByDefault(Return(true));
-                  ON_CALL(*mock_ui_service, IsTrustedAiUrl(testing::_))
-                      .WillByDefault(Return(true));
                   ON_CALL(*mock_ui_service, IsSearchResultsUrl(testing::_))
                       .WillByDefault(Return(true));
+                  ON_CALL(*mock_ui_service, GetDefaultAiPageUrl())
+                      .WillByDefault(Return(GURL("https://google.com/aim")));
 
                   return std::unique_ptr<KeyedService>(
                       std::move(mock_ui_service));
@@ -126,11 +126,19 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleTest,
                        LaunchPanelInNewTab) {
   auto* mock_ui_service = GetMockUiService();
 
-  EXPECT_CALL(*mock_ui_service,
-              StartTaskUiInSidePanel(
-                  testing::_, testing::_,
-                  testing::Property(&GURL::spec, testing::HasSubstr("aim")),
-                  testing::_, /*associate_web_contents=*/false))
+  EXPECT_CALL(
+      *mock_ui_service,
+      StartTaskUiInSidePanel(
+          testing::_, testing::_,
+          testing::Property(
+              &GURL::spec,
+              testing::AllOf(
+                  testing::HasSubstr("/aim"), testing::HasSubstr("ntc=1"),
+                  testing::HasSubstr("mstk=abc"), testing::HasSubstr("aioh=1"),
+                  testing::HasSubstr("csuir=1"), testing::HasSubstr("ved=123"),
+                  testing::HasSubstr("cs=1"), testing::HasSubstr("sxsrf=xyz"),
+                  testing::HasSubstr("ei=456"))),
+          testing::_, /*associate_web_contents=*/false))
       .Times(testing::AtLeast(1));
 
   EXPECT_TRUE(RunExtensionTest(
@@ -154,24 +162,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleTest,
                        {.extension_url = "test.html",
                         .custom_arg = "launch_panel_invalid_target_url"},
                        {.load_as_component = true}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleTest,
-                       LaunchPanelInNewTabInvalidAimUrl) {
-  auto* mock_ui_service = GetMockUiService();
-  ON_CALL(*mock_ui_service, IsTrustedAiUrl(testing::_))
-      .WillByDefault(Return(false));
-
-  EXPECT_CALL(*mock_ui_service,
-              StartTaskUiInSidePanel(testing::_, testing::_, testing::_,
-                                     testing::_, testing::_))
-      .Times(0);
-
-  EXPECT_TRUE(RunExtensionTest("contextual_tasks_private",
-                               {.extension_url = "test.html",
-                                .custom_arg = "launch_panel_invalid_aim_url"},
-                               {.load_as_component = true}))
       << message_;
 }
 
