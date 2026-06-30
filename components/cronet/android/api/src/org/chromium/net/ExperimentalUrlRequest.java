@@ -14,6 +14,7 @@ import java.util.concurrent.Executor;
  * risk.
  *
  * @deprecated scheduled for deletion, don't use in new code.
+ * @hide
  */
 @Deprecated
 public abstract class ExperimentalUrlRequest extends UrlRequest {

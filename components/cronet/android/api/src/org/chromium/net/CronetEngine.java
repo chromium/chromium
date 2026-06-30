@@ -546,6 +546,7 @@ public abstract class CronetEngine {
             return this;
         }
 
+        /** @hide */
         protected ExperimentalCronetEngine buildExperimental() {
             int implLevel = getImplApiLevel(mBuilderDelegate);
             if (implLevel != -1 && implLevel < getMaximumApiLevel()) {

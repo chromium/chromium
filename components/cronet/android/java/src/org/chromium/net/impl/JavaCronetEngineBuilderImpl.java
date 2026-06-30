@@ -4,6 +4,7 @@
 
 package org.chromium.net.impl;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import org.chromium.net.ExperimentalCronetEngine;
@@ -32,6 +33,7 @@ public class JavaCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
     }
 
     @Override
+    @SuppressLint("ReferencesHidden")
     public ExperimentalCronetEngine build() {
         if (getUserAgent() == null) {
             setUserAgent(getDefaultUserAgent());
