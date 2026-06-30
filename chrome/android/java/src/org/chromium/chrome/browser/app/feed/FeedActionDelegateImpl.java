@@ -43,7 +43,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.net.NetError;
@@ -54,7 +53,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
-import org.chromium.url.Origin;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +62,6 @@ import java.util.Map;
 public class FeedActionDelegateImpl
         implements FeedActionDelegate, BottomSheetSigninAndHistorySyncCoordinator.Delegate {
     private static final String NEW_TAB_URL_HELP = "https://support.google.com/chrome/?p=new_tab";
-    private static final String ACLK_PATH = "/aclk";
     private final NativePageNavigationDelegate mNavigationDelegate;
     private final BookmarkModel mBookmarkModel;
     private final Activity mActivity;
@@ -145,11 +142,6 @@ public class FeedActionDelegateImpl
             int pageId,
             PageLoadObserver pageLoadObserver,
             int surfaceId) {
-        if (isAdUrl(params)) {
-            params.setInitiatorOrigin(Origin.createOpaqueOrigin());
-            params.setIsRendererInitiated(true);
-            params.setHasUserGesture(true);
-        }
         params.setReferrer(
                 new Referrer(
                         SuggestionsConfig.getReferrerUrl(),
@@ -179,11 +171,6 @@ public class FeedActionDelegateImpl
 
     @Override
     public void openUrl(int disposition, LoadUrlParams params) {
-        if (isAdUrl(params)) {
-            params.setInitiatorOrigin(Origin.createOpaqueOrigin());
-            params.setIsRendererInitiated(true);
-            params.setHasUserGesture(true);
-        }
         mNavigationDelegate.openUrl(disposition, params);
     }
 
@@ -285,14 +272,6 @@ public class FeedActionDelegateImpl
                 mActivity.startActivity(intent);
             }
         }
-    }
-
-    private static boolean isAdUrl(LoadUrlParams params) {
-        if (params.getUrl() == null) return false;
-        GURL gurl = new GURL(params.getUrl());
-        return gurl.isValid()
-                && gurl.getPath().equals(ACLK_PATH)
-                && UrlUtilities.isGoogleDomainUrl(gurl.getSpec(), true);
     }
 
     /**
