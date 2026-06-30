@@ -246,6 +246,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   private contextMenuOpened_: boolean = false;
   private pageHandler_: PageHandlerInterface;
   private autocompleteResultChangedListenerId_: number|null = null;
+  private inputStateListenerId_: number|null = null;
 
   constructor() {
     performance.mark('searchbox-creation-start');
@@ -268,6 +269,12 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     this.onTabStripChangedListenerId_ =
         this.callbackRouter_.onTabStripChanged.addListener(
             this.refreshTabSuggestions_.bind(this));
+    this.inputStateListenerId_ =
+        this.callbackRouter_.onInputStateChanged.addListener(
+            (inputState: InputState) => {
+              this.inputState_ = inputState;
+              this.inputState_.activeModel = ModelMode.kUnspecified;
+            });
     this.inputState_ =
         (await this.pageHandler().getInputState())?.state ?? null;
     if (this.inputState_) {
@@ -282,6 +289,11 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       this.callbackRouter_.removeListener(
           this.autocompleteResultChangedListenerId_);
       this.autocompleteResultChangedListenerId_ = null;
+    }
+
+    if (this.inputStateListenerId_ !== null) {
+      this.callbackRouter_.removeListener(this.inputStateListenerId_);
+      this.inputStateListenerId_ = null;
     }
 
     this.placeholderCycler_?.stop();

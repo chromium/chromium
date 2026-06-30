@@ -1001,4 +1001,18 @@ suite('NewTabPageRealboxNextTest', () => {
     assertTrue(!!animatedGlow);
     assertFalse(animatedGlow.darkThemeColorsEnabled);
   });
+
+  test('onInputStateChanged updates inputState_', async () => {
+    const newInputState = new MockInputState({
+      allowedTools: [ToolMode.kDeepSearch],
+      allowedModels: [ModelMode.kGeminiPro],
+    });
+    testProxy.callbackRouterRemote.onInputStateChanged(newInputState);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    const inputState = realbox['inputState_'];
+    assertTrue(!!inputState);
+    assertEquals(ToolMode.kDeepSearch, inputState.allowedTools[0]);
+    assertEquals(ModelMode.kUnspecified, inputState.activeModel);
+  });
 });
