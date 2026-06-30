@@ -1386,6 +1386,15 @@ crbug.com/40268721 [ Mac ] external/wpt/html/semantics/popovers/light-dismiss-ev
 crbug.com/40268721 [ Mac ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.tentative.html [ Pass Timeout ]
 crbug.com/332331836 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass Timeout ]
 
+crbug.com/527495812 external/wpt/html/semantics/popovers/popover-events.html [ Failure ]
+crbug.com/527495812 external/wpt/html/semantics/popovers/popover-hint-hierarchy.html [ Failure ]
+crbug.com/527495812 external/wpt/html/semantics/popovers/popover-light-dismiss-hint.html [ Failure ]
+crbug.com/527495812 external/wpt/html/semantics/popovers/popover-light-dismiss.html [ Failure ]
+crbug.com/527495812 external/wpt/html/semantics/popovers/popover-open-in-beforetoggle.html [ Failure ]
+crbug.com/527495812 external/wpt/html/semantics/popovers/popover-remove-attribute-during-focusing-steps.html [ Failure ]
+crbug.com/527495812 external/wpt/html/semantics/popovers/popover-top-layer-nesting-hints.html [ Failure ]
+crbug.com/527495812 external/wpt/html/semantics/popovers/popover-types-with-hints.html [ Failure ]
+
 # Interestfor related tests
 crbug.com/326681249 external/wpt/html/semantics/interestfor/interestfor-svg-a-event-dispatch.tentative.html [ Failure ]
 

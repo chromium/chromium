@@ -4656,7 +4656,6 @@
       // popover=auto. See https://crbug.com/499019927.
       // This shipped in M150 and can be removed in M152.
       name: "PopoverHintNewBehavior",
-      status: "stable",
     },
     {
       name: "PositionOutsideTabSpanCheckSiblingNode",
