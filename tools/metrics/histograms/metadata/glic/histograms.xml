@@ -1832,6 +1832,18 @@ chromium-metrics-reviews@google.com.
   <summary>Records the onboarding flow source shown to the user.</summary>
 </histogram>
 
+<histogram name="Glic.Onboarding.WebUiLoadTime.{Visibility}" units="ms"
+    expires_after="2026-12-31">
+  <owner>sanaakbani@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <summary>
+    Measures the time it takes for the Glic WebUI to load, specifically for
+    users in the unconsented state. This is recorded when the WebUI transitions
+    to the `kReady` state.
+  </summary>
+  <token key="Visibility" variants="Visibility"/>
+</histogram>
+
 <histogram name="Glic.OsEntrypoint.Settings.Shortcut" enum="BooleanEnabled"
     expires_after="2026-09-27">
   <owner>agale@chromium.org</owner>

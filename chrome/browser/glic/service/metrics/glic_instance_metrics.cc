@@ -23,11 +23,13 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_controller.h"
 #include "components/metrics/profile_metrics_service.h"
@@ -120,12 +122,14 @@ GlicInstanceMetrics::TurnInfo::TurnInfo() = default;
 GlicInstanceMetrics::TurnInfo::~TurnInfo() = default;
 
 GlicInstanceMetrics::GlicInstanceMetrics(
-    const metrics::ProfileMetricsService* profile_metrics_service)
+    const metrics::ProfileMetricsService* profile_metrics_service,
+    Profile* profile)
     : creation_time_(base::TimeTicks::Now()),
       session_manager_(this),
       profile_metrics_service_(CHECK_DEREF(profile_metrics_service)),
       saas_usage_reporting_controller_(nullptr),
-      pref_service_(nullptr) {
+      profile_(profile),
+      pref_service_(profile ? profile->GetPrefs() : nullptr) {
   // Used in the unit tests.
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
   activity_tracker_ = std::make_unique<GlicStateTracker>(
@@ -140,7 +144,7 @@ GlicInstanceMetrics::GlicInstanceMetrics(
     GlicSharingManager* sharing_manager,
     enterprise_reporting::SaasUsageReportingController*
         saas_usage_reporting_controller,
-    PrefService* pref_service)
+    Profile* profile)
     : creation_time_(base::TimeTicks::Now()),
       session_manager_(this),
       pinned_tabs_changed_subscription_(
@@ -154,7 +158,8 @@ GlicInstanceMetrics::GlicInstanceMetrics(
       profile_metrics_service_(CHECK_DEREF(profile_metrics_service)),
       sharing_manager_(sharing_manager),
       saas_usage_reporting_controller_(saas_usage_reporting_controller),
-      pref_service_(pref_service) {
+      profile_(profile),
+      pref_service_(profile ? profile->GetPrefs() : nullptr) {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
   activity_tracker_ = std::make_unique<GlicStateTracker>(
       false, "Glic.Instance.UninterruptedActiveDuration");
@@ -818,6 +823,17 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
         base::UmaHistogramCustomTimes(
             base::StrCat({"Glic.Instance.WebUiLoadTime", visibility_suffix}),
             load_time, base::Milliseconds(1), base::Seconds(60), 50);
+
+        if (profile_ && !has_consented_) {
+          has_consented_ = GlicEnabling::HasConsentedForProfile(profile_);
+          if (!has_consented_) {
+            base::UmaHistogramCustomTimes(
+                base::StrCat(
+                    {"Glic.Onboarding.WebUiLoadTime", visibility_suffix}),
+                load_time, base::Milliseconds(1), base::Seconds(60), 50);
+          }
+        }
+
         if (initial_invocation_source_.has_value()) {
           base::UmaHistogramCustomTimes(
               base::StrCat({"Glic.InvocationSource.",

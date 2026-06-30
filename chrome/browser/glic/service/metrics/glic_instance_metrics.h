@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 
 class PrefService;
+class Profile;
 
 namespace metrics {
 
@@ -164,13 +165,14 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   };
 
   explicit GlicInstanceMetrics(
-      const metrics::ProfileMetricsService* profile_metrics_service);
+      const metrics::ProfileMetricsService* profile_metrics_service,
+      Profile* profile = nullptr);
   GlicInstanceMetrics(
       const metrics::ProfileMetricsService* profile_metrics_service,
       GlicSharingManager* sharing_manager,
       enterprise_reporting::SaasUsageReportingController*
           saas_usage_reporting_controller,
-      PrefService* pref_service = nullptr);
+      Profile* profile = nullptr);
   ~GlicInstanceMetrics() override;
 
   GlicInstanceMetrics(const GlicInstanceMetrics&) = delete;
@@ -424,6 +426,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   bool is_client_ready_ = false;
   bool is_opt_in_pending_ = false;
+  bool has_consented_ = false;
 
   void MaybeRecordOptInImpression();
 
@@ -433,6 +436,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   raw_ptr<GlicSharingManager> sharing_manager_ = nullptr;
   raw_ptr<enterprise_reporting::SaasUsageReportingController>
       saas_usage_reporting_controller_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
 
   bool first_side_panel_close_recorded_ = false;
