@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/contextual_tasks/public/account_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -57,7 +59,8 @@ ContextualTasksWebContentsUserData::GetOrCreateInputStateModel(
     browser_identity_matches_aim_identity =
         ui_service->IsSignedInToBrowserWithValidCredentials() &&
         ui_service->IsUrlForPrimaryAccount(url);
-  } else if (profile) {
+  } else if (profile &&
+             omnibox::kComposeboxDriveIdentityFallback.Get()) {
     if (auto* identity_manager =
             IdentityManagerFactory::GetForProfile(profile)) {
       if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {

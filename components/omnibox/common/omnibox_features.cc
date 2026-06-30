@@ -381,6 +381,8 @@ BASE_FEATURE(kComposeboxAttachmentsTypedState, DISABLED);
 
 // Whether to enable Google Drive context menu option in the composebox.
 BASE_FEATURE(kComposeboxDriveContextMenuOption, DISABLED);
+const base::FeatureParam<bool> kComposeboxDriveIdentityFallback{
+    &kComposeboxDriveContextMenuOption, "enable_identity_fallback", true};
 
 // Whether to enable Google Drive context menu option's disclaimer flow in the
 // composebox.

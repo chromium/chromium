@@ -101,6 +101,9 @@ class InputStateModel {
   // Methods for testing.
   void set_state_for_testing(const InputState& state) { state_ = state; }
   const InputState& get_state_for_testing() { return state_; }
+  bool browser_identity_matches_aim_identity_for_testing() const {
+    return browser_identity_matches_aim_identity_;
+  }
 
   // Gets the `PrefService`.
   void SetPrefService(const PrefService* pref_service);
