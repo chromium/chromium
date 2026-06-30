@@ -482,6 +482,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick"
+    enum="Boolean" expires_after="2027-06-18">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user clicks the side panel close button, for sessions that
+    were entered due to a link click from AI mode. Always recorded as true.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.SidePanel.UserAction.Close.LensOverlay"
+    enum="Boolean" expires_after="2027-06-18">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user clicks the side panel close button, for sessions that
+    were entered via the Lens Overlay. Always recorded as true.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.SidePanel.UserAction.Close.Other"
+    enum="Boolean" expires_after="2027-06-18">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user clicks the side panel close button, for sessions
+    where the entry point was not recorded as another histogram. Always recorded
+    as true.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.Tab.ClosedWithSidePanelOpenState"
     enum="ContextualTasksTabCloseState" expires_after="2027-06-18">
   <owner>nguyenbryan@google.com</owner>

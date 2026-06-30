@@ -581,9 +581,12 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
         pending_session_handle_) {
       auto* service = contextual_tasks::ContextualTasksUiServiceFactory::
           GetForBrowserContext(web_contents()->GetBrowserContext());
-      service->InitSidePanelWithGhostLoader(browser_window_interface(),
-                                            tab_interface(),
-                                            std::move(pending_session_handle_));
+      service->InitSidePanelWithGhostLoader(
+          browser_window_interface(), tab_interface(),
+          std::move(pending_session_handle_),
+          AimEntryPointFromInvocationSource(
+              request_info->invocation_source.value_or(
+                  lens::LensOverlayInvocationSource::kAppMenu)));
     }
 
     auto lens_selection_type = request_info->lens_overlay_selection_type;
@@ -665,10 +668,14 @@ void LensQueryFlowRouter::OpenContextualTasksPanel(
 
   // Show the side panel. This will create a new task and associate it with the
   // active tab.
+  auto entry_point = AimEntryPointFromInvocationSource(
+      lens_search_controller_->invocation_source().value_or(
+          lens::LensOverlayInvocationSource::kAppMenu));
+
   contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext())
       ->StartTaskUiInSidePanel(browser_window_interface(), tab_interface(), url,
-                               std::move(pending_session_handle_));
+                               std::move(pending_session_handle_), entry_point);
   // Notify the overlay controller that the side panel was opened so it can
   // update its UI state.
   lens_overlay_controller()->NotifyResultsPanelOpened();
@@ -689,11 +696,14 @@ void LensQueryFlowRouter::OpenContextualTasksPanel(
 }
 
 void LensQueryFlowRouter::ShowContextualTasksErrorPage() {
+  auto entry_point = AimEntryPointFromInvocationSource(
+      lens_search_controller_->invocation_source().value_or(
+          lens::LensOverlayInvocationSource::kAppMenu));
   contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext())
-      ->StartTaskUiInSidePanelWithErrorPage(browser_window_interface(),
-                                            tab_interface(),
-                                            std::move(pending_session_handle_));
+      ->StartTaskUiInSidePanelWithErrorPage(
+          browser_window_interface(), tab_interface(),
+          std::move(pending_session_handle_), entry_point);
   // Notify the overlay controller that the side panel was opened so it can
   // update its UI state.
   lens_overlay_controller()->NotifyResultsPanelOpened();

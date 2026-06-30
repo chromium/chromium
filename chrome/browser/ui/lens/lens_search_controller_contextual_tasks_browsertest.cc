@@ -104,7 +104,8 @@ class TestingContextualTasksUiService
       tabs::TabInterface* tab_interface,
       const GURL& url,
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-          session_handle) override {
+          session_handle,
+      omnibox::ChromeAimEntryPoint entry_point) override {
     is_panel_open_ = true;
     if (!stub_web_contents_) {
       content::WebContents::CreateParams params(profile_);
@@ -127,7 +128,8 @@ class TestingContextualTasksUiService
       BrowserWindowInterface* browser_window_interface,
       tabs::TabInterface* tab_interface,
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-          session_handle) override {
+          session_handle,
+      omnibox::ChromeAimEntryPoint entry_point) override {
     is_panel_open_ = true;
     session_handle_ = std::move(session_handle);
 

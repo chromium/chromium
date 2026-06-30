@@ -424,6 +424,154 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, CleanUpUnusedWebContents) {
   EXPECT_EQ(1u, GetNumberOfActiveTasksForTesting(task_id2));
 }
 
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseSidePanelLogsMetrics_LensOverlay) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  // Show the side panel with Lens Overlay entry point.
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+
+  // Call Close() programmatically (simulating framework close).
+  coordinator_->Close();
+
+  // Trigger the close event via user action (simulating UI transition
+  // completion).
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  // Verify that the Lens Overlay close metric was recorded.
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.LensOverlay"));
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SidePanel.UserAction.Close.LensOverlay", true, 1);
+
+  // Verify that other close metrics were NOT recorded.
+  EXPECT_EQ(0,
+            user_action_tester.GetActionCount(
+                "ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.Other"));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseSidePanelLogsMetrics_AiModeLinkClick) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  // Show the side panel with transition_from_tab = true (representing AI Mode
+  // link click).
+  coordinator_->Show(
+      /*transition_from_tab=*/true,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+
+  // Call Close() programmatically (simulating framework close).
+  coordinator_->Close();
+
+  // Trigger the close event via user action (simulating UI transition
+  // completion).
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  // Verify that the AI Mode Link Click close metric was recorded.
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(
+                "ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick"));
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick", true, 1);
+
+  // Verify that other close metrics were NOT recorded.
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.LensOverlay"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.Other"));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseSidePanelLogsMetrics_Other) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  // Show the side panel with transition_from_tab = false and
+  // non-Lens/non-composebox entry point.
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+
+  // Call Close() programmatically (simulating framework close).
+  coordinator_->Close();
+
+  // Trigger the close event via user action (simulating UI transition
+  // completion).
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  // Verify that the Other close metric was recorded.
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.Other"));
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SidePanel.UserAction.Close.Other", true, 1);
+
+  // Verify that other close metrics were NOT recorded.
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.LensOverlay"));
+  EXPECT_EQ(0,
+            user_action_tester.GetActionCount(
+                "ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick"));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseSidePanelNoLogging_NonUserAction) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  // Show the side panel.
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+
+  // Call Close() programmatically (simulating framework close).
+  coordinator_->Close();
+
+  // Trigger the close event via a NON-user action (e.g. programmatic close due
+  // to navigation or eligibility).
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kSystemAction);
+
+  // Verify that NO close metrics were recorded.
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.LensOverlay"));
+  EXPECT_EQ(0,
+            user_action_tester.GetActionCount(
+                "ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SidePanel.UserAction.Close.Other"));
+}
+
 TEST_F(ContextualTasksSidePanelCoordinatorTest, OnTabRemoved_ActiveTab) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
@@ -541,5 +689,4 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, OnTabRemoved_PanelClosed) {
                    "ContextualTasks.Tab.UserAction."
                    "ClosedBackgroundTabWithSidePanelOpen"));
 }
-
 }  // namespace contextual_tasks

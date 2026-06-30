@@ -251,6 +251,16 @@ ContextualTasksPanelController* ContextualTasksPanelController::From(
 void ContextualTasksSidePanelCoordinator::Show(
     bool transition_from_tab,
     omnibox::ChromeAimEntryPoint entry_point) {
+  EntrySource entry_source;
+  if (entry_point == omnibox::ChromeAimEntryPoint::
+                         DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT) {
+    entry_source = EntrySource::kLensOverlay;
+  } else if (transition_from_tab) {
+    entry_source = EntrySource::kAiModeLinkClick;
+  } else {
+    entry_source = EntrySource::kOther;
+  }
+
   // Increment the impression count and attempt to show the HaTS survey.
   int impression_count =
       pref_service_->GetInteger(prefs::kContextualTasksNextPanelOpenCount);
@@ -296,6 +306,12 @@ void ContextualTasksSidePanelCoordinator::Show(
   }
 
   MaybeCreateCachedWebContents(entry_point);
+  if (std::optional<ContextualTask> task = GetCurrentTask()) {
+    auto it = task_id_to_web_contents_cache_.find(task->GetTaskId());
+    if (it != task_id_to_web_contents_cache_.end()) {
+      it->second->entry_source = entry_source;
+    }
+  }
   UpdateWebContentsForActiveTab();
 
   contextual_tasks_panel_host_->Show(
@@ -322,6 +338,14 @@ void ContextualTasksSidePanelCoordinator::Show(
 }
 
 void ContextualTasksSidePanelCoordinator::Close() {
+  if (content::WebContents* active_web_contents = GetActiveWebContents()) {
+    if (WebContentsCacheItem* cache_item =
+            GetWebContentsCacheItemForWebContents(active_web_contents)) {
+      // Save the entry source so that it can be logged in
+      // OnSurfaceStateChanged.
+      closing_entry_source_ = cache_item->entry_source;
+    }
+  }
   UpdateOpenState(/*is_open=*/false);
   contextual_tasks_panel_host_->Close(
       ContextualTasksPanelHost::AnimationStyle::kStandard);
@@ -1006,11 +1030,30 @@ void ContextualTasksSidePanelCoordinator::OnSurfaceStateChanged(
     NotifyActiveTaskContextProvider();
   }
 
-  if (state == ContextualTasksPanelHost::SurfaceState::kClosed &&
-      reason == ContextualTasksPanelHost::StateChangeReason::kUserAction) {
-    if (auto* ui_service = GetUiService()) {
-      ui_service->ShowUndoSnackbar(browser_window_);
+  if (state == ContextualTasksPanelHost::SurfaceState::kClosed) {
+    if (reason == ContextualTasksPanelHost::StateChangeReason::kUserAction) {
+      if (closing_entry_source_.has_value()) {
+        EntrySource entry_source = *closing_entry_source_;
+        switch (entry_source) {
+          case EntrySource::kLensOverlay:
+            RecordUserActionAndHistogram(
+                "ContextualTasks.SidePanel.UserAction.Close.LensOverlay");
+            break;
+          case EntrySource::kAiModeLinkClick:
+            RecordUserActionAndHistogram(
+                "ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick");
+            break;
+          default:
+            RecordUserActionAndHistogram(
+                "ContextualTasks.SidePanel.UserAction.Close.Other");
+            break;
+        }
+      }
+      if (auto* ui_service = GetUiService()) {
+        ui_service->ShowUndoSnackbar(browser_window_);
+      }
     }
+    closing_entry_source_.reset();
   }
 
   observers_.Notify(

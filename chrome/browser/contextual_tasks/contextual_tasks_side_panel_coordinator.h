@@ -60,6 +60,12 @@ class ContextualTasksSidePanelCoordinator
       public TabListInterfaceObserver,
       content::WebContentsObserver {
  public:
+  enum class EntrySource {
+    kOther,
+    kLensOverlay,
+    kAiModeLinkClick,
+  };
+
   // A data structure to hold the cache and state of the panel per thread.
   struct WebContentsCacheItem {
     WebContentsCacheItem(std::unique_ptr<content::WebContents> wc, bool open);
@@ -75,6 +81,9 @@ class ContextualTasksSidePanelCoordinator
 
     // The time when the WebContents becomes inactive.
     base::TimeTicks last_active_time_ticks;
+
+    // The entry source that triggered this task's panel.
+    EntrySource entry_source = EntrySource::kOther;
   };
 
   DECLARE_USER_DATA(ContextualTasksSidePanelCoordinator);
@@ -270,6 +279,10 @@ class ContextualTasksSidePanelCoordinator
   // contextual tasks URL navigation. Set only by interactive tests that drive
   // in-panel webview navigation.
   bool suppress_hide_on_contextual_tasks_url_for_testing_ = false;
+
+  // Used to save the entry source that triggered a task's panel when the panel
+  // is being closed so that it can be logged.
+  std::optional<EntrySource> closing_entry_source_;
 
   base::ObserverList<ContextualTasksPanelController::Observer> observers_;
 

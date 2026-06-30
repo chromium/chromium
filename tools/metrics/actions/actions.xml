@@ -11402,6 +11402,33 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user closes the side panel for a session entered via an AI
+    mode link click.
+  </description>
+</action>
+
+<action name="ContextualTasks.SidePanel.UserAction.Close.LensOverlay">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user closes the side panel for a session entered via the
+    Lens Overlay.
+  </description>
+</action>
+
+<action name="ContextualTasks.SidePanel.UserAction.Close.Other">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user closes the side panel for a session with an entry
+    point not covered by another action.
+  </description>
+</action>
+
 <action name="ContextualTasks.Tab.UserAction.ClosedActiveTabWithSidePanelOpen">
   <owner>nguyenbryan@google.com</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>

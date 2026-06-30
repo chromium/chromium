@@ -263,7 +263,9 @@ class ContextualTasksUiService : public KeyedService {
       tabs::TabInterface* tab_interface,
       const GURL& url,
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-          session_handle);
+          session_handle,
+      omnibox::ChromeAimEntryPoint entry_point =
+          omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 
   // Opens the contextual tasks side panel and creates a new task with the given
   // URL as its initial thread URL. Allows specifying whether the active tab's
@@ -277,7 +279,9 @@ class ContextualTasksUiService : public KeyedService {
       const GURL& url,
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
           session_handle,
-      bool associate_web_contents);
+      bool associate_web_contents,
+      omnibox::ChromeAimEntryPoint entry_point =
+          omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 
   // Opens the contextual tasks side panel showing a ghost loader while waiting
   // for the initial thread URL to be provided for that task. This creates an
@@ -286,7 +290,9 @@ class ContextualTasksUiService : public KeyedService {
       BrowserWindowInterface* browser_window_interface,
       tabs::TabInterface* tab_interface,
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-          session_handle);
+          session_handle,
+      omnibox::ChromeAimEntryPoint entry_point =
+          omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 
   // Opens the contextual tasks side panel with the protected error page showing
   // by default.
@@ -294,7 +300,9 @@ class ContextualTasksUiService : public KeyedService {
       BrowserWindowInterface* browser_window_interface,
       tabs::TabInterface* tab_interface,
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-          session_handle);
+          session_handle,
+      omnibox::ChromeAimEntryPoint entry_point =
+          omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 
   // Returns whether the provided URL is to an AI page.
   virtual bool IsAiUrl(const GURL& url);

@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleTest,
                   testing::HasSubstr("csuir=1"), testing::HasSubstr("ved=123"),
                   testing::HasSubstr("cs=1"), testing::HasSubstr("sxsrf=xyz"),
                   testing::HasSubstr("ei=456"))),
-          testing::_, /*associate_web_contents=*/false))
+          testing::_, /*associate_web_contents=*/false, testing::_))
       .Times(testing::AtLeast(1));
 
   EXPECT_TRUE(RunExtensionTest(
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleTest,
 
   EXPECT_CALL(*mock_ui_service,
               StartTaskUiInSidePanel(testing::_, testing::_, testing::_,
-                                     testing::_, testing::_))
+                                     testing::_, testing::_, testing::_))
       .Times(0);
 
   EXPECT_TRUE(
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksPrivateApiEligibleTest,
 
   EXPECT_CALL(*mock_ui_service,
               StartTaskUiInSidePanel(testing::_, testing::_, testing::_,
-                                     testing::_, testing::_))
+                                     testing::_, testing::_, testing::_))
       .Times(0);
 
   EXPECT_TRUE(RunExtensionTest(
