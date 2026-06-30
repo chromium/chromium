@@ -7,6 +7,7 @@
 #include "base/callback_list.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -2480,6 +2481,9 @@ TEST_F(ContextualTasksUiServiceTest,
   scoped_feature_list.InitAndEnableFeature(
       kContextualTasksBackButtonExpandsSidePanel);
 
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
   tabs::TabModel::PreventFeatureInitializationForTesting prevent_feature_init;
 
   NiceMock<MockBrowserWindowInterface> mock_browser_window;
@@ -2560,6 +2564,14 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_EQ(controller.GetEntryCount(), 2);
   EXPECT_EQ(controller.GetEntryAtIndex(0)->GetURL(),
             GURL("chrome://contextual-tasks/"));
+
+  // Verify that the back-button navigation metric was recorded.
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContextualTasks.BackButton.UserAction."
+                   "NavigatedFromSidePanelToFullTab"));
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.BackButton.UserAction.NavigatedFromSidePanelToFullTab",
+      true, 1);
 }
 #endif
 

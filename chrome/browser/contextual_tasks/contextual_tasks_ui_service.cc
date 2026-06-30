@@ -1851,6 +1851,14 @@ void ContextualTasksUiService::OnBackButtonExpandsSidePanel(
   auto* controller =
       contextual_tasks::ContextualTasksPanelController::From(browser);
   if (controller && controller->IsPanelOpenForContextualTask()) {
+    base::RecordAction(
+        base::UserMetricsAction("ContextualTasks.BackButton.UserAction."
+                                "NavigatedFromSidePanelToFullTab"));
+    base::UmaHistogramBoolean(
+        "ContextualTasks.BackButton.UserAction."
+        "NavigatedFromSidePanelToFullTab",
+        true);
+
     content::WebContents* side_panel_contents =
         controller->GetActiveWebContents();
     controller->MoveTaskUiToNewTab();
