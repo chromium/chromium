@@ -15133,6 +15133,41 @@ TEST_F(BidderWorkletTest, CrossOrigin) {
       BidderWorklet::SignalsOriginRelation::kCrossOriginSignals, 5);
 }
 
+TEST_F(BidderWorkletTest, MicroTaskTiming) {
+  const char kScript[] = R"(
+    function generateBid() {
+      Promise.resolve().then(() => {
+        /* If this runs at wrong time, the error will be top-level timeout,
+         * not generateBid one */
+        while(true) {}
+      });
+
+      while(true) {};
+    }
+  )";
+
+  mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        kScript);
+  GenerateBid(bidder_worklet.get());
+  generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
+  generate_bid_run_loop_->Run();
+  EXPECT_EQ(0u, bids_.size());
+  EXPECT_THAT(bid_errors_,
+              testing::ElementsAre(
+                  "https://url.test/ execution of `generateBid` timed out."));
+
+  // Second run should have the same behavior, not different one due to
+  // wrong timing of utask execution.
+  GenerateBid(bidder_worklet.get());
+  generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
+  generate_bid_run_loop_->Run();
+  EXPECT_EQ(0u, bids_.size());
+  EXPECT_THAT(bid_errors_,
+              testing::ElementsAre(
+                  "https://url.test/ execution of `generateBid` timed out."));
+}
+
 class BidderWorkletRealTimeReportingEnabledTest : public BidderWorkletTest {
  public:
   BidderWorkletRealTimeReportingEnabledTest() {
