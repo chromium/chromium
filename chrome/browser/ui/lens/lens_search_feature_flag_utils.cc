@@ -21,6 +21,9 @@
 namespace {
 constexpr char kUnitedStatesCountryCode[] = "us";
 constexpr char kEnglishUSLocale[] = "en-US";
+constexpr char kEnglishLanguageCode[] = "en";
+constexpr std::string kEnglishExpansionCountryCodes[] = {"au", "ca", "gb",
+                                                         "nz", "us", "za"};
 
 bool IsEnUs() {
   // Safety check since this is a CP'd change.
@@ -45,16 +48,38 @@ bool IsEnUs() {
          features->application_locale_storage()->Get() == kEnglishUSLocale;
 }
 
+bool IsEnExpansion() {
+  if (!g_browser_process) {
+    DCHECK(g_browser_process) << "g_browser_process is null";
+    return false;
+  }
+
+  // VariationsService and Features should exist.
+  auto* variations_service = g_browser_process->variations_service();
+  auto* features = g_browser_process->GetFeatures();
+
+  if (!variations_service || !features) {
+    return false;
+  }
+
+  // Otherwise, enable it in the expansion countries to en locales via
+  // client-side code.
+  return std::ranges::contains(
+             kEnglishExpansionCountryCodes,
+             variations_service->GetStoredPermanentCountry()) &&
+         features->application_locale_storage() &&
+         features->application_locale_storage()->Get().starts_with(
+             kEnglishLanguageCode);
+}
 }  // namespace
 
 namespace lens {
 
 bool IsLensOverlayContextualSearchboxEnabled(Profile* profile) {
-  // If not AIM eligible or cobrowse eligible, return false.
+  // If not AIM eligible, return false.
   auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
-  if (!aim_eligibility_service || !aim_eligibility_service->IsAimEligible() ||
-      !aim_eligibility_service->IsCobrowseEligible()) {
+  if (!aim_eligibility_service || !aim_eligibility_service->IsAimEligible()) {
     return false;
   }
 
@@ -72,15 +97,14 @@ bool IsLensOverlayContextualSearchboxEnabled(Profile* profile) {
         lens::features::kLensOverlayContextualSearchbox);
   }
 
-  // Otherwise, return true.
-  return true;
+  // Otherwise, enable it to en-* users.
+  return IsEnExpansion();
 }
 
 bool IsAimM3Enabled(Profile* profile) {
   auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
-  if (!aim_eligibility_service || !aim_eligibility_service->IsAimEligible() ||
-      !aim_eligibility_service->IsCobrowseEligible()) {
+  if (!aim_eligibility_service || !aim_eligibility_service->IsAimEligible()) {
     return false;
   }
 
