@@ -96,6 +96,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.Composebox.UserAction.LensButtonClicked"
+    enum="Boolean" expires_after="2027-06-18">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user clicks the Lens button inside the contextual tasks
+    composebox. Always recorded as true.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.Context.ContextCalculationLatency" units="ms"
     expires_after="2026-11-01">
   <owner>sophiechang@chromium.org</owner>

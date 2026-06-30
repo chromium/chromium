@@ -566,6 +566,8 @@ class ContextualTasksComposeboxHandlerTestWithContextManagementEnabled
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery) {
+  base::UserActionTester user_action_tester;
+
   ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
       << "Mock controller is NULL in SubmitQuery!";
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
@@ -579,6 +581,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery) {
   handler_->SubmitQuery("test query", 0, false, false, false, false,
                         /*is_voice_search=*/false);
   EXPECT_EQ(session_handle_->previous_turns().back().query, "test query");
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContextualTasks.Composebox.UserAction.QuerySubmitted"));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
@@ -1330,6 +1334,8 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
                        OnAutocompleteAccept) {
+  base::UserActionTester user_action_tester;
+
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
@@ -1340,15 +1346,26 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
       WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED,
       AutocompleteMatchType::SEARCH_SUGGEST, base::TimeTicks::Now(), false,
       false, u"test query", match, match);
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContextualTasks.Composebox.UserAction.QuerySubmitted"));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
                        HandleLensButtonClick) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
   EXPECT_CALL(
       *mock_lens_controller_,
       OpenLensOverlay(
           lens::LensOverlayInvocationSource::kContextualTasksComposebox, true));
   handler_->HandleLensButtonClick();
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContextualTasks.Composebox.UserAction.LensButtonClicked"));
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Composebox.UserAction.LensButtonClicked", true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,

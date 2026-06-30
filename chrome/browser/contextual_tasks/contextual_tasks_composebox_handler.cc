@@ -347,6 +347,8 @@ void ContextualTasksComposeboxHandler::SubmitQuery(
 void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     const std::string& query,
     bool is_voice_search) {
+  base::RecordAction(base::UserMetricsAction(
+      "ContextualTasks.Composebox.UserAction.QuerySubmitted"));
   auto* session_handle = GetContextualSessionHandle();
 
   // Retrieve the overlay token before closing the overlay, as the controller
@@ -844,6 +846,11 @@ void ContextualTasksComposeboxHandler::ClearFiles(
 
 #if !BUILDFLAG(IS_ANDROID)
 void ContextualTasksComposeboxHandler::HandleLensButtonClick() {
+  base::RecordAction(base::UserMetricsAction(
+      "ContextualTasks.Composebox.UserAction.LensButtonClicked"));
+  base::UmaHistogramBoolean(
+      "ContextualTasks.Composebox.UserAction.LensButtonClicked", true);
+
   if (auto* controller = GetLensSearchController()) {
     if (controller->IsShowingUI()) {
       if (controller->invocation_source() ==

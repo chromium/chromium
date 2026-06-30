@@ -11376,6 +11376,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualTasks.Composebox.UserAction.LensButtonClicked">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user clicks the Lens Overlay button inside the Cobrowse
+    composebox.
+  </description>
+</action>
+
+<action name="ContextualTasks.Composebox.UserAction.QuerySubmitted">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user submits a query from the Cobrowse composebox.
+  </description>
+</action>
+
 <action name="ContextualTasks.HistoryNavigation.UserAction.NavigatedInFullTab">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
