@@ -927,10 +927,15 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
   advanced_done_button_target_ = advanced_done_button.get();
   advanced_done_button_target_->SetProperty(views::kElementIdentifierKey,
                                             kTargetLanguageDoneButton);
+  // Use a different header title depending on whether the searchable target
+  // language UI is enabled.
+  int title_id =
+      base::FeatureList::IsEnabled(translate::kTranslateLanguageSearchUI)
+          ? IDS_TRANSLATE_HEADER
+          : IDS_TRANSLATE_BUBBLE_ADVANCED_TARGET;
   std::unique_ptr<views::Label> target_language_title_label =
-      std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_ADVANCED_TARGET),
-          views::style::CONTEXT_DIALOG_TITLE);
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(title_id),
+                                     views::style::CONTEXT_DIALOG_TITLE);
 
   return CreateViewAdvanced(std::move(child_view),
                             std::move(target_language_title_label),

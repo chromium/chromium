@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/translate/translate_language_search_view.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/translate_features.h"
 #include "content/public/test/test_renderer_host.h"
@@ -701,4 +702,26 @@ TEST_F(TranslateBubbleViewTest, RecentLanguagesShowUpInSearchView) {
   }
 
   EXPECT_THAT(button_texts, testing::IsSupersetOf({u"French", u"Spanish"}));
+}
+
+TEST_F(TranslateBubbleViewTest, SearchNoResultsMessage) {
+  base::test::ScopedFeatureList features(translate::kTranslateLanguageSearchUI);
+  CreateAndShowBubble();
+  SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
+
+  TranslateLanguageSearchView* search_view = translate_language_search_view();
+  ASSERT_TRUE(search_view);
+
+  // Type a query that matches no languages (e.g. "xyz").
+  search_view->ContentsChanged(nullptr, u"xyz");
+
+  views::BoxLayoutView* list_view = search_view->get_list_view_for_testing();
+  ASSERT_TRUE(list_view);
+
+  // Verify that the list view only contains the "No Results Found" label.
+  ASSERT_EQ(1u, list_view->children().size());
+  views::View* child = list_view->children().front();
+  ASSERT_TRUE(views::IsViewClass<views::Label>(child));
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_NO_RESULTS),
+            static_cast<views::Label*>(child)->GetText());
 }

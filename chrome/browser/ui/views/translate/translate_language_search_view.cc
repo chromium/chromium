@@ -124,6 +124,14 @@ void TranslateLanguageSearchView::UpdateLanguageList(
     CreateLanguageHoverButton(i);
   }
 
+  if (list_view_->children().empty()) {
+    views::Label* no_results_label =
+        list_view_->AddChildView(std::make_unique<views::Label>(
+            l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_NO_RESULTS),
+            views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+    no_results_label->SetProperty(views::kMarginsKey, gfx::Insets::VH(16, 8));
+  }
+
   list_view_->InvalidateLayout();
 }
 
