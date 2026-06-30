@@ -2292,7 +2292,7 @@ export const ComposeboxEmbedderMixin =
 
         voiceSearchEndCleanup() {
           this.inVoiceSearchMode = false;
-          this.animationState = GlowAnimationState.NONE;
+          this.animationState = GlowAnimationState.VOICE_EXITED;
           this.transcript = '';
         }
 

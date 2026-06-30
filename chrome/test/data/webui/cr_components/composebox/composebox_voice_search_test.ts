@@ -1302,6 +1302,8 @@ suite('ComposeboxVoiceSearch', () => {
 
     assertEquals('original text', composeboxElement.input);
     assertFalse(composeboxElement.inVoiceSearchMode);
+    assertEquals(
+        composeboxElement.animationState, GlowAnimationState.VOICE_EXITED);
 
     // Case 2: Non-empty transcript should clobber existing input.
     voiceSearchButton.click();
@@ -1313,6 +1315,8 @@ suite('ComposeboxVoiceSearch', () => {
 
     assertEquals('new voice search query', composeboxElement.input);
     assertFalse(composeboxElement.inVoiceSearchMode);
+    assertEquals(
+        composeboxElement.animationState, GlowAnimationState.VOICE_EXITED);
   });
 
   test(

@@ -9,6 +9,7 @@
 
 export enum GlowAnimationState {
   NONE = '',
+  VOICE_EXITED = 'voice-exited',
   DRAGGING = 'dragging',
   EXPANDING = 'expanding',
   SUBMITTING = 'submitting',

@@ -686,7 +686,8 @@
   animation: gradient-border-width-close-submit var(--expand-timing_);
 }
 
-:host([animation-state='listening']) .background {
+:host([animation-state='listening']) .background,
+:host([animation-state='voice-exited']) .background {
   animation: none;
 }
 
