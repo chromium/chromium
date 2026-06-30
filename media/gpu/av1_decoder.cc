@@ -126,6 +126,18 @@ skhdr::ContentLightLevelInformation ToSkHdrCLLI(
   return skhdr::ContentLightLevelInformation::MakeUint16(
       /*maxCLL=*/cll.max_cll, /*maxFALL=*/cll.max_fall);
 }
+bool RequiresHardwareContextReset(
+    const libgav1::ObuSequenceHeader& old_header,
+    const libgav1::ObuSequenceHeader& new_header) {
+  // Changes to these fields require re-allocating GPU memory pools and context.
+  return old_header.use_128x128_superblock !=
+             new_header.use_128x128_superblock ||
+         old_header.film_grain_params_present !=
+             new_header.film_grain_params_present ||
+         old_header.enable_cdef != new_header.enable_cdef ||
+         old_header.enable_restoration != new_header.enable_restoration;
+}
+
 }  // namespace
 
 scoped_refptr<AV1Picture> AV1Decoder::AV1Accelerator::CreateAV1PictureSecure(
@@ -301,23 +313,20 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           return kDecodeError;
         }
 
-        current_sequence_header_ = parser_->sequence_header();
+        const auto& new_sequence_header = parser_->sequence_header();
         VideoChromaSampling new_chroma_sampling =
-            GetAV1ChromaSampling(current_sequence_header_->color_config);
-        if (new_chroma_sampling != chroma_sampling_) {
-          chroma_sampling_ = new_chroma_sampling;
-        }
+            GetAV1ChromaSampling(new_sequence_header.color_config);
 
-        if (chroma_sampling_ != VideoChromaSampling::k420 &&
-            chroma_sampling_ != VideoChromaSampling::k444) {
+        if (new_chroma_sampling != VideoChromaSampling::k420 &&
+            new_chroma_sampling != VideoChromaSampling::k444) {
           DVLOG(1) << "Only YUV 4:2:0 and YUV 4:4:4 are supported";
           return kDecodeError;
         }
 
         const VideoCodecProfile new_profile =
-            AV1ProfileToVideoCodecProfile(current_sequence_header_->profile);
+            AV1ProfileToVideoCodecProfile(new_sequence_header.profile);
         const uint8_t new_bit_depth = base::checked_cast<uint8_t>(
-            current_sequence_header_->color_config.bitdepth);
+            new_sequence_header.color_config.bitdepth);
         if (!IsValidBitDepth(new_bit_depth, new_profile)) {
           DVLOG(1) << "Invalid bit depth="
                    << base::strict_cast<int>(new_bit_depth)
@@ -326,8 +335,8 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
         }
 
         const gfx::Size new_frame_size(
-            base::strict_cast<int>(current_sequence_header_->max_frame_width),
-            base::strict_cast<int>(current_sequence_header_->max_frame_height));
+            base::strict_cast<int>(new_sequence_header.max_frame_width),
+            base::strict_cast<int>(new_sequence_header.max_frame_height));
         gfx::Rect new_visible_rect(
             base::strict_cast<int>(current_frame_header_->width),
             base::strict_cast<int>(current_frame_header_->height));
@@ -339,7 +348,7 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           new_visible_rect = gfx::Rect(new_frame_size);
         }
 
-        const auto& cc = current_sequence_header_->color_config;
+        const auto& cc = new_sequence_header.color_config;
         const VideoColorSpace header_color_space =
             VideoColorSpace(cc.color_primary, cc.transfer_characteristics,
                             cc.matrix_coefficients,
@@ -361,23 +370,36 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
                                   new_color_space != picture_color_space_;
         }
 
+        const bool structural_change =
+            current_sequence_header_ &&
+            RequiresHardwareContextReset(*current_sequence_header_,
+                                         new_sequence_header);
+
+        current_sequence_header_ = new_sequence_header;
         ClearReferenceFrames();
-        // Issues kConfigChange only if either the dimensions, profile or bit
-        // depth is changed.
+
+        // Issue kConfigChange if the sequence header changed significantly,
+        // OR if the visible rect/color space changed.
         if (frame_size_ != new_frame_size ||
             visible_rect_ != new_visible_rect || profile_ != new_profile ||
-            bit_depth_ != new_bit_depth || is_color_space_change) {
-          DVLOG(1) << "New profile: " << GetProfileName(new_profile)
+            bit_depth_ != new_bit_depth ||
+            chroma_sampling_ != new_chroma_sampling || is_color_space_change ||
+            structural_change) {
+          DVLOG(1) << "Configuration changed. New profile: "
+                   << GetProfileName(new_profile)
                    << ", new resolution: " << new_frame_size.ToString()
                    << ", new visible rect: " << new_visible_rect.ToString()
                    << ", new bit depth: "
                    << base::strict_cast<int>(new_bit_depth)
                    << ", new color space: " << new_color_space.ToString();
+
           frame_size_ = new_frame_size;
           visible_rect_ = new_visible_rect;
           profile_ = new_profile;
           bit_depth_ = new_bit_depth;
           picture_color_space_ = new_color_space;
+          chroma_sampling_ = new_chroma_sampling;
+
           std::move(clear_current_frame).Cancel();
           return kConfigChange;
         }
