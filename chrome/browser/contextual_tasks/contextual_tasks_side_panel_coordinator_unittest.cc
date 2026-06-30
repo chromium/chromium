@@ -8,6 +8,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
@@ -420,6 +422,124 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, CleanUpUnusedWebContents) {
 
   // 2. task_id2 should STILL be there because it's active.
   EXPECT_EQ(1u, GetNumberOfActiveTasksForTesting(task_id2));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest, OnTabRemoved_ActiveTab) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  // Setup: Create a tab with a task, and cache it with is_open = true.
+  tabs::TabInterface* tab = tab_list_->GetActiveTab();
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+
+  ON_CALL(*mock_controller_,
+          GetContextualTaskForTab(
+              sessions::SessionTabHelper::IdForTab(tab->GetContents())))
+      .WillByDefault(Return(task));
+
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/true);
+
+  // Make this cached web contents the active one in the panel.
+  UpdateWebContentsForActiveTab();
+  ASSERT_EQ(coordinator_->GetActiveWebContents(),
+            GetWebContentsForTaskForTesting(task_id));
+
+  // Action: Remove the tab.
+  coordinator_->OnTabRemoved(*tab_list_, tab, TabRemovedReason::kDeleted);
+
+  // Verify: Recorded kActiveTab (0) and the correct user action.
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Tab.ClosedWithSidePanelOpenState",
+      ContextualTasksTabCloseState::kActiveTab, 1);
+  EXPECT_EQ(
+      1,
+      user_action_tester.GetActionCount(
+          "ContextualTasks.Tab.UserAction.ClosedActiveTabWithSidePanelOpen"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.Tab.UserAction."
+                   "ClosedBackgroundTabWithSidePanelOpen"));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest, OnTabRemoved_BackgroundTab) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  // Setup:
+  // 1. Create Tab A (which will be backgrounded) with Task A, cached as open.
+  tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
+  base::Uuid task_id_a = base::Uuid::GenerateRandomV4();
+  ContextualTask task_a(task_id_a);
+  ON_CALL(*mock_controller_,
+          GetContextualTaskForTab(
+              sessions::SessionTabHelper::IdForTab(tab_a->GetContents())))
+      .WillByDefault(Return(task_a));
+  CreateCachedWebContentsForTesting(task_id_a, /*is_open=*/true);
+
+  // 2. Create Tab B (active) with Task B.
+  tabs::TabInterface* tab_b = CreateMockTab();
+  base::Uuid task_id_b = base::Uuid::GenerateRandomV4();
+  ContextualTask task_b(task_id_b);
+  ON_CALL(*mock_controller_,
+          GetContextualTaskForTab(
+              sessions::SessionTabHelper::IdForTab(tab_b->GetContents())))
+      .WillByDefault(Return(task_b));
+  CreateCachedWebContentsForTesting(task_id_b, /*is_open=*/false);
+
+  // Make Tab B active in the tab list.
+  ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(tab_b));
+  UpdateWebContentsForActiveTab();
+
+  // Verify Tab A's task is in cache and has is_open = true, but is not active.
+  ASSERT_NE(coordinator_->GetActiveWebContents(),
+            GetWebContentsForTaskForTesting(task_id_a));
+
+  // Action: Remove Tab A (background tab).
+  coordinator_->OnTabRemoved(*tab_list_, tab_a, TabRemovedReason::kDeleted);
+
+  // Verify: Recorded kBackgroundTab (1) and the correct user
+  // action.
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Tab.ClosedWithSidePanelOpenState",
+      ContextualTasksTabCloseState::kBackgroundTab, 1);
+  EXPECT_EQ(
+      0,
+      user_action_tester.GetActionCount(
+          "ContextualTasks.Tab.UserAction.ClosedActiveTabWithSidePanelOpen"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContextualTasks.Tab.UserAction."
+                   "ClosedBackgroundTabWithSidePanelOpen"));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest, OnTabRemoved_PanelClosed) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  // Setup: Create a tab with a task, but cached with is_open = false.
+  tabs::TabInterface* tab = tab_list_->GetActiveTab();
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+
+  ON_CALL(*mock_controller_,
+          GetContextualTaskForTab(
+              sessions::SessionTabHelper::IdForTab(tab->GetContents())))
+      .WillByDefault(Return(task));
+
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/false);
+
+  // Action: Remove the tab.
+  coordinator_->OnTabRemoved(*tab_list_, tab, TabRemovedReason::kDeleted);
+
+  // Verify: No metrics recorded because the panel was closed.
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Tab.ClosedWithSidePanelOpenState", 0);
+  EXPECT_EQ(
+      0,
+      user_action_tester.GetActionCount(
+          "ContextualTasks.Tab.UserAction.ClosedActiveTabWithSidePanelOpen"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.Tab.UserAction."
+                   "ClosedBackgroundTabWithSidePanelOpen"));
 }
 
 }  // namespace contextual_tasks

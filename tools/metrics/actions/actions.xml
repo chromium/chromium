@@ -11385,6 +11385,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualTasks.Tab.UserAction.ClosedActiveTabWithSidePanelOpen">
+  <owner>nguyenbryan@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    The user closed an active content tab that had the contextual tasks side
+    panel open.
+  </description>
+</action>
+
+<action
+    name="ContextualTasks.Tab.UserAction.ClosedBackgroundTabWithSidePanelOpen">
+  <owner>nguyenbryan@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    The user closed a background tab that had a contextual task and logically
+    had the side panel open (i.e., the panel was open before the tab was
+    backgrounded and would restore upon activation).
+  </description>
+</action>
+
 <action name="ContextualTasks.TabChange.UserAction{ActionType}">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>

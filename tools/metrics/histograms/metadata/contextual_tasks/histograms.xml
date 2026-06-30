@@ -472,6 +472,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.Tab.ClosedWithSidePanelOpenState"
+    enum="ContextualTasksTabCloseState" expires_after="2027-06-18">
+  <owner>nguyenbryan@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when a user closes a content tab that had an associated contextual
+    task and had the side panel open (either currently active, or logically open
+    before the tab was backgrounded). The value indicates whether the closed tab
+    was the active tab or a background tab.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.TabAffiliationCount" units="count"
     expires_after="2026-11-01">
   <owner>sophiechang@chromium.org</owner>

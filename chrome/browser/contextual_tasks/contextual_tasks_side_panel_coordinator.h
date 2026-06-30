@@ -44,6 +44,16 @@ class ContextualTasksUiService;
 class ActiveTaskContextProvider;
 class EntryPointEligibilityManager;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ContextualTasksTabCloseState)
+enum class ContextualTasksTabCloseState {
+  kActiveTab = 0,
+  kBackgroundTab = 1,
+  kMaxValue = kBackgroundTab,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:ContextualTasksTabCloseState)
+
 class ContextualTasksSidePanelCoordinator
     : public ContextualTasksPanelController,
       public ContextualTasksPanelHost::Observer,

@@ -582,6 +582,46 @@ void ContextualTasksSidePanelCoordinator::OnTabRemoved(
   // tab strip.
   if (removed_reason != TabRemovedReason::kInsertedIntoSidePanel &&
       removed_reason != TabRemovedReason::kInsertedIntoOtherTabStrip) {
+    // Check if the side panel was open for the tab that is being removed. Only
+    // record the user action and histogram if so.
+    content::WebContents* web_contents = tab->GetContents();
+    if (web_contents) {
+      SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
+      std::optional<ContextualTask> task =
+          contextual_tasks_service_
+              ? contextual_tasks_service_->GetContextualTaskForTab(tab_id)
+              : std::nullopt;
+      if (task) {
+        auto it = task_id_to_web_contents_cache_.find(task->GetTaskId());
+        if (it != task_id_to_web_contents_cache_.end()) {
+          WebContentsCacheItem* cache_item = it->second.get();
+          if (cache_item && cache_item->is_open) {
+            bool is_active_tab = false;
+            content::WebContents* cached_web_contents =
+                cache_item->web_contents.get();
+            if (cached_web_contents &&
+                cached_web_contents == GetActiveWebContents()) {
+              is_active_tab = true;
+            }
+            ContextualTasksTabCloseState close_state =
+                is_active_tab ? ContextualTasksTabCloseState::kActiveTab
+                              : ContextualTasksTabCloseState::kBackgroundTab;
+            base::UmaHistogramEnumeration(
+                "ContextualTasks.Tab.ClosedWithSidePanelOpenState",
+                close_state);
+            if (is_active_tab) {
+              base::RecordAction(
+                  base::UserMetricsAction("ContextualTasks.Tab.UserAction."
+                                          "ClosedActiveTabWithSidePanelOpen"));
+            } else {
+              base::RecordAction(base::UserMetricsAction(
+                  "ContextualTasks.Tab.UserAction."
+                  "ClosedBackgroundTabWithSidePanelOpen"));
+            }
+          }
+        }
+      }
+    }
     DisassociateTabFromTask(tab->GetContents());
   }
 }

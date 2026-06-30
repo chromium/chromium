@@ -46,6 +46,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_ui_service.cc:EntrypointSource) -->
 
+<!-- LINT.IfChange(ContextualTasksTabCloseState) -->
+
+<enum name="ContextualTasksTabCloseState">
+  <int value="0" label="Active tab"/>
+  <int value="1" label="Background tab"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h:ContextualTasksTabCloseState) -->
+
 </enums>
 
 </histogram-configuration>
