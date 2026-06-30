@@ -202,7 +202,7 @@ void ExtensionSyncService::SyncExtensionChangeIfNeeded(
   if (bundle->IsSyncing()) {
     bundle->PushSyncAddOrUpdate(extension.id(),
                                 CreateSyncData(extension).GetSyncData());
-    DCHECK(!ExtensionPrefs::Get(profile_)->NeedsSync(extension.id()));
+    ExtensionPrefs::Get(profile_)->SetNeedsSync(extension.id(), false);
   } else {
     ExtensionPrefs::Get(profile_)->SetNeedsSync(extension.id(), true);
     if (system_->is_ready() && !flare_.is_null()) {
@@ -724,6 +724,17 @@ void ExtensionSyncService::OnExtensionInstalled(
   SyncExtensionChangeIfNeeded(*extension);
 }
 
+void ExtensionSyncService::OnExtensionLoaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension) {
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile_);
+  if (extension_prefs->NeedsSync(extension->id())) {
+    SyncExtensionChangeIfNeeded(*extension);
+    // Note: ExtensionPrefs::NeedsSync() *could* still be true if sync hasn't
+    // started up yet.
+  }
+}
+
 void ExtensionSyncService::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
@@ -765,9 +776,18 @@ void ExtensionSyncService::OnExtensionDisableReasonsChanged(
   const Extension* extension = registry->GetInstalledExtension(extension_id);
   // We can get pref change notifications for extensions that aren't installed
   // (yet). In that case, we'll pick up the change later via ExtensionRegistry
-  // observation (in OnExtensionInstalled).
+  // observation (in OnExtensionInstalled)... Except that disable reasons can
+  // change for existing extensions, in which case OnExtensionInstalled will
+  // never fire, which means any disable reason changes that happen before the
+  // extension is fully loaded will get overwritten by whatever's in sync (see
+  // https://crbug.com/524951740) when the first flare comes in. To fix this...
   if (extension) {
     SyncExtensionChangeIfNeeded(*extension);
+  } else if (!ignore_updates_) {
+    // ... We mark the extension as needing to be sync'd so that we'll ignore
+    // the first update coming in, or once the extension is loaded in
+    // OnExtensionLoaded().
+    ExtensionPrefs::Get(profile_)->SetNeedsSync(extension_id, true);
   }
 }
 
