@@ -11,10 +11,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -96,6 +98,8 @@ import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBr
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
+import org.chromium.chrome.browser.translate.TranslateBridge;
+import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuImageFormat;
@@ -175,6 +179,7 @@ public class ChromeContextMenuPopulatorTest {
     @Mock private MenuModelBridge mMenuModelBridge;
     @Mock private ChromeContextMenuPopulator.PendingIntentSender mMockPendingIntentSender;
     @Mock private ForcedSigninStatusProvider mMockForcedSigninStatusProvider;
+    @Mock private TranslateBridge.Natives mTranslateBridgeMock;
 
     private ChromeContextMenuPopulator mPopulator;
 
@@ -190,6 +195,8 @@ public class ChromeContextMenuPopulatorTest {
         when(mSendTabToSelfAndroidBridgeNatives.getEntryPointDisplayReason(any(), anyString()))
                 .thenReturn(1);
         when(mMenuModelBridge.populateModelList()).thenReturn(new ModelList());
+        TranslateBridgeJni.setInstanceForTesting(mTranslateBridgeMock);
+        when(mTranslateBridgeMock.getTargetLanguage(any())).thenReturn("en");
 
         GURL pageUrl = new GURL(PAGE_URL);
         when(mItemDelegate.getPageUrl()).thenReturn(pageUrl);
@@ -325,6 +332,7 @@ public class ChromeContextMenuPopulatorTest {
         doReturn(false).when(mPopulator).shouldTriggerEphemeralTabHelpUi();
         doReturn(false).when(mPopulator).shouldTriggerReadLaterHelpUi();
         doReturn(true).when(mPopulator).shouldShowEmptySpaceContextMenu();
+        doReturn(false).when(mPopulator).shouldShowTranslateItem();
         doReturn(true).when(mExternalAuthUtils).isGoogleSigned(IntentHandler.PACKAGE_GSA);
         doReturn(shouldShowDeveloperMenu).when(mPopulator).shouldShowDeveloperMenu();
         doReturn(shouldShowViewPageSourceMenu).when(mPopulator).shouldShowViewPageSourceMenu();
@@ -2609,6 +2617,36 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
+    public void testPage_Translate() {
+        setAllMandatoryFlowsComplete();
+        ContextMenuParams params = getPageParams();
+
+        int[][] expected = {
+            {
+                R.id.contextmenu_back,
+                R.id.contextmenu_forward,
+                R.id.contextmenu_reload,
+                R.id.contextmenu_save_page,
+                R.id.contextmenu_share_page,
+                R.id.contextmenu_print_page,
+                R.id.contextmenu_open_in_reading_mode,
+                R.id.contextmenu_send_tab_to_self
+            },
+            {R.id.contextmenu_translate},
+        };
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        doCallRealMethod().when(mPopulator).shouldShowTranslateItem();
+        when(mTranslateBridgeMock.canManuallyTranslate(eq(mWebContents), anyBoolean()))
+                .thenReturn(true);
+        when(mTranslateBridgeMock.getTargetLanguage(any())).thenReturn("en");
+        when(mTranslateBridgeMock.getCurrentLanguage(eq(mWebContents))).thenReturn("fr");
+        checkMenuOptions(expected);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
     public void testPage() {
         setAllMandatoryFlowsComplete();
         ContextMenuParams params = getPageParams();
@@ -3605,6 +3643,15 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         mPopulator.onItemSelected(R.id.contextmenu_send_tab_to_self);
         verify(mShareDelegate).sendTabToSelf(mTab);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnItemSelected_translate() {
+        ContextMenuParams params = getPageParams();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        mPopulator.onItemSelected(R.id.contextmenu_translate);
+        verify(mTranslateBridgeMock).manualTranslateWhenReady(eq(mWebContents));
     }
 
     private void setMandatoryFlowCompleted(boolean isForcedSigninShowing, boolean isCompleted) {

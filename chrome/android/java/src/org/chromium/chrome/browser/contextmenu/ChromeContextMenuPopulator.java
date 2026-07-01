@@ -35,6 +35,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
@@ -75,6 +76,8 @@ import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBr
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.translate.TranslateBridge;
+import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.lens.LensOverlayCoordinator;
 import org.chromium.chrome.browser.ui.lens.LensOverlayInvocationSource;
 import org.chromium.chrome.browser.ui.lens.LensOverlayTabHelper;
@@ -256,6 +259,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.DOWNLOAD_VIDEO_FRAME,
             Action.READING_MODE,
             Action.SEND_TAB_TO_SELF,
+            Action.TRANSLATE,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -316,7 +320,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int DOWNLOAD_VIDEO_FRAME = 54;
             int READING_MODE = 55;
             int SEND_TAB_TO_SELF = 56;
-            int NUM_ENTRIES = 57;
+            int TRANSLATE = 57;
+            int NUM_ENTRIES = 58;
         }
 
         // LINT.ThenChange(/tools/metrics/histograms/enums.xml:ContextMenuOptionAndroid)
@@ -471,6 +476,19 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @VisibleForTesting
+    boolean shouldShowTranslateItem() {
+        Tab tab = getTab();
+        if (tab == null || !TranslateUtils.canTranslateCurrentTab(tab)) {
+            return false;
+        }
+        String pageLanguage = TranslateBridge.getCurrentLanguage(tab);
+        if (TextUtils.isEmpty(pageLanguage)) return false;
+        String targetLanguage = TranslateBridge.getTargetLanguageForChromium(getProfile());
+        if (TextUtils.isEmpty(targetLanguage)) return false;
+        return !LocaleUtils.isBaseLanguageEqual(pageLanguage, targetLanguage);
+    }
+
+    @VisibleForTesting
     boolean shouldShowDeveloperMenu() {
         return DevToolsWindowAndroid.isDevToolsAllowedFor(
                         getProfile(), mItemDelegate.getWebContents())
@@ -555,6 +573,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 }
             }
             groupedItems.add(pageGroup);
+            if (mMode != ContextMenuMode.THIN_WEB_VIEW && shouldShowTranslateItem()) {
+                ModelList utilGroup = new ModelList();
+                utilGroup.add(createListItem(Item.TRANSLATE));
+                groupedItems.add(utilGroup);
+            }
         }
         if (mParams.isAnchor()) {
             ModelList linkGroup = new ModelList();
@@ -1151,6 +1174,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Tab tab = getTab();
             if (tab != null) {
                 assumeNonNull(mShareDelegateSupplier.get()).sendTabToSelf(tab);
+            }
+        } else if (itemId == R.id.contextmenu_translate) {
+            recordContextMenuSelection(ContextMenuUma.Action.TRANSLATE);
+            Tab tab = getTab();
+            if (tab != null) {
+                TranslateBridge.translateTabWhenReady(tab);
             }
         } else if (itemId == R.id.contextmenu_share_link) {
             recordContextMenuSelection(ContextMenuUma.Action.SHARE_LINK);

@@ -2880,6 +2880,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- ContextMenu -->
+      <message name="IDS_CONTEXTMENU_TRANSLATE" desc="This string is shown in the context menu for translating the current page to the target language. [CHAR_LIMIT=30]">
+        Translate to <ph name="LANGUAGE">%1$s<ex>English</ex></ph>
+      </message>
       <message name="IDS_CONTEXTMENU_SAVE_PAGE" desc="This string is shown in the context menu for saving the current page. [CHAR_LIMIT=30]">
         Download
       </message>

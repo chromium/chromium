@@ -67,6 +67,7 @@ found in the LICENSE file.
     <item type="id" name="contextmenu_send_tab_to_self" />
     <item type="id" name="contextmenu_inspect_element" />
     <item type="id" name="contextmenu_view_page_source" />
+    <item type="id" name="contextmenu_translate" />
 
     <!-- Custom Tab Group -->
     <item type="id" name="contextmenu_open_in_new_chrome_tab" />

@@ -2550,6 +2550,7 @@ Called by update_net_error_codes.py.-->
   <int value="54" label="Download video frame"/>
   <int value="55" label="Open in reading mode"/>
   <int value="56" label="Send tab to self"/>
+  <int value="57" label="Translate page"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java:ContextMenuUma.Action) -->
