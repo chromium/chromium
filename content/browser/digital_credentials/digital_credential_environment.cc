@@ -5,7 +5,9 @@
 #include "content/browser/digital_credentials/digital_credential_environment.h"
 
 #include "base/no_destructor.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/digital_credentials/virtual_wallet.h"
+#include "content/public/browser/devtools_agent_host.h"
 
 namespace content {
 
@@ -15,8 +17,13 @@ DigitalCredentialEnvironment* DigitalCredentialEnvironment::GetInstance() {
   return environment.get();
 }
 
-DigitalCredentialEnvironment::DigitalCredentialEnvironment() = default;
-DigitalCredentialEnvironment::~DigitalCredentialEnvironment() = default;
+DigitalCredentialEnvironment::DigitalCredentialEnvironment() {
+  DevToolsAgentHost::AddObserver(this);
+}
+
+DigitalCredentialEnvironment::~DigitalCredentialEnvironment() {
+  DevToolsAgentHost::RemoveObserver(this);
+}
 
 DigitalCredentialEnvironment::ObservedWallet::ObservedWallet(
     FrameTreeNode* node,
@@ -70,6 +77,25 @@ void DigitalCredentialEnvironment::OnFrameTreeNodeDestroyed(
     FrameTreeNode* node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DisableVirtualWalletFor(node);
+}
+
+void DigitalCredentialEnvironment::DevToolsAgentHostDetached(
+    DevToolsAgentHost* agent_host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (agent_host->GetType() != DevToolsAgentHost::kTypePage &&
+      agent_host->GetType() != DevToolsAgentHost::kTypeFrame) {
+    return;
+  }
+
+  auto* render_frame_agent_host =
+      static_cast<RenderFrameDevToolsAgentHost*>(agent_host);
+  FrameTreeNode* frame_tree_node = render_frame_agent_host->frame_tree_node();
+  if (!frame_tree_node) {
+    return;
+  }
+
+  DisableVirtualWalletFor(frame_tree_node);
 }
 
 }  // namespace content

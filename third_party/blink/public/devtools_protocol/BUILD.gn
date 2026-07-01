@@ -23,6 +23,7 @@ domains = [
   "domains/DOMStorage.pdl",
   "domains/DeviceAccess.pdl",
   "domains/DeviceOrientation.pdl",
+  "domains/DigitalCredentials.pdl",
   "domains/Emulation.pdl",
   "domains/EventBreakpoints.pdl",
   "domains/Extensions.pdl",

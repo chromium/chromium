@@ -28,6 +28,7 @@
 #include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/device_access_handler.h"
 #include "content/browser/devtools/protocol/device_orientation_handler.h"
+#include "content/browser/devtools/protocol/digital_credentials_handler.h"
 #include "content/browser/devtools/protocol/dom_handler.h"
 #include "content/browser/devtools/protocol/emulation_handler.h"
 #include "content/browser/devtools/protocol/fedcm_handler.h"
@@ -438,6 +439,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   }
   session->CreateAndAddHandler<protocol::LogHandler>();
   session->CreateAndAddHandler<protocol::FedCmHandler>();
+  session->CreateAndAddHandler<protocol::DigitalCredentialsHandler>();
 #if !BUILDFLAG(IS_ANDROID)
   session->CreateAndAddHandler<protocol::WebAuthnHandler>();
 #endif  // !BUILDFLAG(IS_ANDROID)

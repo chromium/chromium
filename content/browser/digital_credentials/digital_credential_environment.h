@@ -13,10 +13,12 @@
 #include "base/sequence_checker.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/devtools_agent_host_observer.h"
 
 namespace content {
 
 class VirtualWallet;
+class DevToolsAgentHost;
 
 // Allows enabling and disabling per-frame virtual wallet environments for the
 // Digital Credentials API. Disabling the environment resets its state.
@@ -24,7 +26,8 @@ class VirtualWallet;
 // This class is a singleton. Pointers returned by this class are valid only
 // for the lifetime of the associated FrameTreeNode.
 class CONTENT_EXPORT DigitalCredentialEnvironment
-    : public FrameTreeNode::Observer {
+    : public FrameTreeNode::Observer,
+      public DevToolsAgentHostObserver {
  public:
   static DigitalCredentialEnvironment* GetInstance();
 
@@ -42,6 +45,9 @@ class CONTENT_EXPORT DigitalCredentialEnvironment
   // Returns the VirtualWallet for |node|, creating one if it does not exist.
   // Unlike MaybeGetVirtualWallet(), this does not look up the ancestor chain.
   VirtualWallet* GetOrCreateVirtualWallet(FrameTreeNode* node);
+
+  // DevToolsAgentHostObserver:
+  void DevToolsAgentHostDetached(DevToolsAgentHost* agent_host) override;
 
  private:
   friend class base::NoDestructor<DigitalCredentialEnvironment>;

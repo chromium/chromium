@@ -5,9 +5,13 @@
 #include "content/browser/digital_credentials/digital_credential_environment.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/digital_credentials/virtual_wallet.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/digital_identity_provider.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_frame_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -157,6 +161,39 @@ TEST_F(DigitalCredentialEnvironmentTest, SiblingFramesHaveIndependentWallets) {
   ASSERT_NE(wallet_a, nullptr);
   ASSERT_NE(wallet_b, nullptr);
   EXPECT_NE(wallet_a, wallet_b);
+}
+
+// DevToolsAgentHostDetached() clears the wallet state when a DevTools agent
+// host is detached for a frame that has an active wallet.
+TEST_F(DigitalCredentialEnvironmentTest, DevToolsDetachClearsWalletState) {
+  FrameTreeNode* child_node = AppendChildNode(RootNode(), "child");
+  ASSERT_NE(child_node, nullptr);
+
+  // Get the DevTools agent host for this frame and simulate detach.
+  auto agent_host = RenderFrameDevToolsAgentHost::GetOrCreateFor(child_node);
+  ASSERT_NE(agent_host.get(), nullptr);
+
+  FrameTreeNode* frame_node =
+      static_cast<RenderFrameDevToolsAgentHost*>(agent_host.get())
+          ->frame_tree_node();
+  ASSERT_NE(frame_node, nullptr);
+
+  VirtualWallet* wallet = env_->GetOrCreateVirtualWallet(frame_node);
+  ASSERT_NE(wallet, nullptr);
+
+  // Set behavior on the wallet to verify it gets cleared.
+  wallet->set_behavior(VirtualWallet::Behavior::kRespond);
+  DigitalIdentityProvider::DigitalCredential credential(
+      "test_protocol", base::Value(base::Value::Type::DICT));
+  wallet->SetCredential(std::move(credential));
+
+  ASSERT_TRUE(wallet->behavior().has_value());
+  ASSERT_TRUE(wallet->GetCredential().has_value());
+
+  env_->DevToolsAgentHostDetached(agent_host.get());
+
+  // Verify the environment no longer contains the wallet for the frame.
+  EXPECT_EQ(env_->MaybeGetVirtualWallet(frame_node), nullptr);
 }
 
 }  // namespace

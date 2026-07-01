@@ -73,6 +73,9 @@
                 "domain": "FedCm"
             },
             {
+                "domain": "DigitalCredentials"
+            },
+            {
                 "domain": "Input",
                 "async": ["dispatchKeyEvent", "insertText", "imeSetComposition", "dispatchMouseEvent", "dispatchDragEvent", "dispatchTouchEvent", "cancelDragging", "synthesizePinchGesture", "synthesizeScrollGesture", "synthesizeTapGesture"]
             },
