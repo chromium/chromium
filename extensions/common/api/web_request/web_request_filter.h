@@ -10,6 +10,7 @@
 
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/web_request/web_request_resource_type.h"
+#include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -19,6 +20,13 @@ class DictValue;
 }  // namespace base
 
 namespace extensions {
+
+// The URL schemes a `webRequest.RequestFilter` URL pattern can match.
+inline constexpr int kWebRequestFilterValidSchemes =
+    URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS |
+    URLPattern::SCHEME_FTP | URLPattern::SCHEME_FILE |
+    URLPattern::SCHEME_EXTENSION | URLPattern::SCHEME_WS |
+    URLPattern::SCHEME_WSS | URLPattern::SCHEME_UUID_IN_PACKAGE;
 
 // Keys of the webRequest.RequestFilter dictionary.
 inline constexpr char kRequestFilterUrlsKey[] = "urls";

@@ -42,7 +42,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative_net_request.h"
-#include "extensions/common/api/web_request/web_request_filter_constants.h"
+#include "extensions/common/api/web_request/web_request_constants.h"
 #include "extensions/common/extension_id.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"

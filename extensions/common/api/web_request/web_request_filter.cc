@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/values.h"
-#include "extensions/common/api/web_request/web_request_filter_constants.h"
 #include "extensions/common/api/web_request/web_request_resource_type.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/url_pattern.h"

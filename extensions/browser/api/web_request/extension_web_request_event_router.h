@@ -27,7 +27,6 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/web_request/web_request_filter.h"
-#include "extensions/common/api/web_request/web_request_filter_constants.h"
 #include "extensions/common/api/web_request/web_request_resource_type.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/url_pattern_set.h"
