@@ -25,7 +25,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
-#include "components/safe_browsing/core/browser/db/v4_database.h"
+#include "components/safe_browsing/core/browser/db/sb_database.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -153,7 +153,7 @@ class ScopedGetHashProtocolManagerFactoryWithTestUrlLoader {
   }
 };
 
-class FakeV4Database : public V4Database {
+class FakeSBDatabase : public SBDatabase {
  public:
   static void Create(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
@@ -162,18 +162,18 @@ class FakeV4Database : public V4Database {
       NewDatabaseReadyCallback new_db_callback,
       bool stores_available,
       int64_t store_file_size) {
-    // Mimics V4Database::Create
+    // Mimics SBDatabase::Create
     const scoped_refptr<base::SequencedTaskRunner>& callback_task_runner =
         base::SequencedTaskRunner::GetCurrentDefault();
     db_task_runner->PostTask(
         FROM_HERE,
-        base::BindOnce(&FakeV4Database::CreateOnTaskRunner, db_task_runner,
+        base::BindOnce(&FakeSBDatabase::CreateOnTaskRunner, db_task_runner,
                        std::move(store_map), store_and_hash_prefixes,
                        callback_task_runner, std::move(new_db_callback),
                        stores_available, store_file_size));
   }
 
-  // V4Database implementation
+  // SBDatabase implementation
   void GetStoresMatchingFullHash(
       const std::vector<FullHashStr>& full_hashes,
       const StoresToCheck& stores_to_check,
@@ -200,7 +200,7 @@ class FakeV4Database : public V4Database {
         base::BindOnce(std::move(callback), std::move(lookup_result)));
   }
 
-  // V4Database implementation
+  // SBDatabase implementation
   int64_t GetStoreSizeInBytes(const ListIdentifier& store) const override {
     return store_file_size_;
   }
@@ -224,23 +224,23 @@ class FakeV4Database : public V4Database {
       NewDatabaseReadyCallback new_db_callback,
       bool stores_available,
       int64_t store_file_size) {
-    // Mimics the semantics of V4Database::CreateOnTaskRunner
-    std::unique_ptr<FakeV4Database, base::OnTaskRunnerDeleter> fake_v4_database(
-        new FakeV4Database(db_task_runner, std::move(store_map),
+    // Mimics the semantics of SBDatabase::CreateOnTaskRunner
+    std::unique_ptr<FakeSBDatabase, base::OnTaskRunnerDeleter> fake_sb_database(
+        new FakeSBDatabase(db_task_runner, std::move(store_map),
                            store_and_hash_prefixes, stores_available,
                            store_file_size),
         base::OnTaskRunnerDeleter(db_task_runner));
     callback_task_runner->PostTask(FROM_HERE,
                                    base::BindOnce(std::move(new_db_callback),
-                                                  std::move(fake_v4_database)));
+                                                  std::move(fake_sb_database)));
   }
 
-  FakeV4Database(const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
+  FakeSBDatabase(const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
                  std::unique_ptr<StoreMap> store_map,
                  const StoreAndHashPrefixes& store_and_hash_prefixes,
                  bool stores_available,
                  int64_t store_file_size)
-      : V4Database(db_task_runner, std::move(store_map)),
+      : SBDatabase(db_task_runner, std::move(store_map)),
         store_and_hash_prefixes_(store_and_hash_prefixes),
         stores_available_(stores_available),
         store_file_size_(store_file_size) {}
@@ -451,7 +451,7 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     v4_local_database_manager_->PopulateArtificialDatabase();
   }
 
-  void ReplaceV4Database(const StoreAndHashPrefixes& store_and_hash_prefixes,
+  void ReplaceSBDatabase(const StoreAndHashPrefixes& store_and_hash_prefixes,
                          bool stores_available = false,
                          int64_t store_file_size = kDefaultStoreFileSizeInBytes,
                          bool wait_for_tasks_for_new_db = true) {
@@ -469,7 +469,7 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     NewDatabaseReadyCallback db_ready_callback = base::BindOnce(
         &V4LocalDatabaseManager::DatabaseReadyForChecks,
         base::Unretained(v4_local_database_manager_.get()), base::Time::Now());
-    FakeV4Database::Create(
+    FakeSBDatabase::Create(
         task_runner_, std::make_unique<StoreMap>(), store_and_hash_prefixes,
         std::move(db_ready_callback), stores_available, store_file_size);
     if (wait_for_tasks_for_new_db) {
@@ -487,7 +487,7 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     StartLocalDatabaseManager();
   }
 
-  void ResetV4Database() { v4_local_database_manager_->v4_database_.reset(); }
+  void ResetSBDatabase() { v4_local_database_manager_->sb_database_.reset(); }
 
   void StartLocalDatabaseManager() {
     v4_local_database_manager_->StartOnUIThread(test_shared_loader_factory_,
@@ -605,7 +605,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithFakeDbReturnsMatch) {
   const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalwareId(), bad_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes);
+  ReplaceSBDatabase(store_and_hash_prefixes);
 
   const GURL url_bad("https://" + url_bad_no_scheme);
   TestClient client(SB_THREAT_TYPE_SAFE, url_bad);
@@ -640,7 +640,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithPrefixMatch) {
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlCsdAllowlistId(),
                                        safe_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   TestAllowlistClient client(
       /* match_expected= */ false,
@@ -674,7 +674,7 @@ TEST_F(V4LocalDatabaseManagerTest,
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlCsdAllowlistId(),
                                        safe_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   TestAllowlistClient client(
       /* match_expected= */ true,
@@ -700,7 +700,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithFullMatch) {
   FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlCsdAllowlistId(), safe_full_hash);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   TestAllowlistClient client(
       /* match_expected= */ true,
@@ -726,7 +726,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithNoMatch) {
   FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalwareId(), safe_full_hash);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   TestAllowlistClient client(
       /* match_expected= */ false,
@@ -749,7 +749,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistUnavailable) {
   WaitForTasksOnTaskRunner();
 
   StoreAndHashPrefixes store_and_hash_prefixes;
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ false);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ false);
 
   TestAllowlistClient client(
       /* match_expected= */ false,
@@ -789,7 +789,7 @@ TEST_F(V4LocalDatabaseManagerTest,
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
                                        safe_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   // Confirm there is no match and the full hash check is not performed.
   const GURL url_check("https://" + url_safe_no_scheme);
@@ -819,7 +819,7 @@ TEST_F(V4LocalDatabaseManagerTest,
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
                                        safe_full_hash);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   // Confirm there is a match and the full hash check is not performed.
   const GURL url_check("https://" + url_safe_no_scheme);
@@ -847,7 +847,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistWithNoMatch) {
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
                                        safe_full_hash);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   // Confirm there is no match and the full hash check is not performed.
   const GURL url_check("https://example.com/other/");
@@ -870,7 +870,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistUnavailable) {
 
   // Setup local database as unavailable.
   StoreAndHashPrefixes store_and_hash_prefixes;
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ false);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ false);
 
   // Confirm there is a match and the full hash check is not performed.
   const GURL url_check("https://example.com/safe");
@@ -896,7 +896,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistAfterStopping) {
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
                                        safe_full_hash);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   const GURL url_check("https://" + url_safe_no_scheme);
   CheckUrlForHighConfidenceAllowlistFuture future;
@@ -918,7 +918,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistSmallSize) {
   // Setup the size of the allowlist to be smaller than the threshold. (10
   // entries)
   StoreAndHashPrefixes store_and_hash_prefixes;
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true,
                     /* store_file_size= */ 32 * 10);
 
   // Confirm there is a match and the full hash check is not performed.
@@ -947,7 +947,7 @@ TEST_F(V4LocalDatabaseManagerTest,
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
                                        safe_full_hash);
-  ReplaceV4Database(store_and_hash_prefixes, /*stores_available=*/true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /*stores_available=*/true);
   const GURL url_check("https://" + url_safe_no_scheme);
 
   // First, confirm the high-confidence allowlist is checked by default.
@@ -1041,7 +1041,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestChecksAreQueued) {
   histograms.ExpectTotalCount(
       "SafeBrowsing.V4CheckUrl.TimeTaken.LocalLookup.UiCallbackQueueDelay", 1);
 
-  ResetV4Database();
+  ResetSBDatabase();
   v4_local_database_manager_->CheckBrowseUrl(url, usual_threat_types_, &client,
                                              CheckBrowseUrlType::kHashDatabase);
   // The database is unavailable so the check should get queued.
@@ -1059,7 +1059,7 @@ TEST_F(V4LocalDatabaseManagerTest, CancelWhileQueued) {
   // pending attempt to create a V4Store at teardown, which will leak.
   WaitForTasksOnTaskRunner();
 
-  ResetV4Database();
+  ResetSBDatabase();
 
   v4_local_database_manager_->CheckBrowseUrl(url, usual_threat_types_, &client,
                                              CheckBrowseUrlType::kHashDatabase);
@@ -1086,7 +1086,7 @@ TEST_F(V4LocalDatabaseManagerTest, CancelPending) {
   const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalwareId(), bad_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes);
+  ReplaceSBDatabase(store_and_hash_prefixes);
 
   const GURL url_bad("https://" + url_bad_no_scheme);
   // Test that a request flows through to the callback.
@@ -1129,7 +1129,7 @@ TEST_F(V4LocalDatabaseManagerTest, CancelPending) {
 
   // Clean up from the database being shut down.
   StartLocalDatabaseManager();
-  ReplaceV4Database(store_and_hash_prefixes);
+  ReplaceSBDatabase(store_and_hash_prefixes);
 
   // Test that the client does not get a response for a pending check when safe
   // browsing is shutdown.
@@ -1201,7 +1201,7 @@ TEST_F(V4LocalDatabaseManagerTest, QueuedCheckWithFullHash) {
   FullHashInfo fhi(bad_full_hash, GetUrlMalwareId(), base::Time());
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({fhi}));
 
-  ReplaceV4Database(store_and_hash_prefixes, false,
+  ReplaceSBDatabase(store_and_hash_prefixes, false,
                     kDefaultStoreFileSizeInBytes, false);
   StartLocalDatabaseManager();
 
@@ -1230,7 +1230,7 @@ TEST_F(V4LocalDatabaseManagerTest, PerformFullHashCheckCalledAsync) {
   const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalwareId(), bad_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes);
+  ReplaceSBDatabase(store_and_hash_prefixes);
 
   const GURL url_bad("https://" + url_bad_no_scheme);
   // The fake database returns a matched hash prefix.
@@ -1256,7 +1256,7 @@ TEST_F(V4LocalDatabaseManagerTest, UsingWeakPtrDropsCallback) {
   const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalwareId(), bad_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes);
+  ReplaceSBDatabase(store_and_hash_prefixes);
 
   const GURL url_bad("https://" + url_bad_no_scheme);
   TestClient client(SB_THREAT_TYPE_SAFE, url_bad);
@@ -1284,14 +1284,14 @@ TEST_F(V4LocalDatabaseManagerTest, TestMatchDownloadAllowlistUrl) {
   store_and_hash_prefixes.emplace_back(GetUrlCsdDownloadAllowlistId(),
                                        HashForUrl(good_url));
 
-  ReplaceV4Database(store_and_hash_prefixes, false /* not available */);
+  ReplaceSBDatabase(store_and_hash_prefixes, false /* not available */);
   // Verify it defaults to false when DB is not available.
   base::test::TestFuture<bool> future1;
   v4_local_database_manager_->MatchDownloadAllowlistUrl(good_url,
                                                         future1.GetCallback());
   EXPECT_FALSE(future1.Get());
 
-  ReplaceV4Database(store_and_hash_prefixes, true /* available */);
+  ReplaceSBDatabase(store_and_hash_prefixes, true /* available */);
   // Not allowlisted.
   base::test::TestFuture<bool> future2;
   v4_local_database_manager_->MatchDownloadAllowlistUrl(other_url,
@@ -1317,7 +1317,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithSameClientAndCancel) {
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalwareId(),
                                        HashPrefixStr("sن\340\t\006_"));
-  ReplaceV4Database(store_and_hash_prefixes);
+  ReplaceSBDatabase(store_and_hash_prefixes);
 
   GURL first_url("http://example.com/a");
   GURL second_url("http://example.com/");
@@ -1362,7 +1362,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestSubresourceFilterCallback) {
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlSubresourceFilterId(),
                                        bad_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   const GURL url_bad("https://" + url_bad_no_scheme);
   // Test that a request flows through to the callback.
@@ -1397,7 +1397,7 @@ TEST_F(V4LocalDatabaseManagerTest,
   // Put a match in the db that will cause a protocol-manager request.
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetChromeExtMalwareId(), extension_id_1);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   const std::set<FullHashStr> expected_bad_crxs({});
   const std::set<FullHashStr> extension_ids({extension_id_2, extension_id_1});
@@ -1425,7 +1425,7 @@ TEST_F(V4LocalDatabaseManagerTest,
 
   // Replace database with empty store (nothing blocklisted).
   StoreAndHashPrefixes store_and_hash_prefixes;
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   const std::set<FullHashStr> expected_bad_crxs({});
   const std::set<FullHashStr> extension_ids({extension_id_2, extension_id_1});
@@ -1460,7 +1460,7 @@ TEST_F(V4LocalDatabaseManagerTest,
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetChromeExtMalwareId(),
                                        bad_extension_id);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   const std::set<FullHashStr> expected_bad_crxs({bad_extension_id});
   const std::set<FullHashStr> extension_ids(
@@ -1491,7 +1491,7 @@ TEST_F(V4LocalDatabaseManagerTest,
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetChromeExtMalwareId(),
                                        bad_extension_id);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   const std::set<FullHashStr> expected_bad_crxs({bad_extension_id});
   const std::set<FullHashStr> extension_ids(
@@ -1533,7 +1533,7 @@ TEST_F(
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetChromeExtMalwareId(),
                                        bad_extension_id);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   const std::set<FullHashStr> expected_bad_crxs({bad_extension_id});
   const std::set<FullHashStr> extension_ids(
@@ -1581,7 +1581,7 @@ TEST_F(
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetChromeExtMalwareId(),
                                        bad_extension_id);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   const std::set<FullHashStr> expected_bad_crxs({bad_extension_id});
   const std::set<FullHashStr> extension_ids(
@@ -1612,7 +1612,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlNothingBlocklisted) {
   const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalBinId(), bad_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   const GURL url_bad("https://" + url_bad_no_scheme),
       url_good("https://example.com/good/");
@@ -1645,7 +1645,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlWithOneBlocklisted) {
   const HashPrefixStr bad_hash_prefix(bad_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalBinId(), bad_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceSBDatabase(store_and_hash_prefixes, /* stores_available= */ true);
 
   TestClient client(SB_THREAT_TYPE_URL_BINARY_MALWARE, url_chain);
   EXPECT_FALSE(
@@ -1661,9 +1661,9 @@ TEST_F(V4LocalDatabaseManagerTest, NotificationOnUpdate) {
       v4_local_database_manager_->RegisterDatabaseUpdatedCallback(
           run_loop.QuitClosure());
 
-  // Creates and associates a V4Database instance.
+  // Creates and associates a SBDatabase instance.
   StoreAndHashPrefixes store_and_hash_prefixes;
-  ReplaceV4Database(store_and_hash_prefixes);
+  ReplaceSBDatabase(store_and_hash_prefixes);
 
   v4_local_database_manager_->DatabaseUpdated();
 

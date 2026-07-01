@@ -97,10 +97,10 @@ static_library("util") {
   ]
 }
 
-static_library("v4_database") {
+static_library("sb_database") {
   sources = [
-    "v4_database.cc",
-    "v4_database.h",
+    "sb_database.cc",
+    "sb_database.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -150,8 +150,8 @@ static_library("v4_local_database_manager") {
   deps = [
     ":database_manager",
     ":safebrowsing_proto",
+    ":sb_database",
     ":sb_update_protocol_manager",
-    ":v4_database",
     ":v4_get_hash_protocol_manager",
     ":v4_protocol_manager_util",
     "//base",
@@ -284,8 +284,8 @@ static_library("v4_test_util") {
     "v4_test_util.h",
   ]
   deps = [
+    ":sb_database",
     ":util",
-    ":v4_database",
     ":v4_get_hash_protocol_manager",
     ":v4_protocol_manager_util",
     "//base",
@@ -360,7 +360,7 @@ source_set("unit_tests_local_db") {
   sources = [
     "hash_prefix_list_unittest.cc",
     "hash_prefix_map_unittest.cc",
-    "v4_database_unittest.cc",
+    "sb_database_unittest.cc",
     "v4_local_database_manager_unittest.cc",
     "v4_rice_unittest.cc",
     "v4_store_unittest.cc",
@@ -370,11 +370,11 @@ source_set("unit_tests_local_db") {
   ]
   deps = [
     ":database_manager",
+    ":sb_database",
     ":sb_store",
     ":sb_update_protocol_manager",
     ":unit_tests_shared",
     ":util",
-    ":v4_database",
     ":v4_local_database_manager",
     ":v4_protocol_manager_util",
     ":v4_rice",

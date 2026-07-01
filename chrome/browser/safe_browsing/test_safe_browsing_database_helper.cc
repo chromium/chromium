@@ -17,7 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "components/safe_browsing/core/browser/db/v4_database.h"
+#include "components/safe_browsing/core/browser/db/sb_database.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -48,16 +48,17 @@ class FakeSafeBrowsingUIManager
 
 }  // namespace
 
+// TODO(crbug.com/362791941): Handle v4 references.
 // This class automatically inserts lists into the store map when initializing
 // the test database.
-class InsertingDatabaseFactory : public safe_browsing::TestV4DatabaseFactory {
+class InsertingDatabaseFactory : public safe_browsing::TestSBDatabaseFactory {
  public:
   explicit InsertingDatabaseFactory(
       safe_browsing::TestV4StoreFactory* store_factory,
       const std::vector<safe_browsing::ListIdentifier>& lists_to_insert)
       : lists_to_insert_(lists_to_insert), store_factory_(store_factory) {}
 
-  std::unique_ptr<safe_browsing::V4Database, base::OnTaskRunnerDeleter> Create(
+  std::unique_ptr<safe_browsing::SBDatabase, base::OnTaskRunnerDeleter> Create(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       std::unique_ptr<safe_browsing::StoreMap> store_map) override {
     const base::FilePath base_store_path(FILE_PATH_LITERAL("UrlDb.store"));
@@ -76,7 +77,7 @@ class InsertingDatabaseFactory : public safe_browsing::TestV4DatabaseFactory {
 
     for (const auto& it : *store_map)
       lists_.push_back(it.first);
-    return safe_browsing::TestV4DatabaseFactory::Create(db_task_runner,
+    return safe_browsing::TestSBDatabaseFactory::Create(db_task_runner,
                                                         std::move(store_map));
   }
 
@@ -106,15 +107,15 @@ TestSafeBrowsingDatabaseHelper::TestSafeBrowsingDatabaseHelper(
   safe_browsing::SafeBrowsingService::RegisterFactory(sb_factory_.get());
 
   auto store_factory = std::make_unique<safe_browsing::TestV4StoreFactory>();
-  auto v4_db_factory = std::make_unique<InsertingDatabaseFactory>(
+  auto sb_db_factory = std::make_unique<InsertingDatabaseFactory>(
       store_factory.get(), lists_to_insert);
 
-  v4_db_factory_ = v4_db_factory.get();
+  sb_db_factory_ = sb_db_factory.get();
 
-  safe_browsing::V4Database::RegisterStoreFactoryForTest(
+  safe_browsing::SBDatabase::RegisterStoreFactoryForTest(
       std::move(store_factory));
-  safe_browsing::V4Database::RegisterDatabaseFactoryForTest(
-      std::move(v4_db_factory));
+  safe_browsing::SBDatabase::RegisterDatabaseFactoryForTest(
+      std::move(sb_db_factory));
 
   if (v4_get_hash_factory) {
     safe_browsing::V4GetHashProtocolManager::RegisterFactory(
@@ -124,8 +125,8 @@ TestSafeBrowsingDatabaseHelper::TestSafeBrowsingDatabaseHelper(
 
 TestSafeBrowsingDatabaseHelper::~TestSafeBrowsingDatabaseHelper() {
   safe_browsing::V4GetHashProtocolManager::RegisterFactory(nullptr);
-  safe_browsing::V4Database::RegisterDatabaseFactoryForTest(nullptr);
-  safe_browsing::V4Database::RegisterStoreFactoryForTest(nullptr);
+  safe_browsing::SBDatabase::RegisterDatabaseFactoryForTest(nullptr);
+  safe_browsing::SBDatabase::RegisterStoreFactoryForTest(nullptr);
   safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
 }
 
@@ -148,13 +149,13 @@ void TestSafeBrowsingDatabaseHelper::LocallyMarkPrefixAsBad(
     const safe_browsing::ListIdentifier& list_id) {
   safe_browsing::FullHashStr full_hash =
       safe_browsing::SBProtocolManagerUtil::GetFullHash(url);
-  while (!v4_db_factory_->IsReady()) {
+  while (!sb_db_factory_->IsReady()) {
     content::RunAllTasksUntilIdle();
   }
-  v4_db_factory_->MarkPrefixAsBad(list_id, full_hash);
+  sb_db_factory_->MarkPrefixAsBad(list_id, full_hash);
 }
 
 bool TestSafeBrowsingDatabaseHelper::HasListSynced(
     const safe_browsing::ListIdentifier& list_id) {
-  return std::ranges::contains(v4_db_factory_->lists(), list_id);
+  return std::ranges::contains(sb_db_factory_->lists(), list_id);
 }

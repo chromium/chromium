@@ -21,7 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
-#include "components/safe_browsing/core/browser/db/v4_database.h"
+#include "components/safe_browsing/core/browser/db/sb_database.h"
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_update_protocol_manager.h"
@@ -49,7 +49,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
 
   // Populates the protobuf with the database data.
   void CollectDatabaseManagerInfo(
-      DatabaseManagerInfo* v4_database_info,
+      DatabaseManagerInfo* sb_database_info,
       FullHashCacheInfo* full_hash_cache_info) const;
 
   // Return an instance of the V4LocalDatabaseManager object
@@ -262,7 +262,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // callback, so we can measure end-to-end initialization time.
   void DatabaseReadyForChecks(
       base::Time start_time,
-      std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> v4_database);
+      std::unique_ptr<SBDatabase, base::OnTaskRunnerDeleter> sb_database);
 
   // Called when all the stores managed by the database have been verified for
   // checksum correctness after startup and the database is ready for applying
@@ -375,7 +375,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // May not be invoked on an Abandon()'ed check.
   void RespondToClientWithoutPendingCheckCleanup(PendingCheck* pending_check);
 
-  // Instantiates and initializes |v4_database_| on the task runner. Sets up the
+  // Instantiates and initializes |sb_database_| on the task runner. Sets up the
   // callback for |DatabaseReady| when the database is ready for use.
   void SetupDatabase();
 
@@ -433,7 +433,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // Instance of the V4LocalDatabaseManager object
   static const V4LocalDatabaseManager* current_local_database_manager_;
 
-  // Called when the V4Database has finished applying the latest update and is
+  // Called when the SBDatabase has finished applying the latest update and is
   // ready to process next update.
   DatabaseUpdatedCallback db_updated_callback_;
 
@@ -466,7 +466,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
 
   // The database that manages the stores containing the hash prefix updates.
   // All writes to this variable must happen on the UI thread.
-  std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> v4_database_;
+  std::unique_ptr<SBDatabase, base::OnTaskRunnerDeleter> sb_database_;
 
   // The protocol manager that downloads the hash prefix updates.
   std::unique_ptr<V4UpdateProtocolManager> v4_update_protocol_manager_;

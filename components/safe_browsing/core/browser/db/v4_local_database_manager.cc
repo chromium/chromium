@@ -319,8 +319,8 @@ void V4LocalDatabaseManager::CollectDatabaseManagerInfo(
     v4_update_protocol_manager_->CollectUpdateInfo(
         database_manager_info->mutable_update_info());
   }
-  if (v4_database_) {
-    v4_database_->CollectDatabaseInfo(
+  if (sb_database_) {
+    sb_database_->CollectDatabaseInfo(
         database_manager_info->mutable_database_info());
   }
   if (v4_get_hash_protocol_manager_) {
@@ -344,7 +344,7 @@ V4LocalDatabaseManager::V4LocalDatabaseManager(
                        : base::ThreadPool::CreateSequencedTaskRunner(
                              {base::MayBlock(),
                               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
-      v4_database_(std::unique_ptr<V4Database, base::OnTaskRunnerDeleter>(
+      sb_database_(std::unique_ptr<SBDatabase, base::OnTaskRunnerDeleter>(
           nullptr,
           base::OnTaskRunnerDeleter(nullptr))),
       enabled_(false),
@@ -623,13 +623,13 @@ void V4LocalDatabaseManager::StopOnUIThread(bool shutdown) {
     RespondSafeToQueuedAndPendingChecks();
   }
 
-  // Delete the V4Database. Any pending writes to disk are completed.
-  // This operation happens on the task_runner on which v4_database_ operates
+  // Delete the SBDatabase. Any pending writes to disk are completed.
+  // This operation happens on the task_runner on which sb_database_ operates
   // and doesn't block the IO thread.
-  if (v4_database_) {
-    v4_database_->StopOnUIThread();
+  if (sb_database_) {
+    sb_database_->StopOnUIThread();
   }
-  v4_database_.reset();
+  sb_database_.reset();
 
   // Delete the V4UpdateProtocolManager.
   // This cancels any in-flight update request.
@@ -643,7 +643,7 @@ void V4LocalDatabaseManager::StopOnUIThread(bool shutdown) {
 }
 
 bool V4LocalDatabaseManager::IsDatabaseReady() const {
-  return enabled_ && !!v4_database_;
+  return enabled_ && !!sb_database_;
 }
 
 //
@@ -652,20 +652,20 @@ bool V4LocalDatabaseManager::IsDatabaseReady() const {
 
 void V4LocalDatabaseManager::DatabaseReadyForChecks(
     base::Time start_time,
-    std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> v4_database) {
+    std::unique_ptr<SBDatabase, base::OnTaskRunnerDeleter> sb_database) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   base::UmaHistogramTimes("SafeBrowsing.V4DatabaseInitializationTime",
                           base::Time::Now() - start_time);
 
-  v4_database->InitializeOnUIThread();
+  sb_database->InitializeOnUIThread();
 
   // The following check is needed because it is possible that by the time the
   // database is ready, StopOnUIThread has been called.
   if (enabled_) {
-    v4_database_ = std::move(v4_database);
+    sb_database_ = std::move(sb_database);
 
-    v4_database_->RecordFileSizeHistograms();
+    sb_database_->RecordFileSizeHistograms();
 
     PopulateArtificialDatabase();
 
@@ -673,21 +673,21 @@ void V4LocalDatabaseManager::DatabaseReadyForChecks(
     // that task on the task runner. It calls |DatabaseReadyForUpdates|
     // callback with the stores to reset, if any, and then we can schedule the
     // database updates.
-    v4_database_->VerifyChecksum(
+    sb_database_->VerifyChecksum(
         base::BindOnce(&V4LocalDatabaseManager::DatabaseReadyForUpdates,
                        weak_factory_.GetWeakPtr()));
 
     ProcessQueuedChecks();
   } else {
-    // Schedule the deletion of v4_database off IO thread.
-    v4_database.reset();
+    // Schedule the deletion of sb_database off IO thread.
+    sb_database.reset();
   }
 }
 
 void V4LocalDatabaseManager::DatabaseReadyForUpdates(
     const std::vector<ListIdentifier>& stores_to_reset) {
   if (IsDatabaseReady()) {
-    v4_database_->ResetStores(stores_to_reset);
+    sb_database_->ResetStores(stores_to_reset);
     UpdateListClientStates(GetStoreStateMap());
 
     // The database is ready to process updates. Schedule them now.
@@ -699,7 +699,7 @@ void V4LocalDatabaseManager::DatabaseUpdated() {
   if (IsDatabaseReady()) {
     v4_update_protocol_manager_->ScheduleNextUpdate(GetStoreStateMap());
 
-    v4_database_->RecordFileSizeHistograms();
+    sb_database_->RecordFileSizeHistograms();
     UpdateListClientStates(GetStoreStateMap());
 
     ui_task_runner()->PostTask(
@@ -737,7 +737,7 @@ void V4LocalDatabaseManager::GetPrefixMatches(
   DCHECK(IsDatabaseReady());
 
   check->local_db_lookup_start_time = base::TimeTicks::Now();
-  v4_database_->GetStoresMatchingFullHash(
+  sb_database_->GetStoresMatchingFullHash(
       check->full_hashes, check->stores_to_check, std::move(callback));
 }
 
@@ -775,7 +775,7 @@ StoresToCheck V4LocalDatabaseManager::GetStoresForFullHashRequests() {
 }
 
 std::unique_ptr<StoreStateMap> V4LocalDatabaseManager::GetStoreStateMap() {
-  return v4_database_->GetStoreStateMap();
+  return sb_database_->GetStoreStateMap();
 }
 
 // Returns the SBThreatType corresponding to a given SafeBrowsing list.
@@ -796,7 +796,7 @@ void V4LocalDatabaseManager::HandleAllowlistCheck(
   // normally be available already -- allowlists are used after page load,
   // and navigations are blocked until the DB is ready and dequeues checks.
   // The caller should have already checked that the DB is ready.
-  DCHECK(v4_database_);
+  DCHECK(sb_database_);
 
   PendingCheck* check_ptr = check.get();
 
@@ -887,7 +887,7 @@ void V4LocalDatabaseManager::HandleAllowlistCheckContinuation(
 }
 
 void V4LocalDatabaseManager::HandleCheck(std::unique_ptr<PendingCheck> check) {
-  if (!v4_database_) {
+  if (!sb_database_) {
     check->queue_start_time = base::TimeTicks::Now();
     queued_checks_.push_back(std::move(check));
     return;
@@ -1245,7 +1245,7 @@ void V4LocalDatabaseManager::SetupDatabase() {
   NewDatabaseReadyCallback db_ready_callback =
       base::BindOnce(&V4LocalDatabaseManager::DatabaseReadyForChecks,
                      weak_factory_.GetWeakPtr(), base::Time::Now());
-  V4Database::Create(task_runner_, base_path_, list_infos_,
+  SBDatabase::Create(task_runner_, base_path_, list_infos_,
                      std::move(db_ready_callback));
 }
 
@@ -1264,14 +1264,14 @@ void V4LocalDatabaseManager::SetupUpdateProtocolManager(
 void V4LocalDatabaseManager::UpdateRequestCompleted(
     std::unique_ptr<ParsedServerResponse> parsed_server_response) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-  v4_database_->ApplyUpdate(std::move(parsed_server_response),
+  sb_database_->ApplyUpdate(std::move(parsed_server_response),
                             db_updated_callback_);
 }
 
 bool V4LocalDatabaseManager::AreAllStoresAvailableNow(
     const StoresToCheck& stores_to_check) const {
   return IsDatabaseReady() &&
-         v4_database_->AreAllStoresAvailable(stores_to_check);
+         sb_database_->AreAllStoresAvailable(stores_to_check);
 }
 
 int64_t V4LocalDatabaseManager::GetStoreEntryCount(const ListIdentifier& store,
@@ -1279,7 +1279,7 @@ int64_t V4LocalDatabaseManager::GetStoreEntryCount(const ListIdentifier& store,
   if (!IsDatabaseReady()) {
     return 0;
   }
-  return v4_database_->GetStoreSizeInBytes(store) / bytes_per_entry;
+  return sb_database_->GetStoreSizeInBytes(store) / bytes_per_entry;
 }
 
 bool V4LocalDatabaseManager::IsStoreTooSmall(const ListIdentifier& store,
@@ -1291,7 +1291,7 @@ bool V4LocalDatabaseManager::IsStoreTooSmall(const ListIdentifier& store,
 bool V4LocalDatabaseManager::AreAnyStoresAvailableNow(
     const StoresToCheck& stores_to_check) const {
   return IsDatabaseReady() &&
-         v4_database_->AreAnyStoresAvailable(stores_to_check);
+         sb_database_->AreAnyStoresAvailable(stores_to_check);
 }
 
 void V4LocalDatabaseManager::UpdateListClientStates(

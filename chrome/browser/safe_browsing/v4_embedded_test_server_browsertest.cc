@@ -18,6 +18,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"
+#include "components/safe_browsing/core/browser/db/sb_database.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_embedded_test_server_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
@@ -59,6 +60,7 @@ std::vector<net::CanonicalCookie> GetCookies(
 
 namespace safe_browsing {
 
+// TODO(crbug.com/362791941): Handle v4 references.
 // This harness tests test-only code for correctness. This ensures that other
 // test classes which want to use the V4 interceptor are testing the right
 // thing.
@@ -76,12 +78,12 @@ class V4EmbeddedTestServerBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     // We only need to mock a local database. The tests will use a true real V4
     // protocol manager.
-    V4Database::RegisterStoreFactoryForTest(
+    SBDatabase::RegisterStoreFactoryForTest(
         std::make_unique<TestV4StoreFactory>());
 
-    auto v4_db_factory = std::make_unique<TestV4DatabaseFactory>();
-    v4_db_factory_ = v4_db_factory.get();
-    V4Database::RegisterDatabaseFactoryForTest(std::move(v4_db_factory));
+    auto sb_db_factory = std::make_unique<TestSBDatabaseFactory>();
+    sb_db_factory_ = sb_db_factory.get();
+    SBDatabase::RegisterDatabaseFactoryForTest(std::move(sb_db_factory));
 
     secure_embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::Type::TYPE_HTTPS);
@@ -91,18 +93,18 @@ class V4EmbeddedTestServerBrowserTest : public InProcessBrowserTest {
 
   void TearDown() override {
     InProcessBrowserTest::TearDown();
-    V4Database::RegisterStoreFactoryForTest(nullptr);
-    V4Database::RegisterDatabaseFactoryForTest(nullptr);
+    SBDatabase::RegisterStoreFactoryForTest(nullptr);
+    SBDatabase::RegisterDatabaseFactoryForTest(nullptr);
   }
 
   // Only marks the prefix as bad in the local database. The server will respond
   // with the source of truth.
   void LocallyMarkPrefixAsBad(const GURL& url, const ListIdentifier& list_id) {
     FullHashStr full_hash = SBProtocolManagerUtil::GetFullHash(url);
-    while (!v4_db_factory_->IsReady()) {
+    while (!sb_db_factory_->IsReady()) {
       content::RunAllTasksUntilIdle();
     }
-    v4_db_factory_->MarkPrefixAsBad(list_id, full_hash);
+    sb_db_factory_->MarkPrefixAsBad(list_id, full_hash);
   }
 
  protected:
@@ -111,8 +113,8 @@ class V4EmbeddedTestServerBrowserTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<net::MappedHostResolver> mapped_host_resolver_;
 
-  // Owned by the V4Database.
-  raw_ptr<TestV4DatabaseFactory, AcrossTasksDanglingUntriaged> v4_db_factory_ =
+  // Owned by the SBDatabase.
+  raw_ptr<TestSBDatabaseFactory, AcrossTasksDanglingUntriaged> sb_db_factory_ =
       nullptr;
 };
 

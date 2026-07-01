@@ -14,7 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/safe_browsing/core/browser/db/v4_database.h"
+#include "components/safe_browsing/core/browser/db/sb_database.h"
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
 
 namespace safe_browsing {
@@ -63,23 +63,23 @@ class TestV4StoreFactory : public V4StoreFactory {
       bool is_extensions_blocklist) override;
 };
 
-class TestV4Database : public V4Database {
+class TestSBDatabase : public SBDatabase {
  public:
-  TestV4Database(const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
+  TestSBDatabase(const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
                  std::unique_ptr<StoreMap> store_map);
 
   void MarkPrefixAsBad(ListIdentifier list_id, HashPrefixStr prefix);
 
-  // V4Database implementation
+  // SBDatabase implementation
   int64_t GetStoreSizeInBytes(const ListIdentifier& store) const override;
 };
 
-class TestV4DatabaseFactory : public V4DatabaseFactory {
+class TestSBDatabaseFactory : public SBDatabaseFactory {
  public:
-  TestV4DatabaseFactory();
-  ~TestV4DatabaseFactory() override;
+  TestSBDatabaseFactory();
+  ~TestSBDatabaseFactory() override;
 
-  std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> Create(
+  std::unique_ptr<SBDatabase, base::OnTaskRunnerDeleter> Create(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       std::unique_ptr<StoreMap> store_map) override;
 
@@ -91,8 +91,8 @@ class TestV4DatabaseFactory : public V4DatabaseFactory {
   // Owned by V4LocalDatabaseManager. The following usage is expected: each
   // test in the test fixture instantiates a new SafebrowsingService instance,
   // which instantiates a new V4LocalDatabaseManager, which instantiates a new
-  // V4Database using this method so use-after-free isn't possible.
-  raw_ptr<TestV4Database, AcrossTasksDanglingUntriaged> v4_db_ = nullptr;
+  // SBDatabase using this method so use-after-free isn't possible.
+  raw_ptr<TestSBDatabase, AcrossTasksDanglingUntriaged> sb_db_ = nullptr;
 };
 
 class TestV4GetHashProtocolManager : public V4GetHashProtocolManager {

@@ -61,9 +61,9 @@
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/sb_database.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
-#include "components/safe_browsing/core/browser/db/v4_database.h"
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
@@ -384,6 +384,7 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
 
 }  // namespace
 
+// TODO(crbug.com/362791941): Handle v4 references.
 // Tests the safe browsing blocking page in a browser.
 class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
  public:
@@ -405,12 +406,12 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
     SafeBrowsingService::RegisterFactory(sb_factory_.get());
 
     store_factory_ = new TestV4StoreFactory();
-    V4Database::RegisterStoreFactoryForTest(
+    SBDatabase::RegisterStoreFactoryForTest(
         base::WrapUnique(store_factory_.get()));
 
-    v4_db_factory_ = new TestV4DatabaseFactory();
-    V4Database::RegisterDatabaseFactoryForTest(
-        base::WrapUnique(v4_db_factory_.get()));
+    sb_db_factory_ = new TestSBDatabaseFactory();
+    SBDatabase::RegisterDatabaseFactoryForTest(
+        base::WrapUnique(sb_db_factory_.get()));
 
     v4_get_hash_factory_ = new TestV4GetHashProtocolManagerFactory();
     V4GetHashProtocolManager::RegisterFactory(
@@ -425,8 +426,8 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
     // Unregister test factories after InProcessBrowserTest::TearDown
     // (which destructs SafeBrowsingService).
     V4GetHashProtocolManager::RegisterFactory(nullptr);
-    V4Database::RegisterDatabaseFactoryForTest(nullptr);
-    V4Database::RegisterStoreFactoryForTest(nullptr);
+    SBDatabase::RegisterDatabaseFactoryForTest(nullptr);
+    SBDatabase::RegisterStoreFactoryForTest(nullptr);
     SafeBrowsingService::RegisterFactory(nullptr);
   }
 
@@ -437,10 +438,10 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
     metadata.threat_pattern_type = threat_pattern_type;
     FullHashInfo full_hash_info =
         GetFullHashInfoWithMetadata(bad_url, list_id, metadata);
-    while (!v4_db_factory_->IsReady()) {
+    while (!sb_db_factory_->IsReady()) {
       content::RunAllTasksUntilIdle();
     }
-    v4_db_factory_->MarkPrefixAsBad(list_id, full_hash_info.full_hash);
+    sb_db_factory_->MarkPrefixAsBad(list_id, full_hash_info.full_hash);
     v4_get_hash_factory_->AddToFullHashCache(full_hash_info);
   }
 
@@ -536,12 +537,12 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<TestSafeBrowsingServiceFactory> sb_factory_;
-  // Owned by the V4Database.
-  raw_ptr<TestV4DatabaseFactory, AcrossTasksDanglingUntriaged> v4_db_factory_;
+  // Owned by the SBDatabase.
+  raw_ptr<TestSBDatabaseFactory, AcrossTasksDanglingUntriaged> sb_db_factory_;
   // Owned by the V4GetHashProtocolManager.
   raw_ptr<TestV4GetHashProtocolManagerFactory, AcrossTasksDanglingUntriaged>
       v4_get_hash_factory_;
-  // Owned by the V4Database.
+  // Owned by the SBDatabase.
   raw_ptr<TestV4StoreFactory, AcrossTasksDanglingUntriaged> store_factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
 

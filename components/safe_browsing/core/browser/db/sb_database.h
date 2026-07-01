@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_V4_DATABASE_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_V4_DATABASE_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_SB_DATABASE_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_SB_DATABASE_H_
 
 #include <memory>
 #include <string>
@@ -25,14 +25,15 @@
 class SafeBrowsingServiceTest;
 class TestSafeBrowsingDatabaseHelper;
 
+// TODO(crbug.com/362791941): Handle references to v4.
 namespace safe_browsing {
 
-class V4Database;
+class SBDatabase;
 
 // Scheduled when the database has been read from disk and is ready to process
 // resource reputation requests.
 using NewDatabaseReadyCallback = base::OnceCallback<void(
-    std::unique_ptr<V4Database, base::OnTaskRunnerDeleter>)>;
+    std::unique_ptr<SBDatabase, base::OnTaskRunnerDeleter>)>;
 
 // Scheduled when the checksum for all the stores in the database has been
 // verified to match the expected value. Stores for which the checksum did not
@@ -102,12 +103,12 @@ class ListInfo {
 
 using ListInfos = std::vector<ListInfo>;
 
-// Factory for creating V4Database. Tests implement this factory to create fake
+// Factory for creating SBDatabase. Tests implement this factory to create fake
 // databases for testing.
-class V4DatabaseFactory {
+class SBDatabaseFactory {
  public:
-  virtual ~V4DatabaseFactory() = default;
-  virtual std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> Create(
+  virtual ~SBDatabaseFactory() = default;
+  virtual std::unique_ptr<SBDatabase, base::OnTaskRunnerDeleter> Create(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       std::unique_ptr<StoreMap> store_map);
 };
@@ -118,15 +119,15 @@ class V4DatabaseFactory {
 // otherwise.
 // The hash-prefixes of each type are managed by a V4Store (including saving to
 // and reading from disk).
-// The V4Database serves as a single place to manage all the V4Stores.
-class V4Database {
+// The SBDatabase serves as a single place to manage all the V4Stores.
+class SBDatabase {
  public:
-  // Factory method to create a V4Database. It creates the database on the
+  // Factory method to create a SBDatabase. It creates the database on the
   // provided |db_task_runner| containing stores in |store_file_name_map|. When
   // the database creation is complete, it runs the NewDatabaseReadyCallback on
   // the same thread as it was called.
   // NOTE: Within |new_db_callback| the client should invoke
-  // V4Database::InitializeOnUIThread() on the UI thread.
+  // SBDatabase::InitializeOnUIThread() on the UI thread.
   static void Create(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       const base::FilePath& base_path,
@@ -139,10 +140,10 @@ class V4Database {
   // Destroy state that lives on the UI thread.
   void StopOnUIThread();
 
-  V4Database(const V4Database&) = delete;
-  V4Database& operator=(const V4Database&) = delete;
+  SBDatabase(const SBDatabase&) = delete;
+  SBDatabase& operator=(const SBDatabase&) = delete;
 
-  virtual ~V4Database();
+  virtual ~SBDatabase();
 
   // Updates the stores with the response received from the SafeBrowsing service
   // and calls the db_updated_callback when done.
@@ -198,11 +199,11 @@ class V4Database {
   void CollectDatabaseInfo(DatabaseManagerInfo::DatabaseInfo* database_info);
 
  protected:
-  V4Database(const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
+  SBDatabase(const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
              std::unique_ptr<StoreMap> store_map);
 
   // The collection of V4Stores, keyed by ListIdentifier.
-  // The map itself lives on the V4Database's parent thread, but its V4Store
+  // The map itself lives on the SBDatabase's parent thread, but its V4Store
   // objects live on the db_task_runner_thread.
   // TODO(vakh): Consider writing a container object which encapsulates or
   // harmonizes thread affinity for the associative container and the data.
@@ -211,20 +212,20 @@ class V4Database {
  private:
   friend class ::SafeBrowsingServiceTest;
   friend class ::TestSafeBrowsingDatabaseHelper;
-  friend class V4DatabaseFactory;
+  friend class SBDatabaseFactory;
   friend class V4EmbeddedTestServerBrowserTest;
-  friend class V4DatabaseTest;
+  friend class SBDatabaseTest;
   friend class V4SafeBrowsingServiceTest;
-  FRIEND_TEST_ALL_PREFIXES(V4DatabaseTest, TestSetupDatabaseWithFakeStores);
-  FRIEND_TEST_ALL_PREFIXES(V4DatabaseTest,
+  FRIEND_TEST_ALL_PREFIXES(SBDatabaseTest, TestSetupDatabaseWithFakeStores);
+  FRIEND_TEST_ALL_PREFIXES(SBDatabaseTest,
                            TestSetupDatabaseWithFakeStoresFailsReset);
-  FRIEND_TEST_ALL_PREFIXES(V4DatabaseTest, TestApplyUpdateWithNewStates);
-  FRIEND_TEST_ALL_PREFIXES(V4DatabaseTest, TestApplyUpdateWithNoNewState);
-  FRIEND_TEST_ALL_PREFIXES(V4DatabaseTest, TestApplyUpdateWithEmptyUpdate);
-  FRIEND_TEST_ALL_PREFIXES(V4DatabaseTest, TestApplyUpdateWithInvalidUpdate);
-  FRIEND_TEST_ALL_PREFIXES(V4DatabaseTest, TestSomeStoresMatchFullHash);
+  FRIEND_TEST_ALL_PREFIXES(SBDatabaseTest, TestApplyUpdateWithNewStates);
+  FRIEND_TEST_ALL_PREFIXES(SBDatabaseTest, TestApplyUpdateWithNoNewState);
+  FRIEND_TEST_ALL_PREFIXES(SBDatabaseTest, TestApplyUpdateWithEmptyUpdate);
+  FRIEND_TEST_ALL_PREFIXES(SBDatabaseTest, TestApplyUpdateWithInvalidUpdate);
+  FRIEND_TEST_ALL_PREFIXES(SBDatabaseTest, TestSomeStoresMatchFullHash);
 
-  // Factory method to create a V4Database. When the database creation is
+  // Factory method to create a SBDatabase. When the database creation is
   // complete, it calls the NewDatabaseReadyCallback on |callback_task_runner|.
   static void CreateOnTaskRunner(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
@@ -233,10 +234,10 @@ class V4Database {
       const scoped_refptr<base::SequencedTaskRunner>& callback_task_runner,
       NewDatabaseReadyCallback callback);
 
-  // Makes the passed |factory| the factory used to instantiate a V4Database.
+  // Makes the passed |factory| the factory used to instantiate a SBDatabase.
   // Only for tests.
   static void RegisterDatabaseFactoryForTest(
-      std::unique_ptr<V4DatabaseFactory> factory);
+      std::unique_ptr<SBDatabaseFactory> factory);
 
   // Makes the passed |factory| the factory used to instantiate a V4Store. Only
   // for tests.
@@ -276,9 +277,9 @@ class V4Database {
 
   // Only meant to be dereferenced and invalidated on the IO thread and hence
   // named. For details, see the comment at the top of weak_ptr.h
-  base::WeakPtrFactory<V4Database> weak_factory_on_io_{this};
+  base::WeakPtrFactory<SBDatabase> weak_factory_on_io_{this};
 };
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_V4_DATABASE_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_SB_DATABASE_H_
