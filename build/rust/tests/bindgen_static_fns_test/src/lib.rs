@@ -7,6 +7,7 @@ chromium::import! {
 }
 
 pub fn mul_three_numbers_in_c(a: u32, b: u32, c: u32) -> u32 {
+    // SAFETY: This function is safe, but bindgen doesn't know that.
     unsafe { c_lib_bindgen::mul_three_numbers(a, b, c) }
 }
 

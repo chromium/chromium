@@ -26,9 +26,12 @@ pub fn say_hello() {
 }
 
 pub fn alloc_aligned() {
+    // SAFETY: 512 is a power of two, and 1024 is already a multiple of 512
     let layout = unsafe { Layout::from_size_align_unchecked(1024, 512) };
+    // SAFETY: `layout` is nonzero
     let ptr = unsafe { alloc(layout) };
     println!("Alloc aligned ptr: {:p}", ptr);
+    // SAFETY: `ptr` was just allocated in this allocator with `layout`
     unsafe { dealloc(ptr, layout) };
 }
 
@@ -49,11 +52,13 @@ pub fn allocate_via_rust() -> Box<ffi::SomeStruct> {
 // Used from the RustLargeAllocationFailure unit tests.
 pub fn allocate_huge_via_rust(size: usize, align: usize) -> bool {
     let layout = std::alloc::Layout::from_size_align(size, align).unwrap();
+    // SAFETY: `from_size_align` ensures `layout` is non-zero.
     let p = unsafe { std::alloc::alloc(layout) };
     // Rust can optimize out allocations. By printing the pointer value we ensure
     // the allocation actually happens (and can thus fail).
     dbg!(p);
     if !p.is_null() {
+        // SAFETY: `ptr` was just allocated in this allocator with `layout`
         unsafe { std::alloc::dealloc(p, layout) };
     }
     !p.is_null()

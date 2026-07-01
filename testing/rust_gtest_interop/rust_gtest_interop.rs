@@ -119,13 +119,15 @@ pub mod __private {
         let null_term_message = std::ffi::CString::new(message).unwrap();
 
         unsafe extern "C" {
+            // SAFETY: Both pointers have to be valid, probably
             fn rust_gtest_add_failure_at(
                 file: *const std::ffi::c_char,
                 line: i32,
                 message: *const std::ffi::c_char,
             );
-
         }
+
+        // SAFETY: Both pointers come from valid `ffi::CString`s.
         unsafe {
             rust_gtest_add_failure_at(
                 null_term_file.as_ptr(),

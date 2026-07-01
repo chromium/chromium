@@ -25,6 +25,9 @@
 // TODO(https://crbug.com/410596442): Stop using internal features here.
 #![allow(internal_features)]
 #![feature(rustc_attrs)]
+// TODO(crbug.com/497856781): Document the safety requirements of the C++
+// allocator functions, and then ensure all the blocks in this file are sound.
+#![allow(clippy::undocumented_unsafe_blocks)]
 
 /// Module that provides `#[global_allocator]` / `GlobalAlloc` interface for
 /// using an allocator from C++.

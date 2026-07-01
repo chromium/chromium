@@ -10,6 +10,7 @@ use cpp_lib_bindgen::root::functions;
 
 #[unsafe(no_mangle)]
 pub fn rust_main() {
+    // SAFETY: This function is safe, but bindgen doesn't know that.
     let from_cpp = unsafe { functions::normal_fn(functions::kNumber) };
     println!("2 == {from_cpp}");
     assert_eq!(2, from_cpp);

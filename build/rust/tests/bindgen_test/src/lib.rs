@@ -7,6 +7,7 @@ chromium::import! {
 }
 
 pub fn add_two_numbers_in_c(a: u32, b: u32) -> u32 {
+    // SAFETY: This function is safe, but bindgen doesn't know that.
     unsafe { c_lib_bindgen::add_two_numbers(a, b) }
 }
 
