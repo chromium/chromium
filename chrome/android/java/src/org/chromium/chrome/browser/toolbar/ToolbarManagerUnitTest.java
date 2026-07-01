@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.toolbar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -108,6 +110,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.theme.BottomUiThemeColorProvider;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
@@ -260,6 +263,7 @@ public class ToolbarManagerUnitTest {
 
     @Captor private ArgumentCaptor<ButtonDataObserver> mIdentityDiscObserverCaptor;
     @Captor private ArgumentCaptor<ButtonDataObserver> mAdaptiveButtonObserverCaptor;
+    @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
 
     private List<ButtonDataProvider> mButtonDataProviders;
     private ActivityController<TestActivity> mActivityController;
@@ -348,6 +352,7 @@ public class ToolbarManagerUnitTest {
         when(mTab.isInitialized()).thenReturn(true);
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModelSelector.getCurrentModelTabCountSupplier())
@@ -499,7 +504,54 @@ public class ToolbarManagerUnitTest {
 
     @After
     public void tearDown() {
+        mToolbarManager.destroy();
         mActivityController.close();
+    }
+
+    private Tab mockTab(boolean isNtp) {
+        return mockTab(isNtp, false);
+    }
+
+    private Tab mockTab(boolean isNtp, boolean isIncognito) {
+        Tab tab = mock(Tab.class);
+        when(tab.getProfile()).thenReturn(isIncognito ? mIncognitoProfile : mProfile);
+        when(tab.getTabViewManager()).thenReturn(mTabViewManager);
+        UserDataHost userDataHost = new UserDataHost();
+        when(tab.getUserDataHost()).thenReturn(userDataHost);
+        when(tab.isInitialized()).thenReturn(true);
+        when(tab.isIncognito()).thenReturn(isIncognito);
+        when(tab.isNativePage()).thenReturn(isNtp);
+
+        if (isNtp) {
+            when(tab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+            NewTabPage ntpPage = mock(NewTabPage.class);
+            when(ntpPage.getHost()).thenReturn("newtab");
+            when(tab.getNativePage()).thenReturn(ntpPage);
+        } else {
+            when(tab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+            when(tab.getNativePage()).thenReturn(null);
+        }
+        return tab;
+    }
+
+    private void setMockConstraintsHelper(
+            Tab tab, BrowserControlsVisibilityDelegate visibilityDelegate) {
+        try {
+            TabBrowserControlsConstraintsHelper helper =
+                    mock(TabBrowserControlsConstraintsHelper.class);
+            Field field =
+                    TabBrowserControlsConstraintsHelper.class.getDeclaredField(
+                            "mVisibilityDelegate");
+            field.setAccessible(true);
+            field.set(helper, visibilityDelegate);
+            TabBrowserControlsConstraintsHelper.setForTesting(tab, helper);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private AutocompleteInput getAutocompleteInput() {
+        return mToolbarManager.getLocationBar().getOmniboxStub().getAutocompleteInputForTesting();
     }
 
     @Test
@@ -526,7 +578,6 @@ public class ToolbarManagerUnitTest {
                 "Home button should be GONE when flag is on",
                 View.GONE,
                 homeButton.getVisibility());
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -575,8 +626,6 @@ public class ToolbarManagerUnitTest {
                 "Fallback color for bottom toolbar in incognito should be Surface Container High",
                 expectedColor,
                 actualColor);
-
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -589,8 +638,6 @@ public class ToolbarManagerUnitTest {
         homeButton.performClick();
 
         verify(mTabBottomSheetManager).setSheetExpanded(false);
-
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -610,8 +657,6 @@ public class ToolbarManagerUnitTest {
         // Because NTP scroll-off returns true, the supplier should return BOTH even though the tab
         // constraints are SHOWN.
         assertEquals(BrowserControlsState.BOTH, supplier.get().intValue());
-
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -630,8 +675,6 @@ public class ToolbarManagerUnitTest {
 
         // Even if scroll-off is disabled, we force BOTH on NTP to allow screenshots.
         assertEquals(BrowserControlsState.BOTH, supplier.get().intValue());
-
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -651,8 +694,6 @@ public class ToolbarManagerUnitTest {
         // If bottom bar is disabled on NTP, we should not force BOTH constraints (should return
         // SHOWN).
         assertEquals(BrowserControlsState.SHOWN, supplier.get().intValue());
-
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -671,8 +712,6 @@ public class ToolbarManagerUnitTest {
 
         // On a normal page, the supplier should respect the tab constraints (SHOWN).
         assertEquals(BrowserControlsState.SHOWN, supplier.get().intValue());
-
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -689,8 +728,6 @@ public class ToolbarManagerUnitTest {
 
         // When the bottom bar feature is disabled, the constraints should not be forced to BOTH.
         assertEquals(Integer.valueOf(BrowserControlsState.SHOWN), supplier.get());
-
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -711,8 +748,6 @@ public class ToolbarManagerUnitTest {
         // updates,
         // even though tab constraints are SHOWN.
         assertEquals(BrowserControlsState.BOTH, supplier.get().intValue());
-
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -746,50 +781,6 @@ public class ToolbarManagerUnitTest {
         // Exiting XR space mode should finally restore hairline to VISIBLE.
         mToolbarManager.onXrSpaceModeChanged(false);
         assertEquals(View.VISIBLE, hairline.getVisibility());
-
-        mToolbarManager.destroy();
-    }
-
-    private Tab mockTab(boolean isNtp) {
-        return mockTab(isNtp, false);
-    }
-
-    private Tab mockTab(boolean isNtp, boolean isIncognito) {
-        Tab tab = mock(Tab.class);
-        when(tab.getProfile()).thenReturn(isIncognito ? mIncognitoProfile : mProfile);
-        when(tab.getTabViewManager()).thenReturn(mTabViewManager);
-        UserDataHost userDataHost = new UserDataHost();
-        when(tab.getUserDataHost()).thenReturn(userDataHost);
-        when(tab.isInitialized()).thenReturn(true);
-        when(tab.isIncognito()).thenReturn(isIncognito);
-        when(tab.isNativePage()).thenReturn(isNtp);
-
-        if (isNtp) {
-            when(tab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
-            NewTabPage ntpPage = mock(NewTabPage.class);
-            when(ntpPage.getHost()).thenReturn("newtab");
-            when(tab.getNativePage()).thenReturn(ntpPage);
-        } else {
-            when(tab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-            when(tab.getNativePage()).thenReturn(null);
-        }
-        return tab;
-    }
-
-    private void setMockConstraintsHelper(
-            Tab tab, BrowserControlsVisibilityDelegate visibilityDelegate) {
-        try {
-            TabBrowserControlsConstraintsHelper helper =
-                    mock(TabBrowserControlsConstraintsHelper.class);
-            Field field =
-                    TabBrowserControlsConstraintsHelper.class.getDeclaredField(
-                            "mVisibilityDelegate");
-            field.setAccessible(true);
-            field.set(helper, visibilityDelegate);
-            TabBrowserControlsConstraintsHelper.setForTesting(tab, helper);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Test
@@ -821,8 +812,6 @@ public class ToolbarManagerUnitTest {
                 toolbar.findViewById(R.id.toolbar_buttons)
                         .findViewById(R.id.optional_toolbar_button_container);
         assertTrue(toolbarButton == null || toolbarButton.getVisibility() == View.GONE);
-
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -852,8 +841,6 @@ public class ToolbarManagerUnitTest {
         View locationBar = activity.findViewById(R.id.location_bar);
         View locationBarButton = locationBar.findViewById(R.id.optional_button);
         assertTrue(locationBarButton == null || locationBarButton.getVisibility() == View.GONE);
-
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -886,9 +873,6 @@ public class ToolbarManagerUnitTest {
                 toolbar.findViewById(R.id.toolbar_buttons)
                         .findViewById(R.id.optional_toolbar_button_container);
         assertTrue(toolbarButton == null || toolbarButton.getVisibility() == View.GONE);
-
-        ChromeFeatureList.sAndroidBottomBarDisableOnNtp.setForTesting(true);
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -919,8 +903,6 @@ public class ToolbarManagerUnitTest {
                 toolbar.findViewById(R.id.toolbar_buttons)
                         .findViewById(R.id.optional_toolbar_button_container);
         assertTrue(toolbarButton == null || toolbarButton.getVisibility() == View.GONE);
-
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -954,9 +936,6 @@ public class ToolbarManagerUnitTest {
                         .findViewById(R.id.optional_toolbar_button_container);
         assertNotNull(toolbarButton);
         assertEquals(View.VISIBLE, toolbarButton.getVisibility());
-
-        ChromeFeatureList.sAndroidBottomBarDisableOnNtp.setForTesting(true);
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -992,8 +971,6 @@ public class ToolbarManagerUnitTest {
         assertNotNull(locationBarButton);
         assertEquals(View.VISIBLE, locationBarButton.getVisibility());
         assertTrue(toolbarButton == null || toolbarButton.getVisibility() == View.GONE);
-
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -1057,8 +1034,6 @@ public class ToolbarManagerUnitTest {
         assertTrue(locationBarButton == null || locationBarButton.getVisibility() == View.GONE);
         assertNotNull(toolbarButton);
         assertEquals(View.VISIBLE, toolbarButton.getVisibility());
-
-        mToolbarManager.destroy();
     }
 
     @Test
@@ -1109,7 +1084,27 @@ public class ToolbarManagerUnitTest {
 
         assertTrue(toolbarButton == null || toolbarButton.getVisibility() == View.GONE);
         assertTrue(locationBarButton == null || locationBarButton.getVisibility() == View.GONE);
+    }
 
-        mToolbarManager.destroy();
+    @Test
+    public void testSuspendFuseboxInputOnForegroundTabAdd() {
+        String userText = "hello world";
+        verify(mTabModelSelector, atLeastOnce())
+                .addObserver(mTabModelSelectorObserverCaptor.capture());
+        AutocompleteInput input = new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP);
+        input.setUserText(userText);
+        mToolbarManager.beginFuseboxInput(input);
+        assertEquals(userText, getAutocompleteInput().getUserText());
+
+        Tab newTab = mockTab(/* isNtp= */ false);
+        for (TabModelSelectorObserver obs : mTabModelSelectorObserverCaptor.getAllValues()) {
+            obs.onTabHidden(mTab);
+        }
+        assertNull(getAutocompleteInput());
+
+        mActivityTabProvider.setForTesting(newTab);
+        mActivityTabProvider.setForTesting(mTab);
+        assertNotNull(getAutocompleteInput());
+        assertEquals(userText, getAutocompleteInput().getUserText());
     }
 }

@@ -79,4 +79,9 @@ public interface OmniboxStub {
     // TODO(b/519232041): Expand loadUrl() to take the "ActivationType" param to differentiate
     // various ways of resolving user input and migrate this call to loadUrl().
     void loadUrlFromVoice(String query);
+
+    /** Returns the active AutocompleteInput, if any. */
+    default @Nullable AutocompleteInput getAutocompleteInputForTesting() {
+        return null;
+    }
 }

@@ -3078,4 +3078,9 @@ class LocationBarMediator
     /* package */ ToolbarWidthConsumer getBookmarkButtonToolbarWidthConsumerForTesting() {
         return mBookmarkButtonToolbarWidthConsumer;
     }
+
+    @Override
+    public @Nullable AutocompleteInput getAutocompleteInputForTesting() {
+        return mCurrentInput;
+    }
 }
