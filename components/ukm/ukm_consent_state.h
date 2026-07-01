@@ -21,7 +21,7 @@ enum UkmConsentType {
   // found in chrome://settings/syncSetup/advanced.
   EXTENSIONS,
   // App Sync is consented, depends on MSBB.
-  // Controls recording of app:// URLs.
+  // Controls recording of app:// and isolated-app:// URLs.
   // This flag should reflect the "Apps" user setting
   // found in chrome://settings/syncSetup/advanced.
   APPS,

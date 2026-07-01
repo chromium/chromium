@@ -23,6 +23,10 @@ extern const char kExtensionScheme[];
 // kChromeDevToolsScheme is defined in content, which also isn't available here.
 COMPONENT_EXPORT(UKM_RECORDER)
 extern const char kChromeDevToolsScheme[];
+// kIsolatedScheme is defined in components/webapps, which also isn't available
+// here.
+COMPONENT_EXPORT(UKM_RECORDER)
+extern const char kIsolatedAppScheme[];
 
 }  // namespace ukm
 

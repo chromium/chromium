@@ -1684,6 +1684,9 @@ TEST_F(UkmServiceTest, SupportedSchemes) {
       {"about:blank", true},
       {"chrome://version/", true},
       {"app://play/abcdefghijklmnopqrstuvwxyzabcdef/", true},
+      {"isolated-app://"
+       "pl2ctdpnkf7ltse22mpjdb376etd3ydo7s72lgspuopgzcwl5tkqaaic/",
+       true},
       // chrome-extension are controlled by TestIsWebstoreExtension, above.
       {"chrome-extension://bhcnanendmgjjeghamaccjnochlnhcgj/", true},
       {"chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/", false},
@@ -2167,10 +2170,13 @@ TEST_F(UkmServiceTest, WebDXFeatures) {
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(UkmServiceTest, NotifyObserverOnShutdown) {
   MockUkmRecorderObserver observer;
-  UkmService service(&prefs_, &client_,
-                     std::make_unique<MockDemographicMetricsProvider>());
-  ukm::UkmRecorder::Get()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnStartingShutdown()).Times(1);
+  {
+    UkmService service(&prefs_, &client_,
+                       std::make_unique<MockDemographicMetricsProvider>());
+    ukm::UkmRecorder::Get()->AddObserver(&observer);
+    EXPECT_CALL(observer, OnStartingShutdown()).Times(1);
+  }
+  ukm::UkmRecorder::Get()->RemoveObserver(&observer);
 }
 
 namespace {

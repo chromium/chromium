@@ -93,6 +93,8 @@ SourceType ToProtobufSourceType(SourceIdType source_id_type) {
       return SourceType::NOTIFICATION_ID;
     case SourceIdType::CDM_ID:
       return SourceType::CDM_ID;
+    case SourceIdType::IWA_BUNDLE_ID:
+      return SourceType::IWA_BUNDLE_ID;
   }
 }
 

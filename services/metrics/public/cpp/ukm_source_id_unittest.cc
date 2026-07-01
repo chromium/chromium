@@ -48,7 +48,8 @@ TEST(UkmSourceIdTest, GetSourceIdType) {
     const SourceIdType expected_type = SourceIdType(type_index);
     if (expected_type == SourceIdType::WEBAPK_ID ||
         expected_type == SourceIdType::PAYMENT_APP_ID ||
-        expected_type == SourceIdType::WEB_IDENTITY_ID) {
+        expected_type == SourceIdType::WEB_IDENTITY_ID ||
+        expected_type == SourceIdType::IWA_BUNDLE_ID) {
       // See comment in ConvertToSourceId regarding these special cases.
       continue;
     }

@@ -68,7 +68,8 @@ bool IsAllowlistedSourceId(SourceId source_id) {
     case ukm::SourceIdObj::Type::CHROMEOS_WEBSITE_ID:
     case ukm::SourceIdObj::Type::NOTIFICATION_ID:
     case ukm::SourceIdObj::Type::EXTENSION_ID:
-    case ukm::SourceIdObj::Type::CDM_ID: {
+    case ukm::SourceIdObj::Type::CDM_ID:
+    case ukm::SourceIdObj::Type::IWA_BUNDLE_ID: {
       return true;
     }
     case ukm::SourceIdObj::Type::DEFAULT:
@@ -83,7 +84,7 @@ bool IsAllowlistedSourceId(SourceId source_id) {
 bool HasSupportedScheme(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(url::kAboutScheme) ||
          url.SchemeIs(kChromeUIScheme) || url.SchemeIs(kExtensionScheme) ||
-         url.SchemeIs(kAppScheme);
+         url.SchemeIs(kAppScheme) || url.SchemeIs(kIsolatedAppScheme);
 }
 
 void RecordDroppedSource(DroppedDataReason reason) {
@@ -868,6 +869,7 @@ void UkmRecorderImpl::RecordNavigation(
 UkmConsentType UkmRecorderImpl::GetConsentType(SourceIdType type) {
   switch (type) {
     case SourceIdType::APP_ID:
+    case SourceIdType::IWA_BUNDLE_ID:
       return UkmConsentType::APPS;
     case SourceIdType::DEFAULT:
     case SourceIdType::NAVIGATION_ID:
@@ -948,6 +950,7 @@ void UkmRecorderImpl::MaybeMarkForDeletion(SourceId source_id) {
     case ukm::SourceIdObj::Type::NAVIGATION_ID:
     case ukm::SourceIdObj::Type::WORKER_ID:
     case ukm::SourceIdObj::Type::REDIRECT_ID:
+    case ukm::SourceIdObj::Type::IWA_BUNDLE_ID:
       break;
   }
 }

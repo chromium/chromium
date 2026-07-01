@@ -411,11 +411,14 @@ void UkmService::PurgeAppsData() {
   PurgeDataFromUnsentLogStore(
       reporting_service_.ukm_log_store(),
       [&](const Source& source) {
-        if (GetSourceIdType(source.id()) == SourceIdType::APP_ID) {
+        auto source_id_type = GetSourceIdType(source.id());
+        if (source_id_type == SourceIdType::APP_ID ||
+            source_id_type == SourceIdType::IWA_BUNDLE_ID) {
           return true;
         }
         for (const auto& url_info : source.urls()) {
-          if (GURL(url_info.url()).SchemeIs(kAppScheme)) {
+          GURL url = GURL(url_info.url());
+          if (url.SchemeIs(kAppScheme) || url.SchemeIs(kIsolatedAppScheme)) {
             return true;
           }
         }
@@ -425,7 +428,9 @@ void UkmService::PurgeAppsData() {
 
   // Purge data currently in the recordings intended for the next ukm::Report.
   UkmRecorderImpl::PurgeRecordingsWithUrlScheme(kAppScheme);
+  UkmRecorderImpl::PurgeRecordingsWithUrlScheme(kIsolatedAppScheme);
   UkmRecorderImpl::PurgeRecordingsWithSourceIdType(SourceIdType::APP_ID);
+  UkmRecorderImpl::PurgeRecordingsWithSourceIdType(SourceIdType::IWA_BUNDLE_ID);
 }
 
 void UkmService::PurgeMsbbData() {
