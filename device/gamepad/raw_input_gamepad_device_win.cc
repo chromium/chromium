@@ -144,9 +144,11 @@ void RawInputGamepadDeviceWin::UpdateGamepad(RAWINPUT* input) {
     // Handle Dualshock4 input reports that do not specify HID gamepad usages in
     // the report descriptor.
     uint8_t report_id = input->data.hid.bRawData[0];
-    // SAFETY: data.hid.bRawData has length data.hid.dwSizeHid.
+    // SAFETY: The Windows RAWHID API prepends the report ID byte to bRawData
+    // but does not include it in dwSizeHid. Therefore, the actual size of
+    // bRawData is dwSizeHid + 1.
     auto raw_data = UNSAFE_BUFFERS(
-        base::span(input->data.hid.bRawData, input->data.hid.dwSizeHid));
+        base::span(input->data.hid.bRawData, input->data.hid.dwSizeHid + 1));
     auto report = raw_data.subspan(1u);
     Gamepad pad;
     bool is_multitouch_enabled = features::IsGamepadMultitouchEnabled();
