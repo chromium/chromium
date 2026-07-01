@@ -86,10 +86,10 @@ class SessionImpl : public OnDeviceSession {
   AddContextResult AddContextImpl(MultimodalMessage request,
                                   SetInputCallback callback);
 
-  void DestroyOnDeviceState();
+  void DestroyOnDeviceState(std::string_view reason);
 
   // Called when an on-device execution flow terminates, and can be cleaned up.
-  void OnDeviceExecutionTerminated(bool healthy);
+  void OnDeviceExecutionTerminated();
 
   // Helper function to get the size of request in tokens with boolean flag to
   // control if we are extracting the context or the execution text.

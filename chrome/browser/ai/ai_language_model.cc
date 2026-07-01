@@ -687,7 +687,7 @@ AILanguageModel::AILanguageModel(
     OPTIMIZATION_GUIDE_LOGGER(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
         logger_.get())
-        << "Starting on-device session for PromptApi with SessionParams: "
+        << "Starting on-device session for LanguageModel with params: "
         << base::StringPrintf(
                "{max_tokens=%u, top_k=%u, temperature=%.2f, image_input=%d, "
                "audio_input=%d}",
@@ -701,9 +701,17 @@ AILanguageModel::AILanguageModel(
 }
 
 AILanguageModel::~AILanguageModel() {
+  const bool crashed = !initial_session_;
   // If the initial session has been reset, the session crashed.
-  base::UmaHistogramBoolean("AI.Session.LanguageModel.Crashed",
-                            !initial_session_);
+  base::UmaHistogramBoolean("AI.Session.LanguageModel.Crashed", crashed);
+
+  if (logger_ && logger_->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+        logger_.get())
+        << "Terminated on-device session for LanguageModel. Reason: "
+        << (crashed ? "Session crashed" : "Session destroyed");
+  }
 }
 
 // static

@@ -107,7 +107,7 @@ class OnDeviceExecution final
       on_device_model::mojom::ResponseConstraintPtr constraint,
       std::unique_ptr<ResultLogger> logger,
       OptimizationGuideModelExecutionResultStreamingCallback callback,
-      base::OnceCallback<void(bool)> cleanup_callback);
+      base::OnceClosure cleanup_callback);
   ~OnDeviceExecution() final;
 
   // Begin processing the request.
@@ -192,7 +192,7 @@ class OnDeviceExecution final
 
   // Called after terminating to release all held resources and notify owner
   // that this object is safe to destroy.
-  void Cleanup(bool healthy);
+  void Cleanup();
 
   const mojom::OnDeviceFeature feature_;
   const OnDeviceOptions opts_;
@@ -245,8 +245,7 @@ class OnDeviceExecution final
 
   // Callback to notify the owning session that on-device execution has
   // terminated, and that this object is safe to destroy.
-  // Should pass true to indicate healthy completion, or false if unhealthy.
-  base::OnceCallback<void(bool)> cleanup_callback_;
+  base::OnceClosure cleanup_callback_;
 
   mojo::Receiver<on_device_model::mojom::StreamingResponder> receiver_{this};
   mojo::Receiver<on_device_model::mojom::ContextClient> context_receiver_{this};

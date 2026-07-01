@@ -106,7 +106,7 @@ OnDeviceExecution::OnDeviceExecution(
     on_device_model::mojom::ResponseConstraintPtr constraint,
     std::unique_ptr<ResultLogger> logger,
     OptimizationGuideModelExecutionResultStreamingCallback callback,
-    base::OnceCallback<void(bool)> cleanup_callback)
+    base::OnceClosure cleanup_callback)
     : feature_(feature),
       opts_(std::move(opts)),
       last_message_(std::move(message)),
@@ -503,7 +503,7 @@ void OnDeviceExecution::CancelPendingResponse(Result result,
       base::unexpected(error), /*provided_by_on_device=*/true,
       std::make_unique<proto::ModelExecutionInfo>(std::move(exec_log_))));
   if (self) {
-    self->Cleanup(/*healthy=*/true);
+    self->Cleanup();
   }
 }
 
@@ -536,11 +536,11 @@ void OnDeviceExecution::SendSuccessCompletionCallback(
       /*provided_by_on_device=*/true,
       std::make_unique<proto::ModelExecutionInfo>(std::move(exec_log_))));
   if (self) {
-    self->Cleanup(/*healthy=*/true);
+    self->Cleanup();
   }
 }
 
-void OnDeviceExecution::Cleanup(bool healthy) {
+void OnDeviceExecution::Cleanup() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   session_.reset();
   receiver_.reset();
@@ -549,7 +549,7 @@ void OnDeviceExecution::Cleanup(bool healthy) {
   exec_log_.Clear();
   current_response_.clear();
   histogram_logger_.reset();
-  std::move(cleanup_callback_).Run(healthy);
+  std::move(cleanup_callback_).Run();
 }
 
 OnDeviceExecution::SafeRawOutput::SafeRawOutput() = default;
