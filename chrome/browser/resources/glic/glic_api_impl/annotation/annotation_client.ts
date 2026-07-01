@@ -3,54 +3,50 @@
 // found in the LICENSE file.
 
 import type {GlicBrowserHost, ScrollToParams} from '../../glic_api/glic_api.js';
-import type {WebClientHost, WebClientInitialStatePrivate} from '../request_types.js';
-import type {PendingReceiver, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
+import type {GlicBrowserHostBaseContext} from '../client/glic_client_common.js';
+import type {WebClientInitialStatePrivate} from '../request_types.js';
+import type {PendingReceiver, PostMessageRemote} from '../transport/post_message_transport.js';
 
 import {AnnotationHostDef} from './annotation_types.js';
 import type {AnnotationHost} from './annotation_types.js';
 
-type Constructor<T = {}> = new (...args: any[]) => T;
+export class GlicBrowserHostAnnotation implements Partial<GlicBrowserHost> {
+  private annotationSender?: PostMessageRemote<AnnotationHost>;
+  private annotationReceiver?: PendingReceiver<AnnotationHost>;
 
-export function glicBrowserHostAnnotationMixin<T extends Constructor>(base: T) {
-  return class extends base implements Partial<GlicBrowserHost> {
-    annotationSender?: PostMessageRemote<AnnotationHost>;
-    annotationReceiver?: PendingReceiver<AnnotationHost>;
-    mainClientRemote?: PostMessageRemote<WebClientHost>;
+  constructor(private host: GlicBrowserHostBaseContext) {}
 
-    initializeAnnotation(
-        initialState: WebClientInitialStatePrivate, router: PostMessageRouter,
-        clientRemote: PostMessageRemote<WebClientHost>) {
-      if (!initialState.enableScrollTo) {
-        this.scrollTo = undefined;
-        this.dropScrollToHighlight = undefined;
-        return;
-      }
-
-      const {remote, receiver} = router.newPipeWithRemote(AnnotationHostDef);
-      this.annotationSender = remote;
-      this.annotationReceiver = receiver;
-      this.mainClientRemote = clientRemote;
+  initialize(initialState: WebClientInitialStatePrivate) {
+    if (!initialState.enableScrollTo) {
+      this.scrollTo = undefined;
+      this.dropScrollToHighlight = undefined;
+      return;
     }
 
-    async scrollTo?(params: ScrollToParams): Promise<void> {
-      this.ensureAnnotationHandlerCreated();
-      return this.annotationSender!.requestWithResponse('scrollTo', {params});
-    }
+    const {remote, receiver} =
+        this.host.router.newPipeWithRemote(AnnotationHostDef);
+    this.annotationSender = remote;
+    this.annotationReceiver = receiver;
+  }
 
-    dropScrollToHighlight?(): void {
-      this.ensureAnnotationHandlerCreated();
-      this.annotationSender!.requestNoResponse(
-          'dropScrollToHighlight', undefined);
-    }
+  async scrollTo?(params: ScrollToParams): Promise<void> {
+    this.ensureAnnotationHandlerCreated();
+    return this.annotationSender!.requestWithResponse('scrollTo', {params});
+  }
 
-    ensureAnnotationHandlerCreated() {
-      if (this.annotationReceiver === undefined) {
-        return;
-      }
-      this.mainClientRemote!.requestNoResponse('createAnnotationHandler', {
-        annotationReceiver: this.annotationReceiver,
-      });
-      this.annotationReceiver = undefined;
+  dropScrollToHighlight?(): void {
+    this.ensureAnnotationHandlerCreated();
+    this.annotationSender!.requestNoResponse(
+        'dropScrollToHighlight', undefined);
+  }
+
+  private ensureAnnotationHandlerCreated() {
+    if (this.annotationReceiver === undefined) {
+      return;
     }
-  };
+    this.host.clientRemote.requestNoResponse('createAnnotationHandler', {
+      annotationReceiver: this.annotationReceiver,
+    });
+    this.annotationReceiver = undefined;
+  }
 }

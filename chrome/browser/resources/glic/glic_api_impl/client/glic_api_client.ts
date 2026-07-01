@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import {CaptureRegionErrorReason, HostCapability} from '../../glic_api/glic_api.js';
-import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, ExperimentalTriggeringUpdate, FocusedTabData, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, SelectAutofillSuggestionsDialogRequest, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, ExperimentalTriggeringUpdate, FocusedTabData, FormFactor, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {GlicBrowserHostActor} from '../actor/actor_client.js';
-import {glicBrowserHostAnnotationMixin} from '../annotation/annotation_client.js';
-import {glicBrowserHostSkillsMixin} from '../skills/skills_client.js';
+import {GlicBrowserHostAnnotation} from '../annotation/annotation_client.js';
+import {GlicBrowserHostSkills} from '../skills/skills_client.js';
+import {assertNever} from '../transport/messaging.js';
 import type {ResponseExtras} from '../transport/messaging.js';
 import {createBidirectionalPostMessageTransport} from '../transport/post_message_transport.js';
 import type {PendingRemote, PostMessageHandler, PostMessageReceiver, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
@@ -15,6 +16,8 @@ import type {PendingRemote, PostMessageHandler, PostMessageReceiver, PostMessage
 import {replaceProperties} from './../conversions.js';
 import {ERROR_CODEC, ErrorWithReasonImpl, newTransferableException, SubscriberObservationType, WebClientDef, WebClientHostDef, WebClientPinCandidatesObserverDef, WebClientRegionCaptureDef, WebClientTabDataObserverDef, WebClientTabFaviconObserverDef} from './../request_types.js';
 import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, GlicException, ImageBytesResultPrivate, ImageInfoPrivate, InvokeOptionsPrivate, PdfDocumentDataPrivate, PinCandidatePrivate, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClient, WebClientHost, WebClientPinCandidatesObserver, WebClientRegionCapture, WebClientTabDataObserver, WebClientTabFaviconObserver} from './../request_types.js';
+import type {GlicBrowserHostBaseContext} from './glic_client_common.js';
+import {createDelegationProxy} from './glic_client_common.js';
 import {rgbaImageToBlob} from './image_utils.js';
 import type {ObservableSetByTabIdDelegate} from './observable_set_by_tab_id.js';
 import {ObservableSetByTabId} from './observable_set_by_tab_id.js';
@@ -292,7 +295,8 @@ class WebClientMessageHandler implements PostMessageHandler<WebClient> {
   notifyActOnWebCapabilityChanged(payload: {
     canActOnWeb: boolean,
   }): void {
-    this.host.actOnWebCapabilityValue.assignAndSignal(payload.canActOnWeb);
+    this.host.actorClient.actOnWebCapabilityValue.assignAndSignal(
+        payload.canActOnWeb);
   }
 
   onboardingCompletedChanged(payload: {completed: boolean}): void {
@@ -300,7 +304,7 @@ class WebClientMessageHandler implements PostMessageHandler<WebClient> {
   }
 
   notifyActorTaskListRowClicked(payload: {taskId: number}): void {
-    this.host.actorTaskListRowClickedSubject.next(payload.taskId);
+    this.host.actorClient.actorTaskListRowClickedSubject.next(payload.taskId);
   }
 
 }
@@ -321,12 +325,16 @@ class WebClientRegionCaptureHandler implements
   }
 }
 
-export class GlicBrowserHostImpl extends glicBrowserHostSkillsMixin
-(glicBrowserHostAnnotationMixin(GlicBrowserHostActor))
-    implements GlicBrowserHost {
+export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
+                                            GlicBrowserHost {
   readonly router: PostMessageRouter;
+  protected webClientMessageHandler: WebClientMessageHandler;
   readonly clientRemote: PostMessageRemote<WebClientHost>;
-  private webClientMessageHandler: WebClientMessageHandler;
+
+  readonly actorClient: GlicBrowserHostActor;
+  readonly annotationClient: GlicBrowserHostAnnotation;
+  readonly skillsClient: GlicBrowserHostSkills;
+
   private chromeVersion?: ChromeVersion;
   private platform?: Platform;
   private formFactor?: FormFactor;
@@ -386,13 +394,6 @@ export class GlicBrowserHostImpl extends glicBrowserHostSkillsMixin
   notifyPanelWillOpenCompleted = Promise.withResolvers<void>();
 
   constructor(public webClient: GlicWebClient, windowProxy: WindowProxy) {
-    super();
-    // TODO(harringtond): Ideally, we could ensure we only process requests from
-    // the single senderId used by the web client. This would avoid accidental
-    // processing of requests from a previous client. This risk is very minimal,
-    // as it would require reloading the webview page and initializing a new
-    // web client very quickly, and in normal operation, the webview does not
-    // reload after successful load.
     this.webClientMessageHandler =
         new WebClientMessageHandler(this.webClient, this);
     const {router, rootRemote} = createBidirectionalPostMessageTransport(
@@ -408,6 +409,11 @@ export class GlicBrowserHostImpl extends glicBrowserHostSkillsMixin
     );
     this.router = router;
     this.clientRemote = rootRemote;
+
+    this.actorClient = new GlicBrowserHostActor(this);
+    this.annotationClient = new GlicBrowserHostAnnotation(this);
+    this.skillsClient = new GlicBrowserHostSkills();
+
     this.getTabByIdObservableSet =
         new ObservableSetByTabId<TabData, WebClientTabDataObserver>(
             new GetTabByIdObservableSetImpl(), this.clientRemote, this.router);
@@ -416,6 +422,15 @@ export class GlicBrowserHostImpl extends glicBrowserHostSkillsMixin
             new GetTabFaviconByIdObservableSetImpl(), this.clientRemote,
             this.router);
     this.metrics = new GlicBrowserHostMetricsImpl(this.clientRemote);
+
+    const proxy = createDelegationProxy(this as GlicBrowserHostImpl, [
+      this.actorClient,
+      this.annotationClient,
+      this.skillsClient,
+    ]);
+    type UnimplementedApis = Exclude<keyof GlicBrowserHost, keyof typeof proxy>;
+    assertNever<UnimplementedApis>();
+    return proxy as unknown as GlicBrowserHostImpl;
   }
 
   destroy() {
@@ -426,17 +441,13 @@ export class GlicBrowserHostImpl extends glicBrowserHostSkillsMixin
     const response = await this.clientRemote.requestWithResponse(
         'webClientCreated',
         {clientCapabilities: Array.from(clientCapabilities)});
-    if (response.actorRemote !== undefined &&
-        response.actorReceiver !== undefined) {
-      this.initializeActor(
-          response.initialState, this.router, response.actorRemote,
-          response.actorReceiver);
-    }
-    this.initializeSkills(
+    this.actorClient.initialize(
+        response.initialState, response.actorRemote, response.actorReceiver);
+    this.annotationClient.initialize(response.initialState);
+    this.skillsClient.initialize(
         response.initialState, this.router, response.skillsRemote,
         response.skillsReceiver);
-    this.initializeAnnotation(
-        response.initialState, this.router, this.clientRemote);
+
     const state = response.initialState;
     this.geminiEnterpriseSettings.assignAndSignal(
         state.geminiEnterpriseSettings ?? undefined);
@@ -481,7 +492,7 @@ export class GlicBrowserHostImpl extends glicBrowserHostSkillsMixin
     for (const capability of state.hostCapabilities) {
       this.hostCapabilities.add(capability);
     }
-    this.actOnWebCapabilityValue.assignAndSignal(state.canActOnWeb);
+    this.actorClient.actOnWebCapabilityValue.assignAndSignal(state.canActOnWeb);
     this.onboardingCompleted.assignAndSignal(state.onboardingCompleted);
 
     // Set the method to undefined since it's gated behind a mojo
@@ -491,19 +502,6 @@ export class GlicBrowserHostImpl extends glicBrowserHostSkillsMixin
             HostCapability.GET_MODEL_QUALITY_CLIENT_ID)) {
       // MOJO_RUNTIME_FEATURE_GATED GetModelQualityClientId
       this.getModelQualityClientId = undefined;
-    }
-
-    if (!state.enableSkills) {
-      this.createSkill = undefined;
-      this.updateSkill = undefined;
-      this.showManageSkillsUi = undefined;
-      this.showBrowseSkillsUi = undefined;
-      this.getSkill = undefined;
-    }
-
-    if (!state.enableScrollTo) {
-      this.scrollTo = undefined;
-      this.dropScrollToHighlight = undefined;
     }
 
     if (!state.enableZeroStateSuggestions) {
@@ -517,11 +515,6 @@ export class GlicBrowserHostImpl extends glicBrowserHostSkillsMixin
 
     if (!state.enableMaybeRefreshUserStatus) {
       this.maybeRefreshUserStatus = undefined;
-    }
-
-    if (!state.enableGetContextActor) {
-      // MOJO_RUNTIME_FEATURE_GATED GetContextForActorFromTab
-      this.getContextForActorFromTab = undefined;
     }
 
     if (!state.enableGetPageMetadata) {
@@ -1057,10 +1050,6 @@ export class GlicBrowserHostImpl extends glicBrowserHostSkillsMixin
     return observableValue;
   }
 
-  selectAutofillSuggestionsDialogRequestHandler?
-      (): Observable<SelectAutofillSuggestionsDialogRequest> {
-    return this.selectAutofillSuggestionsDialogRequestSubject;
-  }
 
   setOnboardingCompleted?(): void {
     return this.clientRemote.requestNoResponse(

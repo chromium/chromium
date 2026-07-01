@@ -53,16 +53,19 @@ def _CheckGlicGeneratedApi(input_api, output_api):
 
 
 def _CheckRuntimeFeatureChecksIfModified(input_api, output_api):
-    MONITORED_FILES = set((
-        'chrome/browser/resources/glic/glic_api_impl/client/glic_api_client.ts',
-        'chrome/browser/glic/host/glic.mojom',
-        'chrome/browser/resources/glic/presubmit/check_runtime_features.py',
-    ))
-
     os_path = input_api.os_path
-    src_root = os_path.join(os.path.dirname(__file__), '../../../..')
+    src_root = os_path.join(os_path.dirname(__file__), '../../../..')
 
-    if not (set(input_api.UnixLocalPaths()) & MONITORED_FILES):
+    for path in input_api.UnixLocalPaths():
+        if path.startswith('chrome/browser/resources/glic/glic_api_impl/'):
+            break
+        if path in (
+                'chrome/browser/glic/host/glic.mojom',
+                'chrome/browser/resources/glic/presubmit' +
+                '/check_runtime_features.py',
+        ):
+            break
+    else:
         return []
 
     cmd = [

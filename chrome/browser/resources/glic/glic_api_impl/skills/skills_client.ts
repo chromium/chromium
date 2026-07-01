@@ -13,19 +13,12 @@ import type {PendingReceiver, PendingRemote, PostMessageRemote, PostMessageRoute
 import {SkillsClientDef} from './skills_types.js';
 import type {SkillsClient, SkillsHost} from './skills_types.js';
 
-type Constructor<T = {}> = new (...args: any[]) => T;
-
-interface SkillsHostInterface {
-  skillPreviews: ObservableValueImpl<SkillPreview[]>;
-  skillToInvoke: ObservableValueImpl<Skill>;
-}
-
 export class SkillsWebClientMessageHandler implements
     MessageHandlerInterface<SkillsClient> {
   private cachedSkillPreviews: SkillPreview[] = [];
   private cachedContextualSkillPreviews: SkillPreview[] = [];
 
-  constructor(private host: SkillsHostInterface) {}
+  constructor(private host: GlicBrowserHostSkills) {}
 
   notifySkillPreviewsChanged(payload: {
     skillPreviews: SkillPreview[],
@@ -92,85 +85,81 @@ export class SkillsWebClientMessageHandler implements
   }
 }
 
-export function glicBrowserHostSkillsMixin<T extends Constructor>(base: T) {
-  return class extends base implements Partial<GlicBrowserHost> {
-    skillsRemote?: PostMessageRemote<SkillsHost>;
-    skillsWebClientMessageHandler = new SkillsWebClientMessageHandler(
-        this as unknown as SkillsHostInterface);
-    skillPreviews = ObservableValueImpl.withNoValue<SkillPreview[]>();
-    skillToInvoke = ObservableValueImpl.withNoValue<Skill>();
+export class GlicBrowserHostSkills implements Partial<GlicBrowserHost> {
+  private skillsRemote?: PostMessageRemote<SkillsHost>;
+  private skillsWebClientMessageHandler =
+      new SkillsWebClientMessageHandler(this);
+  skillPreviews = ObservableValueImpl.withNoValue<SkillPreview[]>();
+  skillToInvoke = ObservableValueImpl.withNoValue<Skill>();
 
-    initializeSkills(
-        initialState: WebClientInitialStatePrivate, router: PostMessageRouter,
-        skillsRemote: PendingRemote<SkillsHost>|undefined,
-        skillsReceiver: PendingReceiver<SkillsClient>|undefined) {
-      if (!initialState.enableSkills) {
-        this.createSkill = undefined;
-        this.updateSkill = undefined;
-        this.showManageSkillsUi = undefined;
-        this.showBrowseSkillsUi = undefined;
-        this.getSkill = undefined;
-        return;
-      }
-
-      if (skillsRemote && skillsReceiver) {
-        this.skillsRemote = router.newRemote(skillsRemote);
-        router.newReceiver(
-            skillsReceiver, this.skillsWebClientMessageHandler,
-            SkillsClientDef);
-      }
+  initialize(
+      initialState: WebClientInitialStatePrivate, router: PostMessageRouter,
+      skillsRemote: PendingRemote<SkillsHost>|undefined,
+      skillsReceiver: PendingReceiver<SkillsClient>|undefined) {
+    if (!initialState.enableSkills) {
+      this.createSkill = undefined;
+      this.updateSkill = undefined;
+      this.showManageSkillsUi = undefined;
+      this.showBrowseSkillsUi = undefined;
+      this.getSkill = undefined;
+      return;
     }
 
-    async createSkill?(request: CreateSkillRequest): Promise<void> {
-      assert(this.skillsRemote);
-      const result =
-          await this.skillsRemote.requestWithResponse('createSkill', {request});
-      if (!result.modalOpened) {
-        throw new Error('createSkill: failed to open dialog');
-      }
+    if (skillsRemote && skillsReceiver) {
+      this.skillsRemote = router.newRemote(skillsRemote);
+      router.newReceiver(
+          skillsReceiver, this.skillsWebClientMessageHandler, SkillsClientDef);
     }
+  }
 
-    async updateSkill?(request: UpdateSkillRequest): Promise<void> {
-      assert(this.skillsRemote);
-      const result =
-          await this.skillsRemote.requestWithResponse('updateSkill', {request});
-      if (!result.modalOpened) {
-        throw new Error('updateSkill: failed to open dialog');
-      }
+  async createSkill?(request: CreateSkillRequest): Promise<void> {
+    assert(this.skillsRemote);
+    const result =
+        await this.skillsRemote.requestWithResponse('createSkill', {request});
+    if (!result.modalOpened) {
+      throw new Error('createSkill: failed to open dialog');
     }
+  }
 
-    showManageSkillsUi?(): void {
-      assert(this.skillsRemote);
-      this.skillsRemote.requestNoResponse('showManageSkillsUi', undefined);
+  async updateSkill?(request: UpdateSkillRequest): Promise<void> {
+    assert(this.skillsRemote);
+    const result =
+        await this.skillsRemote.requestWithResponse('updateSkill', {request});
+    if (!result.modalOpened) {
+      throw new Error('updateSkill: failed to open dialog');
     }
+  }
 
-    showBrowseSkillsUi?(): void {
-      assert(this.skillsRemote);
-      this.skillsRemote.requestNoResponse('showBrowseSkillsUi', undefined);
-    }
+  showManageSkillsUi?(): void {
+    assert(this.skillsRemote);
+    this.skillsRemote.requestNoResponse('showManageSkillsUi', undefined);
+  }
 
-    async getSkill?(id: string): Promise<Skill> {
-      assert(this.skillsRemote);
-      const result =
-          await this.skillsRemote.requestWithResponse('getSkill', {id});
-      if (!result.skill) {
-        throw new Error('getSkill: failed');
-      }
-      return result.skill;
-    }
+  showBrowseSkillsUi?(): void {
+    assert(this.skillsRemote);
+    this.skillsRemote.requestNoResponse('showBrowseSkillsUi', undefined);
+  }
 
-    recordSkillsWebClientEvent?(event: SkillsWebClientEvent): void {
-      assert(this.skillsRemote);
-      this.skillsRemote.requestNoResponse(
-          'recordSkillsWebClientEvent', {event});
+  async getSkill?(id: string): Promise<Skill> {
+    assert(this.skillsRemote);
+    const result =
+        await this.skillsRemote.requestWithResponse('getSkill', {id});
+    if (!result.skill) {
+      throw new Error('getSkill: failed');
     }
+    return result.skill;
+  }
 
-    getSkillPreviews?(): ObservableValue<SkillPreview[]> {
-      return this.skillPreviews;
-    }
+  recordSkillsWebClientEvent?(event: SkillsWebClientEvent): void {
+    assert(this.skillsRemote);
+    this.skillsRemote.requestNoResponse('recordSkillsWebClientEvent', {event});
+  }
 
-    getSkillToInvoke?(): ObservableValue<Skill> {
-      return this.skillToInvoke;
-    }
-  };
+  getSkillPreviews?(): ObservableValue<SkillPreview[]> {
+    return this.skillPreviews;
+  }
+
+  getSkillToInvoke?(): ObservableValue<Skill> {
+    return this.skillToInvoke;
+  }
 }

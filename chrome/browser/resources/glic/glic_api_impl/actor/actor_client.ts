@@ -10,12 +10,13 @@ import type {ActorTaskInterruptReason, CancelActionsResult, CreateActorTabOption
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {convertTabContextResultFromPrivate, convertTabDataFromPrivate} from '../client/glic_api_client.js';
+import type {GlicBrowserHostBaseContext} from '../client/glic_client_common.js';
 import {rgbaImageToBlob} from '../client/image_utils.js';
 import type {WebClientInitialStatePrivate} from '../request_types.js';
-import type {PendingReceiver, PendingRemote, PostMessageHandler, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
+import type {PendingReceiver, PendingRemote, PostMessageHandler, PostMessageRemote} from '../transport/post_message_transport.js';
 
 import {ActorClientDef, ConfirmationRequestErrorReason, GmailOtpOptInErrorReason, SelectAutofillSuggestionsDialogErrorReason, SelectCredentialDialogErrorReason} from './actor_types.js';
-import type {ActorClient, ActorHost, CredentialPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, GmailOtpOptInRequestPrivate, GmailOtpOptInResponsePrivate} from './actor_types.js';
+import type {ActorClient, ActorHost, CredentialPrivate, GmailOtpOptInRequestPrivate, GmailOtpOptInResponsePrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate} from './actor_types.js';
 
 // Implements actor-specific methods on GlicBrowserHost.
 export class GlicBrowserHostActor implements Partial<GlicBrowserHost> {
@@ -36,17 +37,24 @@ export class GlicBrowserHostActor implements Partial<GlicBrowserHost> {
   private journalHost?: GlicBrowserHostJournalImpl;
   actOnWebCapabilityValue = ObservableValueImpl.withNoValue<boolean>();
   readonly actorTaskListRowClickedSubject = new Subject<number>();
+  // TODO: Remove this from the API.
+  actInFocusedTab = undefined;
 
-  constructor() {
+  constructor(private host: GlicBrowserHostBaseContext) {
     this.actorWebClientMessageHandler = new ActorWebClientMessageHandler(this);
   }
 
-  initializeActor(
-      initialState: WebClientInitialStatePrivate, router: PostMessageRouter,
+  initialize(
+      initialState: WebClientInitialStatePrivate,
       actorRemote: PendingRemote<ActorHost>|undefined,
       actorReceiver: PendingReceiver<ActorClient>|undefined) {
     if (actorRemote === undefined || actorReceiver === undefined ||
         !initialState.enableActInFocusedTab) {
+      this.selectUserConfirmationDialogRequestHandler = undefined;
+      this.selectCredentialDialogRequestHandler = undefined;
+      this.selectNavigationConfirmationRequestHandler = undefined;
+      this.selectAutofillSuggestionsDialogRequestHandler = undefined;
+      this.getContextForActorFromTab = undefined;
       this.createTask = undefined;
       this.performActions = undefined;
       this.cancelActions = undefined;
@@ -55,32 +63,40 @@ export class GlicBrowserHostActor implements Partial<GlicBrowserHost> {
       this.resumeActorTask = undefined;
       this.interruptActorTask = undefined;
       this.uninterruptActorTask = undefined;
-      this.getActOnWebCapability = undefined;
+      this.getActorTaskState = undefined;
       this.createActorTab = undefined;
+      this.getActOnWebCapability = undefined;
       this.actorTaskListRowClicked = undefined;
       this.getJournalHost = undefined;
       return;
     }
 
-    this.actorSender = router.newRemote(actorRemote);
-    router.newReceiver(
+    this.actorSender = this.host.router.newRemote(actorRemote);
+    this.host.router.newReceiver(
         actorReceiver, this.actorWebClientMessageHandler, ActorClientDef);
     this.journalHost = new GlicBrowserHostJournalImpl(this.actorSender);
     if (!initialState.enableGmailOtpOptIn) {
       this.selectGmailOtpOptInRequestHandler = undefined;
     }
+    if (!initialState.enableGetContextActor) {
+      // MOJO_RUNTIME_FEATURE_GATED GetContextForActorFromTab
+      this.getContextForActorFromTab = undefined;
+    }
   }
 
   setActorTaskState(taskId: number, state: ActorTaskState): void {
-    this.getActorTaskState(taskId).assignAndSignal(state);
+    const stateObs =
+        this.getActorTaskState?.(taskId) as ObservableValueImpl<ActorTaskState>|
+        undefined;
+    stateObs?.assignAndSignal(state);
 
     if (state === ActorTaskState.STOPPED) {
       this.actorTaskState.delete(taskId);
     }
   }
 
-  selectUserConfirmationDialogRequestHandler():
-      Observable<UserConfirmationDialogRequest> {
+  selectUserConfirmationDialogRequestHandler?
+      (): Observable<UserConfirmationDialogRequest> {
     return this.userConfirmationDialogRequestSubject;
   }
 
@@ -89,13 +105,18 @@ export class GlicBrowserHostActor implements Partial<GlicBrowserHost> {
     return this.selectCredentialDialogRequestSubject;
   }
 
-  selectNavigationConfirmationRequestHandler():
-      Observable<NavigationConfirmationRequest> {
+  selectNavigationConfirmationRequestHandler?
+      (): Observable<NavigationConfirmationRequest> {
     return this.navigationConfirmationRequestSubject;
   }
 
   selectGmailOtpOptInRequestHandler?(): Observable<GmailOtpOptInRequest> {
     return this.selectGmailOtpOptInRequestSubject;
+  }
+
+  selectAutofillSuggestionsDialogRequestHandler?
+      (): Observable<SelectAutofillSuggestionsDialogRequest> {
+    return this.selectAutofillSuggestionsDialogRequestSubject;
   }
 
   autofillSuggestionDialogOnFormPresented(taskId: number, params: {
@@ -189,7 +210,7 @@ export class GlicBrowserHostActor implements Partial<GlicBrowserHost> {
     });
   }
 
-  getActorTaskState(taskId: number): ObservableValueImpl<ActorTaskState> {
+  getActorTaskState?(taskId: number): ObservableValue<ActorTaskState> {
     const stateObs = this.actorTaskState.get(taskId);
     if (stateObs) {
       return stateObs;

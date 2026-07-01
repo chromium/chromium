@@ -11,6 +11,7 @@ will result in a closed mojo pipe, putting Glic in an unusable state.
 This check helps reduce the risk for accidentally calling such methods.
 '''
 
+import glob
 import os
 import re
 import sys
@@ -67,15 +68,17 @@ SRC_ROOT = _GetDirAbove('chrome')
 
 def _Main():
     error = False
-    # Find methods marked as checked in glic_api_client.ts.
-    api_client_path = ('chrome/browser/resources/glic/glic_api_impl/'
-                       'client/glic_api_client.ts')
-    with open(os.path.join(SRC_ROOT, api_client_path), 'r') as f:
-        client_src = f.read()
+    # Find methods marked as checked in *_client.ts files.
+    client_files_pattern = os.path.join(
+        SRC_ROOT, 'chrome/browser/resources/glic/glic_api_impl/*/*_client.ts')
+    client_files = glob.glob(client_files_pattern)
 
-    checked_methods = set(
-        m.group(1) for m in re.finditer(
-            r'//\s*MOJO_RUNTIME_FEATURE_GATED\s+(\S*)', client_src))
+    checked_methods = set()
+    for client_file in client_files:
+        with open(client_file, 'r') as f:
+            client_src = f.read()
+        checked_methods.update(
+            re.findall(r'//\s*MOJO_RUNTIME_FEATURE_GATED\s+(\S*)', client_src))
 
     # Find methods gated with RuntimeFeature annotations in glic.mojom.
     mojo_file_path = 'chrome/browser/glic/host/glic.mojom'
@@ -108,12 +111,13 @@ def _Main():
         decl = f'// MOJO_RUNTIME_FEATURE_GATED {method}'
         print('Error: missing feature gating code for feature'
               f' gated Mojo method {method} from {mojo_file_path}.'
-              f' Please update {api_client_path} with the line:\n'
+              ' Please update the appropriate client file (e.g. '
+              'glic_api_client.ts or actor_client.ts) with the line:\n'
               f'  {decl}')
         error = True
     for method in ungated:
         decl = f'// MOJO_RUNTIME_FEATURE_GATED {method}'
-        print(f'Error: found "{decl}" in {api_client_path},'
+        print(f'Error: found "{decl}" in one of the client files,'
               ' but this method was not found or is not gated by'
               f' a RuntimeFeature in {mojo_file_path}')
         error = True
