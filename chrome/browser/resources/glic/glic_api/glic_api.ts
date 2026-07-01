@@ -3105,7 +3105,7 @@ export enum InvocationSource {
   WHATS_NEW = 9,
   // User clicked the sign-in button and signed in.
   AFTER_SIGN_IN = 10,
-  // User shared a tab (e.g. via its context menu).
+  // User shared a tab via the tab context menu.
   SHARED_TAB = 11,
   // From the actor task icon.
   ACTOR_TASK_ICON = 12,
@@ -3155,10 +3155,26 @@ export enum InvocationSource {
   WEB_DRAG_DROP = 33,
   // From the promotion page.
   PROMOTION_PAGE = 34,
+  // Side panel remained open on a new tab.
+  DAISY_CHAIN_ON_NEW_TAB = 35,
+  // Side panel remained open on a follow-link.
+  DAISY_CHAIN_ON_FOLLOW_LINK = 36,
+  // User switched conversation.
+  CONVERSATION_SWITCH = 37,
+  // User detached or attached the panel.
+  DETACH_ATTACH_BUTTON = 38,
+  // Restarted from a restored tab.
+  TAB_RESTORE = 39,
+  // Implicitly focused or revealed, e.g., on tab switch or re-focus.
+  RESHOW_INACTIVE = 40,
 }
 
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+//  //tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource,
+//  //tools/metrics/histograms/metadata/glic/histograms.xml:GlicInvocationSource,
+//  //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation
+// )
 // Target for actuation.
 export enum ActuationTarget {
   // Will default to the agent if the target is unknown.

@@ -176,7 +176,24 @@ void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
     side_panel_options.suppress_opening_animation = true;
     side_panel_options.pin_trigger = GlicPinTrigger::kDaisyChain;
     side_panel_options.prefer_peek = true;
+
     auto show_options = ShowOptions{side_panel_options};
+    switch (source) {
+      case DaisyChainSource::kGlicContents:
+      case DaisyChainSource::kTabContents:
+      case DaisyChainSource::kBookmark:
+        show_options.invocation_source =
+            mojom::InvocationSource::kDaisyChainOnFollowLink;
+        break;
+      case DaisyChainSource::kUnknown:
+      case DaisyChainSource::kActorAddTab:
+      case DaisyChainSource::kNewTab:
+      case DaisyChainSource::kWebHandoff:
+      case DaisyChainSource::kAutoOpenPdf:
+      case DaisyChainSource::kLastActiveInstance:
+        break;
+    }
+
     instance_metrics().OnDaisyChain(source,
                                     /*success=*/true, target_tab, source_tab);
     Show(show_options);
@@ -449,6 +466,7 @@ void GlicInstanceImpl::Detach(tabs::TabInterface& tab) {
   instance_metrics_.OnDetach();
   auto show_options =
       ShowOptions::ForFloating(tab.GetHandle(), interaction_mode_);
+  show_options.invocation_source = mojom::InvocationSource::kDetachAttachButton;
   show_options.focus_on_show = true;
   Show(show_options);
   Close(CreateSidePanelEmbedderKey(&tab),
@@ -479,7 +497,9 @@ void GlicInstanceImpl::Attach(tabs::TabHandle tab) {
       delegate->ActivateContents(contents);
     }
   }
-  Show(ShowOptions::ForSidePanel(*tab_to_attach_to));
+  auto show_options = ShowOptions::ForSidePanel(*tab_to_attach_to);
+  show_options.invocation_source = mojom::InvocationSource::kDetachAttachButton;
+  Show(show_options);
 }
 
 void GlicInstanceImpl::Close(EmbedderKey key, const CloseOptions& options) {
@@ -672,6 +692,8 @@ void GlicInstanceImpl::CreateTab(
     side_panel_options.suppress_opening_animation = true;
     side_panel_options.prefer_peek = true;
     auto show_options = ShowOptions{side_panel_options};
+    show_options.invocation_source =
+        mojom::InvocationSource::kDaisyChainOnFollowLink;
     Show(show_options);
   }
   instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
@@ -954,7 +976,9 @@ void GlicInstanceImpl::OnBrowserActivated(BrowserWindowInterface* browser) {
       side_panel_options.prefer_peek =
           coordinator->state() == GlicSidePanelCoordinator::State::kPeek;
     }
-    Show(ShowOptions{side_panel_options});
+    ShowOptions show_options{side_panel_options};
+    show_options.invocation_source = mojom::InvocationSource::kReshowInactive;
+    Show(show_options);
   }
 }
 
@@ -1144,7 +1168,9 @@ void GlicInstanceImpl::OnBoundTabActivated(tabs::TabInterface* tab) {
     side_panel_options.suppress_opening_animation = true;
     side_panel_options.prefer_peek = true;
     side_panel_options.open_trigger = SidePanelOpenTrigger::kTabChanged;
-    Show(ShowOptions{side_panel_options});
+    ShowOptions show_options{side_panel_options};
+    show_options.invocation_source = mojom::InvocationSource::kReshowInactive;
+    Show(show_options);
   }
 }
 
@@ -1374,7 +1400,10 @@ void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
           // peek.
           SidePanelShowOptions side_panel_options{**tab};
           side_panel_options.open_trigger = SidePanelOpenTrigger::kTabChanged;
-          Show(ShowOptions{side_panel_options});
+          ShowOptions show_options{side_panel_options};
+          show_options.invocation_source =
+              mojom::InvocationSource::kReshowInactive;
+          Show(show_options);
           return;
         }
       }

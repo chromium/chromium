@@ -159,6 +159,10 @@ chromium-metrics-reviews@google.com.
   <variant name="AutoOpenedByContextualCue"/>
   <variant name="AutoOpenedForPdf"/>
   <variant name="CaptureRegionHotkey"/>
+  <variant name="ConversationSwitch"/>
+  <variant name="DaisyChainOnFollowLink"/>
+  <variant name="DaisyChainOnNewTab"/>
+  <variant name="DetachAttachButton"/>
   <variant name="ExperimentalTriggering"/>
   <variant name="Fre"/>
   <variant name="HandoffButton"/>
@@ -173,9 +177,11 @@ chromium-metrics-reviews@google.com.
   <variant name="PdfSummarizeButton"/>
   <variant name="ProfilePicker"/>
   <variant name="PromotionPage"/>
+  <variant name="ReshowInactive"/>
   <variant name="SharedImage"/>
   <variant name="SharedTab"/>
   <variant name="Skills"/>
+  <variant name="TabRestore"/>
   <variant name="TextSelectionNudge"/>
   <variant name="TextSelectionWidget"/>
   <variant name="ThreeDotsMenu"/>
@@ -1100,7 +1106,8 @@ chromium-metrics-reviews@google.com.
     Records the source of the invocation when the Glic Floaty panel becomes
     visible for the first time after being closed. Recorded when detached from
     Side Panel, when opened directly via os button / hotkey, or when the
-    conversation is switched.
+    conversation is switched. In M151, the default invocation source was fixed
+    to no longer be the TopChromeButton.
   </summary>
 </histogram>
 
@@ -1112,7 +1119,8 @@ chromium-metrics-reviews@google.com.
     Records the source of the invocation that caused the floaty GlicInstance to
     be toggled. Recorded each time the instance is toggled. See
     Glic.Instance.Floaty.OpenSource for the metric only including invocations
-    that open Floaty.
+    that open Floaty. In M151, the default invocation source was fixed to no
+    longer be the TopChromeButton.
   </summary>
 </histogram>
 
@@ -1151,12 +1159,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.InitialInvocationSource"
-    enum="GlicInvocationSource" expires_after="2026-12-06">
+    enum="GlicInvocationSource" expires_after="2027-06-01">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
     Records the first invocation source that was used to open a Glic instance.
-    Recorded when an instance is opened for the first time.
+    Recorded when an instance is opened for the first time. In M151, the default
+    invocation source was fixed to no longer be the TopChromeButton.
   </summary>
 </histogram>
 
@@ -1452,7 +1461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.SidePanel.OpenSource"
-    enum="GlicInvocationSource" expires_after="2026-12-06">
+    enum="GlicInvocationSource" expires_after="2027-06-01">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -1460,19 +1469,21 @@ chromium-metrics-reviews@google.com.
     the first time after being closed. Recorded when first visible (for
     foreground and background instance creation), when popped back from Floaty,
     for a conversation switch. Background opens were not recorded before M150.
-    This metric is not logged on tab switches.
+    This metric is not logged on tab switches. In M151, the default invocation
+    source was fixed to no longer be the TopChromeButton.
   </summary>
 </histogram>
 
 <histogram name="Glic.Instance.SidePanel.ToggleSource"
-    enum="GlicInvocationSource" expires_after="2026-12-06">
+    enum="GlicInvocationSource" expires_after="2027-06-01">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
     Records the source of the invocation that caused the side panel GlicInstance
     to be toggled. Recorded each time the instance is toggled. See
     Glic.Instance.SidePanel.OpenSource for the metric only including invocations
-    that open the side panel.
+    that open the side panel. In M151, the default invocation source was fixed
+    to no longer be the TopChromeButton.
   </summary>
 </histogram>
 
@@ -1699,7 +1710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.InvocationSource.{InvocationSource}.EventCounts"
-    enum="GlicInstanceEvent" expires_after="2026-12-06">
+    enum="GlicInstanceEvent" expires_after="2027-06-01">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -1707,19 +1718,21 @@ chromium-metrics-reviews@google.com.
     down by {InvocationSource} that instance was created with. This histogram
     answers the question: What is the total number of times each event occurred
     across all Glic instances created via {InvocationSource}? An event is
-    recorded each time it occurs.
+    recorded each time it occurs. In M151, the default invocation source was
+    fixed to no longer be the TopChromeButton.
   </summary>
   <token key="InvocationSource" variants="GlicInvocationSource"/>
 </histogram>
 
 <histogram
     name="Glic.InvocationSource.{InvocationSource}.FloatyFirstOpenDuration"
-    units="ms" expires_after="2027-05-06">
+    units="ms" expires_after="2027-06-01">
   <owner>andreaxg@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
     Records the duration that a Glic Floaty window was open. Recorded for the
-    first time the floaty was open for an instance without an error.
+    first time the floaty was open for an instance without an error. In M151,
+    the default invocation source was fixed to no longer be the TopChromeButton.
   </summary>
   <token key="InvocationSource" variants="GlicInvocationSource"/>
 </histogram>
@@ -1733,7 +1746,8 @@ chromium-metrics-reviews@google.com.
     {InvocationSource} that instance was created with. This histogram answers
     the question: How many instances created via {InvocationSource} had each
     event type occur at least once? Even if an event occurs multiple times in an
-    instance, only one event is recorded per instance.
+    instance, only one event is recorded per instance. In M151, the default
+    invocation source was fixed to no longer be the TopChromeButton.
   </summary>
   <token key="InvocationSource" variants="GlicInvocationSource"/>
 </histogram>
@@ -1747,6 +1761,8 @@ chromium-metrics-reviews@google.com.
     Records the duration that a Glic Side Panel was open. Recorded for the first
     time side panel was open for an instance without an error. Switching away
     from a tab with side panel counts as closure for the purpose of this metric.
+    In M151, the default invocation source was fixed to no longer be the
+    TopChromeButton.
   </summary>
   <token key="InvocationSource" variants="GlicInvocationSource"/>
 </histogram>
@@ -1760,7 +1776,8 @@ chromium-metrics-reviews@google.com.
     Measures the time it takes for the Glic WebUI to load, from the `kBeginLoad`
     state to the `kReady` state. This is recorded for both user-visible loads
     and non-visible pre-warming loads, distinguished by the {InvocationSource}
-    this instance was created with and {Visibility} variant.
+    this instance was created with and {Visibility} variant. In M151, the
+    default invocation source was fixed to no longer be the TopChromeButton.
   </summary>
   <token key="InvocationSource" variants="GlicInvocationSource"/>
   <token key="Visibility" variants="Visibility"/>

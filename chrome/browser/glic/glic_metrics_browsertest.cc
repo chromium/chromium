@@ -245,31 +245,38 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Close"), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
-                       InvokeAndOpenSourceMetrics_SidePanel) {
-  base::UserActionTester user_action_tester;
-  base::HistogramTester histogram_tester;
-
+IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, InvokeAndOpenSourceMetrics) {
   auto* glic_service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
 
-  GlicInvokeOptions options(
-      Target(*TabListInterface::From(browser())->GetActiveTab(),
-             DefaultConversation{}),
-      mojom::InvocationSource::kNavigationCapture);
+  const mojom::InvocationSource kSources[] = {
+      mojom::InvocationSource::kTopChromeButton,
+      mojom::InvocationSource::kWebContentsContextMenu,
+      mojom::InvocationSource::kOsHotkey,
+      mojom::InvocationSource::kThreeDotsMenu,
+      mojom::InvocationSource::kDaisyChainOnNewTab,
+      mojom::InvocationSource::kDaisyChainOnFollowLink,
+      mojom::InvocationSource::kConversationSwitch,
+      mojom::InvocationSource::kDetachAttachButton,
+      mojom::InvocationSource::kTabRestore,
+      mojom::InvocationSource::kNavigationCapture,
+  };
 
-  glic_service->Invoke(std::move(options));
+  for (mojom::InvocationSource source : kSources) {
+    base::UserActionTester user_action_tester;
+    base::HistogramTester histogram_tester;
+    GlicInvokeOptions options(
+        Target(*TabListInterface::From(browser())->GetActiveTab(),
+               NewConversation{}),
+        source);
 
-  // Verify that GlicInstanceMetrics::OnOpen was called with kNavigationCapture.
-  histogram_tester.ExpectUniqueSample(
-      "Glic.Instance.SidePanel.OpenSource",
-      mojom::InvocationSource::kNavigationCapture, 1);
+    glic_service->Invoke(std::move(options));
 
-  // Verify metrics logged in OnOpen.
-  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Instance.Open"), 1);
-  histogram_tester.ExpectUniqueSample(
-      "Glic.Instance.InitialInvocationSource",
-      mojom::InvocationSource::kNavigationCapture, 1);
+    histogram_tester.ExpectUniqueSample("Glic.Instance.SidePanel.OpenSource",
+                                        source, 1);
+    histogram_tester.ExpectUniqueSample("Glic.Instance.InitialInvocationSource",
+                                        source, 1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
@@ -431,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, BackgroundCreationThenReveal) {
 
   histogram_tester.ExpectTotalCount("Glic.Instance.SidePanel.OpenSource", 2);
   histogram_tester.ExpectBucketCount("Glic.Instance.SidePanel.OpenSource",
-                                     mojom::InvocationSource::kTopChromeButton,
+                                     mojom::InvocationSource::kReshowInactive,
                                      1);
 }
 
@@ -478,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, TabSwitchingSuppressesOnOpen) {
 
   // 5. Verify that NO duplicate OnOpen sample is recorded for Tab 1.
   // We check the bucket count for kOsButton because Tab 2 might have logged
-  // a sample with the default kTopChromeButton when it was activated.
+  // a sample with the default kUnsupported when it was activated.
   histogram_tester.ExpectBucketCount("Glic.Instance.SidePanel.OpenSource",
                                      mojom::InvocationSource::kOsButton, 1);
 }
@@ -538,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
 
   histogram_tester.ExpectTotalCount("Glic.Instance.SidePanel.OpenSource", 2);
   histogram_tester.ExpectBucketCount("Glic.Instance.SidePanel.OpenSource",
-                                     mojom::InvocationSource::kTopChromeButton,
+                                     mojom::InvocationSource::kReshowInactive,
                                      1);
 }
 
@@ -610,10 +617,10 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, FloatyDetachAttachDetach) {
   // 2. Detach to Floaty.
   instance->Detach(*tab1);
 
-  // Floaty logs OnOpen. Detach uses kTopChromeButton as default.
-  histogram_tester.ExpectBucketCount("Glic.Instance.Floaty.OpenSource",
-                                     mojom::InvocationSource::kTopChromeButton,
-                                     1);
+  // Floaty logs OnOpen using kDetachAttachButton.
+  histogram_tester.ExpectBucketCount(
+      "Glic.Instance.Floaty.OpenSource",
+      mojom::InvocationSource::kDetachAttachButton, 1);
 
   // 3. Attach floaty back to side panel. This deactivates Floaty and should
   // reset its flag.
@@ -623,9 +630,9 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, FloatyDetachAttachDetach) {
   instance->Detach(*tab1);
 
   // 5. Verify Floaty logged OnOpen again.
-  histogram_tester.ExpectBucketCount("Glic.Instance.Floaty.OpenSource",
-                                     mojom::InvocationSource::kTopChromeButton,
-                                     2);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Instance.Floaty.OpenSource",
+      mojom::InvocationSource::kDetachAttachButton, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
@@ -647,9 +654,9 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
 
   // 2. Detach to Floaty.
   instance->Detach(*tab1);
-  histogram_tester.ExpectBucketCount("Glic.Instance.Floaty.OpenSource",
-                                     mojom::InvocationSource::kTopChromeButton,
-                                     1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Instance.Floaty.OpenSource",
+      mojom::InvocationSource::kDetachAttachButton, 1);
 
   // 3. Switch conversation on the instance.
   FloatingShowOptions floating_options{gfx::Rect(), tab1->GetHandle()};
@@ -662,8 +669,9 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
 
   // 4. Verify Floaty logged OnOpen again for the new conversation.
   histogram_tester.ExpectTotalCount("Glic.Instance.Floaty.OpenSource", 2);
-  histogram_tester.ExpectBucketCount("Glic.Instance.Floaty.OpenSource",
-                                     mojom::InvocationSource::kOsHotkey, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Instance.Floaty.OpenSource",
+      mojom::InvocationSource::kConversationSwitch, 1);
 }
 
 }  // namespace

@@ -814,10 +814,11 @@ void GlicInstanceCoordinatorImpl::ShowInstanceForTabs(
     ShowOptions show_opts(side_panel_options);
     show_opts.focus_on_show =
         IsActive(tab->GetBrowserWindowInterface()) && tab->IsActivated();
-    // Explicitly pin the tabs for the context menu trigger.
     if (pin_trigger == GlicPinTrigger::kContextMenu) {
+      // Explicitly pin the tabs for the context menu trigger.
       instance->GetSharingManagerInternal().PinTabs({tab->GetHandle()},
                                                     pin_trigger);
+      show_opts.invocation_source = mojom::InvocationSource::kSharedTab;
     }
     instance->Show(show_opts);
   }
@@ -915,6 +916,8 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
   ShowOptions mutable_options = options;
   mutable_options.focus_on_show = source_instance.HasFocus();
   mutable_options.reinitialize_if_already_active = true;
+  mutable_options.invocation_source =
+      mojom::InvocationSource::kConversationSwitch;
 
   GlicInstanceImpl* target_instance = nullptr;
   if (!info->conversation_id.empty()) {
@@ -1163,7 +1166,9 @@ void GlicInstanceCoordinatorImpl::MaybeDaisyChainNewTab(
   SidePanelShowOptions side_panel_options{*creation_event.new_tab};
   side_panel_options.suppress_opening_animation = true;
   side_panel_options.pin_trigger = GlicPinTrigger::kNewTabDaisyChain;
-  instance->Show(ShowOptions{side_panel_options});
+  auto show_options = ShowOptions{side_panel_options};
+  show_options.invocation_source = mojom::InvocationSource::kDaisyChainOnNewTab;
+  instance->Show(show_options);
 
   instance->instance_metrics().OnDaisyChain(
       DaisyChainSource::kNewTab,
@@ -1254,7 +1259,9 @@ void GlicInstanceCoordinatorImpl::RestoreTab(
       side_panel_options.suppress_opening_animation = true;
       side_panel_options.pin_on_bind = false;
       side_panel_options.prefer_peek = true;
-      bound_instance->Show(ShowOptions{side_panel_options});
+      auto show_options = ShowOptions{side_panel_options};
+      show_options.invocation_source = mojom::InvocationSource::kTabRestore;
+      bound_instance->Show(show_options);
     } else {
       bound_instance->BindTabWithoutShowing(tab, GlicPinTrigger::kUnknown,
                                             /*pin_on_bind=*/false);

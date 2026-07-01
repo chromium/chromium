@@ -233,6 +233,18 @@ std::string InvocationSourceToString(glic::mojom::InvocationSource source) {
       return "kWebDragDrop";
     case glic::mojom::InvocationSource::kPromotionPage:
       return "kPromotionPage";
+    case glic::mojom::InvocationSource::kDaisyChainOnNewTab:
+      return "kDaisyChainOnNewTab";
+    case glic::mojom::InvocationSource::kDaisyChainOnFollowLink:
+      return "kDaisyChainOnFollowLink";
+    case glic::mojom::InvocationSource::kConversationSwitch:
+      return "kConversationSwitch";
+    case glic::mojom::InvocationSource::kDetachAttachButton:
+      return "kDetachAttachButton";
+    case glic::mojom::InvocationSource::kTabRestore:
+      return "kTabRestore";
+    case glic::mojom::InvocationSource::kReshowInactive:
+      return "kReshowInactive";
   }
   LOG(ERROR) << "Unexpected value for InvocationSource: "
              << static_cast<int>(source);
