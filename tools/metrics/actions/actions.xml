@@ -19617,6 +19617,15 @@ should be able to be added at any place in this file.
   <description>Recorded when user taps Voice button in Fusebox.</description>
 </action>
 
+<action name="IOS.Omnibox.PhysicalKeyboardShiftReturn">
+  <owner>lpromero@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    Recorded when the user presses shift+return on a physical keyboard in the
+    omnibox.
+  </description>
+</action>
+
 <action name="IOS.OpenIn">
   <obsolete>Renamed to IOS.OpenIn.Tapped, 08/2020</obsolete>
   <owner>ewannpv@chromium.org</owner>

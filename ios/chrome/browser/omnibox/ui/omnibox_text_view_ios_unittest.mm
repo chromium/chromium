@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/allow_check_is_test_for_testing.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/composebox/public/features.h"
@@ -192,17 +193,21 @@ TEST_F(OmniboxTextViewIOSTest, CanPerformActionReturnDisabledByFeature) {
 }
 // Tests that Shift+Return inserts a newline.
 TEST_F(OmniboxTextViewIOSTest, ForwardShiftReturnKey) {
+  base::UserActionTester user_action_tester;
   text_view_.text = @"Line 1";
 
   [text_view_ performSelector:@selector(forwardKeyCommandShiftReturn:)
                    withObject:nil];
 
   EXPECT_NSEQ(@"Line 1\n", text_view_.text);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "IOS.Omnibox.PhysicalKeyboardShiftReturn"));
 }
 
 // Tests that a newline character is blocked by default, triggering
 // textInputShouldReturn:
 TEST_F(OmniboxTextViewIOSTest, TextInputShouldReturnOnNewline) {
+  base::UserActionTester user_action_tester;
   id delegateMock = OCMProtocolMock(@protocol(OmniboxTextInputDelegate));
   text_view_.omniboxTextInputDelegate = delegateMock;
 
@@ -213,11 +218,14 @@ TEST_F(OmniboxTextViewIOSTest, TextInputShouldReturnOnNewline) {
                                replacementText:@"\n"];
 
   [delegateMock verify];
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "IOS.Omnibox.PhysicalKeyboardShiftReturn"));
 }
 
 // Tests that carriage return characters are also blocked by default, triggering
 // textInputShouldReturn:
 TEST_F(OmniboxTextViewIOSTest, TextInputShouldReturnOnCarriageReturn) {
+  base::UserActionTester user_action_tester;
   id delegateMock = OCMProtocolMock(@protocol(OmniboxTextInputDelegate));
   text_view_.omniboxTextInputDelegate = delegateMock;
 
@@ -228,11 +236,14 @@ TEST_F(OmniboxTextViewIOSTest, TextInputShouldReturnOnCarriageReturn) {
                                replacementText:@"\r"];
 
   [delegateMock verify];
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "IOS.Omnibox.PhysicalKeyboardShiftReturn"));
 }
 
 // Tests that paragraph separator characters are not blocked, and do not trigger
 // textInputShouldReturn:
 TEST_F(OmniboxTextViewIOSTest, TextInputShouldNotReturnOnParagraphSeparator) {
+  base::UserActionTester user_action_tester;
   id delegateMock = OCMProtocolMock(@protocol(OmniboxTextInputDelegate));
   text_view_.omniboxTextInputDelegate = delegateMock;
 
@@ -248,6 +259,8 @@ TEST_F(OmniboxTextViewIOSTest, TextInputShouldNotReturnOnParagraphSeparator) {
   EXPECT_TRUE(result);
 
   [delegateMock verify];
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "IOS.Omnibox.PhysicalKeyboardShiftReturn"));
 }
 
 }  // namespace
