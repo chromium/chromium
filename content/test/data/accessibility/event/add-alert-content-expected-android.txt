@@ -1,6 +1,7 @@
-TYPE_WINDOW_STATE_CHANGED - [contentTypes=PANE_APPEARED] text=[]
-TYPE_WINDOW_STATE_CHANGED - [contentTypes=PANE_APPEARED] text=[]
-TYPE_WINDOW_STATE_CHANGED - [contentTypes=PANE_APPEARED] text=[]
-TYPE_ANNOUNCEMENT - [First alert]
-TYPE_ANNOUNCEMENT - [Second alert]
-TYPE_ANNOUNCEMENT - [Third alert]
+TYPE_WINDOW_STATE_CHANGED [contentTypes=PANE_APPEARED] text=[] on [Foo] class_name=android.view.View
+TYPE_WINDOW_STATE_CHANGED [contentTypes=PANE_APPEARED] text=[] on [Bar] class_name=android.view.View
+TYPE_WINDOW_STATE_CHANGED [contentTypes=PANE_APPEARED] text=[] on [Baz] class_name=android.view.View
+=== END INITIAL PAGE LOAD ===
+TYPE_ANNOUNCEMENT [First alert]
+TYPE_ANNOUNCEMENT [Second alert]
+TYPE_ANNOUNCEMENT [Third alert]

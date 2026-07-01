@@ -1,2 +1,4 @@
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.app.AlertDialog - [contentTypes=SUBTREE] [After]
-TYPE_WINDOW_CONTENT_CHANGED - [contentTypes=PANE_TITLE] [After]
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.app.AlertDialog [contentTypes=SUBTREE] on [Before] class_name=android.app.AlertDialog
+=== END INITIAL PAGE LOAD ===
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.app.AlertDialog [contentTypes=SUBTREE] on [After] class_name=android.app.AlertDialog
+TYPE_WINDOW_CONTENT_CHANGED [contentTypes=PANE_TITLE] on [After] class_name=android.app.AlertDialog

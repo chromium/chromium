@@ -184,7 +184,6 @@ public class WebContentsAccessibilityEventsTest {
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
-    @DisabledTest(message = "https://crbug.com/414363686")
     public void test_addAlertContent() {
         performTest("add-alert-content.html", "add-alert-content-expected-android.txt");
     }
@@ -196,7 +195,6 @@ public class WebContentsAccessibilityEventsTest {
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
-    @DisabledTest(message = "https://crbug.com/414363686")
     public void test_addAlertContent_exp() {
         performTest("add-alert-content.html", "add-alert-content-expected-android-exp.txt");
     }
@@ -670,7 +668,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/414363686")
     public void test_ariaTreeItemFocus() {
         performTest("aria-treeitem-focus.html", "aria-treeitem-focus-expected-android.txt");
     }
@@ -841,7 +838,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/414363686")
     public void test_dialogPaneNameChanged() {
         performTest("dialog-pane-name-change.html", "dialog-pane-name-change-expected-android.txt");
     }
@@ -1158,7 +1154,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/414363686")
     public void test_menuBarShowHideMenus() {
         performTest("menubar-show-hide-menus.html", "menubar-show-hide-menus-expected-android.txt");
     }
@@ -1195,7 +1190,6 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/414363686")
     public void test_menuOpenedClosed() {
         performTest("menu-opened-closed.html", "menu-opened-closed-expected-android.txt");
     }
