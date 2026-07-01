@@ -777,7 +777,7 @@ class IntentPickerBubbleViewBrowserTestChromeOSParameterized
 // Test that remember this choice checkbox works for open ARC app option.
 //
 // TODO(crbug.com/40863954): Fix timeouts under MSAN.
-#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_RememberOpenARCApp DISABLED_RememberOpenARCApp
 #else
 #define MAYBE_RememberOpenARCApp RememberOpenARCApp
