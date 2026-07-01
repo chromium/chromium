@@ -729,6 +729,11 @@ inline constexpr char kGrayscaleThemeEnabled[] = "browser.theme.is_grayscale2";
 inline constexpr char kExtensionsUIDeveloperMode[] =
     "extensions.ui.developer_mode";
 
+// Boolean pref which persists whether new extensions should be pinned by
+// default.
+inline constexpr char kExtensionsPinnedByDefault[] =
+    "extensions.pinned_by_default";
+
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // A boolean pref set to true if the extensions menu button should be pinned to
 // the toolbar.

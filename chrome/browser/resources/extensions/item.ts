@@ -56,6 +56,7 @@ export interface ItemDelegate {
   setShowAccessRequestsInToolbar(id: string, showRequests: boolean): void;
   setItemPinnedToToolbar(id: string, pinnedToToolbar: boolean): void;
   uploadItemToAccount(id: string): Promise<boolean>;
+  setProfileExtensionsPinnedByDefault(extensionsPinnedByDefault: boolean): void;
 
   // TODO(tjudkins): This function is not specific to items, so should be pulled
   // out to a more generic place when we need to access it from elsewhere.
@@ -112,6 +113,7 @@ export class DummyItemDelegate {
   uploadItemToAccount(_id: string) {
     return Promise.resolve(false);
   }
+  setProfileExtensionsPinnedByDefault(_extensionsPinnedByDefault: boolean) {}
   recordUserAction(_metricName: string) {}
   getItemStateChangedTarget() {
     return new FakeChromeEvent();

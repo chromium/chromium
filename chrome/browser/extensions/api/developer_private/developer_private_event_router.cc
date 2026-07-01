@@ -93,6 +93,10 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
       base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
+      prefs::kExtensionsPinnedByDefault,
+      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
       kMV2DeprecationWarningAcknowledgedGloballyPref.name,
       base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
                           base::Unretained(this)));

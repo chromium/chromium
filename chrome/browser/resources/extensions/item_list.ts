@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import './item.js';
 import './mv2_deprecation_panel.js';
 import './review_panel.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -55,6 +57,11 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         type: String,
       },
 
+      extensionsPinnedByDefault: {
+        type: Boolean,
+        reflect: true,
+      },
+
       computedFilter_: {type: Object},
       maxColumns_: {type: Number},
 
@@ -88,6 +95,11 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         type: Boolean,
         state: true,
       },
+
+      showExtensionsPinnedByDefault_: {
+        type: Boolean,
+        state: true,
+      },
     };
   }
 
@@ -96,7 +108,10 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   accessor delegate: ItemDelegate = new DummyItemDelegate();
   accessor inDevMode: boolean = false;
   accessor isMv2DeprecationNoticeDismissed: boolean = false;
+  accessor extensionsPinnedByDefault: boolean = false;
   accessor filter: string = '';
+  protected accessor showExtensionsPinnedByDefault_: boolean =
+      loadTimeData.getBoolean('enableExtensionsPinnedByDefault');
   protected accessor filteredExtensions_:
       chrome.developerPrivate.ExtensionInfo[] = [];
   protected accessor filteredApps_: chrome.developerPrivate.ExtensionInfo[] =
@@ -295,6 +310,10 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
                      'searchResultsPlural', total.toString(), this.filter)));
       }, 0);
     }
+  }
+
+  protected onExtensionsPinnedByDefaultChange_(e: CustomEvent<boolean>) {
+    this.delegate.setProfileExtensionsPinnedByDefault(e.detail);
   }
 }
 

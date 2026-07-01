@@ -6,10 +6,12 @@
 import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsItemListElement} from 'chrome://extensions/extensions.js';
+import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestService} from './test_service.js';
 import {createExtensionInfo, testVisible} from './test_util.js';
 
 suite('ExtensionItemListTest', function() {
@@ -293,5 +295,39 @@ suite('ExtensionItemListTest', function() {
 
     // MV2 deprecation panel title is visible when the review panel is visible.
     testVisible(mv2DeprecationPanel, '.panel-title', true);
+  });
+
+  test('PinnedToggle_Visibility', async () => {
+    // Hidden by default when enableExtensionsPinnedByDefault is false.
+    boundTestVisible('#pinned-toggle-container', false);
+
+    // Visible when enableExtensionsPinnedByDefault is true.
+    loadTimeData.overrideValues({enableExtensionsPinnedByDefault: true});
+    setupElement();
+    await microtasksFinished();
+    boundTestVisible('#pinned-toggle-container', true);
+  });
+
+  test('PinnedToggle_StateAndInteraction', async () => {
+    loadTimeData.overrideValues({enableExtensionsPinnedByDefault: true});
+    setupElement();
+    const mockDelegate = new TestService();
+    itemList.delegate = mockDelegate;
+    await microtasksFinished();
+
+    const pinnedToggle =
+        itemList.shadowRoot.querySelector<CrToggleElement>('#pinned-toggle');
+    assertTrue(!!pinnedToggle);
+    assertFalse(pinnedToggle.checked);
+    assertFalse(itemList.extensionsPinnedByDefault);
+
+    itemList.extensionsPinnedByDefault = true;
+    await microtasksFinished();
+    assertTrue(pinnedToggle.checked);
+
+    pinnedToggle.click();
+    const checked =
+        await mockDelegate.whenCalled('setProfileExtensionsPinnedByDefault');
+    assertFalse(checked);
   });
 });

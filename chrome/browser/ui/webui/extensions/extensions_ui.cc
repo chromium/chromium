@@ -219,6 +219,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"extensionIcon", IDS_EXTENSIONS_EXTENSION_ICON},
       {"extensionA11yAssociation", IDS_EXTENSIONS_EXTENSION_A11Y_ASSOCIATION},
       {"extensionsSectionHeader", IDS_EXTENSIONS_SECTION_HEADER},
+      {"pinNewExtensions", IDS_EXTENSIONS_PIN_NEW_EXTENSIONS},
       {"itemIdHeading", IDS_EXTENSIONS_ITEM_ID_HEADING},
       {"extensionEnabled", IDS_EXTENSIONS_EXTENSION_ENABLED},
       {"appEnabled", IDS_EXTENSIONS_APP_ENABLED},
@@ -468,6 +469,9 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       "hostPermissionsLearnMoreLink",
       extension_permissions_constants::kRuntimeHostPermissionsHelpURL);
   source->AddBoolean(kInDevModeKey, in_dev_mode);
+  source->AddBoolean(
+      "enableExtensionsPinnedByDefault",
+      base::FeatureList::IsEnabled(features::kExtensionsPinnedByDefault));
   source->AddBoolean(kShowActivityLogKey,
                      base::CommandLine::ForCurrentProcess()->HasSwitch(
                          ::switches::kEnableExtensionActivityLogging));

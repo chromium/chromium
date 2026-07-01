@@ -819,6 +819,7 @@ chromium-metrics-reviews@google.com.
   <int value="100383"
       label="ProfileContentSettingsPartitionedExceptionsInlineCueMenu"/>
   <int value="100384" label="ProfileDefaultContentSettingValuesInlineCueMenu"/>
+  <int value="100385" label="ExtensionsPinnedByDefault"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

@@ -415,6 +415,15 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
   RunTestCase("ManifestV2DeprecationPanel_TitleVisibility");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, PinnedToggle_Visibility) {
+  RunTestCase("PinnedToggle_Visibility");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
+                       PinnedToggle_StateAndInteraction) {
+  RunTestCase("PinnedToggle_StateAndInteraction");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Load Error Tests
 

@@ -445,6 +445,7 @@ enum {
   kProfileContentSettingsExceptionsInlineCueMenu = 100382,
   kProfileContentSettingsPartitionedExceptionsInlineCueMenu = 100383,
   kProfileDefaultContentSettingValuesInlineCueMenu = 100384,
+  kExtensionsPinnedByDefault = 100385,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1547,6 +1548,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kExtensionCommands,
      {syncable_prefs_ids::kExtensionCommands, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kExtensionsPinnedByDefault,
+     {syncable_prefs_ids::kExtensionsPinnedByDefault, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kExtensionsUIDeveloperMode,

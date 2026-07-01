@@ -40,6 +40,7 @@ export interface ServiceInterface extends ActivityLogDelegate,
       extensionId: string,
       eventType: chrome.developerPrivate.EventType): boolean;
   showSiteSettings(extensionId: string): void;
+  setProfileExtensionsPinnedByDefault(extensionsPinnedByDefault: boolean): void;
 }
 
 export class Service implements ServiceInterface {
@@ -584,6 +585,11 @@ export class Service implements ServiceInterface {
 
   showSiteSettings(extensionId: string) {
     chrome.developerPrivate.showSiteSettings(extensionId);
+  }
+
+  setProfileExtensionsPinnedByDefault(extensionsPinnedByDefault: boolean) {
+    chrome.developerPrivate.updateProfileConfiguration(
+        {extensionsPinnedByDefault});
   }
 
   static getInstance(): ServiceInterface {

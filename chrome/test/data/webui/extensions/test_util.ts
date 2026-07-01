@@ -113,6 +113,7 @@ export class MockItemDelegate extends ClickMock implements ItemDelegate {
   uploadItemToAccount(_id: string) {
     return Promise.resolve(false);
   }
+  setProfileExtensionsPinnedByDefault(_extensionsPinnedByDefault: boolean) {}
 
 
   reloadItem(_id: string) {

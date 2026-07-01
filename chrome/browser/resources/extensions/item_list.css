@@ -87,6 +87,26 @@ extensions-item {
   padding-top: 8px;
 }
 
+.section-header-contents {
+  align-items: center;
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: space-between;
+  width: 100%;
+}
+
+#pinned-toggle-container {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+#pinned-toggle-label {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  font-weight: normal;
+}
+
 managed-footnote {
   border-top: none;
   /* #content-wrapper has a 24px margin-top. This overrides that

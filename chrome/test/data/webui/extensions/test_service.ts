@@ -70,6 +70,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'setItemPinnedToToolbar',
       'setItemSafetyCheckWarningAcknowledged',
       'setProfileInDevMode',
+      'setProfileExtensionsPinnedByDefault',
       'setShortcutHandlingSuspended',
       'setShowAccessRequestsInToolbar',
       'shouldIgnoreUpdate',
@@ -121,6 +122,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       isIncognitoAvailable: false,
       isChildAccount: false,
       isMv2DeprecationNoticeDismissed: false,
+      extensionsPinnedByDefault: false,
     });
   }
 
@@ -265,6 +267,11 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   setProfileInDevMode(inDevMode: boolean) {
     this.methodCalled('setProfileInDevMode', inDevMode);
+  }
+
+  setProfileExtensionsPinnedByDefault(extensionsPinnedByDefault: boolean) {
+    this.methodCalled(
+        'setProfileExtensionsPinnedByDefault', extensionsPinnedByDefault);
   }
 
   showInFolder(id: string) {

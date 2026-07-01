@@ -54,6 +54,7 @@ ${this.showDrawer_ ? html`
             "${this.isMv2DeprecationNoticeDismissed}"
         .filter="${this.filter}" ?hidden="${!this.didInitPage_}" slot="view"
         .apps="${this.apps_}" .extensions="${this.extensions_}"
+        ?extensions-pinned-by-default="${this.extensionsPinnedByDefault}"
         @show-install-warnings="${this.onShowInstallWarnings_}">
     </extensions-item-list>
     <cr-lazy-render-lit id="details-view" .template="${() => html`

@@ -40,6 +40,8 @@ developer::ProfileInfo CreateProfileInfo(Profile* profile) {
           ->HasAllowlistedExtension();
   info.is_mv2_deprecation_notice_dismissed =
       ManifestV2Handler::Get(profile)->DidUserAcknowledgeNoticeGlobally();
+  info.extensions_pinned_by_default =
+      prefs->GetBoolean(prefs::kExtensionsPinnedByDefault);
 
   return info;
 }

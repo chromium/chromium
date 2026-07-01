@@ -587,13 +587,19 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
 
   const developer::ProfileConfigurationUpdate& update = params->update;
 
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  CHECK(profile);
+
   if (update.in_developer_mode) {
-    Profile* profile = Profile::FromBrowserContext(browser_context());
-    CHECK(profile);
     if (supervised_user::AreExtensionsPermissionsEnabled(profile)) {
       return RespondNow(Error(kCannotUpdateChildAccountProfileSettingsError));
     }
     util::SetDeveloperModeForProfile(profile, *update.in_developer_mode);
+  }
+
+  if (update.extensions_pinned_by_default) {
+    profile->GetPrefs()->SetBoolean(prefs::kExtensionsPinnedByDefault,
+                                    *update.extensions_pinned_by_default);
   }
 
   if (update.is_mv2_deprecation_notice_dismissed.value_or(false)) {
