@@ -63,6 +63,8 @@ class StatusIconMac : public StatusIcon, public StatusIconMenuModel::Observer {
   FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, CreateMenu);
   FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, MenuToolTip);
   FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, SecondaryClickMenuNoToolTip);
+  FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest,
+                           Os26_StatusIconHiddenInFullscreen);
 
   void CreateMenu(ui::MenuModel* model);
 
