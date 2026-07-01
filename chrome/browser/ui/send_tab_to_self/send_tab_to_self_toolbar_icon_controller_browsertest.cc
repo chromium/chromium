@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -36,6 +37,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ozone_buildflags.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace send_tab_to_self {
 
@@ -101,11 +106,18 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
   EXPECT_TRUE(controller());
 }
 
+// TODO(crbug.com/529823129): Re-enable this test on ChromeOS and Linux.
 // This test cannot work on Wayland because the platform does not allow clients
 // to position top level windows, activate them, and set focus.
-#if !(BUILDFLAG(SUPPORTS_OZONE_WAYLAND) || BUILDFLAG(IS_CHROMEOS))
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_StorePendingNewEntryFromIncognitoBrowser \
+  DISABLED_StorePendingNewEntryFromIncognitoBrowser
+#else
+#define MAYBE_StorePendingNewEntryFromIncognitoBrowser \
+  StorePendingNewEntryFromIncognitoBrowser
+#endif
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
-                       StorePendingNewEntryFromIncognitoBrowser) {
+                       MAYBE_StorePendingNewEntryFromIncognitoBrowser) {
   ASSERT_TRUE(browser()->IsActive());
 
   Browser* incognito_browser = CreateIncognitoBrowser();
@@ -124,8 +136,21 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
   EXPECT_TRUE(bubble_controller()->IsBubbleShowing());
 }
 
+// TODO(crbug.com/529823129): Re-enable this test on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_StorePendingNewEntryFromWebApp \
+  DISABLED_StorePendingNewEntryFromWebApp
+#else
+#define MAYBE_StorePendingNewEntryFromWebApp StorePendingNewEntryFromWebApp
+#endif
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
-                       StorePendingNewEntryFromWebApp) {
+                       MAYBE_StorePendingNewEntryFromWebApp) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support changing window activation "
+                    "programmatically";
+  }
+#endif
   ASSERT_TRUE(browser()->IsActive());
   auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://example.org/"));
@@ -148,7 +173,6 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
   WaitUntilBrowserBecomeActiveOrLastActive(browser());
   EXPECT_TRUE(bubble_controller()->IsBubbleShowing());
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
                        ReplaceExistingEntry) {
@@ -242,9 +266,15 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
 
 // This test cannot work on Wayland because the platform does not allow clients
 // to position top level windows, activate them, and set focus.
-#if !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+#if !BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
                        AutoOpenPendingEntriesAsBackgroundTabsOnActivation) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support changing window activation "
+                    "programmatically";
+  }
+#endif
   ASSERT_TRUE(browser()->IsActive());
 
   base::HistogramTester histogram_tester;
@@ -316,6 +346,12 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
 IN_PROC_BROWSER_TEST_F(
     SendTabToSelfToolbarIconControllerAutoOpenTest,
     ToastActionButtonSwitchesToLatestTabsOpenedInBackground) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support changing window activation "
+                    "programmatically";
+  }
+#endif
   ASSERT_TRUE(browser()->IsActive());
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
 
@@ -376,6 +412,12 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SendTabToSelfToolbarIconControllerAutoOpenTest,
     ToastActionButtonSwitchesToCorrectTabIfPreviousOneIsClosed) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support changing window activation "
+                    "programmatically";
+  }
+#endif
   ASSERT_TRUE(browser()->IsActive());
 
   // Add a new tab.
@@ -448,6 +490,12 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SendTabToSelfToolbarIconControllerAutoOpenTest,
     ToastActionButtonSwitchesToFirstAvailableNewTabAddedToBackground) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland doesn't support changing window activation "
+                    "programmatically";
+  }
+#endif
   ASSERT_TRUE(browser()->IsActive());
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
 
@@ -503,6 +551,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(url_2,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
-#endif  // !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+#endif  // !BUILDFLAG(IS_LINUX)
 
 }  // namespace send_tab_to_self
