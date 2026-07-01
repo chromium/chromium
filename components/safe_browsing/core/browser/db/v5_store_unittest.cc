@@ -131,7 +131,6 @@ class V5StoreTest : public PlatformTest {
       ConvertExtensionBlocklistV4ToV5Result expected_result,
       bool expect_v4_hash_file_deleted,
       base::OnceClosure teardown_cleanup = base::OnceClosure()) {
-    base::HistogramTester histogram_tester;
     std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {
         {"32_foo", v4_hash_file_size}};
     WriteV4FileFormatProtoToFile(
@@ -149,10 +148,10 @@ class V5StoreTest : public PlatformTest {
                   /*is_extensions_blocklist=*/true);
     EXPECT_EQ(V5StoreReadResult::kV4ToV5MigrationFailure, ReadFromDisk(store));
 
-    histogram_tester.ExpectUniqueSample(
+    histogram_tester_.ExpectUniqueSample(
         "SafeBrowsing.V5Store.ConvertExtensionBlocklistV4ToV5Result",
         expected_result, 1);
-    histogram_tester.ExpectUniqueSample(
+    histogram_tester_.ExpectUniqueSample(
         "SafeBrowsing.V5Store.V4ToV5MigrationResult",
         V4ToV5MigrationResult::kExtensionBlocklistMigrationFailed, 1);
 
@@ -171,7 +170,6 @@ class V5StoreTest : public PlatformTest {
   void RunExtensionMigrationChecksumTest(
       std::optional<std::string> override_checksum,
       bool expect_success) {
-    base::HistogramTester histogram_tester;
     std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {
         {"32_foo", 64}};
 
@@ -252,10 +250,10 @@ class V5StoreTest : public PlatformTest {
             ? ConvertExtensionBlocklistV4ToV5Result::kSuccess
             : ConvertExtensionBlocklistV4ToV5Result::kV4ChecksumMismatch;
 
-    histogram_tester.ExpectUniqueSample(
+    histogram_tester_.ExpectUniqueSample(
         "SafeBrowsing.V5Store.V4ToV5MigrationResult", expected_migration_result,
         1);
-    histogram_tester.ExpectUniqueSample(
+    histogram_tester_.ExpectUniqueSample(
         "SafeBrowsing.V5Store.ConvertExtensionBlocklistV4ToV5Result",
         expected_conversion_result, 1);
   }
@@ -348,7 +346,6 @@ TEST_F(V5StoreTest, TestReadFromNoHashPrefixInfoFile) {
 }
 
 TEST_F(V5StoreTest, TestReadFromNoHashPrefixesFile) {
-  base::HistogramTester histogram_tester;
   ListDetails list_details;
   list_details.set_version("test_version");
   auto hash = crypto::hash::Sha256(base::span<const uint8_t>());
@@ -364,16 +361,15 @@ TEST_F(V5StoreTest, TestReadFromNoHashPrefixesFile) {
   EXPECT_TRUE(GetHashPrefixList(store).view().empty());
   EXPECT_EQ(60, GetFileSize(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result",
       V5ApplyUpdateResult::kSuccess, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result.V5StoreTest",
       V5ApplyUpdateResult::kSuccess, 1);
 }
 
 TEST_F(V5StoreTest, TestReadFromInvalidHashPrefixList) {
-  base::HistogramTester histogram_tester;
   // Manually create an invalid store on disk
   V5StoreFileFormat file_format;
   file_format.set_magic_number(0x600D71FE);
@@ -397,16 +393,15 @@ TEST_F(V5StoreTest, TestReadFromInvalidHashPrefixList) {
   EXPECT_TRUE(GetHashPrefixList(read_store).view().empty());
   EXPECT_EQ(0, GetFileSize(read_store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result",
       V5ApplyUpdateResult::kFileSizeNotMultipleOfPrefixSize, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result.V5StoreTest",
       V5ApplyUpdateResult::kFileSizeNotMultipleOfPrefixSize, 1);
 }
 
 TEST_F(V5StoreTest, TestReadWithMissingHashFile) {
-  base::HistogramTester histogram_tester;
   V5StoreFileFormat file_format;
   ListDetails list_details;
   list_details.set_version("test_client_version");
@@ -422,16 +417,15 @@ TEST_F(V5StoreTest, TestReadWithMissingHashFile) {
   EXPECT_EQ(V5StoreReadResult::kHashPrefixListGenerationFailure,
             ReadFromDisk(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result",
       V5ApplyUpdateResult::kMmapFailure, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result.V5StoreTest",
       V5ApplyUpdateResult::kMmapFailure, 1);
 }
 
 TEST_F(V5StoreTest, TestInitializeSucceeds) {
-  base::HistogramTester histogram_tester;
   ListDetails list_details;
   list_details.set_version("test_version");
   WriteFileFormatProtoToFile(0x600D71FE, 10, &list_details);
@@ -441,22 +435,21 @@ TEST_F(V5StoreTest, TestInitializeSucceeds) {
   store.Initialize();
   EXPECT_TRUE(store.HasValidData());
 
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5StoreRead.Result",
-                                      V5StoreReadResult::kReadSuccess, 1);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Store.IsStoreValid", true,
-                                      1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.V5StoreRead.Result",
+                                       V5StoreReadResult::kReadSuccess, 1);
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.V5Store.IsStoreValid",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.IsStoreValid.V5StoreTest", true, 1);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBStoreRead.Success", true,
-                                      1);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBStore.IsStoreValid", true,
-                                      1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.SBStoreRead.Success", true,
+                                       1);
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.SBStore.IsStoreValid",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.SBStore.IsStoreValid.V5StoreTest", true, 1);
 }
 
 TEST_F(V5StoreTest, TestInitializeSucceedsWithV5Suffix) {
-  base::HistogramTester histogram_tester;
   base::FilePath v5_store_path =
       temp_dir_.GetPath().AppendASCII("V5StoreTest_v5.store");
 
@@ -475,24 +468,23 @@ TEST_F(V5StoreTest, TestInitializeSucceedsWithV5Suffix) {
   store.Initialize();
   EXPECT_TRUE(store.HasValidData());
 
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5StoreRead.Result",
-                                      V5StoreReadResult::kReadSuccess, 1);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Store.IsStoreValid", true,
-                                      1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.V5StoreRead.Result",
+                                       V5StoreReadResult::kReadSuccess, 1);
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.V5Store.IsStoreValid",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.IsStoreValid.V5StoreTest_v5", true, 1);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBStoreRead.Success", true,
-                                      1);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBStore.IsStoreValid", true,
-                                      1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.SBStoreRead.Success", true,
+                                       1);
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.SBStore.IsStoreValid",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.SBStore.IsStoreValid.V5StoreTest", true, 1);
 
   base::DeleteFile(v5_store_path);
 }
 
 TEST_F(V5StoreTest, TestInitializeFails) {
-  base::HistogramTester histogram_tester;
   // No file on disk, so Initialize will fail.
   V5Store store(task_runner(), store_path_, 4, v4_store_path_,
                 /*is_eligible_for_v4_to_v5_disk_migration=*/true,
@@ -500,25 +492,24 @@ TEST_F(V5StoreTest, TestInitializeFails) {
   store.Initialize();
   EXPECT_FALSE(store.HasValidData());
 
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5StoreRead.Result",
-                                      V5StoreReadResult::kFileOpenFailure, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.V5StoreRead.Result",
+                                       V5StoreReadResult::kFileOpenFailure, 1);
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kV4StoreNotFound, 1);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Store.IsStoreValid",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.V5Store.IsStoreValid",
+                                       false, 1);
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.IsStoreValid.V5StoreTest", false, 1);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBStoreRead.Success", false,
-                                      1);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBStore.IsStoreValid",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.SBStoreRead.Success",
+                                       false, 1);
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.SBStore.IsStoreValid",
+                                       false, 1);
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.SBStore.IsStoreValid.V5StoreTest", false, 1);
 }
 
 TEST_F(V5StoreTest, TestReadFromDiskDoesNotSetValidData) {
-  base::HistogramTester histogram_tester;
   ListDetails list_details;
   list_details.set_version("test_version");
   WriteFileFormatProtoToFile(0x600D71FE, 10, &list_details);
@@ -529,46 +520,45 @@ TEST_F(V5StoreTest, TestReadFromDiskDoesNotSetValidData) {
   // Only `Initialize()` sets the `has_valid_data_` property.
   EXPECT_FALSE(store.HasValidData());
 
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Store.IsStoreValid",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.V5Store.IsStoreValid",
+                                       false, 1);
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.IsStoreValid.V5StoreTest", false, 1);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBStore.IsStoreValid",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.SBStore.IsStoreValid",
+                                       false, 1);
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.SBStore.IsStoreValid.V5StoreTest", false, 1);
-  histogram_tester.ExpectTotalCount("SafeBrowsing.V5StoreRead.Result", 0);
-  histogram_tester.ExpectTotalCount("SafeBrowsing.SBStoreRead.Success", 0);
+  histogram_tester_.ExpectTotalCount("SafeBrowsing.V5StoreRead.Result", 0);
+  histogram_tester_.ExpectTotalCount("SafeBrowsing.SBStoreRead.Success", 0);
 }
 
 TEST_F(V5StoreTest, TestHasValidDataLoggingHeuristic) {
-  base::HistogramTester histogram_tester;
   V5Store store(task_runner(), store_path_, 4, v4_store_path_,
                 /*is_eligible_for_v4_to_v5_disk_migration=*/true,
                 /*is_extensions_blocklist=*/false);
 
   // First call should log.
   store.HasValidData();
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Store.IsStoreValid",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBStore.IsStoreValid",
-                                      false, 1);
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.V5Store.IsStoreValid",
+                                       false, 1);
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.SBStore.IsStoreValid",
+                                       false, 1);
 
   // Calls 2 to 256 should NOT log.
   for (int i = 2; i <= 256; ++i) {
     store.HasValidData();
   }
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Store.IsStoreValid",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBStore.IsStoreValid",
-                                      false, 1);
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.V5Store.IsStoreValid",
+                                       false, 1);
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.SBStore.IsStoreValid",
+                                       false, 1);
 
   // Next call should log again (total 2 samples).
   store.HasValidData();
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Store.IsStoreValid",
-                                      false, 2);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBStore.IsStoreValid",
-                                      false, 2);
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.V5Store.IsStoreValid",
+                                       false, 2);
+  histogram_tester_.ExpectUniqueSample("SafeBrowsing.SBStore.IsStoreValid",
+                                       false, 2);
 }
 
 TEST_F(V5StoreTest, TestReadFromNoVersionFile) {
@@ -608,7 +598,6 @@ TEST_F(V5StoreTest, TestReadWithMissingSha256) {
 }
 
 TEST_F(V5StoreTest, TestReadWithValidHashPrefixList) {
-  base::HistogramTester histogram_tester;
   V5StoreFileFormat file_format;
   file_format.set_magic_number(0x600D71FE);
   file_format.set_file_version(10);
@@ -642,16 +631,15 @@ TEST_F(V5StoreTest, TestReadWithValidHashPrefixList) {
 
   EXPECT_TRUE(store.VerifyChecksum());
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result",
       V5ApplyUpdateResult::kSuccess, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5ReadFromDisk.ApplyUpdate.Result.V5StoreTest",
       V5ApplyUpdateResult::kSuccess, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationAlreadyV5) {
-  base::HistogramTester histogram_tester;
   ListDetails list_details;
   list_details.set_version("test_version");
   WriteFileFormatProtoToFile(0x600D71FE, 10, &list_details);
@@ -661,13 +649,12 @@ TEST_F(V5StoreTest, TestMigrationAlreadyV5) {
                 /*is_extensions_blocklist=*/false);
   EXPECT_EQ(V5StoreReadResult::kReadSuccess, ReadFromDisk(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kDiskAlreadyV5, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationNotEligible_WipeSucceeds) {
-  base::HistogramTester histogram_tester;
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {{"4_foo", 4}};
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version",
                                "v4_checksum", v4_hash_files);
@@ -683,15 +670,14 @@ TEST_F(V5StoreTest, TestMigrationNotEligible_WipeSucceeds) {
   EXPECT_FALSE(base::PathExists(v4_store_path_));
   EXPECT_FALSE(base::PathExists(v4_store_path_.AddExtensionASCII("4_foo")));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kStoreIneligibleWipeSucceeded, 1);
-  histogram_tester.ExpectTotalCount(
+  histogram_tester_.ExpectTotalCount(
       "SafeBrowsing.V5Store.V4ToV5Migration.TimeTaken.V5StoreTest", 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationNotEligible_WipeFails) {
-  base::HistogramTester histogram_tester;
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {{"4_foo", 4}};
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version",
                                "v4_checksum", v4_hash_files);
@@ -707,7 +693,7 @@ TEST_F(V5StoreTest, TestMigrationNotEligible_WipeFails) {
                 /*is_extensions_blocklist=*/false);
   EXPECT_EQ(V5StoreReadResult::kV4ToV5MigrationFailure, ReadFromDisk(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kStoreIneligibleWipeFailed, 1);
 
@@ -717,7 +703,6 @@ TEST_F(V5StoreTest, TestMigrationNotEligible_WipeFails) {
 
 TEST_F(V5StoreTest,
        TestMigrationNotEligible_WipeHashFileFails_WipeStoreFileSucceeds) {
-  base::HistogramTester histogram_tester;
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {{"4_foo", 4}};
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version",
                                "v4_checksum", v4_hash_files);
@@ -737,7 +722,7 @@ TEST_F(V5StoreTest,
   // But in spite of that, the V4 store file was still able to be deleted.
   EXPECT_FALSE(base::PathExists(v4_store_path_));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kStoreIneligibleWipeFailed, 1);
 
@@ -746,20 +731,18 @@ TEST_F(V5StoreTest,
 }
 
 TEST_F(V5StoreTest, TestMigrationV4NotFound) {
-  base::HistogramTester histogram_tester;
   // V5 doesn't exist, V4 doesn't exist.
   V5Store store(task_runner(), store_path_, 4, v4_store_path_,
                 /*is_eligible_for_v4_to_v5_disk_migration=*/true,
                 /*is_extensions_blocklist=*/false);
   EXPECT_EQ(V5StoreReadResult::kFileOpenFailure, ReadFromDisk(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kV4StoreNotFound, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationSuccess) {
-  base::HistogramTester histogram_tester;
   // Write valid V4 store and hash file with "4_" prefix in extension.
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {{"4_foo", 4}};
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version",
@@ -786,15 +769,14 @@ TEST_F(V5StoreTest, TestMigrationSuccess) {
   EXPECT_EQ(GetHashPrefixList(store).view().at(4), "abcd");
 
   // Verify UMA logging.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kV4ToV5MigrationSucceeded, 1);
-  histogram_tester.ExpectTotalCount(
+  histogram_tester_.ExpectTotalCount(
       "SafeBrowsing.V5Store.V4ToV5Migration.TimeTaken.V5StoreTest", 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationProtoParsingFailure) {
-  base::HistogramTester histogram_tester;
   // Write corrupted V4 file.
   base::WriteFile(v4_store_path_, "CorruptedProtoContent");
 
@@ -803,16 +785,15 @@ TEST_F(V5StoreTest, TestMigrationProtoParsingFailure) {
                 /*is_extensions_blocklist=*/false);
   EXPECT_EQ(V5StoreReadResult::kV4ToV5MigrationFailure, ReadFromDisk(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kReadV4Failed, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5Migration.V4ReadFailureReason",
       PROTO_PARSING_FAILURE, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationUnexpectedMagic) {
-  base::HistogramTester histogram_tester;
   WriteV4FileFormatProtoToFile(v4_store_path_, 111, 9, "v4_version",
                                "v4_checksum", {});
 
@@ -821,16 +802,15 @@ TEST_F(V5StoreTest, TestMigrationUnexpectedMagic) {
                 /*is_extensions_blocklist=*/false);
   EXPECT_EQ(V5StoreReadResult::kV4ToV5MigrationFailure, ReadFromDisk(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kReadV4Failed, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5Migration.V4ReadFailureReason",
       UNEXPECTED_MAGIC_NUMBER_FAILURE, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationVersionIncompatible) {
-  base::HistogramTester histogram_tester;
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 8, "v4_version",
                                "v4_checksum", {});
 
@@ -839,16 +819,15 @@ TEST_F(V5StoreTest, TestMigrationVersionIncompatible) {
                 /*is_extensions_blocklist=*/false);
   EXPECT_EQ(V5StoreReadResult::kV4ToV5MigrationFailure, ReadFromDisk(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kReadV4Failed, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5Migration.V4ReadFailureReason",
       FILE_VERSION_INCOMPATIBLE_FAILURE, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationMultipleHashFilesNotSupported) {
-  base::HistogramTester histogram_tester;
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {{"foo", 4},
                                                                  {"bar", 4}};
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version",
@@ -859,13 +838,12 @@ TEST_F(V5StoreTest, TestMigrationMultipleHashFilesNotSupported) {
                 /*is_extensions_blocklist=*/false);
   EXPECT_EQ(V5StoreReadResult::kV4ToV5MigrationFailure, ReadFromDisk(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kMultipleHashFilesFailure, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationPrefixSizeMismatch) {
-  base::HistogramTester histogram_tester;
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {{"foo", 4}};
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version",
                                "v4_checksum", v4_hash_files);
@@ -876,13 +854,12 @@ TEST_F(V5StoreTest, TestMigrationPrefixSizeMismatch) {
                 /*is_extensions_blocklist=*/false);
   EXPECT_EQ(V5StoreReadResult::kV4ToV5MigrationFailure, ReadFromDisk(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kPrefixSizeMismatchFailure, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationHashFileMissing) {
-  base::HistogramTester histogram_tester;
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {{"foo", 4}};
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version",
                                "v4_checksum", v4_hash_files);
@@ -892,13 +869,12 @@ TEST_F(V5StoreTest, TestMigrationHashFileMissing) {
                 /*is_extensions_blocklist=*/false);
   EXPECT_EQ(V5StoreReadResult::kV4ToV5MigrationFailure, ReadFromDisk(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kHashFileMissingFailure, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationWriteV5Failure) {
-  base::HistogramTester histogram_tester;
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {{"4_foo", 4}};
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version",
                                "v4_checksum", v4_hash_files);
@@ -921,13 +897,12 @@ TEST_F(V5StoreTest, TestMigrationWriteV5Failure) {
   // Cleanup symlink.
   base::DeleteFile(temp_store_path);
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kWriteV5FileFailure, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationV4Empty) {
-  base::HistogramTester histogram_tester;
   base::CloseFile(base::OpenFile(v4_store_path_, "wb+"));
 
   V5Store store(task_runner(), store_path_, 4, v4_store_path_,
@@ -935,16 +910,15 @@ TEST_F(V5StoreTest, TestMigrationV4Empty) {
                 /*is_extensions_blocklist=*/false);
   EXPECT_EQ(V5StoreReadResult::kV4ToV5MigrationFailure, ReadFromDisk(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kReadV4Failed, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5Migration.V4ReadFailureReason",
       FILE_EMPTY_FAILURE, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationNoHashFiles) {
-  base::HistogramTester histogram_tester;
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version",
                                "v4_checksum", {});
 
@@ -959,13 +933,12 @@ TEST_F(V5StoreTest, TestMigrationNoHashFiles) {
   EXPECT_EQ("v4_version", store.version());
   EXPECT_TRUE(GetHashPrefixList(store).view().empty());
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kV4ToV5MigrationSucceeded, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationFailureNoUnderscore) {
-  base::HistogramTester histogram_tester;
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {{"foo", 4}};
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version",
                                "v4_checksum", v4_hash_files);
@@ -976,13 +949,12 @@ TEST_F(V5StoreTest, TestMigrationFailureNoUnderscore) {
                 /*is_extensions_blocklist=*/false);
   EXPECT_EQ(V5StoreReadResult::kV4ToV5MigrationFailure, ReadFromDisk(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kExtensionParsingFailure, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationFailureEmptyV5Extension) {
-  base::HistogramTester histogram_tester;
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {{"foo_", 4}};
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version",
                                "v4_checksum", v4_hash_files);
@@ -993,13 +965,12 @@ TEST_F(V5StoreTest, TestMigrationFailureEmptyV5Extension) {
                 /*is_extensions_blocklist=*/false);
   EXPECT_EQ(V5StoreReadResult::kV4ToV5MigrationFailure, ReadFromDisk(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kExtensionParsingFailure, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationRenameFailure) {
-  base::HistogramTester histogram_tester;
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {{"4_foo", 4}};
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version",
                                "v4_checksum", v4_hash_files);
@@ -1023,13 +994,12 @@ TEST_F(V5StoreTest, TestMigrationRenameFailure) {
   // Cleanup directory.
   base::DeletePathRecursively(v5_hash_file_path);
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kRenameHashFileFailure, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationMissingOptionalFields) {
-  base::HistogramTester histogram_tester;
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {{"4_foo", 4}};
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, std::nullopt,
                                std::nullopt, v4_hash_files);
@@ -1047,13 +1017,12 @@ TEST_F(V5StoreTest, TestMigrationMissingOptionalFields) {
   EXPECT_TRUE(store.version().empty());
   EXPECT_TRUE(GetExpectedChecksum(store).empty());
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kV4ToV5MigrationSucceeded, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationSuccessButReadFailure) {
-  base::HistogramTester histogram_tester;
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {{"4_foo", 4}};
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version",
                                "v4_checksum", v4_hash_files);
@@ -1068,13 +1037,12 @@ TEST_F(V5StoreTest, TestMigrationSuccessButReadFailure) {
   EXPECT_EQ(V5StoreReadResult::kHashPrefixListGenerationFailure,
             ReadFromDisk(store));
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kV4ToV5MigrationSucceeded, 1);
 }
 
 TEST_F(V5StoreTest, TestMigrationRenameV5StoreFileFailure) {
-  base::HistogramTester histogram_tester;
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {{"4_foo", 4}};
   WriteV4FileFormatProtoToFile(v4_store_path_, 0x600D71FE, 9, "v4_version",
                                "v4_checksum", v4_hash_files);
@@ -1105,7 +1073,6 @@ TEST_F(V5StoreTest, TestMigrationRenameV5StoreFileFailure) {
 }
 
 TEST_F(V5StoreTest, TestExtensionMigrationSuccess) {
-  base::HistogramTester histogram_tester;
   // Write valid V4 store and hash file with 32-byte IDs.
   std::vector<std::pair<std::string, uint64_t>> v4_hash_files = {
       {"32_foo", 64}};
@@ -1148,10 +1115,10 @@ TEST_F(V5StoreTest, TestExtensionMigrationSuccess) {
   EXPECT_TRUE(GetExpectedChecksum(store).empty());
 
   // Verify UMA.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.ConvertExtensionBlocklistV4ToV5Result",
       ConvertExtensionBlocklistV4ToV5Result::kSuccess, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kV4ToV5MigrationSucceeded, 1);
 }
@@ -1232,7 +1199,6 @@ TEST_F(V5StoreTest, TestExtensionMigrationFailureWriteV5) {
 }
 
 TEST_F(V5StoreTest, TestExtensionMigrationNoHashFiles) {
-  base::HistogramTester histogram_tester;
   WriteV4FileFormatProtoToFile(
       v4_store_path_, /*magic=*/0x600D71FE, /*file_version=*/9,
       /*client_state=*/"v4_version", /*checksum_sha256=*/"v4_checksum",
@@ -1249,9 +1215,9 @@ TEST_F(V5StoreTest, TestExtensionMigrationNoHashFiles) {
   EXPECT_TRUE(GetHashPrefixList(store).view().empty());
 
   // Confirm no conversion metrics logged since no hash file was processed.
-  histogram_tester.ExpectTotalCount(
+  histogram_tester_.ExpectTotalCount(
       "SafeBrowsing.V5Store.ConvertExtensionBlocklistV4ToV5Result", 0);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester_.ExpectUniqueSample(
       "SafeBrowsing.V5Store.V4ToV5MigrationResult",
       V4ToV5MigrationResult::kV4ToV5MigrationSucceeded, 1);
 }
