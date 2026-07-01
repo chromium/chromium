@@ -128,6 +128,36 @@ enum BoundsCallbackIndex : int {
 namespace aura {
 namespace {
 
+const ui::Layer* GetRootLayer(const ui::Layer* layer) {
+  if (!layer) {
+    return nullptr;
+  }
+  const ui::Layer* root = layer;
+  while (root->parent()) {
+    root = root->parent();
+  }
+  return root;
+}
+
+gfx::Vector2d GetLayerTargetOffsetToRoot(const ui::Layer* layer) {
+  gfx::Vector2d offset;
+  while (layer) {
+    offset += layer->GetTargetBounds().OffsetFromOrigin();
+    layer = layer->parent();
+  }
+  return offset;
+}
+
+gfx::Point ConvertPointToLayerNoTransform(const ui::Layer* source,
+                                          const ui::Layer* target,
+                                          const gfx::Point& point) {
+  if (source == target) {
+    return point;
+  }
+  return point + GetLayerTargetOffsetToRoot(source) -
+         GetLayerTargetOffsetToRoot(target);
+}
+
 class ScopedCursorHider {
  public:
   explicit ScopedCursorHider(Window* window)
@@ -350,6 +380,22 @@ void Window::SetTransparent(bool transparent) {
   TriggerChangedCallback(&transparent_);
 }
 
+void Window::SetLayerManagedByParent(bool layer_managed_by_parent) {
+  if (layer_managed_by_parent == layer_managed_by_parent_) {
+    return;
+  }
+  CHECK(layer_managed_by_parent || !parent_ || !parent_->layout_manager());
+
+  layer_managed_by_parent_ = layer_managed_by_parent;
+  if (parent_) {
+    if (layer_managed_by_parent_) {
+      parent_->layer()->Add(layer());
+    } else {
+      parent_->layer()->Remove(layer());
+    }
+  }
+}
+
 void Window::SetFillsBoundsCompletely(bool fills_bounds) {
   CHECK(layer());
   DUMP_WILL_BE_CHECK(!is_destroying_);
@@ -520,7 +566,26 @@ void Window::SetBoundsInScreen(const gfx::Rect& new_bounds_in_screen,
 }
 
 gfx::Rect Window::GetTargetBounds() const {
-  return layer() ? layer()->GetTargetBounds() : bounds();
+  if (!layer()) {
+    return bounds();
+  }
+  if (layer_managed_by_parent()) {
+    return layer()->GetTargetBounds();
+  }
+  const ui::Layer* my_layer = layer();
+  const ui::Layer* my_layer_parent = my_layer->parent();
+  const ui::Layer* parent_window_layer = parent() ? parent()->layer() : nullptr;
+
+  gfx::Rect layer_target_bounds = my_layer->GetTargetBounds();
+
+  if (parent_window_layer &&
+      GetRootLayer(my_layer_parent) == GetRootLayer(parent_window_layer)) {
+    gfx::Point origin = ConvertPointToLayerNoTransform(
+        my_layer_parent, parent_window_layer, layer_target_bounds.origin());
+    return gfx::Rect(origin, layer_target_bounds.size());
+  }
+
+  return layer_target_bounds;
 }
 
 void Window::ScheduleDraw() {
@@ -568,11 +633,18 @@ void Window::AddChild(Window* child) {
   Window* old_root = child->GetRootWindow();
 
   DCHECK(!std::ranges::contains(children_, child));
-  if (child->parent())
+  if (layout_manager_) {
+    CHECK(child->layer_managed_by_parent());
+  }
+
+  if (child->parent()) {
     child->parent()->RemoveChildImpl(child, this);
+  }
 
   child->parent_ = this;
-  layer()->Add(child->layer());
+  if (child->layer_managed_by_parent()) {
+    layer()->Add(child->layer());
+  }
 
   children_.push_back(child);
   if (layout_manager_)
@@ -637,6 +709,7 @@ void Window::ConvertPointToTarget(const Window* source,
                                   gfx::PointF* point) {
   if (!source)
     return;
+  DCHECK(target);
   if (source->GetRootWindow() != target->GetRootWindow()) {
     client::ScreenPositionClient* source_client =
         client::GetScreenPositionClient(source->GetRootWindow());
@@ -650,15 +723,10 @@ void Window::ConvertPointToTarget(const Window* source,
     if (target_client)
       target_client->ConvertPointFromScreen(target, point);
   } else {
-#if BUILDFLAG(IS_CHROMEOS)
-    // TODO(b/319939913): Remove this log when the issue is fixed.
-    auto get_root = [](const ui::Layer* layer) {
-      const ui::Layer* root = layer;
-      while (root->parent()) {
-        root = root->parent();
-      }
-      return root;
-    };
+    CHECK(source->layer());
+    CHECK(target->layer());
+    const ui::Layer* source_layer = source->layer();
+    const ui::Layer* target_layer = target->layer();
     auto chain_name = [](const aura::Window* window) {
       std::ostringstream out;
       out << "[";
@@ -670,14 +738,12 @@ void Window::ConvertPointToTarget(const Window* source,
       out << "]";
       return out.str();
     };
-    if (get_root(source->layer()) != get_root(target->layer())) {
-      LOG(ERROR) << "Root layer in source and target window are different. "
-                    "source chain="
-                 << chain_name(source)
-                 << ", target chain=" << chain_name(target);
-    }
-#endif
-    ui::Layer::ConvertPointToLayer(source->layer(), target->layer(),
+    CHECK(GetRootLayer(source_layer) == GetRootLayer(target_layer))
+        << "Root layer in source and target window are different. "
+           "source chain="
+        << chain_name(source) << ", target chain=" << chain_name(target);
+
+    ui::Layer::ConvertPointToLayer(source_layer, target_layer,
                                    /*use_target_transform=*/true, point);
   }
 }
@@ -1110,18 +1176,79 @@ bool Window::HitTest(const gfx::Point& local_point) {
 
 void Window::SetBoundsInternal(const gfx::Rect& new_bounds) {
   DUMP_WILL_BE_CHECK(!is_destroying_);
-  gfx::Rect old_bounds = GetTargetBounds();
+  gfx::Rect layer_bounds = new_bounds;
+
+  if (!layer_managed_by_parent() && layer()->parent() && parent() &&
+      parent()->layer()) {
+    ui::Layer* layer_parent = layer()->parent();
+    ui::Layer* parent_window_layer = parent()->layer();
+    if (GetRootLayer(layer_parent) == GetRootLayer(parent_window_layer)) {
+      gfx::Point origin = ConvertPointToLayerNoTransform(
+          parent_window_layer, layer_parent, new_bounds.origin());
+      layer_bounds = gfx::Rect(origin, new_bounds.size());
+    } else {
+      NOTREACHED()
+          << "SetBoundsInternal called on window with unmanaged layer, "
+             "but root layers mismatch. Skipping layer bounds update. window="
+          << GetName();
+    }
+  }
+
+  gfx::Rect old_layer_bounds = layer()->bounds();
 
   // Always need to set the layer's bounds -- even if it is to the same thing.
   // This may cause important side effects such as stopping animation.
-  layer()->SetBounds(new_bounds);
+  layer()->SetBounds(layer_bounds);
 
   // If we are currently not the layer's delegate, we will not get bounds
   // changed notification from the layer (this typically happens after animating
   // hidden). We must notify ourselves.
   if (layer()->delegate() != this) {
-    OnLayerBoundsChanged(old_bounds,
+    OnLayerBoundsChanged(old_layer_bounds,
                          ui::PropertyChangeReason::NOT_FROM_ANIMATION);
+  }
+}
+
+void Window::NotifyBoundsChanged(const gfx::Rect& old_bounds,
+                                 ui::PropertyChangeReason reason) {
+  WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
+
+  ScopedDeleteBlocker blocker(this);
+
+  if (!IsRootWindow() && old_bounds.size() != bounds_.size() &&
+      IsEmbeddingExternalContent()) {
+    parent_local_surface_id_allocator_->GenerateId();
+    if (frame_sink_) {
+      frame_sink_->SetLocalSurfaceId(GetCurrentLocalSurfaceId());
+    }
+  }
+
+  if (layout_manager_) {
+    layout_manager_->OnWindowResized();
+  }
+  if (delegate_) {
+    delegate_->OnBoundsChanged(old_bounds, bounds_);
+  }
+  for (auto& observer : observers_) {
+    observer.OnWindowBoundsChanged(this, old_bounds, bounds_, reason);
+  }
+
+  // Trigger the changed notification for each of the bounds "properties".
+  if (old_bounds.x() != bounds_.x()) {
+    TriggerChangedCallback(
+        ui::metadata::MakeUniquePropertyKey(&bounds_, kBoundsX));
+  }
+  if (old_bounds.y() != bounds_.y()) {
+    TriggerChangedCallback(
+        ui::metadata::MakeUniquePropertyKey(&bounds_, kBoundsY));
+  }
+  if (old_bounds.width() != bounds_.width()) {
+    TriggerChangedCallback(
+        ui::metadata::MakeUniquePropertyKey(&bounds_, kBoundsWidth));
+  }
+  if (old_bounds.height() != bounds_.height()) {
+    TriggerChangedCallback(
+        ui::metadata::MakeUniquePropertyKey(&bounds_, kBoundsHeight));
   }
 }
 
@@ -1200,8 +1327,9 @@ void Window::RemoveChildImpl(Window* child, Window* new_parent) {
   if (root_window && root_window != new_root_window)
     child->NotifyRemovingFromRootWindow(new_root_window);
 
-  if (child->OwnsLayer())
+  if (child->OwnsLayer() && child->layer_managed_by_parent()) {
     layer()->Remove(child->layer());
+  }
   child->parent_ = nullptr;
   auto i = std::ranges::find(children_, child);
   CHECK(i != children_.end());
@@ -1266,10 +1394,19 @@ void Window::StackChildLayerRelativeTo(Window* child,
                                        Window* target,
                                        StackDirection direction) {
   DCHECK(layer() && child->layer() && target->layer());
-  if (direction == STACK_ABOVE)
+  if (!child->layer_managed_by_parent() || !target->layer_managed_by_parent()) {
+    LOG(WARNING) << "StackChildLayerRelativeTo called with unmanaged layer(s)."
+                 << " child=" << child->GetName()
+                 << " child_managed=" << child->layer_managed_by_parent()
+                 << " target=" << target->GetName()
+                 << " target_managed=" << target->layer_managed_by_parent();
+    return;
+  }
+  if (direction == STACK_ABOVE) {
     layer()->StackAbove(child->layer(), target->layer());
-  else
+  } else {
     layer()->StackBelow(child->layer(), target->layer());
+  }
 }
 
 void Window::OnStackingChanged() {
@@ -1628,44 +1765,33 @@ void Window::OnLayerBoundsChanged(const gfx::Rect& old_bounds,
   // This may still be called while finishing animation during destruction.
   DUMP_WILL_BE_CHECK(!is_destroyed_);
 
-  WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
+  gfx::Rect new_bounds = layer()->bounds();
+  gfx::Rect old_window_bounds = old_bounds;
 
-  ScopedDeleteBlocker blocker(this);
+  if (!layer_managed_by_parent() && layer()->parent() && parent() &&
+      parent()->layer()) {
+    ui::Layer* layer_parent = layer()->parent();
+    ui::Layer* parent_window_layer = parent()->layer();
+    if (GetRootLayer(layer_parent) == GetRootLayer(parent_window_layer)) {
+      gfx::Point origin = ConvertPointToLayerNoTransform(
+          layer_parent, parent_window_layer, new_bounds.origin());
+      new_bounds = gfx::Rect(origin, new_bounds.size());
 
-  bounds_ = layer()->bounds();
-
-  if (!IsRootWindow() && old_bounds.size() != bounds_.size() &&
-      IsEmbeddingExternalContent()) {
-    parent_local_surface_id_allocator_->GenerateId();
-    if (frame_sink_) {
-      frame_sink_->SetLocalSurfaceId(GetCurrentLocalSurfaceId());
+      gfx::Point old_origin = ConvertPointToLayerNoTransform(
+          layer_parent, parent_window_layer, old_bounds.origin());
+      old_window_bounds = gfx::Rect(old_origin, old_bounds.size());
+    } else {
+      NOTREACHED()
+          << "OnLayerBoundsChanged called on window with unmanaged layer, "
+             "but root layers mismatch. Skipping applying bounds update. "
+             "window="
+          << GetName();
     }
   }
 
-  if (layout_manager_)
-    layout_manager_->OnWindowResized();
-  if (delegate_)
-    delegate_->OnBoundsChanged(old_bounds, bounds_);
-  for (auto& observer : observers_)
-    observer.OnWindowBoundsChanged(this, old_bounds, bounds_, reason);
+  bounds_ = new_bounds;
 
-  // Trigger the changed notification for each of the bounds "properties".
-  if (old_bounds.x() != bounds_.x()) {
-    TriggerChangedCallback(
-        ui::metadata::MakeUniquePropertyKey(&bounds_, kBoundsX));
-  }
-  if (old_bounds.y() != bounds_.y()) {
-    TriggerChangedCallback(
-        ui::metadata::MakeUniquePropertyKey(&bounds_, kBoundsY));
-  }
-  if (old_bounds.width() != bounds_.width()) {
-    TriggerChangedCallback(
-        ui::metadata::MakeUniquePropertyKey(&bounds_, kBoundsWidth));
-  }
-  if (old_bounds.height() != bounds_.height()) {
-    TriggerChangedCallback(
-        ui::metadata::MakeUniquePropertyKey(&bounds_, kBoundsHeight));
-  }
+  NotifyBoundsChanged(old_window_bounds, reason);
 }
 
 void Window::OnLayerOpacityChanged(ui::PropertyChangeReason reason) {
@@ -1961,9 +2087,15 @@ void Window::SetY(int y) {
 
 void Window::SetLayoutManagerImpl(
     std::unique_ptr<LayoutManager> layout_manager) {
+  if (layout_manager) {
+    for (Window* child : children_) {
+      CHECK(child->layer_managed_by_parent());
+    }
+  }
   layout_manager_ = std::move(layout_manager);
-  if (!layout_manager_)
+  if (!layout_manager_) {
     return;
+  }
 
   DUMP_WILL_BE_CHECK(!is_destroying_);
   // If we're changing to a new layout manager, ensure it is aware of all the
