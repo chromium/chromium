@@ -27,6 +27,10 @@ class TestConfig(config.CodeSignConfig):
         return True
 
     @property
+    def use_static_angle(self):
+        return False
+
+    @property
     def app_product(self):
         return 'App Product'
 

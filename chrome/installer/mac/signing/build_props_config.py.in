@@ -20,6 +20,10 @@ class BuildPropsCodeSignConfig(CodeSignConfig):
         return @ENABLE_UPDATER@
 
     @property
+    def use_static_angle(self):
+        return @USE_STATIC_ANGLE@
+
+    @property
     def app_product(self):
         return '@PRODUCT_FULLNAME@'
 
