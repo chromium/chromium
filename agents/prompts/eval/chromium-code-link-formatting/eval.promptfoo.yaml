@@ -1,0 +1,24 @@
+description: Verify the chromium-code-link-formatting skill correctly formats Chromium source links.
+owner: shomizoe@
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - chromium-code-link-formatting
+tests:
+  - vars:
+      query: "Please format a link for the file \"ui/webui/resources/cr_components/composebox/composebox_input.css\" at line 162 with commit hash \"abcdef0123456789abcdef0123456789abcdef01\" for external sharing."
+    assert:
+      - type: contains
+        value: "https://source.chromium.org/chromium/chromium/src/+/main:ui/webui/resources/cr_components/composebox/composebox_input.css;l=162;drc=abcdef0123456789abcdef0123456789abcdef01"
+  - vars:
+      query: "Create an external link to the line range 40-50 of the file \"ui/webui/resources/cr_components/composebox/composebox_input.css\"."
+    assert:
+      - type: javascript
+        value: |
+          const match = output.match(/https:\/\/source\.chromium\.org\/chromium\/chromium\/src\/\+\/main:ui\/webui\/resources\/cr_components\/composebox\/composebox_input\.css;l=40-50;drc=[0-9a-f]{40}/);
+          return !!match;
