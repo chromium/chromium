@@ -39,12 +39,16 @@ class FeatureListTest;
 //
 //   BASE_DECLARE_FEATURE(kMyFeature);
 //
+// Note that the `extern "C"` here is necessary to make Features accessible
+// across FFI boundaries (motivated, in particular, by the need for Rust
+// interop.)
+//
 // If the feature needs to be marked as exported, i.e. it is referenced by
 // multiple components, then write:
 //
 //   COMPONENT_EXPORT(MY_COMPONENT) BASE_DECLARE_FEATURE(kMyFeature);
 #define BASE_DECLARE_FEATURE(kFeature) \
-  extern constinit const base::Feature kFeature
+  extern "C" constinit const base::Feature kFeature
 
 // Provides a definition for `kFeature` with `name` and `default_state`, e.g.
 //
