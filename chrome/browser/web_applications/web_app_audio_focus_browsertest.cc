@@ -5,6 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
@@ -34,17 +35,23 @@ const char kAudioFocusTestPageURL[] =
 
 // WebAppAudioFocusBrowserTest test that PWAs have separate audio
 // focus from the rest of the browser.
-class WebAppAudioFocusBrowserTest : public WebAppBrowserTestBase {
+class WebAppAudioFocusBrowserTest
+    : public WebAppBrowserTestBase,
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
  public:
   WebAppAudioFocusBrowserTest() = default;
   ~WebAppAudioFocusBrowserTest() override = default;
 
+  apps::test::LinkCapturingFeatureVersion GetLinkCapturingVersion() const {
+    return GetParam();
+  }
+
   void SetUp() override {
-    std::vector<base::test::FeatureRefAndParams> features;
-#if !BUILDFLAG(IS_CHROMEOS)
-    features = apps::test::GetFeaturesToEnableLinkCapturingUX(
-        apps::test::LinkCapturingFeatureVersion::kV2DefaultOn);
-#endif
+    std::vector<base::test::FeatureRefAndParams> features =
+        apps::test::GetFeaturesToEnableLinkCapturingUX(
+            GetLinkCapturingVersion());
+
     features.emplace_back(media_session::features::kMediaSessionService,
                           base::FieldTrialParams());
     features.emplace_back(media_session::features::kAudioFocusEnforcement,
@@ -114,7 +121,7 @@ class WebAppAudioFocusBrowserTest : public WebAppBrowserTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
+IN_PROC_BROWSER_TEST_P(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL app_url = embedded_test_server()->GetURL(kAudioFocusTestPageURL);
 
@@ -152,25 +159,34 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
   EXPECT_TRUE(WaitForPause(tab1));
   EXPECT_TRUE(WaitForPause(tab2));
 
-// TODO(https://crbug.com/376922620): Enable capturing v2 ChromeOS support.
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Open captured window, which should share the same group id.
+  // Open captured window, which should share the same group id if capturing
+  // is enabled.
   {
     content::WebContents* new_contents =
         OpenWindow(web_contents, /*aux=*/false, app_url);
-    EXPECT_EQ(group_id, GetAudioFocusGroupId(new_contents));
+    if (GetLinkCapturingVersion() ==
+        apps::test::LinkCapturingFeatureVersion::kV2DefaultOn) {
+      EXPECT_EQ(group_id, GetAudioFocusGroupId(new_contents));
+    } else {
+      EXPECT_EQ(base::UnguessableToken::Null(),
+                GetAudioFocusGroupId(new_contents));
+    }
   }
+
+#if !BUILDFLAG(IS_CHROMEOS)
   // Open an auxiliary window, which should also open in an app window and share
   // the group id.
+  // TODO(crbug.com/392106502): Fix this test and enable once auxiliary context
+  // support is added to PWAs and works on ChromeOS.
   {
     content::WebContents* new_contents =
         OpenWindow(web_contents, /*aux=*/true, app_url);
     EXPECT_EQ(group_id, GetAudioFocusGroupId(new_contents));
   }
+#endif
 
   ASSERT_EQ(apps::test::DisableLinkCapturingByUser(profile(), app_id),
             base::ok());
-#endif
 
   // Without capturing, new window will open in the browser so it should have no
   // group id.
@@ -210,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
   EXPECT_EQ(group_id, GetAudioFocusGroupId(web_contents));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, WebAppHasSameAudioFocus) {
+IN_PROC_BROWSER_TEST_P(WebAppAudioFocusBrowserTest, WebAppHasSameAudioFocus) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL app_url = embedded_test_server()->GetURL(kAudioFocusTestPageURL);
 
@@ -223,5 +239,11 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, WebAppHasSameAudioFocus) {
 
   EXPECT_EQ(base::UnguessableToken::Null(), GetAudioFocusGroupId(web_contents));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebAppAudioFocusBrowserTest,
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn));
 
 }  // namespace web_app

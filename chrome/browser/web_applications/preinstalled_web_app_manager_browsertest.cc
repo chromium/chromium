@@ -25,6 +25,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
@@ -1623,9 +1624,32 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerWithCloudGamingBrowserTest,
 class PreinstalledWebAppManagerPreferredAppForSupportedLinksBrowserTest
     : public PreinstalledWebAppManagerBrowserTest,
       public ::testing::WithParamInterface<
-          /*is_preferred_app_for_supported_links=*/bool> {
+          std::tuple</*is_preferred_app_for_supported_links=*/bool,
+                     apps::test::LinkCapturingFeatureVersion>> {
  public:
-  bool IsPreferredAppForSupportedLinks() const { return GetParam(); }
+  PreinstalledWebAppManagerPreferredAppForSupportedLinksBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(
+            std::get<apps::test::LinkCapturingFeatureVersion>(GetParam())),
+        {});
+  }
+
+  bool IsPreferredAppPerInstallOption() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool AppsCapturingByDefault() const {
+    return std::get<apps::test::LinkCapturingFeatureVersion>(GetParam()) ==
+           apps::test::LinkCapturingFeatureVersion::kV2DefaultOn;
+  }
+
+  bool GetExpectedPreferredAppForSupportedLinks() const {
+#if BUILDFLAG(IS_CHROMEOS)
+    return IsPreferredAppPerInstallOption() || AppsCapturingByDefault();
+#else
+    return IsPreferredAppPerInstallOption();
+#endif
+  }
 
   void RemoveSupportedLinksPreference(const webapps::AppId& app_id) {
     apps_util::RemoveSupportedLinksPreferenceAndWait(profile(), app_id);
@@ -1639,12 +1663,10 @@ class PreinstalledWebAppManagerPreferredAppForSupportedLinksBrowserTest
         app_id, is_preferred_app)
         .Wait();
   }
-};
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PreinstalledWebAppManagerPreferredAppForSupportedLinksBrowserTest,
-    /*is_preferred_app_for_supported_links=*/::testing::Bool());
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_P(
     PreinstalledWebAppManagerPreferredAppForSupportedLinksBrowserTest,
@@ -1660,7 +1682,7 @@ IN_PROC_BROWSER_TEST_P(
         "launch_container": "window",
         "user_type": ["unmanaged"]
       })",
-      {GetAppUrl().spec(), base::ToString(IsPreferredAppForSupportedLinks())},
+      {GetAppUrl().spec(), base::ToString(IsPreferredAppPerInstallOption())},
       nullptr);
   webapps::AppId app_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, GetAppUrl());
@@ -1668,6 +1690,7 @@ IN_PROC_BROWSER_TEST_P(
   // Install the app for the first time.
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest),
             webapps::InstallResultCode::kSuccessNewInstall);
+  apps::AppReadinessWaiter(profile(), app_id).Await();
   EXPECT_EQ(registrar().GetInstallState(app_id),
 #if BUILDFLAG(IS_CHROMEOS)
             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
@@ -1676,8 +1699,10 @@ IN_PROC_BROWSER_TEST_P(
 #endif
   );
 
-  // Verify that the app is the preferred app if requested in the manifest.
-  WaitForSupportedLinksPreference(app_id, IsPreferredAppForSupportedLinks());
+  // Verify that the app is the preferred app if requested in the install
+  // options, or if v2DefaultOn is enabled.
+  WaitForSupportedLinksPreference(app_id,
+                                  GetExpectedPreferredAppForSupportedLinks());
 
   // Clear the preferred app.
   RemoveSupportedLinksPreference(app_id);
@@ -1693,10 +1718,19 @@ IN_PROC_BROWSER_TEST_P(
 #endif
   );
 
-  // Verify that the app is *not* the preferred app after re-installation as the
-  // user may have already updated their preference.
+  // Verify that the app is *not* the preferred app after re-installation as
+  // the user may have already updated their preference.
   WaitForSupportedLinksPreference(app_id, /*is_preferred_app=*/false);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PreinstalledWebAppManagerPreferredAppForSupportedLinksBrowserTest,
+    testing::Combine(
+        /*is_preferred_app_for_supported_links=*/testing::Bool(),
+        testing::Values(
+            apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+            apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)));
 
 #if !BUILDFLAG(IS_CHROMEOS)
 

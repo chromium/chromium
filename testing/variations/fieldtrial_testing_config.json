@@ -25741,6 +25741,24 @@
             ]
         }
     ],
+    "WebAppNavigationCapturingDefaultOnChromeOS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "link_capturing_state": "reimpl_default_on"
+                    },
+                    "enable_features": [
+                        "PwaNavigationCapturing"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebAuthenticationNewRefreshFlow": [
         {
             "platforms": [
