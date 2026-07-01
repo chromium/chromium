@@ -382,13 +382,12 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
       recorder->RestartRecording();
     }
   } else {
+    FlushCanvas(FlushReason::kOther);
     if (shared_image_provider_) {
-      shared_image_provider_->Flush();
       if (!shared_image_provider_->IsValid()) {
         return false;
       }
     } else {
-      bitmap_provider_->Flush();
       if (!bitmap_provider_->IsValid()) {
         return false;
       }
