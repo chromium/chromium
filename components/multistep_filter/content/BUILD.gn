@@ -15,6 +15,7 @@ source_set("content") {
     "//components/multistep_filter/core",
     "//components/multistep_filter/core:switches",
     "//components/multistep_filter/core:util",
+    "//components/multistep_filter/core/data_models",
     "//components/multistep_filter/core/logging",
     "//content/public/browser",
     "//url",

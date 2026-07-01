@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/contextual_cueing/prefs.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_log_router_factory.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
@@ -237,9 +239,9 @@ void FilterUiController::ApplySuggestion() {
     return;
   }
 
-  GURL url = suggestion_state_->suggestion.navigation_url;
+  UrlFilterSuggestion suggestion = suggestion_state_->suggestion;
   ClearSuggestion(SuggestionUserDecision::kAccepted);
-  NavigateTo(url);
+  NavigateTo(suggestion);
 }
 
 void FilterUiController::OnActionInvoked() {
@@ -260,19 +262,23 @@ void FilterUiController::OnActionInvoked() {
   }
 }
 
-void FilterUiController::NavigateTo(const GURL& url) {
+void FilterUiController::NavigateTo(const UrlFilterSuggestion& suggestion) {
   content::WebContents* web_contents = tab().GetContents();
   if (!web_contents) {
     return;
   }
-  content::OpenURLParams params(url, content::Referrer(),
+  content::OpenURLParams params(suggestion.navigation_url, content::Referrer(),
                                 WindowOpenDisposition::CURRENT_TAB,
                                 ui::PAGE_TRANSITION_GENERATED,
                                 /*is_renderer_initiated=*/false);
   web_contents->OpenURL(
-      params, base::BindOnce([](content::NavigationHandle& handle) {
-        FilterInitiatedNavigationMarker::CreateForNavigationHandle(handle);
-      }));
+      params, base::BindOnce(
+                  [](UrlFilterSuggestion suggestion,
+                     content::NavigationHandle& handle) {
+                    FilterInitiatedNavigationMarker::CreateForNavigationHandle(
+                        handle, std::move(suggestion), base::TimeTicks::Now());
+                  },
+                  suggestion));
 }
 
 // Items in the contextual cue menu are action buttons rather than toggles,

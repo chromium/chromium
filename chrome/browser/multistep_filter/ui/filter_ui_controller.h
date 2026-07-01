@@ -16,8 +16,6 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/menus/simple_menu_model.h"
 
-class GURL;
-
 namespace tabs {
 class TabInterface;
 }
@@ -105,8 +103,9 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
   virtual void OnActionInvoked();
 
  protected:
-  // Navigates the current tab to the given URL. Virtual for testing.
-  virtual void NavigateTo(const GURL& url);
+  // Navigates the current tab applying the given suggestion. Virtual for
+  // testing.
+  virtual void NavigateTo(const UrlFilterSuggestion& suggestion);
 
  private:
   friend class FilterUiControllerTestApi;

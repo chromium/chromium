@@ -57,7 +57,10 @@ class MockFilterUiController : public FilterUiController {
       : FilterUiController(tab) {}
   ~MockFilterUiController() override = default;
 
-  MOCK_METHOD(void, NavigateTo, (const GURL& url), (override));
+  MOCK_METHOD(void,
+              NavigateTo,
+              (const UrlFilterSuggestion& suggestion),
+              (override));
 };
 
 class TestFilterUiController : public FilterUiController {
@@ -383,7 +386,7 @@ TEST_F(FilterUiControllerTest, ApplySuggestion) {
       CreateDummySuggestion(url, DefaultAttributes());
   controller_->OnSuggestionGenerated(suggestion);
 
-  EXPECT_CALL(*controller_, NavigateTo(url));
+  EXPECT_CALL(*controller_, NavigateTo(suggestion));
   controller_->ApplySuggestion();
 }
 
@@ -396,7 +399,9 @@ TEST_F(FilterUiControllerTest, NavigateToWithNullWebContentsDoesNotCrash) {
       std::make_unique<TestFilterUiController>(*mock_tab_null_contents);
 
   // Should not crash.
-  controller_null_contents->NavigateTo(GURL("https://example.com"));
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
+  controller_null_contents->NavigateTo(suggestion);
 }
 
 TEST_F(FilterUiControllerTest, NavigateToWithWebContents) {
@@ -410,6 +415,8 @@ TEST_F(FilterUiControllerTest, NavigateToWithWebContents) {
   web_contents()->SetDelegate(&delegate);
 
   GURL url("https://example.com");
+  UrlFilterSuggestion suggestion =
+      CreateDummySuggestion(url, DefaultAttributes());
 
   EXPECT_CALL(
       delegate,
@@ -428,7 +435,7 @@ TEST_F(FilterUiControllerTest, NavigateToWithWebContents) {
             return web_contents();
           });
 
-  controller->NavigateTo(url);
+  controller->NavigateTo(suggestion);
 }
 
 // === Group 5: Menu Delegate Methods (IsCommandIdChecked, IsCommandIdEnabled,
