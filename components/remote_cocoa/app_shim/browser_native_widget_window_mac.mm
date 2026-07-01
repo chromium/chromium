@@ -26,6 +26,12 @@ const double kThinControllerHeight = 0.5;
 - (void)setButtonRevealAmount:(double)amount;
 @end
 
+// The base class of traffic light buttons.
+WEAK_IMPORT_ATTRIBUTE
+@interface _NSThemeWidget : NSButton
+- (void)setRevealAmount:(double)amount;
+@end
+
 @interface BrowserWindowFrame : NativeWidgetMacNSWindowTitledFrame
 @end
 
@@ -118,9 +124,22 @@ const double kThinControllerHeight = 0.5;
     return;
   }
   NSWindow* window = [self window];
-  [[window standardWindowButton:NSWindowCloseButton] setAlphaValue:1.0];
-  [[window standardWindowButton:NSWindowMiniaturizeButton] setAlphaValue:1.0];
-  [[window standardWindowButton:NSWindowZoomButton] setAlphaValue:1.0];
+  const NSWindowButton kButtons[] = {
+      NSWindowCloseButton,
+      NSWindowMiniaturizeButton,
+      NSWindowZoomButton,
+  };
+  for (NSWindowButton type : kButtons) {
+    NSButton* button = [window standardWindowButton:type];
+    CHECK(button);
+    CHECK([button isKindOfClass:[_NSThemeWidget class]]);
+    [button setAlphaValue:1.0];
+    // macOS 27 adds -[NSThemeWidget setRevealAmount:] to control the visibility
+    // of the traffic lights.
+    if ([button respondsToSelector:@selector(setRevealAmount:)]) {
+      [(_NSThemeWidget*)button setRevealAmount:1.0];
+    }
+  }
 }
 
 @end
