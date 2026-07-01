@@ -108,6 +108,19 @@ function format(node, depth, placeholderMap) {
           for (const match of matches) {
             recordMetadata(placeholderMap, match, depth);
           }
+          // If the child node has a leading newline and whitespace, replace it
+          // with the appropriate indentation whitespace.
+          if (/^\n\s*/.test(child.value)) {
+            child.value = child.value.replace(
+                /^\n\s*/, getIndentationPrefix(depth * INDENT_SIZE));
+          }
+          // If the child node has trailing whitespace, initially set it to the
+          // parent's indentation (for the closing tag). If it has a subsequent
+          // sibling, this will be overwritten later by ensureNewlineAndIndent.
+          if (/\n\s*$/.test(child.value)) {
+            child.value = child.value.replace(
+                /\n\s*$/, getIndentationPrefix((depth - 1) * INDENT_SIZE));
+          }
         }
       }
 

@@ -55,7 +55,7 @@ export function processTemplate(filePath) {
     const jsEnd = node.getStart(sourceFile) + (isTemplate ? 1 : 0);
     const jsText = code.substring(jsStart, jsEnd);
 
-    map.set(tagName, {code: jsText});
+    map.set(tagName, {code: jsText, isTemplate});
     map.set(`/${tagName}`, {code: closeToken});
 
     return `<${tagName}>${innerResult}</${tagName}>`;
@@ -87,6 +87,9 @@ export function processTemplate(filePath) {
 
     node.templateSpans.forEach((span, index, spans) => {
       const expr = span.expression;
+      const jsStart = (index === 0 ? node.head.getEnd() :
+                                     spans[index - 1].literal.getEnd()) -
+          2;
 
       const nestedTemplate = findTemplate(expr);
 
@@ -103,7 +106,7 @@ export function processTemplate(filePath) {
         templateResult += createPlaceholder({
           node: isTrueTemplate ? expr.whenTrue.template : expr.whenTrue,
           // Subtract 2 to include the opening ${ in the placeholder mapping
-          jsStart: expr.getStart(sourceFile) - 2,
+          jsStart,
           closeToken: isTrueTemplate ? '`' : '',
           isTemplate: isTrueTemplate,
         });
@@ -122,7 +125,7 @@ export function processTemplate(filePath) {
         const nestedResult = createPlaceholder({
           node: nestedTemplate,
           // Subtract 2 to include the opening ${ in the placeholder mapping
-          jsStart: expr.getStart(sourceFile) - 2,
+          jsStart,
           // Include the closing backtick and the closing } in closeToken
           closeToken:
               code.substring(nestedTemplate.getEnd() - 1, expr.getEnd()) + '}',
@@ -170,7 +173,6 @@ export function processTemplate(filePath) {
       returnStatement && returnStatement.expression &&
       ts.isTaggedTemplateExpression(returnStatement.expression));
   const templateNode = returnStatement.expression.template;
-
   result = processNode(templateNode);
   const placeholder = '<!--_html_template_placeholder_-->';
   const start =

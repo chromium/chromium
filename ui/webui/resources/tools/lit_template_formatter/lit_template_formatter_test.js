@@ -54,7 +54,10 @@ suite('lit_template_formatter', () => {
     const expectedMap = [
       [`${EXPR_PREFIX}-1`, {code: '${this.disabled}'}],
       [`${EXPR_PREFIX}-3`, {code: '${item}'}],
-      [`${TEMPLATE_PREFIX}-2`, {code: '${this.items.map(item => html`'}],
+      [
+        `${TEMPLATE_PREFIX}-2`,
+        {code: '${this.items.map(item => html`', isTemplate: true},
+      ],
       [`/${TEMPLATE_PREFIX}-2`, {code: '`)}'}],
       [
         `${EXPR_PREFIX}-4`,
@@ -151,6 +154,14 @@ suite('lit_template_formatter', () => {
           indent: 20,
         },
       ],
+      [
+        `${EXPR_PREFIX}-2`,
+        {
+          code:
+              '${this.someVeryLongConditionThatWillMakeItWrapAndExceedTheColumnLimitAndIsEvenLongerThanBeforeAndWillDefinitelyForceAWrap ? html`',
+          indent: 6,
+        },
+      ],
     ]);
 
     await formatTsExpressions(
@@ -161,6 +172,17 @@ suite('lit_template_formatter', () => {
         'Expression should be wrapped across lines by clang-format');
     assert.ok(
         p1.code.includes('    '), 'Wrapped lines should be indented properly');
+
+    const p2 = map.get(`${EXPR_PREFIX}-2`);
+    assert.ok(
+        p2.code.includes('\n'),
+        'Ternary expression should be wrapped across lines by clang-format');
+    assert.ok(
+        p2.code.endsWith('`'),
+        'Ternary expression should end with a single backtick after suffix removal');
+    assert.ok(
+        !p2.code.includes(': \'\''),
+        'Ternary expression should not contain the temporary else branch');
   });
 
   test('serializeHtmlAst', () => {
