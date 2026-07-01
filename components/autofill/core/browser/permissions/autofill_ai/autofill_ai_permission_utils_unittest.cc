@@ -23,6 +23,8 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/personal_context/core/personal_context_prefs.h"
+#include "components/personal_context/core/personal_context_types.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
@@ -659,6 +661,33 @@ TEST_F(AutofillAiPermissionUtilsTest, kAmbientAutofill_G1Tiers) {
     EXPECT_FALSE(MayPerformAutofillAiAction(
         client(), AutofillAiAction::kAmbientAutofill));
   }
+}
+
+TEST_F(AutofillAiPermissionUtilsTest,
+       AmbientAutofillRequiresPersonalContextPref) {
+  client().set_personal_context_enablement_state(
+      personal_context::PersonalContextEnablementState::kEnabled);
+
+  // Pref enabled by default in RegisterProfilePrefs.
+  EXPECT_TRUE(
+      MayPerformAutofillAiAction(client(), AutofillAiAction::kAmbientAutofill));
+  EXPECT_TRUE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+      EntityType(kPassport)));
+  EXPECT_TRUE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kShowAmbientAutofillInSettings));
+
+  // Disable pref.
+  client().GetPrefs()->SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
+  EXPECT_FALSE(
+      MayPerformAutofillAiAction(client(), AutofillAiAction::kAmbientAutofill));
+  EXPECT_FALSE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+      EntityType(kPassport)));
+  EXPECT_TRUE(MayPerformAutofillAiAction(
+      client(), AutofillAiAction::kShowAmbientAutofillInSettings));
 }
 
 INSTANTIATE_TEST_SUITE_P(
