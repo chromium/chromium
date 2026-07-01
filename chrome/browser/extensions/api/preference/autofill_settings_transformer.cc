@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/values.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 
 namespace extensions {
@@ -15,8 +16,6 @@ namespace {
 
 constexpr char kUrlPatternExtensionKey[] = "urlPattern";
 constexpr char kBlockedTypesExtensionKey[] = "blockedTypes";
-constexpr char kUrlPatternBrowserKey[] = "url_pattern";
-constexpr char kBlockedTypesBrowserKey[] = "blocked_types";
 
 }  // namespace
 
@@ -59,8 +58,10 @@ std::optional<base::Value> AutofillSettingsTransformer::ExtensionToBrowserPref(
 
     browser_list.Append(
         base::DictValue()
-            .Set(kUrlPatternBrowserKey, *url_pattern)
-            .Set(kBlockedTypesBrowserKey, blocked_types->Clone()));
+            .Set(autofill::prefs::kAutofillBlockedTypesUrlPatternKey,
+                 *url_pattern)
+            .Set(autofill::prefs::kAutofillBlockedTypesBlockedTypesKey,
+                 blocked_types->Clone()));
   }
 
   return base::Value(std::move(browser_list));
@@ -79,9 +80,10 @@ std::optional<base::Value> AutofillSettingsTransformer::BrowserToExtensionPref(
       continue;
     }
     const auto& dict = item.GetDict();
-    const std::string* url_pattern = dict.FindString(kUrlPatternBrowserKey);
+    const std::string* url_pattern =
+        dict.FindString(autofill::prefs::kAutofillBlockedTypesUrlPatternKey);
     const base::ListValue* blocked_types =
-        dict.FindList(kBlockedTypesBrowserKey);
+        dict.FindList(autofill::prefs::kAutofillBlockedTypesBlockedTypesKey);
     if (!url_pattern || !blocked_types) {
       continue;
     }
