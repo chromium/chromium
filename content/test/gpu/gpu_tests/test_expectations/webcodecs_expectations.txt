@@ -289,13 +289,6 @@ crbug.com/515133241 [ win11 amd-0x7550 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123
 crbug.com/515133241 [ win11 amd-0x7550 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_hw_decoder [ Failure ]
 crbug.com/515133241 [ win11 amd-0x7550 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_sw_decoder [ Failure ]
 
-# MacOS 15.5 failures
-crbug.com/526700185 [ sequoia intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_arraybuffer [ Failure ]
-crbug.com/526700185 [ sequoia intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
-crbug.com/526700185 [ sequoia intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_capture [ Failure ]
-crbug.com/526700185 [ sequoia intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_hw_decoder [ Failure ]
-crbug.com/526700185 [ sequoia intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_offscreen [ Failure ]
-crbug.com/526700185 [ sequoia intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_sw_decoder [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
