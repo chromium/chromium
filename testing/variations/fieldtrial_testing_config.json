@@ -25720,6 +25720,33 @@
             ]
         }
     ],
+    "VoiceSearchCoherenceSearchbox": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_NoLiveTranscription",
+                    "enable_features": [
+                        "VoiceSearchCoherenceSearchbox"
+                    ]
+                },
+                {
+                    "name": "Enabled_WithLiveTranscription",
+                    "params": {
+                        "VoiceSearchCoherenceSearchboxWithLiveTranscription": "true"
+                    },
+                    "enable_features": [
+                        "VoiceSearchCoherenceSearchbox"
+                    ]
+                }
+            ]
+        }
+    ],
     "WalletApiPrivatePassesConsent": [
         {
             "platforms": [
