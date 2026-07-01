@@ -39,6 +39,7 @@
 }
 
 - (void)dealloc {
+  _showMemoryDebugger.Destroy();
   [self tearDownDebugger];
 }
 
@@ -51,17 +52,15 @@
 
 // Shows or hides the debugger when the pref changes.
 - (void)onShowMemoryDebuggingToolsChange {
-  if (_showMemoryDebugger.GetValue()) {
-    _memoryDebugger = [[MemoryDebugger alloc] init];
-    [_debuggerParentView addSubview:_memoryDebugger];
-  } else {
     [self tearDownDebugger];
-  }
+    if (_showMemoryDebugger.GetValue()) {
+      _memoryDebugger = [[MemoryDebugger alloc] init];
+      [_debuggerParentView addSubview:_memoryDebugger];
+    }
 }
 
 // Tears down the debugger so it can be deallocated.
 - (void)tearDownDebugger {
-  _showMemoryDebugger.Destroy();
   [_memoryDebugger invalidateTimers];
   [_memoryDebugger removeFromSuperview];
   _memoryDebugger = nil;

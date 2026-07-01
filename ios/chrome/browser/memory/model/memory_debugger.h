@@ -19,8 +19,10 @@
 // deallocated so the owner must call `invalidateTimers` before a MemoryDebugger
 // instance can be deallocated.
 @interface MemoryDebugger : UIView <UITextFieldDelegate>
+
 // Must be called before the object can be deallocated!
 - (void)invalidateTimers;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_MEMORY_MODEL_MEMORY_DEBUGGER_H_

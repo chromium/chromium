@@ -8,9 +8,6 @@
 
 #import "ios/chrome/common/constants.h"
 
-CGFloat CurrentScreenHeight() {
-  return [UIScreen mainScreen].bounds.size.height;
-}
 
 CGFloat CurrentScreenWidth() {
   return [UIScreen mainScreen].bounds.size.width;

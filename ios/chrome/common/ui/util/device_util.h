@@ -9,9 +9,6 @@
 
 // Device util functions containing functions that do not require Objective-C.
 
-// Returns the height of the screen in the current orientation.
-CGFloat CurrentScreenHeight();
-
 // Returns the width of the screen in the current orientation.
 CGFloat CurrentScreenWidth();
 
