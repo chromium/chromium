@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.OptIn;
+import androidx.privacysandbox.ads.adservices.common.ExperimentalFeatures;
 import androidx.privacysandbox.ads.adservices.java.measurement.MeasurementManagerFutures;
 import androidx.privacysandbox.ads.adservices.measurement.DeletionRequest;
 import androidx.privacysandbox.ads.adservices.measurement.SourceRegistrationRequest;
@@ -351,10 +352,7 @@ public class AttributionOsLevelManager {
      * Registers an attribution source with native, see `registerSourceAsync()`:
      * https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/java/measurement/MeasurementManagerFutures.
      */
-    @OptIn(
-            markerClass =
-                    androidx.privacysandbox.ads.adservices.common.ExperimentalFeatures
-                            .RegisterSourceOptIn.class)
+    @OptIn(markerClass = ExperimentalFeatures.RegisterSourceOptIn.class)
     @CalledByNative
     private void registerAttributionSource(
             int requestId, @JniType("std::vector") GURL[] registrationUrls, MotionEvent event) {

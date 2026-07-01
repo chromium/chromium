@@ -203,8 +203,7 @@ public class SpeechRecognitionImpl {
 
     /** Returns null if there is no Google LLC provided RecognitionService available on device. */
     private static @Nullable ComponentName createRecognitionProvider() {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                || DeviceInfo.isAutomotive()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || DeviceInfo.isAutomotive()) {
             return getComponent(SSBG_PACKAGE_NAME, -1);
         } else {
             return getComponent(AGSA_PACKAGE_NAME, AGSA_MIN_VERSION);
