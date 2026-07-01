@@ -955,8 +955,10 @@ void RenderFrameProxyHost::BindRemoteFrameInterfaces(
     mojo::PendingAssociatedRemote<blink::mojom::RemoteFrame> remote_frame,
     mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>
         remote_frame_host_receiver) {
-  CHECK(!remote_frame_.is_bound(), base::NotFatalUntil::M152);
-  CHECK(!remote_frame_host_receiver_.is_bound(), base::NotFatalUntil::M152);
+  // TODO(crbug.com/529425548): CHECK-exclusion: Convert to CHECKs once we are
+  // confident it won't be triggered.
+  DCHECK(!remote_frame_.is_bound());
+  DCHECK(!remote_frame_host_receiver_.is_bound());
 
   remote_frame_.Bind(std::move(remote_frame));
   remote_frame_host_receiver_.Bind(std::move(remote_frame_host_receiver));
