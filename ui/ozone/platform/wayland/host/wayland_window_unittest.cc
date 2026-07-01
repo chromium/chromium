@@ -308,6 +308,13 @@ class WaylandWindowTest : public WaylandTest {
     VerifyAndClearExpectations(delegate_, surface_id_);
   }
 
+  void DoMinimizeTest(bool async_state);
+  void DoSetFullscreenAndRestoreTest(bool async_state);
+  void DoStartWithFullscreenTest(bool async_state);
+  void DoStartMaximizedTest(bool async_state);
+  void DoStartWithMinimizedTest(bool async_state);
+  void DoSetMaximizedFullscreenAndRestoreTest(bool async_state);
+
   void VerifyXdgPopupPosition(WaylandWindow* menu_window,
                               const PopupPosition& position) {
     const uint32_t surface_id = menu_window->root_surface()->get_surface_id();
@@ -1007,7 +1014,7 @@ TEST_P(WaylandWindowTest, MaximizeAndRestoreWithInsets) {
   VerifyAndClearExpectations();
 }
 
-TEST_P(WaylandWindowTest, Minimize) {
+void WaylandWindowTest::DoMinimizeTest(bool async_state) {
   wl::ScopedWlArray states({});
 
   // Make sure the window is initialized to normal state from the beginning.
@@ -1020,14 +1027,29 @@ TEST_P(WaylandWindowTest, Minimize) {
     wl::MockXdgSurface* xdg_surface = mock_surface->xdg_surface();
     EXPECT_CALL(*xdg_surface->xdg_toplevel(), SetMinimized());
   });
-  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
-  window_->Minimize();
-  EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kMinimized);
-  VerifyAndClearExpectations();
 
-  // Reinitialize wl_array, which removes previous old states.
-  states = wl::ScopedWlArray({});
-  SendConfigureEvent(surface_id_, {0, 0}, states);
+  if (async_state) {
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(0);
+    window_->Minimize();
+    VerifyAndClearExpectations();
+
+    // The state remains normal until we receive a configure event.
+    EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+
+    // Reinitialize wl_array, which removes previous old states.
+    states = wl::ScopedWlArray({});
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
+    SendConfigureEvent(surface_id_, {800, 600}, states);
+    AdvanceFrameToCurrent(window_.get(), delegate_);
+  } else {
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
+    window_->Minimize();
+    VerifyAndClearExpectations();
+
+    // Reinitialize wl_array, which removes previous old states.
+    states = wl::ScopedWlArray({});
+    SendConfigureEvent(surface_id_, {800, 600}, states);
+  }
 
   // Wayland compositor doesn't notify clients about minimized state, but rather
   // if a window is not activated. Thus, a WaylandToplevelWindow marks itself as
@@ -1049,6 +1071,16 @@ TEST_P(WaylandWindowTest, Minimize) {
 
   // And one last time to ensure the behaviour.
   SendConfigureEvent(surface_id_, {0, 0}, states);
+}
+
+TEST_P(WaylandWindowTest, Minimize) {
+  DoMinimizeTest(/*async_state=*/false);
+}
+
+TEST_P(WaylandWindowTest, MinimizeAsync) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAsyncFullscreenWindowState);
+  DoMinimizeTest(/*async_state=*/true);
 }
 
 // Tests the event sequence where a toplevel window is minimized and a restore
@@ -1157,7 +1189,7 @@ TEST_P(WaylandWindowTest, MinimizedWindowDoesNotReconfigureGeometry) {
   VerifyAndClearExpectations();
 }
 
-TEST_P(WaylandWindowTest, SetFullscreenAndRestore) {
+void WaylandWindowTest::DoSetFullscreenAndRestoreTest(bool async_state) {
   constexpr gfx::Rect kNormalBounds{500, 300};
   constexpr gfx::Rect kFullscreenBounds{800, 600};
 
@@ -1166,6 +1198,7 @@ TEST_P(WaylandWindowTest, SetFullscreenAndRestore) {
 
   wl::ScopedWlArray states = InitializeWlArrayWithActivatedState();
   SendConfigureEvent(surface_id_, kNormalBounds.size(), states);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
 
   states.AddStateToWlArray(XDG_TOPLEVEL_STATE_FULLSCREEN);
 
@@ -1175,12 +1208,30 @@ TEST_P(WaylandWindowTest, SetFullscreenAndRestore) {
     wl::MockXdgSurface* xdg_surface = mock_surface->xdg_surface();
     EXPECT_CALL(*xdg_surface->xdg_toplevel(), SetFullscreen());
   });
-  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
-  window_->SetFullscreen(true, display::kInvalidDisplayId);
-  // Make sure than WaylandWindow manually handles fullscreen states. Check the
-  // comment in the WaylandWindow::SetFullscreen.
-  VerifyAndClearExpectations();
+
+  if (async_state) {
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(0);
+    window_->SetFullscreen(true, display::kInvalidDisplayId);
+    VerifyAndClearExpectations();
+
+    EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
+  } else {
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
+    window_->SetFullscreen(true, display::kInvalidDisplayId);
+    // Make sure than WaylandWindow manually handles fullscreen states. Check
+    // the comment in the WaylandWindow::SetFullscreen.
+    VerifyAndClearExpectations();
+
+    EXPECT_EQ(window_->GetPlatformWindowState(),
+              PlatformWindowState::kFullScreen);
+
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(0);
+  }
   SendConfigureEvent(surface_id_, kFullscreenBounds.size(), states);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+
   EXPECT_EQ(window_->GetPlatformWindowState(),
             PlatformWindowState::kFullScreen);
 
@@ -1191,16 +1242,47 @@ TEST_P(WaylandWindowTest, SetFullscreenAndRestore) {
     EXPECT_CALL(*xdg_surface->xdg_toplevel(), UnsetFullscreen());
   });
 
-  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
-  window_->Restore();
-  VerifyAndClearExpectations();
-  // Reinitialize wl_array, which removes previous old states.
-  states = InitializeWlArrayWithActivatedState();
-  SendConfigureEvent(surface_id_, kNormalBounds.size(), states);
+  if (async_state) {
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(0);
+    window_->Restore();
+    VerifyAndClearExpectations();
+
+    // The state of the window must remain fullscreen until the Configure event.
+    EXPECT_EQ(window_->GetPlatformWindowState(),
+              PlatformWindowState::kFullScreen);
+
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
+    // Reinitialize wl_array, which removes previous old states.
+    states = InitializeWlArrayWithActivatedState();
+    SendConfigureEvent(surface_id_, kNormalBounds.size(), states);
+    AdvanceFrameToCurrent(window_.get(), delegate_);
+  } else {
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
+    window_->Restore();
+    VerifyAndClearExpectations();
+
+    EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kNormal);
+
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(0);
+    // Reinitialize wl_array, which removes previous old states.
+    states = InitializeWlArrayWithActivatedState();
+    SendConfigureEvent(surface_id_, kNormalBounds.size(), states);
+  }
+
   EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kNormal);
 }
 
-TEST_P(WaylandWindowTest, StartWithFullscreen) {
+TEST_P(WaylandWindowTest, SetFullscreenAndRestore) {
+  DoSetFullscreenAndRestoreTest(/*async_state=*/false);
+}
+
+TEST_P(WaylandWindowTest, SetFullscreenAndRestoreAsync) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAsyncFullscreenWindowState);
+  DoSetFullscreenAndRestoreTest(/*async_state=*/true);
+}
+
+void WaylandWindowTest::DoStartWithFullscreenTest(bool async_state) {
   MockWaylandPlatformWindowDelegate delegate(connection_.get());
   PlatformWindowInitProperties properties;
   properties.bounds = gfx::Rect(100, 100);
@@ -1227,36 +1309,61 @@ TEST_P(WaylandWindowTest, StartWithFullscreen) {
     EXPECT_FALSE(mock_surface->xdg_surface());
   });
 
-  // We must receive a state change after SetFullscreen.
-  EXPECT_CALL(delegate,
-              OnWindowStateChanged(Eq(PlatformWindowState::kNormal),
-                                   Eq(PlatformWindowState::kFullScreen)))
-      .Times(1);
-
-  window->SetFullscreen(true, display::kInvalidDisplayId);
-  // The state of the window must already be fullscreen one.
-  EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
+  if (async_state) {
+    EXPECT_CALL(delegate, OnWindowStateChanged(_, _)).Times(0);
+    window->SetFullscreen(true, display::kInvalidDisplayId);
+    EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kNormal);
+  } else {
+    // We must receive a state change after SetFullscreen.
+    EXPECT_CALL(delegate,
+                OnWindowStateChanged(Eq(PlatformWindowState::kNormal),
+                                     Eq(PlatformWindowState::kFullScreen)))
+        .Times(1);
+    window->SetFullscreen(true, display::kInvalidDisplayId);
+    // The state of the window must already be fullscreen one.
+    EXPECT_EQ(window->GetPlatformWindowState(),
+              PlatformWindowState::kFullScreen);
+  }
 
   WaylandTestBase::SyncDisplay();
-
   Mock::VerifyAndClearExpectations(&delegate);
 
   // Show and Activate the surface.
   window->Show(false);
 
-  // We mustn't receive any state changes if that does not differ from the last
-  // state.
-  EXPECT_CALL(delegate, OnWindowStateChanged(_, _)).Times(0);
-  wl::ScopedWlArray states = InitializeWlArrayWithActivatedState();
-  states.AddStateToWlArray(XDG_TOPLEVEL_STATE_FULLSCREEN);
-  SendConfigureEvent(surface_id, {0, 0}, states);
+  if (async_state) {
+    EXPECT_CALL(delegate,
+                OnWindowStateChanged(Eq(PlatformWindowState::kNormal),
+                                     Eq(PlatformWindowState::kFullScreen)))
+        .Times(1);
+    wl::ScopedWlArray states = InitializeWlArrayWithActivatedState();
+    states.AddStateToWlArray(XDG_TOPLEVEL_STATE_FULLSCREEN);
+    SendConfigureEvent(surface_id, {800, 600}, states);
+    AdvanceFrameToCurrent(window.get(), delegate);
+  } else {
+    // We mustn't receive any state changes if that does not differ from the
+    // last state.
+    EXPECT_CALL(delegate, OnWindowStateChanged(_, _)).Times(0);
+    wl::ScopedWlArray states = InitializeWlArrayWithActivatedState();
+    states.AddStateToWlArray(XDG_TOPLEVEL_STATE_FULLSCREEN);
+    SendConfigureEvent(surface_id, {0, 0}, states);
+  }
 
-  // It must be still the same state.
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
   Mock::VerifyAndClearExpectations(&delegate);
 }
 
-TEST_P(WaylandWindowTest, StartMaximized) {
+TEST_P(WaylandWindowTest, StartWithFullscreen) {
+  DoStartWithFullscreenTest(/*async_state=*/false);
+}
+
+TEST_P(WaylandWindowTest, StartWithFullscreenAsync) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAsyncFullscreenWindowState);
+  DoStartWithFullscreenTest(/*async_state=*/true);
+}
+
+void WaylandWindowTest::DoStartMaximizedTest(bool async_state) {
   MockWaylandPlatformWindowDelegate delegate(connection_.get());
   PlatformWindowInitProperties properties;
   properties.bounds = gfx::Rect(100, 100);
@@ -1282,36 +1389,62 @@ TEST_P(WaylandWindowTest, StartMaximized) {
     EXPECT_FALSE(mock_surface->xdg_surface());
   });
 
-  // We must receive a state change after Show is called.
-  EXPECT_CALL(delegate,
-              OnWindowStateChanged(Eq(PlatformWindowState::kNormal),
-                                   Eq(PlatformWindowState::kMaximized)))
-      .Times(1);
-
-  window->Maximize();
-  // The state of the window must already be fullscreen one.
-  EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kMaximized);
+  if (async_state) {
+    EXPECT_CALL(delegate, OnWindowStateChanged(_, _)).Times(0);
+    window->Maximize();
+    EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kNormal);
+  } else {
+    // We must receive a state change after Show is called.
+    EXPECT_CALL(delegate,
+                OnWindowStateChanged(Eq(PlatformWindowState::kNormal),
+                                     Eq(PlatformWindowState::kMaximized)))
+        .Times(1);
+    window->Maximize();
+    // The state of the window must already be fullscreen one.
+    EXPECT_EQ(window->GetPlatformWindowState(),
+              PlatformWindowState::kMaximized);
+  }
 
   WaylandTestBase::SyncDisplay();
-
   Mock::VerifyAndClearExpectations(&delegate);
 
   // Show the window now.
   window->Show(false);
 
-  // Window show state should be already up to date, so delegate is not
-  // notified.
-  EXPECT_CALL(delegate, OnWindowStateChanged(_, _)).Times(0);
+  if (async_state) {
+    EXPECT_CALL(delegate,
+                OnWindowStateChanged(Eq(PlatformWindowState::kNormal),
+                                     Eq(PlatformWindowState::kMaximized)))
+        .Times(1);
+
+    wl::ScopedWlArray states = InitializeWlArrayWithActivatedState();
+    states.AddStateToWlArray(XDG_TOPLEVEL_STATE_MAXIMIZED);
+    SendConfigureEvent(surface_id, {800, 600}, states);
+    AdvanceFrameToCurrent(window.get(), delegate);
+  } else {
+    // Window show state should be already up to date, so delegate is not
+    // notified.
+    EXPECT_CALL(delegate, OnWindowStateChanged(_, _)).Times(0);
+    EXPECT_EQ(window->GetPlatformWindowState(),
+              PlatformWindowState::kMaximized);
+    // Activate the surface.
+    wl::ScopedWlArray states = InitializeWlArrayWithActivatedState();
+    states.AddStateToWlArray(XDG_TOPLEVEL_STATE_MAXIMIZED);
+    SendConfigureEvent(surface_id, {0, 0}, states);
+  }
+
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kMaximized);
-
-  // Activate the surface.
-  wl::ScopedWlArray states = InitializeWlArrayWithActivatedState();
-  states.AddStateToWlArray(XDG_TOPLEVEL_STATE_MAXIMIZED);
-  SendConfigureEvent(surface_id, {0, 0}, states);
-
-  EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kMaximized);
-
   Mock::VerifyAndClearExpectations(&delegate);
+}
+
+TEST_P(WaylandWindowTest, StartMaximized) {
+  DoStartMaximizedTest(/*async_state=*/false);
+}
+
+TEST_P(WaylandWindowTest, StartMaximizedAsync) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAsyncFullscreenWindowState);
+  DoStartMaximizedTest(/*async_state=*/true);
 }
 
 TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
@@ -1464,7 +1597,8 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   VerifyAndClearExpectations();
 }
 
-TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
+void WaylandWindowTest::DoSetMaximizedFullscreenAndRestoreTest(
+    bool async_state) {
   constexpr gfx::Rect kNormalBounds{500, 300};
   constexpr gfx::Rect kMaximizedBounds{800, 600};
 
@@ -1481,6 +1615,7 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
 
   auto active_maximized = MakeStateArray(
       {XDG_TOPLEVEL_STATE_ACTIVATED, XDG_TOPLEVEL_STATE_MAXIMIZED});
+
   PostToServerAndWait([id = surface_id_, bounds = kMaximizedBounds](
                           wl::TestWaylandServerThread* server) {
     wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
@@ -1493,11 +1628,16 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange)));
   EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
   window_->Maximize();
-  // State changes are synchronous.
-  EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
+  if (async_state) {
+    // State changes are asynchronous.
+    EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+  } else {
+    // State changes are synchronous.
+    EXPECT_EQ(PlatformWindowState::kMaximized,
+              window_->GetPlatformWindowState());
+  }
   SendConfigureEvent(surface_id_, kMaximizedBounds.size(), active_maximized);
   AdvanceFrameToCurrent(window_.get(), delegate_);
-  // Verify that the state has not been changed.
   EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
   VerifyAndClearExpectations();
 
@@ -1511,15 +1651,20 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
   EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
   EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
   window_->SetFullscreen(true, display::kInvalidDisplayId);
-  // State changes are synchronous.
-  EXPECT_EQ(PlatformWindowState::kFullScreen,
-            window_->GetPlatformWindowState());
+  if (async_state) {
+    // State changes are asynchronous.
+    EXPECT_EQ(PlatformWindowState::kMaximized,
+              window_->GetPlatformWindowState());
+  } else {
+    // State changes are synchronous.
+    EXPECT_EQ(PlatformWindowState::kFullScreen,
+              window_->GetPlatformWindowState());
+  }
   auto active_fullscreen = MakeStateArray({XDG_TOPLEVEL_STATE_ACTIVATED,
                                            XDG_TOPLEVEL_STATE_MAXIMIZED,
                                            XDG_TOPLEVEL_STATE_FULLSCREEN});
   SendConfigureEvent(surface_id_, kMaximizedBounds.size(), active_fullscreen);
   AdvanceFrameToCurrent(window_.get(), delegate_);
-  // Verify that the state has not been changed.
   EXPECT_EQ(PlatformWindowState::kFullScreen,
             window_->GetPlatformWindowState());
   VerifyAndClearExpectations();
@@ -1534,7 +1679,13 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
   EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
   EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
   window_->Restore();
-  EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
+  if (async_state) {
+    EXPECT_EQ(PlatformWindowState::kFullScreen,
+              window_->GetPlatformWindowState());
+  } else {
+    EXPECT_EQ(PlatformWindowState::kMaximized,
+              window_->GetPlatformWindowState());
+  }
   SendConfigureEvent(surface_id_, kMaximizedBounds.size(), active_maximized);
   AdvanceFrameToCurrent(window_.get(), delegate_);
   // Verify that the state has not been changed.
@@ -1551,13 +1702,28 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange)));
   EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
   window_->Restore();
-  EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+  if (async_state) {
+    EXPECT_EQ(PlatformWindowState::kMaximized,
+              window_->GetPlatformWindowState());
+  } else {
+    EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+  }
   // Reinitialize wl_array, which removes previous old states.
   auto active = InitializeWlArrayWithActivatedState();
   SendConfigureEvent(surface_id_, {0, 0}, active);
   AdvanceFrameToCurrent(window_.get(), delegate_);
   // Verify that the state has not been changed.
   EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+}
+
+TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
+  DoSetMaximizedFullscreenAndRestoreTest(/*async_state=*/false);
+}
+
+TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestoreAsync) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAsyncFullscreenWindowState);
+  DoSetMaximizedFullscreenAndRestoreTest(/*async_state=*/true);
 }
 
 TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximize) {
@@ -4554,15 +4720,36 @@ TEST_P(WaylandWindowTest, DoesNotCreateSurfaceSyncOnCommitWithoutBuffers) {
   EXPECT_THAT(window_->root_surface()->surface_sync_, nullptr);
 }
 
-TEST_P(WaylandWindowTest, StartWithMinimized) {
+void WaylandWindowTest::DoStartWithMinimizedTest(bool async_state) {
   // Make sure the window is initialized to normal state from the beginning.
   EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
 
   SendConfigureEvent(surface_id_, {0, 0},
                      InitializeWlArrayWithActivatedState());
+  AdvanceFrameToCurrent(window_.get(), delegate_);
 
-  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
-  window_->Minimize();
+  WaylandTestBase::SyncDisplay();
+
+  if (async_state) {
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(0);
+    window_->Minimize();
+    VerifyAndClearExpectations();
+
+    // The state of the window must remain normal until the Configure event.
+    EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+
+    // Only after the Configure event is sent, the OnWindowStateChanged should
+    // be called and the state changed.
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
+  } else {
+    EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
+    window_->Minimize();
+  }
+
+  wl::ScopedWlArray empty_state({});
+  SendConfigureEvent(surface_id_, gfx::Size(800, 600), empty_state);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+
   VerifyAndClearExpectations();
 
   // The state of the window has to be already minimized.
@@ -4573,6 +4760,7 @@ TEST_P(WaylandWindowTest, StartWithMinimized) {
   EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(0);
   // It must be still the same minimized state.
   EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kMinimized);
+
   EXPECT_EQ(gfx::Rect(800, 600), window_->GetBoundsInDIP());
 
   // The window geometry has to be set to the current bounds of the window for
@@ -4585,6 +4773,16 @@ TEST_P(WaylandWindowTest, StartWithMinimized) {
   // Send one additional empty configuration event for minimized state.
   // (which means the surface is not maximized, fullscreen or activated)
   SendConfigureEvent(surface_id_, {0, 0}, wl::ScopedWlArray({}));
+}
+
+TEST_P(WaylandWindowTest, StartWithMinimized) {
+  DoStartWithMinimizedTest(/*async_state=*/false);
+}
+
+TEST_P(WaylandWindowTest, StartWithMinimizedAsync) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAsyncFullscreenWindowState);
+  DoStartWithMinimizedTest(/*async_state=*/true);
 }
 
 class BlockableWaylandToplevelWindow : public WaylandToplevelWindow {
