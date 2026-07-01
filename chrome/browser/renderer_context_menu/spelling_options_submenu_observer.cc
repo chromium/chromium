@@ -95,7 +95,7 @@ void SpellingOptionsSubMenuObserver::InitMenu(
   }
 
   proxy_->AddSubMenu(
-      kSubMenuPlaceholder,
+      IDC_SPELLCHECK_MENU,
       l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_SPELLCHECK_MENU),
       &submenu_model_);
 }
@@ -111,7 +111,7 @@ bool SpellingOptionsSubMenuObserver::IsCommandIdSupported(int command_id) {
 
   switch (command_id) {
     case IDC_CHECK_SPELLING_WHILE_TYPING:
-    case kSubMenuPlaceholder:
+    case IDC_SPELLCHECK_MENU:
     case IDC_SPELLCHECK_MULTI_LINGUAL:
       return true;
   }
@@ -164,7 +164,7 @@ bool SpellingOptionsSubMenuObserver::IsCommandIdEnabled(int command_id) {
       return !pref->FindPreference(spellcheck::prefs::kSpellCheckEnable)
                   ->IsManaged();
 
-    case kSubMenuPlaceholder:
+    case IDC_SPELLCHECK_MENU:
       return true;
   }
 

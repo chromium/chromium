@@ -43,7 +43,6 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
-#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -129,29 +128,24 @@ void AppMenuBrowserTest::ShowUi(const std::string& name) {
 
   constexpr auto kSubmenus = base::MakeFixedFlatMap<std::string_view, int>({
       // Submenus present in all versions.
-      {"history", AppMenuModel::kRecentTabsMenuPlaceholder},
-      {"bookmarks", AppMenuModel::kBookmarksMenuPlaceholder},
-      {"bookmarks_comparison_tables", AppMenuModel::kBookmarksMenuPlaceholder},
-      {"more_tools", AppMenuModel::kMoreToolsMenuPlaceholder},
+      {"history", IDC_RECENT_TABS_MENU},
+      {"bookmarks", IDC_BOOKMARKS_MENU},
+      {"bookmarks_comparison_tables", IDC_BOOKMARKS_MENU},
+      {"more_tools", IDC_MORE_TOOLS_MENU},
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {"help", AppMenuModel::kHelpMenuPlaceholder},
+      {"help", IDC_HELP_MENU},
 #endif
 
       // Submenus only present after Chrome Refresh.
-      {"passwords_and_autofill",
-       AppMenuModel::kPasswordsAndAutofillMenuPlaceholder},
-      {"reading_list",
-       AppMenuModel::kReadingListMenuPlaceholder},  // Inside the bookmarks
-                                                    // menu.
-      {"extensions", AppMenuModel::kExtensionsSubmenuPlaceholder},
-      {"find_and_edit", AppMenuModel::kFindAndEditMenuPlaceholder},
-      {"save_and_share", AppMenuModel::kSaveAndShareMenuPlaceholder},
-      {"profile_menu_in_app_menu_signed_out",
-       AppMenuModel::kProfileMenuPlaceholder},
-      {"profile_menu_in_app_menu_signed_in",
-       AppMenuModel::kProfileMenuPlaceholder},
+      {"passwords_and_autofill", IDC_PASSWORDS_AND_AUTOFILL_MENU},
+      {"reading_list", IDC_READING_LIST_MENU},  // Inside the bookmarks menu.
+      {"extensions", IDC_EXTENSIONS_SUBMENU},
+      {"find_and_edit", IDC_FIND_AND_EDIT_MENU},
+      {"save_and_share", IDC_SAVE_AND_SHARE_MENU},
+      {"profile_menu_in_app_menu_signed_out", IDC_PROFILE_MENU_IN_APP_MENU},
+      {"profile_menu_in_app_menu_signed_in", IDC_PROFILE_MENU_IN_APP_MENU},
       {"profile_menu_in_app_menu_signin_not_allowed",
-       AppMenuModel::kProfileMenuPlaceholder},
+       IDC_PROFILE_MENU_IN_APP_MENU},
   });
   const auto id_entry = kSubmenus.find(name);
   if (id_entry == kSubmenus.end()) {

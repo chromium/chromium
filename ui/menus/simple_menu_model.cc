@@ -547,7 +547,8 @@ ButtonMenuItemModel* SimpleMenuModel::GetButtonMenuItemAt(size_t index) const {
 bool SimpleMenuModel::IsEnabledAt(size_t index) const {
   int command_id = GetCommandIdAt(index);
 
-  if (!delegate_ || command_id < 0 || GetButtonMenuItemAt(index)) {
+  if (!delegate_ || command_id == kSeparatorId || command_id == kTitleId ||
+      GetButtonMenuItemAt(index)) {
     return items_[ValidateItemIndex(index)].enabled;
   }
 
@@ -557,7 +558,8 @@ bool SimpleMenuModel::IsEnabledAt(size_t index) const {
 
 bool SimpleMenuModel::IsVisibleAt(size_t index) const {
   int command_id = GetCommandIdAt(index);
-  if (!delegate_ || command_id < 0 || GetButtonMenuItemAt(index)) {
+  if (!delegate_ || command_id == kSeparatorId || command_id == kTitleId ||
+      GetButtonMenuItemAt(index)) {
     return items_[ValidateItemIndex(index)].visible;
   }
 
@@ -703,7 +705,7 @@ void SimpleMenuModel::ValidateItem(const Item& item) {
   } else if (item.type == TYPE_TITLE) {
     DCHECK_EQ(item.command_id, kTitleId);
   } else {
-    DCHECK(item.command_id >= 0 || item.command_id <= -1000);
+    DCHECK_GE(item.command_id, 0);
   }
 #endif  // DCHECK_IS_ON()
 }

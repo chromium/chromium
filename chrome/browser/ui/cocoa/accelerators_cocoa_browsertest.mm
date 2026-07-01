@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(AcceleratorsCocoaBrowserTest,
   AcceleratorsCocoa* keymap = AcceleratorsCocoa::GetInstance();
   // The "Share" menu is dynamically populated.
   NSMenu* mainMenu = NSApp.mainMenu;
-  NSMenu* fileMenu = [[mainMenu itemWithTag:kMacFileMenuId] submenu];
+  NSMenu* fileMenu = [[mainMenu itemWithTag:IDC_FILE_MENU] submenu];
   NSMenu* shareMenu =
       [[fileMenu itemWithTitle:l10n_util::GetNSString(IDS_SHARE_MAC)] submenu];
   [[shareMenu delegate] menuNeedsUpdate:shareMenu];

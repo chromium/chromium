@@ -408,6 +408,7 @@ TEST_F(BrowserCommandControllerFullscreenTest,
     { IDC_FOCUS_NEXT_PANE,         true,     false,     false,     false    },
     { IDC_FOCUS_PREVIOUS_PANE,     true,     false,     false,     false    },
     { IDC_FOCUS_BOOKMARKS,         true,     false,     false,     false    },
+    { IDC_DEVELOPER_MENU,          true,     false,     false,     false    },
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     { IDC_FEEDBACK,                true,     false,     false,     false    },
     { IDC_REPORT_UNSAFE_SITE,      true,     false,     false,     false    },

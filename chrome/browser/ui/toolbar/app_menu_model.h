@@ -216,24 +216,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSetBrowserAsDefaultMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHelpMenuItem);
 
-  // Internal placeholder container command IDs (negative to avoid IDC
-  // conflicts).
-  static constexpr int kEditMenuPlaceholder = kEditMenuId;
-  static constexpr int kZoomMenuPlaceholder = kZoomMenuId;
-  static constexpr int kPasswordsAndAutofillMenuPlaceholder =
-      kPasswordsAndAutofillMenuId;
-  static constexpr int kFindAndEditMenuPlaceholder = kFindAndEditMenuId;
-  static constexpr int kSaveAndShareMenuPlaceholder = kSaveAndShareMenuId;
-  static constexpr int kRecentTabsMenuPlaceholder = kRecentTabsMenuId;
-  static constexpr int kSharingHubMenuPlaceholder = kSharingHubMenuId;
-  static constexpr int kProfileMenuPlaceholder = kProfileMenuId;
-  static constexpr int kReadingListMenuPlaceholder = kReadingListMenuId;
-  static constexpr int kExtensionsSubmenuPlaceholder = kExtensionsSubMenuId;
-  static constexpr int kBookmarksMenuPlaceholder = kBookmarksMenuId;
-  static constexpr int kSavedTabGroupsMenuPlaceholder = kSavedTabGroupsMenuId;
-  static constexpr int kMoreToolsMenuPlaceholder = kMoreToolsMenuId;
-  static constexpr int kHelpMenuPlaceholder = kHelpMenuId;
-
   // Number of menus within the app menu with an arbitrarily high (variable)
   // number of menu items. For example, the number of bookmarks menu items
   // varies depending upon the underlying model. The command IDs for items in

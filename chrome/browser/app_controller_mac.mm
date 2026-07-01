@@ -832,7 +832,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 }
 
 - (NSMenu*)fileMenu {
-  return [[NSApp.mainMenu itemWithTag:kMacFileMenuId] submenu];
+  return [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu];
 }
 
 // Returns the ⌘W menu item in the File menu. Returns nil if no such menu item
@@ -1137,7 +1137,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
     if (!_tabMenuBridge) {
       _tabMenuBridge = std::make_unique<TabMenuBridge>(
-          [[NSApp mainMenu] itemWithTag:kMacTabMenuId]);
+          [[NSApp mainMenu] itemWithTag:IDC_TAB_MENU]);
     }
     _tabMenuBridge->SetTabStripModel(browser->GetTabStripModel());
 
@@ -1178,7 +1178,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   // Updates the `Tab` menu's "New Tab to the ..." and "Close Tabs to the ..."
   // accordingly.
   if (_tabMenuBridge) {
-    NSMenu* tabSubmenu = [[[NSApp mainMenu] itemWithTag:kMacTabMenuId] submenu];
+    NSMenu* tabSubmenu = [[[NSApp mainMenu] itemWithTag:IDC_TAB_MENU] submenu];
     NSMenuItem* newTabPositionalItem =
         [tabSubmenu itemWithTag:IDC_NEW_TAB_TO_RIGHT];
     NSMenuItem* closeTabsPositionalItem =
@@ -1943,7 +1943,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 // Conditionally adds the Profile menu to the main menu bar.
 - (void)initProfileMenu {
   NSMenu* mainMenu = [NSApp mainMenu];
-  NSMenuItem* profileMenu = [mainMenu itemWithTag:kMacProfileMainMenuId];
+  NSMenuItem* profileMenu = [mainMenu itemWithTag:IDC_PROFILE_MAIN_MENU];
 
   if (!profiles::IsMultipleProfilesEnabled()) {
     [mainMenu removeItem:profileMenu];
@@ -2206,7 +2206,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
   _profilePrefRegistrar.reset();
 
-  NSMenuItem* bookmarkItem = [NSApp.mainMenu itemWithTag:kBookmarksMenuId];
+  NSMenuItem* bookmarkItem = [NSApp.mainMenu itemWithTag:IDC_BOOKMARKS_MENU];
   BOOL hidden = bookmarkItem.hidden;
   if (profile != nullptr) {
     // Rebuild the menus with the new profile. The bookmarks submenu is cached

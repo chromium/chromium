@@ -511,7 +511,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_SETTINGS, 47},
        {IDC_CONTENT_CONTEXT_OPENLINKWITH, 52},
        {IDC_CHECK_SPELLING_WHILE_TYPING, 53},
-       {kSpellcheckMenuId, 54},
+       {IDC_SPELLCHECK_MENU, 54},
        {IDC_CONTENT_CONTEXT_SPELLING_TOGGLE, 55},
        {IDC_SPELLCHECK_LANGUAGES_FIRST, 56},
        {IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE, 57},
@@ -519,7 +519,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_SPELLCHECK_ADD_TO_DICTIONARY, 59},
        // Removed: {IDC_SPELLPANEL_TOGGLE, 60},
        {IDC_CONTENT_CONTEXT_OPEN_ORIGINAL_IMAGE_NEW_TAB, 61},
-       {kWritingDirectionMenuId, 62},
+       {IDC_WRITING_DIRECTION_MENU, 62},
        {IDC_WRITING_DIRECTION_DEFAULT, 63},
        {IDC_WRITING_DIRECTION_LTR, 64},
        {IDC_WRITING_DIRECTION_RTL, 65},
@@ -3483,7 +3483,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_GENERATE_QR_CODE:
       return IsQRCodeGeneratorEnabled();
 
-    case kSharingSubmenuMenuId:
+    case IDC_CONTENT_CONTEXT_SHARING_SUBMENU:
       return true;
 
     case IDC_CHECK_SPELLING_WHILE_TYPING:
@@ -3491,12 +3491,12 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
 #if !BUILDFLAG(IS_MAC) && BUILDFLAG(IS_POSIX)
     // TODO(suzhe): this should not be enabled for password fields.
-    case kLinuxInputMethodsMenuId:
+    case IDC_INPUT_METHODS_MENU:
       return true;
 #endif
 
     case IDC_CONTENT_CONTEXT_VIDEO_FRAME:
-    case kSpellcheckMenuId:
+    case IDC_SPELLCHECK_MENU:
     case IDC_CONTENT_CONTEXT_OPENLINKWITH:
     case IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_SETTINGS:
     case IDC_CONTENT_CONTEXT_GENERATEPASSWORD:

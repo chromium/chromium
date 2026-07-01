@@ -2213,8 +2213,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InstallToShelfContainsAppName) {
   ui::MenuModel* save_and_share_submenu = app_menu_model.get();
   size_t save_and_share_index = 0;
   EXPECT_TRUE(app_menu_model->GetModelAndIndexForCommandId(
-      AppMenuModel::kSaveAndShareMenuPlaceholder, &save_and_share_submenu,
-      &save_and_share_index));
+      IDC_SAVE_AND_SHARE_MENU, &save_and_share_submenu, &save_and_share_index));
   save_and_share_submenu =
       save_and_share_submenu->GetSubmenuModelAt(save_and_share_index);
   EXPECT_EQ(save_and_share_submenu, model);

@@ -978,7 +978,7 @@ MenuItemView::MenuItemView(MenuItemView* parent,
   // Don't request enabled status from the root menu item as it is just
   // a container for real items. kEmpty items will be disabled.
   MenuDelegate* root_delegate = GetDelegate();
-  if (parent && type != Type::kEmpty && command >= 0 && root_delegate) {
+  if (parent && type != Type::kEmpty && root_delegate) {
     SetEnabled(root_delegate->IsCommandEnabled(command));
   }
   SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));

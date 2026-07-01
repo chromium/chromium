@@ -259,7 +259,7 @@ const base::FilePath& HistoryMenuBridge::profile_dir() const {
 
 NSMenu* HistoryMenuBridge::HistoryMenu() {
   NSMenu* history_menu =
-      [[[NSApp mainMenu] itemWithTag:kMacHistoryMenuId] submenu];
+      [[[NSApp mainMenu] itemWithTag:IDC_HISTORY_MENU] submenu];
   return history_menu;
 }
 

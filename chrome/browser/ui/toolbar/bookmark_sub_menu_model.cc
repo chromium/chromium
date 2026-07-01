@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -103,14 +102,13 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
   reading_list_sub_menu_model_ =
       std::make_unique<ReadingListSubMenuModel>(delegate());
   AddSubMenuWithStringIdAndIcon(
-      AppMenuModel::kReadingListMenuPlaceholder, IDS_READING_LIST_MENU,
+      IDC_READING_LIST_MENU, IDS_READING_LIST_MENU,
       reading_list_sub_menu_model_.get(),
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
                                          ? kListAltIcon
                                          : kReadingListOldIcon));
-  SetElementIdentifierAt(
-      GetIndexOfCommandId(AppMenuModel::kReadingListMenuPlaceholder).value(),
-      kReadingListMenuItem);
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_READING_LIST_MENU).value(),
+                         kReadingListMenuItem);
 
   auto set_icon = [this](int command_id, const gfx::VectorIcon& vector_icon) {
     auto index = GetIndexOfCommandId(command_id);

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "components/prefs/pref_member.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
@@ -21,8 +20,6 @@ class RenderViewContextMenuProxy;
 // creates the submenu, adds it to the parent menu, and handles events.
 class SpellingOptionsSubMenuObserver : public RenderViewContextMenuObserver {
  public:
-  static constexpr int kSubMenuPlaceholder = kSpellcheckMenuId;
-
   SpellingOptionsSubMenuObserver(RenderViewContextMenuProxy* proxy,
                                  ui::SimpleMenuModel::Delegate* delegate,
                                  int group_id);

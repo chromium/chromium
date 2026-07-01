@@ -292,8 +292,8 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
     zoom_menu_contents_->AddItemWithStringId(IDC_ZOOM_PLUS, IDS_ZOOM_PLUS);
     zoom_menu_contents_->AddItemWithStringId(IDC_ZOOM_NORMAL, IDS_ZOOM_NORMAL);
     zoom_menu_contents_->AddItemWithStringId(IDC_ZOOM_MINUS, IDS_ZOOM_MINUS);
-    model->AddSubMenuWithStringId(AppMenuModel::kZoomMenuPlaceholder,
-                                  IDS_ZOOM_MENU, zoom_menu_contents_.get());
+    model->AddSubMenuWithStringId(IDC_ZOOM_MENU, IDS_ZOOM_MENU,
+                                  zoom_menu_contents_.get());
   }
 
   bool should_show_task_manager =

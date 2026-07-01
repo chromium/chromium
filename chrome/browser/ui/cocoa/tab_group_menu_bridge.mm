@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
-#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
@@ -88,8 +87,8 @@ TabGroupMenuBridge::~TabGroupMenuBridge() {
 }
 
 NSMenu* TabGroupMenuBridge::TabGroupsMenu() {
-  NSMenu* tab_groups_menu = [[[NSApp mainMenu]
-      itemWithTag:AppMenuModel::kSavedTabGroupsMenuPlaceholder] submenu];
+  NSMenu* tab_groups_menu =
+      [[[NSApp mainMenu] itemWithTag:IDC_SAVED_TAB_GROUPS_MENU] submenu];
   return tab_groups_menu;
 }
 
