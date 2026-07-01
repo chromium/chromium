@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -54,9 +55,12 @@ std::set<std::string> GetRequestedPackagesFromPolicy(const PolicyMap& policy) {
 
 }  // namespace
 
-ArcAppInstallEventLogger::ArcAppInstallEventLogger(Delegate* delegate,
+ArcAppInstallEventLogger::ArcAppInstallEventLogger(PrefService* local_state,
+                                                   Delegate* delegate,
                                                    Profile* profile)
-    : InstallEventLoggerBase(profile), delegate_(delegate) {
+    : InstallEventLoggerBase(profile),
+      local_state_(CHECK_DEREF(local_state)),
+      delegate_(delegate) {
   if (!arc::IsArcAllowedForProfile(profile_)) {
     AddForSetOfApps(GetPackagesFromPref(arc::prefs::kArcPushInstallAppsPending),
                     CreateEvent(em::AppInstallReportLogEvent::CANCELED));
@@ -209,7 +213,7 @@ void ArcAppInstallEventLogger::UpdateCollector(
     const std::set<std::string>& pending) {
   if (!log_collector_) {
     log_collector_ = std::make_unique<ArcAppInstallEventLogCollector>(
-        this, profile_, pending);
+        &local_state_.get(), this, profile_, pending);
   } else {
     log_collector_->OnPendingPackagesChanged(pending);
   }

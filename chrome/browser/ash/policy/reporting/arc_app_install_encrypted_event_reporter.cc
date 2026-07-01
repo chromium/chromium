@@ -20,11 +20,14 @@ namespace em = enterprise_management;
 namespace policy {
 
 ArcAppInstallEncryptedEventReporter::ArcAppInstallEncryptedEventReporter(
+    PrefService* local_state,
     std::unique_ptr<reporting::ReportQueue, base::OnTaskRunnerDeleter>
         report_queue,
     Profile* profile)
     : report_queue_(std::move(report_queue)),
-      logger_(std::make_unique<ArcAppInstallEventLogger>(this, profile)) {
+      logger_(std::make_unique<ArcAppInstallEventLogger>(local_state,
+                                                         this,
+                                                         profile)) {
   CHECK(report_queue_);
 }
 

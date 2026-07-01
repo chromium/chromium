@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/policy/reporting/install_event_log_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
+class PrefService;
 class Profile;
 
 namespace policy {
@@ -29,10 +30,12 @@ class ArcAppInstallEventLogManager
       public ArcAppInstallEventLogger::Delegate,
       public ArcAppInstallEventLogUploader::Delegate {
  public:
-  // All accesses to the |profile|'s app push-install event log file must use
-  // the same |log_task_runner_wrapper| to ensure correct I/O serialization.
-  // |uploader| must outlive |this|.
-  ArcAppInstallEventLogManager(LogTaskRunnerWrapper* log_task_runner_wrapper,
+  // All accesses to the `profile`'s app push-install event log file must use
+  // the same `log_task_runner_wrapper` to ensure correct I/O serialization.
+  // `local_state` must be non-null and must outlive `this`.
+  // `uploader` must outlive `this`.
+  ArcAppInstallEventLogManager(PrefService* local_state,
+                               LogTaskRunnerWrapper* log_task_runner_wrapper,
                                ArcAppInstallEventLogUploader* uploader,
                                Profile* profile);
 

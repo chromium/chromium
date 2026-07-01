@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_encrypted_event_reporter.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_manager.h"
@@ -17,6 +18,7 @@
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;
+class PrefService;
 class Profile;
 
 namespace policy {
@@ -38,15 +40,19 @@ class AppInstallEventLogManagerWrapper
 
   ~AppInstallEventLogManagerWrapper() override;
 
-  // Creates a new |AppInstallEventLogManager| to handle app push-install event
-  // logging for |profile|. The object returned manages its own lifetime and
+  // Creates a new `AppInstallEventLogManager` to handle app push-install event
+  // logging for `profile`. The object created manages its own lifetime and
   // self-destructs on logout.
-  static AppInstallEventLogManagerWrapper* CreateForProfile(Profile* profile);
+  // `local_state` must be non-null and must be alive while the main RunLoop is
+  // running.
+  // TODO(crbug.com/530040110): Refactor the lifetime and return a unique_ptr.
+  static void CreateForProfile(PrefService* local_state, Profile* profile);
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  protected:
-  explicit AppInstallEventLogManagerWrapper(Profile* profile);
+  // `local_state` must be non-null and must outlive `this`.
+  AppInstallEventLogManagerWrapper(PrefService* local_state, Profile* profile);
 
   // Must be called right after construction. Extracted into a separate method
   // for testing.
@@ -87,6 +93,8 @@ class AppInstallEventLogManagerWrapper
 
   // ash::SessionTerminationManager::Observer:
   void OnAppTerminating() override;
+
+  const raw_ref<PrefService> local_state_;
 
   // The profile whose app push-install events are being logged.
   const raw_ptr<Profile> profile_;

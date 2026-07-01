@@ -284,7 +284,8 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
     // regular users only. `AppInstallEventLogManagerWrapper` and
     // `ExtensionInstallEventLogManagerWrapper` manages their own lifetime and
     // self-destruct on logout.
-    policy::AppInstallEventLogManagerWrapper::CreateForProfile(profile);
+    policy::AppInstallEventLogManagerWrapper::CreateForProfile(
+        &local_state_.get(), profile);
   }
 
   arc::ArcServiceLauncher::Get()->OnPrimaryUserProfilePrepared(profile);

@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/mojom/policy.mojom-forward.h"
 
+class PrefService;
 class Profile;
 
 namespace enterprise_management {
@@ -58,8 +59,10 @@ class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
     virtual ~Delegate() = default;
   };
 
-  // Delegate must outlive |this|.
-  ArcAppInstallEventLogCollector(Delegate* delegate,
+  // `local_state` must be non-null and must outlive `this`.
+  // `delegate` must outlive `this`.
+  ArcAppInstallEventLogCollector(PrefService* local_state,
+                                 Delegate* delegate,
                                  Profile* profile,
                                  const std::set<std::string>& pending_packages);
   ~ArcAppInstallEventLogCollector() override;

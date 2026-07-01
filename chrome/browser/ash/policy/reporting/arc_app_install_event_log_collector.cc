@@ -39,10 +39,11 @@ void SetTimestampFromTime(em::AppInstallReportLogEvent* event,
 }  // namespace
 
 ArcAppInstallEventLogCollector::ArcAppInstallEventLogCollector(
+    PrefService* local_state,
     Delegate* delegate,
     Profile* profile,
     const std::set<std::string>& pending_packages)
-    : InstallEventLogCollectorBase(profile),
+    : InstallEventLogCollectorBase(local_state, profile),
       delegate_(delegate),
       pending_packages_(pending_packages) {
   // Might not be available in unit test.

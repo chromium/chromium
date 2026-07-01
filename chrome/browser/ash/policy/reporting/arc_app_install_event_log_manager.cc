@@ -31,6 +31,7 @@ base::FilePath GetLogFilePath(const Profile& profile) {
 }  // namespace
 
 ArcAppInstallEventLogManager::ArcAppInstallEventLogManager(
+    PrefService* local_state,
     LogTaskRunnerWrapper* log_task_runner_wrapper,
     ArcAppInstallEventLogUploader* uploader,
     Profile* profile)
@@ -45,7 +46,8 @@ ArcAppInstallEventLogManager::ArcAppInstallEventLogManager(
                      GetLogFilePath(*profile)),
       base::BindOnce(&ArcAppInstallEventLogManager::AppLogUpload::OnLogInit,
                      app_log_upload_->log_weak_factory_.GetWeakPtr()));
-  logger_ = std::make_unique<ArcAppInstallEventLogger>(this, profile);
+  logger_ =
+      std::make_unique<ArcAppInstallEventLogger>(local_state, this, profile);
 }
 
 ArcAppInstallEventLogManager::~ArcAppInstallEventLogManager() {

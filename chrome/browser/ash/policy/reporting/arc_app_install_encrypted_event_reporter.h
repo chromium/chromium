@@ -7,6 +7,8 @@
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_logger.h"
 #include "components/reporting/client/report_queue.h"
 
+class PrefService;
+
 namespace policy {
 
 // Class that reports arc app install events using the encrypted reporting
@@ -19,7 +21,9 @@ namespace policy {
 class ArcAppInstallEncryptedEventReporter
     : public ArcAppInstallEventLogger::Delegate {
  public:
-  explicit ArcAppInstallEncryptedEventReporter(
+  // `local_state` must be non-null and must outlive `this`.
+  ArcAppInstallEncryptedEventReporter(
+      PrefService* local_state,
       std::unique_ptr<reporting::ReportQueue, base::OnTaskRunnerDeleter>
           report_queue,
       Profile* profile);

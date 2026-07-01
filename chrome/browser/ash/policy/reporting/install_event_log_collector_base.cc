@@ -6,8 +6,8 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/chrome_pref_names.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -18,8 +18,12 @@
 
 namespace policy {
 
-InstallEventLogCollectorBase::InstallEventLogCollectorBase(Profile* profile)
-    : online_(GetOnlineState()), profile_(profile) {
+InstallEventLogCollectorBase::InstallEventLogCollectorBase(
+    PrefService* local_state,
+    Profile* profile)
+    : online_(GetOnlineState()),
+      profile_(profile),
+      local_state_(CHECK_DEREF(local_state)) {
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
 }
@@ -57,8 +61,7 @@ void InstallEventLogCollectorBase::OnLogin() {
 
 void InstallEventLogCollectorBase::OnLogout() {
   // Don't log in case session is restared.
-  if (g_browser_process->local_state()->GetBoolean(
-          ash::chrome_prefs::kWasRestarted)) {
+  if (local_state_->GetBoolean(ash::chrome_prefs::kWasRestarted)) {
     return;
   }
 

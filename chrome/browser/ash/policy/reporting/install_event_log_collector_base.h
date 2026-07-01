@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_INSTALL_EVENT_LOG_COLLECTOR_BASE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+
+class PrefService;
 
 namespace policy {
 
@@ -21,7 +24,8 @@ class InstallEventLogCollectorBase
     : public chromeos::PowerManagerClient::Observer,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
-  explicit InstallEventLogCollectorBase(Profile* profile);
+  // `local_state` must be non-null and must outlive `this`.
+  InstallEventLogCollectorBase(PrefService* local_state, Profile* profile);
   ~InstallEventLogCollectorBase() override;
 
   // Event handlers for the login and logout events.
@@ -53,6 +57,8 @@ class InstallEventLogCollectorBase
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
+
+  const raw_ref<PrefService> local_state_;
 };
 }  // namespace policy
 

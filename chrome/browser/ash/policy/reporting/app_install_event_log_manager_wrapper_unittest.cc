@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -41,8 +42,9 @@ constexpr char kPackageName[] = "com.example.app";
 class AppInstallEventLogManagerWrapperTestable
     : public AppInstallEventLogManagerWrapper {
  public:
-  explicit AppInstallEventLogManagerWrapperTestable(Profile* profile)
-      : AppInstallEventLogManagerWrapper(profile) {}
+  AppInstallEventLogManagerWrapperTestable(PrefService* local_state,
+                                           Profile* profile)
+      : AppInstallEventLogManagerWrapper(local_state, profile) {}
 
   AppInstallEventLogManagerWrapperTestable(
       const AppInstallEventLogManagerWrapperTestable&) = delete;
@@ -111,8 +113,8 @@ class AppInstallEventLogManagerWrapperTest
   }
 
   void CreateWrapper() {
-    wrapper_ =
-        std::make_unique<AppInstallEventLogManagerWrapperTestable>(&profile_);
+    wrapper_ = std::make_unique<AppInstallEventLogManagerWrapperTestable>(
+        TestingBrowserProcess::GetGlobal()->local_state(), &profile_);
     log_task_runner_ = wrapper_->log_task_runner();
   }
 

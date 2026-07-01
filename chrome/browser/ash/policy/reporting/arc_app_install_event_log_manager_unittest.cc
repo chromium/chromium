@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log.h"
 #include "chrome/browser/ash/policy/reporting/install_event_log_util.h"
 #include "chrome/browser/profiles/reporting_util.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -195,6 +196,7 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
 
   void CreateManager() {
     manager_ = std::make_unique<ArcAppInstallEventLogManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         &log_task_runner_wrapper_, &uploader_, &profile_);
     FlushNonDelayedTasks();
   }

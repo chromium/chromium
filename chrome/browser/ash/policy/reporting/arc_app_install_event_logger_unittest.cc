@@ -195,8 +195,9 @@ class AppInstallEventLoggerTest : public testing::Test {
     event_.set_event_type(em::AppInstallReportLogEvent::CANCELED);
     RunAndVerifyAdd(
         [&]() {
-          logger_ =
-              std::make_unique<ArcAppInstallEventLogger>(&delegate_, &profile_);
+          logger_ = std::make_unique<ArcAppInstallEventLogger>(
+              TestingBrowserProcess::GetGlobal()->local_state(), &delegate_,
+              &profile_);
         },
         {});
     event_.set_event_type(em::AppInstallReportLogEvent::SUCCESS);

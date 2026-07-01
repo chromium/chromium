@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_policy_pref_names.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -29,12 +30,13 @@ BASE_FEATURE(kUseEncryptedReportingPipelineToReportArcAppInstallEvents,
 AppInstallEventLogManagerWrapper::~AppInstallEventLogManagerWrapper() = default;
 
 // static
-AppInstallEventLogManagerWrapper*
-AppInstallEventLogManagerWrapper::CreateForProfile(Profile* profile) {
+void AppInstallEventLogManagerWrapper::CreateForProfile(
+    PrefService* local_state,
+    Profile* profile) {
+  // `wrapper` manages its own lifetime.
   AppInstallEventLogManagerWrapper* wrapper =
-      new AppInstallEventLogManagerWrapper(profile);
+      new AppInstallEventLogManagerWrapper(local_state, profile);
   wrapper->Init();
-  return wrapper;
 }
 
 // static
@@ -45,9 +47,11 @@ void AppInstallEventLogManagerWrapper::RegisterProfilePrefs(
 }
 
 AppInstallEventLogManagerWrapper::AppInstallEventLogManagerWrapper(
+    PrefService* local_state,
     Profile* profile)
     : use_encrypted_reporting_pipeline_(base::FeatureList::IsEnabled(
           kUseEncryptedReportingPipelineToReportArcAppInstallEvents)),
+      local_state_(CHECK_DEREF(local_state)),
       profile_(profile) {
   log_task_runner_ =
       std::make_unique<ArcAppInstallEventLogManager::LogTaskRunnerWrapper>();
@@ -68,7 +72,7 @@ void AppInstallEventLogManagerWrapper::Init() {
 
 void AppInstallEventLogManagerWrapper::CreateManager() {
   log_manager_ = std::make_unique<ArcAppInstallEventLogManager>(
-      log_task_runner_.get(),
+      &local_state_.get(), log_task_runner_.get(),
       profile_->GetUserCloudPolicyManagerAsh()->GetAppInstallEventLogUploader(),
       profile_);
 }
@@ -88,7 +92,7 @@ void AppInstallEventLogManagerWrapper::CreateEncryptedReporter() {
                .destination = ::reporting::Destination::ARC_INSTALL})
               .SetSourceInfo(std::move(source_info)));
   encrypted_reporter_ = std::make_unique<ArcAppInstallEncryptedEventReporter>(
-      std::move(report_queue), profile_);
+      &local_state_.get(), std::move(report_queue), profile_);
 }
 
 void AppInstallEventLogManagerWrapper::DestroyEncryptedReporter() {

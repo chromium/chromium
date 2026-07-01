@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_collector.h"
@@ -18,6 +19,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
+class PrefService;
 class Profile;
 
 namespace base {
@@ -71,8 +73,11 @@ class ArcAppInstallEventLogger
     virtual ~Delegate() = default;
   };
 
-  // Delegate must outlive |this|.
-  ArcAppInstallEventLogger(Delegate* delegate, Profile* profile);
+  // `local_state` must be non-null and must outlive `this`.
+  // `delegate` must outlive `this`.
+  ArcAppInstallEventLogger(PrefService* local_state,
+                           Delegate* delegate,
+                           Profile* profile);
   ~ArcAppInstallEventLogger() override;
 
   ArcAppInstallEventLogger& operator=(const ArcAppInstallEventLogger&) = delete;
@@ -140,6 +145,8 @@ class ArcAppInstallEventLogger
       std::unique_ptr<enterprise_management::AppInstallReportLogEvent> event,
       bool ok,
       int64_t android_id);
+
+  const raw_ref<PrefService> local_state_;
 
   // The delegate that events are forwarded to for inclusion in the log.
   const raw_ptr<Delegate> delegate_;

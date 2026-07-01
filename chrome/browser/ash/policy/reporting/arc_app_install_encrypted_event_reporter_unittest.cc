@@ -92,8 +92,9 @@ TEST_F(AppInstallEventEncryptedReporterTest, Default) {
 
   EXPECT_CALL(*report_queue.get(), AddRecord).Times(3);
 
-  auto reporter =
-      ArcAppInstallEncryptedEventReporter(std::move(report_queue), &profile_);
+  auto reporter = ArcAppInstallEncryptedEventReporter(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      std::move(report_queue), &profile_);
 
   reporter.Add(packages, std::move(event_success));
   reporter.Add(packages, std::move(event_started));
