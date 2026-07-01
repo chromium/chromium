@@ -48,7 +48,7 @@ public class LocationBarLayout extends ConstraintLayout {
     protected ImageButton mLensButton;
     protected ImageButton mZoomButton;
     protected ImageButton mInstallButton;
-    protected final @Nullable View mNavigateButton;
+    protected final View mNavigateButton;
     protected UrlBar mUrlBar;
     protected final View mLocationBarStatusView;
 
@@ -570,4 +570,16 @@ public class LocationBarLayout extends ConstraintLayout {
      * but not showing suggestions until input is received.
      */
     void setIsInStandby(boolean isInStandby) {}
+
+    View getUrlBar() {
+        return mUrlBar;
+    }
+
+    View getMicButton() {
+        return mMicButton;
+    }
+
+    View getNavigateButton() {
+        return mNavigateButton;
+    }
 }

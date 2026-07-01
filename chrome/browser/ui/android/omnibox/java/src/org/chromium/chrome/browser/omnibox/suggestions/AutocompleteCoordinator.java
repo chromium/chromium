@@ -341,12 +341,10 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     }
 
     /** Navigate using the current typed omnibox text. */
-    public void loadTypedOmniboxText() {
+    public void loadTypedOmniboxText(boolean openInNewTab) {
         if (mMediator.hasAutocompleteController()) {
             mMediator.loadTypedOmniboxText(
-                    SystemClock.uptimeMillis(),
-                    /* openInNewTab= */ false,
-                    /* openInNewWindow= */ false);
+                    SystemClock.uptimeMillis(), openInNewTab, /* openInNewWindow= */ false);
         }
     }
 
@@ -510,6 +508,49 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         }
 
         return false;
+    }
+
+    /**
+     * Whether the first item of the suggestions list is currently keyboard selected. False if
+     * parked at the sentinel.
+     */
+    public boolean isFirstItemSelected() {
+        return mDropdown != null && mDropdown.isFirstItemSelected();
+    }
+
+    /**
+     * Whether the last item of the suggestions list is currently keyboard selected. False if parked
+     * at the sentinel.
+     */
+    public boolean isLastItemSelected() {
+        return mDropdown != null && mDropdown.isLastItemSelected();
+    }
+
+    /** Reset the keyboard selected view to its default. */
+    public void resetSelection() {
+        if (mDropdown == null) return;
+        mDropdown.resetSelection();
+    }
+
+    /** Keyboard select the first item in the suggestions list. */
+    public void selectFirstItem() {
+        if (mDropdown == null) return;
+        mDropdown.selectFirstItem();
+    }
+
+    /** Keyboard select the last item in the suggestions list. */
+    public void selectLastItem() {
+        if (mDropdown == null) return;
+        mDropdown.selectLastItem();
+    }
+
+    /**
+     * Get the index of the currently keyboard-selected view, if any. Null if the sentinel is
+     * currently selected.
+     */
+    public @Nullable Integer getSelectedIndex() {
+        if (mDropdown == null) return null;
+        return mDropdown.getSelectedIndex();
     }
 
     /** Site search was successfully triggered. */

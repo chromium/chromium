@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static android.view.View.VISIBLE;
+
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -76,6 +78,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.Observer;
+import org.chromium.chrome.browser.omnibox.LocationBarSelectionController.SelectableView;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
@@ -147,6 +150,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -299,6 +303,7 @@ class LocationBarMediator
     private @Nullable FuseboxAttachmentModelList mFuseboxAttachmentModelList;
     private @Nullable Callback<Boolean> mOnSpecializedFuseboxModeActivatedCallback;
     private boolean mMiniOriginMode;
+    private LocationBarSelectionController mSelectionController;
 
     /*package */ LocationBarMediator(
             Context context,
@@ -447,11 +452,87 @@ class LocationBarMediator
         }
 
         mAutocompleteCoordinator.addOmniboxSuggestionsDropdownScrollListener(this);
+        SelectableView autocompleteSelectableView =
+                new SelectableView() {
+                    @Override
+                    public boolean isAutocompleteList() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isVisible() {
+                        return true;
+                    }
+
+                    @Override
+                    public void setSelected(boolean isSelected) {}
+
+                    @Override
+                    public void handleActivationEvent(KeyEvent event) {}
+                };
+
+        View urlBar = mLocationBarLayout.getUrlBar();
+        SelectableView urlBarSelectableView =
+                new SelectableView() {
+                    @Override
+                    public boolean isAutocompleteList() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean isVisible() {
+                        return true;
+                    }
+
+                    @Override
+                    public void setSelected(boolean isSelected) {
+                        urlBar.setSelected(isSelected);
+                    }
+
+                    @Override
+                    public void handleActivationEvent(KeyEvent event) {
+                        if (mAutocompleteCoordinator == null) return;
+                        mAutocompleteCoordinator.loadTypedOmniboxText(event.isAltPressed());
+                    }
+                };
+        List<SelectableView> selectableViews =
+                List.of(
+                        urlBarSelectableView,
+                        autocompleteSelectableView,
+                        wrapSelectableView(
+                                mLocationBarLayout.findViewById(R.id.fusebox_plus_button)),
+                        wrapSelectableView(mLocationBarLayout.getMicButton()),
+                        wrapSelectableView(mLocationBarLayout.getNavigateButton()));
+        mSelectionController = new LocationBarSelectionController(selectableViews);
 
         updateShouldAnimateIconChanges();
         updateButtonVisibility();
         updateSearchEngineStatusIconShownState();
         updateUrlBarAccessibilityWarning();
+    }
+
+    private SelectableView wrapSelectableView(View view) {
+        return new SelectableView() {
+            @Override
+            public boolean isAutocompleteList() {
+                return false;
+            }
+
+            @Override
+            public boolean isVisible() {
+                return view.getVisibility() == View.VISIBLE;
+            }
+
+            @Override
+            public void setSelected(boolean isSelected) {
+                view.setSelected(isSelected);
+            }
+
+            @Override
+            public void handleActivationEvent(KeyEvent event) {
+                view.performClick();
+            }
+        };
     }
 
     @SuppressWarnings("NullAway")
@@ -1623,7 +1704,7 @@ class LocationBarMediator
      */
     /* package */ ObjectAnimator createShowButtonAnimatorForTablet(View button) {
         assert mIsTablet;
-        if (button.getVisibility() != View.VISIBLE) {
+        if (button.getVisibility() != VISIBLE) {
             button.setAlpha(0.f);
         }
         ObjectAnimator buttonAnimator = ObjectAnimator.ofFloat(button, View.ALPHA, 1.f);
@@ -2326,6 +2407,7 @@ class LocationBarMediator
                 mCurrentInput != null
                         && mCurrentInput.getAutocompleteState() == AutocompleteState.STANDBY);
         updateAlwaysShowAiModeCallback();
+        mSelectionController.reset();
     }
 
     private boolean isLensOnOmniboxEnabled() {
@@ -2361,8 +2443,7 @@ class LocationBarMediator
         try (TraceEvent e = TraceEvent.scoped("LocationBarMediator.handleKeyEvent")) {
             if (keyCode == KeyEvent.KEYCODE_ESCAPE) return false;
             boolean isRtl = view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
-            if (mAutocompleteCoordinator != null
-                    && mAutocompleteCoordinator.handleKeyEvent(keyCode, event)) {
+            if (handleKeyNavigationEvent(keyCode, event)) {
                 return true;
             } else if (KeyNavigationUtil.isEnter(event) && !hasAutocompleteController()) {
                 // This path is specific to Contextual Tasks where suggestions are disabled.
@@ -2405,6 +2486,69 @@ class LocationBarMediator
             }
             return false;
         }
+    }
+
+    @VisibleForTesting
+    boolean handleKeyNavigationEvent(int keyCode, KeyEvent event) {
+        if (mAutocompleteCoordinator == null
+                || !KeyNavigationUtil.isActionDown(event)
+                || (keyCode != KeyEvent.KEYCODE_DPAD_UP
+                        && keyCode != KeyEvent.KEYCODE_DPAD_DOWN
+                        && !KeyNavigationUtil.isTabNavigation(event)
+                        && !KeyNavigationUtil.isButtonActivate(event))) {
+            return false;
+        }
+
+        boolean isBackwardsTab = KeyNavigationUtil.isTabBackward(event);
+        boolean isForwardTab = KeyNavigationUtil.isTabForward(event);
+        boolean isActivation = KeyNavigationUtil.isButtonActivate(event);
+        if (mSelectionController.isAutocompleteSelected()) {
+            if (isActivation) {
+                return mAutocompleteCoordinator.handleKeyEvent(keyCode, event);
+            }
+
+            boolean selectionCouldLeaveAutocomplete =
+                    (isBackwardsTab && mAutocompleteCoordinator.isFirstItemSelected())
+                            || (isForwardTab && mAutocompleteCoordinator.isLastItemSelected());
+            Integer positionBeforeHandle = mAutocompleteCoordinator.getSelectedIndex();
+            boolean autocompleteHandled = mAutocompleteCoordinator.handleKeyEvent(keyCode, event);
+            Integer positionAfterHandle = mAutocompleteCoordinator.getSelectedIndex();
+            boolean selectionShouldLeaveAutocomplete =
+                    selectionCouldLeaveAutocomplete
+                            && !Objects.equals(positionBeforeHandle, positionAfterHandle);
+            if (selectionShouldLeaveAutocomplete) {
+                mAutocompleteCoordinator.resetSelection();
+                autocompleteHandled = false;
+                if (mCurrentInput != null && mCurrentInput.isInZeroPrefixContext()) {
+                    revertChanges();
+                }
+            }
+
+            if (autocompleteHandled) return true;
+        }
+
+        if (isActivation) {
+            mSelectionController.getSelectedView().handleActivationEvent(event);
+            return true;
+        }
+
+        if (isBackwardsTab) {
+            mSelectionController.selectPreviousItem();
+            if (mSelectionController.isAutocompleteSelected()) {
+                // We just moved backwards to the autocomplete list. The last item of that list
+                // should be selected.
+                mAutocompleteCoordinator.selectLastItem();
+            }
+        } else {
+            mSelectionController.selectNextItem();
+            if (mSelectionController.isAutocompleteSelected()) {
+                // We just moved forwards to the autocomplete list. The first item of that list
+                // should be selected.
+                mAutocompleteCoordinator.selectFirstItem();
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -2642,6 +2786,7 @@ class LocationBarMediator
         suspendInput();
         state.deactivate();
         updateUrl();
+        mSelectionController.reset();
         if (mUrlHasFocus) {
             mUrlCoordinator.clearFocus();
         }
@@ -3077,6 +3222,10 @@ class LocationBarMediator
 
     /* package */ ToolbarWidthConsumer getBookmarkButtonToolbarWidthConsumerForTesting() {
         return mBookmarkButtonToolbarWidthConsumer;
+    }
+
+    /* package */ LocationBarSelectionController getSelectionControllerForTesting() {
+        return mSelectionController;
     }
 
     @Override

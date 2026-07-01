@@ -319,7 +319,7 @@ public class LocationBarCoordinator
                                         : null,
                         backPressManager,
                         exactMatchUrlSupplier,
-                        () -> mAutocompleteCoordinator.loadTypedOmniboxText(),
+                        () -> mAutocompleteCoordinator.loadTypedOmniboxText(false),
                         () -> setOmniboxEditingText(""),
                         this::getUrlBarTextWithoutAutocomplete);
         NonNullObservableSupplier<Integer> fuseboxStateSupplier =

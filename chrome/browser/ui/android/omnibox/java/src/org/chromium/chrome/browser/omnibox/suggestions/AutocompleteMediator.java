@@ -1084,7 +1084,9 @@ class AutocompleteMediator
         mIgnoreOmniboxItemSelection = true;
         boolean isInZeroPrefixContext = mAutocompleteInput.isInZeroPrefixContext();
         boolean allowParking =
-                isInZeroPrefixContext || !OmniboxCapabilities.hasDesktopExperience(mContext);
+                isInZeroPrefixContext
+                        || !mAutocompleteInput.isConventionalRequestType()
+                        || !OmniboxCapabilities.hasDesktopExperience(mContext);
         mListPropertyModel.set(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL, allowParking);
         mListPropertyModel.set(SuggestionListProperties.RESET_SELECTION, null);
         cancelAutocompleteRequests();

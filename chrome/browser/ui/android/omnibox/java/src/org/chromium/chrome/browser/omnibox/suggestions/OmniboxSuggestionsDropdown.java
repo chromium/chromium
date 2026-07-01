@@ -448,10 +448,48 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         mNavigationListener = listener;
     }
 
+    /**
+     * Whether the first item of the suggestions list is currently keyboard selected. False if
+     * parked at the sentinel.
+     */
+    public boolean isFirstItemSelected() {
+        return mSelectionController.getPosition() != null
+                && mSelectionController.getPosition() == 0;
+    }
+
+    /**
+     * Whether the last item of the suggestions list is currently keyboard selected. False if parked
+     * at the sentinel.
+     */
+    public boolean isLastItemSelected() {
+        return mSelectionController.getPosition() != null
+                && mSelectionController.getPosition() == mSelectionController.getItemCount() - 1;
+    }
+
     /** Resets selection typically in response to changes to the list. */
     public void resetSelection() {
         mLayoutScrollListener.scrollToPositionWithOffset(0, 0);
         mSelectionController.reset();
+    }
+
+    /** Keyboard select the first item in the suggestions list. */
+    public void selectFirstItem() {
+        if (mSelectionController.getItemCount() == 0) return;
+        mSelectionController.setPosition(0);
+    }
+
+    /** Keyboard select the last item in the suggestions list. */
+    public void selectLastItem() {
+        if (mSelectionController.getItemCount() == 0) return;
+        mSelectionController.setPosition(mSelectionController.getItemCount() - 1);
+    }
+
+    /**
+     * Get the index of the currently keyboard-selected view, if any. Null if the sentinel is
+     * currently selected.
+     */
+    public @Nullable Integer getSelectedIndex() {
+        return mSelectionController.getPosition();
     }
 
     /**

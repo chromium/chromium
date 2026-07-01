@@ -278,6 +278,9 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
 
     @Override
     public void setSelected(boolean selected) {
+        // TODO: fix RecyclerViewSelectionController so that it doesn't redundantly call setSelected
+        // when views are added and removed.
+        boolean wasSelected = isSelected();
         super.setSelected(selected);
         if (mActionButtonsHighlighter != null) mActionButtonsHighlighter.reset();
         for (ActionButtonView v : mActionButtons) {
@@ -288,7 +291,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
             actionChipsView.setSelected(false);
         }
 
-        if (selected && mOnFocusViaSelectionListener != null) {
+        if (!wasSelected && selected && mOnFocusViaSelectionListener != null) {
             mOnFocusViaSelectionListener.run();
         }
     }

@@ -149,9 +149,14 @@ public class SiteSearchTest {
         checkIsFirstSuggestionRowSelected();
 
         // Wait for the Site Search Action chip to be bound and displayed in the suggestion row
-        ViewUtils.onViewWaiting(withText("Search TestName")).check(matches(isDisplayed()));
+        ViewUtils.onViewWaiting(
+                        Matchers.allOf(
+                                ViewMatchers.isAssignableFrom(ChipView.class),
+                                ViewMatchers.hasDescendant(withText("Search TestName"))))
+                .check(matches(isDisplayed()));
 
         // Press <tab>
+        mOmniboxUtils.sendKey(KeyEvent.KEYCODE_TAB);
         mOmniboxUtils.sendKey(KeyEvent.KEYCODE_TAB);
 
         checkIsActionChipSelected("Search TestName");
