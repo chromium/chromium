@@ -116,6 +116,7 @@ bool IsPageContextEligibleWithAccount(
                                                             frame_metadata);
 }
 
+DISABLE_CFI_DLSYM
 PageEligibilityResult CheckPageEligibility(
     const std::vector<optimization_guide::FrameUrl>& frames,
     const PageContextEligibility* api_holder) {

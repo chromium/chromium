@@ -67,7 +67,9 @@ bool IsPageContextEligibleWithAccount(
     const std::vector<optimization_guide::FrameMetadata>& frame_metadata,
     const PageContextEligibility* api_holder);
 
-// Checks the page eligibility based on frame URLs.
+// Checks the page eligibility based on frame URLs using the api provided in
+// `api_holder`. This function must be called instead of the function in the API
+// directly in order to have properly disabled CFI.
 PageEligibilityResult CheckPageEligibility(
     const std::vector<optimization_guide::FrameUrl>& frames,
     const PageContextEligibility* api_holder);
