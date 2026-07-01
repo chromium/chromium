@@ -24,8 +24,8 @@ if (use_system_harfbuzz) {
     public_configs = [ ":harfbuzz_from_pkgconfig" ]
   }
 } else {
+  import("//build/rust/cargo_crate.gni")
   import("//build/rust/rust_bindgen_generator.gni")
-  import("//build/rust/rust_static_library.gni")
 
   rust_bindgen_generator("hb_rs_generator") {
     header = "src/src/hb.h"
@@ -39,8 +39,7 @@ if (use_system_harfbuzz) {
     configs = [ ":harfbuzz_config" ]
   }
 
-  rust_static_library("harfbuzz_rust") {
-    crate_name = "harfbuzz_rust"
+  cargo_crate("harfbuzz_rust") {
     crate_root = "src/src/rust/lib.rs"
     sources = [
       "src/src/rust/font.rs",
@@ -50,6 +49,7 @@ if (use_system_harfbuzz) {
     ]
     allow_unsafe = true
     no_allocator_crate = true
+    build_native_rust_unit_tests = false
     edition = "2021"
     features = [
       "font",
