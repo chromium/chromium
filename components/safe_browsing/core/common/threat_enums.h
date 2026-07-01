@@ -12,7 +12,7 @@ namespace safe_browsing {
 // What service classified this threat as unsafe.
 enum class ThreatSource {
   UNKNOWN,
-  // From V4LocalDatabaseManager, protocol v4. Desktop only.
+  // From SBLocalDatabaseManager, protocol v4. Desktop only.
   LOCAL_PVER4,
   // From ClientSideDetectionHost.
   CLIENT_SIDE_DETECTION,

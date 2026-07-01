@@ -89,9 +89,9 @@ class TestSBDatabaseFactory : public SBDatabaseFactory {
   bool IsReady();
 
  private:
-  // Owned by V4LocalDatabaseManager. The following usage is expected: each
+  // Owned by SBLocalDatabaseManager. The following usage is expected: each
   // test in the test fixture instantiates a new SafebrowsingService instance,
-  // which instantiates a new V4LocalDatabaseManager, which instantiates a new
+  // which instantiates a new SBLocalDatabaseManager, which instantiates a new
   // SBDatabase using this method so use-after-free isn't possible.
   raw_ptr<TestSBDatabase, AcrossTasksDanglingUntriaged> sb_db_ = nullptr;
 };

@@ -199,7 +199,7 @@ HashRealTimeService::SBThreatInfo HashRealTimeService::DetermineSBThreatInfo(
 int HashRealTimeService::GetThreatSeverity(
     const V5::FullHash::FullHashDetail& detail) {
   // These values should be consistent with the ones in GetThreatSeverity in
-  // v4_local_database_manager.cc.
+  // sb_local_database_manager.cc.
   if (std::ranges::contains(detail.attributes(), V5::ThreatAttribute::CANARY)) {
     // ThreatAttribute::CANARY should be equivalent to SUSPICIOUS.
     return 4;

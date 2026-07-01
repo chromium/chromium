@@ -45,7 +45,7 @@ source_set("handler") {
     "//components/password_manager/core/browser:hash_password_manager",
     "//components/safe_browsing/core/browser:download_check_result",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
-    "//components/safe_browsing/core/browser/db:v4_local_database_manager",
+    "//components/safe_browsing/core/browser/db:sb_local_database_manager",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:csd_proto_extras",
     "//components/user_prefs",

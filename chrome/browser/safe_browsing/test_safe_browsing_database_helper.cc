@@ -103,7 +103,7 @@ TestSafeBrowsingDatabaseHelper::TestSafeBrowsingDatabaseHelper(
   sb_factory_ =
       std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>();
   sb_factory_->SetTestUIManager(new FakeSafeBrowsingUIManager());
-  sb_factory_->UseV4LocalDatabaseManager();
+  sb_factory_->UseSBLocalDatabaseManager();
   safe_browsing::SafeBrowsingService::RegisterFactory(sb_factory_.get());
 
   auto store_factory = std::make_unique<safe_browsing::TestV4StoreFactory>();

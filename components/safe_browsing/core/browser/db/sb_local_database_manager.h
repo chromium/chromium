@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_V4_LOCAL_DATABASE_MANAGER_H_
-#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_V4_LOCAL_DATABASE_MANAGER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_SB_LOCAL_DATABASE_MANAGER_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_SB_LOCAL_DATABASE_MANAGER_H_
 
 // A class that provides the interface between the SafeBrowsing protocol manager
 // and database that holds the downloaded updates.
@@ -28,32 +28,34 @@
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 #include "url/gurl.h"
 
+// TODO(crbug.com/362791941): Handle v4 references
+// TODO(crbug.com/362791941): Convert |comments| to `comments`
 namespace safe_browsing {
 
 typedef unsigned ThreatSeverity;
 
 // Manages the local, on-disk database of updates downloaded from the
 // SafeBrowsing service and interfaces with the protocol manager.
-class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
+class SBLocalDatabaseManager : public SafeBrowsingDatabaseManager {
  public:
-  // Create and return an instance of V4LocalDatabaseManager, if Finch trial
+  // Create and return an instance of SBLocalDatabaseManager, if Finch trial
   // allows it; nullptr otherwise.
-  static scoped_refptr<V4LocalDatabaseManager> Create(
+  static scoped_refptr<SBLocalDatabaseManager> Create(
       const base::FilePath& base_path,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       ExtendedReportingLevelCallback extended_reporting_level_callback);
 
-  V4LocalDatabaseManager(const V4LocalDatabaseManager&) = delete;
-  V4LocalDatabaseManager& operator=(const V4LocalDatabaseManager&) = delete;
+  SBLocalDatabaseManager(const SBLocalDatabaseManager&) = delete;
+  SBLocalDatabaseManager& operator=(const SBLocalDatabaseManager&) = delete;
 
   // Populates the protobuf with the database data.
   void CollectDatabaseManagerInfo(
       DatabaseManagerInfo* sb_database_info,
       FullHashCacheInfo* full_hash_cache_info) const;
 
-  // Return an instance of the V4LocalDatabaseManager object
-  static const V4LocalDatabaseManager* current_local_database_manager() {
+  // Return an instance of the SBLocalDatabaseManager object
+  static const SBLocalDatabaseManager* current_local_database_manager() {
     return current_local_database_manager_;
   }
 
@@ -107,16 +109,16 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   //
 
  protected:
-  // Construct V4LocalDatabaseManager.
+  // Construct SBLocalDatabaseManager.
   // Must be initialized by calling StartOnUIThread() before using.
-  V4LocalDatabaseManager(
+  SBLocalDatabaseManager(
       const base::FilePath& base_path,
       ExtendedReportingLevelCallback extended_reporting_level_callback,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_tests);
 
-  ~V4LocalDatabaseManager() override;
+  ~SBLocalDatabaseManager() override;
 
   enum class ClientCallbackType : int {
     // This represents the case when we're trying to determine if a URL is
@@ -228,7 +230,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
     // for that URL.
     ThreatMetadata url_metadata;
 
-    // Specifies whether the PendingCheck is in the V4LocalDatabaseManager's
+    // Specifies whether the PendingCheck is in the SBLocalDatabaseManager's
     // |pending_checks_| set. This property is for sanity-checking that when the
     // check is destructed, it should never still be in |pending_checks_|, since
     // functions could still be called on those checks afterwards.
@@ -244,12 +246,12 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   typedef std::vector<std::unique_ptr<PendingCheck>> QueuedChecks;
 
  private:
-  friend class V4LocalDatabaseManagerTest;
-  friend class FakeV4LocalDatabaseManager;
-  FRIEND_TEST_ALL_PREFIXES(V4LocalDatabaseManagerTest,
+  friend class SBLocalDatabaseManagerTest;
+  friend class FakeSBLocalDatabaseManager;
+  FRIEND_TEST_ALL_PREFIXES(SBLocalDatabaseManagerTest,
                            TestGetSeverestThreatTypeAndMetadata);
-  FRIEND_TEST_ALL_PREFIXES(V4LocalDatabaseManagerTest, NotificationOnUpdate);
-  FRIEND_TEST_ALL_PREFIXES(V4LocalDatabaseManagerTest, SyncedLists);
+  FRIEND_TEST_ALL_PREFIXES(SBLocalDatabaseManagerTest, NotificationOnUpdate);
+  FRIEND_TEST_ALL_PREFIXES(SBLocalDatabaseManagerTest, SyncedLists);
 
   // The checks awaiting a full hash response from SafeBrowsing service.
   typedef std::unordered_set<raw_ptr<PendingCheck, CtnExperimental>>
@@ -430,8 +432,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // The base directory under which to create the files that contain hashes.
   const base::FilePath base_path_;
 
-  // Instance of the V4LocalDatabaseManager object
-  static const V4LocalDatabaseManager* current_local_database_manager_;
+  // Instance of the SBLocalDatabaseManager object
+  static const SBLocalDatabaseManager* current_local_database_manager_;
 
   // Called when the SBDatabase has finished applying the latest update and is
   // ready to process next update.
@@ -472,7 +474,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   std::unique_ptr<V4UpdateProtocolManager> v4_update_protocol_manager_;
 
   // Whether the service is running. 'enabled_' is used by the
-  // V4LocalDatabaseManager on the IO thread during normal operations.
+  // SBLocalDatabaseManager on the IO thread during normal operations.
   bool enabled_;
 
   // Whether the service has been stopped due to browser shutdown. We can be
@@ -480,9 +482,9 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // has been turned off.
   bool is_shutdown_;
 
-  base::WeakPtrFactory<V4LocalDatabaseManager> weak_factory_{this};
-};  // class V4LocalDatabaseManager
+  base::WeakPtrFactory<SBLocalDatabaseManager> weak_factory_{this};
+};  // class SBLocalDatabaseManager
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_V4_LOCAL_DATABASE_MANAGER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_SB_LOCAL_DATABASE_MANAGER_H_

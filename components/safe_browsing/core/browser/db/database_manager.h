@@ -328,7 +328,7 @@ class SafeBrowsingDatabaseManager
 
   friend class base::RefCountedDeleteOnSequence<SafeBrowsingDatabaseManager>;
   friend class base::DeleteHelper<SafeBrowsingDatabaseManager>;
-  friend class V4LocalDatabaseManager;
+  friend class SBLocalDatabaseManager;
 
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingDatabaseManagerTest,
                            CheckApiBlocklistUrlPrefixes);

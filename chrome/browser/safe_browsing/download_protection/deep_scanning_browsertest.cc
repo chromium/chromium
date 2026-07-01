@@ -212,7 +212,7 @@ class DownloadDeepScanningBrowserTestBase
     scoped_feature_list_.InitWithFeatures(std::move(enabled_features_),
                                           std::move(disabled_features_));
     test_sb_factory_ = std::make_unique<TestSafeBrowsingServiceFactory>();
-    test_sb_factory_->UseV4LocalDatabaseManager();
+    test_sb_factory_->UseSBLocalDatabaseManager();
     SafeBrowsingService::RegisterFactory(test_sb_factory_.get());
 
     InProcessBrowserTest::SetUp();

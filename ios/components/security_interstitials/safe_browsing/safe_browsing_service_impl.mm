@@ -10,7 +10,7 @@
 #import "build/branding_buildflags.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
-#import "components/safe_browsing/core/browser/db/v4_local_database_manager.h"
+#import "components/safe_browsing/core/browser/db/sb_local_database_manager.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
@@ -62,7 +62,7 @@ void SafeBrowsingServiceImpl::Initialize(const base::FilePath& user_data_path) {
 
   base::FilePath safe_browsing_data_path =
       user_data_path.Append(safe_browsing::kSafeBrowsingBaseFilename);
-  safe_browsing_db_manager_ = safe_browsing::V4LocalDatabaseManager::Create(
+  safe_browsing_db_manager_ = safe_browsing::SBLocalDatabaseManager::Create(
       safe_browsing_data_path, web::GetUIThreadTaskRunner({}),
       web::GetIOThreadTaskRunner({}),
       safe_browsing::ExtendedReportingLevelCallback());

@@ -47,7 +47,7 @@ V5UpdateProtocolManager::V5UpdateProtocolManager(
     V5UpdateCallback update_callback)
     : SBUpdateProtocolManager(std::move(url_loader_factory), config),
       update_callback_(update_callback) {
-  // Do not auto-schedule updates. Let the owner (V4LocalDatabaseManager) do it
+  // Do not auto-schedule updates. Let the owner (SBLocalDatabaseManager) do it
   // when it is ready to process updates.
 }
 

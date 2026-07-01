@@ -15,7 +15,7 @@
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/browser/db/v4_local_database_manager.h"
+#include "components/safe_browsing/core/browser/db/sb_local_database_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -130,7 +130,7 @@ DownloadProtectionService* ServicesDelegateDesktop::GetDownloadService() {
 
 scoped_refptr<SafeBrowsingDatabaseManager>
 ServicesDelegateDesktop::CreateDatabaseManager() {
-  return V4LocalDatabaseManager::Create(
+  return SBLocalDatabaseManager::Create(
       SafeBrowsingServiceImpl::GetBaseFilename(),
       content::GetUIThreadTaskRunner({}), content::GetIOThreadTaskRunner({}),
       base::BindRepeating(

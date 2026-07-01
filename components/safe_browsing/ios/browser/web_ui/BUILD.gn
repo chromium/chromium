@@ -21,7 +21,7 @@ source_set("web_ui") {
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser:download_check_result",
-    "//components/safe_browsing/core/browser/db:v4_local_database_manager",
+    "//components/safe_browsing/core/browser/db:sb_local_database_manager",
     "//components/safe_browsing/core/browser/web_ui:cr_safe_browsing_log",
     "//components/safe_browsing/core/browser/web_ui:event_observer",
     "//components/safe_browsing/core/browser/web_ui:event_observer_impl",

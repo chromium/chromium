@@ -198,7 +198,7 @@ class AllowlistUrlSet : public content::WebContentsUserData<AllowlistUrlSet> {
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AllowlistUrlSet);
 
 // Returns the corresponding ThreatSeverity to a SBThreatType
-// Keep the same as v4_local_database_manager GetThreatSeverity()
+// Keep the same as sb_local_database_manager GetThreatSeverity()
 ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
   using enum SBThreatType;
   switch (threat_type) {

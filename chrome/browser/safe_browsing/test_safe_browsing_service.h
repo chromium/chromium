@@ -71,7 +71,7 @@ class TestSafeBrowsingService : public SafeBrowsingService,
   void SetV4ProtocolConfig(V4ProtocolConfig* v4_protocol_config);
   const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager()
       const override;
-  void UseV4LocalDatabaseManager();
+  void UseSBLocalDatabaseManager();
 
   // By default, the TestSafeBrowsing service uses a regular URLLoaderFactory.
   // This function can be used to override that behavior, exposing a
@@ -113,7 +113,7 @@ class TestSafeBrowsingService : public SafeBrowsingService,
   std::unique_ptr<V4ProtocolConfig> v4_protocol_config_;
   std::string serialized_download_report_;
   scoped_refptr<SafeBrowsingDatabaseManager> test_database_manager_;
-  bool use_v4_local_db_manager_ = false;
+  bool use_sb_local_db_manager_ = false;
   bool use_test_url_loader_factory_ = false;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
@@ -144,15 +144,15 @@ class TestSafeBrowsingServiceFactory : public SafeBrowsingServiceFactory {
 
   // Be default, the TestSafeBrowsingService creates an instance of the
   // TestSafeBrowsingDatabaseManager. This function can be used to override that
-  // to use the usual V4LocalDatabaseManager that's used in Chrome on Desktop.
-  void UseV4LocalDatabaseManager();
+  // to use the usual SBLocalDatabaseManager that's used in Chrome on Desktop.
+  void UseSBLocalDatabaseManager();
 
  private:
   raw_ptr<TestSafeBrowsingService, DanglingUntriaged>
       test_safe_browsing_service_;
   scoped_refptr<TestSafeBrowsingDatabaseManager> test_database_manager_;
   scoped_refptr<TestSafeBrowsingUIManager> test_ui_manager_;
-  bool use_v4_local_db_manager_;
+  bool use_sb_local_db_manager_;
 };
 
 // This is an implemenation of SafeBrowsingUIManager without actually

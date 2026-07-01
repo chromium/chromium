@@ -13,7 +13,7 @@
 #include "content/public/browser/global_routing_id.h"
 
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
-#include "components/safe_browsing/core/browser/db/v4_local_database_manager.h"
+#include "components/safe_browsing/core/browser/db/sb_local_database_manager.h"
 #endif
 
 namespace safe_browsing {

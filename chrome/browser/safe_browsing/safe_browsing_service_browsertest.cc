@@ -402,7 +402,7 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
   void SetUp() override {
     sb_factory_ = std::make_unique<TestSafeBrowsingServiceFactory>();
     sb_factory_->SetTestUIManager(new FakeSafeBrowsingUIManager());
-    sb_factory_->UseV4LocalDatabaseManager();
+    sb_factory_->UseSBLocalDatabaseManager();
     SafeBrowsingService::RegisterFactory(sb_factory_.get());
 
     store_factory_ = new TestV4StoreFactory();

@@ -29,7 +29,7 @@ group("safe_browsing_db_shared") {
 group("db") {
   deps = [
     ":safe_browsing_db_shared",
-    ":v4_local_database_manager",
+    ":sb_local_database_manager",
   ]
 }
 
@@ -139,10 +139,10 @@ static_library("v4_get_hash_protocol_manager") {
   ]
 }
 
-static_library("v4_local_database_manager") {
+static_library("sb_local_database_manager") {
   sources = [
-    "v4_local_database_manager.cc",
-    "v4_local_database_manager.h",
+    "sb_local_database_manager.cc",
+    "sb_local_database_manager.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -362,7 +362,7 @@ source_set("unit_tests_local_db") {
     "hash_prefix_list_unittest.cc",
     "hash_prefix_map_unittest.cc",
     "sb_database_unittest.cc",
-    "v4_local_database_manager_unittest.cc",
+    "sb_local_database_manager_unittest.cc",
     "v4_rice_unittest.cc",
     "v4_store_unittest.cc",
     "v4_update_protocol_manager_unittest.cc",
@@ -372,11 +372,11 @@ source_set("unit_tests_local_db") {
   deps = [
     ":database_manager",
     ":sb_database",
+    ":sb_local_database_manager",
     ":sb_store",
     ":sb_update_protocol_manager",
     ":unit_tests_shared",
     ":util",
-    ":v4_local_database_manager",
     ":v4_protocol_manager_util",
     ":v4_rice",
     ":v4_store_proto",

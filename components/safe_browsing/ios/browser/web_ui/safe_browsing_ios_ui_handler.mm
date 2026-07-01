@@ -13,7 +13,7 @@
 #import "components/user_prefs/user_prefs.h"
 
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
-#import "components/safe_browsing/core/browser/db/v4_local_database_manager.h"
+#import "components/safe_browsing/core/browser/db/sb_local_database_manager.h"
 #endif
 
 namespace safe_browsing {
