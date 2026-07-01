@@ -2760,6 +2760,12 @@ void RenderViewContextMenu::AppendReadAnythingItem() {
     if (features::IsImprovedReadAloudEnabled()) {
       menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE,
                                       IDS_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE);
+      if (is_menu_simplification_enabled) {
+        menu_model_.SetIconForCommandId(
+            IDC_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE,
+            ui::ImageModel::FromVectorIcon(kPlayCircleIcon, ui::kColorMenuIcon,
+                                           kTabMenuIconSize));
+      }
     }
   }
 }
@@ -4779,10 +4785,8 @@ void RenderViewContextMenu::ExecOpenInReadAnything() {
 }
 
 void RenderViewContextMenu::ExecListenToThisPage() {
-  // TODO(https://b/494307454): This is a placeholder. Full implementation will
-  // be done in a future request.
   read_anything::ReadAnythingEntryPointController::ShowUI(
-      GetBrowser(), ReadAnythingOpenTrigger::kReadAnythingContextMenu);
+      GetBrowser(), ReadAnythingOpenTrigger::kListenToThisPageContextMenu);
 }
 
 void RenderViewContextMenu::ExecSaveToMemoryBanks() {

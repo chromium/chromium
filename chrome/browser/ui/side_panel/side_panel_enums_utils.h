@@ -70,6 +70,8 @@ inline std::string ToString(SidePanelOpenTrigger trigger) {
       return "GlicOpened";
     case SidePanelOpenTrigger::kContextualTasks:
       return "ContextualTasks";
+    case SidePanelOpenTrigger::kReadAnythingListenToThisPageContextMenu:
+      return "ReadAnythingListenToThisPageContextMenu";
   }
   NOTREACHED();
 }
