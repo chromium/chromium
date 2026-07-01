@@ -30,6 +30,7 @@
 #include "components/update_client/op_download.h"
 #include "components/update_client/op_install.h"
 #include "components/update_client/op_puffin.h"
+#include "components/update_client/op_space_check.h"
 #include "components/update_client/op_xz.h"
 #include "components/update_client/op_zucchini.h"
 #include "components/update_client/pipeline_util.h"
@@ -78,9 +79,7 @@ constexpr CategorizedError kInvalidOperationAttributesError = CategorizedError(
 // completion callback will keep it alive).
 class Pipeline : public base::RefCountedThreadSafe<Pipeline> {
  public:
-  Pipeline(
-      std::queue<Operation> operations,
-      scoped_refptr<Pipeline> fallback);
+  Pipeline(std::queue<Operation> operations, scoped_refptr<Pipeline> fallback);
   Pipeline(const Pipeline&) = delete;
   Pipeline& operator=(const Pipeline&) = delete;
 
@@ -261,6 +260,9 @@ std::queue<Operation> MakeOperations(
              void(base::expected<base::FilePath, UnpackerError>)>)> cache_check,
     const std::string& install_data) {
   std::queue<Operation> ops;
+  ops.push(SkipIfCached(cache_check,
+                        base::BindOnce(&SpaceCheckOperation, pipeline,
+                                       get_available_space, event_adder)));
   for (const ProtocolParser::Operation& operation : pipeline.operations) {
     if (operation.type == "download") {
       // expects: `urls` (list of url objects), `size`, and `out` (hash object)
@@ -272,9 +274,9 @@ std::queue<Operation> MakeOperations(
       }
       ops.push(SkipIfCached(
           cache_check,
-          base::BindOnce(&DownloadOperation, config, id, get_available_space,
-                         is_foreground, operation.urls, operation.size,
-                         operation.sha256_out, event_adder, state_tracker,
+          base::BindOnce(&DownloadOperation, config, id, is_foreground,
+                         operation.urls, operation.size, operation.sha256_out,
+                         event_adder, state_tracker,
                          download_progress_callback)));
     } else if (operation.type == "puff") {
       // expects: `previous` (hash object) and `out` (hash object)

@@ -3123,7 +3123,6 @@ TEST_F(UpdateClientTest, EmptyIdList) {
     }
   };
 
-
   class MockCrxDownloader : public CrxDownloader {
    public:
     MockCrxDownloader() = default;
@@ -3234,10 +3233,6 @@ TEST_F(UpdateClientTest, DiskFull) {
                 })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
-                         item.state == ComponentState::kDownloading;
-                })));
-    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                  return item.id == "jebgalgnebhfojomionfpkfelancnnkf" &&
                          item.state == ComponentState::kUpdateError;
                 })));
   }
@@ -3255,15 +3250,13 @@ TEST_F(UpdateClientTest, DiskFull) {
       false, ExpectErrorThenQuit(runloop_, Error::NONE));
   runloop_.Run();
 
-  EXPECT_EQ(4u, items.size());
+  EXPECT_EQ(3u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
   EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id);
   EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
   EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id);
-  EXPECT_EQ(ComponentState::kDownloading, items[2].state);
+  EXPECT_EQ(ComponentState::kUpdateError, items[2].state);
   EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
-  EXPECT_EQ(ComponentState::kUpdateError, items[3].state);
-  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id);
 }
 
 TEST_F(UpdateClientTest, DiskFullDiff) {
@@ -3560,16 +3553,6 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
                 })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kDownloading;
-                })))
-        .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kDownloading;
-                })))
-        .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdateError;
                 })));
   }
@@ -3632,17 +3615,13 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
         false, ExpectErrorThenQuit(runloop, Error::NONE));
     runloop.Run();
 
-    EXPECT_EQ(5u, items.size());
+    EXPECT_EQ(3u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
     EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id);
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
     EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
-    EXPECT_EQ(ComponentState::kDownloading, items[2].state);
+    EXPECT_EQ(ComponentState::kUpdateError, items[2].state);
     EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id);
-    EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id);
-    EXPECT_EQ(ComponentState::kUpdateError, items[4].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id);
   }
 }
 

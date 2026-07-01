@@ -128,9 +128,6 @@ class OpDownloadTest : public testing::Test {
                 int64_t length,
                 const std::string& hash) {
     DownloadOperation(config, "appid",
-                      base::BindRepeating([](const base::FilePath&) -> int64_t {
-                        return 100'000'000;  // 100 MiB
-                      }),
                       /*is_foreground=*/false, {GURL("http://localhost:111")},
                       length, hash, MakePingCallback(), base::DoNothing(),
                       MakeProgressCallback(), {}, MakeDoneCallback());
