@@ -13,6 +13,7 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
+#include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_remote_frame.h"
@@ -23,6 +24,7 @@ using ::blink::WebDocument;
 using ::blink::WebElement;
 using ::blink::WebFormControlElement;
 using ::blink::WebFrame;
+using ::blink::WebInputElement;
 using ::blink::WebLocalFrame;
 using ::blink::WebNode;
 using ::blink::WebString;
@@ -30,8 +32,14 @@ using ::testing::AllOfArray;
 using ::testing::Matcher;
 using ::testing::Property;
 using ::testing::ResultOf;
+using ::testing::SafeMatcherCast;
 
 namespace test {
+
+Matcher<WebInputElement> WebInputElementEq(
+    const WebFormControlElementDescription& description) {
+  return SafeMatcherCast<WebInputElement>(WebFormControlElementEq(description));
+}
 
 Matcher<WebFormControlElement> WebFormControlElementEq(
     const WebFormControlElementDescription& description) {

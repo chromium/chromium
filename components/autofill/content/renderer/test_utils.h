@@ -16,6 +16,7 @@
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
+#include "third_party/blink/public/web/web_input_element.h"
 
 namespace blink {
 class WebDocument;
@@ -47,6 +48,8 @@ namespace test {
 using WebFormControlElementDescription =
     internal::WebFormControlElementDescription<>;
 
+testing::Matcher<blink::WebInputElement> WebInputElementEq(
+    const WebFormControlElementDescription& description);
 testing::Matcher<blink::WebFormControlElement> WebFormControlElementEq(
     const WebFormControlElementDescription& description);
 

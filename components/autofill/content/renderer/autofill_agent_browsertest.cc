@@ -96,6 +96,9 @@ using ::testing::Optional;
 using ::testing::Property;
 using ::testing::SaveArg;
 using ::testing::SizeIs;
+using ::testing::TestParamInfo;
+using ::testing::ValuesIn;
+using ::testing::WithParamInterface;
 
 class MockAutofillAgent : public AutofillAgent {
  public:
@@ -743,56 +746,85 @@ TEST_F(AutofillAgentTest, TriggerSuggestionsForElementWithDatalist) {
   task_environment_.RunUntilIdle();
 }
 
+struct AutofillAgentAcceptDataListSuggestionTestParams {
+  std::string field_id;
+  std::string expected_value_after_accept;
+};
+
+class AutofillAgentAcceptDataListSuggestionTest
+    : public AutofillAgentTest,
+      public WithParamInterface<
+          AutofillAgentAcceptDataListSuggestionTestParams> {
+ protected:
+  void SetUp() override {
+    AutofillAgentTest::SetUp();
+    LoadHTML(Html());
+  }
+
+  static constexpr std::string_view Html() {
+    return "<html>"
+           "<input id='empty' type='email' multiple />"
+           "<input id='multi_one' type='email' multiple "
+           "value='one@example.com'/>"
+           "<input id='multi_two' type='email' multiple"
+           "  value='one@example.com,two@example.com'/>"
+           "<input id='multi_trailing' type='email' multiple"
+           "  value='one@example.com,two@example.com,'/>"
+           "<input id='not_multi' type='email'"
+           "  value='one@example.com,two@example.com,'/>"
+           "<input id='not_email' type='text' multiple"
+           "  value='one@example.com,two@example.com,'/>"
+           "</html>";
+  }
+  static constexpr std::u16string_view DataListSuggestion() {
+    return u"suggestion@example.com";
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AutofillAgentAcceptDataListSuggestionTest,
+    ValuesIn(std::to_array<AutofillAgentAcceptDataListSuggestionTestParams>({
+        // Empty text field; expect to populate with suggestion.
+        {.field_id = "empty",
+         .expected_value_after_accept = "suggestion@example.com"},
+        // Single entry; expect to replace with suggestion.
+        {.field_id = "multi_one",
+         .expected_value_after_accept = "suggestion@example.com"},
+        // Two comma-separated entries; expect to replace second with
+        // suggestion.
+        {.field_id = "multi_two",
+         .expected_value_after_accept =
+             "one@example.com,suggestion@example.com"},
+        // Two comma-separated entries with trailing comma; expect to append
+        // suggestion.
+        {.field_id = "multi_trailing",
+         .expected_value_after_accept =
+             "one@example.com,two@example.com,suggestion@example.com"},
+        // Do not apply this logic for a non-multiple or non-email field.
+        {.field_id = "not_multi",
+         .expected_value_after_accept = "suggestion@example.com"},
+        {.field_id = "not_email",
+         .expected_value_after_accept = "suggestion@example.com"},
+    })),
+    [](const TestParamInfo<
+        AutofillAgentAcceptDataListSuggestionTest::ParamType>& info) {
+      return info.param.field_id;
+    });
+
 // Tests that `AutofillAgent::AcceptDataListSuggestion` sets the field value
 // correctly when accepting a datalist suggestion.
-TEST_F(AutofillAgentTest, AcceptDataListSuggestion) {
-  LoadHTML(
-      "<html>"
-      "<input id='empty' type='email' multiple />"
-      "<input id='multi_one' type='email' multiple value='one@example.com'/>"
-      "<input id='multi_two' type='email' multiple"
-      "  value='one@example.com,two@example.com'/>"
-      "<input id='multi_trailing' type='email' multiple"
-      "  value='one@example.com,two@example.com,'/>"
-      "<input id='not_multi' type='email'"
-      "  value='one@example.com,two@example.com,'/>"
-      "<input id='not_email' type='text' multiple"
-      "  value='one@example.com,two@example.com,'/>"
-      "</html>");
+TEST_P(AutofillAgentAcceptDataListSuggestionTest, AcceptDataListSuggestion) {
+  ASSERT_TRUE(SimulateElementClick(GetParam().field_id));
 
-  // Each case tests a different field value with the same suggestion.
-  const std::u16string kSuggestion = u"suggestion@example.com";
-  struct TestCase {
-    std::string id;
-    std::string expected;
-  } cases[] = {
-      // Empty text field; expect to populate with suggestion.
-      {"empty", "suggestion@example.com"},
-      // Single entry; expect to replace with suggestion.
-      {"multi_one", "suggestion@example.com"},
-      // Two comma-separated entries; expect to replace second with suggestion.
-      {"multi_two", "one@example.com,suggestion@example.com"},
-      // Two comma-separated entries with trailing comma; expect to append
-      // suggestion.
-      {"multi_trailing",
-       "one@example.com,two@example.com,suggestion@example.com"},
-      // Do not apply this logic for a non-multiple or non-email field.
-      {"not_multi", "suggestion@example.com"},
-      {"not_email", "suggestion@example.com"},
-  };
+  WebInputElement input_element = GetInputElementById(GetParam().field_id);
+  autofill_agent().AcceptDataListSuggestion(
+      form_util::GetFieldRendererId(input_element),
+      std::u16string{DataListSuggestion()});
 
-  for (const TestCase& c : cases) {
-    ASSERT_TRUE(SimulateElementClick(c.id));
-
-    WebElement element =
-        GetDocument().GetElementById(WebString::FromUtf8(c.id));
-    ASSERT_TRUE(element);
-    WebInputElement input_element = element.To<WebInputElement>();
-
-    autofill_agent().AcceptDataListSuggestion(
-        form_util::GetFieldRendererId(input_element), kSuggestion);
-    EXPECT_EQ(c.expected, input_element.Value().Utf8()) << "Case id: " << c.id;
-  }
+  EXPECT_THAT(input_element,
+              test::WebInputElementEq(
+                  {.value = GetParam().expected_value_after_accept}));
 }
 
 // Tests that clicking on a select element triggers
@@ -1141,7 +1173,7 @@ struct SelectFillingTestCase {
 
 class AutofillAgentSelectFillingTest
     : public AutofillAgentTest,
-      public ::testing::WithParamInterface<SelectFillingTestCase> {};
+      public WithParamInterface<SelectFillingTestCase> {};
 
 // Tests that select elements are correctly filled upon instructions by
 // Autofill. Various examples are described in details below.
@@ -1264,8 +1296,7 @@ INSTANTIATE_TEST_SUITE_P(
                               .expected_option_id = std::nullopt,
                               .expected_value = std::nullopt,
                               .expected_text = std::nullopt}),
-    [](const ::testing::TestParamInfo<
-        AutofillAgentSelectFillingTest::ParamType>& info) {
+    [](const TestParamInfo<AutofillAgentSelectFillingTest::ParamType>& info) {
       // Makes test output readable in the console
       return info.param.test_name;
     });
@@ -1521,9 +1552,8 @@ TEST_F(AutofillAgentTestUsingPlatformAutofill,
 }
 
 // Test fixture for caret position extraction and movement detection.
-class AutofillAgentTestCaret
-    : public AutofillAgentTest,
-      public ::testing::WithParamInterface<FormControlType> {
+class AutofillAgentTestCaret : public AutofillAgentTest,
+                               public WithParamInterface<FormControlType> {
  public:
   FormControlType form_control_type() const { return GetParam(); }
 
@@ -1703,9 +1733,8 @@ TEST_P(AutofillAgentTestCaret, SelectionFiresEvent) {
 }
 
 // Tests fixture for click handling.
-class AutofillAgentTestClick
-    : public AutofillAgentTest,
-      public ::testing::WithParamInterface<const char*> {
+class AutofillAgentTestClick : public AutofillAgentTest,
+                               public WithParamInterface<const char*> {
  public:
   const char* field_html() const { return GetParam(); }
 
