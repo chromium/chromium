@@ -341,8 +341,12 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
   WebViewProxyTabHelper* tab_helper =
       WebViewProxyTabHelper::FromWebState(web_state_);
   if (tab_helper) {
-    tab_helper->SetOverridingWebViewProxy(
-        reader_mode_web_state_->GetWebViewProxy());
+    id<CRWWebViewProxy> reader_mode_web_view_proxy =
+        reader_mode_web_state_->GetWebViewProxy();
+    // Ensure the web view ignores the obscured insets, as the Reader mode web
+    // view is instead constrained to the content area.
+    reader_mode_web_view_proxy.ignoreObscuredInsets = YES;
+    tab_helper->SetOverridingWebViewProxy(reader_mode_web_view_proxy);
   }
   metrics_helper_.RecordReaderShown();
 

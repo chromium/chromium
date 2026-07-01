@@ -75,6 +75,7 @@ UIView* GetFirstResponderSubview(UIView* view) {
   CRWWebViewScrollViewProxy* _contentViewScrollViewProxy;
 }
 @synthesize contentView = _contentView;
+@synthesize ignoreObscuredInsets = _ignoreObscuredInsets;
 @dynamic keyboardVisible;
 
 - (instancetype)initWithWebController:(CRWWebController*)webController {
@@ -210,6 +211,9 @@ UIView* GetFirstResponderSubview(UIView* view) {
 }
 
 - (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
+  if (_ignoreObscuredInsets) {
+    return;
+  }
   [_contentView setObscuredInsets:obscuredInsets];
 }
 
