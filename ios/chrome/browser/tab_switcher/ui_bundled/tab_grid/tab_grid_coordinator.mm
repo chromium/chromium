@@ -1005,6 +1005,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   _viewController = [[TabGridViewController alloc]
       initWithPageConfiguration:_pageConfiguration];
+  _viewController.tabGridState = sceneState.tabGridState;
   _viewController.layoutState =
       self.regularBrowser->GetSceneState().layoutState;
   _viewController.handler = sceneHandler;

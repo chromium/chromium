@@ -43,6 +43,7 @@ enum class IPHDismissalReasonType;
 @protocol TabGridConsumer;
 @protocol TabGridMutator;
 @protocol TabGridToolbarsCommandsWrangler;
+@class TabGridState;
 @class TabGridViewController;
 @class TabGridTopToolbar;
 @class TabGroupsPanelViewController;
@@ -190,6 +191,8 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, assign, readonly) TabGridPage activePage;
 // The currently visible page.
 @property(nonatomic, assign, readonly) TabGridPage currentPage;
+// The tab grid state.
+@property(nonatomic, weak) TabGridState* tabGridState;
 // The active context menu interaction animator, if any.
 @property(nonatomic, readonly) id<UIContextMenuInteractionAnimating>
     activeContextMenuAnimator;
