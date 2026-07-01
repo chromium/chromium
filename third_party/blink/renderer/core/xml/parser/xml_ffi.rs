@@ -423,6 +423,11 @@ mod ffi {
         type XmlReadState<'a>;
         type AttributesIterator<'a>;
         type NamespacesIterator<'a>;
+
+        /// # Safety
+        ///
+        /// Marked unsafe because functions with explicit lifetimes in a cxx
+        /// bridge require unsafe qualification.
         unsafe fn create_read_state<'a>(
             callbacks: Pin<&'a mut XmlCallbacks>,
         ) -> Box<XmlReadState<'a>>;
@@ -444,15 +449,24 @@ mod ffi {
         fn is_error_resumable(read_state: &XmlReadState) -> bool;
         fn reset_error(read_state: &mut XmlReadState);
 
-        unsafe fn parse_attributes(
+        fn parse_attributes(
             attributes_string: &[u8],
             success: &mut bool,
         ) -> Vec<AttributeNameValue>;
 
+        /// # Safety
+        ///
+        /// Marked unsafe because functions with explicit lifetimes in a cxx
+        /// bridge require unsafe qualification.
         unsafe fn attributes_next<'a>(
             attributes: &mut AttributesIterator<'a>,
             mut attribute_view: Pin<&mut AttributeView>,
         ) -> bool;
+
+        /// # Safety
+        ///
+        /// Marked unsafe because functions with explicit lifetimes in a cxx
+        /// bridge require unsafe qualification.
         unsafe fn namespaces_next<'a>(
             namespaces_iterator: &mut NamespacesIterator<'a>,
             prefix: &mut String,

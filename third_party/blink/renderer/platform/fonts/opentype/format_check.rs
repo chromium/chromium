@@ -90,11 +90,11 @@ fn is_cff2(format_info: &FontFormatInfo) -> bool {
 }
 
 #[cxx::bridge(namespace = "font_format_check")]
-#[allow(unused_unsafe)]
 pub mod ffi {
     extern "Rust" {
         type FontFormatInfo;
-        unsafe fn get_font_format_info(font_bytes: &[u8]) -> Box<FontFormatInfo>;
+
+        fn get_font_format_info(font_bytes: &[u8]) -> Box<FontFormatInfo>;
         fn is_colrv1(format_info: &FontFormatInfo) -> bool;
         fn is_colrv0(format_info: &FontFormatInfo) -> bool;
         fn is_cbdt_cblc(format_info: &FontFormatInfo) -> bool;
