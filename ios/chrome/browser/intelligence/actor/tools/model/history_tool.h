@@ -10,8 +10,6 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 
-class ProfileIOS;
-
 namespace optimization_guide::proto {
 class HistoryBackAction;
 class HistoryForwardAction;
@@ -25,6 +23,8 @@ namespace actor {
 
 struct ToolExecutionResult;
 
+class ProfileContextResolver;
+
 // Tool to navigate back or forward in a tab's history.
 class HistoryTool : public ActorTool {
  public:
@@ -33,12 +33,12 @@ class HistoryTool : public ActorTool {
   // Create the tool to handle "go back" action.
   static base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
   Create(const optimization_guide::proto::HistoryBackAction& action,
-         ProfileIOS* profile);
+         const ProfileContextResolver& profile_context_resolver);
 
   // Create the tool to handle "go forward" action.
   static base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
   Create(const optimization_guide::proto::HistoryForwardAction& action,
-         ProfileIOS* profile);
+         const ProfileContextResolver& profile_context_resolver);
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;
@@ -49,7 +49,8 @@ class HistoryTool : public ActorTool {
   // Internal helper to create the public `Create` method.
   template <typename HistoryAction>
   static base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
-  CreateInternal(const HistoryAction& action, ProfileIOS* profile);
+  CreateInternal(const HistoryAction& action,
+                 const ProfileContextResolver& profile_context_resolver);
 
   HistoryTool(bool is_back_action, base::WeakPtr<web::WebState> web_state);
 

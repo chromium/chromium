@@ -10,8 +10,6 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 
-class ProfileIOS;
-
 namespace optimization_guide {
 namespace proto {
 class WaitAction;
@@ -26,6 +24,8 @@ namespace actor {
 
 struct ToolExecutionResult;
 
+class ProfileContextResolver;
+
 // Tool to wait for a duration.
 class WaitTool : public ActorTool {
  public:
@@ -34,7 +34,7 @@ class WaitTool : public ActorTool {
   // Creates the tool using the given `action`.
   static base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> Create(
       const optimization_guide::proto::WaitAction& action,
-      ProfileIOS* profile);
+      const ProfileContextResolver& profile_context_resolver);
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;

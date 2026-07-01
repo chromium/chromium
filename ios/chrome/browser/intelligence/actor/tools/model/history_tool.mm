@@ -11,6 +11,7 @@
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -21,16 +22,16 @@ HistoryTool::~HistoryTool() = default;
 // static
 base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
 HistoryTool::Create(const optimization_guide::proto::HistoryBackAction& action,
-                    ProfileIOS* profile) {
-  return CreateInternal(action, profile);
+                    const ProfileContextResolver& profile_context_resolver) {
+  return CreateInternal(action, profile_context_resolver);
 }
 
 // static
 base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
 HistoryTool::Create(
     const optimization_guide::proto::HistoryForwardAction& action,
-    ProfileIOS* profile) {
-  return CreateInternal(action, profile);
+    const ProfileContextResolver& profile_context_resolver) {
+  return CreateInternal(action, profile_context_resolver);
 }
 
 void HistoryTool::Execute(ToolExecutionCallback callback) {
@@ -73,13 +74,16 @@ ToolType HistoryTool::GetToolType() const {
 // static
 template <typename HistoryAction>
 base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
-HistoryTool::CreateInternal(const HistoryAction& action, ProfileIOS* profile) {
+HistoryTool::CreateInternal(
+    const HistoryAction& action,
+    const ProfileContextResolver& profile_context_resolver) {
   if (!action.has_tab_id()) {
     return base::unexpected(ToolExecutionResult(
         InternalToolErrorCode::kCreationMissingRequiredFields));
   }
-  base::expected<TabResolutionResult, ToolExecutionResult> resolution_result =
-      ResolveTab(action.tab_id(), profile);
+  base::expected<ProfileContextResolver::TabResolutionResult,
+                 ToolExecutionResult>
+      resolution_result = profile_context_resolver.ResolveTab(action.tab_id());
   if (!resolution_result.has_value()) {
     return base::unexpected(resolution_result.error());
   }

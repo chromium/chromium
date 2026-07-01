@@ -15,8 +15,6 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/web_actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 
-class ProfileIOS;
-
 namespace web {
 class WebState;
 }  // namespace web
@@ -25,6 +23,8 @@ namespace actor {
 
 class ScrollToolJavaScriptFeature;
 
+class ProfileContextResolver;
+
 // Tool that scrolls within an element on a page.
 class ScrollTool : public WebActorTool {
  public:
@@ -32,7 +32,7 @@ class ScrollTool : public WebActorTool {
 
   static base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult>
   Create(const optimization_guide::proto::ScrollAction& action,
-         ProfileIOS* profile);
+         const ProfileContextResolver& profile_context_resolver);
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;

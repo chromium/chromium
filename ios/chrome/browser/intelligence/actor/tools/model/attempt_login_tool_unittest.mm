@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/fake_tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/passwords/model/actor_login/ios_chrome_actor_login_delegate_client.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -131,10 +132,10 @@ class AttemptLoginToolTest : public PlatformTest {
     delegate_.set_actor_login_service(&fake_actor_login_service_);
   }
 
-  // Helper method to create the `AttemptLoginTool`.
   base::expected<std::unique_ptr<AttemptLoginTool>, ToolExecutionResult>
   CreateTool(const optimization_guide::proto::AttemptLoginAction& action) {
-    return AttemptLoginTool::Create(action, &delegate_, profile_.get());
+    return AttemptLoginTool::Create(action, &delegate_,
+                                    ProfileContextResolver(profile_.get()));
   }
 
   // Retrieves the web state list for the current test browser.

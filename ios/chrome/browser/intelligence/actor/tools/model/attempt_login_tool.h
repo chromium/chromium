@@ -19,7 +19,6 @@
 #import "ios/web/public/web_state_observer.h"
 
 class ActorLoginQualityLogger;
-class ProfileIOS;
 
 namespace optimization_guide {
 namespace proto {
@@ -36,13 +35,15 @@ namespace actor {
 class ToolDelegate;
 struct ToolExecutionResult;
 
+class ProfileContextResolver;
+
 // Tool to attempt login on a page.
 class AttemptLoginTool : public ActorTool, public web::WebStateObserver {
  public:
   static base::expected<std::unique_ptr<AttemptLoginTool>, ToolExecutionResult>
   Create(const optimization_guide::proto::AttemptLoginAction& action,
          ToolDelegate* tool_delegate,
-         ProfileIOS* profile);
+         const ProfileContextResolver& profile_context_resolver);
 
   ~AttemptLoginTool() override;
 

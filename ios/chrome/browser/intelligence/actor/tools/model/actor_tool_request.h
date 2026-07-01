@@ -11,12 +11,13 @@
 
 namespace actor {
 
-// Represents a request to create and execute an ActorTool.
+// Represents a request to create and execute an `ActorTool`.
 //
 // This class is a lightweight wrapper around the
-// optimization_guide::proto::Action proto used for actuating the browser. This
-// is used in the orchestration layer to validate parameters, inspect metadata,
-// and resolve target tab IDs before the tool is actually created and executed.
+// `optimization_guide::proto::Action` proto used for actuating the browser.
+// This is used in the orchestration layer to validate parameters, inspect
+// metadata, and resolve target tab IDs before the tool is actually created and
+// executed.
 //
 // In contrast, `ActorTool` represents the actual instance of a capability and
 // holds the state necessary for execution.

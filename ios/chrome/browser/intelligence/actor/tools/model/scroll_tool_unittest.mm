@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/scroll_tool_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -41,6 +42,11 @@ class ScrollToolTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
+
+  base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> CreateTool(
+      const optimization_guide::proto::ScrollAction& action) {
+    return ScrollTool::Create(action, ProfileContextResolver(profile_.get()));
+  }
 };
 
 TEST_F(ScrollToolTest, Create_MissingTabId) {
@@ -51,7 +57,7 @@ TEST_F(ScrollToolTest, Create_MissingTabId) {
   action.mutable_scroll()->set_distance(100);
 
   base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
-      ScrollTool::Create(action.scroll(), profile_.get());
+      CreateTool(action.scroll());
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
@@ -65,7 +71,7 @@ TEST_F(ScrollToolTest, Create_NoWebStateForTabId) {
   action.mutable_scroll()->set_distance(100);
 
   base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
-      ScrollTool::Create(action.scroll(), profile_.get());
+      CreateTool(action.scroll());
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kTabWentAway);
 }
@@ -84,7 +90,7 @@ TEST_F(ScrollToolTest, Create_MissingDirection) {
   action.mutable_scroll()->set_distance(100);
 
   base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
-      ScrollTool::Create(action.scroll(), profile_.get());
+      CreateTool(action.scroll());
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
@@ -105,7 +111,7 @@ TEST_F(ScrollToolTest, Create_MissingDistance) {
       optimization_guide::proto::ScrollAction::DOWN);
 
   base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
-      ScrollTool::Create(action.scroll(), profile_.get());
+      CreateTool(action.scroll());
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
@@ -131,7 +137,7 @@ TEST_F(ScrollToolTest, Create_NodeIdWithoutDocumentIdentifier_Invalid) {
   // Omit document_identifier
 
   base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
-      ScrollTool::Create(action.scroll(), profile_.get());
+      CreateTool(action.scroll());
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
@@ -152,7 +158,7 @@ TEST_F(ScrollToolTest, Create_MissingTarget_Supported) {
   action.mutable_scroll()->set_distance(100);
 
   base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
-      ScrollTool::Create(action.scroll(), profile_.get());
+      CreateTool(action.scroll());
 
   EXPECT_TRUE(result.has_value());
 }
@@ -179,7 +185,7 @@ TEST_F(ScrollToolTest, Create_BothTargetingTypes_Invalid) {
   target->mutable_document_identifier()->set_serialized_token("dummy");
 
   base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
-      ScrollTool::Create(action.scroll(), profile_.get());
+      CreateTool(action.scroll());
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
@@ -204,7 +210,7 @@ TEST_F(ScrollToolTest, Execute_WebStateDestroyed_ReturnsError) {
   scroll_action->set_distance(100);
 
   base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult>
-      create_result = ScrollTool::Create(action.scroll(), profile_.get());
+      create_result = CreateTool(action.scroll());
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ScrollTool> tool = std::move(create_result.value());
 
@@ -241,7 +247,7 @@ TEST_F(ScrollToolTest, Execute_NoWebFramesManager_ReturnsError) {
   scroll_action->set_distance(100);
 
   base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult>
-      create_result = ScrollTool::Create(action.scroll(), profile_.get());
+      create_result = CreateTool(action.scroll());
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ScrollTool> tool = std::move(create_result.value());
 
@@ -285,7 +291,7 @@ TEST_F(ScrollToolTest, Execute_NoMainFrame_ReturnsError) {
   scroll_action->set_distance(100);
 
   base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult>
-      create_result = ScrollTool::Create(action.scroll(), profile_.get());
+      create_result = CreateTool(action.scroll());
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ScrollTool> tool = std::move(create_result.value());
 
@@ -312,7 +318,7 @@ TEST_F(ScrollToolTest, GetToolType) {
   action.mutable_scroll()->set_distance(100);
 
   base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult> result =
-      ScrollTool::Create(action.scroll(), profile_.get());
+      CreateTool(action.scroll());
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value()->GetToolType(), ToolType::kScroll);
 }

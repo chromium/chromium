@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/click_tool_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -20,14 +21,15 @@ ClickTool::~ClickTool() = default;
 // static
 base::expected<std::unique_ptr<ClickTool>, ToolExecutionResult>
 ClickTool::Create(const optimization_guide::proto::ClickAction& action,
-                  ProfileIOS* profile) {
+                  const ProfileContextResolver& profile_context_resolver) {
   if (!action.has_tab_id()) {
     return base::unexpected(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
   }
 
-  base::expected<TabResolutionResult, ToolExecutionResult> resolution_result =
-      ResolveTab(action.tab_id(), profile);
+  base::expected<ProfileContextResolver::TabResolutionResult,
+                 ToolExecutionResult>
+      resolution_result = profile_context_resolver.ResolveTab(action.tab_id());
   if (!resolution_result.has_value()) {
     return base::unexpected(resolution_result.error());
   }

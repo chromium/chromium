@@ -11,7 +11,6 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 
-class ProfileIOS;
 class UrlLoadingBrowserAgent;
 struct UrlLoadParams;
 
@@ -29,12 +28,14 @@ namespace actor {
 
 struct ToolExecutionResult;
 
+class ProfileContextResolver;
+
 // Command to navigate to a URL.
 class NavigateTool : public ActorTool {
  public:
   static base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
   Create(const optimization_guide::proto::NavigateAction& action,
-         ProfileIOS* profile);
+         const ProfileContextResolver& profile_context_resolver);
 
   ~NavigateTool() override;
 

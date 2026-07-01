@@ -10,6 +10,7 @@ source_set("actor_tool_factory") {
     "actor_tool_factory.h",
     "actor_tool_factory.mm",
   ]
+  public_deps = [ "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver" ]
   deps = [
     ":actor_tool_interface",
     ":attempt_login_tool",
@@ -84,6 +85,7 @@ source_set("navigate_tool") {
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
@@ -104,6 +106,7 @@ source_set("wait_tool") {
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/web/public",
   ]
 }
@@ -121,6 +124,7 @@ source_set("attempt_login_tool") {
     "//components/password_manager/core/browser/actor_login:actor_login_service_impl",
     "//components/password_manager/core/browser/actor_login:common",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/passwords/model/actor_login",
     "//ios/chrome/browser/shared/model/application_context",
@@ -139,6 +143,7 @@ source_set("history_tool") {
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/web/public",
   ]
 }
@@ -227,6 +232,7 @@ source_set("click_tool") {
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
@@ -248,6 +254,7 @@ source_set("select_tool") {
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -267,6 +274,7 @@ source_set("type_tool") {
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -287,6 +295,7 @@ source_set("scroll_tool") {
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -306,6 +315,7 @@ source_set("scroll_to_tool") {
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -472,6 +482,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/actor_login:common",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:profile_context_resolver",
     "//ios/chrome/browser/intelligence/actor/util:test_support",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/passwords/model/actor_login",

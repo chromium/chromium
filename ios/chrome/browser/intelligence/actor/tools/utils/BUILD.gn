@@ -43,6 +43,23 @@ source_set("actor_browser_utils") {
   ]
 }
 
+source_set("profile_context_resolver") {
+  sources = [
+    "profile_context_resolver.h",
+    "profile_context_resolver.mm",
+  ]
+  deps = [
+    ":actor_browser_utils",
+    "//base",
+    "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/web/public",
+  ]
+}
+
 source_set("logging_util") {
   sources = [
     "logging_util.h",
@@ -55,4 +72,23 @@ source_set("logging_util") {
     "//url",
   ]
   deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "profile_context_resolver_unittest.mm" ]
+  deps = [
+    ":profile_context_resolver",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
 }

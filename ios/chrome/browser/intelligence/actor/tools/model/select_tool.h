@@ -12,8 +12,6 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/web_actor_tool.h"
 
-class ProfileIOS;
-
 namespace web {
 class WebState;
 }  // namespace web
@@ -21,6 +19,8 @@ class WebState;
 namespace actor {
 
 class SelectToolJavaScriptFeature;
+
+class ProfileContextResolver;
 
 // A tool that picks an <option> from a <select> element.
 class SelectTool : public WebActorTool {
@@ -30,7 +30,7 @@ class SelectTool : public WebActorTool {
   // Validates and creates a SelectTool instance.
   static base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult>
   Create(const optimization_guide::proto::SelectAction& action,
-         ProfileIOS* profile);
+         const ProfileContextResolver& profile_context_resolver);
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;

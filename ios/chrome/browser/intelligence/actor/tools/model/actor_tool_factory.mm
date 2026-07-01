@@ -20,7 +20,8 @@
 
 namespace actor {
 
-ActorToolFactory::ActorToolFactory(ProfileIOS* profile) : profile_(profile) {}
+ActorToolFactory::ActorToolFactory(ProfileIOS* profile)
+    : profile_context_resolver_(profile) {}
 ActorToolFactory::~ActorToolFactory() = default;
 
 base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult>
@@ -34,26 +35,27 @@ ActorToolFactory::CreateTool(const optimization_guide::proto::Action& action,
   // LINT.IfChange(CreateTool)
   switch (action.action_case()) {
     case optimization_guide::proto::Action::kNavigate:
-      return NavigateTool::Create(action.navigate(), profile_);
+      return NavigateTool::Create(action.navigate(), profile_context_resolver_);
     case optimization_guide::proto::Action::kClick:
-      return ClickTool::Create(action.click(), profile_);
+      return ClickTool::Create(action.click(), profile_context_resolver_);
     case optimization_guide::proto::Action::kBack:
-      return HistoryTool::Create(action.back(), profile_);
+      return HistoryTool::Create(action.back(), profile_context_resolver_);
     case optimization_guide::proto::Action::kForward:
-      return HistoryTool::Create(action.forward(), profile_);
+      return HistoryTool::Create(action.forward(), profile_context_resolver_);
     case optimization_guide::proto::Action::kSelect:
-      return SelectTool::Create(action.select(), profile_);
+      return SelectTool::Create(action.select(), profile_context_resolver_);
     case optimization_guide::proto::Action::kType:
-      return TypeTool::Create(action.type(), profile_);
+      return TypeTool::Create(action.type(), profile_context_resolver_);
     case optimization_guide::proto::Action::kWait:
-      return WaitTool::Create(action.wait(), profile_);
+      return WaitTool::Create(action.wait(), profile_context_resolver_);
     case optimization_guide::proto::Action::kScroll:
-      return ScrollTool::Create(action.scroll(), profile_);
+      return ScrollTool::Create(action.scroll(), profile_context_resolver_);
     case optimization_guide::proto::Action::kScrollTo:
-      return ScrollToTool::Create(action.scroll_to(), profile_);
+      return ScrollToTool::Create(action.scroll_to(),
+                                  profile_context_resolver_);
     case optimization_guide::proto::Action::kAttemptLogin:
       return AttemptLoginTool::Create(action.attempt_login(), tool_delegate,
-                                      profile_);
+                                      profile_context_resolver_);
     default:
       return base::unexpected(
           ToolExecutionResult(InternalToolErrorCode::kUnsupportedAction));

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_constants.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/scroll_tool_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -26,14 +27,15 @@ ScrollTool::~ScrollTool() = default;
 // static
 base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult>
 ScrollTool::Create(const optimization_guide::proto::ScrollAction& action,
-                   ProfileIOS* profile) {
+                   const ProfileContextResolver& profile_context_resolver) {
   if (!action.has_tab_id()) {
     return base::unexpected(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
   }
 
-  base::expected<TabResolutionResult, ToolExecutionResult> resolution_result =
-      ResolveTab(action.tab_id(), profile);
+  base::expected<ProfileContextResolver::TabResolutionResult,
+                 ToolExecutionResult>
+      resolution_result = profile_context_resolver.ResolveTab(action.tab_id());
   if (!resolution_result.has_value()) {
     return base::unexpected(resolution_result.error());
   }

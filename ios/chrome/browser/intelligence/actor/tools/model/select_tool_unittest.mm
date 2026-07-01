@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/select_tool_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -43,6 +44,11 @@ class SelectToolTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<web::WebState> web_state_;
   int32_t tab_id_;
+
+  base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> CreateTool(
+      const optimization_guide::proto::SelectAction& action) {
+    return SelectTool::Create(action, ProfileContextResolver(profile_.get()));
+  }
 };
 
 TEST_F(SelectToolTest, Create_MissingTabId) {
@@ -52,7 +58,7 @@ TEST_F(SelectToolTest, Create_MissingTabId) {
   action.mutable_target()->mutable_coordinate()->set_y(1);
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      SelectTool::Create(action, profile());
+      CreateTool(action);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
@@ -65,7 +71,7 @@ TEST_F(SelectToolTest, Create_NoWebStateForTabId) {
   action.mutable_target()->mutable_coordinate()->set_y(1);
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      SelectTool::Create(action, profile_.get());
+      CreateTool(action);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kTabWentAway);
 }
@@ -77,7 +83,7 @@ TEST_F(SelectToolTest, Create_MissingValueField) {
   action.mutable_target()->mutable_coordinate()->set_y(1);
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      SelectTool::Create(action, profile());
+      CreateTool(action);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
@@ -88,7 +94,7 @@ TEST_F(SelectToolTest, Create_MissingTarget) {
   action.set_value("v1");
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      SelectTool::Create(action, profile());
+      CreateTool(action);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
@@ -101,7 +107,7 @@ TEST_F(SelectToolTest, Create_ByCoordinates_Success) {
   action.mutable_target()->mutable_coordinate()->set_y(1);
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      SelectTool::Create(action, profile());
+      CreateTool(action);
   EXPECT_TRUE(result.has_value());
 }
 
@@ -114,7 +120,7 @@ TEST_F(SelectToolTest, Create_ByIdentifiers_Success) {
       "fake_id");
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      SelectTool::Create(action, profile());
+      CreateTool(action);
   EXPECT_TRUE(result.has_value());
 }
 
@@ -128,7 +134,7 @@ TEST_F(SelectToolTest, Create_NodeIdWithoutDocumentIdentifier_Invalid) {
   // Omit document_identifier
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      SelectTool::Create(action, profile());
+      CreateTool(action);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
@@ -145,7 +151,7 @@ TEST_F(SelectToolTest, Create_BothTargetingTypes_Invalid) {
   target->mutable_document_identifier()->set_serialized_token("fake_id");
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      SelectTool::Create(action, profile());
+      CreateTool(action);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
@@ -158,7 +164,7 @@ TEST_F(SelectToolTest, Execute_WebStateDestroyed_ReturnsError) {
   select_action.set_value("v1");
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult>
-      create_result = SelectTool::Create(select_action, profile_.get());
+      create_result = CreateTool(select_action);
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<SelectTool> tool = std::move(create_result.value());
 
@@ -195,7 +201,7 @@ TEST_F(SelectToolTest, Execute_NoWebFramesManager_ReturnsError) {
   select_action.set_value("v1");
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult>
-      create_result = SelectTool::Create(select_action, profile_.get());
+      create_result = CreateTool(select_action);
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<SelectTool> tool = std::move(create_result.value());
 
@@ -236,7 +242,7 @@ TEST_F(SelectToolTest, Execute_NoMainFrame_ReturnsError) {
   select_action.set_value("v1");
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult>
-      create_result = SelectTool::Create(select_action, profile_.get());
+      create_result = CreateTool(select_action);
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<SelectTool> tool = std::move(create_result.value());
 
@@ -256,7 +262,7 @@ TEST_F(SelectToolTest, GetToolType) {
   action.mutable_target()->mutable_coordinate()->set_y(1);
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      SelectTool::Create(action, profile());
+      CreateTool(action);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value()->GetToolType(), ToolType::kSelect);
 }

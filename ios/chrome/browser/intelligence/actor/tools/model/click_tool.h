@@ -12,8 +12,6 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/web_actor_tool.h"
 
-class ProfileIOS;
-
 namespace web {
 class WebState;
 }  // namespace web
@@ -22,6 +20,8 @@ namespace actor {
 
 class ClickToolJavaScriptFeature;
 
+class ProfileContextResolver;
+
 // Tool to click an element on a page.
 class ClickTool : public WebActorTool {
  public:
@@ -29,7 +29,7 @@ class ClickTool : public WebActorTool {
 
   static base::expected<std::unique_ptr<ClickTool>, ToolExecutionResult> Create(
       const optimization_guide::proto::ClickAction& action,
-      ProfileIOS* profile);
+      const ProfileContextResolver& profile_context_resolver);
 
   // ActorTool:
   void Execute(ToolExecutionCallback callback) override;

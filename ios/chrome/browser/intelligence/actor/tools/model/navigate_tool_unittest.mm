@@ -10,6 +10,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -68,6 +69,11 @@ class NavigateToolTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   TestUrlLoadingObserver url_loading_observer_;
+
+  base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult> CreateTool(
+      const optimization_guide::proto::NavigateAction& action) {
+    return NavigateTool::Create(action, ProfileContextResolver(profile_.get()));
+  }
 };
 
 TEST_F(NavigateToolTest, Create_MissingProtoFields) {
@@ -75,7 +81,7 @@ TEST_F(NavigateToolTest, Create_MissingProtoFields) {
   action.mutable_navigate()->set_url("https://example.com");
 
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult> result =
-      NavigateTool::Create(action.navigate(), profile_.get());
+      CreateTool(action.navigate());
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
@@ -84,7 +90,7 @@ TEST_F(NavigateToolTest, Create_MissingProtoFields) {
   action.mutable_navigate()->clear_url();
   action.mutable_navigate()->set_tab_id(1);
 
-  result = NavigateTool::Create(action.navigate(), profile_.get());
+  result = CreateTool(action.navigate());
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(InternalToolErrorCode::kCreationMissingRequiredFields,
             result.error().internal_code().value());
@@ -97,7 +103,7 @@ TEST_F(NavigateToolTest, Create_NoWebStateForTabId) {
   action.mutable_navigate()->set_tab_id(1);
 
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult> result =
-      NavigateTool::Create(action.navigate(), profile_.get());
+      CreateTool(action.navigate());
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(InternalToolErrorCode::kCreationTargetTabNotFound,
             result.error().internal_code().value());
@@ -116,7 +122,7 @@ TEST_F(NavigateToolTest, Execute_TabRemovedBeforeExecution) {
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
-      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+      maybe_tool = CreateTool(action.navigate());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -142,7 +148,7 @@ TEST_F(NavigateToolTest, Execute_InvalidUrl) {
   action.mutable_navigate()->set_tab_id(tab_id);
 
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
-      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+      maybe_tool = CreateTool(action.navigate());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -170,7 +176,7 @@ TEST_F(NavigateToolTest, Execute_Success) {
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
-      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+      maybe_tool = CreateTool(action.navigate());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -207,7 +213,7 @@ TEST_F(NavigateToolTest,
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
-      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+      maybe_tool = CreateTool(action.navigate());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -241,7 +247,7 @@ TEST_F(NavigateToolTest, Execute_TabMoved_Success) {
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
-      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+      maybe_tool = CreateTool(action.navigate());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -282,7 +288,7 @@ TEST_F(NavigateToolTest, Execute_TargetTabUnrealized) {
   action.mutable_navigate()->set_tab_id(tab_id);
 
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
-      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+      maybe_tool = CreateTool(action.navigate());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -309,7 +315,7 @@ TEST_F(NavigateToolTest, GetToolType) {
   action.mutable_navigate()->set_tab_id(tab_id);
 
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult> result =
-      NavigateTool::Create(action.navigate(), profile_.get());
+      CreateTool(action.navigate());
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value()->GetToolType(), ToolType::kNavigate);
 }
