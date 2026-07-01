@@ -57,7 +57,7 @@ namespace fileSystem {
     ChooseEntryType? type;
 
     // The suggested file name that will be presented to the user as the
-    // default name to read or write. This is optional.
+    // default name to save. This is optional and only applies to 'saveFile'.
     DOMString? suggestedName;
 
     // The optional list of accept options for this file opener. Each option

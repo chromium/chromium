@@ -1,0 +1,16 @@
+{
+  "name": "chrome.fileSystem open suggested name ignored",
+  "manifest_version": 2,
+  "version": "0.1",
+  "description": "Test for chrome.fileSystem.chooseEntry ignoring suggestedName when type is openFile.",
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "permissions": [
+    {
+      "fileSystem": ["directory", "write"]
+    }
+  ]
+}

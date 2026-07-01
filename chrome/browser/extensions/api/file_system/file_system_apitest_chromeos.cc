@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
   ASSERT_TRUE(base::PathService::OverrideAndCreateIfNeeded(
       chrome::DIR_USER_DOCUMENTS, test_file.DirName(), true, false));
   const FileSystemChooseEntryFunction::TestOptions test_options{
-      .use_suggested_path = true};
+      .path_to_be_picked = &test_file};
   auto reset_options =
       FileSystemChooseEntryFunction::SetOptionsForTesting(test_options);
   ASSERT_TRUE(

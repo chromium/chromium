@@ -766,6 +766,10 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
 
     BuildFileTypeInfo(&file_type_info, suggested_extension, options.accepts,
                       options.accepts_all_types);
+
+    if (picker_type != ui::SelectFileDialog::SELECT_SAVEAS_FILE) {
+      suggested_name.clear();
+    }
   }
 
   file_type_info.allowed_paths = ui::SelectFileDialog::FileTypeInfo::ANY_PATH;

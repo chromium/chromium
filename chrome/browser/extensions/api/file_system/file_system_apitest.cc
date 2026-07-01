@@ -303,6 +303,27 @@ IN_PROC_BROWSER_TEST_F(
   CheckStoredDirectoryMatches(test_file);
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
+                       FileSystemApiOpenSuggestedNameIgnoredTest) {
+  base::FilePath test_dir = TempFilePath("sub_dir", true);
+  ASSERT_FALSE(test_dir.empty());
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::DeleteFile(test_dir));
+    ASSERT_TRUE(base::CreateDirectory(test_dir));
+    ASSERT_TRUE(base::PathService::OverrideAndCreateIfNeeded(
+        chrome::DIR_USER_DOCUMENTS, test_dir.DirName(), false, false));
+  }
+  const FileSystemChooseEntryFunction::TestOptions test_options{
+      .use_suggested_path = true};
+  auto reset_options =
+      FileSystemChooseEntryFunction::SetOptionsForTesting(test_options);
+  ASSERT_TRUE(
+      RunExtensionTest("api_test/file_system/open_suggested_name_ignored",
+                       {.launch_as_platform_app = true}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemApiTest, FileSystemApiOpenMultipleSuggested) {
   base::FilePath test_file = TempFilePath("open_existing.txt", true);
   ASSERT_FALSE(test_file.empty());
