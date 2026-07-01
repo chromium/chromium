@@ -84,8 +84,6 @@ class SEATBELT_EXPORT Seatbelt {
   // Returns whether or not the process is currently sandboxed.
   static bool IsSandboxed();
 
-  static const char* kProfilePureComputation;
-
   Seatbelt(const Seatbelt& other) = delete;
   Seatbelt& operator=(const Seatbelt& other) = delete;
 

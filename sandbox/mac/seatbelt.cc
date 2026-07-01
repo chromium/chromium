@@ -139,12 +139,6 @@ Seatbelt::Parameters::~Parameters() {
   }
 }
 
-// Initialize the static member variables.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-const char* Seatbelt::kProfilePureComputation = kSBXProfilePureComputation;
-#pragma clang diagnostic pop
-
 // static
 bool Seatbelt::Init(const char* profile, uint64_t flags, std::string* error) {
 // OS X deprecated these functions, but did not provide a suitable replacement,
