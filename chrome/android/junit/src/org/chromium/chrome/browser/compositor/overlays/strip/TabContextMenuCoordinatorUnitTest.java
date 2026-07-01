@@ -2745,9 +2745,69 @@ public class TabContextMenuCoordinatorUnitTest {
         runToggleLayoutMenuTest(/* isVerticalTabsEnabled= */ true, R.string.show_tabs_horizontally);
     }
 
+    @Test
+    // @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Config(qualifiers = "sw600dp")
+    public void testListMenuItems_verticalTabsFiltersDirectionalActions_singleTab() {
+        prepareCoordinatorWithTabs();
+
+        var modelList = new ModelList();
+        // Select the left-most tab (index 0).
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        assertNull(
+                "'New tab to the right' should be filtered out from the Vertical Tabs menu.",
+                findItemByMenuId(modelList, R.id.new_tab_to_the_right_menu_id));
+        assertNull(
+                "'Close tabs to the right' should be filtered out from the Vertical Tabs menu.",
+                findItemByMenuId(modelList, R.id.close_tabs_to_the_right_menu_id));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Config(qualifiers = "sw600dp")
+    public void testListMenuItems_verticalTabsFiltersDirectionalActions_multipleTabs() {
+        prepareCoordinatorWithTabs();
+
+        var modelList = new ModelList();
+        // Select the two left-most tabs (indices 0 and 1).
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
+
+        assertNull(
+                "'New tab to the right' should be filtered out in Multi-Select Mode.",
+                findItemByMenuId(modelList, R.id.new_tab_to_the_right_menu_id));
+        assertNull(
+                "'Close tabs to the right' should be filtered out in Multi-Select Mode.",
+                findItemByMenuId(modelList, R.id.close_tabs_to_the_right_menu_id));
+    }
+
     // --------------------------------------------------------------//
     // ----------------------  UTILITY METHODS ----------------------//
     // --------------------------------------------------------------//
+
+    private void prepareCoordinatorWithTabs() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, true);
+
+        initializeCoordinator();
+        mTabModel.addTab(
+                mTab1,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTab2,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+    }
 
     private void runToggleLayoutMenuTest(boolean isVerticalTabsEnabled, int expectedTitleRes) {
         ChromeSharedPreferences.getInstance()
@@ -2790,13 +2850,12 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        ListItem verticalTabsItem = modelList.get(11);
-        assertEquals(ListItemType.MENU_ITEM, verticalTabsItem.type);
-        assertEquals(
-                R.id.toggle_tab_layout_menu_id,
-                verticalTabsItem.model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        // Find the item dynamically by its ID instead of a hardcoded index.
+        ListItem verticalTabsItem = findItemByMenuId(modelList, R.id.toggle_tab_layout_menu_id);
+        assertNotNull("Toggle layout menu item should be present", verticalTabsItem);
         assertEquals(expectedTitleRes, verticalTabsItem.model.get(TITLE_ID));
-        assertEquals(ListItemType.DIVIDER, modelList.get(12).type);
+        int toggleIndex = modelList.indexOf(verticalTabsItem);
+        assertEquals(ListItemType.DIVIDER, modelList.get(toggleIndex + 1).type);
 
         // Simulate selecting the item.
         mOnItemClickedCallback.onClick(

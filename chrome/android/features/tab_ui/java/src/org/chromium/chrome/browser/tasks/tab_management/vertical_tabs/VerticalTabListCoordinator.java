@@ -328,8 +328,6 @@ public class VerticalTabListCoordinator {
 
         // Handles long-presses for tab item/group context menus. long-presses for empty space
         // context menus are handled by the gesture detector.
-        // TODO(crbug.com/521982129): Context menus are displaying horizontal strip text
-        // ("... to the right") and need layout updates for vertical specific UI.
         touchHelperCallback.setOnLongPressTabItemEventListener(
                 (tabId, cardView) -> {
                     // Drop the incorrect cardView sent by the orchestrator timer thread.

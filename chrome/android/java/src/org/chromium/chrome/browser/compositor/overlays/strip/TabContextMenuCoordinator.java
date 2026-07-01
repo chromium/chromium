@@ -632,7 +632,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     private void buildMenuActionItemsForSingleTab(
             ModelList itemList, AnchorInfo anchorInfo, List<Tab> tabs, boolean isIncognito) {
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
+        // TODO(crbug.com/521982129): Pass an explicit layout/menu source argument here
+        // instead of relying on global feature/preference state via VerticalTabUtils.
+        boolean isVerticalTabs = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled() && !isVerticalTabs) {
             itemList.add(createNewTabToTheRightItem(isIncognito));
         }
         itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
@@ -677,7 +680,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             if (getTabModel().getCount() > 1) {
                 itemList.add(createCloseOtherTabsItem(isIncognito));
             }
-            if (canCloseTabsToTheRight(anchorInfo)) {
+            if (canCloseTabsToTheRight(anchorInfo) && !isVerticalTabs) {
                 itemList.add(createCloseTabsToTheRightItem(isIncognito));
             }
         }
@@ -685,7 +688,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     private void buildMenuActionItemsForMultipleTabs(
             ModelList itemList, AnchorInfo anchorInfo, List<Tab> tabs, boolean isIncognito) {
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
+        boolean isVerticalTabs = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled() && !isVerticalTabs) {
             itemList.add(createNewTabToTheRightItem(isIncognito));
         }
         itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
@@ -715,7 +719,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             if (getTabModel().getCount() > anchorInfo.getAllTabIds().size()) {
                 itemList.add(createCloseOtherTabsItem(isIncognito));
             }
-            if (canCloseTabsToTheRight(anchorInfo)) {
+            if (canCloseTabsToTheRight(anchorInfo) && !isVerticalTabs) {
                 itemList.add(createCloseTabsToTheRightItem(isIncognito));
             }
         }
