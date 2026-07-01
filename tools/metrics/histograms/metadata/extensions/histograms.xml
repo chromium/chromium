@@ -4313,7 +4313,8 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram name="Extensions.ServiceWorkerBackground.WorkerCountAfterAdd"
     units="registered workers" expires_after="2026-11-15">
-  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>andreaorru@chromium.org</owner>
+  <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The count of active workers registered in the extension ProcessManager for a
@@ -4323,13 +4324,15 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.WorkerCountAfterRemove"
-    units="registered workers" expires_after="2026-03-01">
-  <owner>rdevlin.cronin@chromium.org</owner>
+    units="registered workers" expires_after="2026-11-15">
+  <owner>andreaorru@chromium.org</owner>
+  <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The count of active workers registered in the extension ProcessManager for a
     given service worker-based extension. Reported immediately after a worker
-    for the extension is removed from the active set.
+    for the extension is removed from the active set. Note: This histogram was
+    expired between 2026-03 and 2026-06.
   </summary>
 </histogram>
 
