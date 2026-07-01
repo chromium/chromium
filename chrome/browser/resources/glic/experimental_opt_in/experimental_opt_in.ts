@@ -48,8 +48,8 @@ document.body.style.minHeight = `${defaultHeight}px`;
 
 function init() {
   const webview = getRequiredElement<chrome.webviewTag.WebView>('webview');
-  webview.setAttribute('minwidth', String(defaultWidth));
-  webview.setAttribute('maxwidth', String(defaultWidth));
+  webview.setAttribute('minwidth', String(defaultWidth - 2));
+  webview.setAttribute('maxwidth', String(defaultWidth + 2));
   const errorPanel = getRequiredElement('errorPanel');
   const errorIcon = getRequiredElement('errorIcon');
   const errorHeadline = getRequiredElement('errorHeadline');
