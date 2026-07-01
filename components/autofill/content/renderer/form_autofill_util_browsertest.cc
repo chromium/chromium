@@ -34,6 +34,7 @@
 #include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/content/renderer/test_utils.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -50,6 +51,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
@@ -5457,6 +5459,592 @@ TEST_P(FormCacheExtractNewFormsTest, ExtractNewForms) {
     EXPECT_EQ(test_case.expected_is_form_tag,
               !forms.back().renderer_id().is_null());
   }
+}
+
+class FormFieldConversionTest : public test::AutofillRendererTest {
+ public:
+  FormFieldConversionTest() = default;
+  FormFieldConversionTest(const FormFieldConversionTest&) = delete;
+  FormFieldConversionTest& operator=(const FormFieldConversionTest&) = delete;
+  ~FormFieldConversionTest() override = default;
+
+  void SetUp() override {
+    test::AutofillRendererTest::SetUp();
+    form_cache_.emplace(&autofill_agent());
+
+#if BUILDFLAG(IS_WIN)
+    // Autofill uses the system font to render suggestion previews. On Windows
+    // an extra step is required to ensure that the system font is configured.
+    blink::WebFontRendering::SetMenuFontMetrics(
+        blink::WebString::FromAscii("Arial"), 12);
+#endif
+  }
+
+  void TearDown() override {
+    form_cache_.reset();
+    test::AutofillRendererTest::TearDown();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::optional<FormCache> form_cache_;
+};
+
+// We should be able to extract a normal text field.
+TEST_F(FormFieldConversionTest, WebFormControlElementToFormField) {
+  LoadHTML(R"(<input id=element value=value>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      WebFormElement(), element, nullptr, &result);
+
+  EXPECT_THAT(result, test::FormFieldDescriptionEq({.name = u"element",
+                                                    .id_attribute = u"element",
+                                                    .value = u"value"}));
+}
+
+// We should be able to extract a text field with autocomplete="off".
+TEST_F(FormFieldConversionTest,
+       WebFormControlElementToFormFieldAutocompleteOff) {
+  LoadHTML(R"(<input id=element value=value autocomplete=off>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      WebFormElement(), element, nullptr, &result);
+
+  EXPECT_THAT(result,
+              test::FormFieldDescriptionEq({.name = u"element",
+                                            .id_attribute = u"element",
+                                            .value = u"value",
+                                            .autocomplete_attribute = "off"}));
+}
+
+// We should be able to extract a text field with maxlength specified.
+TEST_F(FormFieldConversionTest, WebFormControlElementToFormFieldMaxLength) {
+  LoadHTML(R"(<input id=element value=value maxlength=5>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      WebFormElement(), element, nullptr, &result);
+
+  EXPECT_THAT(result, test::FormFieldDescriptionEq({.name = u"element",
+                                                    .id_attribute = u"element",
+                                                    .value = u"value",
+                                                    .max_length = 5}));
+}
+
+// We should be able to extract a text field that has been autofilled.
+TEST_F(FormFieldConversionTest, WebFormControlElementToFormFieldAutofilled) {
+  LoadHTML(R"(<input id=element value=value>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebInputElement element = GetInputElementById("element");
+  element.SetAutofillState(WebAutofillState::kAutofilled);
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      WebFormElement(), element, nullptr, &result);
+
+  EXPECT_THAT(result, test::FormFieldDescriptionEq(
+                          {.name = u"element",
+                           .id_attribute = u"element",
+                           .value = u"value",
+                           .is_autofilled_according_to_renderer = true}));
+}
+
+// We should be able to extract a <select> field.
+TEST_F(FormFieldConversionTest, WebFormControlElementToFormFieldSelect) {
+  LoadHTML(R"(<select id=element>
+                <option value=CA>California</option>
+                <option value=TX>Texas</option>
+              </select>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      WebFormElement(), element, nullptr, &result);
+
+  EXPECT_THAT(result,
+              test::FormFieldDescriptionEq(
+                  {.name = u"element",
+                   .id_attribute = u"element",
+                   .value = u"CA",
+                   .max_length = 0,
+                   .form_control_type = FormControlType::kSelectOne,
+                   .select_options = {{{.value = u"CA", .text = u"California"},
+                                       {.value = u"TX", .text = u"Texas"}}}}));
+}
+
+// We copy extra attributes for the select field.
+TEST_F(FormFieldConversionTest,
+       WebFormControlElementToFormFieldSelect_ExtraAttributes) {
+  LoadHTML(R"(<select id=element autocomplete=off>
+                <option value=CA>California</option>
+                <option value=TX>Texas</option>
+              </select>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  element.SetAutofillState(WebAutofillState::kAutofilled);
+
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      WebFormElement(), element, nullptr, &result);
+
+  // Check that the extra attributes have been copied to `result`.
+  EXPECT_THAT(result, test::FormFieldDescriptionEq(
+                          {.is_focusable = true,
+                           .is_visible = true,
+                           .name = u"element",
+                           .id_attribute = u"element",
+                           .value = u"CA",
+                           .max_length = 0,
+                           .autocomplete_attribute = "off",
+                           .form_control_type = FormControlType::kSelectOne,
+                           .text_direction = base::i18n::LEFT_TO_RIGHT}));
+}
+
+// When faced with <select> field with *many* options, we should trim them to a
+// reasonable number.
+TEST_F(FormFieldConversionTest, WebFormControlElementToFormFieldLongSelect) {
+  std::string html = R"(<select id=element>)";
+  for (size_t i = 0; i < 2 * kMaxListSize; ++i) {
+    base::StrAppend(&html, {"<option value='", base::NumberToString(i), "'>",
+                            base::NumberToString(i), "</option>"});
+  }
+  html += "</select>";
+  LoadHTML(html.c_str());
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_TRUE(frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      WebFormElement(), element, nullptr, &result);
+
+  EXPECT_TRUE(result.options().empty());
+}
+
+// Test that we use the aria-label as the content if the <option> has no text.
+TEST_F(FormFieldConversionTest,
+       WebFormControlElementToFormFieldSelectAriaLabel) {
+  LoadHTML(
+      R"(<select id=element>
+         <option aria-label='usa'><img></option>
+         <option aria-label='uk'><img></option>
+         </select>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+  WebFormControlElement element = GetFormControlElementById("element");
+
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      WebFormElement(), element, nullptr, &result);
+  ASSERT_EQ(2u, result.options().size());
+  EXPECT_EQ(u"usa", result.options()[0].text);
+  EXPECT_EQ(u"uk", result.options()[1].text);
+}
+
+// Test that the content for the <option> can be computed when the <option>s
+// have nested HTML nodes.
+TEST_F(FormFieldConversionTest,
+       WebFormControlElementToFormFieldSelectNestedNodes) {
+  LoadHTML(
+      R"(<select id=element>
+           <option><div><img><b>+1</b> (Canada)</div></option>
+         </select>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+  WebFormControlElement element = GetFormControlElementById("element");
+
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      WebFormElement(), element, nullptr, &result);
+  ASSERT_EQ(1u, result.options().size());
+  EXPECT_EQ(u"+1 (Canada)", result.options()[0].text);
+}
+
+// We should be able to extract a <textarea> field.
+TEST_F(FormFieldConversionTest, WebFormControlElementToFormFieldTextArea) {
+  LoadHTML(R"(<textarea id=element>This element's value
+spans multiple lines.</textarea>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      WebFormElement(), element, nullptr, &result);
+
+  EXPECT_THAT(result, test::FormFieldDescriptionEq(
+                          {.name = u"element",
+                           .id_attribute = u"element",
+                           .value = u"This element's value\n"
+                                    u"spans multiple lines.",
+                           .form_control_type = FormControlType::kTextArea}));
+}
+
+// We should be able to extract an <input type=month> field.
+TEST_F(FormFieldConversionTest, WebFormControlElementToFormFieldMonthInput) {
+  LoadHTML(R"(<input type=month id=element value='2011-12'>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  FormFieldData result_sans_value;
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      WebFormElement(), element, nullptr, &result);
+
+  EXPECT_THAT(result, test::FormFieldDescriptionEq(
+                          {.name = u"element",
+                           .id_attribute = u"element",
+                           .value = u"2011-12",
+                           .max_length = 0,
+                           .form_control_type = FormControlType::kInputMonth}));
+}
+
+// We should be able to extract password fields.
+TEST_F(FormFieldConversionTest, WebFormControlElementToPasswordFormField) {
+  LoadHTML(R"(<form name=TestForm action='http://cnn.com'>
+                <input type=password id=password value=secret>
+              </form>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("password");
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      element.GetOwningFormForAutofill(), element, nullptr, &result);
+
+  EXPECT_THAT(result,
+              test::FormFieldDescriptionEq(
+                  {.name = u"password",
+                   .id_attribute = u"password",
+                   .value = u"secret",
+                   .form_control_type = FormControlType::kInputPassword}));
+}
+
+TEST_F(FormFieldConversionTest, DetectTextDirectionFromDirectStyle) {
+  LoadHTML(R"(<style>input{direction:rtl}</style>
+              <form>
+                <input id=element>
+              </form>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      element.GetOwningFormForAutofill(), element, nullptr, &result);
+  EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction());
+}
+
+TEST_F(FormFieldConversionTest, DetectTextDirectionFromDirectDIRAttribute) {
+  LoadHTML(R"(<form>
+                <input dir=rtl type=text id=element>
+              </form>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      element.GetOwningFormForAutofill(), element, nullptr, &result);
+  EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction());
+}
+
+TEST_F(FormFieldConversionTest, DetectTextDirectionFromParentStyle) {
+  LoadHTML(R"(<style>form{direction:rtl}</style>
+              <form>
+                <input id=element>
+              </form>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      element.GetOwningFormForAutofill(), element, nullptr, &result);
+  EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction());
+}
+
+TEST_F(FormFieldConversionTest, DetectTextDirectionFromParentDIRAttribute) {
+  LoadHTML(R"(<form dir=rtl>
+                <input id=element>
+              </form>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      element.GetOwningFormForAutofill(), element, nullptr, &result);
+  EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction());
+}
+
+TEST_F(FormFieldConversionTest,
+       DetectTextDirectionWhenStyleAndDIRAttributeMixed) {
+  LoadHTML(R"(<style>input{direction:ltr}</style>
+              <form dir=rtl>
+                <input id=element>
+              </form>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      element.GetOwningFormForAutofill(), element, nullptr, &result);
+  EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, result.text_direction());
+}
+
+TEST_F(FormFieldConversionTest,
+       DetectTextDirectionWhenParentHasBothDIRAttributeAndStyle) {
+  LoadHTML(R"(<style>form{direction:ltr}</style>
+              <form dir=rtl>
+                <input id=element>
+              </form>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      element.GetOwningFormForAutofill(), element, nullptr, &result);
+  EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, result.text_direction());
+}
+
+TEST_F(FormFieldConversionTest, DetectTextDirectionWhenAncestorHasInlineStyle) {
+  LoadHTML(R"(<form style='direction:ltr'>
+                <span dir=rtl>
+                  <input id=element>
+                </span>
+              </form>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      element.GetOwningFormForAutofill(), element, nullptr, &result);
+  EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction());
+}
+
+struct WebFormControlElementAutocompleteAttributeParams {
+  std::string element_id;
+  FormControlType form_control_type;
+  std::string autocomplete_attribute;
+  std::string value;
+};
+
+class WebFormControlElementAutocompleteAttributeTest
+    : public FormFieldConversionTest,
+      public WithParamInterface<
+          WebFormControlElementAutocompleteAttributeParams> {
+ protected:
+  static std::string html() {
+    return base::StrCat({
+        R"(<input id=absent>
+           <input id=empty autocomplete=''>
+           <input id=off autocomplete=off>
+           <input id=regular autocomplete=email>
+           <input id='multi-valued' autocomplete='billing email'>
+           <input id=experimental x-autocompletetype='email'>
+           <input type=month id=month autocomplete='cc-exp'>
+           <select id=select autocomplete=state>
+             <option value=CA>California</option>
+             <option value=TX>Texas</option>
+           </select>
+           <textarea id=textarea autocomplete='street-address'>
+             Some multi-
+             lined value
+           </textarea>
+           <input id=malicious autocomplete=')",
+        std::string(10000, 'x'),
+        "'>",
+    });
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    WebFormControlElementAutocompleteAttributeTest,
+    ValuesIn(std::to_array<WebFormControlElementAutocompleteAttributeParams>({
+        // An absent attribute is equivalent to an empty one.
+        {.element_id = "absent",
+         .form_control_type = FormControlType::kInputText,
+         .autocomplete_attribute = "",
+         .value = ""},
+        // Make sure there are no issues parsing an empty attribute.
+        {.element_id = "empty",
+         .form_control_type = FormControlType::kInputText,
+         .autocomplete_attribute = "",
+         .value = ""},
+        // Make sure there are no issues parsing an attribute value that isn't
+        // a
+        // type hint.
+        {.element_id = "off",
+         .form_control_type = FormControlType::kInputText,
+         .autocomplete_attribute = "off",
+         .value = ""},
+        // Common case: exactly one type specified.
+        {.element_id = "regular",
+         .form_control_type = FormControlType::kInputText,
+         .autocomplete_attribute = "email",
+         .value = ""},
+        // Verify that we correctly extract multiple tokens as well.
+        {.element_id = "multi-valued",
+         .form_control_type = FormControlType::kInputText,
+         .autocomplete_attribute = "billing email",
+         .value = ""},
+        // Verify that <input type=month> fields are supported.
+        {.element_id = "month",
+         .form_control_type = FormControlType::kInputMonth,
+         .autocomplete_attribute = "cc-exp",
+         .value = ""},
+        // We previously extracted this data from the experimental
+        // 'x-autocompletetype' attribute.  Now that the field type hints are
+        // part
+        // of the spec under the autocomplete attribute, we no longer support
+        // the
+        // experimental version.
+        {.element_id = "experimental",
+         .form_control_type = FormControlType::kInputText,
+         .autocomplete_attribute = "",
+         .value = ""},
+        // <select> elements should behave no differently from text fields
+        // here.
+        {.element_id = "select",
+         .form_control_type = FormControlType::kSelectOne,
+         .autocomplete_attribute = "state",
+         .value = "CA"},
+        // <textarea> elements should also behave no differently from text
+        // fields.
+        {.element_id = "textarea",
+         .form_control_type = FormControlType::kTextArea,
+         .autocomplete_attribute = "street-address",
+         .value =
+             "             Some multi-\n             lined value\n           "},
+        // Very long attribute values should be replaced by a default string,
+        // to
+        // prevent malicious websites from DOSing the browser process.
+        {.element_id = "malicious",
+         .form_control_type = FormControlType::kInputText,
+         .autocomplete_attribute = "x-max-data-length-exceeded",
+         .value = ""},
+    })),
+    [](const TestParamInfo<
+        WebFormControlElementAutocompleteAttributeTest::ParamType>& info) {
+      std::string name(info.param.element_id);
+      std::ranges::replace(name, '-', '_');
+      return name;
+    });
+
+// Tests that the autocompletetype attribute is extracted correctly.
+TEST_P(WebFormControlElementAutocompleteAttributeTest,
+       WebFormControlElementToFormFieldAutocompletetype) {
+  LoadHTML(html());
+
+  WebFormControlElement element =
+      GetFormControlElementById(std::string(GetParam().element_id));
+  ASSERT_FALSE(element.IsNull());
+
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      WebFormElement(), element, nullptr, &result);
+
+  EXPECT_THAT(
+      result,
+      test::FormFieldDescriptionEq(
+          {.name = UTF8ToUTF16(GetParam().element_id),
+           .id_attribute = UTF8ToUTF16(GetParam().element_id),
+           .value = UTF8ToUTF16(GetParam().value),
+           .max_length =
+               (GetParam().form_control_type == FormControlType::kInputText ||
+                GetParam().form_control_type == FormControlType::kTextArea)
+                   ? FormFieldData::kDefaultMaxLength
+                   : 0,
+           .autocomplete_attribute =
+               std::string(GetParam().autocomplete_attribute),
+           .parsed_autocomplete = ParseAutocompleteAttribute(
+               std::string(GetParam().autocomplete_attribute)),
+           .form_control_type = GetParam().form_control_type}));
+}
+
+struct TextAlignOverridesDirectionParams {
+  std::string style;
+  base::i18n::TextDirection expected_direction;
+};
+
+class TextAlignOverridesDirectionTest
+    : public FormFieldConversionTest,
+      public WithParamInterface<TextAlignOverridesDirectionParams> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TextAlignOverridesDirectionTest,
+    ValuesIn(std::to_array<TextAlignOverridesDirectionParams>(
+        {{.style = "direction:rtl;text-align:left",
+          .expected_direction = base::i18n::LEFT_TO_RIGHT},
+         {.style = "direction:rtl;text-align:right",
+          .expected_direction = base::i18n::RIGHT_TO_LEFT},
+         {.style = "direction:ltr;text-align:left",
+          .expected_direction = base::i18n::LEFT_TO_RIGHT},
+         {.style = "direction:ltr;text-align:right",
+          .expected_direction = base::i18n::RIGHT_TO_LEFT}})),
+    [](const TestParamInfo<TextAlignOverridesDirectionTest::ParamType>& info) {
+      std::string name(info.param.style);
+      std::ranges::replace_if(
+          name, [](char c) { return !std::isalnum(c); }, '_');
+      return name;
+    });
+
+TEST_P(TextAlignOverridesDirectionTest, TextAlignOverridesDirection) {
+  std::string html = base::StrCat({"<style>input{", GetParam().style,
+                                   "}</style><form><input id=element></form>"});
+  LoadHTML(html.c_str());
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  WebFormControlElement element = GetFormControlElementById("element");
+  FormFieldData result;
+  form_util::WebFormControlElementToFormFieldForTesting(
+      element.GetOwningFormForAutofill(), element, nullptr, &result);
+  EXPECT_EQ(GetParam().expected_direction, result.text_direction());
 }
 
 }  // namespace
