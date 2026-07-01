@@ -80,9 +80,14 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.listmenu.ListItemType;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceFactory;
 import org.chromium.ui.resources.ResourceFactoryJni;
@@ -685,5 +690,70 @@ public class BookmarkBarCoordinatorTest {
         assertNotEquals(initialStartMargin, params.getMarginStart());
         assertNotEquals(initialEndMargin, params.getMarginEnd());
         assertNotEquals(initialWidth, mView.getWidth());
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildMenuModelListForFolder_FolderItemHasIconTint() {
+        onActivity(
+                activity -> {
+                    // Set up: Add a folder to the desktop folder.
+                    BookmarkId folderId = mModel.addFolder(mDesktopFolderId, 0, "Subfolder");
+
+                    // Call the method under test.
+                    ModelList menuItems =
+                            mCoordinator
+                                    .getMediatorForTesting()
+                                    .buildMenuModelListForFolder(mModel, mDesktopFolderId);
+
+                    // Verify: Check that the folder item in the menu has the correct icon tint.
+                    assertEquals(1, menuItems.size());
+                    ListItem listItem = menuItems.get(0);
+                    assertEquals(ListItemType.MENU_ITEM_WITH_SUBMENU, listItem.type);
+
+                    PropertyModel itemModel = listItem.model;
+                    assertNotNull(itemModel);
+
+                    // Default tint should be set.
+                    assertEquals(
+                            R.color.default_icon_color_tint_list,
+                            itemModel.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildMenuModelListForFolder_FolderItemHasIconTint_Incognito() {
+        onActivity(
+                activity -> {
+                    // Set up: Add a folder to the desktop folder.
+                    BookmarkId folderId = mModel.addFolder(mDesktopFolderId, 0, "Subfolder");
+
+                    // Trigger theme change to incognito, which would have changed
+                    // mCurrentIconTintRes.
+                    mCoordinator
+                            .getMediatorForTesting()
+                            .onThemeChanged(/* isIncognito= */ true, BrandedColorScheme.INCOGNITO);
+
+                    // Call the method under test.
+                    ModelList menuItems =
+                            mCoordinator
+                                    .getMediatorForTesting()
+                                    .buildMenuModelListForFolder(mModel, mDesktopFolderId);
+
+                    // Verify: Check that the folder item in the menu still has the default icon
+                    // tint instead of using mCurrentIconTintRes.
+                    assertEquals(1, menuItems.size());
+                    ListItem listItem = menuItems.get(0);
+                    assertEquals(ListItemType.MENU_ITEM_WITH_SUBMENU, listItem.type);
+
+                    PropertyModel itemModel = listItem.model;
+                    assertNotNull(itemModel);
+
+                    // Default tint should be set, NOT the incognito one.
+                    assertEquals(
+                            R.color.default_icon_color_tint_list,
+                            itemModel.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
+                });
     }
 }
