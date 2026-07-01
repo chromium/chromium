@@ -4452,15 +4452,8 @@ if (!is_android) {
         deps += [ "//dbus:test_support" ]
       }
       if (use_cups) {
-        sources += [
-          "../browser/chromeos/extensions/printing_metrics/printing_metrics_apitest.cc",
-          "../browser/extensions/api/printing/printing_apitest.cc",
-        ]
         deps += [
-          "//chrome/browser/chromeos/extensions/printing_metrics",
-          "//chrome/browser/chromeos/printing",
-          "//chromeos/printing",
-          "//printing:test_support",
+          "//chrome/browser/chromeos/extensions/printing_metrics:browser_tests",
         ]
       }
 

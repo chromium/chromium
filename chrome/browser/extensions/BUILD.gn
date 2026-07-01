@@ -2623,6 +2623,10 @@ source_set("browser_tests") {
     ]
   }
 
+  if (is_chromeos && use_cups) {
+    sources += [ "api/printing/printing_apitest.cc" ]
+  }
+
   # ChromeOS and Android don't use the download bubble UI.
   if (is_win || is_mac || is_linux) {
     deps += [ "//chrome/browser/ui/download" ]
