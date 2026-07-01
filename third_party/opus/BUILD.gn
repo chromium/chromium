@@ -75,9 +75,12 @@ config("opus_private_config") {
       # Some systems may have SSE4.1+ support.
       "OPUS_X86_MAY_HAVE_SSE4_1",
 
-      # At present libopus has no AVX functions so no sources are add for this,
-      # if you see linker errors on AVX code the this flag is why.
-      "OPUS_X86_MAY_HAVE_AVX",
+      # Some systems may have AVX2 support. libopus provides AVX2 kernels
+      # (celt_pitch_xcorr, silk_NSQ_del_dec, silk_inner_product_FLP) that are
+      # selected at runtime via RTCD; the actual sources are built in the
+      # ":opus_avx2" source_set below. MAY_HAVE (not PRESUME) so non-AVX2 CPUs
+      # fall back to SSE4.1/C at runtime.
+      "OPUS_X86_MAY_HAVE_AVX2",
     ]
   }
 
@@ -158,7 +161,32 @@ if (use_opus_x86_optimization) {
       cflags = [ "-msse4.1" ]
     }
   }
-  # TODO(dalecurtis): If libopus ever adds AVX support, add an opus_avx block.
+
+  source_set("opus_avx2") {
+    sources = [
+      "src/celt/x86/pitch_avx.c",
+      "src/silk/float/x86/inner_product_FLP_avx2.c",
+      "src/silk/x86/NSQ_del_dec_avx2.c",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [
+      ":opus_private_config",
+      ":opus_config",
+    ]
+
+    if (!is_win || is_clang) {
+      # Matches upstream DEFAULT_X86_AVX2_CFLAGS (configure.ac).
+      cflags = [
+        "-mavx",
+        "-mfma",
+        "-mavx2",
+      ]
+    } else {
+      cflags = [ "/arch:AVX2" ]
+    }
+  }
 }
 
 # Note: Do not add any defines or include_dirs to this target, those should all
@@ -404,7 +432,10 @@ static_library("opus") {
       "src/silk/x86/main_sse.h",
       "src/silk/x86/x86_silk_map.c",
     ]
-    deps += [ ":opus_sse41" ]
+    deps += [
+      ":opus_avx2",
+      ":opus_sse41",
+    ]
   }
 
   if (use_opus_arm_optimization) {
