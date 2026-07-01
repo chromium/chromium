@@ -66,6 +66,7 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudController.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayer.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefs.java",
   ]
@@ -415,6 +416,8 @@ static_library("native") {
   sources = [
     "//chrome/browser/readaloud/android/prefs.cc",
     "//chrome/browser/readaloud/android/prefs.h",
+    "//chrome/browser/readaloud/android/read_aloud_bridge.cc",
+    "//chrome/browser/readaloud/android/read_aloud_bridge.h",
   ]
 
   deps = [
@@ -423,6 +426,7 @@ static_library("native") {
     "//chrome/common:constants",
     "//components/pref_registry",
     "//components/prefs",
+    "//url",
   ]
 
   public_deps = [
