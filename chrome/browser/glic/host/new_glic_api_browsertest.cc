@@ -2498,6 +2498,33 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
+                       testChangingActiveTabClearsPendingContextualSkills) {
+  GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, false);
+
+  ToggleGlicForActiveTab(/*prevent_close=*/true);
+  GlicInstanceImpl* instance = GetOnlyGlicInstance();
+  ASSERT_TRUE(instance);
+
+  std::vector<mojom::SkillPreviewPtr> skills_batch;
+  skills_batch.push_back(mojom::SkillPreview::New(
+      "contextual_skill_id_1", "contextual_skill_1", "contextual_skill_icon_1",
+      mojom::SkillSource::kFirstParty, "contextual_skill_description_1",
+      /*curated_by=*/std::nullopt, /*image_url=*/GURL("https://example.com")));
+
+  instance->host().skills_manager().NotifyContextualSkillsChanged(
+      std::move(skills_batch));
+
+  // Change the active tab before Glic is opened.
+  CreateAndActivateTab(
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html"));
+
+  ASSERT_OK_AND_ASSIGN(auto* instance2, OpenGlicForActiveTab());
+
+  ExecuteJsTest({.instance = instance2});
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
                        testShowManageSkillsUiNoWindow) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndDetach());
   BrowserWindowInterface* browser_to_close = GetBrowserWindowInterface();

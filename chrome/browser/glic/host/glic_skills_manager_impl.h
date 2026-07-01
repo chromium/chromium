@@ -42,7 +42,7 @@ class GlicSkillsClientSession;
 
 // This is a host-scoped object that is responsible for sending skills to the
 // web client.
-class GlicSkillsManagerImpl : public GlicSkillsManager, public Host::Observer {
+class GlicSkillsManagerImpl : public GlicSkillsManager {
  public:
   GlicSkillsManagerImpl(GlicInstance* instance, Profile* profile);
   ~GlicSkillsManagerImpl() override;
@@ -92,9 +92,6 @@ class GlicSkillsManagerImpl : public GlicSkillsManager, public Host::Observer {
   // The function corresponding to our subscription.
   void OnActiveTabChanged(tabs::TabInterface* tab);
 
-  // Host::Observer
-  void WebUiStateChanged(mojom::WebUiState state) override;
-
   // The instance that owns this skills manager.
   const raw_ref<GlicInstance> instance_;
   const raw_ref<Profile> profile_;
@@ -103,9 +100,6 @@ class GlicSkillsManagerImpl : public GlicSkillsManager, public Host::Observer {
 
   // We update the set of skills on active tab changes.
   base::CallbackListSubscription active_tab_changed_subscription_;
-
-  // Used for observer WebUI state changes; this can also trigger updates.
-  base::ScopedObservation<Host, Host::Observer> host_observation_{this};
 
   std::unique_ptr<GlicSkillsClientSession> session_;
   std::vector<mojom::SkillPreviewPtr> pending_contextual_skills_;

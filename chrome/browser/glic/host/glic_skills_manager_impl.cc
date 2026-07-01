@@ -56,7 +56,6 @@ GlicSkillsManagerImpl::GlicSkillsManagerImpl(GlicInstance* instance,
       active_tab_tracker_.AddActiveTabChangedCallback(
           base::BindRepeating(&GlicSkillsManagerImpl::OnActiveTabChanged,
                               weak_ptr_factory_.GetWeakPtr()));
-  host_observation_.Observe(&instance->host());
 }
 
 GlicSkillsManagerImpl::~GlicSkillsManagerImpl() = default;
@@ -242,13 +241,8 @@ void GlicSkillsManagerImpl::ShowSkillsUiAtRelativePath(
 }
 
 void GlicSkillsManagerImpl::OnActiveTabChanged(tabs::TabInterface* tab) {
+  pending_contextual_skills_.clear();
   UpdateSkillPreviews(std::nullopt);
-}
-
-void GlicSkillsManagerImpl::WebUiStateChanged(mojom::WebUiState state) {
-  if (state == mojom::WebUiState::kReady) {
-    UpdateSkillPreviews(std::nullopt);
-  }
 }
 
 void GlicSkillsManagerImpl::NotifyPanelOpenedOrActivated() {

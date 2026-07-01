@@ -1485,6 +1485,13 @@ class SkillsApiTests extends ApiTests {
     assertEquals(true, contextual_skill_1.isContextual);
   }
 
+  async testChangingActiveTabClearsPendingContextualSkills() {
+    assertDefined(this.host.getSkillPreviews);
+    const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
+    const skills = await skillPreviewsSequence.next();
+    assertEquals(0, skills.length);
+  }
+
   async testShowManageSkillsUiNoWindow() {
     assertDefined(this.host.showManageSkillsUi);
     this.host.showManageSkillsUi();
