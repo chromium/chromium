@@ -10,6 +10,7 @@ load("@chromium-luci//gn_args.star", "gn_args")
 load("@chromium-luci//try.star", "try_")
 load("//lib/siso.star", "siso")
 load("//lib/try_constants.star", "try_constants")
+load("//project.star", "settings")
 
 try_.defaults.set(
     executable = try_constants.DEFAULT_EXECUTABLE,
@@ -131,7 +132,7 @@ try_.orchestrator_builder(
     # are addressed
     # use_orchestrator_pool = True,
     cq_settings = try_.cq_settings(
-        equivalent_builder = "chrome:try/android-internal-desktop-x64-rel",
+        equivalent_builder = "{}:try/android-internal-desktop-x64-rel".format(settings.chrome_project),
         equivalent_builder_percentage = 100,
         equivalent_builder_whitelist = "google/chrome-al-eng@google.com",
         on_default_cq = True,
