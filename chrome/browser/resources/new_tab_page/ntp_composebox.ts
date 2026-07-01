@@ -21,6 +21,7 @@ import type {ComposeboxDropdownElement} from '//resources/cr_components/composeb
 import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
 import type {ComposeboxInputElement} from '//resources/cr_components/composebox/composebox_input.js';
 import {ComposeboxEmbedderMixin} from '//resources/cr_components/composebox/composebox_mixin.js';
+import type {ComposeboxEmbedderMixinInterface} from '//resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
@@ -36,7 +37,7 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import {getCss} from './ntp_composebox.css.js';
 import {getHtml} from './ntp_composebox.html.js';
 
-export interface NtpComposeboxElement {
+export interface NtpComposeboxElement extends ComposeboxEmbedderMixinInterface {
   $: {
     composeboxInput: ComposeboxInputElement,
     composebox: HTMLElement,
