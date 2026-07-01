@@ -1525,6 +1525,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"enableProfilesLabel", IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_LABEL},
       {"autofillSyncToggleLabel", IDS_AUTOFILL_SYNC_TOGGLE_LABEL},
       {"enableProfilesSublabel", IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_SUBLABEL},
+      {"enableGmailOtpFillingTitle",
+       IDS_AUTOFILL_GMAIL_OTP_FILLING_TOGGLE_TITLE},
+      {"enableGmailOtpFillingDescription",
+       IDS_AUTOFILL_GMAIL_OTP_FILLING_TOGGLE_DESCRIPTION},
       {"emailVerificationLabel",
        IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_LABEL},
       {"emailVerificationSectionTitle",
@@ -1911,6 +1915,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "emailVerificationProtocolEnabled",
       base::FeatureList::IsEnabled(features::kEmailVerificationProtocol));
+  html_source->AddBoolean("autofillGmailOtpFillingEnabled",
+                          base::FeatureList::IsEnabled(
+                              features::kGlicActorAutofillOneTimePassword));
   html_source->AddString(
       "plusAddressManagementUrl",
       plus_addresses::features::kPlusAddressManagementUrl.Get());

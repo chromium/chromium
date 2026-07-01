@@ -28,17 +28,22 @@ export function expectEvent(
 
 /**
  * Creates the autofill section for the given list.
+ *
+ * When @accountInfo is provided, it is set on the autofill manager. The value
+ * `null` removes the accountInfo on the autofill manager property. The value
+ * `undefined` doesn't set or change the accountInfo on the autofill manager
+ * property.
  */
 export async function createAutofillSection(
     addresses: chrome.autofillPrivate.AddressEntry[],
     prefValues: Record<string, unknown>,
-    accountInfo?: chrome.autofillPrivate.AccountInfo):
-    Promise<SettingsAutofillSectionElement> {
+    accountInfo?: chrome.autofillPrivate.AccountInfo|
+    null): Promise<SettingsAutofillSectionElement> {
   // Override the AutofillManagerImpl for testing.
   const autofillManager = new TestAutofillManager();
   autofillManager.data.addresses = addresses;
-  if (accountInfo) {
-    autofillManager.data.accountInfo = accountInfo;
+  if (accountInfo !== undefined) {
+    autofillManager.data.accountInfo = accountInfo ?? undefined;
   }
   AutofillManagerImpl.setInstance(autofillManager);
 

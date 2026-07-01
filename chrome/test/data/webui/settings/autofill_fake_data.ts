@@ -227,7 +227,7 @@ export class TestAutofillManager extends TestBrowserProxy implements
     AutofillManagerProxy {
   data: {
     addresses: chrome.autofillPrivate.AddressEntry[],
-    accountInfo: chrome.autofillPrivate.AccountInfo,
+    accountInfo?: chrome.autofillPrivate.AccountInfo,
   };
 
   lastCallback:

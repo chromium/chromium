@@ -421,6 +421,12 @@
   <message name="IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_LABEL" desc="Label for a toggle that allows users to control whether addresses should be saved and forms should be autofilled with them. Sentence-Cased." formatter_data="android_java">
     Save and fill addresses
   </message>
+  <message name="IDS_AUTOFILL_GMAIL_OTP_FILLING_TOGGLE_TITLE" translateable="false" desc="Title for the toggle that enables autofilling verification codes from Gmail.">
+    Autofill verification codes from Gmail
+  </message>
+  <message name="IDS_AUTOFILL_GMAIL_OTP_FILLING_TOGGLE_DESCRIPTION" translateable="false" desc="Description for the toggle that enables autofilling verification codes from Gmail.">
+    Autofill verification codes sites use to improve your security. Chrome can get these codes from your Gmail. Learn more about this feature
+  </message>
   <message name="IDS_AUTOFILL_DISABLE_SETTINGS_EXPLANATION_TITLE" desc="Title of the card explaining why the settings page was disabled. Sentence-Cased." formatter_data="android_java">
     Google isn’t your autofill provider
   </message>

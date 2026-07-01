@@ -62,6 +62,13 @@
           pref="{{prefs.autofill.profile_enabled}}"
           on-change="onAutofillProfileToggleChanged_">
       </settings-toggle-button>
+      <template is="dom-if" if="[[showGmailOtpFillingToggle_]]" restamp>
+        <settings-toggle-button id="autofillOtpFillingToggle"
+            label="$i18n{enableGmailOtpFillingTitle}"
+            sub-label="$i18n{enableGmailOtpFillingDescription}"
+            pref="{{prefs.autofill.gmail_otp_filling.enabled}}">
+        </settings-toggle-button>
+      </template>
       <div id="autofillSyncToggleWrapper"
           hidden$="[[!isAutofillSyncToggleVisible_(accountInfo_)]]">
         <div class="flex">
