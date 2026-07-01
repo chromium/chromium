@@ -4,16 +4,48 @@
 
 #include "chrome/browser/ui/views/frame/glass_frame_service.h"
 
+#include <algorithm>
+
 #include "base/check.h"
-#include "chrome/browser/ui/views/frame/browser_widget.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+
+namespace {
+// The maximum number of windows tracked by this service that can be eligible
+// for the glass frame.
+constexpr size_t kMaxWindowsTrackedForGlassFrame = 50;
+}  // namespace
 
 // static
 GlassFrameService* GlassFrameService::GetInstance() {
-  static base::NoDestructor<GlassFrameService> instance;
-  return instance.get();
+  return g_browser_process->GetFeatures()->glass_frame_service();
 }
 
-GlassFrameService::GlassFrameService() = default;
+GlassFrameService::GlassFrameService() {
+  GlobalBrowserCollection* const browser_collection =
+      GlobalBrowserCollection::GetInstance();
+  CHECK(browser_collection);
+  browser_collection_observation_.Observe(browser_collection);
+
+  // Pre-populate the deque with the most recently activated browsers.
+  browser_collection->ForEach(
+      [this](BrowserWindowInterface* browser) {
+        // Break out of ForEach early when we reached the maximum number of
+        // tracked windows.
+        if (activated_browsers_.size() >= kMaxWindowsTrackedForGlassFrame) {
+          return false;
+        }
+
+        activated_browsers_.push_back(browser);
+
+        // Keep iterating if we haven't hit the maximum number of tracked
+        // windows.
+        return true;
+      },
+      BrowserCollection::Order::kActivation);
+}
 
 GlassFrameService::~GlassFrameService() = default;
 
@@ -25,6 +57,39 @@ void GlassFrameService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool GlassFrameService::IsBrowserWidgetEligible(BrowserWidget* widget) {
+bool GlassFrameService::IsBrowserWindowEligible(
+    BrowserWindowInterface* browser) {
+  const size_t max_eligible_count =
+      std::min(activated_browsers_.size(), kMaxGlassWindows);
+  for (size_t i = 0; i < max_eligible_count; i++) {
+    if (browser == activated_browsers_[i]) {
+      return true;
+    }
+  }
   return false;
+}
+
+void GlassFrameService::OnBrowserActivated(BrowserWindowInterface* browser) {
+  // If the browser is already in the list, remove it since it
+  // needs to be re-added to the front of the list.
+  auto it = std::find(activated_browsers_.begin(), activated_browsers_.end(),
+                      browser);
+  if (it != activated_browsers_.end()) {
+    activated_browsers_.erase(it);
+  }
+
+  // If the list size has exceeded the maximum, remove the oldest browser.
+  if (activated_browsers_.size() >= kMaxWindowsTrackedForGlassFrame) {
+    activated_browsers_.pop_back();
+  }
+
+  activated_browsers_.push_front(browser);
+}
+
+void GlassFrameService::OnBrowserClosed(BrowserWindowInterface* browser) {
+  auto it = std::find(activated_browsers_.begin(), activated_browsers_.end(),
+                      browser);
+  if (it != activated_browsers_.end()) {
+    activated_browsers_.erase(it);
+  }
 }

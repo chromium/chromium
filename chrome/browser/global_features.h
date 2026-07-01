@@ -62,6 +62,10 @@ class ApplicationAdvancedProtectionStatusDetector;
 class ProfileLaunchObserver;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC)
+class GlassFrameService;
+#endif
+
 #if BUILDFLAG(IS_WIN)
 class StartupLaunchManager;
 #endif
@@ -210,6 +214,12 @@ class GlobalFeatures {
     return tab_drag_session_manager_.get();
   }
 
+#if BUILDFLAG(IS_MAC)
+  GlassFrameService* glass_frame_service() {
+    return glass_frame_service_.get();
+  }
+#endif
+
  protected:
   GlobalFeatures();
 
@@ -224,6 +234,10 @@ class GlobalFeatures {
 #endif
   virtual std::unique_ptr<GlobalBrowserCollection>
   CreateGlobalBrowserCollection();
+
+#if BUILDFLAG(IS_MAC)
+  virtual std::unique_ptr<GlassFrameService> CreateGlassFrameService();
+#endif
 
  private:
   static ui::UserDataFactoryWithOwner<BrowserProcess>& GetUserDataFactory();
@@ -297,6 +311,10 @@ class GlobalFeatures {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   std::unique_ptr<tabs_api::TabDragSessionManager> tab_drag_session_manager_;
+
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<GlassFrameService> glass_frame_service_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_GLOBAL_FEATURES_H_

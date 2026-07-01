@@ -79,6 +79,11 @@
 #include "chrome/browser/on_device_translation/installer_impl.h"
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/frame/glass_frame_service.h"
+#include "ui/base/ui_base_features.h"
+#endif
+
 namespace {
 
 // This is the generic entry point for test code to stub out browser
@@ -173,6 +178,12 @@ void GlobalFeatures::PostBrowserProcessInit() {
   tab_drag_session_manager_ = std::make_unique<tabs_api::TabDragSessionManager>(
       std::make_unique<tabs_api::TabDragSessionDesktopInjector>());
 #endif
+
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kGlassFrame)) {
+    glass_frame_service_ = CreateGlassFrameService();
+  }
+#endif
 }
 
 void GlobalFeatures::PostBrowserProcessInitCore() {
@@ -259,6 +270,10 @@ void GlobalFeatures::PostMainMessageLoopRun() {
   application_advanced_protection_status_detector_.reset();
   tab_drag_session_manager_.reset();
 
+#if BUILDFLAG(IS_MAC)
+  glass_frame_service_.reset();
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
       DefaultBrowserPromptManager::CloseReason::kDismiss);
@@ -289,6 +304,12 @@ std::unique_ptr<GlobalBrowserCollection>
 GlobalFeatures::CreateGlobalBrowserCollection() {
   return std::make_unique<GlobalBrowserCollection>();
 }
+
+#if BUILDFLAG(IS_MAC)
+std::unique_ptr<GlassFrameService> GlobalFeatures::CreateGlassFrameService() {
+  return std::make_unique<GlassFrameService>();
+}
+#endif
 
 // static
 ui::UserDataFactoryWithOwner<BrowserProcess>&
