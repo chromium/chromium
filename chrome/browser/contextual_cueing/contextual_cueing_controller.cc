@@ -18,6 +18,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_menu_model.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_metrics.h"
@@ -44,6 +46,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/google/core/common/google_util.h"
@@ -63,6 +66,8 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/tabs/public/tab_handle_factory.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/variations/service/variations_service.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -730,6 +735,7 @@ void ContextualCueingController::ShowCue(
     const CueTarget& target,
     const optimization_guide::proto::ContextualCue& cue) {
   auto [tabs_to_show, tab_metrics] = GetTabsToShow(cue);
+  std::string cue_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   CueActionData action_data =
       target.CueActionDataFromResponse(cue, tabs_to_show);
 
@@ -747,6 +753,11 @@ void ContextualCueingController::ShowCue(
 
   RecordCueShownMetrics(GetActiveTabSourceId(), cue.suggested_cuj(),
                         tab_metrics, show_latency);
+
+  RecordCueShownToPrivateInsights(browser_window_interface_->GetProfile(),
+                                  cue_id, cue_type, cue, active_tab,
+                                  tabs_to_show);
+
   cue_hidden_time_ = base::TimeTicks();
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED()
@@ -763,7 +774,7 @@ void ContextualCueingController::ShowCue(
   action->SetImage(target.GetOmniboxChipIcon());
   action->SetInvokeActionCallback(base::BindRepeating(
       &ContextualCueingController::OnCueClicked, weak_ptr_factory_.GetWeakPtr(),
-      cue_type, cue.suggested_cuj(), action_data));
+      cue_type, cue.suggested_cuj(), action_data, cue_id));
 
   page_actions::PageActionController* page_action_controller =
       active_tab->GetTabFeatures()->page_action_controller();
@@ -788,7 +799,7 @@ void ContextualCueingController::ShowCue(
 
   auto menu_model = std::make_unique<ContextualCueingMenuModel>(
       browser_window_interface_->GetProfile(), weak_ptr_factory_.GetWeakPtr(),
-      cue_type, cue.suggested_cuj(), std::move(action_data));
+      cue_type, cue.suggested_cuj(), std::move(action_data), cue_id);
   page_action_controller->SetAnchoredMessageAction(
       kActionAnchoredContextualCue,
       page_actions::AnchoredMessageActionIconType::kMenu,
@@ -948,6 +959,7 @@ void ContextualCueingController::OnCueClicked(
     CueTargetType cue_type,
     std::string cuj,
     CueActionData action,
+    std::string cue_id,
     actions::ActionItem*,
     actions::ActionInvocationContext) {
   CUEING_LOG(
@@ -980,19 +992,23 @@ void ContextualCueingController::OnCueClicked(
 #endif
 
   OnCueInteraction(ContextualCueingInteraction::kCueClicked, cue_type, cuj,
-                   std::move(action));
+                   std::move(action), cue_id);
 }
 
 void ContextualCueingController::OnCueInteraction(
     ContextualCueingInteraction interaction_type,
     CueTargetType cue_type,
     const std::string& cuj,
-    CueActionData action) {
+    CueActionData action,
+    std::string cue_id) {
   base::TimeDelta shown_duration = ExtractCueShownDuration();
   ukm::SourceId source_id = GetActiveTabSourceId();
 
   RecordContextualCueingInteraction(interaction_type, cuj, source_id,
                                     shown_duration);
+
+  RecordCueingInteractionToPrivateInsights(
+      browser_window_interface_->GetProfile(), cue_id, interaction_type, cuj);
 
   HideCueForTab(tab_list_interface_->GetActiveTab());
 

@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/private_insights/private_insights_service_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -46,6 +48,9 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
+#include "components/metrics/private_metrics/private_insights/events/contextual_cue_log_event.pb.h"
+#include "components/metrics/private_metrics/private_insights/private_insights_features.h"
+#include "components/metrics/private_metrics/private_insights/private_insights_service.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
@@ -57,10 +62,12 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/actions.h"
 #include "ui/base/window_open_disposition.h"
@@ -71,6 +78,31 @@ namespace {
 std::unique_ptr<KeyedService> CreateTestSyncService(
     content::BrowserContext* context) {
   return std::make_unique<syncer::TestSyncService>();
+}
+
+class MockPrivateInsightsService
+    : public private_insights::PrivateInsightsService {
+ public:
+  MockPrivateInsightsService(
+      PrefService* local_state,
+      const base::FilePath& profile_dir,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : private_insights::PrivateInsightsService(
+            local_state,
+            profile_dir,
+            std::move(url_loader_factory)) {}
+  MOCK_METHOD(void,
+              LogContextualCueEvent,
+              (private_insights::events::ContextualCueLogEvent event),
+              (override));
+};
+
+std::unique_ptr<KeyedService> CreateMockPrivateInsightsService(
+    content::BrowserContext* context) {
+  return std::make_unique<testing::NiceMock<MockPrivateInsightsService>>(
+      g_browser_process->local_state(), context->GetPath(),
+      context->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
 }
 
 using ::testing::Return;
@@ -204,6 +236,12 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase {
   raw_ptr<TestCueTarget> cue_target_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  MockPrivateInsightsService* GetMockPrivateInsightsService() {
+    return static_cast<MockPrivateInsightsService*>(
+        private_insights::PrivateInsightsServiceFactory::GetForProfile(
+            browser()->profile()));
+  }
+
  private:
   syncer::TestSyncService* GetTestSyncService() {
     return static_cast<syncer::TestSyncService*>(
@@ -215,6 +253,9 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase {
     SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&CreateTestSyncService));
+    private_insights::PrivateInsightsServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            context, base::BindRepeating(&CreateMockPrivateInsightsService));
   }
 
   ui::UserDataFactory::ScopedOverride user_ed_override_;
@@ -910,6 +951,13 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
+  // Expect Shown event
+  EXPECT_CALL(*GetMockPrivateInsightsService(),
+              LogContextualCueEvent(testing::Property(
+                  &private_insights::events::ContextualCueLogEvent::event_type,
+                  private_insights::events::ContextualCueLogEvent::SHOWN)))
+      .Times(1);
+
   SeedExecutionResult(MakeCompleteResponse());
   SimulateFilterPassed();
   optimization_guide::RetryForHistogramUntilCountReached(
@@ -922,6 +970,14 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
   auto* action =
       actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
   ASSERT_TRUE(action);
+
+  // Expect Clicked event
+  EXPECT_CALL(*GetMockPrivateInsightsService(),
+              LogContextualCueEvent(testing::Property(
+                  &private_insights::events::ContextualCueLogEvent::event_type,
+                  private_insights::events::ContextualCueLogEvent::CLICKED)))
+      .Times(1);
+
   action->InvokeAction();
 
   ASSERT_TRUE(cue_target_->HasClickData());

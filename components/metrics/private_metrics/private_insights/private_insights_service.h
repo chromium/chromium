@@ -140,7 +140,7 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
   static void SetRunFederatedComputationForTesting(
       RunFederatedComputationFunc func);
 
-  void LogContextualCueEvent(events::ContextualCueLogEvent event);
+  virtual void LogContextualCueEvent(events::ContextualCueLogEvent event);
 
  private:
   struct ContextualCueEventEntry {

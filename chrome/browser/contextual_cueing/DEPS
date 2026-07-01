@@ -1,3 +1,4 @@
 include_rules = [
   "+components/keyed_service/core",
+  "+components/metrics/private_metrics/private_insights",
 ]

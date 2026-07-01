@@ -112,7 +112,8 @@ class ContextualCueingController
   void OnCueInteraction(ContextualCueingInteraction interaction_type,
                         CueTargetType cue_type,
                         const std::string& cuj,
-                        CueActionData action);
+                        CueActionData action,
+                        std::string cue_id);
 
  private:
   // Initiates a model execution request to MES for the current window state.
@@ -170,6 +171,7 @@ class ContextualCueingController
   void OnCueClicked(CueTargetType cue_type,
                     std::string cuj,
                     CueActionData action,
+                    std::string cue_id,
                     actions::ActionItem*,
                     actions::ActionInvocationContext);
   void OnCueHidden();

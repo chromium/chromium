@@ -8,13 +8,18 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
+#include "components/tabs/public/tab_interface.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+
+class Profile;
 
 namespace contextual_cueing {
 
 enum class ContextualCueingInteraction;
 enum class ContextualCueingDecision;
 enum class CueFormFactor;
+enum class CueTargetType;
 
 // Counts of tabs received from the contextual cue server and whether they are
 // still relevant, or why they aren't.
@@ -42,6 +47,20 @@ void RecordContextualCueingDecision(
 void RecordCueFormFactorShown(CueFormFactor form_factor);
 void RecordCueFormFactorHidden(CueFormFactor form_factor);
 void RecordChipClickedCollapsedDuration(base::TimeDelta collapsed_duration);
+
+void RecordCueShownToPrivateInsights(
+    Profile* profile,
+    const std::string& cue_id,
+    CueTargetType cue_type,
+    const optimization_guide::proto::ContextualCue& cue,
+    tabs::TabInterface* active_tab,
+    const std::vector<tabs::TabHandle>& tabs_to_show);
+
+void RecordCueingInteractionToPrivateInsights(
+    Profile* profile,
+    const std::string& cue_id,
+    ContextualCueingInteraction interaction_type,
+    const std::string& cuj);
 
 }  // namespace contextual_cueing
 
