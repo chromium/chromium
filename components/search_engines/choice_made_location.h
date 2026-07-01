@@ -17,25 +17,24 @@ namespace search_engines {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.search_engines
 // LINT.IfChange
 enum class ChoiceMadeLocation {
+  // Some unspecified source, not matching some requirements that the full
+  // search engine choice surfaces are compatible with. Might be used for
+  // example when automatically changing default search engine via an extension,
+  // or some enterprise policy.
+  kOther = 0,
   // `chrome://settings/search`
-  kSearchSettings = 0,
+  kSearchSettings = 1,
   // `chrome://settings/searchEngines`
   // This value is also used for the settings pages on mobile.
-  kSearchEngineSettings = 1,
+  kSearchEngineSettings = 2,
   // The search engine choice dialog for existing users or the profile picker
   // for new users.
-  kChoiceScreen = 2,
+  kChoiceScreen = 3,
   // Programmatic import of a search engine choice selected at the device level
   // (e.g., Android Play API). Behaves mostly like `kChoiceScreen` for initial
   // recording, but allows repeated signals from the OS to be dropped silently
   // without triggering assertion failures or creating duplicate records.
-  kDeviceChoiceImport = 3,
-  // Some other source, not matching some requirements that the full search
-  // engine choice surfaces are compatible with. Might be used for example when
-  // automatically changing default search engine via an extension, or some
-  // enterprise policy.
-  kOther = 4,
-  kMaxValue = kOther,
+  kDeviceChoiceImport = 4,
 };
 // LINT.ThenChange(/chrome/browser/resources/settings/search_page/search_engines_browser_proxy.ts)
 
