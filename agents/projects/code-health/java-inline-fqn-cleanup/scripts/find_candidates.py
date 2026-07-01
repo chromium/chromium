@@ -6,6 +6,7 @@
 import os
 import random
 import re
+import subprocess
 import sys
 
 SCAN_DIR = os.path.abspath(
@@ -49,6 +50,12 @@ def get_file_fqns(file_path):
                 cleaned_line = URL_REGEX.sub("", line)
                 for match in FQN_REGEX.finditer(cleaned_line):
                     fqn = match.group(0)
+
+                    # Skip 'R' classes (e.g. android.R.attr) to avoid
+                    # conflicting with local R imports.
+                    if ".R." in fqn:
+                        continue
+
                     if len(fqn.split(".")) >= 3:
                         fqns.add(fqn)
     except Exception:
@@ -56,33 +63,94 @@ def get_file_fqns(file_path):
     return fqns
 
 
+def is_valid_import(fqn):
+    # Check if the FQN or its parent classes are imported anywhere in codebase
+    parts = fqn.split(".")
+
+    # Try the full FQN, then progressively drop the last part (down to 2 parts)
+    for i in range(len(parts), 1, -1):
+        test_fqn = ".".join(parts[:i])
+        # Escape dots for the regex
+        regex_fqn = test_fqn.replace(".", r"\.")
+        try:
+            res = subprocess.run([
+                "git", "grep", "-q", "-E", f"import (static )?{regex_fqn}[;.]",
+                "--", ":/*.java"
+            ],
+                                 cwd=SCAN_DIR,
+                                 capture_output=True,
+                                 check=False)
+            if res.returncode == 0:
+                return True
+        except Exception:
+            # Fallback to true if git grep fails for some reason
+            return True
+
+    return False
+
+
+def extract_package(file_path):
+    try:
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+            for line in f:
+                if line.startswith("package "):
+                    return line.strip().split(" ")[1].rstrip(";")
+    except Exception:
+        pass
+    return "Unknown"
+
+
 def analyze_directory(root, java_files):
     candidate_files = []
     dir_fqns = set()
+    package_name = "Unknown"
 
     for java_file in java_files:
         file_path = os.path.join(root, java_file)
         fqns = get_file_fqns(file_path)
         if fqns:
+            if not candidate_files:
+                # Extract package from the first matching file
+                package_name = extract_package(file_path)
             candidate_files.append(java_file)
             dir_fqns.update(fqns)
 
+            # Cap the batch size to 10 files to keep agent workloads manageable
+            if len(candidate_files) >= 10:
+                break
+
     if len(candidate_files) >= 1:
+        banned_fqns = set()
+        for fqn in dir_fqns:
+            if not is_valid_import(fqn):
+                banned_fqns.add(fqn)
+
+        # Skip if all FQNs in this directory are banned (e.g. just packages)
+        if len(banned_fqns) == len(dir_fqns):
+            return False
+
         rel_dir = os.path.relpath(root, SCAN_DIR)
         print("Candidate Batch Found:")
+        print(f"Package: {package_name}")
         print(f"Directory: {rel_dir}")
         print(f"File Count: {len(candidate_files)}")
         print("Files:")
-        for f in candidate_files[:15]:
+        for f in candidate_files:
             print(f"  - {f}")
-        if len(candidate_files) > 15:
-            print(f"  - ... and {len(candidate_files) - 15} more")
+
+        valid_fqns = dir_fqns - banned_fqns
         print("Unique FQNs/Imports to Clean:")
-        sorted_fqns = sorted(list(dir_fqns))
+        sorted_fqns = sorted(list(valid_fqns))
         for fqn in sorted_fqns[:5]:
             print(f"  - {fqn}")
         if len(sorted_fqns) > 5:
             print(f"  - ... and {len(sorted_fqns) - 5} more")
+
+        if banned_fqns:
+            print("Banned FQNs (DO NOT TOUCH THESE):")
+            for fqn in sorted(list(banned_fqns)):
+                print(f"  - {fqn}")
+
         return True
     return False
 

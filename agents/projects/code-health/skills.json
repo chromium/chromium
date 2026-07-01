@@ -7,16 +7,10 @@
       "path": "agents/projects/code-health/histogram-cleanup"
     },
     {
-      "path": "agents/projects/code-health/java-inline-fqn-cleanup"
-    },
-    {
       "path": "agents/projects/code-health/hub"
     },
     {
-      "path": "agents/projects/code-health/lint-sync"
-    },
-    {
-      "path": "agents/projects/code-health/spanify-buffers"
+      "path": "agents/projects/code-health/java-inline-fqn-cleanup"
     }
   ]
 }
