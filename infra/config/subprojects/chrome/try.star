@@ -154,7 +154,7 @@ chrome_internal_verifier(
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     builder = "chromeos-betty-compile-chrome",
     cq_settings = try_.cq_settings(
-        equivalent_builder = "chrome:try/chromeos-betty-chrome-noop",
+        equivalent_builder = "{}:try/chromeos-betty-chrome-noop".format(settings.chrome_project),
         equivalent_builder_percentage = 100,
         equivalent_builder_whitelist = "googlers",
         on_default_cq = True,
@@ -165,7 +165,7 @@ chrome_internal_verifier(
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     builder = "chromeos-betty-chrome-gtest",
     cq_settings = try_.cq_settings(
-        equivalent_builder = "chrome:try/chromeos-betty-chrome-gtest-and-cqtast",
+        equivalent_builder = "{}:try/chromeos-betty-chrome-gtest-and-cqtast".format(settings.chrome_project),
         equivalent_builder_percentage = 100,
         equivalent_builder_whitelist = "google/chromeos-pa@google.com",
         on_default_cq = True,
