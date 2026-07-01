@@ -242,7 +242,7 @@ public class DownloadLocationDialogCoordinator
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 resources,
-                                R.string.duplicate_download_infobar_download_button)
+                                R.string.duplicate_download_prompt_download_button)
                         .with(
                                 ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)

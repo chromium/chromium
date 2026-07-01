@@ -51,7 +51,7 @@ found in the LICENSE file.
     <target android:name="arrow_clip">
         <aapt:attr name="android:animation">
             <objectAnimator
-                android:duration="@integer/download_infobar_fill_in_delay"
+                android:duration="@integer/downloading_fill_animation_fill_in_delay"
                 android:interpolator="@android:interpolator/linear"
                 android:propertyName="pathData"
                 android:valueTo="M 0,0 L 72,0 L 72,60 L 0,60 L 0,0 Z"
@@ -70,8 +70,8 @@ found in the LICENSE file.
                     android:valueFrom="@macro/default_icon_color_accent1"
                     android:valueTo="@macro/default_icon_color_accent1"/>
                 <objectAnimator
-                    android:duration="@integer/download_infobar_fill_out_delay"
-                    android:startOffset="@integer/download_infobar_fill_in_delay"
+                    android:duration="@integer/downloading_fill_animation_fill_out_delay"
+                    android:startOffset="@integer/downloading_fill_animation_fill_in_delay"
                     android:interpolator="@android:interpolator/linear"
                     android:propertyName="fillColor"
                     android:valueFrom="@macro/default_icon_color_accent1"
@@ -84,14 +84,14 @@ found in the LICENSE file.
         <aapt:attr name="android:animation">
             <set android:ordering="sequentially">
                 <objectAnimator
-                    android:duration="@integer/download_infobar_bar_fill_in_delay"
-                    android:startOffset="@integer/download_infobar_bar_start_offset"
+                    android:duration="@integer/downloading_fill_animation_bar_fill_in_delay"
+                    android:startOffset="@integer/downloading_fill_animation_bar_start_offset"
                     android:interpolator="@android:interpolator/linear"
                     android:propertyName="trimPathEnd"
                     android:valueFrom="0"
                     android:valueTo="1"/>
                 <objectAnimator
-                    android:duration="@integer/download_infobar_bar_fill_out_delay"
+                    android:duration="@integer/downloading_fill_animation_bar_fill_out_delay"
                     android:interpolator="@android:interpolator/linear"
                     android:propertyName="trimPathStart"
                     android:valueFrom="0"

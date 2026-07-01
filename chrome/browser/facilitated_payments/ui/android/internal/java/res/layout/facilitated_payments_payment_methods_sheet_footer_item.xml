@@ -28,7 +28,7 @@ found in the LICENSE file.
       android:gravity="center_vertical|start"
       android:textAppearance="@style/TextAppearance.TextLarge.Primary"
       android:text="@string/autofill_bottom_sheet_manage_payment_methods"
-      app:drawableStartCompat="@drawable/infobar_chrome"
+      app:drawableStartCompat="@drawable/chrome_logo_blue"
       app:drawableTint="@color/default_icon_color_secondary_tint_list"
       android:background="?android:attr/selectableItemBackground"
       android:textDirection="locale"

@@ -167,20 +167,6 @@ public class ToolbarButtonInProductHelpController {
                         .build());
     }
 
-    /** Attempts to show an IPH text bubble for download continuing. */
-    public void showDownloadContinuingIph() {
-        mUserEducationHelper.requestShowIph(
-                new IphCommandBuilder(
-                                mActivity.getResources(),
-                                FeatureConstants.DOWNLOAD_INFOBAR_DOWNLOAD_CONTINUING_FEATURE,
-                                R.string.iph_download_infobar_download_continuing_text,
-                                R.string.iph_download_infobar_download_continuing_text)
-                        .setAnchorView(mMenuButtonAnchorView)
-                        .setOnShowCallback(() -> turnOnHighlightForMenuItem(R.id.downloads_menu_id))
-                        .setOnDismissCallback(this::turnOffHighlightForMenuItem)
-                        .build());
-    }
-
     /** Attempts to show an IPH for New Tab Page theme customization. */
     private void maybeShowNewTabPageThemeCustomizationIph(Tab tab) {
         if (NtpCustomizationPromoManager.canShowCustomizationIph(

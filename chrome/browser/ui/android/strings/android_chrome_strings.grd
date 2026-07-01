@@ -2740,13 +2740,13 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- DuplicateDownloadInfoBar -->
-      <message name="IDS_DUPLICATE_DOWNLOAD_INFOBAR_TEXT" desc="Prompt text for the confirmation dialog asking whether the user really wants to download a file when there already exists a file with the same name">
+      <message name="IDS_DUPLICATE_DOWNLOAD_PROMPT_TEXT" desc="Prompt text for the confirmation dialog asking whether the user really wants to download a file when there already exists a file with the same name">
         Do you want to download <ph name="FILE_NAME">^1<ex>specialfile.pdf</ex></ph> again?
       </message>
-      <message name="IDS_DUPLICATE_DOWNLOAD_REQUEST_INFOBAR_TEXT" desc="Prompt text for the confirmation dialog asking whether the user really wants to download a file when a file with the same name is still being downloaded">
+      <message name="IDS_DUPLICATE_DOWNLOAD_REQUEST_PROMPT_TEXT" desc="Prompt text for the confirmation dialog asking whether the user really wants to download a file when a file with the same name is still being downloaded">
         Do you want to start downloading <ph name="FILE_NAME">^1<ex>specialfile.pdf</ex></ph> again?
       </message>
-      <message name="IDS_DUPLICATE_DOWNLOAD_INFOBAR_DOWNLOAD_BUTTON" desc="Label for the button that confirms that a user wants to download the file again. [CHAR_LIMIT=32]">
+      <message name="IDS_DUPLICATE_DOWNLOAD_PROMPT_DOWNLOAD_BUTTON" desc="Label for the button that confirms that a user wants to download the file again. [CHAR_LIMIT=32]">
         Download
       </message>
 
@@ -6168,9 +6168,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_IPH_DOWNLOAD_SETTINGS_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to open download settings in download home.">
         Change the default download location any time using the Settings menu option
-      </message>
-      <message name="IDS_IPH_DOWNLOAD_INFOBAR_DOWNLOAD_CONTINUING_TEXT" desc="The in-product-help message on the download InfoBar to inform that download is still continuing.">
-        Your download is still in progress
       </message>
       <message name="IDS_SEARCH_WIDGET_DESCRIPTION" desc="Description text for the search widget">
         Quickly start a search in Chrome

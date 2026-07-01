@@ -20,9 +20,9 @@ found in the LICENSE file.
     <bool name="compositor_tab_title_fake_bold_text">true</bool>
 
     <!-- Download InfoBar animation. -->
-    <integer name="download_infobar_fill_in_delay">1200</integer>
-    <integer name="download_infobar_fill_out_delay">200</integer>
-    <integer name="download_infobar_bar_start_offset">800</integer>
-    <integer name="download_infobar_bar_fill_in_delay">400</integer>
-    <integer name="download_infobar_bar_fill_out_delay">200</integer>
+    <integer name="downloading_fill_animation_fill_in_delay">1200</integer>
+    <integer name="downloading_fill_animation_fill_out_delay">200</integer>
+    <integer name="downloading_fill_animation_bar_start_offset">800</integer>
+    <integer name="downloading_fill_animation_bar_fill_in_delay">400</integer>
+    <integer name="downloading_fill_animation_bar_fill_out_delay">200</integer>
 </resources>

@@ -749,8 +749,8 @@ public class DownloadUtils {
         String template =
                 context.getString(
                         duplicateRequestExists
-                                ? R.string.duplicate_download_request_infobar_text
-                                : R.string.duplicate_download_infobar_text);
+                                ? R.string.duplicate_download_request_prompt_text
+                                : R.string.duplicate_download_prompt_text);
         return getMessageText(
                 template,
                 filePath,
