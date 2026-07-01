@@ -473,6 +473,22 @@ TEST_P(WaylandWindowTest, Shutdown) {
   window_->OnDragSessionClose(mojom::DragOperation::kNone);
 }
 
+// Regression test for https://crbug.com/495948109.
+TEST_P(WaylandWindowTest, DeleteWindowFromOnStateUpdateDuringSurfaceConfigure) {
+  delegate_.set_on_state_update_callback(base::BindLambdaForTesting([&]() {
+    window_.reset();
+    return false;
+  }));
+
+  WaylandWindow* window = window_.get();
+  WaylandWindow::WindowStates window_states;
+  window_states.is_activated = true;
+  window->HandleToplevelConfigure(1024, 768, window_states);
+  window->HandleSurfaceConfigure(2);
+
+  EXPECT_FALSE(window_);
+}
+
 TEST_P(WaylandWindowTest, SetTitle) {
   window_->SetTitle(u"hello");
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {

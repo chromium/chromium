@@ -1316,7 +1316,13 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
     }
   }
 
+  // RequestStateFromServer transitively calls delegate()->OnStateUpdate(),
+  // which may synchronously delete |this|.
+  auto weak_this = AsWeakPtr();
   RequestStateFromServer(state, serial);
+  if (!weak_this) {
+    return;
+  }
 
   // Reset values.
   pending_configure_state_ = PendingConfigureState();
