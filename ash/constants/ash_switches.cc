@@ -195,10 +195,6 @@ const char kArcVmUreadaheadMode[] = "arcvm-ureadahead-mode";
 // Madvises the kernel to use Huge Pages for guest memory.
 const char kArcVmUseHugePages[] = "arcvm-use-hugepages";
 
-// Clear the fast ink buffer upon creation. This is needed on some devices that
-// do not zero out new buffers.
-const char kAshClearFastInkBuffer[] = "ash-clear-fast-ink-buffer";
-
 // Force the pointer (cursor) position to be kept inside root windows.
 const char kAshConstrainPointerToRoot[] = "ash-constrain-pointer-to-root";
 
@@ -1251,11 +1247,6 @@ bool ContextualNudgesResetShownCount() {
 
 bool IsUsingShelfAutoDim() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kEnableDimShelf);
-}
-
-bool ShouldClearFastInkBuffer() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kAshClearFastInkBuffer);
 }
 
 bool HasHps() {

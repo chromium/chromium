@@ -63,7 +63,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcTosHostForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmMountDebugFs[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmUreadaheadMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmUseHugePages[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshClearFastInkBuffer[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshConstrainPointerToRoot[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshContextualNudgesInterval[];
@@ -490,7 +489,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 std::optional<base::TimeDelta> ContextualNudgesInterval();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ContextualNudgesResetShownCount();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUsingShelfAutoDim();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldClearFastInkBuffer();
 
 // Returns whether the device has hps hardware.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool HasHps();
