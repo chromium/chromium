@@ -36,10 +36,10 @@ class ProfileIOS;
 @property(nonatomic, weak, readwrite) AppState* appState;
 
 // Appends a suitable web state test double to the receiver's main interface.
-- (void)appendWebStateWithURL:(const GURL)URL;
+- (void)appendWebStateWithURL:(const GURL&)URL;
 
 // Appends `count` web states, all with `url` as the current URL, to the
-- (void)appendWebStatesWithURL:(const GURL)URL count:(int)count;
+- (void)appendWebStatesWithURL:(const GURL&)URL count:(int)count;
 
 // Must be called before -dealloc.
 - (void)shutdown;

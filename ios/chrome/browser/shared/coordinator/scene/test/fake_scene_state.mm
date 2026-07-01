@@ -6,7 +6,6 @@
 
 #import <utility>
 
-#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
@@ -37,20 +36,19 @@
     DCHECK(profile);
     DCHECK(!profile->IsOffTheRecord());
     self.activationLevel = SceneActivationLevelForegroundInactive;
-    self.browserProviderInterface = [[StubBrowserProviderInterface alloc] init];
+    StubBrowserProviderInterface* browserProviderInterface =
+        [[StubBrowserProviderInterface alloc] init];
+    self.browserProviderInterface = browserProviderInterface;
     self.appState = appState;
 
     _browser = std::make_unique<TestBrowser>(profile, self);
-    base::apple::ObjCCastStrict<StubBrowserProvider>(
-        self.browserProviderInterface.mainBrowserProvider)
-        .browser = _browser.get();
+    browserProviderInterface.mainBrowserProvider.browser = _browser.get();
     std::ignore = _browser->CreateInactiveBrowser();
 
     _incognito_browser =
         std::make_unique<TestBrowser>(profile->GetOffTheRecordProfile(), self);
-    base::apple::ObjCCastStrict<StubBrowserProvider>(
-        self.browserProviderInterface.incognitoBrowserProvider)
-        .browser = _incognito_browser.get();
+    browserProviderInterface.incognitoBrowserProvider.browser =
+        _incognito_browser.get();
   }
   return self;
 }
@@ -59,7 +57,7 @@
   CHECK(_shutdown) << "-shutdown must be called before -dealloc";
 }
 
-- (void)appendWebStateWithURL:(const GURL)URL {
+- (void)appendWebStateWithURL:(const GURL&)URL {
   auto test_web_state = std::make_unique<web::FakeWebState>();
   test_web_state->SetCurrentURL(URL);
   WebStateList* web_state_list =
@@ -68,7 +66,7 @@
   web_state_list->InsertWebState(std::move(test_web_state));
 }
 
-- (void)appendWebStatesWithURL:(const GURL)URL count:(int)count {
+- (void)appendWebStatesWithURL:(const GURL&)URL count:(int)count {
   for (int i = 0; i < count; i++) {
     [self appendWebStateWithURL:URL];
   }
