@@ -65,5 +65,19 @@ TEST_F(AtMemoryBottomSheetBridgeTest, HideDoesNotCrash) {
   bridge_->Hide();
 }
 
+TEST_F(AtMemoryBottomSheetBridgeTest, RequestShowContentWithChildren) {
+  auto delegate = std::make_unique<MockAtMemoryBottomSheetDelegate>();
+  MockAtMemoryBottomSheetDelegate* delegate_ptr = delegate.get();
+
+  Suggestion child(u"Child label", SuggestionType::kAtMemorySearchResult);
+  child.labels = {{Suggestion::Text(u"Child sublabel")}};
+  Suggestion parent(u"Parent label", SuggestionType::kAtMemorySearchResult);
+  parent.labels = {{Suggestion::Text(u"Parent sublabel")}};
+  parent.children = {std::move(child)};
+
+  EXPECT_CALL(*delegate_ptr, OnDismissed());
+  bridge_->RequestShowContent(std::move(delegate), {parent});
+}
+
 }  // namespace
 }  // namespace autofill

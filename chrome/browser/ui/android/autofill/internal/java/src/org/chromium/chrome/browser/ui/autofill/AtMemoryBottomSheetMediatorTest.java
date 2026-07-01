@@ -101,6 +101,11 @@ public class AtMemoryBottomSheetMediatorTest {
 
     @Test
     public void testOnFlyoutClicked() {
+        AutofillSuggestion childSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Hilton Check-in")
+                        .setSubLabel("May 16")
+                        .build();
         List<AutofillSuggestion> suggestions =
                 List.of(
                         new AutofillSuggestion.Builder()
@@ -112,6 +117,7 @@ public class AtMemoryBottomSheetMediatorTest {
                                 .setIconId(R.drawable.travel_trip)
                                 .setLabel("Hotel Booking")
                                 .setSubLabel("Hilton ⋅ 16 May")
+                                .setChildren(List.of(childSuggestion))
                                 .build());
 
         mMediator.show(suggestions);
@@ -122,7 +128,7 @@ public class AtMemoryBottomSheetMediatorTest {
         PropertyModel flyoutModel = mMediator.getFlyoutModel();
         assertEquals("Hotel Booking", flyoutModel.get(FlyoutProperties.TITLE));
         assertEquals("Google", flyoutModel.get(FlyoutProperties.SOURCE_TEXT));
-        assertEquals(List.of(suggestions.get(1)), flyoutModel.get(FlyoutProperties.SUGGESTIONS));
+        assertEquals(List.of(childSuggestion), flyoutModel.get(FlyoutProperties.SUGGESTIONS));
     }
 
     @Test

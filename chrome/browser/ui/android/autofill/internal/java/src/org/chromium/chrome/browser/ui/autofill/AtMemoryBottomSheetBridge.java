@@ -68,12 +68,14 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
             @JniType("std::u16string") String label,
             @JniType("std::u16string") String subLabel,
             int iconId,
-            int suggestionType) {
+            int suggestionType,
+            @JniType("std::vector") List<AutofillSuggestion> children) {
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
                 .setSubLabel(subLabel)
                 .setIconId(iconId)
                 .setSuggestionType(suggestionType)
+                .setChildren(children)
                 .build();
     }
 

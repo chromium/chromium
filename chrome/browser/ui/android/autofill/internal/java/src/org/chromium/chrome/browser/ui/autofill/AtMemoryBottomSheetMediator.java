@@ -171,7 +171,7 @@ class AtMemoryBottomSheetMediator {
         // TODO(crbug.com/505255929): Retrieve the actual source text dynamically.
         mFlyoutModel.set(FlyoutProperties.TITLE, suggestion.getLabel());
         mFlyoutModel.set(FlyoutProperties.SOURCE_TEXT, "Google");
-        mFlyoutModel.set(FlyoutProperties.SUGGESTIONS, List.of(suggestion));
+        mFlyoutModel.set(FlyoutProperties.SUGGESTIONS, suggestion.getChildren());
 
         mModel.set(CURRENT_SCREEN, ScreenId.FLYOUT_SCREEN);
     }

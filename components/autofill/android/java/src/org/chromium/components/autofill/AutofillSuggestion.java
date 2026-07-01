@@ -12,6 +12,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /** A container representing a single entry in an Autofill UI (e.g. keyboard accessory). */
@@ -31,6 +33,7 @@ public class AutofillSuggestion {
     private final @Nullable String mIphDescriptionText;
     private final @Nullable GURL mCustomIconUrl;
     private final @Nullable Payload mPayload;
+    private final List<AutofillSuggestion> mChildren;
 
     public sealed interface Payload
             permits AutofillAiPayload, AutofillProfilePayload, PaymentsPayload {}
@@ -54,6 +57,7 @@ public class AutofillSuggestion {
      * @param showLoadingOnAcceptance Whether accepting this suggestion should show a loading UI
      *     (e.g., if it requires a fetch from the server).
      * @param payload Additional data passed with the suggestion.
+     * @param children The list of children suggestions.
      */
     @VisibleForTesting
     public AutofillSuggestion(
@@ -70,7 +74,8 @@ public class AutofillSuggestion {
             @Nullable String featureForIph,
             @Nullable String iphDescriptionText,
             @Nullable GURL customIconUrl,
-            @Nullable Payload payload) {
+            @Nullable Payload payload,
+            List<AutofillSuggestion> children) {
         mLabel = label;
         mSecondaryLabel = secondaryLabel;
         mSublabel = sublabel;
@@ -85,6 +90,7 @@ public class AutofillSuggestion {
         mIphDescriptionText = iphDescriptionText;
         mCustomIconUrl = customIconUrl;
         mPayload = payload;
+        mChildren = children;
     }
 
     public @Nullable String getLabel() {
@@ -174,6 +180,10 @@ public class AutofillSuggestion {
         return null;
     }
 
+    public List<AutofillSuggestion> getChildren() {
+        return mChildren;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -194,7 +204,8 @@ public class AutofillSuggestion {
                 && Objects.equals(this.mFeatureForIph, other.mFeatureForIph)
                 && Objects.equals(this.mIphDescriptionText, other.mIphDescriptionText)
                 && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
-                && Objects.equals(this.mPayload, other.mPayload);
+                && Objects.equals(this.mPayload, other.mPayload)
+                && Objects.equals(this.mChildren, other.mChildren);
     }
 
     @Override
@@ -212,7 +223,8 @@ public class AutofillSuggestion {
                 this.mFeatureForIph,
                 this.mIphDescriptionText,
                 this.mCustomIconUrl,
-                this.mPayload);
+                this.mPayload,
+                this.mChildren);
     }
 
     /** Builder for the {@link AutofillSuggestion}. */
@@ -231,6 +243,7 @@ public class AutofillSuggestion {
         private @Nullable String mVoiceOver;
         private int mSuggestionType;
         private @Nullable Payload mPayload;
+        private List<AutofillSuggestion> mChildren = Collections.emptyList();
 
         public Builder setIconId(int iconId) {
             this.mIconId = iconId;
@@ -302,6 +315,11 @@ public class AutofillSuggestion {
             return this;
         }
 
+        public Builder setChildren(List<AutofillSuggestion> children) {
+            this.mChildren = children;
+            return this;
+        }
+
         public AutofillSuggestion build() {
             assert mSuggestionType == SuggestionType.SEPARATOR || !TextUtils.isEmpty(mLabel)
                     : "Only separators may have an empty label.";
@@ -321,7 +339,8 @@ public class AutofillSuggestion {
                     mFeatureForIph,
                     mIphDescriptionText,
                     mCustomIconUrl,
-                    mPayload);
+                    mPayload,
+                    mChildren);
         }
     }
 }
