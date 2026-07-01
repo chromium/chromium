@@ -16,8 +16,7 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
   AutofillPopupControllerImplMac(
       base::WeakPtr<AutofillSuggestionDelegate> delegate,
       content::WebContents* web_contents,
-      PopupControllerCommon controller_common,
-      int32_t form_control_ax_id);
+      PopupControllerCommon controller_common);
 
   AutofillPopupControllerImplMac(const AutofillPopupControllerImplMac&) =
       delete;

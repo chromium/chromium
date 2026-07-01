@@ -131,7 +131,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
       base::WeakPtr<AutofillSuggestionDelegate> delegate,
       content::WebContents* web_contents,
       PopupControllerCommon controller_common,
-      int32_t form_control_ax_id,
       std::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent =
           std::nullopt);
   ~AutofillPopupControllerImpl() override;

@@ -242,7 +242,6 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
     base::WeakPtr<AutofillSuggestionDelegate> delegate,
     content::WebContents* web_contents,
     PopupControllerCommon controller_common,
-    int32_t form_control_ax_id,
     std::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent)
     : web_contents_(web_contents->GetWeakPtr()),
       controller_common_(std::move(controller_common)),
@@ -956,7 +955,6 @@ AutofillPopupControllerImpl::OpenSubPopup(
   new_controller_common.element_bounds = anchor_bounds;
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
       delegate_, web_contents_.get(), std::move(new_controller_common),
-      /*form_control_ax_id=*/form_control_ax_id_,
       /*parent=*/weak_ptr_factory_.GetWeakPtr());
 
   // Show() can fail and cause controller deletion. Therefore store the weak

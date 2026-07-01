@@ -20,23 +20,19 @@ base::WeakPtr<AutofillSuggestionController>
 CreateAutofillPopupControllerImplMac(
     base::WeakPtr<AutofillSuggestionDelegate> delegate,
     content::WebContents* web_contents,
-    PopupControllerCommon controller_common,
-    int32_t form_control_ax_id) {
+    PopupControllerCommon controller_common) {
   return (new AutofillPopupControllerImplMac(delegate, web_contents,
-                                             std::move(controller_common),
-                                             form_control_ax_id))
+                                             std::move(controller_common)))
       ->GetWeakPtr();
 }
 
 AutofillPopupControllerImplMac::AutofillPopupControllerImplMac(
     base::WeakPtr<AutofillSuggestionDelegate> delegate,
     content::WebContents* web_contents,
-    PopupControllerCommon controller_common,
-    int32_t form_control_ax_id)
+    PopupControllerCommon controller_common)
     : AutofillPopupControllerImpl(delegate,
                                   web_contents,
                                   std::move(controller_common),
-                                  form_control_ax_id,
                                   std::nullopt),
       touch_bar_controller_(nil) {}
 

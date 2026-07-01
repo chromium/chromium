@@ -116,7 +116,6 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
       base::WeakPtr<AutofillSuggestionDelegate> delegate,
       content::WebContents* web_contents,
       PopupControllerCommon controller_common,
-      int32_t form_control_ax_id,
       AutofillSuggestionTriggerSource trigger_source);
 
  protected:

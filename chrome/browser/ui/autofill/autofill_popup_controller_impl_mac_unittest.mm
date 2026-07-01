@@ -41,8 +41,7 @@ class AutofillPopupControllerImplMacForTesting
             external_delegate,
             web_contents,
             PopupControllerCommon(element_bounds,
-                                  base::i18n::UNKNOWN_DIRECTION),
-            /*form_control_ax_id=*/0) {}
+                                  base::i18n::UNKNOWN_DIRECTION)) {}
 
   ~AutofillPopupControllerImplMacForTesting() override = default;
 

@@ -31,8 +31,7 @@ base::WeakPtr<AutofillSuggestionController>
 CreateAutofillPopupControllerImplMac(
     base::WeakPtr<AutofillSuggestionDelegate> delegate,
     content::WebContents* web_contents,
-    PopupControllerCommon controller_common,
-    int32_t form_control_ax_id);
+    PopupControllerCommon controller_common);
 #endif
 
 // static
@@ -41,7 +40,6 @@ AutofillSuggestionController::Create(
     base::WeakPtr<AutofillSuggestionDelegate> delegate,
     content::WebContents* web_contents,
     PopupControllerCommon controller_common,
-    int32_t form_control_ax_id,
     AutofillSuggestionTriggerSource trigger_source) {
 #if BUILDFLAG(IS_ANDROID)
   if (IsAtMemoryTriggerSource(trigger_source)) {
@@ -53,11 +51,11 @@ AutofillSuggestionController::Create(
       delegate, web_contents, std::move(controller_common));
   return controller->GetWeakPtr();
 #elif BUILDFLAG(IS_MAC)
-  return CreateAutofillPopupControllerImplMac(
-      delegate, web_contents, std::move(controller_common), form_control_ax_id);
+  return CreateAutofillPopupControllerImplMac(delegate, web_contents,
+                                              std::move(controller_common));
 #else
   auto* controller = new AutofillPopupControllerImpl(
-      delegate, web_contents, std::move(controller_common), form_control_ax_id,
+      delegate, web_contents, std::move(controller_common),
       /*parent=*/std::nullopt);
   return controller->GetWeakPtr();
 #endif
@@ -90,7 +88,7 @@ AutofillSuggestionController::GetOrCreate(
   }
 
   return Create(delegate, web_contents, std::move(controller_common),
-                form_control_ax_id, trigger_source);
+                trigger_source);
 }
 
 }  // namespace autofill
