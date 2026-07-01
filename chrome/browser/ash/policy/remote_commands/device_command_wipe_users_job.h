@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_WIPE_USERS_JOB_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
+
+class PrefService;
 
 namespace policy {
 
@@ -14,7 +17,9 @@ class RemoteCommandsService;
 
 class DeviceCommandWipeUsersJob : public RemoteCommandJob {
  public:
-  explicit DeviceCommandWipeUsersJob(RemoteCommandsService* service);
+  // `local_state` must not be null and must outlive `this`.
+  DeviceCommandWipeUsersJob(PrefService* local_state,
+                            RemoteCommandsService* service);
 
   DeviceCommandWipeUsersJob(const DeviceCommandWipeUsersJob&) = delete;
   DeviceCommandWipeUsersJob& operator=(const DeviceCommandWipeUsersJob&) =
@@ -31,6 +36,7 @@ class DeviceCommandWipeUsersJob : public RemoteCommandJob {
   void RunImpl(CallbackWithResult result_callback) override;
 
  private:
+  const raw_ref<PrefService> local_state_;
   const raw_ptr<RemoteCommandsService> service_;
 };
 

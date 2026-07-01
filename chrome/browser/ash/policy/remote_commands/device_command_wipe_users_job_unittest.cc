@@ -67,7 +67,8 @@ std::unique_ptr<RemoteCommandJob> CreateWipeUsersJob(
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
 
   // Create the job and validate.
-  auto job = std::make_unique<DeviceCommandWipeUsersJob>(service);
+  auto job = std::make_unique<DeviceCommandWipeUsersJob>(
+      TestingBrowserProcess::GetGlobal()->local_state(), service);
 
   EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto,
                         enterprise_management::SignedData()));

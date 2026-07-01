@@ -71,7 +71,7 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
       return std::make_unique<DeviceCommandFetchStatusJob>(
           browser_policy_connector_ash);
     case RemoteCommand::DEVICE_WIPE_USERS:
-      return std::make_unique<DeviceCommandWipeUsersJob>(service);
+      return std::make_unique<DeviceCommandWipeUsersJob>(local_state, service);
     case RemoteCommand::DEVICE_REFRESH_ENTERPRISE_MACHINE_CERTIFICATE:
       return std::make_unique<DeviceCommandRefreshMachineCertificateJob>(
           machine_certificate_uploader_);
