@@ -51,17 +51,26 @@ chromium-metrics-reviews@google.com.
   <variant name="DefaultSearchEngine"
       summary="When preloading is triggered from the default search engine
                suggest service."/>
+  <variant name="EagerViewportHeuristic"
+      summary="When preloading is triggered by a deterministic viewport-based
+               heuristic for the 'eager' eagerness."/>
   <variant name="LinkRel"
       summary="When preloading is triggered by the 'rel' keyword embedded in
                the link element."/>
   <variant name="MouseBackButton"
       summary="When a mouse down of a mouse back button is seen."/>
+  <variant name="MouseHoverOnBookmarkBar"
+      summary="When a mousehover event happens on a bookmark bar link to an
+               HTTPS origin."/>
   <variant name="MouseHoverOnNewTabPage"
       summary="When preloading is triggered by mouse hover NewTabPage on
                Desktop."/>
   <variant name="MouseHoverOrMouseDownOnBookmarkBar"
       summary="When preloading is triggered by mouse hover bookmarkbar or
                mouse down bookmark bar."/>
+  <variant name="MouseHoverOrMouseDownOnNewTabPage"
+      summary="When a mousehover or mousedown event happens on a new tab page
+               linking to an HTTPS origin."/>
   <variant name="OmniboxDirectURLInput"
       summary="When preloading is triggered from the Omnibox DUI."/>
   <variant name="OmniboxMousePredictor"
@@ -70,15 +79,35 @@ chromium-metrics-reviews@google.com.
   <variant name="OmniboxSearchPredictor"
       summary="When preloading is triggered from the default search suggest
                due to change in Omnibox selection."/>
+  <variant name="OmniboxSearchSuggestDefaultMatch"
+      summary="When the default match in omnibox has the search prefetch or
+               prerender hint."/>
+  <variant name="OmniboxTouchDownPredirector"
+      summary="When the preloading URL is predicted from the default search
+               suggest due to the user touching down on an Omnibox Search
+               suggestion."/>
   <variant name="PointerDownOnAnchor"
       summary="When a pointerdown event happens on a HTTP/HTTPS anchor."/>
+  <variant name="PointerDownOnBookmarkBar"
+      summary="When a pointerdown event happens on a bookmark bar link to an
+               HTTPS origin."/>
   <variant name="PointerDownOnNewTabPage"
       summary="When preloading is triggered by mouse down NewTabPage on
                Desktop."/>
   <variant name="PreloadingHeuristicsMLModel"
       summary="When preloading is triggered by an ML model prediction."/>
+  <variant name="PrewarmDefaultSearchEngine"
+      summary="When the default search engine needs to prerender a prewarm
+               page."/>
   <variant name="SpeculationRules"
       summary="When preloading is triggered by the speculation rules."/>
+  <variant name="SpeculationRulesFromAutoSpeculationRules"
+      summary="When preloading is triggered by speculation rules injected by
+               the browser as part of the auto speculation rules feature."/>
+  <variant name="SpeculationRulesFromIsolatedWorld"
+      summary="When preloading is triggered by speculation rules injected
+               from an isolated world (e.g., extensions or embedder's
+               built-in features)."/>
   <variant name="TouchOnNewTabPage"
       summary="When preloading is triggered by Touch events on Android."/>
   <variant name="Unspecified" summary=""/>
