@@ -20,7 +20,6 @@ std::string ReadyStateToString(ReadyState ready_state) {
     CAST_CHANNEL_TYPE_TO_STRING(ReadyState::NONE);
     CAST_CHANNEL_TYPE_TO_STRING(ReadyState::CONNECTING);
     CAST_CHANNEL_TYPE_TO_STRING(ReadyState::OPEN);
-    CAST_CHANNEL_TYPE_TO_STRING(ReadyState::CLOSING);
     CAST_CHANNEL_TYPE_TO_STRING(ReadyState::CLOSED);
   }
   NOTREACHED() << "Unknown ready_state " << ReadyStateToString(ready_state);

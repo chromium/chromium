@@ -22,7 +22,6 @@ enum class ReadyState {
   NONE,
   CONNECTING,
   OPEN,
-  CLOSING,  // TODO(zhaobin): Remove this value because it is unused.
   CLOSED,
 };
 
