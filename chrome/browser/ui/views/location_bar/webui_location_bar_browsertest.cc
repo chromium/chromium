@@ -178,7 +178,6 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, LocationIcon) {
   ASSERT_TRUE(omnibox);
   EXPECT_EQ("about:blank", base::UTF16ToUTF8(omnibox->GetText()));
 
-  bool rounded = features::IsRoundedIconsEnabled();
   const char kGetIcon[] = R"(
       document.querySelector('toolbar-app')?.
         shadowRoot?.querySelector('location-bar')?.
@@ -188,16 +187,14 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, LocationIcon) {
         icon;
     )";
 
-  EXPECT_EQ(
-      rounded ? "webui-toolbar:info" : "webui-toolbar:http_chrome_refresh_old",
-      content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
+  EXPECT_EQ("webui-toolbar:info",
+            content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
   EXPECT_EQ("chrome://version", base::UTF16ToUTF8(omnibox->GetText()));
 
-  EXPECT_EQ(rounded ? "webui-toolbar:chrome_product"
-                    : "webui-toolbar:product_chrome_refresh_old",
+  EXPECT_EQ("webui-toolbar:chrome_product",
             content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
 }
 
