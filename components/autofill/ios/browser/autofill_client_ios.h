@@ -46,6 +46,9 @@ class AutofillClientIOS : public AutofillClient {
   // particular, transitively by members of subclasses).
   AutofillDriverIOSFactory& GetAutofillDriverFactory() final;
 
+  // AutofillClient:
+  std::u16string_view GetPageTitle() const override;
+
   base::WeakPtr<AutofillClientIOS> AsWeakPtr();
 
  private:

@@ -6,12 +6,21 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 
 namespace autofill {
 
-AtMemoryFunnelMetrics::AtMemoryFunnelMetrics() = default;
+AtMemoryFunnelMetrics::AtMemoryFunnelMetrics(
+    optimization_guide::ModelQualityLogsUploaderService* uploader_service,
+    GURL url,
+    std::u16string_view title)
+    : url_(std::move(url)),
+      title_(title),
+      uploader_service_(uploader_service) {}
 
 AtMemoryFunnelMetrics::~AtMemoryFunnelMetrics() {
   // Only log summary metrics if the popup was successfully shown.
@@ -74,7 +83,22 @@ void AtMemoryFunnelMetrics::OnPopupShown(
                                 *source_);
 }
 
-void AtMemoryFunnelMetrics::OnQuerySubmitted() {
+void AtMemoryFunnelMetrics::OnQuerySubmitted(std::u16string query) {
+  if (uploader_service_) {
+    pending_log_entry_ =
+        std::make_unique<optimization_guide::ModelQualityLogEntry>(
+            uploader_service_->GetWeakPtr());
+    optimization_guide::proto::AtMemoryQuality* quality =
+        pending_log_entry_->log_ai_data_request()
+            ->mutable_at_memory()
+            ->mutable_quality();
+    quality->set_query(base::UTF16ToUTF8(query));
+    quality->set_url(url_.spec());
+    quality->set_title(base::UTF16ToUTF8(title_));
+    // Rely on log entry destructor to upload the log entry, so this will flush
+    // when a new query comes in or the funnel metrics object gets destroyed.
+  }
+
   query_submitted_ = true;
 }
 

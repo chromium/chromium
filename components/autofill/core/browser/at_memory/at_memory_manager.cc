@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
@@ -505,7 +506,10 @@ void AtMemoryManager::OnPopupShown(
   trigger_source_ = trigger_source;
   is_context_secure_ = is_context_secure;
   update_callback_ = std::move(update_callback);
-  at_memory_funnel_metrics_ = std::make_unique<AtMemoryFunnelMetrics>();
+  at_memory_funnel_metrics_ = std::make_unique<AtMemoryFunnelMetrics>(
+      owner_->client().GetMqlsUploadService(),
+      owner_->client().GetLastCommittedPrimaryMainFrameURL(),
+      owner_->client().GetPageTitle());
   at_memory_funnel_metrics_->OnPopupShown(trigger_source);
 }
 
@@ -529,7 +533,7 @@ bool AtMemoryManager::OnSearchSubmitted(const std::u16string& filter) {
     return false;
   }
   if (at_memory_funnel_metrics_) {
-    at_memory_funnel_metrics_->OnQuerySubmitted();
+    at_memory_funnel_metrics_->OnQuerySubmitted(filter);
   }
   ExecuteQuery(filter);
   return true;

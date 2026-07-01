@@ -6,10 +6,18 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_FUNNEL_METRICS_H_
 
 #include <optional>
+#include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/aliases.h"
+#include "url/gurl.h"
+
+namespace optimization_guide {
+class ModelQualityLogEntry;
+class ModelQualityLogsUploaderService;
+}  // namespace optimization_guide
 
 namespace autofill {
 
@@ -18,7 +26,10 @@ namespace autofill {
 // suggestions, from the initial display to the submission of a query.
 class AtMemoryFunnelMetrics {
  public:
-  AtMemoryFunnelMetrics();
+  AtMemoryFunnelMetrics(
+      optimization_guide::ModelQualityLogsUploaderService* uploader_service,
+      GURL url,
+      std::u16string_view title);
   AtMemoryFunnelMetrics(const AtMemoryFunnelMetrics&) = delete;
   AtMemoryFunnelMetrics& operator=(const AtMemoryFunnelMetrics&) = delete;
   ~AtMemoryFunnelMetrics();
@@ -31,8 +42,8 @@ class AtMemoryFunnelMetrics {
   // typically result in the popup being hidden and a new session starting.
   void OnPopupShown(AutofillSuggestionTriggerSource trigger_source);
 
-  // Records that at least one search query was submitted during this session.
-  void OnQuerySubmitted();
+  // Records that a search query was submitted during this session.
+  void OnQuerySubmitted(std::u16string query);
 
   // Records that a suggestion was accepted during this session.
   void OnSuggestionAccepted();
@@ -51,12 +62,24 @@ class AtMemoryFunnelMetrics {
   // is called, serving as a signal that the popup was shown.
   std::optional<AutofillMetrics::AtMemoryTriggerSource> source_;
   bool query_submitted_ = false;
+  // The pending log entry to be uploaded to MQLS for the query.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> pending_log_entry_;
   bool suggestion_accepted_ = false;
   bool was_filled_ = false;
   // The start time of the asynchronous fetch/unmask process.
   std::optional<base::TimeTicks> fetch_start_time_;
   // The duration of the successful asynchronous fetch/unmask process.
   std::optional<base::TimeDelta> fetch_duration_;
+
+  // The URL of the primary page the user triggered the @memory search on.
+  GURL url_;
+  // The title of the primary page the user triggered the @memory search on.
+  std::u16string title_;
+
+  // The uploader service used to log metrics to MQLS. Not owned. Guaranteed to
+  // outlive `this`.
+  raw_ptr<optimization_guide::ModelQualityLogsUploaderService>
+      uploader_service_;
 };
 
 }  // namespace autofill

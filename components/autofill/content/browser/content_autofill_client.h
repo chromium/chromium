@@ -53,6 +53,7 @@ class ContentAutofillClient
   PasswordManagerAutofillHelperDelegate* GetPasswordManagerAutofillHelper()
       override;
   AutofillManager* GetAutofillManagerForPrimaryMainFrame() override;
+  std::u16string_view GetPageTitle() const override;
 
  private:
   friend class content::WebContentsUserData<ContentAutofillClient>;

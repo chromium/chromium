@@ -62,6 +62,11 @@ AutofillDriverIOSFactory& AutofillClientIOS::GetAutofillDriverFactory() {
   return autofill_driver_factory_;
 }
 
+std::u16string_view AutofillClientIOS::GetPageTitle() const {
+  CHECK(web_state());
+  return web_state()->GetTitle();
+}
+
 base::WeakPtr<AutofillClientIOS> AutofillClientIOS::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

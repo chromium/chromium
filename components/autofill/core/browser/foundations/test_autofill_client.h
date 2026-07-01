@@ -333,6 +333,8 @@ class TestAutofillClientTemplate : public T {
     return last_committed_primary_main_frame_origin_;
   }
 
+  std::u16string_view GetPageTitle() const override { return page_title_; }
+
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override {
     return security_level_;
   }
@@ -915,6 +917,7 @@ class TestAutofillClientTemplate : public T {
   GURL last_committed_primary_main_frame_url_{"https://example.test"};
   url::Origin last_committed_primary_main_frame_origin_ =
       url::Origin::Create(last_committed_primary_main_frame_url_);
+  std::u16string page_title_ = u"Test page title";
 
   std::optional<AutofillClient::SuggestionUiSessionId>
       suggestion_ui_session_id_;

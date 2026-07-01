@@ -553,6 +553,9 @@ class AutofillClient {
   // Returns the last committed url of the primary main frame.
   virtual const GURL& GetLastCommittedPrimaryMainFrameURL() const = 0;
 
+  // Returns the title of the current page.
+  virtual std::u16string_view GetPageTitle() const = 0;
+
   // Returns the last committed origin of the primary main frame.
   virtual url::Origin GetLastCommittedPrimaryMainFrameOrigin() const = 0;
 
