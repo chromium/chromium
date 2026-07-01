@@ -209,6 +209,13 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         BundleUtils.restoreLoadedSplits(savedInstanceState);
+        if (savedInstanceState != null) {
+            Bundle fragmentsState = savedInstanceState.getBundle("android:support:fragments");
+            if (fragmentsState != null) {
+                setRecursiveClassLoader(
+                        fragmentsState, BundleUtils.getSplitCompatClassLoader());
+            }
+        }
         mInMultiWindowMode = isInMultiWindowMode();
 
         mEdgeToEdgeStateProvider = new EdgeToEdgeStateProvider(getWindow());
@@ -828,6 +835,24 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             NtpCustomizationUtils.applyDynamicColorToActivity(this, primaryColor);
         } else {
             DynamicColors.applyToActivityIfAvailable(this);
+        }
+    }
+
+    // Recursively sets the classloader on the given bundle and all nested bundles.
+    // Note: Iterating through a bundle can cause early unmarshalling, which can have side
+    // effects on framework-redirected data like intents (see crbug.com/527604007).
+    // It is safer to only call this on targeted nested bundles (like "android:support:fragments").
+    private static void setRecursiveClassLoader(Bundle bundle, ClassLoader classLoader) {
+        bundle.setClassLoader(classLoader);
+        for (String key : bundle.keySet()) {
+            try {
+                Object value = bundle.get(key);
+                if (value instanceof Bundle) {
+                    setRecursiveClassLoader((Bundle) value, classLoader);
+                }
+            } catch (Exception e) {
+                // Ignore any unmarshalling errors for unknown types.
+            }
         }
     }
 }
