@@ -19,6 +19,7 @@ source_set("icubridge") {
     "//base",
     "//base/i18n:base_i18n_export",
     "//base/i18n:time_formatting_types",
+    "//base/i18n:timezone",
   ]
 
   deps = [ "//third_party/icu" ]

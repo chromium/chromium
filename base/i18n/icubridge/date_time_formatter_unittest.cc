@@ -10,11 +10,11 @@
 #include "base/i18n/icu_util.h"
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/icu_test_util.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/locid.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace base::i18n {
 
@@ -22,11 +22,12 @@ class DateTimeFormatterTest : public testing::Test {
  public:
   void SetUp() override {
     base::i18n::InitializeICU();
-    // Force UTC timezone for predictable results.
-    icu::TimeZone::adoptDefault(icu::TimeZone::getGMT()->clone());
   }
 
  protected:
+  // Force UTC timezone for predictable results.
+  base::test::ScopedRestoreDefaultTimezone gmt_timezone_{"GMT"};
+
   struct ExactMatchTestEntry {
     std::string_view description;
     std::string_view value;
@@ -760,6 +761,111 @@ TEST_F(DateTimeFormatterTest, SubsecondPrecision) {
       time, datetime_options::T::Medium().with_time_precision(
                 DateTimeFormatterOptions::TimePrecision::kSubsecond_3));
   EXPECT_NE(result.find(u"10:30:00.987"), std::u16string::npos);
+}
+
+TEST_F(DateTimeFormatterTest, FormatShortSpecificTimeZone) {
+  UErrorCode status = U_ZERO_ERROR;
+  icu::Locale::setDefault(icu::Locale::getUS(), status);
+  base::Time time;
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
+
+  const IcuBridge::DateTimeFormatter& formatter =
+      IcuBridge::GetInstance().date_time_formatter();
+
+  std::u16string result = formatter.Format(
+      time, datetime_options::YMDT::Medium()
+                .with_time_zone(
+                    base::i18n::TimeZone::FromString("America/Los_Angeles"))
+                .with_time_zone_style(
+                    DateTimeFormatterOptions::TimeZoneStyle::kShortSpecific));
+  EXPECT_NE(result.find(u"PDT"), std::u16string::npos)
+      << base::UTF16ToUTF8(result);
+}
+
+TEST_F(DateTimeFormatterTest, FormatLongSpecificTimeZone) {
+  UErrorCode status = U_ZERO_ERROR;
+  icu::Locale::setDefault(icu::Locale::getUS(), status);
+  base::Time time;
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
+
+  const IcuBridge::DateTimeFormatter& formatter =
+      IcuBridge::GetInstance().date_time_formatter();
+
+  std::u16string result = formatter.Format(
+      time, datetime_options::YMDT::Medium()
+                .with_time_zone(
+                    base::i18n::TimeZone::FromString("America/Los_Angeles"))
+                .with_time_zone_style(
+                    DateTimeFormatterOptions::TimeZoneStyle::kLongSpecific));
+  EXPECT_NE(result.find(u"Pacific Daylight Time"), std::u16string::npos)
+      << base::UTF16ToUTF8(result);
+}
+
+TEST_F(DateTimeFormatterTest, FormatShortGenericTimeZone) {
+  UErrorCode status = U_ZERO_ERROR;
+  icu::Locale::setDefault(icu::Locale::getUS(), status);
+  base::Time time;
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
+
+  const IcuBridge::DateTimeFormatter& formatter =
+      IcuBridge::GetInstance().date_time_formatter();
+
+  std::u16string result = formatter.Format(
+      time, datetime_options::YMDT::Medium()
+                .with_time_zone(
+                    base::i18n::TimeZone::FromString("America/Los_Angeles"))
+                .with_time_zone_style(
+                    DateTimeFormatterOptions::TimeZoneStyle::kShortGeneric));
+  // "PT" or "Pacific Time" depending on ICU data/version.
+  EXPECT_TRUE(result.find(u"PT") != std::u16string::npos ||
+              result.find(u"Pacific Time") != std::u16string::npos)
+      << base::UTF16ToUTF8(result);
+}
+
+TEST_F(DateTimeFormatterTest, FormatLongGenericTimeZone) {
+  UErrorCode status = U_ZERO_ERROR;
+  icu::Locale::setDefault(icu::Locale::getUS(), status);
+  base::Time time;
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
+
+  const IcuBridge::DateTimeFormatter& formatter =
+      IcuBridge::GetInstance().date_time_formatter();
+
+  std::u16string result = formatter.Format(
+      time, datetime_options::YMDT::Medium()
+                .with_time_zone(
+                    base::i18n::TimeZone::FromString("America/Los_Angeles"))
+                .with_time_zone_style(
+                    DateTimeFormatterOptions::TimeZoneStyle::kLongGeneric));
+  EXPECT_NE(result.find(u"Pacific Time"), std::u16string::npos)
+      << base::UTF16ToUTF8(result);
+}
+
+TEST_F(DateTimeFormatterTest, FormatWithSpecificTimeZoneObject) {
+  UErrorCode status = U_ZERO_ERROR;
+  icu::Locale::setDefault(icu::Locale::getUS(), status);
+  // Default timezone is GMT (set in SetUp).
+  base::Time time;
+  ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
+
+  const IcuBridge::DateTimeFormatter& formatter =
+      IcuBridge::GetInstance().date_time_formatter();
+
+  // Format with Los Angeles timezone object.
+  base::i18n::TimeZone la_tz =
+      base::i18n::TimeZone::FromString("America/Los_Angeles");
+
+  std::u16string result = formatter.Format(
+      time, datetime_options::YMDT::Medium()
+                .with_time_zone(la_tz)
+                .with_time_zone_style(
+                    DateTimeFormatterOptions::TimeZoneStyle::kShortSpecific));
+
+  // 10:30:00 UTC is 03:30:00 PDT.
+  EXPECT_NE(result.find(u"3:30:00"), std::u16string::npos)
+      << base::UTF16ToUTF8(result);
+  EXPECT_NE(result.find(u"PDT"), std::u16string::npos)
+      << base::UTF16ToUTF8(result);
 }
 
 }  // namespace base::i18n

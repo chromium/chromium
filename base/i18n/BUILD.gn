@@ -42,6 +42,26 @@ source_set("unicodestring") {
   public_deps = [ "//third_party/icu" ]
 }
 
+source_set("timezone") {
+  sources = [
+    "timezone.cc",
+    "timezone.h",
+  ]
+
+  defines = [ "BASE_I18N_IMPLEMENTATION" ]
+
+  public_deps = [
+    ":base_i18n_export",
+    ":language_tag",
+    "//base",
+  ]
+
+  deps = [
+    ":unicodestring",
+    "//third_party/icu",
+  ]
+}
+
 source_set("time_formatting_types") {
   sources = [ "time_formatting_types.h" ]
 }
