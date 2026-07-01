@@ -28,11 +28,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ProductConfig;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -61,14 +58,12 @@ public class IncognitoNewTabPageTest {
                 .perform(scrollTo())
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
+        var res = mActivityTestRule.getActivity().getResources();
+        int stringId =
+                R.string
+                .incognito_ntp_block_third_party_cookies_description_android;
         String ntpDescription =
-                getIncognitoNtpDescriptionSpanned(
-                        mActivityTestRule
-                                .getActivity()
-                                .getResources()
-                                .getString(
-                                        R.string
-                                                .incognito_ntp_block_third_party_cookies_description_android));
+                getIncognitoNtpDescriptionSpanned(res.getString(stringId));
 
         onView(withText(R.string.incognito_ntp_block_third_party_cookies_header))
                 .check(matches(isDisplayed()));
@@ -95,39 +90,6 @@ public class IncognitoNewTabPageTest {
             IncognitoDescriptionView.getSpannedBulletText(
                     localeContext, R.string.new_tab_otr_visible);
         }
-    }
-
-    @Test
-    @SmallTest
-    public void recordTimeToFirstNavigation() {
-        final HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        IncognitoNtpMetrics.HISTOGRAM_TIME_TO_FIRST_NAVIGATION);
-
-        openIncognitoTabAndNavigateAway();
-
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.RECORD_INCOGNITO_NTP_TIME_TO_FIRST_NAVIGATION_METRIC)
-    public void recordTimeToFirstNavigation_featureDisabled() {
-        final HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords(IncognitoNtpMetrics.HISTOGRAM_TIME_TO_FIRST_NAVIGATION)
-                        .build();
-
-        openIncognitoTabAndNavigateAway();
-
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    private void openIncognitoTabAndNavigateAway() {
-        mActivityTestRule
-                .startOnBlankPage()
-                .openNewIncognitoTabOrWindowFast()
-                .loadWebPageProgrammatically("about:blank");
     }
 
     private String getIncognitoNtpDescriptionSpanned(String description) {

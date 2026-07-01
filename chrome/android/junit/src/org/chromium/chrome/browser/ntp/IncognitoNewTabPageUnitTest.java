@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ntp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -32,13 +31,10 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPageView.IncognitoNewTabPageManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
-import org.chromium.url.JUnitTestGURLs;
 
 /** Unit test for {@link org.chromium.chrome.browser.ntp.IncognitoNewTabPage} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -51,14 +47,11 @@ public class IncognitoNewTabPageUnitTest {
 
     @Mock NativePageHost mHost;
     @Mock Profile mProfile;
-    @Mock Tab mTab;
     @Mock Destroyable mMarginSupplier;
     @Mock IncognitoNewTabPageManager mIncognitoNtpManager;
-    @Mock IncognitoNtpMetrics mIncognitoNtpMetrics;
 
     @Mock EdgeToEdgeController mEdgeToEdgeController;
     @Captor ArgumentCaptor<EdgeToEdgePadAdjuster> mEdgePadAdjusterCaptor;
-    @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private TestActivity mActivity;
     private IncognitoNewTabPage mIncognitoNtp;
@@ -69,7 +62,6 @@ public class IncognitoNewTabPageUnitTest {
     public void setup() {
         mScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
-        doReturn(mProfile).when(mTab).getProfile();
         doReturn(true).when(mProfile).isOffTheRecord();
 
         doReturn(mActivity).when(mHost).getContext();
@@ -79,7 +71,7 @@ public class IncognitoNewTabPageUnitTest {
 
         mIncognitoNtp =
                 new IncognitoNewTabPage(
-                        mActivity, mHost, mTab, mEdgeToEdgeSupplier, mIncognitoNtpMetrics);
+                        mActivity, mHost, mProfile, mEdgeToEdgeSupplier);
     }
 
     @Test
@@ -110,17 +102,5 @@ public class IncognitoNewTabPageUnitTest {
         assertTrue(
                 "ScrollView should be clip to padding where there's no bottom insets.",
                 view.getClipToPadding());
-    }
-
-    @Test
-    public void recordTimeToFirstNavigation() {
-        verify(mTab).addObserver(mTabObserverCaptor.capture());
-        TabObserver observer = mTabObserverCaptor.getValue();
-        assertNotNull(observer);
-
-        observer.onPageLoadStarted(mTab, JUnitTestGURLs.EXAMPLE_URL);
-
-        verify(mIncognitoNtpMetrics).recordNavigatedAway();
-        verify(mTab).removeObserver(observer);
     }
 }

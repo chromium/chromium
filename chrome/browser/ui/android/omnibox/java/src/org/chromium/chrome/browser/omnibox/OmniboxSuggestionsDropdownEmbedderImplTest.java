@@ -85,7 +85,6 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     private @Mock View mHorizontalAlignmentView;
     private @Mock DisplayAndroid mDisplay;
     private @Mock InsetObserver mInsetObserver;
-    private @Mock LocationBarDataProvider mLocationBarDataProvider;
     private @Mock TopInsetProvider mTopInsetProvider;
     private @Mock Callback<OmniboxAlignment> mAlignmentChanged;
 
@@ -133,7 +132,6 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         () -> mBottomWindowPadding,
                         mFuseboxStateSupplier,
                         mFuseboxLayoutModeSupplier,
-                        mLocationBarDataProvider,
                         mTopInsetProvider);
     }
 
@@ -282,7 +280,6 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         () -> 0,
                         mFuseboxStateSupplier,
                         mFuseboxLayoutModeSupplier,
-                        mLocationBarDataProvider,
                         mTopInsetProvider);
         impl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = impl.getCurrentAlignment();
@@ -381,7 +378,6 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         () -> mBottomWindowPadding,
                         mFuseboxStateSupplier,
                         mFuseboxLayoutModeSupplier,
-                        mLocationBarDataProvider,
                         mTopInsetProvider);
 
         impl.recalculateOmniboxAlignment();

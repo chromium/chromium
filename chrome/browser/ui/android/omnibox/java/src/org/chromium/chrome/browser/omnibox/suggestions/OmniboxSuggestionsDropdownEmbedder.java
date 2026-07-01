@@ -127,11 +127,6 @@ public interface OmniboxSuggestionsDropdownEmbedder {
     /** Return whether the suggestions are being rendered in the tablet UI. */
     boolean isTablet();
 
-    /**
-     * Returns whether {@link OmniboxSuggestionsContainer} should pass through unhandled touch
-     * events.
-     */
-    boolean shouldPassThroughUnhandledTouchEvents();
 
     /**
      * The dropdown must call this when it is attached to the window to start the process of

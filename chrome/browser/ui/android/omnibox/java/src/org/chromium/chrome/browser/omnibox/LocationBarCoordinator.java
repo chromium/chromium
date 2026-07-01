@@ -352,7 +352,6 @@ public class LocationBarCoordinator
                         bottomWindowPaddingSupplier,
                         fuseboxStateSupplier,
                         fuseboxLayoutModeSupplier,
-                        locationBarDataProvider,
                         topInsetProvider);
 
         mPageZoomIndicatorCoordinator =

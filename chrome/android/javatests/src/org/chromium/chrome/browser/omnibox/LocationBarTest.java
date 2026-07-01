@@ -338,7 +338,7 @@ public class LocationBarTest {
         // - Mobile devices show (by default) no text
         // - Desktop devices show the current page URL
         // - in both cases any text in the Omnibox is selected.
-        ThreadUtils.runOnUiThread(mLocationBarMediator::requestUrlFocus);
+        ThreadUtils.runOnUiThread(mUrlBar::requestFocus);
         CriteriaHelper.pollUiThread(
                 () -> {
                     var text = mUrlBar.getText().toString();
@@ -931,7 +931,7 @@ public class LocationBarTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setSelection(2, 5));
 
         // Focus the omnibox.
-        ThreadUtils.runOnUiThread(mLocationBarMediator::requestUrlFocus);
+        ThreadUtils.runOnUiThread(mUrlBar::requestFocus);
 
         // Verify focus and that selection is preserved.
         CriteriaHelper.pollUiThread(

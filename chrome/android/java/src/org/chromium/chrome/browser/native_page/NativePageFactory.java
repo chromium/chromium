@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.management.ManagementPage;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
-import org.chromium.chrome.browser.ntp.IncognitoNtpMetrics;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageCreationTracker;
 import org.chromium.chrome.browser.ntp.RecentTabsManager;
@@ -274,9 +273,8 @@ public class NativePageFactory {
                 return new IncognitoNewTabPage(
                         mActivity,
                         nativePageHost,
-                        tab,
-                        mEdgeToEdgeControllerSupplier,
-                        createIncognitoNtpMetrics());
+                        tab.getProfile(),
+                        mEdgeToEdgeControllerSupplier);
             }
 
             return new NewTabPage(
@@ -445,13 +443,6 @@ public class NativePageFactory {
                             mSnackbarManagerSupplier.get(),
                             mBottomSheetController,
                             mModalDialogManagerSupplier.get()));
-        }
-
-        private @Nullable IncognitoNtpMetrics createIncognitoNtpMetrics() {
-            if (ChromeFeatureList.sRecordIncognitoNtpTimeToFirstNavigationMetric.isEnabled()) {
-                return new IncognitoNtpMetrics();
-            }
-            return null;
         }
     }
 

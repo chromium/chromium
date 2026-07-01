@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -32,7 +30,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -49,7 +46,6 @@ public class LocationBarFocusScrimHandlerUnitTest {
     @Mock private Runnable mClickDelegate;
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private ScrimManager mScrimManager;
-    @Mock private NewTabPageDelegate mNewTabPageDelegate;
     @Mock private BottomControlsStacker mBottomControlsStacker;
 
     LocationBarFocusScrimHandler mScrimHandler;
@@ -87,17 +83,6 @@ public class LocationBarFocusScrimHandlerUnitTest {
         // A second de-focus shouldn't trigger another hide.
         mScrimHandler.setVisibility(false);
         verify(mScrimManager, times(1)).hideScrim(any(), eq(true));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
-    public void testUpdateScrimVisualState_omniboxAutofocusOnIncognitoNtp() {
-        doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
-        doReturn(true).when(mNewTabPageDelegate).isIncognitoNewTabPageCurrentlyVisible();
-        mScrimHandler.updateScrimVisualState();
-
-        // updateScrimVisualState should not show the scrim, it only updates the model.
-        verify(mScrimManager, never()).showScrim(any());
     }
 
     @Test

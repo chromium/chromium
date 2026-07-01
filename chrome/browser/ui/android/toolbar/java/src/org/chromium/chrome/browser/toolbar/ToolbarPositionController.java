@@ -126,7 +126,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
     private final BrowserControlsSizer mBrowserControlsSizer;
     private final NonNullObservableSupplier<Boolean> mIsNtpWithFakeboxShowingSupplier;
-    private final NonNullObservableSupplier<Boolean> mIsIncognitoNtpShowingSupplier;
     private final NonNullObservableSupplier<Boolean> mIsTabSwitcherFinishedShowingSupplier;
     private final NonNullObservableSupplier<Boolean> mIsOmniboxFocusedSupplier;
     private final NonNullObservableSupplier<Boolean> mIsFormFieldFocusedSupplier;
@@ -162,7 +161,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final Callback<Integer> mKeyboardHeightProgressBarCallback;
     private final KeyboardVisibilityListener mKeyboardVisibilityViewOffsetCallback;
     private final Callback<Boolean> mFormFieldViewOffsetCallback;
-    private final Callback<Boolean> mIncognitoNtpShowingViewOffsetCallback;
     private final Callback<Integer> mControlContainerTranslationCallback;
     private final Callback<Integer> mControlContainerHeightCallback;
     private final EmptyBottomSheetObserver mBottomSheetObserver;
@@ -214,7 +212,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             BrowserControlsSizer browserControlsSizer,
             SharedPreferences sharedPreferences,
             NonNullObservableSupplier<Boolean> isNtpWithFakeboxShowingSupplier,
-            NonNullObservableSupplier<Boolean> isIncognitoNtpShowingSupplier,
             NonNullObservableSupplier<Boolean> isTabSwitcherFinishedShowingSupplier,
             NonNullObservableSupplier<Boolean> isOmniboxFocusedSupplier,
             NonNullObservableSupplier<Boolean> isFormFieldFocusedSupplier,
@@ -245,7 +242,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mIsOmniboxFocusedSupplier = isOmniboxFocusedSupplier;
         mIsFormFieldFocusedSupplier = isFormFieldFocusedSupplier;
         mIsFindInPageShowingSupplier = isFindInPageShowingSupplier;
-        mIsIncognitoNtpShowingSupplier = isIncognitoNtpShowingSupplier;
         mKeyboardAccessoryHeightSupplier = keyboardAccessoryHeightSupplier;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mControlContainer = controlContainer;
@@ -382,8 +378,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 (showing) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView());
         mFormFieldViewOffsetCallback =
                 (focused) -> updateViewOffset(mProgressBarLayer, mToolbarProgressBarContainer);
-        mIncognitoNtpShowingViewOffsetCallback =
-                (showing) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView());
         mControlContainerTranslationCallback =
                 (offset) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView());
         mKeyboardAccessoryHeightObserver =
@@ -441,8 +435,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(
                 mKeyboardVisibilityViewOffsetCallback);
         mIsFormFieldFocusedSupplier.addSyncObserverAndPostIfNonNull(mFormFieldViewOffsetCallback);
-        mIsIncognitoNtpShowingSupplier.addSyncObserverAndPostIfNonNull(
-                mIncognitoNtpShowingViewOffsetCallback);
         mControlContainerTranslationSupplier.addSyncObserverAndPostIfNonNull(
                 mControlContainerTranslationCallback);
         mKeyboardHeightSupplier.addSyncObserverAndPostIfNonNull(mKeyboardHeightToolbarCallback);
@@ -463,7 +455,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mIsOmniboxFocusedSupplier.removeObserver(mIsOmniboxFocusedObserver);
         mIsFormFieldFocusedSupplier.removeObserver(mIsFormFieldFocusedObserver);
         mIsFindInPageShowingSupplier.removeObserver(mIsFindInPageShowingObserver);
-        mIsIncognitoNtpShowingSupplier.removeObserver(mIncognitoNtpShowingViewOffsetCallback);
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
         mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
         mKeyboardAccessoryHeightSupplier.removeObserver(mKeyboardHeightToolbarCallback);

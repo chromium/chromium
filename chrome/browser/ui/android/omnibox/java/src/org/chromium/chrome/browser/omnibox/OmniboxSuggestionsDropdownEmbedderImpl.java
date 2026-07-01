@@ -25,7 +25,6 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
@@ -70,7 +69,6 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     private int mTopPaddingForEdgeToEdge;
     private @Nullable WindowInsetsCompat mWindowInsetsCompat;
     private final @Nullable View mBaseChromeLayout;
-    private final LocationBarDataProvider mLocationBarDataProvider;
     private final Supplier<@FuseboxState Integer> mFuseboxStateSupplier;
     private final Supplier<@FuseboxLayoutMode Integer> mFuseboxLayoutModeSupplier;
 
@@ -95,7 +93,6 @@ class OmniboxSuggestionsDropdownEmbedderImpl
      *     soft keyboard is not visible.
      * @param fuseboxStateSupplier Supplier of the current FuseboxState.
      * @param fuseboxLayoutModeSupplier Supplier of the current FuseboxLayoutMode.
-     * @param locationBarDataProvider Provides LocationBar data, e.g. the current URL.
      * @param topInsetProvider Provider for edge-to-edge top inset changes.
      */
     OmniboxSuggestionsDropdownEmbedderImpl(
@@ -109,7 +106,6 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             Supplier<Integer> bottomWindowPaddingSupplier,
             Supplier<@FuseboxState Integer> fuseboxStateSupplier,
             Supplier<@FuseboxLayoutMode Integer> fuseboxLayoutModeSupplier,
-            LocationBarDataProvider locationBarDataProvider,
             TopInsetProvider topInsetProvider) {
         mWindowAndroid = windowAndroid;
         mAnchorView = anchorView;
@@ -126,7 +122,6 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         mBaseChromeLayout = baseChromeLayout;
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mFuseboxLayoutModeSupplier = fuseboxLayoutModeSupplier;
-        mLocationBarDataProvider = locationBarDataProvider;
         mTopInsetProvider = topInsetProvider;
         recalculateOmniboxAlignment();
 
@@ -155,14 +150,6 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         if (mForcePhoneStyleOmnibox) return false;
         return mWindowWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP
                 && DeviceFormFactor.isWindowOnTablet(mWindowAndroid);
-    }
-
-    @Override
-    public boolean shouldPassThroughUnhandledTouchEvents() {
-        return ChromeFeatureList.sOmniboxAutofocusOnIncognitoNtp.isEnabled()
-                && mLocationBarDataProvider
-                        .getNewTabPageDelegate()
-                        .isIncognitoNewTabPageCurrentlyVisible();
     }
 
     @Override
