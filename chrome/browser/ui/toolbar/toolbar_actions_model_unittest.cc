@@ -248,7 +248,6 @@ void ToolbarActionsModelUnitTest::RunEmitUserHistogramsTest(
 
   InitToolbarModelAndObserver();
 
-  histograms.ExpectTotalCount("ExtensionToolbarModel.BrowserActionsCount", 1);
   histograms.ExpectTotalCount("Extension.Toolbar.BrowserActionsCount2",
                               incremented_histogram_count);
 }

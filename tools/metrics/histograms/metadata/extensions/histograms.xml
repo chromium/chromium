@@ -4582,6 +4582,23 @@ This is emitted for two scenarios when a worker may be unregistered:
   <summary>Tracks Tabs API update actions.</summary>
 </histogram>
 
+<histogram name="Extensions.Toolbar.BrowserActionsCount2" units="actions"
+    expires_after="never">
+<!-- expires-never: Monitoring core user behavior with extensions. -->
+
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The total number of extensions that have an icon in the extension toolbar,
+    including those that are unpinned and only show in the extensions menu.
+    Measured once per &quot;user&quot; profile (profiles where people can
+    install extensions, specifically profiles that can have non-component
+    extensions installed) open. Note: There was a typo in the name in the XML
+    for this histogram until 2026-06, which may result in missing data on some
+    platforms.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"
     units="Extension Count" expires_after="2027-05-03">
   <owner>evasu@chromium.org</owner>
@@ -5097,37 +5114,6 @@ This is emitted for two scenarios when a worker may be unregistered:
     <variant name="ManifestFetchRetry"
         summary="MANIFEST_DOWNLOAD_RETRY stage."/>
   </token>
-</histogram>
-
-<histogram name="ExtensionToolbarModel.BrowserActionsCount" units="actions"
-    expires_after="2023-07-07">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The total number of extensions that have an icon in the extension toolbar,
-    including those that are unpinned and only show in the extensions menu.
-    Measured once per (non-incognito) profile open.
-
-    Histogram is in the process of being removed in favor of its incremented
-    version that emits only on profile open for &quot;user&quot; profiles
-    (profiles where people can install extensions, specifically profiles that
-    can have non-component extensions installed).
-  </summary>
-</histogram>
-
-<histogram name="ExtensionToolbarModel.BrowserActionsCount2" units="actions"
-    expires_after="never">
-<!-- expires-never: Monitoring core user behavior with extensions. -->
-
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The total number of extensions that have an icon in the extension toolbar,
-    including those that are unpinned and only show in the extensions menu.
-    Measured once per &quot;user&quot; profile (profiles where people can
-    install extensions, specifically profiles that can have non-component
-    extensions installed) open.
-  </summary>
 </histogram>
 
 <histogram name="GuestView.GuestViewCreated" enum="GuestViewType"

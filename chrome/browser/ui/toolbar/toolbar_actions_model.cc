@@ -545,10 +545,6 @@ void ToolbarActionsModel::InitializeActionList() {
   pinned_action_ids_ = GetFilteredPinnedActionIds();
 
   if (!profile_->IsOffTheRecord()) {
-    // Prefixed with "ExtensionToolbarModel" rather than "Extensions.Toolbar"
-    // for historical reasons.
-    base::UmaHistogramCounts100("ExtensionToolbarModel.BrowserActionsCount",
-                                action_ids_.size());
     if (extensions::profile_util::ProfileCanUseNonComponentExtensions(
             profile_)) {
       base::UmaHistogramCounts100("Extension.Toolbar.BrowserActionsCount2",
