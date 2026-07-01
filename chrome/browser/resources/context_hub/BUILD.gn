@@ -14,6 +14,7 @@ build_webui("build") {
     "app.html.ts",
     "browser_proxy.ts",
     "memory_banks/memory_banks.html.ts",
+    "memory_banks/memory_banks_entry.html.ts",
     "memory_banks/memory_banks.ts",
     "taskbox/ai_taskbox.html.ts",
     "taskbox/ai_taskbox.ts",

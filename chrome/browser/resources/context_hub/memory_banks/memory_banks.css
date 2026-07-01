@@ -139,6 +139,8 @@ h2 {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+  position: relative;
+  height: 56px;
 }
 
 /* Selection State */
@@ -177,4 +179,29 @@ h2 {
 .action-buttons {
   display: flex;
   gap: 8px;
+}
+
+#search-field {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 680px;
+  max-width: 100%;
+  height: 36px;
+  background: var(--cr-card-background-color);
+  border-radius: 100px;
+  border: 1px solid var(--cr-separator-color);
+  box-sizing: border-box;
+  padding: 4px 10px;
+
+  --cr-search-field-input-border-bottom: none;
+  --cr-search-field-input-min-height: auto;
+  --cr-search-field-input-padding-top: 6px;
+  --cr-search-field-input-padding-bottom: 6px;
+  --cr-search-field-search-icon-display: none;
+  --cr-search-field-search-icon-inline-display: block;
+  --cr-search-field-search-icon-fill: var(--cr-secondary-text-color);
+  --cr-search-field-clear-icon-fill: var(--cr-secondary-text-color);
+  --cr-search-field-input-width: 100%;
+  --cr-search-field-placeholder-color: var(--cr-secondary-text-color);
 }
