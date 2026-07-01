@@ -1,0 +1,65 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("qrcode_generator") {
+  public = [
+    "qrcode_generator_bubble.h",
+    "qrcode_window_controller.h",
+  ]
+  sources = [
+    "qrcode_generator_bubble.cc",
+    "qrcode_window_controller.cc",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/qrcode_generator",
+    "//chrome/browser/ui/views/location_bar",
+    "//components/qr_code_generator",
+    "//components/qr_code_generator:bitmap_generator",
+    "//ui/base",
+    "//ui/base/unowned_user_data",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//chrome/browser/ui/qrcode_generator",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/sharing_hub",
+    "//components/sharing_message",
+    "//components/url_formatter",
+    "//ui/base/clipboard",
+    "//ui/gfx",
+    "//ui/native_theme",
+    "//ui/resources",
+    "//ui/strings:ui_strings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "qrcode_generator_bubble_unittest.cc" ]
+  deps = [
+    ":qrcode_generator",
+    "//base",
+    "//chrome/test:test_support",
+    "//components/qr_code_generator",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
