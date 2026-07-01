@@ -55,6 +55,7 @@
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "net/cert/internal/trust_store_chrome.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
+#include "net/cert/root_store_proto_lite/signer_set.pb.h"
 #include "third_party/boringssl/src/pki/parse_name.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 #endif
@@ -110,8 +111,9 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
   }
 
   // Return reference to cert_net_fetcher for testing purposes.
-  if (out_cert_net_fetcher)
+  if (out_cert_net_fetcher) {
     *out_cert_net_fetcher = cert_net_fetcher;
+  }
 
   // The service will delete itself upon disconnection.
   return new internal::CertVerifierServiceImpl(
@@ -364,41 +366,96 @@ void CertVerifierServiceFactoryImpl::OnCRLSetParsed(
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
     mojo_base::ProtoWrapper new_root_store,
+    std::optional<mojo_base::ProtoWrapper> new_signer_set,
     UpdateChromeRootStoreCallback callback) {
   // Ensure the callback is run regardless which return path is used.
   base::ScopedClosureRunner scoped_callback_runner(std::move(callback));
 
-  auto message = new_root_store.As<chrome_root_store::RootStore>();
-  if (!message.has_value()) {
-    LOG(ERROR) << "error parsing proto for Chrome Root Store";
+  std::optional<net::ChromeRootStoreData> new_crs_data =
+      ParseChromeRootStoreProto(new_root_store);
+  std::optional<net::ChromeRootStoreSignerSet> new_signer_set_data =
+      ParseSignerSetProto(new_signer_set);
+
+  if (!new_crs_data && !new_signer_set_data) {
     return;
   }
 
-  // We only check against the compiled version to allow for us to to use
+  InitializeRootStoreDataIfNecessary();
+
+  net::ChromeRootStoreData root_store_data =
+      new_crs_data ? std::move(*new_crs_data) : *proc_params_.root_store_data;
+  std::optional<net::ChromeRootStoreSignerSet> signer_set =
+      new_signer_set_data ? std::move(new_signer_set_data)
+                          : proc_params_.root_store_data->signer_set();
+  if (signer_set) {
+    root_store_data.SetSignerSet(std::move(*signer_set));
+  }
+  proc_params_.root_store_data = std::move(root_store_data);
+  UpdateVerifierServices();
+}
+
+// static
+std::optional<net::ChromeRootStoreData>
+CertVerifierServiceFactoryImpl::ParseChromeRootStoreProto(
+    const mojo_base::ProtoWrapper& new_root_store) {
+  auto crs_message = new_root_store.As<chrome_root_store::RootStore>();
+  if (!crs_message.has_value()) {
+    LOG(ERROR) << "error parsing proto for Chrome Root Store";
+    return std::nullopt;
+  }
+
+  // We only check against the compiled version to allow for us to use
   // Component Updater to revert to older versions. Check is left in
   // to guard against Component updater being stuck on older versions due
   // to daily updates of the PKI Metadata component being broken.
-  if (message->version_major() <= net::CompiledChromeRootStoreVersion()) {
-    return;
+  if (crs_message->version_major() <= net::CompiledChromeRootStoreVersion()) {
+    return std::nullopt;
   }
 
   std::optional<net::ChromeRootStoreData> root_store_data =
-      net::ChromeRootStoreData::CreateFromRootStoreProto(message.value());
+      net::ChromeRootStoreData::CreateFromRootStoreProto(crs_message.value());
   if (!root_store_data) {
     LOG(ERROR) << "error interpreting proto for Chrome Root Store";
-    return;
+    return std::nullopt;
   }
 
   if (root_store_data->trust_anchors().empty()) {
     LOG(ERROR) << "parsed root store contained no anchors";
-    return;
+    return std::nullopt;
   }
 
-  // Update the stored Chrome Root Store so that new CertVerifierService
-  // instances will start with the updated store.
-  proc_params_.root_store_data = std::move(root_store_data);
+  return root_store_data;
+}
 
-  UpdateVerifierServices();
+// static
+std::optional<net::ChromeRootStoreSignerSet>
+CertVerifierServiceFactoryImpl::ParseSignerSetProto(
+    const std::optional<mojo_base::ProtoWrapper>& new_signer_set) {
+  if (!new_signer_set.has_value() ||
+      !base::FeatureList::IsEnabled(net::features::kVerifyMTCs)) {
+    return std::nullopt;
+  }
+
+  std::optional<chrome_root_store::SignerSet> signer_set_message =
+      new_signer_set->As<chrome_root_store::SignerSet>();
+  if (!signer_set_message.has_value()) {
+    LOG(ERROR) << "error parsing proto for SignerSet";
+    return std::nullopt;
+  }
+
+  if (signer_set_message->timestamp().seconds() <=
+      net::CompiledSignerSetTimestampSeconds()) {
+    return std::nullopt;
+  }
+
+  std::optional<net::ChromeRootStoreSignerSet> signer_set =
+      net::ChromeRootStoreSignerSet::CreateFromProto(*signer_set_message);
+  if (!signer_set.has_value()) {
+    LOG(ERROR) << "error interpreting proto for SignerSet";
+    return std::nullopt;
+  }
+
+  return signer_set;
 }
 
 void CertVerifierServiceFactoryImpl::UpdateMtcMetadata(

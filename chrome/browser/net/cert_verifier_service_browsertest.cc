@@ -143,7 +143,8 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceChromeRootStoreOptionalTest, Test) {
 
     base::RunLoop update_run_loop;
     content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store), update_run_loop.QuitClosure());
+        mojo_base::ProtoWrapper(root_store), std::nullopt,
+        update_run_loop.QuitClosure());
     update_run_loop.Run();
   }
 

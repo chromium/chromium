@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
@@ -20,6 +21,8 @@
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
@@ -29,6 +32,8 @@ namespace net {
 
 namespace {
 #include "net/data/ssl/chrome_root_store/chrome-root-store-inc.cc"
+#include "net/data/ssl/chrome_root_store/signer-set-inc.cc"
+
 }  // namespace
 
 ChromeRootCertConstraints::ChromeRootCertConstraints() = default;
@@ -309,10 +314,15 @@ ChromeRootStoreData::CreateFromRootStoreProto(
 }
 
 ChromeRootStoreData ChromeRootStoreData::CreateFromCompiledRootStore() {
-  return ChromeRootStoreData(kChromeRootCertList, kEutlRootCertList,
-                             kChromeTrustedMtcAnchorList,
-                             /*certs_are_static=*/true,
-                             /*version=*/CompiledChromeRootStoreVersion());
+  ChromeRootStoreData root_store_data(
+      kChromeRootCertList, kEutlRootCertList, kChromeTrustedMtcAnchorList,
+      /*certs_are_static=*/true,
+      /*version=*/CompiledChromeRootStoreVersion());
+  if (base::FeatureList::IsEnabled(features::kVerifyMTCs)) {
+    root_store_data.signer_set_ =
+        ChromeRootStoreSignerSet::CreateFromCompiled();
+  }
+  return root_store_data;
 }
 
 ChromeRootStoreData ChromeRootStoreData::CreateForTesting(
@@ -767,6 +777,10 @@ int64_t CompiledChromeRootStoreVersion() {
   return kRootStoreVersion;
 }
 
+int64_t CompiledSignerSetTimestampSeconds() {
+  return kSignerSetCompiledTimestampSeconds;
+}
+
 namespace {
 
 std::optional<ChromeRootStoreMtcMetadata::MtcAnchorData> CreateMtcAnchorData(
@@ -825,6 +839,122 @@ std::optional<ChromeRootStoreMtcMetadata::MtcAnchorData> CreateMtcAnchorData(
   return mtc_anchor_data;
 }
 
+base::Time ProtoTimestampToTime(const chrome_root_store::Timestamp& timestamp) {
+  return base::Time::UnixEpoch() + base::Seconds(timestamp.seconds()) +
+         base::Nanoseconds(timestamp.nanos());
+}
+
+base::TimeDelta ProtoDurationToTimeDelta(
+    const chrome_root_store::Duration& duration) {
+  return base::Seconds(duration.seconds()) +
+         base::Nanoseconds(duration.nanos());
+}
+
+std::optional<std::vector<uint8_t>> RelativeOidBytesFromText(
+    std::string_view oid_text) {
+  bssl::ScopedCBB cbb;
+  if (!CBB_init(cbb.get(), 32) ||
+      !CBB_add_asn1_relative_oid_from_text(cbb.get(), oid_text.data(),
+                                           oid_text.size()) ||
+      !CBB_flush(cbb.get())) {
+    return std::nullopt;
+  }
+  // SAFETY: CBB_len is guaranteed to return the proper size for CBB_data.
+  return base::ToVector(
+      UNSAFE_BUFFERS(base::span(CBB_data(cbb.get()), CBB_len(cbb.get()))));
+}
+
+bool ParseSigner(const chrome_root_store::Signer& signer_proto,
+                 std::vector<Signer>& out_signers) {
+  Signer signer;
+  signer.friendly_name = signer_proto.friendly_name();
+
+  std::optional<std::vector<uint8_t>> oid_bytes =
+      RelativeOidBytesFromText(signer_proto.base_id());
+  if (!oid_bytes.has_value()) {
+    return false;
+  }
+  signer.base_id = std::move(*oid_bytes);
+
+  for (const auto& state : signer_proto.state_history()) {
+    if (!state.has_state_start()) {
+      return false;
+    }
+    signer.state_history.emplace_back(
+        state.state(), ProtoTimestampToTime(state.state_start()));
+  }
+
+  for (const auto& op : signer_proto.operator_history()) {
+    if (!op.has_operator_start()) {
+      return false;
+    }
+    signer.operator_history.emplace_back(
+        std::string(op.name()), ProtoTimestampToTime(op.operator_start()));
+  }
+
+  signer.type = signer_proto.type();
+  signer.realm = signer_proto.realm();
+
+  if (signer_proto.has_max_cert_lifetime()) {
+    signer.max_cert_lifetime =
+        ProtoDurationToTimeDelta(signer_proto.max_cert_lifetime());
+  }
+
+  std::optional<std::vector<ChromeRootCertConstraints>> constraints =
+      CreateConstraints(signer_proto.constraints());
+  if (!constraints) {
+    return false;
+  }
+  signer.constraints = std::move(*constraints);
+
+  if (signer_proto.has_crs_root_id()) {
+    signer.crs_root_id = signer_proto.crs_root_id();
+  }
+  signer.min_log_number = signer_proto.min_log_number();
+  signer.signature_algorithm = signer_proto.signature_algorithm();
+
+  // For component updates, key bytes may be included directly in the proto.
+  // We parse them into a bssl::UniquePtr<CRYPTO_BUFFER>.
+  // We check if the key matches any compiled-in key from kSignerKeys (defined
+  // in signer-set-inc.cc). If it matches, we use the compiled-in span
+  // directly without copying. Otherwise, we store a copy in owned_keys_ and
+  // reference it.
+  if (!signer_proto.key().empty()) {
+    auto sha256_hash =
+        crypto::SHA256Hash(base::as_byte_span(signer_proto.key()));
+    auto it = kSignerKeys.find(base::span<const uint8_t>(sha256_hash));
+    if (it != kSignerKeys.end()) {
+      // This is safe since this is a key that's compiled in and static.
+      signer.key =
+          x509_util::CreateCryptoBufferFromStaticDataUnsafe(it->second);
+    } else {
+      signer.key =
+          x509_util::CreateCryptoBuffer(base::as_byte_span(signer_proto.key()));
+    }
+  } else {
+    // For the compiled-in list, the proto in signer-set-inc.cc does not
+    // include key bytes, only key_sha256 hashes. Here we look up those hashes
+    // in the separate array of key spans (kSignerKeys) and assign the span.
+    std::array<uint8_t, crypto::kSHA256Length> sha256_hash;
+    if (!base::HexStringToSpan(signer_proto.key_sha256(), sha256_hash)) {
+      LOG(ERROR) << "Failed to decode key_sha256 hex: "
+                 << signer_proto.key_sha256();
+      return false;
+    }
+    auto it = kSignerKeys.find(base::span<const uint8_t>(sha256_hash));
+    if (it == kSignerKeys.end()) {
+      LOG(ERROR) << "Could not find key for key_sha256: "
+                 << signer_proto.key_sha256();
+      return false;
+    }
+    // This is safe since this is a key that's compiled in and static.
+    signer.key = x509_util::CreateCryptoBufferFromStaticDataUnsafe(it->second);
+  }
+
+  out_signers.push_back(std::move(signer));
+  return true;
+}
+
 }  // namespace
 
 ChromeRootStoreMtcMetadata::MtcAnchorData::MtcAnchorData() = default;
@@ -876,6 +1006,113 @@ ChromeRootStoreMtcMetadata::CreateFromMtcMetadataProto(
   }
 
   return mtc_metadata;
+}
+
+SignerStateChange::SignerStateChange() = default;
+SignerStateChange::SignerStateChange(chrome_root_store::SignerState state,
+                                     base::Time state_start)
+    : state(state), state_start(state_start) {}
+SignerStateChange::~SignerStateChange() = default;
+SignerStateChange::SignerStateChange(const SignerStateChange& other) = default;
+SignerStateChange::SignerStateChange(SignerStateChange&& other) = default;
+SignerStateChange& SignerStateChange::operator=(
+    const SignerStateChange& other) = default;
+SignerStateChange& SignerStateChange::operator=(SignerStateChange&& other) =
+    default;
+
+SignerOperatorChange::SignerOperatorChange() = default;
+SignerOperatorChange::SignerOperatorChange(std::string name,
+                                           base::Time operator_start)
+    : name(std::move(name)), operator_start(operator_start) {}
+SignerOperatorChange::~SignerOperatorChange() = default;
+SignerOperatorChange::SignerOperatorChange(const SignerOperatorChange& other) =
+    default;
+SignerOperatorChange::SignerOperatorChange(SignerOperatorChange&& other) =
+    default;
+SignerOperatorChange& SignerOperatorChange::operator=(
+    const SignerOperatorChange& other) = default;
+SignerOperatorChange& SignerOperatorChange::operator=(
+    SignerOperatorChange&& other) = default;
+
+SignerOperator::SignerOperator() = default;
+SignerOperator::SignerOperator(std::string name, std::vector<std::string> email)
+    : name(std::move(name)), email(std::move(email)) {}
+SignerOperator::~SignerOperator() = default;
+SignerOperator::SignerOperator(const SignerOperator& other) = default;
+SignerOperator::SignerOperator(SignerOperator&& other) = default;
+SignerOperator& SignerOperator::operator=(const SignerOperator& other) =
+    default;
+SignerOperator& SignerOperator::operator=(SignerOperator&& other) = default;
+
+Signer::Signer() = default;
+Signer::~Signer() = default;
+Signer::Signer(const Signer& other) = default;
+Signer::Signer(Signer&& other) = default;
+Signer& Signer::operator=(const Signer& other) = default;
+Signer& Signer::operator=(Signer&& other) = default;
+
+ChromeRootStoreSignerSet::ChromeRootStoreSignerSet() = default;
+ChromeRootStoreSignerSet::~ChromeRootStoreSignerSet() = default;
+ChromeRootStoreSignerSet::ChromeRootStoreSignerSet(
+    const ChromeRootStoreSignerSet& other) = default;
+ChromeRootStoreSignerSet::ChromeRootStoreSignerSet(
+    ChromeRootStoreSignerSet&& other) = default;
+ChromeRootStoreSignerSet& ChromeRootStoreSignerSet::operator=(
+    const ChromeRootStoreSignerSet& other) = default;
+ChromeRootStoreSignerSet& ChromeRootStoreSignerSet::operator=(
+    ChromeRootStoreSignerSet&& other) = default;
+
+// static
+std::optional<ChromeRootStoreSignerSet>
+ChromeRootStoreSignerSet::CreateFromProto(
+    const chrome_root_store::SignerSet& proto) {
+  ChromeRootStoreSignerSet signer_set;
+
+  base::Time timestamp;
+  if (proto.has_timestamp()) {
+    timestamp = ProtoTimestampToTime(proto.timestamp());
+  } else {
+    timestamp = base::Time::Min();
+  }
+  signer_set.timestamp_ = timestamp;
+  signer_set.version_ = proto.version();
+
+  for (const auto& op : proto.operators()) {
+    std::vector<std::string> emails;
+    for (const auto& email : op.email()) {
+      emails.emplace_back(email);
+    }
+    signer_set.operators_.emplace_back(std::string(op.name()),
+                                       std::move(emails));
+  }
+
+  for (const auto& issuer : proto.issuers()) {
+    if (!ParseSigner(issuer, signer_set.issuers_)) {
+      return std::nullopt;
+    }
+  }
+
+  for (const auto& mirror : proto.mirrors()) {
+    if (!ParseSigner(mirror, signer_set.mirrors_)) {
+      return std::nullopt;
+    }
+  }
+
+  return signer_set;
+}
+
+// static
+ChromeRootStoreSignerSet ChromeRootStoreSignerSet::CreateFromCompiled() {
+  chrome_root_store::SignerSet proto;
+  CHECK(proto.ParseFromArray(kSignerSetProto.data(), kSignerSetProto.size()));
+
+  // The compiled-in proto only contains key_sha256 hashes. When CreateFromProto
+  // runs below, it automatically accesses the separate array of key spans
+  // (kSignerKeys from signer-set-inc.cc) to populate the key spans for each
+  // signer.
+  std::optional<ChromeRootStoreSignerSet> signer_set = CreateFromProto(proto);
+  CHECK(signer_set.has_value());
+  return std::move(*signer_set);
 }
 
 }  // namespace net

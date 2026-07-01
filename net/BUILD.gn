@@ -161,6 +161,8 @@ component("net") {
     "base/backoff_entry_serializer.h",
     "base/base64.cc",
     "base/base64.h",
+    "base/bssl_refcounted.cc",
+    "base/bssl_refcounted.h",
     "base/cache_type.h",
     "base/chunked_upload_data_stream.cc",
     "base/chunked_upload_data_stream.h",
@@ -3625,6 +3627,7 @@ target(_test_target_type, "net_unittests") {
     deps += [
       "//base/version_info",
       "//net/data/ssl/chrome_root_store:gen_root_store_test_inc",
+      "//net/data/ssl/chrome_root_store:gen_signer_set_inc",
     ]
 
     if (is_win) {

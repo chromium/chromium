@@ -86,6 +86,8 @@ class PKIMetadataComponentInstallerService final {
                                             const std::string& contents);
   [[nodiscard]] bool WriteMtcMetadataForTesting(const base::FilePath& path,
                                                 const std::string& contents);
+  [[nodiscard]] bool WriteSignerSetDataForTesting(const base::FilePath& path,
+                                                  const std::string& contents);
 #endif
 
   void AddObserver(Observer* observer);
@@ -101,11 +103,17 @@ class PKIMetadataComponentInstallerService final {
   void UpdateNetworkServiceKPListOnUI(const std::string& kp_config_bytes);
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  static std::optional<mojo_base::ProtoWrapper> ParseChromeRootStore(
+      const base::FilePath& crs_pb_path);
+  static std::optional<mojo_base::ProtoWrapper> ParseSignerSet(
+      const base::FilePath& signer_pb_path);
+
   // Updates SystemNetworkContextManager and cert verifiers with the component
-  // delivered Chrome Root Store data. `chrome_root_store` should be a wrapped
-  // chrome_root_store.RootStore proto message.
+  // delivered Chrome Root Store data and optional Signer Set data.
   void UpdateChromeRootStoreOnUI(
-      std::optional<mojo_base::ProtoWrapper> chrome_root_store);
+      std::pair<std::optional<mojo_base::ProtoWrapper>,
+                std::optional<mojo_base::ProtoWrapper>>
+          root_store_and_signer_set);
 
   // Updates SystemNetworkContextManager and cert verifiers with the component
   // delivered MTC Metadata. `mtc_metadata` should be a wrapped

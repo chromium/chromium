@@ -23,6 +23,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
@@ -86,6 +87,14 @@ const uint64_t kMaxSupportedCTCompatibilityVersion = 4;
 // Chrome is compatible with the version it is being incremented to.
 const uint64_t kMaxSupportedKPCompatibilityVersion = 1;
 
+// This is the last version of signer sets that this version of Chrome will
+// accept. If a list is delivered with a compatibility version higher than this,
+// it will be ignored. This should never be decreased since that will cause MTC
+// verification to eventually fail for new signer sets. This should also only be
+// increased if Chrome is compatible with the version it is being incremented
+// to.
+const int64_t kMaxSupportedSignerSetCompatibilityVersion = 1;
+
 // Ignore any MtcMetadata component update data that is older than this amount.
 // The MTC Metadata has a short useful lifetime, and since it impacts Trust
 // Anchor ID data that is sent over the wire, using a stale update would just
@@ -105,6 +114,9 @@ constexpr char kChromeRootStoreProto[] = "chrome_root_store.RootStore";
 const base::FilePath::CharType kMtcMetadataProtoFileName[] =
     FILE_PATH_LITERAL("mtc_metadata.pb");
 constexpr char kMtcMetadataProto[] = "chrome_root_store.MtcMetadata";
+const base::FilePath::CharType kSignerSetProtoFileName[] =
+    FILE_PATH_LITERAL("signer_set.pb");
+constexpr char kSignerSetProto[] = "chrome_root_store.SignerSet";
 #endif
 
 std::string LoadBinaryProtoFromDisk(const base::FilePath& pb_path) {
@@ -165,7 +177,6 @@ std::vector<net::SHA256HashValue> SHA256HashValueArrayFromProtoBytes(
   }
   return hashes;
 }
-
 }  // namespace
 
 namespace component_updater {
@@ -205,23 +216,69 @@ PKIMetadataComponentInstallerService::MtcLogIdAndLandmarkTrustAnchorId::
     MtcLogIdAndLandmarkTrustAnchorId(
         const MtcLogIdAndLandmarkTrustAnchorId& other) = default;
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+// static
+std::optional<mojo_base::ProtoWrapper>
+PKIMetadataComponentInstallerService::ParseChromeRootStore(
+    const base::FilePath& crs_pb_path) {
+  std::string crs_contents = LoadBinaryProtoFromDisk(crs_pb_path);
+  if (crs_contents.empty()) {
+    return std::nullopt;
+  }
+  return mojo_base::ProtoWrapper(base::as_byte_span(crs_contents),
+                                 kChromeRootStoreProto,
+                                 mojo_base::ProtoWrapperBytes::GetPassKey());
+}
+
+// static
+std::optional<mojo_base::ProtoWrapper>
+PKIMetadataComponentInstallerService::ParseSignerSet(
+    const base::FilePath& signer_pb_path) {
+  if (!base::FeatureList::IsEnabled(net::features::kVerifyMTCs)) {
+    return std::nullopt;
+  }
+  std::string signer_contents = LoadBinaryProtoFromDisk(signer_pb_path);
+  if (signer_contents.empty()) {
+    return std::nullopt;
+  }
+  chrome_root_store::SignerSet signer_set_proto;
+  if (!signer_set_proto.ParseFromString(signer_contents)) {
+    LOG(ERROR) << "Failed to parse SignerSet proto";
+    return std::nullopt;
+  }
+  if (signer_set_proto.compatibility_version() >
+      kMaxSupportedSignerSetCompatibilityVersion) {
+    LOG(WARNING) << "SignerSet compatibility version ("
+                 << signer_set_proto.compatibility_version()
+                 << ") is higher than max supported version ("
+                 << kMaxSupportedSignerSetCompatibilityVersion
+                 << "). Ignoring update.";
+    return std::nullopt;
+  }
+  return mojo_base::ProtoWrapper(base::as_byte_span(signer_contents),
+                                 kSignerSetProto,
+                                 mojo_base::ProtoWrapperBytes::GetPassKey());
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+
 void PKIMetadataComponentInstallerService::ConfigureChromeRootStore() {
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(
-          [](const base::FilePath& pb_path)
-              -> std::optional<mojo_base::ProtoWrapper> {
-            std::string file_contents = LoadBinaryProtoFromDisk(pb_path);
-            if (file_contents.size()) {
-              return mojo_base::ProtoWrapper(
-                  base::as_byte_span(file_contents), kChromeRootStoreProto,
-                  mojo_base::ProtoWrapperBytes::GetPassKey());
-            }
-            return std::nullopt;
+          [](const base::FilePath& crs_pb_path,
+             const base::FilePath& signer_pb_path)
+              -> std::pair<std::optional<mojo_base::ProtoWrapper>,
+                           std::optional<mojo_base::ProtoWrapper>> {
+            return std::make_pair(
+                PKIMetadataComponentInstallerService::ParseChromeRootStore(
+                    crs_pb_path),
+                PKIMetadataComponentInstallerService::ParseSignerSet(
+                    signer_pb_path));
           },
-          install_dir_.Append(kCRSProtoFileName)),
+          install_dir_.Append(kCRSProtoFileName),
+          install_dir_.Append(kSignerSetProtoFileName)),
       base::BindOnce(
           &PKIMetadataComponentInstallerService::UpdateChromeRootStoreOnUI,
           weak_factory_.GetWeakPtr()));
@@ -261,11 +318,14 @@ void PKIMetadataComponentInstallerService::ConfigureMtcMetadata() {
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 void PKIMetadataComponentInstallerService::UpdateChromeRootStoreOnUI(
-    std::optional<mojo_base::ProtoWrapper> chrome_root_store) {
+    std::pair<std::optional<mojo_base::ProtoWrapper>,
+              std::optional<mojo_base::ProtoWrapper>>
+        root_store_and_signer_set) {
+  auto& [chrome_root_store, signer_set] = root_store_and_signer_set;
   if (chrome_root_store.has_value()) {
     UpdateCRSTrustAnchorIDs(chrome_root_store.value());
     content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
-        std::move(chrome_root_store.value()),
+        std::move(chrome_root_store.value()), std::move(signer_set),
         base::BindOnce(&PKIMetadataComponentInstallerService::
                            NotifyChromeRootStoreConfigured,
                        weak_factory_.GetWeakPtr()));
@@ -484,6 +544,14 @@ bool PKIMetadataComponentInstallerService::WriteMtcMetadataForTesting(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fastpush_install_dir_ = path;
   return base::WriteFile(path.Append(kMtcMetadataProtoFileName), contents);
+}
+
+bool PKIMetadataComponentInstallerService::WriteSignerSetDataForTesting(
+    const base::FilePath& path,
+    const std::string& contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  install_dir_ = path;
+  return base::WriteFile(path.Append(kSignerSetProtoFileName), contents);
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 

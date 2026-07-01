@@ -13,7 +13,9 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "crypto/sha2.h"
+#include "net/base/bssl_refcounted.h"
 #include "net/base/net_export.h"
+#include "net/cert/root_store_proto_lite/signer_set.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/boringssl/src/pki/path_builder.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
@@ -22,6 +24,7 @@
 namespace chrome_root_store {
 class RootStore;
 class MtcMetadata;
+class SignerSet;
 }
 
 namespace net {
@@ -105,6 +108,96 @@ struct NET_EXPORT ChromeRootCertConstraints {
   std::optional<base::Time> validity_starts_after;
 };
 
+struct NET_EXPORT SignerStateChange {
+  SignerStateChange();
+  SignerStateChange(chrome_root_store::SignerState state,
+                    base::Time state_start);
+  ~SignerStateChange();
+  SignerStateChange(const SignerStateChange&);
+  SignerStateChange(SignerStateChange&&);
+  SignerStateChange& operator=(const SignerStateChange&);
+  SignerStateChange& operator=(SignerStateChange&&);
+
+  chrome_root_store::SignerState state;
+  base::Time state_start;
+};
+
+struct NET_EXPORT SignerOperatorChange {
+  SignerOperatorChange();
+  SignerOperatorChange(std::string name, base::Time operator_start);
+  ~SignerOperatorChange();
+  SignerOperatorChange(const SignerOperatorChange&);
+  SignerOperatorChange(SignerOperatorChange&&);
+  SignerOperatorChange& operator=(const SignerOperatorChange&);
+  SignerOperatorChange& operator=(SignerOperatorChange&&);
+
+  std::string name;
+  base::Time operator_start;
+};
+
+struct NET_EXPORT SignerOperator {
+  SignerOperator();
+  SignerOperator(std::string name, std::vector<std::string> email);
+  ~SignerOperator();
+  SignerOperator(const SignerOperator&);
+  SignerOperator(SignerOperator&&);
+  SignerOperator& operator=(const SignerOperator&);
+  SignerOperator& operator=(SignerOperator&&);
+
+  std::string name;
+  std::vector<std::string> email;
+};
+
+struct NET_EXPORT Signer {
+  Signer();
+  ~Signer();
+  Signer(const Signer&);
+  Signer(Signer&&);
+  Signer& operator=(const Signer&);
+  Signer& operator=(Signer&&);
+
+  std::string friendly_name;
+  std::vector<uint8_t> base_id;
+  std::vector<SignerStateChange> state_history;
+  std::vector<SignerOperatorChange> operator_history;
+  BsslRefcounted<CRYPTO_BUFFER> key;
+  chrome_root_store::SignerType type;
+  chrome_root_store::Realm realm;
+  std::optional<base::TimeDelta> max_cert_lifetime;
+  std::vector<ChromeRootCertConstraints> constraints;
+  std::optional<int32_t> crs_root_id;
+  int32_t min_log_number;
+  chrome_root_store::SignatureAlgorithm signature_algorithm;
+};
+
+class NET_EXPORT ChromeRootStoreSignerSet {
+ public:
+  ChromeRootStoreSignerSet();
+  ~ChromeRootStoreSignerSet();
+  ChromeRootStoreSignerSet(const ChromeRootStoreSignerSet&);
+  ChromeRootStoreSignerSet(ChromeRootStoreSignerSet&&);
+  ChromeRootStoreSignerSet& operator=(const ChromeRootStoreSignerSet&);
+  ChromeRootStoreSignerSet& operator=(ChromeRootStoreSignerSet&&);
+
+  static std::optional<ChromeRootStoreSignerSet> CreateFromProto(
+      const chrome_root_store::SignerSet& proto);
+
+  static ChromeRootStoreSignerSet CreateFromCompiled();
+
+  const base::Time& timestamp() const { return timestamp_; }
+  const std::string& version() const { return version_; }
+  const std::vector<SignerOperator>& operators() const { return operators_; }
+  const std::vector<Signer>& issuers() const { return issuers_; }
+  const std::vector<Signer>& mirrors() const { return mirrors_; }
+
+ private:
+  base::Time timestamp_;
+  std::string version_;
+  std::vector<SignerOperator> operators_;
+  std::vector<Signer> issuers_;
+  std::vector<Signer> mirrors_;
+};
+
 // ChromeRootStoreData is a container class that stores the Chrome Root Store
 // data which is updated by the RootStore and MtcMetadata protos.
 class NET_EXPORT ChromeRootStoreData {
@@ -178,6 +271,12 @@ class NET_EXPORT ChromeRootStoreData {
   const std::vector<MtcAnchor>& mtc_trust_anchors() const {
     return mtc_trust_anchors_;
   }
+  const std::optional<ChromeRootStoreSignerSet>& signer_set() const {
+    return signer_set_;
+  }
+  void SetSignerSet(ChromeRootStoreSignerSet signer_set) {
+    signer_set_ = std::move(signer_set);
+  }
   int64_t version() const { return version_; }
 
  private:
@@ -191,6 +290,7 @@ class NET_EXPORT ChromeRootStoreData {
   std::vector<Anchor> trust_anchors_;
   std::vector<Anchor> eutl_certs_;
   std::vector<MtcAnchor> mtc_trust_anchors_;
+  std::optional<ChromeRootStoreSignerSet> signer_set_;
   int64_t version_;
 };
 
@@ -446,6 +546,10 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
 // Returns the version # of the Chrome Root Store that was compiled into the
 // binary.
 NET_EXPORT int64_t CompiledChromeRootStoreVersion();
+
+// Returns the timestamp (seconds since epoch) of the SignerSet that was
+// compiled into the binary.
+NET_EXPORT int64_t CompiledSignerSetTimestampSeconds();
 
 }  // namespace net
 

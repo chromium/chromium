@@ -5,6 +5,7 @@
 #include "net/cert/internal/trust_store_chrome.h"
 
 #include "base/containers/extend.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,6 +30,7 @@ namespace net {
 namespace {
 
 #include "net/data/ssl/chrome_root_store/chrome-root-store-test-data-inc.cc"
+#include "net/data/ssl/chrome_root_store/signer-set-inc.cc"
 
 std::shared_ptr<const bssl::ParsedCertificate> ToParsedCertificate(
     bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer) {
@@ -1460,6 +1462,62 @@ TEST(TrustStoreChromeTestNoFixture,
     EXPECT_FALSE(constraint1.max_version_exclusive.has_value());
     EXPECT_THAT(constraint1.permitted_dns_names, testing::IsEmpty());
   }
+}
+
+TEST(TrustStoreChromeTestNoFixture, SignerSetUpdates) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kVerifyMTCs);
+
+  // Check CreateFromCompiled populates the set.
+  ChromeRootStoreSignerSet compiled_set =
+      ChromeRootStoreSignerSet::CreateFromCompiled();
+  EXPECT_FALSE(compiled_set.version().empty());
+
+  chrome_root_store::SignerSet proto;
+  proto.mutable_timestamp()->set_seconds(123456);
+  proto.set_version("2.0.0");
+  proto.set_compatibility_version(0);
+
+  // Add an issuer that has a key that exists in the built-in list.
+  ASSERT_FALSE(kSignerKeys.empty());
+  auto compiled_key_it = kSignerKeys.begin();
+  base::span<const uint8_t> compiled_key_bytes = compiled_key_it->second;
+
+  auto* issuer1 = proto.add_issuers();
+  issuer1->set_friendly_name("compiled_key_issuer_with_bytes");
+  issuer1->set_key(base::as_string_view(compiled_key_bytes));
+  issuer1->set_base_id("1.2.3");
+
+  // Add an issuer with a new key.
+  std::vector<uint8_t> new_key_bytes = {0x01, 0x02, 0x03, 0x04};
+  auto* issuer2 = proto.add_issuers();
+  issuer2->set_friendly_name("new_key_issuer");
+  issuer2->set_key(base::as_string_view(new_key_bytes));
+  issuer2->set_base_id("4.5.6.7");
+
+  std::optional<ChromeRootStoreSignerSet> parsed_set =
+      ChromeRootStoreSignerSet::CreateFromProto(proto);
+  ASSERT_TRUE(parsed_set.has_value());
+  EXPECT_EQ(parsed_set->version(), "2.0.0");
+  ASSERT_EQ(parsed_set->issuers().size(), 2U);
+
+  // issuer1 should have the compiled key bytes.
+  ASSERT_TRUE(parsed_set->issuers()[0].key);
+  EXPECT_EQ(base::ToVector(x509_util::CryptoBufferAsSpan(
+                parsed_set->issuers()[0].key.get())),
+            base::ToVector(compiled_key_bytes));
+
+  // issuer2 should have the new key bytes.
+  ASSERT_TRUE(parsed_set->issuers()[1].key);
+  EXPECT_EQ(base::ToVector(x509_util::CryptoBufferAsSpan(
+                parsed_set->issuers()[1].key.get())),
+            new_key_bytes);
+
+  // Check base_id parsing matches expected relative OID DER.
+  std::vector<uint8_t> expected_base_id1 = {0x01, 0x02, 0x03};
+  std::vector<uint8_t> expected_base_id2 = {0x04, 0x05, 0x06, 0x07};
+  EXPECT_EQ(parsed_set->issuers()[0].base_id, expected_base_id1);
+  EXPECT_EQ(parsed_set->issuers()[1].base_id, expected_base_id2);
 }
 
 }  // namespace

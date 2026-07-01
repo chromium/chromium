@@ -269,7 +269,7 @@ class QwacWebContentsObserverBrowserTest
 
     base::RunLoop update_run_loop;
     content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store_proto),
+        mojo_base::ProtoWrapper(root_store_proto), std::nullopt,
         update_run_loop.QuitClosure());
     update_run_loop.Run();
   }

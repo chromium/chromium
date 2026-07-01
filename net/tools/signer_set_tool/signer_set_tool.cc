@@ -106,6 +106,10 @@ bool WriteCppFile(
   std::string string_to_write =
       "// This file is auto-generated, DO NOT EDIT.\n\n";
 
+  string_to_write += "constexpr int64_t kSignerSetCompiledTimestampSeconds = " +
+                     base::NumberToString(signer_set.timestamp().seconds()) +
+                     ";\n\n";
+
   WriteByteArrayConstant("kSignerSetProtoBytes", serialized, &string_to_write);
   string_to_write +=
       "\nconstexpr base::span<const uint8_t> kSignerSetProto = "
