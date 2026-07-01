@@ -88,6 +88,13 @@ cr-composebox-submit::part(submit) {
   top: 10px;
 }
 
+@media (forced-colors: active) {
+  #contextEntrypoint::part(context-menu-entrypoint-icon),
+  #voiceSearchButton {
+    --cr-icon-button-fill-color: ButtonText;
+  }
+}
+
 #composebox[inert] {
   pointer-events: none;
 }
