@@ -2267,12 +2267,24 @@ bool IsFullscreenNextIAEnabled() {
       (self.secondaryToolbarAppBarBottomConstraint != nil);
 
   if (shouldUseAppBar) {
-    self.secondaryToolbarRegularBottomConstraint.active = NO;
-    self.secondaryToolbarAppBarBottomConstraint.active = YES;
-  } else {
-    self.secondaryToolbarAppBarBottomConstraint.active = NO;
-    self.secondaryToolbarRegularBottomConstraint.active = YES;
+    // Sometimes, `appBar` and `toolbarView` aren't in the same view hierarchy,
+    // which causes an exception when activating
+    // `secondaryToolbarAppBarBottomConstraint`. Ensure they share a common
+    // ancestor view before activating the constraint.
+    UIView* appBar = [_layoutGuideCenter referencedViewUnderName:kAppBarGuide];
+    UIView* toolbarView =
+        self.toolbarCoordinator.secondaryToolbarViewController.view;
+    if (appBar && toolbarView &&
+        ViewHierarchyRootForView(appBar) ==
+            ViewHierarchyRootForView(toolbarView)) {
+      self.secondaryToolbarRegularBottomConstraint.active = NO;
+      self.secondaryToolbarAppBarBottomConstraint.active = YES;
+      return;
+    }
   }
+
+  self.secondaryToolbarAppBarBottomConstraint.active = NO;
+  self.secondaryToolbarRegularBottomConstraint.active = YES;
 }
 
 // Returns the height difference between the fully expanded and fully collapsed
