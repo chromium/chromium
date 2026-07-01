@@ -80,11 +80,9 @@ const int kPlusButtonIdentifier = -1;
   return self;
 }
 
-- (void)layoutSubviews {
-  [super layoutSubviews];
-  if (!CGSizeEqualToSize(self.bounds.size, self.intrinsicContentSize)) {
-    [self invalidateIntrinsicContentSize];
-  }
+- (void)setContentSize:(CGSize)contentSize {
+  [super setContentSize:contentSize];
+  [self invalidateIntrinsicContentSize];
 }
 
 - (CGSize)intrinsicContentSize {
