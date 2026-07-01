@@ -472,6 +472,8 @@ try_.orchestrator_builder(
         # go/rts-project-proposal
         "chromium_rts.filter_file_analysis": 100,
         "luci.buildbucket.run_in_turboci": 100,
+        # crbug.com/40280175
+        "chromium_checkout.expand_submodules": 100,
     },
     main_list_view = "try",
     use_clang_coverage = True,
