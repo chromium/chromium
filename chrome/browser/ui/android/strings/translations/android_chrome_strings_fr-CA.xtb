@@ -317,6 +317,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2363734411417672757">Plus de pages sont préchargées. Les pages peuvent être préchargées par le biais des serveurs de Google lorsqu'elles sont demandées par d'autres sites.</translation>
 <translation id="2366554533468315977">Historique des prix sur le Web pour cette option</translation>
 <translation id="2367818124433749493">Raccourcis pour les développeurs</translation>
+<translation id="2369058545741334020">Ouvrir avec le mode de lecture</translation>
 <translation id="2385605401818128172">Vous pouvez examiner les sites qui envoient beaucoup de notifications et les empêcher d'en envoyer davantage à l'avenir</translation>
 <translation id="2386938421315164605">Masquer et afficher les sujets</translation>
 <translation id="2390510615457643724">Voulez-vous télécharger <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de nouveau?</translation>
@@ -327,6 +328,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, onglet sélectionné avec son</translation>
 <translation id="2413014528833954543">Impossible de vérifier les mots de passe sur cet appareil</translation>
 <translation id="2414886740292270097">Foncé</translation>
+<translation id="2415037988255164008">Restaurer les fenêtres?</translation>
 <translation id="2421705177906985956">Aucun site à afficher pour le moment</translation>
 <translation id="2426805022920575512">Choisir un autre compte</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Vidéos, 1 vidéo dans la liste}one{Vidéos, # vidéo dans la liste}other{Vidéos, # vidéos dans la liste}}</translation>
@@ -596,6 +598,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3524334353996115845">Laissez <ph name="ORIGIN" /> vérifier qu'il s'agit bien de vous</translation>
 <translation id="3527085408025491307">Dossier</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> ko disponible(s)</translation>
+<translation id="3547933853190131743">Rechercher avec le mode IA</translation>
 <translation id="3549537543136628349">Comme les pages préchargées sont chiffrées et que le site ou l'appli qui renvoie à ces pages est un site ou une appli Google, les serveurs de Google ne reçoivent pas de nouveaux renseignements lors du préchargement privé de ces pages.</translation>
 <translation id="3549657413697417275">Rechercher dans votre historique</translation>
 <translation id="3557336313807607643">Ajouter aux contacts</translation>
@@ -1338,6 +1341,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Utiliser Sogou pour les recherches</translation>
 <translation id="656065428026159829">En voir plus</translation>
+<translation id="6565781844089373403">Restaurer les fenêtres</translation>
 <translation id="6565959834589222080">Le Wi-Fi est utilisé lorsque c'est possible</translation>
 <translation id="657177046675873214">Pour accéder à vos favoris sur tous vos appareils, activez « Favoris » dans les paramètres.</translation>
 <translation id="6573096386450695060">Toujours autoriser</translation>

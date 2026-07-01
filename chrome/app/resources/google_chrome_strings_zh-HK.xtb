@@ -129,6 +129,7 @@
 <translation id="2120620239521071941">這會刪除此裝置上的 <ph name="ITEMS_COUNT" /> 個項目。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
 <translation id="2121284319307530122">重新啟動以更新 &amp;Chrome</translation>
 <translation id="2123055963409958220">只要報告<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 Chrome 更臻完美</translation>
+<translation id="2125838419757773031">選擇要搜尋的畫面區域</translation>
 <translation id="2126108037660393668">已下載的檔案驗證失敗。</translation>
 <translation id="2128411189117340671">管理 Chrome 設定檔</translation>
 <translation id="2137162749895930932">關閉翻譯畫面</translation>
@@ -791,6 +792,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8601359445272098721">新功能！你可選取「翻譯畫面」按鈕，翻譯畫面上的文字和圖片</translation>
 <translation id="8614913330719544658">Google Chrome 沒有回應，要立即重新啟動嗎？</translation>
 <translation id="861702415419836452">Chrome 需要取得權限，才能存取相機以建立您身處環境的 3D 地圖</translation>
+<translation id="8623450603356630491">在手機上登入 Chrome</translation>
 <translation id="8624541899164515475">設定，喺新分頁打開。</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 將於 1 分鐘後重新啟動}other{Chrome 將於 # 分鐘後重新啟動}}</translation>
 <translation id="8637932705841171563">如要分享視窗，請前往「系統設定」允許 Chrome 螢幕錄影</translation>

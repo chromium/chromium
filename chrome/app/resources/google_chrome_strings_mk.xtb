@@ -129,6 +129,7 @@
 <translation id="2120620239521071941">Ова ќе избрише <ph name="ITEMS_COUNT" /> ставки од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Рестартирајте за да се ажурира &amp;Chrome</translation>
 <translation id="2123055963409958220">Помогнете да го подобриме Chrome со пријавување на <ph name="BEGIN_LINK" />тековните поставки<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Изберете дел од екранот за да пребарувате</translation>
 <translation id="2126108037660393668">Преземената датотека не можеше да се потврди.</translation>
 <translation id="2128411189117340671">Управувајте со профилите на Chrome</translation>
 <translation id="2137162749895930932">Затвори го екранот за преведување</translation>
@@ -791,6 +792,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8601359445272098721">Ново! Може да ги преведувате и текстот и сликите на екранот така што ќе го изберете копчето „Преведи го екранот“</translation>
 <translation id="8614913330719544658">Google Chrome не реагира. Да се рестартира сега?</translation>
 <translation id="861702415419836452">На Chrome му треба дозвола за да пристапи до камерата и да создаде 3D-карта од вашето опкружување</translation>
+<translation id="8623450603356630491">Најавете се на Chrome на телефонот</translation>
 <translation id="8624541899164515475">Поставки, се отвора во нова картичка.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ќе се рестартира по 1 минута}one{Chrome ќе се рестартира по # минута}other{Chrome ќе се рестартира по # минути}}</translation>
 <translation id="8637932705841171563">За да го споделите прозорецот, дозволете снимање на екранот за Chrome во System Settings</translation>

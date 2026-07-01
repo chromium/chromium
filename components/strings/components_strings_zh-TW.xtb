@@ -14,7 +14,6 @@
 <translation id="1021753677514347426">發生這個問題是因為你或其他人在裝置上安裝了具有風險的憑證。已知這個憑證是用於監控及攔截網路資訊，且不受 Chromium 信任。雖然有部分監控活動屬於正當行為 (例如學校或公司網路上的監控機制)，Chromium 仍想確保你知曉此一情況，即使你無法阻止這類監控活動。任何存取網路的瀏覽器或應用程式都可能受到監控。</translation>
 <translation id="1024111578869940408">攻擊者有時會在網址中加入不易察覺的細微變更來仿冒網站。</translation>
 <translation id="1024913885641459127">產品評論與比價</translation>
-<translation id="1025174656774447058">要自動與這個對話串共用開啟的分頁嗎？</translation>
 <translation id="102916930470544692">密碼金鑰</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 要求在你的裝置上永久儲存大量資料</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{無}=1{來自 1 個網站。刪除 Cookie 後，大多數網站都會將你登出。}other{來自 # 個網站。刪除 Cookie 後，大多數網站都會將你登出。}}</translation>
@@ -26,6 +25,7 @@
 <translation id="1038106730571050514">顯示搜尋建議</translation>
 <translation id="1038168778161626396">只有 Encipher</translation>
 <translation id="1038842779957582377">不明名稱</translation>
+<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">工作表訊息</translation>
 <translation id="1044897699341250361">說明</translation>
 <translation id="1046350918013988591">優待券與折扣優惠</translation>
@@ -314,6 +314,7 @@
 <translation id="1463793142714244641">分時度假與度假房產</translation>
 <translation id="1465457928007067810">已將 IBAN 儲存至 Google 帳戶</translation>
 <translation id="1467432559032391204">向左</translation>
+<translation id="1471514598850585811">筆記型電腦</translation>
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">請輸入 3 個以上的字詞，才能取得撰寫協助</translation>
@@ -1235,6 +1236,7 @@
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}other{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}}</translation>
 <translation id="2930531075747147366">來自其他裝置的分頁</translation>
 <translation id="2930577230479659665">完成每次複印後裁切</translation>
+<translation id="2931453528659195355">管理購物資訊</translation>
 <translation id="2933624813161016821">壓紋箔</translation>
 <translation id="2935726091208500473">共用分頁</translation>
 <translation id="293796669683825859">留言</translation>
@@ -1449,6 +1451,7 @@
 <translation id="3237427677128462778">無法儲存至 Google Pay</translation>
 <translation id="3238395604961564389">在無痕視窗中開啟連結</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可自訂瀏覽器外觀</translation>
+<translation id="3243131902823383230"><ph name="MANUFACTURER" /> 筆記型電腦</translation>
 <translation id="3243650379537999343">繪圖</translation>
 <translation id="3248329428895535435">不要在這個網站顯示</translation>
 <translation id="3249102948665905108">已完成「<ph name="CLOUD_PROVIDER" />」檔案上傳作業，但有錯誤</translation>
@@ -1495,7 +1498,6 @@
 <translation id="3325568918769906282">依遞減順序排列</translation>
 <translation id="3325662270238538525">最近存取及修改的檔案，包括檔案名稱、檔案內容的數位指紋、下載來源和中繼資料</translation>
 <translation id="3329013043687509092">飽和度</translation>
-<translation id="3330483197654063678">開啟後，Chrome 會分享此視窗中的開啟分頁，讓回覆更貼近需求。</translation>
 <translation id="3333762389743153920">不符合虛擬卡片設定資格</translation>
 <translation id="3338095232262050444">安全</translation>
 <translation id="333839153442689579">高強度間歇訓練</translation>
@@ -1694,7 +1696,6 @@
 <translation id="3641116835972736297">美式足球</translation>
 <translation id="3642196846309122856">再次嘗試下載檔案</translation>
 <translation id="3642638418806704195">應用程式：</translation>
-<translation id="3644768007456662469">「付款項目」圖示</translation>
 <translation id="3647286794400715637">每個網址字串項目都必須包含 1 到 2 個網址。</translation>
 <translation id="3647400963805615193">關閉 Chrome 提示的按鈕，按下 Enter 鍵即可關閉，<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">驗證成功</translation>
@@ -1726,6 +1727,7 @@
 <translation id="3681841880472207951">QuickTime 影片</translation>
 <translation id="3687920599421452763">貨車與小貨車</translation>
 <translation id="3693327506115126094">選擇身分驗證方式</translation>
+<translation id="3693516565203081475">選擇付款方式</translation>
 <translation id="3698353241727597930">系統管理員已將<ph name="FILES" />的儲存位置設為由貴公司管理的 <ph name="CLOUD_STORAGE" />。即使你刪除這些檔案，貴公司仍可能會監控、稽核及保留這些檔案。</translation>
 <translation id="3698629142018988477">「建立網站」按鈕，啟動後即可在 Google 協作平台中快速建立新網站</translation>
 <translation id="3700094625653511150">如要隱藏「先買後付」選項，請前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
@@ -2287,6 +2289,7 @@
 <translation id="4557573143631562971">住宅保險</translation>
 <translation id="4558551763791394412">試試看停用擴充功能。</translation>
 <translation id="4566017918361049074">戶外活動</translation>
+<translation id="4568572491321119037">更新 Google 錢包中的身分證</translation>
 <translation id="4569155249847375786">驗證完成</translation>
 <translation id="4570008401337135432">文字對齊方式</translation>
 <translation id="457875822857220463">快遞</translation>
@@ -2761,6 +2764,7 @@
 <translation id="5323501626199324454">在 Google 帳戶中管理</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5329858041417644019">你的瀏覽器未受管理</translation>
+<translation id="5330451136755214328"><ph name="MANUFACTURER" /> 電腦</translation>
 <translation id="5331585574693522196">設為預設</translation>
 <translation id="5332219387342487447">運送方式</translation>
 <translation id="5332769172018416402">透過訊息詢問</translation>
@@ -2799,6 +2803,7 @@
 <translation id="5385857628869214740">幽默趣味</translation>
 <translation id="5386426401304769735">這個網站的憑證鏈結包含使用 SHA-1 進行簽署的憑證。</translation>
 <translation id="5391010642126249196">造訪時間：</translation>
+<translation id="5391030615542642809"><ph name="MANUFACTURER" /> 裝置</translation>
 <translation id="5391306025131596142">開啟歷史記錄頁面</translation>
 <translation id="539203134595252721">桌球</translation>
 <translation id="5392506727170022660">金屬 (半光面)</translation>
@@ -3057,6 +3062,7 @@
 <translation id="5765072501007116331">如要查看快遞方式和相關規定，請選取一個地址</translation>
 <translation id="57689295674415555">尚未填寫虛擬卡號嗎？</translation>
 <translation id="5773286975255318081">例如設定檔使用者名稱和瀏覽器版本</translation>
+<translation id="5774897849666641211">針對這個分頁提問</translation>
 <translation id="5776313857861697733">優先順序</translation>
 <translation id="577804500166306874">正在載入結果</translation>
 <translation id="5781136890105823427">實驗已啟用</translation>
@@ -3758,7 +3764,6 @@
 <translation id="6874604403660855544">重做新增(&amp;R)</translation>
 <translation id="6875873347995743859">傳送給助理</translation>
 <translation id="6875894866901426843">系統管理員會在 <ph name="DATE_TIME" /> 刪除你的本機檔案，包括垃圾桶中的所有檔案。</translation>
-<translation id="6880812263216766325">是否要一律分享開啟的分頁，以取得更實用的回覆？</translation>
 <translation id="6880941331070119097">高價選項</translation>
 <translation id="6881240511396774766">快速建立新的 Google 文件</translation>
 <translation id="6883221904761970440">已關閉安全付款憑證驗證表</translation>
@@ -4015,7 +4020,6 @@
 <translation id="7257453341537973799">職業資源與規劃</translation>
 <translation id="725866823122871198">你電腦的日期和時間 (<ph name="DATE_AND_TIME" />) 不正確，因此無法與 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私人連線。</translation>
 <translation id="7260075294900977274">新的智慧型資料夾可集中儲存所有購物頁面，並自動追蹤價格、取得價格分析資訊等等</translation>
-<translation id="7264942008235065057">你已加入 Google 進階保護計畫，因此這個網站會維持封鎖狀態。<ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">這項地址資訊僅供此裝置存取</translation>
 <translation id="7266094331715305887">裝置上的應用程式</translation>
 <translation id="7269151392155523061">捷徑不得與 <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> 定義的搜尋聚合器關鍵字相同：<ph name="SHORTCUT_NAME" /></translation>
@@ -4117,6 +4121,7 @@
 <translation id="7418620734632363981">程式設計</translation>
 <translation id="7419091773564635591">電腦和電子產品</translation>
 <translation id="7419106976560586862">設定檔路徑</translation>
+<translation id="742088698616475957"><ph name="MANUFACTURER" /> 電腦</translation>
 <translation id="7421067045979951561">通訊協定處理常式</translation>
 <translation id="7422347648202898039">標籤 (安全紙)</translation>
 <translation id="7423283032694727565">「管理 Cookie」按鈕，啟動後即可在 Chrome 設定中管理 Cookie 偏好設定</translation>
@@ -4169,7 +4174,6 @@
 <translation id="7489255442002627311">「<ph name="BNPL_ISSUER_NAME" />」會確認資格，這不會影響你的信用評分。如果核准，「<ph name="BNPL_ISSUER_NAME" />」就會提供付款方案供你選擇，讓你完成購買程序。</translation>
 <translation id="7489392576326061356">洗髮精與潤髮乳</translation>
 <translation id="7489919936111034362">Google 雲端硬碟儲存空間已滿</translation>
-<translation id="7490026840522163531">要自動與所有對話串共用開啟的分頁嗎？</translation>
 <translation id="7495528107193238112">這項內容已遭到封鎖，請聯絡網站擁有者以修正問題。</translation>
 <translation id="749865518782565832">水管工程</translation>
 <translation id="7499188644237027195">在 Chrome 中進行購買交易時可選擇「電子錢包」和「Pix」</translation>
@@ -4234,6 +4238,7 @@
 <translation id="7575207903026901870">移除建議按鈕，按下 Enter 鍵即可移除這項建議</translation>
 <translation id="7575800019233204241">「你的連線不是私人連線」、「&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;」、「&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;」、「&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;」或「SSL 憑證錯誤」</translation>
 <translation id="7575887283389198269">手機</translation>
+<translation id="7579113844074980463"><ph name="MANUFACTURER" /> 平板電腦</translation>
 <translation id="7579442726219254162">在「<ph name="APPLICATION_ID" />」受管理設定中的未知變數「<ph name="VARIABLE" />」。</translation>
 <translation id="7581199239021537589">側邊 2 圖片 Y 批次</translation>
 <translation id="7582602800368606489">在 Google 日曆中快速建立新活動</translation>
@@ -5030,7 +5035,6 @@
 <translation id="8861482055962701239">這項資訊無法儲存到 Google 錢包，因此改存到這部裝置的 Chrome。下次使用時，Chrome 會詢問你是否要儲存至錢包。</translation>
 <translation id="8863218129525348270">將卡片資訊儲存在裝置上，下次就能更快完成付款程序</translation>
 <translation id="8864939224504814334">套裝與上班服飾</translation>
-<translation id="8865650218866129025">是否要自動分享開啟的分頁，在此對話串取得更實用的回覆？</translation>
 <translation id="8866132857352163524">原聲帶</translation>
 <translation id="8866481888320382733">解析政策設定時發生錯誤</translation>
 <translation id="8866928039507595380">折疊</translation>
@@ -5150,9 +5154,11 @@
 <translation id="9063800855227801443">無法擷取機密內容</translation>
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9065745800631924235">「<ph name="TEXT" />」的搜尋記錄</translation>
+<translation id="9066116644715286230">{NUM_TABS,plural, =1{分頁分享詳情。正在分享 {WEBSITE_LIST_STR} 的 1 個分頁}other{分頁分享詳情。正在分享 {WEBSITE_LIST_STR} 的 {NUM_TABS} 個分頁}}</translation>
 <translation id="90695670378604968">塑膠 (霧面)</translation>
 <translation id="9069693763241529744">依據擴充功能設定封鎖</translation>
 <translation id="9073799351042754113">你已選擇關閉這個網站的安全性警告。</translation>
+<translation id="907426083053157749"><ph name="MANUFACTURER" /> 手機</translation>
 <translation id="9075717835386447447">棕褐色 1</translation>
 <translation id="9078170656887151974">為提供建議及改善這項功能，系統會將網頁網址和內容提供給 Google。你隨時可以改變心意，也可以<ph name="LEARN_MORE" />。</translation>
 <translation id="9078912659001679888">食物調理機和榨汁機</translation>

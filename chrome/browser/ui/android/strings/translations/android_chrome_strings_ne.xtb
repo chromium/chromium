@@ -184,6 +184,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1792959175193046959">डिफल्ट डाउनलोड स्थान जुनसुकै बेला परिवर्तन गर्नुहोस्</translation>
 <translation id="1796666869097395659">पछि फेरि फर्कन ट्याब मिनिमाइज गर्नुहोस्</translation>
 <translation id="1799920918471566157">Chrome को प्रयोगसम्बन्धी सुझावहरू</translation>
+<translation id="1803799720926799756">फाइलको आकार</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1807709131360304325">कुनै नयाँ विन्डो खोल्नुहोस्</translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> मा <ph name="SITE_ETLD_PLUS_ONE" /> प्रयोग गरिराख्न मिल्दैन</translation>
@@ -316,6 +317,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2363734411417672757">थप पेजहरू प्रिलोड गरिएका छन्। अन्य साइट वा एपहरूले अनुरोध गरेका खण्डमा पेजहरू Google का सर्भरमार्फत प्रिलोड गरिन सक्छन्।</translation>
 <translation id="2366554533468315977">वेबमा यो सामानको विगतका मूल्य</translation>
 <translation id="2367818124433749493">विकासकर्ताका लागि सर्टकटहरू</translation>
+<translation id="2369058545741334020">रिडिङ मोडमा खोल्नुहोस्</translation>
 <translation id="2385605401818128172">तपाईं थुप्रै नोटिफिकेसनहरू पठाउने साइटहरूको समीक्षा गर्न र भविष्यमा ती साइटबाट थप नोटिफिकेसनहरू प्राप्त गर्न छाड्न सक्नुहुन्छ</translation>
 <translation id="2386938421315164605">विषयहरू लुकाउनुहोस् तथा देखाउनुहोस्</translation>
 <translation id="2390510615457643724">तपाईं <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> फेरि डाउनलोड गर्न चाहनुहुन्छ?</translation>
@@ -326,6 +328,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, चयन गरिएको अडिबल ट्याब</translation>
 <translation id="2413014528833954543">यो डिभाइसमा भएका पासवर्डहरू जाँच गर्न सकिएन</translation>
 <translation id="2414886740292270097">अँध्यारो</translation>
+<translation id="2415037988255164008"># वटा विन्डोहरू रिस्टोर गर्नुहोस्</translation>
 <translation id="2421705177906985956">यस बखत देखाउनका लागि कुनै पनि साइट छैन</translation>
 <translation id="2426805022920575512">कुनै अर्को खाता छनौट गर्नुहोस्‌</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{भिडियोहरू, सूचीमा एउटा भिडियो छ}other{भिडियोहरू, सूचीमा # वटा भिडियो छन्}}</translation>
@@ -595,6 +598,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3524334353996115845"><ph name="ORIGIN" /> लाई कोड पेस गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्न दिनुहोस्</translation>
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> के.बि. उपलब्ध छ</translation>
+<translation id="3547933853190131743">AI मोड प्रयोग गरेर खोज्नुहोस्</translation>
 <translation id="3549537543136628349">प्रिलोड गरिएका पेजहरू इन्क्रिप्ट गरिएकाले र ती पेजसँग सम्बन्धित साइट वा एप Google को साइट वा एप भएकाले यी पेज गोप्य तरिकाले प्रिलोड गर्दा Google का सर्भरहरूले नयाँ जानकारी प्राप्त गर्दैनन्।</translation>
 <translation id="3549657413697417275">आफ्नो ब्राउजिङको इतिहासमा खोज्नुहोस्।</translation>
 <translation id="3557336313807607643">कन्ट्याक्टमा हाल्नुहोस्</translation>
@@ -1336,6 +1340,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Sogou मार्फत खोजी गर्नुहोस्</translation>
 <translation id="656065428026159829">थप हेर्नुहोस्</translation>
+<translation id="6565781844089373403">विन्डोहरू रिस्टोर गर्नुहोस्</translation>
 <translation id="6565959834589222080">Wi-Fi उपलब्ध हुँदा मोबाइल डेटा प्रयोग गरिँदैन</translation>
 <translation id="657177046675873214">आफ्ना सबै डिभाइसमा बुकमार्कहरू प्राप्त गर्न सेटिङमा गई “बुकमार्कहरू” अन गर्नुहोस्</translation>
 <translation id="6573096386450695060">सधैँ अनुमति दिनुहोस्</translation>

@@ -129,6 +129,7 @@
 <translation id="2120620239521071941">Овим ћете избрисати <ph name="ITEMS_COUNT" /> ставке(и) са овог уређаја. Да бисте касније вратили податке, пријавите се у Chrome као <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Поново покрени да би се &amp;Chrome ажурирао</translation>
 <translation id="2123055963409958220">Помозите да побољшамо Chrome тако што ћете послати извештај о <ph name="BEGIN_LINK" />актуелним подешавањима<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Изаберите део екрана за претрагу</translation>
 <translation id="2126108037660393668">Верификација преузетог фајла није успела.</translation>
 <translation id="2128411189117340671">Управљај Chrome профилима</translation>
 <translation id="2137162749895930932">Затворите екран за превођење</translation>
@@ -792,6 +793,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8601359445272098721">Ново. Можете да преводите и текст и слике на екрану тако што ћете изабрати дугме „Преведи екран“</translation>
 <translation id="8614913330719544658">Google Chrome не реагује. Желите ли да га одмах поново покренете?</translation>
 <translation id="861702415419836452">Chrome тражи дозволу да приступи камери да би направио 3D мапу окружења</translation>
+<translation id="8623450603356630491">Пријавите се у Chrome на телефону</translation>
 <translation id="8624541899164515475">Подешавања, отварају се на новој картици.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Поново ћемо покренути Chrome за 1 минут}one{Поново ћемо покренути Chrome за # минут}few{Поново ћемо покренути Chrome за # минута}other{Поново ћемо покренути Chrome за # минута}}</translation>
 <translation id="8637932705841171563">Да бисте делили прозор, дозволите снимање екрана за Chrome у подешавањима система</translation>

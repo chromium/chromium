@@ -317,6 +317,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2363734411417672757">Mas maraming page ang ipi-preload. Posibleng i-preload ang mga page sa pamamagitan ng mga server ng Google kapag hiniling ng iba pang site o app.</translation>
 <translation id="2366554533468315977">History ng presyo sa buong web para sa opsyong ito</translation>
 <translation id="2367818124433749493">Mga shortcut ng developer</translation>
+<translation id="2369058545741334020">Buksan sa reading mode</translation>
 <translation id="2385605401818128172">Puwede mong suriin ang mga site na nagpapadala ng maraming notification at pigilan ang mga itong magpadala ng higit pa sa hinaharap</translation>
 <translation id="2386938421315164605">Itago at i-unhide ang mga paksa</translation>
 <translation id="2390510615457643724">Gusto mo bang i-download ulit ang <ph name="FILE_NAME" /><ph name="FILE_SIZE" />?</translation>
@@ -597,6 +598,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3524334353996115845">Hayaan ang <ph name="ORIGIN" /> na patunayang ikaw ito</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB ang available</translation>
+<translation id="3547933853190131743">Maghanap gamit ang AI Mode</translation>
 <translation id="3549537543136628349">Dahil naka-encrypt ang mga na-preload na page, at ang site o app na nagli-link sa mga page ay site o app ng Google, hindi nakakatanggap ng bagong impormasyon ang mga server ng Google kapag pribadong pini-preload ang mga page na ito.</translation>
 <translation id="3549657413697417275">Hanapin sa iyong history</translation>
 <translation id="3557336313807607643">Idagdag sa mga contact</translation>

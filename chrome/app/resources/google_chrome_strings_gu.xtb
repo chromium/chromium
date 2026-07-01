@@ -128,6 +128,7 @@
 <translation id="2120620239521071941">આ, <ph name="ITEMS_COUNT" /> આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="2121284319307530122">&amp;Chrome અપડેટ કરવા માટે, ફરીથી લૉન્ચ કરો</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />વર્તમાન સેટિંગ<ph name="END_LINK" />ની જાણ કરીને Chromeને બહેતર બનાવવામાં સહાય કરો</translation>
+<translation id="2125838419757773031">શોધવા માટે સ્ક્રીનનો વિસ્તાર પસંદ કરો</translation>
 <translation id="2126108037660393668">ડાઉનલોડ કરેલી ફાઇલની ચકાસણી નિષ્ફળ થઈ.</translation>
 <translation id="2128411189117340671">Chrome પ્રોફાઇલ મેનેજ કરો</translation>
 <translation id="2137162749895930932">અનુવાદ સ્ક્રીન બંધ કરો</translation>
@@ -791,6 +792,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8601359445272098721">નવું! "સ્ક્રીનનો અનુવાદ કરો" બટન પસંદ કરીને તમે તમારી સ્ક્રીન પર ટેક્સ્ટ અને છબીઓનો અનુવાદ કરી શકો છો</translation>
 <translation id="8614913330719544658">Google Chrome પ્રતિસાદ આપતું નથી. હવે ફરીથી લોંચ કરીએ?</translation>
 <translation id="861702415419836452">તમારા આસપાસનો 3D નકશો બનાવવા માટે, Chromeને તમારા કૅમેરાના ઍક્સેસની પરવાનગી જરૂરી છે</translation>
+<translation id="8623450603356630491">તમારા ફોન પર Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="8624541899164515475">સેટિંગ, નવા ટૅબમાં ખૂલે છે.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 મિનિટમાં ફરીથી લૉન્ચ થશે}one{Chrome # મિનિટમાં ફરીથી લૉન્ચ થશે}other{Chrome # મિનિટમાં ફરીથી લૉન્ચ થશે}}</translation>
 <translation id="8637932705841171563">તમારી વિન્ડો શેર કરવા માટે, સિસ્ટમના સેટિંગમાં Chrome માટે સ્ક્રીન રેકોર્ડિંગની મંજૂરી આપો</translation>

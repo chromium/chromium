@@ -317,6 +317,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2363734411417672757">Daha fazla sayfa önceden yüklenir. Diğer siteler veya uygulamalar istediğinde sayfalar Google sunucuları aracılığıyla önceden yüklenebilir.</translation>
 <translation id="2366554533468315977">Bu seçenek için web genelindeki fiyat geçmişi</translation>
 <translation id="2367818124433749493">Geliştirici kısayolları</translation>
+<translation id="2369058545741334020">Okuma modunda aç</translation>
 <translation id="2385605401818128172">Çok fazla bildirim gönderen siteleri inceleyebilir ve bu sitelerin gelecekte bildirim göndermesini engelleyebilirsiniz</translation>
 <translation id="2386938421315164605">Konuları gizle ve göster</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" /><ph name="FILE_SIZE" /> dosyasını tekrar indirmek istiyor musunuz?</translation>
@@ -327,6 +328,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, Ses Çalan Seçili Sekme</translation>
 <translation id="2413014528833954543">Bu cihazda şifreler kontrol edilemiyor</translation>
 <translation id="2414886740292270097">Koyu</translation>
+<translation id="2415037988255164008">Pencereler geri yüklensin mi?</translation>
 <translation id="2421705177906985956">Şu anda gösterilecek site yok</translation>
 <translation id="2426805022920575512">Başka hesap seç</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videolar, listede 1 video var}other{Videolar, listede # video var}}</translation>
@@ -596,6 +598,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3524334353996115845"><ph name="ORIGIN" /> kaynağının sizi doğrulamasına izin verin</translation>
 <translation id="3527085408025491307">Klasör</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB kullanılabilir</translation>
+<translation id="3547933853190131743">AI Modu ile arama yap</translation>
 <translation id="3549537543136628349">Önceden yüklenmiş sayfalar şifrelenmiş ve sayfalara bağlantı veren site ya da uygulama bir Google sitesi veya uygulaması olduğundan Google sunucuları bu sayfaları gizli olarak önceden yüklerken yeni bilgi almaz.</translation>
 <translation id="3549657413697417275">Geçmişinizde arayın</translation>
 <translation id="3557336313807607643">Kişilere ekle</translation>
@@ -1338,6 +1341,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Sogou ile arama</translation>
 <translation id="656065428026159829">Daha fazla göster</translation>
+<translation id="6565781844089373403">Pencereleri geri yükle</translation>
 <translation id="6565959834589222080">Mevcut olduğunda kablosuz bağlantı kullanılır</translation>
 <translation id="657177046675873214">Yer işaretlerinizi tüm cihazlarınızda almak için ayarlarda "Yer İşaretleri"ni açın</translation>
 <translation id="6573096386450695060">Her zaman izin ver</translation>

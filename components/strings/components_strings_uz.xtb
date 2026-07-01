@@ -14,7 +14,6 @@
 <translation id="1021753677514347426">Bu muammo qurilmangizda oʻrnatilgan sertifikat sababli yuz berishi ham mumkin. Bunday sertifikat ishonchli hisoblanmaydi, chunki u odatda tarmoqdagi maʼlumotlarni kuzatish va olish uchun foydalaniladi. Bunday funksiyadan ish joylarida yoki taʼlim muassasalarida foydalanishadi. Nima boʻlganda ham biz ushbu sertifikat mavjudligi haqida sizni ogohlantirmoqchimiz. Har qanday internetga ulangan brauzer yoki ilovada faoliyatni kuzatish mumkin.</translation>
 <translation id="1024111578869940408">Odatda shubhali kimsalar sayt manzilida kichik oʻzgarishlar kiritib, saytlarga soxta nusxalar yasaydi.</translation>
 <translation id="1024913885641459127">Mahsulot sharhlari va narxlarni taqqoslash</translation>
-<translation id="1025174656774447058">Ushbu yozishma uchun ochiq varaqlar avtomatik ulashilsinmi?</translation>
 <translation id="102916930470544692">Kalit</translation>
 <translation id="1030706264415084469"><ph name="URL" /> saytidan katta hajmdagi ma’lumotlarni mobil qurilmangizda saqlashga ruxsat so‘rovi keldi</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Hech qanday}=1{1 ta saytdan. Bir nechta saytlardagi hisobingizdan chiqasiz. }other{# ta saytdan. Bir nechta saytlardagi hisobingizdan chiqasiz. }}</translation>
@@ -1498,7 +1497,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3325568918769906282">kamayish tartibida</translation>
 <translation id="3325662270238538525">Oxirgi fayllarga ruxsat va tahrirlar, jumladan, fayl nomlari, fayl kontentidagi raqamli imzolar, yuklanma manbasi va meta-axborotlar</translation>
 <translation id="3329013043687509092">To‘liqlik</translation>
-<translation id="3330483197654063678">Yoqilsa, Chrome yanada mos javoblar olishingizga yordam berish uchun bu oynadagi ochiq varaqlarni ulashadi.</translation>
 <translation id="3333762389743153920">Virtual karta uchun mos kelmaydi</translation>
 <translation id="3338095232262050444">Xavfsiz</translation>
 <translation id="333839153442689579">Qisqa vaqt oralatib shug‘ullanish</translation>
@@ -1695,7 +1693,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3641116835972736297">Amerikancha futbol</translation>
 <translation id="3642196846309122856">Fayllarni qaytadan yuklab oling</translation>
 <translation id="3642638418806704195">Ilova:</translation>
-<translation id="3644768007456662469">Toʻlovlar elementi belgisi</translation>
 <translation id="3647286794400715637">Har bir URL satrida 1–2 ta URL boʻlishi kerak.</translation>
 <translation id="3647400963805615193">Chrome maslahatini yopish tugmasi, yopish uchun Enter tugmasini bosing, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Tekshiruv muvaffaqiyatli bajarildi</translation>
@@ -3765,7 +3762,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6874604403660855544">&amp;Qaytadan qo‘shish</translation>
 <translation id="6875873347995743859">Yordamchiga yuborish</translation>
 <translation id="6875894866901426843">Qurilmadagi fayllar, jumladan, Chiqitdondagi har qanday fayl <ph name="DATE_TIME" /> sanasida administrator tomonidan oʻchirib tashlanadi.</translation>
-<translation id="6880812263216766325">Aniqroq javoblar olish uchun ochiq varaqlar doim ulashilsinmi?</translation>
 <translation id="6880941331070119097">Yuqori narxdagi variant</translation>
 <translation id="6881240511396774766">Yangi Google Doc hujjatini tezda yaratish</translation>
 <translation id="6883221904761970440">Xavfsiz toʻlovlar uchun hisob maʼlumotlarini tekshirish ekrani yopiq</translation>
@@ -4021,7 +4017,6 @@ Batafsil axborot:
 <translation id="7257453341537973799">Ish resurslari va rejalashtirish</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeni bilan tizimdagi sana va vaqt sozlamalari (<ph name="DATE_AND_TIME" />) noto‘g‘ri bo‘lganligi uchun havfsiz aloqa o‘rnatib bo'lmadi.</translation>
 <translation id="7260075294900977274">Barcha xarid sahifalaringizni bir joyda saqlashga va narxlarni avtomatik kuzatishga, narxlar haqidagi maʼlumotga ega boʻlishga yordam beruvchi yangi smart jild</translation>
-<translation id="7264942008235065057">Google Kuchaytirilgan himoya dasturiga yozilganingiz uchun bu sayt bloklangan holatda qoladi. <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">Manzil faqat shu qurilmada mavjud</translation>
 <translation id="7266094331715305887">qurilmadagi ilovalar</translation>
 <translation id="7269151392155523061">Buyruq <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> belgilagan qidiruv agregatori kalit soʻzi bilan bir xil boʻlishi mumkin emas: <ph name="SHORTCUT_NAME" /></translation>
@@ -4176,7 +4171,6 @@ Batafsil axborot:
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> muvofiqligingizni tekshiradi (bu kredit balliga taʼsir qilmaydi). Tasdiqlansa, <ph name="BNPL_ISSUER_NAME" /> tanlash va xaridni yakunlash uchun toʻlov rejalarini taqdim etadi.</translation>
 <translation id="7489392576326061356">Shampun va konditsionerlar</translation>
 <translation id="7489919936111034362">Google Drive xotira omboringizda joy qolmadi</translation>
-<translation id="7490026840522163531">Barcha yozishmalarda ochiq varaqlarni avtomatik ulashish yoqilsinmi?</translation>
 <translation id="7495528107193238112">Bu kontent bloklandi. Muammoni yechish uchun sayt egasiga murojaat qiling.</translation>
 <translation id="749865518782565832">Santexnik xizmatlari</translation>
 <translation id="7499188644237027195">Chrome orqali xarid qilish vaqtida eWallet va Pix tanlovlari chiqsin</translation>
@@ -5038,7 +5032,6 @@ Batafsil axborot:
 <translation id="8861482055962701239">Bu axborotni Google Walletga saqlash imkonsiz. Ammo bu qurilmadagi Chrome xotirasiga saqlandi. Keyingi safar ishlatganingizda Chrome uni Walletga saqlashni taklif qiladi.</translation>
 <translation id="8863218129525348270">Keyingi safar tezroq toʻlash uchun kartangizni qurilmangizga saqlang</translation>
 <translation id="8864939224504814334">Kostyumlar va bisnes kiyimlar</translation>
-<translation id="8865650218866129025">Aniqroq javoblar olish uchun ushbu yozishmada ochiq varaqlarni avtomatik ulashish yoqilsinmi?</translation>
 <translation id="8866132857352163524">Saundtreklar</translation>
 <translation id="8866481888320382733">Siyosat sozlamalarini tahlil qilib bo‘lmadi</translation>
 <translation id="8866928039507595380">Taxlash</translation>

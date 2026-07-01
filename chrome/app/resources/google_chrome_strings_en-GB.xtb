@@ -129,6 +129,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2120620239521071941">This will delete <ph name="ITEMS_COUNT" /> items from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Relaunch to Update &amp;Chrome</translation>
 <translation id="2123055963409958220">Help make Chrome better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Select region of screen to search</translation>
 <translation id="2126108037660393668">The downloaded file failed verification.</translation>
 <translation id="2128411189117340671">Manage Chrome profiles</translation>
 <translation id="2137162749895930932">Close translate screen</translation>
@@ -792,6 +793,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8601359445272098721">New! You can translate both text and images on your screen by selecting the 'translate screen' button</translation>
 <translation id="8614913330719544658">Google Chrome is unresponsive. Relaunch now?</translation>
 <translation id="861702415419836452">Chrome needs permission to access your camera to create a 3D map of your surroundings</translation>
+<translation id="8623450603356630491">Sign in to Chrome on your phone</translation>
 <translation id="8624541899164515475">Settings, opens in new tab.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome will relaunch in 1 minute}other{Chrome will relaunch in # minutes}}</translation>
 <translation id="8637932705841171563">To share your window, allow screen recording for Chrome in System Settings</translation>

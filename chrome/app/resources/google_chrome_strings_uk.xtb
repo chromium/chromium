@@ -125,6 +125,7 @@
 <translation id="2120620239521071941">З цього пристрою буде видалено стільки елементів: <ph name="ITEMS_COUNT" />. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Перезапустити, щоб оновити &amp;Chrome</translation>
 <translation id="2123055963409958220">Допоможіть покращити Chrome, надсилаючи звіти про <ph name="BEGIN_LINK" />поточні налаштування<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">Виберіть область екрана для пошуку</translation>
 <translation id="2126108037660393668">Завантажений файл не пройшов перевірку.</translation>
 <translation id="2128411189117340671">Керувати профілями Chrome</translation>
 <translation id="2137162749895930932">Закрити екран перекладу</translation>
@@ -784,6 +785,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8601359445272098721">Новинка! Тепер ви можете перекладати текст і зображення на екрані, натиснувши кнопку "Перекласти вміст екрана".</translation>
 <translation id="8614913330719544658">Google Chrome не відповідає. Перезапустити зараз?</translation>
 <translation id="861702415419836452">Chrome потрібен дозвіл на використання камери, щоб створити 3D-карту вашого оточення</translation>
+<translation id="8623450603356630491">Увійдіть у Chrome на телефоні</translation>
 <translation id="8624541899164515475">Налаштування (відкриється в новій вкладці).</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome перезапуститься через 1 хвилину}one{Chrome перезапуститься через # хвилину}few{Chrome перезапуститься через # хвилини}many{Chrome перезапуститься через # хвилин}other{Chrome перезапуститься через # хвилини}}</translation>
 <translation id="8637932705841171563">Щоб показувати своє вікно, у системних параметрах дозвольте Chrome записувати відео з екрана</translation>

@@ -127,6 +127,7 @@
 <translation id="2120620239521071941">‏سيعمل هذا على حذف <ph name="ITEMS_COUNT" /> من العناصر من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">‏إعادة تشغيل متصفِّح Chrome لتحديثه</translation>
 <translation id="2123055963409958220">‏يمكنك المساعدة في تحسين Chrome بالإبلاغ عن <ph name="BEGIN_LINK" />الإعدادات الحالية<ph name="END_LINK" /></translation>
+<translation id="2125838419757773031">يمكنك تحديد أي محتوى على الشاشة للبحث عنه</translation>
 <translation id="2126108037660393668">تعذَّر التحقق من الملف الذي تم تنزيله.</translation>
 <translation id="2128411189117340671">‏إدارة الملفات الشخصية على Chrome</translation>
 <translation id="2137162749895930932">إغلاق شاشة الترجمة</translation>
@@ -788,6 +789,7 @@
 <translation id="8601359445272098721">ميزة جديدة: يمكنك ترجمة النص والصور على الشاشة من خلال النقر على زر "ترجمة محتوى الشاشة"</translation>
 <translation id="8614913330719544658">‏لا يستجيب Google Chrome. هل تريد إعادة التشغيل الآن؟</translation>
 <translation id="861702415419836452">‏يحتاج متصفِّح Chrome إلى إذن للوصول إلى الكاميرا من أجل إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك.</translation>
+<translation id="8623450603356630491">‏تسجيل الدخول إلى Chrome على هاتفك</translation>
 <translation id="8624541899164515475">الإعدادات (يفتح الرابط في علامة تبويب جديدة)</translation>
 <translation id="8625237574518804553">{0,plural, =1{‏ستتم إعادة تشغيل Chrome في غضون دقيقة واحدة}zero{‏ستتم إعادة تشغيل Chrome في غضون # دقيقة}two{‏ستتم إعادة تشغيل Chrome في غضون دقيقتين}few{‏ستتم إعادة تشغيل Chrome في غضون # دقائق}many{‏ستتم إعادة تشغيل Chrome في غضون # دقيقةً}other{‏ستتم إعادة تشغيل Chrome في غضون # دقيقة}}</translation>
 <translation id="8637932705841171563">‏لمشاركة النافذة، يجب السماح بتسجيل الشاشة في Chrome ضِمن "إعدادات النظام" (System Settings)</translation>

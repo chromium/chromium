@@ -36,6 +36,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1315551408014407711">Konfiguro profilin tënd të ri të Chromium</translation>
 <translation id="132092532143527429">Provo me Gemini në Chromium</translation>
 <translation id="1324107359134968521">Chromium ka nevojë për qasje te Bluetooth-i për të eksploruar pajisjet me Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1329040302064168406">Identifikohu në Chromium në telefonin tënd</translation>
 <translation id="1330562121671411446">Zbulo gjuhën</translation>
 <translation id="1330742950061766891">Përdor cilësimet e rekomanduara të shfletuesit Chromium</translation>
 <translation id="1342274909142618978">Fshi po ashtu të dhënat nga Chromium (<ph name="URL" />)</translation>
@@ -107,6 +108,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="208726765006323911">Do të shikosh një kërkesë për të provuar <ph name="FEATURE_NAME" /> herën tjetër kur të hapësh Chromium për iOS.</translation>
 <translation id="2099452623287920103">Fjalëkalimet e tua dhe të dhënat e tjera të Chromium që ke ruajtur në "Llogarinë tënde të Google" do të hiqen nga kjo pajisje. Për t'i përdorur përsëri në Chromium, identifikohu përsëri.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organizata jote i fshin automatikisht të dhënat e shfletimit kur Chromium nuk përdoret për 1 minutë. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua do të qëndrojnë të hapura.}other{Organizata jote i fshin automatikisht të dhënat e shfletimit kur Chromium nuk përdoret për # minuta. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua do të qëndrojnë të hapura.}}</translation>
+<translation id="2125838419757773031">Zgjidh rajonin e ekranit për të kërkuar</translation>
 <translation id="2126108037660393668">Skedari i shkarkuar nuk u verifikua.</translation>
 <translation id="2135919691573380097">Raportoje këtë sajt</translation>
 <translation id="2137162749895930932">Mbyll ekranin e përkthimit</translation>
@@ -687,6 +689,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8107060931443639922">Herën tjetër që të hapësh Chromium në <ph name="DEVICE_TYPE" />, do të shikosh një kërkesë për të aktivizuar sinjalizimet për monitorimin e çmimeve.</translation>
 <translation id="8117908349476699973">Merr sinjalizime për rënie çmimi për artikujt që të interesojnë me aplikacionin e Chromium në telefonin tënd</translation>
 <translation id="8118331347066725040">Dërgo komente për kërkimin me "Lenten"</translation>
+<translation id="8130609355518033382">Personalizo Chromium sipas dëshirës</translation>
 <translation id="8133124826068723441">ChromiumOS nuk mund t'i sinkronizonte të dhënat e tua sepse "Sinkronizimi" nuk ofrohet për domenin tënd.</translation>
 <translation id="813913629614996137">Po fillon...</translation>
 <translation id="8161503455832158203">Hap Gemini në Chromium me një shkurtore të tastierës.</translation>

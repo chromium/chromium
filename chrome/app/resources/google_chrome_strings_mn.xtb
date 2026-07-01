@@ -128,6 +128,7 @@
 <translation id="2120620239521071941">Энэ нь төхөөрөмжөөс <ph name="ITEMS_COUNT" /> зүйлийг устгана. Дараа нь өгөгдлөө сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="2121284319307530122">&amp;Chrome-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Одоогийн тохиргоог<ph name="END_LINK" /> мэдэгдэж Chrome-г сайжруулахад тусална уу</translation>
+<translation id="2125838419757773031">Хайх дэлгэцийн хэсэг сонгох</translation>
 <translation id="2126108037660393668">Татсан файлын баталгаажуулалт амжилтгүй боллоо.</translation>
 <translation id="2128411189117340671">Chrome-н профайлуудыг удирдах</translation>
 <translation id="2137162749895930932">Орчуулах дэлгэцийг хаах</translation>
@@ -789,6 +790,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8601359445272098721">Шинэ! Та "дэлгэцийг орчуулах" товчийг сонгож дэлгэц дээрх текст, зургийн аль алиныг орчуулах боломжтой</translation>
 <translation id="8614913330719544658">Google Chrome ажиллахгүй байна. Дахин эхүүлэх үү?</translation>
 <translation id="861702415419836452">Орчин тойрны тань 3D газрын зургийг үүсгэхийн тулд таны камерт хандах зөвшөөрөл Chrome-д шаардлагатай</translation>
+<translation id="8623450603356630491">Утсан дээрээ Chrome-д нэвтрэх</translation>
 <translation id="8624541899164515475">Тохиргоо, шинэ табд нээгдэнэ.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome-г 1 минутын дотор дахин ажиллуулна}other{Chrome-г # минутын дотор дахин ажиллуулна}}</translation>
 <translation id="8637932705841171563">Цонхоо хуваалцахын тулд Системийн тохиргоонд Chrome-д дэлгэцийн үйлдэл бичихийг зөвшөөрнө үү</translation>

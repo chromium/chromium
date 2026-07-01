@@ -317,6 +317,7 @@
 <translation id="2363734411417672757">ระบบจะโหลดหน้าเว็บล่วงหน้าเพิ่มเติม ระบบอาจโหลดหน้าเว็บล่วงหน้าผ่านเซิร์ฟเวอร์ของ Google เมื่อเว็บไซต์หรือแอปอื่นๆ ขอ</translation>
 <translation id="2366554533468315977">ประวัติราคาในเว็บสำหรับตัวเลือกนี้</translation>
 <translation id="2367818124433749493">ทางลัดสําหรับนักพัฒนาซอฟต์แวร์</translation>
+<translation id="2369058545741334020">เปิดในโหมดการอ่าน</translation>
 <translation id="2385605401818128172">คุณสามารถตรวจสอบเว็บไซต์ที่ส่งการแจ้งเตือนจำนวนมากและหยุดไม่ให้ส่งการแจ้งเตือนอีกในอนาคต</translation>
 <translation id="2386938421315164605">ซ่อนและเลิกซ่อนหัวข้อ</translation>
 <translation id="2390510615457643724">คุณต้องการดาวน์โหลด <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> อีกครั้งใช่ไหม</translation>
@@ -327,6 +328,7 @@
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, แท็บที่เลือกซึ่งมีเสียง</translation>
 <translation id="2413014528833954543">ตรวจสอบรหัสผ่านในอุปกรณ์เครื่องนี้ไม่ได้</translation>
 <translation id="2414886740292270097">มืด</translation>
+<translation id="2415037988255164008">คืนค่าหน้าต่างไหม</translation>
 <translation id="2421705177906985956">ไม่มีเว็บไซต์ที่จะแสดงในขณะนี้</translation>
 <translation id="2426805022920575512">เลือกบัญชีอื่น</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{วิดีโอ มี 1 วิดีโอในรายการ}other{วิดีโอ มี # วิดีโอในรายการ}}</translation>
@@ -596,6 +598,7 @@
 <translation id="3524334353996115845">ให้ <ph name="ORIGIN" /> ยืนยันตัวตนของคุณ</translation>
 <translation id="3527085408025491307">โฟลเดอร์</translation>
 <translation id="3542235761944717775">ใช้ได้ <ph name="KILOBYTES" /> KB</translation>
+<translation id="3547933853190131743">ค้นหาด้วยโหมด AI</translation>
 <translation id="3549537543136628349">เซิร์ฟเวอร์ของ Google จะไม่ได้รับข้อมูลใหม่เมื่อโหลดหน้าเว็บล่วงหน้าแบบส่วนตัว เนื่องจากหน้าเว็บที่โหลดล่วงหน้าจะได้รับการเข้ารหัส และเว็บไซต์หรือแอปที่ลิงก์ไปยังหน้าดังกล่าวเป็นเว็บไซต์หรือแอป Google</translation>
 <translation id="3549657413697417275">ค้นหาประวัติการเข้าชม</translation>
 <translation id="3557336313807607643">เพิ่มในรายชื่อติดต่อ</translation>
@@ -1338,6 +1341,7 @@
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">ค้นหาด้วย Sogou</translation>
 <translation id="656065428026159829">ดูเพิ่มเติม</translation>
+<translation id="6565781844089373403">คืนค่าหน้าต่าง</translation>
 <translation id="6565959834589222080">ระบบจะใช้ Wi-Fi เมื่อพร้อมใช้งาน</translation>
 <translation id="657177046675873214">หากต้องการรับบุ๊กมาร์กในอุปกรณ์ทุกเครื่อง ให้เปิด "บุ๊กมาร์ก" ในการตั้งค่า</translation>
 <translation id="6573096386450695060">อนุญาตเสมอ</translation>

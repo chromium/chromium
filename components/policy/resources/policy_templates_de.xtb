@@ -131,6 +131,11 @@ Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter http
 <translation id="1076751984131277498">Zulassungsliste von trennbaren USB-Geräten</translation>
 <translation id="1077675271127011209">Berichte mit Nutzungs- und Absturzdaten deaktivieren</translation>
 <translation id="1079498696402787191">Standardwert für Hashes verwenden, die in TLS-Handshakes zulässig sind.</translation>
+<translation id="1081263326166769685">Wenn die Richtlinie aktiviert ist, meldet <ph name="PRODUCT_OS_NAME" /> Messwerte zur Nutzung und Diagnosedaten wie Absturzberichte an Google. Ist die Richtlinie deaktiviert, werden Messwerte und Diagnosedaten nicht gemeldet.
+
+Bei verwalteten Geräten ist diese Richtlinie standardmäßig aktiviert und sendet Messwerte an Google.
+
+Bei nicht verwalteten Geräten kann der Nutzer entscheiden, ob Messwerte gesendet werden sollen, wenn die Richtlinie nicht konfiguriert ist.</translation>
 <translation id="1081470306474387129">Die Controlled Frame API, die für bestimmte isolierte Kontexte wie isolierte Web‑Apps (IWAs) verfügbar ist, ermöglicht es einer App, beliebige Inhalte einzubetten und zu manipulieren.
 Weitere Informationen findest du unter https://github.com/WICG/controlled-frame.
 
@@ -394,18 +399,6 @@ Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@
 <translation id="1262993197422487260">Button zum Anzeigen des Passworts nicht auf dem Anmelde- oder Sperrbildschirm anzeigen</translation>
 <translation id="1265053460044691532">Zeit beschränken, für die sich ein über SAML authentifizierter Nutzer offline anmelden kann</translation>
 <translation id="1265076559723566171">Für die Konfiguration der Einstellungen für EDU-Nutzer</translation>
-<translation id="1268782248484174352">Gibt die Ebene der Messwertberichte für <ph name="PRODUCT_OS_NAME" /> an.
-
-Mit dieser Richtlinie kann festgelegt werden, in welchem Umfang Nutzungs- und Absturzdaten an Google gesendet werden:
-* 0 = Berichte deaktivieren: Es werden keine Nutzungs- oder Absturzdaten an Google gesendet.
-* 1 = Grundlegende Berichte: Eine begrenzte Menge an Nutzungs- und Absturzdaten wird an Google gesendet.
-* 2 = Erweiterte Berichte: Umfangreiche Nutzungs- und Absturzdaten werden an Google gesendet.
-
-Wenn diese Richtlinie nicht konfiguriert ist, kann der Nutzer bei der Installation oder beim ersten Ausführen eine entsprechende Auswahl treffen und diese Einstellung später ändern.
-
-Diese Richtlinie wird nur ausgewertet, wenn der Test „<ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" />“ auf dem Gerät aktiv ist.
-
-Wenn der Test „<ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" />“ auf dem Gerät aktiv ist und sowohl diese Richtlinie als auch die Richtlinie „<ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />“ festgelegt sind, hat diese Richtlinie Vorrang.</translation>
 <translation id="1271811620059192171">Gruppen aus Einzelrichtlinien aktivieren</translation>
 <translation id="127264587838521316">Mit dieser Richtlinie werden Anfragen für die Installation von Erweiterungen für <ph name="PRODUCT_NAME" /> aktiviert</translation>
 <translation id="1272798957154751008">Migration von Chromad-Geräten zur Cloud-Verwaltung aktivieren</translation>
@@ -840,6 +833,7 @@ Der Nutzer bleibt in seinem Google-Konto angemeldet, wenn über „<ph name="CLE
 
 Wenn du „<ph name="CLEAR_BROWSING_HISTORY_ACTION" />“, „<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />“, „<ph name="CLEAR_AUTOFILL_ACTION" />“ und „<ph name="CLEAR_SITE_SETTINGS_ACTION" />“ festlegst, wird die Synchronisierung für die entsprechenden Datentypen deaktiviert, sofern weder „<ph name="CHROME_SYNC_NAME" />“ durch Festlegen der Richtlinie „<ph name="SYNC_DISABLED_POLICY_NAME" />“ noch „<ph name="BROWSER_SIGNIN_POLICY_NAME" />“ deaktiviert ist.</translation>
 <translation id="1585643501600142852">Einbindung des Google Developer Program in „<ph name="CHROME_DEVTOOLS_NAME" />“ nicht aktivieren.</translation>
+<translation id="1585993524649373383">KI-Modus-Integrationen von Drittanbietern zulassen.</translation>
 <translation id="1587585749332985896">Verwendung des monitorlosen Modus nicht erlauben</translation>
 <translation id="1588240398285670601">Browsereinstellungen</translation>
 <translation id="1590802206069983683">Funktion „ThrottleDisplayNoneAndViewableHiddenCrossOriginIframes“ verfügbar</translation>
@@ -1824,18 +1818,6 @@ Ist die Richtlinie deaktiviert, können Nutzer diese Funktion nicht verwenden.
 
       Ist die Richtlinie konfiguriert, können Nutzer sie in <ph name="PRODUCT_NAME" /> nicht ändern. Ist die Richtlinie nicht konfiguriert, ist die Datenleckprüfung für Anmeldedaten zulässig, kann jedoch vom Nutzer deaktiviert werden.</translation>
 <translation id="2208976000652006649">Parameter für URL der Suche, die POST verwendet</translation>
-<translation id="2211167090584042804">Gibt die Ebene der Messwertberichte für <ph name="PRODUCT_NAME" /> an.
-
-Mit dieser Richtlinie kann festgelegt werden, in welchem Umfang Nutzungs- und Absturzdaten an Google gesendet werden:
-* 0 = Berichte deaktivieren: Es werden keine Nutzungs- oder Absturzdaten an Google gesendet.
-* 1 = Grundlegende Berichte: Eine begrenzte Menge an Nutzungs- und Absturzdaten wird an Google gesendet.
-* 2 = Erweiterte Berichte: Umfangreiche Nutzungs- und Absturzdaten werden an Google gesendet.
-
-Wenn diese Richtlinie nicht konfiguriert ist, kann der Nutzer bei der Installation oder beim ersten Ausführen eine entsprechende Auswahl treffen und diese Einstellung später ändern.
-
-Diese Richtlinie wird nur ausgewertet, wenn der Test „<ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" />“ auf dem Gerät aktiv ist.
-
-Wenn der Test „<ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" />“ auf dem Gerät aktiv ist und sowohl diese Richtlinie als auch die Richtlinie „<ph name="METRICS_REPORTING_ENABLED_POLICY_NAME" />“ festgelegt sind, hat diese Richtlinie Vorrang.</translation>
 <translation id="2212011154693551439">Die in Gruppen eingeteilte Chrome-Verlaufsseite ist standardmäßig unter chrome://history/grouped sichtbar.</translation>
 <translation id="2212207215880394506">Fotobearbeitung basierend auf generativer KI nicht zulassen.</translation>
 <translation id="221287948061571053">Maximiertes Unternehmenslogo auf der Symbolleiste ausblenden</translation>
@@ -1958,25 +1940,6 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer Date
       Nutzer können diese Einstellung weder ändern noch überschreiben.
 
       Hinweis: Durch diese Richtlinie wird allen HTTP- und HTTPS-Anfragen, die an google.com-Domains gesendet werden, der Header „X-GoogApps-Allowed-Domains“ angehängt (siehe https://support.google.com/a/answer/1668854).</translation>
-<translation id="2282968242492236886">Wenn du diese Richtlinie konfigurierst, kannst du angeben, welche Autofill-Datentypen für bestimmte URL-Muster blockiert werden.
-
-Die Richtlinie ist als Liste von Wörterbüchern strukturiert. Jedes Wörterbuch muss Folgendes enthalten:
-* „url_pattern“: Ein URL-Muster für die Inhaltseinstellungen (z. B. „https://[*.]beispiel.de“).
-* „blocked_types“: Eine Liste von Strings, die die Kategorien von Autofill-Daten darstellen, die blockiert werden sollen.
-
-Die unterstützten Werte für „blocked_types“ sind:
-* „contact_info“: Das Ausfüllen und Speichern von Kontaktdaten wird blockiert.
-* „payments“: Das Ausfüllen und Speichern von Kreditkarten und Zahlungsmethoden wird blockiert.
-* „identity_docs“: Das Ausfüllen und Speichern von Identitätsdokumenten (z. B. Reisepass, Führerschein, Personalausweis) wird blockiert.
-* „travel“: Das Ausfüllen und Speichern von Reiseinformationen (z. B. Flugreservierungen, Fahrzeugkennzeichen) wird blockiert.
-
-Wenn ein Datentyp für eine Website blockiert ist, sind sowohl das Erstellen von Vorschlägen als auch die Aufforderung zum Speichern/Importieren neuer Daten dieses Typs auf dieser Website deaktiviert.
-
-Wenn eine URL mit mehreren Mustereinträgen in der Liste übereinstimmt, werden die blockierten Typen aus allen übereinstimmenden Einträgen zusammengeführt. Ungültige URL-Muster in der Liste werden ignoriert.
-
-Wenn diese Richtlinie nicht konfiguriert ist, werden keine Autofill-Datentypen nach Domain blockiert.
-
-Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Der Platzhalter * wird unterstützt. Dieses Muster entspricht jeder URL mit beliebigem Schema, Port und Pfad.</translation>
 <translation id="2287414160388710497">Ermöglicht Administratoren, das Erscheinungsbild von Wasserzeichen anzupassen, die durch Regeln zum Schutz vor Datenverlust (Data Loss Prevention, DLP) angewendet werden. Dazu gehört auch das Festlegen der Deckkraft für Füllung und Kontur sowie der Schriftgröße.
 Wenn diese Richtlinie oder einige Werte nicht konfiguriert sind, verwendet Chrome die Standardwerte für Wasserzeichen.
 Diese sind: Füllungsdeckkraft bei 4, Konturdeckkraft bei 6 und Schriftgröße bei 24.
@@ -2644,6 +2607,7 @@ Das System fragt AAAA-Einträge nur dann ab, wenn es für einen globalen IPv6-Ho
 <translation id="2659581762274047663">Dienst „<ph name="PRODUCT_NAME" />“ aktivieren</translation>
 <translation id="2660846099862559570">Nie Proxy verwenden</translation>
 <translation id="2661628029848851543">Jegliche Nutzung von verwalteten Konten ist zulässig</translation>
+<translation id="2662878721240837364">Zusätzliche HTTP-Header, die in die Abrufanfrage aufgenommen werden sollen.</translation>
 <translation id="2664391398878045611">Die Seite „Neuer Tab“ zeigt die Information im mittleren Slot nicht an – selbst wenn sie verfügbar ist</translation>
 <translation id="2664682171745499686">Warnungen zu nachgeahmten URLs auf Domains unterdrücken</translation>
 <translation id="2665129863304939984">Nutzer entscheiden lassen, ob sie vorhandene Browserdaten in ihr verwaltetes Profil importieren möchten</translation>
@@ -3260,6 +3224,16 @@ Hinweis: Ausführliche Beispiele findest du in den Chromium-Projekten unter http
           Diese Richtlinie wird nur angewendet, wenn die Richtlinie "DefaultSearchProviderEnabled" aktiviert ist.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3057459316145779761">Verwendung von Chrome for Testing nicht zulassen</translation>
+<translation id="3058753935627342236">Der OAuth-Bereich oder die Zweck-ID. Nur relevant, wenn der Typ „profile_bearer_token“ ist.</translation>
+<translation id="3059569468777773458">Mit dieser Richtlinie werden die KI-Modus-Integrationen von Drittanbietern in der Adressleiste und im Suchfeld auf der Seite „Neuer Tab“ gesteuert.
+
+Für den Zugriff auf diese Funktion muss eine Drittanbieter-Suchmaschine, die den KI-Modus unterstützt, als Standardsuchmaschine des Nutzers festgelegt sein.
+
+0 = Die Funktion ist für Nutzer verfügbar.
+
+1 = Die Funktion ist für Nutzer nicht verfügbar.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird ihr Verhalten durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.</translation>
 <translation id="3059687162224942925">Verwaltungshinweis in der Fußzeile auf der Seite „Neuer Tab“ aktivieren</translation>
 <translation id="3060608694980129910">Mit dieser Richtlinie wird festgelegt, ob in <ph name="PRODUCT_NAME" /> Cloud-Berichte zu Sicherheitssignalen für ein bestimmtes verwaltetes Profil erstellt werden.
 
@@ -3299,6 +3273,7 @@ Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</trans
 <translation id="3101035417394748390">Die maximale Größe in Byte, die zwischen dem Client und dem Host über die Synchronisierung der Zwischenablage übertragen werden kann</translation>
 <translation id="3101501961102569744">Auswählen, wie Proxyserver-Einstellungen angegeben werden</translation>
 <translation id="3101709781009526431">Datum und Uhrzeit</translation>
+<translation id="3104124358611145014">Authentifizierungskonfiguration für die PvD.</translation>
 <translation id="3105764289283669411">Diese Richtlinie legt fest, ob Anfragemethoden groß geschrieben werden, wenn sie mit <ph name="ACAM_HEADER_NAME" />-Antwortheadern in <ph name="CORS" />-Preflight abgeglichen werden.
 
 Wenn die Richtlinie deaktiviert ist, werden Anfragemethoden groß geschrieben.
@@ -5456,6 +5431,7 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://ch
 <translation id="4554991346503872538">Nie Übersetzung anbieten</translation>
 <translation id="4555850956567117258">Remote-Bescheinigung (Remote Attestation) für den Nutzer aktivieren</translation>
 <translation id="4557134566541205630">Standardsuchanbieter-URL für die "Neuer Tab"-Seite</translation>
+<translation id="4557484263538581790">Einstellungen für KI-Modus-Integrationen von Drittanbietern in der Adressleiste und im Suchfeld auf der Seite „Neuer Tab“.</translation>
 <translation id="4558166110367609724">Überspringt automatisch die Nutzungsbedingungen und lädt den Browser.</translation>
 <translation id="4559846397119102037">Verwendung von <ph name="LACROS_NAME" /> zulassen</translation>
 <translation id="4561560385824323005">Nutzern erlauben, ein vorkonfiguriertes Desktoplayout zum Laden auszuwählen</translation>
@@ -5899,6 +5875,7 @@ Diese Richtlinie gilt vorübergehend und wird 2026 entfernt.</translation>
        Wenn diese Richtlinie nicht konfiguriert oder auf eine leere Liste festgelegt ist, können jederzeit Warnungen zu nachgeahmten URLs erscheinen.
 
        Ein Hostname kann bei vollständiger Host- oder beliebiger Domainübereinstimmung erlaubt sein. Beispiel: Für die URL „https://foo.beispiel.de/bar“ werden Warnungen möglicherweise unterdrückt, wenn „foo.beispiel.de“ oder „beispiel.de“ zur Liste hinzugefügt wurden.</translation>
+<translation id="4852491708447324664">Der Schlüssel des Headers.</translation>
 <translation id="4852900976354340846">Einstellungen für Direct Sockets</translation>
 <translation id="485419696366295465">Steuert zum <ph name="BOREALIS_NAME" />-Subsystem gehörige Richtlinien.</translation>
 <translation id="4854384393031206645">Durch diese Richtlinie wird festgelegt, ob der Nutzer IWAs manuell installieren kann.
@@ -6405,6 +6382,19 @@ Diese Richtlinie ist eine vorübergehende Lösung, damit genug Zeit ist, Webinha
 <translation id="5118635822783657217">Updates für nicht kritische Komponenten deaktivieren</translation>
 <translation id="5120168808610189805">Import der Startseite bei der ersten Ausführung aktivieren</translation>
 <translation id="5124368997194894978">Starten bei anliegender Netzspannung aktivieren</translation>
+<translation id="5124652340668722849">Konfiguriert eine Liste von Bereitstellungsdomains (Provisioning Domains, PvDs), die <ph name="PRODUCT_NAME" /> zum dynamischen Abrufen von Proxykonfigurationen verwendet.
+
+Mit dieser Richtlinie kann eine Liste von Domainnamen oder Ressourcen-URIs angegeben werden, die Bereitstellungsdomains gemäß RFC 8801 („Discovering Provisioning Domain Names and Data“) darstellen. Für jede PvD löst der Browser die entsprechende JSON-Konfiguration auf, indem er eine HTTPS-Anfrage an den bekannten Endpunktpfad „https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd“ sendet.
+
+Jeder Eintrag in der Liste gibt Folgendes an:
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: Die Kennung der Bereitstellungsdomain (ein Domainname).
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: Die optionale Authentifizierungskonfiguration. Wenn sie nicht konfiguriert oder auf „none“ gesetzt ist, wird keine Authentifizierung durchgeführt. Wenn die Einstellung „profile_bearer_token“ lautet, weist sie den Browser an, ein OAuth2-Zugriffstoken mit dem angegebenen Bereich für das angemeldete primäre Konto abzurufen und es im „Authorization“-Header als „Bearer“-Token anzuhängen.
+
+* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: Eine optionale Liste benutzerdefinierter HTTP-Header, die beim Abfragen des PvD-Endpunkts enthalten sein sollen. Dynamische Werte können eingefügt werden, z. B. „profile_id“ (steht für eine stabile, eindeutige ID des Browserprofils auf dem Gerät, die das Targeting auf die Konfiguration pro Profil ermöglicht) oder „accept_language“ (steht für die bevorzugten Sprachen des Browsers).
+
+Die abgerufenen Konfigurationen werden gemäß dem RFC 8801-Schema geparst. Es werden nur Routingregeln und Proxys aus der JSON-Nutzlast des PvD angewendet, die sich auf die Proxykonfiguration beziehen. Wenn diese Richtlinie nicht konfiguriert ist, werden keine Bereitstellungsdomains abgefragt oder zum Abrufen von Proxykonfigurationen verwendet.</translation>
 <translation id="5130213897914754028">Websites die Nutzung von „SharedArrayBuffers“ nicht erlauben</translation>
 <translation id="5130935469849337738">Übersetzung immer anbieten</translation>
 <translation id="513314432051760916">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Erfolgsmessung bei Anzeigen für Nutzer deaktiviert werden kann.
@@ -7572,6 +7562,11 @@ Hinweis: Diese Richtlinie verhindert nur das manuelle Löschen über die Benutze
 <translation id="5882345429632338713">Verzögerung vor dem Starten eines alternativen Browsers (Millisekunden)</translation>
 <translation id="5883015257301027298">Standardeinstellungen für Cookies</translation>
 <translation id="5883631290631802010">Live-Übersetzung aktivieren</translation>
+<translation id="5883955715467031292">Der Wert des Headers, der Platzhalter enthalten kann, die der Browser dynamisch erweitert:
+
+* „${profile_id}“: Wird zu einer stabilen, eindeutigen Kennung erweitert, die das jeweilige Browserprofil auf dem Gerät darstellt (wie vom Browser-Profil-ID-Dienst generiert).
+
+* „${accept_language}“: Wird zu den aktuellen bevorzugten Sprachen des Browsers erweitert.</translation>
 <translation id="5886280631293123880">Diese Richtlinie bietet die Möglichkeit, eine bereits eingestellte und entfernte Reihe von Plattformereignissen namens Mutationsereignisse vorübergehend wieder zu aktivieren.
 Wenn diese Richtlinie aktiviert ist, werden Mutationsereignisse weiterhin ausgelöst, selbst wenn sie für normale Webnutzer standardmäßig deaktiviert wurden. Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden diese Ereignisse möglicherweise nicht ausgelöst.
 Diese Richtlinie ist eine vorübergehende Behelfslösung und wird in M137 nicht mehr funktionieren.</translation>
@@ -7602,7 +7597,6 @@ Wenn die Richtlinie auf EnabledFocusSoundsOnly gesetzt ist, wird die Musikfunkti
 
 Wenn die Richtlinie deaktiviert ist, werden im Konzentrationsmodus keine Klänge abgespielt.</translation>
 <translation id="5890063326284543943">Verwendung der Serial API steuern</translation>
-<translation id="5893086678951790439">Berichtsebene für Messwerte</translation>
 <translation id="5893303508158298667">Wenn „<ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" />“ aktiviert ist, kann es Remote-Clients durch Aktivieren oder Nichtkonfigurieren von „<ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" />“ ermöglicht werden, über Relayserver eine Verbindung zu diesem Computer herzustellen, falls keine direkte Verbindung verfügbar ist, z. B. aufgrund von Firewallbeschränkungen.
 
       Ist diese Richtlinie deaktiviert, wird dadurch nicht der Remote-Zugriff deaktiviert. Stattdessen werden nur Verbindungen desselben Netzwerks zugelassen (nicht NAT-Traversal oder Relay).</translation>
@@ -7727,7 +7721,6 @@ Diese Richtlinie wird ab <ph name="PRODUCT_NAME" /> 147 nicht mehr unterstützt
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Ist sie nicht konfiguriert, können die Nutzer festlegen, ob Kopf- und Fußzeilen angezeigt werden sollen.</translation>
 <translation id="5951418260805607969">Benachrichtigung anzeigen, wenn nur wenig Speicherplatz verfügbar ist</translation>
-<translation id="5952917461013988610">Grundlegende Berichte</translation>
 <translation id="5958746038080720143">Web Proxy Auto-Discovery (WPAD)-Optimierungen aktivieren</translation>
 <translation id="5961137303188584693">MAC-Adresse der im Gerät verbauten NIC</translation>
 <translation id="5962271004971310788">Erweiterungen, deren Ausführung im Inkognitomodus vom Nutzer erlaubt werden muss</translation>
@@ -9073,6 +9066,17 @@ Diese Richtlinie ersetzt die nicht mehr unterstützte Richtlinie „<ph name="WI
 <translation id="6813263547126514821">Energiesparmodus und Herunterfahren</translation>
 <translation id="681446116407619279">Unterstützte Authentifizierungsschemas</translation>
 <translation id="6815628711329903153">Moderne Zwischenspeicherzuweisung für Graphics3D-APIs im PPAPI-Plug-in zulassen.</translation>
+<translation id="6819031008957510729">Ist diese Richtlinie aktiviert, solltest du auch anonyme Berichte aktivieren. Nutzungs- und Absturzdaten für <ph name="PRODUCT_NAME" /> werden dann standardmäßig an Google gesendet. Nutzer können diese Einstellung weiterhin ändern.
+
+Ist diese Richtlinie deaktiviert, sind auch anonyme Berichte deaktiviert. Es werden keine Nutzungs- und Absturzdaten an Google gesendet. Nutzer können diese Einstellung nicht ändern.
+
+Wird diese Richtlinie nicht konfiguriert, können Nutzer die anonymen Berichte bei der Installation oder beim ersten Ausführen auswählen und diese Einstellung später ändern.
+
+(Für <ph name="PRODUCT_OS_NAME" /> siehe <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.)
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="6819838337315703072">Wenn der Support für die <ph name="LINUX_OS_NAME" />-App und die Richtlinie aktiviert sind, werden Informationen zur Nutzung von <ph name="LINUX_OS_NAME" />-Apps an den Server zurückgesendet.
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, werden keine Informationen zur App-Nutzung gesendet.</translation>
@@ -9152,7 +9156,6 @@ Ist sie auf „false“ gesetzt oder nicht festgelegt, ist das Layout nicht verf
 <translation id="686079137349561371">Microsoft Windows 7 oder höher</translation>
 <translation id="6863927303509860338">Verknüpfungen auf der Seite „Neuer Tab“ einrichten</translation>
 <translation id="6866755486434471318">Zulassen, dass <ph name="PEPPER_NAME" /> freigegebene Bilder für die Videodecodierung verwendet.</translation>
-<translation id="6874461444739276423">Berichtsebene für Gerätemesswerte</translation>
 <translation id="6878757724611298427">Nutzern erlauben, Android-Apps auf nicht verbundenen Geräten zu verwenden</translation>
 <translation id="6881447940489194100">Hexadezimalcodierter SHA‑256-Hash der Daten.</translation>
 <translation id="68818134518270542">Mit der Konfiguration der Richtlinie werden die Apps festgelegt, die Nutzer als Notizen-App auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> aktivieren können.
@@ -9367,6 +9370,7 @@ Wenn die Richtlinie auf „<ph name="DISALLOWED_NAME" />“ gesetzt ist, kann de
 Wenn die Richtlinie auf „<ph name="AUTOMATED_NAME" />“ gesetzt ist, wird der <ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /> automatisch so eingerichtet, dass Dateien mit passenden Dateiformaten standardmäßig in <ph name="MICROSOFT_ONE_DRIVE_NAME" /> verschoben und in der <ph name="MICROSOFT_365_NAME" />-App verarbeitet werden, wenn der Nutzer versucht, sie zu öffnen.
 
 Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph name="ALLOWED_NAME" />“ für normale Nutzer. Für Unternehmensnutzer gilt bei nicht konfigurierter Richtlinie die Einstellung „<ph name="DISALLOWED_NAME" />“.</translation>
+<translation id="6995141039241855398">Die PvD-ID der Bereitstellungsdomain. Die vollständige URL des PvD lautet https://[PvD-ID]/.well-known/pvd.</translation>
 <translation id="6999948519306285655">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />".
 
        Durch Festlegen der Richtlinie kannst du die URL zu einer PAC-Proxydatei angeben. Diese Richtlinie ist nur dann wirksam, wenn die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" nicht konfiguriert ist und du "<ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />" mit "<ph name="PROXY_MODE_POLICY_NAME" />" ausgewählt hast.
@@ -10370,6 +10374,7 @@ Es gibt mehrere Richtlinien, die Ursprünge auflisten, die sich auf Anfragen an 
 <translation id="7612157962821894603">Systemweite Parameter, die beim Starten von <ph name="PRODUCT_NAME" /> angewendet werden</translation>
 <translation id="7613115815080726221">Zeitraum ohne Nutzereingabe, nach dem das Gerät in den Inaktivitätsmodus wechselt, angegeben in Millisekunden.</translation>
 <translation id="7613706918933704660">Ursprüngen der isolierten Web-App nicht erlauben, Direct Sockets zu verwenden</translation>
+<translation id="761389392812593780">KI-Modus-Integrationen von Drittanbietern nicht zulassen.</translation>
 <translation id="7614663184588396421">Liste der deaktivierten Protokollschemas</translation>
 <translation id="7615139766238160758">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL‑Mustern erstellen, durch die Websites angegeben werden, denen automatisch Zugriff auf lokale Drucker über die WebPrinting API gewährt wird.
 Gültige Muster sind auf isolierte Web-Apps beschränkt.
@@ -10435,6 +10440,11 @@ Richtlinien, die zusammengeführt werden müssen, müssen außerdem entweder in 
 
       Für das Ursprungsmuster muss folgendes Format verwendet werden: <ph name="URL_SCHEME_FORMAT_LINK" />. In „<ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />“ können bis zu 1.000 Ausnahmen definiert werden.
       Für die Hostkomponente sind Platzhalter zulässig (z. B. „*:8000“ passt für alle Hosts auf Port 8000). Wenn alle Schemas oder alle Ports passen sollen, kannst du die Komponente vollständig weglassen (z. B. passt „beispiel.de“ für jedes Schema und jeden Port). Ein Hostname (z. B. „beispiel.de“) stimmt auch mit seinen Subdomains überein. Wenn ein Host genau passen soll und seine Subdomains ausgeschlossen werden sollen, stell ihm einen Punkt voran (z. B. „.beispiel.de“). Verwende ein einzelnes Sternchen („*“), damit alle Ursprünge passen.</translation>
+<translation id="7652330587655863759">Der Authentifizierungstyp.
+
+* „none“: Es wird keine Authentifizierung durchgeführt.
+
+* „profile_bearer_token“: Weist den Browser an, ein OAuth2-Zugriffstoken für das angemeldete primäre Konto abzurufen und es im „Authorization“-Header als „Bearer“-Token anzuhängen.</translation>
 <translation id="7657261947024629645">Für eine optimale Leistung.</translation>
 <translation id="76580522298425324">Bildschirmaufnahme ohne vorherige Nutzergeste zulassen</translation>
 <translation id="7661379728107156839">Geringe Komplexität</translation>
@@ -11213,13 +11223,6 @@ Wird diese Richtlinie nicht konfiguriert, ist der Datenschutzbildschirm anfangs 
 <translation id="8171262216089271568">Großen Cursor auf der Anmeldeseite aktivieren</translation>
 <translation id="8171924760436219650">Mit dieser Richtlinie kann die rechte Maustaste auf dem Anmeldebildschirm als primäre Maustaste festgelegt werden</translation>
 <translation id="81724933026241365">Geräteausschaltung über das Symbol „Herunterfahren“ oder mit der physischen Ein-/Aus-Taste zulassen</translation>
-<translation id="8173338752620395043">Wenn die Richtlinie aktiviert ist, sendet <ph name="PRODUCT_OS_NAME" /> Messwerte zur Nutzung und Diagnosedaten wie Absturzberichte an Google. Ist die Richtlinie deaktiviert, werden keine Messwerte und Diagnosedaten gesendet.
-
-Bei verwalteten Geräten ist diese Richtlinie standardmäßig aktiviert und sendet Messwerte an Google.
-
-Bei nicht verwalteten Geräten kann der Nutzer entscheiden, ob Messwerte gesendet werden sollen, wenn die Richtlinie nicht konfiguriert ist.
-
-Wenn der Test „<ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" />“ auf dem Gerät aktiv ist und sowohl diese Richtlinie als auch die Richtlinie „<ph name="DEVICE_METRICS_REPORTING_LEVEL_POLICY_NAME" />“ festgelegt sind, hat die Richtlinie „<ph name="DEVICE_METRICS_REPORTING_LEVEL_POLICY_NAME" />“ Vorrang.</translation>
 <translation id="8173864651667424191">Die Option „Als Bild drucken“ ist die Standardeinstellung für die Druckvorschau von PDF-Dokumenten, wenn sie verfügbar ist.</translation>
 <translation id="8175922758834816585">Gesprochenes Feedback auf dem Anmeldebildschirm aktivieren und dem Nutzer erlauben, es vorübergehend zu deaktivieren</translation>
 <translation id="8176035528522326671">Unternehmensnutzer nur als primären Nutzer mehrerer Profile zulassen (Standardverhalten für von Unternehmen verwaltete Nutzer)</translation>
@@ -11816,7 +11819,6 @@ Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durc
 Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="8566842294717252664">Web Store auf der "Neuer Tab"-Seite und im App Launcher ausblenden</translation>
 <translation id="8567697114274003779">Benutzerdefiniertes Unternehmenslabel für ein verwaltetes Profil festlegen</translation>
-<translation id="8570976102224880079">Erweiterte Berichte</translation>
 <translation id="8571069584826006598">Ursprüngen der isolierten Web-App erlauben, den Nutzer um Zugriff auf lokale Drucker über die WebPrinting API zu bitten</translation>
 <translation id="8571119890730528225">Drittanbieter-Speicherpartitionierung deaktivieren.</translation>
 <translation id="8571314270766672278">Bei Versionsdowngrade ein Rollback durchführen und das Gerät zurücksetzen; dabei die Registrierung möglichst erhalten</translation>
@@ -11956,6 +11958,7 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
 
       Hinweis: Unter https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables findest du eine Liste der Variablen, die verwendet werden können.</translation>
 <translation id="8657543427358173663">Erfassen von WebRTC-Ereignisprotokollen aus Google-Diensten zulassen</translation>
+<translation id="8657739086905799444">Domains für die Proxy-Bereitstellung konfigurieren</translation>
 <translation id="8659843732895043951">Zwischenablage für diese Websites zulassen</translation>
 <translation id="8661297125441579970">Datenmigration und ARC nicht zulassen.</translation>
 <translation id="8661538142776716004">Website-Einstellungen löschen</translation>
@@ -12006,7 +12009,6 @@ Diese Richtlinie ist eine vorübergehende Maßnahme und wird nach einigen Meilen
       Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="8672321184841719703">Automatische Aktualisierung auf Zielversion</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
-<translation id="8675599659717867329">Berichte deaktivieren</translation>
 <translation id="8676959842615154675">Wenn diese Richtlinie aktiviert ist, vergleicht der Host für den Remote-Zugriff den Namen des mit dem Host verknüpften lokalen Nutzers mit dem Namen des Google-Kontos, das als Hosteigentümer registriert ist (z. B. „maxmustermann“, wenn der Hosteigentümer das Google-Konto „maxmustermann@beispiel.de“ ist). Dieser Host wird nicht gestartet, wenn der Name des Hosteigentümers vom Namen des mit dem Host verknüpften lokalen Nutzers abweicht. Wenn du erzwingen möchtest, dass das Google-Konto des Eigentümers mit einer bestimmten Domain verknüpft ist, verwende die Richtlinie mit <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, kann der Host für den Remote-Zugriff mit jedem lokalen Nutzer verknüpft sein.</translation>
@@ -12820,19 +12822,6 @@ Mit dieser Richtlinie wird festgelegt, ob ein Nutzer den Gerätehostnamen konfig
 Wenn diese Richtlinie deaktiviert ist, geben die Speicherkontingent-APIs in der Regel einen dynamischen Wert zurück, der proportional zum auf dem Gerät verfügbaren Gesamtspeicherplatz berechnet wird, unabhängig davon, wie viel Speicherplatz belegt ist.
 Ist diese Richtlinie nicht konfiguriert, verwenden die Speicherkontingent-APIs das Standardverhalten von Chrome.
 Websites mit der Berechtigung zur unbegrenzten Speicherung sind von dieser Einstellung nicht betroffen. Auch das erzwungene Kontingent ist davon nicht betroffen.</translation>
-<translation id="975621145048605048">Ist diese Richtlinie aktiviert, solltest du auch anonyme Berichte aktivieren. Nutzungs- und Absturzdaten für <ph name="PRODUCT_NAME" /> werden dann standardmäßig an Google gesendet. Nutzer können diese Einstellung weiterhin ändern.
-
-Ist diese Richtlinie deaktiviert, sind auch anonyme Berichte deaktiviert. Es werden keine Nutzungs- und Absturzdaten an Google gesendet. Nutzer können diese Einstellung nicht ändern.
-
-Wird diese Richtlinie nicht konfiguriert, können Nutzer die anonymen Berichte bei der Installation oder beim ersten Ausführen auswählen und diese Einstellung später ändern.
-
-(Informationen zu <ph name="PRODUCT_OS_NAME" /> findest du unter <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.)
-
-Wenn der Test „<ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME" />“ auf dem Gerät aktiv ist und sowohl diese Richtlinie als auch die Richtlinie „<ph name="METRICS_REPORTING_LEVEL_POLICY_NAME" />“ festgelegt sind, hat die Richtlinie „<ph name="METRICS_REPORTING_LEVEL_POLICY_NAME" />“ Vorrang.
-
-Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
-
-Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="976415389478739655">Verlangen, dass Geräte von Nutzern mit einem verwalteten Netzwerk verbunden sind, um einem <ph name="CLASS_TOOLS_NAME" />-Kurs beitreten zu können</translation>
 <translation id="978619365985286086">Einstellungen für die Tools zur Kursverwaltung</translation>
 <translation id="978658824596356870">24-Stunden-Format</translation>

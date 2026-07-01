@@ -317,6 +317,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2363734411417672757">More pages are preloaded. Pages may be preloaded through Google servers when requested by other sites or apps.</translation>
 <translation id="2366554533468315977">Price history across the web for this option</translation>
 <translation id="2367818124433749493">Developer shortcuts</translation>
+<translation id="2369058545741334020">Open in reading mode</translation>
 <translation id="2385605401818128172">You can review sites that send a lot of notifications and stop them from sending more in the future</translation>
 <translation id="2386938421315164605">Hide and unhide topics</translation>
 <translation id="2390510615457643724">Do you want to download <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> again?</translation>
@@ -327,6 +328,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, selected audible tab</translation>
 <translation id="2413014528833954543">Can't check passwords on this device</translation>
 <translation id="2414886740292270097">Dark</translation>
+<translation id="2415037988255164008">Restore windows?</translation>
 <translation id="2421705177906985956">No sites to show right now</translation>
 <translation id="2426805022920575512">Choose another account</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Videos, 1 video in list}other{Videos, # videos in list}}</translation>
@@ -596,6 +598,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3524334353996115845">Let <ph name="ORIGIN" /> verify that it's you</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB available</translation>
+<translation id="3547933853190131743">Search with AI Mode</translation>
 <translation id="3549537543136628349">Because the preloaded pages are encrypted, and the site or app linking to the pages is a Google site or app, Google servers don't receive new information when privately preloading these pages.</translation>
 <translation id="3549657413697417275">Search your history</translation>
 <translation id="3557336313807607643">Add to contacts</translation>
@@ -1338,6 +1341,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Search with Sogou</translation>
 <translation id="656065428026159829">See more</translation>
+<translation id="6565781844089373403">Restore windows</translation>
 <translation id="6565959834589222080">Wi-Fi is used when available</translation>
 <translation id="657177046675873214">To get your bookmarks on all your devices, turn on 'Bookmarks' in Settings.</translation>
 <translation id="6573096386450695060">Always allow</translation>

@@ -30,9 +30,11 @@
 <translation id="126567311906253476">使用 <ph name="USER_EMAIL" /> 登录 Gmail 或 YouTube 等 Google 服务时，您可以使用同一账号自动登录 Chromium</translation>
 <translation id="1287534462498555020">在手机上下载 Chromium</translation>
 <translation id="1290883685122687410">设置错误：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
+<translation id="1312200348844120300">插图：展示如何使用“图片搜索”功能查找商品</translation>
 <translation id="1315551408014407711">设置您的新 Chromium 个人资料</translation>
 <translation id="132092532143527429">试用 Chromium 中的 Gemini</translation>
 <translation id="1324107359134968521">Chromium 需获得蓝牙使用权限，才能浏览蓝牙设备。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1329040302064168406">在手机上登录 Chromium</translation>
 <translation id="1330562121671411446">检测语言</translation>
 <translation id="1330742950061766891">使用 Chromium 推荐的浏览器设置</translation>
 <translation id="1342274909142618978">同时删除 Chromium 中的数据 (<ph name="URL" />)</translation>
@@ -91,6 +93,7 @@
 <translation id="1951406923938785464">Chromium 阻止了此项下载操作，因为这不是常下载的文件类型，可能具有危险性</translation>
 <translation id="1953553007165777902">正在下载…还需 <ph name="MINUTE" /> 分钟</translation>
 <translation id="1966382378801805537">Chromium 无法确定或设置默认浏览器</translation>
+<translation id="197326043290947695">巧用“图片搜索”，让浏览更智能</translation>
 <translation id="1990262977744080398">了解 Chromium 为何屏蔽某些文件（在新标签页中打开）</translation>
 <translation id="1999715455684970349">让您的 Chromium 软件保持最新状态。如果此服务已停用或已停止运行，您的 Chromium 软件将无法保持最新状态，这意味着可能出现的安全漏洞无法得到修复，并且某些功能可能无法正常运行。当没有 Chromium 软件使用此服务时，此服务会自行卸载。</translation>
 <translation id="2008474315282236005">这会从这台设备上删除 1 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
@@ -103,6 +106,7 @@
 <translation id="208726765006323911">下次打开 Chromium iOS 时，您会看到试用<ph name="FEATURE_NAME" />的提示。</translation>
 <translation id="2099452623287920103">系统将从此设备中移除您已保存在 Google 账号中的密码和其他 Chromium 数据。如需在 Chromium 中重新使用这些数据，请重新登录。</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{您的组织会在 Chromium 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{您的组织会在 Chromium 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
+<translation id="2125838419757773031">选择屏幕区域即可搜索</translation>
 <translation id="2126108037660393668">所下载的文件未能顺利通过验证。</translation>
 <translation id="2135919691573380097">举报此网站</translation>
 <translation id="2137162749895930932">关闭翻译屏幕</translation>
@@ -233,6 +237,7 @@
 <translation id="3387527074123400161">Chromium 操作系统</translation>
 <translation id="3406848076815591792">切换到现有的 Chromium 个人资料？</translation>
 <translation id="3412460710772753638">在此设备上的密码管理工具中更新</translation>
+<translation id="3423442168617177595">内置于 Chromium 中，可帮助您创建、保存和自动填充安全系数高的密码。添加快捷方式，访问更轻松</translation>
 <translation id="3455907671758333080">借助 Chromium 在手机上使用增强型安全浏览功能</translation>
 <translation id="3461644266919055473">正在打造您的专属 Chromium…</translation>
 <translation id="3474745554856756813">这会从这台设备上删除 <ph name="ITEMS_COUNT" /> 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
@@ -282,6 +287,7 @@
 <translation id="3975724895399328945">关于 Google Chrome for Testing(&amp;G)</translation>
 <translation id="3997429360543082038">关于 Chromium 操作系统</translation>
 <translation id="4010059961270896984">当您访问某个网站时，Chromium 会通过可隐藏 IP 地址的隐私保护服务器，将经过混淆处理的网址片段发送给 <ph name="BEGIN_LINK" />Google 安全浏览服务<ph name="END_LINK" />。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>
+<translation id="4016217212818346953">利用“密码管理工具”，保障安全无忧</translation>
 <translation id="4019629340646866719">与 <ph name="BEGIN_LINK_LINUX_OSS" />Linux 开发环境<ph name="END_LINK_LINUX_OSS" />一样，Chromium 操作系统也是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="4022972681110646219">翻译屏幕</translation>
 <translation id="4023601594785368013">源语言：<ph name="LANGUAGE" /></translation>
@@ -501,6 +507,7 @@
 <translation id="6400112897226594999">计算机屏幕中的 Chromium 徽标。</translation>
 <translation id="6403826409255603130">Chromium 是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Chromium 内置的防护恶意软件和网上诱骗的功能可让您更安全地浏览网页。</translation>
 <translation id="6414624068245092115">为了确保您可以一直通过 Google 账号使用和保存 Chromium 数据，请验证是您本人在操作</translation>
+<translation id="6417332166651156371">简图：展示 Chromium 中密码管理工具的入口点</translation>
 <translation id="642132557830635295">Chromium 的运行速度会更快，并且使用 JavaScript 的功能应该能按预期运行</translation>
 <translation id="6436260184216827876">图片搜索功能不可用，请稍后再试。</translation>
 <translation id="6442900851116057561">重启 Chromium 操作系统</translation>
@@ -592,6 +599,7 @@
 <translation id="7196312274710523067">无法启动 Chromium。请重试。</translation>
 <translation id="7213008767289637091">将 Chromium 保留在程序坞中，即可随时快速访问</translation>
 <translation id="7213407614656404070">随时使用 Chromium 打开您在消息、文档和其他应用内点击的链接</translation>
+<translation id="7216228761061470870">当您在桌面设备上使用“图片搜索”功能时，系统会将网页标题、网址和内容（包括 PDF 文件）发送给服务器</translation>
 <translation id="7223968959479464213">任务管理器 - Chromium</translation>
 <translation id="7252276985725323153">即刻开启浏览之旅：Chromium 现在可以在 Windows 启动时启动。</translation>
 <translation id="7274695763216404502">已固定！可通过工具栏再次使用图片搜索功能</translation>
@@ -681,6 +689,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8107060931443639922">下次在 <ph name="DEVICE_TYPE" /> 上打开 Chromium 时，系统会提示您启用价格跟踪提醒。</translation>
 <translation id="8117908349476699973">借助手机上的 Chromium 应用，接收感兴趣商品的降价提醒</translation>
 <translation id="8118331347066725040">发送有关智能镜头搜索的反馈</translation>
+<translation id="8130609355518033382">打造您的专属 Chromium</translation>
 <translation id="8133124826068723441">由于您的网域不支持同步，Chromium 操作系统无法同步您的数据。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8161503455832158203">使用键盘快捷键打开 Chromium 中的 Gemini。</translation>

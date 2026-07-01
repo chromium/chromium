@@ -36,6 +36,7 @@
 <translation id="1315551408014407711">ଆପଣଙ୍କର ନୂଆ Chromium ପ୍ରୋଫାଇଲ୍ ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
 <translation id="132092532143527429">Chromiumରେ Gemini ସହ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="1324107359134968521">ବ୍ଲୁଟୁଥ ଡିଭାଇସଗୁଡ଼ିକୁ ଏକ୍ସପ୍ଲୋର କରିବା ପାଇଁ Chromium ବ୍ଲୁଟୁଥ ଆକ୍ସେସ ଆବଶ୍ୟକ କରେ। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1329040302064168406">ଆପଣଙ୍କ ଫୋନରେ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="1330562121671411446">ଭାଷା ଚିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="1330742950061766891">Chromiumର ସୁପାରିଶ କରାଯାଇଥିବା ବ୍ରାଉଜର ସେଟିଂସ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1342274909142618978">Chromium (<ph name="URL" />)ରୁ ମଧ୍ୟ ଡାଟା ଡିଲିଟ କରନ୍ତୁ</translation>
@@ -107,6 +108,7 @@
 <translation id="208726765006323911">ଆଗାମୀ ଥର ଆପଣ Chromium iOS ଖୋଲିଲେ <ph name="FEATURE_NAME" />କୁ ବ୍ୟବହାର କରି ଦେଖିବା ପାଇଁ ଏକ ପ୍ରମ୍ପ୍ଟ ଦେଖିବେ।</translation>
 <translation id="2099452623287920103">ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରିଥିବା ଆପଣଙ୍କର ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ Chromium ଡାଟାକୁ ଏହି ଡିଭାଇସରୁ କାଢ଼ି ଦିଆଯିବ। Chromiumରେ ସେଗୁଡ଼ିକୁ ପୁଣି ବ୍ୟବହାର କରିବା ପାଇଁ ଆଉ ଥରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{1 ମିନିଟ ପାଇଁ Chromiumକୁ ବ୍ୟବହାର କରାନଗଲେ ଆପଣଙ୍କ ସଂସ୍ଥା ସ୍ୱତଃ ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରିଦିଏ। ଏଥିରେ ଇତିହାସ, ଅଟୋଫିଲ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ। ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଖୋଲା ରହିବ।}other{# ମିନିଟ ପାଇଁ Chromiumକୁ ବ୍ୟବହାର କରାନଗଲେ ଆପଣଙ୍କ ସଂସ୍ଥା ସ୍ୱତଃ ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରିଦିଏ। ଏଥିରେ ଇତିହାସ, ଅଟୋଫିଲ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ଅନ୍ତର୍ଭୁକ୍ତ ହୋଇପାରେ। ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଖୋଲା ରହିବ।}}</translation>
+<translation id="2125838419757773031">ସର୍ଚ୍ଚ କରିବାକୁ ସ୍କ୍ରିନର ଅଞ୍ଚଳ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2126108037660393668">ଡାଉନଲୋଡ କରାଯାଇଥିବା ଫାଇଲର ଯାଞ୍ଚକରଣ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="2135919691573380097">ଏହି ସାଇଟର ରିପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2137162749895930932">ଅନୁବାଦ ସ୍କ୍ରିନକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -689,6 +691,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8107060931443639922">ପରବର୍ତ୍ତୀ ସମୟରେ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣ Chromium ଖୋଲିଲେ, ମୂଲ୍ୟ ଟ୍ରାକିଂ ଆଲର୍ଟଗୁଡ଼ିକୁ ସକ୍ଷମ କରିବା ପାଇଁ ଆପଣ ଏକ ପ୍ରମ୍ପ୍ଟ ଦେଖିବେ।</translation>
 <translation id="8117908349476699973">ଆପଣଙ୍କ ଫୋନରେ Chromium ଆପ ସହ ଆପଣଙ୍କ ରୁଚି ଥିବା ଆଇଟମଗୁଡ଼ିକରେ ମୂଲ୍ୟ ହ୍ରାସ ଆଲର୍ଟ ପାଆନ୍ତୁ</translation>
 <translation id="8118331347066725040">Lens ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ ପାଇଁ ମତାମତ ପଠାନ୍ତୁ</translation>
+<translation id="8130609355518033382">Chromiumକୁ ନିଜ ଅନୁସାରେ କରନ୍ତୁ</translation>
 <translation id="8133124826068723441">ଆପଣଙ୍କ ଡୋମେନ ପାଇଁ ସିଙ୍କ ଉପଲବ୍ଧ ନଥିବା ଯୋଗୁଁ ChromiumOS ଆପଣଙ୍କ ଡାଟାକୁ ସିଙ୍କ କରିପାରିଲା ନାହିଁ।</translation>
 <translation id="813913629614996137">ଆରମ୍ଭ କରୁଛି…</translation>
 <translation id="8161503455832158203">ଏକ କୀବୋର୍ଡ ସର୍ଟକଟ ମାଧ୍ୟମରେ Chromiumରେ Gemini ଖୋଲନ୍ତୁ।</translation>

@@ -317,6 +317,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2363734411417672757">Sẽ có nhiều trang được tải trước hơn. Những trang này có thể được tải trước thông qua các máy chủ của Google khi được các trang web hoặc ứng dụng khác yêu cầu.</translation>
 <translation id="2366554533468315977">Giá trên Internet theo thời gian cho lựa chọn này</translation>
 <translation id="2367818124433749493">Lối tắt cho nhà phát triển</translation>
+<translation id="2369058545741334020">Mở ở chế độ đọc</translation>
 <translation id="2385605401818128172">Bạn có thể xem xét các trang web gửi nhiều thông báo và ngăn các trang web đó gửi thêm thông báo trong tương lai</translation>
 <translation id="2386938421315164605">Ẩn và hiện chủ đề</translation>
 <translation id="2390510615457643724">Bạn có muốn tải <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) xuống lần nữa?</translation>
@@ -597,6 +598,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3524334353996115845">Cho phép <ph name="ORIGIN" /> xác minh danh tính của bạn</translation>
 <translation id="3527085408025491307">Thư mục</translation>
 <translation id="3542235761944717775">Còn <ph name="KILOBYTES" /> KB</translation>
+<translation id="3547933853190131743">Tìm kiếm bằng Chế độ AI</translation>
 <translation id="3549537543136628349">Vì các trang tải trước đã được mã hoá và ứng dụng hoặc trang web có đường liên kết đến các trang này là ứng dụng Google hoặc trang web tạo bằng Google Sites, nên các máy chủ của Google không nhận được thông tin mới khi tải trước các trang này ở chế độ riêng tư.</translation>
 <translation id="3549657413697417275">Tìm kiếm trong nhật ký duyệt web</translation>
 <translation id="3557336313807607643">Thêm vào danh bạ</translation>

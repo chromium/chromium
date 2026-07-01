@@ -118,6 +118,7 @@
 <translation id="2120620239521071941">Amb aquesta acció, se suprimiran <ph name="ITEMS_COUNT" /> elements d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chrome com a <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reinicia per actualitzar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa de la <ph name="BEGIN_LINK" />configuració actual<ph name="END_LINK" /> per ajudar-nos a millorar Chrome</translation>
+<translation id="2125838419757773031">Selecciona una zona de la pantalla per cercar</translation>
 <translation id="2126108037660393668">La verificació del fitxer baixat ha fallat.</translation>
 <translation id="2128411189117340671">Gestiona els perfils de Chrome</translation>
 <translation id="2137162749895930932">Tanca la pantalla de traducció</translation>
@@ -758,6 +759,7 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="8601359445272098721">Novetat! Pots traduir tant el text com les imatges en pantalla seleccionant el botó Tradueix la pantalla.</translation>
 <translation id="8614913330719544658">Google Chrome no respon. Voleu tornar-lo a iniciar ara?</translation>
 <translation id="861702415419836452">Chrome necessita permís per accedir a la càmera i poder crear un mapa 3D del teu entorn</translation>
+<translation id="8623450603356630491">Inicia la sessió a Chrome al telèfon</translation>
 <translation id="8624541899164515475">Configuració; s'obre en una pestanya nova.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome es reiniciarà d'aquí a 1 minut}other{Chrome es reiniciarà d'aquí a # minuts}}</translation>
 <translation id="8637932705841171563">Per compartir la finestra, permet que Chrome gravi la pantalla a Configuració del sistema</translation>

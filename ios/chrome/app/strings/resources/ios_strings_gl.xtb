@@ -803,6 +803,7 @@
 <translation id="3753618528540214374">Tema verde esmeralda</translation>
 <translation id="3759491607478608474">Comparte o contido da pestana actual con Gemini para obter respostas máis relevantes</translation>
 <translation id="3762232513783804601">Deseñado para iPad</translation>
+<translation id="3767529805486761639">Menú Editar</translation>
 <translation id="3768725474733206671">Reabrir última pestana pechada</translation>
 <translation id="3779810277399252432">Non hai conexión a Internet.</translation>
 <translation id="3782614601387961027">Pechar advertencia</translation>
@@ -887,7 +888,6 @@
 <translation id="4021447724486050609">Actualizar o navegador</translation>
 <translation id="4021931095789478915">Engadir ${url} á lista de lectura</translation>
 <translation id="4028871427853484857">Gardar na conta…</translation>
-<translation id="4036529942385659684">Mostrar páxina de inicio despois dun período de inactividade</translation>
 <translation id="4038354071007134711">Ningunha aplicación do dispositivo pode abrir o ficheiro.</translation>
 <translation id="4042870976416480368">Buscar na páxina</translation>
 <translation id="4045441967987592849">Volver abrir</translation>
@@ -1237,6 +1237,7 @@
 <translation id="518997337573684769">Enviando informe de fallos…</translation>
 <translation id="519528950056409240">Permitir que Wallet comparta datos</translation>
 <translation id="519530786644929958">Erro na descarga. Non se pode volver tentar.</translation>
+<translation id="519620255540220054">Personalizar páxina de inicio</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Opcións para configurar permisos</translation>
 <translation id="5203051773066903947">Introducir</translation>
@@ -1650,6 +1651,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6523575793810663688">Ver como se fai</translation>
 <translation id="6524082013156754186">Gardar na conta</translation>
 <translation id="6524918542306337007">O modo de incógnito non está dispoñible</translation>
+<translation id="6525550806864373485">Menú Editar</translation>
 <translation id="6527208859483186860">fondo {position} de {total}</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6532106788206463496">Gardar cambios</translation>

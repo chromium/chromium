@@ -32,10 +32,12 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="126567311906253476">When signing in to Google services like Gmail or YouTube with <ph name="USER_EMAIL" />, you can automatically sign in to Chromium with the same account</translation>
 <translation id="1287534462498555020">Get Chromium on your phone</translation>
 <translation id="1290883685122687410">Setup error: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
+<translation id="1312200348844120300">An illustration showing how you can use image search to look up a product</translation>
 <translation id="1315551408014407711">Set up your new Chromium profile</translation>
 <translation id="132092532143527429">Try with Gemini in Chromium</translation>
 <translation id="1324107359134968521">Chromium needs Bluetooth access to explore 
  Bluetooth devices. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1329040302064168406">Sign in to Chromium on your phone</translation>
 <translation id="1330562121671411446">Detect language</translation>
 <translation id="1330742950061766891">Use Chromium recommended browser settings</translation>
 <translation id="1342274909142618978">Also delete data from Chromium (<ph name="URL" />)</translation>
@@ -94,6 +96,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1951406923938785464">Chromium blocked this download because the file type isn't commonly downloaded and it may be dangerous</translation>
 <translation id="1953553007165777902">Downloading… <ph name="MINUTE" /> minute(s) remaining</translation>
 <translation id="1966382378801805537">Chromium cannot determine or set the default browser</translation>
+<translation id="197326043290947695">Browse smarter with image search</translation>
 <translation id="1990262977744080398">Learn why Chromium blocks some files, opens in new tab</translation>
 <translation id="1999715455684970349">Keeps your Chromium software up to date. If this service is disabled or stopped, your Chromium software will not be kept up to date, meaning security vulnerabilities that may arise cannot be fixed and features may not work. This service uninstalls itself when there is no Chromium software using it.</translation>
 <translation id="2008474315282236005">This will delete 1 item from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
@@ -106,6 +109,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="208726765006323911">You'll see a prompt to try <ph name="FEATURE_NAME" /> next time you open Chromium iOS.</translation>
 <translation id="2099452623287920103">Your passwords and other Chromium data that you saved in your Google Account will be removed from this device. To use them again in Chromium, sign back in.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Your organisation deletes browsing data automatically when Chromium isn't used for one minute. This could include history, autofill and downloads. Your tabs will stay open.}other{Your organisation deletes browsing data automatically when Chromium isn't used for # minutes. This could include history, autofill and downloads. Your tabs will stay open.}}</translation>
+<translation id="2125838419757773031">Select region of screen to search</translation>
 <translation id="2126108037660393668">The downloaded file failed verification.</translation>
 <translation id="2135919691573380097">Report this site</translation>
 <translation id="2137162749895930932">Close translate screen</translation>
@@ -236,6 +240,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Switch to existing Chromium profile?</translation>
 <translation id="3412460710772753638">In Password Manager on this device</translation>
+<translation id="3423442168617177595">Built into Chromium to help you create, save and autofill strong passwords. Add the shortcut for easy access</translation>
 <translation id="3455907671758333080">Extend Enhanced Safe Browsing with Chromium on your phone</translation>
 <translation id="3461644266919055473">Making Chromium yours…</translation>
 <translation id="3474745554856756813">This will delete <ph name="ITEMS_COUNT" /> items from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
@@ -285,6 +290,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3975724895399328945">About Google Chrome for testing</translation>
 <translation id="3997429360543082038">About Chromium OS</translation>
 <translation id="4010059961270896984">When you visit a site, Chromium sends an obfuscated portion of the URL to <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" /> through a privacy server that hides your IP address. If a site does something suspicious, full URLs and bits of page content are also sent.</translation>
+<translation id="4016217212818346953">Stay safe with Password Manager</translation>
 <translation id="4019629340646866719">Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Translate screen</translation>
 <translation id="4023601594785368013">Original language: <ph name="LANGUAGE" /></translation>
@@ -504,6 +510,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="6400112897226594999">Chromium logo inside a computer screen.</translation>
 <translation id="6403826409255603130">Chromium is a web browser that runs webpages and applications with lightning speed. It's fast, stable, and easy to use. Browse the web more safely with malware and phishing protection built into Chromium.</translation>
 <translation id="6414624068245092115">To make sure that you can always use and save Chromium data in your Google Account, verify that it's you</translation>
+<translation id="6417332166651156371">A simplified image showing the Password Manager entry point in Chromium</translation>
 <translation id="642132557830635295">Chromium runs faster and features that use JavaScript should work as designed</translation>
 <translation id="6436260184216827876">Image search is not available. Please try again later.</translation>
 <translation id="6442900851116057561">Restart Chromium OS</translation>
@@ -595,6 +602,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="7196312274710523067">Couldn't launch Chromium. Try again.</translation>
 <translation id="7213008767289637091">Keep Chromium in your Dock to get to it quickly at any time</translation>
 <translation id="7213407614656404070">Use Chromium any time that you click links in messages, documents and other apps</translation>
+<translation id="7216228761061470870">When you use image search on desktop, the page title, URL and content, including PDFs, are sent to the server</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="7252276985725323153">Begin browsing instantly: Chromium can now launch when Windows starts.</translation>
 <translation id="7274695763216404502">Pinned! Use image search again from the toolbar</translation>
@@ -684,6 +692,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8107060931443639922">Next time you open Chromium on your <ph name="DEVICE_TYPE" />, you'll see a prompt to enable price tracking alerts.</translation>
 <translation id="8117908349476699973">Get price drop alerts on items that you're interested in with the Chromium app on your phone</translation>
 <translation id="8118331347066725040">Send feedback for search with Lens</translation>
+<translation id="8130609355518033382">Make Chromium yours</translation>
 <translation id="8133124826068723441">Chromium OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8161503455832158203">Open Gemini in Chromium with a keyboard shortcut.</translation>

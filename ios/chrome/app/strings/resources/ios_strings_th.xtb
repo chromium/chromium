@@ -803,6 +803,7 @@
 <translation id="3753618528540214374">ธีมสีวอรีเดียน</translation>
 <translation id="3759491607478608474">แชร์เนื้อหาของแท็บปัจจุบันกับ Gemini เพื่อรับคำตอบที่เกี่ยวข้องมากขึ้น</translation>
 <translation id="3762232513783804601">สร้างมาเพื่อ iPad ของคุณ</translation>
+<translation id="3767529805486761639">เมนูแก้ไข</translation>
 <translation id="3768725474733206671">เปิดแท็บที่ปิดไปล่าสุดอีกครั้ง</translation>
 <translation id="3779810277399252432">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="3782614601387961027">ปิดคำเตือน</translation>
@@ -887,7 +888,6 @@
 <translation id="4021447724486050609">อัปเดตเบราว์เซอร์ของคุณ</translation>
 <translation id="4021931095789478915">เพิ่ม ${url} ลงในเรื่องรออ่าน</translation>
 <translation id="4028871427853484857">บันทึกในบัญชี…</translation>
-<translation id="4036529942385659684">แสดงหน้าเริ่มต้นหลังจากไม่มีการใช้งานเป็นระยะเวลาหนึ่ง</translation>
 <translation id="4038354071007134711">ไม่มีแอปพลิเคชันใดบนอุปกรณ์นี้ที่สามารถเปิดไฟล์ได้</translation>
 <translation id="4042870976416480368">ค้นหาในหน้าเว็บ</translation>
 <translation id="4045441967987592849">เปิดอีกครั้ง</translation>
@@ -1237,6 +1237,7 @@
 <translation id="518997337573684769">กำลังส่งรายงานข้อขัดข้อง…</translation>
 <translation id="519528950056409240">อนุญาตให้ Wallet แชร์ข้อมูล</translation>
 <translation id="519530786644929958">ดาวน์โหลดไม่สำเร็จและลองอีกครั้งไม่ได้</translation>
+<translation id="519620255540220054">ปรับแต่งหน้าแรก</translation>
 <translation id="5197255632782567636">อินเทอร์เน็ต</translation>
 <translation id="5200894869889836319">ตัวเลือกในการตั้งค่าสิทธิ์</translation>
 <translation id="5203051773066903947">ป้อน</translation>
@@ -1650,6 +1651,7 @@
 <translation id="6523575793810663688">แสดงวิธีการ</translation>
 <translation id="6524082013156754186">บันทึกในบัญชี</translation>
 <translation id="6524918542306337007">โหมดไม่ระบุตัวตนไม่พร้อมใช้งาน</translation>
+<translation id="6525550806864373485">เมนูแก้ไข</translation>
 <translation id="6527208859483186860">พื้นหลัง {position} จาก {total}</translation>
 <translation id="6527303717912515753">แชร์</translation>
 <translation id="6532106788206463496">บันทึกการเปลี่ยนแปลง</translation>
@@ -2254,6 +2256,7 @@
 <translation id="8534481786647257214">โพสต์ใน Google+ แล้ว</translation>
 <translation id="8535368836838588657">แสดงรหัสผ่าน</translation>
 <translation id="8540426897269305488">ลงชื่อเข้าใช้ด้วย <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
+<translation id="8542331710562073430">เกิดข้อผิดพลาด แตะปุ่ม Live เพื่อลองใช้ฟีเจอร์ Live อีกครั้ง</translation>
 <translation id="8545276357312221485">ตรวจสอบการตั้งค่าเบราว์เซอร์เริ่มต้น</translation>
 <translation id="854938212724803178">คุณมีรหัสผ่านที่ถูกละเมิด 1 รายการ แก้ไขเลยเพื่อความปลอดภัย</translation>
 <translation id="8551311254462607218">ในแถบที่อยู่ ให้แตะไอคอนกล้อง Google Lens</translation>

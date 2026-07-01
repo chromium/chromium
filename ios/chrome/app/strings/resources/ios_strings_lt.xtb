@@ -803,6 +803,7 @@
 <translation id="3753618528540214374">Mėlynai žalia tema</translation>
 <translation id="3759491607478608474">Bendrinkite dabartinio skirtuko turinį su „Gemini“, kad gautumėte aktualesnius atsakymus</translation>
 <translation id="3762232513783804601">Sukurta specialiai „iPad“</translation>
+<translation id="3767529805486761639">Meniu redagavimas</translation>
 <translation id="3768725474733206671">Iš naujo atidaryti pastarąjį uždarytą skirtuką</translation>
 <translation id="3779810277399252432">Nėra interneto ryšio.</translation>
 <translation id="3782614601387961027">Uždaryti perspėjimą</translation>
@@ -887,7 +888,6 @@
 <translation id="4021447724486050609">Naršyklės atnaujinimas</translation>
 <translation id="4021931095789478915">Pridėti ${url} prie skaitymo sąrašo</translation>
 <translation id="4028871427853484857">Išsaugoti paskyroje…</translation>
-<translation id="4036529942385659684">Rodyti pradžios puslapį po neaktyvumo laikotarpio</translation>
 <translation id="4038354071007134711">Šiame įreng. nėra progr., gal. atidaryti failą.</translation>
 <translation id="4042870976416480368">Rasti puslapyje</translation>
 <translation id="4045441967987592849">Atidaryti iš naujo</translation>
@@ -1237,6 +1237,7 @@
 <translation id="518997337573684769">Siunčiama strigčių ataskaita…</translation>
 <translation id="519528950056409240">Leisti „Wallet“ bendrinti duomenis</translation>
 <translation id="519530786644929958">Nepavyko atsisiųsti. Negalima bandyti iš naujo.</translation>
+<translation id="519620255540220054">Tinkinti pagrindinį puslapį</translation>
 <translation id="5197255632782567636">Internetas</translation>
 <translation id="5200894869889836319">Leidimų nustatymo parinktys</translation>
 <translation id="5203051773066903947">Klavišas „Enter“</translation>
@@ -1650,6 +1651,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6523575793810663688">Peržiūrėti, kaip tai padaryti</translation>
 <translation id="6524082013156754186">Išsaugoti paskyroje</translation>
 <translation id="6524918542306337007">Inkognito režimas nepasiekiamas</translation>
+<translation id="6525550806864373485">Redaguoti meniu</translation>
 <translation id="6527208859483186860">{position} fonas iš {total}</translation>
 <translation id="6527303717912515753">Bendrinti</translation>
 <translation id="6532106788206463496">Išsaugoti pakeitimus</translation>

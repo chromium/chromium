@@ -125,6 +125,7 @@
 <translation id="2120620239521071941">‏این کار <ph name="ITEMS_COUNT" /> مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> وارد سیستم Chrome شوید.</translation>
 <translation id="2121284319307530122">‏راه‌اندازی مجدد برای به‌روزرسانی Chrome</translation>
 <translation id="2123055963409958220">‏با گزارش <ph name="BEGIN_LINK" />تنظیمات کنونی<ph name="END_LINK" />، به بهتر شدن Chrome کمک کنید</translation>
+<translation id="2125838419757773031">بخشی از صفحه‌نمایش را برای جستجو انتخاب کنید</translation>
 <translation id="2126108037660393668">فایل بارگیری‌شده تأیید نشد.</translation>
 <translation id="2128411189117340671">‏مدیریت نمایه‌های Chrome</translation>
 <translation id="2137162749895930932">بستن صفحه ترجمه</translation>
@@ -783,6 +784,7 @@
 <translation id="8601359445272098721">جدید! با انتخاب دکمه «ترجمه کردن صفحه‌نمایش»، می‌توانید هم نوشتار و هم تصاویر روی صفحه‌نمایش را ترجمه کنید</translation>
 <translation id="8614913330719544658">‏Google Chrome پاسخ نمی‌دهد. مجدداً راه‌اندازی شود؟</translation>
 <translation id="861702415419836452">‏Chrome برای دسترسی به دوربین به اجازه نیاز دارد تا بتواند نقشه سه‌بعدی محیط شما را ایجاد کند</translation>
+<translation id="8623450603356630491">‏ورود به سیستم Chrome در تلفن</translation>
 <translation id="8624541899164515475">«تنظیمات»، در زبانه جدیدی باز می‌شود.</translation>
 <translation id="8625237574518804553">{0,plural, =1{‏Chrome ‏۱ دقیقه دیگر راه‌اندازی مجدد می‌شود}one{‏Chrome ‏# دقیقه دیگر راه‌اندازی مجدد می‌شود}other{‏Chrome ‏# دقیقه دیگر راه‌اندازی مجدد می‌شود}}</translation>
 <translation id="8637932705841171563">‏برای هم‌رسانی پنجره، ضبط صفحه‌نمایش را در «تنظیمات سیستم» برای Chrome مجاز کنید</translation>

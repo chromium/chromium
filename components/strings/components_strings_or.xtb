@@ -14,7 +14,6 @@
 <translation id="1021753677514347426">ଆପଣ କିମ୍ବା ଅନ୍ୟ କେହି ଜଣେ ଆପଣଙ୍କ ଡିଭାଇସ୍‌ରେ ଇନଷ୍ଟଲ୍ କରିଥିବା ଏକ ସାର୍ଟିଫିକେଟ୍ ଯୋଗୁଁ ଏହି ସମସ୍ୟାଟି ହୋଇଥାଏ। ସାର୍ଟିଫିକେଟ୍‍ଟି ନେଟ୍‍ୱାର୍କଗୁଡ଼ିକର ନିରୀକ୍ଷଣ ଏବଂ ଗତିରୋଧ ନିମନ୍ତେ ବ୍ୟବହାର କରାଯାଇଥାଏ ବୋଲି ଜଣାଯାଏ ଏବଂ Chromium ଏହାକୁ ବିଶ୍ୱାସ କରେ ନାହିଁ। ଯଦିଓ କୌଣସି ସ୍କୁଲ୍ କିମ୍ବା କମ୍ପାନୀ ନେଟ୍‍ୱାର୍କ ପରି ନିରୀକ୍ଷଣ ପାଇଁ କିଛି ବୈଧ ଉଦାହରଣ ବିଦ୍ୟମାନ ଅଛି, Chromium ଏହା ସୁନିଶ୍ଚିତ କରିବାକୁ ଚାହେଁ ଯେ, ଆପଣ ଏହାକୁ ବନ୍ଦ ନକରିପାରିଲେ ମଧ୍ୟ ଏହା ହେଉଥିବା ବିଷୟରେ ଅବଗତ ରୁହନ୍ତୁ। ୱେବ୍ ଆକ୍ସେସ୍ କରିପାରୁଥିବା ଯେ କୌଣସି ବ୍ରାଉଜର୍ କିମ୍ବା ଆପ୍ଲିକେସନ୍‍‍ରେ ନିରୀକ୍ଷଣ ହୋଇପାରେ।</translation>
 <translation id="1024111578869940408">ଆକ୍ରମଣକାରୀମାନେ ବେଳେବେଳେ ୱେବ୍ ଠିକଣାରେ ସହଜରେ-ଦେଖା-ଯାଉନଥିବା ପରିବର୍ତ୍ତନଗୁଡ଼ିକ କରି ସାଇଟଗୁଡ଼ିକର ନକଲ କରିଥାନ୍ତି।</translation>
 <translation id="1024913885641459127">ପ୍ରଡକ୍ଟ ସମୀକ୍ଷା ଏବଂ ମୂଲ୍ୟ ତୁଳନା</translation>
-<translation id="1025174656774447058">ଏହି ଥ୍ରେଡ ପାଇଁ ଖୋଲା ଟାବଗୁଡ଼ିକୁ ସ୍ୱତଃ ସେୟାର କରିବେ?</translation>
 <translation id="102916930470544692">ପାସକୀ</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ସ୍ଥାୟୀରୂପେ ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଅଧିକ ଡାଟା ଷ୍ଟୋର୍ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{କିଛି ନାହିଁ}=1{1 ସାଇଟରୁ। ଅଧିକାଂଶ ସାଇଟରୁ ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରିଦିଏ। }other{# ସାଇଟରୁ। ଅଧିକାଂଶ ସାଇଟରୁ ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରିଦିଏ। }}</translation>
@@ -26,6 +25,7 @@
 <translation id="1038106730571050514">ପରାମର୍ଶଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="1038168778161626396">କେବଳ ଏନ୍‌ସାଇଫର୍‌</translation>
 <translation id="1038842779957582377">ଅଜ୍ଞାତ ନାମ</translation>
+<translation id="1039767473048604223"><ph name="DEVICE_NAME" /> <ph name="MODEL" /></translation>
 <translation id="1041998700806130099">ଜବ୍ ସିଟ୍ ମେସେଜ୍</translation>
 <translation id="1044897699341250361">ଏହାର ଅର୍ଥ କ’ଣ</translation>
 <translation id="1046350918013988591">କୁପନ ଏବଂ ରିହାତି ଅଫରଗୁଡ଼ିକ</translation>
@@ -1237,6 +1237,7 @@
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ଏବଂ ଅଧିକ<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />ଟି}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ଏବଂ ଅଧିକ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />ଟି}}</translation>
 <translation id="2930531075747147366">ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସରୁ ଟାବ</translation>
 <translation id="2930577230479659665">ପ୍ରତ୍ୟେକ କପି ପରେ ଟ୍ରିମ୍ କରନ୍ତୁ</translation>
+<translation id="2931453528659195355">ସପିଂ ସୂଚନା ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2933624813161016821">ଏମ୍ବସିଂ ଫଏଲ</translation>
 <translation id="2935726091208500473">ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକୁ ସେୟାର କରାଯାଉଛି</translation>
 <translation id="293796669683825859">ମନ୍ତବ୍ୟଗୁଡ଼ିକ</translation>
@@ -1450,6 +1451,7 @@
 <translation id="3237427677128462778">Google Walletରେ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3238395604961564389">ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଲିଙ୍କ ଖୋଲନ୍ତୁ</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୁକ କଷ୍ଟମାଇଜ କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
+<translation id="3243131902823383230"><ph name="MANUFACTURER" /> ଲାପଟପ</translation>
 <translation id="3243650379537999343">ଡ୍ର କରନ୍ତୁ</translation>
 <translation id="3248329428895535435">ଏହି ସାଇଟରେ ଦେଖାନ୍ତୁ ନାହିଁ</translation>
 <translation id="3249102948665905108"><ph name="CLOUD_PROVIDER" />ରେ ଫାଇଲ ଅପଲୋଡ କରିବା ତ୍ରୁଟି ସହିତ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
@@ -1496,7 +1498,6 @@
 <translation id="3325568918769906282">ବଡ଼ରୁ ସାନ କ୍ରମରେ</translation>
 <translation id="3325662270238538525">ଫାଇଲଗୁଡ଼ିକର ନାମ, ଫାଇଲର ବିଷୟବସ୍ତୁର ଡିଜିଟାଲ ଫିଙ୍ଗରପ୍ରିଣ୍ଟ, ଡାଉନଲୋଡ ସୋର୍ସ ଏବଂ ମେଟାଡାଟା ସମେତ ବର୍ତ୍ତମାନର ଫାଇଲର ଆକ୍ସେସ ଏବଂ ପରିବର୍ତ୍ତନ</translation>
 <translation id="3329013043687509092">ସମ୍ପୃକ୍ତି</translation>
-<translation id="3330483197654063678">ଚାଲୁ ଥିବା ସମୟରେ, ଅଧିକ ପ୍ରାସଙ୍ଗିକ ଉତ୍ତର ପାଇବାରେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିବା ପାଇଁ Chrome ଏହି ୱିଣ୍ଡୋରେ ଥିବା ସମସ୍ତ ଟାବକୁ ସେୟାର କରିବ।</translation>
 <translation id="3333762389743153920">ଭର୍ଚୁଆଲ୍ କାର୍ଡ ପାଇଁ ଯୋଗ୍ୟ ନୁହେଁ</translation>
 <translation id="3338095232262050444">ସୁରକ୍ଷିତ</translation>
 <translation id="333839153442689579">ଉଚ୍ଚ ତୀବ୍ରତାର ଇଣ୍ଟରଭାଲ ଟ୍ରେନିଂ</translation>
@@ -1694,7 +1695,6 @@
 <translation id="3641116835972736297">ଆମେରିକାନ ଫୁଟବଲ</translation>
 <translation id="3642196846309122856">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ପୁଣି ଡାଉନଲୋଡ କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="3642638418806704195">ଆପ୍ଲିକେସନ୍:</translation>
-<translation id="3644768007456662469">ପେମେଣ୍ଟ ଆଇଟମ ଆଇକନ</translation>
 <translation id="3647286794400715637">ପ୍ରତ୍ୟେକ URL ଷ୍ଟ୍ରିଙ୍ଗ ଏଣ୍ଟ୍ରି 1ରୁ 2 URL ମଧ୍ୟରେ ରହିବା ଉଚିତ।</translation>
 <translation id="3647400963805615193">Chromeର ଟିପକୁ ଖାରଜ କରିବା ବଟନ, ଖାରଜ କରିବାକୁ ଏଣ୍ଟର ଦବାନ୍ତୁ, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">ବୈଧକରଣ ସଫଳ ହେଲା</translation>
@@ -1726,6 +1726,7 @@
 <translation id="3681841880472207951">QuickTime ଭିଡିଓ</translation>
 <translation id="3687920599421452763">ଭ୍ୟାନ ଏବଂ ମିନିଭ୍ୟାନଗୁଡ଼ିକ</translation>
 <translation id="3693327506115126094">ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଆପଣ କିପରି ଯାଞ୍ଚ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
+<translation id="3693516565203081475">ପେମେଣ୍ଟ ପଦ୍ଧତି ବାଛନ୍ତୁ</translation>
 <translation id="3698353241727597930">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="FILES" /> ଆପଣଙ୍କର ଏଣ୍ଟରପ୍ରାଇଜ-ଦ୍ୱାରା ପରିଚାଳିତ <ph name="CLOUD_STORAGE" /> ଷ୍ଟୋରେଜରେ ସେଭ କରିବା ପାଇଁ କନଫିଗର କରିଛି। ଆପଣ ଏହି ଫାଇଲଗୁଡ଼ିକୁ ଡିଲିଟ କଲେ, ସେଗୁଡ଼ିକୁ ମନିଟର, ଅଡିଟ କରାଯାଇପାରେ କିମ୍ବା ରଖାଯାଇପାରେ।</translation>
 <translation id="3698629142018988477">'ସାଇଟ ତିଆରି କରନ୍ତୁ' ବଟନ, Google Sitesରେ ଶୀଘ୍ର ଏକ ନୂଆ ସାଇଟ ତିଆରି କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="3700094625653511150">'ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ' ବିକଳ୍ପଗୁଡ଼ିକୁ ଲୁଚାଇବା ପାଇଁ, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />କୁ ଯାଆନ୍ତୁ</translation>
@@ -2287,6 +2288,7 @@
 <translation id="4557573143631562971">ହୋମ ବୀମା</translation>
 <translation id="4558551763791394412">ଆପଣଙ୍କର ଏକ୍ସଟେନ୍‍ସନ୍‍ଗୁଡ଼ିକୁ ଅକ୍ଷମ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4566017918361049074">ଆଉଟଡୋର</translation>
+<translation id="4568572491321119037">Google Walletରେ ପରିଚୟ କାର୍ଡକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="4569155249847375786">ଯାଞ୍ଚ କରାଯାଇଛି</translation>
 <translation id="4570008401337135432">ଟେକ୍ସଟ ଆଲାଇନମେଣ୍ଟ</translation>
 <translation id="457875822857220463">ଡେଲିଭରୀ</translation>
@@ -2761,6 +2763,7 @@
 <translation id="5323501626199324454">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="5327248766486351172">ନାମ</translation>
 <translation id="5329858041417644019">ଆପଣଙ୍କର ବ୍ରାଉଜର୍ ପରିଚାଳିତ ନୁହେଁ</translation>
+<translation id="5330451136755214328"><ph name="MANUFACTURER" /> କମ୍ପ୍ୟୁଟର</translation>
 <translation id="5331585574693522196">ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="5332219387342487447">ସିପିଂ ପଦ୍ଧତି</translation>
 <translation id="5332769172018416402">ଏକ ମେସେଜ ପଠାଇ ପଚାରନ୍ତୁ</translation>
@@ -2799,6 +2802,7 @@
 <translation id="5385857628869214740">ବ୍ୟଙ୍ଗ</translation>
 <translation id="5386426401304769735">ଏହି ସାଇଟ୍‌ ପାଇଁ ଥିବା ସାର୍ଟିଫିକେଟ୍‌ ଶୃଙ୍ଖଳାରେ SHA-1ର ବ୍ୟବହାର କରି ଦସ୍ତଖତ କରାଯାଇଥିବା ସାର୍ଟିଫିକେଟ୍‌ ଅଛି।</translation>
 <translation id="5391010642126249196">ଆପଣ ଭିଜିଟ କରିଛନ୍ତି</translation>
+<translation id="5391030615542642809"><ph name="MANUFACTURER" /> ଡିଭାଇସ</translation>
 <translation id="5391306025131596142">&amp;ଇତିହାସ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ</translation>
 <translation id="539203134595252721">ଟେବୁଲ ଟେନିସ</translation>
 <translation id="5392506727170022660">ମେଟାଲ (ସେମି-ଗ୍ଲସ)</translation>
@@ -3057,6 +3061,7 @@
 <translation id="5765072501007116331">ବିତରଣ ପଦ୍ଧତି ଓ ଆବଶ୍ୟକତା ଦେଖିବା ପାଇଁ ଗୋଟିଏ ଠିକଣା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="57689295674415555">ଭର୍ଚୁଆଲ୍ କାର୍ଡ ନମ୍ବର ପୂରଣ କରାଯାଇନାହିଁ?</translation>
 <translation id="5773286975255318081">ଯେପରି ପ୍ରୋଫାଇଲ ୟୁଜରନେମ ଏବଂ ବ୍ରାଉଜର ଭର୍ସନ</translation>
+<translation id="5774897849666641211">ଏହି ଟାବ ବିଷୟରେ ପ୍ରଶ୍ନଗୁଡ଼ିକ ପଚାରନ୍ତୁ</translation>
 <translation id="5776313857861697733">ପ୍ରାଥମିକତା</translation>
 <translation id="577804500166306874">ଫଳାଫଳ ଲୋଡ ହେଉଛି</translation>
 <translation id="5781136890105823427">ପରୀକ୍ଷଣ କରାଯାଇଛି</translation>
@@ -3533,6 +3538,7 @@
 <translation id="6494750904506170417">ପପ୍-ଅପ୍ ଏବଂ ରିଡାଇରେକ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="6495664197699704593">ଏହି ପାସୱାର୍ଡକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରେ ଏହାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="GOOGLE_PASSWORD_MANAGER" />।</translation>
 <translation id="649611364763911650">Chromeରେ ଅନ୍ୟ ଏକ ଅଟୋଫିଲ ସେବାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, Android ସେଟିଂସରେ ଆପଣଙ୍କ ଅଟୋଫିଲ ପ୍ରଦାନକାରୀ ବାଛନ୍ତୁ</translation>
+<translation id="6496531801333278234">ପର୍ସନାଲ ଇଣ୍ଟେଲିଜେନ୍ସ ଦ୍ୱାରା ମିଳିଛି। ଆପଣ ସେଟିଂସରେ ଆପଣଙ୍କ ସୂଚନା ପରିଚାଳନା କରିପାରିବେ।</translation>
 <translation id="6499038740797743453">ପାସ୍‍ୱର୍ଡ ରିସେଟ୍ କରିବେ?</translation>
 <translation id="6502510275417601303">ନୂଆ ପେମେଣ୍ଟ ସେଟିଂ ବିଷୟରେ ଆଲର୍ଟକୁ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="6502991525169604759">ଆପଣଙ୍କ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ବିନା</translation>
@@ -3756,7 +3762,6 @@
 <translation id="6874604403660855544">&amp;ଯୋଗ କରିବା ପୁନଃବତ୍ କରନ୍ତୁ</translation>
 <translation id="6875873347995743859">ଆସିଷ୍ଟାଣ୍ଟକୁ ପଠାନ୍ତୁ</translation>
 <translation id="6875894866901426843">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="DATE_TIME" />ରେ ଟ୍ରାସରେ ଥିବା ଯେ କୌଣସି ଫାଇଲ ସମେତ ଆପଣଙ୍କ ସ୍ଥାନୀୟ ଫାଇଲଗୁଡ଼ିକୁ ଡିଲିଟ କରିଦେବେ।</translation>
-<translation id="6880812263216766325">ଉତ୍ତମ ଉତ୍ତର ପାଇଁ ସର୍ବଦା ଖୋଲା ଟାବଗୁଡ଼ିକୁ ସେୟାର କରିବେ?</translation>
 <translation id="6880941331070119097">ଅଧିକ ମୂଲ୍ୟ ଥିବା ବିକଳ୍ପ</translation>
 <translation id="6881240511396774766">ଶୀଘ୍ର ଏକ ନୂଆ Google Doc ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6883221904761970440">ସୁରକ୍ଷିତ ଭାବରେ ପେମେଣ୍ଟ କରିବା ପାଇଁ କ୍ରେଡେନସିଆଲ୍ ପ୍ରମାଣୀକରଣ ସିଟ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
@@ -4012,7 +4017,6 @@
 <translation id="7257453341537973799">କ୍ୟାରିଅର ରିସୋର୍ସ ଏବଂ ପ୍ଲାନିଂ</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />ରୁ ଏକ ବ୍ୟକ୍ତିଗତ ସଂଯୋଗ ସ୍ଥାପନ କରାଯାଇପାରିବ ନାହିଁ କାରଣ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‌ର ତାରିଖ ଓ ସମୟ (<ph name="DATE_AND_TIME" />) ଭୁଲ୍‍ ଅଟେ।</translation>
 <translation id="7260075294900977274">ଆପଣଙ୍କୁ ଆପଣଙ୍କର ସମସ୍ତ ପୃଷ୍ଠାକୁ ଗୋଟିଏ ସ୍ଥାନରେ ସେଭ କରିବାରେ, ସ୍ୱତଃ ମୂଲ୍ୟ ଟ୍ରାକ କରିବାରେ, ମୂଲ୍ୟ ଇନସାଇଟ ପାଇବାରେ ଏବଂ ଆହୁରି ଅନେକ କିଛି କରିବାରେ ସାହାଯ୍ୟ କରୁଥିବା ଏକ ନୂଆ ସ୍ମାର୍ଟ ଫୋଲ୍ଡର</translation>
-<translation id="7264942008235065057">ଆପଣ Googleର Advanced Protection Program ଅଧୀନରେ ଥିବା ଯୋଗୁଁ ଏହି ସାଇଟ ବ୍ଲକ ହୋଇ ରହିବ। <ph name="LEARN_MORE" /></translation>
 <translation id="7265608370113700582">ଠିକଣାଟି କେବଳ ଏହି ଡିଭାଇସରେ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="7266094331715305887">ଡିଭାଇସରେ ଥିବା ଆପ୍ସ</translation>
 <translation id="7269151392155523061"><ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> ଦ୍ୱାରା ପରିଭାଷିତ ହୋଇଥିବା ସର୍ଚ୍ଚ ଏଗ୍ରିଗେଟର କୀୱାର୍ଡ ସହ ସର୍ଟକଟ ସମାନ ହୋଇପାରିବ ନାହିଁ: <ph name="SHORTCUT_NAME" /></translation>
@@ -4114,6 +4118,7 @@
 <translation id="7418620734632363981">ପ୍ରୋଗ୍ରାମିଂ</translation>
 <translation id="7419091773564635591">କମ୍ପ୍ୟୁଟର ଓ ଇଲେକ୍ଟ୍ରୋନିକ୍ସ</translation>
 <translation id="7419106976560586862">ପ୍ରୋଫାଇଲ୍ ପଥ</translation>
+<translation id="742088698616475957"><ph name="MANUFACTURER" /> ଡେସ୍କଟପ</translation>
 <translation id="7421067045979951561">ପ୍ରୋଟୋକଲ୍ ହ୍ୟାଣ୍ଡଲରଗୁଡ଼ିକ</translation>
 <translation id="7422347648202898039">ଲେବଲ (ସୁରକ୍ଷା)</translation>
 <translation id="7423283032694727565">'କୁକୀଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ' ବଟନ, Chrome ସେଟିଂସରେ ଆପଣଙ୍କ କୁକୀ ପସନ୍ଦଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
@@ -4166,7 +4171,6 @@
 <translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ଆପଣଙ୍କ ଯୋଗ୍ୟତା ଯାଞ୍ଚ କରିବ (ଏହା ଆପଣଙ୍କ କ୍ରେଡିଟ ସ୍କୋରକୁ ପ୍ରଭାବିତ କରିବ ନାହିଁ)। ଯଦି ଅନୁମୋଦିତ ହୁଏ, ତେବେ <ph name="BNPL_ISSUER_NAME" /> ଆପଣଙ୍କୁ ଆପଣଙ୍କ ପାଇଁ ପେମେଣ୍ଟ ପ୍ଲାନ ବାଛିବାକୁ ଏବଂ କ୍ରୟ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ଦେବ।</translation>
 <translation id="7489392576326061356">ସାମ୍ପୁ ଓ କଣ୍ଡିସନର</translation>
 <translation id="7489919936111034362">ଆପଣଙ୍କ Google Drive ଷ୍ଟୋରେଜ ପୂର୍ଣ୍ଣ ଅଛି</translation>
-<translation id="7490026840522163531">ପ୍ରତ୍ୟେକ ଥ୍ରେଡରେ ଖୋଲା ଥିବା ଟାବଗୁଡ଼ିକୁ ସ୍ୱତଃ ସେୟାର କରିବେ?</translation>
 <translation id="7495528107193238112">ଏହି ବିଷୟବସ୍ତୁକୁ ବ୍ଲକ୍ କରାଯାଇଛି। ସମସ୍ୟାର ସମାଧାନ କରିବାକୁ ସାଇଟର ମାଲିକଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="749865518782565832">ପ୍ଲମ୍ବିଂ</translation>
 <translation id="7499188644237027195">ଆପଣ Chromeରେ କ୍ରୟଗୁଡ଼ିକ କଲେ, eWallet ଏବଂ Pixକୁ ବିକଳ୍ପ ଭାବେ ଦେଖନ୍ତୁ</translation>
@@ -4231,6 +4235,7 @@
 <translation id="7575207903026901870">ପ୍ରସ୍ତାବ ବଟନ୍‍କୁ କାଢ଼ି ଦିଅନ୍ତୁ, ଏହି ପ୍ରସ୍ତାବକୁ କାଢ଼ିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="7575800019233204241">"ଆପଣଙ୍କର କନେକ୍ସନ ବ୍ୟକ୍ତିଗତ ନୁହେଁ" କିମ୍ବା "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" କିମ୍ବା "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" କିମ୍ବା "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" କିମ୍ବା "SSL ସାର୍ଟିଫିକେଟ ତ୍ରୁଟି"</translation>
 <translation id="7575887283389198269">ମୋବାଇଲ ଫୋନ</translation>
+<translation id="7579113844074980463"><ph name="MANUFACTURER" /> ଟାବଲେଟ</translation>
 <translation id="7579442726219254162">"<ph name="APPLICATION_ID" />"ର ପରିଚାଳିତ କନଫିଗରେସନରେ ଅଜଣା ଭେରିଏବଲ "<ph name="VARIABLE" />" ଅଛି।</translation>
 <translation id="7581199239021537589">ସାଇଡ୍ 2 ଇମେଜ୍ Y ସିଫ୍ଟ</translation>
 <translation id="7582602800368606489">Google Calendarରେ ଶୀଘ୍ର ଏକ ନୂଆ ଇଭେଣ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
@@ -5027,7 +5032,6 @@
 <translation id="8861482055962701239">ଆପଣଙ୍କ Google Walletରେ ଏହି ସୂଚନାକୁ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ଏହାକୁ ଏହି ଡିଭାଇସରେ Chromeରେ ସେଭ କରାଯାଇଛି। ଆପଣ ପରବର୍ତ୍ତୀ ଥର ଏହାକୁ ବ୍ୟବହାର କଲେ Chrome ଏହାକୁ Walletରେ ସେଭ କରିବାକୁ ଅଫର କରିବ।</translation>
 <translation id="8863218129525348270">ପରବର୍ତ୍ତୀ ସମୟରେ ଶୀଘ୍ର ପେମେଣ୍ଟ କରିବାକୁ, ଆପଣଙ୍କ ଡିଭାଇସରେ ଆପଣଙ୍କର କାର୍ଡ ସେଭ କରନ୍ତୁ</translation>
 <translation id="8864939224504814334">ସୁଟ ଏବଂ ବିଜିନେସ ପୋଷାକ</translation>
-<translation id="8865650218866129025">ଏହି ଥ୍ରେଡରେ ଉତ୍ତମ ଉତ୍ତରଗୁଡ଼ିକ ପାଇଁ ଖୋଲା ଟାବଗୁଡ଼ିକୁ ସ୍ୱତଃ ସେୟାର କରିବେ?</translation>
 <translation id="8866132857352163524">ସାଉଣ୍ଡଟ୍ରାକଗୁଡ଼ିକ</translation>
 <translation id="8866481888320382733">ନୀତି ସେଟିଂସ୍‌ ବିଶ୍ଳେଷଣ କରିବାରେ ତ୍ରୁଟି</translation>
 <translation id="8866928039507595380">ଫୋଲ୍ଡ</translation>
@@ -5147,9 +5151,11 @@
 <translation id="9063800855227801443">ଗୋପନୀୟ ବିଷୟବସ୍ତୁକୁ କ୍ୟାପଚର୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="9065203028668620118">ସମ୍ପାଦନ</translation>
 <translation id="9065745800631924235"><ph name="TEXT" /> ଇତିବୃତ୍ତିରେ ଖୋଜନ୍ତୁ</translation>
+<translation id="9066116644715286230">{NUM_TABS,plural, =1{ଟାବ ସେୟାରିଂ ବିବରଣୀ। {WEBSITE_LIST_STR}ରୁ 1 ଟାବ ସେୟାର କରାଯାଉଛି}other{ଟାବ ସେୟାରିଂ ବିବରଣୀ। {WEBSITE_LIST_STR}ରୁ {NUM_TABS} ଟାବ ସେୟାର କରାଯାଉଛି}}</translation>
 <translation id="90695670378604968">ପ୍ଲାଷ୍ଟିକ (ମେଟ)</translation>
 <translation id="9069693763241529744">ଗୋଟିଏ ଏକ୍ସଟେନ୍‍ସନ୍ ଦ୍ଵାରା ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="9073799351042754113">ଆପଣ ଏହି ସାଇଟ୍ ପାଇଁ ସୁରକ୍ଷା ଚେତାବନୀ ବନ୍ଦ କରିବାକୁ ବାଛିଛନ୍ତି।</translation>
+<translation id="907426083053157749"><ph name="MANUFACTURER" /> ଫୋନ</translation>
 <translation id="9075717835386447447">ଟାନ 1</translation>
 <translation id="9078170656887151974">ପରାମର୍ଶ ଦେବା ଏବଂ ଏହି ଫିଚରକୁ ଉନ୍ନତ କରିବା ପାଇଁ, ପୃଷ୍ଠାର URL ଏବଂ ବିଷୟବସ୍ତୁକୁ Google ସହ ସେୟାର କରାଯାଇଛି। ଯେ କୌଣସି ସମୟରେ ଆପଣଙ୍କ ମନ ବଦଳାନ୍ତୁ ଏବଂ <ph name="LEARN_MORE" />।</translation>
 <translation id="9078912659001679888">ବ୍ଲେଣ୍ଡର ଏବଂ ଜୁସର</translation>

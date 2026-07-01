@@ -30,9 +30,11 @@
 <translation id="126567311906253476">Quando accedi a servizi Google come Gmail o YouTube con <ph name="USER_EMAIL" />, puoi accedere automaticamente a Chromium con lo stesso account</translation>
 <translation id="1287534462498555020">Scarica Chromium sul tuo smartphone</translation>
 <translation id="1290883685122687410">Errore di configurazione: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
+<translation id="1312200348844120300">Un'illustrazione che mostra come utilizzare la Ricerca immagini per cercare un prodotto</translation>
 <translation id="1315551408014407711">Configura il tuo nuovo profilo di Chromium</translation>
 <translation id="132092532143527429">Prova con Gemini in Chromium</translation>
 <translation id="1324107359134968521">Chromium richiede l'accesso al Bluetooth per individuare i dispositivi Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1329040302064168406">Accedi a Chromium dallo smartphone</translation>
 <translation id="1330562121671411446">Rileva lingua</translation>
 <translation id="1330742950061766891">Utilizza le impostazioni del browser consigliate di Chromium</translation>
 <translation id="1342274909142618978">Elimina i dati anche da Chromium (<ph name="URL" />)</translation>
@@ -91,6 +93,7 @@
 <translation id="1951406923938785464">Chromium ha bloccato questo download perché il tipo di file non viene scaricato comunemente e potrebbe essere pericoloso</translation>
 <translation id="1953553007165777902">Download in corso… Minuti rimanenti: <ph name="MINUTE" /></translation>
 <translation id="1966382378801805537">Chromium non è in grado di determinare o impostare il browser predefinito</translation>
+<translation id="197326043290947695">Naviga in modo più intelligente con la Ricerca immagini</translation>
 <translation id="1990262977744080398">Scopri perché Chromium blocca alcuni file (si apre in una nuova scheda)</translation>
 <translation id="1999715455684970349">Mantiene aggiornato il software di Chromium. Se questo servizio viene disattivato o interrotto, il software di Chromium non verrà aggiornato, il che significa che le vulnerabilità di sicurezza che potrebbero verificarsi non potranno essere corrette e le funzionalità potrebbero non essere eseguite correttamente. Questo servizio si disinstalla autonomamente quando non viene utilizzato da nessun software di Chromium.</translation>
 <translation id="2008474315282236005">Verrà eliminato 1 elemento da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chromium come <ph name="USER_EMAIL" />.</translation>
@@ -103,6 +106,7 @@
 <translation id="208726765006323911">La prossima volta che aprirai Chromium su iOS, ti verrà chiesto di provare <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Le tue password e altri dati di Chromium salvati nel tuo Account Google verranno rimossi da questo dispositivo. Per usarli di nuovo in Chromium, accedi nuovamente.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{La tua organizzazione elimina automaticamente i dati di navigazione quando Chromium non viene utilizzato per 1 minuto. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede rimarranno aperte.}other{La tua organizzazione elimina automaticamente i dati di navigazione quando Chromium non viene utilizzato per # minuti. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede rimarranno aperte.}}</translation>
+<translation id="2125838419757773031">Seleziona una zona dello schermo per cercare</translation>
 <translation id="2126108037660393668">Il file scaricato non ha superato la verifica.</translation>
 <translation id="2135919691573380097">Segnala questo sito</translation>
 <translation id="2137162749895930932">Chiudi la schermata di traduzione</translation>
@@ -233,6 +237,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vuoi passare a un profilo Chromium esistente?</translation>
 <translation id="3412460710772753638">In Gestore delle password su questo dispositivo</translation>
+<translation id="3423442168617177595">Integrato in Chromium per aiutarti a creare, salvare e compilare automaticamente password efficaci. Aggiungi la scorciatoia per accedere facilmente</translation>
 <translation id="3455907671758333080">Estendi la Navigazione sicura avanzata con Chromium sul tuo smartphone</translation>
 <translation id="3461644266919055473">Personalizzazione di Chromium in corso…</translation>
 <translation id="3474745554856756813">Verranno eliminati <ph name="ITEMS_COUNT" /> elementi da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chromium come <ph name="USER_EMAIL" />.</translation>
@@ -282,6 +287,7 @@
 <translation id="3975724895399328945">Informazioni su &amp;Google Chrome for Testing</translation>
 <translation id="3997429360543082038">Informazioni su Chromium OS</translation>
 <translation id="4010059961270896984">Quando visiti un sito, Chromium invia una parte offuscata dell'URL a <ph name="BEGIN_LINK" />Google Navigazione sicura<ph name="END_LINK" /> tramite un server per la privacy che nasconde il tuo indirizzo IP. Se un sito effettua attività sospette, vengono inviati anche URL completi e frammenti dei contenuti delle pagine.</translation>
+<translation id="4016217212818346953">Stai al sicuro con Gestore delle password</translation>
 <translation id="4019629340646866719">La realizzazione di Chromium OS è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Traduci schermata</translation>
 <translation id="4023601594785368013">Lingua originale: <ph name="LANGUAGE" /></translation>
@@ -501,6 +507,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6400112897226594999">Logo di Chromium sullo schermo di un computer.</translation>
 <translation id="6403826409255603130">Chromium è un browser web che esegue le pagine web e le applicazioni alla velocità della luce. È veloce, stabile e facile da utilizzare. Naviga su Internet in modo più sicuro grazie alla protezione da malware e phishing integrata in Chromium.</translation>
 <translation id="6414624068245092115">Per assicurarti di poter usare e salvare sempre i dati di Chromium nel tuo Account Google, verifica la tua identità</translation>
+<translation id="6417332166651156371">Immagine semplificata che mostra il punto di accesso a Gestore delle password in Chromium</translation>
 <translation id="642132557830635295">Chromium funziona più velocemente e le funzionalità che utilizzano JavaScript dovrebbero avere il comportamento previsto</translation>
 <translation id="6436260184216827876">La ricerca immagini non è disponibile. Riprova più tardi.</translation>
 <translation id="6442900851116057561">Riavvia Chromium OS</translation>
@@ -592,6 +599,7 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="7196312274710523067">Impossibile avviare Chromium. Riprova.</translation>
 <translation id="7213008767289637091">Mantieni Chromium nel dock per accedervi rapidamente in qualsiasi momento</translation>
 <translation id="7213407614656404070">Usa Chromium ogni volta che fai clic sui link in messaggi, documenti e altre app</translation>
+<translation id="7216228761061470870">Quando utilizzi la Ricerca immagini su desktop, il titolo della pagina, l'URL e i contenuti, inclusi i PDF, vengono inviati al server</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="7252276985725323153">Inizia subito a navigare: ora Chromium può essere avviato all'avvio di Windows.</translation>
 <translation id="7274695763216404502">Riquadro fissato. Usa di nuovo la ricerca immagini dalla barra degli strumenti</translation>
@@ -680,6 +688,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8107060931443639922">La prossima volta che aprirai Chromium sul tuo <ph name="DEVICE_TYPE" />, ti verrà chiesto se vuoi attivare gli avvisi di monitoraggio del prezzo.</translation>
 <translation id="8117908349476699973">Ricevi avvisi sui cali di prezzo per i prodotti che ti interessano con l'app Chromium sul tuo smartphone</translation>
 <translation id="8118331347066725040">Invia feedback per la ricerca con Lens</translation>
+<translation id="8130609355518033382">Personalizza Chromium</translation>
 <translation id="8133124826068723441">Impossibile sincronizzare i dati in Chromium OS perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
 <translation id="813913629614996137">Inizializzazione...</translation>
 <translation id="8161503455832158203">Apri Gemini in Chromium con una scorciatoia da tastiera.</translation>

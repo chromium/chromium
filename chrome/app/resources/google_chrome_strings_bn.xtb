@@ -127,6 +127,7 @@
 <translation id="2120620239521071941">এটি এই ডিভাইস থেকে <ph name="ITEMS_COUNT" />টি আইটেম মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="2121284319307530122">&amp;Chrome আপডেট করতে আবার লঞ্চ করুন</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />বর্তমান সেটিংস<ph name="END_LINK" />-এর রিপোর্ট করে Chrome-কে আরও ভাল করে তুলতে সাহায্য করুন</translation>
+<translation id="2125838419757773031">সার্চ করার জন্য স্ক্রিনের নির্দিষ্ট অংশ বেছে নিন</translation>
 <translation id="2126108037660393668">ডাউনলোড করা ফাইলটি যাচাই করা যায়নি।</translation>
 <translation id="2128411189117340671">Chrome প্রোফাইল ম্যানেজ করুন</translation>
 <translation id="2137162749895930932">অনুবাদ করার স্ক্রিন বন্ধ করুন</translation>
@@ -787,6 +788,7 @@
 <translation id="8601359445272098721">নতুন! "স্ক্রিন অনুবাদ করুন" বোতাম বেছে নিয়ে আপনি স্ক্রিনে টেক্সট ও ছবি দুটিই অনুবাদ করতে পারেন</translation>
 <translation id="8614913330719544658">Google Chrome প্রতিক্রিয়া করছে না৷ এখনই পুনঃলঞ্চ করবেন?</translation>
 <translation id="861702415419836452">আপনার আশেপাশের 3D ম্যাপ তৈরি করতে এই সাইটটির জন্য Chrome-কে আপনার ক্যামেরা অ্যাক্সেস করার অনুমতি দিতে হবে</translation>
+<translation id="8623450603356630491">আপনার ফোনে Chrome-এ সাইন-ইন করুন</translation>
 <translation id="8624541899164515475">সেটিংস, নতুন ট্যাবে খোলে।</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ১ মিনিটের মধ্যে আবার লঞ্চ হবে}one{Chrome # মিনিটের মধ্যে আবার লঞ্চ হবে}other{Chrome # মিনিটের মধ্যে আবার লঞ্চ হবে}}</translation>
 <translation id="8637932705841171563">আপনার উইন্ডো শেয়ার করতে, সিস্টেম সেটিংস থেকে Chrome-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন</translation>

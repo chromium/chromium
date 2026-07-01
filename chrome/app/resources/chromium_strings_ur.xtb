@@ -36,6 +36,7 @@
 <translation id="1315551408014407711">‏اپنی نئی Chromium پروفائل سیٹ اپ کریں</translation>
 <translation id="132092532143527429">‏‫Chromium میں Gemini کے ساتھ آزمائیں</translation>
 <translation id="1324107359134968521">‏‫Chromium کو بلوٹوتھ آلات دریافت کرنے کے لیے بلوٹوتھ تک رسائی درکار ہے۔ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1329040302064168406">‏اپنے فون پر Chromium میں سائن ان کریں</translation>
 <translation id="1330562121671411446">زبان کا پتا لگائیں</translation>
 <translation id="1330742950061766891">‏‫Chromium کی تجویز کردہ براؤزر کی ترتیبات استعمال کریں</translation>
 <translation id="1342274909142618978">‏Chromium (<ph name="URL" />) سے ڈیٹا بھی حذف کریں</translation>
@@ -107,6 +108,7 @@
 <translation id="208726765006323911">‏اگلی بار جب آپ Chromium iOS کھولیں گے تو آپ کو <ph name="FEATURE_NAME" /> کو آزمانے کے لیے ایک پرامپٹ نظر آئے گا۔</translation>
 <translation id="2099452623287920103">‏آپ کے پاس ورڈز اور دیگر Chromium ڈیٹا جو آپ نے اپنے Google اکاؤنٹ میں محفوظ کیا ہے انہیں اس آلہ سے ہٹا دیا جائے گا۔ انہیں Chromium میں دوبارہ استعمال کرنے کے لیے، دوبارہ سائن ان کریں۔</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{‏1 منٹ تک Chromium کا استعمال نہ ہونے پر آپ کی تنظیم خودکار طور پر براؤزنگ ڈیٹا حذف کر دیتی ہے۔ اس میں سرگزشت، آٹو فل اور ڈاؤن لوڈز شامل ہو سکتے ہیں۔ آپ کے ٹیبز کھلے رہیں گے۔}other{‏# منٹ تک Chromium کا استعمال نہ ہونے پر آپ کی تنظیم خودکار طور پر براؤزنگ ڈیٹا کو حذف کر دیتی ہے۔ اس میں سرگزشت، آٹو فل اور ڈاؤن لوڈز شامل ہو سکتے ہیں۔ آپ کے ٹیبز کھلے رہیں گے۔}}</translation>
+<translation id="2125838419757773031">تلاش کرنے کے لیے اسکرین کا علاقہ منتخب کریں</translation>
 <translation id="2126108037660393668">ڈاؤن لوڈ کردہ فائل کی توثیق ناکام ہو گئی۔</translation>
 <translation id="2135919691573380097">اس سائٹ کی اطلاع دیں</translation>
 <translation id="2137162749895930932">ترجمہ اسکرین کو بند کریں</translation>

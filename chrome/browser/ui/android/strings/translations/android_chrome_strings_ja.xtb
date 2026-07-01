@@ -317,6 +317,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2363734411417672757">プリロードされるページ数が増加します。ページが他のサイトまたはアプリからリクエストされた場合は、Google サーバーを経由してプリロードされる可能性があります。</translation>
 <translation id="2366554533468315977">このオプションのウェブ全体での価格の推移</translation>
 <translation id="2367818124433749493">デベロッパーのショートカット</translation>
+<translation id="2369058545741334020">リーディング モードで開く</translation>
 <translation id="2385605401818128172">多くの通知を送信しているサイトを確認して、通知をブロックできます</translation>
 <translation id="2386938421315164605">トピックの表示と非表示を切り替えます</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" /><ph name="FILE_SIZE" />を再ダウンロードしますか？</translation>
@@ -327,6 +328,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />、選択された音声ありのタブ</translation>
 <translation id="2413014528833954543">このデバイスではパスワードを確認できません</translation>
 <translation id="2414886740292270097">ダーク</translation>
+<translation id="2415037988255164008">ウィンドウを復元しますか？</translation>
 <translation id="2421705177906985956">現在表示できるサイトはありません</translation>
 <translation id="2426805022920575512">別のアカウントを選択</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{動画、リストの 1 件の動画}other{動画、リストの # 件の動画}}</translation>
@@ -596,6 +598,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3524334353996115845"><ph name="ORIGIN" /> で本人確認を行います</translation>
 <translation id="3527085408025491307">フォルダ</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB の空き</translation>
+<translation id="3547933853190131743">AI モードで検索</translation>
 <translation id="3549537543136628349">プリロードされたページが暗号化されており、ページへリンクしているサイトまたはアプリが Google のサイトまたはアプリであるため、これらのページを非公開でプリロードする際に Google サーバーは新しい情報を受信しません。</translation>
 <translation id="3549657413697417275">履歴を検索</translation>
 <translation id="3557336313807607643">連絡先に追加</translation>
@@ -1338,6 +1341,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Sogou で検索します</translation>
 <translation id="656065428026159829">もっと見る</translation>
+<translation id="6565781844089373403">ウィンドウを復元</translation>
 <translation id="6565959834589222080">可能な場合は Wi-Fi を使用します</translation>
 <translation id="657177046675873214">お使いのすべてのデバイスで同じブックマークを使用するには、設定で [ブックマーク] をオンにします</translation>
 <translation id="6573096386450695060">常に許可</translation>

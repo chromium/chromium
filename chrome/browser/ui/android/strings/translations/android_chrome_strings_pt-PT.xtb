@@ -263,6 +263,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2149968176347646218">A ligação não é segura</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2163089732491971196">Para usar e guardar dados do Chrome na sua Conta Google, introduza a frase de acesso</translation>
+<translation id="2164015935042801524">Clique com o botão direito do rato aqui para mostrar os separadores na vertical</translation>
 <translation id="2166228530126694506">Versão <ph name="VERSION_NUMBER" /></translation>
 <translation id="2172688499998841696">As descrições das imagens estão desativadas.</translation>
 <translation id="2172905120685242547">Quer fechar a janela?</translation>
@@ -305,6 +306,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2323763861024343754">Armazenamento do site</translation>
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="2328474416100889417">Todas as pessoas vão perder imediatamente o acesso ao grupo de separadores "<ph name="GROUP_NAME" />", e todos os links de convite vão ser desativados</translation>
+<translation id="2329500425421091035">Apresentamos o Modo IA no Chrome</translation>
 <translation id="2330186936255788117">Mais marcadores</translation>
 <translation id="2332515770639153015">A Navegação segura melhorada está ativada</translation>
 <translation id="233375395665273385">Eliminar e terminar sessão</translation>
@@ -317,6 +319,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2363734411417672757">Mais páginas são pré-carregadas. As páginas podem ser pré-carregadas através dos servidores da Google quando pedido por outros sites ou apps.</translation>
 <translation id="2366554533468315977">Histórico de preços na Web para esta opção</translation>
 <translation id="2367818124433749493">Atalhos para programadores</translation>
+<translation id="2369058545741334020">Abrir em modo de leitura</translation>
 <translation id="2385605401818128172">Pode rever os sites que enviam muitas notificações e impedir que enviem mais no futuro</translation>
 <translation id="2386938421315164605">Oculte e mostre tópicos</translation>
 <translation id="2390510615457643724">Quer transferir <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> novamente?</translation>
@@ -327,6 +330,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, separador audível selecionado</translation>
 <translation id="2413014528833954543">Não é possível verificar as palavras-passe neste dispositivo</translation>
 <translation id="2414886740292270097">Escuro</translation>
+<translation id="2415037988255164008">Restaurar as janelas?</translation>
 <translation id="2421705177906985956">Não existem sites para mostrar neste momento</translation>
 <translation id="2426805022920575512">Selecionar outra conta</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{Vídeos, 1 vídeo na lista}other{Vídeos, # vídeos na lista}}</translation>
@@ -596,6 +600,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3524334353996115845">Permita que <ph name="ORIGIN" /> valide a sua identidade</translation>
 <translation id="3527085408025491307">Pasta</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB disponível(eis)</translation>
+<translation id="3547933853190131743">Pesquisar com Modo IA</translation>
 <translation id="3549537543136628349">Uma vez que as páginas pré-carregadas são encriptadas e o site ou a app que remete para as páginas é um site ou uma app Google, os servidores da Google não recebem novas informações quando estas páginas são pré-carregadas de forma privada.</translation>
 <translation id="3549657413697417275">Pesquisar no histórico</translation>
 <translation id="3557336313807607643">Adicionar aos contactos</translation>
@@ -1338,6 +1343,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6556501700899673703">Lexend</translation>
 <translation id="6560414384669816528">Pesquisar com o Sogou</translation>
 <translation id="656065428026159829">Ver mais</translation>
+<translation id="6565781844089373403">Restaurar janelas</translation>
 <translation id="6565959834589222080">O Wi-Fi é utilizado quando estiver disponível.</translation>
 <translation id="657177046675873214">Para ver os seus marcadores em todos os dispositivos, ative os "Marcadores" nas definições</translation>
 <translation id="6573096386450695060">Permitir sempre</translation>
@@ -1964,12 +1970,14 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="9001604755921395912">Abrir separador anónimo Chrome</translation>
 <translation id="9010094279589497751">Abra rapidamente o Gemini sempre que precisar</translation>
 <translation id="9012585441087414258">Protege contra sites, transferências e extensões identificados como perigosos. Se uma página fizer algo suspeito, os URLs e partes do conteúdo da página são enviados para a Navegação segura do Google.</translation>
+<translation id="9014097371980259227">Algumas ferramentas foram movidas para ajudar a pesquisar com o Modo IA</translation>
 <translation id="9019199799064251516">Continuar sem um bloqueio do perfil do carro?</translation>
 <translation id="9022774213089566801">Visitados frequentemente</translation>
 <translation id="9022871169049522985">Os sites e os anunciantes podem medir o desempenho dos respetivos anúncios</translation>
 <translation id="9024318700713112071">Definir o Chrome como o navegador predefinido</translation>
 <translation id="9027728231343310283">Anular <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover para\u2026</translation>
+<translation id="904146253922032365">Toque sem soltar para mostrar os separadores na vertical</translation>
 <translation id="9042893549633094279">Privacidade e segurança</translation>
 <translation id="9047347135558855162">Inicie rapidamente uma pesquisa no Chrome</translation>
 <translation id="9050666287014529139">Frase de acesso</translation>
