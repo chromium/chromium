@@ -488,6 +488,8 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
         # crbug/940930
         "chromium.enable_cleandead": 100,
+        # go/rts-project-proposal
+        "chromium_rts.filter_file_analysis": 10,
         "luci.buildbucket.run_in_turboci": 100,
     },
     main_list_view = "try",
@@ -1131,6 +1133,8 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
         # crbug/940930
         "chromium.enable_cleandead": 100,
+        # go/rts-project-proposal
+        "chromium_rts.filter_file_analysis": 10,
         "luci.buildbucket.run_in_turboci": 100,
     },
     main_list_view = "try",
