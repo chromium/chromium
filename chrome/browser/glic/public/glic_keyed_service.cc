@@ -29,9 +29,6 @@
 #include "chrome/browser/glic/common/application_hotkey_delegate.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
-#endif
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -86,16 +83,16 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/glic_metrics.h"
-#include "chrome/browser/glic/media/glic_media_integration.h"
-#include "chrome/browser/glic/widget/glic_widget.h"
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/android/glic_keyed_service_android.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller_android.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#else
+#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
+#include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/media/glic_media_integration.h"
+#include "chrome/browser/glic/widget/glic_widget.h"
 #endif
 
 namespace glic {

@@ -29,10 +29,13 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/base_window.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
@@ -43,10 +46,6 @@
 #else
 #include "chrome/browser/ui/browser.h"
 #endif
-
-#include "content/public/test/browser_test_utils.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
-#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace {
 // Simulates a click on a link with the given modifiers.

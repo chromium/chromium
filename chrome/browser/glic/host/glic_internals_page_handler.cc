@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/glic_internals_page_handler.h"
 
 #include <cstdio>
+#include <sstream>
 
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
@@ -48,16 +49,13 @@
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/device_form_factor.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
 #endif
-
-#include <sstream>
-
-#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace glic {
 
