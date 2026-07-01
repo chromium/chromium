@@ -32,11 +32,16 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/shortcuts_provider_test_util.h"
+#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/mouse_constants.h"
 #include "ui/webui/tracked_element/interaction_test_util_web_ui.h"
@@ -281,14 +286,18 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
   }
 
   auto WaitTillOmniboxViewSelection(std::string_view expected_selected,
-                                    gfx::Range expected_selection) {
+                                    gfx::Range expected_selection,
+                                    bool expect_no_dir = false) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kSelectionOK);
     const char kTemplate[] = R"(
       (el) => {
         const expectedSelection = $1;
         const min = $2;
         const max = $3;
-        const dir = $4 ? 'backward' : 'forward';
+        let dir = $4 ? 'backward' : 'forward';
+        if ($5) {
+          dir = 'none';
+        }
         if (el.selectionStart !== min ||
             el.selectionEnd !== max) {
           return false;
@@ -298,8 +307,9 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
           return true;
         }
 
-        // Mac likes to default selections to none. Here it should only be
-        // for caret things, since others we set directly.
+        // Mac likes to default selections to none. Handle that implicitly
+        // for caret, since almost every other selection we set ourselves,
+        // with explicit direction.
         if (min === max) {
            return el.selectionDirection === 'none';
         }
@@ -313,7 +323,7 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
         content::JsReplace(kTemplate, expected_selected,
                            static_cast<double>(expected_selection.GetMin()),
                            static_cast<double>(expected_selection.GetMax()),
-                           expected_selection.is_reversed());
+                           expected_selection.is_reversed(), expect_no_dir);
     return WaitForStateChange(kWebUIToolbarId, text_matches);
   }
 
@@ -331,6 +341,37 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
         delay));
     step.SetDescription("DoWaitForTime()");
     return step;
+  }
+
+  // We synthesize double-clicks by using the content API to inject an event.
+  // Using Kombucha ClickMouse(); ClickMouse() turns into two single-clicks in
+  // slow environments (e.g. ASAN bots) and doesn't work on Mac.
+  //
+  // Injecting via JS would not get default behavior from blink.
+  auto SynthesizeDoubleClickInToolbarWebUI() {
+    return Do([&]() {
+      views::WebView* web_view = GetToolbarWebView();
+      content::RenderWidgetHost* widget =
+          web_view->GetWebContents()->GetRenderViewHost()->GetWidget();
+
+      gfx::Point point = display::Screen::Get()->GetCursorScreenPoint();
+
+      for (int click = 1; click <= 2; ++click) {
+        blink::WebMouseEvent mouse_event(
+            blink::WebInputEvent::Type::kMouseDown,
+            blink::WebInputEvent::kNoModifiers,
+            blink::WebInputEvent::GetStaticTimeStampForTests());
+        mouse_event.button = blink::WebMouseEvent::Button::kLeft;
+        mouse_event.click_count = click;
+        mouse_event.SetPositionInWidget(
+            point.x() - web_view->GetBoundsInScreen().x(),
+            point.y() - web_view->GetBoundsInScreen().y());
+        mouse_event.SetPositionInScreen(point.x(), point.y());
+        widget->ForwardMouseEvent(mouse_event);
+        mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
+        widget->ForwardMouseEvent(mouse_event);
+      }
+    });
   }
 
  private:
@@ -869,22 +910,19 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, TypeWithMouseDown) {
       WaitTillOmniboxViewText("ww"));
 }
 
-// The double-click select tests are disabled on Mac since doing ClickMouse
-// twice synthesizes two single-clicks, not a single-click-into-double-click.
-// See https://crbug.com/522216165
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DoubleClick DISABLED_DoubleClick
-#define MAYBE_DoubleClick2 DISABLED_DoubleClick2
-#else
-#define MAYBE_DoubleClick DoubleClick
-#define MAYBE_DoubleClick2 DoubleClick2
-#endif
-
 // Test of selecting a word portion of URL with double-click select.
 // This is just a regular double-click. That it's the first word is
 // relevant, since we also need to make sure the selection isn't extended to
 // encompass https:// unlike what it would do otherwise.
-IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, MAYBE_DoubleClick) {
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, DoubleClick) {
+#if BUILDFLAG(IS_MAC)
+  // Mac likes to make selections non-directional by default, and this test
+  // has it setting one rather than our code.
+  const bool expect_no_dir = true;
+#else
+  const bool expect_no_dir = false;
+#endif
+
   RunTestSequence(
       InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
       InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
@@ -903,16 +941,16 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, MAYBE_DoubleClick) {
                 return reference_element->GetScreenBounds().left_center() +
                        gfx::Vector2d(10, 0);
               }))),
-      InSameContext(ClickMouse(), ClickMouse()),
+      SynthesizeDoubleClickInToolbarWebUI(),
       // The URL is unelided, and "local" is selected.
       WaitTillOmniboxViewText("https://local.test"),
-      WaitTillOmniboxViewSelection("local", gfx::Range(8, 13)));
+      WaitTillOmniboxViewSelection("local", gfx::Range(8, 13), expect_no_dir));
 }
 
 // Test of selecting a word portion of URL with double-click select.
 // This arranges for unelision to have happened on first click and not second;
 // and selects the last word.
-IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, MAYBE_DoubleClick2) {
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, DoubleClick2) {
   RunTestSequence(
       InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
       InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
@@ -941,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, MAYBE_DoubleClick2) {
                 return reference_element->GetScreenBounds().right_center() -
                        gfx::Vector2d(10, 0);
               }))),
-      InSameContext(ClickMouse(), ClickMouse()),
+      SynthesizeDoubleClickInToolbarWebUI(),
       WaitTillOmniboxViewText("https://local.test"),
       WaitTillOmniboxViewSelection("test", gfx::Range(14, 18)));
 }
