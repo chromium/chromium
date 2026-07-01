@@ -152,8 +152,7 @@ void HlsDataSourceProviderImpl::OnDataSourceCreated(
     old_data_source->second->Stop();
     data_source_map_.erase(old_data_source);
   }
-  would_taint_origin_ |= data_source->WouldTaintOrigin();
-  if (would_taint_origin_) {
+  if (data_source->WouldTaintOrigin()) {
     stream->set_would_taint_origin();
   }
   if (range_mode == DataSource::RangeMode::kRangeRequest) {
@@ -190,8 +189,7 @@ void HlsDataSourceProviderImpl::DataSourceInitialized(
 
   auto it = data_source_map_.find(stream->stream_id());
   if (it != data_source_map_.end()) {
-    would_taint_origin_ |= it->second->WouldTaintOrigin();
-    if (would_taint_origin_) {
+    if (it->second->WouldTaintOrigin()) {
       stream->set_would_taint_origin();
     }
     if (it->second->DidRedirect()) {

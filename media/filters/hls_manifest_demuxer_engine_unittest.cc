@@ -1321,4 +1321,36 @@ TEST_F(HlsManifestDemuxerEngineTest, TestTrackChangeUpdatesSelectableOptions) {
   }
 }
 
+TEST_F(HlsManifestDemuxerEngineTest, TestPersistentTainting) {
+  EXPECT_FALSE(engine_->WouldTaintOrigin());
+
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
+  EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
+  EXPECT_CALL(*mock_mdeh_,
+              AddRole("primary", RelaxedParserSupportedType::kMP2T));
+  // The first request (multivariant playlist) taints the origin.
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist,
+      /*taint_origin=*/true);
+  // The second request (media playlist) does not taint the origin.
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://example.com/low.m3u8", kSimpleMediaPlaylist,
+      /*taint_origin=*/false);
+
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "1.2 Mbps"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "2.5 Mbps"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "7.6 Mbps"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "Default"));
+  EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "1.2 Mbps",
+                                       MediaTrack::State::kActive));
+  EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
+
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
+
+  // The engine should persistently report that it would taint the origin even
+  // though the latest data source did not taint the origin.
+  EXPECT_TRUE(engine_->WouldTaintOrigin());
+}
+
 }  // namespace media

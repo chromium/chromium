@@ -52,8 +52,6 @@ class MEDIA_EXPORT HlsDataSourceProviderImpl : public HlsDataSourceProvider {
                  std::unique_ptr<CrossOriginDataSource>>
       data_source_map_;
 
-  bool would_taint_origin_ = false;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<HlsDataSourceProviderImpl> weak_factory_{this};
