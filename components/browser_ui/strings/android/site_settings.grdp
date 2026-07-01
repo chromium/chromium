@@ -1279,7 +1279,7 @@
 
     <!-- Automatic Picture-in-Picture -->
   <message name="IDS_WEBSITE_SETTINGS_AUTOMATIC_PICTURE_IN_PICTURE_PAGE_DESCRIPTION" desc="Description of the automatic picture-in-picture content setting.">
-    Sites use this feature to enter picture-in-picture automatically. This lets you continue watching a video, while freeing up your screen for other tasks.
+    Sites can enter picture-in-picture automatically. This lets you continue watching a video, while freeing up your screen for other tasks.
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTOMATIC_PICTURE_IN_PICTURE_ALLOWED" desc="Summary text explaining that sites are alllowed to enter picture-in-picture automatically.">
    Sites can enter picture-in-picture automatically
