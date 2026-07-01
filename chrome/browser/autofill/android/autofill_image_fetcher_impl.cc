@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/containers/span.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/profiles/profile_key_android.h"
 #include "ui/gfx/image/image.h"

@@ -13,6 +13,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
