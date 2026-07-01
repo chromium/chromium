@@ -18,17 +18,19 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/core/browser/db/v4_store.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/sb_store.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 
 class SafeBrowsingServiceTest;
 class TestSafeBrowsingDatabaseHelper;
 
 // TODO(crbug.com/362791941): Handle references to v4.
+// TODO(crbug.com/362791941): replace all |comments| with `comments` for v5.
 namespace safe_browsing {
 
 class SBDatabase;
+class SBStoreFactory;
 
 // Scheduled when the database has been read from disk and is ready to process
 // resource reputation requests.
@@ -49,7 +51,7 @@ using DatabaseUpdatedCallback = base::RepeatingClosure;
 // Maps the ListIdentifiers to their corresponding in-memory stores, which
 // contain the hash prefixes for that ListIdentifier as well as manage their
 // storage on disk.
-using StoreMap = std::unordered_map<ListIdentifier, V4StorePtr>;
+using StoreMap = std::unordered_map<ListIdentifier, SBStorePtr>;
 
 // Results and timings of a local database lookup.
 struct DbLookupResult {
@@ -68,41 +70,6 @@ struct DbLookupResult {
   base::TimeTicks db_thread_end_time;
 };
 
-// Associates metadata for a list with its ListIdentifier.
-class ListInfo {
- public:
-  ListInfo(const bool fetch_updates,
-           const std::string& filename,
-           const ListIdentifier& list_id,
-           const SBThreatType sb_threat_type);
-  ~ListInfo();
-
-  const ListIdentifier& list_id() const { return list_id_; }
-  const std::string& filename() const { return filename_; }
-  SBThreatType sb_threat_type() const { return sb_threat_type_; }
-  bool fetch_updates() const { return fetch_updates_; }
-
- private:
-  // Whether to fetch and store updates for this list.
-  bool fetch_updates_;
-
-  // The ASCII name of the file on disk. This file is created inside the
-  // user-data directory. For instance, the ListIdentifier could be for URL
-  // expressions for UwS on Windows platform, and the corresponding file on disk
-  // could be named: "UrlUws.store"
-  std::string filename_;
-
-  // The list being read from/written to the disk.
-  ListIdentifier list_id_;
-
-  // The threat type enum value for this store.
-  SBThreatType sb_threat_type_;
-
-  ListInfo() = delete;
-};
-
-using ListInfos = std::vector<ListInfo>;
-
 // Factory for creating SBDatabase. Tests implement this factory to create fake
 // databases for testing.
 class SBDatabaseFactory {
@@ -117,9 +84,9 @@ class SBDatabaseFactory {
 // user-specific data. This object is not thread-safe, i.e. all its methods
 // should be used on the same thread that it was created on, unless specified
 // otherwise.
-// The hash-prefixes of each type are managed by a V4Store (including saving to
+// The hash-prefixes of each type are managed by an SBStore (including saving to
 // and reading from disk).
-// The SBDatabase serves as a single place to manage all the V4Stores.
+// The SBDatabase serves as a single place to manage all the SBStores.
 class SBDatabase {
  public:
   // Factory method to create a SBDatabase. It creates the database on the
@@ -147,7 +114,7 @@ class SBDatabase {
 
   // Updates the stores with the response received from the SafeBrowsing service
   // and calls the db_updated_callback when done.
-  void ApplyUpdate(std::unique_ptr<ParsedServerResponse> parsed_server_response,
+  void ApplyUpdate(std::unique_ptr<SBUpdateResponseMap> update_map,
                    DatabaseUpdatedCallback db_updated_callback);
 
   // Returns the current state of each of the stores being managed.
@@ -202,8 +169,8 @@ class SBDatabase {
   SBDatabase(const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
              std::unique_ptr<StoreMap> store_map);
 
-  // The collection of V4Stores, keyed by ListIdentifier.
-  // The map itself lives on the SBDatabase's parent thread, but its V4Store
+  // The collection of SBStores, keyed by ListIdentifier.
+  // The map itself lives on the SBDatabase's parent thread, but its SBStore
   // objects live on the db_task_runner_thread.
   // TODO(vakh): Consider writing a container object which encapsulates or
   // harmonizes thread affinity for the associative container and the data.
@@ -239,15 +206,15 @@ class SBDatabase {
   static void RegisterDatabaseFactoryForTest(
       std::unique_ptr<SBDatabaseFactory> factory);
 
-  // Makes the passed |factory| the factory used to instantiate a V4Store. Only
+  // Makes the passed |factory| the factory used to instantiate SBStores. Only
   // for tests.
   static void RegisterStoreFactoryForTest(
-      std::unique_ptr<V4StoreFactory> factory);
+      std::unique_ptr<SBStoreFactory> factory);
 
   // Callback called when a new store has been created and is ready to be used.
   // This method updates the store_map_ to point to the new store, which causes
   // the old store to get deleted.
-  void UpdatedStoreReady(ListIdentifier identifier, V4StorePtr store);
+  void UpdatedStoreReady(ListIdentifier identifier, SBStorePtr store);
 
   // See |VerifyChecksum|.
   void OnChecksumVerified(

@@ -424,6 +424,14 @@ HashPrefixStr V5Store::GetMatchingHashPrefix(const FullHashStr& full_hash) {
   NOTREACHED();
 }
 
+void V5Store::ApplyUpdate(
+    std::unique_ptr<SBUpdateResponse> response,
+    const scoped_refptr<base::SequencedTaskRunner>& runner,
+    UpdatedStoreReadyCallback callback) {
+  // TODO(crbug.com/362791941): implement
+  NOTREACHED();
+}
+
 const std::string& V5Store::GetStoreState() const {
   return version_;
 }

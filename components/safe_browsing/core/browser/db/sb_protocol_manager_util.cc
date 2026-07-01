@@ -28,6 +28,7 @@
 
 using base::Time;
 
+// TODO(crbug.com/362791941): change all DCHECKs to CHECKs for v5 usages.
 namespace safe_browsing {
 
 // Can be overriden by tests.
@@ -743,5 +744,19 @@ void SBProtocolManagerUtil::GetListClientStatesFromStoreStateMap(
                          std::back_inserter(*list_client_states),
                          &StoreStateMap::value_type::second);
 }
+
+ListInfo::ListInfo(const bool fetch_updates,
+                   const std::string& filename,
+                   const ListIdentifier& list_id,
+                   const SBThreatType sb_threat_type)
+    : fetch_updates_(fetch_updates),
+      filename_(filename),
+      list_id_(list_id),
+      sb_threat_type_(sb_threat_type) {
+  DCHECK(!fetch_updates_ || !filename_.empty());
+  DCHECK_NE(SBThreatType::SB_THREAT_TYPE_SAFE, sb_threat_type_);
+}
+
+ListInfo::~ListInfo() = default;
 
 }  // namespace safe_browsing

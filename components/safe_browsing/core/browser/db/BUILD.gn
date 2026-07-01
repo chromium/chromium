@@ -285,6 +285,7 @@ static_library("v4_test_util") {
   ]
   deps = [
     ":sb_database",
+    ":sb_store",
     ":util",
     ":v4_get_hash_protocol_manager",
     ":v4_protocol_manager_util",

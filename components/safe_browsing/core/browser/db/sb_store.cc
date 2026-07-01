@@ -219,6 +219,9 @@ std::string SBStore::ExtensionV4IdToV5Hash(std::string_view v4_id) {
   return v5_hash;
 }
 
+SBUpdateResponse::SBUpdateResponse() = default;
+SBUpdateResponse::~SBUpdateResponse() = default;
+
 SBStoreDeleter::SBStoreDeleter(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(std::move(task_runner)) {}

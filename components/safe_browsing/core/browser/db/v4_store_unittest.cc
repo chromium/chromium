@@ -106,12 +106,13 @@ class V4StoreTest : public PlatformTest {
 
   void UpdatedStoreReady(base::RunLoop* run_loop,
                          bool expect_store,
-                         V4StorePtr store) {
+                         SBStorePtr store) {
     if (expect_store) {
       ASSERT_TRUE(store);
-      EXPECT_EQ(2u, store->hash_prefix_map_->view().size());
-      EXPECT_EQ("22222", store->hash_prefix_map_->view()[5]);
-      EXPECT_EQ("abcd", store->hash_prefix_map_->view()[4]);
+      V4Store* v4_store = static_cast<V4Store*>(store.get());
+      EXPECT_EQ(2u, v4_store->hash_prefix_map_->view().size());
+      EXPECT_EQ("22222", v4_store->hash_prefix_map_->view()[5]);
+      EXPECT_EQ("abcd", v4_store->hash_prefix_map_->view()[4]);
     } else {
       ASSERT_FALSE(store);
     }
@@ -295,7 +296,7 @@ class V4StoreTest : public PlatformTest {
   base::FilePath store_path_;
   base::FilePath v5_store_path_;
   base::test::TaskEnvironment task_environment_;
-  V4StorePtr updated_store_{nullptr, SBStoreDeleter(nullptr)};
+  SBStorePtr updated_store_{nullptr, SBStoreDeleter(nullptr)};
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -1974,7 +1975,9 @@ TEST_F(V4StoreTest, TestRemovalsWithRiceEncodingSucceeds) {
   UpdatedStoreReadyCallback store_ready_callback =
       base::BindOnce(&V4StoreTest::UpdatedStoreReady, base::Unretained(this),
                      &run_loop, true /* expect_store */);
-  store.ApplyUpdate(std::move(lur), task_runner(),
+  auto sb_response = std::make_unique<SBUpdateResponse>();
+  sb_response->v4_response = std::move(lur);
+  store.ApplyUpdate(std::move(sb_response), task_runner(),
                     std::move(store_ready_callback));
   EXPECT_TRUE(base::PathExists(store.store_path_));
 
@@ -2104,7 +2107,9 @@ TEST_F(V4StoreTest, FullUpdateFailsChecksumSynchronously) {
   std::unique_ptr<ListUpdateResponse> lur(new ListUpdateResponse);
   lur->set_response_type(ListUpdateResponse::FULL_UPDATE);
   lur->mutable_checksum()->set_sha256(std::string(crypto::kSHA256Length, 0));
-  store.ApplyUpdate(std::move(lur), task_runner(),
+  auto sb_response = std::make_unique<SBUpdateResponse>();
+  sb_response->v4_response = std::move(lur);
+  store.ApplyUpdate(std::move(sb_response), task_runner(),
                     std::move(store_ready_callback));
   // The update should fail synchronously and not create a store file.
   EXPECT_FALSE(base::PathExists(store.store_path_));
@@ -2135,7 +2140,9 @@ TEST_F(V4StoreTest, ApplyUpdateFailsWithInvalidResponseType) {
   // Now create a response with an invalid response type.
   std::unique_ptr<ListUpdateResponse> lur(new ListUpdateResponse);
   lur->set_response_type(ListUpdateResponse::RESPONSE_TYPE_UNSPECIFIED);
-  store.ApplyUpdate(std::move(lur), task_runner(),
+  auto sb_response = std::make_unique<SBUpdateResponse>();
+  sb_response->v4_response = std::move(lur);
+  store.ApplyUpdate(std::move(sb_response), task_runner(),
                     std::move(store_ready_callback));
   // The update should fail synchronously and not create a store file.
   EXPECT_FALSE(base::PathExists(store.store_path_));
@@ -2168,7 +2175,9 @@ TEST_F(V4StoreTest, ApplyUpdateRemovalsFailsWithInvalidCompressionType) {
   lur->set_response_type(ListUpdateResponse::PARTIAL_UPDATE);
   ThreatEntrySet* removal = lur->add_removals();
   removal->set_compression_type(COMPRESSION_TYPE_UNSPECIFIED);
-  store.ApplyUpdate(std::move(lur), task_runner(),
+  auto sb_response = std::make_unique<SBUpdateResponse>();
+  sb_response->v4_response = std::move(lur);
+  store.ApplyUpdate(std::move(sb_response), task_runner(),
                     std::move(store_ready_callback));
   // The update should fail synchronously and not create a store file.
   EXPECT_FALSE(base::PathExists(store.store_path_));

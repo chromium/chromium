@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/safe_browsing/core/browser/db/v4_store.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 
@@ -27,6 +28,8 @@
 
 using base::TimeTicks;
 
+// TODO(crbug.com/362791941): replace all |comments| with `comments` for v5.
+// TODO(crbug.com/362791941): change all DCHECKs to CHECKs for v5 usages.
 namespace safe_browsing {
 
 namespace {
@@ -45,16 +48,16 @@ std::unique_ptr<SBDatabaseFactory>& GetDatabaseFactory() {
   return *db_factory;
 }
 
-// The factory that controls the creation of V4Store objects.
-std::unique_ptr<V4StoreFactory>& GetStoreFactory() {
-  static base::NoDestructor<std::unique_ptr<V4StoreFactory>> store_factory;
+// The factory that controls the creation of SBStore objects.
+std::unique_ptr<SBStoreFactory>& GetStoreFactory() {
+  static base::NoDestructor<std::unique_ptr<SBStoreFactory>> store_factory;
   return *store_factory;
 }
 
 // Verifies the checksums on a collection of stores.
 // Returns the IDs of stores whose checksums failed to verify.
 std::vector<ListIdentifier> VerifyChecksums(
-    std::vector<std::pair<ListIdentifier, V4Store*>> stores) {
+    std::vector<std::pair<ListIdentifier, SBStore*>> stores) {
   std::vector<ListIdentifier> stores_to_reset;
   for (const auto& store_map_iter : stores) {
     if (!store_map_iter.second->VerifyChecksum()) {
@@ -67,7 +70,7 @@ std::vector<ListIdentifier> VerifyChecksums(
 // Returns hash prefixes matching the collection of stores.
 DbLookupResult CheckStores(
     const std::vector<FullHashStr>& full_hashes,
-    std::vector<std::pair<ListIdentifier, V4Store*>> stores,
+    std::vector<std::pair<ListIdentifier, SBStore*>> stores,
     base::TimeTicks db_thread_post_time) {
   base::TimeTicks db_thread_start_time = base::TimeTicks::Now();
   base::UmaHistogramTimes(
@@ -143,6 +146,7 @@ void SBDatabase::CreateOnTaskRunner(
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
 
   if (!GetStoreFactory()) {
+    // TODO(crbug.com/362791941): handle v5
     GetStoreFactory() = std::make_unique<V4StoreFactory>();
   }
 
@@ -162,12 +166,8 @@ void SBDatabase::CreateOnTaskRunner(
     }
 
     const base::FilePath store_path = base_path.AppendASCII(it.filename());
-    // TODO(crbug.com/362791941): Pass actual v5 prefix size.
-    V4StorePtr store = GetStoreFactory()->CreateV4Store(
-        db_task_runner, store_path,
-        /*v5_prefix_size=*/0,
-        /*is_eligible_for_migration=*/it.list_id() != GetUrlCsdAllowlistId(),
-        /*is_extensions_blocklist=*/it.list_id() == GetChromeExtMalwareId());
+    SBStorePtr store =
+        GetStoreFactory()->CreateStore(db_task_runner, store_path, it);
     base::UmaHistogramBoolean("SafeBrowsing.V4Store.ReadyOnStartup",
                               store->HasValidData());
     store_map->insert({it.list_id(), std::move(store)});
@@ -195,7 +195,7 @@ void SBDatabase::RegisterDatabaseFactoryForTest(
 
 // static
 void SBDatabase::RegisterStoreFactoryForTest(
-    std::unique_ptr<V4StoreFactory> factory) {
+    std::unique_ptr<SBStoreFactory> factory) {
   GetStoreFactory() = std::move(factory);
 }
 
@@ -229,39 +229,39 @@ SBDatabase::~SBDatabase() {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
 }
 
-void SBDatabase::ApplyUpdate(
-    std::unique_ptr<ParsedServerResponse> parsed_server_response,
-    DatabaseUpdatedCallback db_updated_callback) {
+void SBDatabase::ApplyUpdate(std::unique_ptr<SBUpdateResponseMap> update_map,
+                             DatabaseUpdatedCallback db_updated_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!pending_store_updates_);
   DCHECK(db_updated_callback_.is_null());
 
   db_updated_callback_ = db_updated_callback;
 
-  // Post the V4Store update task on the DB sequence but get the callback on the
+  // Post the SBStore update task on the DB sequence but get the callback on the
   // current sequence.
   const scoped_refptr<base::SequencedTaskRunner> current_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
-  for (std::unique_ptr<ListUpdateResponse>& response :
-       *parsed_server_response) {
-    ListIdentifier identifier(*response);
-    StoreMap::const_iterator iter = store_map_->find(identifier);
-    if (iter != store_map_->end()) {
-      const V4StorePtr& old_store = iter->second;
-      if (old_store->state() != response->new_client_state()) {
-        // A different state implies there are updates to process.
-        pending_store_updates_++;
-        UpdatedStoreReadyCallback store_ready_callback =
-            base::BindOnce(&SBDatabase::UpdatedStoreReady,
-                           weak_factory_on_io_.GetWeakPtr(), identifier);
-        db_task_runner_->PostTask(
-            FROM_HERE, base::BindOnce(&V4Store::ApplyUpdate,
-                                      base::Unretained(old_store.get()),
-                                      std::move(response), current_task_runner,
-                                      std::move(store_ready_callback)));
-      }
-    } else {
-      NOTREACHED() << "Got update for unexpected identifier: " << identifier;
+  for (auto& [list_id, response] : *update_map) {
+    StoreMap::const_iterator iter = store_map_->find(list_id);
+    CHECK(iter != store_map_->end())
+        << "Got update for unexpected identifier: " << list_id;
+    const SBStorePtr& old_store = iter->second;
+    std::string new_state;
+    // TODO(crbug.com/362791941): handle v5
+    if (response->v4_response) {
+      new_state = response->v4_response->new_client_state();
+    }
+    if (old_store->GetStoreState() != new_state) {
+      // A different state implies there are updates to process.
+      pending_store_updates_++;
+      UpdatedStoreReadyCallback store_ready_callback =
+          base::BindOnce(&SBDatabase::UpdatedStoreReady,
+                         weak_factory_on_io_.GetWeakPtr(), list_id);
+      db_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&SBStore::ApplyUpdate,
+                         base::Unretained(old_store.get()), std::move(response),
+                         current_task_runner, std::move(store_ready_callback)));
     }
   }
 
@@ -274,7 +274,7 @@ void SBDatabase::ApplyUpdate(
 }
 
 void SBDatabase::UpdatedStoreReady(ListIdentifier identifier,
-                                   V4StorePtr new_store) {
+                                   SBStorePtr new_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_store_updates_);
   if (new_store) {
@@ -296,7 +296,8 @@ std::unique_ptr<StoreStateMap> SBDatabase::GetStoreStateMap() {
   std::unique_ptr<StoreStateMap> store_state_map =
       std::make_unique<StoreStateMap>();
   for (const auto& store_map_iter : *store_map_) {
-    (*store_state_map)[store_map_iter.first] = store_map_iter.second->state();
+    (*store_state_map)[store_map_iter.first] =
+        store_map_iter.second->GetStoreState();
   }
   return store_state_map;
 }
@@ -329,7 +330,7 @@ void SBDatabase::GetStoresMatchingFullHash(
     base::OnceCallback<void(DbLookupResult)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<std::pair<ListIdentifier, V4Store*>> stores;
+  std::vector<std::pair<ListIdentifier, SBStore*>> stores;
   for (const ListIdentifier& identifier : stores_to_check) {
     if (!IsStoreAvailable(identifier)) {
       continue;
@@ -343,7 +344,7 @@ void SBDatabase::GetStoresMatchingFullHash(
   auto check_stores = base::BindOnce(CheckStores, full_hashes,
                                      std::move(stores), db_thread_post_time);
 
-  // The V4Stores ptrs are guaranteed to be valid because their deletion would
+  // The SBStores ptrs are guaranteed to be valid because their deletion would
   // be sequenced on the DB thread, after this posted task is serviced.
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, std::move(check_stores), std::move(callback));
@@ -362,10 +363,10 @@ void SBDatabase::VerifyChecksum(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Make a threadsafe copy of store_map_ w/raw pointers that we can hand to
-  // the DB thread. The V4Stores ptrs are guaranteed to be valid because their
+  // the DB thread. The SBStores ptrs are guaranteed to be valid because their
   // deletion would be sequenced on the DB thread, after this posted task is
   // serviced.
-  std::vector<std::pair<ListIdentifier, V4Store*>> stores;
+  std::vector<std::pair<ListIdentifier, SBStore*>> stores;
   for (const auto& next_store : *store_map_) {
     stores.push_back(std::make_pair(next_store.first, next_store.second.get()));
   }
@@ -437,19 +438,5 @@ void SBDatabase::CollectDatabaseInfo(
 
   database_info->set_database_size_bytes(db_size);
 }
-
-ListInfo::ListInfo(const bool fetch_updates,
-                   const std::string& filename,
-                   const ListIdentifier& list_id,
-                   const SBThreatType sb_threat_type)
-    : fetch_updates_(fetch_updates),
-      filename_(filename),
-      list_id_(list_id),
-      sb_threat_type_(sb_threat_type) {
-  DCHECK(!fetch_updates_ || !filename_.empty());
-  DCHECK_NE(SBThreatType::SB_THREAT_TYPE_SAFE, sb_threat_type_);
-}
-
-ListInfo::~ListInfo() = default;
 
 }  // namespace safe_browsing

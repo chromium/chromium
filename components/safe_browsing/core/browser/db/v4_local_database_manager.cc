@@ -28,6 +28,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/sb_database.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
@@ -1261,11 +1262,19 @@ void V4LocalDatabaseManager::SetupUpdateProtocolManager(
       extended_reporting_level_callback_);
 }
 
+// TODO(crbug.com/362791941): Rename to be v4-specific or make implementation
+// generic and support v5.
 void V4LocalDatabaseManager::UpdateRequestCompleted(
     std::unique_ptr<ParsedServerResponse> parsed_server_response) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-  sb_database_->ApplyUpdate(std::move(parsed_server_response),
-                            db_updated_callback_);
+  auto update_map = std::make_unique<SBUpdateResponseMap>();
+  for (auto& response : *parsed_server_response) {
+    ListIdentifier identifier(*response);
+    auto sb_response = std::make_unique<SBUpdateResponse>();
+    sb_response->v4_response = std::move(response);
+    update_map->insert({identifier, std::move(sb_response)});
+  }
+  sb_database_->ApplyUpdate(std::move(update_map), db_updated_callback_);
 }
 
 bool V4LocalDatabaseManager::AreAllStoresAvailableNow(

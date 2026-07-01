@@ -188,6 +188,19 @@ class SBDatabaseTest : public PlatformTest {
     return parsed_server_response;
   }
 
+  // TODO(crbug.com/362791941): Handle v5
+  std::unique_ptr<SBUpdateResponseMap> ConvertToV4UpdateMap(
+      std::unique_ptr<ParsedServerResponse> parsed_server_response) {
+    auto update_map = std::make_unique<SBUpdateResponseMap>();
+    for (auto& response : *parsed_server_response) {
+      ListIdentifier identifier(*response);
+      auto sb_response = std::make_unique<SBUpdateResponse>();
+      sb_response->v4_response = std::move(response);
+      update_map->insert({identifier, std::move(sb_response)});
+    }
+    return update_map;
+  }
+
   void VerifyExpectedStoresState(bool expect_new_stores) {
     const StoreMap* new_store_map = sb_database_->store_map_.get();
     std::unique_ptr<StoreStateMap> new_store_state_map =
@@ -201,7 +214,7 @@ class SBDatabaseTest : public PlatformTest {
       ASSERT_EQ(1u, new_store_state_map->count(identifier));
 
       // Verify the expected state in the store map and the state map.
-      EXPECT_EQ(state, new_store_map->at(identifier)->state());
+      EXPECT_EQ(state, new_store_map->at(identifier)->GetStoreState());
       EXPECT_EQ(state, new_store_state_map->at(identifier));
 
       if (expect_new_stores) {
@@ -224,7 +237,7 @@ class SBDatabaseTest : public PlatformTest {
   std::vector<ListIdentifier> expected_identifiers_;
   std::vector<base::FilePath> expected_store_paths_;
   StoreStateMap expected_store_state_map_;
-  std::unordered_map<ListIdentifier, raw_ptr<V4Store, CtnExperimental>>
+  std::unordered_map<ListIdentifier, raw_ptr<SBStore, CtnExperimental>>
       old_stores_map_;
   const ListIdentifier linux_malware_id_, win_malware_id_;
 };
@@ -250,15 +263,16 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithNewStates) {
   const StoreMap* db_stores = sb_database_->store_map_.get();
   EXPECT_EQ(expected_store_paths_.size(), db_stores->size());
   for (const auto& store_iter : *db_stores) {
-    V4Store* store = store_iter.second.get();
-    expected_store_state_map_[store_iter.first] = store->state() + "_fake";
+    SBStore* store = store_iter.second.get();
+    expected_store_state_map_[store_iter.first] =
+        store->GetStoreState() + "_fake";
     old_stores_map_[store_iter.first] = store;
   }
 
   base::RunLoop callback_db_updated_run_loop;
-  sb_database_->ApplyUpdate(
-      CreateFakeServerResponse(expected_store_state_map_, true),
-      callback_db_updated_run_loop.QuitClosure());
+  sb_database_->ApplyUpdate(ConvertToV4UpdateMap(CreateFakeServerResponse(
+                                expected_store_state_map_, true)),
+                            callback_db_updated_run_loop.QuitClosure());
 
   // Wait for the ApplyUpdate callback to get called.
   callback_db_updated_run_loop.Run();
@@ -278,15 +292,15 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithNoNewState) {
   const StoreMap* db_stores = sb_database_->store_map_.get();
   EXPECT_EQ(expected_store_paths_.size(), db_stores->size());
   for (const auto& store_iter : *db_stores) {
-    V4Store* store = store_iter.second.get();
-    expected_store_state_map_[store_iter.first] = store->state();
+    SBStore* store = store_iter.second.get();
+    expected_store_state_map_[store_iter.first] = store->GetStoreState();
     old_stores_map_[store_iter.first] = store;
   }
 
   base::RunLoop callback_db_updated_run_loop;
-  sb_database_->ApplyUpdate(
-      CreateFakeServerResponse(expected_store_state_map_, true),
-      callback_db_updated_run_loop.QuitClosure());
+  sb_database_->ApplyUpdate(ConvertToV4UpdateMap(CreateFakeServerResponse(
+                                expected_store_state_map_, true)),
+                            callback_db_updated_run_loop.QuitClosure());
 
   callback_db_updated_run_loop.Run();
 
@@ -305,15 +319,16 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithEmptyUpdate) {
   const StoreMap* db_stores = sb_database_->store_map_.get();
   EXPECT_EQ(expected_store_paths_.size(), db_stores->size());
   for (const auto& store_iter : *db_stores) {
-    V4Store* store = store_iter.second.get();
-    expected_store_state_map_[store_iter.first] = store->state();
+    SBStore* store = store_iter.second.get();
+    expected_store_state_map_[store_iter.first] = store->GetStoreState();
     old_stores_map_[store_iter.first] = store;
   }
 
   base::RunLoop callback_db_updated_run_loop;
   auto parsed_server_response = std::make_unique<ParsedServerResponse>();
-  sb_database_->ApplyUpdate(std::move(parsed_server_response),
-                            callback_db_updated_run_loop.QuitClosure());
+  sb_database_->ApplyUpdate(
+      ConvertToV4UpdateMap(std::move(parsed_server_response)),
+      callback_db_updated_run_loop.QuitClosure());
 
   callback_db_updated_run_loop.Run();
 
@@ -332,15 +347,15 @@ TEST_F(SBDatabaseTest, TestApplyUpdateWithInvalidUpdate) {
   const StoreMap* db_stores = sb_database_->store_map_.get();
   EXPECT_EQ(expected_store_paths_.size(), db_stores->size());
   for (const auto& store_iter : *db_stores) {
-    V4Store* store = store_iter.second.get();
-    expected_store_state_map_[store_iter.first] = store->state();
+    SBStore* store = store_iter.second.get();
+    expected_store_state_map_[store_iter.first] = store->GetStoreState();
     old_stores_map_[store_iter.first] = store;
   }
 
   base::RunLoop callback_db_updated_run_loop;
-  sb_database_->ApplyUpdate(
-      CreateFakeServerResponse(expected_store_state_map_, false),
-      callback_db_updated_run_loop.QuitClosure());
+  sb_database_->ApplyUpdate(ConvertToV4UpdateMap(CreateFakeServerResponse(
+                                expected_store_state_map_, false)),
+                            callback_db_updated_run_loop.QuitClosure());
   callback_db_updated_run_loop.Run();
 
   VerifyExpectedStoresState(false);
@@ -561,8 +576,9 @@ TEST_F(SBDatabaseTest, UsingWeakPtrDropsCallback) {
   // We expect the callback not to be executed. Use TestApplyUpdateCallback to
   // verify this.
   TestApplyUpdateCallback test_callback;
-  sb_database_->ApplyUpdate(std::move(parsed_server_response),
-                            test_callback.CreateRepeatingClosure());
+  sb_database_->ApplyUpdate(
+      ConvertToV4UpdateMap(std::move(parsed_server_response)),
+      test_callback.CreateRepeatingClosure());
 
   // Step 3: Post task to destroy SBDatabase on db thread.
   sb_database_.reset();

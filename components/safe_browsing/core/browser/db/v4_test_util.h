@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/sb_database.h"
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
+#include "components/safe_browsing/core/browser/db/v4_store.h"
 
 namespace safe_browsing {
 

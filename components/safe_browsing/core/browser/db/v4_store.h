@@ -26,11 +26,9 @@
 namespace safe_browsing {
 
 class V4Store;
+class ListInfo;
 
 using V4StorePtr = std::unique_ptr<V4Store, SBStoreDeleter>;
-
-using UpdatedStoreReadyCallback =
-    base::OnceCallback<void(V4StorePtr new_store)>;
 
 // Stores the iterator to the last element merged from the HashPrefixMap for a
 // given prefix size.
@@ -63,11 +61,17 @@ enum StoreWriteResult {
   STORE_WRITE_RESULT_MAX
 };
 
-// Factory for creating V4Store. Tests implement this factory to create fake
-// stores for testing.
-class V4StoreFactory {
+// Factory for creating V4Store instances. Implements SBStoreFactory. Tests
+// implement this factory to create fake stores for testing.
+class V4StoreFactory : public SBStoreFactory {
  public:
-  virtual ~V4StoreFactory() = default;
+  ~V4StoreFactory() override = default;
+
+  // SBStoreFactory implementation:
+  SBStorePtr CreateStore(
+      const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
+      const base::FilePath& store_path,
+      const ListInfo& list_info) override;
 
   // Creates a V4Store.
   // |task_runner| is used to ensure operations are done on the correct thread.
@@ -186,9 +190,9 @@ class V4Store : public SBStore {
 
   const std::string& state() const { return state_; }
 
-  void ApplyUpdate(std::unique_ptr<ListUpdateResponse> response,
+  void ApplyUpdate(std::unique_ptr<SBUpdateResponse> response,
                    const scoped_refptr<base::SequencedTaskRunner>& runner,
-                   UpdatedStoreReadyCallback callback);
+                   UpdatedStoreReadyCallback callback) override;
 
   int64_t RecordAndReturnFileSize(const std::string& base_metric) override;
 

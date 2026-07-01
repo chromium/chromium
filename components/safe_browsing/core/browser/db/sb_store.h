@@ -19,13 +19,39 @@
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 class V5StoreFileFormat;
 
+// TODO(crbug.com/362791941): replace all |comments| with `comments`.
 namespace safe_browsing {
 
 class V4StoreFileFormat;
 class SBStore;
+class ListInfo;
 
 struct SBStoreDeleter;
 using SBStorePtr = std::unique_ptr<SBStore, SBStoreDeleter>;
+
+class SBStoreFactory {
+ public:
+  virtual ~SBStoreFactory() = default;
+  virtual SBStorePtr CreateStore(
+      const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
+      const base::FilePath& store_path,
+      const ListInfo& list_info) = 0;
+};
+
+// This will have either a `v4_response` or a `v5_response`. Having a shared
+// wrapper struct allows for more code reuse during the v4 -> v5 transition.
+struct SBUpdateResponse {
+  SBUpdateResponse();
+  ~SBUpdateResponse();
+
+  std::unique_ptr<ListUpdateResponse> v4_response;
+  // TODO(crbug.com/362791941): add `v5_response`
+};
+
+using SBUpdateResponseMap =
+    std::unordered_map<ListIdentifier, std::unique_ptr<SBUpdateResponse>>;
+using UpdatedStoreReadyCallback =
+    base::OnceCallback<void(SBStorePtr new_store)>;
 
 // Enumerate different failure events while parsing the file read from disk for
 // histogramming purposes.  DO NOT CHANGE THE ORDERING OF THESE VALUES.
@@ -204,6 +230,8 @@ class SBStore {
   // Reset internal state.
   virtual void Reset() = 0;
 
+  // TODO(crbug.com/362791941): All comments in sb_* files should use the modern
+  // `code` format rather than the older |code| format.
   // Scheduled after reading the store file from disk on startup. When run, it
   // ensures that the checksum of the hash prefixes in lexicographical sorted
   // order matches the expected value in |expected_checksum_|. Returns true if
@@ -216,6 +244,15 @@ class SBStore {
   virtual void CollectStoreInfo(
       DatabaseManagerInfo::DatabaseInfo::StoreInfo* store_info,
       const std::string& base_metric) = 0;
+
+  // Updates the SBStore with the response received from the SafeBrowsing
+  // service. `response` contains the protocol-specific update payload. `runner`
+  // is the task runner on which the callback should be run. `callback` is
+  // scheduled once the update has been processed.
+  virtual void ApplyUpdate(
+      std::unique_ptr<SBUpdateResponse> response,
+      const scoped_refptr<base::SequencedTaskRunner>& runner,
+      UpdatedStoreReadyCallback callback) = 0;
 
   // If a hash prefix in this store matches `full_hash`, returns that hash
   // prefix; otherwise returns an empty hash prefix.

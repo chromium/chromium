@@ -31,6 +31,7 @@
 #include "base/types/to_address.h"
 #include "components/crx_file/id_util.h"
 #include "components/safe_browsing/core/browser/db/prefix_iterator.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/sb_store_file_format.h"
 #include "components/safe_browsing/core/browser/db/v4_rice.h"
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
@@ -255,6 +256,19 @@ std::ostream& operator<<(std::ostream& os, const V4Store& store) {
   return os;
 }
 
+SBStorePtr V4StoreFactory::CreateStore(
+    const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
+    const base::FilePath& store_path,
+    const ListInfo& list_info) {
+  // TODO(crbug.com/362791941): Pass actual v5 prefix size.
+  return CreateV4Store(db_task_runner, store_path,
+                       /*v5_prefix_size=*/0,
+                       /*is_eligible_for_migration=*/list_info.list_id() !=
+                           GetUrlCsdAllowlistId(),
+                       /*is_extensions_blocklist=*/list_info.list_id() ==
+                           GetChromeExtMalwareId());
+}
+
 V4StorePtr V4StoreFactory::CreateV4Store(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const base::FilePath& store_path,
@@ -455,9 +469,12 @@ ApplyUpdateResult V4Store::ProcessUpdate(
 }
 
 void V4Store::ApplyUpdate(
-    std::unique_ptr<ListUpdateResponse> response,
+    std::unique_ptr<SBUpdateResponse> response,
     const scoped_refptr<base::SequencedTaskRunner>& callback_task_runner,
     UpdatedStoreReadyCallback callback) {
+  CHECK(response->v4_response);
+  std::unique_ptr<ListUpdateResponse> v4_response =
+      std::move(response->v4_response);
   base::ElapsedThreadTimer thread_timer;
   V4StorePtr new_store(new V4Store(task_runner_, store_path_, v5_prefix_size_,
                                    is_eligible_for_migration_,
@@ -466,16 +483,16 @@ void V4Store::ApplyUpdate(
   ApplyUpdateResult apply_update_result;
   std::optional<std::string> metric;
   ApplyUpdateType apply_update_type;
-  if (response->response_type() == ListUpdateResponse::PARTIAL_UPDATE) {
+  if (v4_response->response_type() == ListUpdateResponse::PARTIAL_UPDATE) {
     metric = kProcessPartialUpdate;
     apply_update_type = ApplyUpdateType::kPartial;
     apply_update_result = new_store->ProcessPartialUpdateAndWriteToDisk(
-        metric.value(), hash_prefix_map_->view(), std::move(response));
-  } else if (response->response_type() == ListUpdateResponse::FULL_UPDATE) {
+        metric.value(), hash_prefix_map_->view(), std::move(v4_response));
+  } else if (v4_response->response_type() == ListUpdateResponse::FULL_UPDATE) {
     apply_update_type = ApplyUpdateType::kFull;
     metric = kProcessFullUpdate;
     apply_update_result = new_store->ProcessFullUpdateAndWriteToDisk(
-        metric.value(), std::move(response));
+        metric.value(), std::move(v4_response));
   } else {
     apply_update_type = ApplyUpdateType::kInvalid;
     apply_update_result = UNEXPECTED_RESPONSE_TYPE_FAILURE;

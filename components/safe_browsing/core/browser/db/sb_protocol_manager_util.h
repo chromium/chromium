@@ -25,6 +25,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "url/gurl.h"
 
+// TODO(crbug.com/362791941): replace all |comments| with `comments` for v5.
 namespace net {
 class HttpRequestHeaders;
 }  // namespace net
@@ -261,6 +262,41 @@ class ListIdentifier {
 };
 
 std::ostream& operator<<(std::ostream& os, const ListIdentifier& id);
+
+// Associates metadata for a list with its ListIdentifier.
+class ListInfo {
+ public:
+  ListInfo(const bool fetch_updates,
+           const std::string& filename,
+           const ListIdentifier& list_id,
+           const SBThreatType sb_threat_type);
+  ~ListInfo();
+
+  const ListIdentifier& list_id() const { return list_id_; }
+  const std::string& filename() const { return filename_; }
+  SBThreatType sb_threat_type() const { return sb_threat_type_; }
+  bool fetch_updates() const { return fetch_updates_; }
+
+ private:
+  // Whether to fetch and store updates for this list.
+  bool fetch_updates_;
+
+  // The ASCII name of the file on disk. This file is created inside the
+  // user-data directory. For instance, the ListIdentifier could be for URL
+  // expressions for UwS on Windows platform, and the corresponding file on disk
+  // could be named: "UrlUws.store"
+  std::string filename_;
+
+  // The list being read from/written to the disk.
+  ListIdentifier list_id_;
+
+  // The threat type enum value for this store.
+  SBThreatType sb_threat_type_;
+
+  ListInfo() = delete;
+};
+
+using ListInfos = std::vector<ListInfo>;
 
 PlatformType GetCurrentPlatformType();
 ListIdentifier GetChromeExtMalwareId();

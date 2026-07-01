@@ -145,6 +145,10 @@ class V5Store : public SBStore {
 
   HashPrefixStr GetMatchingHashPrefix(const FullHashStr& full_hash) override;
 
+  void ApplyUpdate(std::unique_ptr<SBUpdateResponse> response,
+                   const scoped_refptr<base::SequencedTaskRunner>& runner,
+                   UpdatedStoreReadyCallback callback) override;
+
  protected:
   std::string GetMetricPrefix() const override;
 

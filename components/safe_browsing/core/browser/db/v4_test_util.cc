@@ -86,7 +86,7 @@ TestSBDatabase::TestSBDatabase(
 
 void TestSBDatabase::MarkPrefixAsBad(ListIdentifier list_id,
                                      HashPrefixStr prefix) {
-  V4Store* base_store = store_map_->at(list_id).get();
+  SBStore* base_store = store_map_->at(list_id).get();
   TestV4Store* test_store = static_cast<TestV4Store*>(base_store);
   test_store->MarkPrefixAsBad(prefix);
 }
