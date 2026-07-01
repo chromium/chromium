@@ -64,6 +64,12 @@ public class GlicButtonStateController
     private boolean mIsPanelOpen;
     private int mBrowserControlsShowingToken = TokenHolder.INVALID_TOKEN;
 
+    private static @Nullable Boolean sIsPanelOpenForTesting;
+
+    public static void setPanelOpenForTesting(@Nullable Boolean isOpen) {
+        sIsPanelOpenForTesting = isOpen;
+    }
+
     /**
      * Constructs a new GlicButtonStateController.
      *
@@ -171,13 +177,18 @@ public class GlicButtonStateController
 
     private void updateIsPanelOpen() {
         if (mCurrentGlicService == null || mCurrentProfile == null) return;
-        ChromeAndroidTask task = mTaskSupplier.get();
-        if (task == null) return;
 
-        long browserWindowPtr = task.getNativeBrowserWindowPtr(mCurrentProfile, mActivity);
         boolean isOpen = false;
-        if (browserWindowPtr != 0 && !mActivity.isDestroyed()) {
-            isOpen = mCurrentGlicService.isPanelShowingForBrowser(browserWindowPtr);
+        if (sIsPanelOpenForTesting != null) {
+            isOpen = sIsPanelOpenForTesting;
+        } else {
+            ChromeAndroidTask task = mTaskSupplier.get();
+            if (task == null) return;
+
+            long browserWindowPtr = task.getNativeBrowserWindowPtr(mCurrentProfile, mActivity);
+            if (browserWindowPtr != 0 && !mActivity.isDestroyed()) {
+                isOpen = mCurrentGlicService.isPanelShowingForBrowser(browserWindowPtr);
+            }
         }
         if (mIsPanelOpen != isOpen) {
             mIsPanelOpen = isOpen;
@@ -231,6 +242,9 @@ public class GlicButtonStateController
 
     /** Returns true if the panel is open. */
     public boolean isPanelOpen() {
+        if (sIsPanelOpenForTesting != null) {
+            return sIsPanelOpenForTesting;
+        }
         return mIsPanelOpen;
     }
 
