@@ -131,6 +131,49 @@ TEST_F(SpeechRecognitionRecognizerImplTest, OnLanguagePackInstalledTest) {
 }
 
 TEST_F(SpeechRecognitionRecognizerImplTest,
+       OnLanguagePackInstalledTest_MultiLanguageEnabled) {
+  base::flat_map<std::string, base::FilePath> multiple_config_paths;
+  multiple_config_paths[kPrimaryLanguageName] =
+      base::FilePath::FromASCII("/fake/path");
+  multiple_config_paths["fr-FR"] = base::FilePath::FromASCII("/fake/path2");
+
+  auto options = CreateOptions();
+  options->allow_multi_language = true;
+  CreateRecognizer(std::move(options), kPrimaryLanguageName);
+  EXPECT_CALL(*soda_client_, Reset(_, _, _));
+  recognizer_->OnLanguagePackInstalled(multiple_config_paths);
+
+  auto* config = recognizer_->GetExtendedSodaConfigMsgForTesting();
+  EXPECT_EQ(soda::chrome::ExtendedSodaConfigMsg::CAPTION,
+            config->recognition_mode());
+  EXPECT_TRUE(config->has_multilang_config());
+  EXPECT_EQ(
+      2u,
+      config->multilang_config().multilang_language_pack_directory().size());
+  EXPECT_EQ("/fake/path", config->language_pack_directory());
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       OnLanguagePackInstalledTest_MultiLanguageDisabled) {
+  base::flat_map<std::string, base::FilePath> multiple_config_paths;
+  multiple_config_paths[kPrimaryLanguageName] =
+      base::FilePath::FromASCII("/fake/path");
+  multiple_config_paths["fr-FR"] = base::FilePath::FromASCII("/fake/path2");
+
+  auto options = CreateOptions();
+  options->allow_multi_language = false;
+  CreateRecognizer(std::move(options), kPrimaryLanguageName);
+  EXPECT_CALL(*soda_client_, Reset(_, _, _));
+  recognizer_->OnLanguagePackInstalled(multiple_config_paths);
+
+  auto* config = recognizer_->GetExtendedSodaConfigMsgForTesting();
+  EXPECT_EQ(soda::chrome::ExtendedSodaConfigMsg::CAPTION,
+            config->recognition_mode());
+  EXPECT_FALSE(config->has_multilang_config());
+  EXPECT_EQ("/fake/path", config->language_pack_directory());
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
        SpeechRecognitionRecognitionContextTest) {
   std::vector<media::SpeechRecognitionPhrase> phrases;
   phrases.emplace_back("test phrase", 2.0);

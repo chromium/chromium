@@ -12,7 +12,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Next MinVersion: 12
+// Next MinVersion: 13
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
@@ -338,4 +338,9 @@ struct SpeechRecognitionOptions {
   // The optional recognition context for speech recognition biasing.
   [MinVersion=8]
   SpeechRecognitionRecognitionContext? recognition_context;
+
+  // Whether to allow multiple languages for speech recognition beyond the
+  // language specified.
+  [MinVersion=12]
+  bool allow_multi_language = true;
 };
