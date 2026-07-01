@@ -1,0 +1,42 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+
+source_set("unit_tests") {
+  testonly = true
+
+  # Some of these tests declare file-scope objects with non-trivial
+  # destructors.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  sources = [ "interstitials/enterprise_page_unittest.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/enterprise:impl",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+
+  if (enterprise_cloud_content_analysis || is_android) {
+    sources += [
+      "common_unittest.cc",
+      "connectors_manager_unittest.cc",
+      "connectors_service_unittest.cc",
+    ]
+    deps += [
+      "//chrome/browser/enterprise/connectors/test:test_support",
+      "//chrome/browser/profiles:test_support",
+      "//components/enterprise:test_support",
+    ]
+
+    if (is_chromeos) {
+      deps += [
+        "//chromeos/ash/components/policy/device_policy:test_support",
+        "//chromeos/components/mgs:test_support",
+      ]
+    }
+  }
+}
