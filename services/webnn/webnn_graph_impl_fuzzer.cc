@@ -297,14 +297,6 @@ struct LayerNormalizationParams {
   bool is_input_constant;
 };
 
-struct LeakyReluParams {
-  OperandDataType data_type;
-  uint32_t rank;
-  std::array<uint32_t, 8> input_dims;
-  float alpha;
-  bool is_input_constant;
-};
-
 struct LstmParams {
   OperandDataType data_type;
   uint32_t steps;
@@ -1023,17 +1015,6 @@ auto AnyLayerNormalizationParams() {
       AnyOptionalOperandKind(),                      // scale_kind
       AnyOptionalOperandKind(),                      // bias_kind
       fuzztest::Arbitrary<bool>()                    // is_input_constant
-  );
-}
-
-auto AnyLeakyReluParams() {
-  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
-  return fuzztest::StructOf<LeakyReluParams>(
-      AnyOperandDataTypeFor(limits.leaky_relu_input.data_types),
-      AnyTensorRankIncludeZero(),          // rank
-      fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
-      fuzztest::Arbitrary<float>(),        // alpha
-      fuzztest::Arbitrary<bool>()          // is_input_constant
   );
 }
 
@@ -1911,34 +1892,6 @@ std::optional<GemmDescriptors> SetUpGemmDescriptors(
   };
 }
 
-struct LeakyReluDescriptors {
-  // The output of leakyRelu has the same shape and data type as the input.
-  OperandDescriptor input_desc;
-  float alpha;
-};
-
-// Helper to set up LeakyReluDescriptors. Returns nullopt if any validation
-// fails.
-std::optional<LeakyReluDescriptors> SetUpLeakyReluDescriptors(
-    const ContextProperties& context_properties,
-    const LeakyReluParams& params) {
-  std::vector<uint32_t> input_dims(params.input_dims.begin(),
-                                   params.input_dims.begin() + params.rank);
-
-  ASSIGN_OR_RETURN_NULLOPT(
-      auto input_desc,
-      OperandDescriptor::Create(context_properties, params.data_type,
-                                input_dims, ""));
-
-  // Replace NaN alpha with the default value so the operator is valid.
-  float alpha = std::isnan(params.alpha) ? 0.01f : params.alpha;
-
-  return LeakyReluDescriptors{
-      .input_desc = std::move(input_desc),
-      .alpha = alpha,
-  };
-}
-
 struct PadDescriptors {
   OperandDescriptor input_desc;
   OperandDescriptor output_desc;
@@ -2622,7 +2575,6 @@ class WebNNGraphImplFuzzerImpl
                              uint8_t seed_for_data);
   void LayerNormalization(LayerNormalizationParams params,
                           uint8_t seed_for_data);
-  void LeakyRelu(LeakyReluParams params, uint8_t seed_for_data);
   void Lstm(LstmParams params, uint8_t seed_for_data);
   void LstmCell(LstmCellParams params, uint8_t seed_for_data);
   void Matmul(MatmulParams params, uint8_t seed_for_data);
@@ -2668,11 +2620,6 @@ class WebNNGraphImplFuzzerImpl
   void DQGemmQ(GemmParams gemm_params,
                QuantizationParams quantization_params,
                uint8_t seed_for_data);
-  void DQLeakyReluQ(LeakyReluParams leaky_relu_params,
-                    OperandDataType quantized_type,
-                    uint8_t seed_for_input,
-                    float seed_for_scale,
-                    uint8_t seed_for_zero_point);
   void DQPadQ(PadParams pad_params,
               OperandDataType quantized_type,
               uint8_t seed_for_input,
@@ -3454,39 +3401,6 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::LayerNormalization(
   };
 
   builder.BuildLayerNormalization(input_id, output_id, build_attributes);
-
-  if (!builder.IsValidGraphForTesting(this->context_properties())) {
-    return;
-  }
-  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
-                  std::move(named_inputs));
-
-  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
-}
-
-template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::LeakyRelu(LeakyReluParams params,
-                                                      uint8_t seed_for_data) {
-  ASSIGN_OR_RETURN_VOID(
-      auto leaky_relu_descs,
-      SetUpLeakyReluDescriptors(this->context_properties(), params));
-
-  mojo::Remote<mojom::WebNNGraphBuilder> remote =
-      this->BindNewGraphBuilderRemote();
-  GraphInfoBuilder builder(remote);
-
-  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
-  std::vector<std::vector<uint8_t>> data_buffers;
-  OperandId input_id = BuildInputOrConstant(
-      builder, params.is_input_constant, "input", leaky_relu_descs.input_desc,
-      seed_for_data, data_buffers, named_inputs);
-
-  // The output of leakyRelu has the same shape and data type as the input.
-  OperandId output_id =
-      builder.BuildOutput("output", leaky_relu_descs.input_desc.shape(),
-                          leaky_relu_descs.input_desc.data_type());
-
-  builder.BuildLeakyRelu(input_id, output_id, leaky_relu_descs.alpha);
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -4859,76 +4773,6 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGemmQ(
 }
 
 template <typename BaseFixture>
-void WebNNGraphImplFuzzerImpl<BaseFixture>::DQLeakyReluQ(
-    LeakyReluParams leaky_relu_params,
-    OperandDataType quantized_type,
-    uint8_t seed_for_input,
-    float seed_for_scale,
-    uint8_t seed_for_zero_point) {
-  ASSIGN_OR_RETURN_VOID(
-      auto leaky_relu_descs,
-      SetUpLeakyReluDescriptors(this->context_properties(), leaky_relu_params));
-  const OperandDescriptor& leaky_relu_desc = leaky_relu_descs.input_desc;
-
-  // kPerTensor quantization and the corrected alpha value is used to exercise
-  // the fusiable path for TFLite backend:
-  // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2601;drc=ec4ff4bae24916aaad3186ce4bc1339313b6fb5a
-  // TODO(crbug.com/498987226): Remove this restriction to increase test
-  // coverage.
-  QuantizationParams per_tensor_quantization_params{
-      .quantized_type = quantized_type,
-      .quantization_kind = QuantizationKind::kPerTensor,
-      .channel_block_size = 1};
-  constexpr float kScalePositiveMin = 1.0f / 256.0f;
-  constexpr float kScalePositiveMax = 128.0f;
-  constexpr float kScaleNegativeMin = -127.99609375f;
-  if (leaky_relu_descs.alpha < kScaleNegativeMin ||
-      leaky_relu_descs.alpha > kScalePositiveMax ||
-      std::abs(leaky_relu_descs.alpha) < kScalePositiveMin) {
-    leaky_relu_descs.alpha = 0.01f;
-  }
-
-  mojo::Remote<mojom::WebNNGraphBuilder> remote =
-      this->BindNewGraphBuilderRemote();
-  GraphInfoBuilder builder(remote);
-
-  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
-  std::vector<std::vector<uint8_t>> data_buffers;
-  ASSIGN_OPTIONAL_OR_RETURN_VOID(
-      auto leaky_relu_input_id,
-      BuildDequantizeInput(
-          builder, this->context_properties(),
-          leaky_relu_params.is_input_constant, "input", leaky_relu_desc,
-          quantized_type, per_tensor_quantization_params,
-          /*channel_axis=*/std::nullopt, seed_for_input, seed_for_scale,
-          seed_for_zero_point, data_buffers, named_inputs));
-
-  // The output of leakyRelu has the same shape and data type as the input.
-  OperandId leaky_relu_output_id = builder.BuildIntermediateOperand(
-      leaky_relu_desc.shape(), leaky_relu_desc.data_type());
-
-  builder.BuildLeakyRelu(leaky_relu_input_id, leaky_relu_output_id,
-                         leaky_relu_descs.alpha);
-
-  if (!BuildQuantizeOutput(builder, this->context_properties(), "output",
-                           leaky_relu_desc, quantized_type,
-                           per_tensor_quantization_params,
-                           /*channel_axis=*/std::nullopt, leaky_relu_output_id,
-                           seed_for_scale, seed_for_zero_point)) {
-    return;
-  }
-
-  if (!builder.IsValidGraphForTesting(this->context_properties())) {
-    return;
-  }
-
-  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
-                  std::move(named_inputs));
-
-  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
-}
-
-template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::DQPadQ(
     PadParams pad_params,
     OperandDataType quantized_type,
@@ -5673,18 +5517,6 @@ WEBNN_FUZZ_TEST_F(
                      },
                      /*seed_for_data=*/1}}));
 
-WEBNN_FUZZ_TEST_F(LeakyRelu,
-                  .WithDomains(AnyLeakyReluParams(),
-                               fuzztest::Arbitrary<uint8_t>())
-                      .WithSeeds({{LeakyReluParams{
-                                       /*data_type=*/OperandDataType::kFloat32,
-                                       /*rank=*/4,
-                                       /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
-                                       /*alpha=*/0.01f,
-                                       /*is_input_constant=*/false,
-                                   },
-                                   /*seed_for_data=*/2}}));
-
 WEBNN_FUZZ_TEST_F(
     Lstm,
     .WithDomains(AnyLstmParams(), fuzztest::Arbitrary<uint8_t>())
@@ -6079,26 +5911,6 @@ WEBNN_FUZZ_TEST_F(
                          // This is unused for per channel quantization.
                          /*channel_block_size=*/1},
                      /*seed_for_data=*/3}}));
-
-WEBNN_FUZZ_TEST_F(
-    DQLeakyReluQ,
-    .WithDomains(AnyLeakyReluParams(),
-                 AnyQuantizedDataType(),
-                 /*seed_for_input=*/fuzztest::Arbitrary<uint8_t>(),
-                 /*seed_for_scale=*/
-                 fuzztest::ElementOf({0.125f, 0.25f, 0.5f, 1.0f, 2.0f}),
-                 /*seed_for_zero_point=*/fuzztest::Arbitrary<uint8_t>())
-        .WithSeeds({{LeakyReluParams{
-                         /*data_type=*/OperandDataType::kFloat32,
-                         /*rank=*/4,
-                         /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
-                         /*alpha=*/0.01f,
-                         /*is_input_constant=*/false,
-                     },
-                     /*quantized_type=*/OperandDataType::kUint8,
-                     /*seed_for_input=*/2,
-                     /*seed_for_scale=*/0.25f,
-                     /*seed_for_zero_point=*/0}}));
 
 WEBNN_FUZZ_TEST_F(
     DQPadQ,
