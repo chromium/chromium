@@ -302,8 +302,6 @@ crbug.com/515133241 [ win11 nvidia-0x2c02 ] OverlayModeTraceTest_DirectCompositi
 crbug.com/453704683 [ win11 qualcomm-0x36334330 ] OverlayModeTraceTest_DirectComposition* [ Failure ]
 
 
-# Readback assertion on macOS
-crbug.com/474873836 [ angle-metal debug intel-0x3e9b no-asan no-clang-coverage sonoma ] WebGLCanvasCaptureTraceTest_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
 
 ###############################
 # Permanent Slow Expectations #
