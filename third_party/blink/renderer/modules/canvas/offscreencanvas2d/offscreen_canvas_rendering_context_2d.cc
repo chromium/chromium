@@ -390,16 +390,14 @@ scoped_refptr<StaticBitmapImage> OffscreenCanvasRenderingContext2D::GetImage() {
 scoped_refptr<StaticBitmapImage>
 OffscreenCanvasRenderingContext2D::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer) {
-  if (shared_image_provider_ && !shared_image_provider_->IsValid()) {
-    return nullptr;
-  }
-  if (bitmap_provider_ && !bitmap_provider_->IsValid()) {
+  if (!IsResourceProviderValid()) {
     return nullptr;
   }
   FlushCanvas(FlushReason::kOther);
-  return shared_image_provider_ ? shared_image_provider_->Snapshot()
-         : bitmap_provider_     ? bitmap_provider_->Snapshot()
-                                : nullptr;
+  if (shared_image_provider_) {
+    return shared_image_provider_->Snapshot();
+  }
+  return bitmap_provider_->Snapshot();
 }
 
 V8RenderingContext* OffscreenCanvasRenderingContext2D::AsV8RenderingContext() {
@@ -500,27 +498,18 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
     size_t row_bytes,
     int x,
     int y) {
-  if (shared_image_provider_ && !shared_image_provider_->IsValid()) {
-    return false;
-  }
-  if (bitmap_provider_ && !bitmap_provider_->IsValid()) {
+  if (!IsResourceProviderValid()) {
     return false;
   }
   FlushCanvas(FlushReason::kOther);
+  if (!IsResourceProviderValid()) {
+    return false;
+  }
   if (shared_image_provider_) {
-    if (!shared_image_provider_->IsValid()) {
-      return false;
-    }
     return shared_image_provider_->WritePixels(orig_info, pixels, row_bytes, x,
                                                y);
   }
-  if (bitmap_provider_) {
-    if (!bitmap_provider_->IsValid()) {
-      return false;
-    }
-    return bitmap_provider_->WritePixels(orig_info, pixels, row_bytes, x, y);
-  }
-  return false;
+  return bitmap_provider_->WritePixels(orig_info, pixels, row_bytes, x, y);
 }
 
 bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
@@ -562,6 +551,16 @@ std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
     return bitmap_provider_->Flush(reason);
   }
   return std::nullopt;
+}
+
+bool OffscreenCanvasRenderingContext2D::IsResourceProviderValid() const {
+  if (shared_image_provider_) {
+    return shared_image_provider_->IsValid();
+  }
+  if (bitmap_provider_) {
+    return bitmap_provider_->IsValid();
+  }
+  return false;
 }
 
 OffscreenCanvas* OffscreenCanvasRenderingContext2D::HostAsOffscreenCanvas()
