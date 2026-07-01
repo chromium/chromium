@@ -4,6 +4,7 @@
 
 #include "components/accessibility_annotator/core/storage/content_annotations_table.h"
 
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"

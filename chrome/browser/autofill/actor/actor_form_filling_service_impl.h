@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/actor/actor_filling_observer.h"

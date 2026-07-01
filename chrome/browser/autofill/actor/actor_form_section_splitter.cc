@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"

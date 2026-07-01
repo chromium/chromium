@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"

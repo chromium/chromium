@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"

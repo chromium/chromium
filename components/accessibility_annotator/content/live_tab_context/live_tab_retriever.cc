@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"

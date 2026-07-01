@@ -12,6 +12,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"

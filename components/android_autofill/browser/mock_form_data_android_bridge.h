@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "components/android_autofill/browser/form_data_android.h"
 #include "components/android_autofill/browser/form_data_android_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"

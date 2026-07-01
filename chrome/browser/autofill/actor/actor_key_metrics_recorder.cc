@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"

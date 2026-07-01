@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/autofill/actor/actor_form_filling_service_impl.h"

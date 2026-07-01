@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 
 #ifdef __SSE2__
 #include <immintrin.h>

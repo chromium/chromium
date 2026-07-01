@@ -11,6 +11,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/lru_cache.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"

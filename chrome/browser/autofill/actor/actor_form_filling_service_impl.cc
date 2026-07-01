@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"

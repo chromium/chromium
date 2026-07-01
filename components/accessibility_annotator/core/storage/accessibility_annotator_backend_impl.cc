@@ -9,6 +9,7 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/containers/map_util.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"

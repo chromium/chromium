@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill/actor/actor_filling_observer.h"
 
+#include "base/containers/span.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"

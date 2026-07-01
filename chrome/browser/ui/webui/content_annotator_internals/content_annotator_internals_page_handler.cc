@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/accessibility_annotator/core/content_annotator/content_annotations_data.h"
