@@ -73,18 +73,17 @@ void ConvertValueToBool(base::OnceCallback<void(BOOL)> callback,
 // Extracts a single child frame's data from the JSON dictionary into a
 // FrameTokenWithPredecessor object. Returns false if the data could not be
 // extracted.
-bool ExtractRemoteFrameToken(
-    const base::DictValue& frame_data,
-    FrameTokenWithPredecessor* token_with_predecessor) {
+std::optional<FrameTokenWithPredecessor> ExtractRemoteFrameToken(
+    const base::DictValue& frame_data) {
   const std::string* frame_id = frame_data.FindString("token");
   if (!frame_id) {
-    return false;
+    return std::nullopt;
   }
 
   std::optional<base::UnguessableToken> token =
       DeserializeJavaScriptFrameId(*frame_id);
   if (!token) {
-    return false;
+    return std::nullopt;
   }
 
   const std::optional<int> predecessor =
@@ -92,12 +91,13 @@ bool ExtractRemoteFrameToken(
         return base::saturated_cast<int>(x);
       });
   if (!predecessor || *predecessor < -1) {
-    return false;
+    return std::nullopt;
   }
 
-  token_with_predecessor->token = RemoteFrameToken(*token);
-  token_with_predecessor->predecessor = *predecessor;
-  return true;
+  FrameTokenWithPredecessor result;
+  result.token = RemoteFrameToken(*token);
+  result.predecessor = *predecessor;
+  return result;
 }
 
 // Extracts the child frames from the JSON dictionary. Returns an empty vector
@@ -108,10 +108,12 @@ std::vector<FrameTokenWithPredecessor> ExtractChildFrames(
   if (const base::ListValue* child_frames_list =
           form.FindList("child_frames")) {
     for (const auto& frame_dict : *child_frames_list) {
-      if (FrameTokenWithPredecessor token;
-          frame_dict.is_dict() &&
-          ExtractRemoteFrameToken(frame_dict.GetDict(), &token)) {
-        child_frames.push_back(std::move(token));
+      if (!frame_dict.is_dict()) {
+        continue;
+      }
+      if (std::optional<FrameTokenWithPredecessor> token =
+              ExtractRemoteFrameToken(frame_dict.GetDict())) {
+        child_frames.push_back(*std::move(token));
       }
     }
   }
@@ -552,10 +554,10 @@ std::vector<FrameTokenWithPredecessor> ExtractChildFramesForTest(  // IN-TEST
   return ExtractChildFrames(form);
 }
 
-bool ExtractRemoteFrameTokenForTest(  // IN-TEST
-    const base::DictValue& frame_data,
-    FrameTokenWithPredecessor* token_with_predecessor) {
-  return ExtractRemoteFrameToken(frame_data, token_with_predecessor);
+std::optional<FrameTokenWithPredecessor>
+ExtractRemoteFrameTokenForTest(  // IN-TEST
+    const base::DictValue& frame_data) {
+  return ExtractRemoteFrameToken(frame_data);
 }
 
 }  // namespace autofill

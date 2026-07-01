@@ -193,9 +193,8 @@ web::WebFramesManager* GetWebFramesManagerForAutofill(web::WebState* web_state);
 std::vector<FrameTokenWithPredecessor> ExtractChildFramesForTest(
     const base::DictValue& form);
 
-bool ExtractRemoteFrameTokenForTest(
-    const base::DictValue& frame_data,
-    FrameTokenWithPredecessor* token_with_predecessor);
+std::optional<FrameTokenWithPredecessor> ExtractRemoteFrameTokenForTest(
+    const base::DictValue& frame_data);
 
 }  // namespace autofill
 
