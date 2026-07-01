@@ -18,7 +18,7 @@
   }
 
   // Cap snapshot resolution to 2x to reduce the amount of memory used.
-  return [UIScreen mainScreen].scale == 1.0 ? kImageScale1X : kImageScale2X;
+  return kImageScale2X;
 }
 
 + (CGFloat)floatImageScaleForDevice {
