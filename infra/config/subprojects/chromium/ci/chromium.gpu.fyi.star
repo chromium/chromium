@@ -2195,10 +2195,10 @@ ci.thin_tester(
         # should have the same test_suites as 'Mac FYI Retina Release (Apple
         # M2)'.
         targets = [
-            "gpu_noop_sleep_telemetry_test",
+            "gpu_fyi_mac_release_gtests",
+            "gpu_fyi_only_mac_release_graphite_telemetry_tests",
         ],
         mixins = [
-            "limited_capacity_bot",
             "mac_arm64_apple_m2_retina_gpu_experimental",
         ],
     ),
@@ -2207,10 +2207,10 @@ ci.thin_tester(
         os_type = targets.os_type.MAC,
     ),
     # Uncomment this entry when this experimental tester is actually in use.
-    # console_view_entry = consoles.console_view_entry(
-    #     category = "Mac|Apple",
-    #     short_name = "exp",
-    # ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac|Apple",
+        short_name = "exp",
+    ),
     list_view = "chromium.gpu.experimental",
 )
 
