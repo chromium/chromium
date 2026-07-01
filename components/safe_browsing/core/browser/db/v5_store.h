@@ -222,6 +222,29 @@ class V5Store : public SBStore {
   V5ApplyUpdateResult last_apply_update_result_ = V5ApplyUpdateResult::kUnknown;
 };
 
+using V5StorePtr = std::unique_ptr<V5Store, SBStoreDeleter>;
+
+// Factory for creating V5Store instances. Implements SBStoreFactory.
+class V5StoreFactory : public SBStoreFactory {
+ public:
+  ~V5StoreFactory() override = default;
+
+  // SBStoreFactory implementation:
+  SBStorePtr CreateStore(
+      const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
+      const base::FilePath& base_path,
+      const ListInfo& list_info) override;
+
+  // Creates a V5Store.
+  virtual V5StorePtr CreateV5Store(
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+      const base::FilePath& store_path,
+      PrefixSize prefix_size,
+      const base::FilePath& v4_store_path,
+      bool is_eligible_for_v4_to_v5_disk_migration,
+      bool is_extensions_blocklist);
+};
+
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_DB_V5_STORE_H_

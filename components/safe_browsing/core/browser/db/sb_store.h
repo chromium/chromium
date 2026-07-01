@@ -34,7 +34,7 @@ class SBStoreFactory {
   virtual ~SBStoreFactory() = default;
   virtual SBStorePtr CreateStore(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
-      const base::FilePath& store_path,
+      const base::FilePath& base_path,
       const ListInfo& list_info) = 0;
 };
 

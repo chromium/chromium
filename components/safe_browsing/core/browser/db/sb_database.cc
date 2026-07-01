@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/v4_store.h"
+#include "components/safe_browsing/core/browser/db/v5_store.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 
@@ -41,9 +42,17 @@ constexpr int kUmaNumBuckets = 50;
 
 // Returns the name of the metric by combining `prefix`, "V4" or "V5",
 // and `suffix`.
-std::string GetMetricName(std::string_view prefix, std::string_view suffix) {
-  // TODO(crbug.com/362791941): handle v5 and SB
-  return base::StrCat({prefix, "V4", suffix});
+std::string GetMetricName(std::string_view prefix,
+                          std::string_view suffix,
+                          bool allow_v5_logging = false) {
+  // TODO(crbug.com/362791941): handle v5 and SB. Eventually `allow_v5_logging`
+  // should be removed and always be true.
+  return base::StrCat(
+      {prefix,
+       allow_v5_logging && base::FeatureList::IsEnabled(kLocalListsUseSBv5)
+           ? "V5"
+           : "V4",
+       suffix});
 }
 
 // The factory that controls the creation of the SBDatabase object.
@@ -152,11 +161,6 @@ void SBDatabase::CreateOnTaskRunner(
     NewDatabaseReadyCallback new_db_callback) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
 
-  if (!GetStoreFactory()) {
-    // TODO(crbug.com/362791941): handle v5
-    GetStoreFactory() = std::make_unique<V4StoreFactory>();
-  }
-
   if (!base::CreateDirectory(base_path)) {
     return;
   }
@@ -172,13 +176,14 @@ void SBDatabase::CreateOnTaskRunner(
       continue;
     }
 
-    const base::FilePath store_path = base_path.AppendASCII(it.filename());
-    SBStorePtr store =
-        GetStoreFactory()->CreateStore(db_task_runner, store_path, it);
+    SBStorePtr store = CreateStore(db_task_runner, base_path, it);
     // Logs SafeBrowsing.V4Store.ReadyOnStartup
     base::UmaHistogramBoolean(
-        GetMetricName("SafeBrowsing.", "Store.ReadyOnStartup"),
+        GetMetricName("SafeBrowsing.", "Store.ReadyOnStartup",
+                      /*allow_v5_logging=*/true),
         store->HasValidData());
+    base::UmaHistogramBoolean("SafeBrowsing.SBStore.ReadyOnStartup",
+                              store->HasValidData());
     store_map->insert({it.list_id(), std::move(store)});
   }
 
@@ -200,6 +205,22 @@ void SBDatabase::CreateOnTaskRunner(
 void SBDatabase::RegisterDatabaseFactoryForTest(
     std::unique_ptr<SBDatabaseFactory> factory) {
   GetDatabaseFactory() = std::move(factory);
+}
+
+// static
+SBStorePtr SBDatabase::CreateStore(
+    const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
+    const base::FilePath& base_path,
+    const ListInfo& list_info) {
+  if (GetStoreFactory()) {
+    // Used for tests.
+    return GetStoreFactory()->CreateStore(db_task_runner, base_path, list_info);
+  }
+  return base::FeatureList::IsEnabled(kLocalListsUseSBv5)
+             ? V5StoreFactory().CreateStore(db_task_runner, base_path,
+                                            list_info)
+             : V4StoreFactory().CreateStore(db_task_runner, base_path,
+                                            list_info);
 }
 
 // static

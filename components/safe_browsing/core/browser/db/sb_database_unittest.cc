@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/debug/leak_annotations.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -16,10 +17,16 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/safe_browsing/core/browser/db/v4_store.h"
+#include "components/safe_browsing/core/browser/db/v4_store.pb.h"
+#include "components/safe_browsing/core/browser/db/v5_store.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/v5_store.pb.h"
 #include "testing/platform_test.h"
 
 namespace safe_browsing {
@@ -29,13 +36,13 @@ class FakeV4Store : public V4Store {
  public:
   FakeV4Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
               const base::FilePath& store_path,
+              PrefixSize v5_prefix_size,
               const bool hash_prefix_matches)
-      : V4Store(
-            task_runner,
-            base::FilePath(store_path.value() + FILE_PATH_LITERAL(".store")),
-            /*v5_prefix_size=*/0,
-            /*is_eligible_for_migration=*/true,
-            /*is_extensions_blocklist=*/false),
+      : V4Store(task_runner,
+                store_path,
+                v5_prefix_size,
+                /*is_eligible_for_migration=*/true,
+                /*is_extensions_blocklist=*/false),
         hash_prefix_should_match_(hash_prefix_matches) {}
 
   HashPrefixStr GetMatchingHashPrefix(const FullHashStr& full_hash) override {
@@ -66,9 +73,9 @@ class FakeV4StoreFactory : public V4StoreFactory {
       PrefixSize v5_prefix_size,
       bool is_eligible_for_migration,
       bool is_extensions_blocklist) override {
-    return V4StorePtr(
-        new FakeV4Store(task_runner, store_path, hash_prefix_should_match_),
-        SBStoreDeleter(task_runner));
+    return V4StorePtr(new FakeV4Store(task_runner, store_path, v5_prefix_size,
+                                      hash_prefix_should_match_),
+                      SBStoreDeleter(task_runner));
   }
 
  private:
@@ -591,6 +598,134 @@ TEST_F(SBDatabaseTest, UsingWeakPtrDropsCallback) {
   db_task_runner->RunPendingTasks();
   EXPECT_TRUE(test_callback.was_callback_destroyed());
   EXPECT_FALSE(test_callback.was_called());
+}
+
+TEST_F(SBDatabaseTest, TestFactorySelectionV4) {
+  // Clear and setup list_infos_ with base name (no extension)
+  list_infos_.clear();
+  expected_identifiers_.clear();
+  expected_store_paths_.clear();
+
+  list_infos_.emplace_back(true, "win_url_malware", win_malware_id_,
+                           SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  expected_identifiers_.push_back(win_malware_id_);
+  expected_store_paths_.push_back(
+      database_dirname_.AppendASCII("win_url_malware.store"));
+
+  list_infos_.emplace_back(true, "linux_url_malware", linux_malware_id_,
+                           SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  expected_identifiers_.push_back(linux_malware_id_);
+  expected_store_paths_.push_back(
+      database_dirname_.AppendASCII("linux_url_malware.store"));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kLocalListsUseSBv5);
+  base::HistogramTester histogram_tester;
+
+  // Do not register fake factory, let it use the default.
+  WaitForSBDatabaseReady(CreateTaskRunner(), {});
+
+  ASSERT_TRUE(sb_database_);
+
+  // V4 store read should be logged, V5 should not.
+  histogram_tester.ExpectBucketCount("SafeBrowsing.V4StoreRead.Result",
+                                     FILE_UNREADABLE_FAILURE,
+                                     list_infos_.size());
+  histogram_tester.ExpectTotalCount("SafeBrowsing.V5StoreRead.Result", 0);
+
+  // V4 store ready on startup should be logged as false, V5 should not be
+  // logged.
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V4Store.ReadyOnStartup",
+                                      false, list_infos_.size());
+  histogram_tester.ExpectTotalCount("SafeBrowsing.V5Store.ReadyOnStartup", 0);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBStore.ReadyOnStartup",
+                                      false, list_infos_.size());
+}
+
+TEST_F(SBDatabaseTest, TestFactorySelectionV5) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLocalListsUseSBv5);
+  base::HistogramTester histogram_tester;
+
+  // Use different threat types for V5 to avoid duplicate keys in StoreMap.
+  ListIdentifier malware_id_v5(SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  ListIdentifier phishing_id_v5(SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+
+  // Clear and setup list_infos_ with V5 identifiers and base name (no
+  // extension)
+  list_infos_.clear();
+  expected_identifiers_.clear();
+  expected_store_paths_.clear();
+
+  list_infos_.emplace_back(true, "win_url_malware", malware_id_v5,
+                           SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  expected_identifiers_.push_back(malware_id_v5);
+  expected_store_paths_.push_back(
+      database_dirname_.AppendASCII("win_url_malware_v5.store"));
+
+  list_infos_.emplace_back(true, "linux_url_malware", phishing_id_v5,
+                           SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+  expected_identifiers_.push_back(phishing_id_v5);
+  expected_store_paths_.push_back(
+      database_dirname_.AppendASCII("linux_url_malware_v5.store"));
+
+  // Do not register fake factory, let it use the default.
+  WaitForSBDatabaseReady(CreateTaskRunner(), {});
+
+  ASSERT_TRUE(sb_database_);
+
+  // V5 store read should be logged, V4 should not.
+  histogram_tester.ExpectBucketCount("SafeBrowsing.V5StoreRead.Result",
+                                     V5StoreReadResult::kFileOpenFailure,
+                                     list_infos_.size());
+  histogram_tester.ExpectTotalCount("SafeBrowsing.V4StoreRead.Result", 0);
+
+  // V5 store ready on startup should be logged as false, V4 should not be
+  // logged.
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.V5Store.ReadyOnStartup",
+                                      false, list_infos_.size());
+  histogram_tester.ExpectTotalCount("SafeBrowsing.V4Store.ReadyOnStartup", 0);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.SBStore.ReadyOnStartup",
+                                      false, list_infos_.size());
+}
+
+TEST(SBDatabaseListInfoTest, TestV4ModeProperties) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kLocalListsUseSBv5);
+
+  ListIdentifier v4_id(WINDOWS_PLATFORM, URL, MALWARE_THREAT);
+  ListInfo list_info(/*fetch_updates=*/true, "UrlMalware", v4_id,
+                     SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+
+  EXPECT_EQ("UrlMalware.store", list_info.filename());
+  EXPECT_EQ("UrlMalware.store", list_info.v4_filename());
+  EXPECT_EQ(4u, list_info.v5_prefix_size().value_or(0));
+}
+
+TEST(SBDatabaseListInfoTest, TestV5ModeProperties) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLocalListsUseSBv5);
+
+  ListIdentifier v5_id(SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  ListInfo list_info(/*fetch_updates=*/true, "UrlMalware", v5_id,
+                     SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+
+  EXPECT_EQ("UrlMalware_v5.store", list_info.filename());
+  EXPECT_EQ("UrlMalware.store", list_info.v4_filename());
+  EXPECT_EQ(4u, list_info.v5_prefix_size().value_or(0));
+}
+
+TEST(SBDatabaseListInfoTest, TestNonSyncProperties) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLocalListsUseSBv5);
+
+  ListIdentifier id(SBThreatType::SB_THREAT_TYPE_API_ABUSE);
+  ListInfo list_info(/*fetch_updates=*/false, "", id,
+                     SBThreatType::SB_THREAT_TYPE_API_ABUSE);
+
+  EXPECT_EQ("", list_info.filename());
+  EXPECT_EQ("", list_info.v4_filename());
+  EXPECT_FALSE(list_info.v5_prefix_size().has_value());
 }
 
 }  // namespace safe_browsing

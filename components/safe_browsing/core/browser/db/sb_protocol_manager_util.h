@@ -267,25 +267,34 @@ std::ostream& operator<<(std::ostream& os, const ListIdentifier& id);
 class ListInfo {
  public:
   ListInfo(const bool fetch_updates,
-           const std::string& filename,
+           const std::string& name,
            const ListIdentifier& list_id,
            const SBThreatType sb_threat_type);
   ~ListInfo();
+  ListInfo(const ListInfo&);
+  ListInfo(ListInfo&&) noexcept;
+  ListInfo& operator=(const ListInfo&);
+  ListInfo& operator=(ListInfo&&) noexcept;
+  ListInfo() = delete;
 
   const ListIdentifier& list_id() const { return list_id_; }
   const std::string& filename() const { return filename_; }
+  const std::string& v4_filename() const { return v4_filename_; }
   SBThreatType sb_threat_type() const { return sb_threat_type_; }
   bool fetch_updates() const { return fetch_updates_; }
+  std::optional<PrefixSize> v5_prefix_size() const { return v5_prefix_size_; }
 
  private:
   // Whether to fetch and store updates for this list.
   bool fetch_updates_;
 
   // The ASCII name of the file on disk. This file is created inside the
-  // user-data directory. For instance, the ListIdentifier could be for URL
-  // expressions for UwS on Windows platform, and the corresponding file on disk
-  // could be named: "UrlUws.store"
+  // user-data directory.
   std::string filename_;
+
+  // The ASCII name of the V4 file on disk. This file is created inside the
+  // user-data directory.
+  std::string v4_filename_;
 
   // The list being read from/written to the disk.
   ListIdentifier list_id_;
@@ -293,7 +302,9 @@ class ListInfo {
   // The threat type enum value for this store.
   SBThreatType sb_threat_type_;
 
-  ListInfo() = delete;
+  // The expected prefix size for the hash prefixes in V5 store. Not populated
+  // when not fetching updates for this list.
+  std::optional<PrefixSize> v5_prefix_size_;
 };
 
 using ListInfos = std::vector<ListInfo>;
@@ -317,6 +328,9 @@ std::string GetUmaSuffixForStore(const base::FilePath& file_path);
 
 // Get the prefix size of a v5 list.
 PrefixSize GetV5ListPrefixSize(const ListIdentifier& list_identifier);
+
+// Get the prefix size of a v5 list based on SBThreatType.
+PrefixSize GetV5PrefixSizeForThreatType(SBThreatType threat_type);
 
 // Get the name of a v5 list.
 std::string GetV5ListName(const ListIdentifier& list_identifier);

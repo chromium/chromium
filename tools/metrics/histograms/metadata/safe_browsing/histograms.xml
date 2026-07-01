@@ -4243,17 +4243,6 @@ and applied correctly. -->
   </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4Store.ReadyOnStartup" enum="BooleanReady"
-    expires_after="2026-12-27">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs whether an individual store has valid data immediately after being
-    constructed. This is logged once for each V4 store on each startup. Failures
-    here can indicate an inability to read data from disk.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.V4Store.V5ToV4Migration.TimeTaken{Store}"
     units="ms" expires_after="2026-11-26">
   <owner>thefrog@chromium.org</owner>
@@ -4647,6 +4636,18 @@ failing to fetch the updates which puts users' security at risk. -->
     overlap, so the counts cannot be used as percentages.
   </summary>
   <token key="Protocol" variants="SafeBrowsingUpdateProtocolV4OrSB"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{Store}.ReadyOnStartup" enum="BooleanReady"
+    expires_after="2026-12-27">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether an individual store has valid data immediately after being
+    constructed. This is logged once for each {Store} on each startup. Failures
+    here can indicate an inability to read data from disk.
+  </summary>
+  <token key="Store" variants="SafeBrowsingStore"/>
 </histogram>
 
 <histogram name="SafeBrowsing.{Store}FileOpenError" enum="PlatformFileError"

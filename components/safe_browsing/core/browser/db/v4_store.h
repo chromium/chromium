@@ -70,7 +70,7 @@ class V4StoreFactory : public SBStoreFactory {
   // SBStoreFactory implementation:
   SBStorePtr CreateStore(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
-      const base::FilePath& store_path,
+      const base::FilePath& base_path,
       const ListInfo& list_info) override;
 
   // Creates a V4Store.

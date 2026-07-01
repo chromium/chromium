@@ -435,4 +435,37 @@ const std::string& V5Store::GetStoreState() const {
   return version_;
 }
 
+SBStorePtr V5StoreFactory::CreateStore(
+    const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
+    const base::FilePath& base_path,
+    const ListInfo& list_info) {
+  const base::FilePath store_path = base_path.AppendASCII(list_info.filename());
+  const base::FilePath v4_store_path =
+      base_path.AppendASCII(list_info.v4_filename());
+
+  return CreateV5Store(
+      db_task_runner, store_path, list_info.v5_prefix_size().value(),
+      v4_store_path,
+      /*is_eligible_for_v4_to_v5_disk_migration=*/list_info.list_id() !=
+          GetUrlCsdAllowlistId(),
+      /*is_extensions_blocklist=*/list_info.list_id() ==
+          GetChromeExtMalwareId());
+}
+
+V5StorePtr V5StoreFactory::CreateV5Store(
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    const base::FilePath& store_path,
+    PrefixSize prefix_size,
+    const base::FilePath& v4_store_path,
+    bool is_eligible_for_v4_to_v5_disk_migration,
+    bool is_extensions_blocklist) {
+  V5StorePtr new_store(
+      new V5Store(task_runner, store_path, prefix_size, v4_store_path,
+                  is_eligible_for_v4_to_v5_disk_migration,
+                  is_extensions_blocklist),
+      SBStoreDeleter(task_runner));
+  new_store->Initialize();
+  return new_store;
+}
+
 }  // namespace safe_browsing

@@ -258,11 +258,11 @@ std::ostream& operator<<(std::ostream& os, const V4Store& store) {
 
 SBStorePtr V4StoreFactory::CreateStore(
     const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
-    const base::FilePath& store_path,
+    const base::FilePath& base_path,
     const ListInfo& list_info) {
-  // TODO(crbug.com/362791941): Pass actual v5 prefix size.
+  const base::FilePath store_path = base_path.AppendASCII(list_info.filename());
   return CreateV4Store(db_task_runner, store_path,
-                       /*v5_prefix_size=*/0,
+                       /*v5_prefix_size=*/list_info.v5_prefix_size().value(),
                        /*is_eligible_for_migration=*/list_info.list_id() !=
                            GetUrlCsdAllowlistId(),
                        /*is_extensions_blocklist=*/list_info.list_id() ==
@@ -308,6 +308,7 @@ V4Store::V4Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       v5_prefix_size_(v5_prefix_size),
       is_eligible_for_migration_(is_eligible_for_migration),
       is_extensions_blocklist_(is_extensions_blocklist) {
+  CHECK_GT(v5_prefix_size_, 0u);
   if (base::FeatureList::IsEnabled(
           kAllowSafeBrowsingV4StoreDiskMigrationChanges) &&
       is_extensions_blocklist_) {
@@ -1112,11 +1113,7 @@ V5ToV4MigrationResult V4Store::MigrateFromV5(
     // we have the `hash_file.extension()` available.
     v5_hash_file_path =
         HashPrefixContainer::GetPath(v5_store_path, hash_file.extension());
-    // TODO(crbug.com/362791941): Eventually change `v5_prefix_size_ != 0` to a
-    // CHECK in the constructor.
-    if (v5_prefix_size_ == 0) {
-      return V5ToV4MigrationResult::kPrefixSizeMismatchFailure;
-    }
+
     if (hash_file.file_size() % v5_prefix_size_ != 0) {
       return V5ToV4MigrationResult::kPrefixSizeMismatchFailure;
     }

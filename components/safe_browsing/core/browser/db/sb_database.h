@@ -211,6 +211,12 @@ class SBDatabase {
   static void RegisterStoreFactoryForTest(
       std::unique_ptr<SBStoreFactory> factory);
 
+  // Instantiates a store.
+  static SBStorePtr CreateStore(
+      const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
+      const base::FilePath& base_path,
+      const ListInfo& list_info);
+
   // Callback called when a new store has been created and is ready to be used.
   // This method updates the store_map_ to point to the new store, which causes
   // the old store to get deleted.

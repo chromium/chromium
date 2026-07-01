@@ -220,7 +220,11 @@ std::string GetUmaSuffixForStore(const base::FilePath& file_path) {
 
 PrefixSize GetV5ListPrefixSize(const ListIdentifier& list_identifier) {
   CHECK(base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5));
-  switch (list_identifier.sb_threat_type()) {
+  return GetV5PrefixSizeForThreatType(list_identifier.sb_threat_type());
+}
+
+PrefixSize GetV5PrefixSizeForThreatType(SBThreatType sb_threat_type) {
+  switch (sb_threat_type) {
     case SBThreatType::SB_THREAT_TYPE_EXTENSION:
       return 16;
     case SBThreatType::SB_THREAT_TYPE_BILLING:
@@ -261,9 +265,10 @@ PrefixSize GetV5ListPrefixSize(const ListIdentifier& list_identifier) {
     case SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN:
     case SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
     case SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE:
-      NOTREACHED() << "GetV5ListPrefixSize not supported for SBThreatType: "
-                   << static_cast<std::underlying_type<SBThreatType>::type>(
-                          list_identifier.sb_threat_type());
+      NOTREACHED()
+          << "GetV5PrefixSizeForThreatType not supported for SBThreatType: "
+          << static_cast<std::underlying_type<SBThreatType>::type>(
+                 sb_threat_type);
   }
 }
 
@@ -746,17 +751,29 @@ void SBProtocolManagerUtil::GetListClientStatesFromStoreStateMap(
 }
 
 ListInfo::ListInfo(const bool fetch_updates,
-                   const std::string& filename,
+                   const std::string& name,
                    const ListIdentifier& list_id,
                    const SBThreatType sb_threat_type)
     : fetch_updates_(fetch_updates),
-      filename_(filename),
       list_id_(list_id),
       sb_threat_type_(sb_threat_type) {
-  DCHECK(!fetch_updates_ || !filename_.empty());
-  DCHECK_NE(SBThreatType::SB_THREAT_TYPE_SAFE, sb_threat_type_);
+  CHECK(!fetch_updates_ || !name.empty());
+  CHECK_NE(SBThreatType::SB_THREAT_TYPE_SAFE, sb_threat_type_);
+  if (!name.empty()) {
+    filename_ = base::FeatureList::IsEnabled(kLocalListsUseSBv5)
+                    ? name + "_v5.store"
+                    : name + ".store";
+    v4_filename_ = name + ".store";
+  }
+  if (fetch_updates) {
+    v5_prefix_size_ = GetV5PrefixSizeForThreatType(sb_threat_type);
+  }
 }
 
 ListInfo::~ListInfo() = default;
+ListInfo::ListInfo(const ListInfo&) = default;
+ListInfo::ListInfo(ListInfo&&) noexcept = default;
+ListInfo& ListInfo::operator=(const ListInfo&) = default;
+ListInfo& ListInfo::operator=(ListInfo&&) noexcept = default;
 
 }  // namespace safe_browsing
