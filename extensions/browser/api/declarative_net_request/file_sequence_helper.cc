@@ -167,6 +167,9 @@ UpdateDynamicRulesStatus GetUpdateDynamicRuleStatus(LoadRulesetResult result) {
       // Updating dynamic rules shouldn't require looking up checksum from
       // prefs.
       break;
+    case LoadRulesetResult::kErrorRulesetFileSizeLimitExceeded:
+      return UpdateDynamicRulesStatus::
+          kErrorCreateMatcher_RulesetFileSizeLimitExceeded;
   }
 
   NOTREACHED();
@@ -199,7 +202,9 @@ bool GetNewDynamicRules(const FileBackedRulesetSource& source,
   // - kFileReadError: Throw an internal error.
   // - kJSONParseError, kJSONIsNotList: These denote JSON ruleset corruption.
   //   Assume the current set of rules is empty.
-  if (result.status == ReadJSONRulesResult::Status::kFileReadError) {
+  if (result.status == ReadJSONRulesResult::Status::kFileReadError ||
+      result.status ==
+          ReadJSONRulesResult::Status::kRulesetFileSizeLimitExceeded) {
     *status = UpdateDynamicRulesStatus::kErrorReadJSONRules;
     *error = kInternalErrorUpdatingDynamicRules;
     return false;
