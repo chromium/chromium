@@ -396,12 +396,14 @@ class MediaStreamConstraintsUtilAudioTest
     MediaStreamConstraintsUtilAudioTestBase::SetUp();
     ResetFactory();
     if (IsDeviceCapture()) {
-      capabilities_.emplace_back(
-          "default_device", "fake_group1",
-          media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 media::ChannelLayoutConfig::Stereo(),
-                                 media::AudioParameters::kAudioCDSampleRate,
-                                 1000));
+      media::AudioParameters default_params(
+          media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+          media::ChannelLayoutConfig::Stereo(),
+          media::AudioParameters::kAudioCDSampleRate, 1000);
+      default_params.set_effects(
+          media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+      capabilities_.emplace_back("default_device", "fake_group1",
+                                 default_params);
 
       media::AudioParameters system_echo_canceller_parameters(
           media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -1549,10 +1551,15 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
   TestAudioSource* platform_source = platform_source_unique.get();
   platform_source->SetAudioProcessingProperties(AudioProcessingProperties());
   platform_source->SetIsApmProcessed(true);
-  platform_source->SetFormatForTesting(
-      media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                             media::ChannelLayoutConfig::Stereo(),
-                             media::AudioParameters::kAudioCDSampleRate, 1000));
+  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                media::ChannelLayoutConfig::Stereo(),
+                                media::AudioParameters::kAudioCDSampleRate, 1000);
+  params.set_effects(media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  platform_source->SetFormatForTesting(params);
+  MediaStreamDevice device(mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE,
+                           "processed_source", "processed_source_name");
+  device.input = params;
+  platform_source->SetDevice(device);
 
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "processed_source", MediaStreamSource::kTypeAudio,

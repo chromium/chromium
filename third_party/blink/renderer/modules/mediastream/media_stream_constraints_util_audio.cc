@@ -798,6 +798,14 @@ class ProcessingBasedContainer {
     } else if (voice_isolation_value.has_value()) {
       voice_isolation_set = BoolSet({*voice_isolation_value});
     }
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+    if (voice_isolation_set.Contains(true)) {
+      if (!(device_parameters.effects() &
+            media::AudioParameters::VOICE_ISOLATION_SUPPORTED)) {
+        voice_isolation_set = BoolSet({false});
+      }
+    }
+#endif
     return ProcessingBasedContainer(
         ProcessingType::kApmProcessed, std::move(echo_cancellation_modes),
         /*auto_gain_control_set=*/BoolSet(),

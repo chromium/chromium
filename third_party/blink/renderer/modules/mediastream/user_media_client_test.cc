@@ -2260,6 +2260,14 @@ TEST_F(UserMediaClientTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
 #endif
+  // Configure both the media devices dispatcher (used during capability
+  // selection) and the mock dispatcher host (used when opening the device)
+  // to support voice isolation.
+  media_devices_dispatcher_.AudioParameters().set_effects(
+      media_devices_dispatcher_.AudioParameters().effects() |
+      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  mock_dispatcher_host_.SetAudioDeviceEffects(
+      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
 
   // 1. Request Track 1 with voiceIsolation = true exact.
   MediaStreamTrack* track1 =
@@ -2346,6 +2354,14 @@ TEST_F(UserMediaClientTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
 #endif
+  // Configure both the media devices dispatcher (used during capability
+  // selection) and the mock dispatcher host (used when opening the device)
+  // to support voice isolation.
+  media_devices_dispatcher_.AudioParameters().set_effects(
+      media_devices_dispatcher_.AudioParameters().effects() |
+      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  mock_dispatcher_host_.SetAudioDeviceEffects(
+      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
   // 1. Request Track 1 with voiceIsolation = true ideal.
   MediaStreamTrack* track1 =
       RequestLocalAudioTrackWithVoiceIsolationIdeal(true);
@@ -2406,6 +2422,14 @@ TEST_F(UserMediaClientTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
 #endif
+  // Configure both the media devices dispatcher (used during capability
+  // selection) and the mock dispatcher host (used when opening the device)
+  // to support voice isolation.
+  media_devices_dispatcher_.AudioParameters().set_effects(
+      media_devices_dispatcher_.AudioParameters().effects() |
+      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  mock_dispatcher_host_.SetAudioDeviceEffects(
+      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
 
   // 1. Request Track with voiceIsolation = true exact.
   MediaStreamTrack* track = RequestLocalAudioTrackWithVoiceIsolationExact(true);
