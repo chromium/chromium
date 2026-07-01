@@ -517,6 +517,100 @@ ProposedLayout FlexLayout::CalculateProposedLayout(
   return data.layout;
 }
 
+int FlexLayout::CalculateMainAxisSpaceAvailableToView(
+    const View* target_view,
+    int target_flex_order,
+    const SizeBounds& size_bounds) const {
+  // This method largely mirrors CalculateProposedLayout(), down to the
+  // UpdateLayoutFromChildren() call, inlining the InitializeChildData() call.
+  // It does not calculate minimum, preferred, or maximum sizes, since those do
+  // not matter for getting the main axis size from UpdateLayoutFromChildren().
+
+  // This copies logic from the start of CalculateProposedLayout(), however, it
+  // does not set `data.host_insets`, since this should be called recursively
+  // within CalculateProposedLayout(), so insets should already have been
+  // applied to `size_bounds`, if include_host_insets_in_layout() is false.
+  FlexLayoutData data;
+  if (include_host_insets_in_layout()) {
+    data.interior_margin =
+        Normalize(orientation(), interior_margin() + host_view()->GetInsets());
+  } else {
+    data.interior_margin = Normalize(orientation(), interior_margin());
+  }
+  NormalizedSizeBounds bounds = Normalize(orientation(), size_bounds);
+
+  // This isn't useful to call when not bounded along the main axis.
+  CHECK(bounds.main().is_bounded());
+
+  // Set to true once `target_view` is encountered. Needed to correctly handle
+  // prioritization of children with an order that exactly matches
+  // `target_flex_order`.
+  bool after_target_view = false;
+  for (View* child : host_view()->children()) {
+    if (!IsChildIncludedInLayout(child)) {
+      continue;
+    }
+
+    // This mirrors the logic in InitializeChildData(), except it only gets
+    // current size, using the preferred or minimum sizes, based on
+    // `target_flex_order`, and has special logic for `target_view`.
+    const size_t view_index = data.num_children();
+    data.layout.child_layouts.emplace_back(ChildLayout{child});
+    data.child_data.emplace_back(
+        GetViewProperty(child, layout_defaults_, views::kFlexBehaviorKey));
+    FlexChildData& flex_child = data.child_data.back();
+
+    flex_child.margins =
+        Normalize(orientation(),
+                  GetViewProperty(child, layout_defaults_, views::kMarginsKey,
+                                  &flex_child.using_default_margins));
+    flex_child.internal_padding = Normalize(
+        orientation(),
+        GetViewProperty(child, layout_defaults_, views::kInternalPaddingKey));
+
+    const SizeBound available_cross =
+        GetAvailableCrossAxisSize(data, view_index, bounds);
+
+    if (child == target_view) {
+      // Set size for `target_view` to 1, to force it to be visible, so any
+      // margins it has will be applied. This is subtracted out at the end.
+      data.SetCurrentSize(view_index, NormalizedSize(1, 0));
+      after_target_view = true;
+    } else {
+      auto [active_rule, active_order] =
+          flex_child.flex.GetRuleAndOrderForBounds(size_bounds);
+      flex_child.rule = std::move(active_rule);
+      flex_child.order = active_order;
+
+      const bool space_allocated_before_target =
+          flex_child.order < target_flex_order ||
+          (flex_child.order == target_flex_order &&
+           (flex_allocation_order() == FlexAllocationOrder::kNormal
+                ? !after_target_view
+                : after_target_view));
+
+      NormalizedSize child_size =
+          space_allocated_before_target
+              ? GetPreferredSizeForRule(flex_child.rule, child, available_cross)
+              : GetCurrentSizeForRule(flex_child.rule, child,
+                                      NormalizedSizeBounds(0, available_cross));
+      data.SetCurrentSize(view_index, child_size);
+    }
+  }
+  // Target view must be a child and included in layout.
+  CHECK(after_target_view);
+
+  ChildViewSpacing child_spacing(
+      base::BindRepeating(&FlexLayout::CalculateChildSpacing,
+                          base::Unretained(this), std::cref(data)));
+  UpdateLayoutFromChildren(bounds, data, child_spacing);
+
+  // Subtract used size from available size, forcing return value to be at least
+  // 0. The "+1" added below is to add back in the 1 pixel width assigned to
+  // `target_view` to ensure its margins are accounted for.
+  return std::max(0, bounds.main().value() - data.total_size.main() + 1);
+}
+
 NormalizedSize FlexLayout::GetPreferredSizeForRule(
     const FlexRule& rule,
     const View* child,

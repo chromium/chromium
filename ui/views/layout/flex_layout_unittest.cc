@@ -3498,6 +3498,145 @@ TEST_F(FlexLayoutTest, ZeroPreferedSizeView) {
   EXPECT_TRUE(v3->GetVisible());
 }
 
+// CalculateMainAxisSpaceAvailableToView tests ---------------------------------
+
+TEST_F(FlexLayoutTest, CalculateMainAxisSpaceAvailableToView_SingleChild) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal);
+  layout_->SetInteriorMargin(Insets(5));
+  View* child = AddChild(Size(20, 10));
+
+  // Total width is 100. Left and right margins are each 5. Width of `child`
+  // itself is ignored, and there are no other children. That leaves 90
+  // available for `child`.
+  EXPECT_EQ(90, layout_->CalculateMainAxisSpaceAvailableToView(
+                    child, /*flex_order=*/1, SizeBounds(100, 50)));
+}
+
+TEST_F(FlexLayoutTest, CalculateMainAxisSpaceAvailableToView_PeerMargins) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal);
+  layout_->SetCollapseMargins(true);
+  layout_->SetInteriorMargin(Insets(0));
+  layout_->SetDefault(views::kMarginsKey, gfx::Insets(10));
+
+  AddChild(Size(15, 10));
+  View* target = AddChild(Size(30, 10));
+  AddChild(Size(20, 10));
+
+  // Total width is 100.
+  // Combined width of peers is 15 + 20 = 35.
+  // There are 4 margins between buttons and at edge of view, which each have
+  // a width of 10.
+  // Remaining space available to `target`: 100 - 35 - 40 = 25.
+  EXPECT_EQ(25, layout_->CalculateMainAxisSpaceAvailableToView(
+                    target, /*flex_order=*/1, SizeBounds(100, 50)));
+}
+
+TEST_F(FlexLayoutTest, CalculateMainAxisSpaceAvailableToView_HostInsets) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal);
+  layout_->SetInteriorMargin(Insets(10));
+  host_->SetBorder(CreateEmptyBorder(Insets(5)));
+  View* target = AddChild(Size(20, 10));
+
+  layout_->SetIncludeHostInsetsInLayout(false);
+  // When called from drain predicate, `size_bounds` passed in has already been
+  // inset by host border. Only interior margin should matter here, resulting in
+  // 100 - 2 * 10 = 80 width available.
+  EXPECT_EQ(80, layout_->CalculateMainAxisSpaceAvailableToView(
+                    target, /*flex_order=*/1, SizeBounds(100, 50)));
+
+  layout_->SetIncludeHostInsetsInLayout(true);
+  // When `include_host_insets_in_layout` is true, twice the host insets
+  // should be subtracted as well, 80 - 2 * 5 = 70.
+  EXPECT_EQ(70, layout_->CalculateMainAxisSpaceAvailableToView(
+                    target, /*flex_order=*/1, SizeBounds(100, 50)));
+}
+
+TEST_F(FlexLayoutTest, CalculateMainAxisSpaceAvailableToView_InputPriority) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal);
+  layout_->SetInteriorMargin(Insets(0));
+
+  View* peer =
+      AddChild(/*preferred_size=*/Size(40, 10), /*minimum_size=*/Size(15, 10));
+  peer->SetProperty(kFlexBehaviorKey, kFlex1ScaleToMinimum.WithOrder(2));
+  View* target = AddChild(Size(20, 10));
+
+  // With a `flex_order` of 1, `target` should have a higher priority than
+  // peer's order of 2, so `peer` should assume minimum size, so return value
+  // should be 100 - 15 = 85.
+  EXPECT_EQ(85, layout_->CalculateMainAxisSpaceAvailableToView(
+                    target, /*flex_order=*/1, SizeBounds(100, 50)));
+
+  // With a `flex_order` of 3, `target` should have a lower priority than peer's
+  // order of 2, so `peer` should assume preferred size, so return value should
+  // be 100 - 40 = 60.
+  EXPECT_EQ(60, layout_->CalculateMainAxisSpaceAvailableToView(
+                    target, /*flex_order=*/3, SizeBounds(100, 50)));
+}
+
+TEST_F(FlexLayoutTest, CalculateMainAxisSpaceAvailableToView_HiddenChild) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal);
+  layout_->SetInteriorMargin(Insets(0));
+
+  View* hidden_peer = AddChild(Size(40, 10));
+  AddChild(Size(30, 10));
+  View* target = AddChild(Size(20, 10));
+
+  // With both peers visible, there's 100 - 40 - 30 = 30 width available.
+  EXPECT_EQ(30, layout_->CalculateMainAxisSpaceAvailableToView(
+                    target, /*flex_order=*/1, SizeBounds(100, 50)));
+
+  // With one peer hidden, there's 100 - 30 = 70 width available.
+  hidden_peer->SetVisible(false);
+  EXPECT_EQ(70, layout_->CalculateMainAxisSpaceAvailableToView(
+                    target, /*flex_order=*/1, SizeBounds(100, 50)));
+}
+
+TEST_F(FlexLayoutTest,
+       CalculateMainAxisSpaceAvailableToView_AlwaysNonNegative) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal);
+  layout_->SetInteriorMargin(Insets(0));
+
+  AddChild(Size(80, 10));
+  View* target = AddChild(Size(20, 10));
+
+  // There's 50 - 80 width available, which is capped with 0.
+  EXPECT_EQ(0, layout_->CalculateMainAxisSpaceAvailableToView(
+                   target, /*flex_order=*/1, SizeBounds(50, 50)));
+}
+
+TEST_F(FlexLayoutTest,
+       CalculateMainAxisSpaceAvailableToView_MatchingOrderTieBreak) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal);
+
+  const FlexSpecification kFlex(MinimumFlexSizeRule::kScaleToMinimum,
+                                MaximumFlexSizeRule::kUnbounded);
+
+  View* left =
+      AddChild(/*preferred_size=*/Size(40, 10), /*minimum_size=*/Size(10, 10));
+  left->SetProperty(kFlexBehaviorKey, kFlex.WithOrder(1));
+
+  View* target =
+      AddChild(/*preferred_size=*/Size(30, 10), /*minimum_size=*/Size(2, 2));
+  target->SetProperty(kFlexBehaviorKey, kFlex.WithOrder(1));
+
+  View* right =
+      AddChild(/*preferred_size=*/Size(50, 10), /*minimum_size=*/Size(15, 10));
+  right->SetProperty(kFlexBehaviorKey, kFlex.WithOrder(1));
+
+  // With kNormal allocation order (left to right), left child is higher
+  // priority than target, so gets preferred size, while right child has lower
+  // priority, so gets minimum size. Available space for target is 100 - (40 +
+  // 15) = 45.
+  EXPECT_EQ(45, layout_->CalculateMainAxisSpaceAvailableToView(
+                    target, /*flex_order=*/1, SizeBounds(100, 50)));
+
+  // With kReverse, relative priority of children with same order is flipped.
+  // Available space for target is 100 - (10 + 50) = 40.
+  layout_->SetFlexAllocationOrder(FlexAllocationOrder::kReverse);
+  EXPECT_EQ(40, layout_->CalculateMainAxisSpaceAvailableToView(
+                    target, /*flex_order=*/1, SizeBounds(100, 50)));
+}
+
 // Cross-axis Fit Tests --------------------------------------------------------
 
 // Tests for cross-axis alignment that checks three different conditions:
