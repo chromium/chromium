@@ -589,6 +589,9 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   // |is_user_initiated| is true for focus events from keyboard accelerators.
   if (is_user_initiated) {
     controller()->edit_model()->StartZeroSuggestRequest();
+    if (location_bar_view_) {
+      location_bar_view_->OpenOmniboxPopup();
+    }
   }
 
   // Restore caret visibility if focus is explicitly requested. This is
