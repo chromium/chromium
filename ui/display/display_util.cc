@@ -67,6 +67,50 @@ void DisplayUtil::GetDefaultScreenInfo(ScreenInfo* screen_info) {
 }
 
 // static
+void DisplayUtil::DisableHdrAndHighBitDepth(ScreenInfo* screen_info) {
+  gfx::DisplayColorSpaces& color_spaces = screen_info->display_color_spaces;
+
+  for (bool needs_alpha : {false, true}) {
+    // If WCG content causes use of an HDR output color space, replace that
+    // space with sRGB's color space.
+    if (color_spaces
+            .GetOutputColorSpace(gfx::ContentColorUsage::kWideColorGamut,
+                                 needs_alpha)
+            .IsHDR()) {
+      color_spaces.SetOutputColorSpaceAndFormat(
+          gfx::ContentColorUsage::kWideColorGamut, needs_alpha,
+          color_spaces.GetOutputColorSpace(gfx::ContentColorUsage::kSRGB,
+                                           needs_alpha),
+          color_spaces.GetOutputFormat(gfx::ContentColorUsage::kSRGB,
+                                       needs_alpha));
+    }
+
+    // If HDR content causes use of an HDR output color space, replace that
+    // space with WCG's color space.
+    if (color_spaces
+            .GetOutputColorSpace(gfx::ContentColorUsage::kHDR, needs_alpha)
+            .IsHDR()) {
+      color_spaces.SetOutputColorSpaceAndFormat(
+          gfx::ContentColorUsage::kHDR, needs_alpha,
+          color_spaces.GetOutputColorSpace(
+              gfx::ContentColorUsage::kWideColorGamut, needs_alpha),
+          color_spaces.GetOutputFormat(gfx::ContentColorUsage::kWideColorGamut,
+                                       needs_alpha));
+    }
+  }
+
+  // The CSS OM spec is clear that color depth should exclude the alpha
+  // channel, but several tests set it to 32 inappropriately. Work around
+  // this by only changing color depth if depth per component indicates
+  // high bit depth.
+  if (screen_info->depth_per_component > Display::kDefaultBitsPerComponent) {
+    screen_info->depth = Display::kDefaultBitsPerPixel;
+    screen_info->depth_per_component = Display::kDefaultBitsPerComponent;
+  }
+  color_spaces.SetHDRMaxLuminanceRelative(1.0f);
+}
+
+// static
 void DisplayUtil::GetNativeViewScreenInfo(ScreenInfo* screen_info,
                                           gfx::NativeView native_view) {
   // Some tests are run with no Screen initialized.

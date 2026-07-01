@@ -7,10 +7,15 @@
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/display.h"
+#include "ui/display/display_util.h"
+#include "ui/display/screen_info.h"
 #include "ui/display/test/display_test_util.h"
 #include "ui/display/util/edid_parser.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/display_color_spaces.h"
 
 namespace display {
 
@@ -514,6 +519,72 @@ TEST(DisplayUtilTest, CompareDisplayIdsWithMultipleDisplays) {
     EXPECT_FALSE(CompareDisplayIds(12, 10));
     EXPECT_TRUE(CompareDisplayIds(12, 9));
     EXPECT_TRUE(CompareDisplayIds(12, 15));
+  }
+}
+
+TEST(DisplayUtilClassTest, DisableHdrAndHighBitDepth) {
+  ScreenInfo screen_info;
+  auto& color_spaces = screen_info.display_color_spaces;
+  gfx::ColorSpace display_p3 = gfx::ColorSpace::CreateDisplayP3D65();
+  gfx::ColorSpace hdr10 = gfx::ColorSpace::CreateHDR10();
+  for (bool needs_alpha : {false, true}) {
+    color_spaces.SetOutputColorSpaceAndFormat(
+        gfx::ContentColorUsage::kWideColorGamut, needs_alpha, display_p3,
+        viz::SinglePlaneFormat::kRGBA_8888);
+    color_spaces.SetOutputColorSpaceAndFormat(
+        gfx::ContentColorUsage::kHDR, needs_alpha, hdr10,
+        viz::SinglePlaneFormat::kRGBA_F16);
+  }
+  color_spaces.SetHDRMaxLuminanceRelative(4.0f);
+  screen_info.depth = 48;
+  screen_info.depth_per_component = 16;
+
+  DisplayUtil::DisableHdrAndHighBitDepth(&screen_info);
+  EXPECT_EQ(Display::kDefaultBitsPerPixel, screen_info.depth);
+  EXPECT_EQ(Display::kDefaultBitsPerComponent, screen_info.depth_per_component);
+  EXPECT_EQ(1.0f, color_spaces.GetHDRMaxLuminanceRelative());
+  for (bool needs_alpha : {false, true}) {
+    // WCG was SDR (P3), so it should remain P3 (not match sRGB).
+    EXPECT_EQ(display_p3,
+              color_spaces.GetOutputColorSpace(
+                  gfx::ContentColorUsage::kWideColorGamut, needs_alpha));
+    EXPECT_NE(color_spaces.GetOutputColorSpace(gfx::ContentColorUsage::kSRGB,
+                                               needs_alpha),
+              color_spaces.GetOutputColorSpace(
+                  gfx::ContentColorUsage::kWideColorGamut, needs_alpha));
+
+    // HDR was HDR, so it should become WCG (which is P3).
+    EXPECT_EQ(display_p3, color_spaces.GetOutputColorSpace(
+                              gfx::ContentColorUsage::kHDR, needs_alpha));
+  }
+}
+
+TEST(DisplayUtilClassTest, DisableHdrAndHighBitDepth_WcgIsHdr) {
+  ScreenInfo screen_info;
+  auto& color_spaces = screen_info.display_color_spaces;
+  gfx::ColorSpace hdr10 = gfx::ColorSpace::CreateHDR10();
+  for (bool needs_alpha : {false, true}) {
+    color_spaces.SetOutputColorSpaceAndFormat(
+        gfx::ContentColorUsage::kWideColorGamut, needs_alpha, hdr10,
+        viz::SinglePlaneFormat::kRGBA_F16);
+    color_spaces.SetOutputColorSpaceAndFormat(
+        gfx::ContentColorUsage::kHDR, needs_alpha, hdr10,
+        viz::SinglePlaneFormat::kRGBA_F16);
+  }
+
+  DisplayUtil::DisableHdrAndHighBitDepth(&screen_info);
+  for (bool needs_alpha : {false, true}) {
+    // WCG was HDR, so it should become sRGB.
+    EXPECT_EQ(color_spaces.GetOutputColorSpace(gfx::ContentColorUsage::kSRGB,
+                                               needs_alpha),
+              color_spaces.GetOutputColorSpace(
+                  gfx::ContentColorUsage::kWideColorGamut, needs_alpha));
+
+    // HDR was HDR, so it should become WCG (which is now sRGB).
+    EXPECT_EQ(color_spaces.GetOutputColorSpace(gfx::ContentColorUsage::kSRGB,
+                                               needs_alpha),
+              color_spaces.GetOutputColorSpace(gfx::ContentColorUsage::kHDR,
+                                               needs_alpha));
   }
 }
 

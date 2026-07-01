@@ -22,6 +22,10 @@ class DISPLAY_EXPORT DisplayUtil {
 
   static void GetDefaultScreenInfo(display::ScreenInfo* screen_info);
 
+  // Disables HDR and high bit depth color spaces on the given ScreenInfo,
+  // falling back to sRGB and default bit depth.
+  static void DisableHdrAndHighBitDepth(display::ScreenInfo* screen_info);
+
   // Compute the orientation type of the display assuming it is a mobile device.
   static display::mojom::ScreenOrientation GetOrientationTypeForMobile(
       const display::Display& display);

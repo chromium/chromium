@@ -96,6 +96,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/disallow_activation_reason.h"
+#include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
@@ -1055,6 +1056,15 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   blink::VisualProperties visual_properties;
   visual_properties.screen_infos = GetScreenInfos();
   auto& current_screen_info = visual_properties.screen_infos.mutable_current();
+
+  // If hardware acceleration is disabled then do not report the display as
+  // HDR or high bit depth because it is too resource intensive to run on the
+  // CPU.
+  if (!GpuDataManager::GetInstance()->HardwareAccelerationEnabled()) {
+    for (auto& screen_info : visual_properties.screen_infos.screen_infos) {
+      display::DisplayUtil::DisableHdrAndHighBitDepth(&screen_info);
+    }
+  }
 
   // For testing, override the raster color profile.
   // Note: this needs to be done here and not earlier in the pipeline because
