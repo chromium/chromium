@@ -35,6 +35,10 @@
 #include "ui/wm/public/activation_client.h"
 #include "url/gurl.h"
 
+namespace base {
+class TickClock;
+}
+
 class Browser;
 class Profile;
 
@@ -97,7 +101,9 @@ class WebsiteMetrics : public BrowserCollectionObserver,
     virtual void OnWebsiteMetricsDestroyed() {}
   };
 
-  WebsiteMetrics(Profile* profile, int user_type_by_device_type);
+  WebsiteMetrics(Profile* profile,
+                 int user_type_by_device_type,
+                 const base::TickClock& tick_clock);
 
   WebsiteMetrics(const WebsiteMetrics&) = delete;
   WebsiteMetrics& operator=(const WebsiteMetrics&) = delete;
@@ -313,6 +319,8 @@ class WebsiteMetrics : public BrowserCollectionObserver,
       history_observation_{this};
 
   base::ObserverList<Observer> observers_;
+
+  const raw_ref<const base::TickClock> tick_clock_;
 
   base::WeakPtrFactory<WebsiteMetrics> weak_factory_{this};
 };

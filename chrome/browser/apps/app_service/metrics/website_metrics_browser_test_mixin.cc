@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
@@ -49,7 +51,10 @@ void WebsiteMetricsBrowserTestMixin::SetUpOnMainThread() {
   app_platform_metrics_service_ =
       app_service_proxy->AppPlatformMetricsService();
   if (!app_platform_metrics_service_) {
-    auto metrics_service = std::make_unique<AppPlatformMetricsService>(profile);
+    auto metrics_service = std::make_unique<AppPlatformMetricsService>(
+        profile, base::DefaultClock::GetInstance(),
+        base::DefaultTickClock::GetInstance(),
+        base::SequencedTaskRunner::GetCurrentDefault());
     app_platform_metrics_service_ = metrics_service.get();
     app_service_proxy->SetAppPlatformMetricsServiceForTesting(
         std::move(metrics_service));

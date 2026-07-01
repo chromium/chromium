@@ -8,6 +8,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -132,8 +134,10 @@ void AppPlatformMetricsServiceTestBase::SetUp() {
   // Wait for AppServiceProxy to be ready.
   app_service_test_.SetUp(profile());
 
-  app_platform_metrics_service_ =
-      std::make_unique<AppPlatformMetricsService>(profile());
+  app_platform_metrics_service_ = std::make_unique<AppPlatformMetricsService>(
+      profile(), base::DefaultClock::GetInstance(),
+      base::DefaultTickClock::GetInstance(),
+      task_environment_.GetMainThreadTaskRunner());
 
   if (start_app_platform_metrics_service_on_init_) {
     app_platform_metrics_service_->Start(
@@ -174,8 +178,10 @@ void AppPlatformMetricsServiceTestBase::InstallOneApp(TestApp app) {
 
 void AppPlatformMetricsServiceTestBase::ResetAppPlatformMetricsService() {
   app_platform_metrics_service_.reset();
-  app_platform_metrics_service_ =
-      std::make_unique<AppPlatformMetricsService>(profile());
+  app_platform_metrics_service_ = std::make_unique<AppPlatformMetricsService>(
+      profile(), base::DefaultClock::GetInstance(),
+      base::DefaultTickClock::GetInstance(),
+      task_environment_.GetMainThreadTaskRunner());
 
   app_platform_metrics_service_->Start(
       AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache(),

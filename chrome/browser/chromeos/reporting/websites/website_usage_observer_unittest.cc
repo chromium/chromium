@@ -55,7 +55,8 @@ class WebsiteUsageObserverTest : public ::testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kTestUserId);
     website_metrics_ = std::make_unique<::apps::WebsiteMetrics>(
-        profile_, /*user_type_by_device_type=*/0);
+        profile_, /*user_type_by_device_type=*/0,
+        *base::DefaultTickClock::GetInstance());
     auto mock_website_metrics_retriever =
         std::make_unique<MockWebsiteMetricsRetriever>();
     EXPECT_CALL(*mock_website_metrics_retriever, GetWebsiteMetrics(_))

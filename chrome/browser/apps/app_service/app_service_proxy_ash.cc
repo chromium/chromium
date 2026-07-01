@@ -14,6 +14,8 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
@@ -148,7 +150,10 @@ void AppServiceProxyAsh::Initialize() {
   if (!profile_->AsTestingProfile() &&
       !::ash::IsShimlessRmaAppBrowserContext(profile_)) {
     app_platform_metrics_service_ =
-        std::make_unique<apps::AppPlatformMetricsService>(profile_);
+        std::make_unique<apps::AppPlatformMetricsService>(
+            profile_, base::DefaultClock::GetInstance(),
+            base::DefaultTickClock::GetInstance(),
+            base::SequencedTaskRunner::GetCurrentDefault());
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AppServiceProxyAsh::InitAppPlatformMetrics,
                                   weak_ptr_factory_.GetWeakPtr()));

@@ -22,6 +22,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
+#include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -1661,7 +1663,10 @@ TEST_F(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnDestruction) {
   // test destruction lifecycle without affecting pre-existing test teardown
   // fixtures.
   auto app_platform_metrics_service =
-      std::make_unique<AppPlatformMetricsService>(profile());
+      std::make_unique<AppPlatformMetricsService>(
+          profile(), base::DefaultClock::GetInstance(),
+          base::DefaultTickClock::GetInstance(),
+          task_environment_.GetMainThreadTaskRunner());
   app_platform_metrics_service->Start(
       apps::AppServiceProxyFactory::GetForProfile(profile())
           ->AppRegistryCache(),
@@ -2131,7 +2136,10 @@ class AppPlatformMetricsServiceObserverTest
 TEST_F(AppPlatformMetricsServiceObserverTest,
        NotifyObserversOnAppPlatformMetricsInit) {
   MockObserver* const observer_ptr = observer();
-  AppPlatformMetricsService app_platform_metrics_service(profile());
+  AppPlatformMetricsService app_platform_metrics_service(
+      profile(), base::DefaultClock::GetInstance(),
+      base::DefaultTickClock::GetInstance(),
+      task_environment_.GetMainThreadTaskRunner());
   app_platform_metrics_service.AddObserver(observer_ptr);
   EXPECT_CALL(*observer_ptr, OnAppPlatformMetricsInit(_))
       .WillOnce([&](AppPlatformMetrics* app_platform_metrics) {
@@ -2148,7 +2156,10 @@ TEST_F(AppPlatformMetricsServiceObserverTest,
 TEST_F(AppPlatformMetricsServiceObserverTest,
        ShouldNotNotifyObserversOnAppPlatformMetricsInitIfUnregistered) {
   MockObserver* const observer_ptr = observer();
-  AppPlatformMetricsService app_platform_metrics_service(profile());
+  AppPlatformMetricsService app_platform_metrics_service(
+      profile(), base::DefaultClock::GetInstance(),
+      base::DefaultTickClock::GetInstance(),
+      task_environment_.GetMainThreadTaskRunner());
 
   // Unregister registered observer before init and verify observer is not
   // notified.
@@ -2166,7 +2177,10 @@ TEST_F(AppPlatformMetricsServiceObserverTest,
        ShouldNotifyObserverOnDestruction) {
   MockObserver* const observer_ptr = observer();
   auto app_platform_metrics_service =
-      std::make_unique<AppPlatformMetricsService>(profile());
+      std::make_unique<AppPlatformMetricsService>(
+          profile(), base::DefaultClock::GetInstance(),
+          base::DefaultTickClock::GetInstance(),
+          task_environment_.GetMainThreadTaskRunner());
   app_platform_metrics_service->AddObserver(observer_ptr);
   EXPECT_CALL(*observer_ptr, OnAppPlatformMetricsServiceWillBeDestroyed)
       .Times(1);
@@ -2176,7 +2190,10 @@ TEST_F(AppPlatformMetricsServiceObserverTest,
 TEST_F(AppPlatformMetricsServiceObserverTest,
        NotifyObserversOnWebsiteMetricsInit) {
   MockObserver* const observer_ptr = observer();
-  AppPlatformMetricsService app_platform_metrics_service(profile());
+  AppPlatformMetricsService app_platform_metrics_service(
+      profile(), base::DefaultClock::GetInstance(),
+      base::DefaultTickClock::GetInstance(),
+      task_environment_.GetMainThreadTaskRunner());
   app_platform_metrics_service.AddObserver(observer_ptr);
 
   EXPECT_CALL(*observer_ptr, OnWebsiteMetricsInit)

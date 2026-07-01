@@ -8,6 +8,8 @@
 
 #include "base/json/values_util.h"
 #include "base/rand_util.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/apps/browser_instance/web_contents_instance_id_utils.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -182,10 +184,13 @@ base::DictValue WebsiteMetrics::UrlInfo::ConvertToDict() const {
   return usage_time_dict;
 }
 
-WebsiteMetrics::WebsiteMetrics(Profile* profile, int user_type_by_device_type)
+WebsiteMetrics::WebsiteMetrics(Profile* profile,
+                               int user_type_by_device_type,
+                               const base::TickClock& tick_clock)
     : profile_(profile),
       browser_tab_strip_tracker_(this, nullptr),
-      user_type_by_device_type_(user_type_by_device_type) {
+      user_type_by_device_type_(user_type_by_device_type),
+      tick_clock_(tick_clock) {
   browser_collection_observation_.Observe(
       ProfileBrowserCollection::GetForProfile(profile_));
   browser_tab_strip_tracker_.Init();
@@ -538,7 +543,7 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
                       it != window_to_web_contents_.end() &&
                       it->second == web_contents;
   AddUrlInfo(url, web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
-             base::TimeTicks::Now(), is_activated, /*promotable=*/false);
+             tick_clock_->NowTicks(), is_activated, /*promotable=*/false);
 }
 
 void WebsiteMetrics::OnInstallableWebAppStatusUpdated(
@@ -601,7 +606,7 @@ void WebsiteMetrics::SetTabActivated(content::WebContents* web_contents) {
   if (url_it == url_infos_.end()) {
     return;
   }
-  url_it->second.start_time = base::TimeTicks::Now();
+  url_it->second.start_time = tick_clock_->NowTicks();
   url_it->second.is_activated = true;
 }
 
@@ -618,7 +623,7 @@ void WebsiteMetrics::SetTabInActivated(content::WebContents* web_contents) {
     return;
   }
 
-  const auto current_time = base::TimeTicks::Now();
+  const auto current_time = tick_clock_->NowTicks();
   DCHECK_GE(current_time, it->second.start_time);
   it->second.running_time_in_five_minutes +=
       current_time - it->second.start_time;
@@ -630,7 +635,7 @@ void WebsiteMetrics::SaveUsageTime() {
   for (auto& it : url_infos_) {
     if (it.second.is_activated) {
       // Continued usage of active web content.
-      const auto current_time = base::TimeTicks::Now();
+      const auto current_time = tick_clock_->NowTicks();
       DCHECK_GE(current_time, it.second.start_time);
       it.second.running_time_in_five_minutes +=
           current_time - it.second.start_time;

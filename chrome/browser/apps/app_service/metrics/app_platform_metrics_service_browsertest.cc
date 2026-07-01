@@ -16,8 +16,8 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/sequence_local_storage_map.h"
-#include "base/time/time_override.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -41,6 +41,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -83,27 +84,6 @@ class FakeSyncService : public syncer::TestSyncService {
   }
 };
 
-std::atomic<int64_t> g_fake_time_us{0};
-std::atomic<int64_t> g_fake_ticks_us{0};
-std::atomic<int64_t> g_last_ticks_us{0};
-
-base::Time GetFakeTime() {
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::Microseconds(g_fake_time_us.load(std::memory_order_relaxed)));
-}
-base::TimeTicks GetFakeTimeTicks() {
-  int64_t ticks_us = g_fake_ticks_us.load(std::memory_order_relaxed);
-  int64_t last_us = g_last_ticks_us.load(std::memory_order_relaxed);
-  while (ticks_us > last_us) {
-    if (g_last_ticks_us.compare_exchange_weak(last_us, ticks_us,
-                                              std::memory_order_relaxed)) {
-      last_us = ticks_us;
-      break;
-    }
-  }
-  return base::TimeTicks() + base::Microseconds(last_us);
-}
-
 }  // namespace
 
 class AppPlatformInputMetricsTest : public InProcessBrowserTest {
@@ -127,9 +107,14 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
         }));
   }
 
+  virtual scoped_refptr<base::TestMockTimeTaskRunner> CreateTaskRunner() {
+    return base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    task_runner_ = CreateTaskRunner();
   }
 
   void StartMetricsService() {
@@ -141,7 +126,9 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
     // Force overwrite and re-create the service to completely bypass and
     // replace the production async posted task from
     // AppServiceProxyAsh::Initialize()!
-    auto service = std::make_unique<apps::AppPlatformMetricsService>(profile());
+    auto service = std::make_unique<apps::AppPlatformMetricsService>(
+        profile(), task_runner_->GetMockClock(),
+        task_runner_->GetMockTickClock(), task_runner_);
     auto* service_ptr = service.get();
     proxy->SetAppPlatformMetricsServiceForTesting(std::move(service));
 
@@ -349,6 +336,7 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
  protected:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   base::CallbackListSubscription create_services_subscription_;
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
   void TriggerCheckForFiveMinutes(AppPlatformMetricsService* service) {
     service->CheckForFiveMinutes();
@@ -360,10 +348,21 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
       AppPlatformMetricsService* service) {
     service->CheckForNoisyAppKMReportingInterval();
   }
+
+  void FastForwardBy(base::TimeDelta delta) {
+    task_runner_->FastForwardBy(delta);
+    content::RunAllTasksUntilIdle();
+  }
 };
 
 class ManagedGuestSessionMetricsTest : public AppPlatformInputMetricsTest {
  public:
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    AppPlatformInputMetricsTest::SetUpLocalStatePrefService(local_state);
+    user_manager::TestHelper::RegisterOwner(*local_state,
+                                            "not_current_user@example.com");
+  }
+
   void SetUpOnMainThread() override {
     // 1. Run base setup (InProcessBrowserTest handles its own login)
     AppPlatformInputMetricsTest::SetUpOnMainThread();
@@ -593,12 +592,12 @@ IN_PROC_BROWSER_TEST_F(ManagedGuestSessionMetricsTest,
   ModifyInstance(app_constants::kChromeAppId, chrome_window.get(),
                  kActiveInstanceState);
 
-  app_platform_metrics()->OnFiveMinutes();
+  FastForwardBy(base::Minutes(5));
   ModifyInstance(app_constants::kChromeAppId, chrome_window.get(),
                  kInactiveInstanceState);
   VerifyNoAppUsageTimeUkm();
 
-  app_platform_metrics()->OnTwoHours();
+  FastForwardBy(base::Hours(2) - base::Minutes(5));
   VerifyAppUsageTimeUkm(app_constants::kChromeAppId,
                         AppTypeName::kChromeBrowser);
 
@@ -614,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(ManagedGuestSessionMetricsTest,
   ModifyInstance(app_constants::kChromeAppId, chrome_window.get(),
                  kActiveInstanceState);
 
-  app_platform_metrics()->OnFiveMinutes();
+  FastForwardBy(base::Minutes(5));
   ModifyInstance(app_constants::kChromeAppId, chrome_window.get(),
                  kInactiveInstanceState);
   VerifyNoAppUsageTimeUkm();
@@ -641,6 +640,7 @@ IN_PROC_BROWSER_TEST_F(ManagedGuestSessionMetricsTest,
   ModifyInstance(app_constants::kChromeAppId, chrome_window.get(),
                  kActiveInstanceState);
 
+  FastForwardBy(base::Seconds(1));
   ModifyInstance(app_constants::kChromeAppId, chrome_window.get(),
                  kInactiveInstanceState);
   VerifyNoAppUsageTimeUkm();
@@ -667,8 +667,7 @@ IN_PROC_BROWSER_TEST_F(ManagedGuestSessionMetricsTest,
     auto app_window = CreateWebAppWindow(nullptr);
     ModifyInstance("blocked_app", app_window.get(), kActiveInstanceState);
 
-    app_platform_metrics()->OnFiveMinutes();
-    app_platform_metrics()->OnTwoHours();
+    FastForwardBy(base::Hours(2));
     VerifyNoAppUsageTimeUkm();
 
     ModifyInstance("blocked_app", app_window.get(),
@@ -684,8 +683,7 @@ IN_PROC_BROWSER_TEST_F(ManagedGuestSessionMetricsTest,
   auto app_window = CreateWebAppWindow(nullptr);
   ModifyInstance("policy_app", app_window.get(), kActiveInstanceState);
 
-  app_platform_metrics()->OnFiveMinutes();
-  app_platform_metrics()->OnTwoHours();
+  FastForwardBy(base::Hours(2));
   VerifyAppUsageTimeUkm("policy_app", AppTypeName::kWeb);
 
   ModifyInstance("policy_app", app_window.get(),
@@ -699,8 +697,7 @@ IN_PROC_BROWSER_TEST_F(ManagedGuestSessionMetricsTest,
   auto app_window = CreateWebAppWindow(nullptr);
   ModifyInstance("oem_app", app_window.get(), kActiveInstanceState);
 
-  app_platform_metrics()->OnFiveMinutes();
-  app_platform_metrics()->OnTwoHours();
+  FastForwardBy(base::Hours(2));
   VerifyAppUsageTimeUkm("oem_app", AppTypeName::kWeb);
 
   ModifyInstance("oem_app", app_window.get(), apps::InstanceState::kDestroyed);
@@ -714,8 +711,7 @@ IN_PROC_BROWSER_TEST_F(ManagedGuestSessionMetricsTest,
   auto app_window = CreateWebAppWindow(nullptr);
   ModifyInstance("default_app", app_window.get(), kActiveInstanceState);
 
-  app_platform_metrics()->OnFiveMinutes();
-  app_platform_metrics()->OnTwoHours();
+  FastForwardBy(base::Hours(2));
   VerifyAppUsageTimeUkm("default_app", AppTypeName::kWeb);
 
   ModifyInstance("default_app", app_window.get(),
@@ -744,6 +740,14 @@ class AppPlatformMetricsServiceBrowserTest
   }
   ~AppPlatformMetricsServiceBrowserTest() override = default;
 
+  scoped_refptr<base::TestMockTimeTaskRunner> CreateTaskRunner() override {
+    base::Time fake_time;
+    constexpr char kFakeNowTimeString[] = "Sunday, 5 June 2022 14:30:00 CDT";
+    CHECK(base::Time::FromString(kFakeNowTimeString, &fake_time));
+    return base::MakeRefCounted<base::TestMockTimeTaskRunner>(
+        fake_time, base::TimeTicks::Now());
+  }
+
   void SetUpOnMainThread() override {
     base::SequenceCheckerImpl::EnableStackLogging();
     AppPlatformInputMetricsTest::SetUpOnMainThread();
@@ -754,17 +758,6 @@ class AppPlatformMetricsServiceBrowserTest
       SetBrowser(nullptr);
     }
 
-    base::Time fake_time;
-    constexpr char kFakeNowTimeString[] = "Sunday, 5 June 2022 14:30:00 CDT";
-    ASSERT_TRUE(base::Time::FromString(kFakeNowTimeString, &fake_time));
-    g_fake_time_us.store(fake_time.ToDeltaSinceWindowsEpoch().InMicroseconds(),
-                         std::memory_order_relaxed);
-
-    base::TimeTicks fake_ticks = base::TimeTicks::Now();
-    g_fake_ticks_us.store(fake_ticks.since_origin().InMicroseconds(),
-                          std::memory_order_relaxed);
-    time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
-        &GetFakeTime, &GetFakeTimeTicks, nullptr);
     policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
     StartMetricsService();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
@@ -777,7 +770,6 @@ class AppPlatformMetricsServiceBrowserTest
 
   void TearDownOnMainThread() override {
     base::ThreadPoolInstance::Get()->FlushForTesting();
-    time_override_.release();
     AppPlatformInputMetricsTest::TearDownOnMainThread();
   }
 
@@ -913,44 +905,6 @@ class AppPlatformMetricsServiceBrowserTest
         SyncServiceFactory::GetForProfile(profile()));
   }
 
-  void FastForwardBy(base::TimeDelta delta) {
-    content::RunAllTasksUntilIdle();
-    base::TimeDelta remaining = delta;
-    auto* service = AppServiceProxyFactory::GetForProfile(profile())
-                        ->AppPlatformMetricsService();
-    while (remaining > base::TimeDelta()) {
-      base::TimeDelta time_to_five_mins =
-          base::Minutes(5) - accumulated_five_minutes_time_;
-      base::TimeDelta time_to_two_hours =
-          base::Hours(2) - accumulated_two_hours_time_;
-      base::TimeDelta step =
-          std::min({remaining, time_to_five_mins, time_to_two_hours});
-      g_fake_time_us.fetch_add(step.InMicroseconds(),
-                               std::memory_order_relaxed);
-      g_fake_ticks_us.fetch_add(step.InMicroseconds(),
-                                std::memory_order_relaxed);
-      remaining -= step;
-
-      accumulated_five_minutes_time_ += step;
-      accumulated_two_hours_time_ += step;
-
-      // Pump the loop to let tasks run at this new time step.
-      content::RunAllTasksUntilIdle();
-
-      if (accumulated_five_minutes_time_ >= base::Minutes(5)) {
-        TriggerCheckForNewDay(service);
-        accumulated_five_minutes_time_ = base::TimeDelta();
-      }
-
-      if (accumulated_two_hours_time_ >= base::Hours(2)) {
-        accumulated_two_hours_time_ = base::TimeDelta();
-      }
-
-      // Pump again in case the checks posted more tasks.
-      content::RunAllTasksUntilIdle();
-    }
-  }
-
   PrefService* GetPrefService() { return profile()->GetPrefs(); }
 
   void VerifyAppRunningDuration(const base::TimeDelta time_delta,
@@ -1042,18 +996,9 @@ class AppPlatformMetricsServiceBrowserTest
 
  private:
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
-  base::TimeDelta accumulated_five_minutes_time_;
-  base::TimeDelta accumulated_two_hours_time_;
 };
 
-// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
-#if defined(LEAK_SANITIZER)
-#define MAYBE_UsageTime DISABLED_UsageTime
-#else
-#define MAYBE_UsageTime UsageTime
-#endif
-IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, MAYBE_UsageTime) {
+IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, UsageTime) {
   // Create an ARC app window.
   std::string app_id = "aa";
   InstallOneApp(app_id, AppType::kArc, "com.google.AA", Readiness::kReady,
@@ -1115,14 +1060,7 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, MAYBE_UsageTime) {
   CloseBrowserSynchronously(browser);
 }
 
-// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
-#if defined(LEAK_SANITIZER)
-#define MAYBE_UsageTimeUkm DISABLED_UsageTimeUkm
-#else
-#define MAYBE_UsageTimeUkm UsageTimeUkm
-#endif
-IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
-                       MAYBE_UsageTimeUkm) {
+IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, UsageTimeUkm) {
   Browser* browser = CreateBrowserWindow();
 
   // Set the browser window active.
@@ -1151,15 +1089,8 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
   CloseBrowserSynchronously(browser);
 }
 
-// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
-#if defined(LEAK_SANITIZER)
-#define MAYBE_UsageTimeUkmReportAfterReboot \
-  DISABLED_UsageTimeUkmReportAfterReboot
-#else
-#define MAYBE_UsageTimeUkmReportAfterReboot UsageTimeUkmReportAfterReboot
-#endif
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
-                       MAYBE_UsageTimeUkmReportAfterReboot) {
+                       UsageTimeUkmReportAfterReboot) {
   Browser* browser = CreateBrowserWindow();
   InstallOneApp(kWebAppId1, AppType::kWeb, "https://foo.com/",
                 Readiness::kReady, InstallSource::kSystem);
@@ -1231,15 +1162,8 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
   CloseBrowserSynchronously(browser);
 }
 
-// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
-#if defined(LEAK_SANITIZER)
-#define MAYBE_UsageTimeUkmWithMultipleWindows \
-  DISABLED_UsageTimeUkmWithMultipleWindows
-#else
-#define MAYBE_UsageTimeUkmWithMultipleWindows UsageTimeUkmWithMultipleWindows
-#endif
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
-                       MAYBE_UsageTimeUkmWithMultipleWindows) {
+                       UsageTimeUkmWithMultipleWindows) {
   Browser* browser1 = CreateBrowserWithAuraWindow();
 
   // Set the browser window active.
@@ -1272,17 +1196,8 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
                         AppTypeName::kChromeBrowser);
 }
 
-// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
-#if defined(LEAK_SANITIZER)
-#define MAYBE_UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser \
-  DISABLED_UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser
-#else
-#define MAYBE_UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser \
-  UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser
-#endif
-IN_PROC_BROWSER_TEST_F(
-    AppPlatformMetricsServiceBrowserTest,
-    MAYBE_UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser) {
+IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
+                       UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser) {
   Browser* browser = CreateBrowserWindow();
   InstallOneApp(kWebAppId1, AppType::kWeb, "https://foo.com/",
                 Readiness::kReady, InstallSource::kSystem);
@@ -1347,17 +1262,8 @@ IN_PROC_BROWSER_TEST_F(
   CloseBrowserSynchronously(browser);
 }
 
-// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
-#if defined(LEAK_SANITIZER)
-#define MAYBE_UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser \
-  DISABLED_UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser
-#else
-#define MAYBE_UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser \
-  UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser
-#endif
-IN_PROC_BROWSER_TEST_F(
-    AppPlatformMetricsServiceBrowserTest,
-    MAYBE_UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser) {
+IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
+                       UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser) {
   Browser* browser = CreateBrowserWindow();
   InstallOneApp(kWebAppId1, AppType::kWeb, "https://foo.com/",
                 Readiness::kReady, InstallSource::kSystem);
@@ -1451,16 +1357,8 @@ IN_PROC_BROWSER_TEST_F(
   CloseBrowserSynchronously(browser);
 }
 
-// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
-#if defined(LEAK_SANITIZER)
-#define MAYBE_UsageTimeUkmForMultipleWebAppOpenInTab \
-  DISABLED_UsageTimeUkmForMultipleWebAppOpenInTab
-#else
-#define MAYBE_UsageTimeUkmForMultipleWebAppOpenInTab \
-  UsageTimeUkmForMultipleWebAppOpenInTab
-#endif
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
-                       MAYBE_UsageTimeUkmForMultipleWebAppOpenInTab) {
+                       UsageTimeUkmForMultipleWebAppOpenInTab) {
   Browser* browser = CreateBrowserWindow();
   InstallOneApp(kWebAppId1, AppType::kWeb, "https://foo.com/",
                 Readiness::kReady, InstallSource::kSystem);
@@ -1529,14 +1427,7 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
   CloseBrowserSynchronously(browser);
 }
 
-// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
-#if defined(LEAK_SANITIZER)
-#define MAYBE_BrowserWindow DISABLED_BrowserWindow
-#else
-#define MAYBE_BrowserWindow BrowserWindow
-#endif
-IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
-                       MAYBE_BrowserWindow) {
+IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, BrowserWindow) {
   InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
                 Readiness::kReady, InstallSource::kSystem);
 
@@ -1599,14 +1490,8 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
   CloseBrowserSynchronously(browser1);
 }
 
-// TODO(crbug.com/521490538): Fix memory leaks and re-enable the tests.
-#if defined(LEAK_SANITIZER)
-#define MAYBE_AppRunningPercentage DISABLED_AppRunningPercentage
-#else
-#define MAYBE_AppRunningPercentage AppRunningPercentage
-#endif
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
-                       MAYBE_AppRunningPercentage) {
+                       AppRunningPercentage) {
   Browser* browser = CreateBrowserWindow();
 
   // Test one Chrome browser.

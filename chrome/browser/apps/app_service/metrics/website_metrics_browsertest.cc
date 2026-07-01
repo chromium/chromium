@@ -13,6 +13,7 @@
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/website_metrics_browser_test_mixin.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,7 +53,8 @@ class TestWebsiteMetrics : public WebsiteMetrics {
  public:
   explicit TestWebsiteMetrics(Profile* profile)
       : WebsiteMetrics(profile,
-                       /*user_type_by_device_type=*/0) {}
+                       /*user_type_by_device_type=*/0,
+                       *base::DefaultTickClock::GetInstance()) {}
 
   void AwaitForInstallableWebAppCheck(const GURL& ukm_key) {
     if (on_checked_) {
@@ -1273,7 +1275,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
   // pre-existing test teardown fixtures.
   std::unique_ptr<WebsiteMetrics> owned_website_metrics =
       std::make_unique<WebsiteMetrics>(profile(),
-                                       /*user_type_by_device_type=*/0);
+                                       /*user_type_by_device_type=*/0,
+                                       *base::DefaultTickClock::GetInstance());
   owned_website_metrics->AddObserver(&observer_);
   EXPECT_CALL(observer_, OnWebsiteMetricsDestroyed).Times(1);
   owned_website_metrics.reset();

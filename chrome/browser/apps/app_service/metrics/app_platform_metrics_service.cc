@@ -4,7 +4,11 @@
 
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -35,9 +39,18 @@ int GetDayId(base::Time time) {
 
 constexpr char kAppPlatformMetricsDayId[] = "app_platform_metrics.day_id";
 
-AppPlatformMetricsService::AppPlatformMetricsService(Profile* profile)
-    : profile_(profile) {
+AppPlatformMetricsService::AppPlatformMetricsService(
+    Profile* profile,
+    const base::Clock* clock,
+    const base::TickClock* tick_clock,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : profile_(profile),
+      clock_(CHECK_DEREF(clock)),
+      tick_clock_(CHECK_DEREF(tick_clock)) {
   DCHECK(profile_);
+  timer_.SetTaskRunner(task_runner);
+  five_minutes_timer_.SetTaskRunner(task_runner);
+  noisy_appkm_reporting_interval_timer_.SetTaskRunner(task_runner);
 }
 
 AppPlatformMetricsService::~AppPlatformMetricsService() {
@@ -72,11 +85,11 @@ void AppPlatformMetricsService::Start(
     InstanceRegistry& instance_registry,
     apps::AppCapabilityAccessCache& app_capability_access_cache) {
   app_platform_app_metrics_ = std::make_unique<apps::AppPlatformMetrics>(
-      profile_, app_registry_cache, instance_registry);
+      profile_, app_registry_cache, instance_registry, &*tick_clock_);
   app_platform_input_metrics_ = std::make_unique<apps::AppPlatformInputMetrics>(
       profile_, app_registry_cache, instance_registry);
   website_metrics_ = std::make_unique<apps::WebsiteMetrics>(
-      profile_, GetUserTypeByDeviceTypeMetrics());
+      profile_, GetUserTypeByDeviceTypeMetrics(), *tick_clock_);
   app_discovery_metrics_ = std::make_unique<apps::AppDiscoveryMetrics>(
       profile_, app_registry_cache, instance_registry,
       app_platform_app_metrics_.get(), app_capability_access_cache);
@@ -120,7 +133,7 @@ void AppPlatformMetricsService::SetWebsiteMetricsForTesting(
 }
 
 void AppPlatformMetricsService::CheckForNewDay() {
-  base::Time now = base::Time::Now();
+  base::Time now = clock_->Now();
 
   DCHECK(app_platform_app_metrics_);
   app_platform_app_metrics_->OnTenMinutes();
