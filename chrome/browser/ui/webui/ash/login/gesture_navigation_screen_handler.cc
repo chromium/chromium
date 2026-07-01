@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
 namespace ash {

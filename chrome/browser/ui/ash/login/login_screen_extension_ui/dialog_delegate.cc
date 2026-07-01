@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/ash/login/login_screen_extension_ui/dialog_delegate.h"
 
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/login/login_screen_extension_ui/create_options.h"
-#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/l10n/l10n_util.h"
