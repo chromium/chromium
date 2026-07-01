@@ -152,8 +152,8 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
     int identifier;
     String search_text;
     mojom::blink::FindOptions options;
+    Persistent<const Range> first_match;
     bool wrap_within_frame;
-    Persistent<Range> first_match;
     bool wrapped_around;
 
     // Range to fire beforematch on and scroll to. active_match_ may get
@@ -166,10 +166,10 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
   bool FindInternal(int identifier,
                     const String& search_text,
                     const mojom::blink::FindOptions& options,
+                    const Range* first_match,
                     bool wrap_within_frame,
-                    bool* active_now = nullptr,
-                    Range* first_match = nullptr,
-                    bool wrapped_around = false);
+                    bool wrapped_around,
+                    bool* active_now);
 
   // Notifies the delegate about a new selection rect.
   void ReportFindInPageSelection(const gfx::Rect& selection_rect,

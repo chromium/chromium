@@ -190,17 +190,18 @@ bool TextFinder::Find(int identifier,
                       const mojom::blink::FindOptions& options,
                       bool wrap_within_frame,
                       bool* active_now) {
-  return FindInternal(identifier, search_text, options, wrap_within_frame,
-                      active_now);
+  return FindInternal(identifier, search_text, options,
+                      /* first_match */ nullptr, wrap_within_frame,
+                      /* wrapped_around */ false, active_now);
 }
 
 bool TextFinder::FindInternal(int identifier,
                               const String& search_text,
                               const mojom::blink::FindOptions& options,
+                              const Range* first_match,
                               bool wrap_within_frame,
-                              bool* active_now,
-                              Range* first_match,
-                              bool wrapped_around) {
+                              bool wrapped_around,
+                              bool* active_now) {
   // Searching text without forcing DisplayLocks is likely to hit bad layout
   // state, so force them here and update style and layout in order to get good
   // layout state.
@@ -917,8 +918,8 @@ void TextFinder::Scroll(std::unique_ptr<AsyncScrollContext> context) {
     active_match_ = context->range;
 
     FindInternal(context->identifier, context->search_text, context->options,
-                 context->wrap_within_frame, /*active_now=*/nullptr,
-                 context->first_match, context->wrapped_around);
+                 context->first_match, context->wrap_within_frame,
+                 context->wrapped_around, /* active_now */ nullptr);
     return;
   }
 
