@@ -10052,6 +10052,16 @@ void Document::ResetAgent(Agent& agent) {
 void Document::EnqueuePageRevealEvent() {
   CHECK(dom_window_);
 
+  if (RuntimeEnabledFeatures::RouteMatchingEnabled()) {
+    // Set up a route map and navigation state now, and perform an active style
+    // update right away, in case there are any @navigation rules.
+    //
+    // TODO(crbug.com/436805487): This seems rather heavy. Should it be
+    // conditioned on active view transitions or something?
+    auto& route_map = RouteMap::Ensure(*this);
+    route_map.EstablishNavigationStateFromActivation();
+  }
+
   dom_window_->SetHasBeenRevealed(false);
   auto* page_reveal_event = MakeGarbageCollected<PageRevealEvent>();
   page_reveal_event->SetTarget(dom_window_);

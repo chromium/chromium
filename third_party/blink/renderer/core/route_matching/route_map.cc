@@ -12,17 +12,25 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_activation.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_history_entry.h"
 #include "third_party/blink/renderer/core/route_matching/route.h"
 #include "third_party/blink/renderer/core/route_matching/route_event.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_utils.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
-RouteMap::RouteMap(Document& document) : Supplement<Document>(document) {}
+RouteMap::RouteMap(Document& document) : Supplement<Document>(document) {
+  DCHECK(RuntimeEnabledFeatures::RouteMatchingEnabled());
+}
+
 RouteMap::RouteMap() : Supplement<Document>(nullptr) {
   CHECK_IS_TEST();
 }
@@ -162,6 +170,7 @@ void RouteMap::AddRouteFromRule(const String& dashed_ident,
   Route* route = MakeGarbageCollected<Route>(GetDocument());
   route->AddPattern(url_pattern);
   routes_.insert(dashed_ident, route);
+  SetNeedsStyleUpdateOnNavigation();
   UpdateMatchStatus(*route);
 }
 
@@ -181,6 +190,7 @@ void RouteMap::AddAnonymousRoute(const AtomicString& url_pattern_string) {
 
   route = MakeGarbageCollected<Route>(GetDocument());
   route->AddPattern(url_pattern);
+  SetNeedsStyleUpdateOnNavigation();
   UpdateMatchStatus(*route);
 }
 
@@ -237,14 +247,31 @@ void RouteMap::GetActiveRoutesForTesting(NavigationPreposition preposition,
   }
 }
 
+void RouteMap::EstablishNavigationStateFromActivation() {
+  NavigationActivation* activation =
+      GetDocument().domWindow()->navigation()->activation();
+  if (!activation) {
+    return;
+  }
+  NavigationHistoryEntry* to = activation->entry();
+  NavigationHistoryEntry* from = activation->from();
+  if (!to || !from) {
+    return;
+  }
+  OnNavigationStart(from->url(), to->url(), /*source_element=*/nullptr);
+}
+
 void RouteMap::OnNavigationStart(const KURL& previous_url,
                                  const KURL& next_url,
                                  Element* source_element) {
-  DCHECK(!navigation_state_);
   navigation_state_ = MakeGarbageCollected<NavigationState>(
       previous_url, next_url, source_element);
   UpdateActiveRoutes();
-  GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
+
+  // Need to update active style right away, or view transitions might glitch.
+  StyleEngine& style_engine = GetDocument().GetStyleEngine();
+  style_engine.SetNeedsActiveStyleUpdate(GetDocument());
+  style_engine.UpdateActiveStyle();
 
   if (source_element) {
     source_element->PseudoStateChanged(CSSSelector::kPseudoTriggerLink);
@@ -254,25 +281,32 @@ void RouteMap::OnNavigationStart(const KURL& previous_url,
 void RouteMap::OnNavigationTraverse(NavigationState::HistoryTraverseType type) {
   DCHECK(navigation_state_);
   navigation_state_->SetTraverseType(type);
-  GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
+  NotifyStyleEngineIfNeeded();
 }
 
 void RouteMap::OnNavigationCommitted() {
   DCHECK(navigation_state_);
   navigation_state_->SetPhase(NavigationPhase::kCommitted);
   UpdateActiveRoutes();
-  GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
+  NotifyStyleEngineIfNeeded();
 }
 
 void RouteMap::OnNavigationDone() {
-  if (navigation_state_) {
-    if (Element* source_element = navigation_state_->GetSourceElement()) {
-      source_element->PseudoStateChanged(CSSSelector::kPseudoTriggerLink);
-    }
+  if (!navigation_state_) {
+    return;
+  }
+  if (ViewTransitionUtils::GetTransition(GetDocument())) {
+    // Even if the document has finished loading, the navigation needs to remain
+    // active, since there are ongoing view transitions. When view transitions
+    // are done, this function will be called again.
+    return;
+  }
+  if (Element* source_element = navigation_state_->GetSourceElement()) {
+    source_element->PseudoStateChanged(CSSSelector::kPseudoTriggerLink);
   }
   navigation_state_ = nullptr;
   UpdateActiveRoutes();
-  GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
+  NotifyStyleEngineIfNeeded();
 }
 
 void RouteMap::OnPreviewStart() {
@@ -280,7 +314,7 @@ void RouteMap::OnPreviewStart() {
   CHECK(!navigation_state_->IsInPreview());
   CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
   navigation_state_->SetIsInPreview(true);
-  GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
+  NotifyStyleEngineIfNeeded();
 }
 
 void RouteMap::OnPreviewFinished() {
@@ -289,7 +323,7 @@ void RouteMap::OnPreviewFinished() {
   }
   CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
   navigation_state_->SetIsInPreview(false);
-  GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
+  NotifyStyleEngineIfNeeded();
 }
 
 // Get the "active navigation URL", given the specified preposition.
@@ -327,10 +361,11 @@ RouteMap::ParseResult RouteMap::AddPatternToRoute(Route& route,
   if (pattern.has_value()) {
     DCHECK(*pattern);
     route.AddPattern(*pattern);
+    SetNeedsStyleUpdateOnNavigation();
     // TODO(crbug.com/436805487): If we actually end up keeping support for
     // <script type="routemap">, we're missing events here.
     if (UpdateMatchStatus(route)) {
-      GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
+      NotifyStyleEngineIfNeeded();
     }
     return RouteMap::ParseResult(RouteMap::ParseResult::kSuccess);
   }
@@ -351,6 +386,12 @@ bool RouteMap::UpdateMatchStatus(
     }
   }
   return true;
+}
+
+void RouteMap::NotifyStyleEngineIfNeeded() {
+  if (needs_style_update_on_navigation_) {
+    GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
+  }
 }
 
 }  // namespace blink

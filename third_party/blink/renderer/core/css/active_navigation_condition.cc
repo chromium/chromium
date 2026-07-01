@@ -29,6 +29,7 @@ bool ActiveNavigationCondition::CheckSelectorMatch(
   }
   Document& document = element.GetDocument();
   RouteMap& route_map = RouteMap::Ensure(document);
+  route_map.SetNeedsStyleUpdateOnNavigation();
 
   KURL active_navigation_url = route_map.GetActiveNavigationURL(preposition_);
   KURL href = anchor->Href();

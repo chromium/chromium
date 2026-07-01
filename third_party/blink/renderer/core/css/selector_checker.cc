@@ -2938,7 +2938,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         // TODO(crbug.com/436805487) Find a better solution. For now we need a
         // RouteMap instance in order to trigger style recalc of source elements
         // for :trigger-link, when navigation starts and ends.
-        RouteMap::Ensure(element.GetDocument());
+        RouteMap::Ensure(element.GetDocument())
+            .SetNeedsStyleUpdateOnNavigation();
       }
       return false;
     case CSSSelector::kPseudoLang: {

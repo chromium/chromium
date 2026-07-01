@@ -301,7 +301,9 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
   }
 
   if (auto* routemap = RouteMap::Get(window_->document())) {
-    routemap->OnNavigationCommitted();
+    if (transition_) {
+      routemap->OnNavigationCommitted();
+    }
   }
 
   if (ongoing_navigate_event && window_->GetFrame()) {

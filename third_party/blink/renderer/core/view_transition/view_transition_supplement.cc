@@ -341,6 +341,13 @@ void ViewTransitionSupplement::OnTransitionFinished(
       page->Animator().SetHasViewTransition(false);
     }
   }
+
+  if (RouteMap* route_map = RouteMap::Get(document_)) {
+    // This view transition, which is now finished, may be the one reason why
+    // there's still a "current navigation state". Therefore, notify the route
+    // map, so that the current navigation (if any) can finish.
+    route_map->OnNavigationDone();
+  }
 }
 
 void ViewTransitionSupplement::OnSkipTransitionWithPendingCallback(

@@ -85,8 +85,15 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
     return *document;
   }
 
-  void SetHasHistoryRules() { has_history_rules_ = true; }
+  void SetHasHistoryRules() {
+    has_history_rules_ = true;
+    SetNeedsStyleUpdateOnNavigation();
+  }
   bool HasHistoryRules() const { return has_history_rules_; }
+
+  void SetNeedsStyleUpdateOnNavigation() {
+    needs_style_update_on_navigation_ = true;
+  }
 
   ParseResult ParseAndApplyRoutes(const String& route_map_text);
 
@@ -103,8 +110,15 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   // TODO(crbug.com/436805487): We probably don't need to keep this.
   void GetActiveRoutesForTesting(NavigationPreposition, MatchCollection*) const;
 
+  // When the new document in a cross-document navigation is ready, this
+  // function is called, in order to establish an active navigation. For
+  // same-document navigations, this is instead handled directly by the
+  // Navigation API.
+  void EstablishNavigationStateFromActivation();
+
   // Set the URLs that we're navigating between at the start of navigation. This
-  // is used to match @route "from" (and "to") rules.
+  // is used to match @route "from" (and "to") rules. This will establish a
+  // NavigationState object. If one already exists, it will be overwritten.
   void OnNavigationStart(const KURL& previous_url,
                          const KURL& next_url,
                          Element* source_element);
@@ -116,7 +130,8 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   void OnNavigationCommitted();
 
   // Clear the URL that we're navigating between when the navigation is
-  // complete.
+  // complete. Calling this if there's no active navigation is allowed, and has
+  // no effect.
   void OnNavigationDone();
 
   void OnPreviewStart();
@@ -143,12 +158,16 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
       Route&,
       HeapVector<Member<Route>>* routes_needing_event = nullptr);
 
+  void NotifyStyleEngineIfNeeded();
+
   HeapHashMap<String, Member<Route>> routes_;
   HeapHashMap<String, Member<Route>> anonymous_routes_;
 
   Member<NavigationState> navigation_state_;
 
   bool has_history_rules_ = false;
+
+  bool needs_style_update_on_navigation_ = false;
 
 #if DCHECK_IS_ON()
   bool is_updating_active_routes_ = false;
