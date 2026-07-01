@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/glic/common/glic_navigation.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/auth_controller.h"
@@ -601,6 +602,30 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testShowProfilePicker) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
   ASSERT_TRUE(profile_picker_opened.Wait());
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(https://crbug.com/512641949): Fix flakes.
+#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
+#define MAYBE_testPanelActive DISABLED_testPanelActive
+#else
+#define MAYBE_testPanelActive testPanelActive
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testPanelActive) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  // Opening a new browser window will deactivate the previous one, and make
+  // the panel not active.
+  auto params = std::make_unique<NavigateParams>(
+      InProcessBrowserTest::browser()->profile(), GURL("about:blank"),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params->disposition = WindowOpenDisposition::NEW_WINDOW;
+  base::WeakPtr<content::NavigationHandle> navigation_handle =
+      glic::Navigate(std::move(params));
+
+  ContinueJsTest();
 }
 #endif
 

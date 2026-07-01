@@ -924,6 +924,16 @@ class ApiTests extends ApiTestFixtureBase {
     // QuitBrowsers() never exiting. This sleep avoids this problem.
     await sleep(500);
   }
+
+  async testPanelActive() {
+    assertDefined(this.host.panelActive);
+    const activeSequence = observeSequence(this.host.panelActive());
+    assertDefined(this.host.closePanel);
+    await this.host.closePanel();
+    assertTrue(await activeSequence.next());
+    await this.advanceToNextStep();
+    assertFalse(await activeSequence.next());
+  }
 }
 
 class FaviconTest extends ApiTests {

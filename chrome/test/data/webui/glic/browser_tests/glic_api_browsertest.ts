@@ -353,16 +353,6 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testErrorShownOnMojoPipeError() {}
 
-  async testPanelActive() {
-    assertDefined(this.host.panelActive);
-    const activeSequence = observeSequence(this.host.panelActive());
-    assertDefined(this.host.closePanel);
-    await this.host.closePanel();
-    assertTrue(await activeSequence.next());
-    await this.advanceToNextStep();
-    assertFalse(await activeSequence.next());
-  }
-
   async testPanelActiveWithMicrophone() {
     await this.advanceToNextStep();
     await this.advanceToNextStep();

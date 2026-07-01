@@ -1287,31 +1287,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
   ExecuteJsTest();
 }
 
-// TODO(https://crbug.com/512641949): Fix flakes.
-#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
-#define MAYBE_testPanelActive DISABLED_testPanelActive
-#else
-#define MAYBE_testPanelActive testPanelActive
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, MAYBE_testPanelActive) {
-  // Explicitly track this glic instance by ID. When a new browser window is
-  // created below, it will become the most recently activated browser. Without
-  // explicit tracking, GetBrowser() would return the new window (based on
-  // activation order) instead of the original browser where glic was opened.
-  TrackGlicInstanceWithId(GetGlicInstance()->id());
-  ExecuteJsTest();
-
-  // Opening a new browser window will deactivate the previous one, and make
-  // the panel not active.
-  NavigateParams params(browser()->profile(), GURL("about:blank"),
-                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::NEW_WINDOW;
-  base::WeakPtr<content::NavigationHandle> navigation_handle =
-      Navigate(&params);
-
-  ContinueJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelActiveWithMicrophone) {
   TrackFloatingGlicInstance();
   // Add another tab and open Floaty.
