@@ -232,7 +232,8 @@ void LoginPinInputView::UpdateLength(const size_t pin_length) {
   // Hide the view before deleting.
   SetVisible(false);
 
-  RemoveChildView(std::exchange(code_input_, nullptr));
+  RemoveChildView(code_input_);
+  delete code_input_;
   code_input_ = AddChildView(std::make_unique<LoginPinInput>(
       length_,
       base::BindRepeating(&LoginPinInputView::SubmitPin,
