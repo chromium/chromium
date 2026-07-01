@@ -2386,6 +2386,48 @@ TEST_F(SendTabToSelfBridgeTest, GetUnopenedEntriesTargetedToLocalDevice) {
       UnorderedElementsAre(GuidIs("guid1"), GuidIs("guid4"), GuidIs("guid5")));
 }
 
+TEST_F(SendTabToSelfBridgeTest,
+       GetUnopenedEntriesTargetedToLocalDeviceOrderedByTime) {
+  InitializeBridge();
+
+  syncer::EntityChangeList remote_input;
+
+  // Add entries with different shared times.
+  // AdvanceAndGetTime() ensures increasing times.
+  SendTabToSelfEntry entry1(
+      "guid1", GURL("http://www.example.com/1"), "title", AdvanceAndGetTime(),
+      "device", kLocalDeviceCacheGuid, PageContext(), NavigationHistory());
+
+  SendTabToSelfEntry entry2(
+      "guid2", GURL("http://www.example.com/2"), "title", AdvanceAndGetTime(),
+      "device", kLocalDeviceCacheGuid, PageContext(), NavigationHistory());
+
+  SendTabToSelfEntry entry3(
+      "guid3", GURL("http://www.example.com/3"), "title", AdvanceAndGetTime(),
+      "device", kLocalDeviceCacheGuid, PageContext(), NavigationHistory());
+
+  // Add them in non-chronological order: entry3 (newest), entry1 (oldest),
+  // entry2 (middle).
+  remote_input.push_back(
+      syncer::EntityChange::CreateAdd("guid3", MakeEntityData(entry3)));
+  remote_input.push_back(
+      syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry1)));
+  remote_input.push_back(
+      syncer::EntityChange::CreateAdd("guid2", MakeEntityData(entry2)));
+
+  bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                              std::move(remote_input));
+
+  std::vector<const SendTabToSelfEntry*> unopened_entries =
+      bridge()->GetUnopenedEntriesTargetedToLocalDevice();
+
+  // Should be returned in oldest-first order: entry1, entry2, entry3.
+  ASSERT_EQ(3u, unopened_entries.size());
+  EXPECT_EQ("guid1", unopened_entries[0]->GetGUID());
+  EXPECT_EQ("guid2", unopened_entries[1]->GetGUID());
+  EXPECT_EQ("guid3", unopened_entries[2]->GetGUID());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     SendTabToSelfBridgeNamingTest,

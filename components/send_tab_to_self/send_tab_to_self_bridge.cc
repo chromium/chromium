@@ -460,6 +460,7 @@ SendTabToSelfBridge::GetUnopenedEntriesTargetedToLocalDevice() const {
       unopened_entries.push_back(entry.get());
     }
   }
+  std::ranges::sort(unopened_entries, {}, &SendTabToSelfEntry::GetSharedTime);
   return unopened_entries;
 }
 

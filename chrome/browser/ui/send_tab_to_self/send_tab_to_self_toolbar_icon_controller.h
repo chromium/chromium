@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "components/send_tab_to_self/receiving_ui_handler.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
+#include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -27,11 +28,14 @@ class TabInterface;
 
 namespace send_tab_to_self {
 
+class SendTabToSelfModel;
+
 // Controller for send tab to self's toolbar button that decides when to show
 // or hide the icon from the toolbar.
 class SendTabToSelfToolbarIconController
     : public send_tab_to_self::ReceivingUiHandler,
-      public BrowserCollectionObserver {
+      public BrowserCollectionObserver,
+      public SendTabToSelfModelObserver {
  public:
   explicit SendTabToSelfToolbarIconController(Profile* profile);
   SendTabToSelfToolbarIconController(
@@ -67,6 +71,9 @@ class SendTabToSelfToolbarIconController
   // BrowserCollectionObserver implementation
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
+  // SendTabToSelfModelObserver implementation
+  void OnModelReady() override;
+
   // Switches to the latest tabs received from the remote and opened in
   // background. This opens the first tab in the list of latest tabs opened in
   // background. This is used by the toast action button to switch to the latest
@@ -78,8 +85,8 @@ class SendTabToSelfToolbarIconController
   void OnToastClosed();
 
  private:
-  void StorePendingEntries(base::span<const SendTabToSelfEntry* const>
-                               new_entries_pending_notification);
+  BrowserWindowInterface* GetActiveBrowser();
+  SendTabToSelfModel* GetModel();
 
   void ShowToolbarButton(const SendTabToSelfEntry& entry,
                          BrowserWindowInterface* browser = nullptr);
@@ -90,18 +97,24 @@ class SendTabToSelfToolbarIconController
                             SendTabToSelfEntry entry,
                             BubbleAnchorResult anchor);
 
+  void StartObservingBrowserCollection();
+
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // In the case that we cannot immediately display a new entry
   // (e.g. the active browser is incognito or a different profile), we store it
   // here and wait until an appropriate browser becomes active to display it.
-  std::vector<std::unique_ptr<SendTabToSelfEntry>> pending_entries_;
+  // Only used when kSendTabToSelfAutoOpen is disabled.
+  std::unique_ptr<SendTabToSelfEntry> pending_entry_;
 
   std::vector<base::WeakPtr<tabs::TabInterface>>
       latest_tabs_opened_in_background_;
 
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
       browser_collection_observer_{this};
+
+  base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
+      model_observation_{this};
 
   // If true, bypasses the browser activation check in DisplayNewEntries.
   bool ignore_active_for_testing_ = false;
