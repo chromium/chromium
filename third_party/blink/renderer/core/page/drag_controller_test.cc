@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/page/drag_image.h"
@@ -23,7 +25,10 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
@@ -87,6 +92,59 @@ class DragControllerTest : public RenderingTest {
                                                                    GetFrame());
     GetFrame().GetPage()->GetDragController().PerformDrop(
         &data, GetFrame(), DragController::Operation());
+  }
+
+  // Injects a fully decoded 6 MP (3000x2000) image into an <img> and starts an
+  // image drag from it, bypassing the network. Returns the drag image size
+  // recorded by the mock ChromeClient so callers can assert whether a preview
+  // was produced.
+  gfx::Size StartDragForLargeImage() {
+    SetBodyInnerHTML(R"HTML(
+      <style>
+        * { margin: 0; }
+        img { display: block; }
+      </style>
+      <img id='image' src='http://test.com/large.png' width='100' height='100'>
+    )HTML");
+
+    // Build a real, decoded image larger than 2.25 MP (3000x2000 = 6 MP) and
+    // inject it into the <img>. `CanDragImage()` requires a resource buffer and
+    // a filename extension, both of which a file-backed `BitmapImage` provides.
+    std::optional<Vector<char>> image_file = test::ReadFromFile(
+        test::CoreTestDataPath("notifications/3000x2000.png"));
+    EXPECT_TRUE(image_file);
+    scoped_refptr<SharedBuffer> image_data =
+        SharedBuffer::Create(std::move(*image_file));
+    scoped_refptr<BitmapImage> bitmap_image = BitmapImage::Create();
+    bitmap_image->SetData(image_data, true);
+    EXPECT_GT(bitmap_image->Size().Area64(), int64_t{1500} * 1500);
+
+    auto* image_element = To<HTMLImageElement>(
+        GetDocument().getElementById(AtomicString("image")));
+    EXPECT_TRUE(image_element);
+    image_element->SetImageForTest(
+        ImageResourceContent::CreateLoaded(bitmap_image.get()));
+    UpdateAllLifecyclePhasesForTest();
+
+    const gfx::Point drag_origin(5, 5);
+    WebMouseEvent mouse_event(WebInputEvent::Type::kMouseDown,
+                              WebInputEvent::kNoModifiers,
+                              WebInputEvent::GetStaticTimeStampForTests());
+    mouse_event.button = WebMouseEvent::Button::kLeft;
+    mouse_event.SetPositionInWidget(drag_origin.x(), drag_origin.y());
+
+    auto& drag_state = GetFrame().GetPage()->GetDragController().GetDragState();
+    drag_state.drag_type_ = kDragSourceActionImage;
+    drag_state.drag_src_ = image_element;
+    drag_state.drag_data_transfer_ = DataTransfer::Create(
+        DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
+        DataObject::Create());
+
+    // The drag must start regardless of the image's intrinsic size.
+    EXPECT_TRUE(GetFrame().GetPage()->GetDragController().StartDrag(
+        &GetFrame(), drag_state, mouse_event, drag_origin));
+
+    return GetChromeClient().last_drag_image_size;
   }
 
  private:
@@ -201,10 +259,10 @@ TEST_F(DragControllerSimTest, ThrottledDocumentHandled) {
   // Test passes if we don't crash.
 }
 
-// Dragging an image whose intrinsic area exceeds `kMaxOriginalImageArea`
-// (1500*1500) causes `DragImageForImage()` to return null. The drag should
-// still proceed even with no image overlay.
-TEST_F(DragControllerSimTest, ImageTooLargeForPreviewStillStartsDrag) {
+// Dragging an image whose intrinsic area exceeds the resolution of a typical
+// photo must still start a drag. Regression coverage for the drag still
+// proceeding regardless of the source image's intrinsic size.
+TEST_F(DragControllerSimTest, LargeImageStartsDrag) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimRequest image_resource("https://example.com/big.png", "image/png");
@@ -215,9 +273,8 @@ TEST_F(DragControllerSimTest, ImageTooLargeForPreviewStillStartsDrag) {
     <img id="big" src="big.png">
   )HTML");
 
-  // The 3000x2000.png test image exceeds the `kMaxOriginalImageArea` cap,
-  // so `DragImageForImage()` returns nullptr, but the image still passes
-  // `CanDragImage()`.
+  // The 3000x2000.png test image (6 MP) is larger than an ordinary photo but
+  // still passes `CanDragImage()` and produces a (down-scaled) drag preview.
   image_resource.Complete(*test::ReadFromFile(
       test::CoreTestDataPath("notifications/3000x2000.png")));
   test::RunPendingTasks();
@@ -596,6 +653,30 @@ TEST_F(DragControllerTest, DragImageOffsetWithPageScaleFactor) {
   gfx::Vector2d expected_offset(5 * page_scale_factor,
                                 (10 - 2) * page_scale_factor);
   EXPECT_EQ(expected_offset, GetChromeClient().last_cursor_offset);
+}
+
+// A large image whose intrinsic area exceeds the former 1500*1500 (2.25 MP)
+// cap used to make `DragImageForImage()` return null, leaving the dragged
+// image with no preview even though its data payload still transferred. The
+// drag image is always scaled down to `MaxDragImageSize`, so the source
+// image's intrinsic size must not suppress the preview. With the
+// DragImageForLargeImages feature enabled, a large image still produces a
+// non-empty drag image.
+TEST_F(DragControllerTest, LargeImageProducesDragImage) {
+  ScopedDragImageForLargeImagesForTest scoped_feature(true);
+
+  // With the obsolete intrinsic-area cap removed, the large image yields a
+  // (down-scaled) drag preview instead of an empty bitmap.
+  EXPECT_FALSE(StartDragForLargeImage().IsEmpty());
+}
+
+// Kill-switch coverage: when the DragImageForLargeImages feature is disabled,
+// the legacy intrinsic-area cap is restored, so a large image produces no drag
+// preview while the drag itself still starts.
+TEST_F(DragControllerTest, LargeImageProducesNoDragImageWhenFeatureDisabled) {
+  ScopedDragImageForLargeImagesForTest scoped_feature(false);
+
+  EXPECT_TRUE(StartDragForLargeImage().IsEmpty());
 }
 
 TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {

@@ -1150,8 +1150,10 @@ std::unique_ptr<DragImage> DragImageForImage(
       image_resource.ImageOrientation();
 
   gfx::Size image_size = image->Size(respect_orientation);
-  if (image_size.Area64() > kMaxOriginalImageArea)
+  if (!RuntimeEnabledFeatures::DragImageForLargeImagesEnabled() &&
+      image_size.Area64() > kMaxOriginalImageArea) {
     return nullptr;
+  }
 
   InterpolationQuality interpolation_quality = GetDefaultInterpolationQuality();
   if (layout_image->StyleRef().ImageRendering() ==

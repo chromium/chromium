@@ -2550,6 +2550,16 @@
       status: "test",
     },
     {
+      // When enabled, drag image previews are generated for images regardless
+      // of their intrinsic size (the output is still clamped to
+      // MaxDragImageSize). When disabled, images whose intrinsic area exceeds
+      // kMaxOriginalImageArea produce no drag preview (legacy behavior). Acts
+      // as a kill switch for the removal of that cap. See
+      // https://crbug.com/518266739
+      name: "DragImageForLargeImages",
+      status: "stable",
+    },
+    {
       // See: crrev.com/c/7874048
       // Diagnostic flag to gather data for a case when compositable animations lack snapshots without a known reason.
       name: "DumpForAbsentKeyframeSnapshots",
