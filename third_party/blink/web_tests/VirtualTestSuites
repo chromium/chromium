@@ -826,6 +826,21 @@
     ],
     "expires": "Jun 1, 2027"
   },
+  "Enables the fake UI to test successful token retrieval by auto-resolving",
+  "requests in 1ms. Without this flag, the API hangs to simulate waiting",
+  "for user interaction (which is the default expectation for WPTs).",
+  {
+    "prefix": "digital-credentials-fake-ui",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "wpt_internal/digital-credentials",
+      "http/tests/inspector-protocol/digital-credentials"
+    ],
+    "args": ["--use-fake-ui-for-digital-identity"],
+    "exclusive_tests": "ALL",
+    "owners": ["mamir@chromium.org"],
+    "expires": "never"
+  },
   {
     "prefix": "direct-sockets",
     "owners": [

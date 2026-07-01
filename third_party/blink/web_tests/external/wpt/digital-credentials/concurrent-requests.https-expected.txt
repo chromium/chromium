@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] A second get() call while another is pending should reject with NotAllowedError.
-  assert_unreached: Should have rejected: Second concurrent request should be rejected with NotAllowedError Reached unreachable code
-Harness: the test ran to completion.
-

@@ -47,6 +47,7 @@
 #include "components/surface_embed/common/surface_embed.mojom.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/client_certificate_delegate.h"
+#include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
@@ -302,6 +303,39 @@ std::unique_ptr<PrefService> CreateLocalState() {
 bool AreIsolatedWebAppsEnabled() {
   return base::FeatureList::IsEnabled(features::kIsolatedWebApps);
 }
+
+// A dummy DigitalIdentityProvider that hangs (never invokes the callback) to
+// simulate the browser waiting for user interaction on the selection UI.
+// This is the default expectation for Digital Credential APIs in WPTs when
+// no user interaction is simulated.
+class ShellDigitalIdentityProvider : public content::DigitalIdentityProvider {
+ public:
+  ShellDigitalIdentityProvider() = default;
+  ~ShellDigitalIdentityProvider() override = default;
+
+  bool IsLastCommittedOriginLowRisk(
+      content::RenderFrameHost& render_frame_host) const override {
+    return false;
+  }
+
+  DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
+      content::WebContents& web_contents,
+      const url::Origin& origin,
+      content::DigitalIdentityInterstitialType interstitial_type,
+      DigitalIdentityInterstitialCallback callback) override {
+    return base::OnceClosure();
+  }
+
+  void Get(content::WebContents* web_contents,
+           const url::Origin& origin,
+           base::ValueView request,
+           DigitalIdentityCallback callback) override {}
+
+  void Create(content::WebContents* web_contents,
+              const url::Origin& origin,
+              base::ValueView request,
+              DigitalIdentityCallback callback) override {}
+};
 
 }  // namespace
 
@@ -879,6 +913,11 @@ void ShellContentBrowserClient::OnWebContentsCreated(
 void ShellContentBrowserClient::CreateFeatureListAndFieldTrials() {
   GetSharedState().local_state = CreateLocalState();
   SetupFieldTrials();
+}
+
+std::unique_ptr<DigitalIdentityProvider>
+ShellContentBrowserClient::CreateDigitalIdentityProvider() {
+  return std::make_unique<ShellDigitalIdentityProvider>();
 }
 
 // Tests may install their own ShellContentBrowserClient, track the list here.

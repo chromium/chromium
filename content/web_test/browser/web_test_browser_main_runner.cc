@@ -309,9 +309,6 @@ void WebTestBrowserMainRunner::Initialize() {
   // Always run with fake FedCM UI.
   command_line.AppendSwitch(switches::kUseFakeUIForFedCM);
 
-  // Always run with fake digital identity credential UI.
-  command_line.AppendSwitch(switches::kUseFakeUIForDigitalIdentity);
-
   // Disable the backgrounding of renderers to make running tests faster.
   command_line.AppendSwitch(switches::kDisableRendererBackgrounding);
 

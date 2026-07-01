@@ -624,7 +624,7 @@ void DigitalIdentityRequestImpl::Get(
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeUIForDigitalIdentity)) {
-    // Post delayed task to enable testing abort.
+    // Post delayed task to simulate successful user resolution.
     std::string fake_protocol = digital_credential_requests[0]->protocol;
     GetUIThreadTaskRunner()->PostDelayedTask(
         FROM_HERE,
@@ -750,7 +750,7 @@ void DigitalIdentityRequestImpl::Create(
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeUIForDigitalIdentity)) {
-    // Post delayed task to enable testing abort+.
+    // Post delayed task to simulate successful user resolution.
     GetUIThreadTaskRunner()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,

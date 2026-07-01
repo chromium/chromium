@@ -8,6 +8,7 @@
 
 # Do not skip wpt_internal tests on blink_wpt_tests
 wpt_internal/*
+virtual/digital-credentials-fake-ui/wpt_internal/*
 virtual/threaded/wpt_internal/*
 virtual/attribution-reporting-debug-mode/wpt_internal/*
 virtual/background-fetch-service-worker-allowed/wpt_internal/*
