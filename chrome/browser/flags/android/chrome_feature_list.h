@@ -55,7 +55,6 @@ BASE_DECLARE_FEATURE(kAndroidSaveCardNonBlockingDialog);
 BASE_DECLARE_FEATURE(kAndroidSettingsContainment);
 BASE_DECLARE_FEATURE(kAndroidSettingsUrl);
 BASE_DECLARE_FEATURE(kAndroidSetupList);
-BASE_DECLARE_FEATURE(kAndroidShareFullLink);
 BASE_DECLARE_FEATURE(kAndroidSurfaceColorUpdate);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterDedupeTabIdsKillSwitch);
 BASE_DECLARE_FEATURE(kAndroidTabSkipSaveTabsKillswitch);

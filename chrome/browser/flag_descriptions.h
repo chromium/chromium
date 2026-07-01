@@ -5389,11 +5389,6 @@ inline constexpr char kAndroidForceTextInputStateUpdateUponFocusDescription[] =
     "Forces an active text input state update calculation and push whenever "
     "focus is gained on an editable text field.";
 
-inline constexpr char kAndroidShareFullLinkName[] =
-    "Share Full Link on Android";
-inline constexpr char kAndroidShareFullLinkDescription[] =
-    "Enables sharing the full link instead of the canonical URL on Android.";
-
 inline constexpr char kAndroidSpellcheckFullApiBlinkName[] =
     "Enable full Android Spellchecker API support for Blink";
 inline constexpr char kAndroidSpellcheckFullApiBlinkDescription[] =

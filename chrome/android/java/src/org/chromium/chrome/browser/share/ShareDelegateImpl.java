@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.FeatureList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -28,7 +26,6 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -38,11 +35,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetController;
 import org.chromium.chrome.browser.share.android_share_sheet.TabGroupSharingController;
-import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.share.send_tab_to_self.ShareEntryPoint;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
-import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -50,10 +45,7 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLaunche
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
-import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.ui_metrics.CanonicalURLResult;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -71,7 +63,6 @@ import java.util.function.Supplier;
 /** Implementation of share interface. Mostly a wrapper around ShareSheetCoordinator. */
 @NullMarked
 public class ShareDelegateImpl implements ShareDelegate {
-    static final String CANONICAL_URL_RESULT_HISTOGRAM = "Mobile.CanonicalURLResult";
 
     private final Context mContext;
     private final @Nullable BottomSheetController mBottomSheetController;
@@ -248,79 +239,27 @@ public class ShareDelegateImpl implements ShareDelegate {
                         share(p, extras, shareOrigin);
                         return;
                     }
-                    // Could not share as an offline page.
-                    if (!shouldFetchCanonicalUrl(currentTab)) {
-                        assert currentTab.getWindowAndroid() != null;
-                        triggerShareWithCanonicalUrlResolved(
-                                currentTab.getWindowAndroid(),
-                                currentTab.getWebContents(),
-                                currentTab.getTitle(),
-                                currentTab.getUrl(),
-                                GURL.emptyGURL(),
-                                shareOrigin,
-                                shareDirectly);
-                    } else {
-                        triggerShareWithUnresolvedUrl(currentTab, shareOrigin, shareDirectly);
-                    }
+                    // Could not share as an offline page. Share the visible URL.
+                    assert currentTab.getWindowAndroid() != null;
+                    triggerShareWithUrl(
+                            currentTab.getWindowAndroid(),
+                            currentTab.getWebContents(),
+                            currentTab.getTitle(),
+                            currentTab.getUrl(),
+                            shareOrigin,
+                            shareDirectly);
                 });
     }
 
-    private void triggerShareWithUnresolvedUrl(
-            Tab currentTab, @ShareOrigin int shareOrigin, boolean shareDirectly) {
-        WindowAndroid window = assertNonNull(currentTab.getWindowAndroid());
-        WebContents webContents = currentTab.getWebContents();
-        String title = currentTab.getTitle();
-        GURL visibleUrl = currentTab.getUrl();
-        assumeNonNull(webContents)
-                .getMainFrame()
-                .getCanonicalUrlForSharing(
-                        (@Nullable GURL result) -> {
-                            if (!LinkToTextHelper.hasTextFragment(visibleUrl)) {
-                                logCanonicalUrlResult(visibleUrl, result);
-                                triggerShareWithCanonicalUrlResolved(
-                                        window,
-                                        webContents,
-                                        title,
-                                        visibleUrl,
-                                        result,
-                                        shareOrigin,
-                                        shareDirectly);
-                                return;
-                            }
-
-                            LinkToTextHelper.getExistingSelectorsAllFrames(
-                                    currentTab,
-                                    (selectors) -> {
-                                        GURL canonicalUrl = null;
-                                        if (result != null) {
-                                            canonicalUrl =
-                                                    new GURL(
-                                                            LinkToTextHelper.getUrlToShare(
-                                                                    result.getSpec(), selectors));
-                                        }
-                                        logCanonicalUrlResult(visibleUrl, canonicalUrl);
-                                        triggerShareWithCanonicalUrlResolved(
-                                                window,
-                                                webContents,
-                                                title,
-                                                visibleUrl,
-                                                canonicalUrl,
-                                                shareOrigin,
-                                                shareDirectly);
-                                    });
-                        });
-    }
-
-    private void triggerShareWithCanonicalUrlResolved(
+    private void triggerShareWithUrl(
             final WindowAndroid window,
             final @Nullable WebContents webContents,
             final String title,
             final GURL visibleUrl,
-            @Nullable final GURL canonicalUrl,
             @ShareOrigin final int shareOrigin,
             final boolean shareDirectly) {
         ShareParams.Builder shareParamsBuilder =
-                new ShareParams.Builder(window, title, getUrlToShare(visibleUrl, canonicalUrl));
+                new ShareParams.Builder(window, title, getUrlToShare(visibleUrl));
 
         shareParamsBuilder.setOrigin(shareOrigin);
         boolean isDownloadedPdf = PdfUtils.isDownloadedPdf(visibleUrl.getSpec());
@@ -346,67 +285,9 @@ public class ShareDelegateImpl implements ShareDelegate {
     }
 
     @VisibleForTesting
-    static boolean shouldFetchCanonicalUrl(final Tab currentTab) {
-        WebContents webContents = currentTab.getWebContents();
-        if (webContents == null) return false;
-        if (webContents.getMainFrame() == null) return false;
-        if (currentTab.getUrl().isEmpty()) return false;
-        if (currentTab.isShowingErrorPage()
-                || SadTab.isShowing(currentTab)
-                || currentTab.isNativePage()) {
-            return false;
-        }
-        return true;
-    }
-
-    private static void logCanonicalUrlResult(GURL visibleUrl, @Nullable GURL canonicalUrl) {
-        @CanonicalURLResult int result = getCanonicalUrlResult(visibleUrl, canonicalUrl);
-        RecordHistogram.recordEnumeratedHistogram(
-                CANONICAL_URL_RESULT_HISTOGRAM,
-                result,
-                CanonicalURLResult.CANONICAL_URL_RESULT_COUNT);
-    }
-
-    @VisibleForTesting
-    static String getUrlToShare(GURL visibleUrl, @Nullable GURL canonicalUrl) {
+    static String getUrlToShare(GURL visibleUrl) {
         if (PdfUtils.isDownloadedPdf(visibleUrl.getSpec())) return "";
-        if (FeatureList.isNativeInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SHARE_FULL_LINK)) {
-            return visibleUrl.getSpec();
-        }
-        if (canonicalUrl == null || canonicalUrl.isEmpty()) {
-            return visibleUrl.getSpec();
-        }
-        if (!UrlConstants.HTTPS_SCHEME.equals(visibleUrl.getScheme())) {
-            return visibleUrl.getSpec();
-        }
-        if (!UrlUtilities.isHttpOrHttps(canonicalUrl)) {
-            return visibleUrl.getSpec();
-        }
-        return canonicalUrl.getSpec();
-    }
-
-    private static @CanonicalURLResult int getCanonicalUrlResult(
-            GURL visibleUrl, @Nullable GURL canonicalUrl) {
-        if (!UrlConstants.HTTPS_SCHEME.equals(visibleUrl.getScheme())) {
-            return CanonicalURLResult.FAILED_VISIBLE_URL_NOT_HTTPS;
-        }
-        if (canonicalUrl == null || canonicalUrl.isEmpty()) {
-            return CanonicalURLResult.FAILED_NO_CANONICAL_URL_DEFINED;
-        }
-        String canonicalScheme = canonicalUrl.getScheme();
-        if (!UrlConstants.HTTPS_SCHEME.equals(canonicalScheme)) {
-            if (!UrlConstants.HTTP_SCHEME.equals(canonicalScheme)) {
-                return CanonicalURLResult.FAILED_CANONICAL_URL_INVALID;
-            } else {
-                return CanonicalURLResult.SUCCESS_CANONICAL_URL_NOT_HTTPS;
-            }
-        }
-        if (visibleUrl.equals(canonicalUrl)) {
-            return CanonicalURLResult.SUCCESS_CANONICAL_URL_SAME_AS_VISIBLE;
-        } else {
-            return CanonicalURLResult.SUCCESS_CANONICAL_URL_DIFFERENT_FROM_VISIBLE;
-        }
+        return visibleUrl.getSpec();
     }
 
     private void printTab(Tab tab) {

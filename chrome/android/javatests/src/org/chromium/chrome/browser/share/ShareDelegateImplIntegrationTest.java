@@ -18,10 +18,6 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -37,7 +33,6 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.components.ui_metrics.CanonicalURLResult;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -51,14 +46,9 @@ import java.util.function.Supplier;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures(ChromeFeatureList.ANDROID_SHARE_FULL_LINK)
 public class ShareDelegateImplIntegrationTest {
     private static final String PAGE_WITH_HTTPS_CANONICAL_URL =
             "/chrome/test/data/android/share/link_share_https_canonical.html";
-    private static final String PAGE_WITH_HTTP_CANONICAL_URL =
-            "/chrome/test/data/android/share/link_share_http_canonical.html";
-    private static final String PAGE_WITH_NO_CANONICAL_URL =
-            "/chrome/test/data/android/share/link_share_no_canonical.html";
 
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
@@ -66,84 +56,22 @@ public class ShareDelegateImplIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_SHARE_FULL_LINK)
-    public void testCanonicalUrlsOverHttps() throws TimeoutException {
+    public void testShareVisibleUrl() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(
                         InstrumentationRegistry.getInstrumentation().getContext(),
                         ServerCertificate.CERT_OK);
         final String httpsCanonicalUrl = testServer.getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
-        final String httpCanonicalUrl = testServer.getURL(PAGE_WITH_HTTP_CANONICAL_URL);
-        final String noCanonicalUrl = testServer.getURL(PAGE_WITH_NO_CANONICAL_URL);
 
-        verifyShareUrl(
-                httpsCanonicalUrl,
-                "https://examplehttps.com/",
-                CanonicalURLResult.SUCCESS_CANONICAL_URL_DIFFERENT_FROM_VISIBLE);
-        verifyShareUrl(
-                httpCanonicalUrl,
-                "http://examplehttp.com/",
-                CanonicalURLResult.SUCCESS_CANONICAL_URL_NOT_HTTPS);
-        verifyShareUrl(
-                noCanonicalUrl, noCanonicalUrl, CanonicalURLResult.FAILED_NO_CANONICAL_URL_DEFINED);
+        // We expect to share the visible URL (httpsCanonicalUrl), NOT the canonical URL.
+        verifyShareUrl(httpsCanonicalUrl, httpsCanonicalUrl);
     }
 
-    @Test
-    @SmallTest
-    public void testCanonicalUrlsOverHttps_AndroidShareFullLinkEnabled() throws TimeoutException {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartHTTPSServer(
-                        InstrumentationRegistry.getInstrumentation().getContext(),
-                        ServerCertificate.CERT_OK);
-        final String httpsCanonicalUrl = testServer.getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
-        final String httpCanonicalUrl = testServer.getURL(PAGE_WITH_HTTP_CANONICAL_URL);
-        final String noCanonicalUrl = testServer.getURL(PAGE_WITH_NO_CANONICAL_URL);
-
-        verifyShareUrl(
-                httpsCanonicalUrl,
-                httpsCanonicalUrl,
-                CanonicalURLResult.SUCCESS_CANONICAL_URL_DIFFERENT_FROM_VISIBLE);
-        verifyShareUrl(
-                httpCanonicalUrl,
-                httpCanonicalUrl,
-                CanonicalURLResult.SUCCESS_CANONICAL_URL_NOT_HTTPS);
-        verifyShareUrl(
-                noCanonicalUrl, noCanonicalUrl, CanonicalURLResult.FAILED_NO_CANONICAL_URL_DEFINED);
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_SHARE_FULL_LINK)
-    public void testCanonicalUrlsOverHttp() throws TimeoutException {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(
-                        InstrumentationRegistry.getInstrumentation().getContext());
-        final String httpsCanonicalUrl = testServer.getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
-        final String httpCanonicalUrl = testServer.getURL(PAGE_WITH_HTTP_CANONICAL_URL);
-        final String noCanonicalUrl = testServer.getURL(PAGE_WITH_NO_CANONICAL_URL);
-
-        verifyShareUrl(
-                httpsCanonicalUrl,
-                httpsCanonicalUrl,
-                CanonicalURLResult.FAILED_VISIBLE_URL_NOT_HTTPS);
-        verifyShareUrl(
-                httpCanonicalUrl,
-                httpCanonicalUrl,
-                CanonicalURLResult.FAILED_VISIBLE_URL_NOT_HTTPS);
-        verifyShareUrl(
-                noCanonicalUrl, noCanonicalUrl, CanonicalURLResult.FAILED_VISIBLE_URL_NOT_HTTPS);
-    }
-
-    private void verifyShareUrl(
-            String pageUrl, String expectedShareUrl, @CanonicalURLResult int expectedUrlResult)
+    private void verifyShareUrl(String pageUrl, String expectedShareUrl)
             throws IllegalArgumentException, TimeoutException {
         mActivityTestRule.loadUrl(pageUrl);
-        var urlResultHistogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        ShareDelegateImpl.CANONICAL_URL_RESULT_HISTOGRAM, expectedUrlResult);
         ShareParams params = triggerShare();
         Assert.assertTrue(params.getTextAndUrl().contains(expectedShareUrl));
-        urlResultHistogram.assertExpected();
     }
 
     private ShareParams triggerShare() throws TimeoutException {
