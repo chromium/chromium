@@ -1250,14 +1250,16 @@ void PopulateBinderMapWithContext(
   map->Add<device::mojom::NFC>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::BindNFCReceiver>);
 #else
-  map->Add<blink::mojom::HidService>(
-      &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetHidService>);
-
   map->Add<blink::mojom::InstalledAppProvider>(
       &BindRenderFrameHostImpl<
           &RenderFrameHostImpl::CreateInstalledAppProvider>);
 #endif  // BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) &&
         // !BUILDFLAG(IS_IOS_TVOS))
+
+#if !BUILDFLAG(IS_IOS)
+  map->Add<blink::mojom::HidService>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetHidService>);
+#endif  // !BUILDFLAG(IS_IOS)
 
   map->Add<blink::mojom::SerialService>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::BindSerialService>);

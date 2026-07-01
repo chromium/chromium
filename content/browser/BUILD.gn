@@ -1220,6 +1220,8 @@ source_set("browser") {
     "handwriting/handwriting_recognition_service_impl.h",
     "handwriting/handwriting_recognizer_impl.cc",
     "handwriting/handwriting_recognizer_impl.h",
+    "hid/hid_service.cc",
+    "hid/hid_service.h",
     "host_zoom_level_context.cc",
     "host_zoom_level_context.h",
     "host_zoom_map_impl.cc",
@@ -3588,10 +3590,6 @@ source_set("browser") {
       "direct_sockets/direct_sockets_service_impl.cc",
       "direct_sockets/direct_sockets_service_impl.h",
 
-      # WebHID is non-Android
-      "hid/hid_service.cc",
-      "hid/hid_service.h",
-
       # These fetch web app tasks, used by getInstalledRelatedApps API, are not
       # supported in Android.
       "installedapp/fetch_related_web_apps_task.cc",
@@ -3602,7 +3600,7 @@ source_set("browser") {
       "network_sandbox.cc",
       "network_sandbox.h",
 
-      # WebHID is non-Android
+      # WebHID is not supported in service workers on Android
       "service_worker/service_worker_hid_delegate_observer.cc",
       "service_worker/service_worker_hid_delegate_observer.h",
 

@@ -754,10 +754,14 @@ static_library("test_support") {
 
   # HID support is not available without udev.
   is_linux_without_udev = (is_linux || is_chromeos) && !use_udev
-  if (!is_linux_without_udev && !is_android) {
+  if (!is_linux_without_udev) {
     sources += [
       "../browser/hid/hid_test_utils.cc",
       "../browser/hid/hid_test_utils.h",
+    ]
+  }
+  if (!is_linux_without_udev && !is_android) {
+    sources += [
       "../browser/webauth/authenticator_test_base.cc",
       "../browser/webauth/authenticator_test_base.h",
     ]
@@ -2392,11 +2396,11 @@ test("content_browsertests") {
 
   # HID support is not available without udev.
   is_linux_without_udev = (is_linux || is_chromeos) && !use_udev
+  if (!is_linux_without_udev) {
+    sources += [ "../browser/hid/hid_browsertest.cc" ]
+  }
   if (!is_linux_without_udev && !is_android) {
-    sources += [
-      "../browser/hid/hid_browsertest.cc",
-      "../browser/webauth/webauth_browsertest.cc",
-    ]
+    sources += [ "../browser/webauth/webauth_browsertest.cc" ]
   }
 
   if (is_mac) {
