@@ -52,10 +52,10 @@ class AtMemoryFunnelMetrics {
   void MarkFilled();
 
   // Records the start time of the asynchronous PII fetching process.
-  void OnFetchStarted();
+  void OnFetchPiiStarted();
 
   // Records the completion of the asynchronous PII fetching process.
-  void OnFetchCompleted();
+  void OnFetchPiiCompleted();
 
  private:
   // The trigger source of the popup. It is `std::nullopt` until `OnPopupShown`
@@ -67,9 +67,9 @@ class AtMemoryFunnelMetrics {
   bool suggestion_accepted_ = false;
   bool was_filled_ = false;
   // The start time of the asynchronous fetch/unmask process.
-  std::optional<base::TimeTicks> fetch_start_time_;
+  std::optional<base::TimeTicks> fetch_pii_start_time_;
   // The duration of the successful asynchronous fetch/unmask process.
-  std::optional<base::TimeDelta> fetch_duration_;
+  std::optional<base::TimeDelta> fetch_pii_duration_;
 
   // The URL of the primary page the user triggered the @memory search on.
   GURL url_;

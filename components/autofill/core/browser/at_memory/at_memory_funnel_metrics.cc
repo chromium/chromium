@@ -35,9 +35,9 @@ AtMemoryFunnelMetrics::~AtMemoryFunnelMetrics() {
     if (suggestion_accepted_) {
       base::UmaHistogramBoolean("Autofill.AtMemory.Funnel.SuggestionFilled",
                                 was_filled_);
-      if (fetch_duration_) {
+      if (fetch_pii_duration_) {
         base::UmaHistogramTimes("Autofill.AtMemory.Funnel.TimeToFetchUnmasked",
-                                *fetch_duration_);
+                                *fetch_pii_duration_);
       }
     }
   }
@@ -106,14 +106,14 @@ void AtMemoryFunnelMetrics::OnSuggestionAccepted() {
   suggestion_accepted_ = true;
 }
 
-void AtMemoryFunnelMetrics::OnFetchStarted() {
-  fetch_start_time_ = base::TimeTicks::Now();
-  fetch_duration_.reset();
+void AtMemoryFunnelMetrics::OnFetchPiiStarted() {
+  fetch_pii_start_time_ = base::TimeTicks::Now();
+  fetch_pii_duration_.reset();
 }
 
-void AtMemoryFunnelMetrics::OnFetchCompleted() {
-  CHECK(fetch_start_time_);
-  fetch_duration_.emplace(base::TimeTicks::Now() - *fetch_start_time_);
+void AtMemoryFunnelMetrics::OnFetchPiiCompleted() {
+  CHECK(fetch_pii_start_time_);
+  fetch_pii_duration_.emplace(base::TimeTicks::Now() - *fetch_pii_start_time_);
 }
 
 void AtMemoryFunnelMetrics::MarkFilled() {

@@ -139,9 +139,9 @@ TEST_F(AtMemoryFunnelMetricsTest, TimeToFetchUnmasked) {
     AtMemoryFunnelMetrics metrics(nullptr, GURL(), std::u16string());
     metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
     metrics.OnSuggestionAccepted();
-    metrics.OnFetchStarted();
+    metrics.OnFetchPiiStarted();
     task_environment.FastForwardBy(base::Seconds(2));
-    metrics.OnFetchCompleted();
+    metrics.OnFetchPiiCompleted();
     metrics.MarkFilled();
   }
 

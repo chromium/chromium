@@ -956,7 +956,7 @@ void AtMemoryManager::FillIban(
   }
 
   if (metrics) {
-    metrics->OnFetchStarted();
+    metrics->OnFetchPiiStarted();
   }
 
   iban_access_manager->FetchValue(
@@ -971,7 +971,7 @@ void AtMemoryManager::FillIban(
               return;
             }
             if (metrics) {
-              metrics->OnFetchCompleted();
+              metrics->OnFetchPiiCompleted();
               metrics->MarkFilled();
             }
             manager->owner_->FillOrPreviewField(
@@ -1004,7 +1004,7 @@ void AtMemoryManager::FillCreditCard(
   }
 
   if (metrics) {
-    metrics->OnFetchStarted();
+    metrics->OnFetchPiiStarted();
   }
 
   // TODO(crbug.com/497795513): Consider caching fetched cards.
@@ -1020,7 +1020,7 @@ void AtMemoryManager::FillCreditCard(
               return;
             }
             if (metrics) {
-              metrics->OnFetchCompleted();
+              metrics->OnFetchPiiCompleted();
               metrics->MarkFilled();
             }
             const Suggestion::AtMemoryPayload& payload =
@@ -1065,7 +1065,7 @@ void AtMemoryManager::FillSensitiveAutofillAiData(
   }
 
   if (metrics) {
-    metrics->OnFetchStarted();
+    metrics->OnFetchPiiStarted();
   }
 
   owner_->GetAutofillAiAccessManager().FetchEntityInstance(
@@ -1113,7 +1113,7 @@ void AtMemoryManager::OnAutofillAiFetched(
   }
 
   if (metrics) {
-    metrics->OnFetchCompleted();
+    metrics->OnFetchPiiCompleted();
     metrics->MarkFilled();
   }
 
