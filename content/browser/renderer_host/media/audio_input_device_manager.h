@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread.h"
@@ -73,6 +74,12 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   // Only accessed on Browser::IO thread.
   base::ObserverList<MediaStreamProviderListener>::Unchecked listeners_;
   blink::MediaStreamDevices devices_;
+
+  // Sessions for which Open() has been called and the asynchronous device
+  // query is still in flight. A session is removed from this set either when
+  // OpenedOnIOThread() runs or when Close() is called for it before that
+  // happens, in which case OpenedOnIOThread() will discard the result.
+  base::flat_set<base::UnguessableToken> pending_open_sessions_;
 
   const raw_ptr<media::AudioSystem> audio_system_;
 };
