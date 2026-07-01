@@ -18,6 +18,7 @@ source_set("eg2_tests") {
     "//components/signin/public/base",
     "//components/sync/base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/account_menu/public",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
