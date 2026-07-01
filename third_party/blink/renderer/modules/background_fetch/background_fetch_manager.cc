@@ -397,6 +397,19 @@ ScriptPromise<IDLNullable<BackgroundFetchRegistration>>
 BackgroundFetchManager::get(ScriptState* script_state,
                             const String& id,
                             ExceptionState& exception_state) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsInFencedFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "backgroundFetch is not allowed in fenced frames.");
+    return EmptyPromise();
+  }
+
+  if (id.empty()) {
+    exception_state.ThrowTypeError("The provided id is invalid.");
+    return EmptyPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolver<IDLNullable<BackgroundFetchRegistration>>>(
       script_state, exception_state.GetContext());
@@ -409,20 +422,7 @@ BackgroundFetchManager::get(ScriptState* script_state,
     return promise;
   }
 
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  if (execution_context->IsInFencedFrame()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "backgroundFetch is not allowed in fenced frames.");
-    return promise;
-  }
-
   ScriptState::Scope scope(script_state);
-
-  if (id.empty()) {
-    exception_state.ThrowTypeError("The provided id is invalid.");
-    return promise;
-  }
 
   bridge_->GetRegistration(id, resolver->WrapCallbackInScriptScope(BindOnce(
                                    &BackgroundFetchManager::DidGetRegistration,
