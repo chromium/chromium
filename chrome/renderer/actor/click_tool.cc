@@ -110,8 +110,14 @@ bool ClickTool::SupportsPaintStability() const {
 
 void ClickTool::Cancel() {
   if (click_dispatcher_) {
+    // click_dispatcher_->Cancel() synchronously dispatches DOM events that
+    // might destroy the owning frame and this tool. Use a weak pointer to
+    // detect if `this` is still valid.
+    base::WeakPtr<ClickTool> weak_this = weak_ptr_factory_.GetWeakPtr();
     click_dispatcher_->Cancel();
-    click_dispatcher_.reset();
+    if (weak_this) {
+      click_dispatcher_.reset();
+    }
   }
 }
 
