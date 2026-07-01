@@ -109,6 +109,11 @@ chromium-metrics-reviews@google.com.
                available on Windows."/>
 </variants>
 
+<variants name="NewWindowMetricVersion">
+  <variant name="" summary=""/>
+  <variant name="2" summary="(V2 with fixed metric start times)"/>
+</variants>
+
 <variants name="PaintType">
   <variant name="FirstContentfulPaint" summary="contentful paint"/>
   <variant name="FirstPaint" summary="paint"/>
@@ -542,23 +547,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.ClosedBeforeFirstPaint"
+    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.ClosedBeforeFirstPaint{Version}"
     units="ms" expires_after="2026-12-31">
   <owner>annasato@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the duration from window creation to closing the browser window for
-    new windows {CreationSource} {ExistingWindow}.
+    new windows {CreationSource} {ExistingWindow}{Version}.
 
     This is only recorded for desktop platforms when the InitialWebUIMetrics is
     enabled, and when the initial paint has not been recorded.
   </summary>
   <token key="CreationSource" variants="CreationSource"/>
   <token key="ExistingWindow" variants="ExistingWindow"/>
+  <token key="Version" variants="NewWindowMetricVersion"/>
 </histogram>
 
 <histogram
-    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.FirstPaint.{StartPoint}"
+    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.FirstPaint.{StartPoint}{Version}"
     units="ms" expires_after="2026-11-08">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
@@ -572,17 +578,18 @@ chromium-metrics-reviews@google.com.
   <token key="CreationSource" variants="CreationSource"/>
   <token key="ExistingWindow" variants="ExistingWindow"/>
   <token key="StartPoint" variants="StartPoint"/>
+  <token key="Version" variants="NewWindowMetricVersion"/>
 </histogram>
 
 <histogram
-    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.ShowRequestedToFirstPaint.{StartPoint}"
+    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.ShowRequestedToFirstPaint.{StartPoint}{Version}"
     units="ms" expires_after="2026-11-29">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the duration from the initial show/activation request of a new
-    browser window to its first paint. {CreationSource} {ExistingWindow}.
-    {StartPoint}
+    browser window to its first paint. {CreationSource} {ExistingWindow}
+    {Version}. {StartPoint}
 
     This metric is used to measure the impact of window show deferral. It is
     recorded only once per window lifecycle. If multiple windows are shown
@@ -595,17 +602,18 @@ chromium-metrics-reviews@google.com.
   <token key="CreationSource" variants="CreationSource"/>
   <token key="ExistingWindow" variants="ExistingWindow"/>
   <token key="StartPoint" variants="StartPoint"/>
+  <token key="Version" variants="NewWindowMetricVersion"/>
 </histogram>
 
 <histogram
-    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindowToReloadButton.FirstPaintGap"
+    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindowToReloadButton.FirstPaintGap{Version}"
     units="ms" expires_after="2026-11-29">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the delay between the native browser window's first presentation
     (paint) and the Reload Button first paint in a new window. {CreationSource}
-    {ExistingWindow}.
+    {ExistingWindow}{Version}.
 
     This is a direct, session-linked measurement of the delta, unlike the
     separately logged `.FirstPaint` metrics. Used to quantify the rendering lag.
@@ -615,16 +623,17 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="CreationSource" variants="CreationSource"/>
   <token key="ExistingWindow" variants="ExistingWindow"/>
+  <token key="Version" variants="NewWindowMetricVersion"/>
 </histogram>
 
 <histogram
-    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.ReloadButton.{PaintType}.{StartPoint}"
+    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.ReloadButton.{PaintType}.{StartPoint}{Version}"
     units="ms" expires_after="2026-11-08">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the time from {StartPoint} to first {PaintType} of the Reload Button
-    in the new browser window. {CreationSource} {ExistingWindow}.
+    in the new browser window. {CreationSource} {ExistingWindow}{Version}.
 
     This is only recorded for desktop platforms when the InitialWebUIMetrics is
     enabled.
@@ -633,6 +642,7 @@ chromium-metrics-reviews@google.com.
   <token key="ExistingWindow" variants="ExistingWindow"/>
   <token key="PaintType" variants="PaintType"/>
   <token key="StartPoint" variants="StartPoint"/>
+  <token key="Version" variants="NewWindowMetricVersion"/>
 </histogram>
 
 <histogram

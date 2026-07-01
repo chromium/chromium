@@ -524,7 +524,12 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
                                std::vector<RestoredTab>& restored_tabs) {
     Browser* browser = nullptr;
     if (!created_tabbed_browser && always_create_tabbed_browser_) {
+      base::TimeTicks now = base::TimeTicks::Now();
       browser = Browser::Create(Browser::CreateParams(profile_, false));
+      if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
+        manager->SetWindowCreationInfo(
+            waap::NewWindowCreationSource::kBrowserInitiated, now);
+      }
       if (startup_tabs_.empty() ||
           (startup_tabs_.size() == 1 && whats_new::IsEnabled() &&
            startup_tabs_[0].url == whats_new::GetWebUIStartupURL())) {

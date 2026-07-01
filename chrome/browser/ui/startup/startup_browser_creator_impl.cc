@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/chrome_version.h"
@@ -330,7 +331,12 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
           command_line_->GetSwitchValueUTF8(switches::kWindowName);
     }
 
+    base::TimeTicks now = base::TimeTicks::Now();
     browser = Browser::Create(params);
+    if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
+      manager->SetWindowCreationInfo(
+          waap::NewWindowCreationSource::kBrowserInitiated, now);
+    }
   }
   CHECK(profile_);
 
