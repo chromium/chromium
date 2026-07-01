@@ -1649,17 +1649,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.EventlessEventPages" units="units"
-    expires_after="2022-06-01">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The number of extensions with event pages that have no registered event
-    listeners at profile startup. (This may indicate something has gone wrong;
-    such event pages will never get started.)
-  </summary>
-</histogram>
-
 <histogram name="Extensions.EventPageActiveTime2" units="ms"
     expires_after="never">
 <!-- expires-never: Monitoring core extensions platform behavior. -->

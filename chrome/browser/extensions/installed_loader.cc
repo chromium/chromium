@@ -39,7 +39,6 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/disable_reason.h"
-#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_allowlist.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
@@ -486,7 +485,6 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile) {
   int incognito_not_allowed_count = 0;
   int file_access_allowed_count = 0;
   int file_access_not_allowed_count = 0;
-  int eventless_event_pages_count = 0;
   int off_store_item_count = 0;
   int web_request_blocking_count = 0;
   int web_request_count = 0;
@@ -698,17 +696,6 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile) {
     if (type == Manifest::Type::kExtension) {
       base::UmaHistogramEnumeration("Extensions.BackgroundPageType2",
                                     GetBackgroundPageType(extension));
-
-      if (GetBackgroundPageType(extension) == BackgroundPageType::kEventPage) {
-        // Count extension event pages with no registered events. Either the
-        // event page is badly designed, or there may be a bug where the event
-        // page failed to start after an update (crbug.com/40410577).
-        if (!EventRouter::Get(profile_)->HasRegisteredEvents(extension->id())) {
-          ++eventless_event_pages_count;
-          VLOG(1) << "Event page without registered event listeners: "
-                  << extension->id() << " " << extension->name();
-        }
-      }
     }
 
     // Using an enumeration shows us the total installed ratio across all users.
@@ -988,8 +975,6 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile) {
   base::UmaHistogramCounts100(
       "Extensions.CorruptExtensionTotalDisables2",
       extension_prefs_->GetPrefAsInteger(kCorruptedDisableCount));
-  base::UmaHistogramCounts100("Extensions.EventlessEventPages2",
-                              eventless_event_pages_count);
   base::UmaHistogramCounts100("Extensions.LoadOffStoreItems2",
                               off_store_item_count);
   base::UmaHistogramCounts100("Extensions.WebRequestBlockingCount2",
