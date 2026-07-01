@@ -15,15 +15,18 @@ build_webui("build") {
   ]
 
   web_component_files = [
-    "smb_credentials_dialog.js",
-    "smb_share_dialog.js",
+    "smb_credentials_dialog.ts",
+    "smb_share_dialog.ts",
   ]
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cr_elements:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
   ]
+
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 
   ts_composite = true
 

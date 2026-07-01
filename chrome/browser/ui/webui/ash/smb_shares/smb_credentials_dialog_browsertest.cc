@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(SmbCredentialsDialogTest, SubmitCredentials) {
 const dialog = document.querySelector('smb-credentials-dialog');
 dialog.username_ = 'my-username';
 dialog.password_ = 'my-password';
-dialog.$$('.action-button').click();
+dialog.$.action.click();
       )xxx"));
 
   run_loop.Run();

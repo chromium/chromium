@@ -5,9 +5,9 @@
 import 'chrome://resources/ash/common/smb_shares/add_smb_share_dialog.js';
 import '/strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './smb_share_dialog.html.js';
 
@@ -17,23 +17,26 @@ import {getTemplate} from './smb_share_dialog.html.js';
  * add SMB file shares.
  */
 
-Polymer({
-  is: 'smb-share-dialog',
+const SmbShareDialogElementBase = I18nMixin(PolymerElement);
 
-  _template: getTemplate(),
+class SmbShareDialogElement extends SmbShareDialogElementBase {
+  static get is() {
+    return 'smb-share-dialog';
+  }
 
-  behaviors: [I18nBehavior],
+  static get template() {
+    return getTemplate();
+  }
 
-  /**
-   * @suppress {checkTypes}
-   * @override
-   */
-  created: function() {
+  constructor() {
+    super();
+
     ColorChangeUpdater.forDocument().start();
-  },
+  }
 
-  /** @private */
-  onDialogClose_: function() {
+  private onDialogClose_() {
     chrome.send('dialogClose');
-  },
-});
+  }
+}
+
+customElements.define(SmbShareDialogElement.is, SmbShareDialogElement);

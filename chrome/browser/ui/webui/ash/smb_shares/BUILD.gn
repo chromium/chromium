@@ -30,6 +30,7 @@ static_library("smb_shares") {
     "//chrome/browser/ash/smb_client",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/smb_shares:resources",
+    "//chrome/browser/ui/webui:theme_source",
     "//chromeos/constants",
     "//components/strings:components_strings",
     "//components/user_manager",
