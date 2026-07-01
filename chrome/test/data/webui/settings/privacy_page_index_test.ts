@@ -470,7 +470,8 @@ suite('PrivacyPageIndex', function() {
           routes.SITE_SETTINGS_BLUETOOTH_DEVICES,
           ['siteSettingsBluetoothDevices'], 'privacy');
     });
-
+    // TODO(https://crbug.com/530054694): Flaky on Linux.
+    // <if expr="not is_linux">
     test('RoutingBluetoothScanning', async function() {
       assertFalse(
           loadTimeData.getBoolean('enableExperimentalWebPlatformFeatures'));
@@ -481,6 +482,7 @@ suite('PrivacyPageIndex', function() {
           routes.SITE_SETTINGS_BLUETOOTH_SCANNING,
           ['siteSettingsBluetoothScanning'], 'privacy');
     });
+    // </if>
 
     test('RoutingCapturedSurfaceControl', async function() {
       assertFalse(loadTimeData.getBoolean('enableCapturedSurfaceControl'));
