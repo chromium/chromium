@@ -242,7 +242,7 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
     base::WeakPtr<AutofillSuggestionDelegate> delegate,
     content::WebContents* web_contents,
     PopupControllerCommon controller_common,
-    std::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent)
+    std::optional<base::WeakPtr<AutofillPopupControllerImpl>> parent)
     : web_contents_(web_contents->GetWeakPtr()),
       controller_common_(std::move(controller_common)),
       delegate_(delegate),
