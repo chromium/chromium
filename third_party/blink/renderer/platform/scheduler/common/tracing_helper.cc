@@ -11,10 +11,10 @@ namespace scheduler {
 
 using perfetto::protos::pbzero::RendererMainThreadTaskExecution;
 
-perfetto::NamedTrack MakeNamedTrack(perfetto::StaticString name,
+perfetto::StateTrack MakeStateTrack(perfetto::StaticString name,
                                     const void* ptr,
                                     perfetto::Track parent) {
-  return perfetto::NamedTrack(name, reinterpret_cast<uintptr_t>(ptr), parent);
+  return perfetto::StateTrack(name, reinterpret_cast<uintptr_t>(ptr), parent);
 }
 
 perfetto::CounterTrack MakeCounterTrack(perfetto::StaticString name,
