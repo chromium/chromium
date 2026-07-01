@@ -4730,6 +4730,14 @@ const FeatureEntry::FeatureVariation kToolbarGlowUpVariations[] = {
     {"no reload, back, or forward animations",
      kToolbarGlowUpNoReloadBackForward, nullptr}};
 
+const FeatureEntry::FeatureParam kGlassFrameEoH95[] = {
+    {"ExpandOnHoverOpacity", "0.95"}};
+const FeatureEntry::FeatureParam kGlassFrameEoH90[] = {
+    {"ExpandOnHoverOpacity", "0.90"}};
+const FeatureEntry::FeatureVariation kGlassFrameVariations[] = {
+    {"expand-on-hover 5% glass", kGlassFrameEoH95, nullptr},
+    {"expand-on-hover 10% glass", kGlassFrameEoH90, nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -9663,7 +9671,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"glass-frame", flag_descriptions::kGlassFrameName,
      flag_descriptions::kGlassFrameDescription, kOsMac,
-     FEATURE_VALUE_TYPE(features::kGlassFrame)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlassFrame,
+                                    kGlassFrameVariations,
+                                    "GlassFrame")},
 
     {"desktop-glow-up", flag_descriptions::kDesktopGlowUpName,
      flag_descriptions::kDesktopGlowUpDescription, kOsDesktop,

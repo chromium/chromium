@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -1413,13 +1414,31 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
 
     if (features::IsGlassFrameEnabled()) {
       if (!is_fullscreen(layout_data_->window_state)) {
-        // Use a curve that goes very close to 1 very quickly, but still has a
-        // visible fade. This isn't perfect, but hopefully with glass
-        // expand-on-hover it will improve.
-        frame_color.opacity =
-            std::powf(static_cast<float>(animation.expand_on_hover), 0.2f);
+        frame_color.opacity = 0.0f;
       }
-      vertical_tabs_background->SetPrimaryColor(frame_color);
+      // Use a curve that goes very close to 1 very quickly, but still has a
+      // visible fade. This isn't perfect, but hopefully with glass
+      // expand-on-hover it will improve.
+      const float scaled_percent =
+          std::powf(static_cast<float>(animation.expand_on_hover), 0.2f);
+      auto vertical_tabs_background_color = frame_color;
+      static const float expand_on_hover_opacity =
+          static_cast<float>(features::kExpandOnHoverOpacity.Get());
+      vertical_tabs_background_color.opacity =
+          (1.0f - scaled_percent) * frame_color.opacity +
+          scaled_percent * expand_on_hover_opacity;
+      vertical_tabs_background->SetPrimaryColor(vertical_tabs_background_color);
+      auto* const layer = views().vertical_tab_strip_region_view->layer();
+
+      // TODO(https://crbug.com/526614803): Move the following to a feature of
+      // CustomCornersBackground, clip corners appropriately.
+      if (animation.expand_on_hover > 0 && expand_on_hover_opacity < 1.0f) {
+        static const float expand_on_hover_blur_radius =
+            static_cast<float>(features::kExpandOnHoverBlurRadius.Get());
+        layer->SetBackgroundBlur(expand_on_hover_blur_radius);
+      } else {
+        layer->SetBackgroundBlur(0.0f);
+      }
     }
 
     // Ensure that corners of the window remain rounded.
