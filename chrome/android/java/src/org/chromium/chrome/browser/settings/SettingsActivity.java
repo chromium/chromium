@@ -23,7 +23,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
 import androidx.annotation.VisibleForTesting;
@@ -279,7 +278,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         () -> mSearchCoordinator),
                 /* recursive= */ true);
         fragmentManager.registerFragmentLifecycleCallbacks(
-                new WideDisplayPaddingApplier(), /* recursive= */ true);
+                new WideDisplayPaddingApplier(
+                        this, this::isTwoColumnSettingsVisible, MAIN_FRAGMENT_TAG),
+                /* recursive= */ true);
         fragmentManager.registerFragmentLifecycleCallbacks(
                 new SettingsMetricsReporter(), /* recursive= */ true);
 
@@ -1116,39 +1117,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 }
                 mCurrentPageTitle = settingsFragment.getPageTitle();
                 mCurrentPageTitle.addSyncObserverAndCallIfNonNull(mSetTitleCallback);
-            }
-        }
-    }
-
-    // TODO(crbug.com/521895796): Extract to a shared class so it can be reused by
-    // SettingsPageFragmentDelegateImpl.
-    private class WideDisplayPaddingApplier extends FragmentManager.FragmentLifecycleCallbacks {
-        @Override
-        public void onFragmentViewCreated(
-                FragmentManager fragmentManager,
-                Fragment fragment,
-                View view,
-                @Nullable Bundle savedInstanceState) {
-            int minGapPx =
-                    getResources().getDimensionPixelSize(R.dimen.settings_multi_column_pane_gap);
-            int paddingPx = (fragment instanceof MainSettings) ? 0 : minGapPx;
-            if (fragment instanceof PreferenceFragmentCompat
-                    || MAIN_FRAGMENT_TAG.equals(fragment.getTag())) {
-                // TODO(crbug.com/439911511): Have this logic in the same place as other layout
-                // updates
-                view.getViewTreeObserver()
-                        .addOnGlobalLayoutListener(
-                                new ViewTreeObserver.OnGlobalLayoutListener() {
-                                    @Override
-                                    public void onGlobalLayout() {
-                                        if (fragment.getView() == null) return;
-                                        fragment.getView()
-                                                .getViewTreeObserver()
-                                                .removeOnGlobalLayoutListener(this);
-                                        WideDisplayPadding.apply(
-                                                fragment, SettingsActivity.this, paddingPx);
-                                    }
-                                });
             }
         }
     }

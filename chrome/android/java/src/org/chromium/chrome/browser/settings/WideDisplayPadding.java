@@ -26,6 +26,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplaySt
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizerUtil;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /** Applies the padding to the fragment for wide displays. */
@@ -37,7 +38,9 @@ public class WideDisplayPadding {
     private final UiConfig mUiConfig;
 
     private WideDisplayPadding(
-            Fragment fragment, SettingsActivity settingsActivity, int minPaddingPx) {
+            Fragment fragment,
+            BooleanSupplier isTwoColumnSettingsVisibleSupplier,
+            int minPaddingPx) {
         mContext = fragment.requireContext();
         mContent = fragment.getView();
 
@@ -69,13 +72,14 @@ public class WideDisplayPadding {
         }
 
         // Update padding on configuration changes.
-        settingsActivity.addOnConfigurationChangedListener(
-                (newConfig) -> {
-                    mUiConfig.updateDisplayStyle();
-                });
+        fragment.requireActivity()
+                .addOnConfigurationChangedListener(
+                        (newConfig) -> {
+                            mUiConfig.updateDisplayStyle();
+                        });
 
         if (!hasPreferenceRecyclerView) {
-            if (!settingsActivity.isTwoColumnSettingsVisible()) {
+            if (!isTwoColumnSettingsVisibleSupplier.getAsBoolean()) {
                 // TODO(crbug.com/454247949): Short term workaround until margin for views are
                 // updated.
                 int defaultPadding =
@@ -100,7 +104,8 @@ public class WideDisplayPadding {
                 fragment instanceof CustomDividerFragment ? (CustomDividerFragment) fragment : null;
 
         PaddedItemDecorationWithDivider itemDecoration =
-                getPaddedItemDecorationWithDivider(settingsActivity, recyclerView, minPaddingPx);
+                getPaddedItemDecorationWithDivider(
+                        isTwoColumnSettingsVisibleSupplier, recyclerView, minPaddingPx);
         Drawable dividerDrawable = getDividerDrawable();
 
         // Early return if (a)Fragment implements CustomDividerFragment and explicitly don't
@@ -128,10 +133,12 @@ public class WideDisplayPadding {
     }
 
     private PaddedItemDecorationWithDivider getPaddedItemDecorationWithDivider(
-            SettingsActivity settingsActivity, RecyclerView recyclerView, int minPaddingPx) {
+            BooleanSupplier isTwoColumnSettingsVisibleSupplier,
+            RecyclerView recyclerView,
+            int minPaddingPx) {
         Supplier<Integer> itemOffsetSupplier =
                 () -> {
-                    if (settingsActivity.isTwoColumnSettingsVisible()) {
+                    if (isTwoColumnSettingsVisibleSupplier.getAsBoolean()) {
                         return computeMultiColumnSearchPadding(recyclerView, minPaddingPx);
                     } else {
                         return getItemOffset(mUiConfig.getCurrentDisplayStyle(), recyclerView);
@@ -159,12 +166,15 @@ public class WideDisplayPadding {
      * <p>Call this method exactly once with a top-level fragment on its creation.
      *
      * @param fragment The fragment to apply padding to.
-     * @param settingsActivity The settings activity to observe for configuration changes.
+     * @param isTwoColumnSettingsVisibleSupplier Supplier to check if two-column settings is
+     *     visible.
      * @param minPaddingPx Minimum horizontal padding to apply to the fragment in pixels.
      */
     public static void apply(
-            Fragment fragment, SettingsActivity settingsActivity, int minPaddingPx) {
-        new WideDisplayPadding(fragment, settingsActivity, minPaddingPx);
+            Fragment fragment,
+            BooleanSupplier isTwoColumnSettingsVisibleSupplier,
+            int minPaddingPx) {
+        new WideDisplayPadding(fragment, isTwoColumnSettingsVisibleSupplier, minPaddingPx);
     }
 
     private Integer getItemOffset(DisplayStyle displayStyle, View view) {

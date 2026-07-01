@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -120,15 +121,20 @@ public class SettingsPageFragmentDelegateImplTest {
         verify(mFragmentManager, atLeastOnce())
                 .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
         boolean foundDependencyProvider = false;
+        boolean foundWideDisplayPaddingApplier = false;
         for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
             if (callback instanceof FragmentDependencyProvider) {
                 foundDependencyProvider = true;
-                break;
+            } else if (callback instanceof WideDisplayPaddingApplier) {
+                foundWideDisplayPaddingApplier = true;
             }
         }
         assertTrue(
                 "Lifecycle callbacks should include FragmentDependencyProvider",
                 foundDependencyProvider);
+        assertTrue(
+                "Lifecycle callbacks should include WideDisplayPaddingApplier",
+                foundWideDisplayPaddingApplier);
 
         // Verify fragment creation and addition.
         verify(mFragmentTransaction)
@@ -273,5 +279,27 @@ public class SettingsPageFragmentDelegateImplTest {
 
         // Verify that the observer was removed.
         verify(mMultiColumnSettings).removeObserver(titleUpdater);
+    }
+
+    @Test
+    public void testIsTwoColumnSettingsVisible() {
+        // Setup mSettingsHostFragment.
+        when(mFragmentManager.findFragmentByTag("settings_native_page"))
+                .thenReturn(mMockSettingsHostFragment);
+        mDelegate.initSettings(mContainerView);
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+
+        // Case 1: getMultiColumnSettings() is null.
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(null);
+        assertFalse(mDelegate.isTwoColumnSettingsVisible());
+
+        // Case 2: getMultiColumnSettings() is non-null and not two column.
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+        when(mMultiColumnSettings.isTwoColumn()).thenReturn(false);
+        assertFalse(mDelegate.isTwoColumnSettingsVisible());
+
+        // Case 3: getMultiColumnSettings() is non-null and two column.
+        when(mMultiColumnSettings.isTwoColumn()).thenReturn(true);
+        assertTrue(mDelegate.isTwoColumnSettingsVisible());
     }
 }

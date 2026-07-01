@@ -63,6 +63,7 @@ public class SettingsPageFragmentDelegateImpl
     private @Nullable SettingsHostFragment mSettingsHostFragment;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mDependencyProvider;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mTitleUpdaterLifecycleCallbacks;
+    private FragmentManager.@Nullable FragmentLifecycleCallbacks mWideDisplayPaddingApplier;
     private @Nullable Toolbar mToolbar;
     private @Nullable MultiColumnTitleUpdater mMultiColumnTitleUpdater;
 
@@ -123,6 +124,17 @@ public class SettingsPageFragmentDelegateImpl
         fragmentManager.registerFragmentLifecycleCallbacks(
                 mTitleUpdaterLifecycleCallbacks, /* recursive= */ true);
 
+        // TODO(crbug.com/521895796): Used for settings fragments that are shown using a
+        // new activity, where we want to apply padding and record histograms. Sort out if
+        // there are any such fragment left and provide a non-null tag here if so.
+        @Nullable String mainFragmentTag = null;
+
+        mWideDisplayPaddingApplier =
+                new WideDisplayPaddingApplier(
+                        mActivity, this::isTwoColumnSettingsVisible, mainFragmentTag);
+        fragmentManager.registerFragmentLifecycleCallbacks(
+                mWideDisplayPaddingApplier, /* recursive= */ true);
+
         // Inflate the settings layout into the container view.
         // TODO(crbug.com/521895796): Rename settings_activity.xml since with settings-in-a-tab it
         // doesn't map directly to its own activity.
@@ -180,6 +192,10 @@ public class SettingsPageFragmentDelegateImpl
         assumeNonNull(mTitleUpdaterLifecycleCallbacks);
         fragmentManager.unregisterFragmentLifecycleCallbacks(mTitleUpdaterLifecycleCallbacks);
         mTitleUpdaterLifecycleCallbacks = null;
+
+        assumeNonNull(mWideDisplayPaddingApplier);
+        fragmentManager.unregisterFragmentLifecycleCallbacks(mWideDisplayPaddingApplier);
+        mWideDisplayPaddingApplier = null;
 
         if (mMultiColumnTitleUpdater != null) {
             MultiColumnSettings multiColumnSettings = getMultiColumnSettings();
