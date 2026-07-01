@@ -30,6 +30,7 @@
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
+#include "components/autofill/content/renderer/focus_test_utils.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/content/renderer/synchronous_form_cache.h"
@@ -7124,6 +7125,175 @@ TEST_P(FormAutofillEmptyFormNamesTest, FillFormEmptyFormNames) {
                                .id_attribute = u"cantelope",
                                .value = u"Also Yellow",
                                .is_autofilled_according_to_renderer = true})));
+}
+
+class AutofillFocusTest : public test::AutofillRendererTest {
+ protected:
+  void SetUp() override {
+    test::AutofillRendererTest::SetUp();
+
+    focus_test_utils_ = std::make_unique<test::FocusTestUtils>(
+        base::BindRepeating(&AutofillFocusTest::ExecuteJavaScriptForTests,
+                            base::Unretained(this)));
+  }
+
+  // See `AutofillRendererTest::SimulateFillForm`. Extracts `FormData` from main
+  // frame if none is provided.
+  AssertionResult SimulateFillForm(
+      std::optional<FormData> form_data = std::nullopt) {
+    if (!form_data) {
+      form_data = ExtractFormData("myForm");
+    }
+    if (!form_data) {
+      return AssertionFailure();
+    }
+    return AutofillRendererTest::SimulateFillForm(
+        *form_data, "fname", {{u"fname", u"John"}, {u"lname", u"Smith"}});
+  }
+
+  std::string GetFocusLog() {
+    return focus_test_utils_->GetFocusLog(GetMainFrame()->GetDocument());
+  }
+
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  std::unique_ptr<test::FocusTestUtils> focus_test_utils_;
+};
+
+// Tests that correct focus, change and blur events are emitted during the
+// autofilling process when there is an initial focused element in a form
+// having non-fillable fields.
+TEST_F(AutofillFocusTest, VerifyFocusAndBlurEventsAfterAutofill) {
+  // Load a form.
+  LoadHTML(
+      "<html><form id='myForm'>"
+      "<label>First Name:</label><input id='fname' name='0'/><br/>"
+      "<label>Last Name:</label> <input id='lname' name='1'/><br/>"
+      "<label>Middle Name:</label><input id='mname' name='2'/><br/>"
+      "</form></html>");
+
+  focus_test_utils_->SetUpFocusLogging();
+  focus_test_utils_->FocusElement("fname");
+
+  // Simulate filling the form using Autofill.
+  ASSERT_TRUE(SimulateFillForm());
+
+  // Expected Result in order:
+  // * Change fname
+  // * Blur fname
+  // * Focus lname
+  // * Change lname
+  // * Blur lname
+  // * Focus fname
+  EXPECT_EQ(GetFocusLog(), "c0b0f1c1b1f0");
+}
+
+// Tests that correct focus, change and blur events are emitted during the
+// autofilling process when there is an initial focused element.
+TEST_F(AutofillFocusTest,
+       VerifyFocusAndBlurEventsAfterAutofillWithFocusedElement) {
+  // Load a form.
+  LoadHTML(
+      "<html><form id='myForm'>"
+      "<label>First Name:</label><input id='fname' name='0'/><br/>"
+      "<label>Last Name:</label> <input id='lname' name='1'/><br/>"
+      "</form></html>");
+
+  focus_test_utils_->SetUpFocusLogging();
+  focus_test_utils_->FocusElement("fname");
+
+  // Simulate filling the form using Autofill.
+  ASSERT_TRUE(SimulateFillForm());
+
+  // Expected Result in order:
+  // * Change fname
+  // * Blur fname
+  // * Focus lname
+  // * Change lname
+  // * Blur lname
+  // * Focus fname
+  EXPECT_EQ(GetFocusLog(), "c0b0f1c1b1f0");
+}
+
+// Tests that correct focus, change and blur events are emitted during the
+// autofilling process when there is an initial focused element in a form having
+// single field.
+TEST_F(AutofillFocusTest,
+       VerifyFocusAndBlurEventAfterAutofillWithFocusedElementForSingleElement) {
+  // Load a form.
+  LoadHTML(
+      "<html><form id='myForm'>"
+      "<label>First Name:</label><input id='fname' name='0'/><br/>"
+      "</form></html>");
+
+  focus_test_utils_->SetUpFocusLogging();
+  focus_test_utils_->FocusElement("fname");
+
+  // Simulate filling the form using Autofill.
+  ASSERT_TRUE(SimulateFillForm());
+
+  // Expected Result in order:
+  // * Change fname
+  EXPECT_EQ(GetFocusLog(), "c0");
+}
+
+// Tests that a field is added to the form between the times of triggering
+// and executing the filling.
+TEST_F(AutofillFocusTest, VerifyFocusAndBlurEventAfterElementAdded) {
+  // Load a form.
+  LoadHTML(
+      "<html><form id='myForm'>"
+      "<label>First Name:</label><input id='fname' name='0'/><br/>"
+      "<label>Last Name:</label> <input id='lname' name='1'/><br/>"
+      "</form></html>");
+
+  focus_test_utils_->SetUpFocusLogging();
+  focus_test_utils_->FocusElement("fname");
+
+  // Simulate filling the form using Autofill.
+  std::optional<FormData> form = ExtractFormData("myForm");
+  ASSERT_TRUE(form);
+  // Simulate that the form was modified between parsing and executing the fill.
+  // The element is inserted at the beginning of the form to verify that
+  // everything works correctly even if `renderer_id`s of the `<input>`
+  // elements are not in ascending order.
+  ExecuteJavaScriptForTests(
+      "document.getElementById('fname').insertAdjacentHTML('beforebegin', "
+      "'<label>Zip code:</label><input id=\"zip_code\"/>');");
+  ASSERT_TRUE(SimulateFillForm(form));
+
+  // Expected Result in order:
+  // * Change fname
+  // * Blur fname
+  // * Focus lname
+  // * Change lname
+  // * Blur lname
+  // * Focus fname
+  EXPECT_EQ(GetFocusLog(), "c0b0f1c1b1f0");
+}
+
+// Tests that a field is removed from the form between the times of
+// triggering and executing the filling.
+TEST_F(AutofillFocusTest, VerifyFocusAndBlurEventAfterElementRemoved) {
+  // Load a form.
+  LoadHTML(
+      "<html><form id='myForm'>"
+      "<label>First Name:</label><input id='fname' name='0'/><br/>"
+      "<label>Last Name:</label> <input id='lname' name='1'/><br/>"
+      "</form></html>");
+
+  focus_test_utils_->SetUpFocusLogging();
+  focus_test_utils_->FocusElement("fname");
+
+  // Simulate filling the form using Autofill.
+  std::optional<FormData> form = ExtractFormData("myForm");
+  ASSERT_TRUE(form);
+
+  ExecuteJavaScriptForTests("document.getElementById('lname').remove()");
+  ASSERT_TRUE(SimulateFillForm(form));
+
+  // Expected Result in order:
+  // * Change fname
+  EXPECT_EQ(GetFocusLog(), "c0");
 }
 
 }  // namespace
