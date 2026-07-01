@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 35
+version_major: 36
 
 # When allocating new crs_root_id values, always start from the value in
 # NEXT_UNUSED_CRS_ROOT_ID.txt (which may not exist in the Chromium repository),
@@ -878,27 +878,27 @@ trust_anchors {
 
 # CN=DigiCert Assured ID Root G2, OU=www.digicert.com, O=DigiCert Inc, C=US
 # https://assured-id-root-g2.chain-demos.digicert.com/
-# Constraint date: Tues, Jun 30, 2026 23:59:59 GMT+0000
+# Constraint date: Mon, Sep 14, 2026 at 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "7d05ebb682339f8c9451ee094eebfefa7953a114edb2f44949452fab7d2fc185"
   crs_root_id: 23
   ev_policy_oids: "2.23.140.1.1"
   trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0c"  # 52580.200109.1.12
   constraints: {
-    sct_not_after_sec: 1782863999
+    sct_not_after_sec: 1789430399
   }
 }
 
 # CN=DigiCert Assured ID Root G3, OU=www.digicert.com, O=DigiCert Inc, C=US
 # https://assured-id-root-g3.chain-demos.digicert.com/
-# Constraint date: Tues, Jun 30, 2026 23:59:59 GMT+0000
+# Constraint date: Mon, Sep 14, 2026 at 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "7e37cb8b4c47090cab36551ba6f45db840680fba166a952db100717f43053fc2"
   crs_root_id: 24
   ev_policy_oids: "2.23.140.1.1"
   trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0d"  # 52580.200109.1.13
   constraints: {
-    sct_not_after_sec: 1782863999
+    sct_not_after_sec: 1789430399
   }
 }
 
