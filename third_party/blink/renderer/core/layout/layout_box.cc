@@ -1012,26 +1012,12 @@ void LayoutBox::LayoutSubtreeRoot() {
 DISABLE_CFI_PERF
 LayoutUnit LayoutBox::ClientLeft() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
-    if (CanSkipComputeScrollbars()) {
-      return BorderOutsets().left;
-    }
-    return BorderOutsets().left +
-           ComputeScrollbarsInternal(kClampToContentBox).left;
-  }
   return PhysicalContractedBoxRect(kContractToPaddingEdge).X();
 }
 
 DISABLE_CFI_PERF
 LayoutUnit LayoutBox::ClientTop() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
-    if (CanSkipComputeScrollbars()) {
-      return BorderOutsets().top;
-    }
-    return BorderOutsets().top +
-           ComputeScrollbarsInternal(kClampToContentBox).top;
-  }
   return PhysicalContractedBoxRect(kContractToPaddingEdge).Y();
 }
 
@@ -1040,30 +1026,12 @@ LayoutUnit LayoutBox::ClientTop() const {
 DISABLE_CFI_PERF
 LayoutUnit LayoutBox::ClientWidth() const {
   NOT_DESTROYED();
-  LayoutUnit width = StitchedSize().width;
-  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
-    if (CanSkipComputeScrollbars()) {
-      return (width - BorderOutsets().HorizontalSum()).ClampNegativeToZero();
-    }
-    return (width - BorderOutsets().HorizontalSum() -
-            ComputeScrollbarsInternal(kClampToContentBox).HorizontalSum())
-        .ClampNegativeToZero();
-  }
   return PhysicalContractedBoxRect(kContractToPaddingEdge).Width();
 }
 
 DISABLE_CFI_PERF
 LayoutUnit LayoutBox::ClientHeight() const {
   NOT_DESTROYED();
-  LayoutUnit height = StitchedSize().height;
-  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
-    if (CanSkipComputeScrollbars()) {
-      return (height - BorderOutsets().VerticalSum()).ClampNegativeToZero();
-    }
-    return (height - BorderOutsets().VerticalSum() -
-            ComputeScrollbarsInternal(kClampToContentBox).VerticalSum())
-        .ClampNegativeToZero();
-  }
   return PhysicalContractedBoxRect(kContractToPaddingEdge).Height();
 }
 
@@ -1279,38 +1247,24 @@ void LayoutBox::UpdateAfterLayout() {
 DISABLE_CFI_PERF
 LayoutUnit LayoutBox::ContentLeft() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
-    return ClientLeft() + PaddingOutsets().left;
-  }
   return PhysicalContractedBoxRect(kContractToContentEdge).X();
 }
 
 DISABLE_CFI_PERF
 LayoutUnit LayoutBox::ContentTop() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
-    return ClientTop() + PaddingOutsets().top;
-  }
   return PhysicalContractedBoxRect(kContractToContentEdge).Y();
 }
 
 DISABLE_CFI_PERF
 LayoutUnit LayoutBox::ContentWidth() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
-    return (ClientWidth() - PaddingOutsets().HorizontalSum())
-        .ClampNegativeToZero();
-  }
   return PhysicalContractedBoxRect(kContractToContentEdge).Width();
 }
 
 DISABLE_CFI_PERF
 LayoutUnit LayoutBox::ContentHeight() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
-    return (ClientHeight() - PaddingOutsets().VerticalSum())
-        .ClampNegativeToZero();
-  }
   return PhysicalContractedBoxRect(kContractToContentEdge).Height();
 }
 
@@ -3924,36 +3878,22 @@ PhysicalRect LayoutBox::PhysicalContractedBoxRect(ContractionEdge edge) const {
 
 PhysicalRect LayoutBox::PhysicalPaddingBoxRect() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
-    return PhysicalRect(ClientLeft(), ClientTop(), ClientWidth(),
-                        ClientHeight());
-  }
   return PhysicalContractedBoxRect(kContractToPaddingEdge);
 }
 
 DISABLE_CFI_PERF
 PhysicalRect LayoutBox::PhysicalContentBoxRect() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
-    return PhysicalRect(ContentLeft(), ContentTop(), ContentWidth(),
-                        ContentHeight());
-  }
   return PhysicalContractedBoxRect(kContractToContentEdge);
 }
 
 PhysicalOffset LayoutBox::PhysicalContentBoxOffset() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
-    return PhysicalOffset(ContentLeft(), ContentTop());
-  }
   return PhysicalContractedBoxRect(kContractToContentEdge).offset;
 }
 
 PhysicalSize LayoutBox::PhysicalContentBoxSize() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutBoxRectGettersUseFragmentsEnabled()) {
-    return PhysicalSize(ContentWidth(), ContentHeight());
-  }
   return PhysicalContractedBoxRect(kContractToContentEdge).size;
 }
 
