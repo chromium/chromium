@@ -46,8 +46,6 @@ public class AtMemoryHomeView extends LinearLayout {
         mSearchBarView = findViewById(R.id.search_query_input_container);
         mRecyclerView = findViewById(R.id.suggestions_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.addItemDecoration(new AtMemoryDividerItemDecoration(getContext()));
-
         mNoticeContainer = findViewById(R.id.notice_container);
         mNoticeOkButton = findViewById(R.id.notice_ok_button);
     }
@@ -71,6 +69,7 @@ public class AtMemoryHomeView extends LinearLayout {
                 (model, view, propertyKey) -> {});
 
         mRecyclerView.setAdapter(adapter);
+        mRecyclerView.addItemDecoration(new AtMemoryDividerItemDecoration(getContext()));
     }
 
     public void focusSearchArea() {
@@ -139,7 +138,8 @@ public class AtMemoryHomeView extends LinearLayout {
                 View child = parent.getChildAt(i);
                 int position = parent.getChildAdapterPosition(child);
                 if (position == RecyclerView.NO_POSITION
-                        || position == adapter.getItemCount() - 1) {
+                        || position == adapter.getItemCount() - 1
+                        || shouldSkipItemType(adapter.getItemViewType(position))) {
                     continue;
                 }
 
@@ -160,10 +160,24 @@ public class AtMemoryHomeView extends LinearLayout {
             if (adapter == null) return;
 
             int position = parent.getChildAdapterPosition(view);
-            if (position == RecyclerView.NO_POSITION || position == adapter.getItemCount() - 1) {
+            if (position == RecyclerView.NO_POSITION
+                    || position == adapter.getItemCount() - 1
+                    || shouldSkipItemType(adapter.getItemViewType(position))) {
                 outRect.set(0, 0, 0, 0);
             } else {
                 outRect.set(0, 0, 0, mDividerHeight);
+            }
+        }
+
+        private boolean shouldSkipItemType(@ItemType int type) {
+            switch (type) {
+                case ItemType.ZERO_STATE:
+                case ItemType.SEARCH_TILE:
+                    return true;
+                case ItemType.SUGGESTION:
+                    return false;
+                default:
+                    return false;
             }
         }
     }
