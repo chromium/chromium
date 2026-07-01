@@ -11,6 +11,7 @@ namespace autofill::autofill_metrics {
 // These events are triggered separately for address and credit card forms.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(FormEvent)
 enum FormEvent {
   // User interacted with a field of this kind of form. Logged only once per
   // page load.
@@ -372,6 +373,7 @@ enum FormEvent {
 
   NUM_FORM_EVENTS,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillFormEvent)
 
 }  // namespace autofill::autofill_metrics
 

@@ -2630,6 +2630,8 @@ Called by update_autofill_enums.py.-->
   <int value="14" label="TextArea"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillFormEvent) -->
+
 <enum name="AutofillFormEvent">
   <int value="0" label="Interacted (once)"/>
   <int value="1" label="Suggestions shown"/>
@@ -2850,7 +2852,18 @@ Called by update_autofill_enums.py.-->
              cards with a benefit available were shown (once)"/>
   <int value="108" label="Local card suggestion selected"/>
   <int value="109" label="Local card suggestion selected (once)"/>
+  <int value="110" label="Suggestion for externally saved card shown"/>
+  <int value="111" label="Suggestion for externally saved card shown (once)"/>
+  <int value="112" label="Suggestion for externally saved card selected"/>
+  <int value="113"
+      label="Suggestion for externally saved card selected (once)"/>
+  <int value="114" label="Suggestion for never used card shown"/>
+  <int value="115" label="Suggestion for never used card shown (once)"/>
+  <int value="116" label="Suggestion for never used card selected"/>
+  <int value="117" label="Suggestion for never used card selected (once)"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/metrics/form_events/form_events.h:FormEvent) -->
 
 <enum name="AutofillGetRealPanResult">
   <int value="0" label="Success"/>
