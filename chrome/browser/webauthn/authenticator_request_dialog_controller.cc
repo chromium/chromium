@@ -601,8 +601,15 @@ void AuthenticatorRequestDialogController::CancelAuthenticatorRequest() {
     return;
   }
 
+  // SetCurrentStep(Step::kClosed) can synchronously destroy the hosting
+  // WebContents and therefore `this`. See crbug.com/522566295.
+  base::WeakPtr<AuthenticatorRequestDialogController> weak_this =
+      weak_factory_.GetWeakPtr();
   if (is_request_complete()) {
     SetCurrentStep(Step::kClosed);
+  }
+  if (!weak_this) {
+    return;
   }
 
   for (auto& observer : model_->observers) {
