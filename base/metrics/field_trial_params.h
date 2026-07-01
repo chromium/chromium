@@ -11,6 +11,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_span.h"
