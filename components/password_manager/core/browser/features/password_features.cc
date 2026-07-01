@@ -165,10 +165,8 @@ BASE_FEATURE(kPasswordFormGroupedAffiliations,
 
 BASE_FEATURE(kPasswordManagerLogToTerminal, base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_FEATURE(kPasswordManualFallbackSecurityChecks,
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kPasswordSaveInContextErrorResolution,
              base::FEATURE_DISABLED_BY_DEFAULT);

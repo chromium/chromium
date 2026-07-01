@@ -178,6 +178,8 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
       (override));
   MOCK_METHOD(PasswordManager*, GetPasswordManager, (), (override));
   MOCK_METHOD(bool, CanShowAutofillUi, (), (const override));
+  MOCK_METHOD(bool, HasValidURL, (bool), (override));
+  MOCK_METHOD(bool, IsRenderFrameHostSupported, (), (override));
 
   gfx::RectF TransformToRootCoordinates(
       const gfx::RectF& bounds_in_frame_coordinates) override {
@@ -2080,9 +2082,16 @@ TEST_F(PasswordAutofillManagerTest, NoPreviewSuggestionWithAuthBeforeFilling) {
 }
 
 TEST_F(PasswordAutofillManagerTest, ManualFallback_InvokesFlow) {
+  base::test::ScopedFeatureList security_checks_feature_list{
+      features::kPasswordManualFallbackSecurityChecks};
   TestPasswordManagerClient client;
   InitializePasswordAutofillManager(&client,
                                     /*autofill_client=*/nullptr);
+
+  ON_CALL(*client.mock_driver(), HasValidURL(/*may_kill_renderer=*/true))
+      .WillByDefault(Return(true));
+  ON_CALL(*client.mock_driver(), IsRenderFrameHostSupported())
+      .WillByDefault(Return(true));
   autofill::TriggeringField field = kTriggeringField;
   field.trigger_source =
       autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords;
@@ -2093,10 +2102,59 @@ TEST_F(PasswordAutofillManagerTest, ManualFallback_InvokesFlow) {
   password_autofill_manager_->ShowSuggestions(field);
 }
 
-TEST_F(PasswordAutofillManagerTest, ManualFallback_FlowResetOnNavigation) {
+TEST_F(PasswordAutofillManagerTest,
+       ManualFallback_UrlInsecure_NoManualFallback) {
+  base::test::ScopedFeatureList security_checks_feature_list{
+      features::kPasswordManualFallbackSecurityChecks};
   TestPasswordManagerClient client;
   InitializePasswordAutofillManager(&client,
                                     /*autofill_client=*/nullptr);
+
+  ON_CALL(*client.mock_driver(), HasValidURL(/*may_kill_renderer=*/true))
+      .WillByDefault(Return(false));
+  ON_CALL(*client.mock_driver(), IsRenderFrameHostSupported())
+      .WillByDefault(Return(true));
+  EXPECT_CALL(manual_fallback_flow(), RunFlow).Times(0);
+  autofill::TriggeringField field = kTriggeringField;
+  field.trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords;
+  field.bounds = gfx::RectF(1, 1, 2, 2);
+  field.text_direction = base::i18n::LEFT_TO_RIGHT;
+  password_autofill_manager_->ShowSuggestions(field);
+}
+
+TEST_F(PasswordAutofillManagerTest,
+       ManualFallback_FrameHostNotSupported_NoManualFallback) {
+  base::test::ScopedFeatureList security_checks_feature_list{
+      features::kPasswordManualFallbackSecurityChecks};
+  TestPasswordManagerClient client;
+  InitializePasswordAutofillManager(&client,
+                                    /*autofill_client=*/nullptr);
+
+  ON_CALL(*client.mock_driver(), HasValidURL(/*may_kill_renderer=*/true))
+      .WillByDefault(Return(true));
+  ON_CALL(*client.mock_driver(), IsRenderFrameHostSupported())
+      .WillByDefault(Return(false));
+  EXPECT_CALL(manual_fallback_flow(), RunFlow).Times(0);
+  autofill::TriggeringField field = kTriggeringField;
+  field.trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords;
+  field.bounds = gfx::RectF(1, 1, 2, 2);
+  field.text_direction = base::i18n::LEFT_TO_RIGHT;
+  password_autofill_manager_->ShowSuggestions(field);
+}
+
+TEST_F(PasswordAutofillManagerTest, ManualFallback_FlowResetOnNavigation) {
+  base::test::ScopedFeatureList security_checks_feature_list{
+      features::kPasswordManualFallbackSecurityChecks};
+  TestPasswordManagerClient client;
+  InitializePasswordAutofillManager(&client,
+                                    /*autofill_client=*/nullptr);
+
+  ON_CALL(*client.mock_driver(), HasValidURL(/*may_kill_renderer=*/true))
+      .WillByDefault(Return(true));
+  ON_CALL(*client.mock_driver(), IsRenderFrameHostSupported())
+      .WillByDefault(Return(true));
   autofill::TriggeringField field = kTriggeringField;
   field.trigger_source =
       autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords;

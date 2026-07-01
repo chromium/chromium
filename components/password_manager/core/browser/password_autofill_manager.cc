@@ -555,6 +555,17 @@ void PasswordAutofillManager::ShowSuggestions(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
   if (autofill::IsPasswordsAutofillManuallyTriggered(field.trigger_source)) {
+    if (base::FeatureList::IsEnabled(
+            features::kPasswordManualFallbackSecurityChecks)) {
+      const bool manual_fallback_allowed_for_frame =
+          password_manager_driver_->HasValidURL() &&
+          password_manager_driver_->IsRenderFrameHostSupported();
+      if (!manual_fallback_allowed_for_frame) {
+        // Do not show manual fallback suggestions if the current frame doesn't
+        // meet security criteria, see crbug.com/521502218.
+        return;
+      }
+    }
     if (!manual_fallback_flow_) {
       manual_fallback_flow_ = std::make_unique<PasswordManualFallbackFlow>(
           password_manager_driver_, autofill_client_, password_client_,

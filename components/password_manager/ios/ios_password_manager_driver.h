@@ -88,6 +88,8 @@ class IOSPasswordManagerDriver final
       const gfx::RectF& bounds_in_frame_coordinates) override;
   void CheckViewAreaVisible(autofill::FieldRendererId field_id,
                             base::OnceCallback<void(bool)>) override;
+  bool HasValidURL(bool may_kill_renderer = true) override;
+  bool IsRenderFrameHostSupported() override;
   autofill::AutofillDriver* GetAutofillDriver() const override;
   base::WeakPtr<PasswordManagerDriver> AsWeakPtr() override;
   const std::string& web_frame_id() const { return frame_id_; }

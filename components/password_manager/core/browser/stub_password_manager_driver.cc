@@ -130,6 +130,14 @@ void StubPasswordManagerDriver::CheckViewAreaVisible(
     autofill::FieldRendererId field_id,
     base::OnceCallback<void(bool)>) {}
 
+bool StubPasswordManagerDriver::HasValidURL(bool may_kill_renderer) {
+  return true;
+}
+
+bool StubPasswordManagerDriver::IsRenderFrameHostSupported() {
+  return true;
+}
+
 autofill::AutofillDriver* StubPasswordManagerDriver::GetAutofillDriver() const {
   return nullptr;
 }

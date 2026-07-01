@@ -55,11 +55,6 @@ class ContentPasswordManagerDriver final
       mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>
           pending_receiver);
   void DidNavigate();
-  // Checks if the current URL is safe to share password data with. Kills the
-  // current renderer process if the URL is not safe and `may_kill_renderer` is
-  // `true`.
-  bool HasValidURL(bool may_kill_renderer = true);
-  bool IsRenderFrameHostSupported();
 
   // PasswordManagerDriver implementation.
   DriverId GetId() const override;
@@ -136,6 +131,8 @@ class ContentPasswordManagerDriver final
       const autofill::ParsingResult& parsing_result) override;
   void CheckViewAreaVisible(autofill::FieldRendererId field_id,
                             base::OnceCallback<void(bool)>) override;
+  bool HasValidURL(bool may_kill_renderer = true) override;
+  bool IsRenderFrameHostSupported() override;
   autofill::AutofillDriver* GetAutofillDriver() const override;
   base::WeakPtr<password_manager::PasswordManagerDriver> AsWeakPtr() override;
 

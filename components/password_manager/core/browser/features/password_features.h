@@ -176,11 +176,9 @@ BASE_DECLARE_FEATURE(kPasswordFormGroupedAffiliations);
 // terminal.
 BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // Performs additional security checks wrt. the triggering frame before adding
 // the "Select password" entry to the context menu.
 BASE_DECLARE_FEATURE(kPasswordManualFallbackSecurityChecks);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // When enabled, the user can resolve actionable errors in context during a
 // password save flow.

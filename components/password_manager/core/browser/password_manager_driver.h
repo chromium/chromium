@@ -243,6 +243,14 @@ class PasswordManagerDriver {
   virtual void CheckViewAreaVisible(autofill::FieldRendererId field_id,
                                     base::OnceCallback<void(bool)>) = 0;
 
+  // Checks if the current URL is safe to share password data with. Kills the
+  // current renderer process if the URL is not safe and `may_kill_renderer` is
+  // `true`.
+  virtual bool HasValidURL(bool may_kill_renderer = true) = 0;
+
+  // Performs a number of security checks for the current frame.
+  virtual bool IsRenderFrameHostSupported() = 0;
+
   virtual autofill::AutofillDriver* GetAutofillDriver() const = 0;
 
   // Get a WeakPtr to the instance.
