@@ -35,6 +35,7 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/search/ntp_features.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -498,6 +499,62 @@ TEST_F(BookmarkTest, NtpSimplificationVisibilityPrefSyncsShowBookmarkBar) {
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(bookmarks::prefs::kShowBookmarkBar));
+}
+
+// Ensures that when `kShowBookmarkBar` is managed/recommended (i.e. not
+// user-controlled), `kBookmarkBarVisibilityState` is not automatically updated.
+TEST_F(BookmarkTest, NtpSimplificationVisibilityPrefNotUpdatedWhenManaged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ntp_features::kNtpSimplificationBookmarkBar);
+
+  profile()->GetTestingPrefService()->SetManagedPref(
+      bookmarks::prefs::kShowBookmarkBar, std::make_unique<base::Value>(true));
+
+  // Verify that the pref is initially at its default value.
+  EXPECT_EQ(
+      profile()->GetPrefs()->GetInteger(
+          bookmarks::prefs::kBookmarkBarVisibilityState),
+      static_cast<int>(bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp));
+
+  BookmarkBarController controller(mock_browser_window_interface_,
+                                   *tab_strip_model_);
+
+  // Verify that the visibility state pref remains unchanged and is not written
+  // to the user pref store.
+  EXPECT_EQ(
+      profile()->GetPrefs()->GetInteger(
+          bookmarks::prefs::kBookmarkBarVisibilityState),
+      static_cast<int>(bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp));
+  EXPECT_FALSE(
+      profile()
+          ->GetPrefs()
+          ->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState)
+          ->IsUserControlled());
+}
+
+// Ensures that when `kBookmarkBarVisibilityState` is managed/recommended (i.e.
+// not user-controlled), `OnBookmarkBarVisibilityStateChanged` does not override
+// `kShowBookmarkBar` in the user pref store.
+TEST_F(BookmarkTest,
+       NtpSimplificationVisibilityPrefSyncDoesNotOverrideManagedShowPref) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ntp_features::kNtpSimplificationBookmarkBar);
+
+  profile()->GetTestingPrefService()->SetManagedPref(
+      bookmarks::prefs::kBookmarkBarVisibilityState,
+      std::make_unique<base::Value>(static_cast<int>(
+          bookmarks::BookmarkBarVisibilityState::kAlwaysShow)));
+
+  BookmarkBarController controller(mock_browser_window_interface_,
+                                   *tab_strip_model_);
+
+  // Verify that kShowBookmarkBar is not user controlled.
+  EXPECT_FALSE(profile()
+                   ->GetPrefs()
+                   ->FindPreference(bookmarks::prefs::kShowBookmarkBar)
+                   ->IsUserControlled());
 }
 
 // Ensures that the bookmark bar auto-hides after being rendered on NTP more

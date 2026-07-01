@@ -90,9 +90,11 @@ BookmarkBarController::BookmarkBarController(BrowserWindowInterface& browser,
           ntp_features::kNtpSimplificationBookmarkBar)) {
     const PrefService::Preference* state_pref =
         prefs->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState);
+    const PrefService::Preference* show_pref =
+        prefs->FindPreference(bookmarks::prefs::kShowBookmarkBar);
 
-    if (state_pref && state_pref->IsDefaultValue() &&
-        prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar)) {
+    if (state_pref && state_pref->IsDefaultValue() && show_pref &&
+        show_pref->IsUserControlled() && show_pref->GetValue()->GetBool()) {
       prefs->SetInteger(
           bookmarks::prefs::kBookmarkBarVisibilityState,
           static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
@@ -131,10 +133,14 @@ BookmarkBarController::BookmarkBarController(BrowserWindowInterface& browser,
 void BookmarkBarController::OnBookmarkBarVisibilityStateChanged() {
   Profile* profile = browser_->GetProfile();
   PrefService* prefs = profile->GetPrefs();
-  bool always_show =
-      prefs->GetInteger(bookmarks::prefs::kBookmarkBarVisibilityState) ==
-      static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow);
-  prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, always_show);
+  const PrefService::Preference* state_pref =
+      prefs->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState);
+  if (state_pref && state_pref->IsUserControlled()) {
+    bool always_show =
+        prefs->GetInteger(bookmarks::prefs::kBookmarkBarVisibilityState) ==
+        static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow);
+    prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, always_show);
+  }
 
   UpdateBookmarkBarState(StateChangeReason::kPrefChange);
 }
