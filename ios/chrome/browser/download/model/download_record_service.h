@@ -47,80 +47,60 @@ class DownloadRecordService : public KeyedService {
 
   ~DownloadRecordService() override = default;
 
-  // Records a new download and start observing it.
+  // Records a new download and starts observing it.
   virtual void RecordDownload(web::DownloadTask* task) = 0;
-  // Retrieves all downloads. Callback is invoked on the calling thread.
+  // Retrieves all downloads. `callback` runs on the calling sequence.
   virtual void GetAllDownloadsAsync(DownloadRecordsCallback callback) = 0;
-  // Retrieves a download by ID. Callback is invoked on the calling thread.
+  // Retrieves a download by ID. `callback` runs on the calling sequence.
   virtual void GetDownloadByIdAsync(const std::string& download_id,
                                     DownloadRecordCallback callback) = 0;
-  // Removes a download by ID. Callback is invoked on the calling thread.
+  // Removes a download by ID. `callback` runs on the calling sequence.
   virtual void RemoveDownloadByIdAsync(
       const std::string& download_id,
       CompletionCallback callback = CompletionCallback()) = 0;
 
   // Returns one keyset-paginated page of download records.
   //
-  // Contract:
-  //   * Ordering: rows are returned in DESC (created_time, download_id)
-  //     order; ordering is stable across pages even when concurrent
-  //     inserts/updates happen on intervening rows.
-  //   * Cursor: pass an empty `query` to fetch the first page; for
-  //     subsequent pages, populate `cursor_created_time` and
-  //     `cursor_download_id` with the values of the last returned row.
-  //     The cursor refers to ordering keys only and is not tied to a row
-  //     identity, so deleting the cursor row does not invalidate
-  //     continuation.
-  //   * Filter: when `filter_type` is set, only rows matching the filter
-  //     are returned. When `name_query` is set, a case-insensitive
-  //     substring match on the normalized file name is applied.
-  //   * Freshness: rows whose download is currently held in the in-memory
-  //     active cache (e.g. an in-progress download whose byte-progress
-  //     update has not yet been flushed to disk) are returned with the
-  //     cached value taking precedence over the persisted row. Incognito
-  //     (off-the-record) records are never included because they are not
-  //     persisted.
-  //   * Threading: `callback` is invoked on the calling sequence and the
-  //     method never blocks the calling thread.
-  //   * Errors: if the database has not yet finished asynchronous
-  //     initialization, `callback` is invoked with an empty vector.
-  //   * Feature gating: this method will be gated by
-  //     `kDownloadListPagination` once the paginated reader lands. In
-  //     this CL the implementation is a placeholder that always posts
-  //     an empty vector to `callback` on the calling sequence
-  //     regardless of flag state; callers should continue to use
-  //     `GetAllDownloadsAsync` until the follow-up CL ships the real
-  //     reader.
+  // Ordering: `(created_time DESC, download_id DESC)`. Stable across pages
+  // even when concurrent inserts/updates land on intervening rows.
+  //
+  // Cursor: pass an empty `query` for the first page; for subsequent pages
+  // set `cursor_created_time` / `cursor_download_id` from the last returned
+  // row. The cursor is by ordering keys, not row identity, so deleting the
+  // cursor row does not invalidate continuation.
+  //
+  // Filters: `filter_type` selects a file category; `name_query` applies a
+  // case-insensitive substring match on the normalized file name.
+  //
+  // Freshness: rows still in the in-memory active cache (e.g. an in-progress
+  // download whose byte-progress update has not been flushed) are returned
+  // with the cached value overlaying the persisted row. Incognito records
+  // are merged from memory (they are never persisted).
+  //
+  // Requires `kDownloadListPagination`. `callback` runs on the calling
+  // sequence; returns an empty vector if the DB is not yet initialized.
   virtual void GetDownloadsPageAsync(const DownloadRecordQuery& query,
                                      DownloadRecordsPageCallback callback) = 0;
 
-  // Returns the total count of persisted records matching `filter`.
+  // Returns the total count of records matching `filter` across persisted
+  // rows plus the in-memory incognito set.
   //
-  // Contract:
-  //   * Counts persisted records only; incognito (in-memory only)
-  //     records are excluded.
-  //   * When `filter` is unset or `kAll`, counts all persisted records.
-  //   * Threading: `callback` is invoked on the calling sequence and the
-  //     method never blocks the calling thread.
-  //   * Errors: if the database has not yet finished asynchronous
-  //     initialization, `callback` is invoked with 0.
-  //   * Feature gating: this method will be gated by
-  //     `kDownloadListPagination` once the paginated reader lands. In
-  //     this CL the implementation is a placeholder that always posts
-  //     0 to `callback` on the calling sequence regardless of flag
-  //     state.
+  // When `filter` is unset or `kAll`, counts everything. Requires
+  // `kDownloadListPagination`. `callback` runs on the calling sequence;
+  // returns 0 if the DB is not yet initialized.
   virtual void GetDownloadsCountAsync(
       std::optional<DownloadFilterType> filter,
       DownloadRecordsCountCallback callback) = 0;
 
-  // Updates the file path for a download record by ID.
-  // Callback is invoked on the calling thread.
+  // Updates the file path for a download record by ID. `callback` runs on
+  // the calling sequence.
   virtual void UpdateDownloadFilePathAsync(
       const std::string& download_id,
       const base::FilePath& file_path,
       CompletionCallback callback = CompletionCallback()) = 0;
 
-  // Gets download task by ID.
+  // Returns the live `web::DownloadTask` for `download_id`, or nullptr if
+  // the task has already completed.
   virtual web::DownloadTask* GetDownloadTaskById(
       std::string_view download_id) const = 0;
 

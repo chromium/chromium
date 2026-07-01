@@ -19,20 +19,17 @@ namespace {
 
 using ::download_model::NormalizeFileName;
 
-// Determines whether a download record update should be persisted to the
-// database by comparing critical fields between the new and cached
-// records. Incognito records are never persisted; non-incognito records
-// only need a DB write when a non-progress field actually changed.
+// Whether a record update should be persisted. Incognito records are never
+// persisted; non-incognito records persist only when a non-progress field
+// actually changed.
 bool ShouldPersistUpdate(const DownloadRecord& new_record,
                          const DownloadRecord& cached_record) {
-  // Incognito records are not persistently stored.
   if (cached_record.is_incognito) {
     return false;
   }
 
-  // Persist only if critical fields have changed.
-  // Progress fields (received_bytes, progress_percent) are not persisted to
-  // database.
+  // Progress fields (`received_bytes`, `progress_percent`) are not
+  // persisted, so they don't trigger a write.
   return !new_record.EqualsExcludingProgress(cached_record);
 }
 
@@ -117,16 +114,14 @@ bool MatchesNonCursorFilters(const DownloadRecord& record,
 DownloadRecordStore::DownloadRecordStore(bool pagination_enabled)
     : pagination_enabled_(pagination_enabled) {
   // `base::SequenceBound` constructs the store on the database sequence,
-  // but the SEQUENCE_CHECKER is unconditionally detached at construction
-  // so it rebinds on the first method call rather than on whichever
-  // sequence happened to construct the object.
+  // but `SEQUENCE_CHECKER` is detached unconditionally so it rebinds on
+  // the first method call rather than the construction sequence.
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 DownloadRecordStore::~DownloadRecordStore() {
   // `base::SequenceBound` posts the destructor onto the bound database
-  // sequence, so it always runs on the same sequence as every other
-  // method.
+  // sequence, so it always runs on the same sequence as every other method.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -165,8 +160,8 @@ void DownloadRecordStore::LoadHistoricalRecords() {
     record_cache_[record.download_id] = record;
   }
 
-  // Mark any record stuck in kInProgress / kNotStarted as kFailed. This
-  // mirrors the original CleanupInconsistentStates legacy helper.
+  // Mark any record stuck in `kInProgress` / `kNotStarted` as `kFailed`.
+  // Mirrors the original `CleanupInconsistentStates` legacy helper.
   std::vector<std::string> records_to_fix;
   for (const auto& [id, record] : record_cache_) {
     if (record.state == web::DownloadTask::State::kInProgress ||
@@ -189,27 +184,27 @@ void DownloadRecordStore::MarkUnfinishedDownloadsAsFailed() {
     return;
   }
 
-  // Single SQL UPDATE — no full-table load. Any record found in
-  // kInProgress / kNotStarted at startup is treated as interrupted by
-  // app termination and flipped to kFailed.
+  // Single SQL `UPDATE` — no full-table load. Any row found in
+  // `kInProgress` / `kNotStarted` at startup is treated as interrupted by
+  // app termination and flipped to `kFailed`.
   //
-  // Return value is intentionally discarded: a transient SQL failure
-  // here is self-healing (the next OnDownload* update for the row, or
-  // the next session's identical UPDATE, will repair the state) and no
-  // caller depends on its success.
+  // Return value is intentionally discarded: a transient SQL failure is
+  // self-healing (the next `OnDownload*` update for the row, or the next
+  // session's identical `UPDATE`, will repair state) and no caller depends
+  // on its success.
   std::ignore = database_->MarkUnfinishedDownloadsAsFailed();
 
-  // `record_cache_` is intentionally not populated here. It is only
-  // populated by `LoadHistoricalRecords` on the flag-OFF path; on the
-  // flag-ON path it stays empty by design. This keeps service
-  // construction O(1) instead of O(N) on the persisted-row count.
+  // `record_cache_` is intentionally not populated here — it is owned by
+  // `LoadHistoricalRecords` on the flag-OFF path and stays empty on the
+  // flag-ON path. Keeps service construction O(1) instead of O(N) on the
+  // persisted-row count.
 }
 
 bool DownloadRecordStore::InsertRecord(const DownloadRecord& record) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (record.is_incognito) {
-    // Incognito records are never persisted; live only in memory.
+    // Incognito records live only in memory.
     if (pagination_enabled_) {
       incognito_records_[record.download_id] = record;
     } else {
@@ -243,20 +238,19 @@ std::optional<DownloadRecord> DownloadRecordStore::UpdateRecord(
     return std::nullopt;
   }
 
-  // Preserve created_time and is_incognito from the existing record so a
-  // stale-in-memory updated_record cannot drop those invariants.
+  // Preserve `created_time` and `is_incognito` from the existing record so
+  // a stale-in-memory `updated_record` cannot drop those invariants.
   DownloadRecord merged_record = updated_record;
   merged_record.created_time = existing_record_opt->created_time;
   merged_record.is_incognito = existing_record_opt->is_incognito;
 
-  // Determine if we need to persist this update to database.
   const bool should_persist =
       ShouldPersistUpdate(merged_record, *existing_record_opt);
 
   if (!should_persist) {
-    // Volatile-only change (e.g. received_bytes / progress_percent without
-    // a state transition): refresh the in-memory hot copy so subsequent
-    // reads see the freshest value, but skip the DB write.
+    // Volatile-only change (e.g. `received_bytes` / `progress_percent`
+    // without a state transition): refresh the in-memory hot copy so
+    // subsequent reads see the freshest value, but skip the DB write.
     if (pagination_enabled_) {
       WriteThroughToActiveCache(merged_record);
     } else {
@@ -285,16 +279,15 @@ bool DownloadRecordStore::UpdateRecordsState(
     const std::vector<std::string>& download_ids,
     web::DownloadTask::State new_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Legacy flag-OFF helper. Under the flag-ON path the active records
-  // cache is the source of truth for in-flight state; any future caller
-  // must explicitly decide whether to write-through it, so force such a
-  // caller to think about that here rather than silently miss the cache.
-  // TODO(crbug.com/524790428): Remove once the pagination flag has
-  // shipped to stable and is retired.
+  // Legacy flag-OFF helper. Under flag-ON, `active_records_cache_` is the
+  // source of truth for in-flight state; any future caller must explicitly
+  // decide whether to write through it. Forcing that decision here avoids
+  // silent cache misses.
+  // TODO(crbug.com/524790428): Remove once the pagination flag has shipped
+  // to stable.
   DCHECK(!pagination_enabled_);
 
   if (download_ids.empty()) {
-    // Empty list is considered successful.
     return true;
   }
 
@@ -303,7 +296,7 @@ bool DownloadRecordStore::UpdateRecordsState(
   }
 
   if (database_->UpdateDownloadRecordsState(download_ids, new_state)) {
-    // Updates cache for all successfully updated records.
+    // Mirror the new state into the cache for every updated row.
     for (const std::string& download_id : download_ids) {
       auto it = record_cache_.find(download_id);
       if (it != record_cache_.end()) {
@@ -326,7 +319,7 @@ std::optional<DownloadRecord> DownloadRecordStore::UpdateFilePathInRecord(
     return std::nullopt;
   }
 
-  // Create updated record with new file path.
+  // Apply new file path.
   DownloadRecord updated_record = existing_record_opt.value();
   updated_record.file_path = file_path;
 
@@ -337,12 +330,12 @@ bool DownloadRecordStore::DeleteRecord(std::string_view id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!pagination_enabled_) {
-    // Legacy flag-OFF path: record_cache_ is the single source of truth
+    // Legacy flag-OFF path: `record_cache_` is the single source of truth
     // for both the existence probe and the incognito test. Heterogeneous
     // lookup via `std::less<>` avoids a string copy on cache miss.
     auto it = record_cache_.find(id);
     if (it == record_cache_.end()) {
-      // Consider this a success since the record doesn't exist anyway.
+      // Treat "already gone" as success.
       return true;
     }
 
@@ -366,17 +359,16 @@ bool DownloadRecordStore::DeleteRecord(std::string_view id) {
     return false;
   }
 
-  // Flag-ON path: avoid the synchronous DB SELECT that `GetById` would
-  // otherwise perform on a cache miss. Incognito rows never touch the
-  // DB and live only in `incognito_records_`, so probing that hot map
-  // first is enough to short-circuit the incognito branch. We rely on
-  // `base::flat_map::erase` accepting a heterogeneous `std::string_view`
-  // key and returning the number of removed elements: a return of 1
-  // means the row was an incognito-only entry and we're done. The two
-  // maps have disjoint keys by construction (incognito records go only
-  // to `incognito_records_`, persisted records go only to
-  // `active_records_cache_`), so a successful incognito erase rules
-  // out a DB row for the same id.
+  // Flag-ON path: avoid the synchronous DB `SELECT` that `GetById` would
+  // do on a cache miss. Incognito rows never touch the DB and live only in
+  // `incognito_records_`, so probing that hot map first short-circuits the
+  // incognito branch. `base::flat_map::erase` accepts a heterogeneous
+  // `std::string_view` key and returns the number of removed elements: a
+  // return of 1 means the row was incognito-only and we're done. The two
+  // maps have disjoint keys by construction (incognito records go only to
+  // `incognito_records_`, persisted records go only to
+  // `active_records_cache_`), so a successful incognito erase rules out a
+  // DB row for the same id.
   if (incognito_records_.erase(id) == 1) {
     return true;
   }
@@ -385,10 +377,10 @@ bool DownloadRecordStore::DeleteRecord(std::string_view id) {
     return false;
   }
 
-  // Persisted path. The DB DELETE is idempotent — it returns true with
-  // zero rows affected if `id` was never persisted — so an "already
-  // gone" non-incognito id (e.g. the row was already deleted in a prior
-  // call) is naturally handled here without a separate existence probe.
+  // Persisted path. The DB `DELETE` is idempotent — it returns true with
+  // zero rows affected if `id` was never persisted — so an "already gone"
+  // non-incognito id (e.g. already deleted in a prior call) is handled
+  // naturally without a separate existence probe.
   if (!database_->DeleteDownloadRecord(std::string(id))) {
     // DB delete failed: do NOT evict the active cache entry. The DB row
     // is still present, so the cache must stay in sync with it.
@@ -407,8 +399,8 @@ std::vector<DownloadRecord> DownloadRecordStore::GetAllFromCache() {
 
   if (pagination_enabled_) {
     // Flag-ON in-memory layer is hot-only. A snapshot covers
-    // `active_records_cache_` + `incognito_records_`; full history is served
-    // by `GetDownloadsPage`.
+    // `active_records_cache_` + `incognito_records_`; full history is
+    // served by `GetDownloadsPage`.
     std::vector<DownloadRecord> records;
     records.reserve(active_records_cache_.size() + incognito_records_.size());
     for (const auto& [id, record] : active_records_cache_) {
@@ -435,9 +427,9 @@ std::optional<DownloadRecord> DownloadRecordStore::GetById(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (pagination_enabled_) {
-    // Probe the hot caches first (active records, then incognito), then
-    // fall back to a single-row DB lookup so a persisted-but-not-cached
-    // row (e.g. cold DB row from a previous session) is still reachable.
+    // Probe the hot caches first (active, then incognito), then fall back
+    // to a single-row DB lookup so a persisted-but-not-cached row (e.g. a
+    // cold DB row from a previous session) is still reachable.
     // Heterogeneous lookup keeps cache hits allocation-free.
     if (auto it = active_records_cache_.find(download_id);
         it != active_records_cache_.end()) {
@@ -564,8 +556,8 @@ void DownloadRecordStore::EvictOnDestroy(const std::string& download_id) {
   }
   // Both erases are idempotent; either map (or neither) may hold the id.
   // Posting on the database sequence makes this FIFO-ordered with all
-  // other CRUD work, so a still-pending UpdateRecord finishes first and
-  // can never resurrect the entry after this evict runs.
+  // other CRUD work, so a still-pending `UpdateRecord` finishes first
+  // and cannot resurrect the entry after this evict runs.
   active_records_cache_.erase(download_id);
   incognito_records_.erase(download_id);
 }

@@ -31,9 +31,9 @@ DownloadRecordServiceImpl::DownloadRecordServiceImpl(
   CHECK(IsDownloadListEnabled());
   CHECK(!profile_path.empty());
 
-  // Initialize the database, then run the appropriate startup cleanup
-  // path. Both calls are dispatched on `database_task_runner_` via
-  // `AsyncCall`, which guarantees ordering.
+  // Initialize the DB, then run the matching startup cleanup. Both calls
+  // dispatch on `database_task_runner_` via `AsyncCall`, which preserves
+  // ordering.
   store_.AsyncCall(&DownloadRecordStore::InitializeDatabase)
       .WithArgs(profile_path);
   if (pagination_enabled_) {
@@ -50,7 +50,7 @@ void DownloadRecordServiceImpl::RecordDownload(web::DownloadTask* task) {
   CHECK(task);
 
   DownloadRecord record = DownloadRecord(task);
-  // Sets creation time when we first record the download.
+  // Stamp creation time on first record.
   record.created_time = base::Time::Now();
 
   store_.AsyncCall(&DownloadRecordStore::InsertRecord)
@@ -66,21 +66,18 @@ void DownloadRecordServiceImpl::OnRecordInserted(
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
-  // `weak_task` is held as a WeakPtr because the DownloadTask may be destroyed
-  // during the asynchronous InsertRecord write (e.g. the download is
-  // cancelled, which posts CleanupCurrentDownload -> task_.reset()). The
-  // service is not yet observing the task at this point, so it receives no
-  // OnDownloadDestroyed callback. If the task is gone, the pointer is null and
-  // we skip safely instead of dereferencing freed memory.
+  // `weak_task` is a `WeakPtr` because `task` may be destroyed mid-flight
+  // (e.g. user cancels -> `CleanupCurrentDownload` -> `task_.reset()`). We
+  // are not yet observing `task`, so no `OnDownloadDestroyed` fires. Skip
+  // when null.
   web::DownloadTask* task = weak_task.get();
   if (!success || !task) {
     return;
   }
 
-  // Guard against double-registration: the same task may be retried (e.g.
-  // user taps "Try Again"), which would call RecordDownload again with the
-  // same DownloadTask pointer. AddObservation CHECKs that the source is not
-  // already observed, so skip it if we are already tracking this task.
+  // Guard against double-registration: a retried task ("Try Again") may
+  // re-enter `RecordDownload` with the same pointer, and `AddObservation`
+  // CHECKs uniqueness.
   if (download_task_observations_.IsObservingSource(task)) {
     return;
   }
@@ -109,7 +106,7 @@ void DownloadRecordServiceImpl::RemoveDownloadByIdAsync(
     const std::string& download_id,
     CompletionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  // Find and remove from observed tasks if present.
+  // Stop observing the task if we still hold it.
   web::DownloadTask* task_to_remove = GetDownloadTaskById(download_id);
   if (task_to_remove) {
     download_task_observations_.RemoveObservation(task_to_remove);
@@ -148,8 +145,8 @@ void DownloadRecordServiceImpl::GetDownloadsCountAsync(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(pagination_enabled_);
 
-  // Translate the optional filter into a count-only query. The cursor
-  // fields are ignored by the DB layer for count queries.
+  // Translate the optional filter into a count-only query; cursor fields
+  // are ignored by the DB layer for counts.
   DownloadRecordQuery query;
   query.filter_type = filter;
 
@@ -184,7 +181,7 @@ void DownloadRecordServiceImpl::UpdateDownloadFilePathAsync(
 web::DownloadTask* DownloadRecordServiceImpl::GetDownloadTaskById(
     std::string_view download_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  // Search through all observed download tasks.
+  // Scan observed tasks for a matching identifier.
   for (web::DownloadTask* task : download_task_observations_.sources()) {
     if (base::SysNSStringToUTF8(task->GetIdentifier()) == download_id) {
       return task;
@@ -230,11 +227,11 @@ void DownloadRecordServiceImpl::OnDownloadDestroyed(web::DownloadTask* task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   CHECK(task);
   if (pagination_enabled_) {
-    // Extract the id BEFORE `RemoveObservation`, which may drop the
-    // last handle on `task`. `EvictOnDestroy` is FIFO-ordered with every
-    // other CRUD task on the database sequence (see
-    // download_record_store.h), so a still-pending `UpdateRecord` for
-    // the same id finishes first and cannot resurrect the entry.
+    // Snapshot the id BEFORE `RemoveObservation`, which may drop the last
+    // handle on `task`. `EvictOnDestroy` is FIFO-ordered with every other
+    // CRUD task on the DB sequence (see `download_record_store.h`), so a
+    // pending `UpdateRecord` for the same id finishes first and cannot
+    // resurrect the entry.
     std::string download_id = base::SysNSStringToUTF8(task->GetIdentifier());
     store_.AsyncCall(&DownloadRecordStore::EvictOnDestroy)
         .WithArgs(std::move(download_id));

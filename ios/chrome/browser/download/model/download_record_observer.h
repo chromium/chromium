@@ -15,13 +15,8 @@ struct DownloadRecord;
 // Observer interface for download record changes.
 class DownloadRecordObserver : public base::CheckedObserver {
  public:
-  // Called when a new download started.
   virtual void OnDownloadAdded(const DownloadRecord& record) {}
-
-  // Called when a download updated.
   virtual void OnDownloadUpdated(const DownloadRecord& record) {}
-
-  // Called when downloads were removed.
   virtual void OnDownloadsRemoved(
       const std::vector<std::string_view>& download_ids) {}
 };

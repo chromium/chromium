@@ -24,8 +24,8 @@ class MetaTable;
 class Statement;
 }  // namespace sql
 
-// Manages download records storage using SQLite database.
-// This class is NOT thread-safe and must be used from a single sequence.
+// Manages download records storage using a SQLite database. Not thread-safe;
+// must be used from a single sequence.
 class DownloadRecordDatabase {
  public:
   explicit DownloadRecordDatabase(const base::FilePath& db_path);
@@ -44,80 +44,71 @@ class DownloadRecordDatabase {
   // Updates an existing download record in the database.
   bool UpdateDownloadRecord(const DownloadRecord& record);
 
-  // Updates the state of multiple download records in a single transaction.
+  // Updates state for multiple records in a single transaction.
   bool UpdateDownloadRecordsState(const std::vector<std::string>& download_ids,
                                   web::DownloadTask::State new_state);
 
-  // Deletes a download record by its ID.
+  // Deletes a record by ID.
   bool DeleteDownloadRecord(const std::string& download_id);
 
-  // Retrieves a single download record by its ID.
+  // Retrieves a single record by ID.
   std::optional<DownloadRecord> GetDownloadRecord(
       const std::string& download_id);
 
-  // Retrieves all download records ordered by creation time (newest first).
+  // Retrieves all records ordered by `created_time` (newest first).
   std::vector<DownloadRecord> GetAllDownloadRecords();
 
-  // Retrieves one page of download records using keyset pagination.
-  // Results are ordered by (created_time DESC, download_id DESC) and contain
-  // at most `kPageSize` rows (currently hardcoded in
-  // download_record_database.mm; callers cannot override it via `query`).
-  // Pass the (created_time, download_id) of the last row from the previous
-  // page in `cursor_*` to continue.
+  // Retrieves one page of records using keyset pagination. Results are
+  // ordered by `(created_time DESC, download_id DESC)` and contain at most
+  // `kDownloadRecordsPageSize` rows (defined in `download_record_query.h`;
+  // not overridable via `query`). Pass the `(created_time, download_id)` of
+  // the last row from the previous page in `cursor_*` to continue.
   std::vector<DownloadRecord> GetDownloadRecordsPage(
       const DownloadRecordQuery& query);
 
-  // Returns the total number of records matching the (non-cursor) filter
-  // portion of `query`. Cursor fields are ignored - this returns the total
-  // count across all pages.
+  // Returns the total number of records matching the non-cursor filter
+  // portion of `query`. Cursor fields are ignored — this returns the total
+  // across all pages.
   int GetDownloadRecordsCount(const DownloadRecordQuery& query);
 
-  // Single SQL UPDATE that flips any record currently in kInProgress or
-  // kNotStarted to kFailed. Other states are left untouched. Intended to be
-  // called once at startup to clean up downloads that were interrupted by app
-  // termination.
+  // Single SQL `UPDATE` that flips any record in `kInProgress` or
+  // `kNotStarted` to `kFailed`. Intended for one-shot startup cleanup of
+  // downloads interrupted by app termination.
   bool MarkUnfinishedDownloadsAsFailed();
 
-  // Checks if the database is properly initialized and ready for operations.
+  // True once the schema is fully initialized.
   bool IsInitialized() const;
 
  private:
-  // Creates the database schema tables.
+  // Creates the database schema.
   bool CreateSchema();
 
-  // Upgrades the database to the current version.
+  // Upgrades the schema to the current version.
   bool UpgradeDatabase();
 
-  // Checks if a table exists in the database.
   bool DoesTableExist(const std::string& table_name);
 
-  // Binds record data to an INSERT statement.
   void BindRecordToInsertStatement(sql::Statement& statement,
                                    const DownloadRecord& record);
 
-  // Binds record data to an UPDATE statement.
   void BindRecordToUpdateStatement(sql::Statement& statement,
                                    const DownloadRecord& record);
 
-  // Creates a DownloadRecord from a SQL statement result.
+  // Builds a `DownloadRecord` from a row in `statement`.
   DownloadRecord CreateRecordFromStatement(sql::Statement& statement);
 
-  // Handles database errors.
   void DatabaseErrorCallback(int error, sql::Statement* stmt);
 
-  // Path to the database file.
   const base::FilePath db_path_;
 
-  // SQLite database connection.
   sql::Database db_;
 
-  // Manages database versioning metadata.
+  // Tracks schema version.
   std::unique_ptr<sql::MetaTable> meta_table_;
 
-  // Stores the initialization status from the last Init() call.
+  // Result of the last `Init()`.
   sql::InitStatus init_status_ = sql::INIT_FAILURE;
 
-  // Ensures single-threaded access.
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

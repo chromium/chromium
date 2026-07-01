@@ -69,40 +69,33 @@ class DownloadRecordServiceImpl : public DownloadRecordService,
   void NotifyDownloadsRemoved(
       const std::vector<std::string_view>& download_ids);
 
-  // Reply for the asynchronous InsertRecord write started by
-  // `RecordDownload()`, run on the main sequence. Observes `task` and
-  // notifies observers when the insert succeeded.
+  // Reply for the async `InsertRecord` write started by `RecordDownload`;
+  // runs on the main sequence and starts observing `task` on success.
   void OnRecordInserted(base::WeakPtr<web::DownloadTask> weak_task,
                         const DownloadRecord& record,
                         bool success);
 
-  // Snapshot of `IsDownloadListPaginationEnabled()` taken at construction
-  // time, so an in-process Finch flip cannot change the path chosen at
-  // startup. Every pagination-gated code path reads this member, not the
-  // live function.
+  // Snapshot of `IsDownloadListPaginationEnabled()` sampled at construction
+  // so an in-process Finch flip cannot change the path chosen at startup.
+  // Pagination-gated paths read this member, not the live function.
   const bool pagination_enabled_;
 
-  // Task runner for database operations. `store_` is bound to it at
-  // construction.
+  // Task runner that owns `store_`. Declared first so it is alive when
+  // `store_`'s `SequenceBound` constructor runs (declaration order).
   scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
 
-  // Owns the SQLite-backed database and the in-memory record cache. All
-  // CRUD runs on `database_task_runner_` via `AsyncCall`; `SequenceBound`
-  // also destroys the store on that sequence, so any in-flight DB-task
-  // observes a live store even after `this` is gone on the main thread.
-  // The two preceding members are declared first because they feed this
-  // constructor (member init runs in declaration order).
+  // SQLite-backed store plus the in-memory record cache. All CRUD runs on
+  // `database_task_runner_` via `AsyncCall`; `SequenceBound` also destroys
+  // the store on that sequence, so in-flight DB tasks observe a live store
+  // even after `this` is gone on the main thread.
   base::SequenceBound<DownloadRecordStore> store_;
 
-  // ObserverList for download record changes.
-  base::ObserverList<DownloadRecordObserver, /* check_empty= */ true>
-      observers_;
-  // Observation for download tasks.
+  base::ObserverList<DownloadRecordObserver, /*check_empty=*/true> observers_;
   base::ScopedMultiSourceObservation<web::DownloadTask,
                                      web::DownloadTaskObserver>
       download_task_observations_{this};
 
-  // Main thread sequence checker for public API calls.
+  // Guards public API calls.
   SEQUENCE_CHECKER(main_sequence_checker_);
 
   base::WeakPtrFactory<DownloadRecordServiceImpl> weak_ptr_factory_{this};

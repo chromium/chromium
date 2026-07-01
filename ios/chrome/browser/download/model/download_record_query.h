@@ -18,11 +18,11 @@ inline constexpr int kDownloadRecordsPageSize = 50;
 
 // Query parameters for keyset-based pagination of download records.
 //
-// Records are returned ordered by (created_time DESC, download_id DESC). When
-// `cursor_created_time` and `cursor_download_id` are both set, only records
-// strictly less than that tuple (in the same ordering) are returned, enabling
-// stable continuation across pages even when new rows are inserted between
-// calls.
+// Records are returned ordered by `(created_time DESC, download_id DESC)`.
+// When `cursor_created_time` and `cursor_download_id` are both set, only
+// records strictly less than that tuple (in the same ordering) are returned,
+// enabling stable continuation across pages even when new rows are inserted
+// between calls.
 //
 // This struct lives in its own lightweight header so the public service
 // interface can take a dependency on it without leaking the SQL-backed
@@ -34,14 +34,14 @@ struct DownloadRecordQuery {
   ~DownloadRecordQuery();
 
   // Optional filter by file category (PDF/Image/Video/...). When unset or
-  // kAll, all categories are returned.
+  // `kAll`, all categories are returned.
   std::optional<DownloadFilterType> filter_type;
-  // Pagination cursor: created_time of the last row from the previous page.
+  // Pagination cursor: `created_time` of the last row from the previous page.
   std::optional<base::Time> cursor_created_time;
-  // Pagination cursor: download_id of the last row from the previous page.
+  // Pagination cursor: `download_id` of the last row from the previous page.
   std::optional<std::string> cursor_download_id;
   // Optional case-insensitive substring filter on the file name. Matched
-  // against the normalized (case-folded) file_name column using SQL LIKE,
+  // against the normalized (case-folded) `file_name` column using SQL `LIKE`,
   // so e.g. "Port" matches "report.pdf".
   std::optional<std::string> name_query;
 };
