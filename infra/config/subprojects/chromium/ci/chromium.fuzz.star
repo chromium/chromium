@@ -1191,7 +1191,7 @@ libfuzzer_mac_asan_builder(
     cpu = cpu.ARM64,
     target_arch = builder_config.target_arch.ARM,
     console_short_name = "mac-arm64-asan",
-    swarming_mixins = ["mac_15_arm64"],
+    swarming_mixins = ["mac_default_arm64"],
     # Even if we don't actively fuzz this build configuration yet, it is useful
     # to test that things nominally work and do not regress.
     test_builder_name = "mac-arm64-libfuzzer-asan-rel-tests",

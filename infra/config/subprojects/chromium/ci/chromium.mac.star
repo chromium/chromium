@@ -1069,7 +1069,7 @@ ci.thin_tester(
             "unit_tests",
         ],
         mixins = [
-            "mac_15_arm64",
+            "mac_default_arm64",
             "isolate_profile_data",
         ],
         per_test_modifications = {
