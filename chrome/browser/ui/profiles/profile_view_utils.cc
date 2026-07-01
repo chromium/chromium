@@ -191,7 +191,9 @@ bool IsAiSubscriptionRingEnabled(Profile* profile) {
 
 gfx::ImageSkia AddAiRingToAvatar(const ui::ImageModel& avatar_image,
                                  const ui::ColorProvider& color_provider,
-                                 int avatar_size) {
+                                 int avatar_size,
+                                 int gap_width,
+                                 int ring_thickness) {
   // Gradient stops corresponding to SVG:
   // 1) 0 to 85%: Solid start_color
   // 2) 85% to 99.6%: Linear transition between start and end color.
@@ -202,5 +204,5 @@ gfx::ImageSkia AddAiRingToAvatar(const ui::ImageModel& avatar_image,
       avatar_image, color_provider,
       color_provider.GetColor(kColorAiSubscriptionRingGradientStart),
       color_provider.GetColor(kColorAiSubscriptionRingGradientEnd), kPositions,
-      avatar_size, /*gap_width=*/2, /*ring_thickness=*/3);
+      avatar_size, gap_width, ring_thickness);
 }

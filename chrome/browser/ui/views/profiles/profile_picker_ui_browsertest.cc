@@ -22,6 +22,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
@@ -48,6 +49,8 @@
 namespace {
 constexpr char kEmail[] = "joe@gmail.com";
 constexpr char kOtherEmail[] = "other@gmail.com";
+constexpr char kManagedEmail[] = "joework@example.com";
+constexpr char kOtherManagedEmail[] = "otherwork@example.com";
 
 struct ProfilePickerTestParam {
   PixelTestParam pixel_test_param;
@@ -63,6 +66,7 @@ struct ProfilePickerTestParam {
   std::optional<std::variant<ForceSigninUIError::Type, SigninUIError::Type>>
       signin_error_dialog_type;
   bool error_with_signin_button = false;
+  bool use_ai_avatar_ring = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -174,6 +178,21 @@ const ProfilePickerTestParam kTestParams[] = {
                           .use_dark_theme = true},
      .use_multiple_profiles = true,
      .use_refreshed_ui = true},
+    {.pixel_test_param = {.test_suffix = "SingleProfileAiRing"},
+     .use_ai_avatar_ring = true},
+    {.pixel_test_param = {.test_suffix = "DarkSingleProfileAiRing",
+                          .use_dark_theme = true},
+     .use_ai_avatar_ring = true},
+    {.pixel_test_param = {.test_suffix = "SingleProfileManagedAiRing"},
+     .is_enterprise_badging_enabled = true,
+     .use_ai_avatar_ring = true},
+    {.pixel_test_param = {.test_suffix = "MultipleProfilesAiRing"},
+     .use_multiple_profiles = true,
+     .use_ai_avatar_ring = true},
+    {.pixel_test_param = {.test_suffix = "DarkMultipleProfilesAiRing",
+                          .use_dark_theme = true},
+     .use_multiple_profiles = true,
+     .use_ai_avatar_ring = true},
 };
 
 enum class ProfileStatus {
@@ -181,13 +200,18 @@ enum class ProfileStatus {
   kSignedIn,
   kSignedInManaged,
   kSignedInSupervised,
+  kSignedInAiSubscription,
+  kSignedInManagedAiSubscription,
 };
 
-void SetSigninProfileProperties(signin::IdentityManager* identity_manager,
+void SetSigninProfileProperties(Profile* profile,
                                 ProfileStatus profile_status,
-                                bool is_glic_version,
-                                const base::FilePath& profile_path) {
+                                bool is_glic_version) {
+  CHECK(profile);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
   CHECK(identity_manager);
+  const base::FilePath& profile_path = profile->GetPath();
 
   AccountInfo account_info;
   switch (profile_status) {
@@ -195,12 +219,11 @@ void SetSigninProfileProperties(signin::IdentityManager* identity_manager,
       break;
     case ProfileStatus::kSignedIn:
       account_info = signin::MakePrimaryAccountAvailable(
-          identity_manager, "joe@gmail.com", signin::ConsentLevel::kSignin);
+          identity_manager, kEmail, signin::ConsentLevel::kSignin);
       break;
     case ProfileStatus::kSignedInManaged: {
       account_info = signin::MakePrimaryAccountAvailable(
-          identity_manager, "joework@example.com",
-          signin::ConsentLevel::kSignin);
+          identity_manager, kManagedEmail, signin::ConsentLevel::kSignin);
       account_info =
           FillAccountInfo(account_info, AccountManagementStatus::kManaged,
                           signin::Tribool::kUnknown);
@@ -215,6 +238,28 @@ void SetSigninProfileProperties(signin::IdentityManager* identity_manager,
           account_info, identity_manager, true);
       break;
     }
+    case ProfileStatus::kSignedInAiSubscription: {
+      account_info = signin::MakePrimaryAccountAvailable(
+          identity_manager, kOtherEmail, signin::ConsentLevel::kSignin);
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path)
+          ->SetAiSubscriptionTier(1);
+      break;
+    }
+    case ProfileStatus::kSignedInManagedAiSubscription: {
+      account_info = signin::MakePrimaryAccountAvailable(
+          identity_manager, kOtherManagedEmail, signin::ConsentLevel::kSignin);
+      account_info =
+          FillAccountInfo(account_info, AccountManagementStatus::kManaged,
+                          signin::Tribool::kUnknown);
+      signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path)
+          ->SetAiSubscriptionTier(1);
+      break;
+    }
   }
 
   if (!account_info.IsEmpty() && is_glic_version) {
@@ -227,21 +272,35 @@ void SetSigninProfileProperties(signin::IdentityManager* identity_manager,
         .GetProfileAttributesWithPath(profile_path)
         ->SetIsGlicEligible(true);
   }
+
+  if (profile_status == ProfileStatus::kSignedInManaged ||
+      profile_status == ProfileStatus::kSignedInManagedAiSubscription) {
+    enterprise_util::SetUserAcceptedAccountManagement(profile, true);
+  }
 }
 
 // Create 4 profiles with different icons and types.
-void AddMultipleProfiles(bool is_glic_version, bool has_supervised_user) {
+void AddMultipleProfiles(bool is_glic_version,
+                         bool has_supervised_user,
+                         bool use_ai_avatar_ring) {
+  ProfileStatus signed_in_status_with_potential_ai_subscription =
+      use_ai_avatar_ring ? ProfileStatus::kSignedInAiSubscription
+                         : ProfileStatus::kSignedIn;
+  ProfileStatus managed_status_with_potential_ai_subscription =
+      use_ai_avatar_ring ? ProfileStatus::kSignedInManagedAiSubscription
+                         : ProfileStatus::kSignedInManaged;
+
   std::vector<ProfileStatus> profiles_status;
   if (is_glic_version) {
     // For the glic version, we need all Profiles to be signed in.
-    profiles_status.insert(
-        profiles_status.end(),
-        {ProfileStatus::kSignedIn, ProfileStatus::kSignedInManaged,
-         ProfileStatus::kSignedIn, ProfileStatus::kSignedInManaged});
+    profiles_status = {ProfileStatus::kSignedIn,
+                       ProfileStatus::kSignedInManaged,
+                       signed_in_status_with_potential_ai_subscription,
+                       managed_status_with_potential_ai_subscription};
   } else {
-    profiles_status.insert(profiles_status.end(),
-                           {ProfileStatus::kSignedOut, ProfileStatus::kSignedIn,
-                            ProfileStatus::kSignedInManaged});
+    profiles_status = {ProfileStatus::kSignedOut,
+                       signed_in_status_with_potential_ai_subscription,
+                       managed_status_with_potential_ai_subscription};
     if (has_supervised_user) {
       profiles_status.push_back(ProfileStatus::kSignedInSupervised);
     }
@@ -255,12 +314,7 @@ void AddMultipleProfiles(bool is_glic_version, bool has_supervised_user) {
         /*initialized_callback=*/
         base::BindLambdaForTesting([&run_loop, &profile_status,
                                     &is_glic_version](Profile* profile) {
-          SetSigninProfileProperties(
-              IdentityManagerFactory::GetForProfile(profile), profile_status,
-              is_glic_version, profile->GetPath());
-          if (profile_status == ProfileStatus::kSignedInManaged) {
-            enterprise_util::SetUserAcceptedAccountManagement(profile, true);
-          }
+          SetSigninProfileProperties(profile, profile_status, is_glic_version);
           run_loop.Quit();
         }));
     run_loop.Run();
@@ -282,6 +336,12 @@ class ProfilePickerUIPixelTest
       enabled_features.push_back({switches::kFirstRunDesktopRefresh, {}});
     } else {
       disabled_features.push_back(switches::kFirstRunDesktopRefresh);
+    }
+    if (GetParam().use_ai_avatar_ring) {
+      enabled_features.push_back(
+          {features::kEnableAiSubscriptionAvatarRing, {}});
+    } else {
+      disabled_features.push_back(features::kEnableAiSubscriptionAvatarRing);
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -358,13 +418,18 @@ class ProfilePickerUIPixelTest
     bool is_glic_version = GetParam().use_glic_version;
     bool no_glic_eligible_profiles = GetParam().no_glic_eligible_profiles;
 
-    // In Glic mode, sign in the default account as well if we need eligible
-    // profiles.
-    if (is_glic_version && !no_glic_eligible_profiles) {
-      SetSigninProfileProperties(
-          IdentityManagerFactory::GetForProfile(browser()->profile()),
-          ProfileStatus::kSignedIn,
-          /*is_glic_version=*/true, browser()->profile()->GetPath());
+    // Sign in the default profile if needed.
+    bool sign_in_default =
+        (is_glic_version && !no_glic_eligible_profiles) ||
+        (GetParam().use_ai_avatar_ring && !GetParam().use_multiple_profiles);
+    if (sign_in_default) {
+      ProfileStatus status = ProfileStatus::kSignedIn;
+      if (GetParam().use_ai_avatar_ring) {
+        status = GetParam().is_enterprise_badging_enabled
+                     ? ProfileStatus::kSignedInManagedAiSubscription
+                     : ProfileStatus::kSignedInAiSubscription;
+      }
+      SetSigninProfileProperties(browser()->profile(), status, is_glic_version);
     }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -381,7 +446,8 @@ class ProfilePickerUIPixelTest
       // In Glic mode, if `use_multiple_profiles` is set,
       // `no_glic_eligible_profiles` must be set to false.
       CHECK(!is_glic_version || !no_glic_eligible_profiles);
-      AddMultipleProfiles(is_glic_version, GetParam().has_supervised_user);
+      AddMultipleProfiles(is_glic_version, GetParam().has_supervised_user,
+                          GetParam().use_ai_avatar_ring);
     }
 
     if (GetParam().disallow_profile_creation) {

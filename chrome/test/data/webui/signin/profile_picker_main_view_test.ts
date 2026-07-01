@@ -64,6 +64,7 @@ function generateProfilesList(n: number): ProfileState[] {
              avatarBadge: i % 4 === 0 ? 'cr:domain' : '',
              profileCardButtonLabel: '',
              hasEnterpriseLabel: false,
+             hasAiRing: i % 3 === 0,
            }));
 }
 
@@ -140,12 +141,13 @@ suite('ProfilePickerMainViewTest', function() {
           profile.shadowRoot.querySelector<HTMLElement>(
                                 '#iconContainer')!.hidden,
           !expectedProfile.avatarBadge);
+      const avatarElement = profile.shadowRoot.querySelector<HTMLImageElement>(
+          '.profile-avatar')!;
       assertEquals(
-          (profile.shadowRoot
-               .querySelector<HTMLImageElement>('.profile-avatar')!.src)
-              .split('/')
-              .pop(),
-          expectedProfile.avatarIcon);
+          avatarElement.src.split('/').pop(), expectedProfile.avatarIcon);
+      assertEquals(
+          avatarElement.classList.contains('with-ai-ring'),
+          expectedProfile.hasAiRing);
     }
   }
 
@@ -202,6 +204,7 @@ suite('ProfilePickerMainViewTest', function() {
       avatarBadge: 'cr:domain',
       profileCardButtonLabel: '',
       hasEnterpriseLabel: true,
+      hasAiRing: false,
     });
     await simulateProfilesListChanged(profiles);
 

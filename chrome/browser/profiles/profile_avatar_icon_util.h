@@ -278,8 +278,8 @@ gfx::ImageSkia AddAiRingToAvatar(const ui::ImageModel& avatar_image,
                                  SkColor end_color,
                                  base::span<const float, 4> positions,
                                  int avatar_size,
-                                 int gap_width = 2,
-                                 int ring_thickness = 3);
+                                 int gap_width,
+                                 int ring_thickness);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace profiles
