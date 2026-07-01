@@ -36,10 +36,6 @@ class GpuChannelHost;
 class SharedImageInterfaceProxy;
 }  // namespace gpu
 
-namespace ui {
-class Compositor;
-}  // namespace ui
-
 namespace viz {
 class GpuHostImpl;
 class HostFrameSinkManager;
@@ -114,9 +110,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   // For destroying the GL context/surface that draw to a platform window before
   // the platform window is destroyed.
   friend class viz::HostFrameSinkManager;
-  // For preventing frame swaps of wrong size during resize on Windows.
-  // (https://crbug.com/811945)
-  friend class ui::Compositor;
   // For calling sync mojo API to get cdm origin in the ChromeOS GPU process.
   // Migrating to async is non-trivial and has not been prioritized.
   // (http://crbug.com/368792274)

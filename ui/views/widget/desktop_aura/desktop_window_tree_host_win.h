@@ -276,8 +276,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void PostHandleMSG(UINT message, WPARAM w_param, LPARAM l_param) override;
   bool HandleScrollEvent(ui::ScrollEvent* event) override;
   bool HandleGestureEvent(ui::GestureEvent* event) override;
-  void HandleWindowSizeChanging() override;
-  void HandleWindowSizeUnchanged() override;
   void HandleWindowScaleFactorChanged(float window_scale_factor) override;
   void HandleHeadlessWindowBoundsChanged(const gfx::Rect& bounds) override;
   HBRUSH GetBackgroundPaintBrush() override;

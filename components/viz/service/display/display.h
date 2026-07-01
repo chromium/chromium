@@ -138,14 +138,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // outside of Initialize, DrawAndSwap and dtor.
   void DisableGPUAccessByDefault();
 
-  // Stop drawing until Resize() is called with a new size. If the display
-  // hasn't drawn a frame at the current size *and* it's possible to immediately
-  // draw then this will run DrawAndSwap() first.
-  //
-  // |no_pending_swaps_callback| will be run there are no more swaps pending and
-  // may be run immediately.
-  void DisableSwapUntilResize(base::OnceClosure no_pending_swaps_callback);
-
   // Sets the color matrix that will be used to transform the output of this
   // display. This is only supported for GPU compositing.
   void SetColorMatrix(const SkM44& matrix);
@@ -308,7 +300,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   float device_scale_factor_ = 1.f;
   gfx::DisplayColorSpaces display_color_spaces_;
   bool visible_ = false;
-  bool swapped_since_resize_ = false;
   bool output_is_secure_ = false;
 
 #if DCHECK_IS_ON()
@@ -356,9 +347,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
       pending_presentation_group_timings_;
 
   bool disable_swap_until_resize_ = true;
-
-  // Callback that will be run after all pending swaps have acked.
-  base::OnceClosure no_pending_swaps_callback_;
 
   int pending_swaps_ = 0;
 

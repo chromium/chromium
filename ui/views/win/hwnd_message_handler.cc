@@ -3201,12 +3201,11 @@ void HWNDMessageHandler::OnWindowPosChanging(WINDOWPOS* window_pos) {
     // WM_PAINT.
     exposed_pixels_ = new_size - old_size;
 
-    delegate_->HandleWindowSizeChanging();
     sent_window_size_changing_ = true;
 
     // It's possible that if Aero snap is being entered then the window size
-    // won't actually change. Post a message to ensure swaps will be re-enabled
-    // in that case.
+    // won't actually change. Post a message to finalize the size-changing
+    // state in that case.
     ::PostMessage(hwnd(), WM_WINDOWSIZINGFINISHED,
                   ++current_window_size_message_, 0);
     // Copying the old bits can sometimes cause a flash of black when
@@ -3263,7 +3262,6 @@ LRESULT HWNDMessageHandler::OnWindowSizingFinished(UINT message,
   if (current_window_size_message_ != w_param) {
     return 0;
   }
-  delegate_->HandleWindowSizeUnchanged();
   sent_window_size_changing_ = false;
 
   // The window size didn't actually change, so nothing was exposed that needs

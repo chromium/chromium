@@ -358,13 +358,6 @@ void RootCompositorFrameSinkImpl::SetDisplayVisible(bool visible) {
   display_->SetVisible(visible);
 }
 
-#if BUILDFLAG(IS_WIN)
-void RootCompositorFrameSinkImpl::DisableSwapUntilResize(
-    DisableSwapUntilResizeCallback callback) {
-  display_->DisableSwapUntilResize(std::move(callback));
-}
-#endif
-
 void RootCompositorFrameSinkImpl::Resize(const gfx::Size& size) {
   if (!display_->resize_based_on_root_surface())
     display_->Resize(size);

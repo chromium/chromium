@@ -231,17 +231,6 @@ class COMPOSITOR_EXPORT Compositor
   // from changes to layer properties.
   void ScheduleRedrawRect(const gfx::Rect& damage_rect);
 
-#if BUILDFLAG(IS_WIN)
-  // Until this is called with |should| true then both DisableSwapUntilResize()
-  // and ReenableSwap() do nothing.
-  void SetShouldDisableSwapUntilResize(bool should);
-
-  // Attempts to immediately swap a frame with the current size if possible,
-  // then disables swapping on this surface until it is resized.
-  void DisableSwapUntilResize();
-  void ReenableSwap();
-#endif
-
   // Sets the compositor's device scale factor and size.
   void SetScaleAndSize(float scale,
                        const gfx::Size& size_in_pixel,
@@ -699,13 +688,6 @@ class COMPOSITOR_EXPORT Compositor
   CompositorLockManager lock_manager_;
 
   std::unique_ptr<ScrollInputHandler> scroll_input_handler_;
-
-#if BUILDFLAG(IS_WIN)
-  bool should_disable_swap_until_resize_ = false;
-#endif
-
-  // Set in DisableSwapUntilResize and reset when a resize happens.
-  bool disabled_swap_until_resize_ = false;
 
   bool animations_are_enabled_ = true;
 

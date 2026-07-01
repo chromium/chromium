@@ -73,7 +73,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/time/time.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #endif
 
 namespace ui {
@@ -367,7 +366,6 @@ void Compositor::SetLayerTreeFrameSink(
   // Display properties are reset when the output surface is lost, so update it
   // to match the Compositor's.
   if (display_private_) {
-    disabled_swap_until_resize_ = false;
     display_private_->Resize(size());
     display_private_->SetDisplayVisible(host_->IsVisible());
     display_private_->SetDisplayColorSpaces(display_color_spaces_);
@@ -473,31 +471,6 @@ void Compositor::ScheduleRedrawRect(const gfx::Rect& damage_rect) {
   host_->SetNeedsCommit();
 }
 
-#if BUILDFLAG(IS_WIN)
-void Compositor::SetShouldDisableSwapUntilResize(bool should) {
-  should_disable_swap_until_resize_ = should;
-}
-
-void Compositor::DisableSwapUntilResize() {
-  if (should_disable_swap_until_resize_ && display_private_) {
-    // Browser needs to block for Viz to receive and process this message.
-    // Otherwise when we return from WM_WINDOWPOSCHANGING message handler and
-    // receive a WM_WINDOWPOSCHANGED the resize is finalized and any swaps of
-    // wrong size by Viz can cause the swapped content to get scaled.
-    // TODO(crbug.com/40583169): Investigate nonblocking ways for solving.
-    TRACE_EVENT0("viz", "Blocked UI for DisableSwapUntilResize");
-    mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow_sync_call;
-    display_private_->DisableSwapUntilResize();
-    disabled_swap_until_resize_ = true;
-  }
-}
-
-void Compositor::ReenableSwap() {
-  if (should_disable_swap_until_resize_ && display_private_)
-    display_private_->Resize(size_);
-}
-#endif
-
 void Compositor::SetScaleAndSize(float scale,
                                  const gfx::Size& size_in_pixel,
                                  const viz::LocalSurfaceId& local_surface_id) {
@@ -529,9 +502,8 @@ void Compositor::SetScaleAndSize(float scale,
     }
 
     root_cc_layer_->SetBounds(size_in_pixel);
-    if (display_private_ && (size_changed || disabled_swap_until_resize_)) {
+    if (display_private_ && size_changed) {
       display_private_->Resize(size_in_pixel);
-      disabled_swap_until_resize_ = false;
     }
   }
   if (device_scale_factor_changed) {

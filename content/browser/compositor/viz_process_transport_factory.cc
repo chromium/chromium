@@ -501,15 +501,6 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
     compositor->SetExternalBeginFrameController(
         std::move(external_begin_frame_controller));
   }
-
-#if BUILDFLAG(IS_WIN)
-  // Windows using the ANGLE D3D backend for compositing needs to disable swap
-  // on resize to avoid D3D scaling the framebuffer texture. This isn't a
-  // problem with software compositing or ANGLE D3D with direct composition.
-  const bool using_angle_d3d_compositing =
-      gpu_compositing && !using_direct_composition;
-  compositor->SetShouldDisableSwapUntilResize(using_angle_d3d_compositing);
-#endif
 }
 
 gpu::ContextResult

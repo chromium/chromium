@@ -811,8 +811,8 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // glass. Defaults to false.
   bool dwm_transition_desired_;
 
-  // True if HandleWindowSizeChanging has been called in the delegate, but not
-  // HandleClientSizeChanged.
+  // True if a size-changing WM_WINDOWPOSCHANGING has been observed but the
+  // corresponding client size change hasn't been processed yet.
   bool sent_window_size_changing_;
 
   // This is used to keep track of whether a WM_WINDOWPOSCHANGED has

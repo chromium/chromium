@@ -1419,22 +1419,6 @@ bool DesktopWindowTreeHostWin::HandleGestureEvent(ui::GestureEvent* event) {
   return event->handled();
 }
 
-void DesktopWindowTreeHostWin::HandleWindowSizeChanging() {
-  if (compositor()) {
-    compositor()->DisableSwapUntilResize();
-  }
-}
-
-void DesktopWindowTreeHostWin::HandleWindowSizeUnchanged() {
-  // A resize may not have occurred if the window size happened not to have
-  // changed (can occur on Windows 10 when snapping a window to the side of
-  // the screen). In that case do a resize to the current size to reenable
-  // swaps.
-  if (compositor()) {
-    compositor()->ReenableSwap();
-  }
-}
-
 void DesktopWindowTreeHostWin::HandleWindowScaleFactorChanged(
     float window_scale_factor) {
   // TODO(ccameron): This will violate surface invariants, and is insane.

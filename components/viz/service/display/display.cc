@@ -336,9 +336,6 @@ Display::~Display() {
     resource_provider_->SetAllowAccessToGPUThread(true);
   }
 
-  if (no_pending_swaps_callback_)
-    std::move(no_pending_swaps_callback_).Run();
-
   for (auto& observer : observers_)
     observer.OnDisplayDestroyed();
   observers_.Clear();
@@ -459,7 +456,6 @@ void Display::Resize(const gfx::Size& size) {
   DCHECK(!clamped_size_px.IsEmpty());
   TRACE_EVENT0("viz", "Display::Resize");
 
-  swapped_since_resize_ = false;
   current_surface_size_ = clamped_size_px;
 
   damage_tracker_->DisplayResized();
@@ -474,30 +470,6 @@ void Display::InvalidateCurrentSurfaceId() {
   // Force a gc as the display may not be visible (gc occurs after drawing,
   // which won't happen when display is hidden).
   surface_manager_->GarbageCollectSurfaces();
-}
-
-void Display::DisableSwapUntilResize(
-    base::OnceClosure no_pending_swaps_callback) {
-  TRACE_EVENT0("viz", "Display::DisableSwapUntilResize");
-  DCHECK(no_pending_swaps_callback_.is_null());
-
-  if (!disable_swap_until_resize_) {
-    DCHECK(scheduler_);
-
-    if (!swapped_since_resize_)
-      scheduler_->ForceImmediateSwapIfPossible();
-
-    if (no_pending_swaps_callback && pending_swaps_ > 0 &&
-        output_surface_->AsSkiaOutputSurface()) {
-      no_pending_swaps_callback_ = std::move(no_pending_swaps_callback);
-    }
-
-    disable_swap_until_resize_ = true;
-  }
-
-  // There are no pending swaps for current size so immediately run callback.
-  if (no_pending_swaps_callback)
-    std::move(no_pending_swaps_callback).Run();
 }
 
 void Display::SetColorMatrix(const SkM44& matrix) {
@@ -1086,7 +1058,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     TRACE_EVENT_INSTANT(
         "viz,benchmark", "Graphics.Pipeline.WaitForSwap",
         perfetto::NamedTrack("Graphics.Pipeline", display_trace_id));
-    swapped_since_resize_ = true;
 
     IssueDisplayRenderingStatsEvent();
     DirectRenderer::SwapFrameData swap_frame_data;
@@ -1219,9 +1190,6 @@ void Display::DidReceiveSwapBuffersAck(gpu::SwapBuffersCompleteParams params,
   if (scheduler_) {
     scheduler_->DidReceiveSwapBuffersAck();
   }
-
-  if (no_pending_swaps_callback_ && pending_swaps_ == 0)
-    std::move(no_pending_swaps_callback_).Run();
 
   // It's possible to receive multiple calls to DidReceiveSwapBuffersAck()
   // before DidReceivePresentationFeedback(). Ensure that we're matching

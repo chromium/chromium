@@ -132,8 +132,6 @@ class TestHWNDMessageHandlerDelegate : public HWNDMessageHandlerDelegate {
   void PostHandleMSG(UINT message, WPARAM w_param, LPARAM l_param) override {}
   bool HandleScrollEvent(ui::ScrollEvent* event) override { return false; }
   bool HandleGestureEvent(ui::GestureEvent* event) override { return false; }
-  void HandleWindowSizeChanging() override {}
-  void HandleWindowSizeUnchanged() override {}
   void HandleWindowScaleFactorChanged(float window_scale_factor) override {}
   void HandleHeadlessWindowBoundsChanged(const gfx::Rect& bounds) override {}
   HBRUSH GetBackgroundPaintBrush() override { return nullptr; }

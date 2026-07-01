@@ -147,11 +147,6 @@ void CopyCallback(bool* called,
   std::move(finished).Run();
 }
 
-gfx::SwapTimings GetTestSwapTimings() {
-  base::TimeTicks now = base::TimeTicks::Now();
-  return gfx::SwapTimings{now, now};
-}
-
 }  // namespace
 
 class DisplayTest : public testing::Test {
@@ -513,35 +508,6 @@ TEST_F(DisplayTest, DisplayDamaged) {
     EXPECT_EQ(5u, output_surface_->num_sent_frames());
   }
 
-  // DisableSwapUntilResize() should cause a swap if no frame was swapped at the
-  // previous size.
-  {
-    id_allocator_.GenerateId();
-    display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
-    scheduler_->reset_swapped_for_test();
-    display_->Resize(gfx::Size(200, 200));
-    EXPECT_FALSE(scheduler_->swapped());
-    EXPECT_EQ(5u, output_surface_->num_sent_frames());
-    ResetDamageForTest();
-
-    constexpr gfx::Rect kOutputRect(0, 0, 200, 200);
-    constexpr gfx::Rect kDamageRect(10, 10, 10, 10);
-    CompositorFrame frame = CompositorFrameBuilder()
-                                .AddRenderPass(kOutputRect, kDamageRect)
-                                .Build();
-
-    support_->SubmitCompositorFrame(id_allocator_.GetCurrentLocalSurfaceId(),
-                                    std::move(frame));
-    EXPECT_TRUE(scheduler_->damaged());
-
-    scheduler_->reset_swapped_for_test();
-    display_->DisableSwapUntilResize(base::OnceClosure());
-    display_->Resize(gfx::Size(100, 100));
-    EXPECT_TRUE(scheduler_->swapped());
-    EXPECT_EQ(6u, output_surface_->num_sent_frames());
-    EXPECT_EQ(0u, output_surface_->last_sent_frame()->latency_info.size());
-  }
-
   // Surface that's damaged completely should be resized and swapped.
   {
     id_allocator_.GenerateId();
@@ -561,7 +527,7 @@ TEST_F(DisplayTest, DisplayDamaged) {
     params9.expected_display_time = base::TimeTicks::Now();
     display_->DrawAndSwap(params9);
     EXPECT_TRUE(scheduler_->swapped());
-    EXPECT_EQ(7u, output_surface_->num_sent_frames());
+    EXPECT_EQ(6u, output_surface_->num_sent_frames());
     EXPECT_EQ(gfx::Size(100, 100),
               software_output_device_->viewport_pixel_size());
     EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
@@ -642,80 +608,6 @@ TEST_F(DisplayTest, UnderLatencyInfoCap) {
 
 TEST_F(DisplayTest, OverLatencyInfoCap) {
   LatencyInfoCapTest(true);
-}
-
-TEST_F(DisplayTest, DisableSwapUntilResize) {
-  id_allocator_.GenerateId();
-  LocalSurfaceId local_surface_id1(id_allocator_.GetCurrentLocalSurfaceId());
-  id_allocator_.GenerateId();
-  LocalSurfaceId local_surface_id2(id_allocator_.GetCurrentLocalSurfaceId());
-
-  RendererSettings settings;
-  settings.partial_swap_enabled = true;
-  SetUpGpuDisplay(settings);
-  display_->Initialize(client_.get(), manager_.surface_manager());
-  display_->SetLocalSurfaceId(local_surface_id1, 1.f);
-  display_->Resize(gfx::Size(100, 100));
-
-  {
-    CompositorRenderPassList pass_list;
-    auto pass = CompositorRenderPass::Create();
-    pass->output_rect = gfx::Rect(0, 0, 100, 100);
-    pass->damage_rect = gfx::Rect(10, 10, 1, 1);
-    pass->id = CompositorRenderPassId{1u};
-    pass_list.push_back(std::move(pass));
-
-    SubmitCompositorFrame(&pass_list, local_surface_id1);
-  }
-
-  EXPECT_FALSE(scheduler_->swapped());
-
-  // DisableSwapUntilResize() should trigger a swap because we have a frame of
-  // the correct size and haven't swapped at that size yet.
-  bool swap_callback_run = false;
-  display_->DisableSwapUntilResize(base::BindLambdaForTesting(
-      [&swap_callback_run]() { swap_callback_run = true; }));
-  EXPECT_TRUE(scheduler_->swapped());
-
-  gpu::SwapBuffersCompleteParams params;
-  params.swap_response.timings = GetTestSwapTimings();
-  params.swap_response.result = gfx::SwapResult::SWAP_ACK;
-  display_->DidReceiveSwapBuffersAck(std::move(params),
-                                     /*release_fence=*/gfx::GpuFenceHandle());
-  EXPECT_TRUE(swap_callback_run);
-
-  display_->Resize(gfx::Size(150, 150));
-  scheduler_->reset_swapped_for_test();
-
-  // DisableSwapUntilResize() won't trigger a swap because there is no frame
-  // of the correct size to draw.
-  display_->SetLocalSurfaceId(local_surface_id2, 1.f);
-  display_->DisableSwapUntilResize(base::OnceClosure());
-  EXPECT_FALSE(scheduler_->swapped());
-  display_->Resize(gfx::Size(200, 200));
-
-  {
-    CompositorRenderPassList pass_list;
-    auto pass = CompositorRenderPass::Create();
-    pass->output_rect = gfx::Rect(0, 0, 200, 200);
-    pass->damage_rect = gfx::Rect(10, 10, 1, 1);
-    pass->id = CompositorRenderPassId{1u};
-    pass_list.push_back(std::move(pass));
-
-    SubmitCompositorFrame(&pass_list, local_surface_id2);
-  }
-
-  // DrawAndSwap() should trigger a swap at current size.
-  DrawAndSwapParams swap_until_resize_params;
-  swap_until_resize_params.expected_display_time = base::TimeTicks::Now();
-  display_->DrawAndSwap(swap_until_resize_params);
-  EXPECT_TRUE(scheduler_->swapped());
-  scheduler_->reset_swapped_for_test();
-
-  // DisableSwapUntilResize() won't trigger another swap because we already
-  // swapped a frame at the current size.
-  display_->DisableSwapUntilResize(base::OnceClosure());
-  EXPECT_FALSE(scheduler_->swapped());
 }
 
 TEST_F(DisplayTest, BackdropFilterTest) {
