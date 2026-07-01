@@ -23,6 +23,9 @@ BASE_DECLARE_FEATURE(kCastStreaming60fps);
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 BASE_DECLARE_FEATURE(kCastStreamingOfferHardwareFirst);
 
+COMPONENT_EXPORT(MIRRORING_SERVICE)
+BASE_DECLARE_FEATURE(kCastMirroringNativeNV12);
+
 }  // namespace features
 }  // namespace mirroring
 

@@ -6394,6 +6394,12 @@ inline constexpr char kPictureInPictureMuteControlName[] =
 inline constexpr char kPictureInPictureMuteControlDescription[] =
     "Adds a mute/unmute button to the Video Picture-in-Picture window.";
 
+inline constexpr char kCastMirroringNativeNV12Name[] =
+    "Cast Mirroring Native NV12";
+inline constexpr char kCastMirroringNativeNV12Description[] =
+    "If enabled, NV12 video frames will be sent to the encoder without being "
+    "converted to I420 during Cast Mirroring.";
+
 inline constexpr char kCastMirroringTargetPlayoutDelayName[] =
     "Changes the target playout delay for Cast mirroring.";
 inline constexpr char kCastMirroringTargetPlayoutDelayDescription[] =

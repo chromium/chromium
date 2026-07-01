@@ -8292,6 +8292,7 @@ from previous Chrome versions.
   <int value="-2004882388" label="AutofillPruneSuggestions:enabled"/>
   <int value="-2004862295" label="FedCmUserInfo:disabled"/>
   <int value="-2004231189" label="AppNotificationStatusMessaging:disabled"/>
+  <int value="-2004019042" label="CastMirroringNativeNV12:disabled"/>
   <int value="-2003893779" label="SpeakOnMuteEnabled:enabled"/>
   <int value="-2003389300" label="CrossDeviceTabPaneAndroid:enabled"/>
   <int value="-2003354337"
@@ -17028,6 +17029,7 @@ from previous Chrome versions.
   <int value="797924041" label="DeferredShaping:enabled"/>
   <int value="798093827"
       label="EnableEscapeHandlingForSecondaryActivities:enabled"/>
+  <int value="798254284" label="CastMirroringNativeNV12:enabled"/>
   <int value="798414711" label="BorealisForceDoubleScale:enabled"/>
   <int value="798456441" label="ConchGenAi:disabled"/>
   <int value="798696013" label="ImeInputLogicMozc:enabled"/>

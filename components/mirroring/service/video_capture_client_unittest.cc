@@ -9,8 +9,10 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/mirroring/service/fake_video_capture_host.h"
+#include "components/mirroring/service/mirroring_features.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
@@ -30,14 +32,16 @@ const media::VideoCaptureFeedback kFeedback(0.6, 30.0, 1000);
 
 constexpr bool kNotPremapped = false;
 
-media::mojom::VideoFrameInfoPtr GetVideoFrameInfo(const gfx::Size& size) {
+media::mojom::VideoFrameInfoPtr GetVideoFrameInfo(
+    const gfx::Size& size,
+    media::VideoPixelFormat format = media::PIXEL_FORMAT_I420) {
   media::VideoFrameMetadata metadata;
   metadata.frame_rate = 30;
   metadata.reference_time = base::TimeTicks();
   return media::mojom::VideoFrameInfo::New(
-      base::TimeDelta(), metadata, media::PIXEL_FORMAT_I420, size,
-      gfx::Rect(size), /*natural_size=*/size, kNotPremapped,
-      gfx::ColorSpace::CreateREC709(), nullptr);
+      base::TimeDelta(), metadata, format, size, gfx::Rect(size),
+      /*natural_size=*/size, kNotPremapped, gfx::ColorSpace::CreateREC709(),
+      nullptr);
 }
 
 }  // namespace
@@ -67,10 +71,11 @@ class VideoCaptureClientTest : public ::testing::Test,
     task_environment_.RunUntilIdle();
   }
 
-  MOCK_METHOD1(OnFrameReceived, void(const gfx::Size&));
+  MOCK_METHOD2(OnFrameReceived,
+               void(const gfx::Size&, media::VideoPixelFormat));
   void OnFrameReady(scoped_refptr<media::VideoFrame> video_frame) {
     client_->ProcessFeedback(kFeedback);
-    OnFrameReceived(video_frame->coded_size());
+    OnFrameReceived(video_frame->coded_size(), video_frame->format());
   }
 
  protected:
@@ -103,16 +108,20 @@ class VideoCaptureClientTest : public ::testing::Test,
     task_environment_.RunUntilIdle();
   }
 
-  void OnBufferReady(int buffer_id, const gfx::Size& frame_size) {
+  void OnBufferReady(
+      int buffer_id,
+      const gfx::Size& frame_size,
+      media::VideoPixelFormat format = media::PIXEL_FORMAT_I420,
+      media::VideoPixelFormat expected_format = media::PIXEL_FORMAT_I420) {
     EXPECT_CALL(error_cb_, Run()).Times(0);
     base::RunLoop run_loop;
     // Expects to receive one frame.
-    EXPECT_CALL(*this, OnFrameReceived(frame_size)).Times(1);
+    EXPECT_CALL(*this, OnFrameReceived(frame_size, expected_format)).Times(1);
     // Expects to return the buffer after the frame is consumed.
     EXPECT_CALL(*host_impl_, ReleaseBuffer(_, 0, kFeedback))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
     client_->OnBufferReady(media::mojom::ReadyBuffer::New(
-        buffer_id, GetVideoFrameInfo(frame_size)));
+        buffer_id, GetVideoFrameInfo(frame_size, format)));
     run_loop.Run();
     task_environment_.RunUntilIdle();
   }
@@ -138,6 +147,32 @@ TEST_P(VideoCaptureClientTest, Basic) {
 
   // A larger size video frame is received in the same buffer.
   OnBufferReady(0, gfx::Size(320, 180));
+}
+
+TEST_P(VideoCaptureClientTest, NV12) {
+  StartCapturing();
+
+  // A new buffer is created.
+  const gfx::Size frame_size(128, 64);
+  const int buffer_size =
+      media::VideoFrame::AllocationSize(media::PIXEL_FORMAT_NV12, frame_size);
+  OnNewBuffer(0, buffer_size);
+
+  {
+    // NV12 should be converted to I420 by default.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kCastMirroringNativeNV12);
+    OnBufferReady(0, frame_size, media::PIXEL_FORMAT_NV12,
+                  media::PIXEL_FORMAT_I420);
+  }
+
+  {
+    // NV12 should be passed through when the feature is enabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kCastMirroringNativeNV12);
+    OnBufferReady(0, frame_size, media::PIXEL_FORMAT_NV12,
+                  media::PIXEL_FORMAT_NV12);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

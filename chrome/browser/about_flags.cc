@@ -9639,6 +9639,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
+    {"cast-mirroring-native-nv12",
+     flag_descriptions::kCastMirroringNativeNV12Name,
+     flag_descriptions::kCastMirroringNativeNV12Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(mirroring::features::kCastMirroringNativeNV12)},
     {"cast-mirroring-target-playout-delay",
      flag_descriptions::kCastMirroringTargetPlayoutDelayName,
      flag_descriptions::kCastMirroringTargetPlayoutDelayDescription, kOsDesktop,
