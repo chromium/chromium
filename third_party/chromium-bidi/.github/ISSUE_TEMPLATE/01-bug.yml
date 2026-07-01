@@ -1,5 +1,5 @@
 name: Bug report
-description: File a bug report for puppeteer or puppeteer-core
+description: File a bug report for chromium-bidi
 title: '[Bug]: '
 type: 'Bug'
 body:
