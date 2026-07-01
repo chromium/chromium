@@ -62,6 +62,7 @@
 #include "components/page_image_service/image_service_handler.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_types.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -74,6 +75,10 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/webui/history/history_cross_device_signin_promo_handler.h"
+#endif
 
 namespace {
 
@@ -101,6 +106,10 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"compareHistoryRow", IDS_COMPARE_HISTORY_ROW},
       {"compareHistoryMenuAriaLabel", IDS_COMPARE_HISTORY_MENU_ARIA_LABEL},
       {"noSyncedResults", IDS_HISTORY_NO_SYNCED_RESULTS},
+      {"signinOnPhonePromoButton", IDS_HISTORY_SIGNIN_ON_PHONE_PROMO_BUTTON},
+      {"signinOnPhonePromoSubtitle",
+       IDS_HISTORY_SIGNIN_ON_PHONE_PROMO_SUBTITLE},
+      {"signinOnPhonePromoTitle", IDS_HISTORY_SIGNIN_ON_PHONE_PROMO_TITLE},
       {"turnOnSyncPromo", IDS_HISTORY_TURN_ON_SYNC_PROMO},
       {"turnOnSyncPromoDesc", IDS_HISTORY_TURN_ON_SYNC_PROMO_DESC},
       {"turnOnSyncHistoryPromo", IDS_HISTORY_SYNC_HISTORY_PROMO},
@@ -304,6 +313,17 @@ void HistoryUI::BindInterface(
       std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
       web_ui()->GetWebContents());
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void HistoryUI::BindInterface(
+    mojo::PendingReceiver<history_cross_device_signin_promo::mojom::
+                              HistoryCrossDeviceSigninPromoHandler>
+        pending_receiver) {
+  history_cross_device_signin_promo_handler_ =
+      std::make_unique<HistoryCrossDeviceSigninPromoHandler>(
+          std::move(pending_receiver), web_ui()->GetWebContents());
+}
+#endif
 
 void HistoryUI::BindInterface(
     mojo::PendingReceiver<history::mojom::ForeignSessionPageHandlerFactory>

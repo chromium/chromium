@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/signin/features.gni")
+
 source_set("history") {
   if (is_android) {
     sources = [ "history_ui_android.cc" ]
@@ -21,6 +23,9 @@ source_set("history") {
       "history_ui.cc",
       "navigation_handler.cc",
     ]
+    if (enable_dice_support) {
+      sources += [ "history_cross_device_signin_promo_handler.cc" ]
+    }
     public = [
       "browsing_history_handler.h",
       "foreign_session_handler.h",
@@ -29,6 +34,9 @@ source_set("history") {
       "history_ui.h",
       "navigation_handler.h",
     ]
+    if (enable_dice_support) {
+      public += [ "history_cross_device_signin_promo_handler.h" ]
+    }
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [
       "//base",

@@ -116,6 +116,7 @@
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/search/ntp_features.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/surface_embed/browser/surface_embed_host.h"
 #include "components/surface_embed/common/features.h"
 #include "components/surface_embed/common/surface_embed.mojom.h"
@@ -284,6 +285,12 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
     RegisterWebUIControllerInterfaceBinder<history::mojom::PageHandler,
                                            HistoryUI>(map);
   }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  RegisterWebUIControllerInterfaceBinder<
+      history_cross_device_signin_promo::mojom::
+          HistoryCrossDeviceSigninPromoHandler,
+      HistoryUI>(map);
+#endif
   if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported(
           Profile::FromBrowserContext(
               render_frame_host->GetBrowserContext()))) {

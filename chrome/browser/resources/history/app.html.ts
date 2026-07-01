@@ -86,6 +86,11 @@ export function getHtml(this: HistoryAppElement) {
                 <div class="history-cards">
                   <history-sync-promo></history-sync-promo>
                 </div>` : ''}
+              <div class="history-cards" ?hidden="${!this.shouldShowHistoryCrossDeviceSigninPromo_}">
+                <history-cross-device-signin-promo id="historyCrossDeviceSigninPromo"
+                    @should-show-history-cross-device-signin-promo="${this.onShouldShowHistoryCrossDeviceSigninPromo_}">
+                </history-cross-device-signin-promo>
+              </div>
             </if>
             ${this.enableHistoryEmbeddings_ ? html`
               <div id="historyEmbeddingsContainer" class="history-cards">

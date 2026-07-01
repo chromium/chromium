@@ -53,6 +53,9 @@ build_webui("build") {
   ]
   if (!is_chromeos) {
     ts_files += [
+      "history_cross_device_signin_promo.html.ts",
+      "history_cross_device_signin_promo.ts",
+      "history_cross_device_signin_promo_browser_proxy.ts",
       "history_sync_promo.html.ts",
       "history_sync_promo.ts",
     ]
@@ -73,7 +76,10 @@ build_webui("build") {
     "synced_device_manager.css",
   ]
   if (!is_chromeos) {
-    css_files += [ "history_sync_promo.css" ]
+    css_files += [
+      "history_cross_device_signin_promo.css",
+      "history_sync_promo.css",
+    ]
   }
 
   icons_html_files = [ "shared_icons.html" ]

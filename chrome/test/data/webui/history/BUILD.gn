@@ -38,6 +38,10 @@ build_webui_tests("build") {
     "test_util.ts",
   ]
 
+  if (!is_chromeos) {
+    files += [ "history_cross_device_signin_promo_test.ts" ]
+  }
+
   ts_path_mappings = [
     "chrome://history/history.js|" +
         rebase_path(

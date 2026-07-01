@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module history_cross_device_signin_promo.mojom;
+
+// Browser-side handler for the cross-device sign-in promo card.
+interface HistoryCrossDeviceSigninPromoHandler {
+  // Checks if the promo card should be shown.
+  ShouldShowPromoCard() => (bool should_show);
+
+  // Called when the promo card is shown.
+  OnPromoCardShown();
+
+  // Called when the promo card is dismissed.
+  OnPromoCardDismissed();
+
+  // Called when the promo card action button is clicked.
+  // The callback is resolved when the action is completed.
+  OnPromoCardActionClicked() => ();
+};

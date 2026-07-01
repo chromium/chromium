@@ -300,7 +300,7 @@ void OnCrossDeviceSigninPromoDismissed(
       data->shown_count, kMaxShownCount + 1);
 }
 
-void OpenSigninToPhoneQrCodeBubble(Browser* browser,
+void OpenSigninToPhoneQrCodeBubble(BrowserWindowInterface* browser_window,
                                    CrossDeviceSigninPromoEntryPoint entry_point,
                                    base::OnceClosure closing_callback) {
   CHECK(base::FeatureList::IsEnabled(switches::kCrossDeviceSigninFromDesktop));

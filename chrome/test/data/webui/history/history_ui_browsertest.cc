@@ -7,6 +7,7 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_embeddings/core/history_embeddings_features.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 
@@ -66,6 +67,12 @@ IN_PROC_BROWSER_TEST_F(HistoryTest, SearchedLabel) {
 IN_PROC_BROWSER_TEST_F(HistoryTest, HistoryEmbeddingsPromo) {
   RunTest("history/history_embeddings_promo_test.js", "mocha.run()");
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+IN_PROC_BROWSER_TEST_F(HistoryTest, HistoryCrossDeviceSigninPromo) {
+  RunTest("history/history_cross_device_signin_promo_test.js", "mocha.run()");
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(HistoryTest, HistorySideBarFooter) {
   RunTest("history/history_side_bar_footer_test.js", "mocha.run()");
