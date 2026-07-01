@@ -1302,9 +1302,8 @@ XrResult xrWaitSwapchainImage(XrSwapchain swapchain,
   RETURN_IF(wait_info->type != XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO,
             XR_ERROR_VALIDATION_FAILURE,
             "xrWaitSwapchainImage next is nullptr");
-  RETURN_IF(wait_info->timeout != XR_INFINITE_DURATION,
-            XR_ERROR_VALIDATION_FAILURE,
-            "xrWaitSwapchainImage timeout not XR_INFINITE_DURATION");
+  RETURN_IF(wait_info->timeout <= 0, XR_ERROR_VALIDATION_FAILURE,
+            "xrWaitSwapchainImage timeout must be greater than 0");
 
   return XR_SUCCESS;
 }

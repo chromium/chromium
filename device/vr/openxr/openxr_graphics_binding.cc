@@ -296,14 +296,23 @@ void OpenXrGraphicsBinding::UpdateProjectionLayerActiveSwapchainImageSize(
   }
 }
 
-XrResult OpenXrGraphicsBinding::ActivateSwapchainImages(
+XrResult OpenXrGraphicsBinding::AcquireSwapchainImages(
     gpu::SharedImageInterface* sii) {
   if (ShouldRenderBaseLayer()) {
-    RETURN_IF_XR_FAILED(base_layer_->ActivateSwapchainImage(sii));
+    DCHECK(base_layer_);
+    if (base_layer_->swapchain_image_state() ==
+        OpenXrCompositionLayer::SwapchainImageState::kReleased) {
+      RETURN_IF_XR_FAILED(base_layer_->AcquireSwapchainImage(sii));
+    }
   }
   for (const auto& layer_id : layers_sequence_) {
     auto layer_it = layers_.find(layer_id);
     if (layer_it == layers_.end()) {
+      continue;
+    }
+
+    if (layer_it->second->swapchain_image_state() ==
+        OpenXrCompositionLayer::SwapchainImageState::kAcquired) {
       continue;
     }
 
@@ -324,9 +333,43 @@ XrResult OpenXrGraphicsBinding::ActivateSwapchainImages(
         layer_it->second->is_rendered()) {
       continue;
     }
-    RETURN_IF_XR_FAILED(layer_it->second->ActivateSwapchainImage(sii));
+    RETURN_IF_XR_FAILED(layer_it->second->AcquireSwapchainImage(sii));
   }
   return XR_SUCCESS;
+}
+
+XrResult OpenXrGraphicsBinding::WaitSwapchainImages(
+    gpu::SharedImageInterface* sii) {
+  XrResult return_result = XR_SUCCESS;
+
+  if (ShouldRenderBaseLayer()) {
+    DCHECK(base_layer_);
+    if (base_layer_->swapchain_image_state() ==
+        OpenXrCompositionLayer::SwapchainImageState::kAcquired) {
+      XrResult result = base_layer_->WaitSwapchainImage(sii);
+      RETURN_IF_XR_FAILED(result);
+      if (result == XR_TIMEOUT_EXPIRED) {
+        return_result = result;
+      }
+    }
+  }
+
+  for (const auto& layer_id : layers_sequence_) {
+    auto layer_it = layers_.find(layer_id);
+    if (layer_it == layers_.end()) {
+      continue;
+    }
+    if (layer_it->second->swapchain_image_state() ==
+        OpenXrCompositionLayer::SwapchainImageState::kAcquired) {
+      XrResult result = layer_it->second->WaitSwapchainImage(sii);
+      RETURN_IF_XR_FAILED(result);
+      if (result == XR_TIMEOUT_EXPIRED) {
+        return_result = result;
+      }
+    }
+  }
+
+  return return_result;
 }
 
 XrResult OpenXrGraphicsBinding::ReleaseActiveSwapchainImages() {

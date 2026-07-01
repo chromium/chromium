@@ -42,8 +42,8 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   int64_t GetSwapchainFormat(XrSession session) const override;
   XrResult EnumerateSwapchainImages(OpenXrCompositionLayer& layer) override;
   bool CanUseSharedImages() const override;
-  void OnSwapchainImageActivated(OpenXrCompositionLayer& layer,
-                                 gpu::SharedImageInterface* sii) override;
+  void OnSwapchainImageReady(OpenXrCompositionLayer& layer,
+                             gpu::SharedImageInterface* sii) override;
   void ResizeSharedBuffer(OpenXrCompositionLayer& layer,
                           OpenXrSwapchainInfo& swap_chain_info,
                           gpu::SharedImageInterface* sii) override;

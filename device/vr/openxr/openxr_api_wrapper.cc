@@ -1096,8 +1096,21 @@ XrResult OpenXrApiWrapper::BeginFrame() {
   RETURN_IF_XR_FAILED(xrBeginFrame(session_, &begin_frame_info));
   pending_frame_ = true;
 
-  RETURN_IF_XR_FAILED(graphics_binding_->ActivateSwapchainImages(
+  RETURN_IF_XR_FAILED(graphics_binding_->AcquireSwapchainImages(
       context_provider_->SharedImageInterface()));
+
+  XrResult wait_result = XR_TIMEOUT_EXPIRED;
+  while (wait_result == XR_TIMEOUT_EXPIRED) {
+    wait_result = graphics_binding_->WaitSwapchainImages(
+        context_provider_->SharedImageInterface());
+    if (wait_result == XR_TIMEOUT_EXPIRED) {
+      if (UpdateAndGetSessionEnded()) {
+        return XR_ERROR_SESSION_LOST;
+      }
+    }
+  }
+
+  RETURN_IF_XR_FAILED(wait_result);
 
   RETURN_IF_XR_FAILED(UpdateViewConfigurations());
 

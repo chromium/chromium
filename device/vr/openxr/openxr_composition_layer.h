@@ -26,6 +26,12 @@ class OpenXrCompositionLayer {
     kCube = 4,
   };
 
+  enum class SwapchainImageState {
+    kReleased,
+    kAcquired,
+    kWaited,
+  };
+
   // Base class for graphics binding specific layer data.
   struct GraphicsBindingData {
     enum GraphicsBindingDataType {
@@ -86,9 +92,11 @@ class OpenXrCompositionLayer {
   // up those SharedImages.
   void DestroySwapchain(gpu::SharedImageInterface* sii);
 
-  // Acquire and activate a Swapchain image from the OpenXr system. This is the
-  // swapchain image that will be in use for the next render.
-  XrResult ActivateSwapchainImage(gpu::SharedImageInterface* sii);
+  // Acquire a Swapchain image from the OpenXr system.
+  XrResult AcquireSwapchainImage(gpu::SharedImageInterface* sii);
+
+  // Wait for the acquired Swapchain image to be ready for writing.
+  XrResult WaitSwapchainImage(gpu::SharedImageInterface* sii);
 
   // Release the active swapchain image from the OpenXr system. This is called
   // before calling EndFrame and will enable acquiring a new swapchain image for
@@ -125,7 +133,10 @@ class OpenXrCompositionLayer {
   // A group of simple getters.
   XrSwapchain color_swapchain() const { return color_swapchain_; }
   bool has_active_swapchain_image() const {
-    return has_active_swapchain_image_;
+    return swapchain_image_state_ == SwapchainImageState::kWaited;
+  }
+  SwapchainImageState swapchain_image_state() const {
+    return swapchain_image_state_;
   }
   GraphicsBindingData* graphics_binding_data() {
     return graphics_binding_data_.get();
@@ -164,9 +175,8 @@ class OpenXrCompositionLayer {
   // as was returned by the OpenXr system when querying for the swapchain info.
   uint32_t active_swapchain_index_ = 0;
 
-  // Indicates whether or not we actually have an active swapchain image (e.g.
-  // ActivateSwapchainImage has been called, but ReleaseSwapchainImage has not).
-  bool has_active_swapchain_image_ = false;
+  // Indicates the state of the swapchain image in its lifecycle.
+  SwapchainImageState swapchain_image_state_ = SwapchainImageState::kReleased;
 
   // Indicates whether the layer has been rendered at least once, in other
   // words, if it contains some contents.

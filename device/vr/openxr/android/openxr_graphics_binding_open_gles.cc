@@ -454,7 +454,7 @@ bool OpenXrGraphicsBindingOpenGLES::ShouldFlipSubmittedImage(
   return should_flip;
 }
 
-void OpenXrGraphicsBindingOpenGLES::OnSwapchainImageActivated(
+void OpenXrGraphicsBindingOpenGLES::OnSwapchainImageReady(
     OpenXrCompositionLayer& layer,
     gpu::SharedImageInterface* sii) {
   OpenXrSwapchainInfo* swap_chain_info = layer.GetActiveSwapchainImage();

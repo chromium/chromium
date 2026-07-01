@@ -36,8 +36,8 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
                           OpenXrSwapchainInfo& swap_chain_info,
                           gpu::SharedImageInterface* sii) override;
   void OnSwapchainImageSizeChanged(OpenXrCompositionLayer&) override;
-  void OnSwapchainImageActivated(OpenXrCompositionLayer&,
-                                 gpu::SharedImageInterface* sii) override;
+  void OnSwapchainImageReady(OpenXrCompositionLayer&,
+                             gpu::SharedImageInterface* sii) override;
   void CleanupWithoutSubmit() override;
   void OnSetOverlayAndWebXrVisibility() override;
   void SetWebXrTexture(mojo::PlatformHandle texture_handle,

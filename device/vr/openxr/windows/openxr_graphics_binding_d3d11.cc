@@ -307,7 +307,9 @@ bool OpenXrGraphicsBindingD3D11::RenderLayer(
     const scoped_refptr<viz::ContextProvider>& context_provider) {
   CHECK(texture_helper_);
   const OpenXrSwapchainInfo* swapchain_info = layer.GetActiveSwapchainImage();
-  CHECK(swapchain_info);
+  if (!swapchain_info) {
+    return false;
+  }
   if (swapchain_info->d3d11_shared_texture) {
     if (!texture_helper_->CopyToBackBuffer(
             context_provider, swapchain_info->d3d11_shared_texture)) {
@@ -336,7 +338,7 @@ void OpenXrGraphicsBindingD3D11::OnSwapchainImageSizeChanged(
   texture_helper_->SetDefaultSize(layer.GetSwapchainImageSize());
 }
 
-void OpenXrGraphicsBindingD3D11::OnSwapchainImageActivated(
+void OpenXrGraphicsBindingD3D11::OnSwapchainImageReady(
     OpenXrCompositionLayer& layer,
     gpu::SharedImageInterface* sii) {
   const OpenXrSwapchainInfo* swapchain_info = layer.GetActiveSwapchainImage();
