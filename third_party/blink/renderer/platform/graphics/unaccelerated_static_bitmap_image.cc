@@ -66,9 +66,8 @@ UnacceleratedStaticBitmapImage::CreateFromRaster(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
     scoped_refptr<const cc::AnimatedImageFrameIndexMap>
         animated_image_frame_index_map) {
-  SkImageInfo info = SkImageInfo::MakeN32Premul(
-      size.width(), size.height(),
-      gfx::ColorSpace::CreateSRGB().ToSkColorSpace());
+  SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height(),
+                                                SkColorSpace::MakeSRGB());
   SkSurfaceProps props = skia::LegacyDisplayGlobals::ComputeSurfaceProps(
       /*can_use_lcd_text=*/false);
   sk_sp<SkSurface> surface = SkSurfaces::Raster(info, &props);
