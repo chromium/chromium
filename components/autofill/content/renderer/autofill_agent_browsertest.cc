@@ -40,6 +40,7 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/navigation_simulator.h"
@@ -72,8 +73,10 @@ using ::blink::WebAutofillState;
 using ::blink::WebElement;
 using ::blink::WebFormControlElement;
 using ::blink::WebFormElement;
+using ::blink::WebInputElement;
 using ::blink::WebOptionElement;
 using ::blink::WebSelectElement;
+using ::blink::WebString;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AtMost;
@@ -738,6 +741,89 @@ TEST_F(AutofillAgentTest, TriggerSuggestionsForElementWithDatalist) {
       GetFieldRendererIdById("ff"),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
   task_environment_.RunUntilIdle();
+}
+
+// Tests that `AutofillAgent::AcceptDataListSuggestion` sets the field value
+// correctly when accepting a datalist suggestion.
+TEST_F(AutofillAgentTest, AcceptDataListSuggestion) {
+  LoadHTML(
+      "<html>"
+      "<input id='empty' type='email' multiple />"
+      "<input id='multi_one' type='email' multiple value='one@example.com'/>"
+      "<input id='multi_two' type='email' multiple"
+      "  value='one@example.com,two@example.com'/>"
+      "<input id='multi_trailing' type='email' multiple"
+      "  value='one@example.com,two@example.com,'/>"
+      "<input id='not_multi' type='email'"
+      "  value='one@example.com,two@example.com,'/>"
+      "<input id='not_email' type='text' multiple"
+      "  value='one@example.com,two@example.com,'/>"
+      "</html>");
+
+  // Each case tests a different field value with the same suggestion.
+  const std::u16string kSuggestion = u"suggestion@example.com";
+  struct TestCase {
+    std::string id;
+    std::string expected;
+  } cases[] = {
+      // Empty text field; expect to populate with suggestion.
+      {"empty", "suggestion@example.com"},
+      // Single entry; expect to replace with suggestion.
+      {"multi_one", "suggestion@example.com"},
+      // Two comma-separated entries; expect to replace second with suggestion.
+      {"multi_two", "one@example.com,suggestion@example.com"},
+      // Two comma-separated entries with trailing comma; expect to append
+      // suggestion.
+      {"multi_trailing",
+       "one@example.com,two@example.com,suggestion@example.com"},
+      // Do not apply this logic for a non-multiple or non-email field.
+      {"not_multi", "suggestion@example.com"},
+      {"not_email", "suggestion@example.com"},
+  };
+
+  for (const TestCase& c : cases) {
+    ASSERT_TRUE(SimulateElementClick(c.id));
+
+    WebElement element =
+        GetDocument().GetElementById(WebString::FromUtf8(c.id));
+    ASSERT_TRUE(element);
+    WebInputElement input_element = element.To<WebInputElement>();
+
+    autofill_agent().AcceptDataListSuggestion(
+        form_util::GetFieldRendererId(input_element), kSuggestion);
+    EXPECT_EQ(c.expected, input_element.Value().Utf8()) << "Case id: " << c.id;
+  }
+}
+
+// Tests that clicking on a select element triggers
+// `mojom::AutofillDriver::SelectControlSelectionChanged` for that element.
+TEST_F(AutofillAgentTest, SelectControlChanged) {
+  LoadHTML(
+      "<html>"
+      "<form>"
+      "<select id='color'><option value='red'>red</option><option "
+      "value='blue'>blue</option></select>"
+      "</form>"
+      "</html>");
+
+  std::string change_value =
+      "var color = document.getElementById('color');"
+      "color.selectedIndex = 1;";
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(autofill_driver(),
+              SelectControlSelectionChanged(
+                  Property(&FormData::fields,
+                           ElementsAre(test::FormFieldDescriptionEq(
+                               {.name = u"color", .value = u"blue"}))),
+                  _))
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  // The click simulation is necessary to give the frame transient user
+  // activation, otherwise the select value-change event will be ignored by the
+  // agent.
+  ASSERT_TRUE(SimulateElementClick("color"));
+  ExecuteJavaScriptForTests(change_value.c_str());
+  std::move(run_loop).Run();
 }
 
 // A test fixture that sets the autofill agent's `focus_requires_scroll` config
