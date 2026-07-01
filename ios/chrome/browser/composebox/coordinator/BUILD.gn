@@ -349,6 +349,7 @@ source_set("unit_tests") {
     "//components/search_engines:test_support",
     "//components/signin/public/identity_manager",
     "//components/variations",
+    "//components/variations:test_support",
     "//components/version_info:channel",
     "//ios/chrome/browser/cobrowse/model:factory",
     "//ios/chrome/browser/composebox/public",

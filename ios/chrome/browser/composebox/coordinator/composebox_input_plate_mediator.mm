@@ -689,8 +689,11 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 - (void)sendText:(NSString*)text
     additionalParams:(std::map<std::string, std::string>)additionalParams {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  // Contextual search session can be null when fusebox is disabled.
-  if (!_contextualSearchSession) {
+  // If the session is null, or if this is a regular search with no attachments,
+  // the contextual session is bypassed and a standard search URL is generated.
+  BOOL isRegularSearchWithoutContext =
+      [_modeHolder isRegularSearch] && (!_items || _items.empty);
+  if (!_contextualSearchSession || isRegularSearchWithoutContext) {
     if (_templateURLService) {
       GURL URL = GetDefaultSearchURLForSearchTerms(_templateURLService,
                                                    [text cr_UTF16String]);
@@ -706,6 +709,12 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
       search_url_request_info = std::make_unique<
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
+  search_url_request_info->search_url_type =
+      [_modeHolder isRegularSearch]
+          ? contextual_search::ContextualSearchContextController::
+                SearchUrlType::kStandard
+          : contextual_search::ContextualSearchContextController::
+                SearchUrlType::kAim;
   search_url_request_info->query_text = base::SysNSStringToUTF8(text);
   search_url_request_info->query_start_time = base::Time::Now();
   search_url_request_info->aim_entry_point =
@@ -1478,10 +1487,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self recordNavigationInitiated];
 
-  // TODO(crbug.com/40280872): Handle AIM enabled in the query controller.
-  if ([_modeHolder isRegularSearch]) {
-    URL = net::AppendOrReplaceQueryParameter(URL, "udm", "24");
-  } else if (_modeHolder.mode == ComposeboxMode::kAIM) {
+  if (_modeHolder.mode == ComposeboxMode::kAIM) {
     // If the active tab is attached to the composebox, an AIM query should
     // invoke the Assistant directly using the query URL instead of routing
     // through the standard search navigation flow.
