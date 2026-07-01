@@ -54,6 +54,9 @@ class ScreenAIInstallState {
   // expected.
   static bool VerifyLibraryVersion(const base::Version& version);
 
+  // Returns true if the device is compatible with ScreenAI requirements.
+  static bool IsDeviceCompatible();
+
   // Returns true if the library is used recently and we need to keep it on
   // device and updated.
   static bool ShouldInstall(PrefService* local_state);

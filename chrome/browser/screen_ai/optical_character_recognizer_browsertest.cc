@@ -5,7 +5,6 @@
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 
 #include "base/command_line.h"
-#include "base/cpu.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -220,14 +219,8 @@ class OpticalCharacterRecognizerTest
   bool IsOcrServiceEnabled() const { return std::get<0>(GetParam()); }
   bool IsLibraryAvailable() const {
 #if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
-    // TODO(crbug.com/529158268): Remove AVX2 check when library is updated to
-    // only use SSE4.2 and below instruction set.
-#if defined(ARCH_CPU_X86_FAMILY)
-    if (!base::CPU().has_avx2()) {
-      return false;
-    }
-#endif
-    return std::get<1>(GetParam());
+    return std::get<1>(GetParam()) &&
+           ScreenAIInstallState::IsDeviceCompatible();
 #else
     return false;
 #endif
@@ -681,6 +674,10 @@ class OpticalCharacterRecognizerResultsTest
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    if (!ScreenAIInstallState::IsDeviceCompatible()) {
+      GTEST_SKIP()
+          << "ScreenAI library is not available / compatible on this device.";
+    }
     ScreenAIInstallState::GetInstance()->SetComponentFolder(
         GetComponentBinaryPathForTests().DirName());
   }
