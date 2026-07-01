@@ -1,0 +1,33 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("domain_matching") {
+  sources = [
+    "domain_relation_checker.cc",
+    "domain_relation_checker.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/affiliations/core/browser:affiliations",
+    "//url",
+  ]
+
+  public_deps = [ "//components/affiliations/core/browser:match_type" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "domain_relation_checker_unittest.cc" ]
+
+  deps = [
+    ":domain_matching",
+    "//base",
+    "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

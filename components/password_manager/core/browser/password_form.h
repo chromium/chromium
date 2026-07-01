@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -210,22 +211,9 @@ struct PasswordForm {
     kMaxValue = kNegativeSignalSent,
   };
 
-  // Enum describing how PasswordForm was matched for a given FormDigest. This
-  // enum is a bitmask because each PasswordForm can be matched by multiple
-  // sources.
-  enum class MatchType {
-    // Default match type meaning signon_realm of a PasswordForm is identical to
-    // a requested URL.
-    kExact = 0,
-    // signon_realm of a PasswordForm is affiliated with a given URL.
-    // Affiliation information is provided by the affiliation service.
-    kAffiliated = 1 << 1,
-    // signon_realm of a PasswordForm has the same eTLD+1 as a given URL.
-    kPSL = 1 << 2,
-    // signon_realm of a PasswordForm is grouped with a given URL. Grouping
-    // information is provided by the affiliation service.
-    kGrouped = 1 << 3,
-  };
+  // TODO(crbug.com/529620190): Refactor old usages to use
+  // `affiliations::MatchType` directly.
+  using MatchType = affiliations::MatchType;
 
   // The primary key of the password record in the logins database. This is only
   // set when the credentials has been read from the login database. Password
@@ -631,23 +619,6 @@ constexpr PasswordForm::Store operator|(PasswordForm::Store lhs,
                                         PasswordForm::Store rhs) {
   return static_cast<PasswordForm::Store>(static_cast<int>(lhs) |
                                           static_cast<int>(rhs));
-}
-
-constexpr PasswordForm::MatchType operator&(PasswordForm::MatchType lhs,
-                                            PasswordForm::MatchType rhs) {
-  return static_cast<PasswordForm::MatchType>(static_cast<int>(lhs) &
-                                              static_cast<int>(rhs));
-}
-
-constexpr PasswordForm::MatchType operator|(PasswordForm::MatchType lhs,
-                                            PasswordForm::MatchType rhs) {
-  return static_cast<PasswordForm::MatchType>(static_cast<int>(lhs) |
-                                              static_cast<int>(rhs));
-}
-
-constexpr void operator|=(std::optional<PasswordForm::MatchType>& lhs,
-                          PasswordForm::MatchType rhs) {
-  lhs = lhs.has_value() ? (lhs.value() | rhs) : rhs;
 }
 
 }  // namespace password_manager

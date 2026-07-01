@@ -20,6 +20,10 @@ fuzzable_proto_library("affiliation_proto") {
   use_experimental_fuzzable_proto = true
 }
 
+source_set("match_type") {
+  sources = [ "match_type.h" ]
+}
+
 source_set("affiliations") {
   sources = [
     "affiliation_backend.cc",

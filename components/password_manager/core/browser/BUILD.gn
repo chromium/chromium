@@ -305,6 +305,7 @@ source_set("password_form") {
   ]
   public_deps = [
     "//base",
+    "//components/affiliations/core/browser:match_type",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/core/common/mojom:mojo_types_shared",

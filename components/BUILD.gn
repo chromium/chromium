@@ -190,6 +190,7 @@ test("components_unittests") {
     "//components/activity_reporter:unit_tests",
     "//components/actor/core:unit_tests",
     "//components/affiliations/core/browser:unit_tests",
+    "//components/affiliations/core/browser/domain_matching:unit_tests",
     "//components/aggregation_service:unit_tests",
     "//components/apdu:unit_tests",
     "//components/application_locale_storage:unit_tests",
