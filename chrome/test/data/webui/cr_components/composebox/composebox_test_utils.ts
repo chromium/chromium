@@ -129,6 +129,13 @@ export function installMock<T extends object>(
     windowProxy.setResultMapperFor('createSpeechRecognition', () => {
       return new MockSpeechRecognition() as unknown as SpeechRecognition;
     });
+    windowProxy.setResultMapperFor('matchMedia', () => ({
+      matches: false,
+      addListener() {},
+      addEventListener() {},
+      removeListener() {},
+      removeEventListener() {},
+    }));
   }
 
   installer(mock);

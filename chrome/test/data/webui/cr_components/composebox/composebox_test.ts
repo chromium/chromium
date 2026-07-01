@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/composebox/composebox.js';
+import 'chrome://contextual-tasks/strings.m.js';
 
 import {ComposeboxFile, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
@@ -40,47 +41,13 @@ suite('ComposeboxTest', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    loadTimeData.resetForTesting({
-      composeboxShowImageSuggest: false,
-      composeboxSmartComposeEnabled: false,
-      composeboxShowContextMenuDescription: false,
-      composeboxShowZps: true,
-      composeboxContextDragAndDropEnabled: false,
+    loadTimeData.overrideValues({
       composeboxSource: 'NTP',
+      composeboxShowZps: true,
       composeboxFileMaxCount: 1,
       composeboxFileMaxSize: 1024,
       composeboxAttachmentFileTypes: '.pdf',
       composeboxImageFileTypes: 'image/png',
-      lensSendRawFileMediaTypesEnabled: false,
-      voiceSearchCoherenceAnySearchboxExperimentEnabled: false,
-      voiceSearchCoherenceSearchboxEnabled: false,
-      voiceSearchCoherenceComposeboxesEnabled: false,
-      composeDeepSearchPlaceholder: 'Deep Search',
-      composeCreateImagePlaceholder: 'Create Image',
-      searchboxComposePlaceholder: 'Compose',
-      composeboxShowContextMenu: false,
-      composeboxShowTypedSuggest: false,
-      composeboxCancelButtonTitleInput: 'Cancel input',
-      composeboxCancelButtonTitle: 'Cancel',
-      voiceSearchButtonLabel: 'Voice search',
-      lensSearchButtonLabel: 'Lens search',
-      lensSearchHint: 'Lens search',
-      suggestionActivityLink: '<a>Activity</a>',
-      composeboxSubmitButtonTitle: 'Submit',
-      composeboxSmartComposeTabTitle: 'Tab',
-      composeboxSmartComposeTitle: 'Smart Compose',
-      voiceListening: 'Listening',
-      voiceDetails: 'Details',
-      voiceClose: 'Close',
-      voiceStop: 'Stop',
-      dismissButton: 'Dismiss',
-      composeboxDragAndDropHint: 'Hint',
-      removeSuggestion: 'Remove',
-      composeboxDeleteFileTitle: 'Delete',
-      tabFaviconChipsToCoinsEnabled: false,
-      maxFilesReachedError: 'Max files reached',
-      composeboxFileUploadInvalidTooLarge: 'File too large',
-      composeboxFileUploadStartedText: 'Upload started',
     });
 
     handler = installMock(
@@ -574,60 +541,20 @@ suite('composeboxSharedMountAutoRepositionDefault', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    loadTimeData.resetForTesting({
-      // Reuse the ComposeboxTest suite's key set, but sets
-      // `composeboxShowContextMenu` to true so
-      // composebox_context_menu.html.ts's
-      // shared `<cr-composebox-contextual-entrypoint-and-menu>` mount renders.
-      composeboxShowImageSuggest: false,
-      composeboxSmartComposeEnabled: false,
-      composeboxShowContextMenuDescription: false,
-      composeboxShowZps: true,
-      composeboxContextDragAndDropEnabled: false,
+    loadTimeData.overrideValues({
       composeboxSource: 'NTP',
+      composeboxShowZps: true,
       composeboxFileMaxCount: 1,
       composeboxFileMaxSize: 1024,
       composeboxAttachmentFileTypes: '.pdf',
       composeboxImageFileTypes: 'image/png',
-      lensSendRawFileMediaTypesEnabled: false,
-      voiceSearchCoherenceAnySearchboxExperimentEnabled: false,
-      voiceSearchCoherenceSearchboxEnabled: false,
-      voiceSearchCoherenceComposeboxesEnabled: false,
-      composeDeepSearchPlaceholder: 'Deep Search',
-      composeCreateImagePlaceholder: 'Create Image',
-      searchboxComposePlaceholder: 'Compose',
       composeboxShowContextMenu: true,
-      // Keys accessed by ContextualActionMenuElement class-field
-      // initialization once the shared
-      // `<cr-composebox-contextual-entrypoint-and-menu>` mount renders.
-      // loadTimeData.getBoolean() asserts on absent keys, so these are
-      // required.
-      // Not optional with defaults - when `composeboxShowContextMenu` is true.
       composeboxContextMenuEnableMultiTabSelection: false,
       composeboxShowContextMenuTabPreviews: false,
       ShowContextMenuHeaders: false,
       menu: 'menu',
       addContextTitle: 'Add context',
       addContext: 'Add context',
-      composeboxShowTypedSuggest: false,
-      composeboxCancelButtonTitleInput: 'Cancel input',
-      composeboxCancelButtonTitle: 'Cancel',
-      voiceSearchButtonLabel: 'Voice search',
-      lensSearchButtonLabel: 'Lens search',
-      lensSearchHint: 'Lens search',
-      suggestionActivityLink: '<a>Activity</a>',
-      composeboxSubmitButtonTitle: 'Submit',
-      composeboxSmartComposeTabTitle: 'Tab',
-      composeboxSmartComposeTitle: 'Smart Compose',
-      voiceListening: 'Listening',
-      voiceDetails: 'Details',
-      voiceClose: 'Close',
-      dismissButton: 'Dismiss',
-      composeboxDragAndDropHint: 'Hint',
-      removeSuggestion: 'Remove',
-      voiceStop: 'Stop',
-      tabFaviconChipsToCoinsEnabled: false,
-      removeToolChipAriaLabel: 'Remove $1',
     });
 
     const handler = installMock(
