@@ -772,10 +772,17 @@ void EditContext::DeleteSurroundingText(int before, int after) {
   TRACE_EVENT1("ime", "EditContext::DeleteSurroundingText", "before, after",
                std::to_string(before) + ", " + std::to_string(after));
   const bool is_backwards_selection = selection_start_ > selection_end_;
-  const uint32_t update_range_start =
-      std::max(OrderedSelectionStart() - before, 0U);
-  const uint32_t update_range_end =
-      std::min(OrderedSelectionEnd() + after, text_.length());
+
+  // Safe clamping to avoid unsigned underflow and negative before / after.
+  int clamped_before =
+      std::max(0, std::min(before, static_cast<int>(OrderedSelectionStart())));
+  int clamped_after = std::max(
+      0, std::min(after,
+                  static_cast<int>(text_.length() - OrderedSelectionEnd())));
+
+  const uint32_t update_range_start = OrderedSelectionStart() - clamped_before;
+  const uint32_t update_range_end = OrderedSelectionEnd() + clamped_after;
+
   SetSelection(
       update_range_start,
       OrderedSelectionEnd() - (OrderedSelectionStart() - update_range_start));

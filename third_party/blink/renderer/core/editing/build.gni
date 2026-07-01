@@ -421,6 +421,7 @@ blink_core_tests_editing = [
   "granularity_strategy_test.cc",
   "hit_testing_bidi_test.cc",
   "ime/cached_text_input_info_test.cc",
+  "ime/edit_context_test.cc",
   "ime/ime_text_span_test.cc",
   "ime/input_method_controller_test.cc",
   "ime/stylus_writing_gesture_test.cc",
