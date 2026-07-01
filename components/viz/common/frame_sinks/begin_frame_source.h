@@ -218,6 +218,9 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   void SetSchedulerClient(SchedulerClient* scheduler_client);
   void SetInputClient(InputClient* input_client);
 
+  static base::flat_set<base::TimeDelta> GetDefaultSupportedFrameIntervals(
+      base::TimeDelta interval);
+
   // BeginFrameObservers use DidFinishFrame to provide back pressure to a frame
   // source about frame processing (rather than toggling SetNeedsBeginFrames
   // every frame). For example, the BackToBackFrameSource uses them to make sure
@@ -481,9 +484,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   // This gives the maximium refresh rate that can be requested.
   virtual base::TimeDelta GetMinimumFrameInterval();
 
-#if BUILDFLAG(IS_ANDROID)
-  // Sets the refresh rates supported by the display. See
-  // https://developer.android.com/reference/android/view/Display#getSupportedRefreshRates().
+  // Sets the refresh rates supported by the display.
   //
   // `supported_rates` is a map from supported VSync intervals to the equivalent
   // supported refresh rates. For example, if the display supports 60 Hz and 120
@@ -491,7 +492,6 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   // → `120.0f` and `base::Milliseconds(16.666)` → `60.0f`.
   virtual void SetSupportedRefreshRates(
       const base::flat_map<base::TimeDelta, float>& supported_rates) {}
-#endif
 
   virtual base::flat_set<base::TimeDelta> GetSupportedFrameIntervals(
       base::TimeDelta interval);
