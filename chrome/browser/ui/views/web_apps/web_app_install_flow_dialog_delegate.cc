@@ -742,6 +742,14 @@ WebAppInstallFlowDialogDelegate::Show(
     }
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  const webapps::AppId app_id =
+      web_app::GenerateAppIdFromManifestId(install_info->manifest_id());
+  metrics::structured::StructuredMetricsClient::Record(
+      cros_events::AppDiscovery_Browser_AppInstallDialogShown().SetAppId(
+          app_id));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   auto delegate = std::make_unique<WebAppInstallFlowDialogDelegate>(
       web_contents, std::move(install_info), std::move(install_tracker),
       std::move(callback), std::move(iph_state), prefs, tracker, install_type,
