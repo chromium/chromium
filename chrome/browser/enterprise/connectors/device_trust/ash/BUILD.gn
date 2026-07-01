@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "ash_attestation_policy_observer_unittest.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/enterprise:impl",
+    "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -7578,7 +7578,6 @@ test("unit_tests") {
     sources += [
       "../browser/enterprise/connectors/analysis/file_transfer_analysis_delegate_unittest.cc",
       "../browser/enterprise/connectors/analysis/source_destination_matcher_ash_unittest.cc",
-      "../browser/enterprise/connectors/device_trust/ash/ash_attestation_policy_observer_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_cleanup_manager_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service_impl_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/ash/flex_attester_unittest.cc",
@@ -7716,6 +7715,7 @@ test("unit_tests") {
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/chromeos/policy/dlp/test:test_support",
       "//chrome/browser/chromeos/reporting",
+      "//chrome/browser/enterprise/connectors/device_trust/ash:unit_tests",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chrome/browser/media_galleries",
       "//chrome/browser/media_galleries:test_support",
