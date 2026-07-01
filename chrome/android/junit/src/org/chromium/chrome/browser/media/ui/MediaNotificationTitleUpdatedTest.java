@@ -120,7 +120,7 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase
         assertNotNull(getController().mMediaNotificationInfo);
 
         advanceTimeByMillis(HIDE_NOTIFICATION_DELAY_MILLIS);
-        assertNull(getController().mMediaNotificationInfo);
+        assertNull(getController());
     }
 
     @Test
@@ -136,7 +136,7 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase
                 /* isControllable= */ false, /* isSuspended= */ false);
 
         // Should be hidden immediately
-        assertNull(getController().mMediaNotificationInfo);
+        assertNull(getController());
     }
 
     @Test
@@ -157,7 +157,7 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase
         simulateScreenLock();
 
         // Should be hidden immediately
-        assertNull(getController().mMediaNotificationInfo);
+        assertNull(getController());
     }
 
     @Test
@@ -197,7 +197,7 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase
         assertNotNull(getController().mMediaNotificationInfo);
 
         advanceTimeByMillis(HIDE_NOTIFICATION_DELAY_MILLIS);
-        assertNull(getController().mMediaNotificationInfo);
+        assertNull(getController());
     }
 
     @Test

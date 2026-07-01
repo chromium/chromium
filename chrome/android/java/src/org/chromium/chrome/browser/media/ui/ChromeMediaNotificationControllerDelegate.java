@@ -97,7 +97,19 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
             // TODO(crbug.com/522397811): We currently assume each media type shows only one
             // notification.
             MediaNotificationManager.onServiceDestroyed(mNotificationTypeId);
-            MediaNotificationManager.clear(mNotificationTypeId);
+            // In single-notification mode, destroying the shared service means the notification
+            // for this media type should be removed. In multiple-notification mode, service
+            // lifetime
+            // is decoupled from individual notifications.
+            if (!MediaNotificationManager.isMultipleMediaNotificationsEnabled()) {
+                MediaNotificationManager.hideForAllTabs(mNotificationTypeId);
+            }
+        }
+
+        @Override
+        public void onTaskRemoved(Intent rootIntent) {
+            super.onTaskRemoved(rootIntent);
+            MediaNotificationManager.hideForAllTabs(mNotificationTypeId);
         }
 
         @Override

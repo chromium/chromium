@@ -574,12 +574,14 @@ public class MediaNotificationController {
         if (mService == service) return;
 
         mService = service;
+        MediaNotificationManager.setService(getMediaTypeId(), service);
         updateNotification(/* serviceStarting= */ true, /* shouldLogNotification= */ true);
     }
 
     /** Handles the service destruction. */
     public void onServiceDestroyed() {
         mService = null;
+        MediaNotificationManager.setService(getMediaTypeId(), null);
     }
 
     public boolean processIntent(Service service, @Nullable Intent intent) {
@@ -687,12 +689,22 @@ public class MediaNotificationController {
         if (mService == null) {
             updateMediaSession();
             updateNotificationBuilder();
-            // This is not allowed from the background, and there is no workaround on S+.  Just
-            // catch the exception, and `mService` will remain null for us to try again later.
-            try {
-                ForegroundServiceUtils.getInstance()
-                        .startForegroundService(assertNonNull(mDelegate.createServiceIntent()));
-            } catch (RuntimeException e) {
+            // If a foreground service is already running for another tab, reuse it instead
+            // of starting a new one. Android only permits one active FGS instance of this
+            // class, and starting another from the background would crash on Android S+.
+            Service sharedService = MediaNotificationManager.getService(getMediaTypeId());
+            if (sharedService != null) {
+                mService = sharedService;
+                updateNotification(/* serviceStarting= */ false, /* shouldLogNotification= */ true);
+            } else {
+                // This is not allowed from the background, and there is no workaround on S+.  Just
+                // catch the exception, and `mService` will remain null for us to try again later.
+                try {
+                    Intent intent = assertNonNull(mDelegate.createServiceIntent());
+                    intent.putExtra(EXTRA_NOTIFICATION_ID, mediaNotificationInfo.id);
+                    ForegroundServiceUtils.getInstance().startForegroundService(intent);
+                } catch (RuntimeException e) {
+                }
             }
         } else {
             updateNotification(false, false);
@@ -754,9 +766,16 @@ public class MediaNotificationController {
     public void stopListenerService() {
         if (mService == null) return;
 
+        if (MediaNotificationManager.isServiceNeeded(
+                getMediaTypeId(), mDelegate.getNotificationId())) {
+            mService = null;
+            return;
+        }
+
         ForegroundServiceUtils.getInstance()
                 .stopForeground(mService, Service.STOP_FOREGROUND_REMOVE);
         mService.stopSelf();
+        mService = null;
     }
 
     @VisibleForTesting
@@ -1164,6 +1183,32 @@ public class MediaNotificationController {
         }
 
         return CollectionUtil.integerCollectionToIntArray(compactActions);
+    }
+
+    public boolean isPaused() {
+        return mMediaNotificationInfo == null || mMediaNotificationInfo.isPaused;
+    }
+
+    public int getMediaTypeId() {
+        return mDelegate.getMediaTypeId();
+    }
+
+    /**
+     * Promotes this controller's notification to own the Foreground Service (FGS). This transitions
+     * the shared service to the foreground and displays this notification as the active,
+     * non-swipeable FGS notification to protect playback.
+     */
+    public void promote() {
+        // TODO(crbug.com/522397811): Implement promotion logic.
+    }
+
+    /**
+     * Demotes this controller's notification from the Foreground Service (FGS). This transitions
+     * the shared service to the background, making this notification a normal background
+     * notification that the user can swipe away.
+     */
+    public void demote() {
+        // TODO(crbug.com/522397811): Implement demotion logic.
     }
 
     private static Context getContext() {

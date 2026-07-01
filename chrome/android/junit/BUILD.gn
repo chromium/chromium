@@ -912,6 +912,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationControllerTest.java",
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationFaviconTest.java",
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationManagerNotificationTest.java",
+      "src/org/chromium/chrome/browser/media/ui/MediaNotificationManagerTest.java",
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationServiceActionsTest.java",
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationServiceLifecycleTest.java",
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationTestBase.java",

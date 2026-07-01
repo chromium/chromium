@@ -72,7 +72,7 @@ public class MediaNotificationControllerTest extends MediaNotificationTestBase {
         MediaNotificationController controller =
                 new MockMediaNotificationController(
                         new ChromeMediaNotificationControllerDelegate(
-                                getNotificationId(), getNotificationId()));
+                                getNotificationId(), getMediaTypeId()));
         controller.mMediaNotificationInfo = mMediaNotificationInfoBuilder.setPaused(true).build();
 
         // Mock MediaSession for the controller

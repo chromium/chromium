@@ -121,7 +121,7 @@ public class MediaNotificationTestBase {
                 spy(
                         new MockMediaNotificationController(
                                 new ChromeMediaNotificationControllerDelegate(
-                                        getNotificationId(), getNotificationId()) {
+                                        getNotificationId(), getMediaTypeId()) {
                                     @Override
                                     public void logNotificationShown(
                                             NotificationWrapper notification) {
@@ -181,7 +181,8 @@ public class MediaNotificationTestBase {
 
     @After
     public void tearDown() {
-        MediaNotificationManager.clear(NOTIFICATION_ID);
+        MediaNotificationManager.hideForAllTabs(getNotificationId());
+        MediaNotificationManager.setService(getNotificationId(), null);
     }
 
     MediaNotificationController getController() {
@@ -241,6 +242,10 @@ public class MediaNotificationTestBase {
 
     int getNotificationId() {
         return NOTIFICATION_ID;
+    }
+
+    int getMediaTypeId() {
+        return getNotificationId();
     }
 
     void advanceTimeByMillis(int timeMillis) {
