@@ -16,11 +16,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/native_library.h"
-#include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
-#include "build/build_config.h"
 #include "services/on_device_model/backend.h"
 #include "services/on_device_model/backend_model.h"
 #include "services/on_device_model/backend_session.h"
@@ -36,7 +33,6 @@
 namespace ml {
 
 class ContextHolder;
-class TsHolder;
 class OnDeviceModelExecutor;
 class Responder;
 class AsrStreamResponder;
@@ -55,10 +51,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) BackendImpl final
                  on_device_model::mojom::LoadModelResult>
   CreateWithResult(on_device_model::mojom::LoadModelParamsPtr params,
                    base::OnceClosure on_complete) override;
-  void LoadTextSafetyModel(
-      on_device_model::mojom::TextSafetyModelParamsPtr params,
-      mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel> model)
-      override;
   std::pair<on_device_model::mojom::DevicePerformanceInfoPtr,
             on_device_model::mojom::DeviceInfoPtr>
   GetDeviceAndPerformanceInfo() override;
@@ -68,9 +60,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) BackendImpl final
 
  private:
   const raw_ptr<const ml::ChromeML> chrome_ml_;
-#if !BUILDFLAG(IS_FUCHSIA)
-  base::SequenceBound<ml::TsHolder> ts_holder_;
-#endif
 };
 
 class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final

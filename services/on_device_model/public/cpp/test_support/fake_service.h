@@ -202,11 +202,11 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_adaptation_receivers_;
 };
 
-class FakeTsModel final : public mojom::TextSafetyModel,
-                          public mojom::TextSafetySession {
+class FakeTextSafetyModel final : public mojom::TextSafetyModel,
+                                  public mojom::TextSafetySession {
  public:
-  explicit FakeTsModel(mojom::TextSafetyModelParamsPtr params);
-  ~FakeTsModel() override;
+  explicit FakeTextSafetyModel(mojom::TextSafetyModelParamsPtr params);
+  ~FakeTextSafetyModel() override;
 
   // on_device_model::mojom::TextSafetyModel
   void StartSession(
@@ -225,15 +225,14 @@ class FakeTsModel final : public mojom::TextSafetyModel,
   mojo::ReceiverSet<mojom::TextSafetySession> sessions_;
 };
 
-// FakeTsHolder holds a single FakeTsModel. Its operations may block.
-class FakeTsHolder final {
+// FakeSafetyModelHolder holds a single FakeTextSafetyModel for testing.
+class FakeSafetyModelHolder final {
  public:
-  explicit FakeTsHolder();
-  ~FakeTsHolder();
+  FakeSafetyModelHolder();
+  ~FakeSafetyModelHolder();
 
-  void Reset(on_device_model::mojom::TextSafetyModelParamsPtr params,
-             mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel>
-                 model_receiver);
+  void Reset(mojom::TextSafetyModelParamsPtr params,
+             mojo::PendingReceiver<mojom::TextSafetyModel> model_receiver);
 
  private:
   mojo::UniqueReceiverSet<on_device_model::mojom::TextSafetyModel> model_;
@@ -270,7 +269,7 @@ class FakeOnDeviceModelService : public mojom::OnDeviceModelService {
       GetDeviceAndPerformanceInfoCallback callback) override;
 
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
-  FakeTsHolder ts_holder_;
+  FakeSafetyModelHolder safety_model_holder_;
   mojo::UniqueReceiverSet<mojom::OnDeviceModel, FakeOnDeviceModel*>
       model_receivers_;
 };

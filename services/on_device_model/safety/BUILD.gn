@@ -43,6 +43,22 @@ if (!is_fuchsia) {
       "//third_party/tflite_support:tflite_support_proto",
     ]
   }
+
+  source_set("safety_model_holder") {
+    sources = [
+      "safety_model_holder.cc",
+      "safety_model_holder.h",
+    ]
+
+    deps = [
+      ":bert_safety_model",
+      "//base",
+      "//mojo/public/cpp/bindings",
+      "//services/on_device_model/public/mojom",
+    ]
+
+    defines = [ "IS_ON_DEVICE_MODEL_IMPL" ]
+  }
 }
 
 source_set("safety_util") {

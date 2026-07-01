@@ -45,10 +45,6 @@
 #include "base/apple/foundation_util.h"
 #endif
 
-#if !BUILDFLAG(IS_FUCHSIA)
-#include "services/on_device_model/ml/ts_model.h"
-#endif
-
 #if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
 #include "third_party/rust/chromium_crates_io/vendor/llguidance-v1/llguidance.h"
 #endif
@@ -459,13 +455,7 @@ class ContextHolder final {
 };
 
 BackendImpl::BackendImpl(const ml::ChromeML* chrome_ml)
-    : chrome_ml_(chrome_ml)
-#if !BUILDFLAG(IS_FUCHSIA)
-      ,
-      ts_holder_(ml::TsHolder::Create())
-#endif
-{
-}
+    : chrome_ml_(chrome_ml) {}
 
 base::expected<void, on_device_model::ServiceDisconnectReason>
 BackendImpl::CanCreate() {
@@ -515,16 +505,6 @@ BackendImpl::CreateWithResult(on_device_model::mojom::LoadModelParamsPtr params,
                               base::OnceClosure on_complete) {
   return OnDeviceModelExecutor::CreateWithResult(*chrome_ml_, std::move(params),
                                                  std::move(on_complete));
-}
-
-void BackendImpl::LoadTextSafetyModel(
-    on_device_model::mojom::TextSafetyModelParamsPtr params,
-    mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel> model) {
-  TRACE_EVENT("optimization_guide", "BackendImpl::LoadTextSafetyModel");
-#if !BUILDFLAG(IS_FUCHSIA)
-  ts_holder_.AsyncCall(&ml::TsHolder::Reset)
-      .WithArgs(std::move(params), std::move(model));
-#endif
 }
 
 std::pair<on_device_model::mojom::DevicePerformanceInfoPtr,

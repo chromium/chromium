@@ -22,6 +22,7 @@
 #include "services/on_device_model/on_device_model_mojom_impl.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/service_client.h"
+#include "services/on_device_model/safety/safety_model_holder.h"
 
 namespace on_device_model {
 namespace {
@@ -158,7 +159,10 @@ void OnDeviceModelService::LoadTextSafetyModel(
     mojo::PendingReceiver<mojom::TextSafetyModel> model) {
   TRACE_EVENT("optimization_guide",
               "OnDeviceModelService::LoadTextSafetyModel");
-  backend_->LoadTextSafetyModel(std::move(params), std::move(model));
+#if !BUILDFLAG(IS_FUCHSIA)
+  safety_model_holder_.AsyncCall(&SafetyModelHolder::Reset)
+      .WithArgs(std::move(params), std::move(model));
+#endif
 }
 
 void OnDeviceModelService::SetForceQueueingForTesting(bool force_queueing) {

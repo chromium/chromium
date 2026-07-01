@@ -32,11 +32,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) Backend
   CreateWithResult(mojom::LoadModelParamsPtr params,
                    base::OnceClosure on_complete) = 0;
 
-  // Binds a text safety model to `model` given `params`.
-  virtual void LoadTextSafetyModel(
-      mojom::TextSafetyModelParamsPtr params,
-      mojo::PendingReceiver<mojom::TextSafetyModel> model) = 0;
-
   // Gets the device and performance information for this device.
   virtual std::pair<mojom::DevicePerformanceInfoPtr, mojom::DeviceInfoPtr>
   GetDeviceAndPerformanceInfo() = 0;

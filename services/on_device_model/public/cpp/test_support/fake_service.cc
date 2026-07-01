@@ -476,7 +476,7 @@ void FakeOnDeviceModel::LoadAdaptation(
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }
 
-FakeTsModel::FakeTsModel(
+FakeTextSafetyModel::FakeTextSafetyModel(
     on_device_model::mojom::TextSafetyModelParamsPtr params) {
   if (params->safety_model.IsValid()) {
     CHECK_EQ(ReadFile(params->safety_model), FakeTsData());
@@ -487,19 +487,20 @@ FakeTsModel::FakeTsModel(
     has_language_model_ = true;
   }
 }
-FakeTsModel::~FakeTsModel() {
-  TRACE_EVENT("optimization_guide", "FakeTsModel::~FakeTsModel",
+FakeTextSafetyModel::~FakeTextSafetyModel() {
+  TRACE_EVENT("optimization_guide", "FakeTextSafetyModel::~FakeTextSafetyModel",
               perfetto::TerminatingFlow::FromPointer(this));
 }
 
-void FakeTsModel::StartSession(
+void FakeTextSafetyModel::StartSession(
     mojo::PendingReceiver<mojom::TextSafetySession> session) {
   sessions_.Add(this, std::move(session));
 }
 
-void FakeTsModel::ClassifyTextSafety(const std::string& text,
-                                     ClassifyTextSafetyCallback callback) {
-  TRACE_EVENT("optimization_guide", "FakeTsModel::ClassifyTextSafety",
+void FakeTextSafetyModel::ClassifyTextSafety(
+    const std::string& text,
+    ClassifyTextSafetyCallback callback) {
+  TRACE_EVENT("optimization_guide", "FakeTextSafetyModel::ClassifyTextSafety",
               perfetto::Flow::FromPointer(this), "text", text);
   CHECK(has_safety_model_);
   auto safety_info = mojom::SafetyInfo::New();
@@ -516,30 +517,29 @@ void FakeTsModel::ClassifyTextSafety(const std::string& text,
   std::move(callback).Run(std::move(safety_info));
 }
 
-void FakeTsModel::DetectLanguage(const std::string& text,
-                                 DetectLanguageCallback callback) {
-  TRACE_EVENT("optimization_guide", "FakeTsModel::DetectLanguage",
+void FakeTextSafetyModel::DetectLanguage(const std::string& text,
+                                         DetectLanguageCallback callback) {
+  TRACE_EVENT("optimization_guide", "FakeTextSafetyModel::DetectLanguage",
               perfetto::Flow::FromPointer(this), "text", text);
   CHECK(has_language_model_);
   std::move(callback).Run(DummyDetectLanguage(text));
 }
 
-void FakeTsModel::Clone(
+void FakeTextSafetyModel::Clone(
     mojo::PendingReceiver<mojom::TextSafetySession> session) {
-  TRACE_EVENT("optimization_guide", "FakeTsModel::Clone",
+  TRACE_EVENT("optimization_guide", "FakeTextSafetyModel::Clone",
               perfetto::Flow::FromPointer(this));
   StartSession(std::move(session));
 }
 
-FakeTsHolder::FakeTsHolder() = default;
-FakeTsHolder::~FakeTsHolder() = default;
+FakeSafetyModelHolder::FakeSafetyModelHolder() = default;
+FakeSafetyModelHolder::~FakeSafetyModelHolder() = default;
 
-void FakeTsHolder::Reset(
-    on_device_model::mojom::TextSafetyModelParamsPtr params,
-    mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel>
-        model_receiver) {
+void FakeSafetyModelHolder::Reset(
+    mojom::TextSafetyModelParamsPtr params,
+    mojo::PendingReceiver<mojom::TextSafetyModel> model_receiver) {
   model_.Clear();
-  model_.Add(std::make_unique<FakeTsModel>(std::move(params)),
+  model_.Add(std::make_unique<FakeTextSafetyModel>(std::move(params)),
              std::move(model_receiver));
 }
 
@@ -608,10 +608,12 @@ void FakeOnDeviceModelService::GetCapabilities(
 void FakeOnDeviceModelService::LoadTextSafetyModel(
     mojom::TextSafetyModelParamsPtr params,
     mojo::PendingReceiver<mojom::TextSafetyModel> model) {
+#if !BUILDFLAG(IS_FUCHSIA)
   TRACE_EVENT("optimization_guide",
               "FakeOnDeviceModelService::LoadTextSafetyModel",
               perfetto::Flow::FromPointer(this));
-  ts_holder_.Reset(std::move(params), std::move(model));
+  safety_model_holder_.Reset(std::move(params), std::move(model));
+#endif
 }
 
 void FakeOnDeviceModelService::GetDeviceAndPerformanceInfo(
