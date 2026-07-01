@@ -506,7 +506,6 @@ TEST_F(ImportantFileWriterTest, SerializationDurationWithCustomSuffix) {
   histogram_tester.ExpectTotalCount("ImportantFile.WriteDuration.All", 1);
 }
 
-#if BUILDFLAG(IS_WIN)
 // Tests that failures of ReplaceFile are handled. These don't call the OS
 // ReplaceFile because they count the exact number of calls, which could be
 // flaky if the test runs on a machine with file scanners.
@@ -533,6 +532,7 @@ TEST_F(ImportantFileWriterTest, ReplaceFileSuccess) {
   EXPECT_EQ(CALLED_WITH_SUCCESS,
             write_callback_observer_.GetAndResetObservationState());
 
+#if BUILDFLAG(IS_WIN)
   // 0 means no retries were needed.
   histogram_tester.ExpectUniqueSample("ImportantFile.FileReplaceRetryCount", 0,
                                       1);
@@ -541,6 +541,7 @@ TEST_F(ImportantFileWriterTest, ReplaceFileSuccess) {
   histogram_tester.ExpectTotalCount("ImportantFile.FileReplaceRetryCount2", 0);
   histogram_tester.ExpectTotalCount("ImportantFile.FileReplaceRetryCount2.All",
                                     0);
+#endif
 
   // 0 means no retries were needed.
   histogram_tester.ExpectUniqueSample("ImportantFile.FileReplaceResult", 0, 1);
@@ -548,6 +549,7 @@ TEST_F(ImportantFileWriterTest, ReplaceFileSuccess) {
                                       1);
 }
 
+#if BUILDFLAG(IS_WIN)
 TEST_F(ImportantFileWriterTest, ReplaceFileRetry) {
   base::HistogramTester histogram_tester;
   ImportantFileWriter writer(file_,
@@ -591,6 +593,7 @@ TEST_F(ImportantFileWriterTest, ReplaceFileRetry) {
   histogram_tester.ExpectUniqueSample("ImportantFile.FileReplaceResult.All", 1,
                                       1);
 }
+#endif
 
 TEST_F(ImportantFileWriterTest, ReplaceFileFails) {
   base::HistogramTester histogram_tester;
@@ -614,6 +617,7 @@ TEST_F(ImportantFileWriterTest, ReplaceFileFails) {
 
   EXPECT_EQ(CALLED_WITH_ERROR,
             write_callback_observer_.GetAndResetObservationState());
+#if BUILDFLAG(IS_WIN)
   // 10 means ReplaceFile never succeeded.
   histogram_tester.ExpectUniqueSample("ImportantFile.FileReplaceRetryCount", 10,
                                       1);
@@ -622,6 +626,7 @@ TEST_F(ImportantFileWriterTest, ReplaceFileFails) {
                                       1);
   histogram_tester.ExpectUniqueSample(
       "ImportantFile.FileReplaceRetryCount2.All", 5, 1);
+#endif
 
   // 2 means ReplaceFile never succeeded.
   histogram_tester.ExpectUniqueSample("ImportantFile.FileReplaceResult", 2, 1);
@@ -652,6 +657,7 @@ TEST_F(ImportantFileWriterTest, ReplaceFileFailsWithSuffix) {
   EXPECT_EQ(CALLED_WITH_ERROR,
             write_callback_observer_.GetAndResetObservationState());
 
+#if BUILDFLAG(IS_WIN)
   // 10 means ReplaceFile never succeeded.
   histogram_tester.ExpectUniqueSample("ImportantFile.FileReplaceRetryCount", 10,
                                       1);
@@ -660,6 +666,7 @@ TEST_F(ImportantFileWriterTest, ReplaceFileFailsWithSuffix) {
       "ImportantFile.FileReplaceRetryCount2.Foo", 5, 1);
   histogram_tester.ExpectUniqueSample(
       "ImportantFile.FileReplaceRetryCount2.All", 5, 1);
+#endif
 
   // 2 means ReplaceFile never succeeded.
   histogram_tester.ExpectUniqueSample("ImportantFile.FileReplaceResult.Foo", 2,
@@ -667,6 +674,5 @@ TEST_F(ImportantFileWriterTest, ReplaceFileFailsWithSuffix) {
   histogram_tester.ExpectUniqueSample("ImportantFile.FileReplaceResult.All", 2,
                                       1);
 }
-#endif
 
 }  // namespace base
