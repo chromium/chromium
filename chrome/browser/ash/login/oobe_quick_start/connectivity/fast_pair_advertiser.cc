@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"

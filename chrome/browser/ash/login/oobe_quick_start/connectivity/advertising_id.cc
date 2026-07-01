@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/base64url.h"
+#include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/quick_start/logging.h"
 #include "crypto/random.h"
