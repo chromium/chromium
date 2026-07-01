@@ -10,6 +10,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -42,6 +44,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -77,6 +82,9 @@ import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.offlinepages.SavePageResult;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.components.security_state.SecurityStateModel;
+import org.chromium.components.security_state.SecurityStateModelJni;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -96,6 +104,10 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TrustedCdnPublisherUrlTest {
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock SecurityStateModel.Natives mSecurityStateModelNatives;
+
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_CUSTOM_TABS)
@@ -148,6 +160,12 @@ public class TrustedCdnPublisherUrlTest {
         ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
 
         LibraryLoader.getInstance().ensureInitialized();
+
+        SecurityStateModelJni.setInstanceForTesting(mSecurityStateModelNatives);
+        doReturn(ConnectionSecurityLevel.SECURE)
+                .when(mSecurityStateModelNatives)
+                .getSecurityLevelForWebContents(any());
+
         mWebServer = TestWebServer.start();
         if (mOverrideTrustedCdn.isEnabled()) {
             CommandLine.getInstance()
@@ -236,6 +254,22 @@ public class TrustedCdnPublisherUrlTest {
     public void testUntrustedCdn() throws Exception {
         runTrustedCdnPublisherUrlTest(
                 "https://example.com/test", "com.example.test", null, getDefaultSecurityIcon());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"UiCatalogue"})
+    @OverrideTrustedCdn
+    public void testNotSecureConnectionLevel() throws Exception {
+        doReturn(ConnectionSecurityLevel.WARNING)
+                .when(mSecurityStateModelNatives)
+                .getSecurityLevelForWebContents(any());
+
+        runTrustedCdnPublisherUrlTest(
+                "https://example.com/test",
+                "com.example.test",
+                null,
+                R.drawable.omnibox_not_secure_warning);
     }
 
     @Test

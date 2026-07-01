@@ -146,7 +146,7 @@ public class TrustedCdn extends TabWebContentsUserData {
             return null;
         }
         int level = SecurityStateModel.getSecurityLevelForWebContents(mTab.getWebContents());
-        if (level == ConnectionSecurityLevel.DANGEROUS) return null;
+        if (level != ConnectionSecurityLevel.SECURE) return null;
         GURL publisherUrl = TrustedCdnJni.get().getPublisherUrl(mNativeTrustedCdn);
         return publisherUrl.isValid() ? publisherUrl : null;
     }
