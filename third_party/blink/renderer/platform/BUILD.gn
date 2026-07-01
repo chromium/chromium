@@ -906,6 +906,7 @@ component("platform") {
     "graphics/canvas_hibernation_handler.h",
     "graphics/canvas_image_provider.cc",
     "graphics/canvas_image_provider.h",
+    "graphics/canvas_non_2d_resource_provider.h",
     "graphics/canvas_resource.cc",
     "graphics/canvas_resource.h",
     "graphics/canvas_resource_dispatcher.cc",
