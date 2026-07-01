@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/features.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -18,25 +18,13 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
-#include "chrome/browser/glic/test_support/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/glic/glic_button_interface.h"
-#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
-#include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -51,6 +39,14 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
+#endif
+
 class FakeGlicNudgeDelegate : public glic::GlicSplitButtonDelegate {
  public:
   void OnTriggerGlicNudgeUI(glic::NudgeParams params) override {
@@ -60,16 +56,19 @@ class FakeGlicNudgeDelegate : public glic::GlicSplitButtonDelegate {
       future_.SetValue();
     }
   }
-  void OnHideGlicNudgeUI() override { is_showing_nudge_ = false; }
+  void OnHideGlicNudgeUI() override {
+    is_showing_nudge_ = false;
+    last_nudge_label_ = "";
+  }
   bool GetIsShowingGlicNudge() override { return is_showing_nudge_; }
   void WaitUntilValidNudge() { future_.Get(); }
+  void ResetFuture() { future_.Clear(); }
   std::string last_nudge_label_;
   bool is_showing_nudge_ = false;
   base::test::TestFuture<void> future_;
 };
 
-class ContextualCueingHelperBaseBrowserTest
-    : public glic::test::InteractiveGlicTest {
+class ContextualCueingHelperBaseBrowserTest : public glic::GlicBrowserTest {
  public:
   virtual void InitializeFeatureList() = 0;
 
@@ -80,11 +79,11 @@ class ContextualCueingHelperBaseBrowserTest
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
 
-    glic::test::InteractiveGlicTest::SetUp();
+    glic::GlicBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    glic::test::InteractiveGlicTest::SetUpOnMainThread();
+    glic::GlicBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
@@ -99,25 +98,31 @@ class ContextualCueingHelperBaseBrowserTest
     optimization_guide::OptimizationMetadata metadata;
     metadata.set_any_metadata(
         optimization_guide::AnyWrapProto(cueing_metadata));
-    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+    OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile())
         ->AddHintForTesting(
-            https_server_.GetURL("enabled.com",
-                                 "/optimization_guide/hello.html"),
+            https_server_.GetURL("a.test", "/optimization_guide/hello.html"),
             optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, metadata);
   }
 
   glic::GlicNudgeController* glic_nudge_controller() {
-    return browser()->browser_window_features()->glic_nudge_controller();
+    content::WebContents* web_contents =
+        GetTabListInterface()->GetActiveTab()->GetContents();
+    auto* helper = glic::ContextualCueingHelper::FromWebContents(web_contents);
+    CHECK(helper);
+    return helper->GetGlicNudgeController();
   }
 
   void SwapToFakeDelegate(FakeGlicNudgeDelegate& nudge_delegate) {
     glic_nudge_controller()->SetTabStripDelegate(&nudge_delegate);
   }
 
-  glic::TabStripGlicButton* GetGlicButtonForBrowser(Browser* browser) {
+#if !BUILDFLAG(IS_ANDROID)
+  glic::TabStripGlicButton* GetGlicButtonForBrowser(
+      BrowserWindowInterface* browser) {
     return static_cast<glic::TabStripGlicButton*>(
         glic::TabStripGlicButton::FromBrowser(browser));
   }
+#endif
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -137,6 +142,7 @@ class ContextualCueingHelperBrowserTest
            {"NudgeCapTime", "0h"},
            {"NudgeCapCount", "10"},
            {"MinPageCountBetweenNudges", "0"},
+           {"MinTimeBetweenNudges", "0s"},
            {"UseDynamicCues", "true"}}},
          {page_content_annotations::features::kAnnotatedPageContentExtraction,
           {}},
@@ -155,11 +161,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   FakeGlicNudgeDelegate nudge_delegate;
   SwapToFakeDelegate(nudge_delegate);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
+  nudge_delegate.WaitUntilValidNudge();
   EXPECT_EQ(l10n_util::GetStringUTF8(
                 IDS_GLIC_BUTTON_ENTRYPOINT_ASK_ABOUT_THIS_PAGE_LABEL),
             nudge_delegate.last_nudge_label_);
@@ -181,14 +185,18 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       static_cast<int64_t>(glic::NudgeDecision::kSuccess));
 
   // Simulate reload.
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  nudge_delegate.ResetFuture();
+  GetTabListInterface()->GetActiveTab()->GetContents()->GetController().Reload(
+      content::ReloadType::NORMAL, /*check_for_repost=*/true);
+  nudge_delegate.WaitUntilValidNudge();
   EXPECT_EQ(l10n_util::GetStringUTF8(
                 IDS_GLIC_BUTTON_ENTRYPOINT_ASK_ABOUT_THIS_PAGE_LABEL),
             nudge_delegate.last_nudge_label_);
 
   // Simulate new navigation. Should clear nudge.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL("https://www.disabled.com")));
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      https_server_.GetURL("b.test", "/optimization_guide/hello.html")));
   EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 }
 
@@ -206,11 +214,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   FakeGlicNudgeDelegate nudge_delegate;
   SwapToFakeDelegate(nudge_delegate);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
+  nudge_delegate.WaitUntilValidNudge();
   EXPECT_EQ("dynamic cue label", nudge_delegate.last_nudge_label_);
 
   histogram_tester.ExpectUniqueSample(
@@ -265,10 +271,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   FakeGlicNudgeDelegate nudge_delegate;
   SwapToFakeDelegate(nudge_delegate);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), chrome::ChromeUINewTabURLAsGURL(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(chrome::ChromeUINewTabURLAsGURL());
   EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
   histogram_tester.ExpectTotalCount(
       "ContextualCueing.NudgeDecision.GlicContextualCueing", 0);
@@ -285,11 +288,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest, TestCueNotAvailable) {
   FakeGlicNudgeDelegate nudge_delegate;
   SwapToFakeDelegate(nudge_delegate);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
   EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample(
@@ -316,19 +316,16 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 
   optimization_guide::OptimizationMetadata metadata;
   metadata.set_any_metadata(optimization_guide::proto::Any());
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+  OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile())
       ->AddHintForTesting(
-          https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
+          https_server_.GetURL("a.test", "/optimization_guide/hello.html"),
           optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, metadata);
 
   FakeGlicNudgeDelegate nudge_delegate;
   SwapToFakeDelegate(nudge_delegate);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
   EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample(
@@ -368,11 +365,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   FakeGlicNudgeDelegate nudge_delegate;
   SwapToFakeDelegate(nudge_delegate);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
   EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample(
@@ -399,10 +393,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   FakeGlicNudgeDelegate nudge_delegate;
   SwapToFakeDelegate(nudge_delegate);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://disabled.com/"),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      https_server_.GetURL("b.test", "/optimization_guide/hello.html")));
   EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 }
 
@@ -413,19 +406,18 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   FakeGlicNudgeDelegate nudge_delegate;
   SwapToFakeDelegate(nudge_delegate);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
+  nudge_delegate.WaitUntilValidNudge();
   EXPECT_EQ(l10n_util::GetStringUTF8(
                 IDS_GLIC_BUTTON_ENTRYPOINT_ASK_ABOUT_THIS_PAGE_LABEL),
             nudge_delegate.last_nudge_label_);
   EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
   // Make sure it's cleared on error page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL("chrome://eeerrrooorrrpage")));
+  content::NavigateToURLBlockUntilNavigationsComplete(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      GURL("chrome://eeerrrooorrrpage"), 1);
   EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 }
 
@@ -436,26 +428,22 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   FakeGlicNudgeDelegate nudge_delegate;
   SwapToFakeDelegate(nudge_delegate);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
+  nudge_delegate.WaitUntilValidNudge();
   EXPECT_EQ(l10n_util::GetStringUTF8(
                 IDS_GLIC_BUTTON_ENTRYPOINT_ASK_ABOUT_THIS_PAGE_LABEL),
             nudge_delegate.last_nudge_label_);
   EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://disabled.com/"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("b.test", "/optimization_guide/hello.html"));
   EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  ActivateTab(GetTabListInterface()->GetTab(1));
   EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 
-  browser()->tab_strip_model()->ActivateTabAt(2);
+  ActivateTab(GetTabListInterface()->GetTab(2));
   EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 }
 
@@ -468,11 +456,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   FakeGlicNudgeDelegate nudge_delegate;
   SwapToFakeDelegate(nudge_delegate);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
+  nudge_delegate.WaitUntilValidNudge();
   EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample("ContextualCueing.NudgeInteraction",
@@ -495,11 +481,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   FakeGlicNudgeDelegate nudge_delegate;
   SwapToFakeDelegate(nudge_delegate);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
+  nudge_delegate.WaitUntilValidNudge();
   EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample("ContextualCueing.NudgeInteraction",
@@ -518,11 +502,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   FakeGlicNudgeDelegate nudge_delegate;
   SwapToFakeDelegate(nudge_delegate);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
+  nudge_delegate.WaitUntilValidNudge();
   EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample("ContextualCueing.NudgeInteraction",
@@ -532,10 +514,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       glic::NudgeInteraction::kShown, 1);
 
   base::HistogramTester histogram_tester_2;
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://disabled.com/"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("b.test", "/optimization_guide/hello.html"));
 
   EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
   histogram_tester_2.ExpectUniqueSample(
@@ -561,18 +541,15 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   cond->set_cueing_operator(
       optimization_guide::proto::
           CONTEXTUAL_CUEING_OPERATOR_GREATER_THAN_OR_EQUAL_TO);
-  cond->set_int64_threshold(3);
+  cond->set_int64_threshold(1);
 
   SetUpEnabledHints(cueing_metadata);
 
   FakeGlicNudgeDelegate nudge_delegate;
   SwapToFakeDelegate(nudge_delegate);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
   nudge_delegate.WaitUntilValidNudge();
   EXPECT_EQ(l10n_util::GetStringUTF8(
                 IDS_GLIC_BUTTON_ENTRYPOINT_ASK_ABOUT_THIS_PAGE_LABEL),
@@ -596,24 +573,26 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
       static_cast<int64_t>(glic::NudgeDecision::kSuccess));
 }
 
+// TODO(crbug.com/529442132): Abstract the unpin tests (NudgeHideAfterUnpin and
+// TriggerNudgeWhileUnpinned) to work with either a C++ Views button (on
+// Desktop) or a Java-based button (on Android) once the Android entrypoint
+// button is supported.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest, NudgeHideAfterUnpin) {
   SetUpEnabledHints();
 
-  PrefService* const pref_service = browser()->profile()->GetPrefs();
+  PrefService* const pref_service = GetProfile()->GetPrefs();
   glic::TabStripGlicButton* const glic_button =
-      GetGlicButtonForBrowser(browser());
+      GetGlicButtonForBrowser(GetBrowser());
   ASSERT_TRUE(glic_button->GetVisible());
 
   // Trigger the nudge to show
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
   EXPECT_TRUE(glic_button->GetIsShowingNudge());
 
   // Unpin the button
-  chrome::ExecuteCommand(browser(), IDC_GLIC_TOGGLE_PIN);
+  chrome::ExecuteCommand(GetBrowser(), IDC_GLIC_TOGGLE_PIN);
   EXPECT_FALSE(pref_service->GetBoolean(glic::prefs::kGlicPinnedToTabstrip));
 
   // The nudge is also the glic button so it should also hide when the button is
@@ -625,24 +604,21 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
                        TriggerNudgeWhileUnpinned) {
   SetUpEnabledHints();
 
-  PrefService* const pref_service = browser()->profile()->GetPrefs();
+  PrefService* const pref_service = GetProfile()->GetPrefs();
   glic::TabStripGlicButton* const glic_button =
-      GetGlicButtonForBrowser(browser());
+      GetGlicButtonForBrowser(GetBrowser());
   EXPECT_TRUE(glic_button->GetVisible());
 
   // Unpin the glic button
-  chrome::ExecuteCommand(browser(), IDC_GLIC_TOGGLE_PIN);
+  chrome::ExecuteCommand(GetBrowser(), IDC_GLIC_TOGGLE_PIN);
   EXPECT_FALSE(pref_service->GetBoolean(glic::prefs::kGlicPinnedToTabstrip));
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
   EXPECT_FALSE(glic_button->GetVisible());
   EXPECT_FALSE(glic_button->GetIsShowingNudge());
 
   // Pin the glic button.
-  chrome::ExecuteCommand(browser(), IDC_GLIC_TOGGLE_PIN);
+  chrome::ExecuteCommand(GetBrowser(), IDC_GLIC_TOGGLE_PIN);
   EXPECT_TRUE(pref_service->GetBoolean(glic::prefs::kGlicPinnedToTabstrip));
 
   // The nudge shouldn't show because the nudge is triggered after the button
@@ -661,11 +637,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   {
     base::HistogramTester histogram_tester;
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(),
-        https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    CreateAndActivateTab(
+        https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
+    nudge_delegate.WaitUntilValidNudge();
     EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
     histogram_tester.ExpectUniqueSample("ContextualCueing.NudgeInteraction",
@@ -677,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 
     // Open the Contextual Tasks Side Panel.
     auto* controller =
-        contextual_tasks::ContextualTasksPanelController::From(browser());
+        contextual_tasks::ContextualTasksPanelController::From(GetBrowser());
     controller->Show();
 
     histogram_tester.ExpectUniqueSample(
@@ -686,6 +660,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
     EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
   }
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
                        TestCueNotShownForMismatchedMimeType) {
@@ -704,11 +679,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 
   // Navigate to an HTML page - should NOT trigger the nudge since the
   // config requires application/pdf.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
   EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample(
@@ -733,11 +705,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
 
   // Navigate to an HTML page - SHOULD trigger the nudge since the
   // config allows text/html.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
+  nudge_delegate.WaitUntilValidNudge();
   EXPECT_TRUE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample(
@@ -757,6 +727,7 @@ class ContextualCueingHelperWithContextualCueingV2BrowserTest
            {"NudgeCapTime", "0h"},
            {"NudgeCapCount", "10"},
            {"MinPageCountBetweenNudges", "0"},
+           {"MinTimeBetweenNudges", "0s"},
            {"UseDynamicCues", "true"}}},
          {page_content_annotations::features::kAnnotatedPageContentExtraction,
           {}},
@@ -775,11 +746,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperWithContextualCueingV2BrowserTest,
 
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  CreateAndActivateTab(
+      https_server_.GetURL("a.test", "/optimization_guide/hello.html"));
   EXPECT_FALSE(nudge_delegate.GetIsShowingGlicNudge());
 
   histogram_tester.ExpectUniqueSample(
@@ -788,8 +756,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperWithContextualCueingV2BrowserTest,
 }
 
 // Test fixture to verify that auto-open for PDF bypasses nudge caps.
-class ContextualCueingBypassNudgeCapsTest
-    : public glic::test::InteractiveGlicTest {
+class ContextualCueingBypassNudgeCapsTest : public glic::GlicBrowserTest {
  public:
   ContextualCueingBypassNudgeCapsTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -814,11 +781,11 @@ class ContextualCueingBypassNudgeCapsTest
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
 
-    glic::test::InteractiveGlicTest::SetUp();
+    glic::GlicBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    glic::test::InteractiveGlicTest::SetUpOnMainThread();
+    glic::GlicBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
@@ -833,10 +800,9 @@ class ContextualCueingBypassNudgeCapsTest
     optimization_guide::OptimizationMetadata metadata;
     metadata.set_any_metadata(
         optimization_guide::AnyWrapProto(cueing_metadata));
-    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+    OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile())
         ->AddHintForTesting(
-            https_server_.GetURL("autoopen.com",
-                                 "/optimization_guide/hello.html"),
+            https_server_.GetURL("c.test", "/optimization_guide/hello.html"),
             optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, metadata);
   }
 
@@ -851,16 +817,12 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingBypassNudgeCapsTest,
                        TestAutoOpenBypassesNudgeCaps) {
   SetUpBypassHints();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("autoopen.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  auto* tab = CreateAndActivateTab(
+      https_server_.GetURL("c.test", "/optimization_guide/hello.html"));
 
   // kAutoOpenGlicForPdf + auto_open_eligible should open the panel.
-  auto* glic_service = glic::GlicKeyedService::Get(browser()->profile());
-  ASSERT_TRUE(glic_service);
-  EXPECT_TRUE(glic_service->instance_coordinator().IsAnyPanelShowing());
+  ASSERT_OK(WaitForGlicOpen(tab));
+  EXPECT_TRUE(coordinator().IsAnyPanelShowing());
 }
 
 // Verify that the auto-open is blocked by the instance-scoped cooldown
@@ -871,21 +833,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingBypassNudgeCapsTest,
   SetUpBypassHints();
 
   // Navigate to the pdf to trigger initial auto-open.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("autoopen.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  auto* tab = CreateAndActivateTab(
+      https_server_.GetURL("c.test", "/optimization_guide/hello.html"));
 
-  auto* glic_service = glic::GlicKeyedService::Get(browser()->profile());
-  ASSERT_TRUE(glic_service);
-  EXPECT_TRUE(glic_service->instance_coordinator().IsAnyPanelShowing());
-
-  // Retrieve the active tab and its associated GlicInstance.
-  auto* tab_interface = tabs::TabInterface::GetFromContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  ASSERT_TRUE(tab_interface);
-  auto* glic_instance = glic_service->GetInstanceForTab(tab_interface);
+  ASSERT_OK_AND_ASSIGN(auto* glic_instance, WaitForGlicOpen(tab));
+  EXPECT_TRUE(coordinator().IsAnyPanelShowing());
   ASSERT_TRUE(glic_instance);
 
   // Simulate a user prompt submission to start the 1-hour cooldown.
@@ -900,28 +852,31 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingBypassNudgeCapsTest,
       glic::mojom::WebClientMode::kText);
 
   // Close the Glic side panel.
-  auto* coordinator = glic::GlicSidePanelCoordinator::GetForTab(tab_interface);
-  ASSERT_TRUE(coordinator);
-  coordinator->Close();
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return !glic_service->instance_coordinator().IsAnyPanelShowing();
-  }));
+  ASSERT_OK(CloseGlicForTabAndWait(tab));
 
   // Navigate again to trigger auto-open
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      https_server_.GetURL("autoopen.com", "/optimization_guide/hello.html")));
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      https_server_.GetURL("c.test", "/optimization_guide/hello.html")));
+
+  // Wait for the cooldown decision to be recorded in the histogram.
+  ASSERT_OK(glic::RunUntilEqual(
+      [&]() {
+        return histogram_tester.GetBucketCount(
+            "ContextualCueing.GlicAutoOpen.Result",
+            glic::GlicAutoOpenResult::kPreventedFromCooldown);
+      },
+      1));
 
   // Verify that the Glic panel is still closed (and suppressed by the
   // cooldown).
-  EXPECT_FALSE(glic_service->instance_coordinator().IsAnyPanelShowing());
+  EXPECT_FALSE(coordinator().IsAnyPanelShowing());
   histogram_tester.ExpectBucketCount(
       "ContextualCueing.GlicAutoOpen.Result",
       glic::GlicAutoOpenResult::kPreventedFromCooldown, 1);
 }
 
-class ContextualCueingAutoOpenCooldownTest
-    : public glic::test::InteractiveGlicTest {
+class ContextualCueingAutoOpenCooldownTest : public glic::GlicBrowserTest {
  public:
   ContextualCueingAutoOpenCooldownTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -945,11 +900,11 @@ class ContextualCueingAutoOpenCooldownTest
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
 
-    glic::test::InteractiveGlicTest::SetUp();
+    glic::GlicBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    glic::test::InteractiveGlicTest::SetUpOnMainThread();
+    glic::GlicBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
@@ -964,10 +919,9 @@ class ContextualCueingAutoOpenCooldownTest
     optimization_guide::OptimizationMetadata metadata;
     metadata.set_any_metadata(
         optimization_guide::AnyWrapProto(cueing_metadata));
-    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+    OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile())
         ->AddHintForTesting(
-            https_server_.GetURL("autoopen.com",
-                                 "/optimization_guide/hello.html"),
+            https_server_.GetURL("c.test", "/optimization_guide/hello.html"),
             optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, metadata);
   }
 
@@ -985,21 +939,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingAutoOpenCooldownTest,
 
   // 1. Navigate to the pdf in a new foreground tab to trigger initial
   // auto-open.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(),
-      https_server_.GetURL("autoopen.com", "/optimization_guide/hello.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  auto* tab = CreateAndActivateTab(
+      https_server_.GetURL("c.test", "/optimization_guide/hello.html"));
 
-  auto* glic_service = glic::GlicKeyedService::Get(browser()->profile());
-  ASSERT_TRUE(glic_service);
-  EXPECT_TRUE(glic_service->instance_coordinator().IsAnyPanelShowing());
-
-  // 2. Retrieve the active tab and its associated GlicInstance.
-  auto* tab_interface = tabs::TabInterface::GetFromContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  ASSERT_TRUE(tab_interface);
-  auto* glic_instance = glic_service->GetInstanceForTab(tab_interface);
+  ASSERT_OK_AND_ASSIGN(auto* glic_instance, WaitForGlicOpen(tab));
+  EXPECT_TRUE(coordinator().IsAnyPanelShowing());
   ASSERT_TRUE(glic_instance);
 
   // 3. Simulate a user prompt submission to start the 2-second cooldown.
@@ -1014,12 +958,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingAutoOpenCooldownTest,
       glic::mojom::WebClientMode::kText);
 
   // 4. Close the Glic side panel.
-  auto* coordinator = glic::GlicSidePanelCoordinator::GetForTab(tab_interface);
-  ASSERT_TRUE(coordinator);
-  coordinator->Close();
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return !glic_service->instance_coordinator().IsAnyPanelShowing();
-  }));
+  ASSERT_OK(CloseGlicForTabAndWait(tab));
 
   // 5. Wait 3 seconds for the 2-second cooldown to expire safely.
   base::RunLoop run_loop;
@@ -1028,12 +967,13 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingAutoOpenCooldownTest,
   run_loop.Run();
 
   // 6. Navigate again to trigger auto-open.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      https_server_.GetURL("autoopen.com", "/optimization_guide/hello.html")));
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      https_server_.GetURL("c.test", "/optimization_guide/hello.html")));
 
   // 7. Verify that Glic DOES auto-open this time (since the cooldown expired).
-  EXPECT_TRUE(glic_service->instance_coordinator().IsAnyPanelShowing());
+  ASSERT_OK(WaitForGlicOpen(tab));
+  EXPECT_TRUE(coordinator().IsAnyPanelShowing());
   histogram_tester.ExpectBucketCount("ContextualCueing.GlicAutoOpen.Result",
                                      glic::GlicAutoOpenResult::kSuccess, 2);
 }

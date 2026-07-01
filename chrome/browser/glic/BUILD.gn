@@ -755,6 +755,7 @@ source_set("browser_tests") {
     "service/glic_instance_coordinator_browsertest.cc",
     "service/glic_invoke_browsertest.cc",
     "service/metrics/glic_instance_coordinator_metrics_browsertest.cc",
+    "suggestions/contextual_cueing_helper_browsertest.cc",
   ]
 
   deps = [
@@ -765,6 +766,7 @@ source_set("browser_tests") {
     "//chrome/browser:browser_features",
     "//chrome/browser/actor",
     "//chrome/browser/background/glic",
+    "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/glic/actor",
     "//chrome/browser/glic/actor:test_support",
     "//chrome/browser/glic/common",
@@ -780,6 +782,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/actor/core",
     "//components/actor/public/mojom:mojo_bindings",
+    "//components/contextual_tasks/public:feature_list",
     "//components/enterprise/buildflags",
     "//components/enterprise/connectors/core",
     "//components/favicon/content",
@@ -788,6 +791,7 @@ source_set("browser_tests") {
     "//components/skills:features",
     "//components/skills/public",
     "//components/sync_device_info:test_support",
+    "//components/ukm:test_support",
     "//content/test:test_support",
     "//third_party/blink/public/common:headers",
     "//ui/gfx/geometry",
@@ -947,7 +951,6 @@ if (!is_android) {
       "host/glic_focus_interactive_uitest.cc",
       "host/glic_ui_interactive_uitest.cc",
       "service/metrics/glic_instance_metrics_ui_test.cc",
-      "suggestions/contextual_cueing_helper_interactive_uitest.cc",
       "widget/glic_instance_coordinator_interactive_uitest.cc",
     ]
 
