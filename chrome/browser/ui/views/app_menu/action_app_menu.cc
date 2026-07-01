@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/action_app_menu.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/views/app_menu/action_menu_item_view.h"
+#include "ui/actions/actions.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/button/button.h"
@@ -24,6 +26,16 @@ void ActionAppMenu::RunMenu(views::MenuButtonController* host) {
   // Stash the raw pointer before transferring unique_ptr ownership to
   // `menu_runner_` so we can reference the root menu view later.
   root_ = root.get();
+
+  // Temporary ActionItem to bind with ActionMenuItemView.
+  placeholder_action_item_ = actions::ActionItem::Builder()
+                                 .SetText(u"Placeholder Item")
+                                 .SetVisible(true)
+                                 .SetEnabled(true)
+                                 .Build();
+  root_->AddChildView(std::make_unique<ActionMenuItemView>(
+      root_, placeholder_action_item_.get(),
+      views::MenuItemView::Type::kNormal));
 
   int32_t types = views::MenuRunner::HAS_MNEMONICS;
   menu_runner_ = std::make_unique<views::MenuRunner>(std::move(root), types);

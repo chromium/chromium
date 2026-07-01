@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_ACTION_APP_MENU_H_
-#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_ACTION_APP_MENU_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_H_
+#define CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_H_
 
 #include <memory>
 
@@ -12,6 +12,10 @@
 #include "ui/views/controls/menu/menu_delegate.h"
 
 class BrowserWindowInterface;
+
+namespace actions {
+class ActionItem;
+}  // namespace actions
 
 namespace views {
 class MenuButtonController;
@@ -42,6 +46,9 @@ class ActionAppMenu : public views::MenuDelegate {
   // Callback run when the menu is closed to notify the menu button.
   base::RepeatingClosure on_menu_closed_callback_;
 
+  // Temporary ActionItem to bind with ActionMenuItemView.
+  std::unique_ptr<actions::ActionItem> placeholder_action_item_;
+
   // Manages the widget and popup execution lifecycle of the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
@@ -49,4 +56,4 @@ class ActionAppMenu : public views::MenuDelegate {
   raw_ptr<views::MenuItemView> root_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_ACTION_APP_MENU_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_H_
