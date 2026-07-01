@@ -15,6 +15,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -25,6 +26,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -411,6 +413,9 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
      * @return whether Contextual Search is enabled and active in this tab.
      */
     private boolean isContextualSearchActive(WebContents webContents) {
+        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_CONTEXTUAL_SEARCH)) {
+            return false;
+        }
         if (mTab == null) return false;
         assert mTab.getWebContents() == null || mTab.getWebContents() == webContents;
         // If the tab has an active ReadAloud playback, contextual search is disabled
