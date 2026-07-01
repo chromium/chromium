@@ -24555,8 +24555,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ApiGlicAccessFromGoogleWebpage",
-                        "ApiGlicPrivate"
+                        "ApiGlicAccessFromGoogleWebpage"
                     ]
                 }
             ]
