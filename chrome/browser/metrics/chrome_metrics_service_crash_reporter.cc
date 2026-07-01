@@ -21,7 +21,10 @@ void ChromeMetricsServiceCrashReporter::OnEnvironmentUpdate(
     std::string& environment) {
   environment_.swap(environment);
   auto* const crash = crashpad::CrashpadInfo::GetCrashpadInfo();
-  const auto* const data = reinterpret_cast<const void*>(environment_.data());
+  // SAFETY: environment_ is std::string and is alive for the duration of this
+  // call. We cast its data to const void* to pass to the crashpad C-style API.
+  const auto* const data =
+      UNSAFE_BUFFERS(reinterpret_cast<const void*>(environment_.data()));
   const auto size = environment_.size();
 
   auto* update_handle = update_handle_.get();

@@ -99,7 +99,11 @@ bool BrokerSimpleMessage::SendMsgMultipleFds(int fd,
   RAW_CHECK(send_fds.size() <= base::UnixDomainSocket::kMaxFileDescriptors);
 
   struct msghdr msg = {};
-  const void* buf = reinterpret_cast<const void*>(message_.data());
+  // SAFETY: message_ is a statically allocated buffer and length_ represents
+  // the size of the message. We obtain the raw pointer to pass to POSIX writev
+  // system call via iovec.
+  const void* buf =
+      UNSAFE_BUFFERS(reinterpret_cast<const void*>(message_.data()));
   struct iovec iov = {const_cast<void*>(buf), length_};
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
