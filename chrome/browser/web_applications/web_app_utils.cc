@@ -68,6 +68,8 @@
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
+#include "third_party/icu/source/common/unicode/uchar.h"
+#include "third_party/icu/source/common/unicode/utf16.h"
 #include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/part.h"
 #include "third_party/liburlpattern/pattern.h"
@@ -426,7 +428,33 @@ std::vector<std::u16string> TransformFileExtensionsForDisplay(
   std::ranges::transform(
       extensions, std::back_inserter(extensions_for_display),
       [](const std::string& extension) {
-        return base::UTF8ToUTF16(base::ToUpperASCII(extension.substr(1)));
+        if (extension.empty()) {
+          return std::u16string();
+        }
+        std::u16string ext_u16 =
+            base::UTF8ToUTF16(base::ToUpperASCII(extension.substr(1)));
+        std::u16string sanitized;
+        sanitized.reserve(ext_u16.size());
+        for (size_t i = 0; i < ext_u16.length();) {
+          UChar32 c;
+          U16_NEXT(ext_u16, i, ext_u16.length(), c);
+          // TODO(crbug.com/530303003): This check for control and format
+          // characters is duplicated across manifest parsing, IPC validation,
+          // and PWA display. Consider consolidating it into a shared helper in
+          // //base/strings/string_util.h.
+          if (!base::IsUnicodeControl(c) && u_charType(c) != U_FORMAT_CHAR) {
+            if (c <= 0xFFFF) {
+              // Safe to cast UChar32 to char16_t here because the guard ensures
+              // c is within the BMP (<= 0xFFFF), and Unicode code points are
+              // non-negative.
+              sanitized.push_back(static_cast<char16_t>(c));
+            } else {
+              sanitized.push_back(U16_LEAD(c));
+              sanitized.push_back(U16_TRAIL(c));
+            }
+          }
+        }
+        return sanitized;
       });
   return extensions_for_display;
 }

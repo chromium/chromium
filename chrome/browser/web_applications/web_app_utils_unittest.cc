@@ -115,6 +115,23 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
 #endif
 }
 
+TEST_F(WebAppUtilsTest, TransformFileExtensionsForDisplay_StripsBidiControls) {
+  std::set<std::string> extensions = {
+      ".aa\xE2\x80\x8E",  // LRM (Format)
+      ".bb\xE2\x80\xAE",  // RLO (Format)
+      ".cc\x01",          // SOH (Control)
+      ".dd\x7F",          // DEL (Control)
+      ".ee\xC2\x9F",      // APC (Control)
+      ".bat",             // Safe
+      ""                  // Empty
+  };
+  std::vector<std::u16string> transformed =
+      TransformFileExtensionsForDisplay(extensions);
+
+  EXPECT_THAT(transformed, ::testing::UnorderedElementsAre(
+                               u"", u"AA", u"BB", u"CC", u"DD", u"EE", u"BAT"));
+}
+
 TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
   Profile* regular_profile = profile();
 
