@@ -43,7 +43,8 @@
     // Feature Policy
     [CEReactions, Reflect] attribute DOMString allow;
     // https://w3c.github.io/webappsec-feature-policy/#the-policy-object
-    readonly attribute FeaturePolicy featurePolicy;
+    readonly attribute PermissionsPolicy featurePolicy;
+    [RuntimeEnabled=PermissionsPolicyAPI, ImplementedAs=featurePolicy] readonly attribute PermissionsPolicy permissionsPolicy;
 
     // Document Policy
     [RuntimeEnabled=DocumentPolicyNegotiation, CEReactions, Reflect] attribute DOMString policy;

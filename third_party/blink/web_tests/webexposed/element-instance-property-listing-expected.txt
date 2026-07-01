@@ -790,6 +790,7 @@ html element iframe
     property marginHeight
     property marginWidth
     property name
+    property permissionsPolicy
     property policy
     property privateToken
     property referrerPolicy

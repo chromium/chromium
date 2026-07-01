@@ -203,7 +203,8 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [SameObject, Measure, RuntimeEnabled=TextFragmentIdentifiers] readonly attribute FragmentDirective fragmentDirective;
 
     // https://w3c.github.io/webappsec-feature-policy/#the-policy-object
-    readonly attribute FeaturePolicy featurePolicy;
+    readonly attribute PermissionsPolicy featurePolicy;
+    [RuntimeEnabled=PermissionsPolicyAPI, ImplementedAs=featurePolicy] readonly attribute PermissionsPolicy permissionsPolicy;
 
     // Deprecated prefixed page visibility API.
     // TODO(davidben): This is a property so attaching a deprecation warning results in false positives when outputting

@@ -4628,6 +4628,10 @@
       base_feature: "none",
     },
     {
+      name: "PermissionsPolicyAPI",
+      status: "experimental",
+    },
+    {
       name: "PermissionsRequestRevoke",
       status: "experimental",
     },
