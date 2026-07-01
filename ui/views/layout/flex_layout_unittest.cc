@@ -1589,6 +1589,93 @@ TEST_F(FlexLayoutTest, Layout_IgnoreMinimumSize_DropByPriority) {
   EXPECT_FALSE(child3->GetVisible());
 }
 
+namespace {
+// Flex rule that returns the passed in size, clamped to the provided range.
+gfx::Size CustomFlexRule(int min_width,
+                         int preferred_width,
+                         const View* view,
+                         const SizeBounds& size_bounds) {
+  int width = preferred_width;
+  if (size_bounds.width().is_bounded()) {
+    width = std::clamp(size_bounds.width().value(), min_width, preferred_width);
+  }
+  return gfx::Size(width, 30);
+}
+
+// Returns true (to use the current rule) if the total size of the FlexLayout is
+// at least 200.
+bool CustomRuleEnabledPredicate(const SizeBounds& size_bounds) {
+  return size_bounds.width().is_bounded() && size_bounds.width().value() >= 200;
+}
+}  // namespace
+
+// Sets up two children, one with a vector of two RuleAndPredicates, and another
+// with an order between the two predicates of the other child, then tests
+// layouts to make sure the RuleEnabledPredicates are applied correctly.
+TEST_F(FlexLayoutTest, Layout_RuleAndPredicates) {
+  layout_->SetOrientation(LayoutOrientation::kHorizontal);
+  layout_->SetCollapseMargins(true);
+  layout_->SetInteriorMargin(Insets(0));
+  layout_->SetMainAxisAlignment(LayoutAlignment::kStart);
+  layout_->SetCrossAxisAlignment(LayoutAlignment::kStart);
+  layout_->SetDefault(views::kMarginsKey, gfx::Insets(0));
+
+  View* child1 = AddChild(Size(200, 30));
+  View* child2 = AddChild(Size(200, 30));
+
+  std::vector<RuleAndPredicate> rules_and_predicates;
+  rules_and_predicates.emplace_back(
+      3, base::BindRepeating(&CustomFlexRule, 100, 200),
+      base::BindRepeating(&CustomRuleEnabledPredicate));
+  rules_and_predicates.emplace_back(
+      1, base::BindRepeating(&CustomFlexRule, 50, 100),
+      views::RuleEnabledPredicate());
+  child1->SetProperty(views::kFlexBehaviorKey,
+                      FlexSpecification(std::move(rules_and_predicates)));
+
+  child2->SetProperty(
+      views::kFlexBehaviorKey,
+      FlexSpecification(base::BindRepeating(&CustomFlexRule, 90, 200))
+          .WithOrder(2));
+
+  // Parent width 400: both get their preferred sizes
+  // (`child1` = 200, `child2` = 200)
+  host_->SetSize(Size(400, 30));
+  test::RunScheduledLayout(host_.get());
+  EXPECT_EQ(Size(200, 30), child1->size());
+  EXPECT_EQ(Size(200, 30), child2->size());
+
+  // Parent width 300:
+  // The RuleEnabledPredicate for `child1` returns true, so it gets order 3,
+  // which is the highest order, so it is the child that shrinks.
+  //
+  // `child1` (Order 3) shrinks to its min size of 100.
+  // `child2` (Order 2) remains at 200.
+  host_->SetSize(Size(300, 30));
+  test::RunScheduledLayout(host_.get());
+  EXPECT_EQ(Size(100, 30), child1->size());
+  EXPECT_EQ(Size(200, 30), child2->size());
+
+  // Parent width 200:
+  // The RuleEnabledPredicate for `child1` returns false, which makes it use its
+  // second RuleAndPredicate instead.
+  //
+  // `child1` (Order 1) gets 100, the preferred size of its second rule.
+  // `child2` (Order 2) shrinks to its min size, which is 90.
+  host_->SetSize(Size(190, 30));
+  test::RunScheduledLayout(host_.get());
+  EXPECT_EQ(Size(100, 30), child1->size());
+  EXPECT_EQ(Size(90, 30), child2->size());
+
+  // Parent width 140: both get their minimums
+  // `child1` gets 50, the minimum of its second rule.
+  // `child2` is again at its min size of 90.
+  host_->SetSize(Size(140, 30));
+  test::RunScheduledLayout(host_.get());
+  EXPECT_EQ(Size(50, 30), child1->size());
+  EXPECT_EQ(Size(90, 30), child2->size());
+}
+
 TEST_F(FlexLayoutTest, Layout_Flex_OneViewScales) {
   layout_->SetOrientation(LayoutOrientation::kVertical);
   layout_->SetCollapseMargins(true);

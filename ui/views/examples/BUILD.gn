@@ -66,6 +66,8 @@ component("views_examples_lib") {
     "fade_animation.h",
     "flex_layout_example.cc",
     "flex_layout_example.h",
+    "flex_layout_multiple_order_example.cc",
+    "flex_layout_multiple_order_example.h",
     "ink_drop_example.cc",
     "ink_drop_example.h",
     "label_example.cc",

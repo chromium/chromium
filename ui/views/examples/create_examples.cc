@@ -26,6 +26,7 @@
 #include "ui/views/examples/dialog_model_example.h"
 #include "ui/views/examples/fade_animation.h"
 #include "ui/views/examples/flex_layout_example.h"
+#include "ui/views/examples/flex_layout_multiple_order_example.h"
 #include "ui/views/examples/ink_drop_example.h"
 #include "ui/views/examples/label_example.h"
 #include "ui/views/examples/link_example.h"
@@ -74,6 +75,7 @@ ExampleVector CreateExamples(ExampleVector extra_examples) {
   examples.push_back(std::make_unique<DialogModelExample>());
   examples.push_back(std::make_unique<FadeAnimationExample>());
   examples.push_back(std::make_unique<FlexLayoutExample>());
+  examples.push_back(std::make_unique<FlexLayoutMultipleOrderExample>());
   examples.push_back(std::make_unique<InkDropExample>());
   examples.push_back(std::make_unique<LabelExample>());
   examples.push_back(std::make_unique<LinkExample>());

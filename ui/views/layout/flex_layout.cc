@@ -68,6 +68,8 @@ struct FlexChildData {
   NormalizedInsets internal_padding;
   NormalizedRect actual_bounds;
   FlexSpecification flex;
+  FlexRule rule;
+  int order = 1;
 };
 
 template <typename T>
@@ -594,17 +596,21 @@ void FlexLayout::InitializeChildData(
         GetAvailableCrossAxisSize(data, view_index, bounds);
     SetCrossAxis(&child_layout.available_size, orientation(), available_cross);
 
+    auto [active_rule, active_order] = flex_child.flex.GetRuleAndOrderForBounds(
+        Denormalize(orientation(), bounds));
+    flex_child.rule = std::move(active_rule);
+    flex_child.order = active_order;
+
     // According to css flexbox:
     // https://www.w3.org/TR/css-flexbox-1/#algo-main-item $9.2.3 All layout
     // algorithms in views should follow the rule listed in $9.2.3, subsection
     // 'C'. So here the basic size is set according to the C rule.
     flex_child.preferred_size =
-        GetPreferredSizeForRule(flex_child.flex.rule(), child, available_cross);
-    flex_child.minimum_size =
-        GetCurrentSizeForRule(flex_child.flex.rule(), child,
-                              NormalizedSizeBounds(0, available_cross));
+        GetPreferredSizeForRule(flex_child.rule, child, available_cross);
+    flex_child.minimum_size = GetCurrentSizeForRule(
+        flex_child.rule, child, NormalizedSizeBounds(0, available_cross));
     flex_child.maximum_size = GetCurrentSizeForRule(
-        flex_child.flex.rule(), child,
+        flex_child.rule, child,
         NormalizedSizeBounds(bounds.main(), available_cross));
 
     data.SetCurrentSize(view_index, main_axis_bounded
@@ -623,7 +629,7 @@ void FlexLayout::InitializeChildData(
 
     // Add views that have the potential to flex to the appropriate order list.
     if (can_flex) {
-      flex_order_to_index[flex_child.flex.order()].push_back(view_index);
+      flex_order_to_index[flex_child.order].push_back(view_index);
     }
 
     if (main_axis_bounded) {
@@ -864,7 +870,7 @@ NormalizedSize FlexLayout::ClampSizeToMinAndMax(FlexLayoutData& data,
   const NormalizedSizeBounds available(
       size, GetCrossAxis(orientation(), child_layout.available_size));
   const NormalizedSize new_size = GetCurrentSizeForRule(
-      flex_child.flex.rule(), child_layout.child_view, available);
+      flex_child.rule, child_layout.child_view, available);
 
   return std::min<NormalizedSize>(
       std::max<NormalizedSize>(flex_child.minimum_size, new_size),
