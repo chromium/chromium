@@ -398,7 +398,7 @@ try_.builder(
 )
 
 try_.builder(
-    name = "mac26-arm64-rel-tests",
+    name = "mac26-arm64-rel",
     branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/mac-arm64-rel",

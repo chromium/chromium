@@ -273,7 +273,7 @@
           "group": "tryserver.chromium.mac"
         },
         {
-          "builder": "mac26-arm64-rel-tests",
+          "builder": "mac26-arm64-rel",
           "group": "tryserver.chromium.mac"
         }
       ],
