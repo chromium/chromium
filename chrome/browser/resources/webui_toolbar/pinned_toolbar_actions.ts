@@ -24,6 +24,8 @@ export interface KeyedActionState {
   // If true, this instance will be deleted from `keyedStates_` when the
   // slide-out animation completes by `onTransitionDone_()`.
   exiting?: boolean;
+  // Should this element animate in (i.e. slide in)?
+  animateIn?: boolean;
 }
 
 export class PinnedToolbarActionsElement extends CrLitElement {
@@ -74,21 +76,17 @@ export class PinnedToolbarActionsElement extends CrLitElement {
 
   private reconcileKeys_() {
     const newMojoStates = this.state || [];
+    const isInitial = this.keyedStates_.length === 0 &&
+        // Initial updates contain only pinned items, which requires a divider.
+        newMojoStates.some(s => s.action === PinnedToolbarAction.kDivider);
 
     // 1. Map new mojo states to KeyedActionState (all active).
-    let dividerCount = 0;
     const newKeyedStates: KeyedActionState[] = newMojoStates.map(s => {
-      const key = s.action === PinnedToolbarAction.kDivider ?
-          `divider-${dividerCount++}` :
-          s.action.toString();
-      return {key, state: s};
+      const key = s.action.toString();
+      const animateIn =
+          !isInitial && !this.keyedStates_.some(old => old.key === key);
+      return {key, state: s, animateIn};
     });
-
-    if (this.keyedStates_.length === 0) {
-      this.keyedStates_ = newKeyedStates;
-      this.updateVisibility_();
-      return;
-    }
 
     // 2. Find which keys were in the old `keyedStates_` but are not in
     // `newKeyedStates`. These are the ones that are "sliding-out".

@@ -16,13 +16,15 @@ ${repeat(
     (keyedState) => html`
       ${keyedState.state.action === PinnedToolbarAction.kDivider ? html`
         <toolbar-divider
-            class="${keyedState.exiting ? 'exiting' : ''}"
+            class="${keyedState.animateIn ? 'animate-in' : ''}
+                   ${keyedState.exiting ? 'exiting' : ''}"
             data-key="${keyedState.key}">
         </toolbar-divider>
       ` : html`
         <pinned-toolbar-action
             .state="${keyedState.state}"
-            class="${keyedState.exiting ? 'exiting' : ''}"
+            class="${keyedState.animateIn ? 'animate-in' : ''}
+                   ${keyedState.exiting ? 'exiting' : ''}"
             data-key="${keyedState.key}">
         </pinned-toolbar-action>
       `}

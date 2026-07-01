@@ -21,7 +21,10 @@ toolbar-divider {
               opacity 200ms linear;
 
   margin-inline-end: var(--toolbar-icon-default-margin);
+}
 
+pinned-toolbar-action.animate-in,
+toolbar-divider.animate-in {
   animation: slide-in 300ms ease-out;
 }
 
