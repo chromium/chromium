@@ -8,27 +8,26 @@
  * settings to change the default browser (i.e. which the OS will open).
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../icons.html.js';
 import '../settings_page/settings_section.js';
-import '../settings_shared.css.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {getCss as getCrSharedStyle} from 'chrome://resources/cr_elements/cr_shared_style_lit.css.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {RouteObserverMixin} from '../router.js';
+import {RouteObserverMixinLit} from '../router.js';
 import type {Route} from '../router.js';
 import {getSearchManager} from '../search_settings.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
+import {getCss as getSettingsSharedLit} from '../settings_shared_lit.css.js';
 
 import type {DefaultBrowserBrowserProxy, DefaultBrowserInfo} from './default_browser_browser_proxy.js';
 import {DefaultBrowserBrowserProxyImpl} from './default_browser_browser_proxy.js';
-import {getTemplate} from './default_browser_page.html.js';
+import {getHtml} from './default_browser_page.html.js';
 
 const SettingsDefaultBrowserPageElementBase =
-    RouteObserverMixin(WebUiListenerMixin(PolymerElement));
+    RouteObserverMixinLit(WebUiListenerMixinLit(CrLitElement));
 
 export class SettingsDefaultBrowserPageElement extends
     SettingsDefaultBrowserPageElementBase implements SettingsPlugin {
@@ -36,36 +35,38 @@ export class SettingsDefaultBrowserPageElement extends
     return 'settings-default-browser-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [getCrSharedStyle(), getSettingsSharedLit()];
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      canPin_: Boolean,
-      isDefault_: Boolean,
-      isSecondaryInstall_: Boolean,
-      isUnknownError_: Boolean,
-      maySetDefaultBrowser_: Boolean,
+      canPin_: {type: Boolean},
+      isDefault_: {type: Boolean},
+      isSecondaryInstall_: {type: Boolean},
+      isUnknownError_: {type: Boolean},
+      maySetDefaultBrowser_: {type: Boolean},
       // Whether the description should use a more user-centric string.
-      userValueDefaultBrowserStringsEnabled_: {
-        type: Boolean,
-        value: false,
-      },
+      userValueDefaultBrowserStringsEnabled_: {type: Boolean},
     };
   }
 
-  declare private canPin_: boolean;
-  declare private isDefault_: boolean;
-  declare private isSecondaryInstall_: boolean;
-  declare private isUnknownError_: boolean;
-  declare private maySetDefaultBrowser_: boolean;
-  declare private userValueDefaultBrowserStringsEnabled_: boolean;
+  protected accessor canPin_: boolean = false;
+  protected accessor isDefault_: boolean = false;
+  protected accessor isSecondaryInstall_: boolean = false;
+  protected accessor isUnknownError_: boolean = false;
+  protected accessor maySetDefaultBrowser_: boolean = false;
+  protected accessor userValueDefaultBrowserStringsEnabled_: boolean = false;
+
   private browserProxy_: DefaultBrowserBrowserProxy =
       DefaultBrowserBrowserProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
 
     this.addWebUiListener(
         'browser-default-state-changed',
@@ -111,7 +112,7 @@ export class SettingsDefaultBrowserPageElement extends
     }
   }
 
-  private getMakeDefaultLabel(): string {
+  protected getMakeDefaultLabel(): string {
     // When the UserValueDefaultBrowserStrings feature is enabled, show a
     // more user-centric string.
     // TODO(crbug.com/459593729): Clean up after launch by removing the old
@@ -133,7 +134,7 @@ export class SettingsDefaultBrowserPageElement extends
             'defaultBrowserMakeDefault');
   }
 
-  private onSetDefaultBrowserClick_() {
+  protected onSetDefaultBrowserClick_() {
     this.browserProxy_.setAsDefaultBrowser(this.canPin_);
   }
 

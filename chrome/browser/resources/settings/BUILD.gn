@@ -273,7 +273,6 @@ build_webui("build") {
       "a11y_page/live_caption.ts",
       "a11y_page/live_translate.ts",
       "clear_browsing_data_dialog/clear_browsing_data_account_indicator.ts",
-      "default_browser_page/default_browser_page.ts",
       "languages_page/add_languages_dialog.ts",
       "languages_page/languages_page.ts",
       "languages_page/languages_page_index.ts",
@@ -397,6 +396,8 @@ build_webui("build") {
   } else {
     ts_files += [
       "default_browser_page/default_browser_browser_proxy.ts",
+      "default_browser_page/default_browser_page.html.ts",
+      "default_browser_page/default_browser_page.ts",
       "languages_page/languages.ts",
       "languages_page/languages_browser_proxy.ts",
       "languages_page/languages_settings_metrics_proxy.ts",
