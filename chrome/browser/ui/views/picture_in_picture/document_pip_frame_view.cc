@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
 
 #include <memory>
+#include <optional>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -15,17 +17,21 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
+#include "chrome/browser/ui/views/location_bar/location_icon_state_helper.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/location_bar_model_util.h"
-#include "components/security_state/content/security_state_tab_helper.h"
+#include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/security_state/core/security_state.h"
-#include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,6 +44,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -45,18 +52,21 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/event_monitor.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/window_shape.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -102,33 +112,102 @@ std::unique_ptr<views::ImageButton> CreatePipTitleBarButton(
   return button;
 }
 
-// A thin clickable container that holds the security icon and security chip
-// text and opens the Page Info dialog when pressed. This intentionally adds no
-// behavior beyond views::Button; the subclass exists only because
-// views::Button's constructor is protected.
-//
-// TODO(crbug.com/515252142): A follow-up CL will give the chip the
-// browser-backed IconLabelBubbleView's interior padding and hover/pressed
-// highlight (a rounded-rect background). That highlight is split out of this
-// layout-focused CL because it is a distinct visual treatment whose exact
-// metrics (corner radius, highlight color/alpha, and ink-drop behavior on
-// hover and press) still need to be matched to the omnibox chip; keeping it
-// separate makes both this change and the highlight reviewable on their own.
-class OriginChipButton : public views::Button {
-  METADATA_HEADER(OriginChipButton, views::Button)
+// The standalone Document PiP origin chip. Reuses views::IconLabelBubbleView
+// (the omnibox security-chip base) for pixel-accurate icon/label geometry,
+// hover/press ink-drop, the security-text slide animation, and theme handling.
+// The chip's URL/security text is supplied by the frame view from a
+// LocationBarModelImpl backed by the opener WebContents. Pressing the chip
+// opens the Page Info dialog.
+class OriginChipView : public IconLabelBubbleView {
+  METADATA_HEADER(OriginChipView, IconLabelBubbleView)
 
  public:
-  explicit OriginChipButton(PressedCallback callback)
-      : views::Button(std::move(callback)) {}
-  OriginChipButton(const OriginChipButton&) = delete;
-  OriginChipButton& operator=(const OriginChipButton&) = delete;
-  ~OriginChipButton() override = default;
+  OriginChipView(const gfx::FontList& font_list,
+                 IconLabelBubbleView::Delegate* delegate,
+                 base::RepeatingCallback<bool()> show_page_info)
+      : IconLabelBubbleView(font_list, delegate),
+        show_page_info_(std::move(show_page_info)) {
+    // Enable the security-text slide animation and let the explicit PiP
+    // foreground color drive the label color (no auto-contrast adjustment).
+    SetUpForAnimation();
+    label()->SetAutoColorReadabilityEnabled(false);
+  }
+  OriginChipView(const OriginChipView&) = delete;
+  OriginChipView& operator=(const OriginChipView&) = delete;
+  ~OriginChipView() override = default;
+
+  // Sets the security (lock) icon. Exposes the protected SetImageModel().
+  void SetSecurityImage(const ui::ImageModel& image) { SetImageModel(image); }
+
+  // Sets the security chip text, sliding it in/out when `animate` is true and
+  // updating it instantly otherwise (e.g. on the first update or a theme
+  // change). Mirrors LocationIconView::UpdateTextVisibility(), but takes the
+  // already-computed text and animate flag (the browser-backed view pulls them
+  // from a LocationBarModel) and folds in the trailing UpdateLabelColors() that
+  // LocationIconView::Update() runs separately.
+  void UpdateSecurityText(std::u16string_view text, bool animate) {
+    SetLabel(text);
+    const bool should_show = !text.empty();
+    if (!animate) {
+      ResetSlideAnimation(should_show);
+    } else if (should_show) {
+      AnimateIn(std::nullopt);
+    } else {
+      AnimateOut();
+    }
+    // UpdateLabelColors() resolves colors through the ColorProvider, which is
+    // only available once this view is attached to a Widget. During the frame
+    // view's construction the chip is not yet in the widget, so skip the color
+    // update; OnThemeChanged() re-runs the full update after attach.
+    if (GetWidget()) {
+      UpdateLabelColors();
+    }
+  }
+
+ protected:
+  // IconLabelBubbleView:
+  bool ShowBubble(const ui::Event& event) override {
+    return show_page_info_.Run();
+  }
+  bool IsBubbleShowing() const override {
+    return PageInfoBubbleView::GetShownBubbleType() !=
+           PageInfoBubbleView::BUBBLE_NONE;
+  }
+  // Match the browser-backed LocationIconView: never draw the trailing
+  // separator (there is no omnibox decoration to separate from).
+  bool ShouldShowSeparator() const override { return false; }
+
+ private:
+  base::RepeatingCallback<bool()> show_page_info_;
 };
 
-BEGIN_METADATA(OriginChipButton)
+BEGIN_METADATA(OriginChipView)
 END_METADATA
 
 }  // namespace
+
+// Minimal LocationBarModelDelegate that sources the "active" WebContents from
+// the standalone PiP opener. This lets the frame view drive a
+// LocationBarModelImpl (and thus reuse the omnibox's URL-formatting and
+// security-text logic) without the omnibox/Browser stack.
+class DocumentPipFrameView::LocationBarModelDelegateImpl
+    : public ChromeLocationBarModelDelegate {
+ public:
+  explicit LocationBarModelDelegateImpl(DocumentPipHost* host)
+      : host_(CHECK_DEREF(host)) {}
+  LocationBarModelDelegateImpl(const LocationBarModelDelegateImpl&) = delete;
+  LocationBarModelDelegateImpl& operator=(const LocationBarModelDelegateImpl&) =
+      delete;
+  ~LocationBarModelDelegateImpl() override = default;
+
+  // ChromeLocationBarModelDelegate:
+  content::WebContents* GetActiveWebContents() const override {
+    return host_->GetOpenerWebContents();
+  }
+
+ private:
+  const raw_ref<DocumentPipHost> host_;
+};
 
 class DocumentPipFrameView::WindowEventObserver : public ui::EventObserver {
  public:
@@ -170,6 +249,16 @@ DocumentPipFrameView::DocumentPipFrameView(DocumentPipHost* host)
   CHECK(widget);
   const bool disallow_return_to_opener =
       host_->GetPipOptions().disallow_return_to_opener;
+
+  // Build the LocationBarModel that drives the origin chip's URL and security
+  // text from the opener WebContents, reusing the omnibox's formatting and
+  // secure-display-text logic. Created before any UpdateOriginAndSecurity()
+  // call (including a possible early OnThemeChanged()).
+  location_bar_model_delegate_ =
+      std::make_unique<LocationBarModelDelegateImpl>(&host_.get());
+  location_bar_model_ = std::make_unique<LocationBarModelImpl>(
+      location_bar_model_delegate_.get(), content::kMaxURLDisplayChars);
+
   // Create the top bar container.
   AddChildView(views::Builder<views::FlexLayoutView>()
                    .CopyAddressTo(&top_bar_container_view_)
@@ -180,39 +269,33 @@ DocumentPipFrameView::DocumentPipFrameView(DocumentPipHost* host)
   top_bar_container_view_->SetBackground(
       views::CreateSolidBackground(kColorPipWindowTopBarBackground));
 
-  // Create the origin chip: a clickable button containing the security (lock)
-  // icon. Clicking it opens the Page Info dialog. This mirrors the
-  // browser-backed frame's LocationIconView: the chip is the security indicator
-  // only; the URL/title is a separate label outside the chip. Unlike the
-  // omnibox stack, this is a thin PiP-specific control that reads directly from
-  // the opener WebContents.
-  auto origin_chip = std::make_unique<OriginChipButton>(base::BindRepeating(
-      [](DocumentPipFrameView* frame_view) { frame_view->ShowPageInfo(); },
-      // Safety: The widget owns the frame view and this button, so the
-      // callback cannot outlive the widget.
-      base::Unretained(this)));
+  // Create the origin chip: a security indicator (lock icon + optional
+  // security chip text) that opens the Page Info dialog when pressed. Reuses
+  // views::IconLabelBubbleView for geometry/ink-drop/animation parity with the
+  // browser-backed frame's LocationIconView, but is driven from a
+  // LocationBarModelImpl backed by the opener WebContents rather than the
+  // omnibox stack. The URL/title is a separate sibling label outside the chip.
+  const gfx::FontList& chip_font_list =
+      views::TypographyProvider::Get().GetFont(CONTEXT_OMNIBOX_PRIMARY,
+                                               views::style::STYLE_PRIMARY);
+  auto origin_chip = std::make_unique<OriginChipView>(
+      chip_font_list, /*delegate=*/this,
+      base::BindRepeating(
+          [](DocumentPipFrameView* frame_view) {
+            return frame_view->ShowPageInfo();
+          },
+          // Safety: The widget owns the frame view and this chip, so the
+          // callback cannot outlive the widget.
+          base::Unretained(this)));
   origin_chip->SetProperty(views::kElementIdentifierKey,
                            kLocationIconElementId);
   origin_chip->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_LOCATION_ICON));
   origin_chip->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_LOCATION_ICON));
-  auto* origin_layout =
-      origin_chip->SetLayoutManager(std::make_unique<views::FlexLayout>());
-  origin_layout->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  // The chip sizes to its content (lock + optional chip text) and is not
-  // flexible, so it always stays at its preferred size and never collapses,
-  // matching the browser-backed frame's non-flexible location icon. The
-  // external margin offsets the chip 8px from the window edge and 4px from the
-  // window title.
+  // The external margin offsets the chip 8px from the window edge and 4px from
+  // the window title, matching the browser-backed location icon.
   origin_chip->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(5, 8, 5, 4));
-
-  // The security (lock) icon, the sole content of the chip. The left offset and
-  // vertical centering are provided by the chip's margin.
-  auto security_icon = std::make_unique<views::ImageView>();
-  security_icon_ = origin_chip->AddChildView(std::move(security_icon));
-
   origin_chip_ = top_bar_container_view_->AddChildView(std::move(origin_chip));
 
   // The window title label, showing the opener's URL. This is a sibling of the
@@ -374,9 +457,10 @@ gfx::Rect DocumentPipFrameView::GetWindowBoundsForClientBounds(
 }
 
 int DocumentPipFrameView::NonClientHitTest(const gfx::Point& point) {
-  // Allow interacting with the security icon (opens Page Info). The origin
-  // label next to it is draggable to match browser-backed PiP behavior.
-  if (GetSecurityIconBounds().Contains(point)) {
+  // Allow interacting with the origin chip (opens Page Info). The
+  // window-title label next to it is draggable to match browser-backed PiP
+  // behavior.
+  if (GetOriginChipBounds().Contains(point)) {
     return HTCLIENT;
   }
 
@@ -562,49 +646,63 @@ gfx::Rect DocumentPipFrameView::ConvertControlBoundsToFrame(
   return gfx::ToEnclosingRect(bounds);
 }
 
-gfx::Rect DocumentPipFrameView::GetSecurityIconBounds() const {
-  CHECK(security_icon_);
-  return ConvertControlBoundsToFrame(security_icon_);
+gfx::Rect DocumentPipFrameView::GetOriginChipBounds() const {
+  CHECK(origin_chip_);
+  return ConvertControlBoundsToFrame(origin_chip_);
 }
 
 void DocumentPipFrameView::UpdateOriginAndSecurity() {
   content::WebContents* const opener_web_contents =
       host_->GetOpenerWebContents();
-  const GURL url = opener_web_contents->GetLastCommittedURL();
+  const GURL url = location_bar_model_->GetURL();
 
-  // Show the opener origin in security-display form (scheme omitted for the
-  // common HTTPS case).
-  //
-  // TODO(crbug.com/515252142): A follow-up CL will add the security-sensitive
-  // title/security treatment that mirrors PictureInPictureBrowserFrameView:
-  // file-scheme-aware URL formatting (keep the path, omit file://), the
-  // scheme-dependent elision direction (elide the tail for file/extension/
-  // isolated-app URLs to resist origin spoofing), and the omnibox-style
-  // security chip text ("File"/"Not secure"/"Dangerous"). It is split out so
-  // those security-sensitive lines land in a focused, separately reviewable CL
-  // with clean blame history.
-  const std::u16string origin_text = url_formatter::FormatUrlForSecurityDisplay(
-      url, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  window_title_->SetText(origin_text);
-  origin_chip_->GetViewAccessibility().SetDescription(origin_text);
+  // Reuse the omnibox's steady-state URL formatting (omit https://, trivial
+  // subdomains, and, on desktop, the file:// scheme).
+  const std::u16string url_text = location_bar_model_->GetURLForDisplay();
+  window_title_->SetText(url_text);
+  origin_chip_->GetViewAccessibility().SetDescription(url_text);
 
-  // Derive the security level and lock/security icon directly from the opener,
-  // without a LocationBarModel.
-  auto* helper = SecurityStateTabHelper::FromWebContents(opener_web_contents);
-  // The opener always has a SecurityStateTabHelper attached (it is created by
-  // TabHelpers), so it is safe to read the security state directly.
-  CHECK(helper);
+  // Pick the elision direction by scheme, mirroring
+  // PictureInPictureBrowserFrameView. For file URLs we elide the tail, since
+  // the file name/query can be crafted to look like an origin (spoofing). For
+  // HTTPS URLs we elide the head, since everything but the origin is removed
+  // for display, so a long origin could otherwise be pushed out of view.
+  gfx::ElideBehavior elide_behavior =
+      url.SchemeIsFile() ? gfx::ELIDE_TAIL : gfx::ELIDE_HEAD;
+  // Extension and isolated-app URLs are like file URLs: the tail is the
+  // spoofable part, so elide it.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (url.SchemeIs(extensions::kExtensionScheme) ||
+      url.SchemeIs(webapps::kIsolatedAppScheme)) {
+    elide_behavior = gfx::ELIDE_TAIL;
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  window_title_->SetElideBehavior(elide_behavior);
+
   const security_state::SecurityLevel security_level =
-      helper->GetSecurityLevel();
-  const std::unique_ptr<security_state::VisibleSecurityState>
-      visible_security_state = helper->GetVisibleSecurityState();
+      location_bar_model_->GetSecurityLevel();
   const ui::ColorId foreground_color_id =
       render_active_ ? kColorPipWindowForeground
                      : kColorPipWindowForegroundInactive;
-  security_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      location_bar_model::GetSecurityVectorIcon(security_level,
-                                                visible_security_state.get()),
-      foreground_color_id, kSecurityIconImageSize));
+
+  auto* const chip = views::AsViewClass<OriginChipView>(origin_chip_);
+  chip->SetSecurityImage(ui::ImageModel::FromVectorIcon(
+      location_bar_model_->GetVectorIcon(), foreground_color_id,
+      kSecurityIconImageSize));
+
+  // Set the omnibox-style security chip text ("File"/extension/chrome
+  // product/"Not secure"/"Dangerous") via the shared helper, animating the
+  // change for the same level transitions the omnibox animates.
+  const std::u16string chip_text = location_bar::GetSecurityChipText(
+      location_bar_model_.get(), opener_web_contents,
+      /*is_editing_or_empty=*/false);
+  const bool animate =
+      security_text_initialized_ &&
+      location_bar::ShouldAnimateSecurityChipTextChange(
+          /*is_editing_or_empty=*/false, last_security_level_, security_level);
+  chip->UpdateSecurityText(chip_text, animate);
+  last_security_level_ = security_level;
+  security_text_initialized_ = true;
 }
 
 void DocumentPipFrameView::UpdateTopBarView(bool render_active) {

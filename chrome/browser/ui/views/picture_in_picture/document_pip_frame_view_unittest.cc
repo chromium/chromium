@@ -12,22 +12,27 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_widget_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/security_state/content/security_state_tab_helper.h"
+#include "components/security_state/core/security_state.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -61,6 +66,31 @@ blink::mojom::PictureInPictureWindowOptions MakePipOptions(
 gfx::Rect MakeDefaultInitialBounds() {
   return gfx::Rect(20, 30, 400, 300);
 }
+
+// A SecurityStateTabHelper whose security state is fixed by tests, so the chip
+// can be driven to a DANGEROUS level (and its billing/managed-policy sub-cases)
+// that a plain NavigateAndCommit cannot produce. Attaches under the base
+// SecurityStateTabHelper key, so DocumentPipFrameView's
+// SecurityStateTabHelper::FromWebContents() reads it.
+class FakeSecurityStateTabHelper : public SecurityStateTabHelper {
+ public:
+  FakeSecurityStateTabHelper(
+      content::WebContents* web_contents,
+      security_state::MaliciousContentStatus malicious_content_status)
+      : SecurityStateTabHelper(web_contents, UsesEmbedderInformation(false)),
+        malicious_content_status_(malicious_content_status) {}
+
+  std::unique_ptr<security_state::VisibleSecurityState>
+  GetVisibleSecurityState() override {
+    auto state = std::make_unique<security_state::VisibleSecurityState>();
+    state->url = GURL("https://example.com/");
+    state->malicious_content_status = malicious_content_status_;
+    return state;
+  }
+
+ private:
+  const security_state::MaliciousContentStatus malicious_content_status_;
+};
 
 }  // namespace
 
@@ -144,12 +174,8 @@ class DocumentPipFrameViewTest : public ChromeViewsTestBase {
     return frame_view->close_image_button_;
   }
 
-  views::Button* GetOriginChip(DocumentPipFrameView* frame_view) {
+  IconLabelBubbleView* GetOriginChip(DocumentPipFrameView* frame_view) {
     return frame_view->origin_chip_;
-  }
-
-  views::ImageView* GetSecurityIcon(DocumentPipFrameView* frame_view) {
-    return frame_view->security_icon_;
   }
 
   views::Label* GetWindowTitle(DocumentPipFrameView* frame_view) {
@@ -180,6 +206,15 @@ class DocumentPipFrameViewTest : public ChromeViewsTestBase {
   void OnMouseEnteredOrExitedWindow(DocumentPipFrameView* frame_view,
                                     bool entered) {
     frame_view->OnMouseEnteredOrExitedWindow(entered);
+  }
+
+  // Replaces the opener's SecurityStateTabHelper with a fake reporting the
+  // given malicious-content status, so the chip is computed at DANGEROUS level.
+  void SeedFakeSecurityState(
+      security_state::MaliciousContentStatus malicious_content_status) {
+    opener()->SetUserData(SecurityStateTabHelper::UserDataKey(),
+                          std::make_unique<FakeSecurityStateTabHelper>(
+                              opener(), malicious_content_status));
   }
 
  protected:
@@ -285,7 +320,7 @@ TEST_F(DocumentPipFrameViewTest, HitTestTopBar_ReturnsCaption) {
 
   // Use the button container's left edge as the right boundary of the spacer
   // (not the close button, which is further right inside the container).
-  views::Button* chip = GetOriginChip(frame_view);
+  IconLabelBubbleView* chip = GetOriginChip(frame_view);
   ASSERT_TRUE(chip);
   gfx::Point chip_right_pt(chip->GetMirroredBounds().right(),
                            chip->GetMirroredBounds().CenterPoint().y());
@@ -379,27 +414,117 @@ TEST_F(DocumentPipFrameViewTest, CloseReasonHistogram_RecordsBackToTabButton) {
       DocumentPipFrameView::CloseReason::kBackToTabButton, 1);
 }
 
-// The origin chip (lock + origin label) is present.
+// The origin chip and window title are present.
 TEST_F(DocumentPipFrameViewTest, OriginChipPresent) {
   auto* frame_view =
       CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
 
   EXPECT_TRUE(GetOriginChip(frame_view));
-  EXPECT_TRUE(GetSecurityIcon(frame_view));
   EXPECT_TRUE(GetWindowTitle(frame_view));
 }
 
-// The window title shows the opener origin in security-display form (scheme
-// omitted, path omitted, subdomain preserved).
-TEST_F(DocumentPipFrameViewTest, WindowTitleShowsSecurityDisplayOrigin) {
+// The window title shows the opener URL formatted the omnibox way: scheme and
+// trivial subdomain omitted, path preserved.
+TEST_F(DocumentPipFrameViewTest, WindowTitleShowsFormattedUrl) {
   content::WebContentsTester::For(opener())->NavigateAndCommit(
       GURL("https://www.example.com/some/path?query=1"));
 
   auto* frame_view =
       CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
 
-  EXPECT_EQ(std::u16string(u"www.example.com"),
+  EXPECT_EQ(std::u16string(u"example.com/some/path?query=1"),
             GetWindowTitle(frame_view)->GetText());
+}
+
+// HTTPS URLs head-elide so a long origin cannot be pushed out of view.
+TEST_F(DocumentPipFrameViewTest, WindowTitleElidesHeadForHttps) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("https://www.example.com/some/path"));
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+
+  EXPECT_EQ(gfx::ELIDE_HEAD, GetWindowTitle(frame_view)->GetElideBehavior());
+}
+
+// File URLs tail-elide (the file name/query is the spoofable part) and the chip
+// shows the "File" security text, matching the browser-backed frame.
+TEST_F(DocumentPipFrameViewTest, FileUrlTailElidesAndChipSaysFile) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("file:///home/user/movie.html"));
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+
+  EXPECT_EQ(gfx::ELIDE_TAIL, GetWindowTitle(frame_view)->GetElideBehavior());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_OMNIBOX_FILE),
+            GetOriginChip(frame_view)->GetText());
+}
+
+// A secure HTTPS page shows no security chip text (the lock icon alone conveys
+// the secure state), mirroring the omnibox.
+TEST_F(DocumentPipFrameViewTest, HttpsSecureUrlHasEmptyChipText) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("https://www.example.com/"));
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+
+  EXPECT_TRUE(GetOriginChip(frame_view)->GetText().empty());
+}
+
+// A plain HTTP page reports the WARNING security level, so the chip shows the
+// "Not secure" verbose text.
+TEST_F(DocumentPipFrameViewTest, HttpWarningUrlChipSaysNotSecure) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("http://www.example.com/"));
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NOT_SECURE_VERBOSE_STATE),
+            GetOriginChip(frame_view)->GetText());
+}
+
+// A DANGEROUS page that fails the malware check shows the "Dangerous" verbose
+// text on the chip.
+TEST_F(DocumentPipFrameViewTest, DangerousMalwareUrlChipSaysDangerous) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("https://malware.test/"));
+  SeedFakeSecurityState(security_state::MALICIOUS_CONTENT_STATUS_MALWARE);
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE),
+            GetOriginChip(frame_view)->GetText());
+}
+
+// A DANGEROUS page on the billing interstitial list carries its own UI, so the
+// chip stays empty.
+TEST_F(DocumentPipFrameViewTest, DangerousBillingUrlHasEmptyChipText) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("https://billing.test/"));
+  SeedFakeSecurityState(security_state::MALICIOUS_CONTENT_STATUS_BILLING);
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+
+  EXPECT_TRUE(GetOriginChip(frame_view)->GetText().empty());
+}
+
+// A DANGEROUS page blocked by enterprise policy carries its own UI, so the chip
+// stays empty.
+TEST_F(DocumentPipFrameViewTest, DangerousManagedPolicyUrlHasEmptyChipText) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("https://policy.test/"));
+  SeedFakeSecurityState(
+      security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK);
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+
+  EXPECT_TRUE(GetOriginChip(frame_view)->GetText().empty());
 }
 
 // The recompute after Widget::Init() grows the outer window by the non-client
@@ -420,19 +545,21 @@ TEST_F(DocumentPipFrameViewTest, OuterBoundsAccountForTopBar) {
 
 // The security icon is populated from the opener's security state when the
 // frame view is constructed.
-TEST_F(DocumentPipFrameViewTest, SecurityIconHasImage) {
+TEST_F(DocumentPipFrameViewTest, OriginChipHasSecurityImage) {
   content::WebContentsTester::For(opener())->NavigateAndCommit(
       GURL("https://www.example.com/"));
 
   auto* frame_view =
       CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
 
-  EXPECT_FALSE(GetSecurityIcon(frame_view)->GetImageModel().IsEmpty());
+  auto* chip = GetOriginChip(frame_view);
+  ASSERT_TRUE(chip);
+  EXPECT_FALSE(chip->GetImageContainerView()->GetPreferredSize().IsEmpty());
 }
 
-// NonClientHitTest returns HTCLIENT for the security icon bounds (opens Page
+// NonClientHitTest returns HTCLIENT for the origin chip bounds (opens Page
 // Info on click).
-TEST_F(DocumentPipFrameViewTest, HitTestSecurityIcon_ReturnsClient) {
+TEST_F(DocumentPipFrameViewTest, HitTestOriginChip_ReturnsClient) {
   content::WebContentsTester::For(opener())->NavigateAndCommit(
       GURL("https://example.com/"));
 
@@ -443,13 +570,12 @@ TEST_F(DocumentPipFrameViewTest, HitTestSecurityIcon_ReturnsClient) {
   widget->SetBounds(gfx::Rect(0, 0, 400, 300));
   widget->LayoutRootViewIfNecessary();
 
-  views::ImageView* security_icon = GetSecurityIcon(frame_view);
-  ASSERT_TRUE(security_icon);
-  ASSERT_FALSE(security_icon->bounds().IsEmpty());
+  IconLabelBubbleView* chip = GetOriginChip(frame_view);
+  ASSERT_TRUE(chip);
+  ASSERT_FALSE(chip->bounds().IsEmpty());
 
-  gfx::Point center = security_icon->bounds().CenterPoint();
-  views::View::ConvertPointToTarget(security_icon->parent(), frame_view,
-                                    &center);
+  gfx::Point center = chip->bounds().CenterPoint();
+  views::View::ConvertPointToTarget(chip->parent(), frame_view, &center);
 
   EXPECT_EQ(HTCLIENT, frame_view->NonClientHitTest(center));
 }
@@ -586,4 +712,55 @@ TEST_F(DocumentPipFrameViewTest, ContentSettingDelegateUsesOpener) {
   EXPECT_EQ(opener(), frame_view->GetContentSettingWebContents());
   EXPECT_EQ(nullptr, frame_view->GetContentSettingBubbleModelDelegate());
   EXPECT_FALSE(frame_view->ShouldHideContentSettingImage());
+}
+
+// Deactivating the window hides the window-control buttons (matching the
+// browser-backed frame, which keeps their space reserved but hides them while
+// inactive). Reactivating restores them.
+TEST_F(DocumentPipFrameViewTest, InactiveHidesWindowControlButtons) {
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+
+  views::ImageButton* close_btn = GetCloseButton(frame_view);
+  views::ImageButton* back_btn = GetBackToTabButton(frame_view);
+  ASSERT_TRUE(close_btn);
+  ASSERT_TRUE(back_btn);
+  EXPECT_TRUE(close_btn->GetVisible());
+  EXPECT_TRUE(back_btn->GetVisible());
+
+  frame_view->OnWidgetActivationChanged(frame_view->GetWidget(),
+                                        /*active=*/false);
+  EXPECT_FALSE(close_btn->GetVisible());
+  EXPECT_FALSE(back_btn->GetVisible());
+
+  frame_view->OnWidgetActivationChanged(frame_view->GetWidget(),
+                                        /*active=*/true);
+  EXPECT_TRUE(close_btn->GetVisible());
+  EXPECT_TRUE(back_btn->GetVisible());
+}
+
+// While inactive the window-control buttons are hidden, so NonClientHitTest
+// must not report HTCLIENT over their (now hidden) bounds; the area falls
+// through to the draggable caption instead.
+TEST_F(DocumentPipFrameViewTest, HitTestCloseButton_InactiveReturnsCaption) {
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+
+  auto* widget = frame_view->GetWidget();
+  widget->SetBounds(gfx::Rect(0, 0, 400, 300));
+  widget->LayoutRootViewIfNecessary();
+
+  views::ImageButton* close_btn = GetCloseButton(frame_view);
+  ASSERT_TRUE(close_btn);
+  ASSERT_FALSE(close_btn->bounds().IsEmpty());
+  gfx::Point center = close_btn->bounds().CenterPoint();
+  views::View::ConvertPointToTarget(close_btn->parent(), frame_view, &center);
+
+  // Active: hits the close button.
+  EXPECT_EQ(HTCLIENT, frame_view->NonClientHitTest(center));
+
+  // Inactive: buttons hidden, so the same point is caption (draggable).
+  frame_view->OnWidgetActivationChanged(frame_view->GetWidget(),
+                                        /*active=*/false);
+  EXPECT_EQ(HTCAPTION, frame_view->NonClientHitTest(center));
 }
