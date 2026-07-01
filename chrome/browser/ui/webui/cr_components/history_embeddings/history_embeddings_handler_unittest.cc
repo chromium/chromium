@@ -6,6 +6,7 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,13 +18,14 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -33,12 +35,14 @@
 #include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -96,7 +100,7 @@ std::unique_ptr<KeyedService> BuildTestOptimizationGuideKeyedService(
       testing::NiceMock<MockOptimizationGuideKeyedService>>();
 }
 
-class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
+class HistoryEmbeddingsHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
@@ -115,54 +119,57 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
         },
         /*disabled_features=*/{});
 
-    user_ed_override_ =
-        BrowserWindowFeatures::GetUserDataFactoryForTesting()
-            .AddOverrideForTesting(
-                base::BindRepeating([](BrowserWindowInterface& window) {
-                  return std::make_unique<MockBrowserUserEducationInterface>(
-                      &window);
-                }));
+    ChromeRenderViewHostTestHarness::SetUp();
 
-    BrowserWithTestWindowTest::SetUp();
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
 
-    TestingProfile* profile_ = profile_manager()->CreateTestingProfile(
-        "History Embeddings Test User",
-        {
-            TestingProfile::TestingFactory{
-                HistoryServiceFactory::GetInstance(),
-                HistoryServiceFactory::GetDefaultFactory()},
-            TestingProfile::TestingFactory{
-                HistoryEmbeddingsServiceFactory::GetInstance(),
-                base::BindRepeating(&BuildTestHistoryEmbeddingsService,
-                                    &passage_embeddings_test_env_)},
-            TestingProfile::TestingFactory{
-                PageContentAnnotationsServiceFactory::GetInstance(),
-                base::BindRepeating(&BuildTestPageContentAnnotationsService)},
-            TestingProfile::TestingFactory{
-                OptimizationGuideKeyedServiceFactory::GetInstance(),
-                base::BindRepeating(&BuildTestOptimizationGuideKeyedService)},
-        });
+    // Register testing factories.
+    HistoryServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), HistoryServiceFactory::GetDefaultFactory());
+    HistoryEmbeddingsServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildTestHistoryEmbeddingsService,
+                                       &passage_embeddings_test_env_));
+    PageContentAnnotationsServiceFactory::GetInstance()->SetTestingFactory(
+        profile(),
+        base::BindRepeating(&BuildTestPageContentAnnotationsService));
+    OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        profile(),
+        base::BindRepeating(&BuildTestOptimizationGuideKeyedService));
 
-    web_contents_ = content::WebContents::Create(
-        content::WebContents::CreateParams(profile_));
-    web_ui_.set_web_contents(web_contents_.get());
-    browser()->tab_strip_model()->AppendWebContents(std::move(web_contents_),
-                                                    true);
+    web_ui_.set_web_contents(web_contents());
+
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile_, base::BindRepeating(&BuildMockHatsService)));
+            profile(), base::BindRepeating(&BuildMockHatsService)));
+
+    // Mock tabs and associate with WebContents.
+    mock_tab_interface_ = std::make_unique<tabs::MockTabInterface>();
+    tabs::TabLookupFromWebContents::CreateForWebContents(
+        web_contents(), mock_tab_interface_.get());
+
+    ON_CALL(*mock_tab_interface_, GetBrowserWindowInterface())
+        .WillByDefault(testing::Return(&mock_browser_window_));
+
+    ON_CALL(mock_browser_window_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
+
+    // Instantiating registers mock_user_education_ on unowned_user_data_host_.
+    mock_user_education_ =
+        std::make_unique<testing::NiceMock<MockBrowserUserEducationInterface>>(
+            &mock_browser_window_);
 
     handler_ = std::make_unique<HistoryEmbeddingsHandler>(
         mojo::PendingReceiver<history_embeddings::mojom::PageHandler>(),
-        page_.BindAndGetRemote(), profile_->GetWeakPtr(), web_ui(), false);
+        page_.BindAndGetRemote(), profile()->GetWeakPtr(), web_ui(), false);
   }
 
   void TearDown() override {
-    browser()->tab_strip_model()->CloseAllTabs();
     mock_hats_service_ = nullptr;
-    web_contents_.reset();
     handler_.reset();
-    BrowserWithTestWindowTest::TearDown();
+    profile_manager_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   content::TestWebUI* web_ui() { return &web_ui_; }
@@ -170,20 +177,22 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   MockBrowserUserEducationInterface* user_education() {
-    return static_cast<MockBrowserUserEducationInterface*>(
-        BrowserUserEducationInterface::From(browser()));
+    return mock_user_education_.get();
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
   passage_embeddings::TestEnvironment passage_embeddings_test_env_;
   std::unique_ptr<HistoryEmbeddingsHandler> handler_;
   testing::NiceMock<MockPage> page_;
   raw_ptr<MockHatsService> mock_hats_service_;
   base::HistogramTester histogram_tester_;
-  ui::UserDataFactory::ScopedOverride user_ed_override_;
+  std::unique_ptr<tabs::MockTabInterface> mock_tab_interface_;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
+  std::unique_ptr<MockBrowserUserEducationInterface> mock_user_education_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 
 TEST_F(HistoryEmbeddingsHandlerTest, Searches) {

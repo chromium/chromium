@@ -50,7 +50,9 @@ source_set("unit_tests") {
     "//components/history_embeddings/content",
     "//components/history_embeddings/core",
     "//components/passage_embeddings/core:test_support",
+    "//components/tabs:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/unowned_user_data",
   ]
 }
