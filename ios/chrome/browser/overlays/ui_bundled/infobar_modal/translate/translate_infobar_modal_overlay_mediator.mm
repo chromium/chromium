@@ -71,6 +71,10 @@ const int kInvalidLanguageIndex = -1;
 - (void)setConsumer:(id<InfobarTranslateModalConsumer>)consumer {
   _consumer = consumer;
   translate::TranslateInfoBarDelegate* delegate = self.translateDelegate;
+  if (!delegate) {
+    [self dismissOverlay];
+    return;
+  }
 
   std::vector<std::u16string> languageNames;
   for (size_t i = 0; i < delegate->num_languages(); ++i) {
@@ -142,11 +146,18 @@ const int kInvalidLanguageIndex = -1;
 #pragma mark - InfobarTranslateModalDelegate
 
 - (void)showSourceLanguage {
+  translate::TranslateInfoBarDelegate* delegate = self.translateDelegate;
+  if (!delegate) {
+    [self dismissOverlay];
+    return;
+  }
   translate::ReportCompactInfobarEvent(translate::InfobarEvent::INFOBAR_REVERT);
 
+  delegate->RevertWithoutClosingInfobar();
   InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
-  self.translateDelegate->RevertWithoutClosingInfobar();
-  infobar->set_accepted(false);
+  if (infobar) {
+    infobar->set_accepted(false);
+  }
   [TranslateInfobarMetricsRecorder
       recordModalEvent:MobileMessagesTranslateModalEvent::ShowOriginal];
 
@@ -190,10 +201,12 @@ const int kInvalidLanguageIndex = -1;
 
   [self toggleAlwaysTranslate];
 
+  translate::TranslateInfoBarDelegate* delegate = self.translateDelegate;
   // Since toggle turned on always translate, translate now if not already
   // translated.
-  if (self.translateDelegate->translate_step() ==
-      translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE) {
+  if (delegate &&
+      delegate->translate_step() ==
+          translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE) {
     [self startTranslation];
   }
 
@@ -252,6 +265,10 @@ const int kInvalidLanguageIndex = -1;
 - (void)didSelectSourceLanguageIndex:(int)itemIndex
                             withName:(NSString*)languageName {
   translate::TranslateInfoBarDelegate* delegate = self.translateDelegate;
+  if (!delegate) {
+    [self dismissOverlay];
+    return;
+  }
   int languageIndex = self.sourceLanguageMapping[itemIndex];
   std::vector<std::u16string> languageNames = self.languageNames;
 
@@ -280,6 +297,10 @@ const int kInvalidLanguageIndex = -1;
 - (void)didSelectTargetLanguageIndex:(int)itemIndex
                             withName:(NSString*)languageName {
   translate::TranslateInfoBarDelegate* delegate = self.translateDelegate;
+  if (!delegate) {
+    [self dismissOverlay];
+    return;
+  }
   int languageIndex = self.targetLanguageMapping[itemIndex];
   std::vector<std::u16string> languageNames = self.languageNames;
 
@@ -309,6 +330,9 @@ const int kInvalidLanguageIndex = -1;
 - (NSArray<TableViewTextItem*>*)loadTranslateLanguageItemsForSelectingLanguage:
     (BOOL)sourceLanguage {
   translate::TranslateInfoBarDelegate* delegate = self.translateDelegate;
+  if (!delegate) {
+    return @[];
+  }
   std::vector<std::u16string> languageNames = self.languageNames;
 
   // In the instance that the user has already selected a different source
@@ -398,6 +422,9 @@ const int kInvalidLanguageIndex = -1;
   if (sourceLanguageIndex != kInvalidLanguageIndex ||
       targetLanguageIndex != kInvalidLanguageIndex) {
     translate::TranslateInfoBarDelegate* delegate = self.translateDelegate;
+    if (!delegate) {
+      return;
+    }
 
     if (sourceLanguageIndex != kInvalidLanguageIndex) {
       std::string sourceLanguageCode =
@@ -428,6 +455,9 @@ const int kInvalidLanguageIndex = -1;
                                 translateButtonEnabled:
                                     (BOOL)translateButtonEnabled {
   translate::TranslateInfoBarDelegate* delegate = self.translateDelegate;
+  if (!delegate) {
+    return @{};
+  }
   const translate::TranslateStep currentStep = delegate->translate_step();
 
   // Modal state following a translate error should be the same as on an
@@ -461,6 +491,9 @@ const int kInvalidLanguageIndex = -1;
 // Called when the always translate preference has been toggled.
 - (void)toggleAlwaysTranslate {
   translate::TranslateInfoBarDelegate* delegate = self.translateDelegate;
+  if (!delegate) {
+    return;
+  }
   const bool enablingAlwaysTranslate = !delegate->ShouldAlwaysTranslate();
   delegate->ToggleAlwaysTranslate();
   if (enablingAlwaysTranslate) {
@@ -471,30 +504,43 @@ const int kInvalidLanguageIndex = -1;
 // Called when the never translate source language preference has been toggled.
 - (void)ToggleNeverTranslateSourceLanguage {
   translate::TranslateInfoBarDelegate* delegate = self.translateDelegate;
+  if (!delegate) {
+    return;
+  }
   const bool shouldRemoveInfobar = delegate->IsTranslatableLanguageByPrefs();
   delegate->ToggleTranslatableLanguageByPrefs();
   // Remove infobar if turning it on.
   if (shouldRemoveInfobar) {
     InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
-    infobar->RemoveSelf();
+    if (infobar) {
+      infobar->RemoveSelf();
+    }
   }
 }
 
 // Called when the never translate site preference has been toggled.
 - (void)toggleNeverTranslateSite {
   translate::TranslateInfoBarDelegate* delegate = self.translateDelegate;
+  if (!delegate) {
+    return;
+  }
   const bool shouldRemoveInfobar = !delegate->IsSiteOnNeverPromptList();
   delegate->ToggleNeverPromptSite();
   // Remove infobar if turning it on.
   if (shouldRemoveInfobar) {
     InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
-    infobar->RemoveSelf();
+    if (infobar) {
+      infobar->RemoveSelf();
+    }
   }
 }
 
 // Starts translation.
 - (void)startTranslation {
   translate::TranslateInfoBarDelegate* delegate = self.translateDelegate;
+  if (!delegate) {
+    return;
+  }
   if (delegate->ShouldAutoAlwaysTranslate()) {
     delegate->ToggleAlwaysTranslate();
   }

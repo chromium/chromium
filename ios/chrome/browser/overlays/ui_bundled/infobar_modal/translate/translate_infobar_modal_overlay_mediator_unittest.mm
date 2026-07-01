@@ -165,6 +165,15 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, NeverTranslateSite) {
   [mediator_ neverTranslateSite];
 }
 
+// Tests that calling user-triggered actions when the underlying infobar has
+// been destroyed (leading to a null delegate) safely dismisses the overlay
+// without crashing.
+TEST_F(TranslateInfobarModalOverlayMediatorTest, NullDelegateDoesNotCrash) {
+  infobar_.reset();
+  OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
+  [mediator_ alwaysTranslateSourceLanguage];
+}
+
 // Test fixture for TranslateInfobarModalOverlayMediator using the
 // TRANSLATE_STEP_AFTER_TRANSLATE translate step.
 class TranslateInfobarModalOverlayMediatorAfterTranslateTest
