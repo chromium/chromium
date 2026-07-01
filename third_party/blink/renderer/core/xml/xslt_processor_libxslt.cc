@@ -374,7 +374,8 @@ bool XSLTProcessor::TransformToString(Node* source_node,
 
     xsltTransformContextPtr transform_context =
         xsltNewTransformContext(sheet, source_doc);
-    RegisterXSLTExtensions(transform_context);
+    RegisterXSLTExtensions(transform_context,
+                           source_node->GetExecutionContext());
 
     xsltSecurityPrefsPtr security_prefs = xsltNewSecurityPrefs();
     // Read permissions are checked by docLoaderFunc.

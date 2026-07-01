@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://chromestatus.com/feature/4709671889534976">
+<!-- Generate this token with the command:
+generate_token.py http://127.0.0.1:8000 XSLT --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial" content="A8han61nRjVM8+L3mzkJqlph0EBI9XzQb21yYzW5HPChkIaI233Lk9nsTgU8j41KNWL8/t6MaA/0nF260fv59gwAAABMeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiWFNMVCIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<script>
+test(() => {
+  assert_true('XSLTProcessor' in window, 'XSLTProcessor should be exposed on window when the deprecation trial is enabled');
+
+  const parser = new DOMParser();
+  const xslDoc = parser.parseFromString(
+    `<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+      <xsl:template match="/">
+        <div><xsl:value-of select="//node"/></div>
+      </xsl:template>
+    </xsl:stylesheet>`,
+    'text/xml'
+  );
+
+  const xmlDoc = parser.parseFromString(
+    '<root><node>Hello World</node></root>',
+    'text/xml'
+  );
+
+  const xsltProcessor = new XSLTProcessor();
+  xsltProcessor.importStylesheet(xslDoc);
+  const fragment = xsltProcessor.transformToFragment(xmlDoc, document);
+
+  assert_not_equals(fragment, null, 'Transformation should succeed');
+  const div = fragment.querySelector('div');
+  assert_not_equals(div, null, 'Result should contain a div element');
+  assert_equals(div.textContent, 'Hello World', 'Result div should contain the node content');
+}, 'XSLT deprecation trial - enabled');
+</script>

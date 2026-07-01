@@ -76,8 +76,9 @@ static void ExsltNodeSetFunction(xmlXPathParserContextPtr ctxt, int nargs) {
   valuePush(ctxt, ret);
 }
 
-void RegisterXSLTExtensions(xsltTransformContextPtr ctxt) {
-  CHECK(RuntimeEnabledFeatures::XSLTEnabled());
+void RegisterXSLTExtensions(xsltTransformContextPtr ctxt,
+                            const ExecutionContext* context) {
+  CHECK(XSLTProcessor::IsXSLTEnabled(context));
   xsltRegisterExtFunction(ctxt, (const xmlChar*)"node-set",
                           (const xmlChar*)"http://exslt.org/common",
                           ExsltNodeSetFunction);

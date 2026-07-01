@@ -73,7 +73,7 @@ DocumentXSLT::DocumentXSLT(Document& document)
 void DocumentXSLT::ApplyXSLTransform(Document& document,
                                      ProcessingInstruction* pi) {
   DCHECK(!pi->IsLoading());
-  CHECK(RuntimeEnabledFeatures::XSLTEnabled());
+  CHECK(XSLTProcessor::IsXSLTEnabled(document.GetExecutionContext()));
   XSLTProcessor* processor = XSLTProcessor::Create(
       document, ASSERT_NO_EXCEPTION, WebFeature::kXSLProcessingInstruction);
   processor->SetXSLStyleSheet(To<XSLStyleSheet>(pi->sheet()));

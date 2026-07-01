@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://chromestatus.com/feature/4709671889534976">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<script>
+test(() => {
+  assert_false('XSLTProcessor' in window, 'XSLTProcessor should not be exposed on window when the deprecation trial is disabled');
+}, 'XSLT deprecation trial - disabled');
+</script>

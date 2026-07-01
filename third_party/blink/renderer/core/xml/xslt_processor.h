@@ -61,6 +61,8 @@ class XSLTProcessor final : public ScriptWrappable {
   static void ReportXSLTDisabled(Document& document,
                                  ExceptionState* exception_state);
 
+  static bool IsXSLTEnabled(const ExecutionContext* context);
+
   void SetXSLStyleSheet(XSLStyleSheet* style_sheet) {
     stylesheet_ = style_sheet;
   }

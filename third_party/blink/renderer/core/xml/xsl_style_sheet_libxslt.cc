@@ -56,7 +56,8 @@ XSLStyleSheet::XSLStyleSheet(XSLStyleSheet* parent_style_sheet,
       compilation_failed_(false),
       parent_style_sheet_(parent_style_sheet),
       owner_document_(nullptr) {
-  CHECK(RuntimeEnabledFeatures::XSLTEnabled());
+  CHECK(XSLTProcessor::IsXSLTEnabled(
+      OwnerDocument() ? OwnerDocument()->GetExecutionContext() : nullptr));
 }
 
 XSLStyleSheet::XSLStyleSheet(Node* parent_node,
@@ -74,7 +75,8 @@ XSLStyleSheet::XSLStyleSheet(Node* parent_node,
       compilation_failed_(false),
       parent_style_sheet_(nullptr),
       owner_document_(nullptr) {
-  CHECK(RuntimeEnabledFeatures::XSLTEnabled());
+  CHECK(XSLTProcessor::IsXSLTEnabled(
+      OwnerDocument() ? OwnerDocument()->GetExecutionContext() : nullptr));
 }
 
 XSLStyleSheet::XSLStyleSheet(Document* owner_document,
@@ -93,7 +95,8 @@ XSLStyleSheet::XSLStyleSheet(Document* owner_document,
       compilation_failed_(false),
       parent_style_sheet_(nullptr),
       owner_document_(owner_document) {
-  CHECK(RuntimeEnabledFeatures::XSLTEnabled());
+  CHECK(XSLTProcessor::IsXSLTEnabled(
+      owner_document ? owner_document->GetExecutionContext() : nullptr));
 }
 
 XSLStyleSheet::~XSLStyleSheet() {

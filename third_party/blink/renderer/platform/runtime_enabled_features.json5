@@ -7349,6 +7349,9 @@
       name: "XSLT",
       status: "stable",
       public: true,
+      origin_trial_feature_name: "XSLT",
+      origin_trial_type: "deprecation",
+      origin_trial_allows_insecure: true,
     },
     {
       // A feature flag that will be used for a "special trial" of disabling

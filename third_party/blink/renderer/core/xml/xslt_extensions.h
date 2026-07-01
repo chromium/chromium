@@ -30,7 +30,10 @@
 
 namespace blink {
 
-void RegisterXSLTExtensions(xsltTransformContextPtr ctxt);
+class ExecutionContext;
+
+void RegisterXSLTExtensions(xsltTransformContextPtr ctxt,
+                            const ExecutionContext* context);
 }
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_XML_XSLT_EXTENSIONS_H_
