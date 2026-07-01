@@ -509,22 +509,6 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_EQ(original_shared_image, provider->Snapshot()->GetSharedImage());
 }
 
-TEST_F(CanvasResourceProviderTest, Canvas2DBitmapProvider) {
-  const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo =
-      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
-
-  Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
-                                   gfx::HDRMetadata(),
-                                   CanvasPixelFormat::kUint8,
-                                   /*has_alpha=*/true);
-  auto provider = Canvas2DBitmapProvider::CreateForTesting(kSize, color_params);
-
-  EXPECT_EQ(provider->Size(), kSize);
-  EXPECT_TRUE(provider && provider->IsValid());
-  EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
-}
-
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSoftwareSharedImage_GPUCompositing) {
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
@@ -600,22 +584,6 @@ TEST_F(CanvasResourceProviderTest,
 #else
   EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
 #endif
-}
-
-TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_Bitmap) {
-  Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
-                                   gfx::HDRMetadata(),
-                                   CanvasPixelFormat::kUint8,
-                                   /*has_alpha=*/true);
-  auto provider = Canvas2DBitmapProvider::CreateForTesting(
-      gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), color_params);
-  EXPECT_TRUE(provider);
-  provider = Canvas2DBitmapProvider::CreateForTesting(
-      gfx::Size(kMaxTextureSize, kMaxTextureSize), color_params);
-  EXPECT_TRUE(provider);
-  provider = Canvas2DBitmapProvider::CreateForTesting(
-      gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), color_params);
-  EXPECT_TRUE(provider);
 }
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SharedImage) {
