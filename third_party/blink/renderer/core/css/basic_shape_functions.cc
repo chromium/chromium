@@ -587,8 +587,7 @@ static LengthSize ConvertToLengthSize(const StyleResolverState& state,
 static BasicShapeCenterCoordinate ConvertToCenterCoordinate(
     const StyleResolverState& state,
     const CSSValue* value) {
-  BasicShapeCenterCoordinate::Direction direction;
-  std::optional<Length> offset;
+  Length offset = Length::Percent(0);
 
   CSSValueID keyword = CSSValueID::kTop;
   if (!value) {
@@ -606,32 +605,19 @@ static BasicShapeCenterCoordinate ConvertToCenterCoordinate(
   switch (keyword) {
     case CSSValueID::kTop:
     case CSSValueID::kLeft:
-      direction = BasicShapeCenterCoordinate::kTopLeft;
       break;
     case CSSValueID::kRight:
     case CSSValueID::kBottom:
-      direction = BasicShapeCenterCoordinate::kBottomRight;
+      offset = offset.SubtractFromOneHundredPercent();
       break;
     case CSSValueID::kCenter:
-      direction = BasicShapeCenterCoordinate::kTopLeft;
       offset = Length::Percent(50);
       break;
     default:
       NOTREACHED();
   }
-
-  if (RuntimeEnabledFeatures::
-          CSSShapeEllipseCirclePositionSerializationEnabled()) {
-    offset = offset.value_or(Length::Percent(0));
-    if (direction == BasicShapeCenterCoordinate::kBottomRight) {
-      offset = offset->SubtractFromOneHundredPercent();
-      direction = BasicShapeCenterCoordinate::kTopLeft;
-    }
-  } else {
-    offset = offset.value_or(Length::Fixed(0));
-  }
-
-  return BasicShapeCenterCoordinate(direction, *offset);
+  return BasicShapeCenterCoordinate(BasicShapeCenterCoordinate::kTopLeft,
+                                    offset);
 }
 
 static BasicShapeRadius CssValueToBasicShapeRadius(

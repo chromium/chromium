@@ -47,62 +47,6 @@ bool MatchesIdentifier(const CSSValue& value, CSSValueID ident) {
   return identifier_value && identifier_value->GetValueID() == ident;
 }
 
-String SerializePositionOffset(const CSSValuePair& offset,
-                               const CSSValuePair& other) {
-  if ((To<CSSIdentifierValue>(offset.First()).GetValueID() ==
-           CSSValueID::kLeft &&
-       To<CSSIdentifierValue>(other.First()).GetValueID() ==
-           CSSValueID::kTop) ||
-      (To<CSSIdentifierValue>(offset.First()).GetValueID() ==
-           CSSValueID::kTop &&
-       To<CSSIdentifierValue>(other.First()).GetValueID() ==
-           CSSValueID::kLeft)) {
-    return offset.Second().CssText();
-  }
-  return offset.CssText();
-}
-
-const CSSValuePair* BuildSerializablePositionOffset(const CSSValue& offset,
-                                                    CSSValueID default_side) {
-  CSSValueID side = default_side;
-  const CSSPrimitiveValue* amount = nullptr;
-
-  if (auto* offset_identifier_value = DynamicTo<CSSIdentifierValue>(offset)) {
-    side = offset_identifier_value->GetValueID();
-  } else if (auto* offset_value_pair = DynamicTo<CSSValuePair>(offset)) {
-    side = To<CSSIdentifierValue>(offset_value_pair->First()).GetValueID();
-    amount = &To<CSSPrimitiveValue>(offset_value_pair->Second());
-    if ((side == CSSValueID::kRight || side == CSSValueID::kBottom) &&
-        amount->IsPercentage()) {
-      side = default_side;
-      amount =
-          amount->SubtractFrom(100, CSSPrimitiveValue::UnitType::kPercentage);
-    }
-  } else {
-    amount = &To<CSSPrimitiveValue>(offset);
-  }
-
-  if (side == CSSValueID::kCenter) {
-    side = default_side;
-    amount = CSSNumericLiteralValue::Create(
-        50, CSSPrimitiveValue::UnitType::kPercentage);
-  } else if (!amount ||
-             (amount->IsLength() && amount->GetValueIfKnown() == 0.0)) {
-    if (side == CSSValueID::kRight || side == CSSValueID::kBottom) {
-      amount = CSSNumericLiteralValue::Create(
-          100, CSSPrimitiveValue::UnitType::kPercentage);
-    } else {
-      amount = CSSNumericLiteralValue::Create(
-          0, CSSPrimitiveValue::UnitType::kPercentage);
-    }
-    side = default_side;
-  }
-
-  return MakeGarbageCollected<CSSValuePair>(CSSIdentifierValue::Create(side),
-                                            amount,
-                                            CSSValuePair::kKeepIdenticalValues);
-}
-
 // 8.3.2. Serializing <position>
 // When serializing the specified value of a <position>:
 //
@@ -134,20 +78,9 @@ void SerializePosition(const CSSValue& center_x,
     result.Append(' ');
   }
   result.Append("at ");
-  if (RuntimeEnabledFeatures::
-          CSSShapeEllipseCirclePositionSerializationEnabled()) {
-    result.Append(center_x.CssText());
-    result.Append(' ');
-    result.Append(center_y.CssText());
-  } else {
-    const CSSValuePair* normalized_cx =
-        BuildSerializablePositionOffset(center_x, CSSValueID::kLeft);
-    const CSSValuePair* normalized_cy =
-        BuildSerializablePositionOffset(center_y, CSSValueID::kTop);
-    result.Append(SerializePositionOffset(*normalized_cx, *normalized_cy));
-    result.Append(' ');
-    result.Append(SerializePositionOffset(*normalized_cy, *normalized_cx));
-  }
+  result.Append(center_x.CssText());
+  result.Append(' ');
+  result.Append(center_y.CssText());
 }
 
 bool IsZeroPx(const CSSValue& value) {
