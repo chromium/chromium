@@ -138,21 +138,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".UrlUws" summary=""/>
 </variants>
 
-<variants name="SafeBrowsingStore">
-  <variant name="SBStore" summary="Safe Browsing store"/>
-  <variant name="V4Store" summary="Safe Browsing V4 store"/>
-  <variant name="V5Store" summary="Safe Browsing V5 store"/>
-</variants>
-
-<variants name="SafeBrowsingUpdateProtocol">
-  <variant name="SBUpdate" summary="Safe Browsing update"/>
-  <variant name="V4Update" summary="Safe Browsing V4 update"/>
-  <variant name="V5Update" summary="Safe Browsing V5 update"/>
-</variants>
-
-<variants name="SafeBrowsingUpdateProtocolV4OrSB">
-  <variant name="SBUpdate" summary="Safe Browsing update"/>
-  <variant name="V4Update" summary="Safe Browsing V4 update"/>
+<variants name="SafeBrowsingV4OrSB">
+  <variant name="SB" summary="Safe Browsing"/>
+  <variant name="V4" summary="Safe Browsing V4"/>
 </variants>
 
 <variants name="SafeBrowsingV4OrV5OrSB">
@@ -4576,65 +4564,7 @@ failing to fetch the updates which puts users' security at risk. -->
   </token>
 </histogram>
 
-<histogram name="SafeBrowsing.{Protocol}.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-12-06">
-<!-- Note to owner: This histogram can be renewed 1 full year if it is still
-useful for Chirp alerts (go/crca-alerts). -->
-
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Response or error codes when fetching updates from the {Protocol} service.
-    Starting M92, the ERR_HTTP_RESPONSE_CODE_FAILURE net error is matched to the
-    actual HTTP response code.
-  </summary>
-  <token key="Protocol" variants="SafeBrowsingUpdateProtocol"/>
-</histogram>
-
-<histogram name="SafeBrowsing.{Protocol}.Network.Time" units="ms"
-    expires_after="2026-10-06">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The time that it took for the update request to Safe Browsing servers using
-    the {Protocol} protocol, or how long it took for it to time out.
-  </summary>
-  <token key="Protocol" variants="SafeBrowsingUpdateProtocol"/>
-</histogram>
-
-<histogram name="SafeBrowsing.{Protocol}.Network.TimedOut"
-    enum="BooleanTimedOut" expires_after="2026-10-06">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether the network request timed out when fetching updates from the
-    {Protocol} service.
-  </summary>
-  <token key="Protocol" variants="SafeBrowsingUpdateProtocol"/>
-</histogram>
-
-<histogram name="SafeBrowsing.{Protocol}.NextUpdateInterval" units="ms"
-    expires_after="2026-10-06">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the next update interval for Safe Browsing updates using the
-    {Protocol} protocol. Logged when calculating the next update interval.
-  </summary>
-  <token key="Protocol" variants="SafeBrowsingUpdateProtocol"/>
-</histogram>
-
-<histogram name="SafeBrowsing.{Protocol}.ResponseSizeKB" units="KB"
-    expires_after="2026-12-16">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The size of the response sent by the {Protocol} service, in KB.
-  </summary>
-  <token key="Protocol" variants="SafeBrowsingUpdateProtocol"/>
-</histogram>
-
-<histogram name="SafeBrowsing.{Protocol}.Result"
+<histogram name="SafeBrowsing.{SafeBrowsingV4OrSB}Update.Result"
     enum="SafeBrowsingV4OperationResult" expires_after="never">
 <!-- expires-never: This reports the outcome of fetching the Safe Browsing
 database update from the API backend. It is crucial to detect if we ever start
@@ -4643,10 +4573,10 @@ failing to fetch the updates which puts users' security at risk. -->
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Track return status from {Protocol} attempts. The buckets of this histogram
-    overlap, so the counts cannot be used as percentages.
+    Track return status from {SafeBrowsingV4OrSB} update attempts. The buckets
+    of this histogram overlap, so the counts cannot be used as percentages.
   </summary>
-  <token key="Protocol" variants="SafeBrowsingUpdateProtocolV4OrSB"/>
+  <token key="SafeBrowsingV4OrSB" variants="SafeBrowsingV4OrSB"/>
 </histogram>
 
 <histogram
@@ -4662,52 +4592,116 @@ failing to fetch the updates which puts users' security at risk. -->
   <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
 </histogram>
 
-<histogram name="SafeBrowsing.{Store}.ReadyOnStartup" enum="BooleanReady"
-    expires_after="2026-12-27">
+<histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}Store.ReadyOnStartup"
+    enum="BooleanReady" expires_after="2026-12-27">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs whether an individual store has valid data immediately after being
-    constructed. This is logged once for each {Store} on each startup. Failures
-    here can indicate an inability to read data from disk.
+    constructed. This is logged once for each {SafeBrowsingV4OrV5OrSB} store on
+    each startup. Failures here can indicate an inability to read data from
+    disk.
   </summary>
-  <token key="Store" variants="SafeBrowsingStore"/>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
 </histogram>
 
-<histogram name="SafeBrowsing.{Store}FileOpenError" enum="PlatformFileError"
-    expires_after="2026-10-25">
-  <owner>drubery@chromium.org</owner>
+<histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}StoreFileOpenError"
+    enum="PlatformFileError" expires_after="2026-10-25">
+  <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records the file error when a {Store} hash prefix map fails to be opened on
-    disk. This can be logged once per map per database sync (roughly every 30
-    minutes).
+    Records the file error when a {SafeBrowsingV4OrV5OrSB} store hash prefix map
+    fails to be opened on disk. This can be logged once per map per database
+    sync (roughly every 30 minutes).
   </summary>
-  <token key="Store" variants="SafeBrowsingStore"/>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
 </histogram>
 
-<histogram name="SafeBrowsing.{Store}FileWriteError" enum="PlatformFileError"
-    expires_after="2026-10-25">
-  <owner>drubery@chromium.org</owner>
+<histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}StoreFileWriteError"
+    enum="PlatformFileError" expires_after="2026-10-25">
+  <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records the file error when we fail to write to a previously opened {Store}
-    hash prefix map file. This can be logged once per map per database sync
-    (roughly every 30 minutes).
+    Records the file error when we fail to write to a previously opened
+    {SafeBrowsingV4OrV5OrSB} store hash prefix map file. This can be logged once
+    per map per database sync (roughly every 30 minutes).
   </summary>
-  <token key="Store" variants="SafeBrowsingStore"/>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
 </histogram>
 
-<histogram name="SafeBrowsing.{Store}WriteError" enum="SBHashPrefixWriteError"
-    expires_after="2026-10-25">
-  <owner>drubery@chromium.org</owner>
+<histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}StoreWriteError"
+    enum="SBHashPrefixWriteError" expires_after="2026-10-25">
+  <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This records a more specific error for every UNEXPECTED_WRITE_FAILURE in the
     corresponding SafeBrowsing.*StoreWrite.Result histogram. This is logged at
     most once per hash prefix map write (roughly every 30 minutes).
   </summary>
-  <token key="Store" variants="SafeBrowsingStore"/>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}Update.Network.Result"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-12-06">
+<!-- Note to owner: This histogram can be renewed 1 full year if it is still
+useful for Chirp alerts (go/crca-alerts). -->
+
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Response or error codes when fetching updates from the
+    {SafeBrowsingV4OrV5OrSB} update service. Starting M92, the
+    ERR_HTTP_RESPONSE_CODE_FAILURE net error is matched to the actual HTTP
+    response code.
+  </summary>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}Update.Network.Time"
+    units="ms" expires_after="2026-10-06">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The time that it took for the update request to Safe Browsing servers using
+    the {SafeBrowsingV4OrV5OrSB} update protocol, or how long it took for it to
+    time out.
+  </summary>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}Update.Network.TimedOut"
+    enum="BooleanTimedOut" expires_after="2026-10-06">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the network request timed out when fetching updates from the
+    {SafeBrowsingV4OrV5OrSB} update service.
+  </summary>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}Update.NextUpdateInterval"
+    units="ms" expires_after="2026-10-06">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the next update interval for Safe Browsing updates using the
+    {SafeBrowsingV4OrV5OrSB} update protocol. Logged when calculating the next
+    update interval.
+  </summary>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
+</histogram>
+
+<histogram name="SafeBrowsing.{SafeBrowsingV4OrV5OrSB}Update.ResponseSizeKB"
+    units="KB" expires_after="2026-12-16">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The size of the response sent by the {SafeBrowsingV4OrV5OrSB} update
+    service, in KB.
+  </summary>
+  <token key="SafeBrowsingV4OrV5OrSB" variants="SafeBrowsingV4OrV5OrSB"/>
 </histogram>
 
 <histogram name="SafeBrowsingBinaryUploadRequest.DlpResult"
