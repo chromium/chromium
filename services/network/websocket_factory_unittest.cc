@@ -4,24 +4,38 @@
 
 #include "services/network/websocket_factory.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "net/base/auth.h"
 #include "net/base/isolation_info.h"
+#include "net/http/http_auth.h"
+#include "net/http/http_auth_cache.h"
+#include "net/http/http_network_session.h"
+#include "net/http/http_request_headers.h"
+#include "net/http/http_transaction_factory.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_entry.h"
 #include "net/log/net_log_event_type.h"
+#include "net/test/embedded_test_server/create_websocket_handler.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
+#include "net/test/embedded_test_server/websocket_echo_handler.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/originating_process_id.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
@@ -61,7 +75,9 @@ class StubWebSocketHandshakeClient : public mojom::WebSocketHandshakeClient {
       : receiver_(this, std::move(receiver)) {}
   ~StubWebSocketHandshakeClient() override = default;
 
-  void OnOpeningHandshakeStarted(mojom::WebSocketHandshakeRequestPtr) override {
+  void OnOpeningHandshakeStarted(
+      mojom::WebSocketHandshakeRequestPtr request) override {
+    handshake_request_future_.SetValue(std::move(request));
   }
 
   void OnConnectionEstablished(mojo::PendingRemote<mojom::WebSocket>,
@@ -72,8 +88,14 @@ class StubWebSocketHandshakeClient : public mojom::WebSocketHandshakeClient {
 
   void OnFailure(const std::string&, int32_t, int32_t) override {}
 
+  mojom::WebSocketHandshakeRequestPtr WaitForOpeningHandshake() {
+    return handshake_request_future_.Take();
+  }
+
  private:
   mojo::Receiver<mojom::WebSocketHandshakeClient> receiver_;
+  base::test::TestFuture<mojom::WebSocketHandshakeRequestPtr>
+      handshake_request_future_;
 };
 
 mojom::NetworkContextParamsPtr CreateNetworkContextParams() {
@@ -97,8 +119,11 @@ class WebSocketFactoryTest : public testing::Test {
     factory_ = std::make_unique<WebSocketFactory>(network_context_.get());
   }
 
-  void CreateWebSocket(const GURL& url,
-                       const std::vector<std::string>& requested_protocols) {
+  StubWebSocketHandshakeClient* CreateWebSocket(
+      const GURL& url,
+      const std::vector<std::string>& requested_protocols,
+      const OriginatingProcessId& process_id =
+          OriginatingProcessId::browser()) {
     mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client;
     // Keep all handshake clients alive to prevent WebSocket cleanup
     stub_handshake_clients_.push_back(
@@ -109,13 +134,13 @@ class WebSocketFactoryTest : public testing::Test {
     // asynchronously.
     factory_->CreateWebSocket(
         url, requested_protocols, net::StorageAccessApiStatus::kNone,
-        net::IsolationInfo(), {}, network::OriginatingProcessId::browser(),
-        url::Origin::Create(url),
+        net::IsolationInfo(), {}, process_id, url::Origin::Create(url),
         /*client_security_state=*/nullptr, /*options=*/0,
         TRAFFIC_ANNOTATION_FOR_TESTS, std::move(handshake_client),
         mojo::NullRemote(), mojo::NullRemote(), mojo::NullRemote(),
         /*throttling_profile_id=*/std::nullopt,
         network::GetTestNetworkRestrictionsId());
+    return stub_handshake_clients_.back().get();
   }
 
  protected:
@@ -194,6 +219,75 @@ TEST_F(WebSocketFactoryTest, CreateNetLogEntriesForActiveConnections) {
     EXPECT_EQ(entry.phase, net::NetLogEventPhase::BEGIN);
     EXPECT_TRUE(entry.HasParams());
   }
+}
+
+bool ContainsHeader(const mojom::WebSocketHandshakeRequestPtr& request,
+                    std::string_view name) {
+  return std::ranges::any_of(request->headers, [&](const auto& header) {
+    return base::EqualsCaseInsensitiveASCII(header->name, name);
+  });
+}
+
+class WebSocketFactoryHandshakeTest : public WebSocketFactoryTest {
+ public:
+  WebSocketFactoryHandshakeTest() {
+    net::test_server::RegisterWebSocketHandler<
+        net::test_server::WebSocketEchoHandler>(&test_server_, "/echo");
+    EXPECT_TRUE(test_server_.Start());
+  }
+
+  void AddBasicAuthCacheEntry() {
+    net::HttpAuthCache* cache = network_context_->url_request_context()
+                                    ->http_transaction_factory()
+                                    ->GetSession()
+                                    ->http_auth_cache();
+    cache->Add(url::SchemeHostPort(test_server_.base_url()),
+               net::HttpAuth::AUTH_SERVER, "TestRealm",
+               net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkAnonymizationKey(),
+               "Basic realm=TestRealm",
+               net::AuthCredentials(u"user", u"password"), "/");
+  }
+
+ protected:
+  net::EmbeddedTestServer test_server_;
+};
+
+// Verifies that the handshake request reported to a client with raw headers
+// access includes credential headers attached by the network stack.
+TEST_F(WebSocketFactoryHandshakeTest,
+       OpeningHandshakeReportsAuthHeadersWithRawHeadersAccess) {
+  AddBasicAuthCacheEntry();
+
+  StubWebSocketHandshakeClient* client = CreateWebSocket(
+      net::test_server::GetWebSocketURL(test_server_, "/echo"), {});
+
+  mojom::WebSocketHandshakeRequestPtr request =
+      client->WaitForOpeningHandshake();
+  ASSERT_TRUE(request);
+  EXPECT_TRUE(ContainsHeader(request, net::HttpRequestHeaders::kAuthorization));
+}
+
+// Verifies that the handshake request reported to a client without raw
+// headers access omits credential headers attached by the network stack.
+TEST_F(WebSocketFactoryHandshakeTest,
+       OpeningHandshakeOmitsAuthHeadersWithoutRawHeadersAccess) {
+  AddBasicAuthCacheEntry();
+
+  StubWebSocketHandshakeClient* client =
+      CreateWebSocket(net::test_server::GetWebSocketURL(test_server_, "/echo"),
+                      {}, OriginatingProcessId::renderer(RendererProcessId(1)));
+
+  mojom::WebSocketHandshakeRequestPtr request =
+      client->WaitForOpeningHandshake();
+  ASSERT_TRUE(request);
+  // The handshake should still report non-credential headers such as Host.
+  EXPECT_TRUE(ContainsHeader(request, net::HttpRequestHeaders::kHost));
+  EXPECT_FALSE(
+      ContainsHeader(request, net::HttpRequestHeaders::kAuthorization));
+  EXPECT_FALSE(
+      ContainsHeader(request, net::HttpRequestHeaders::kProxyAuthorization));
+  EXPECT_EQ(request->headers_text.find(net::HttpRequestHeaders::kAuthorization),
+            std::string::npos);
 }
 
 }  // namespace

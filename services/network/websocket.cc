@@ -488,8 +488,12 @@ void WebSocket::WebSocketEventHandler::OnStartOpeningHandshake(
   net::HttpRequestHeaders::Iterator it(request->headers);
   while (it.GetNext()) {
     if (!impl_->has_raw_headers_access_ &&
-        base::EqualsCaseInsensitiveASCII(it.name(),
-                                         net::HttpRequestHeaders::kCookie)) {
+        (base::EqualsCaseInsensitiveASCII(it.name(),
+                                          net::HttpRequestHeaders::kCookie) ||
+         base::EqualsCaseInsensitiveASCII(
+             it.name(), net::HttpRequestHeaders::kAuthorization) ||
+         base::EqualsCaseInsensitiveASCII(
+             it.name(), net::HttpRequestHeaders::kProxyAuthorization))) {
       continue;
     }
     mojom::HttpHeaderPtr header(mojom::HttpHeader::New());
