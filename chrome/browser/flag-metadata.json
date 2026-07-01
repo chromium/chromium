@@ -2330,6 +2330,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "declarative-performance-observer",
+    "owners": [ "sisidovski@chromium.org" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "default-angle-vulkan",
     "owners": ["syoussefi@chromium.org"],
     "expiry_milestone": 160
