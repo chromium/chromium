@@ -284,12 +284,15 @@ export class OmniboxPopupSearchboxElement extends
 
   protected onInputKeydown_(e: CustomEvent<{key: string}>) {
     if (e.detail.key === 'ArrowLeft' || e.detail.key === 'ArrowRight') {
-      this.showFullUrlOnDeselect_();
       const input = this.getInputElement().inputElement;
-      if (e.detail.key === 'ArrowLeft') {
-        input.setSelectionRange(0, 0);
-      } else {
-        input.setSelectionRange(input.value.length, input.value.length);
+      if (input.selectionStart === 0 &&
+          input.selectionEnd === input.value.length) {
+        this.showFullUrlOnDeselect_();
+        if (e.detail.key === 'ArrowLeft') {
+          input.setSelectionRange(0, 0);
+        } else {
+          input.setSelectionRange(input.value.length, input.value.length);
+        }
       }
     }
   }
