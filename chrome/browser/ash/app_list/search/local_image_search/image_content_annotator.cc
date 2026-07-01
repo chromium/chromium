@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/local_image_search/image_content_annotator.h"
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"

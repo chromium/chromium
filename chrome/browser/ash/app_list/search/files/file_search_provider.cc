@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"

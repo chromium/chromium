@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/values.h"
 
 namespace redaction_internal {
