@@ -82,4 +82,12 @@ void LogUNNotificationSettings(UNNotificationSettings* settings) {
       ConvertAuthorizationStatus(settings.authorizationStatus));
 }
 
+void LogUNNotificationAddRequestResult(NSError* error) {
+  std::string metric_name = base::StrCat(
+      {"Notifications.macOS.DeliveryResult.",
+       MacNotificationStyleSuffix(NotificationStyleFromAppBundle())});
+  int32_t status_code = error ? static_cast<int32_t>(error.code) : 0;
+  base::UmaHistogramSparse(metric_name, status_code);
+}
+
 }  // namespace mac_notifications

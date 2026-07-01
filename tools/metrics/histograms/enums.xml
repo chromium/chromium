@@ -419,6 +419,17 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="4" label="Unknown Error"/>
 </enum>
 
+<!-- LINT.IfChange(AppShimLaunchResult) -->
+
+<enum name="AppShimLaunchResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed: Process Creation Failed"/>
+  <int value="2" label="Failed: Process Terminated Before Connection"/>
+  <int value="3" label="Success after recreating shim"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/apps/app_shim/app_shim_host_mac.h:AppShimLaunchResult) -->
+
 <!-- LINT.IfChange(AppStreamLaunchEntryPoint) -->
 
 <enum name="AppStreamLaunchEntryPoint">
@@ -21381,6 +21392,12 @@ from previous Chrome versions.
     The OS returned an error, but the launch appears to have succeeded anyway.
   </int>
   <int value="2" label="Failure"/>
+</enum>
+
+<enum name="MacNotificationAttributionOutcome">
+  <int value="0" label="Attributed to App Shim"/>
+  <int value="1" label="Fallback: Feature Disabled"/>
+  <int value="2" label="Fallback: App Shim not installed in profile"/>
 </enum>
 
 <enum name="MacThermalState">

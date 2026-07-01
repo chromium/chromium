@@ -836,6 +836,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.macOS.AttributionOutcome"
+    enum="MacNotificationAttributionOutcome" expires_after="2027-03-01">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the outcome of attempting to attribute a Web App notification to its
+    App Shim on macOS. Recorded when displaying a notification that has a Web
+    App ID.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.macOS.DeliveryResult.{Style}"
+    units="NSErrorCode" expires_after="2027-03-01">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of adding a notification request to the macOS
+    UNUserNotificationCenter. Recorded when the macOS API completion handler is
+    called. Logs 0 for success, or the NSError code on failure.
+  </summary>
+  <token key="Style" variants="MacOSNotificationStyle"/>
+</histogram>
+
 <histogram name="Notifications.macOS.ServiceProcessKilled" units="ms"
     expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>

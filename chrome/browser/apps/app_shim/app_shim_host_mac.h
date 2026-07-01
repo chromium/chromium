@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SHIM_APP_SHIM_HOST_MAC_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -214,6 +215,33 @@ class AppShimHost : public chrome::mojom::AppShimHost,
   // Will be created if accessibility APIs are needed, e.g. if the VoiceOver
   // screen reader is enabled.
   std::unique_ptr<content::ScopedAccessibilityMode> process_accessibility_mode_;
+
+ private:
+  // LINT.IfChange(AppShimLaunchResult)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class LaunchResult {
+    kSuccess = 0,
+    kFailedProcessCreation = 1,
+    kFailedTerminatedBeforeConnection = 2,
+    kSuccessAfterRecreate = 3,
+    kMaxValue = kSuccessAfterRecreate,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:AppShimLaunchResult)
+
+  void MaybeRecordLaunchResult(LaunchResult result);
+
+  // If a launch was initiated by Chrome, this stores the launch mode.
+  // This is used to log the Apps.AppShim.LaunchResult.{LaunchMode} metric
+  // when the launch succeeds (OnBootstrapConnected) or fails
+  // (OnShimProcessTerminated). If this is nullopt, no launch is pending
+  // or the launch was initiated externally (in which case we don't log).
+  std::optional<web_app::ShimLaunchMode> pending_chrome_initiated_launch_mode_;
+
+  // True if we have attempted to recreate the shim during this launch process.
+  // Used to distinguish between success on first try vs success after recreate
+  // for metrics.
+  bool shim_recreated_ = false;
 
   // This weak factory is used for launch callbacks only.
   base::WeakPtrFactory<AppShimHost> launch_weak_factory_;

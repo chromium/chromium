@@ -1901,6 +1901,23 @@ chromium-metrics-reviews@google.com.
   <token key="InstallReason" variants="InstallReason"/>
 </histogram>
 
+<histogram name="Apps.AppShim.LaunchResult.{LaunchMode}"
+    enum="AppShimLaunchResult" expires_after="2027-03-01">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the success or failure of launching the App Shim. Recorded when the
+    launch process completes (either successfully connecting, or giving up). If
+    the first launch attempt fails, Chrome may attempt to recreate the shim and
+    retry. Success after recreation is recorded as a separate bucket.
+  </summary>
+  <token key="LaunchMode">
+    <variant name="Background"
+        summary="Background launch (e.g. notifications)"/>
+    <variant name="Normal" summary="Normal foreground launch"/>
+  </token>
+</histogram>
+
 <histogram name="Apps.AppShim.MacSecurityFrameworkOSStatus.{Operation}"
     enum="MacSecurityFrameworkOSStatus" expires_after="2027-01-01">
   <owner>mek@chromium.org</owner>
