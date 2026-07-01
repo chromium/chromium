@@ -222,6 +222,7 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

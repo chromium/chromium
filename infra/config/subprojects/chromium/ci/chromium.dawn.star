@@ -1571,6 +1571,11 @@ ci.thin_tester(
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_experimental",
         ],
+        per_test_modifications = {
+            "webgpu_cts_default_features_tests": targets.mixin(
+                ci_only = True,
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
