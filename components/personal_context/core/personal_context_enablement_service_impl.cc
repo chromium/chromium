@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -30,15 +31,25 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   }
 }
 
+void MaybeLogPersonalContextNonEligibility(
+    std::optional<PersonalContextNonEligibilityReason> non_eligibility_reason) {
+  if (!non_eligibility_reason) {
+    return;
+  }
+  base::UmaHistogramEnumeration("Autofill.PersonalContext.NonEligibilityReason",
+                                *non_eligibility_reason);
+}
+
 // Checks whether all requirements for `IdentityManager` state are met.
-[[nodiscard]] bool SatisfiesAccountRequirements(
-    const signin::IdentityManager* identity_manager,
-    std::string* debug_message = nullptr) {
+[[nodiscard]] std::pair<bool,
+                        std::optional<PersonalContextNonEligibilityReason>>
+SatisfiesAccountRequirements(const signin::IdentityManager* identity_manager,
+                             std::string* debug_message = nullptr) {
   // The user is signed out.
   if (!identity_manager ||
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     MaybeOutputReason(debug_message, "User not signed into Chrome.");
-    return false;
+    return std::pair{false, PersonalContextNonEligibilityReason::kNotSignedIn};
   }
 
   if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
@@ -46,7 +57,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
               signin::ConsentLevel::kSignin))) {
     MaybeOutputReason(debug_message,
                       "User's sign-in is in a persistent error state.");
-    return false;
+    return std::pair{false, PersonalContextNonEligibilityReason::kNotSignedIn};
   }
 
   const AccountInfo extended_account_info =
@@ -57,7 +68,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   // Consumer account checks.
   if (extended_account_info.IsManaged() == signin::Tribool::kTrue) {
     MaybeOutputReason(debug_message, "The account is not a consumer account");
-    return false;
+    return std::pair{false,
+                     PersonalContextNonEligibilityReason::kNotConsumerAccount};
   }
 
   // TODO(crbug.com/494149753): This `can_use_model_execution_features()`
@@ -67,25 +79,29 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   if (extended_account_info.GetAccountCapabilities()
           .can_use_model_execution_features() != signin::Tribool::kTrue) {
     MaybeOutputReason(debug_message, "User is underaged.");
-    return false;
+    return std::pair{false,
+                     PersonalContextNonEligibilityReason::kNotAgeEligible};
   }
 
-  return true;
+  return std::pair{true, std::nullopt};
 }
 
 // Checks whether all opt-in for `AccountSettingService` state are met.
-[[nodiscard]] bool SatisfiesOptInRequirements(
+[[nodiscard]] std::pair<bool,
+                        std::optional<PersonalContextNonEligibilityReason>>
+SatisfiesOptInRequirements(
     account_settings::AccountSettingService* account_settings,
     std::string* debug_message = nullptr) {
   if (!account_settings) {
     MaybeOutputReason(debug_message, "Account settings service not available.");
-    return false;
+    return std::pair{false, std::nullopt};
   }
 
   if (!account_settings->GetBoolean(account_settings::kAccountSettingContext)
            .value_or(false)) {
     MaybeOutputReason(debug_message, "Account is opted out of context");
-    return false;
+    return std::pair{false,
+                     PersonalContextNonEligibilityReason::kNotOptedInToContext};
   }
 
   if (!account_settings
@@ -95,39 +111,43 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
            ->GetBoolean(account_settings::kAccountSettingContextPhotos)
            .value_or(false)) {
     MaybeOutputReason(debug_message, "No context sources are enabled.");
-    return false;
+    return std::pair{
+        false,
+        PersonalContextNonEligibilityReason::kNotPhotosAndWorkspaceAvailable};
   }
-  return true;
+  return std::pair{true, std::nullopt};
 }
 
 // Checks whether miscellaneous "other" requirements (e.g. Geo-IP, locale)
 // are satisfied.
-[[nodiscard]] bool SatisfiesMiscellaneousRequirements(
-    GeoIpCountryCode country_code,
-    std::string_view locale,
-    std::string* debug_message = nullptr) {
+[[nodiscard]] std::pair<bool,
+                        std::optional<PersonalContextNonEligibilityReason>>
+SatisfiesMiscellaneousRequirements(GeoIpCountryCode country_code,
+                                   std::string_view locale,
+                                   std::string* debug_message = nullptr) {
   if (country_code != GeoIpCountryCode("US")) {
     MaybeOutputReason(debug_message, "Unsupported GeoIp.");
-    return false;
+    return std::pair{false, PersonalContextNonEligibilityReason::kNotGeoIpUS};
   }
 
   if (locale != "en-US") {
     MaybeOutputReason(debug_message, "Unsupported locale.");
-    return false;
+    return std::pair{false,
+                     PersonalContextNonEligibilityReason::kNotLocaleEnUS};
   }
 
-  return true;
+  return std::pair{true, std::nullopt};
 }
 
 // Checks whether preference requirements are satisfied.
-[[nodiscard]] PersonalContextEnablementState SatisfiesPreferenceRequirements(
-    PrefService* pref_service,
-    std::string* debug_message = nullptr) {
+[[nodiscard]] std::pair<PersonalContextEnablementState,
+                        std::optional<PersonalContextNonEligibilityReason>>
+SatisfiesPreferenceRequirements(PrefService* pref_service,
+                                std::string* debug_message = nullptr) {
   using enum PersonalContextEnablementState;
-
   if (!pref_service) {
     MaybeOutputReason(debug_message, "Prefs are not available.");
-    return kDisabledNotEligible;
+    return std::pair{kDisabledNotEligible, std::nullopt};
   }
 
   // TODO(b:494149753): This pref is autofill specific, find a way to move it to
@@ -141,15 +161,18 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     // The toggle is on-by-default. If it's off then it must have been disabled
     // by the user.
     MaybeOutputReason(debug_message, "User disabled via toggle.");
-    return kDisabledViaPersonalIntelligenceInAutofillToggle;
+    return std::pair{
+        kDisabledViaPersonalIntelligenceInAutofillToggle,
+        PersonalContextNonEligibilityReason::kPersonalIntelligencePrefDisabled};
   }
 
   if (ambient_autofill_notice_should_be_shown) {
     MaybeOutputReason(debug_message, "Notice not yet shown.");
-    return kEnabledShouldShowNotice;
+    return std::pair{kEnabledShouldShowNotice,
+                     PersonalContextNonEligibilityReason::kEligible};
   }
 
-  return kEnabled;
+  return std::pair{kEnabled, PersonalContextNonEligibilityReason::kEligible};
 }
 }  // namespace
 
@@ -210,26 +233,35 @@ PersonalContextEnablementServiceImpl::GetEnablementState() {
   return enablement_state_;
 }
 
-PersonalContextEnablementState
+std::pair<PersonalContextEnablementState,
+          std::optional<PersonalContextNonEligibilityReason>>
 PersonalContextEnablementServiceImpl::ComputeEnablementState() {
   using enum PersonalContextEnablementState;
 
-  if (!SatisfiesAccountRequirements(identity_manager_.get())) {
-    return kDisabledNotEligible;
+  if (auto [satisfied, reason] =
+          SatisfiesAccountRequirements(identity_manager_.get());
+      !satisfied) {
+    return std::pair{kDisabledNotEligible, reason};
   }
 
-  if (!SatisfiesMiscellaneousRequirements(country_code_, locale_)) {
-    return kDisabledNotEligible;
+  if (auto [satisfied, reason] =
+          SatisfiesMiscellaneousRequirements(country_code_, locale_);
+      !satisfied) {
+    return std::pair{kDisabledNotEligible, reason};
   }
 
   if (!account_settings_service_) {
-    return kDisabledNotEligible;
+    return std::pair{kDisabledNotEligible, std::nullopt};
   }
 
-  if (!SatisfiesOptInRequirements(account_settings_service_.get())) {
-    return personal_context::features::IsPersonalContextFirstRunOptInEnabled()
-               ? kDisabledNeedsOptIn
-               : kDisabledNotEligible;
+  if (auto [satisfied, reason] =
+          SatisfiesOptInRequirements(account_settings_service_.get());
+      !satisfied) {
+    return std::pair{
+        personal_context::features::IsPersonalContextFirstRunOptInEnabled()
+            ? kDisabledNeedsOptIn
+            : kDisabledNotEligible,
+        reason};
   }
   // SatisfiesPreferenceRequirements() needs to be called last: Up to this
   // point, general eligibility checks have been performed. Only if those are
@@ -238,12 +270,17 @@ PersonalContextEnablementServiceImpl::ComputeEnablementState() {
 }
 
 void PersonalContextEnablementServiceImpl::UpdateEnablementState() {
-  PersonalContextEnablementState new_state = ComputeEnablementState();
-  if (new_state != enablement_state_) {
-    enablement_state_ = new_state;
+  const auto [new_enablement_state, non_eligibility_reason] =
+      ComputeEnablementState();
+  if (new_enablement_state != enablement_state_) {
+    enablement_state_ = new_enablement_state;
     observers_.Notify(
         &PersonalContextEnablementService::Observer::OnEnablementStateChanged,
         enablement_state_);
+  }
+  if (non_eligibility_reason != last_non_eligibility_reason_) {
+    last_non_eligibility_reason_ = non_eligibility_reason;
+    MaybeLogPersonalContextNonEligibility(non_eligibility_reason);
   }
 }
 

@@ -55,7 +55,9 @@ class PersonalContextEnablementServiceImpl
  private:
   friend class PersonalContextEnablementServiceImplTestApi;
 
-  PersonalContextEnablementState ComputeEnablementState();
+  std::pair<PersonalContextEnablementState,
+            std::optional<PersonalContextNonEligibilityReason>>
+  ComputeEnablementState();
   void UpdateEnablementState();
 
   const raw_ptr<account_settings::AccountSettingService>
@@ -75,6 +77,9 @@ class PersonalContextEnablementServiceImpl
   // Cached last enablement state.
   PersonalContextEnablementState enablement_state_ =
       PersonalContextEnablementState::kDisabledNotEligible;
+  // Cached last non-eligibility reason for logging.
+  std::optional<PersonalContextNonEligibilityReason>
+      last_non_eligibility_reason_;
 };
 
 }  // namespace personal_context

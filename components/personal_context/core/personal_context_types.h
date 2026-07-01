@@ -15,6 +15,25 @@
 
 namespace personal_context {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PersonalContextNonEligibilityReason)
+enum class PersonalContextNonEligibilityReason {
+  kNotSignedIn = 0,
+  kNotConsumerAccount = 1,
+  kNotAgeEligible = 2,
+  kNotLocaleEnUS = 3,
+  kNotGeoIpUS = 4,
+  kNotOptedInToContext = 5,
+  kNotPhotosAndWorkspaceAvailable = 6,
+  kPersonalIntelligencePrefDisabled = 7,
+  kNotG1Subscriber = 8,
+  kNotAndroidPremiumDevice = 9,
+  kEligible = 10,
+  kMaxValue = kEligible
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:PersonalContextNonEligibilityReason)
+
 // Tracks the global enablement state of the feature for the current profile.
 // Used by consuming features to determine both feature execution and UI
 // entrypoint visibility.

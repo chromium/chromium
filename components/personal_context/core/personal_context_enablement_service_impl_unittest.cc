@@ -5,6 +5,7 @@
 #include "components/personal_context/core/personal_context_enablement_service_impl.h"
 
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/account_settings/account_settings.h"
@@ -52,8 +53,7 @@ class PersonalContextEnablementServiceImplTest : public testing::Test {
   void SignIn(const std::string& email,
               bool is_underaged = false,
               bool is_managed = false) {
-    AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-        email, signin::ConsentLevel::kSignin);
+    AccountInfo account_info = identity_test_env_.MakeAccountAvailable(email);
     AccountInfo::Builder builder(account_info);
     if (is_managed) {
       builder.SetHostedDomain("example.com");
@@ -65,6 +65,7 @@ class PersonalContextEnablementServiceImplTest : public testing::Test {
     mutator.set_can_use_model_execution_features(!is_underaged);
     builder.UpdateAccountCapabilitiesWith(capabilities);
     identity_test_env_.UpdateAccountInfoForAccount(builder.Build());
+    identity_test_env_.SetPrimaryAccount(email, signin::ConsentLevel::kSignin);
   }
 
   void CreateService(const std::string& country_code,
@@ -90,6 +91,7 @@ class PersonalContextEnablementServiceImplTest : public testing::Test {
   }
 
   PersonalContextEnablementServiceImpl& service() { return *service_; }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -97,6 +99,7 @@ class PersonalContextEnablementServiceImplTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   testing::NiceMock<account_settings::MockAccountSettingService>
       mock_account_settings_service_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<PersonalContextEnablementServiceImpl> service_;
 };
 
@@ -155,6 +158,9 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
 TEST_F(PersonalContextEnablementServiceImplTest, EnabledWhenAllFeaturesAreOn) {
   EXPECT_EQ(service().GetEnablementState(),
             PersonalContextEnablementState::kEnabled);
+  histogram_tester().ExpectBucketCount(
+      "Autofill.PersonalContext.NonEligibilityReason",
+      PersonalContextNonEligibilityReason::kEligible, 1);
 }
 
 // Verifies that the state is `kEnabled` when the notice no longer needs to be
@@ -185,6 +191,9 @@ TEST_F(PersonalContextEnablementServiceImplTest,
       true);
   EXPECT_EQ(service().GetEnablementState(),
             PersonalContextEnablementState::kEnabledShouldShowNotice);
+  histogram_tester().ExpectBucketCount(
+      "Autofill.PersonalContext.NonEligibilityReason",
+      PersonalContextNonEligibilityReason::kEligible, 1);
 }
 
 // Verifies that the state is `kDisabledViaPersonalIntelligenceInAutofillToggle`
@@ -210,6 +219,11 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledViaToggle) {
   EXPECT_EQ(service().GetEnablementState(),
             PersonalContextEnablementState::
                 kDisabledViaPersonalIntelligenceInAutofillToggle);
+
+  histogram_tester().ExpectBucketCount(
+      "Autofill.PersonalContext.NonEligibilityReason",
+      PersonalContextNonEligibilityReason::kPersonalIntelligencePrefDisabled,
+      1);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
@@ -218,6 +232,10 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenSignedOut) {
   identity_test_env_.ClearPrimaryAccount();
   EXPECT_EQ(service().GetEnablementState(),
             PersonalContextEnablementState::kDisabledNotEligible);
+
+  histogram_tester().ExpectBucketCount(
+      "Autofill.PersonalContext.NonEligibilityReason",
+      PersonalContextNonEligibilityReason::kNotSignedIn, 2);
 }
 
 // Verifies that the onboarding preference is reset when the user signs out,
@@ -245,6 +263,10 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenUnderaged) {
 
   EXPECT_EQ(service().GetEnablementState(),
             PersonalContextEnablementState::kDisabledNotEligible);
+
+  histogram_tester().ExpectBucketCount(
+      "Autofill.PersonalContext.NonEligibilityReason",
+      PersonalContextNonEligibilityReason::kNotAgeEligible, 1);
 }
 
 // Verifies that the service is disabled for managed (enterprise) accounts.
@@ -253,9 +275,11 @@ TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenManaged) {
 
   EXPECT_EQ(service().GetEnablementState(),
             PersonalContextEnablementState::kDisabledNotEligible);
+
+  histogram_tester().ExpectBucketCount(
+      "Autofill.PersonalContext.NonEligibilityReason",
+      PersonalContextNonEligibilityReason::kNotConsumerAccount, 1);
 }
-
-
 
 // Verifies that the service fails safe (disabled) if the required
 // `AccountSettingService` is missing.
@@ -282,6 +306,10 @@ TEST_F(PersonalContextEnablementServiceImplTest,
       account_settings::kAccountSettingContext.name);
   EXPECT_EQ(service().GetEnablementState(),
             PersonalContextEnablementState::kDisabledNotEligible);
+
+  histogram_tester().ExpectBucketCount(
+      "Autofill.PersonalContext.NonEligibilityReason",
+      PersonalContextNonEligibilityReason::kNotOptedInToContext, 1);
 }
 
 // Verifies that the service is disabled if no specific context sources
@@ -305,6 +333,10 @@ TEST_F(PersonalContextEnablementServiceImplTest,
       account_settings::kAccountSettingContext.name);
   EXPECT_EQ(service().GetEnablementState(),
             PersonalContextEnablementState::kDisabledNotEligible);
+
+  histogram_tester().ExpectBucketCount(
+      "Autofill.PersonalContext.NonEligibilityReason",
+      PersonalContextNonEligibilityReason::kNotPhotosAndWorkspaceAvailable, 1);
 }
 
 // Verifies that the service is enabled if at least one context source
@@ -506,6 +538,16 @@ TEST_P(PersonalContextEnablementServiceImplGeolocationTest,
        CheckCountryEnablement) {
   CreateService(std::get<0>(GetParam()));
   EXPECT_EQ(service().GetEnablementState(), std::get<1>(GetParam()));
+
+  if (std::get<1>(GetParam()) == PersonalContextEnablementState::kEnabled) {
+    histogram_tester().ExpectBucketCount(
+        "Autofill.PersonalContext.NonEligibilityReason",
+        PersonalContextNonEligibilityReason::kEligible, 2);
+  } else {
+    histogram_tester().ExpectBucketCount(
+        "Autofill.PersonalContext.NonEligibilityReason",
+        PersonalContextNonEligibilityReason::kNotGeoIpUS, 1);
+  }
 }
 
 class PersonalContextEnablementServiceImplLocaleTest
@@ -530,6 +572,16 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(PersonalContextEnablementServiceImplLocaleTest, CheckLocaleEnablement) {
   CreateService("us", std::get<0>(GetParam()));
   EXPECT_EQ(service().GetEnablementState(), std::get<1>(GetParam()));
+
+  if (std::get<1>(GetParam()) == PersonalContextEnablementState::kEnabled) {
+    histogram_tester().ExpectBucketCount(
+        "Autofill.PersonalContext.NonEligibilityReason",
+        PersonalContextNonEligibilityReason::kEligible, 2);
+  } else {
+    histogram_tester().ExpectBucketCount(
+        "Autofill.PersonalContext.NonEligibilityReason",
+        PersonalContextNonEligibilityReason::kNotLocaleEnUS, 1);
+  }
 }
 
 }  // namespace

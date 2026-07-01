@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Address"
       summary="User chose to fill a form or field with an address profile."/>
   <variant name="AtMemory"
-      summary="User chose to fill a field with @memory search pop-up."/>
+      summary="User chose to fill a field with AtMemory search pop-up."/>
   <variant name="Autocomplete"
       summary="User chose to fill a field with autocomplete."/>
   <variant name="AutofillAi"
@@ -2172,7 +2172,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>rahimis@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Records the trigger source of the Autofill @memory popup. Emitted once per
+    Records the trigger source of the Autofill AtMemory popup. Emitted once per
     popup display.
   </summary>
 </histogram>
@@ -2182,7 +2182,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>rahimis@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Records whether at least one search query was submitted while the @memory
+    Records whether at least one search query was submitted while the AtMemory
     popup was displayed. Emitted when the popup is hidden, provided it was
     successfully shown.
   </summary>
@@ -2193,7 +2193,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>rahimis@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Records whether a suggestion was accepted while the @memory popup was
+    Records whether a suggestion was accepted while the AtMemory popup was
     displayed. Emitted when the popup is hidden, provided it was successfully
     shown.
   </summary>
@@ -2204,7 +2204,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>sygiet@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Records whether a suggestion was filled after accepting the @memory
+    Records whether a suggestion was filled after accepting the AtMemory
     suggestion. Recorded after the popup is hidden and all fetching and
     authentication calls finished.
   </summary>
@@ -6497,6 +6497,23 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name="CreditCards"
         summary="Form contains credit card information."/>
   </token>
+</histogram>
+
+<histogram name="Autofill.PersonalContext.NonEligibilityReason"
+    enum="PersonalContextNonEligibilityReason" expires_after="2027-03-09">
+  <owner>picarella@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Tracks the reason why a user is not eligible for Personal Context (shared
+    founding requirements for Ambient Autofill and AtMemory). Emitted on browser
+    startup (profile initialization) and on any relevant eligibility reason
+    change.
+
+    The evaluation checks requirements sequentially and returns early on the
+    first failure. Therefore, exactly one enum bucket is logged per evaluation:
+    either the first failed eligibility reason (e.g., Not Signed In, Not Age
+    Eligible) or Eligible if all requirements are met.
+  </summary>
 </histogram>
 
 <histogram name="Autofill.PopupHidingReason"

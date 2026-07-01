@@ -18,7 +18,7 @@ class PersonalContextEnablementServiceImplTestApi {
       : service_(CHECK_DEREF(service)) {}
 
   PersonalContextEnablementState ComputeEnablementState() {
-    return service_->ComputeEnablementState();
+    return service_->ComputeEnablementState().first;
   }
 
  private:

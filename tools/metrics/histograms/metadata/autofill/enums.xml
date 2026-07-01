@@ -5432,6 +5432,24 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="The accept button was pressed, closing the dialog"/>
 </enum>
 
+<!-- LINT.IfChange(PersonalContextNonEligibilityReason) -->
+
+<enum name="PersonalContextNonEligibilityReason">
+  <int value="0" label="Not signed in"/>
+  <int value="1" label="Not consumer account"/>
+  <int value="2" label="Not age eligible"/>
+  <int value="3" label="Not locale en-US"/>
+  <int value="4" label="Not GeoIP US"/>
+  <int value="5" label="Not opted in to context"/>
+  <int value="6" label="Photos and Workspace context unavailable"/>
+  <int value="7" label="Personal Intelligence preferences disabled"/>
+  <int value="8" label="Not G1 subscriber"/>
+  <int value="9" label="Not Android premium device"/>
+  <int value="10" label="Eligible"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/personal_context/core/personal_context_types.h:PersonalContextNonEligibilityReason) -->
+
 <enum name="PhoneCollectionState">
   <int value="0" label="Phone Not Collected, WebOTP Not Used, OTC Not Used"/>
   <int value="1" label="Phone Not Collected, WebOTP Not Used, OTC Used"/>
