@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "components/sync/engine/cryptographer.h"
 #include "components/sync/nigori/cross_user_sharing_public_private_key_pair.h"

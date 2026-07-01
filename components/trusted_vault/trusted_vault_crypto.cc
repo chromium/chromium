@@ -7,6 +7,7 @@
 #include <array>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "components/trusted_vault/securebox.h"
 #include "crypto/hash.h"
 #include "crypto/hmac.h"

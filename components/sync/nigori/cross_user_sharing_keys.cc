@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"

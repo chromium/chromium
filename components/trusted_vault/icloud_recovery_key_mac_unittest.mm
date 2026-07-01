@@ -16,6 +16,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"

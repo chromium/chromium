@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler_test_util.h"
 
+#include "base/containers/span.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 

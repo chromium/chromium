@@ -6,6 +6,7 @@
 
 #include "base/android/feature_map.h"
 #include "base/android/jni_android.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/no_destructor.h"

@@ -4,6 +4,8 @@
 
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 
+#include "base/containers/span.h"
+
 namespace trusted_vault {
 
 void AssignBytesToProtoString(base::span<const uint8_t> bytes,

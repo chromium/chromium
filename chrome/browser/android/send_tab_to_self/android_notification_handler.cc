@@ -10,6 +10,7 @@
 
 #include "base/android/application_status_listener.h"
 #include "base/android/jni_string.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/send_tab_to_self/send_tab_to_self_android_bridge.h"
