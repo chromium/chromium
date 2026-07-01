@@ -104,7 +104,6 @@
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -360,7 +359,6 @@ UIImage* CreateCustomBackgroundPreviewImage(
 @property(nonatomic, strong) OverflowMenuActionGroup* helpActionsGroup;
 @property(nonatomic, strong) OverflowMenuActionGroup* editActionsGroup;
 
-@property(nonatomic, strong) OverflowMenuAction* signinAction;
 @property(nonatomic, strong) OverflowMenuAction* identityAction;
 
 @property(nonatomic, strong) OverflowMenuAction* reloadAction;
@@ -791,7 +789,6 @@ UIImage* CreateCustomBackgroundPreviewImage(
   [self logTranslateAvailability];
 
   if (IsIdentityAwarenessEnabled()) {
-    self.signinAction = [self newSigninAction];
     self.identityAction = [self newIdentityAction];
     [self updateIdentityAction];
   }
@@ -1224,24 +1221,6 @@ UIImage* CreateCustomBackgroundPreviewImage(
                                  handler:^{
                                    [weakSelf openClearBrowsingData];
                                  }];
-}
-
-- (OverflowMenuAction*)newSigninAction {
-  __weak __typeof(self) weakSelf = self;
-  OverflowMenuAction* action =
-      [self createOverflowMenuActionWithNameID:IDS_IOS_SIGNIN_BUTTON_TEXT
-                                    actionType:overflow_menu::ActionType::Signin
-                                    symbolName:kPersonCropCircleSymbol
-                                  systemSymbol:YES
-                              monochromeSymbol:NO
-                               accessibilityID:kToolsMenuSigninId
-                                  hideItemText:nil
-                                       handler:^{
-                                         [weakSelf showSignin];
-                                       }];
-  action.subtitle =
-      l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
-  return action;
 }
 
 - (OverflowMenuAction*)newIdentityAction {
@@ -1840,8 +1819,8 @@ UIImage* CreateCustomBackgroundPreviewImage(
       NOTREACHED();
     case overflow_menu::ActionType::ShareThisPage:
       return self.shareAction;
-    case overflow_menu::ActionType::Signin:
-      return self.signinAction;
+    case overflow_menu::ActionType::SigninDeprecated:
+      NOTREACHED();
     case overflow_menu::ActionType::Identity:
       return self.identityAction;
     case overflow_menu::ActionType::CustomizeHomePage:
@@ -2020,20 +1999,6 @@ UIImage* CreateCustomBackgroundPreviewImage(
     if (self.authenticationService->GetPrimaryIdentity()) {
       [self updateIdentityAction];
       [identityActions addObject:self.identityAction];
-    } else {
-      // Hide identity action if sign-in is not allowed.
-      AuthenticationService::ServiceStatus status =
-          self.authenticationService->GetServiceStatus();
-      switch (status) {
-        case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-        case AuthenticationService::ServiceStatus::SigninAllowed:
-          [identityActions addObject:self.signinAction];
-          break;
-        case AuthenticationService::ServiceStatus::SigninDisabledByUser:
-        case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
-        case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-          break;
-      }
     }
     self.identityActionsGroup.actions = identityActions;
 
@@ -2730,7 +2695,7 @@ UIImage* CreateCustomBackgroundPreviewImage(
     case overflow_menu::ActionType::ShareChrome:
     case overflow_menu::ActionType::EditActions:
     case overflow_menu::ActionType::ShareThisPage:
-    case overflow_menu::ActionType::Signin:
+    case overflow_menu::ActionType::SigninDeprecated:
     case overflow_menu::ActionType::Identity:
     case overflow_menu::ActionType::CustomizeHomePage:
       NOTREACHED();
@@ -2915,17 +2880,6 @@ UIImage* CreateCustomBackgroundPreviewImage(
   RecordAction(UserMetricsAction("MobileMenuFindInPage"));
   [self dismissMenu];
   [self.findInPageHandler openFindInPage];
-}
-
-// Dismisses the menu and opens the sign-in bottom sheet.
-- (void)showSignin {
-  RecordAction(UserMetricsAction("MobileMenuSignin"));
-  [self dismissMenu];
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
-            accessPoint:signin_metrics::AccessPoint::kOverflowMenu];
-  [self.sceneHandler showSignin:command
-             baseViewController:self.baseViewController];
 }
 
 // Dismisses the menu and opens the account menu.

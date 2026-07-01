@@ -102,7 +102,7 @@ enum class IOSOverflowMenuAction {
   kHideToolbars = 21,
   // kTabGroupDeprecated = 22,  // Deprecated M150.
   kShareThisPage = 23,
-  kSignin = 24,
+  // kSigninDeprecated = 24,  // Deprecated M152.
   kIdentity = 25,
   kCustomizeHomePage = 26,
   kMaxValue = kCustomizeHomePage,

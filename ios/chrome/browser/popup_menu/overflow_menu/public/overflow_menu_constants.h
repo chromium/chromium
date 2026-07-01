@@ -60,7 +60,7 @@ enum class ActionType {
   HideToolbars,
   TabGroupDeprecated,  // This enum is deprecated due to feature cleanup.
   ShareThisPage,
-  Signin,
+  SigninDeprecated,
   Identity,
   CustomizeHomePage,
 };

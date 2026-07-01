@@ -31,9 +31,7 @@ struct OverflowMenuActionSection<FooterBackground: View>: View {
     Section(
       content: {
         ForEach(actionGroup.actions) { action in
-          if action.accessibilityIdentifier == kToolsMenuSigninId
-            || action.accessibilityIdentifier == kToolsMenuIdentityId
-          {
+          if action.accessibilityIdentifier == kToolsMenuIdentityId {
             OverflowMenuIdentityRow(action: action, metricsHandler: metricsHandler)
               .moveDisabled(!actionGroup.supportsReordering)
           } else {

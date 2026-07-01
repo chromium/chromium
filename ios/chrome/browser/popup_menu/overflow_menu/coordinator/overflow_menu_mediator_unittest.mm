@@ -951,9 +951,9 @@ TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoShown) {
   ASSERT_TRUE(HasFamilyLinkInfoItem());
 }
 
-// Tests that the sign-in button is shown in its own group when user is signed
-// out and the IdentityAwareness feature is enabled.
-TEST_F(OverflowMenuMediatorTest, TestIdentityButtonVisibleWhenSignedOut) {
+// Tests that the identity button is not shown when user is signed out even
+// if the IdentityAwareness feature is enabled.
+TEST_F(OverflowMenuMediatorTest, TestIdentityButtonHiddenWhenSignedOut) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kIdentityAwareness);
 
@@ -963,19 +963,8 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityButtonVisibleWhenSignedOut) {
       AuthenticationServiceFactory::GetForProfile(profile_.get());
   mediator_.model = model_;
 
-  // Check the identity group.
-  EXPECT_TRUE(HasItem(kToolsMenuSigninId, /*enabled=*/YES));
-  EXPECT_EQ(5u, mediator_.model.actionGroups.count);
-  OverflowMenuActionGroup* identity_group = mediator_.model.actionGroups[0];
-  EXPECT_NSEQ(kIdentityGroupName, identity_group.groupName);
-  EXPECT_EQ(1u, identity_group.actions.count);
-
-  // Check the sign-in action button.
-  OverflowMenuAction* signin_action = identity_group.actions[0];
-  EXPECT_NSEQ(kToolsMenuSigninId, signin_action.accessibilityIdentifier);
-  NSString* expectedSubtitle =
-      l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
-  EXPECT_NSEQ(expectedSubtitle, signin_action.subtitle);
+  // Check the identity item is not there.
+  EXPECT_FALSE(HasItem(kToolsMenuIdentityId, /*enabled=*/YES));
 }
 
 // Tests that the identity button is shown in its own group when user is signed

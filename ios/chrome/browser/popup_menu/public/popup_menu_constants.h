@@ -103,8 +103,6 @@ extern NSString* const kToolsMenuMoveTabToGroupId;
 extern NSString* const kToolsMenuAddTabToGroupId;
 // Share This Page a11y identifier.
 extern NSString* const kToolsMenuShareId;
-// Sign in item accessibility Identifier.
-extern NSString* const kToolsMenuSigninId;
 // Identity item accessibility Identifier.
 extern NSString* const kToolsMenuIdentityId;
 

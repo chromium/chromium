@@ -29754,6 +29754,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuSignin">
+  <obsolete>Obsolete as the feature implementation was reverted.</obsolete>
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <description>
