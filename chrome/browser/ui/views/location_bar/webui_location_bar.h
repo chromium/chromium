@@ -151,6 +151,13 @@ class WebUILocationBar : public LocationBar,
   // pushes it to the WebUI.
   void UpdateLhsChipsState(bool icon_known = false);
 
+  // Updates the state of the content setting models (e.g. camera, microphone,
+  // sensors) to reflect status on the current page. Pushes the updated
+  // right-hand side content setting states to the WebUI. Returns true if the
+  // state of at least one left-hand side permission chip changed, indicating
+  // that `UpdateLhsChipsState()` should be called.
+  bool UpdateContentSettingModels();
+
   ui::ImageModel UpdateLocationIcon(
       toolbar_ui_api::mojom::SecurityLevel security_level,
       bool is_text_dangerous);

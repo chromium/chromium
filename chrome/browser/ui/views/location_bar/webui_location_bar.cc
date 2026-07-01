@@ -168,9 +168,17 @@ void WebUILocationBar::UpdateFocusBehavior(bool toolbar_visible) {
 }
 
 void WebUILocationBar::UpdateContentSettingsIcons() {
+  // If the LHS permission chip models changed visibility or state, propagate
+  // the updated LHS dashboard state to the WebUI.
+  if (UpdateContentSettingModels()) {
+    UpdateLhsChipsState();
+  }
+}
+
+bool WebUILocationBar::UpdateContentSettingModels() {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents) {
-    return;
+    return false;
   }
 
   bool permission_dashboard_changed = false;
@@ -203,14 +211,12 @@ void WebUILocationBar::UpdateContentSettingsIcons() {
   }
 
   if (!toolbar_delegate_) {
-    return;
+    return permission_dashboard_changed;
   }
   toolbar_delegate_->OnContentSettingChanged(
       content_setting_image_control_.ProcessContentSettingState(web_contents));
 
-  if (permission_dashboard_changed) {
-    UpdateLhsChipsState();
-  }
+  return permission_dashboard_changed;
 }
 
 void WebUILocationBar::SaveStateToContents(content::WebContents* contents) {
@@ -366,6 +372,7 @@ void WebUILocationBar::Update(content::WebContents* contents) {
     omnibox_view_->Update();
   }
 
+  UpdateContentSettingModels();
   OnChanged();
 }
 

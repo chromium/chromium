@@ -355,9 +355,10 @@ class LocationBarView
   // Updates the background on a theme change, or dropdown state change.
   void RefreshBackground();
 
-  // Updates the visibility state of the Content Blocked icons to reflect what
-  // is actually blocked on the current page. Returns true if the visibility
-  // of at least one of the views in |content_setting_views_| changed.
+  // Updates the visibility state of the content setting icons to reflect what
+  // is blocked or actively in use on the current page. Returns true if the
+  // visibility of at least one of the views in `content_setting_views_`
+  // changed.
   bool RefreshContentSettingViews();
 
   // Updates the visibility state of the PageActionIconViews to reflect what
