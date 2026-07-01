@@ -59,7 +59,7 @@
     "@types/sinon": "21.0.1",
     "@types/websocket": "1.0.10",
     "chai": "6.2.2",
-    "devtools-protocol": "0.0.1647336",
+    "devtools-protocol": "0.0.1654583",
     "eslint": "10.5.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-typescript": "4.4.5",
