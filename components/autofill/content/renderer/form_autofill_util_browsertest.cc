@@ -12,6 +12,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/extend.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
@@ -40,6 +41,7 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/render_view_test.h"
@@ -74,6 +76,7 @@ using ::blink::WebElementCollection;
 using ::blink::WebFormControlElement;
 using ::blink::WebFormElement;
 using ::blink::WebInputElement;
+using ::blink::WebLocalFrame;
 using ::blink::WebNode;
 using ::blink::WebString;
 using ::testing::_;
@@ -83,6 +86,7 @@ using ::testing::AssertionFailure;
 using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
@@ -3039,6 +3043,23 @@ FormCache::UpdateFormCacheResult UpdateFormCache(FormCache& form_cache) {
                                     kUpdateFormCacheCallTimerStateDummy);
 }
 
+FormData FindForm(const blink::WebFormControlElement& element) {
+  constexpr CallTimerState kExtractFormDataCallTimerStateDummy = {
+      .call_site = CallTimerState::CallSite::kUpdateFormCache,
+      .last_autofill_agent_reset = {},
+      .last_dom_content_loaded = {},
+  };
+
+  if (auto p = form_util::FindFormAndFieldForFormControlElement(
+          element, *base::MakeRefCounted<FieldDataManager>(),
+          kExtractFormDataCallTimerStateDummy,
+          /*button_titles_cache=*/nullptr,
+          /*form_cache=*/{})) {
+    return p->first;
+  }
+  return FormData();
+}
+
 // Helper to retrieve a value from a map. Return default-constructed value if
 // the key does not exist.
 template <typename MapType, typename KeyType>
@@ -3539,6 +3560,1148 @@ TEST_P(FormClearPreviewTest, ClearPreviewedFormWithAutofilledInitiatingNode) {
     EXPECT_TRUE(element.SuggestedValue().IsEmpty());
     EXPECT_FALSE(element.IsAutofilled());
   }
+}
+
+class FieldLabelInferenceTest : public test::AutofillRendererTest {
+ protected:
+  static std::vector<Matcher<FormFieldData>> JohnSmithIdFieldsMatchers() {
+    return {test::FormFieldDescriptionEq({.label = u"First name:",
+                                          .name = u"firstname",
+                                          .name_attribute = u"",
+                                          .id_attribute = u"firstname",
+                                          .value = u"John"}),
+            test::FormFieldDescriptionEq({.label = u"Last name:",
+                                          .name = u"lastname",
+                                          .name_attribute = u"",
+                                          .id_attribute = u"lastname",
+                                          .value = u"Smith"}),
+            test::FormFieldDescriptionEq({.label = u"Email:",
+                                          .name = u"email",
+                                          .name_attribute = u"",
+                                          .id_attribute = u"email",
+                                          .value = u"john@example.com"})};
+  }
+
+  static std::vector<Matcher<FormFieldData>> JohnSmithNameFieldsMatchers() {
+    return {test::FormFieldDescriptionEq({.label = u"First name:",
+                                          .name = u"firstname",
+                                          .name_attribute = u"firstname",
+                                          .value = u"John"}),
+            test::FormFieldDescriptionEq({.label = u"Last name:",
+                                          .name = u"lastname",
+                                          .name_attribute = u"lastname",
+                                          .value = u"Smith"}),
+            test::FormFieldDescriptionEq({.label = u"Email:",
+                                          .name = u"email",
+                                          .name_attribute = u"email",
+                                          .value = u"john@example.com"})};
+  }
+
+  static std::vector<Matcher<FormFieldData>>
+  StarredFirstLastEmailFieldsMatchers() {
+    return {test::FormFieldDescriptionEq({.label = u"*First Name",
+                                          .name = u"firstname",
+                                          .name_attribute = u"",
+                                          .id_attribute = u"firstname",
+                                          .value = u"John"}),
+            test::FormFieldDescriptionEq({.label = u"*Last Name",
+                                          .name = u"lastname",
+                                          .name_attribute = u"",
+                                          .id_attribute = u"lastname",
+                                          .value = u"Smith"}),
+            test::FormFieldDescriptionEq({.label = u"*Email",
+                                          .name = u"email",
+                                          .name_attribute = u"",
+                                          .id_attribute = u"email",
+                                          .value = u"john@example.com"})};
+  }
+
+  static std::vector<Matcher<FormFieldData>>
+  AriaLabelAndDescriptionFieldsMatchers() {
+    return {test::FormFieldDescriptionEq(
+                {.aria_label = u"inline aria label", .aria_description = u""}),
+            test::FormFieldDescriptionEq(
+                {.aria_label = u"aria label", .aria_description = u""}),
+            test::FormFieldDescriptionEq(
+                {.aria_label = u"", .aria_description = u"aria description"})};
+  }
+};
+
+TEST_F(FieldLabelInferenceTest, Labels) {
+  LoadHTML(R"(<form id=TestForm>
+           <label for=firstname> First name: </label>
+             <input id=firstname value=John>
+           <label for=lastname> Last name: </label>
+             <input id=lastname value=Smith>
+           <label for=email> Email: </label>
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithIdFieldsMatchers()));
+}
+
+// <label for=fieldId> elements are correctly assigned to their inputs. Multiple
+// labels are separated with a space.
+TEST_F(FieldLabelInferenceTest, LabelForAttribute) {
+  LoadHTML(R"(<label for=fieldId>foo</label>
+              <label for=fieldId>bar</label>
+              <input id=fieldId>)");
+  ASSERT_NE(GetMainFrame(), nullptr);
+
+  base::HistogramTester histogram_tester;
+  // Simulate seeing an unowned form containing just the input "fieldID".
+  std::optional<FormData> form = ExtractFormData(WebFormElement());
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(),
+              ElementsAre(test::FormFieldDescriptionEq({
+                  .label = u"foo bar",
+                  .label_source = FormFieldData::LabelSource::kForId,
+              })));
+}
+
+// Tests that when a label is assigned to an input, text behind it is considered
+// as a fallback.
+// The label is assigned to the input without the for-attribute, by declaring it
+// it inside the label.
+TEST_F(FieldLabelInferenceTest, LabelTextBehindInput) {
+  LoadHTML(R"(
+    <form id=TestForm>
+      <label>
+        <input>
+        label
+      </label>
+    </form>
+  )");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(),
+              ElementsAre(test::FormFieldDescriptionEq({.label = u"label"})));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsWithSpans) {
+  LoadHTML(R"(<form id=TestForm>
+           <label for=firstname><span>First name: </span></label>
+             <input id=firstname value=John>
+           <label for=lastname><span>Last name: </span></label>
+             <input id=lastname value=Smith>
+           <label for=email><span>Email: </span></label>
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithIdFieldsMatchers()));
+}
+
+// This test is different from FormLabelsTest.Labels in that the label
+// elements for= attribute is set to the name of the form control element it is
+// a label for instead of the id of the form control element.  This is invalid
+// because the for= attribute must be set to the id of the form control element;
+// however, current label parsing code will extract the text from the previous
+// label element and apply it to the following input field.
+TEST_F(FieldLabelInferenceTest, InvalidLabels) {
+  LoadHTML(
+      R"(<form id=TestForm>
+           <label for=firstname> First name: </label>
+             <input name=firstname value=John>
+           <label for=lastname> Last name: </label>
+             <input name=lastname value=Smith>
+           <label for=email> Email: </label>
+             <input name=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithNameFieldsMatchers()));
+}
+
+// This test has three form control elements, only one of which has a label
+// element associated with it.
+TEST_F(FieldLabelInferenceTest, OneLabelElement) {
+  LoadHTML(R"(<form id=TestForm>
+           First name:
+             <input id=firstname value=John>
+           <label for=lastname>Last name: </label>
+             <input id=lastname value=Smith>
+           Email:
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithIdFieldsMatchers()));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromText) {
+  LoadHTML(R"(<form id=TestForm>
+           First name:
+             <input id=firstname value=John>
+           Last name:
+             <input id=lastname value=Smith>
+           Email:
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithIdFieldsMatchers()));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromParagraph) {
+  LoadHTML(R"(<form id=TestForm>
+           <p>First name:</p><input id=firstname value=John>
+           <p>Last name:</p>
+             <input id=lastname value=Smith>
+           <p>Email:</p>
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithIdFieldsMatchers()));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromBold) {
+  LoadHTML(R"(<form id=TestForm>
+           <b>First name:</b><input id=firstname value=John>
+           <b>Last name:</b>
+             <input id=lastname value=Smith>
+           <b>Email:</b>
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithIdFieldsMatchers()));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredPriorToImgOrBr) {
+  LoadHTML(R"(<form id=TestForm>
+           First name:<img><input id=firstname value=John>
+           Last name:<img>
+             <input id=lastname value=Smith>
+           Email:<br>
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithIdFieldsMatchers()));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromTableCell) {
+  LoadHTML(R"(<form id=TestForm>
+           <table>
+             <tr>
+               <td>First name:</td>
+               <td><input id=firstname value=John></td>
+             </tr>
+             <tr>
+               <td>Last name:</td>
+               <td><input id=lastname value=Smith></td>
+             </tr>
+             <tr>
+               <td>Email:</td>
+               <td><input id=email value='john@example.com'></td>
+             </tr>
+             <tr>
+               <td></td>
+               <td><input type=submit name='reply-send' value=Send></td>
+             </tr>
+           </table>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithIdFieldsMatchers()));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromTableCellTH) {
+  LoadHTML(R"(<form id=TestForm>
+         <table>
+           <tr>
+             <th>First name:</th>
+             <td><input id=firstname value=John></td>
+           </tr>
+           <tr>
+             <th>Last name:</th>
+             <td><input id=lastname value=Smith></td>
+           </tr>
+           <tr>
+             <th>Email:</th>
+             <td><input id=email value='john@example.com'></td>
+           </tr>
+           <tr>
+             <td></td>
+             <td><input type=submit name='reply-send' value=Send></td>
+           </tr>
+         </table>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithIdFieldsMatchers()));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromTableCellNested) {
+  LoadHTML(R"(<form id=TestForm>
+         <table>
+           <tr>
+             <td>
+               <font>
+                 First name:
+               </font>
+               <font>
+                 Bogus
+               </font>
+             </td>
+             <td>
+               <font>
+                 <input id=firstname value=John>
+               </font>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <font>
+                 Last name:
+               </font>
+             </td>
+             <td>
+               <font>
+                 <input id=lastname value=Smith>
+               </font>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <font>
+                 Email:
+               </font>
+             </td>
+             <td>
+               <font>
+                 <input id=email value='john@example.com'>
+               </font>
+             </td>
+           </tr>
+           <tr>
+             <td></td>
+             <td>
+               <input type=submit name='reply-send' value=Send>
+             </td>
+           </tr>
+         </table>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(
+          test::FormFieldDescriptionEq({.label = u"First name: Bogus",
+                                        .name = u"firstname",
+                                        .name_attribute = u"",
+                                        .id_attribute = u"firstname",
+                                        .value = u"John"}),
+          test::FormFieldDescriptionEq({.label = u"Last name:",
+                                        .name = u"lastname",
+                                        .name_attribute = u"",
+                                        .id_attribute = u"lastname",
+                                        .value = u"Smith"}),
+          test::FormFieldDescriptionEq({.label = u"Email:",
+                                        .name = u"email",
+                                        .name_attribute = u"",
+                                        .id_attribute = u"email",
+                                        .value = u"john@example.com"})));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromTableEmptyTDs) {
+  LoadHTML(R"(<form id=TestForm>
+         <table>
+                       <tr>
+             <td><span>*</span><b>First Name</b></td>
+             <td></td>
+             <td>
+               <input id=firstname value=John>
+             </td>
+           </tr>
+           <tr>
+             <td><span>*</span><b>Last Name</b></td>
+             <td></td>
+             <td>
+               <input id=lastname value=Smith>
+             </td>
+           </tr>
+           <tr>
+             <td><span>*</span><b>Email</b></td>
+             <td></td>
+             <td>
+               <input id=email value='john@example.com'>
+             </td>
+           </tr>
+           <tr>
+             <td></td>
+             <td>
+               <input type=submit name='reply-send' value=Send>
+             </td>
+           </tr>
+         </table>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(),
+              ElementsAreArray(StarredFirstLastEmailFieldsMatchers()));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromPreviousTD) {
+  LoadHTML(R"(<form id=TestForm>
+         <table>
+           <tr>
+             <td>*First Name</td>
+             <td>
+               Bogus
+               <input type=hidden>
+               <input id=firstname value=John>
+             </td>
+           </tr>
+           <tr>
+             <td>*Last Name</td>
+             <td>
+               <input id=lastname value=Smith>
+             </td>
+           </tr>
+           <tr>
+             <td>*Email</td>
+             <td>
+               <input id=email value='john@example.com'>
+             </td>
+           </tr>
+           <tr>
+             <td></td>
+             <td>
+               <input type=submit name='reply-send' value=Send>
+             </td>
+           </tr>
+         </table>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(),
+              ElementsAreArray(StarredFirstLastEmailFieldsMatchers()));
+}
+
+// <script>, <noscript> and <option> tags are excluded when the labels are
+// inferred.
+// Also <!-- comment --> is excluded.
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromTableWithSpecialElements) {
+  LoadHTML(R"(<form id=TestForm>
+         <table>
+           <tr>
+             <td>
+               <span>*</span>
+               <b>First Name</b>
+             </td>
+             <td>
+               <script> <!-- function test() { alert('ignored as label'); } -->
+               </script>
+               <input id=firstname value=John>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <span>*</span>
+               <b>Middle Name</b>
+             </td>
+             <td>
+               <noscript>
+                 <p>Bad</p>
+               </noscript>
+               <input id=middlename value=Joe>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <span>*</span>
+               <b>Last Name</b>
+             </td>
+             <td>
+               <input id=lastname value=Smith>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <span>*</span>
+               <b>Country</b>
+             </td>
+             <td>
+               <select id=country>
+                 <option value=US>The value should be ignored as label.
+                 </option>
+                 <option value=JP>JAPAN</option>
+               </select>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <span>*</span>
+               <b>Email</b>
+             </td>
+             <td>
+               <!-- This comment should be ignored as inferred label.-->
+               <input id=email value='john@example.com'>
+             </td>
+           </tr>
+           <tr>
+             <td></td>
+             <td>
+               <input type=submit name='reply-send' value=Send>
+             </td>
+           </tr>
+         </table>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(test::FormFieldDescriptionEq(
+                      {.label = u"* First Name",
+                       .name = u"firstname",
+                       .name_attribute = u"",
+                       .id_attribute = u"firstname",
+                       .value = u"John",
+                       .form_control_type = FormControlType::kInputText}),
+                  test::FormFieldDescriptionEq(
+                      {.label = u"* Middle Name",
+                       .name = u"middlename",
+                       .name_attribute = u"",
+                       .id_attribute = u"middlename",
+                       .value = u"Joe",
+                       .form_control_type = FormControlType::kInputText}),
+                  test::FormFieldDescriptionEq(
+                      {.label = u"* Last Name",
+                       .name = u"lastname",
+                       .name_attribute = u"",
+                       .id_attribute = u"lastname",
+                       .value = u"Smith",
+                       .form_control_type = FormControlType::kInputText}),
+                  test::FormFieldDescriptionEq(
+                      {.label = u"* Country",
+                       .name = u"country",
+                       .name_attribute = u"",
+                       .id_attribute = u"country",
+                       .value = u"US",
+                       .max_length = 0,
+                       .form_control_type = FormControlType::kSelectOne}),
+                  test::FormFieldDescriptionEq(
+                      {.label = u"* Email",
+                       .name = u"email",
+                       .name_attribute = u"",
+                       .id_attribute = u"email",
+                       .value = u"john@example.com",
+                       .form_control_type = FormControlType::kInputText})));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromTableLabels) {
+  LoadHTML(R"(<form id=TestForm>
+         <table>
+           <tr>
+             <td>
+               <label>First name:</label>
+               <input id=firstname value=John>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <label>Last name:</label>
+               <input id=lastname value=Smith>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <label>Email:</label>
+               <input id=email value='john@example.com'>
+             </td>
+           </tr>
+         </table>
+         <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithIdFieldsMatchers()));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromTableTDInterveningElements) {
+  LoadHTML(R"(<form id=TestForm>
+         <table>
+           <tr>
+             <td>
+               First name:
+               <br>
+               <input id=firstname value=John>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               Last name:
+               <br>
+               <input id=lastname value=Smith>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               Email:
+               <br>
+               <input id=email value='john@example.com'>
+             </td>
+           </tr>
+         </table>
+         <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithIdFieldsMatchers()));
+}
+
+// Verify that we correctly infer labels when the label text spans multiple
+// adjacent HTML elements, not separated by whitespace.
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromTableAdjacentElements) {
+  LoadHTML(R"(<form id=TestForm>
+         <table>
+           <tr>
+             <td>
+               <span>*</span><b>First Name</b>
+             </td>
+             <td>
+               <input id=firstname value=John>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <span>*</span><b>Last Name</b>
+             </td>
+             <td>
+               <input id=lastname value=Smith>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <span>*</span><b>Email</b>
+             </td>
+             <td>
+               <input id=email value='john@example.com'>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <input type=submit name='reply-send' value=Send>
+             </td>
+           </tr>
+         </table>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(),
+              ElementsAreArray(StarredFirstLastEmailFieldsMatchers()));
+}
+
+// Verify that we correctly infer labels when the label text resides in the
+// previous row.
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromTableRow) {
+  LoadHTML(R"(<form id=TestForm>
+         <table>
+           <tr>
+             <td>*First Name</td>
+             <td>*Last Name</td>
+             <td>*Email</td>
+           </tr>
+           <tr>
+             <td>
+               <input id=firstname value=John>
+             </td>
+             <td>
+               <input id=lastname value=Smith>
+             </td>
+             <td>
+               <input id=email value='john@example.com'>
+             </td>
+           </tr>
+           <tr>
+             <td colspan=2>NAME</td>
+             <td>EMAIL</td>
+           </tr>
+           <tr>
+             <td colspan=2>
+               <input id=name2 value='John Smith'>
+             </td>
+             <td>
+               <input id=email2 value='john@example2.com'>
+             </td>
+           </tr>
+           <tr>
+             <td>Phone</td>
+           </tr>
+           <tr>
+             <td>
+               <input id=phone1 value=123>
+             </td>
+             <td>
+               <input id=phone2 value=456>
+             </td>
+             <td>
+               <input id=phone3 value=7890>
+             </td>
+           </tr>
+           <tr>
+             <th>
+               Credit Card Number
+             </th>
+           </tr>
+           <tr>
+             <td>
+               <input name=ccnumber value=4444555544445555>
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <input type=submit name='reply-send' value=Send>
+             </td>
+           </tr>
+         </table>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  std::vector<Matcher<FormFieldData>> matchers =
+      StarredFirstLastEmailFieldsMatchers();
+  base::Extend(
+      matchers,
+      std::array{test::FormFieldDescriptionEq({.label = u"NAME",
+                                               .name = u"name2",
+                                               .name_attribute = u"",
+                                               .id_attribute = u"name2",
+                                               .value = u"John Smith"}),
+                 test::FormFieldDescriptionEq({.label = u"EMAIL",
+                                               .name = u"email2",
+                                               .name_attribute = u"",
+                                               .id_attribute = u"email2",
+                                               .value = u"john@example2.com"}),
+                 test::FormFieldDescriptionEq({.label = u"Phone",
+                                               .name = u"phone1",
+                                               .name_attribute = u"",
+                                               .id_attribute = u"phone1",
+                                               .value = u"123"}),
+                 test::FormFieldDescriptionEq({.label = u"Phone",
+                                               .name = u"phone2",
+                                               .name_attribute = u"",
+                                               .id_attribute = u"phone2",
+                                               .value = u"456"}),
+                 test::FormFieldDescriptionEq({.label = u"Phone",
+                                               .name = u"phone3",
+                                               .name_attribute = u"",
+                                               .id_attribute = u"phone3",
+                                               .value = u"7890"}),
+                 test::FormFieldDescriptionEq({.label = u"Credit Card Number",
+                                               .name = u"ccnumber",
+                                               .name_attribute = u"ccnumber",
+                                               .value = u"4444555544445555"})});
+  EXPECT_THAT(form->fields(), ElementsAreArray(matchers));
+}
+
+// Verify that we correctly infer labels when enclosed within a list item.
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromListItem) {
+  LoadHTML(R"(<form id=TestForm name=TestForm action='http://cnn.com'>
+         <div>
+           <li>
+             <span>Bogus</span>
+           </li>
+           <li>
+             <label><em>*</em> Home Phone</label>
+             <input id=areacode value=415>
+             <input id=prefix value=555>
+             <input id=suffix value=1212>
+           </li>
+           <li>
+             <input type=submit name='reply-send' value=Send>
+           </li>
+         </div>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(test::FormFieldDescriptionEq({.label = u"* Home Phone",
+                                                .name = u"areacode",
+                                                .name_attribute = u"",
+                                                .id_attribute = u"areacode",
+                                                .value = u"415"}),
+                  test::FormFieldDescriptionEq({.label = u"* Home Phone",
+                                                .name = u"prefix",
+                                                .name_attribute = u"",
+                                                .id_attribute = u"prefix",
+                                                .value = u"555"}),
+                  test::FormFieldDescriptionEq({.label = u"* Home Phone",
+                                                .name = u"suffix",
+                                                .name_attribute = u"",
+                                                .id_attribute = u"suffix",
+                                                .value = u"1212"})));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromDefinitionList) {
+  LoadHTML(R"(<form id=TestForm>
+         <dl>
+           <dt>
+             <span>
+               *
+             </span>
+             <span>
+               First name:
+             </span>
+             <span>
+               Bogus
+             </span>
+           </dt>
+           <dd>
+             <font>
+               <input id=firstname value=John>
+             </font>
+           </dd>
+           <dt>
+             <span>
+               Last name:
+             </span>
+           </dt>
+           <dd>
+             <font>
+               <input id=lastname value=Smith>
+             </font>
+           </dd>
+           <dt>
+             <span>
+               Email:
+             </span>
+           </dt>
+           <dd>
+             <font>
+               <input id=email value='john@example.com'>
+             </font>
+           </dd>
+           <dt></dt>
+           <dd>
+             <input type=submit name='reply-send' value=Send>
+           </dd>
+         </dl>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(
+          test::FormFieldDescriptionEq({.label = u"* First name: Bogus",
+                                        .name = u"firstname",
+                                        .name_attribute = u"",
+                                        .id_attribute = u"firstname",
+                                        .value = u"John"}),
+          test::FormFieldDescriptionEq({.label = u"Last name:",
+                                        .name = u"lastname",
+                                        .name_attribute = u"",
+                                        .id_attribute = u"lastname",
+                                        .value = u"Smith"}),
+          test::FormFieldDescriptionEq({.label = u"Email:",
+                                        .name = u"email",
+                                        .name_attribute = u"",
+                                        .id_attribute = u"email",
+                                        .value = u"john@example.com"})));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredWithSameName) {
+  LoadHTML(R"(<form id=TestForm>
+           Address Line 1:
+             <input name=Address>
+           Address Line 2:
+             <input name=Address>
+           Address Line 3:
+             <input name=Address>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(
+          test::FormFieldDescriptionEq({.label = u"Address Line 1:",
+                                        .name = u"Address",
+                                        .name_attribute = u"Address"}),
+          test::FormFieldDescriptionEq({.label = u"Address Line 2:",
+                                        .name = u"Address",
+                                        .name_attribute = u"Address"}),
+          test::FormFieldDescriptionEq({.label = u"Address Line 3:",
+                                        .name = u"Address",
+                                        .name_attribute = u"Address"})));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredWithImageTags) {
+  LoadHTML(R"(<form id=TestForm name=TestForm action='http://cnn.com'>
+           Phone:
+           <input name=dayphone1>
+           <img>
+           -
+           <img>
+           <input name=dayphone2>
+           <img>
+           -
+           <img>
+           <input name=dayphone3>
+           ext.:
+           <input name=dayphone4>
+           <input name=dummy>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(
+          test::FormFieldDescriptionEq({.label = u"Phone:",
+                                        .name = u"dayphone1",
+                                        .name_attribute = u"dayphone1"}),
+          test::FormFieldDescriptionEq({.label = u"",
+                                        .name = u"dayphone2",
+                                        .name_attribute = u"dayphone2"}),
+          test::FormFieldDescriptionEq({.label = u"",
+                                        .name = u"dayphone3",
+                                        .name_attribute = u"dayphone3"}),
+          test::FormFieldDescriptionEq({.label = u"ext.:",
+                                        .name = u"dayphone4",
+                                        .name_attribute = u"dayphone4"}),
+          test::FormFieldDescriptionEq(
+              {.label = u"", .name = u"dummy", .name_attribute = u"dummy"})));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromDivTable) {
+  LoadHTML(R"(<form id=TestForm>
+         <div>First name:<br>
+           <span>
+             <input name=firstname value=John>
+           </span>
+         </div>
+         <div>Last name:<br>
+           <span>
+             <input name=lastname value=Smith>
+           </span>
+         </div>
+         <div>Email:<br>
+           <span>
+             <input name=email value='john@example.com'>
+           </span>
+         </div>
+         <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithNameFieldsMatchers()));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromDivSiblingTable) {
+  LoadHTML(R"(<form id=TestForm>
+         <div>First name:</div>
+         <div>
+           <span>
+             <input name=firstname value=John>
+           </span>
+         </div>
+         <div>Last name:</div>
+         <div>
+           <span>
+             <input name=lastname value=Smith>
+           </span>
+         </div>
+         <div>Email:</div>
+         <div>
+           <span>
+             <input name=email value='john@example.com'>
+           </span>
+         </div>
+         <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithNameFieldsMatchers()));
+}
+
+TEST_F(FieldLabelInferenceTest, LabelsInferredFromLabelInDivTable) {
+  LoadHTML(R"(<form id=TestForm>
+         <label>First name:</label>
+         <label for=lastname>Last name:</label>
+         <div>
+           <input id=firstname value=John>
+         </div>
+         <div>
+           <input id=lastname value=Smith>
+         </div>
+         <label>Email:</label>
+         <div>
+           <span>
+             <input id=email value='john@example.com'>
+           </span>
+         </div>
+         <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithIdFieldsMatchers()));
+}
+
+TEST_F(FieldLabelInferenceTest,
+       LabelsInferredFromDefinitionListRatherThanDivTable) {
+  LoadHTML(R"(<form id=TestForm name=TestForm action='http://cnn.com'>
+         <div>This is not a label.<br>
+         <dl>
+           <dt>
+             <span>
+               First name:
+             </span>
+           </dt>
+           <dd>
+             <font>
+               <input id=firstname value=John>
+             </font>
+           </dd>
+           <dt>
+             <span>
+               Last name:
+             </span>
+           </dt>
+           <dd>
+             <font>
+               <input id=lastname value=Smith>
+             </font>
+           </dd>
+           <dt>
+             <span>
+               Email:
+             </span>
+           </dt>
+           <dd>
+             <font>
+               <input id=email value='john@example.com'>
+             </font>
+           </dd>
+           <dt></dt>
+           <dd>
+             <input type=submit name='reply-send' value=Send>
+           </dd>
+         </dl>
+         </div>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+  EXPECT_EQ(u"TestForm", form->name());
+  EXPECT_EQ(GURL("http://cnn.com"), form->action());
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithIdFieldsMatchers()));
+}
+
+// If we have multiple labels per id, the labels concatenated into label string.
+TEST_F(FieldLabelInferenceTest, MultipleLabelsPerElement) {
+  LoadHTML(R"(<form id=TestForm>
+           <label for=firstname> First Name: </label>
+           <label for=firstname></label>
+             <input id=firstname value=John>
+           <label for=lastname></label>
+           <label for=lastname> Last Name: </label>
+             <input id=lastname value=Smith>
+           <label for=email> Email: </label>
+           <label for=email> xxx@yyy.com </label>
+             <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(
+          test::FormFieldDescriptionEq({.label = u"First Name:",
+                                        .name = u"firstname",
+                                        .name_attribute = u"",
+                                        .id_attribute = u"firstname",
+                                        .value = u"John"}),
+          test::FormFieldDescriptionEq({.label = u"Last Name:",
+                                        .name = u"lastname",
+                                        .name_attribute = u"",
+                                        .id_attribute = u"lastname",
+                                        .value = u"Smith"}),
+          test::FormFieldDescriptionEq({.label = u"Email: xxx@yyy.com",
+                                        .name = u"email",
+                                        .name_attribute = u"",
+                                        .id_attribute = u"email",
+                                        .value = u"john@example.com"})));
+}
+
+TEST_F(FieldLabelInferenceTest, AriaLabelAndDescription) {
+  LoadHTML(
+      R"(<form id=form>
+           <div id=label>aria label</div>
+           <div id=description>aria description</div>
+           <input id=field0 aria-label='inline aria label'>
+           <input id=field1 aria-labelledby='label'>
+           <input id=field2 aria-describedby='description'>
+         </form>)");
+
+  WebFormElement web_form = GetWebElementById("form").To<WebFormElement>();
+  ASSERT_TRUE(web_form);
+
+  WebFormControlElement control_element = GetFormControlElementById("field0");
+  ASSERT_TRUE(control_element);
+  FormData form = FindForm(control_element);
+
+  EXPECT_THAT(form.fields(),
+              ElementsAreArray(AriaLabelAndDescriptionFieldsMatchers()));
+}
+
+TEST_F(FieldLabelInferenceTest, AriaLabelAndDescription2) {
+  LoadHTML(
+      R"(<form id=form>
+           <input id=field0 aria-label='inline aria label'>
+           <input id=field1 aria-labelledby='label'>
+           <input id=field2 aria-describedby='description'>
+         </form>
+         <div id=label>aria label</div>
+         <div id=description>aria description</div>)");
+
+  WebFormElement web_form = GetWebElementById("form").To<WebFormElement>();
+  ASSERT_TRUE(web_form);
+
+  WebFormControlElement control_element = GetFormControlElementById("field0");
+  ASSERT_TRUE(control_element);
+  FormData form = FindForm(control_element);
+
+  EXPECT_THAT(form.fields(),
+              ElementsAreArray(AriaLabelAndDescriptionFieldsMatchers()));
 }
 
 }  // namespace
