@@ -50,6 +50,7 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
     private final @Nullable BiConsumer<GURL, String> mEphemeralTabOpener;
     private final @Nullable ThinWebViewPrintingController mPrintingController;
     private final @Nullable LinkOpener mLinkOpener;
+    private final @Nullable BiConsumer<GURL, String> mReadLaterOpener;
 
     /** Builds a {@link ThinWebViewContextMenuItemDelegate} instance. */
     public ThinWebViewContextMenuItemDelegate(WebContents webContents) {
@@ -57,7 +58,8 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
                 webContents,
                 /* intentTargetClassName= */ null,
                 /* ephemeralTabOpener= */ null,
-                /* linkOpener= */ null);
+                /* linkOpener= */ null,
+                /* readLaterOpener= */ null);
     }
 
     /**
@@ -73,7 +75,7 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
             WebContents webContents,
             @Nullable String intentTargetClassName,
             @Nullable BiConsumer<GURL, String> ephemeralTabOpener) {
-        this(webContents, intentTargetClassName, ephemeralTabOpener, null);
+        this(webContents, intentTargetClassName, ephemeralTabOpener, null, null);
     }
 
     /**
@@ -85,17 +87,20 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
      *     context might be null.
      * @param ephemeralTabOpener A callback to open a URL in an ephemeral tab, if supported.
      * @param linkOpener A delegate to handle link opening actions.
+     * @param readLaterOpener A callback to add a URL to the reading list, if supported.
      */
     public ThinWebViewContextMenuItemDelegate(
             WebContents webContents,
             @Nullable String intentTargetClassName,
             @Nullable BiConsumer<GURL, String> ephemeralTabOpener,
-            @Nullable LinkOpener linkOpener) {
+            @Nullable LinkOpener linkOpener,
+            @Nullable BiConsumer<GURL, String> readLaterOpener) {
         mWebContents = webContents;
         mIntentTargetClassName = intentTargetClassName;
         mEphemeralTabOpener = ephemeralTabOpener;
         mPrintingController = ServiceLoaderUtil.maybeCreate(ThinWebViewPrintingController.class);
         mLinkOpener = linkOpener;
+        mReadLaterOpener = readLaterOpener;
     }
 
     @Override
@@ -367,6 +372,18 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
     @Override
     public boolean supportsInspectElement() {
         return mIntentTargetClassName != null;
+    }
+
+    @Override
+    public boolean supportsReadLater() {
+        return mIntentTargetClassName != null && mReadLaterOpener != null;
+    }
+
+    @Override
+    public void onReadLater(GURL url, String title) {
+        if (mReadLaterOpener != null) {
+            mReadLaterOpener.accept(url, title);
+        }
     }
 
     public @Nullable String getIntentTargetClassNameForTesting() {

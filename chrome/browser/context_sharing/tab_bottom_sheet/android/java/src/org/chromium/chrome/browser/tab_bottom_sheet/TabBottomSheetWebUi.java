@@ -68,6 +68,7 @@ public class TabBottomSheetWebUi {
     private final @ColorInt int mBackgroundColor;
     private final @CoBrowseContainerType int mContainerType;
     private final @Nullable BiConsumer<GURL, String> mEphemeralTabOpener;
+    private final @Nullable BiConsumer<GURL, String> mReadLaterOpener;
 
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
@@ -87,7 +88,8 @@ public class TabBottomSheetWebUi {
             SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
             @ColorInt int backgroundColor,
             @CoBrowseContainerType int containerType,
-            @Nullable BiConsumer<GURL, String> ephemeralTabOpener) {
+            @Nullable BiConsumer<GURL, String> ephemeralTabOpener,
+            @Nullable BiConsumer<GURL, String> readLaterOpener) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
@@ -96,6 +98,7 @@ public class TabBottomSheetWebUi {
         mBackgroundColor = backgroundColor;
         mContainerType = containerType;
         mEphemeralTabOpener = ephemeralTabOpener;
+        mReadLaterOpener = readLaterOpener;
         mWebViewResizingHelper =
                 new WebViewResizingHelper(
                         containerView,
@@ -271,7 +274,8 @@ public class TabBottomSheetWebUi {
                                 ? BrowserIntentUtils.CHROME_LAUNCHER_ACTIVITY_CLASS_NAME
                                 : null,
                         mEphemeralTabOpener,
-                        mContainerType == CoBrowseContainerType.SIDE_PANEL ? linkOpener : null);
+                        mContainerType == CoBrowseContainerType.SIDE_PANEL ? linkOpener : null,
+                        mReadLaterOpener);
         mContextMenuPopulatorFactory.setItemDelegate(itemDelegate);
         ensureThinWebViewCreated();
         if (mThinWebView != null) {

@@ -20,6 +20,9 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox.ContextualTasksFuseboxConfig;
@@ -28,12 +31,15 @@ import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinatorSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
@@ -55,6 +61,8 @@ public class CoBrowseViewFactory {
     private final SelectionDropdownMenuDelegate mSelectionDropdownMenuDelegate;
     private final NullableObservableSupplier<Tab> mActivityTabProvider;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final PriceDropNotificationManager mPriceDropNotificationManager;
+    private final BookmarkManagerOpener mBookmarkManagerOpener;
 
     /**
      * Factory responsible for creating co-browse content.
@@ -72,6 +80,8 @@ public class CoBrowseViewFactory {
      *     selection dropdown menus.
      * @param activityTabProvider The supplier for the active tab.
      * @param tabModelSelectorSupplier The supplier for the active tab model selector.
+     * @param priceDropNotificationManager The {@link PriceDropNotificationManager} for bookmarks.
+     * @param bookmarkManagerOpener The {@link BookmarkManagerOpener} for opening bookmarks.
      */
     public CoBrowseViewFactory(
             Activity activity,
@@ -83,7 +93,9 @@ public class CoBrowseViewFactory {
             ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
             NullableObservableSupplier<Tab> activityTabProvider,
-            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            PriceDropNotificationManager priceDropNotificationManager,
+            BookmarkManagerOpener bookmarkManagerOpener) {
         mActivity = activity;
         mFuseboxConfig = fuseboxConfig;
         mProfileSupplier = profileSupplier;
@@ -94,6 +106,8 @@ public class CoBrowseViewFactory {
         mSelectionDropdownMenuDelegate = selectionDropdownMenuDelegate;
         mActivityTabProvider = activityTabProvider;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mPriceDropNotificationManager = priceDropNotificationManager;
+        mBookmarkManagerOpener = bookmarkManagerOpener;
 
         TabBottomSheetUtils.attachFactoryToWindow(windowAndroid, this);
     }
@@ -159,6 +173,27 @@ public class CoBrowseViewFactory {
                                     /* shouldHaveContextMenu= */ true,
                                     initiatorOrigin,
                                     /* requestDeniedCallback= */ () -> {});
+                        },
+                        (GURL url, String title) -> {
+                            Profile profile = mProfileSupplier.get();
+                            if (profile == null) return;
+                            BookmarkModel bookmarkModel = BookmarkModel.getForProfile(profile);
+                            bookmarkModel.finishLoadingBookmarkModel(
+                                    () -> {
+                                        BottomSheetController bottomSheetController =
+                                                BottomSheetControllerProvider.from(mWindowAndroid);
+                                        if (bottomSheetController == null) return;
+                                        BookmarkUtils.addToReadingList(
+                                                mActivity,
+                                                bookmarkModel,
+                                                title,
+                                                url,
+                                                mSnackbarManager,
+                                                profile,
+                                                bottomSheetController,
+                                                mBookmarkManagerOpener,
+                                                mPriceDropNotificationManager);
+                                    });
                         });
         ContextualTasksFusebox fusebox = null;
         if (clientType == TabBottomSheetClientType.CONTEXTUAL_TASKS

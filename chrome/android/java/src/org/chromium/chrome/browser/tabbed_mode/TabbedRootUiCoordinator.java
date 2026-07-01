@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.actor.ui.ActorOverlayCoordinator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
@@ -161,6 +162,7 @@ import org.chromium.chrome.browser.pdf.PdfPageIphController;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandbox3pcdRollbackMessageController;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1948,7 +1950,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             contextMenuPopulatorFactory,
                             new ChromeSelectionDropdownMenuDelegate(),
                             mActivityTabProvider.asObservable(),
-                            mTabModelSelectorSupplier);
+                            mTabModelSelectorSupplier,
+                            PriceDropNotificationManagerFactory.create(
+                                    mProfileSupplier.asNonNull().get()),
+                            new BookmarkManagerOpenerImpl());
         }
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
             mTabBottomSheetManager =
