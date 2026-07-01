@@ -45,6 +45,8 @@ inline constexpr char kFcpHttpClientNetErrorHistogram[] =
     "PrivateMetrics.PrivateInsights.FcpHttpClient.NetError";
 inline constexpr char kFcpHttpClientRequestDurationHistogram[] =
     "PrivateMetrics.PrivateInsights.FcpHttpClient.RequestDuration";
+inline constexpr char kFcpHttpClientRunnerCountHistogram[] =
+    "PrivateMetrics.PrivateInsights.FcpHttpClient.RunnerCount";
 
 class FcpHttpRequestHandle;
 class FcpHttpRequestManager;
