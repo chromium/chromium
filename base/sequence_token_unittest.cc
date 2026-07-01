@@ -4,6 +4,9 @@
 
 #include "base/sequence_token.h"
 
+#include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/threading/simple_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::internal {
@@ -157,6 +160,44 @@ TEST(TaskScopeTest, ThreadBound) {
   }
 
   EXPECT_TRUE(CurrentTaskIsThreadBound());
+}
+
+class SequencedCheckedObject {
+ public:
+  SequencedCheckedObject() { DETACH_FROM_SEQUENCE(sequence_checker_); }
+  void Verify() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+TEST(SequenceTokenTest, SetForCurrentThread) {
+  SequencedCheckedObject object;
+  const SequenceToken token = SequenceToken::Create();
+
+  {
+    TaskScope task_scope(token, /* is_thread_bound=*/false);
+    object.Verify();
+  }
+
+  class TestThread : public SimpleThread {
+   public:
+    TestThread(SequenceToken token, SequencedCheckedObject* object)
+        : SimpleThread("TestThread"), token_(token), object_(object) {}
+
+    void Run() override {
+      token_.SetForCurrentThread();
+      object_->Verify();
+    }
+
+   private:
+    SequenceToken token_;
+    raw_ptr<SequencedCheckedObject> object_;
+  };
+
+  TestThread thread(token, &object);
+  thread.Start();
+  thread.Join();
 }
 
 }  // namespace base::internal
