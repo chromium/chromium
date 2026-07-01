@@ -302,7 +302,7 @@ ViewTimeline::ViewTimeline(Document* document,
       inset_(inset) {}
 
 void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
-                                    ScrollOrientation physical_orientation,
+                                    PhysicalAxis physical_orientation,
                                     TimelineState* state) const {
   // Do not call this method with an unresolved timeline.
   // Called from ScrollTimeline::ComputeTimelineState, which has safeguard.
@@ -322,12 +322,12 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
   DCHECK(subject_position);
 
   // TODO(crbug.com/1448801): Handle nested sticky elements.
-  double target_offset = physical_orientation == kHorizontalScroll
+  double target_offset = physical_orientation == PhysicalAxis::kHorizontal
                              ? subject_position->x()
                              : subject_position->y();
   double target_size;
   LayoutUnit viewport_size;
-  if (physical_orientation == kHorizontalScroll) {
+  if (physical_orientation == PhysicalAxis::kHorizontal) {
     target_size = subject_size->width();
     viewport_size = scrollable_area->LayoutContentRect().Width();
   } else {
@@ -383,7 +383,7 @@ void ViewTimeline::ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
                                           double viewport_size,
                                           double target_size,
                                           double target_offset,
-                                          ScrollOrientation orientation,
+                                          PhysicalAxis orientation,
                                           LayoutBox* scroll_container) const {
   if (!subject()) {
     return;
@@ -403,10 +403,7 @@ void ViewTimeline::ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
   StickyPositionScrollingConstraints constraints =
       sticky_container->StickyConstraints();
 
-  const PhysicalAxis axis = orientation == kHorizontalScroll
-                                ? PhysicalAxis::kHorizontal
-                                : PhysicalAxis::kVertical;
-  const auto* axis_data = constraints.AxisData(axis);
+  const auto* axis_data = constraints.AxisData(orientation);
   if (!axis_data) {
     return;
   }

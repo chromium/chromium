@@ -143,7 +143,6 @@ enum ScrollInertialPhase {
 
 enum ScrollbarOrientation { kHorizontalScrollbar, kVerticalScrollbar };
 
-enum ScrollOrientation { kHorizontalScroll, kVerticalScroll };
 
 typedef unsigned ScrollbarControlState;
 

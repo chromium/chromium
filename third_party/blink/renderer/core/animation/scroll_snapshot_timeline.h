@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/post_layout_snapshot_client.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
@@ -187,7 +188,7 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
   virtual TimelineState ComputeTimelineState() const = 0;
 
   void CalculateScrollLimits(PaintLayerScrollableArea* scrollable_area,
-                             ScrollOrientation physical_orientation,
+                             PhysicalAxis physical_orientation,
                              TimelineState* state) const;
 
  private:

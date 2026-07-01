@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -79,7 +80,7 @@ ScrollableArea* GetScrollableAreaForLayoutBox(
 mojom::blink::ScrollAlignment ResolveToPhysicalAlignment(
     V8ScrollLogicalPosition::Enum inline_alignment,
     V8ScrollLogicalPosition::Enum block_alignment,
-    ScrollOrientation axis,
+    PhysicalAxis axis,
     const ComputedStyle& computed_style);
 
 V8ScrollLogicalPosition::Enum SnapAlignmentToV8ScrollLogicalPosition(
@@ -107,7 +108,7 @@ mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
 
 mojom::blink::ScrollAlignment PhysicalAlignmentFromSnapAlignStyle(
     const LayoutObject&,
-    ScrollOrientation axis);
+    PhysicalAxis axis);
 
 }  // namespace scroll_into_view_util
 

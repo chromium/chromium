@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/scroll_manager.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -251,10 +252,10 @@ void AutoscrollController::StartAutoscrollForSelectionToPoint(
 
 bool CanScrollDirection(LayoutBox* layout_box,
                         Page* page,
-                        ScrollOrientation orientation) {
+                        PhysicalAxis orientation) {
   DCHECK(layout_box);
 
-  bool can_scroll = orientation == ScrollOrientation::kHorizontalScroll
+  bool can_scroll = orientation == PhysicalAxis::kHorizontal
                         ? layout_box->HasScrollableOverflowX()
                         : layout_box->HasScrollableOverflowY();
 
@@ -264,10 +265,9 @@ bool CanScrollDirection(LayoutBox* layout_box,
     // See comments on crrev.com/c/2109286
     ScrollOffset maximum_scroll_offset =
         page->GetVisualViewport().MaximumScrollOffset();
-    can_scroll =
-        can_scroll || (orientation == ScrollOrientation::kHorizontalScroll
-                           ? maximum_scroll_offset.x() > 0
-                           : maximum_scroll_offset.y() > 0);
+    can_scroll = can_scroll || (orientation == PhysicalAxis::kHorizontal
+                                    ? maximum_scroll_offset.x() > 0
+                                    : maximum_scroll_offset.y() > 0);
   }
 
   return can_scroll;
@@ -318,11 +318,11 @@ void AutoscrollController::HandleMouseMoveForMiddleClickAutoscroll(
   bool can_scroll_vertically =
       vertical_autoscroll_possible &&
       CanScrollDirection(vertical_autoscroll_layout_box_, frame->GetPage(),
-                         ScrollOrientation::kVerticalScroll);
+                         PhysicalAxis::kVertical);
   bool can_scroll_horizontally =
       horizontal_autoscroll_possible &&
       CanScrollDirection(horizontal_autoscroll_layout_box_, frame->GetPage(),
-                         ScrollOrientation::kHorizontalScroll);
+                         PhysicalAxis::kHorizontal);
 
   if (velocity != last_velocity_) {
     last_velocity_ = velocity;
@@ -405,7 +405,7 @@ void AutoscrollController::StartMiddleClickAutoscroll(
       // scrollable area.
       if (can_propagate_vertically &&
           CanScrollDirection(layout_box, frame->GetPage(),
-                             ScrollOrientation::kVerticalScroll) &&
+                             PhysicalAxis::kVertical) &&
           !vertical_autoscroll_layout_box_) {
         vertical_autoscroll_layout_box_ = layout_box;
         can_scroll_vertically = true;
@@ -414,7 +414,7 @@ void AutoscrollController::StartMiddleClickAutoscroll(
       // scrollable area.
       if (can_propagate_horizontally &&
           CanScrollDirection(layout_box, frame->GetPage(),
-                             ScrollOrientation::kHorizontalScroll) &&
+                             PhysicalAxis::kHorizontal) &&
           !horizontal_autoscroll_layout_box_) {
         horizontal_autoscroll_layout_box_ = layout_box;
         can_scroll_horizontally = true;

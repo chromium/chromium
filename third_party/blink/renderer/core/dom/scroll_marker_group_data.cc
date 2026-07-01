@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
@@ -31,7 +32,7 @@ Element* ScrollTargetElement(Element* scroll_marker) {
 }
 
 mojom::blink::ScrollAlignment GetAlignmentForScrollTarget(
-    ScrollOrientation axis,
+    PhysicalAxis axis,
     const LayoutObject* target_object) {
   cc::ScrollSnapAlign snap = target_object->StyleRef().GetScrollSnapAlign();
 
@@ -112,9 +113,9 @@ std::optional<double> ScrollMarkerChooser::GetScrollTargetPosition(
   rect_to_scroll.Expand(scroll_margin);
 
   mojom::blink::ScrollAlignment align_y =
-      GetAlignmentForScrollTarget(kVerticalScroll, target_object);
+      GetAlignmentForScrollTarget(PhysicalAxis::kVertical, target_object);
   mojom::blink::ScrollAlignment align_x =
-      GetAlignmentForScrollTarget(kHorizontalScroll, target_object);
+      GetAlignmentForScrollTarget(PhysicalAxis::kHorizontal, target_object);
   ScrollOffset target_scroll_offset =
       scroll_into_view_util::GetScrollOffsetToExpose(
           *scrollable_area_, rect_to_scroll, scroll_margin, align_x, align_y);

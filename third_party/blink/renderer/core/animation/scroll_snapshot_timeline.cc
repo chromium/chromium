@@ -267,11 +267,11 @@ void ScrollSnapshotTimeline::UpdateCompositorTimeline() {
 
 void ScrollSnapshotTimeline::CalculateScrollLimits(
     PaintLayerScrollableArea* scrollable_area,
-    ScrollOrientation physical_orientation,
+    PhysicalAxis physical_orientation,
     TimelineState* state) const {
   ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
                                    scrollable_area->MinimumScrollOffset();
-  double end_offset = physical_orientation == kHorizontalScroll
+  double end_offset = physical_orientation == PhysicalAxis::kHorizontal
                           ? scroll_dimensions.x()
                           : scroll_dimensions.y();
   state->scroll_limits = std::make_optional<ScrollOffsets>(0, end_offset);

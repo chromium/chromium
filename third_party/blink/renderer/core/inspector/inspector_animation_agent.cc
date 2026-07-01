@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/scroll_snapshot_timeline.h"
+#include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/view_timeline.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
@@ -44,6 +45,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_style_sheet.h"
 #include "third_party/blink/renderer/core/inspector/protocol/animation.h"
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -55,25 +57,6 @@
 namespace blink {
 
 namespace {
-
-protocol::DOM::ScrollOrientation ToScrollOrientation(
-    ScrollSnapshotTimeline::ScrollAxis scroll_axis_enum,
-    bool is_horizontal_writing_mode) {
-  switch (scroll_axis_enum) {
-    case ScrollSnapshotTimeline::ScrollAxis::kBlock:
-      return is_horizontal_writing_mode
-                 ? protocol::DOM::ScrollOrientationEnum::Vertical
-                 : protocol::DOM::ScrollOrientationEnum::Horizontal;
-    case ScrollSnapshotTimeline::ScrollAxis::kInline:
-      return is_horizontal_writing_mode
-                 ? protocol::DOM::ScrollOrientationEnum::Horizontal
-                 : protocol::DOM::ScrollOrientationEnum::Vertical;
-    case ScrollSnapshotTimeline::ScrollAxis::kX:
-      return protocol::DOM::ScrollOrientationEnum::Horizontal;
-    case ScrollSnapshotTimeline::ScrollAxis::kY:
-      return protocol::DOM::ScrollOrientationEnum::Vertical;
-  }
-}
 
 double NormalizedDuration(
     V8UnionCSSNumericValueOrStringOrUnrestrictedDouble* duration) {
@@ -214,12 +197,14 @@ BuildObjectForViewOrScrollTimeline(AnimationTimeline* timeline) {
       return nullptr;
     }
 
+    PhysicalAxis physical_axis = ScrollTimeline::ResolvePhysicalAxis(
+        scroll_snapshot_timeline->GetAxis(), *scroll_container);
     std::unique_ptr<protocol::Animation::ViewOrScrollTimeline> timeline_object =
         protocol::Animation::ViewOrScrollTimeline::create()
             .setSourceNodeId(IdentifiersFactory::IntIdForNode(resolved_source))
-            .setAxis(ToScrollOrientation(
-                scroll_snapshot_timeline->GetAxis(),
-                scroll_container->IsHorizontalWritingMode()))
+            .setAxis(physical_axis == PhysicalAxis::kHorizontal
+                         ? protocol::DOM::ScrollOrientationEnum::Horizontal
+                         : protocol::DOM::ScrollOrientationEnum::Vertical)
             .build();
     std::optional<ScrollSnapshotTimeline::ScrollOffsets> scroll_offsets =
         scroll_snapshot_timeline->GetResolvedScrollOffsets();

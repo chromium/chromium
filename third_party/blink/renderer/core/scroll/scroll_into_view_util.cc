@@ -539,12 +539,12 @@ mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
 mojom::blink::ScrollAlignment ResolveToPhysicalAlignment(
     V8ScrollLogicalPosition::Enum inline_alignment,
     V8ScrollLogicalPosition::Enum block_alignment,
-    ScrollOrientation axis,
+    PhysicalAxis axis,
     const ComputedStyle& computed_style) {
   bool is_horizontal_writing_mode = computed_style.IsHorizontalWritingMode();
   V8ScrollLogicalPosition::Enum alignment =
-      ((axis == kHorizontalScroll && is_horizontal_writing_mode) ||
-       (axis == kVerticalScroll && !is_horizontal_writing_mode))
+      ((axis == PhysicalAxis::kHorizontal && is_horizontal_writing_mode) ||
+       (axis == PhysicalAxis::kVertical && !is_horizontal_writing_mode))
           ? inline_alignment
           : block_alignment;
 
@@ -559,7 +559,7 @@ mojom::blink::ScrollAlignment ResolveToPhysicalAlignment(
         computed_style.GetWritingDirection(), ScrollAlignment::TopAlways,
         ScrollAlignment::RightAlways, ScrollAlignment::BottomAlways,
         ScrollAlignment::LeftAlways);
-    if (axis == kHorizontalScroll) {
+    if (axis == PhysicalAxis::kHorizontal) {
       return is_horizontal_writing_mode ? (*to_logical.InlineStart())()
                                         : (*to_logical.BlockStart())();
     } else {
@@ -572,7 +572,7 @@ mojom::blink::ScrollAlignment ResolveToPhysicalAlignment(
         computed_style.GetWritingDirection(), ScrollAlignment::TopAlways,
         ScrollAlignment::RightAlways, ScrollAlignment::BottomAlways,
         ScrollAlignment::LeftAlways);
-    if (axis == kHorizontalScroll) {
+    if (axis == PhysicalAxis::kHorizontal) {
       return is_horizontal_writing_mode ? (*to_logical.InlineEnd())()
                                         : (*to_logical.BlockEnd())();
     } else {
@@ -583,11 +583,13 @@ mojom::blink::ScrollAlignment ResolveToPhysicalAlignment(
 
   // Default values
   if (is_horizontal_writing_mode) {
-    return (axis == kHorizontalScroll) ? ScrollAlignment::ToEdgeIfNeeded()
-                                       : ScrollAlignment::TopAlways();
+    return (axis == PhysicalAxis::kHorizontal)
+               ? ScrollAlignment::ToEdgeIfNeeded()
+               : ScrollAlignment::TopAlways();
   }
-  return (axis == kHorizontalScroll) ? ScrollAlignment::LeftAlways()
-                                     : ScrollAlignment::ToEdgeIfNeeded();
+  return (axis == PhysicalAxis::kHorizontal)
+             ? ScrollAlignment::LeftAlways()
+             : ScrollAlignment::ToEdgeIfNeeded();
 }
 
 V8ScrollLogicalPosition::Enum SnapAlignmentToV8ScrollLogicalPosition(
@@ -630,10 +632,10 @@ mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
         computed_style.GetScrollSnapAlign().alignment_inline);
   }
 
-  auto align_x = ResolveToPhysicalAlignment(inline_align, block_align,
-                                            kHorizontalScroll, computed_style);
-  auto align_y = ResolveToPhysicalAlignment(inline_align, block_align,
-                                            kVerticalScroll, computed_style);
+  auto align_x = ResolveToPhysicalAlignment(
+      inline_align, block_align, PhysicalAxis::kHorizontal, computed_style);
+  auto align_y = ResolveToPhysicalAlignment(
+      inline_align, block_align, PhysicalAxis::kVertical, computed_style);
 
   mojom::blink::ScrollIntoViewParamsPtr params =
       CreateScrollIntoViewParams(align_x, align_y);
@@ -752,7 +754,7 @@ ScrollOffset GetScrollOffsetToExpose(
 
 mojom::blink::ScrollAlignment PhysicalAlignmentFromSnapAlignStyle(
     const LayoutObject& object,
-    ScrollOrientation axis) {
+    PhysicalAxis axis) {
   cc::ScrollSnapAlign snap = object.StyleRef().GetScrollSnapAlign();
   return ResolveToPhysicalAlignment(
       SnapAlignmentToV8ScrollLogicalPosition(snap.alignment_inline),
