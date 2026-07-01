@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #import <Cocoa/Cocoa.h>
+#include <CoreGraphics/CoreGraphics.h>
 
+#include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
 #import "skia/ext/skia_utils_mac.h"
 #include "ui/color/color_id.h"
@@ -66,6 +68,39 @@ NSAppearance* AppearanceForKey(const ColorProviderKey& key) {
   }
 }
 
+SkColor NSSystemColorToSkColor(NSColor* color) {
+  // It is expected that the colors that will flow through this function will be
+  // catalog colors. Being a catalog color means that it doesn't have explicit
+  // components, so convert it to a color that has components. If that resulting
+  // color can be converted, then we're done here.
+  NSColor* device_color =
+      [color colorUsingColorSpace:NSColorSpace.deviceRGBColorSpace];
+  if (device_color) {
+    return skia::NSDeviceColorToSkColor(device_color);
+  }
+
+  // Sometimes the conversion is not possible, but we can get an approximation
+  // by going through a CGColorRef. TODO: Is this still the case? What is the
+  // situation where converting as an NSColor fails but converting as a
+  // CGColorRef succeeds?
+  CGColorRef cg_color = color.CGColor;
+  size_t component_count = CGColorGetNumberOfComponents(cg_color);
+
+  // 4 components means RGBA.
+  if (component_count == 4) {
+    return skia::CGColorRefToSkColor(cg_color);
+  }
+
+  // 1-2 components means a grayscale channel and maybe an alpha channel, which
+  // CGColorRefToSkColor will not like. But RGB is additive, so the conversion
+  // is easy (RGB to grayscale is less easy).
+  CHECK(component_count == 1 || component_count == 2);
+  float gray_value = *CGColorGetComponents(cg_color);
+  float alpha_value = CGColorGetAlpha(cg_color);
+
+  return SkColor4f{gray_value, gray_value, gray_value, alpha_value}.toSkColor();
+}
+
 }  // namespace
 
 void AddNativeCoreColorMixer(ColorProvider* provider,
@@ -73,8 +108,7 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
   auto load_colors = ^{
     ColorMixer& mixer = provider->AddMixer();
     mixer[kColorItemHighlight] = {SkColorSetA(
-        skia::NSSystemColorToSkColor(NSColor.keyboardFocusIndicatorColor),
-        0x66)};
+        NSSystemColorToSkColor(NSColor.keyboardFocusIndicatorColor), 0x66)};
   };
 
   [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
@@ -83,9 +117,9 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
 void AddNativeColorSetInColorMixer(ColorMixer& mixer) {
   mixer[kColorMenuBorder] = {SkColorSetA(SK_ColorBLACK, 0x60)};
   mixer[kColorMenuItemForegroundDisabled] = {
-      skia::NSSystemColorToSkColor(NSColor.disabledControlTextColor)};
+      NSSystemColorToSkColor(NSColor.disabledControlTextColor)};
   mixer[kColorMenuItemForeground] = {
-      skia::NSSystemColorToSkColor(NSColor.controlTextColor)};
+      NSSystemColorToSkColor(NSColor.controlTextColor)};
 }
 
 void AddNativeUiColorMixer(ColorProvider* provider,
@@ -97,15 +131,15 @@ void AddNativeUiColorMixer(ColorProvider* provider,
 
     AddNativeColorSetInColorMixer(mixer);
 
-    mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
-        NSColor.alternatingContentBackgroundColors[1])};
+    mixer[kColorTableBackgroundAlternate] = {
+        NSSystemColorToSkColor(NSColor.alternatingContentBackgroundColors[1])};
     if (!key.user_color.has_value()) {
       mixer[kColorSysStateFocusRing] = PickGoogleColor(
-          skia::NSSystemColorToSkColor(NSColor.keyboardFocusIndicatorColor),
+          NSSystemColorToSkColor(NSColor.keyboardFocusIndicatorColor),
           kColorSysBase, color_utils::kMinimumVisibleContrastRatio);
 
       const SkColor system_highlight_color =
-          skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor);
+          NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor);
       mixer[kColorTextSelectionBackground] = {system_highlight_color};
 
       // TODO(crbug.com/40074489): Address accessibility for mac highlight

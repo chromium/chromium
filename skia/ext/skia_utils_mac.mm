@@ -167,37 +167,6 @@ CGRect SkRectToCGRect(const SkRect& rect) {
   return cg_rect;
 }
 
-SkColor NSSystemColorToSkColor(NSColor* color) {
-  // System colors use the an NSNamedColorSpace called "System", so first step
-  // is to convert the color into something that can be worked with.
-  NSColor* device_color =
-      [color colorUsingColorSpace:NSColorSpace.deviceRGBColorSpace];
-  if (device_color) {
-    return NSDeviceColorToSkColor(device_color);
-  }
-
-  // Sometimes the conversion is not possible, but we can get an approximation
-  // by going through a CGColorRef. Note that simply using NSColor methods for
-  // accessing components for system colors results in exceptions like
-  // "-numberOfComponents not valid for the NSColor NSNamedColorSpace System
-  // windowBackgroundColor; need to first convert colorspace." Hence the
-  // conversion first to CGColor.
-  base::span<const CGFloat> components = AsSpan(color.CGColor);
-
-  // 4 components means RGBA.
-  if (components.size() == 4) {
-    return CGColorRefToSkColor(color.CGColor);
-  }
-
-  CHECK(components.size() == 1 || components.size() == 2);
-  // 1-2 components means a grayscale channel and maybe an alpha channel, which
-  // CGColorRefToSkColor will not like. But RGB is additive, so the conversion
-  // is easy (RGB to grayscale is less easy).
-  CGFloat alpha = components.size() == 2 ? components[1] : 1.0f;
-  return SkColor4f{components[0], components[0], components[0], alpha}
-      .toSkColor();
-}
-
 SkColor CGColorRefToSkColor(CGColorRef color) {
   base::apple::ScopedCFTypeRef<CGColorRef> cg_color(
       CGColorCreateCopyByMatchingToColorSpace(base::mac::GetSRGBColorSpace(),

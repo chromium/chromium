@@ -18,7 +18,7 @@ namespace ui {
 // Maps the native Mac system colors to their corresponding CSS system colors.
 void MapNativeColorsToCssSystemColors(ColorMixer& mixer, ColorProviderKey key) {
   // The default blue color for the system highlight, can be obtained through:
-  // `skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor)`.
+  // `NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor)`.
   // This results in #b3d7ff.
   //
   // The actual system color isn't used due to fingerprinting concerns.
