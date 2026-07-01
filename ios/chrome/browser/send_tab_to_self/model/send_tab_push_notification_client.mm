@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/send_tab_to_self/features.h"
+#import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -153,19 +154,29 @@ void SendTabPushNotificationClient::LoadSendTabUrlInNewTab(
 
   if (entry) {
     send_tab_model->MarkEntryOpened(std::string(identifier));
+    send_tab_model->MarkEntryActivated(
+        identifier,
+        send_tab_to_self::ShareActivatedEntryPoint::kMobileNotification);
   }
 
-  if (IsProvisionalNotificationAlertEnabled()) {
-    AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
-    id<SystemIdentity> identity = authService->GetPrimaryIdentity();
-    if (!push_notification_settings::
-            GetMobileNotificationPermissionStatusForClient(
-                PushNotificationClientId::kSendTab, identity.gaiaId)) {
-      PushNotificationService* service =
-          GetApplicationContext()->GetPushNotificationService();
-      service->SetPreference(identity.gaiaId,
-                             PushNotificationClientId::kSendTab, true);
-    }
+  if (!IsProvisionalNotificationAlertEnabled()) {
+    return;
+  }
+
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
+  id<SystemIdentity> identity =
+      auth_service ? auth_service->GetPrimaryIdentity() : nil;
+  if (!identity) {
+    return;
+  }
+
+  if (!push_notification_settings::
+          GetMobileNotificationPermissionStatusForClient(
+              PushNotificationClientId::kSendTab, identity.gaiaId)) {
+    PushNotificationService* service =
+        GetApplicationContext()->GetPushNotificationService();
+    service->SetPreference(identity.gaiaId, PushNotificationClientId::kSendTab,
+                           true);
   }
 }

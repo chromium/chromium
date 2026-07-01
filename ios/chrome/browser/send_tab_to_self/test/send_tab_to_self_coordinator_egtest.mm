@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -987,6 +988,92 @@ void DismissSnackbar() {
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(labelText),
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests that when a shared tab is auto-opened, the activation tracking survives
+// an app relaunch, and viewing the restored tab from the Tab Grid correctly
+// logs the activation metrics (both the entry point and the time from opened to
+// activated).
+- (void)testTabCardActivationLogsMetrics {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+
+  // Load a starting page so there is an active, visible WebState.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+
+  NSUInteger initialTabCount = [ChromeEarlGrey mainTabCount];
+
+  // Receive a shared tab.
+  [ChromeEarlGrey addFakeSyncServerSendTabToSelfEntryWithURL:kExampleURL
+                                                       title:@"AutoOpen Page"
+                                                  deviceName:@"remote_device"
+                                            targetDeviceGUID:@""];
+  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
+
+  // Wait for the background tab to open.
+  [ChromeEarlGrey waitForMainTabCount:initialTabCount + 1];
+
+  // Relaunch the app with the fake identity.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  config.additional_args.push_back(base::StrCat({
+    "-", test_switches::kAddFakeIdentitiesAtStartup, "=",
+        [FakeSystemIdentity encodeIdentitiesToBase64:@[ identity ]]
+  }));
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Setup the histogram tester AFTER relaunch, since relaunching wipes the
+  // previous app-side histogram tester.
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+  [self addTeardownBlock:^{
+    [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                  @"Cannot reset histogram tester.");
+  }];
+
+  // Enter the Tab Grid (this triggers lazy recreation of the card label and
+  // re-attaches the tracker).
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Verify that the activation metrics histograms have NOT been logged yet.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"Sharing.SendTabToSelf.ActivatedEntryPoint"],
+      @"Sharing.SendTabToSelf.ActivatedEntryPoint logged prematurely.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"Sharing.SendTabToSelf.TimeOpenedToActivated"],
+      @"Sharing.SendTabToSelf.TimeOpenedToActivated logged prematurely.");
+
+  // Tap the restored background tab (index 1) to view/activate it.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(1)]
+      performAction:grey_tap()];
+
+  // Verify that the activation metrics histograms were logged successfully.
+  // 1. Sharing.SendTabToSelf.ActivatedEntryPoint should have 1 sample in bucket
+  // 4 (kTabStrip).
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:4  // ShareActivatedEntryPoint::kTabStrip
+                                         // is 4
+                         forHistogram:
+                             @"Sharing.SendTabToSelf.ActivatedEntryPoint"],
+      @"Sharing.SendTabToSelf.ActivatedEntryPoint histogram not logged.");
+
+  // 2. Sharing.SendTabToSelf.TimeOpenedToActivated should have exactly 1
+  // sample.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:@"Sharing.SendTabToSelf.TimeOpenedToActivated"],
+      @"Sharing.SendTabToSelf.TimeOpenedToActivated histogram not logged.");
 }
 
 @end

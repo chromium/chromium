@@ -6,6 +6,8 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "components/send_tab_to_self/fake_send_tab_to_self_model.h"
+#import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -24,6 +26,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -39,7 +42,11 @@ class SendTabPushNotificationClientTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
-        SendTabToSelfSyncServiceFactory::GetDefaultFactory());
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  send_tab_to_self::StubSendTabToSelfSyncService>();
+            }));
 
     ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
@@ -59,6 +66,9 @@ class SendTabPushNotificationClientTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:application_handler_
                      forProtocol:@protocol(SceneCommands)];
+    model_ = static_cast<send_tab_to_self::FakeSendTabToSelfModel*>(
+        SendTabToSelfSyncServiceFactory::GetForProfile(profile)
+            ->GetSendTabToSelfModel());
   }
 
   void TearDown() override {
@@ -70,27 +80,34 @@ class SendTabPushNotificationClientTest : public PlatformTest {
   }
 
   // Returns a mock UNNotificationResponse.
-  id MockRequestResponse(bool is_send_tab_notification) {
+  id MockRequestResponse(bool is_send_tab_notification,
+                         const std::string& guid = "") {
     mock_response_ = OCMClassMock([UNNotificationResponse class]);
     OCMStub([mock_response_ notification])
-        .andReturn(MockNotification(is_send_tab_notification));
+        .andReturn(MockNotification(is_send_tab_notification, guid));
     return mock_response_;
   }
 
   // Returns a mock UNNotification.
-  id MockNotification(bool is_send_tab_notification) {
-    UNNotificationRequest* request = CreateRequest(is_send_tab_notification);
+  id MockNotification(bool is_send_tab_notification,
+                      const std::string& guid = "") {
+    UNNotificationRequest* request =
+        CreateRequest(is_send_tab_notification, guid);
     mock_notification_ = OCMClassMock([UNNotification class]);
     OCMStub([mock_notification_ request]).andReturn(request);
     return mock_notification_;
   }
 
-  id CreateRequest(bool is_send_tab_notification) {
+  id CreateRequest(bool is_send_tab_notification,
+                   const std::string& guid = "") {
     NSMutableDictionary<NSString*, id>* payload =
         [[NSMutableDictionary alloc] init];
     [payload setObject:@"https://www.example.com" forKey:@"url"];
     if (is_send_tab_notification) {
       [payload setObject:@"6" forKey:@"push_notification_client_id"];
+      if (!guid.empty()) {
+        [payload setObject:base::SysUTF8ToNSString(guid) forKey:@"SendTabGuid"];
+      }
     }
 
     UNMutableNotificationContent* content =
@@ -111,6 +128,7 @@ class SendTabPushNotificationClientTest : public PlatformTest {
   id mock_scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<SendTabPushNotificationClient> client_;
+  raw_ptr<send_tab_to_self::FakeSendTabToSelfModel> model_;
   id<SceneCommands> application_handler_;
   id mock_notification_center_;
   id mock_application_handler_;
@@ -118,18 +136,32 @@ class SendTabPushNotificationClientTest : public PlatformTest {
   id mock_notification_;
 };
 
-// TODO(crbug.com/422441614): re-enable.
-TEST_F(SendTabPushNotificationClientTest,
-       DISABLED_TestNotificationInteraction) {
-  bool handle_interaction = client_->HandleNotificationInteraction(
-      MockRequestResponse(/*is_send_tab_notification=*/true));
+TEST_F(SendTabPushNotificationClientTest, TestNotificationInteraction) {
+  // Add an entry to the fake model.
+  const send_tab_to_self::SendTabToSelfEntry* entry = model_->AddEntryRemotely(
+      GURL("https://www.example.com"), "title", "device",
+      send_tab_to_self::PageContext(), send_tab_to_self::NavigationHistory());
+  std::string guid = entry->GetGUID();
 
-  // Check destination URL loaded.
+  // Set up expectation BEFORE the action.
   OCMExpect([application_handler_
       openURLInNewTab:[OCMArg checkWithBlock:^(OpenNewTabCommand* command) {
-        return command.URL == "https://www.example.com/";
+        EXPECT_EQ(GURL("https://www.example.com/"), command.URL);
+        EXPECT_NSEQ(base::SysUTF8ToNSString(guid),
+                    command.sendTabToSelfEntryGUID);
+        return YES;
       }]]);
+
+  // Trigger the interaction.
+  bool handle_interaction = client_->HandleNotificationInteraction(
+      MockRequestResponse(/*is_send_tab_notification=*/true, guid));
   EXPECT_TRUE(handle_interaction);
+
+  // Assert that the entry was marked opened and activated!
+  EXPECT_EQ(guid, model_->last_opened_guid());
+  EXPECT_EQ(guid, model_->last_activated_guid());
+  EXPECT_EQ(model_->last_activated_entry_point(),
+            send_tab_to_self::ShareActivatedEntryPoint::kMobileNotification);
 }
 
 TEST_F(SendTabPushNotificationClientTest,

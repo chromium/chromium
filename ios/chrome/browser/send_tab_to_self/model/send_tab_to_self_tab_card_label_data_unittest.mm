@@ -132,31 +132,40 @@ TEST_F(SendTabToSelfTabCardLabelDataTest, MatchingEntryViewed) {
 // automatically when the tab is shown.
 TEST_F(SendTabToSelfTabCardLabelDataTest, WasShownClearsLabel) {
   web::FakeWebState web_state;
+  web_state.SetBrowserState(profile_.get());
 
   // No label data should be attached initially.
   EXPECT_EQ(nullptr, SendTabToSelfTabCardLabelData::FromWebState(&web_state));
 
   // Attach the label.
-  SendTabToSelfTabCardLabelData::CreateForWebState(&web_state, "remote_device");
+  SendTabToSelfTabCardLabelData::CreateForWebState(&web_state, "test_guid",
+                                                   "remote_device");
 
   EXPECT_NE(nullptr, SendTabToSelfTabCardLabelData::FromWebState(&web_state));
   EXPECT_NSEQ(
       @"From remote_device",
       SendTabToSelfTabCardLabelData::GetLabelTextForWebState(&web_state));
 
-  // Simulating viewing the tab should clear the label.
+  // Simulating viewing the tab should clear the label and log activation.
+  EXPECT_EQ(model_->last_activated_guid(), "");
   web_state.WasShown();
   EXPECT_EQ(nullptr, SendTabToSelfTabCardLabelData::FromWebState(&web_state));
+  EXPECT_EQ(model_->last_activated_guid(), "test_guid");
+  EXPECT_EQ(model_->last_activated_entry_point(),
+            send_tab_to_self::ShareActivatedEntryPoint::kTabStrip);
 }
 
 // Tests that the label data is successfully cleaned up when the WebState is
-// destroyed without ever being shown.
+// destroyed without ever being shown. Also crucial for verifying that raw
+// destruction (which occurs during browser shutdown) does NOT log any
+// activation or abandonment metrics.
 TEST_F(SendTabToSelfTabCardLabelDataTest, WebStateDestroyedClearsLabel) {
   auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(profile_.get());
 
   // Attach the label.
-  SendTabToSelfTabCardLabelData::CreateForWebState(web_state.get(),
-                                                   "remote_device");
+  SendTabToSelfTabCardLabelData::CreateForWebState(
+      web_state.get(), "destroy_guid", "remote_device");
 
   // Verify it is attached.
   EXPECT_NE(nullptr,
@@ -165,6 +174,56 @@ TEST_F(SendTabToSelfTabCardLabelDataTest, WebStateDestroyedClearsLabel) {
   // Destroy the WebState. This will trigger WebStateDestroyed, removing the
   // observer and safely destructing the label data.
   web_state.reset();
+  // Verify that no metrics were logged. This ensures we don't log abandonment
+  // during browser shutdown or tab strip destruction.
+  EXPECT_EQ(model_->last_activated_guid(), "");
+}
+
+// Tests that the activation metric is logged even if the model is not ready
+// when the tab is shown.
+TEST_F(SendTabToSelfTabCardLabelDataTest, WasShownLogsMetricWhenModelNotReady) {
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(profile_.get());
+
+  // Attach the label.
+  SendTabToSelfTabCardLabelData::CreateForWebState(&web_state, "test_guid",
+                                                   "remote_device");
+
+  // Set the model to not ready.
+  model_->SetIsReady(false);
+
+  // Simulating viewing the tab should clear the label and log activation
+  // even if the model is not ready.
+  EXPECT_EQ(model_->last_activated_guid(), "");
+  web_state.WasShown();
+  EXPECT_EQ(nullptr, SendTabToSelfTabCardLabelData::FromWebState(&web_state));
+  EXPECT_EQ(model_->last_activated_guid(), "test_guid");
+  EXPECT_EQ(model_->last_activated_entry_point(),
+            send_tab_to_self::ShareActivatedEntryPoint::kTabStrip);
+}
+
+// Tests that WebStateClosedByUser logs the abandonment metric.
+TEST_F(SendTabToSelfTabCardLabelDataTest, WebStateClosedByUserLogsMetric) {
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(profile_.get());
+
+  // Attach the label.
+  SendTabToSelfTabCardLabelData::CreateForWebState(&web_state, "test_guid",
+                                                   "remote_device");
+
+  EXPECT_EQ(model_->last_activated_guid(), "");
+
+  SendTabToSelfTabCardLabelData* label_data =
+      SendTabToSelfTabCardLabelData::FromWebState(&web_state);
+  ASSERT_NE(nullptr, label_data);
+
+  // Simulating the user closing the tab should log abandonment.
+  label_data->WebStateClosedByUser(&web_state);
+
+  EXPECT_EQ(model_->last_activated_guid(), "test_guid");
+  EXPECT_EQ(model_->last_activated_entry_point(),
+            send_tab_to_self::ShareActivatedEntryPoint::
+                kTabOrBrowserClosedWithoutActivation);
 }
 
 // Tests that the label data automatically expires after 5 days.
@@ -172,7 +231,8 @@ TEST_F(SendTabToSelfTabCardLabelDataTest, ExpiryClearsLabel) {
   web::FakeWebState web_state;
 
   // Attach the label.
-  SendTabToSelfTabCardLabelData::CreateForWebState(&web_state, "remote_device");
+  SendTabToSelfTabCardLabelData::CreateForWebState(&web_state, "expiry_guid",
+                                                   "remote_device");
 
   SendTabToSelfTabCardLabelData* label_data =
       SendTabToSelfTabCardLabelData::FromWebState(&web_state);

@@ -6,6 +6,7 @@
 
 #import "base/strings/utf_string_conversions.h"
 #import "components/send_tab_to_self/features.h"
+#import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -28,7 +29,7 @@ bool IsTimestampExpired(base::Time timestamp) {
   return base::Time::Now() - timestamp > kLabelExpirationDelay;
 }
 
-// Returns the SendTabToSelfModel for the given `web_state` if it is ready.
+// Returns the SendTabToSelfModel for the given `web_state` if it exists.
 // Returns nullptr otherwise.
 send_tab_to_self::SendTabToSelfModel* GetSendTabToSelfModel(
     web::WebState* web_state) {
@@ -41,7 +42,7 @@ send_tab_to_self::SendTabToSelfModel* GetSendTabToSelfModel(
   }
   send_tab_to_self::SendTabToSelfModel* model =
       service->GetSendTabToSelfModel();
-  return (model && model->IsReady()) ? model : nullptr;
+  return model;
 }
 
 // Returns the SendTabToSelfEntry corresponding to `web_state` using URL-based
@@ -93,9 +94,11 @@ const send_tab_to_self::SendTabToSelfEntry* GetUnviewedMatchingEntry(
 
 SendTabToSelfTabCardLabelData::SendTabToSelfTabCardLabelData(
     web::WebState* web_state,
+    const std::string& entry_guid,
     const std::string& sender_device_name,
     base::Time creation_time)
-    : sender_device_name_(base::UTF8ToUTF16(sender_device_name)),
+    : entry_guid_(entry_guid),
+      sender_device_name_(base::UTF8ToUTF16(sender_device_name)),
       creation_time_(creation_time) {
   // Registers as an observer to detect when the tab is shown to the user.
   web_state_observation_.Observe(web_state);
@@ -132,7 +135,7 @@ NSString* SendTabToSelfTabCardLabelData::GetLabelTextForWebState(
 
   send_tab_to_self::SendTabToSelfModel* model =
       GetSendTabToSelfModel(web_state);
-  if (!model) {
+  if (!model || !model->IsReady()) {
     return nil;
   }
 
@@ -145,7 +148,7 @@ NSString* SendTabToSelfTabCardLabelData::GetLabelTextForWebState(
   // If the WebState is realized, attach the UserData to observe `WasShown` and
   // optimize future calls.
   if (web_state->IsRealized()) {
-    CreateForWebState(web_state, entry->GetDeviceName(),
+    CreateForWebState(web_state, entry->GetGUID(), entry->GetDeviceName(),
                       entry->GetOpenedTime());
   }
 
@@ -159,9 +162,30 @@ NSString* SendTabToSelfTabCardLabelData::GetLabelText(
       IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE, device_name);
 }
 
+void SendTabToSelfTabCardLabelData::WebStateClosedByUser(
+    web::WebState* web_state) {
+  // Logs abandonment because the user closed the tab without activating it.
+  MarkEntryActivated(web_state, send_tab_to_self::ShareActivatedEntryPoint::
+                                    kTabOrBrowserClosedWithoutActivation);
+}
+
+void SendTabToSelfTabCardLabelData::MarkEntryActivated(
+    web::WebState* web_state,
+    send_tab_to_self::ShareActivatedEntryPoint entry_point) {
+  // Retrieves the model and marks the entry as activated/interacted with,
+  // which will trigger the appropriate telemetry logging.
+  send_tab_to_self::SendTabToSelfModel* model =
+      GetSendTabToSelfModel(web_state);
+  if (model) {
+    model->MarkEntryActivated(entry_guid_, entry_point);
+  }
+}
+
 #pragma mark - web::WebStateObserver
 
 void SendTabToSelfTabCardLabelData::WasShown(web::WebState* web_state) {
+  MarkEntryActivated(web_state,
+                     send_tab_to_self::ShareActivatedEntryPoint::kTabStrip);
   // Deletes itself since the tab is now viewed.
   RemoveFromWebState(web_state);
 }
