@@ -60,11 +60,14 @@ Matcher<MemorySearchResult> IsMemorySearchResult(
     const std::u16string& value,
     const std::u16string& type_name,
     Matcher<std::vector<EntryMetadata>> metadata_matcher,
-    bool is_obfuscated = false) {
+    bool is_obfuscated = false,
+    std::variant<std::monostate, std::string, int64_t> identifier =
+        std::monostate()) {
   return AllOf(Field(&MemorySearchResult::value, Eq(value)),
                Field(&MemorySearchResult::type_name, Eq(type_name)),
                Field(&MemorySearchResult::is_obfuscated, Eq(is_obfuscated)),
-               Field(&MemorySearchResult::metadata_list, metadata_matcher));
+               Field(&MemorySearchResult::metadata_list, metadata_matcher),
+               Field(&MemorySearchResult::identifier, Eq(identifier)));
 }
 
 std::vector<MemorySearchResult> RetrieveAllHelper(
@@ -127,6 +130,7 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_Empty) {
 // PersonalDataManager.
 TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
   AutofillProfile profile = test::GetFullProfile();
+  profile.set_guid(test::MakeGuid(1));
   client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
 
   EXPECT_THAT(
@@ -140,7 +144,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
                          u"666 Erebus St.\nApt 8"),
               IsMetadata(MemoryDataType::kAddressState, u"CA"),
               IsMetadata(MemoryDataType::kAddressZip, u"91111"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")))));
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+          /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
       RetrieveAllHelper(retriever(),
@@ -153,7 +158,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
                          u"666 Erebus St.\nApt 8"),
               IsMetadata(MemoryDataType::kAddressCity, u"Elysium"),
               IsMetadata(MemoryDataType::kAddressState, u"CA"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")))));
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+          /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
       RetrieveAllHelper(retriever(),
@@ -166,7 +172,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
                          u"666 Erebus St.\nApt 8"),
               IsMetadata(MemoryDataType::kAddressCity, u"Elysium"),
               IsMetadata(MemoryDataType::kAddressZip, u"91111"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")))));
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+          /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(RetrieveAllHelper(
                   retriever(),
@@ -179,7 +186,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
                                  u"666 Erebus St.\nApt 8"),
                       IsMetadata(MemoryDataType::kAddressCity, u"Elysium"),
                       IsMetadata(MemoryDataType::kAddressState, u"CA"),
-                      IsMetadata(MemoryDataType::kAddressZip, u"91111")))));
+                      IsMetadata(MemoryDataType::kAddressZip, u"91111")),
+                  /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
       RetrieveAllHelper(retriever(),
@@ -192,7 +200,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
               IsMetadata(MemoryDataType::kAddressCity, u"Elysium"),
               IsMetadata(MemoryDataType::kAddressState, u"CA"),
               IsMetadata(MemoryDataType::kAddressZip, u"91111"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")))));
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+          /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
       RetrieveAllHelper(retriever(),
@@ -206,7 +215,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
               IsMetadata(MemoryDataType::kAddressCity, u"Elysium"),
               IsMetadata(MemoryDataType::kAddressState, u"CA"),
               IsMetadata(MemoryDataType::kAddressZip, u"91111"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")))));
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+          /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   EXPECT_THAT(
       RetrieveAllHelper(retriever(),
@@ -220,7 +230,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
               IsMetadata(MemoryDataType::kAddressCity, u"Elysium"),
               IsMetadata(MemoryDataType::kAddressState, u"CA"),
               IsMetadata(MemoryDataType::kAddressZip, u"91111"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")))));
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+          /*is_obfuscated=*/false, test::MakeGuid(1))));
 
   // Requesting for address should return only the full address.
   EXPECT_THAT(
@@ -237,7 +248,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressData) {
               IsMetadata(MemoryDataType::kAddressCity, u"Elysium"),
               IsMetadata(MemoryDataType::kAddressZip, u"91111"),
               IsMetadata(MemoryDataType::kAddressState, u"CA"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")))));
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+          /*is_obfuscated=*/false, test::MakeGuid(1))));
 }
 
 // Tests that RetrieveAll correctly fetches and formats IBAN data.
@@ -253,9 +265,7 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_IbanData) {
                            GetObfuscatedIban(iban.value()), u"IBAN",
                            UnorderedElementsAre(IsMetadata(
                                MemoryDataType::kIbanNickname, u"My IBAN")),
-                           /*is_obfuscated=*/true)));
-  ASSERT_TRUE(std::holds_alternative<std::string>(results[0].identifier));
-  EXPECT_EQ(std::get<std::string>(results[0].identifier), iban.guid());
+                           /*is_obfuscated=*/true, iban.guid())));
 }
 
 // Tests that RetrieveAll correctly fetches and formats credit card data.
@@ -283,11 +293,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
               IsMetadata(MemoryDataType::kCreditCardNickname,
                          u"My Credit Card"),
               IsMetadata(MemoryDataType::kCreditCardSecurityCode,
-                         std::u16string(3, kMidlineEllipsisPlainDot))))));
-  ASSERT_TRUE(
-      std::holds_alternative<std::string>(number_results[0].identifier));
-  EXPECT_EQ(std::get<std::string>(number_results[0].identifier),
-            credit_card.guid());
+                         std::u16string(3, kMidlineEllipsisPlainDot))),
+          /*is_obfuscated=*/false, credit_card.guid())));
 
   std::vector<MemorySearchResult> cvc_results = RetrieveAllHelper(
       retriever(),
@@ -307,7 +314,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
                          u"My Credit Card"),
               IsMetadata(
                   MemoryDataType::kCreditCardNumber,
-                  credit_card.ObfuscatedNumberWithVisibleLastFourDigits())))));
+                  credit_card.ObfuscatedNumberWithVisibleLastFourDigits())),
+          /*is_obfuscated=*/false, credit_card.guid())));
 
   std::vector<MemorySearchResult> name_results = RetrieveAllHelper(
       retriever(),
@@ -327,7 +335,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
                   MemoryDataType::kCreditCardNumber,
                   credit_card.ObfuscatedNumberWithVisibleLastFourDigits()),
               IsMetadata(MemoryDataType::kCreditCardSecurityCode,
-                         std::u16string(3, kMidlineEllipsisPlainDot))))));
+                         std::u16string(3, kMidlineEllipsisPlainDot))),
+          /*is_obfuscated=*/false, credit_card.guid())));
 
   std::vector<MemorySearchResult> exp_results = RetrieveAllHelper(
       retriever(),
@@ -347,7 +356,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
                   MemoryDataType::kCreditCardNumber,
                   credit_card.ObfuscatedNumberWithVisibleLastFourDigits()),
               IsMetadata(MemoryDataType::kCreditCardSecurityCode,
-                         std::u16string(3, kMidlineEllipsisPlainDot))))));
+                         std::u16string(3, kMidlineEllipsisPlainDot))),
+          /*is_obfuscated=*/false, credit_card.guid())));
 }
 
 // Tests that RetrieveAll correctly fetches and formats data from
@@ -370,7 +380,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AutofillAiEntityData) {
               IsMetadata(MemoryDataType::kVehicleYear, u"2025"),
               IsMetadata(MemoryDataType::kVehicleOwner, u"Knecht Ruprecht"),
               IsMetadata(MemoryDataType::kVehiclePlateState, u"California"),
-              IsMetadata(MemoryDataType::kVehicleVin, u"12312345")))));
+              IsMetadata(MemoryDataType::kVehicleVin, u"12312345")),
+          /*is_obfuscated=*/false, vehicle.guid().value())));
 }
 
 // Tests that RetrieveAll correctly formats Passport entity data.
@@ -421,7 +432,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AutofillAiAttributeData) {
               IsMetadata(MemoryDataType::kVehicleYear, u"2025"),
               IsMetadata(MemoryDataType::kVehicleOwner, u"Knecht Ruprecht"),
               IsMetadata(MemoryDataType::kVehiclePlateState, u"California"),
-              IsMetadata(MemoryDataType::kVehicleVin, u"12312345")))));
+              IsMetadata(MemoryDataType::kVehicleVin, u"12312345")),
+          /*is_obfuscated=*/false, vehicle.guid().value())));
 }
 
 // Tests that RetrieveAll falls back to the first non-empty attribute for
@@ -442,7 +454,8 @@ TEST_F(AutofillDataProviderImplTest,
           ElementsAre(
               IsMetadata(MemoryDataType::kVehicleModel, u"Series 2"),
               IsMetadata(MemoryDataType::kVehiclePlateState, u"California"),
-              IsMetadata(MemoryDataType::kVehicleVin, u"12312345")))));
+              IsMetadata(MemoryDataType::kVehicleVin, u"12312345")),
+          /*is_obfuscated=*/false, vehicle.guid().value())));
 }
 
 // Tests that RetrieveAll omits address suggestions for profiles that only have
@@ -462,6 +475,7 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressFull_EmptyProfile) {
 // partial addresses.
 TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressFull_PartialAddress) {
   AutofillProfile profile(AddressCountryCode("US"));
+  profile.set_guid(test::MakeGuid(1));
   profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
   profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"742 Evergreen Terrace");
   profile.SetRawInfo(ADDRESS_HOME_CITY, u"Springfield");
@@ -480,7 +494,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_AddressFull_PartialAddress) {
               IsMetadata(MemoryDataType::kAddressStreetAddress,
                          u"742 Evergreen Terrace"),
               IsMetadata(MemoryDataType::kAddressCity, u"Springfield"),
-              IsMetadata(MemoryDataType::kAddressCountry, u"United States")))));
+              IsMetadata(MemoryDataType::kAddressCountry, u"United States")),
+          /*is_obfuscated=*/false, test::MakeGuid(1))));
 }
 
 // Tests that RetrieveAll can fetch multiple types at once (e.g. City and Zip).

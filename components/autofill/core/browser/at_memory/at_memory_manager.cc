@@ -27,7 +27,9 @@
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_funnel_metrics.h"
 #include "components/autofill/core/browser/at_memory/at_memory_utils.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
@@ -111,11 +113,6 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
       }
       NOTREACHED();
     }
-    case MemoryDataType::kCreditCardNumber:
-    case MemoryDataType::kCreditCardSecurityCode: {
-      CHECK(std::holds_alternative<std::string>(identifier));
-      return *std::get_if<std::string>(&identifier);
-    }
     case MemoryDataType::kPassportFull:
     case MemoryDataType::kDriversLicenseFull:
     case MemoryDataType::kNationalIdCardFull:
@@ -126,10 +123,76 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
     case MemoryDataType::kNationalIdCardNumber:
     case MemoryDataType::kKnownTravelerNumberNumber:
     case MemoryDataType::kRedressNumberNumber: {
-      CHECK(std::holds_alternative<std::string>(identifier));
-      return EntityInstance::EntityId(*std::get_if<std::string>(&identifier));
+      return EntityInstance::EntityId(std::get<std::string>(identifier));
     }
-    default:
+    case MemoryDataType::kCreditCardNumber:
+    case MemoryDataType::kCreditCardSecurityCode:
+    case MemoryDataType::kNameFull:
+    case MemoryDataType::kAddressFull:
+    case MemoryDataType::kAddressStreetAddress:
+    case MemoryDataType::kAddressCity:
+    case MemoryDataType::kAddressState:
+    case MemoryDataType::kAddressZip:
+    case MemoryDataType::kAddressCountry:
+    case MemoryDataType::kPhone:
+    case MemoryDataType::kEmail:
+    case MemoryDataType::kCompanyName: {
+      return std::get<std::string>(identifier);
+    }
+    case MemoryDataType::kVehicle:
+    case MemoryDataType::kVehicleMake:
+    case MemoryDataType::kVehicleModel:
+    case MemoryDataType::kVehicleYear:
+    case MemoryDataType::kVehicleOwner:
+    case MemoryDataType::kVehiclePlateNumber:
+    case MemoryDataType::kVehiclePlateState:
+    case MemoryDataType::kVehicleVin:
+    case MemoryDataType::kPassportName:
+    case MemoryDataType::kPassportCountry:
+    case MemoryDataType::kPassportIssueDate:
+    case MemoryDataType::kPassportExpirationDate:
+    case MemoryDataType::kFlightReservationFull:
+    case MemoryDataType::kFlightReservationFlightNumber:
+    case MemoryDataType::kFlightReservationTicketNumber:
+    case MemoryDataType::kFlightReservationConfirmationCode:
+    case MemoryDataType::kFlightReservationPassengerName:
+    case MemoryDataType::kFlightReservationDepartureAirport:
+    case MemoryDataType::kFlightReservationArrivalAirport:
+    case MemoryDataType::kFlightReservationDepartureDate:
+    case MemoryDataType::kFlightReservationArrivalDate:
+    case MemoryDataType::kShipmentFull:
+    case MemoryDataType::kShipmentTrackingNumber:
+    case MemoryDataType::kShipmentAssociatedOrderId:
+    case MemoryDataType::kShipmentDeliveryAddress:
+    case MemoryDataType::kShipmentDeliveryZipCode:
+    case MemoryDataType::kShipmentCarrierName:
+    case MemoryDataType::kShipmentCarrierDomain:
+    case MemoryDataType::kShipmentEstimatedDeliveryDate:
+    case MemoryDataType::kShipmentShippedDate:
+    case MemoryDataType::kNationalIdCardName:
+    case MemoryDataType::kNationalIdCardCountry:
+    case MemoryDataType::kNationalIdCardIssueDate:
+    case MemoryDataType::kNationalIdCardExpirationDate:
+    case MemoryDataType::kRedressNumberName:
+    case MemoryDataType::kKnownTravelerNumberName:
+    case MemoryDataType::kKnownTravelerNumberExpirationDate:
+    case MemoryDataType::kDriversLicenseName:
+    case MemoryDataType::kDriversLicenseState:
+    case MemoryDataType::kDriversLicenseIssueDate:
+    case MemoryDataType::kDriversLicenseExpirationDate:
+    case MemoryDataType::kOrderFull:
+    case MemoryDataType::kOrderId:
+    case MemoryDataType::kOrderAccount:
+    case MemoryDataType::kOrderDate:
+    case MemoryDataType::kOrderMerchantName:
+    case MemoryDataType::kOrderMerchantDomain:
+    case MemoryDataType::kOrderProductNames:
+    case MemoryDataType::kOrderGrandTotal:
+    case MemoryDataType::kCreditCardExpirationDate:
+    case MemoryDataType::kCreditCardNameOnCard:
+    case MemoryDataType::kCreditCardNickname:
+    case MemoryDataType::kIbanNickname:
+    case MemoryDataType::kUnknown:
       return std::monostate();
   }
 }
@@ -565,18 +628,30 @@ void AtMemoryManager::FillOrPreviewSearchResult(
           /*field_type_used=*/std::nullopt);
       break;
     case mojom::ActionPersistence::kFill: {
-      if (at_memory_funnel_metrics_) {
-        at_memory_funnel_metrics_->OnSuggestionAccepted();
-      }
-      // Transfer ownership of the metrics session to the filling path.
-      // Ensures that the metrics will be properly recorded once the suggestion
-      // is filled or one of the async steps in between fails.
-      std::unique_ptr<AtMemoryFunnelMetrics> metrics =
-          std::move(at_memory_funnel_metrics_);
-      switch (payload.memory_data_type) {
-        case MemoryDataType::kIban: {
-          std::visit(absl::Overload{
-                         [&](const Iban::Guid& guid) {
+      FillSearchResult(form_id, field_id, suggestion);
+      break;
+    }
+  }
+}
+
+void AtMemoryManager::FillSearchResult(const FormGlobalId& form_id,
+                                       const FieldGlobalId& field_id,
+                                       const Suggestion& suggestion) {
+  const Suggestion::AtMemoryPayload& payload =
+      suggestion.GetPayload<Suggestion::AtMemoryPayload>();
+
+  if (at_memory_funnel_metrics_) {
+    at_memory_funnel_metrics_->OnSuggestionAccepted();
+  }
+  // Transfer ownership of the metrics session to the filling path.
+  // Ensures that the metrics will be properly recorded once the suggestion
+  // is filled or one of the async steps in between fails.
+  std::unique_ptr<AtMemoryFunnelMetrics> metrics =
+      std::move(at_memory_funnel_metrics_);
+  switch (payload.memory_data_type) {
+    case MemoryDataType::kIban: {
+      std::visit(
+          absl::Overload{[&](const Iban::Guid& guid) {
                            FillIban(guid, form_id, field_id, suggestion,
                                     std::move(metrics));
                          },
@@ -587,51 +662,119 @@ void AtMemoryManager::FillOrPreviewSearchResult(
                          [](std::monostate) { NOTREACHED(); },
                          [](const std::string&) { NOTREACHED(); },
                          [](const EntityInstance::EntityId&) { NOTREACHED(); }},
-                     payload.identifier);
-          break;
-        }
-        case MemoryDataType::kCreditCardNumber:
-        case MemoryDataType::kCreditCardSecurityCode: {
-          CHECK(std::holds_alternative<std::string>(payload.identifier));
-          FillCreditCard(std::get<std::string>(payload.identifier), form_id,
-                         field_id, suggestion, std::move(metrics));
-          break;
-        }
-        case MemoryDataType::kPassportFull:
-        case MemoryDataType::kDriversLicenseFull:
-        case MemoryDataType::kNationalIdCardFull:
-        case MemoryDataType::kKnownTravelerNumberFull:
-        case MemoryDataType::kRedressNumberFull:
-        case MemoryDataType::kPassportNumber:
-        case MemoryDataType::kDriversLicenseNumber:
-        case MemoryDataType::kNationalIdCardNumber:
-        case MemoryDataType::kKnownTravelerNumberNumber:
-        case MemoryDataType::kRedressNumberNumber: {
-          CHECK(std::holds_alternative<EntityInstance::EntityId>(
-              payload.identifier));
-          std::optional<AtMemoryDataType> data_type =
-              ToAtMemoryDataType(payload.memory_data_type);
-          CHECK(data_type &&
-                (std::holds_alternative<AttributeType>(*data_type) ||
-                 std::holds_alternative<EntityType>(*data_type)));
-          FillSensitiveAutofillAiData(
-              std::get<EntityInstance::EntityId>(payload.identifier), form_id,
-              field_id, suggestion, *data_type, std::move(metrics));
-          break;
-        }
+          payload.identifier);
+      break;
+    }
+    case MemoryDataType::kCreditCardNumber:
+    case MemoryDataType::kCreditCardSecurityCode: {
+      CHECK(std::holds_alternative<std::string>(payload.identifier));
+      FillCreditCard(std::get<std::string>(payload.identifier), form_id,
+                     field_id, suggestion, std::move(metrics));
+      break;
+    }
+    case MemoryDataType::kPassportFull:
+    case MemoryDataType::kDriversLicenseFull:
+    case MemoryDataType::kNationalIdCardFull:
+    case MemoryDataType::kKnownTravelerNumberFull:
+    case MemoryDataType::kRedressNumberFull:
+    case MemoryDataType::kPassportNumber:
+    case MemoryDataType::kDriversLicenseNumber:
+    case MemoryDataType::kNationalIdCardNumber:
+    case MemoryDataType::kKnownTravelerNumberNumber:
+    case MemoryDataType::kRedressNumberNumber: {
+      std::optional<AtMemoryDataType> data_type =
+          ToAtMemoryDataType(payload.memory_data_type);
+      CHECK(data_type && (std::holds_alternative<AttributeType>(*data_type) ||
+                          std::holds_alternative<EntityType>(*data_type)));
+      FillSensitiveAutofillAiData(
+          std::get<EntityInstance::EntityId>(payload.identifier), form_id,
+          field_id, suggestion, *data_type, std::move(metrics));
+      break;
+    }
 
-        default: {
-          if (metrics) {
-            metrics->MarkFilled();
-          }
-          owner_->FillOrPreviewField(
-              action_persistence,
-              mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id,
-              field_id, payload.value, FillingProduct::kAtMemory,
-              /*field_type_used=*/std::nullopt);
-          break;
-        }
+    case MemoryDataType::kNameFull:
+    case MemoryDataType::kAddressFull:
+    case MemoryDataType::kAddressStreetAddress:
+    case MemoryDataType::kAddressCity:
+    case MemoryDataType::kAddressState:
+    case MemoryDataType::kAddressZip:
+    case MemoryDataType::kAddressCountry:
+    case MemoryDataType::kPhone:
+    case MemoryDataType::kEmail:
+    case MemoryDataType::kCompanyName: {
+      if (metrics) {
+        metrics->MarkFilled();
       }
+      owner_->FillOrPreviewField(
+          mojom::ActionPersistence::kFill,
+          mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id, field_id,
+          payload.value, FillingProduct::kAtMemory,
+          /*field_type_used=*/std::nullopt);
+      break;
+    }
+
+    case MemoryDataType::kIbanNickname:
+    case MemoryDataType::kVehicle:
+    case MemoryDataType::kVehicleMake:
+    case MemoryDataType::kVehicleModel:
+    case MemoryDataType::kVehicleYear:
+    case MemoryDataType::kVehicleOwner:
+    case MemoryDataType::kVehiclePlateNumber:
+    case MemoryDataType::kVehiclePlateState:
+    case MemoryDataType::kVehicleVin:
+    case MemoryDataType::kPassportName:
+    case MemoryDataType::kPassportCountry:
+    case MemoryDataType::kPassportIssueDate:
+    case MemoryDataType::kPassportExpirationDate:
+    case MemoryDataType::kFlightReservationFull:
+    case MemoryDataType::kFlightReservationFlightNumber:
+    case MemoryDataType::kFlightReservationTicketNumber:
+    case MemoryDataType::kFlightReservationConfirmationCode:
+    case MemoryDataType::kFlightReservationPassengerName:
+    case MemoryDataType::kFlightReservationDepartureAirport:
+    case MemoryDataType::kFlightReservationArrivalAirport:
+    case MemoryDataType::kFlightReservationDepartureDate:
+    case MemoryDataType::kFlightReservationArrivalDate:
+    case MemoryDataType::kShipmentFull:
+    case MemoryDataType::kShipmentTrackingNumber:
+    case MemoryDataType::kShipmentAssociatedOrderId:
+    case MemoryDataType::kShipmentDeliveryAddress:
+    case MemoryDataType::kShipmentDeliveryZipCode:
+    case MemoryDataType::kShipmentCarrierName:
+    case MemoryDataType::kShipmentCarrierDomain:
+    case MemoryDataType::kShipmentEstimatedDeliveryDate:
+    case MemoryDataType::kShipmentShippedDate:
+    case MemoryDataType::kNationalIdCardName:
+    case MemoryDataType::kNationalIdCardCountry:
+    case MemoryDataType::kNationalIdCardIssueDate:
+    case MemoryDataType::kNationalIdCardExpirationDate:
+    case MemoryDataType::kRedressNumberName:
+    case MemoryDataType::kKnownTravelerNumberName:
+    case MemoryDataType::kKnownTravelerNumberExpirationDate:
+    case MemoryDataType::kDriversLicenseName:
+    case MemoryDataType::kDriversLicenseState:
+    case MemoryDataType::kDriversLicenseIssueDate:
+    case MemoryDataType::kDriversLicenseExpirationDate:
+    case MemoryDataType::kOrderFull:
+    case MemoryDataType::kOrderId:
+    case MemoryDataType::kOrderAccount:
+    case MemoryDataType::kOrderDate:
+    case MemoryDataType::kOrderMerchantName:
+    case MemoryDataType::kOrderMerchantDomain:
+    case MemoryDataType::kOrderProductNames:
+    case MemoryDataType::kOrderGrandTotal:
+    case MemoryDataType::kCreditCardExpirationDate:
+    case MemoryDataType::kCreditCardNameOnCard:
+    case MemoryDataType::kCreditCardNickname:
+    case MemoryDataType::kUnknown: {
+      if (metrics) {
+        metrics->MarkFilled();
+      }
+      owner_->FillOrPreviewField(
+          mojom::ActionPersistence::kFill,
+          mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id, field_id,
+          payload.value, FillingProduct::kAtMemory,
+          /*field_type_used=*/std::nullopt);
       break;
     }
   }

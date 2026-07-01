@@ -73,6 +73,11 @@ class AtMemoryManager {
                                  const FieldGlobalId& field_id,
                                  const Suggestion& suggestion);
 
+  // Fills the selected search result.
+  void FillSearchResult(const FormGlobalId& form_id,
+                        const FieldGlobalId& field_id,
+                        const Suggestion& suggestion);
+
   // Returns true if a search is currently in progress.
   bool IsSearching() const;
 

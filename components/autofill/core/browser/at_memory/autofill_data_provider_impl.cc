@@ -150,6 +150,8 @@ MemorySearchResult CreateResultFromAddressProfile(
       memory_data_type, GetMemoryDataTypeNameForI18n(memory_data_type),
       std::move(value), profile.GetRankingScore(base::Time::Now()));
 
+  entry.identifier = profile.guid();
+
   // Add other address fields as metadata.
   AddMetadataToResult(entry, profile, MemoryDataType::kNameFull, field_type,
                       app_locale);
