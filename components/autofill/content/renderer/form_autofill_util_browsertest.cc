@@ -3064,6 +3064,21 @@ FormData FindForm(const blink::WebFormControlElement& element) {
   return FormData();
 }
 
+void ApplyFieldsAction(
+    const blink::WebDocument& document,
+    base::span<const FormFieldData> fields,
+    mojom::ActionPersistence action_persistence,
+    mojom::FormActionType action_type = mojom::FormActionType::kFill) {
+  form_util::ApplyFieldsAction(
+      document,
+      base::ToVector(fields,
+                     [](const FormFieldData& field) {
+                       return FormFieldData::FillData(field);
+                     }),
+      action_type, action_persistence,
+      *base::MakeRefCounted<FieldDataManager>());
+}
+
 // Helper to retrieve a value from a map. Return default-constructed value if
 // the key does not exist.
 template <typename MapType, typename KeyType>
@@ -3178,14 +3193,7 @@ class FormFillAndPreviewTest
     GetDocument()
         .GetElementById(WebString::FromUtf8(initial_focus_element_id))
         .Focus();
-    form_util::ApplyFieldsAction(
-        GetDocument(),
-        base::ToVector(form.fields(),
-                       [](const FormFieldData& field) {
-                         return FormFieldData::FillData(field);
-                       }),
-        mojom::FormActionType::kFill, action_persistence,
-        *base::MakeRefCounted<FieldDataManager>());
+    ApplyFieldsAction(GetDocument(), form.fields(), action_persistence);
 
     return AssertionSuccess();
   }
@@ -6045,6 +6053,1077 @@ TEST_P(TextAlignOverridesDirectionTest, TextAlignOverridesDirection) {
   form_util::WebFormControlElementToFormFieldForTesting(
       element.GetOwningFormForAutofill(), element, nullptr, &result);
   EXPECT_EQ(GetParam().expected_direction, result.text_direction());
+}
+
+class FormAutofillWithConstraintsTest : public test::AutofillRendererTest {
+ public:
+  FormAutofillWithConstraintsTest() = default;
+
+  FormAutofillWithConstraintsTest(const FormAutofillWithConstraintsTest&) =
+      delete;
+  FormAutofillWithConstraintsTest& operator=(
+      const FormAutofillWithConstraintsTest&) = delete;
+
+  ~FormAutofillWithConstraintsTest() override = default;
+
+  void SetUp() override {
+    test::AutofillRendererTest::SetUp();
+    form_cache_.emplace(&autofill_agent());
+
+#if BUILDFLAG(IS_WIN)
+    // Autofill uses the system font to render suggestion previews. On Windows
+    // an extra step is required to ensure that the system font is configured.
+    blink::WebFontRendering::SetMenuFontMetrics(
+        blink::WebString::FromAscii("Arial"), 12);
+#endif
+  }
+
+  void TearDown() override {
+    form_cache_.reset();
+    test::AutofillRendererTest::TearDown();
+  }
+
+  FormCache::UpdateFormCacheResult UpdateFormCache() {
+    return form_util::UpdateFormCache(*form_cache_);
+  }
+
+ protected:
+  static std::vector<Matcher<FormFieldData>> FirstLastEmailIdFieldsMatchers() {
+    return {test::FormFieldDescriptionEq(
+                {.name = u"firstname", .id_attribute = u"firstname"}),
+            test::FormFieldDescriptionEq(
+                {.name = u"lastname", .id_attribute = u"lastname"}),
+            test::FormFieldDescriptionEq(
+                {.name = u"email", .id_attribute = u"email"})};
+  }
+
+  static std::vector<Matcher<FormFieldData>>
+  CreditCardAutofilledFieldsMatchers() {
+    return {test::FormFieldDescriptionEq(
+                {.label = u"Credit Card Number",
+                 .name = u"cc",
+                 .id_attribute = u"cc",
+                 .value = u"1111-2222-3333-4444",
+                 .placeholder = u"Credit Card Number",
+                 .is_autofilled_according_to_renderer = true}),
+            test::FormFieldDescriptionEq(
+                {.label = u"Expiration Date",
+                 .name = u"expiration_date",
+                 .id_attribute = u"expiration_date",
+                 .value = u"03/2030",
+                 .placeholder = u"Expiration Date",
+                 .is_autofilled_according_to_renderer = true}),
+            test::FormFieldDescriptionEq(
+                {.label = u"Full Name",
+                 .name = u"name",
+                 .id_attribute = u"name",
+                 .value = u"John Smith",
+                 .placeholder = u"Full Name",
+                 .is_autofilled_according_to_renderer = false})};
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  // We use a fresh `FormCache` in this fixture because the `AutofillAgent`'s
+  // cache is used and populated by `AutofillAgent`.
+  std::optional<FormCache> form_cache_;
+};
+
+TEST_F(FormAutofillWithConstraintsTest, ThreePartPhone) {
+  LoadHTML(R"(<form name=TestForm action='http://cnn.com'>
+                Phone:
+                <input name=dayphone1>
+                -
+                <input name=dayphone2>
+                -
+                <input name=dayphone3>
+                ext.:
+                <input name=dayphone4>
+                <input type=submit name='reply-send' value=Send>
+              </form>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  std::vector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
+  ASSERT_EQ(1U, forms.size());
+
+  std::optional<FormData> form = ExtractFormData(forms.front());
+  ASSERT_TRUE(form);
+  EXPECT_EQ(form->name(), u"TestForm");
+  EXPECT_EQ(form->action(), GURL("http://cnn.com"));
+
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(
+          test::FormFieldDescriptionEq({.label = u"Phone:",
+                                        .name = u"dayphone1",
+                                        .name_attribute = u"dayphone1"}),
+          test::FormFieldDescriptionEq({.label = u"",
+                                        .name = u"dayphone2",
+                                        .name_attribute = u"dayphone2"}),
+          test::FormFieldDescriptionEq({.label = u"",
+                                        .name = u"dayphone3",
+                                        .name_attribute = u"dayphone3"}),
+          test::FormFieldDescriptionEq({.label = u"ext.:",
+                                        .name = u"dayphone4",
+                                        .name_attribute = u"dayphone4"})));
+}
+
+// This test re-creates the experience of typing in a field then selecting a
+// profile from the Autofill suggestions popup.  The field that is being typed
+// into should be filled even though it's not technically empty.
+TEST_F(FormAutofillWithConstraintsTest, MaxLengthFields) {
+  LoadHTML(R"(<form name=TestForm action='http://cnn.com'>
+                Phone:
+                <input maxlength=3 name=dayphone1>
+                -
+                <input maxlength=3 name=dayphone2>
+                -
+                <input maxlength=4 size=5 name=dayphone3>
+                ext.:
+                <input maxlength=5 name=dayphone4>
+                <input name=default1>
+                <input maxlength='-1' name=invalid1>
+                <input type=submit name='reply-send' value=Send>
+              </form>)");
+
+  WebLocalFrame* frame = GetMainFrame();
+  ASSERT_NE(nullptr, frame);
+
+  std::vector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
+  ASSERT_EQ(1U, forms.size());
+
+  std::optional<FormData> form = ExtractFormData(forms.front());
+  ASSERT_TRUE(form);
+  EXPECT_EQ(form->name(), u"TestForm");
+  EXPECT_EQ(form->action(), GURL("http://cnn.com"));
+
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(test::FormFieldDescriptionEq({.label = u"Phone:",
+                                                .name = u"dayphone1",
+                                                .name_attribute = u"dayphone1",
+                                                .max_length = 3}),
+                  test::FormFieldDescriptionEq({.label = u"",
+                                                .name = u"dayphone2",
+                                                .name_attribute = u"dayphone2",
+                                                .max_length = 3}),
+                  test::FormFieldDescriptionEq({.label = u"",
+                                                .name = u"dayphone3",
+                                                .name_attribute = u"dayphone3",
+                                                .max_length = 4}),
+                  test::FormFieldDescriptionEq({.label = u"ext.:",
+                                                .name = u"dayphone4",
+                                                .name_attribute = u"dayphone4",
+                                                .max_length = 5}),
+                  test::FormFieldDescriptionEq(
+                      {.label = u"",
+                       .name = u"default1",
+                       .name_attribute = u"default1",
+                       .max_length = FormFieldData::kDefaultMaxLength}),
+                  test::FormFieldDescriptionEq(
+                      {.label = u"",
+                       .name = u"invalid1",
+                       .name_attribute = u"invalid1",
+                       .max_length = FormFieldData::kDefaultMaxLength})));
+}
+
+// Tests that loading, dynamically editing, and then autofilling the form in
+// an HTML string yields a specific result.
+//
+// The form contains the fields first name, last name, phone, credit card
+// number, city, and state, each with the placeholder attribute set.
+//
+// Each field's value is modified dynamically. The second one is explicitly
+// marked as user-edited; the other ones are not. The third and fourth field's
+// values are typical placeholder values that are expected to be ignored.
+TEST_F(FormAutofillWithConstraintsTest, FillFormModifyValues) {
+  LoadHTML(R"(<form name=TestForm action='http://abc.com'>
+           <input id=firstname placeholder='First Name' value='First Name'>
+           <input id=lastname placeholder='Last Name' value='Last Name'>
+           <input id=phone placeholder=Phone value=Phone>
+           <input id=cc placeholder='Credit Card Number' value='Credit Card'>
+           <input id=city placeholder=City value=City>
+           <select id=state name=state placeholder=State>
+             <option selected>?</option>
+             <option>AA</option>
+             <option>AE</option>
+             <option>AK</option>
+           </select>
+           <input type=submit value=Send>
+         </form>)");
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  // Get the input element we want to find.
+  WebInputElement input_element = GetInputElementById("firstname");
+  WebFormElement form_element = input_element.GetOwningFormForAutofill();
+  std::vector<WebFormControlElement> control_elements =
+      form_util::GetOwnedAutofillableFormControls(input_element.GetDocument(),
+                                                  form_element);
+
+  ASSERT_EQ(6U, control_elements.size());
+  // We now modify the values.
+  // This will be ignored, the string will be sanitized into an empty string.
+  control_elements[0].SetValue(WebString::FromUtf16(
+      std::u16string(1, base::i18n::kLeftToRightMark) + u"     "));
+
+  // This will be considered as a value entered by the user.
+  control_elements[1].SetValue(WebString::FromUtf16(u"Earp"));
+  control_elements[1].SetUserHasEditedTheField(true);
+
+  // This will be ignored, the string will be sanitized into an empty string.
+  control_elements[2].SetValue(WebString::FromUtf16(u"(___)-___-____"));
+
+  // This will be ignored, the string will be sanitized into an empty string.
+  control_elements[3].SetValue(WebString::FromUtf16(u"____-____-____-____"));
+
+  // This will be ignored, because it's injected by the website and not the
+  // user.
+  control_elements[4].SetValue(WebString::FromUtf16(u"Enter your city.."));
+
+  control_elements[5].SetValue(WebString::FromUtf16(u"AK"));
+
+  // Find the form that contains the input element.
+  FormData form = FindForm(input_element);
+  EXPECT_EQ(u"TestForm", form.name());
+  EXPECT_EQ(GURL("http://abc.com"), form.action());
+
+  const std::vector<FormFieldData>& fields = form.fields();
+  ASSERT_EQ(6U, fields.size());
+
+  // Preview the form and verify that the cursor position has been updated.
+  test_api(form).field(0).set_value(u"Wyatt");
+  test_api(form).field(1).set_value(u"Earpagus");
+  test_api(form).field(2).set_value(u"888-123-4567");
+  test_api(form).field(3).set_value(u"1111-2222-3333-4444");
+  test_api(form).field(4).set_value(u"Montreal");
+  test_api(form).field(5).set_value(u"AA");
+  test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(1).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(3).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(4).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(5).set_is_autofilled_according_to_renderer(true);
+  ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
+  ApplyFieldsAction(input_element.GetDocument(), form.fields(),
+                    mojom::ActionPersistence::kPreview);
+
+  // Fill the form.
+  ApplyFieldsAction(input_element.GetDocument(), form.fields(),
+                    mojom::ActionPersistence::kFill);
+
+  // Find the newly-filled form that contains the input element.
+  FormData form2 = FindForm(input_element);
+  EXPECT_EQ(u"TestForm", form2.name());
+  EXPECT_EQ(GURL("http://abc.com"), form2.action());
+
+  EXPECT_THAT(form2.fields(),
+              ElementsAre(test::FormFieldDescriptionEq(
+                              {.label = u"First Name",
+                               .name = u"firstname",
+                               .id_attribute = u"firstname",
+                               .value = u"Wyatt",
+                               .placeholder = u"First Name",
+                               .is_autofilled_according_to_renderer = true}),
+                          test::FormFieldDescriptionEq(
+                              {.label = u"Last Name",
+                               .name = u"lastname",
+                               .id_attribute = u"lastname",
+                               .value = u"Earp",
+                               .placeholder = u"Last Name",
+                               .is_autofilled_according_to_renderer = false}),
+                          test::FormFieldDescriptionEq(
+                              {.label = u"Phone",
+                               .name = u"phone",
+                               .id_attribute = u"phone",
+                               .value = u"888-123-4567",
+                               .placeholder = u"Phone",
+                               .is_autofilled_according_to_renderer = true}),
+                          test::FormFieldDescriptionEq(
+                              {.label = u"Credit Card Number",
+                               .name = u"cc",
+                               .id_attribute = u"cc",
+                               .value = u"1111-2222-3333-4444",
+                               .placeholder = u"Credit Card Number",
+                               .is_autofilled_according_to_renderer = true}),
+                          test::FormFieldDescriptionEq(
+                              {.label = u"City",
+                               .name = u"city",
+                               .id_attribute = u"city",
+                               .value = u"Montreal",
+                               .placeholder = u"City",
+                               .is_autofilled_according_to_renderer = true}),
+                          test::FormFieldDescriptionEq(
+                              {.label = u"State",
+                               .name = u"state",
+                               .name_attribute = u"state",
+                               .id_attribute = u"state",
+                               .value = u"AA",
+                               .placeholder = u"State",
+                               .is_autofilled_according_to_renderer = true})));
+}
+
+// Similar to test case `FillFormModifyValues`.
+TEST_F(FormAutofillWithConstraintsTest, FillFormModifyInitiatingValue) {
+  LoadHTML(R"(<form name=TestForm action='http://abc.com'>
+           <input id=cc placeholder='Credit Card Number' value='Credit Card'>
+           <input id=expiration_date placeholder='Expiration Date'
+                  value='Expiration Date'>
+           <input id=name placeholder='Full Name' value='Full Name'>
+           <input type=submit value=Send>
+         </form>)");
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  // Get the input element we want to find.
+  WebInputElement input_element = GetInputElementById("cc");
+  WebFormElement form_element = input_element.GetOwningFormForAutofill();
+  std::vector<WebFormControlElement> control_elements =
+      form_util::GetOwnedAutofillableFormControls(input_element.GetDocument(),
+                                                  form_element);
+
+  ASSERT_EQ(3U, control_elements.size());
+  // We now modify the values.
+  // This will be ignored.
+  control_elements[0].SetValue(WebString::FromUtf16(u"____-____-____-____"));
+  // This will be ignored.
+  control_elements[1].SetValue(WebString::FromUtf16(u"____/__"));
+  control_elements[2].SetValue(WebString::FromUtf16(u"John Smith"));
+  control_elements[2].SetUserHasEditedTheField(true);
+
+  // Find the form that contains the input element.
+  FormData form = FindForm(input_element);
+  EXPECT_EQ(u"TestForm", form.name());
+  EXPECT_EQ(GURL("http://abc.com"), form.action());
+
+  const std::vector<FormFieldData>& fields = form.fields();
+  ASSERT_EQ(3U, fields.size());
+
+  // Preview the form and verify that the cursor position has been updated.
+  test_api(form).field(0).set_value(u"1111-2222-3333-4444");
+  test_api(form).field(1).set_value(u"03/2030");
+  test_api(form).field(2).set_value(u"Susan Smith");
+  test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(1).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
+  ExecuteJavaScriptForTests("document.getElementById('cc').focus();");
+  ApplyFieldsAction(input_element.GetDocument(), form.fields(),
+                    mojom::ActionPersistence::kPreview);
+  // The selection should be set after the 19th character.
+  EXPECT_EQ(19u, input_element.SelectionStart());
+  EXPECT_EQ(19u, input_element.SelectionEnd());
+
+  // Fill the form.
+  ApplyFieldsAction(input_element.GetDocument(), form.fields(),
+                    mojom::ActionPersistence::kFill);
+
+  // Find the newly-filled form that contains the input element.
+  FormData form2 = FindForm(input_element);
+  EXPECT_EQ(u"TestForm", form2.name());
+  EXPECT_EQ(GURL("http://abc.com"), form2.action());
+
+  EXPECT_THAT(form2.fields(),
+              ElementsAreArray(CreditCardAutofilledFieldsMatchers()));
+
+  // Verify that the cursor position has been updated.
+  EXPECT_EQ(19u, input_element.SelectionStart());
+  EXPECT_EQ(19u, input_element.SelectionEnd());
+}
+
+// Similar to test case `FillFormModifyValues`.
+TEST_F(FormAutofillWithConstraintsTest, FillFormJSModifiesUserInputValue) {
+  LoadHTML(R"(<form name=TestForm action='http://abc.com'>
+           <input id=cc placeholder='Credit Card Number' value='Credit Card'>
+           <input id=expiration_date placeholder='Expiration Date'
+                  value='Expiration Date'>
+           <input id=name placeholder='Full Name' value='Full Name'>
+           <input type=submit value=Send>
+         </form>)");
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  // Get the input element we want to find.
+  WebInputElement input_element = GetInputElementById("cc");
+  WebFormElement form_element = input_element.GetOwningFormForAutofill();
+  std::vector<WebFormControlElement> control_elements =
+      form_util::GetOwnedAutofillableFormControls(input_element.GetDocument(),
+                                                  form_element);
+
+  ASSERT_EQ(3U, control_elements.size());
+  // We now modify the values.
+  // This will be ignored.
+  control_elements[0].SetValue(WebString::FromUtf16(u"____-____-____-____"));
+  // This will be ignored.
+  control_elements[1].SetValue(WebString::FromUtf16(u"____/__"));
+  control_elements[2].SetValue(WebString::FromUtf16(u"john smith"));
+  control_elements[2].SetUserHasEditedTheField(true);
+
+  // Sometimes the JS modifies the value entered by the user.
+  ExecuteJavaScriptForTests(
+      "document.getElementById('name').value = 'John Smith';");
+
+  // Find the form that contains the input element.
+  FormData form = FindForm(input_element);
+  EXPECT_EQ(u"TestForm", form.name());
+  EXPECT_EQ(GURL("http://abc.com"), form.action());
+
+  const std::vector<FormFieldData>& fields = form.fields();
+  ASSERT_EQ(3U, fields.size());
+
+  // Preview the form and verify that the cursor position has been updated.
+  test_api(form).field(0).set_value(u"1111-2222-3333-4444");
+  test_api(form).field(1).set_value(u"03/2030");
+  test_api(form).field(2).set_value(u"Susan Smith");
+  test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(1).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
+  ExecuteJavaScriptForTests("document.getElementById('cc').focus();");
+  ApplyFieldsAction(input_element.GetDocument(), form.fields(),
+                    mojom::ActionPersistence::kPreview);
+  // The selection should be set after the 19th character.
+  EXPECT_EQ(19u, input_element.SelectionStart());
+  EXPECT_EQ(19u, input_element.SelectionEnd());
+
+  // Fill the form.
+  ApplyFieldsAction(input_element.GetDocument(), form.fields(),
+                    mojom::ActionPersistence::kFill);
+
+  // Find the newly-filled form that contains the input element.
+  FormData form2 = FindForm(input_element);
+  EXPECT_EQ(u"TestForm", form2.name());
+  EXPECT_EQ(GURL("http://abc.com"), form2.action());
+
+  EXPECT_THAT(form2.fields(),
+              ElementsAreArray(CreditCardAutofilledFieldsMatchers()));
+
+  // Verify that the cursor position has been updated.
+  EXPECT_EQ(19u, input_element.SelectionStart());
+  EXPECT_EQ(19u, input_element.SelectionEnd());
+}
+
+TEST_F(FormAutofillWithConstraintsTest, UndoAutofill) {
+  LoadHTML(R"(
+    <form id=form_id>
+        <input id=text_id_1>
+        <input id=text_id_2>
+        <select id=select_id_1>
+          <option value=undo_select_option_1>Foo</option>
+          <option value=autofill_select_option_1>Bar</option>
+        </select>
+        <select id=select_id_2>
+          <option value=undo_select_option_2>Foo</option>
+          <option value=autofill_select_option_2>Bar</option>
+        </select>
+      </form>
+  )");
+  WebFormControlElement text_element_1 = GetFormControlElementById("text_id_1");
+  WebFormControlElement text_element_2 = GetFormControlElementById("text_id_2");
+  text_element_1.SetAutofillValue("autofill_text_1",
+                                  WebAutofillState::kAutofilled);
+  text_element_2.SetAutofillValue("autofill_text_2",
+                                  WebAutofillState::kAutofilled);
+
+  WebFormControlElement select_element_1 =
+      GetFormControlElementById("select_id_1");
+  WebFormControlElement select_element_2 =
+      GetFormControlElementById("select_id_2");
+  select_element_1.SetAutofillValue("autofill_select_option_1",
+                                    WebAutofillState::kAutofilled);
+  select_element_2.SetAutofillValue("autofill_select_option_2",
+                                    WebAutofillState::kAutofilled);
+
+  auto HasAutofillValue = [](const WebString& value,
+                             WebAutofillState autofill_state) {
+    return AllOf(
+        Property(&WebFormControlElement::Value, value),
+        Property(&WebFormControlElement::GetAutofillState, autofill_state));
+  };
+  ASSERT_THAT(text_element_1, HasAutofillValue("autofill_text_1",
+                                               WebAutofillState::kAutofilled));
+  ASSERT_THAT(text_element_2, HasAutofillValue("autofill_text_2",
+                                               WebAutofillState::kAutofilled));
+  ASSERT_THAT(select_element_1,
+              HasAutofillValue("autofill_select_option_1",
+                               WebAutofillState::kAutofilled));
+  ASSERT_THAT(select_element_2,
+              HasAutofillValue("autofill_select_option_2",
+                               WebAutofillState::kAutofilled));
+
+  std::vector<WebFormElement> forms =
+      GetMainFrame()->GetDocument().GetTopLevelForms();
+  EXPECT_EQ(1U, forms.size());
+
+  std::optional<FormData> form = ExtractFormData(forms.front());
+  ASSERT_TRUE(form);
+
+  ASSERT_EQ(form->fields().size(), 4u);
+  std::vector<FormFieldData> undo_fields;
+  for (size_t i = 0; i < 4; i += 2) {
+    std::u16string type = i == 0 ? u"text" : u"select_option";
+    test_api(*form).field(i).set_value(u"undo_" + type + u"_1");
+    test_api(*form).field(i).set_is_autofilled_according_to_renderer(false);
+    undo_fields.push_back(form->fields()[i]);
+  }
+
+  form->set_fields(undo_fields);
+  ExecuteJavaScriptForTests("document.getElementById('text_id_1').focus();");
+  ApplyFieldsAction(text_element_1.GetDocument(), form->fields(),
+                    mojom::ActionPersistence::kFill,
+                    mojom::FormActionType::kUndo);
+  EXPECT_THAT(text_element_1,
+              HasAutofillValue("undo_text_1", WebAutofillState::kNotFilled));
+  EXPECT_THAT(text_element_2, HasAutofillValue("autofill_text_2",
+                                               WebAutofillState::kAutofilled));
+  EXPECT_THAT(select_element_1, HasAutofillValue("undo_select_option_1",
+                                                 WebAutofillState::kNotFilled));
+  EXPECT_THAT(select_element_2,
+              HasAutofillValue("autofill_select_option_2",
+                               WebAutofillState::kAutofilled));
+}
+
+struct FillFormNonEmptyFieldParams {
+  std::string html;
+  bool unowned;
+  std::optional<std::string> initial_lastname;
+  std::optional<std::string> initial_email;
+  std::optional<std::string> placeholder_firstname;
+  std::optional<std::string> placeholder_lastname;
+  std::optional<std::string> placeholder_email;
+};
+
+class FormAutofillNonEmptyFieldTest
+    : public FormAutofillWithConstraintsTest,
+      public WithParamInterface<FillFormNonEmptyFieldParams> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FormAutofillNonEmptyFieldTest,
+    ValuesIn(std::to_array<FillFormNonEmptyFieldParams>({
+        FillFormNonEmptyFieldParams{
+            .html = R"(<form name=TestForm action='http://abc.com'>
+                         <input id=firstname>
+                         <input id=lastname>
+                         <input id=email>
+                         <input type=submit value=Send>
+                       </form>)",
+            .unowned = false},
+        FillFormNonEmptyFieldParams{
+            .html = R"(<form name=TestForm action='http://abc.com'>
+                         <input id=firstname value='Enter first name'>
+                         <input id=lastname value='Enter last name'>
+                         <input id=email value='Enter email'>
+                         <input type=submit value=Send>
+                       </form>)",
+            .unowned = false,
+            .initial_lastname = "Enter last name",
+            .initial_email = "Enter email"},
+        FillFormNonEmptyFieldParams{
+            .html = R"(<form name=TestForm action='http://abc.com' method=POST>
+                         <input id=firstname
+                                placeholder='First Name'
+                                value='First Name'>
+                         <input id=lastname
+                                placeholder='Last Name'
+                                value='Last Name'>
+                         <input id=email placeholder=Email value=Email>
+                         <input type=submit value=Send>
+                       </form>)",
+            .unowned = false,
+            .placeholder_firstname = "First Name",
+            .placeholder_lastname = "Last Name",
+            .placeholder_email = "Email"},
+        FillFormNonEmptyFieldParams{
+            .html = R"(<head><title>delivery recipient info</title></head>
+                       <input id=firstname>
+                       <input id=lastname>
+                       <input id=email>
+                       <input type=submit value=Send>)",
+            .unowned = true},
+    })),
+    [](const TestParamInfo<FormAutofillNonEmptyFieldTest::ParamType>&
+           param_info) {
+      constexpr auto kNames = std::to_array<std::string_view>(
+          {"UserInput", "WithDefaultValues", "WithPlaceholderValues",
+           "UnownedForm"});
+      return std::string{kNames[param_info.index]};
+    });
+
+TEST_P(FormAutofillNonEmptyFieldTest, FillFormNonEmptyField) {
+  LoadHTML(GetParam().html);
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  // Get the input element we want to find.
+  WebInputElement input_element = GetInputElementById("firstname");
+
+  // Simulate typing by modifying the field value.
+  constexpr std::string_view kNewFirstnameValue = "Wy";
+  input_element.SetValue(WebString::FromAscii(kNewFirstnameValue));
+
+  // Find the form that contains the input element.
+  FormData form = FindForm(input_element);
+  if (!GetParam().unowned) {
+    EXPECT_EQ(u"TestForm", form.name());
+    EXPECT_EQ(GURL("http://abc.com"), form.action());
+  }
+
+  const std::u16string firstname_label =
+      UTF8ToUTF16(GetParam().placeholder_firstname.value_or(""));
+  const std::u16string firstname_placeholder =
+      UTF8ToUTF16(GetParam().placeholder_firstname.value_or(""));
+  const std::u16string lastname_label =
+      UTF8ToUTF16(GetParam().initial_lastname.value_or(
+          GetParam().placeholder_lastname.value_or("")));
+  const std::u16string lastname_placeholder =
+      UTF8ToUTF16(GetParam().placeholder_lastname.value_or(""));
+  const std::u16string email_label =
+      UTF8ToUTF16(GetParam().initial_email.value_or(
+          GetParam().placeholder_email.value_or("")));
+  const std::u16string email_placeholder =
+      UTF8ToUTF16(GetParam().placeholder_email.value_or(""));
+  EXPECT_THAT(
+      form.fields(),
+      ElementsAre(
+          test::FormFieldDescriptionEq(
+              {.label = firstname_label,
+               .name = u"firstname",
+               .id_attribute = u"firstname",
+               .value = base::UTF8ToUTF16(kNewFirstnameValue),
+               .placeholder = firstname_placeholder,
+               .is_autofilled_according_to_renderer = false}),
+          test::FormFieldDescriptionEq(
+              {.label = lastname_label,
+               .name = u"lastname",
+               .id_attribute = u"lastname",
+               .value = lastname_label,
+               .placeholder =
+                   GetParam().initial_lastname ? u"" : lastname_placeholder,
+               .is_autofilled_according_to_renderer = false}),
+          test::FormFieldDescriptionEq(
+              {.label = email_label,
+               .name = u"email",
+               .id_attribute = u"email",
+               .value = email_label,
+               .placeholder =
+                   GetParam().initial_email ? u"" : email_placeholder,
+               .is_autofilled_according_to_renderer = false})));
+
+  // Preview the form and verify that the cursor position has been updated.
+  test_api(form).field(0).set_value(u"Wyatt");
+  test_api(form).field(1).set_value(u"Earp");
+  test_api(form).field(2).set_value(u"wyatt@example.com");
+  test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(1).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
+  ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
+  ApplyFieldsAction(input_element.GetDocument(), form.fields(),
+                    mojom::ActionPersistence::kPreview);
+  // The selection should be set after the second character.
+  EXPECT_EQ(2u, input_element.SelectionStart());
+  EXPECT_EQ(2u, input_element.SelectionEnd());
+
+  // Fill the form.
+  ApplyFieldsAction(input_element.GetDocument(), form.fields(),
+                    mojom::ActionPersistence::kFill);
+
+  // Find the newly-filled form that contains the input element.
+  FormData form2 = FindForm(input_element);
+  if (!GetParam().unowned) {
+    EXPECT_EQ(u"TestForm", form2.name());
+    EXPECT_EQ(GURL("http://abc.com"), form2.action());
+  }
+
+  EXPECT_THAT(form2.fields(),
+              ElementsAre(test::FormFieldDescriptionEq(
+                              {.label = firstname_placeholder,
+                               .name = u"firstname",
+                               .id_attribute = u"firstname",
+                               .value = u"Wyatt",
+                               .placeholder = firstname_placeholder,
+                               .is_autofilled_according_to_renderer = true}),
+                          test::FormFieldDescriptionEq(
+                              {.label = lastname_placeholder,
+                               .name = u"lastname",
+                               .id_attribute = u"lastname",
+                               .value = u"Earp",
+                               .placeholder = lastname_placeholder,
+                               .is_autofilled_according_to_renderer = true}),
+                          test::FormFieldDescriptionEq(
+                              {.label = email_placeholder,
+                               .name = u"email",
+                               .id_attribute = u"email",
+                               .value = u"wyatt@example.com",
+                               .placeholder = email_placeholder,
+                               .is_autofilled_according_to_renderer = true})));
+
+  // Verify that the cursor position has been updated.
+  EXPECT_EQ(5u, input_element.SelectionStart());
+  EXPECT_EQ(5u, input_element.SelectionEnd());
+}
+
+class FormAutofillMaxLengthTest
+    : public FormAutofillWithConstraintsTest,
+      public WithParamInterface<FormAutofillTestParam> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FormAutofillMaxLengthTest,
+    ValuesIn(std::to_array<FormAutofillTestParam>(
+        {{.html = R"(<form name=TestForm action='http://abc.com'>
+                         <input id=firstname maxlength=5>
+                         <input id=lastname maxlength=7>
+                         <input id=email maxlength=9>
+                         <input type=submit value=Send>
+                       </form>)",
+          .unowned = false},
+         {.html = R"(<head><title>delivery recipient info</title></head>
+                       <input id=firstname maxlength=5>
+                       <input id=lastname maxlength=7>
+                       <input id=email maxlength=9>
+                       <input type=submit value=Send>)",
+          .unowned = true}})),
+    [](const TestParamInfo<FormAutofillMaxLengthTest::ParamType>& param_info) {
+      return param_info.param.unowned ? "Unowned" : "Owned";
+    });
+
+TEST_P(FormAutofillMaxLengthTest, FillFormMaxLength) {
+  LoadHTML(GetParam().html);
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  // Get the input element we want to find.
+  WebInputElement input_element = GetInputElementById("firstname");
+
+  // Find the form that contains the input element.
+  FormData form = FindForm(input_element);
+  if (!GetParam().unowned) {
+    EXPECT_EQ(u"TestForm", form.name());
+    EXPECT_EQ(GURL("http://abc.com"), form.action());
+  }
+
+  EXPECT_THAT(form.fields(),
+              ElementsAre(test::FormFieldDescriptionEq(
+                              {.name = u"firstname",
+                               .id_attribute = u"firstname",
+                               .max_length = 5,
+                               .is_autofilled_according_to_renderer = false}),
+                          test::FormFieldDescriptionEq(
+                              {.name = u"lastname",
+                               .id_attribute = u"lastname",
+                               .max_length = 7,
+                               .is_autofilled_according_to_renderer = false}),
+                          test::FormFieldDescriptionEq(
+                              {.name = u"email",
+                               .id_attribute = u"email",
+                               .max_length = 9,
+                               .is_autofilled_according_to_renderer = false})));
+
+  // Fill the form.
+  test_api(form).field(0).set_value(u"Brother");
+  test_api(form).field(1).set_value(u"Jonathan");
+  test_api(form).field(2).set_value(u"brotherj@example.com");
+  test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(1).set_is_autofilled_according_to_renderer(true);
+  test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
+  ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
+  ApplyFieldsAction(input_element.GetDocument(), form.fields(),
+                    mojom::ActionPersistence::kFill);
+
+  // Find the newly-filled form that contains the input element.
+  FormData form2 = FindForm(input_element);
+  if (!GetParam().unowned) {
+    EXPECT_EQ(u"TestForm", form2.name());
+    EXPECT_EQ(GURL("http://abc.com"), form2.action());
+  }
+
+  EXPECT_THAT(form2.fields(),
+              ElementsAre(test::FormFieldDescriptionEq(
+                              {.name = u"firstname",
+                               .id_attribute = u"firstname",
+                               .value = u"Broth",
+                               .max_length = 5,
+                               .is_autofilled_according_to_renderer = true}),
+                          test::FormFieldDescriptionEq(
+                              {.name = u"lastname",
+                               .id_attribute = u"lastname",
+                               .value = u"Jonatha",
+                               .max_length = 7,
+                               .is_autofilled_according_to_renderer = true}),
+                          test::FormFieldDescriptionEq(
+                              {.name = u"email",
+                               .id_attribute = u"email",
+                               .value = u"brotherj@",
+                               .max_length = 9,
+                               .is_autofilled_according_to_renderer = true})));
+}
+
+class FormAutofillNegativeMaxLengthTest
+    : public FormAutofillWithConstraintsTest,
+      public WithParamInterface<FormAutofillTestParam> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FormAutofillNegativeMaxLengthTest,
+    ValuesIn(std::to_array<FormAutofillTestParam>(
+        {{.html = R"(<form name=TestForm action='http://abc.com'>
+                         <input id=firstname maxlength='-1'>
+                         <input id=lastname maxlength='-2'>
+                         <input id=email maxlength='-3'>
+                         <input type=submit value=Send>
+                       </form>)",
+          .unowned = false},
+         {.html = R"(<head><title>delivery recipient info</title></head>
+                       <input id=firstname maxlength='-1'>
+                       <input id=lastname maxlength='-2'>
+                       <input id=email maxlength='-3'>
+                       <input type=submit value=Send>)",
+          .unowned = true}})),
+    [](const TestParamInfo<FormAutofillNegativeMaxLengthTest::ParamType>&
+           param_info) {
+      return param_info.param.unowned ? "Unowned" : "Owned";
+    });
+
+// This test uses negative values of the maxlength attribute for input elements.
+// In this case, the maxlength of the input elements is set to the default
+// maxlength (defined in WebKit.)
+TEST_P(FormAutofillNegativeMaxLengthTest, FillFormNegativeMaxLength) {
+  LoadHTML(GetParam().html);
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  // Get the input element we want to find.
+  WebInputElement input_element = GetInputElementById("firstname");
+
+  // Find the form that contains the input element.
+  FormData form = FindForm(input_element);
+  if (!GetParam().unowned) {
+    EXPECT_EQ(u"TestForm", form.name());
+    EXPECT_EQ(GURL("http://abc.com"), form.action());
+  }
+
+  EXPECT_THAT(form.fields(),
+              ElementsAreArray(FirstLastEmailIdFieldsMatchers()));
+
+  // Fill the form.
+  test_api(form).field(0).set_value(u"Brother");
+  test_api(form).field(1).set_value(u"Jonathan");
+  test_api(form).field(2).set_value(u"brotherj@example.com");
+  ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
+  ApplyFieldsAction(input_element.GetDocument(), form.fields(),
+                    mojom::ActionPersistence::kFill);
+
+  // Find the newly-filled form that contains the input element.
+  FormData form2 = FindForm(input_element);
+  if (!GetParam().unowned) {
+    EXPECT_EQ(u"TestForm", form2.name());
+    EXPECT_EQ(GURL("http://abc.com"), form2.action());
+  }
+
+  EXPECT_THAT(
+      form2.fields(),
+      ElementsAre(
+          test::FormFieldDescriptionEq({.name = u"firstname",
+                                        .id_attribute = u"firstname",
+                                        .value = u"Brother"}),
+          test::FormFieldDescriptionEq({.name = u"lastname",
+                                        .id_attribute = u"lastname",
+                                        .value = u"Jonathan"}),
+          test::FormFieldDescriptionEq({.name = u"email",
+                                        .id_attribute = u"email",
+                                        .value = u"brotherj@example.com"})));
+}
+
+class FormAutofillEmptyNameTest
+    : public FormAutofillWithConstraintsTest,
+      public WithParamInterface<FormAutofillTestParam> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FormAutofillEmptyNameTest,
+    ValuesIn(std::to_array<FormAutofillTestParam>(
+        {{.html = R"(<form name=TestForm action='http://abc.com'>
+                         <input id=firstname name=''>
+                         <input id=lastname name=''>
+                         <input id=email name=''>
+                         <input type=submit value=Send>
+                       </form>)",
+          .unowned = false},
+         {.html = R"(<head><title>delivery recipient info</title></head>
+                       <input id=firstname name=''>
+                       <input id=lastname name=''>
+                       <input id=email name=''>
+                       <input type=submit value=Send>)",
+          .unowned = true}})),
+    [](const TestParamInfo<FormAutofillEmptyNameTest::ParamType>& param_info) {
+      return param_info.param.unowned ? "Unowned" : "Owned";
+    });
+
+TEST_P(FormAutofillEmptyNameTest, FillFormEmptyName) {
+  LoadHTML(GetParam().html);
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  // Get the input element we want to find.
+  WebInputElement input_element = GetInputElementById("firstname");
+
+  // Find the form that contains the input element.
+  FormData form = FindForm(input_element);
+  if (!GetParam().unowned) {
+    EXPECT_EQ(u"TestForm", form.name());
+    EXPECT_EQ(GURL("http://abc.com"), form.action());
+  }
+
+  EXPECT_THAT(form.fields(),
+              ElementsAreArray(FirstLastEmailIdFieldsMatchers()));
+
+  // Fill the form.
+  test_api(form).field(0).set_value(u"Wyatt");
+  test_api(form).field(1).set_value(u"Earp");
+  test_api(form).field(2).set_value(u"wyatt@example.com");
+  ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
+  ApplyFieldsAction(input_element.GetDocument(), form.fields(),
+                    mojom::ActionPersistence::kFill);
+
+  // Find the newly-filled form that contains the input element.
+  FormData form2 = FindForm(input_element);
+  if (!GetParam().unowned) {
+    EXPECT_EQ(u"TestForm", form2.name());
+    EXPECT_EQ(GURL("http://abc.com"), form2.action());
+  }
+
+  EXPECT_THAT(
+      form2.fields(),
+      ElementsAre(
+          test::FormFieldDescriptionEq({.name = u"firstname",
+                                        .id_attribute = u"firstname",
+                                        .value = u"Wyatt"}),
+          test::FormFieldDescriptionEq({.name = u"lastname",
+                                        .id_attribute = u"lastname",
+                                        .value = u"Earp"}),
+          test::FormFieldDescriptionEq({.name = u"email",
+                                        .id_attribute = u"email",
+                                        .value = u"wyatt@example.com"})));
+}
+
+class FormAutofillEmptyFormNamesTest
+    : public FormAutofillWithConstraintsTest,
+      public WithParamInterface<FormAutofillTestParam> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FormAutofillEmptyFormNamesTest,
+    ValuesIn(std::to_array<FormAutofillTestParam>({
+        {.html = R"(<form action='http://abc.com'>
+                      <input id=firstname>
+                      <input id=middlename>
+                      <input id=lastname>
+                      <input type=submit value=Send>
+                    </form>
+                    <form action='http://abc.com'>
+                      <input id=apple>
+                      <input id=banana>
+                      <input id=cantelope>
+                      <input type=submit value=Send>
+                    </form>)",
+         .unowned = false},
+        {.html = R"(<head><title>enter delivery preferences</title></head>
+                    <input id=firstname>
+                    <input id=middlename>
+                    <input id=lastname>
+                    <input id=apple>
+                    <input id=banana>
+                    <input id=cantelope>
+                    <input type=submit value=Send>)",
+         .unowned = true},
+    })),
+    [](const TestParamInfo<FormAutofillEmptyFormNamesTest::ParamType>&
+           param_info) {
+      return param_info.param.unowned ? "Unowned" : "Owned";
+    });
+
+TEST_P(FormAutofillEmptyFormNamesTest, FillFormEmptyFormNames) {
+  LoadHTML(GetParam().html);
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  const size_t expected_size = GetParam().unowned ? 1 : 2;
+  ASSERT_EQ(expected_size, forms.size());
+
+  // Get the input element we want to find.
+  WebInputElement input_element = GetInputElementById("apple");
+
+  // Find the form that contains the input element.
+  FormData form = FindForm(input_element);
+  if (!GetParam().unowned) {
+    EXPECT_TRUE(form.name().empty());
+    EXPECT_EQ(GURL("http://abc.com"), form.action());
+  }
+
+  const size_t unowned_offset = GetParam().unowned ? 3 : 0;
+  ASSERT_EQ(unowned_offset + 3, form.fields().size());
+  EXPECT_THAT(base::span(form.fields()).subspan(unowned_offset, 3U),
+              ElementsAre(test::FormFieldDescriptionEq(
+                              {.name = u"apple",
+                               .id_attribute = u"apple",
+                               .is_autofilled_according_to_renderer = false}),
+                          test::FormFieldDescriptionEq(
+                              {.name = u"banana",
+                               .id_attribute = u"banana",
+                               .is_autofilled_according_to_renderer = false}),
+                          test::FormFieldDescriptionEq(
+                              {.name = u"cantelope",
+                               .id_attribute = u"cantelope",
+                               .is_autofilled_according_to_renderer = false})));
+
+  // Fill the form.
+  test_api(form).field(unowned_offset + 0).set_value(u"Red");
+  test_api(form).field(unowned_offset + 1).set_value(u"Yellow");
+  test_api(form).field(unowned_offset + 2).set_value(u"Also Yellow");
+  test_api(form)
+      .field(unowned_offset + 0)
+      .set_is_autofilled_according_to_renderer(true);
+  test_api(form)
+      .field(unowned_offset + 1)
+      .set_is_autofilled_according_to_renderer(true);
+  test_api(form)
+      .field(unowned_offset + 2)
+      .set_is_autofilled_according_to_renderer(true);
+  ExecuteJavaScriptForTests("document.getElementById('apple').focus();");
+  ApplyFieldsAction(input_element.GetDocument(), form.fields(),
+                    mojom::ActionPersistence::kFill);
+
+  // Find the newly-filled form that contains the input element.
+  FormData form2 = FindForm(input_element);
+  if (!GetParam().unowned) {
+    EXPECT_TRUE(form2.name().empty());
+    EXPECT_EQ(GURL("http://abc.com"), form2.action());
+  }
+
+  ASSERT_EQ(unowned_offset + 3, form2.fields().size());
+  EXPECT_THAT(base::span(form2.fields()).subspan(unowned_offset, 3U),
+              ElementsAre(test::FormFieldDescriptionEq(
+                              {.name = u"apple",
+                               .id_attribute = u"apple",
+                               .value = u"Red",
+                               .is_autofilled_according_to_renderer = true}),
+                          test::FormFieldDescriptionEq(
+                              {.name = u"banana",
+                               .id_attribute = u"banana",
+                               .value = u"Yellow",
+                               .is_autofilled_according_to_renderer = true}),
+                          test::FormFieldDescriptionEq(
+                              {.name = u"cantelope",
+                               .id_attribute = u"cantelope",
+                               .value = u"Also Yellow",
+                               .is_autofilled_according_to_renderer = true})));
 }
 
 }  // namespace
