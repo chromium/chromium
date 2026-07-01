@@ -846,8 +846,7 @@ TEST_F(PersonalContextAccessManagerImplTest, WipeStateOnDisablement) {
   // 2. Call OnEnablementStateChanged with an ENABLED state. State should not
   // be wiped.
   access_manager().OnEnablementStateChanged(
-      personal_context::PersonalContextEnablementState::
-          kEnabledShouldShowNotice);
+      personal_context::PersonalContextEnablementState::kEnabled);
   EXPECT_TRUE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
 
@@ -856,8 +855,7 @@ TEST_F(PersonalContextAccessManagerImplTest, WipeStateOnDisablement) {
   EXPECT_CALL(mock_observer(), OnMaskedEntityTypeEvicted(
                                    _, EntityType(EntityTypeName::kPassport)));
   access_manager().OnEnablementStateChanged(
-      personal_context::PersonalContextEnablementState::
-          kDisabledViaPersonalIntelligenceInAutofillToggle);
+      personal_context::PersonalContextEnablementState::kDisabledNotEligible);
   EXPECT_FALSE(
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
 }
@@ -1086,8 +1084,7 @@ TEST_F(PersonalContextAccessManagerImplTest, PrefetchStatusAndObserverFailure) {
 
   // 3. Wipe state. Status should transition back to `kNotStarted`.
   access_manager().OnEnablementStateChanged(
-      personal_context::PersonalContextEnablementState::
-          kDisabledViaPersonalIntelligenceInAutofillToggle);
+      personal_context::PersonalContextEnablementState::kDisabledNotEligible);
   EXPECT_EQ(access_manager().GetPrefetchStatusByEntityType(order_type),
             RequestStatus::kNotStarted);
 }

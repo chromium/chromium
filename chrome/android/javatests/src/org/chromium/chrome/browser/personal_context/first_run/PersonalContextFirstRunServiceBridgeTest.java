@@ -40,19 +40,19 @@ public class PersonalContextFirstRunServiceBridgeTest {
     }
 
     /**
-     * Test 1: Verify shouldShow is true under state 4 (eligible), and calling noticeAcknowledged
+     * Test 1: Verify shouldShow is true under state 2 (eligible), and calling noticeAcknowledged
      * makes it false.
      */
     @Test
     @SmallTest
     @CommandLineFlags.Add({
         "enable-features=PersonalContextFirstRunNoticePhase2,"
-                + "PersonalContextForceEnablementState:state/4"
+                + "PersonalContextForceEnablementState:state/2"
     })
     public void testNoticeEligibleInitially() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Under state 4 (eligible), shouldShowNotice must return true initially.
+                    // Under state 2 (eligible), shouldShowNotice must return true initially.
                     Assert.assertTrue(PersonalContextFirstRunService.shouldShowNotice(mProfile));
 
                     // Call real C++ noticeAcknowledged JNI.

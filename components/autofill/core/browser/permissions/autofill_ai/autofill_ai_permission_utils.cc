@@ -67,36 +67,13 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   }
 }
 
-// Returns true if Personal Context is enabled for performing active operations
-// (e.g. ambient autofill filling or data lookup). This requires the user toggle
-// to be turned on.
-[[nodiscard]] bool IsPersonalContextEnabled(
-    personal_context::PersonalContextEnablementState state) {
-  using personal_context::PersonalContextEnablementState;
-  switch (state) {
-    case PersonalContextEnablementState::kEnabled:
-    case PersonalContextEnablementState::kEnabledShouldShowNotice:
-      return true;
-    case PersonalContextEnablementState::kDisabledNotEligible:
-    case PersonalContextEnablementState::kDisabledNeedsOptIn:
-    case PersonalContextEnablementState::
-        kDisabledViaPersonalIntelligenceInAutofillToggle:
-      return false;
-  }
-}
-
-// Returns true if the user/device is eligible for Personal Context features
-// (e.g. to determine whether to show Personal Context settings UI). Unlike
-// `IsPersonalContextEnabled`, this returns true even if the user has disabled
-// the feature via the settings toggle.
+// Returns true if the account is eligible for Personal Context (e.g. to
+// determine whether to show Personal Context settings UI).
 [[nodiscard]] bool IsPersonalContextEligible(
     personal_context::PersonalContextEnablementState state) {
   using personal_context::PersonalContextEnablementState;
   switch (state) {
     case PersonalContextEnablementState::kEnabled:
-    case PersonalContextEnablementState::kEnabledShouldShowNotice:
-    case PersonalContextEnablementState::
-        kDisabledViaPersonalIntelligenceInAutofillToggle:
       return true;
     case PersonalContextEnablementState::kDisabledNotEligible:
     case PersonalContextEnablementState::kDisabledNeedsOptIn:
@@ -685,23 +662,14 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
       break;
-    case AutofillAiAction::kShowAmbientAutofillInSettings: {
-      if (base::FeatureList::IsEnabled(
-              features::debug::kAutofillAmbientAutofillSkipEligibilityChecks)) {
-        return true;
-      }
-      if (!IsPersonalContextEligible(personal_context_enablement_state)) {
-        return false;
-      }
-      break;
-    }
+    case AutofillAiAction::kShowAmbientAutofillInSettings:
     case AutofillAiAction::kAmbientAutofill:
     case AutofillAiAction::kTypeSupportsAmbientAutofillData: {
       if (base::FeatureList::IsEnabled(
               features::debug::kAutofillAmbientAutofillSkipEligibilityChecks)) {
         return true;
       }
-      if (!IsPersonalContextEnabled(personal_context_enablement_state)) {
+      if (!IsPersonalContextEligible(personal_context_enablement_state)) {
         return false;
       }
       break;

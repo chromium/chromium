@@ -46,16 +46,14 @@ constexpr net::BackoffEntry::Policy kBackoffPolicy = {
     .entry_lifetime_ms = -1,
     .always_use_initial_delay = false};
 
-bool IsPersonalContextEnabled(
+bool IsPersonalContextEligible(
     personal_context::PersonalContextEnablementState state) {
   using enum personal_context::PersonalContextEnablementState;
   switch (state) {
     case kDisabledNotEligible:
     case kDisabledNeedsOptIn:
-    case kDisabledViaPersonalIntelligenceInAutofillToggle:
       return false;
     case kEnabled:
-    case kEnabledShouldShowNotice:
       return true;
   }
 }
@@ -424,7 +422,7 @@ void PersonalContextAccessManagerImpl::WipeCache() {
 
 void PersonalContextAccessManagerImpl::OnEnablementStateChanged(
     personal_context::PersonalContextEnablementState new_state) {
-  if (!IsPersonalContextEnabled(new_state)) {
+  if (!IsPersonalContextEligible(new_state)) {
     WipeCache();
   }
 }

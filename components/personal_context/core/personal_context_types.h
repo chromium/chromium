@@ -38,13 +38,9 @@ enum class PersonalContextNonEligibilityReason {
 // Used by consuming features to determine both feature execution and UI
 // entrypoint visibility.
 enum class PersonalContextEnablementState {
-  kDisabledNotEligible = 0,  // Feature disabled, user not eligible.
-  kDisabledNeedsOptIn = 1,   // Feature disabled pending OptIn.
-  // TODO(b:494149753): The EnablementService should only handle the non-
-  // Autofill-specific parts. Remove the following two Autofill-specific states.
-  kDisabledViaPersonalIntelligenceInAutofillToggle = 2,  // User toggled it off.
-  kEnabledShouldShowNotice = 3,  // Feature enabled but notice should be shown.
-  kEnabled = 4                   // Feature enabled, first run completed.
+  kDisabledNotEligible = 0,  // Not available, user not eligible.
+  kDisabledNeedsOptIn = 1,   // Not available, requires account opt-in.
+  kEnabled = 2               // Available.
 };
 
 // Defines the result of a PersonalContextService::FetchContext operation.

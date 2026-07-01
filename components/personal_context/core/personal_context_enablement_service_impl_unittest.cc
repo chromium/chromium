@@ -130,25 +130,6 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
         features::debug::kPersonalContextForceEnablementState,
         {{"state", "2"}});
     EXPECT_EQ(service().GetEnablementState(),
-              PersonalContextEnablementState::
-                  kDisabledViaPersonalIntelligenceInAutofillToggle);
-  }
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        features::debug::kPersonalContextForceEnablementState,
-        {{"state", "3"}});
-    EXPECT_EQ(service().GetEnablementState(),
-              PersonalContextEnablementState::kEnabledShouldShowNotice);
-  }
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        features::debug::kPersonalContextForceEnablementState,
-        {{"state", "4"}});
-    EXPECT_EQ(service().GetEnablementState(),
               PersonalContextEnablementState::kEnabled);
   }
 }

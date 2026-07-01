@@ -39,8 +39,6 @@ namespace {
     // implementing opt-in logic.
     case kDisabledNeedsOptIn:
       return false;
-    case kDisabledViaPersonalIntelligenceInAutofillToggle:
-    case kEnabledShouldShowNotice:
     case kEnabled:
       return true;
   }

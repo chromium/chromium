@@ -84,8 +84,6 @@ TEST_F(PersonalContextAutofillUtilTest,
 
   EXPECT_FALSE(check_state(kDisabledNotEligible));
   EXPECT_FALSE(check_state(kDisabledNeedsOptIn));
-  EXPECT_TRUE(check_state(kDisabledViaPersonalIntelligenceInAutofillToggle));
-  EXPECT_TRUE(check_state(kEnabledShouldShowNotice));
   EXPECT_TRUE(check_state(kEnabled));
 
   EXPECT_FALSE(ShouldShowPersonalContextAutofillSetting(
