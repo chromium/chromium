@@ -15,6 +15,7 @@
 #include "base/containers/extend.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/map_util.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
@@ -78,6 +79,7 @@ using ::blink::WebFormElement;
 using ::blink::WebInputElement;
 using ::blink::WebLocalFrame;
 using ::blink::WebNode;
+using ::blink::WebSelectElement;
 using ::blink::WebString;
 using ::testing::_;
 using ::testing::AllOf;
@@ -4702,6 +4704,759 @@ TEST_F(FieldLabelInferenceTest, AriaLabelAndDescription2) {
 
   EXPECT_THAT(form.fields(),
               ElementsAreArray(AriaLabelAndDescriptionFieldsMatchers()));
+}
+
+class FormDataConversionTest : public test::AutofillRendererTest {
+ public:
+  FormDataConversionTest() = default;
+
+  FormDataConversionTest(const FormDataConversionTest&) = delete;
+  FormDataConversionTest& operator=(const FormDataConversionTest&) = delete;
+
+  ~FormDataConversionTest() override = default;
+
+  void SetUp() override {
+    test::AutofillRendererTest::SetUp();
+    form_cache_.emplace(&autofill_agent());
+
+#if BUILDFLAG(IS_WIN)
+    // Autofill uses the system font to render suggestion previews. On Windows
+    // an extra step is required to ensure that the system font is configured.
+    blink::WebFontRendering::SetMenuFontMetrics(
+        blink::WebString::FromAscii("Arial"), 12);
+#endif
+  }
+
+  void TearDown() override {
+    form_cache_.reset();
+    test::AutofillRendererTest::TearDown();
+  }
+
+  FormCache::UpdateFormCacheResult UpdateFormCache() {
+    return form_util::UpdateFormCache(*form_cache_);
+  }
+
+ protected:
+  static std::vector<Matcher<FormFieldData>> JohnSmithFieldsMatchers() {
+    return {test::FormFieldDescriptionEq({.label = u"First name:",
+                                          .name = u"firstname",
+                                          .name_attribute = u"",
+                                          .id_attribute = u"firstname",
+                                          .value = u"John"}),
+            test::FormFieldDescriptionEq({.label = u"Last name:",
+                                          .name = u"lastname",
+                                          .name_attribute = u"",
+                                          .id_attribute = u"lastname",
+                                          .value = u"Smith"}),
+            test::FormFieldDescriptionEq({.label = u"Email:",
+                                          .name = u"email",
+                                          .name_attribute = u"",
+                                          .id_attribute = u"email",
+                                          .value = u"john@example.com"})};
+  }
+
+  static std::vector<Matcher<FormFieldData>>
+  JohnSmithWithLabelsFieldsMatchers() {
+    return {test::FormFieldDescriptionEq({.label = u"John",
+                                          .name = u"firstname",
+                                          .id_attribute = u"firstname",
+                                          .value = u"John"}),
+            test::FormFieldDescriptionEq({.label = u"Smith",
+                                          .name = u"lastname",
+                                          .id_attribute = u"lastname",
+                                          .value = u"Smith"}),
+            test::FormFieldDescriptionEq({.label = u"john@example.com",
+                                          .name = u"email",
+                                          .id_attribute = u"email",
+                                          .value = u"john@example.com"})};
+  }
+
+  static std::vector<Matcher<FormFieldData>>
+  JohnSmithWithPhoneAndAddressFieldsMatchers() {
+    std::vector<Matcher<FormFieldData>> matchers =
+        JohnSmithWithLabelsFieldsMatchers();
+    matchers.push_back(test::FormFieldDescriptionEq(
+        {.label = u"1.800.555.1234",
+         .name = u"phone",
+         .id_attribute = u"phone",
+         .value = u"1.800.555.1234",
+         .form_control_type = FormControlType::kInputText}));
+    matchers.push_back(test::FormFieldDescriptionEq(
+        {.label = u"",
+         .name = u"street-address",
+         .id_attribute = u"street-address",
+         .value = u"123 Fantasy Ln.\nApt. 42",
+         .form_control_type = FormControlType::kTextArea}));
+    return matchers;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::optional<FormCache> form_cache_;
+};
+
+TEST_F(FormDataConversionTest, WebFormElementToFormData) {
+  LoadHTML(
+      R"(<form name=TestForm action='http://cnn.com/submit/?a=1'>
+           <label for=firstname>First name:</label>
+             <input id=firstname value=John>
+           <label for=lastname>Last name:</label>
+             <input id=lastname value=Smith>
+           <label for=street-address>Address:</label>
+             <textarea id=street-address>123 Fantasy Ln.&#10;Apt. 42</textarea>
+           <label for=state>State:</label>
+             <select id=state>
+               <option value=CA>California</option>
+               <option value=TX>Texas</option>
+             </select>
+           <label for=password>Password:</label>
+             <input type=password id=password value=secret>
+           <label for=month>Card expiration:</label>
+             <input type=month id=month value='2011-12'>
+             <input type=submit name='reply-send' value=Send>
+           <!-- The below inputs should be ignored -->
+           <label for=notvisible>Hidden:</label>
+             <input type=hidden id=notvisible value=apple>
+         </form>)");
+
+  std::vector<WebFormElement> forms = GetDocument().GetTopLevelForms();
+  ASSERT_EQ(1U, forms.size());
+
+  WebInputElement input_element = GetInputElementById("firstname");
+
+  FormData form = FindForm(input_element);
+
+  EXPECT_EQ(u"TestForm", form.name());
+  EXPECT_EQ(form_util::GetFormRendererId(forms[0]), form.renderer_id());
+  EXPECT_EQ(GURL("http://cnn.com/submit/"), form.action());
+
+  EXPECT_THAT(
+      form.fields(),
+      ElementsAre(test::FormFieldDescriptionEq(
+                      {.label = u"First name:",
+                       .name = u"firstname",
+                       .id_attribute = u"firstname",
+                       .value = u"John",
+                       .max_length = FormFieldData::kDefaultMaxLength,
+                       .form_control_type = FormControlType::kInputText}),
+                  test::FormFieldDescriptionEq(
+                      {.label = u"Last name:",
+                       .name = u"lastname",
+                       .id_attribute = u"lastname",
+                       .value = u"Smith",
+                       .max_length = FormFieldData::kDefaultMaxLength,
+                       .form_control_type = FormControlType::kInputText}),
+                  test::FormFieldDescriptionEq(
+                      {.label = u"Address:",
+                       .name = u"street-address",
+                       .id_attribute = u"street-address",
+                       .value = u"123 Fantasy Ln.\nApt. 42",
+                       .max_length = FormFieldData::kDefaultMaxLength,
+                       .form_control_type = FormControlType::kTextArea}),
+                  test::FormFieldDescriptionEq(
+                      {.label = u"State:",
+                       .name = u"state",
+                       .id_attribute = u"state",
+                       .value = u"CA",
+                       .max_length = 0,
+                       .form_control_type = FormControlType::kSelectOne}),
+                  test::FormFieldDescriptionEq(
+                      {.label = u"Password:",
+                       .name = u"password",
+                       .id_attribute = u"password",
+                       .value = u"secret",
+                       .max_length = FormFieldData::kDefaultMaxLength,
+                       .form_control_type = FormControlType::kInputPassword}),
+                  test::FormFieldDescriptionEq(
+                      {.label = u"Card expiration:",
+                       .name = u"month",
+                       .id_attribute = u"month",
+                       .value = u"2011-12",
+                       .max_length = 0,
+                       .form_control_type = FormControlType::kInputMonth})));
+
+  // Check that the `renderer_id`s of the extracted `form.fields()` match the
+  // IDs of the form control elements.
+  EXPECT_EQ(base::ToVector(form.fields(), &FormFieldData::renderer_id),
+            base::ToVector(form_util::GetOwnedAutofillableFormControls(
+                               forms[0].GetDocument(), forms[0]),
+                           &form_util::GetFieldRendererId));
+}
+
+TEST_F(FormDataConversionTest,
+       WebFormElementConsiderNonControlLabelableElements) {
+  LoadHTML(R"(<form id=form>
+                <label for=progress>Progress:</label>
+                <progress id=progress></progress>
+                <label for=firstname>First name:</label>
+                <input id=firstname value=John>
+              </form>)");
+
+  WebFormElement web_form =
+      GetDocument().GetElementById("form").To<WebFormElement>();
+  ASSERT_TRUE(web_form);
+
+  std::optional<FormData> form = ExtractFormData(web_form);
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(test::FormFieldDescriptionEq({.name = u"firstname"})));
+}
+
+// We should not be able to serialize a form with too many fillable fields.
+TEST_F(FormDataConversionTest, WebFormElementToFormData_TooManyFields) {
+  std::string html = "<form name=TestForm action='http://cnn.com'>";
+  for (size_t i = 0; i < (kMaxExtractableFields + 1); ++i) {
+    html += "<input>";
+  }
+  html += "</form>";
+  LoadHTML(html.c_str());
+
+  std::vector<WebFormElement> forms = GetDocument().GetTopLevelForms();
+  ASSERT_EQ(1U, forms.size());
+  std::vector<WebFormControlElement> form_controls =
+      form_util::GetOwnedAutofillableFormControls(GetDocument(), forms.front());
+  ASSERT_FALSE(form_controls.empty());
+
+  WebInputElement input_element =
+      form_controls.front().DynamicTo<WebInputElement>();
+
+  EXPECT_THAT(FindForm(input_element),
+              Property(&FormData::fields,
+                       ElementsAre(Property(
+                           &FormFieldData::renderer_id,
+                           form_util::GetFieldRendererId(input_element)))));
+}
+
+// Tests that the `should_autocomplete` is set to false for all the fields when
+// an autocomplete='off' attribute is set for the form in HTML.
+TEST_F(FormDataConversionTest,
+       WebFormElementToFormData_AutocompleteOff_OnForm) {
+  LoadHTML(
+      R"(<form name=TestForm id=form action='http://cnn.com' autocomplete=off>
+           <label for=firstname>First name:</label>
+             <input id=firstname value=John>
+           <label for=lastname>Last name:</label>
+             <input id=lastname value=Smith>
+           <label for='street-address'>Address:</label>
+             <input id=addressline1 value='123 Test st.'>
+         </form>)");
+
+  WebFormElement web_form =
+      GetDocument().GetElementById("form").To<WebFormElement>();
+  ASSERT_TRUE(web_form);
+
+  std::optional<FormData> form = ExtractFormData(web_form);
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(
+      form->fields(),
+      Each(test::FormFieldDescriptionEq({.should_autocomplete = false})));
+}
+
+// Tests that the `should_autocomplete` is set to false only for the field
+// which has an autocomplete='off' attribute set for it in HTML.
+TEST_F(FormDataConversionTest,
+       WebFormElementToFormData_AutocompleteOff_OnField) {
+  LoadHTML(
+      R"(<form name=TestForm id=form action='http://cnn.com'>
+           <label for=firstname>First name:</label>
+             <input id=firstname value=John autocomplete=off>
+           <label for=lastname>Last name:</label>
+             <input id=lastname value=Smith>
+           <label for='street-address'>Address:</label>
+             <input id=addressline1 value='123 Test st.'>
+         </form>)");
+
+  WebFormElement web_form =
+      GetDocument().GetElementById("form").To<WebFormElement>();
+  ASSERT_TRUE(web_form);
+
+  std::optional<FormData> form = ExtractFormData(web_form);
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(test::FormFieldDescriptionEq({.should_autocomplete = false}),
+                  test::FormFieldDescriptionEq({.should_autocomplete = true}),
+                  test::FormFieldDescriptionEq({.should_autocomplete = true})));
+}
+
+// `should_autocomplete` must be set to false for the field with
+// autocomplete='one-time-code' attribute set in HTML.
+TEST_F(FormDataConversionTest,
+       WebFormElementToFormData_AutocompleteOff_OneTimeCode) {
+  LoadHTML(
+      R"(<form name=TestForm id=form action='http://cnn.com'>
+           <input value=123 autocomplete='one-time-code'>
+         </form>)");
+
+  WebFormElement web_form =
+      GetDocument().GetElementById("form").To<WebFormElement>();
+  ASSERT_TRUE(web_form);
+
+  std::optional<FormData> form = ExtractFormData(web_form);
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(form->fields(), ElementsAre(test::FormFieldDescriptionEq(
+                                  {.should_autocomplete = false})));
+}
+
+// Tests CSS classes are set.
+TEST_F(FormDataConversionTest, WebFormElementToFormData_CssClasses) {
+  LoadHTML(
+      R"(<form name=TestForm id=form action='http://cnn.com' autocomplete=off>
+           <input id=firstname class='firstname_field'>
+           <input id=lastname class='lastname_field'>
+           <input id=addressline1>
+         </form>)");
+
+  WebFormElement web_form =
+      GetDocument().GetElementById("form").To<WebFormElement>();
+  ASSERT_TRUE(web_form);
+
+  std::optional<FormData> form = ExtractFormData(web_form);
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(
+          test::FormFieldDescriptionEq({.css_classes = u"firstname_field"}),
+          test::FormFieldDescriptionEq({.css_classes = u"lastname_field"}),
+          test::FormFieldDescriptionEq({.css_classes = u""})));
+}
+
+// Tests id attributes are set.
+TEST_F(FormDataConversionTest, WebFormElementToFormData_IdAttributes) {
+  LoadHTML(
+      R"(<form name=TestForm id=form action='http://cnn.com' autocomplete=off>
+           <input name=name1 id=firstname>
+           <input name=name2 id=lastname>
+           <input name=same id=same>
+           <input id=addressline1>
+         </form>)");
+
+  WebFormElement web_form =
+      GetDocument().GetElementById("form").To<WebFormElement>();
+  ASSERT_TRUE(web_form);
+
+  std::optional<FormData> form = ExtractFormData(web_form);
+  ASSERT_TRUE(form);
+
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(
+          test::FormFieldDescriptionEq({.name = u"name1",
+                                        .name_attribute = u"name1",
+                                        .id_attribute = u"firstname"}),
+          test::FormFieldDescriptionEq({.name = u"name2",
+                                        .name_attribute = u"name2",
+                                        .id_attribute = u"lastname"}),
+          test::FormFieldDescriptionEq({.name = u"same",
+                                        .name_attribute = u"same",
+                                        .id_attribute = u"same"}),
+          test::FormFieldDescriptionEq({.name = u"addressline1",
+                                        .name_attribute = u"",
+                                        .id_attribute = u"addressline1"})));
+}
+
+TEST_F(FormDataConversionTest, ExtractForms) {
+  LoadHTML(R"(<form id=TestForm name=TestForm action='http://cnn.com'>
+           First name: <input id=firstname value=John>
+           Last name: <input id=lastname value=Smith>
+           Email: <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
+  std::optional<FormData> form = ExtractFormData("TestForm");
+  ASSERT_TRUE(form);
+  EXPECT_EQ(u"TestForm", form->name());
+  EXPECT_EQ(GURL("http://cnn.com"), form->action());
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithFieldsMatchers()));
+}
+
+TEST_F(FormDataConversionTest, ExtractMultipleForms) {
+  LoadHTML(R"(<form name=TestForm action='http://cnn.com'>
+                <input id=firstname value=John>
+                <input id=lastname value=Smith>
+                <input id=email value='john@example.com'>
+                <input type=submit name='reply-send' value=Send>
+              </form>
+              <form name=TestForm2 action='http://zoo.com'>
+                <input id=firstname value=Jack>
+                <input id=lastname value=Adams>
+                <input id=email value='jack@example.com'>
+                <input type=submit name='reply-send' value=Send>
+              </form>)");
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(2U, forms.size());
+
+  // First form.
+  const FormData& form = forms[0];
+  EXPECT_EQ(u"TestForm", form.name());
+  EXPECT_EQ(GURL("http://cnn.com"), form.action());
+
+  EXPECT_THAT(form.fields(),
+              ElementsAreArray(JohnSmithWithLabelsFieldsMatchers()));
+
+  // Second form.
+  const FormData& form2 = forms[1];
+  EXPECT_EQ(u"TestForm2", form2.name());
+  EXPECT_EQ(GURL("http://zoo.com"), form2.action());
+
+  EXPECT_THAT(
+      form2.fields(),
+      ElementsAre(
+          test::FormFieldDescriptionEq({.label = u"Jack",
+                                        .name = u"firstname",
+                                        .id_attribute = u"firstname",
+                                        .value = u"Jack"}),
+          test::FormFieldDescriptionEq({.label = u"Adams",
+                                        .name = u"lastname",
+                                        .id_attribute = u"lastname",
+                                        .value = u"Adams"}),
+          test::FormFieldDescriptionEq({.label = u"jack@example.com",
+                                        .name = u"email",
+                                        .id_attribute = u"email",
+                                        .value = u"jack@example.com"})));
+}
+
+TEST_F(FormDataConversionTest, OnlyExtractNewForms) {
+  LoadHTML(
+      R"(<form id=testform action='http://cnn.com'>
+           <input id=firstname value=John>
+           <input id=lastname value=Smith>
+           <input id=email value='john@example.com'>
+           <input type=submit name='reply-send' value=Send>
+         </form>)");
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  // Second call should give nothing as there are no new forms.
+  forms = UpdateFormCache().updated_forms;
+  ASSERT_TRUE(forms.empty());
+
+  // Append to the current form will re-extract.
+  ExecuteJavaScriptForTests(
+      R"(var newInput = document.createElement('input');
+         newInput.setAttribute('type', 'text');
+         newInput.setAttribute('id', 'telephone');
+         newInput.value = '12345';
+         document.getElementById('testform').appendChild(newInput);)");
+
+  forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  std::vector<Matcher<FormFieldData>> expected_fields =
+      JohnSmithWithLabelsFieldsMatchers();
+  expected_fields.push_back(
+      test::FormFieldDescriptionEq({.label = u"",
+                                    .name = u"telephone",
+                                    .id_attribute = u"telephone",
+                                    .value = u"12345"}));
+  EXPECT_THAT(forms[0].fields(), ElementsAreArray(expected_fields));
+
+  forms.clear();
+
+  // Completely new form will also be extracted.
+  ExecuteJavaScriptForTests(
+      R"(var newForm=document.createElement('form');
+        newForm.id='new_testform';
+        newForm.action='http://google.com';
+        newForm.method='post';
+        var newFirstname=document.createElement('input');
+        newFirstname.setAttribute('type', 'text');
+        newFirstname.setAttribute('id', 'second_firstname');
+        newFirstname.value = 'Bob';
+        var newLastname=document.createElement('input');
+        newLastname.setAttribute('type', 'text');
+        newLastname.setAttribute('id', 'second_lastname');
+        newLastname.value = 'Hope';
+        var newEmail=document.createElement('input');
+        newEmail.setAttribute('type', 'text');
+        newEmail.setAttribute('id', 'second_email');
+        newEmail.value = 'bobhope@example.com';
+        newForm.appendChild(newFirstname);
+        newForm.appendChild(newLastname);
+        newForm.appendChild(newEmail);
+        document.body.appendChild(newForm);)");
+
+  forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  EXPECT_THAT(
+      forms[0].fields(),
+      ElementsAre(
+          test::FormFieldDescriptionEq({.label = u"",
+                                        .name = u"second_firstname",
+                                        .id_attribute = u"second_firstname",
+                                        .value = u"Bob"}),
+          test::FormFieldDescriptionEq({.label = u"",
+                                        .name = u"second_lastname",
+                                        .id_attribute = u"second_lastname",
+                                        .value = u"Hope"}),
+          test::FormFieldDescriptionEq({.label = u"",
+                                        .name = u"second_email",
+                                        .id_attribute = u"second_email",
+                                        .value = u"bobhope@example.com"})));
+}
+
+// We should not report additional forms for empty forms.
+TEST_F(FormDataConversionTest, ExtractFormsNoFields) {
+  LoadHTML(R"(<form name=TestForm action='http://cnn.com'>
+              </form>)");
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_TRUE(forms.empty());
+}
+
+TEST_F(FormDataConversionTest, WebFormElementToFormData_Autocomplete) {
+  // Form is still Autofill-able despite autocomplete=off.
+  LoadHTML(
+      R"(<form name=TestForm action='http://cnn.com' autocomplete=off>
+             <input id=firstname value=John>
+             <input id=lastname value=Smith>
+             <input id=email value='john@example.com'>
+             <input type=submit name='reply-send' value=Send>
+           </form>)");
+
+  std::vector<WebFormElement> web_forms = GetDocument().GetTopLevelForms();
+  ASSERT_EQ(1U, web_forms.size());
+  WebFormElement web_form = web_forms[0];
+
+  EXPECT_TRUE(ExtractFormData(web_form));
+}
+
+TEST_F(FormDataConversionTest, SelectOneAsText) {
+  LoadHTML(R"(<form name=TestForm action='http://cnn.com'>
+                <input id=firstname value=John>
+                <input id=lastname value=Smith>
+                <select id=country>
+                  <option value=AF>Afghanistan</option>
+                  <option value=AL>Albania</option>
+                  <option value=DZ>Algeria</option>
+                </select>
+                <input type=submit name='reply-send' value=Send>
+              </form>)");
+
+  // Set the value of the select-one.
+  WebSelectElement select_element =
+      GetDocument().GetElementById("country").To<WebSelectElement>();
+  select_element.SetValue(WebString("AL"));
+
+  std::vector<WebFormElement> forms = GetDocument().GetTopLevelForms();
+  ASSERT_EQ(1U, forms.size());
+
+  std::optional<FormData> form = ExtractFormData(forms.front());
+  ASSERT_TRUE(form);
+  EXPECT_EQ(form->name(), u"TestForm");
+  EXPECT_EQ(form->action(), GURL("http://cnn.com"));
+
+  EXPECT_THAT(
+      form->fields(),
+      ElementsAre(test::FormFieldDescriptionEq({.label = u"John",
+                                                .name = u"firstname",
+                                                .id_attribute = u"firstname",
+                                                .value = u"John"}),
+                  test::FormFieldDescriptionEq({.label = u"Smith",
+                                                .name = u"lastname",
+                                                .id_attribute = u"lastname",
+                                                .value = u"Smith"}),
+                  test::FormFieldDescriptionEq({.label = u"",
+                                                .name = u"country",
+                                                .id_attribute = u"country",
+                                                .value = u"AL"})));
+}
+
+TEST_F(FormDataConversionTest, UnownedFormElementsToFormDataWithoutForm) {
+  LoadHTML(R"(<head><title>delivery info</title></head>
+              <div>
+                <label for=firstname>First name:</label>
+                <label for=lastname>Last name:</label>
+                <input id=firstname value=John>
+                <input id=lastname value=Smith>
+                <label for=email>Email:</label>
+                <input id=email value='john@example.com'>
+              </div>)");
+  std::optional<FormData> form = ExtractFormData(WebFormElement());
+  ASSERT_TRUE(form);
+
+  EXPECT_TRUE(form->name().empty());
+  EXPECT_FALSE(form->action().is_valid());
+
+  EXPECT_THAT(form->fields(), ElementsAreArray(JohnSmithFieldsMatchers()));
+}
+
+struct FormAutofillTestParam {
+  std::string html;
+  bool unowned;
+};
+
+class FormAutofillFindFormTest
+    : public FormDataConversionTest,
+      public WithParamInterface<FormAutofillTestParam> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FormAutofillFindFormTest,
+    ValuesIn(std::to_array<FormAutofillTestParam>(
+        {{.html =
+              R"(<form name=TestForm action='http://abc.com'>
+              <input id=firstname value=John>
+              <input id=lastname value=Smith>
+              <input id=email value='john@example.com'>
+              <input id=phone value=1.800.555.1234>
+              <textarea id=street-address>123 Fantasy Ln.&#10;Apt. 42</textarea>
+              <input type=submit value=Send>
+              </form>)",
+          .unowned = false},
+         {.html =
+              R"(<head><title>delivery recipient info</title></head>
+              <input id=firstname value=John>
+              <input id=lastname value=Smith>
+              <input id=email value='john@example.com'>
+              <input id=phone value=1.800.555.1234>
+              <textarea id=street-address>123 Fantasy Ln.&#10;Apt. 42</textarea>
+              <input type=submit value=Send>)",
+          .unowned = true}})),
+    [](const TestParamInfo<FormAutofillFindFormTest::ParamType>& param_info) {
+      return param_info.param.unowned ? "Unowned" : "Owned";
+    });
+
+TEST_P(FormAutofillFindFormTest, FindFormForInputElement) {
+  LoadHTML(GetParam().html);
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  // Get the input element we want to find.
+  WebInputElement input_element = GetInputElementById("phone");
+
+  // Find the form and verify it's the correct form.
+  FormData form = FindForm(input_element);
+  if (!GetParam().unowned) {
+    EXPECT_EQ(u"TestForm", form.name());
+    EXPECT_EQ(GURL("http://abc.com"), form.action());
+  }
+
+  EXPECT_THAT(form.fields(),
+              ElementsAreArray(JohnSmithWithPhoneAndAddressFieldsMatchers()));
+}
+
+TEST_P(FormAutofillFindFormTest, FindFormForTextAreaElement) {
+  LoadHTML(GetParam().html);
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  ASSERT_EQ(1U, forms.size());
+
+  // Get the textarea element we want to find.
+  WebElement element = GetDocument().GetElementById("street-address");
+  WebFormControlElement textarea_element = element.To<WebFormControlElement>();
+
+  // Find the form and verify it's the correct form.
+  FormData form = FindForm(textarea_element);
+  if (!GetParam().unowned) {
+    EXPECT_EQ(u"TestForm", form.name());
+    EXPECT_EQ(GURL("http://abc.com"), form.action());
+  }
+
+  EXPECT_THAT(form.fields(),
+              ElementsAreArray(JohnSmithWithPhoneAndAddressFieldsMatchers()));
+}
+
+struct FormCacheExtractNewFormsTestParam {
+  std::string html;
+  size_t expected_number_of_extracted_forms;
+  bool expected_is_form_tag;
+};
+
+class FormCacheExtractNewFormsTest
+    : public FormDataConversionTest,
+      public WithParamInterface<FormCacheExtractNewFormsTestParam> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FormCacheExtractNewFormsTest,
+    ValuesIn(std::to_array<FormCacheExtractNewFormsTestParam>({
+        // An empty form should not be extracted.
+        {.html = R"(<form name=TestForm action='http://abc.com'></form>)",
+         .expected_number_of_extracted_forms = 0u,
+         .expected_is_form_tag = true},
+        // A form with less than three fields with no autocomplete type(s)
+        // should be extracted because no minimum is being enforced for upload.
+        {.html = R"(<form name=TestForm action='http://abc.com'>
+                         <input id=firstname>
+                       </form>)",
+         .expected_number_of_extracted_forms = 1u,
+         .expected_is_form_tag = true},
+        // A form with less than three fields with at least one autocomplete
+        // type should be extracted.
+        {.html = R"(<form name=TestForm action='http://abc.com'>
+                         <input id=firstname autocomplete='given-name'>
+                       </form>)",
+         .expected_number_of_extracted_forms = 1u,
+         .expected_is_form_tag = true},
+        // A form with three or more fields should be extracted.
+        {.html = R"(<form name=TestForm action='http://abc.com'>
+                         <input id=firstname>
+                         <input id=lastname>
+                         <input id=email>
+                         <input type=submit value=Send>
+                       </form>)",
+         .expected_number_of_extracted_forms = 1u,
+         .expected_is_form_tag = true},
+        // An input field with an autocomplete attribute outside of a form
+        // should be extracted.
+        {.html = R"(<input id=firstname autocomplete='given-name'>
+                       <input type=submit value=Send>)",
+         .expected_number_of_extracted_forms = 1u,
+         .expected_is_form_tag = false},
+        // An input field without an autocomplete attribute outside of a form,
+        // with no checkout hints, should not be extracted.
+        {.html = R"(<input id=firstname>
+                       <input type=submit value=Send>)",
+         .expected_number_of_extracted_forms = 1u,
+         .expected_is_form_tag = false},
+        // A form with one field which is password gets extracted.
+        {.html = R"(<form name=TestForm action='http://abc.com'>
+                         <input type=password id=pw>
+                       </form>)",
+         .expected_number_of_extracted_forms = 1u,
+         .expected_is_form_tag = true},
+        // A form with two fields which are passwords should be extracted.
+        {.html = R"(<form name=TestForm action='http://abc.com'>
+                         <input type=password id=pw>
+                         <input type=password id=new_pw>
+                       </form>)",
+         .expected_number_of_extracted_forms = 1u,
+         .expected_is_form_tag = true},
+    })),
+    [](const TestParamInfo<FormCacheExtractNewFormsTest::ParamType>& info) {
+      constexpr auto kNames = std::to_array<std::string_view>({
+          "EmptyForm",
+          "SmallFormNoAutocomplete",
+          "SmallFormWithAutocomplete",
+          "ThreeFieldForm",
+          "SmallFormlessWithAutocomplete",
+          "SmallFormlessNoAutocomplete",
+          "PasswordOnly",
+          "TwoPasswords",
+      });
+      return std::string{kNames[info.index]};
+    });
+
+TEST_P(FormCacheExtractNewFormsTest, ExtractNewForms) {
+  const FormCacheExtractNewFormsTestParam& test_case = GetParam();
+  LoadHTML(std::string(test_case.html).c_str());
+
+  std::vector<FormData> forms = UpdateFormCache().updated_forms;
+  EXPECT_EQ(test_case.expected_number_of_extracted_forms, forms.size());
+  if (!forms.empty()) {
+    EXPECT_EQ(test_case.expected_is_form_tag,
+              !forms.back().renderer_id().is_null());
+  }
 }
 
 }  // namespace
