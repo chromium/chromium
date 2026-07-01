@@ -48,7 +48,7 @@ const CGFloat kWidthLandscapeSplitViewOnLargeIPad = 678.0;
 // Returns true if test is running on 12.9 inch iPad Pro. Otherwise, it's
 // running on regular iPad.
 - (BOOL)isRunningOnLargeIPadPro {
-  CGSize size = [[UIScreen mainScreen] bounds].size;
+  CGSize size = [super window].screen.bounds.size;
   return MAX(size.height, size.width) ==
          MAX(kLargeIPadPortraitSize.width, kLargeIPadPortraitSize.height);
 }
